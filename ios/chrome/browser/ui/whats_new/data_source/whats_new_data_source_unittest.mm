@@ -9,7 +9,10 @@
 #import "base/path_service.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/gtest_util.h"
+#import "base/test/scoped_feature_list.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_item.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
+#import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "testing/platform_test.h"
 #import "ui/base/l10n/l10n_util_mac.h"
@@ -130,4 +133,54 @@ TEST_F(WhatsNewDataSourceTest, TestChromeTipEntries) {
       isEqualToString:
           l10n_util::GetNSString(
               IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_BUTTON_TITLE)]);
+}
+
+// Test that WhatsNewItem M116 is constructed correctly from a valid entry in
+// the test file.
+TEST_F(WhatsNewDataSourceTest, TestConstructionOfWhatsNewItemM116) {
+  base::test::ScopedFeatureList features;
+  features.InitAndEnableFeature(kWhatsNewIOSM116);
+  base::FilePath test_path;
+  test_path = GetTestDataPath();
+  NSString* path = base::SysUTF8ToNSString(test_path.value().c_str());
+
+  NSDictionary* entries = [NSDictionary dictionaryWithContentsOfFile:path];
+  NSArray<NSDictionary*>* keys =
+      [entries objectForKey:@"WhatsNewItemM116TestKey"];
+  NSDictionary* entry = [keys objectAtIndex:0];
+
+  WhatsNewItem* item = ConstructWhatsNewItem(entry);
+  EXPECT_EQ(item.type, WhatsNewType::kIncognitoTabsFromOtherApps);
+  EXPECT_TRUE([item.title
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_TITLE)]);
+  EXPECT_TRUE([item.subtitle
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SUBTITLE)]);
+  EXPECT_TRUE(
+      [item.screenshotName isEqualToString:@"incognito_tabs_from_other_apps"]);
+  NSDictionary* image_text_expected = @{
+    @"IDS_OPEN_IN_INCOGNITO" : l10n_util::GetNSString(
+        IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_OPEN_IN_INCOGNITO),
+    @"IDS_OPEN_IN_INCOGNITO_URL" : l10n_util::GetNSString(
+        IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_URL)
+  };
+  EXPECT_TRUE(
+      [item.screenshotTextProvider isEqualToDictionary:image_text_expected]);
+  EXPECT_TRUE([item.instructionSteps[0]
+      isEqualToString:l10n_util::GetNSString(IDS_IOS_WHATS_NEW_APP_SETTINGS)]);
+  EXPECT_TRUE([item.instructionSteps[1]
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_2)]);
+  EXPECT_TRUE([item.instructionSteps[2]
+      isEqualToString:
+          l10n_util::GetNSString(
+              IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3)]);
+  EXPECT_EQ(item.hasPrimaryAction, true);
+  EXPECT_TRUE([item.primaryActionTitle
+      isEqualToString:l10n_util::GetNSString(
+                          IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE)]);
 }

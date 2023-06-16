@@ -26,6 +26,7 @@ source_set("data_source") {
     "//base",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/shared/ui/symbols",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//ios/chrome/common/ui/colors",
     "//ui/base",
     "//url",
@@ -42,7 +43,8 @@ source_set("unit_tests") {
     "resources:unit_tests_resources",
     "//base",
     "//base/test:test_support",
-    "//ios/chrome/app/strings:ios_strings_grit",
+    "//ios/chrome/app/strings",
+    "//ios/chrome/browser/ui/whats_new:util",
     "//testing/gtest",
     "//ui/base",
   ]

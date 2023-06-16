@@ -122,5 +122,43 @@
             <string>https://support.google.com/chrome</string>
         </dict>
     </array>
+    <key>WhatsNewItemM116TestKey</key>
+    <array>
+        <dict>
+            <key>Type</key>
+            <integer>7</integer>
+            <key>Title</key>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_TITLE</string>
+            <key>Subtitle</key>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>incognito_tabs_from_other_apps</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_OPEN_IN_INCOGNITO</key>
+                <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_OPEN_IN_INCOGNITO</string>
+                <key>IDS_OPEN_IN_INCOGNITO_URL</key>
+                <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_SCREENSHOT_TEXT_URL</string>
+            </dict>
+            <key>IconImageName</key>
+            <string>magnifyingglass</string>
+            <key>IconBackgroundColor</key>
+            <string>blue</string>
+            <key>IsSymbol</key>
+            <true/>
+            <key>InstructionSteps</key>
+            <array>
+            <string>IDS_IOS_WHATS_NEW_APP_SETTINGS</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_INCOGNITO_TABS_FROM_OTHER_APPS_STEP_3</string>
+            </array>
+            <key>HasPrimaryAction</key>
+            <true/>
+            <key>PrimaryActionTitle</key>
+            <string>IDS_IOS_WHATS_NEW_GOT_TO_SETTINGS_BUTTON_TITLE</string>
+            <key>LearnMoreUrlString</key>
+            <string>https://support.google.com/chrome</string>
+        </dict>
+    </array>
 </dict>
 </plist>
