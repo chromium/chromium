@@ -24,6 +24,12 @@ class ChapsSlotSession {
   // Close and re-open this session.
   virtual bool ReopenSession() = 0;
 
+  // Calls C_CreateObject.
+  // PKCS #11 v2.20 section 11.7 page 128.
+  virtual CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
+                             CK_ULONG ulCount,
+                             CK_OBJECT_HANDLE_PTR phObject) = 0;
+
   // Calls C_GenerateKeyPair.
   // PKCS #11 v2.20 section 11.14 page 176.
   virtual CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,

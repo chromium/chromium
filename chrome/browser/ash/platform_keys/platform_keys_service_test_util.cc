@@ -74,6 +74,15 @@ bool FakeChapsUtil::GenerateSoftwareBackedRSAKey(
   return true;
 }
 
+// TODO(olsa): Extend this initial implementation with more logic.
+bool FakeChapsUtil::ImportPkcs12Certificate(
+    PK11SlotInfo* slot,
+    const std::vector<uint8_t>& pkcs12_data,
+    const std::string& password,
+    bool is_software_backed) {
+  return true;
+}
+
 ScopedChapsUtilOverride::ScopedChapsUtilOverride() {
   chromeos::platform_keys::ChapsUtil::SetFactoryForTesting(base::BindRepeating(
       &ScopedChapsUtilOverride::CreateChapsUtil, base::Unretained(this)));

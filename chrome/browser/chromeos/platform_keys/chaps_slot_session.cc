@@ -71,14 +71,15 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     }
     CK_C_OpenSession open_session = function_list->C_OpenSession;
     CK_C_CloseSession close_session = function_list->C_CloseSession;
+    CK_C_CreateObject create_object = function_list->C_CreateObject;
     CK_C_GenerateKeyPair generate_key_pair = function_list->C_GenerateKeyPair;
     CK_C_GetAttributeValue get_attribute_value =
         function_list->C_GetAttributeValue;
     CK_C_SetAttributeValue set_attribute_value =
         function_list->C_SetAttributeValue;
 
-    if (!open_session || !close_session || !generate_key_pair ||
-        !get_attribute_value || !set_attribute_value) {
+    if (!open_session || !close_session || !create_object ||
+        !generate_key_pair || !get_attribute_value || !set_attribute_value) {
       LogError(ErrorCode::kRequiredFunctionMissing);
       return nullptr;
     }
@@ -99,8 +100,9 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
       return nullptr;
     }
     return base::WrapUnique(new ChapsSlotSessionImpl(
-        chaps_handle, open_session, close_session, generate_key_pair,
-        get_attribute_value, set_attribute_value, slot_id, session_handle));
+        chaps_handle, open_session, close_session, create_object,
+        generate_key_pair, get_attribute_value, set_attribute_value, slot_id,
+        session_handle));
   }
 
   ~ChapsSlotSessionImpl() override {
@@ -149,6 +151,14 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
     return true;
   }
 
+  CK_RV CreateObject(CK_ATTRIBUTE_PTR pTemplate,
+                     CK_ULONG ulCount,
+                     CK_OBJECT_HANDLE_PTR phObject) override {
+    base::ScopedBlockingCall scoped_blocking_call(
+        FROM_HERE, base::BlockingType::WILL_BLOCK);
+    return create_object_(session_handle_, pTemplate, ulCount, phObject);
+  }
+
   CK_RV GenerateKeyPair(CK_MECHANISM_PTR pMechanism,
                         CK_ATTRIBUTE_PTR pPublicKeyTemplate,
                         CK_ULONG ulPublicKeyAttributeCount,
@@ -184,6 +194,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   ChapsSlotSessionImpl(void* chaps_handle,
                        CK_C_OpenSession open_session,
                        CK_C_CloseSession close_session,
+                       CK_C_CreateObject create_object,
                        CK_C_GenerateKeyPair generate_key_pair,
                        CK_C_GetAttributeValue get_attribute_value,
                        CK_C_SetAttributeValue set_attribute_value,
@@ -192,6 +203,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
       : chaps_handle_(chaps_handle),
         open_session_(open_session),
         close_session_(close_session),
+        create_object_(create_object),
         generate_key_pair_(generate_key_pair),
         get_attribute_value_(get_attribute_value),
         set_attribute_value_(set_attribute_value),
@@ -207,6 +219,7 @@ class ChapsSlotSessionImpl : public ChapsSlotSession {
   raw_ptr<void, ExperimentalAsh> chaps_handle_ = nullptr;
   CK_C_OpenSession open_session_ = nullptr;
   CK_C_CloseSession close_session_ = nullptr;
+  CK_C_CreateObject create_object_ = nullptr;
   CK_C_GenerateKeyPair generate_key_pair_ = nullptr;
   CK_C_GetAttributeValue get_attribute_value_ = nullptr;
   CK_C_SetAttributeValue set_attribute_value_ = nullptr;
