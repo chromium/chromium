@@ -33,6 +33,7 @@
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_text_item.h"
 #import "ios/chrome/browser/shared/ui/table_view/chrome_table_view_controller_test.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
+#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
 #import "ios/chrome/browser/ui/settings/password/password_manager_view_controller+private.h"
 #import "ios/chrome/browser/ui/settings/password/passwords_consumer.h"
@@ -162,8 +163,12 @@ class BasePasswordManagerViewControllerTest
   }
 
   ChromeTableViewController* InstantiateController() override {
-    return
-        [[PasswordManagerViewController alloc] initWithBrowser:browser_.get()];
+    ChromeAccountManagerService* account_manager_service =
+        ChromeAccountManagerServiceFactory::GetForBrowserState(
+            browser_state_.get());
+    return [[PasswordManagerViewController alloc]
+        initWithChromeAccountManagerService:account_manager_service
+                                prefService:browser_state_.get()->GetPrefs()];
   }
 
   PasswordManagerViewController* GetPasswordManagerViewController() {

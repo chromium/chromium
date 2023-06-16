@@ -36,8 +36,6 @@
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/passwords/password_checkup_metrics.h"
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
-#import "ios/chrome/browser/shared/model/browser/browser.h"
-#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/ui/elements/home_waiting_view.h"
 #import "ios/chrome/browser/shared/ui/table_view/cells/table_view_detail_icon_item.h"
@@ -56,7 +54,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_navigation_controller_constants.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
-#import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_observer_bridge.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_cell.h"
 #import "ios/chrome/browser/ui/settings/cells/settings_check_item.h"
@@ -224,10 +221,6 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
   std::vector<password_manager::CredentialUIEntry> _blockedSites;
   // The list of the user's saved grouped passwords.
   std::vector<password_manager::AffiliatedGroup> _affiliatedGroups;
-  // The browser where the screen is being displayed.
-  Browser* _browser;
-  // The current Chrome browser state.
-  ChromeBrowserState* _browserState;
   // AcountManagerService Observer.
   std::unique_ptr<ChromeAccountManagerServiceObserverBridge>
       _accountManagerServiceObserver;
@@ -290,23 +283,24 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 // kIOSPasswordCheckup feature is enabled.
 @property(nonatomic, assign) BOOL shouldShowCheckButton;
 
+// The PrefService passed to this instance.
+@property(nonatomic, assign) PrefService* prefService;
+
 @end
 
 @implementation PasswordManagerViewController
 
 #pragma mark - Initialization
 
-- (instancetype)initWithBrowser:(Browser*)browser {
-  DCHECK(browser);
-
+- (instancetype)initWithChromeAccountManagerService:
+                    (ChromeAccountManagerService*)accountManagerService
+                                        prefService:(PrefService*)prefService {
   self = [super initWithStyle:ChromeTableViewStyle()];
   if (self) {
-    _browser = browser;
-    _browserState = browser->GetBrowserState();
+    _prefService = prefService;
     _accountManagerServiceObserver =
         std::make_unique<ChromeAccountManagerServiceObserverBridge>(
-            self, ChromeAccountManagerServiceFactory::GetForBrowserState(
-                      _browserState));
+            self, accountManagerService);
 
     self.shouldDisableDoneButtonOnEdit = YES;
     self.searchTerm = @"";
@@ -639,6 +633,7 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 
 - (void)settingsWillBeDismissed {
   _accountManagerServiceObserver.reset();
+  self.prefService = nullptr;
 }
 
 #pragma mark - Items
@@ -1811,9 +1806,9 @@ bool AreIssuesEqual(const std::vector<password_manager::AffiliatedGroup>& lhs,
 - (bool)allowsAddPassword {
   // If the settings are managed by enterprise policy and the password manager
   // is not enabled, there won't be any add functionality.
-  auto* prefs = _browserState->GetPrefs();
   const char* prefName = password_manager::prefs::kCredentialsEnableService;
-  return !prefs->IsManagedPreference(prefName) || prefs->GetBoolean(prefName);
+  return !self.prefService->IsManagedPreference(prefName) ||
+         self.prefService->GetBoolean(prefName);
 }
 
 // Configures the title of this ViewController.
