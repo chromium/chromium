@@ -3784,6 +3784,8 @@ if (!is_android) {
       sources += [
         "../browser/supervised_user/permission_request_creator_mock.cc",
         "../browser/supervised_user/permission_request_creator_mock.h",
+        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
+        "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
       ]
       if (enable_extensions) {
         sources += [
@@ -3791,10 +3793,6 @@ if (!is_android) {
           "../browser/ui/views/supervised_user/extension_install_blocked_by_parent_dialog_browsertest.cc",
         ]
       }
-      sources += [
-        "../browser/supervised_user/supervised_user_url_filter_browsertest.cc",
-        "../browser/ui/views/extensions/extension_install_dialog_view_supervised_browsertest.cc",
-      ]
 
       if (is_chromeos_ash) {
         sources += [
