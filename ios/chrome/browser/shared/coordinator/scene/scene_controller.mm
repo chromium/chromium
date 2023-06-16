@@ -1216,6 +1216,10 @@ void InjectNTP(Browser* browser) {
   [self.sceneState.appState removeObserver:self];
 }
 
+- (void)dealloc {
+  CHECK(!self.sceneState.UIEnabled);
+}
+
 // Formats string for display on iPadOS application switcher with the
 // domain of the foreground tab and the tab count. Assumes the scene is
 // visible. Will return nil if there are no tabs.
