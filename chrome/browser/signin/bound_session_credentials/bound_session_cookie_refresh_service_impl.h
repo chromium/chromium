@@ -82,6 +82,7 @@ class BoundSessionCookieRefreshServiceImpl
 
   // BoundSessionCookieController::Delegate
   void OnCookieExpirationDateChanged() override;
+  void TerminateSession() override;
 
   std::unique_ptr<BoundSessionCookieController>
   CreateBoundSessionCookieController(const GURL& url,
@@ -102,6 +103,12 @@ class BoundSessionCookieRefreshServiceImpl
 
   mojo::ReceiverSet<chrome::mojom::BoundSessionRequestThrottledListener>
       renderer_request_throttled_listener_;
+
+  // TODO(b/273920956): Remove when the registration flow is implemented and we
+  // no longer rely on chrome signin status. Note: This is not stored on disk.
+  // On next startup, the session will still be bound. This is fine as the
+  // feature is still WIP.
+  bool force_terminate_bound_session_ = false;
 
   base::WeakPtrFactory<BoundSessionCookieRefreshService> weak_ptr_factory_{
       this};

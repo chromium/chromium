@@ -10,8 +10,10 @@
 #include "base/functional/bind.h"
 #include "base/time/time.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_observer.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_refresh_cookie_fetcher_impl.h"
 #include "components/signin/public/base/signin_client.h"
+#include "net/base/net_errors.h"
 #include "net/http/http_status_code.h"
 
 BoundSessionCookieControllerImpl::BoundSessionCookieControllerImpl(
@@ -92,24 +94,19 @@ void BoundSessionCookieControllerImpl::MaybeRefreshCookie() {
 
 void BoundSessionCookieControllerImpl::OnCookieRefreshFetched(
     BoundSessionRefreshCookieFetcher::Result result) {
+  // TODO(b/263263352): Record histogram with the result of the fetch.
   refresh_cookie_fetcher_.reset();
-  if (result == BoundSessionRefreshCookieFetcher::Result::kSuccess) {
-    // Requests are resumed once the cookie is set in the cookie jar. The
-    // cookie is expected to be fresh and `this` is notified with its
-    // expiration date before `OnCookieRefreshFetched` is called.
-    if (IsCookieFresh()) {
-      CHECK(resume_blocked_requests_.empty());
-      return;
-    } else {
-      // The request should include `Set-Cookie` header. `this` is expected to
-      // have been notified of the new cookie inserted in the cookie jar by the
-      // time `OnCookieRefreshFetched()` is called.
-      base::debug::DumpWithoutCrashing();
-    }
-  }
-  // TODO(b/263263352): Handle error cases.
+
+  // Resume blocked requests regardless of the result.
   ResumeBlockedRequests();
-  NOTIMPLEMENTED();
+
+  // Persistent errors result in session termination.
+  // Transient errors have no impact on future requests.
+  if (result ==
+      BoundSessionRefreshCookieFetcher::Result::kServerPersistentError) {
+    delegate_->TerminateSession();
+    // `this` should be deleted.
+  }
 }
 
 void BoundSessionCookieControllerImpl::ResumeBlockedRequests() {

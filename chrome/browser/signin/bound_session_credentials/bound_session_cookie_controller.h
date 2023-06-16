@@ -29,6 +29,11 @@ class BoundSessionCookieController {
  public:
   class Delegate {
    public:
+    // Called when the cookie refresh request results in a persistent error that
+    // can't be fixed by retrying. `BoundSessionCookieController` is expected to
+    // be deleted after this call.
+    virtual void TerminateSession() = 0;
+
     // Called when the cookie tracked in this controller has a change in its
     // expiration date. Cookie deletion is considered as a change in the
     // expiration date to the null time.

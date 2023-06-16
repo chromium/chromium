@@ -224,7 +224,8 @@ bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {
     return client_->GetPrefs()->HasPrefPath(kRegistrationParamsPref);
   } else {
     CHECK(bound_session_tracker_);
-    return bound_session_tracker_->is_bound_session();
+    return !force_terminate_bound_session_ &&
+           bound_session_tracker_->is_bound_session();
   }
 }
 
@@ -271,6 +272,15 @@ BoundSessionCookieRefreshServiceImpl::GetWeakPtr() {
 
 void BoundSessionCookieRefreshServiceImpl::OnCookieExpirationDateChanged() {
   UpdateAllRenderers();
+}
+
+void BoundSessionCookieRefreshServiceImpl::TerminateSession() {
+  if (base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
+    client_->GetPrefs()->ClearPref(kRegistrationParamsPref);
+  } else {
+    force_terminate_bound_session_ = true;
+  }
+  OnBoundSessionUpdated();
 }
 
 std::unique_ptr<BoundSessionCookieController>

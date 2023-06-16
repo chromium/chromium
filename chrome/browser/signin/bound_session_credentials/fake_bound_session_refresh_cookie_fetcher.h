@@ -10,6 +10,7 @@
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
 #include "base/time/time.h"
+#include "base/types/expected.h"
 #include "net/cookies/canonical_cookie.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -28,7 +29,10 @@ class FakeBoundSessionRefreshCookieFetcher
   // BoundSessionRefreshCookieFetcher:
   void Start(RefreshCookieCompleteCallback callback) override;
 
+  // `cookie_expiration` is set only if `result` is
+  // `BoundSessionRefreshCookieFetcher::Result::kSuccess`.
   void SimulateCompleteRefreshRequest(
+      BoundSessionRefreshCookieFetcher::Result result,
       absl::optional<base::Time> cookie_expiration);
 
  protected:

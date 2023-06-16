@@ -64,6 +64,8 @@ class FakeBoundSessionCookieController : public BoundSessionCookieController {
     delegate_->OnCookieExpirationDateChanged();
   }
 
+  void SimulateTerminateSession() { delegate_->TerminateSession(); }
+
   void SimulateRefreshBoundSessionCompleted() {
     EXPECT_FALSE(resume_blocked_requests_.empty());
     std::vector<base::OnceClosure> callbacks;
@@ -181,22 +183,16 @@ class BoundSessionCookieRefreshServiceImplTest
     }
   }
 
-  void TerminateBoundSession() {
-    if (IsExplicitRegistrationEnabled()) {
-      // TODO(http://b/286222327): Replace this with
-      // `BoundSessionCookieRefreshServiceImpl::TerminateSession()`.
-      prefs()->ClearPref(kRegistrationParamsPref);
-      if (cookie_refresh_service_) {
-        cookie_refresh_service_->OnBoundSessionUpdated();
-      }
-    } else {
-      identity_test_env_.ClearPrimaryAccount();
-    }
-  }
-
   void RunUntilIdle() { task_environment_.RunUntilIdle(); }
 
   bool IsExplicitRegistrationEnabled() { return GetParam(); }
+
+  void VerifyNoBoundSession() {
+    CHECK(cookie_refresh_service_);
+    EXPECT_FALSE(cookie_refresh_service_->IsBoundSession());
+    EXPECT_FALSE(cookie_refresh_service_->GetBoundSessionParams());
+    EXPECT_FALSE(cookie_controller());
+  }
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
@@ -221,9 +217,8 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest, VerifyControllerParams) {
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,
        VerifyBoundSessionParamsUnboundSession) {
-  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_TRUE(service->GetBoundSessionParams().is_null());
+  GetCookieRefreshServiceImpl();
+  VerifyNoBoundSession();
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,
@@ -310,11 +305,30 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
 
   EXPECT_CALL(renderer_updater, Run()).WillOnce([&] {
-    EXPECT_FALSE(service->IsBoundSession());
-    EXPECT_TRUE(service->GetBoundSessionParams().is_null());
+    VerifyNoBoundSession();
   });
-  TerminateBoundSession();
+  cookie_controller()->SimulateTerminateSession();
   testing::Mock::VerifyAndClearExpectations(&renderer_updater);
+}
+
+TEST_P(BoundSessionCookieRefreshServiceImplTest, TerminateSession) {
+  SetupPreConditionForBoundSession();
+  BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
+  EXPECT_TRUE(service->IsBoundSession());
+  EXPECT_TRUE(service->GetBoundSessionParams());
+
+  cookie_controller()->SimulateTerminateSession();
+  VerifyNoBoundSession();
+
+  if (IsExplicitRegistrationEnabled()) {
+    // Verify prefs were cleared.
+    // Ensure on next startup, there won't be a bound session.
+    ResetCookieRefreshService();
+    service = GetCookieRefreshServiceImpl();
+
+    SCOPED_TRACE("No bound session on Startup.");
+    VerifyNoBoundSession();
+  }
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,
@@ -396,8 +410,7 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
       GoogleServiceAuthError::FromInvalidGaiaCredentialsReason(
           GoogleServiceAuthError::InvalidGaiaCredentialsReason::
               CREDENTIALS_REJECTED_BY_CLIENT));
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  VerifyNoBoundSession();
 
   identity_test_env()->ResetToAccountsNotYetLoadedFromDiskState();
   ResetCookieRefreshService();
@@ -407,8 +420,7 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
 
   identity_test_env()->ReloadAccountsFromDisk();
   identity_test_env()->WaitForRefreshTokensLoaded();
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  VerifyNoBoundSession();
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,
@@ -418,8 +430,7 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   }
   BoundSessionCookieRefreshServiceImpl* service = GetCookieRefreshServiceImpl();
   identity_test_env()->WaitForRefreshTokensLoaded();
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  VerifyNoBoundSession();
 
   // `MakeAccountAvailable()` is used to ensure the primary account has
   // already
@@ -431,9 +442,8 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_TRUE(service->IsBoundSession());
   EXPECT_TRUE(cookie_controller());
 
-  TerminateBoundSession();
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  identity_test_env()->ClearPrimaryAccount();
+  VerifyNoBoundSession();
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest,
@@ -448,8 +458,7 @@ TEST_P(BoundSessionCookieRefreshServiceImplTest,
   EXPECT_TRUE(cookie_controller());
 
   identity_test_env()->SetCookieAccounts({});
-  EXPECT_FALSE(service->IsBoundSession());
-  EXPECT_FALSE(cookie_controller());
+  VerifyNoBoundSession();
 }
 
 TEST_P(BoundSessionCookieRefreshServiceImplTest, RegisterNewBoundSession) {
