@@ -27,6 +27,7 @@
 #include "third_party/blink/renderer/core/frame/local_dom_window.h"
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/geometry/dom_rect.h"
+#include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/text/text_boundaries.h"
 #include "third_party/blink/renderer/platform/wtf/decimal.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
@@ -38,6 +39,7 @@ EditContext::EditContext(ScriptState* script_state, const EditContextInit* dict)
     : ActiveScriptWrappable<EditContext>({}),
       ExecutionContextClient(ExecutionContext::From(script_state)) {
   DCHECK(IsMainThread());
+  UseCounter::Count(GetExecutionContext(), WebFeature::kEditContext);
 
   if (dict->hasText())
     text_ = dict->text();
