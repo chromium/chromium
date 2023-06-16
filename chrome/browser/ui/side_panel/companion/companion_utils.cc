@@ -31,9 +31,12 @@ bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser) {
   if (!web_contents) {
     return false;
   }
-  const GURL& url = web_contents->GetLastCommittedURL();
+  return IsCompanionAvailableForURL(web_contents->GetLastCommittedURL());
+}
+
+bool IsCompanionAvailableForURL(const GURL& url) {
   // Companion should not be available for any chrome UI pages.
-  return !url.SchemeIs(content::kChromeUIScheme);
+  return !url.is_empty() && !url.SchemeIs(content::kChromeUIScheme);
 }
 
 bool IsCompanionFeatureEnabledByPolicy(PrefService* pref_service) {
@@ -99,18 +102,23 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service) {
 }
 
 void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents) {
-  if (web_contents->GetLastCommittedURL().SchemeIs(content::kChromeUIScheme)) {
+  if (!web_contents) {
     return;
   }
-
   Browser* const browser = chrome::FindBrowserWithWebContents(web_contents);
-  PrefService* const pref_service = browser->profile()->GetPrefs();
-  if (IsCompanionFeatureEnabled() && pref_service &&
-      pref_service->GetBoolean(
-          prefs::kSidePanelCompanionEntryPinnedToToolbar)) {
+  if (ShouldTriggerCompanionFeaturePromo(web_contents->GetLastCommittedURL(),
+                                         browser->profile()->GetPrefs())) {
     browser->window()->MaybeShowFeaturePromo(
         feature_engagement::kIPHCompanionSidePanelFeature);
   }
+}
+
+bool ShouldTriggerCompanionFeaturePromo(const GURL& url,
+                                        PrefService* pref_service) {
+  return IsCompanionAvailableForURL(url) && IsCompanionFeatureEnabled() &&
+         pref_service &&
+         pref_service->GetBoolean(
+             prefs::kSidePanelCompanionEntryPinnedToToolbar);
 }
 
 }  // namespace companion

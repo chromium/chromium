@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_UTILS_H_
 #define CHROME_BROWSER_UI_SIDE_PANEL_COMPANION_COMPANION_UTILS_H_
 
+#include "url/gurl.h"
+
 class Browser;
 class PrefService;
 class Profile;
@@ -21,6 +23,10 @@ bool IsCompanionFeatureEnabled();
 // Returns true if the companion entry points should be enabled for the state of
 // the current active tab.
 bool IsCompanionAvailableForCurrentActiveTab(const Browser* browser);
+
+// Returns true if the companion entry points should be enabled for the given
+// `url`.
+bool IsCompanionAvailableForURL(const GURL& url);
 
 // Returns true if the companion policy is enabled. The policy can change
 // dynamically, so callers should not cache the returned results.
@@ -45,6 +51,11 @@ void UpdateCompanionDefaultPinnedToToolbarState(PrefService* pref_service);
 
 // Potentially triggers the IPH promo for the companion feature.
 void MaybeTriggerCompanionFeaturePromo(content::WebContents* web_contents);
+
+// Determines IPH promo eligibility based on URL and user preferences.
+// Returns true if should show promo, false if promo is ineligible.
+bool ShouldTriggerCompanionFeaturePromo(const GURL& url,
+                                        PrefService* pref_service);
 
 }  // namespace companion
 
