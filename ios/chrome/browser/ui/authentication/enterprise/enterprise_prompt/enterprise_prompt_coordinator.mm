@@ -75,7 +75,12 @@ constexpr CGFloat kHalfSheetCornerRadius = 20;
 
 - (void)stop {
   [self dismissSignOutViewController];
+  self.viewController = nil;
   [super stop];
+}
+
+- (void)dealloc {
+  CHECK(!self.viewController);
 }
 
 #pragma mark - ConfirmationAlertActionHandler
