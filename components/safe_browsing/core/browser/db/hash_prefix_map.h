@@ -89,6 +89,9 @@ class HashPrefixMap {
   // Returns a read-only view of the data stored in this map.
   virtual HashPrefixMapView view() const = 0;
 
+  // Returns the prefix at `size`.
+  virtual HashPrefixesView at(PrefixSize size) const = 0;
+
   // Appends |prefix| to the prefix list of size |size|.
   virtual void Append(PrefixSize size, HashPrefixesView prefix) = 0;
 
@@ -143,6 +146,7 @@ class InMemoryHashPrefixMap : public HashPrefixMap {
   // HashPrefixMap implementation:
   void Clear() override;
   HashPrefixMapView view() const override;
+  HashPrefixesView at(PrefixSize size) const override;
   void Append(PrefixSize size, HashPrefixesView prefix) override;
   void Reserve(PrefixSize size, size_t capacity) override;
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;
@@ -171,6 +175,7 @@ class MmapHashPrefixMap : public HashPrefixMap {
   // HashPrefixMap implementation:
   void Clear() override;
   HashPrefixMapView view() const override;
+  HashPrefixesView at(PrefixSize size) const override;
   void Append(PrefixSize size, HashPrefixesView prefix) override;
   void Reserve(PrefixSize size, size_t capacity) override;
   ApplyUpdateResult ReadFromDisk(const V4StoreFileFormat& file_format) override;

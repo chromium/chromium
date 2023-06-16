@@ -128,9 +128,14 @@ void InMemoryHashPrefixMap::Clear() {
 
 HashPrefixMapView InMemoryHashPrefixMap::view() const {
   HashPrefixMapView view;
+  view.reserve(map_.size());
   for (const auto& kv : map_)
     view.emplace(kv.first, kv.second);
   return view;
+}
+
+HashPrefixesView InMemoryHashPrefixMap::at(PrefixSize size) const {
+  return map_.at(size);
 }
 
 void InMemoryHashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
@@ -347,6 +352,7 @@ void MmapHashPrefixMap::Clear() {
 
 HashPrefixMapView MmapHashPrefixMap::view() const {
   HashPrefixMapView view;
+  view.reserve(map_.size());
   for (const auto& kv : map_) {
     if (!kv.second.IsReadable())
       continue;
@@ -354,6 +360,12 @@ HashPrefixMapView MmapHashPrefixMap::view() const {
     view.emplace(kv.first, kv.second.GetView());
   }
   return view;
+}
+
+HashPrefixesView MmapHashPrefixMap::at(PrefixSize size) const {
+  const FileInfo& info = map_.at(size);
+  CHECK(info.IsReadable());
+  return info.GetView();
 }
 
 void MmapHashPrefixMap::Append(PrefixSize size, HashPrefixesView prefix) {
