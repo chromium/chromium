@@ -4620,9 +4620,6 @@ crbug.com/1144171 http/tests/devtools/report-API-errors.js [ Crash Failure Pass 
 crbug.com/1157861 http/tests/devtools/extensions/extensions-resources.js [ Failure Pass ]
 crbug.com/1157861 http/tests/devtools/console/paintworklet-console-selector.js [ Failure Pass ]
 
-# Wpt importer Sheriff 2020-12-11
-crbug.com/626703 [ Linux ] wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
-
 # Wpt importer sheriff 2021-01-05
 crbug.com/1163175 external/wpt/css/css-pseudo/first-letter-punctuation-and-space.html [ Failure ]
 
@@ -6704,3 +6701,4 @@ crbug.com/1455314 external/wpt/longtask-timing/longtask-in-childiframe-crossorig
 # Gardener 2023-06-16
 crbug.com/1455487 fast/layers/no-clipping-overflow-hidden-hardware-acceleration.html [ Failure Pass ]
 crbug.com/1429309 [ Mac ] external/wpt/css/css-position/fixed-z-index-blend.html [ Failure Pass ]
+crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
