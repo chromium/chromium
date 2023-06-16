@@ -181,7 +181,6 @@ void PreloadingDecider::OnPointerHover(
     // ditto (async fallback)
     if (ShouldWaitForPrefetchResult(url))
       return;
-    preconnector_.MaybePreconnect(url);
   }
 }
 

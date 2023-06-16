@@ -314,17 +314,43 @@ TEST_P(PreloadingDeciderTest, PrefetchOnPointerEventHeuristics) {
     EXPECT_FALSE(preconnect_delegate->Target().has_value());
     EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
 
-    // It should preconnect if the target is not safe to prefetch
     call_pointer_event_handler(GetCrossOriginUrl("/candidate2.html"));
-    EXPECT_TRUE(preconnect_delegate->Target().has_value());
+    // It should preconnect if the target is not safe to prefetch and it is a
+    // `kPointerDown` event.
+    switch (event_type) {
+      case EventType::kPointerDown:
+        EXPECT_TRUE(preconnect_delegate->Target().has_value());
+        break;
+      case EventType::kPointerHover:
+        EXPECT_FALSE(preconnect_delegate->Target().has_value());
+        break;
+    }
     EXPECT_EQ(1u, GetPrefetchService()->prefetches_.size());
   } else {
     call_pointer_event_handler(GetCrossOriginUrl("/candidate1.html"));
-    EXPECT_TRUE(preconnect_delegate->Target().has_value());
+    // It should preconnect if the target is not safe to prefetch and it is a
+    // `kPointerDown` event.
+    switch (event_type) {
+      case EventType::kPointerDown:
+        EXPECT_TRUE(preconnect_delegate->Target().has_value());
+        break;
+      case EventType::kPointerHover:
+        EXPECT_FALSE(preconnect_delegate->Target().has_value());
+        break;
+    }
     EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
 
     call_pointer_event_handler(GetCrossOriginUrl("/candidate2.html"));
-    EXPECT_TRUE(preconnect_delegate->Target().has_value());
+    // It should preconnect if the target is not safe to prefetch and it is a
+    // `kPointerDown` event.
+    switch (event_type) {
+      case EventType::kPointerDown:
+        EXPECT_TRUE(preconnect_delegate->Target().has_value());
+        break;
+      case EventType::kPointerHover:
+        EXPECT_FALSE(preconnect_delegate->Target().has_value());
+        break;
+    }
     EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
   }
 }
@@ -431,15 +457,31 @@ TEST_P(PreloadingDeciderTest, PrerenderOnPointerEventHeuristics) {
     EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
 
-    // It should preconnect if the target is not safe to prerender nor safe to
-    // prefetch.
     call_pointer_event_handler(GetSameOriginUrl("/candidate3.html"));
-    EXPECT_TRUE(preconnect_delegate->Target().has_value());
+    // It should preconnect if the target is not safe to prerender nor safe to
+    // prefetch and it is a `kPointerDown` event.
+    switch (event_type) {
+      case EventType::kPointerDown:
+        EXPECT_TRUE(preconnect_delegate->Target().has_value());
+        break;
+      case EventType::kPointerHover:
+        EXPECT_FALSE(preconnect_delegate->Target().has_value());
+        break;
+    }
     EXPECT_EQ(2u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(1u, prerenderer.Get()->prerenders_.size());
   } else {
     call_pointer_event_handler(GetSameOriginUrl("/candidate1.html"));
-    EXPECT_TRUE(preconnect_delegate->Target().has_value());
+    // It should preconnect if the target is not safe to prerender nor safe to
+    // prefetch and it is a `kPointerDown` event.
+    switch (event_type) {
+      case EventType::kPointerDown:
+        EXPECT_TRUE(preconnect_delegate->Target().has_value());
+        break;
+      case EventType::kPointerHover:
+        EXPECT_FALSE(preconnect_delegate->Target().has_value());
+        break;
+    }
     EXPECT_EQ(0u, GetPrefetchService()->prefetches_.size());
     EXPECT_EQ(0u, prerenderer.Get()->prerenders_.size());
   }
