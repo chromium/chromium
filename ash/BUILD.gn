@@ -2376,6 +2376,8 @@ component("ash") {
     "wm/float/tablet_mode_float_window_resizer.h",
     "wm/float/tablet_mode_tuck_education.cc",
     "wm/float/tablet_mode_tuck_education.h",
+    "wm/focus_mode/focus_mode_feature_pod_controller.cc",
+    "wm/focus_mode/focus_mode_feature_pod_controller.h",
     "wm/fullscreen_window_finder.cc",
     "wm/fullscreen_window_finder.h",
     "wm/gestures/back_gesture/back_gesture_affordance.cc",

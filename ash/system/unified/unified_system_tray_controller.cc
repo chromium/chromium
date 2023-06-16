@@ -68,6 +68,7 @@
 #include "ash/system/unified/unified_system_tray_model.h"
 #include "ash/system/unified/unified_system_tray_view.h"
 #include "ash/system/unified/user_chooser_detailed_view_controller.h"
+#include "ash/wm/focus_mode/focus_mode_feature_pod_controller.h"
 #include "ash/wm/lock_state_controller.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/bind.h"
@@ -503,6 +504,10 @@ void UnifiedSystemTrayController::ShowAccessibilityDetailedView() {
       std::make_unique<UnifiedAccessibilityDetailedViewController>(this));
 }
 
+void UnifiedSystemTrayController::ShowFocusModeDetailedView() {
+  // TODO(b/286931532): Create the Focus Mode detailed view.
+}
+
 void UnifiedSystemTrayController::ShowVPNDetailedView() {
   base::RecordAction(base::UserMetricsAction("StatusArea_VPN_Detailed"));
   ShowDetailedView(std::make_unique<UnifiedVPNDetailedViewController>(this));
@@ -694,6 +699,9 @@ void UnifiedSystemTrayController::InitFeaturePods() {
   AddFeaturePodItem(std::make_unique<NetworkFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<BluetoothFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<AccessibilityFeaturePodController>(this));
+  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
+    AddFeaturePodItem(std::make_unique<FocusModeFeaturePodController>(this));
+  }
   AddFeaturePodItem(std::make_unique<QuietModeFeaturePodController>(this));
   AddFeaturePodItem(std::make_unique<RotationLockFeaturePodController>());
   AddFeaturePodItem(std::make_unique<PrivacyScreenFeaturePodController>());
@@ -760,6 +768,10 @@ void UnifiedSystemTrayController::InitFeatureTiles() {
               cast_and_rotation_tiles_are_compact);
   create_tile(std::make_unique<AccessibilityFeaturePodController>(this),
               feature_pod_controllers_, tiles);
+  if (base::FeatureList::IsEnabled(features::kFocusMode)) {
+    create_tile(std::make_unique<FocusModeFeaturePodController>(this),
+                feature_pod_controllers_, tiles);
+  }
   create_tile(std::make_unique<NearbyShareFeaturePodController>(this),
               feature_pod_controllers_, tiles);
   create_tile(std::make_unique<LocaleFeaturePodController>(this),

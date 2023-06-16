@@ -123,6 +123,8 @@ class ASH_EXPORT UnifiedSystemTrayController
   void ShowCastDetailedView();
   // Show the detailed view of accessibility. Called from the view.
   void ShowAccessibilityDetailedView();
+  // Show the detailed view of focus mode. Called from the view.
+  void ShowFocusModeDetailedView();
   // Show the detailed view of VPN. Called from the view.
   void ShowVPNDetailedView();
   // Show the detailed view of IME. Called from the view.
