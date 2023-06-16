@@ -55,6 +55,8 @@ enum Status {
   // An attempt to interact with an in-flight Payload failed because it's
   // unknown to us.
   kPayloadUnknown = 14,
+  // The app is already listening.
+  kAlreadyListening = 15,
 };
 
 // Information about a connection that is being initiated.
