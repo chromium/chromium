@@ -261,9 +261,6 @@ IN_PROC_BROWSER_TEST_F(PDFExtensionJSTest, Printing) {
 #if defined(MEMORY_SANITIZER) || defined(LEAK_SANITIZER) || \
     defined(ADDRESS_SANITIZER) || defined(_DEBUG)
 #define MAYBE_AnnotationsFeatureEnabled DISABLED_AnnotationsFeatureEnabled
-// TODO(https://crbug.com/1453993): Failing in ChromeOS.
-#elif BUILDFLAG(IS_CHROMEOS)
-#define MAYBE_AnnotationsFeatureEnabled DISABLED_AnnotationsFeatureEnabled
 #else
 #define MAYBE_AnnotationsFeatureEnabled AnnotationsFeatureEnabled
 #endif
