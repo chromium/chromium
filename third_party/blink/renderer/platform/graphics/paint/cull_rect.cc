@@ -92,9 +92,15 @@ bool CullRect::ApplyScrollTranslation(
   if (disable_expansion) {
     return false;
   }
-  if (!RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled() &&
-      // Don't expand for non-composited scrolling.
-      !scroll_translation.HasDirectCompositingReasons()) {
+  if (RuntimeEnabledFeatures::CompositeScrollAfterPaintEnabled()) {
+    // kNotPreferred is used for selects/inputs which don't benefit from
+    // composited scrolling.
+    if (scroll->GetCompositedScrollingPreference() ==
+        CompositedScrollingPreference::kNotPreferred) {
+      return false;
+    }
+  } else if (!scroll_translation.HasDirectCompositingReasons()) {
+    // Don't expand for non-composited scrolling.
     return false;
   }
 
