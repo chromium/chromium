@@ -152,6 +152,7 @@
     "Oreo Phone Tester": "Ubuntu-22.04",
     "Site Isolation Android": "Ubuntu-22.04",
     "TSAN Debug": "Ubuntu-22.04",
+    "TSAN Release": "Ubuntu-22.04",
     "ToTAndroid": "Ubuntu-22.04",
     "ToTAndroid (dbg)": "Ubuntu-22.04",
     "ToTAndroid x64": "Ubuntu-22.04",
