@@ -387,6 +387,7 @@
     "win10-updater-tester-rel-uac": "Ubuntu-22.04",
     "win10-wpt-content-shell-fyi-rel": "Ubuntu-22.04",
     "win11-updater-tester-dbg-uac": "Ubuntu-22.04",
+    "win11-updater-tester-rel": "Ubuntu-22.04",
     "win11-wpt-content-shell-fyi-rel": "Ubuntu-22.04"
   },
   "flakiness": {
