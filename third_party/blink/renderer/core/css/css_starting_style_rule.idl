@@ -5,5 +5,5 @@
 [
   Exposed=Window,
   RuntimeEnabled=CSSInitialPseudo
-] interface CSSStartingStyleRule : CSSConditionRule {
+] interface CSSStartingStyleRule : CSSGroupingRule {
 };

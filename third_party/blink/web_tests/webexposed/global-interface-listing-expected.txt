@@ -947,7 +947,7 @@ interface CSSSkewY : CSSTransformComponent
     getter ay
     method constructor
     setter ay
-interface CSSStartingStyleRule : CSSConditionRule
+interface CSSStartingStyleRule : CSSGroupingRule
     attribute @@toStringTag
     method constructor
 interface CSSStyleDeclaration
