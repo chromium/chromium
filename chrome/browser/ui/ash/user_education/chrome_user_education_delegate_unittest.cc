@@ -188,9 +188,8 @@ TEST_F(ChromeUserEducationDelegateTest, StartAndAbortTutorial) {
   // Create a tutorial description.
   user_education::TutorialDescription tutorial_description;
   tutorial_description.steps.emplace_back(
-      /*title_text_id_=*/0, /*body_text_id_=*/IDS_OK,
-      ui::InteractionSequence::StepType::kShown, kElementId,
-      /*element_name=*/std::string(), user_education::HelpBubbleArrow::kNone);
+      user_education::TutorialDescription::BubbleStep(kElementId)
+          .SetBubbleBodyText(IDS_OK));
 
   // Register the tutorial.
   delegate()->RegisterTutorial(account_id(), ash::TutorialId::kTest,

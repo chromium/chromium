@@ -74,25 +74,19 @@ class TutorialInteractiveUitest : public InProcessBrowserTest {
 
   TutorialDescription GetDefaultTutorialDescription() {
     TutorialDescription description;
-    TutorialDescription::Step step1(0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
-                                    ui::InteractionSequence::StepType::kShown,
-                                    kAppMenuButtonElementId, std::string(),
-                                    HelpBubbleArrow::kTopRight);
-    description.steps.emplace_back(step1);
-
-    TutorialDescription::Step step2(
-        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
-        ui::InteractionSequence::StepType::kCustomEvent,
-        ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
-        kCustomEventType1);
-    description.steps.emplace_back(step2);
-
-    TutorialDescription::Step step3(
-        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
-        ui::InteractionSequence::StepType::kActivated, kAppMenuButtonElementId,
-        std::string(), HelpBubbleArrow::kTopRight);
-    description.steps.emplace_back(step3);
-
+    description.steps.emplace_back(
+        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight));
+    description.steps.emplace_back(
+        TutorialDescription::EventStep(kCustomEventType1));
+    description.steps.emplace_back(
+        TutorialDescription::HiddenStep::WaitForActivated(
+            kAppMenuButtonElementId));
+    description.steps.emplace_back(
+        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight));
     return description;
   }
 };
@@ -156,21 +150,17 @@ class WebUITutorialInteractiveUitest : public InteractiveBrowserTest {
 
   TutorialDescription GetDefaultTutorialDescription() {
     TutorialDescription description;
-    TutorialDescription::Step step1(
-        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
-        ui::InteractionSequence::StepType::kShown,
-        NewTabPageUI::kCustomizeChromeButtonElementId, std::string(),
-        HelpBubbleArrow::kTopRight);
-    step1.context_mode = TutorialDescription::ContextMode::kAny;
-    description.steps.emplace_back(step1);
-
-    TutorialDescription::Step step2(
-        0, IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP,
-        ui::InteractionSequence::StepType::kCustomEvent,
-        ui::ElementIdentifier(), std::string(), HelpBubbleArrow::kTopCenter,
-        kCustomEventType1);
-    description.steps.emplace_back(step2);
-
+    description.steps.emplace_back(
+        TutorialDescription::BubbleStep(
+            NewTabPageUI::kCustomizeChromeButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)
+            .SetBubbleArrow(HelpBubbleArrow::kTopRight)
+            .InAnyContext());
+    description.steps.emplace_back(
+        TutorialDescription::EventStep(kCustomEventType1));
+    description.steps.emplace_back(
+        TutorialDescription::BubbleStep(kAppMenuButtonElementId)
+            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP));
     return description;
   }
 };

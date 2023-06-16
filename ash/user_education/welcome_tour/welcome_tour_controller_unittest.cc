@@ -74,12 +74,12 @@ auto MoveArgs(T*... out) {
 MATCHER_P(ElementSpecifierEq, element_specifier, "") {
   return absl::visit(base::Overloaded{
                          [&](const ui::ElementIdentifier& element_id) {
-                           return arg.element_id == element_id &&
-                                  arg.element_name.empty();
+                           return arg.element_id() == element_id &&
+                                  arg.element_name().empty();
                          },
                          [&](const std::string& element_name) {
-                           return arg.element_name == element_name &&
-                                  arg.element_id == ui::ElementIdentifier();
+                           return arg.element_name() == element_name &&
+                                  arg.element_id() == ui::ElementIdentifier();
                          },
                      },
                      element_specifier);
@@ -93,12 +93,12 @@ MATCHER_P5(BubbleStep,
            has_next_button,
            "") {
   namespace util = user_education_util;
-  return arg.step_type == ui::InteractionSequence::StepType::kShown &&
+  return arg.step_type() == ui::InteractionSequence::StepType::kShown &&
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
-         arg.context_mode == context_mode &&
-         util::GetHelpBubbleId(arg.extended_properties) == help_bubble_id &&
-         arg.body_text_id == body_text_id &&
-         arg.next_button_callback.is_null() != has_next_button;
+         arg.context_mode() == context_mode &&
+         util::GetHelpBubbleId(arg.extended_properties()) == help_bubble_id &&
+         arg.body_text_id() == body_text_id &&
+         arg.next_button_callback().is_null() != has_next_button;
 }
 
 MATCHER_P3(EventStep,
@@ -106,10 +106,10 @@ MATCHER_P3(EventStep,
            context_mode,
            has_name_elements_callback,
            "") {
-  return arg.step_type == ui::InteractionSequence::StepType::kCustomEvent &&
+  return arg.step_type() == ui::InteractionSequence::StepType::kCustomEvent &&
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
-         arg.context_mode == context_mode &&
-         arg.name_elements_callback.is_null() != has_name_elements_callback;
+         arg.context_mode() == context_mode &&
+         arg.name_elements_callback().is_null() != has_name_elements_callback;
 }
 
 }  // namespace

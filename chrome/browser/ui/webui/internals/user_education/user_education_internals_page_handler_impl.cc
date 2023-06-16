@@ -83,8 +83,8 @@ std::vector<std::string> GetTutorialInstructions(
     const user_education::TutorialDescription& desc) {
   std::vector<std::string> instructions;
   for (const auto& step : desc.steps) {
-    if (step.body_text_id) {
-      instructions.emplace_back(l10n_util::GetStringUTF8(step.body_text_id));
+    if (step.body_text_id()) {
+      instructions.emplace_back(l10n_util::GetStringUTF8(step.body_text_id()));
     }
   }
   return instructions;

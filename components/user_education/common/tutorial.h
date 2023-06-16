@@ -52,7 +52,6 @@ class Tutorial {
   class StepBuilder {
    public:
     StepBuilder();
-    explicit StepBuilder(const TutorialDescription::Step& step);
     StepBuilder(const StepBuilder&) = delete;
     StepBuilder& operator=(const StepBuilder&) = delete;
     ~StepBuilder();
@@ -67,31 +66,15 @@ class Tutorial {
                              bool can_be_restarted,
                              TutorialService* tutorial_service);
 
-    StepBuilder& SetAnchorElementID(ui::ElementIdentifier anchor_element_id);
-    StepBuilder& SetAnchorElementName(std::string anchor_element_name);
-    StepBuilder& SetTitleTextID(int title_text_id);
-    StepBuilder& SetBodyTextID(int body_text_id);
-    // Sets the step type; `event_type_` should be set only for custom events.
-    StepBuilder& SetStepType(
-        ui::InteractionSequence::StepType step_type_,
-        ui::CustomElementEventType event_type_ = ui::CustomElementEventType());
-    StepBuilder& SetArrow(HelpBubbleArrow arrow_);
-    StepBuilder& SetProgress(absl::optional<std::pair<int, int>> progress_);
-    StepBuilder& SetIsLastStep(bool is_last_step_);
-    StepBuilder& SetMustRemainVisible(bool must_remain_visible_);
-    StepBuilder& SetMustBeVisibleAtStart(bool must_be_visible_);
-    StepBuilder& SetTransitionOnlyOnEvent(bool transition_only_on_event_);
-    StepBuilder& SetNameElementsCallback(
-        TutorialDescription::NameElementsCallback name_elements_callback_);
-    StepBuilder& SetCanBeRestarted(bool can_be_restarted_);
+   private:
+    explicit StepBuilder(const TutorialDescription::Step& step);
 
     std::unique_ptr<ui::InteractionSequence::Step> Build(
         TutorialService* tutorial_service);
 
-   private:
-    absl::optional<std::pair<int, int>> progress;
-    bool is_last_step = false;
-    bool can_be_restarted = false;
+    absl::optional<std::pair<int, int>> progress_;
+    bool is_last_step_ = false;
+    bool can_be_restarted_ = false;
 
     ui::InteractionSequence::StepStartCallback BuildStartCallback(
         TutorialService* tutorial_service);

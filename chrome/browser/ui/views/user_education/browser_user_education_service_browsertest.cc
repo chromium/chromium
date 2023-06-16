@@ -449,20 +449,20 @@ IN_PROC_BROWSER_TEST_F(BrowserUserEducationServiceBrowserTest,
     for (const auto& step : description->steps) {
       ++step_count;
       const bool is_show_bubble =
-          (step.step_type == ui::InteractionSequence::StepType::kShown &&
-           step.body_text_id);
+          (step.step_type() == ui::InteractionSequence::StepType::kShown &&
+           step.body_text_id());
       const bool is_always_visible =
-          base::Contains(kAlwaysPresentElementIds, step.element_id);
+          base::Contains(kAlwaysPresentElementIds, step.element_id());
       if (is_show_bubble && was_show_bubble && is_always_visible &&
-          !step.transition_only_on_event) {
+          !step.transition_only_on_event()) {
         failures.push_back(
-            TutorialFailure{identifier, step_count, step.element_id,
+            TutorialFailure{identifier, step_count, step.element_id(),
                             TutorialFailureReason::kLikelySkippedStep});
-      } else if (is_always_visible && step.transition_only_on_event &&
-                 step.context_mode !=
+      } else if (is_always_visible && step.transition_only_on_event() &&
+                 step.context_mode() !=
                      ui::InteractionSequence::ContextMode::kAny) {
         failures.push_back(TutorialFailure{
-            identifier, step_count, step.element_id,
+            identifier, step_count, step.element_id(),
             TutorialFailureReason::kWaitForAlwaysVisibleElement});
       }
       was_show_bubble = is_show_bubble;

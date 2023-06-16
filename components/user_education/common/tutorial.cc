@@ -39,98 +39,10 @@ Tutorial::StepBuilder::BuildFromDescriptionStep(
     bool can_be_restarted,
     TutorialService* tutorial_service) {
   Tutorial::StepBuilder step_builder(step);
-  step_builder.SetProgress(progress)
-      .SetIsLastStep(is_last_step)
-      .SetCanBeRestarted(can_be_restarted);
-
+  step_builder.progress_ = progress;
+  step_builder.is_last_step_ = is_last_step;
+  step_builder.can_be_restarted_ = can_be_restarted;
   return step_builder.Build(tutorial_service);
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementID(
-    ui::ElementIdentifier anchor_element_id) {
-  // Element ID and Element Name are mutually exclusive
-  DCHECK(!anchor_element_id || step_.element_name.empty());
-
-  step_.element_id = anchor_element_id;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetAnchorElementName(
-    std::string anchor_element_name) {
-  // Element ID and Element Name are mutually exclusive
-  DCHECK(anchor_element_name.empty() || !step_.element_id);
-  step_.element_name = anchor_element_name;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetTitleTextID(
-    int title_text_id) {
-  step_.title_text_id = title_text_id;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetBodyTextID(int body_text_id) {
-  step_.body_text_id = body_text_id;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetStepType(
-    ui::InteractionSequence::StepType step_type_,
-    ui::CustomElementEventType event_type_) {
-  DCHECK_EQ(step_type_ == ui::InteractionSequence::StepType::kCustomEvent,
-            static_cast<bool>(event_type_))
-      << "`event_type_` should be set if and only if `step_type_` is "
-         "kCustomEvent.";
-  step_.step_type = step_type_;
-  step_.event_type = event_type_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetProgress(
-    absl::optional<std::pair<int, int>> progress_) {
-  progress = progress_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetArrow(HelpBubbleArrow arrow_) {
-  step_.arrow = arrow_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetIsLastStep(
-    bool is_last_step_) {
-  is_last_step = is_last_step_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetMustRemainVisible(
-    bool must_remain_visible_) {
-  step_.must_remain_visible = must_remain_visible_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetMustBeVisibleAtStart(
-    bool must_be_visible_) {
-  step_.must_be_visible = must_be_visible_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetTransitionOnlyOnEvent(
-    bool transition_only_on_event_) {
-  step_.transition_only_on_event = transition_only_on_event_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetNameElementsCallback(
-    TutorialDescription::NameElementsCallback name_elements_callback_) {
-  step_.name_elements_callback = name_elements_callback_;
-  return *this;
-}
-
-Tutorial::StepBuilder& Tutorial::StepBuilder::SetCanBeRestarted(
-    bool can_be_restarted_) {
-  can_be_restarted = can_be_restarted_;
-  return *this;
 }
 
 std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
@@ -139,30 +51,31 @@ std::unique_ptr<ui::InteractionSequence::Step> Tutorial::StepBuilder::Build(
       interaction_sequence_step_builder =
           std::make_unique<ui::InteractionSequence::StepBuilder>();
 
-  interaction_sequence_step_builder->SetContext(step_.context_mode);
+  interaction_sequence_step_builder->SetContext(step_.context_mode_);
 
-  if (step_.element_id) {
-    interaction_sequence_step_builder->SetElementID(step_.element_id);
+  if (step_.element_id_) {
+    interaction_sequence_step_builder->SetElementID(step_.element_id_);
   }
 
-  if (!step_.element_name.empty()) {
-    interaction_sequence_step_builder->SetElementName(step_.element_name);
+  if (!step_.element_name_.empty()) {
+    interaction_sequence_step_builder->SetElementName(step_.element_name_);
   }
 
-  interaction_sequence_step_builder->SetType(step_.step_type, step_.event_type);
+  interaction_sequence_step_builder->SetType(step_.step_type_,
+                                             step_.event_type_);
 
-  if (step_.must_remain_visible.has_value()) {
+  if (step_.must_remain_visible_.has_value()) {
     interaction_sequence_step_builder->SetMustRemainVisible(
-        step_.must_remain_visible.value());
+        step_.must_remain_visible_.value());
   }
 
-  if (step_.must_be_visible.has_value()) {
+  if (step_.must_be_visible_.has_value()) {
     interaction_sequence_step_builder->SetMustBeVisibleAtStart(
-        step_.must_be_visible.value());
+        step_.must_be_visible_.value());
   }
 
   interaction_sequence_step_builder->SetTransitionOnlyOnEvent(
-      step_.transition_only_on_event);
+      step_.transition_only_on_event_);
 
   interaction_sequence_step_builder->SetStartCallback(
       BuildStartCallback(tutorial_service));
@@ -187,7 +100,7 @@ Tutorial::StepBuilder::BuildStartCallback(TutorialService* tutorial_service) {
         if (maybe_show_bubble_callback)
           std::move(maybe_show_bubble_callback).Run(sequence, element);
       },
-      step_.name_elements_callback, std::move(maybe_show_bubble_callback));
+      step_.name_elements_callback_, std::move(maybe_show_bubble_callback));
 }
 
 ui::InteractionSequence::StepStartCallback
@@ -197,18 +110,18 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
     return ui::InteractionSequence::StepStartCallback();
 
   const std::u16string title_text =
-      step_.title_text_id ? l10n_util::GetStringUTF16(step_.title_text_id)
-                          : std::u16string();
+      step_.title_text_id_ ? l10n_util::GetStringUTF16(step_.title_text_id_)
+                           : std::u16string();
 
   const std::u16string body_text =
-      step_.body_text_id ? l10n_util::GetStringUTF16(step_.body_text_id)
-                         : std::u16string();
+      step_.body_text_id_ ? l10n_util::GetStringUTF16(step_.body_text_id_)
+                          : std::u16string();
 
   return base::BindOnce(
       [](TutorialService* tutorial_service, std::u16string title_text_,
          std::u16string body_text_, HelpBubbleArrow arrow_,
-         absl::optional<std::pair<int, int>> progress_, bool is_last_step_,
-         bool can_be_restarted_,
+         absl::optional<std::pair<int, int>> progress, bool is_last_step,
+         bool can_be_restarted,
          TutorialDescription::NextButtonCallback next_button_callback,
          HelpBubbleParams::ExtendedProperties extended_properties,
          ui::InteractionSequence* sequence, ui::TrackedElement* element) {
@@ -220,7 +133,7 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         params.extended_properties = std::move(extended_properties);
         params.title_text = title_text_;
         params.body_text = body_text_;
-        params.progress = progress_;
+        params.progress = progress;
         params.arrow = arrow_;
         params.timeout = base::TimeDelta();
         params.dismiss_callback = base::BindOnce(
@@ -228,11 +141,11 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
                TutorialService* tutorial_service) {
               tutorial_service->AbortTutorial(step_number);
             },
-            progress_.has_value() ? absl::make_optional(progress_.value().first)
-                                  : absl::nullopt,
+            progress.has_value() ? absl::make_optional(progress.value().first)
+                                 : absl::nullopt,
             base::Unretained(tutorial_service));
 
-        if (is_last_step_) {
+        if (is_last_step) {
           params.body_icon = &vector_icons::kCelebrationIcon;
           params.body_icon_alt_text =
               tutorial_service->GetBodyIconAltText(true);
@@ -242,7 +155,7 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
               },
               base::Unretained(tutorial_service));
 
-          if (can_be_restarted_) {
+          if (can_be_restarted) {
             HelpBubbleButtonParams restart_button;
             restart_button.text =
                 l10n_util::GetStringUTF16(IDS_TUTORIAL_RESTART_TUTORIAL);
@@ -285,11 +198,11 @@ Tutorial::StepBuilder::BuildMaybeShowBubbleCallback(
         std::unique_ptr<HelpBubble> bubble =
             tutorial_service->bubble_factory_registry()->CreateHelpBubble(
                 element, std::move(params));
-        tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step_);
+        tutorial_service->SetCurrentBubble(std::move(bubble), is_last_step);
       },
-      base::Unretained(tutorial_service), title_text, body_text, step_.arrow,
-      progress, is_last_step, can_be_restarted, step_.next_button_callback,
-      step_.extended_properties);
+      base::Unretained(tutorial_service), title_text, body_text, step_.arrow_,
+      progress_, is_last_step_, can_be_restarted_, step_.next_button_callback_,
+      step_.extended_properties_);
 }
 
 ui::InteractionSequence::StepEndCallback
