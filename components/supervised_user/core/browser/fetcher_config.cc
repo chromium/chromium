@@ -90,6 +90,47 @@ policy {
   }
 })");
 }
+
+net::NetworkTrafficAnnotationTag CreatePermissionRequestTag() {
+  return net::DefineNetworkTrafficAnnotation(
+      "supervised_user_request_blocked_site_permission",
+      R"(
+semantics {
+  sender: "Supervised Users"
+  description:
+    "Requests permission for the user to access a blocked site."
+  trigger:
+    "Initiated by the user, through the Remote Approval option "
+    " from the supervised user intersitial page."
+  data:
+    "The request is authenticated with an OAuth2 access token "
+    "that identifies the Google account and contains the URL that "
+    "the user requests access to."
+  destination: GOOGLE_OWNED_SERVICE
+  user_data {
+    type: NONE
+  }
+  internal {
+    contacts {
+      email: "chrome-kids-eng@google.com"
+    }
+  }
+  last_reviewed: "2023-06-06"
+}
+policy {
+  cookies_allowed: NO
+  setting:
+    "This feature cannot be disabled in settings and is only enabled "
+    "for child accounts. If sign-in is restricted to accounts from a "
+    "managed domain, those accounts are not going to be child accounts."
+  chrome_policy {
+    RestrictSigninToPattern {
+      policy_options {mode: MANDATORY}
+      RestrictSigninToPattern: "*@manageddomain.com"
+    }
+  }
+})");
+}
 }  // namespace annotations
 
 std::string FetcherConfig::GetHttpMethod() const {

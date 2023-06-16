@@ -19,6 +19,7 @@ namespace annotations {
 // Traffic annotations can only live in cc/mm files.
 net::NetworkTrafficAnnotationTag ClassifyUrlTag();
 net::NetworkTrafficAnnotationTag ListFamilyMembersTag();
+net::NetworkTrafficAnnotationTag CreatePermissionRequestTag();
 }  // namespace annotations
 
 // Configuration bundle for the ProtoFetcher.
@@ -65,6 +66,16 @@ constexpr FetcherConfig kListFamilyMembersConfig{
     .histogram_basename = "Signin.ListFamilyMembersRequest",
     .traffic_annotation = annotations::ListFamilyMembersTag,
 };
+
+constexpr FetcherConfig kCreatePermissionRequestConfig = {
+    .service_path = "people/me/permissionRequests",
+    // TODO(b/284523446): Refer to GaiaConstants rather than literal.
+    .oauth2_scope = "https://www.googleapis.com/auth/kid.permission",
+    .method = FetcherConfig::Method::kPost,
+    .histogram_basename = "FamilyLinkUser.CreatePermissionRequest",
+    .traffic_annotation = annotations::CreatePermissionRequestTag,
+};
+
 }  // namespace supervised_user
 
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_FETCHER_CONFIG_H_

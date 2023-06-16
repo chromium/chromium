@@ -8,6 +8,7 @@
 #include <string>
 #include <tuple>
 
+#include "base/functional/bind.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_piece.h"
 #include "base/test/metrics/histogram_tester.h"
@@ -36,9 +37,11 @@ using ::base::BindOnce;
 using ::base::Time;
 using ::kids_chrome_management::ClassifyUrlRequest;
 using ::kids_chrome_management::ClassifyUrlResponse;
+using ::kids_chrome_management::CreatePermissionRequestResponse;
 using ::kids_chrome_management::FamilyRole;
 using ::kids_chrome_management::ListFamilyMembersRequest;
 using ::kids_chrome_management::ListFamilyMembersResponse;
+using ::kids_chrome_management::PermissionRequest;
 using ::network::GetUploadData;
 using ::network::TestURLLoaderFactory;
 using ::signin::ConsentLevel;
@@ -358,6 +361,63 @@ REGISTER_TYPED_TEST_SUITE_P(ProtoFetcherTest,
 
 using Fetchers = ::testing::Types<ClassifyUrl, ListFamilyMembers>;
 INSTANTIATE_TYPED_TEST_SUITE_P(AllFetchers, ProtoFetcherTest, Fetchers);
+
+bool Callback(CreatePermissionRequestResponse response) {
+  return true;
+}
+
+void WrappedCallback(
+    std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
+        fetcher,
+    base::OnceCallback<bool(CreatePermissionRequestResponse)> callback,
+    ProtoFetcherStatus::State* target_state,
+    /* free arguments */ ProtoFetcherStatus status,
+    std::unique_ptr<CreatePermissionRequestResponse> response) {
+  *target_state = status.state();
+  std::move(callback).Run(*response);
+  // and now we forget about fetcher.
+}
+
+TEST(DeferredFetcher, IsCreated) {
+  network::TestURLLoaderFactory test_url_loader_factory;
+  base::test::TaskEnvironment task_environment;
+  IdentityTestEnvironment identity_test_env;
+
+  AccountInfo account = identity_test_env.MakePrimaryAccountAvailable(
+      "bob@gmail.com", ConsentLevel::kSignin);
+
+  auto callback = base::BindRepeating(&Callback);
+
+  std::unique_ptr<DeferredProtoFetcher<CreatePermissionRequestResponse>>
+      fetcher = CreatePermissionRequestFetcher(
+          *identity_test_env.identity_manager(),
+          test_url_loader_factory.GetSafeWeakWrapper(),
+          // Payload does not matter, not validated on client side.
+          kids_chrome_management::PermissionRequest());
+  auto* fetcher_ptr = fetcher.get();
+
+  ProtoFetcherStatus::State target_state =
+      ProtoFetcherStatus::State::INVALID_RESPONSE;
+
+  fetcher_ptr->Start(base::BindOnce(&WrappedCallback, std::move(fetcher),
+                                    std::move(callback),
+                                    base::Unretained(&target_state)));
+  ASSERT_TRUE(!fetcher);
+
+  identity_test_env.WaitForAccessTokenRequestIfNecessaryAndRespondWithToken(
+      "access_token", Time::Max());
+
+  CreatePermissionRequestResponse response;
+  TestURLLoaderFactory::PendingRequest* pending_request =
+      test_url_loader_factory.GetPendingRequest(0);
+
+  ASSERT_NE(target_state, ProtoFetcherStatus::State::OK);
+
+  test_url_loader_factory.SimulateResponseForPendingRequest(
+      pending_request->request.url.spec(),
+      /*content=*/response.SerializeAsString());
+  EXPECT_EQ(target_state, ProtoFetcherStatus::State::OK);
+}
 
 }  // namespace
 }  // namespace supervised_user

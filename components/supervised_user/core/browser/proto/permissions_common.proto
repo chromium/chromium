@@ -1,0 +1,19 @@
+syntax = "proto2";
+
+option optimize_for = LITE_RUNTIME;
+
+package kids_chrome_management;
+
+// The possible states of a permission request.
+enum PermissionRequestState {
+  UNKNOWN_STATE = 0;
+  PENDING = 1;
+  APPROVED = 2;
+  REJECTED = 3;
+  // Next id: 5
+}
+
+enum FamilyEventType {
+  // Originator: the child who asks for the permission.
+  PERMISSION_CHROME_URL = 13;
+}

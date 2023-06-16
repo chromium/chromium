@@ -424,4 +424,5 @@ Refer to README.md for content description and update process.
  <item id="bidding_and_auction_server_key_fetch" added_in_milestone="116" content_hash_code="07667a22" os_list="linux,windows,android,chromeos" file_path="content/browser/interest_group/bidding_and_auction_server_key_fetcher.cc" />
  <item id="backdrop_image_link_verification" added_in_milestone="116" content_hash_code="054ed1ab" os_list="linux,windows,chromeos" file_path="chrome/browser/search/background/ntp_background_service.cc" />
  <item id="ip_protection_service_get_token" added_in_milestone="116" content_hash_code="03968a1c" os_list="linux,windows,android,chromeos" file_path="chrome/browser/ip_protection/blind_sign_http_impl.cc" />
+ <item id="supervised_user_request_blocked_site_permission" added_in_milestone="116" content_hash_code="04f49427" os_list="linux,windows,android,chromeos" file_path="components/supervised_user/core/browser/fetcher_config.cc" />
 </annotations>

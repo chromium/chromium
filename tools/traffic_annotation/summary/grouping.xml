@@ -287,6 +287,7 @@ after discussions on the right group.
       <annotation id="promise_app_service_download_icon"/>
       <annotation id="backdrop_image_link_verification"/>
       <annotation id="ip_protection_service_get_token"/>
+      <annotation id="supervised_user_request_blocked_site_permission"/>
     </sender>
   </group>
   <group name="Admin Features" hidden="true">

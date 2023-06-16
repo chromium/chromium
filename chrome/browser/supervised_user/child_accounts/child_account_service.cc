@@ -28,6 +28,7 @@
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
 #include "components/signin/public/identity_manager/tribool.h"
 #include "components/supervised_user/core/browser/list_family_members_service.h"
+#include "components/supervised_user/core/browser/permission_request_creator_impl.h"
 #include "components/supervised_user/core/browser/proto/families_common.pb.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
 #include "components/supervised_user/core/browser/proto_fetcher.h"
@@ -139,8 +140,16 @@ void ChildAccountService::SetActive(bool active) {
 
     supervised_user::SupervisedUserService* service =
         SupervisedUserServiceFactory::GetForProfile(profile_);
+    std::unique_ptr<supervised_user::PermissionRequestCreator> creator;
+    if (base::FeatureList::IsEnabled(
+            supervised_user::kEnableCreatePermissionRequestFetcher)) {
+      creator = std::make_unique<supervised_user::PermissionRequestCreatorImpl>(
+          identity_manager_, profile_->GetURLLoaderFactory());
+    } else {
+      creator = PermissionRequestCreatorApiary::CreateWithProfile(profile_);
+    }
     service->remote_web_approvals_manager().AddApprovalRequestCreator(
-        PermissionRequestCreatorApiary::CreateWithProfile(profile_));
+        std::move(creator));
   } else {
     list_family_members_service_->Cancel();
   }

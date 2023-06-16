@@ -14,6 +14,7 @@
 #include "components/signin/public/identity_manager/identity_manager.h"
 #include "components/supervised_user/core/browser/fetcher_config.h"
 #include "components/supervised_user/core/browser/proto/kidschromemanagement_messages.pb.h"
+#include "components/supervised_user/core/browser/proto/permissions_common.pb.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
 #include "url/gurl.h"
@@ -121,7 +122,7 @@ class ProtoFetcherStatus {
   class GoogleServiceAuthError google_service_auth_error_;
 };
 
-// Use instance of Fetcher to start request and write the result onto the
+// Use instance of ProtoFetcher to start request and write the result onto the
 // receiving delegate. Every instance of Fetcher is disposable and should be
 // used only once.
 template <typename Response>
@@ -130,6 +131,14 @@ class ProtoFetcher {
   using Callback =
       base::OnceCallback<void(ProtoFetcherStatus, std::unique_ptr<Response>)>;
   virtual ~ProtoFetcher() = default;
+};
+
+// Use instance of DeferredProtoFetcher to create fetch process which is
+// unstarted yet.
+template <typename Response>
+class DeferredProtoFetcher : public ProtoFetcher<Response> {
+ public:
+  virtual void Start(typename ProtoFetcher<Response>::Callback callback) = 0;
 };
 
 // Creates a disposable instance of an access token consumer that will fetch
@@ -151,6 +160,21 @@ ClassifyURL(signin::IdentityManager& identity_manager,
             ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>::Callback
                 callback,
             const FetcherConfig& config = kClassifyUrlConfig);
+
+// Creates a disposable instance of an access token consumer that will create
+// a new permission request for a given url.
+// The fetcher does not need to use the `CreatePermissionRequestRequest`
+// message. The `request` input corresponds to a `PermissionRequest` message,
+// which is mapped to the body of the `CreatePermissionRequestRequest`
+// message by the http to gRPC mapping on the server side.
+// See go/rpc-create-permission-request.
+std::unique_ptr<DeferredProtoFetcher<
+    kids_chrome_management::CreatePermissionRequestResponse>>
+CreatePermissionRequestFetcher(
+    signin::IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const kids_chrome_management::PermissionRequest& request,
+    const FetcherConfig& config = kCreatePermissionRequestConfig);
 
 }  // namespace supervised_user
 #endif  // COMPONENTS_SUPERVISED_USER_CORE_BROWSER_PROTO_FETCHER_H_

@@ -137,13 +137,25 @@ class FetcherImpl final : public ProtoFetcher<Response> {
 
  public:
   FetcherImpl() = delete;
-  explicit FetcherImpl(
-      IdentityManager& identity_manager,
-      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      const google::protobuf::MessageLite& request,
-      const FetcherConfig& fetcher_config,
-      Callback callback)
+  FetcherImpl(IdentityManager& identity_manager,
+              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+              const google::protobuf::MessageLite& request,
+              const FetcherConfig& fetcher_config,
+              Callback callback)
       : payload_(request.SerializeAsString()), config_(fetcher_config) {
+    access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
+        identity_manager, fetcher_config,
+        BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
+                 url_loader_factory,
+                 std::move(callback)));  // Unretained(.) is safe because `this`
+                                         // owns `access_token_fetcher_`.
+  }
+  FetcherImpl(IdentityManager& identity_manager,
+              scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+              const std::string& payload,
+              const FetcherConfig& fetcher_config,
+              Callback callback)
+      : payload_(payload), config_(fetcher_config) {
     access_token_fetcher_ = std::make_unique<ApiAccessTokenFetcher>(
         identity_manager, fetcher_config,
         BindOnce(&FetcherImpl::OnAccessTokenFetchComplete, Unretained(this),
@@ -261,10 +273,46 @@ class FetcherImpl final : public ProtoFetcher<Response> {
   const FetcherConfig config_;
 };
 
+// Wraps FetcherImpl deferring its startup until explicitly invoked.
+// It is useful to have fetcher with self-reference, which will destroy
+// themselves upon completion.
+template <typename Response>
+class DeferredFetcherImpl final : public DeferredProtoFetcher<Response> {
+ private:
+  using Callback = typename DeferredProtoFetcher<Response>::Callback;
+
+ public:
+  DeferredFetcherImpl() = delete;
+  DeferredFetcherImpl(
+      IdentityManager& identity_manager,
+      scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+      const google::protobuf::MessageLite& request,
+      const FetcherConfig& fetcher_config)
+      : payload_(request.SerializeAsString()),
+        identity_manager_(identity_manager),
+        url_loader_factory_(url_loader_factory),
+        config_(fetcher_config) {}
+
+  void Start(Callback callback) override {
+    fetcher_ = std::make_unique<FetcherImpl<Response>>(
+        identity_manager_, url_loader_factory_, payload_, config_,
+        std::move(callback));
+  }
+
+ private:
+  std::unique_ptr<FetcherImpl<Response>> fetcher_;
+  std::string payload_;
+  IdentityManager& identity_manager_;
+  scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory_;
+  const FetcherConfig config_;
+};
+
 using ClassifyUrlFetcher =
     ProtoFetcher<kids_chrome_management::ClassifyUrlResponse>;
 using ListFamilyMembersFetcher =
     ProtoFetcher<kids_chrome_management::ListFamilyMembersResponse>;
+using PermissionRequestFetcher = DeferredProtoFetcher<
+    kids_chrome_management::CreatePermissionRequestResponse>;
 }  // namespace
 
 // Main constructor, referenced by the rest.
@@ -408,6 +456,16 @@ std::unique_ptr<ListFamilyMembersFetcher> FetchListFamilyMembers(
       identity_manager, url_loader_factory,
       kids_chrome_management::ListFamilyMembersRequest(), config,
       std::move(callback));
+}
+
+std::unique_ptr<PermissionRequestFetcher> CreatePermissionRequestFetcher(
+    IdentityManager& identity_manager,
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
+    const kids_chrome_management::PermissionRequest& request,
+    const FetcherConfig& config) {
+  return std::make_unique<DeferredFetcherImpl<
+      kids_chrome_management::CreatePermissionRequestResponse>>(
+      identity_manager, url_loader_factory, request, config);
 }
 
 }  // namespace supervised_user

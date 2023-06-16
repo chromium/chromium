@@ -26,6 +26,8 @@ namespace network {
 class SharedURLLoaderFactory;
 }
 
+// TODO(4598236): This class will be deprecated once we fully switch
+// to make requests via the supervised_user::PermissionRequestCreatorImpl.
 class PermissionRequestCreatorApiary
     : public supervised_user::PermissionRequestCreator {
  public:

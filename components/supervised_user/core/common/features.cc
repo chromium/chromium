@@ -138,6 +138,10 @@ BASE_FEATURE(kSupervisedPrefsControlledBySupervisedStore,
              "SupervisedPrefsControlledBySupervisedStore",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+BASE_FEATURE(kEnableCreatePermissionRequestFetcher,
+             "EnableCreatePermissionRequestFetcher",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Whether to display a "Managed by your parent" or similar text for supervised
 // users in various UI surfaces.
 BASE_FEATURE(kEnableManagedByParentUi,

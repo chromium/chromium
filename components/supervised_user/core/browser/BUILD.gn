@@ -66,6 +66,8 @@ static_library("browser") {
     "parental_control_metrics.cc",
     "parental_control_metrics.h",
     "permission_request_creator.h",
+    "permission_request_creator_impl.cc",
+    "permission_request_creator_impl.h",
     "remote_web_approvals_manager.cc",
     "remote_web_approvals_manager.h",
     "supervised_user_error_page.cc",
