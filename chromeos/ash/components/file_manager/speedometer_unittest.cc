@@ -1,7 +1,8 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#include "chrome/browser/ash/file_manager/speedometer.h"
+
+#include "chromeos/ash/components/file_manager/speedometer.h"
 
 #include <cmath>
 #include <limits>
@@ -11,7 +12,6 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {
-namespace io_task {
 
 namespace {
 
@@ -134,5 +134,4 @@ TEST(SpeedometerTest, Samples) {
 }
 
 }  // namespace
-}  // namespace io_task
 }  // namespace file_manager

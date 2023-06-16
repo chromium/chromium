@@ -15,13 +15,12 @@
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
-#include "chrome/browser/ash/file_manager/speedometer.h"
+#include "chromeos/ash/components/file_manager/speedometer.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
 
-namespace file_manager {
-namespace io_task {
+namespace file_manager::io_task {
 
 // Histogram name for FileBrowser.ExtractTask.
 inline constexpr char kExtractTaskStatusHistogramName[] =
@@ -122,7 +121,6 @@ class ExtractIOTask : public IOTask {
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };
 
-}  // namespace io_task
-}  // namespace file_manager
+}  // namespace file_manager::io_task
 
 #endif  // CHROME_BROWSER_ASH_FILE_MANAGER_EXTRACT_IO_TASK_H_

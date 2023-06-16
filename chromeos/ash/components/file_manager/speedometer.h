@@ -1,9 +1,11 @@
 // Copyright 2021 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-#ifndef CHROME_BROWSER_ASH_FILE_MANAGER_SPEEDOMETER_H_
-#define CHROME_BROWSER_ASH_FILE_MANAGER_SPEEDOMETER_H_
 
+#ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_SPEEDOMETER_H_
+#define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_SPEEDOMETER_H_
+
+#include "base/component_export.h"
 #include "base/containers/ring_buffer.h"
 #include "base/time/time.h"
 
@@ -18,14 +20,13 @@ struct SpeedSample {
 }  // namespace
 
 namespace file_manager {
-namespace io_task {
 
 // Calculates the remaining time for an operation based on the initial total
 // bytes and the amount of bytes transferred on each `sample`.
 //
 // It estimates when the total bytes will be reached and exposes the "remaining
 // time" from now until the projected end time.
-class Speedometer {
+class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
  public:
   Speedometer();
 
@@ -74,7 +75,6 @@ class Speedometer {
   const base::TimeTicks start_time_;
 };
 
-}  // namespace io_task
 }  // namespace file_manager
 
-#endif  // CHROME_BROWSER_ASH_FILE_MANAGER_SPEEDOMETER_H_
+#endif  // CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_SPEEDOMETER_H_

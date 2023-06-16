@@ -1,0 +1,30 @@
+# Copyright 2023 The Chromium Authors
+# Use of this source code is governed by a BSD-style license that can be
+# found in the LICENSE file.
+
+import("//build/config/chromeos/ui_mode.gni")
+
+assert(is_chromeos_ash)
+
+component("file_manager") {
+  output_name = "file_manager"
+  defines = [ "IS_FILE_MANAGER_IMPL" ]
+
+  deps = [ "//base" ]
+
+  sources = [
+    "speedometer.cc",
+    "speedometer.h",
+  ]
+}
+
+source_set("unit_tests") {
+  testonly = true
+  deps = [
+    ":file_manager",
+    "//base/test:test_support",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+  sources = [ "speedometer_unittest.cc" ]
+}
