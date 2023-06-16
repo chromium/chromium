@@ -106,6 +106,13 @@ struct LineWidthsData {
         0123 5678
       </div>
     )HTML"},
+    // "46.25 / 23" needs more precision than `LayoutUnit`.
+    {{70, 70, 70, 100}, R"HTML(
+      <div id="target" style="line-height: 23px">
+        <div class="left" style="height: 46.25px"></div>
+        0123 5678
+      </div>
+    )HTML"},
     // Multiple floats are computable if they produce single exclusion.
     {{40, 100}, R"HTML(
       <div id="target">

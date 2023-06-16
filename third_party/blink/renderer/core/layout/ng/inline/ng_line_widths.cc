@@ -136,9 +136,12 @@ bool NGLineWidths::Set(const NGInlineNode& node,
       last_opportunity.rect.BlockStartOffset() -
       first_opportunity.rect.BlockStartOffset();
   DCHECK_GT(exclusion_block_size, LayoutUnit());
-  const int num_excluded_lines = (exclusion_block_size / line_height).Ceil();
-  DCHECK_GT(num_excluded_lines, 0);
-  num_excluded_lines_ = num_excluded_lines;
+  // Use the float division because `LayoutUnit::operator/` doesn't have enough
+  // precision; e.g., `LayoutUnit` computes "46.25 / 23" to 2.
+  const float num_excluded_lines =
+      ceil(exclusion_block_size.ToFloat() / line_height.ToFloat());
+  DCHECK_GE(num_excluded_lines, 1);
+  num_excluded_lines_ = base::saturated_cast<wtf_size_t>(num_excluded_lines);
   excluded_width_ = first_opportunity.rect.InlineSize();
   return true;
 }
