@@ -9,7 +9,6 @@
 #include <memory>
 #include <vector>
 
-#include "base/memory/ref_counted.h"
 #include "content/common/content_export.h"
 #include "net/http/http_no_vary_search_data.h"
 #include "services/network/public/mojom/no_vary_search.mojom.h"
@@ -22,51 +21,50 @@ class URLResponseHead;
 
 namespace content {
 
+class PrefetchContainer;
 class RenderFrameHost;
 
-// Helper class to keep track of prefetched URLs that have No-Vary-Search
+// Helpers to keep track of prefetched URLs that have No-Vary-Search
 // header present in their responses.
-class CONTENT_EXPORT NoVarySearchHelper
-    : public base::RefCounted<NoVarySearchHelper> {
- public:
-  NoVarySearchHelper();
+// The source of truth is the `prefetches` and the helpers iterates over
+// `prefetches` to find matching `PrefetchContainer`s.
+namespace no_vary_search {
 
-  // Track `url` with No-Vary-Search header information if applicable.
-  // If `url` doesn't have a No-Vary-Search header this method will not
-  // track `url` at all. It is left to the caller to handle the case of
-  // true URL equality.
-  void AddUrl(const GURL& url, const network::mojom::URLResponseHead& head);
+// Sets `prefetch_container`'s `NoVarySearchData` based on the response header
+// (`prefetch_container->GetHead()`) if applicable. Unless this is set, the
+// helpers don't perform No-Vary-Search matching for `prefetch_container`, even
+// if `GetHead()` has No-Vary-Search headers. If `prefetch_container` doesn't
+// have a No-Vary-Search header this method is no-op and it is left to the
+// caller to handle the case of true URL equality.
+CONTENT_EXPORT void SetNoVarySearchData(
+    base::WeakPtr<PrefetchContainer> prefetch_container);
 
-  // Try to match `url` within tracked urls with No-Vary-Search information.
-  // Return the matched url or absl::nullopt otherwise.
-  absl::optional<GURL> MatchUrl(const GURL& url) const;
+// Get a PrefetchContainer from `prefetches` that can serve `url` according to
+// No-Vary-Search information.
+CONTENT_EXPORT base::WeakPtr<PrefetchContainer> MatchUrl(
+    const GURL& url,
+    const std::map<GURL, base::WeakPtr<PrefetchContainer>>& prefetches);
 
-  // Send No-Vary-Search parsing errors in DevTools console.
-  // The method will test if there are errors/warning that the developer
-  // needs to know about, and if there are send them to the DevTools console.
-  void MaybeSendErrorsToConsole(const GURL& url,
-                                const network::mojom::URLResponseHead& head,
-                                RenderFrameHost& rfh) const;
+// Send No-Vary-Search parsing errors in DevTools console.
+// The method will test if there are errors/warning that the developer
+// needs to know about, and if there are send them to the DevTools console.
+void MaybeSendErrorsToConsole(const GURL& url,
+                              const network::mojom::URLResponseHead& head,
+                              RenderFrameHost& rfh);
 
-  // Return the (URL,NoVarySearchInfo) pairs for a specific Url without
-  // query and reference. Allow as input urls with query and/or reference
-  // for ease of use (remove query/reference during lookup).
-  const std::vector<std::pair<GURL, net::HttpNoVarySearchData>>*
-  GetAllForUrlWithoutRefAndQueryForTesting(const GURL& url) const;
+// Return the (URL,PrefetchContainer) pairs for a specific Url without
+// query and reference. Allow as input urls with query and/or reference
+// for ease of use (remove query/reference during lookup).
+CONTENT_EXPORT std::vector<std::pair<GURL, base::WeakPtr<PrefetchContainer>>>
+GetAllForUrlWithoutRefAndQueryForTesting(
+    const GURL& url,
+    const std::map<GURL, base::WeakPtr<PrefetchContainer>>& prefetches);
 
-  // Parse No-Vary-Search from mojom structure received from network service.
-  static net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
-      const network::mojom::NoVarySearchPtr& no_vary_search_ptr);
+// Parse No-Vary-Search from mojom structure received from network service.
+net::HttpNoVarySearchData ParseHttpNoVarySearchDataFromMojom(
+    const network::mojom::NoVarySearchPtr& no_vary_search_ptr);
 
- private:
-  friend class base::RefCounted<NoVarySearchHelper>;
-  ~NoVarySearchHelper();
-
-  // The set of urls that have No-Vary-Search header in their prefetched
-  // response keyed by their path without the ref and query parts.
-  std::map<GURL, std::vector<std::pair<GURL, net::HttpNoVarySearchData>>>
-      prefetches_with_no_vary_search_;
-};
+}  // namespace no_vary_search
 
 }  // namespace content
 

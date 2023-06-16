@@ -1564,7 +1564,7 @@ void PrefetchService::WaitOnPrefetchToServeHead(
       return;
     }
     auto no_vary_search_data =
-        NoVarySearchHelper::ParseHttpNoVarySearchDataFromMojom(
+        no_vary_search::ParseHttpNoVarySearchDataFromMojom(
             head->parsed_headers->no_vary_search_with_parse_error
                 ->get_no_vary_search());
     if (!no_vary_search_data.AreEquivalent(nav_url,

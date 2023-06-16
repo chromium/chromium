@@ -269,7 +269,6 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
 
     prefetch_document_manager->ProcessCandidates(candidates,
                                                  /*devtools_observer=*/nullptr);
-    const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
 
     // Now call TakePrefetchedResponse
     network::mojom::URLResponseHeadPtr head =
@@ -288,22 +287,26 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
         MakeServableStreamingURLLoaderForTest(std::move(head), "empty"));
     GetPrefetches()[0]->OnPrefetchedResponseHeadReceived();
 
-    const auto* urls_with_no_vary_search =
-        helper.GetAllForUrlWithoutRefAndQueryForTesting(test_url);
-    ASSERT_TRUE(urls_with_no_vary_search);
-    ASSERT_EQ(urls_with_no_vary_search->size(), 1u);
-    EXPECT_EQ(urls_with_no_vary_search->at(0).first, test_url);
-    const net::HttpNoVarySearchData& nvs =
-        urls_with_no_vary_search->at(0).second;
-    EXPECT_THAT(nvs.vary_params(), UnorderedElementsAreArray({"a"}));
-    EXPECT_THAT(nvs.no_vary_params(), IsEmpty());
-    EXPECT_FALSE(nvs.vary_by_default());
-    EXPECT_TRUE(nvs.vary_on_key_order());
-    EXPECT_TRUE(
-        helper.MatchUrl(GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5")));
-    EXPECT_TRUE(helper.MatchUrl(GetCrossOriginUrl("/candidate1.html?a=2")));
-    EXPECT_FALSE(helper.MatchUrl(GetCrossOriginUrl("/candidate1.html")));
-    EXPECT_FALSE(helper.MatchUrl(GetCrossOriginUrl("/candidate1.html?b=4")));
+    const auto urls_with_no_vary_search =
+        prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
+            test_url);
+    ASSERT_EQ(urls_with_no_vary_search.size(), 1u);
+    EXPECT_EQ(urls_with_no_vary_search.at(0).first, test_url);
+    const absl::optional<net::HttpNoVarySearchData>& nvs =
+        urls_with_no_vary_search.at(0).second->GetNoVarySearchData();
+    ASSERT_TRUE(nvs);
+    EXPECT_THAT(nvs->vary_params(), UnorderedElementsAreArray({"a"}));
+    EXPECT_THAT(nvs->no_vary_params(), IsEmpty());
+    EXPECT_FALSE(nvs->vary_by_default());
+    EXPECT_TRUE(nvs->vary_on_key_order());
+    EXPECT_TRUE(prefetch_document_manager->MatchUrl(
+        GetCrossOriginUrl("/candidate1.html?b=4&a=2&c=5")));
+    EXPECT_TRUE(prefetch_document_manager->MatchUrl(
+        GetCrossOriginUrl("/candidate1.html?a=2")));
+    EXPECT_FALSE(prefetch_document_manager->MatchUrl(
+        GetCrossOriginUrl("/candidate1.html")));
+    EXPECT_FALSE(prefetch_document_manager->MatchUrl(
+        GetCrossOriginUrl("/candidate1.html?b=4")));
   }
   {
     const auto test_url = GetCrossOriginUrl("/candidate2.html?a=2&b=3");
@@ -327,10 +330,10 @@ TEST_F(PrefetchDocumentManagerTest, ProcessNoVarySearchResponse) {
         MakeServableStreamingURLLoaderForTest(std::move(head), "empty"));
     GetPrefetches().back()->OnPrefetchedResponseHeadReceived();
 
-    const auto& helper = prefetch_document_manager->GetNoVarySearchHelper();
-    const auto* urls_with_no_vary_search =
-        helper.GetAllForUrlWithoutRefAndQueryForTesting(test_url);
-    ASSERT_FALSE(urls_with_no_vary_search);
+    const auto urls_with_no_vary_search =
+        prefetch_document_manager->GetAllForUrlWithoutRefAndQueryForTesting(
+            test_url);
+    ASSERT_TRUE(urls_with_no_vary_search.empty());
   }
 
   NavigateMainframeRendererTo(GetCrossOriginUrl("/candidate2.html?a=2&b=3"));

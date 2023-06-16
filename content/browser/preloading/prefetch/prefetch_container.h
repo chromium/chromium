@@ -261,6 +261,13 @@ class CONTENT_EXPORT PrefetchContainer {
   void SimulateAttemptAtInterceptorForTest();
   void DisablePrecogLoggingForTest() { attempt_ = nullptr; }
 
+  const absl::optional<net::HttpNoVarySearchData>& GetNoVarySearchData() const {
+    return no_vary_search_data_;
+  }
+  void SetNoVarySearchData(net::HttpNoVarySearchData no_vary_search_data) {
+    no_vary_search_data_ = std::move(no_vary_search_data);
+  }
+
   class SinglePrefetch;
 
   // A `Reader` represents the current state of serving.
@@ -377,7 +384,12 @@ class CONTENT_EXPORT PrefetchContainer {
   url::Origin referring_origin_;
   net::SchemefulSite referring_site_;
 
-  // The No-Vary-Search hint of the prefetch.
+  // The No-Vary-Search response data, parsed from the actual response header
+  // (`GetHead()`).
+  absl::optional<net::HttpNoVarySearchData> no_vary_search_data_;
+
+  // The No-Vary-Search hint of the prefetch, which is specified by the
+  // speculation rules and can be different from actual `no_vary_search_data_`.
   const absl::optional<net::HttpNoVarySearchData> no_vary_search_hint_;
 
   // The |PrefetchDocumentManager| that requested |this|. Initially it owns

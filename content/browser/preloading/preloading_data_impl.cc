@@ -9,6 +9,7 @@
 #include "base/rand_util.h"
 #include "base/strings/strcat.h"
 #include "content/browser/preloading/prefetch/no_vary_search_helper.h"
+#include "content/browser/preloading/prefetch/prefetch_container.h"
 #include "content/browser/preloading/prefetch/prefetch_document_manager.h"
 #include "content/browser/preloading/preloading.h"
 #include "content/browser/preloading/preloading_attempt_impl.h"
@@ -82,10 +83,10 @@ PreloadingDataImpl::GetSameURLAndNoVarySearchURLMatcher(
           return true;
         }
 
-        const absl::optional<GURL> match_url =
-            prefetch_doc_manager->GetNoVarySearchHelper().MatchUrl(
-                navigated_url);
-        return match_url == predicted_url;
+        base::WeakPtr<PrefetchContainer> prefetch_container =
+            prefetch_doc_manager->MatchUrl(navigated_url);
+        return prefetch_container &&
+               prefetch_container->GetURL() == predicted_url;
       },
       manager, destination_url);
 }
