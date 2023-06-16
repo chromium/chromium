@@ -245,7 +245,10 @@ class AmbientBadgeManagerSecondVisitTest
 
   ~AmbientBadgeManagerSecondVisitTest() override = default;
 
-  void SetUpFeatureList() override {}
+  void SetUpFeatureList() override {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kAmbientBadgeSuppressFirstVisit);
+  }
 };
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSecondVisitTest,
