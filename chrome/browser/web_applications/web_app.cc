@@ -509,14 +509,12 @@ void WebApp::SetNoteTakingNewNoteUrl(const GURL& note_taking_new_note_url) {
   note_taking_new_note_url_ = note_taking_new_note_url;
 }
 
-void WebApp::SetShortcutsMenuItemInfos(
-    std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos) {
+void WebApp::SetShortcutsMenuInfo(
+    std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos,
+    std::vector<IconSizes> downloaded_sizes) {
+  CHECK_EQ(shortcuts_menu_item_infos.size(), downloaded_sizes.size());
   shortcuts_menu_item_infos_ = std::move(shortcuts_menu_item_infos);
-}
-
-void WebApp::SetDownloadedShortcutsMenuIconsSizes(
-    std::vector<IconSizes> sizes) {
-  downloaded_shortcuts_menu_icons_sizes_ = std::move(sizes);
+  downloaded_shortcuts_menu_icons_sizes_ = std::move(downloaded_sizes);
 }
 
 void WebApp::SetLastBadgingTime(const base::Time& time) {

@@ -444,9 +444,11 @@ class WebApp {
   // Performs sorting and uniquifying of |sizes| if passed as vector.
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
-  void SetShortcutsMenuItemInfos(
-      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos);
-  void SetDownloadedShortcutsMenuIconsSizes(std::vector<IconSizes> icon_sizes);
+  // Sets information about the shortcuts menu for the app.
+  // `shortcuts_menu_item_infos` and `downloaded_sizes` must be the same length.
+  void SetShortcutsMenuInfo(
+      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos,
+      std::vector<IconSizes> downloaded_sizes);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetFileHandlerApprovalState(ApiApprovalState approval_state);
   void SetFileHandlerOsIntegrationState(

@@ -304,7 +304,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, IconsButNoShortcutInfo) {
   // Remove the shortcut menu item infos from the DB and sync OS integration.
   {
     ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
-    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuItemInfos({});
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({}, {});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
     base::test::TestFuture<void> future;
@@ -363,12 +363,17 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest,
     shortcut_info.monochrome.push_back(std::move(icon_data));
   }
 
+  IconSizes icon_sizes{};
+  icon_sizes.any = sizes;
+  icon_sizes.maskable = sizes;
+  icon_sizes.monochrome = sizes;
+
   // Update the shortcut menu item infos in the DB to only match a single icon
   // and rerun OS integration.
   {
     ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
-    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuItemInfos(
-        {shortcut_info});
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({shortcut_info},
+                                                               {icon_sizes});
   }
 
   if (AreOsIntegrationSubManagersEnabled()) {
@@ -412,8 +417,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
   // Remove the downloaded icons & resync os integration.
   {
     ScopedRegistryUpdate remove_downloaded(&provider().sync_bridge_unsafe());
-    remove_downloaded->UpdateApp(app_id)->SetDownloadedShortcutsMenuIconsSizes(
-        {});
+    remove_downloaded->UpdateApp(app_id)->SetShortcutsMenuInfo({}, {});
   }
   if (AreOsIntegrationSubManagersEnabled()) {
     base::test::TestFuture<void> future;
@@ -426,40 +430,7 @@ TEST_P(ShortcutMenuHandlingSubManagerConfigureTest, NoDownloadedIcons_1427444) {
       provider().registrar_unsafe().GetAppCurrentOsIntegrationState(app_id);
   ASSERT_TRUE(state.has_value());
   const proto::WebAppOsIntegrationState& os_integration_state = state.value();
-  if (AreOsIntegrationSubManagersEnabled()) {
-    EXPECT_TRUE(
-        os_integration_state.shortcut_menus().shortcut_menu_info_size() ==
-        num_menu_items);
-
-    for (int menu_index = 0; menu_index < num_menu_items; menu_index++) {
-      EXPECT_THAT(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .shortcut_name(),
-                  testing::Eq(base::StrCat(
-                      {"shortcut_name", base::NumberToString(menu_index)})));
-
-      EXPECT_THAT(os_integration_state.shortcut_menus()
-                      .shortcut_menu_info(menu_index)
-                      .shortcut_launch_url(),
-                  testing::Eq(base::StrCat(
-                      {kWebAppUrl.spec(), base::NumberToString(menu_index)})));
-
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_any_size(),
-                0);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_maskable_size(),
-                0);
-      EXPECT_EQ(os_integration_state.shortcut_menus()
-                    .shortcut_menu_info(menu_index)
-                    .icon_data_monochrome_size(),
-                0);
-    }
-  } else {
-    ASSERT_FALSE(os_integration_state.has_shortcut_menus());
-  }
+  ASSERT_FALSE(os_integration_state.has_shortcut_menus());
 }
 
 INSTANTIATE_TEST_SUITE_P(

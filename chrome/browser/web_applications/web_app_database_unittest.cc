@@ -578,6 +578,42 @@ TEST_F(WebAppDatabaseTest, MigrateOldLaunchHandlerSyntax) {
             LaunchHandlerProto_ClientMode_FOCUS_EXISTING);
 }
 
+// Tests handling crashes fixed in crbug.com/1417955.
+TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
+  std::unique_ptr<WebApp> base_app = test::CreateRandomWebApp({});
+  WebAppShortcutsMenuItemInfo shortcut_item_info{};
+  shortcut_item_info.name = u"shortcut";
+  shortcut_item_info.url = GURL("http://example.com/shortcut");
+  IconSizes downloaded_icon_sizes{};
+  downloaded_icon_sizes.any = {42};
+  downloaded_icon_sizes.maskable = {24};
+  downloaded_icon_sizes.monochrome = {123};
+  base_app->SetShortcutsMenuInfo({shortcut_item_info}, {downloaded_icon_sizes});
+
+  std::unique_ptr<WebAppProto> base_proto =
+      WebAppDatabase::CreateWebAppProto(*base_app);
+
+  WebAppProto proto_without_shortcut_info(*base_proto);
+  proto_without_shortcut_info.clear_shortcuts_menu_item_infos();
+  // Fail to parse when fewer shortcut infos than downloaded sizes. No evidence
+  // this happens in the wild.
+  EXPECT_EQ(WebAppDatabase::CreateWebApp(proto_without_shortcut_info), nullptr);
+
+  // If DB is missing downloaded shortcut icon sizes information, expect to pad
+  // the vector with empty IconSizes structs so the vectors in WebApp have equal
+  // length.
+  WebAppProto proto_without_downloaded_sizes(*base_proto);
+  proto_without_downloaded_sizes.clear_downloaded_shortcuts_menu_icons_sizes();
+
+  auto app_with_empty_downloaded_sizes = std::make_unique<WebApp>(*base_app);
+  app_with_empty_downloaded_sizes->SetShortcutsMenuInfo({shortcut_item_info},
+                                                        {IconSizes{}});
+  auto roundtrip_app =
+      WebAppDatabase::CreateWebApp(proto_without_downloaded_sizes);
+  EXPECT_EQ(base::ToString(*roundtrip_app),
+            base::ToString(*app_with_empty_downloaded_sizes));
+}
+
 class WebAppDatabaseProtoDataTest : public ::testing::Test {
  public:
   std::unique_ptr<WebApp> CreateMinimalWebApp() {

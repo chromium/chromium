@@ -1286,7 +1286,6 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
     shortcuts_menu_item_infos.emplace_back(std::move(shortcut_info));
   }
   const size_t shortcut_menu_item_size = shortcuts_menu_item_infos.size();
-  web_app->SetShortcutsMenuItemInfos(std::move(shortcuts_menu_item_infos));
 
   std::vector<IconSizes> shortcuts_menu_icons_sizes;
   for (const auto& shortcuts_icon_sizes_proto :
@@ -1314,8 +1313,12 @@ std::unique_ptr<WebApp> WebAppDatabase::CreateWebApp(
   while (shortcuts_menu_icons_sizes.size() < shortcut_menu_item_size) {
     shortcuts_menu_icons_sizes.emplace_back();
   }
-  web_app->SetDownloadedShortcutsMenuIconsSizes(
-      std::move(shortcuts_menu_icons_sizes));
+  if (shortcut_menu_item_size < shortcuts_menu_icons_sizes.size()) {
+    DLOG(ERROR) << "WebApp proto had more downloaded shortcut icons than infos";
+    return nullptr;
+  }
+  web_app->SetShortcutsMenuInfo(std::move(shortcuts_menu_item_infos),
+                                std::move(shortcuts_menu_icons_sizes));
 
   std::vector<std::string> additional_search_terms;
   for (const std::string& additional_search_term :

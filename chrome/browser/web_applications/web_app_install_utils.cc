@@ -1203,11 +1203,10 @@ void SetWebAppManifestFields(const WebAppInstallInfo& web_app_info,
         IconPurpose::MONOCHROME,
         GetSquareSizePxs(web_app_info.icon_bitmaps.monochrome));
     web_app.SetIsGeneratedIcon(web_app_info.is_generated_icon);
-    web_app.SetShortcutsMenuItemInfos(web_app_info.shortcuts_menu_item_infos);
-    web_app.SetDownloadedShortcutsMenuIconsSizes(
-        GetDownloadedShortcutsMenuIconsSizes(
-            web_app_info.shortcuts_menu_item_infos,
-            web_app_info.shortcuts_menu_icon_bitmaps));
+    web_app.SetShortcutsMenuInfo(web_app_info.shortcuts_menu_item_infos,
+                                 GetDownloadedShortcutsMenuIconsSizes(
+                                     web_app_info.shortcuts_menu_item_infos,
+                                     web_app_info.shortcuts_menu_icon_bitmaps));
   }
 
   web_app.SetPermissionsPolicy(web_app_info.permissions_policy);
