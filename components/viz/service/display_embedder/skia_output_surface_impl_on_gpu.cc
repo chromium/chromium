@@ -853,9 +853,21 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputRGBAInMemory(
   if (!sk_color_space) {
     dest_color_space = gfx::ColorSpace::CreateSRGB();
   }
+
+  // TODO(https://bugs.chromium.org/p/skia/issues/detail?id=14389):
+  // BGRA is not supported on iOS, so explicitly request RGBA here. This should
+  // not prevent readback, however, so once that is fixed, this code could be
+  // removed.
+  auto color_type =
+#if BUILDFLAG(IS_IOS)
+      kRGBA_8888_SkColorType;
+#else
+      kN32_SkColorType;
+#endif  // BUILDFLAG(IS_IOS)
+
   SkImageInfo dst_info = SkImageInfo::Make(
       geometry.result_selection.width(), geometry.result_selection.height(),
-      kN32_SkColorType, kPremul_SkAlphaType, sk_color_space);
+      color_type, kPremul_SkAlphaType, sk_color_space);
   std::unique_ptr<ReadPixelsContext> context =
       std::make_unique<ReadPixelsContext>(std::move(request),
                                           geometry.result_selection,
