@@ -5,6 +5,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/public/cpp/ash_view_ids.h"
 #include "ash/resources/vector_icons/vector_icons.h"
 #include "ash/shell.h"
 #include "ash/style/checkbox_group.h"
@@ -17,11 +18,13 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/desks/desks_util.h"
 #include "base/run_loop.h"
+#include "ui/base/interaction/expect_call_in_scope.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/gfx/vector_icon_types.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
+#include "ui/views/test/widget_test.h"
 #include "ui/views/view_test_api.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_delegate.h"
@@ -37,6 +40,36 @@ enum class TabSliderType {
   kLabelSlider,
   kIconLabelSlider,
 };
+
+// Helpers ---------------------------------------------------------------------
+
+std::unique_ptr<views::Widget> CreateSystemDialogWidget(
+    ui::ModalType modal_type,
+    aura::Window* parent_window) {
+  // Generate a new dialog delegate view.
+  auto dialog_view = views::Builder<SystemDialogDelegateView>()
+                         .SetIcon(kTestIcon)
+                         .SetTitleText(u"Title")
+                         .SetDescription(u"Dialog description.")
+                         .Build();
+
+  dialog_view->SetModalType(modal_type);
+
+  // Create a dialog widget.
+  views::Widget::InitParams dialog_params;
+  dialog_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
+  dialog_params.bounds = gfx::Rect(dialog_view->GetPreferredSize());
+  dialog_params.delegate = dialog_view.release();
+  dialog_params.ownership =
+      views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
+  dialog_params.parent = parent_window;
+  auto dialog_widget =
+      std::make_unique<views::Widget>(std::move(dialog_params));
+  dialog_widget->Show();
+  return dialog_widget;
+}
+
+// WidgetWithSystemUIComponentView ---------------------------------------------
 
 // A WidgetDelegateView with given component as the only content.
 class WidgetWithSystemUIComponentView : public views::WidgetDelegateView {
@@ -271,13 +304,60 @@ struct DialogTestParams {
   bool parent_to_root;
 };
 
-class SystemDialogTest : public SystemComponentsTest,
-                         public testing::WithParamInterface<DialogTestParams> {
+using SystemDialogDelegateViewTest = SystemComponentsTest;
+
+TEST_F(SystemDialogDelegateViewTest, CancelCallback) {
+  std::unique_ptr<views::Widget> dialog_widget =
+      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+                               /*parent_window=*/Shell::GetPrimaryRootWindow());
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, close_callback);
+
+  auto* const system_dialog_delegate_view =
+      static_cast<SystemDialogDelegateView*>(dialog_widget->GetContentsView());
+  system_dialog_delegate_view->SetAcceptCallback(accept_callback.Get());
+  system_dialog_delegate_view->SetCancelCallback(cancel_callback.Get());
+  system_dialog_delegate_view->SetCloseCallback(close_callback.Get());
+
+  // Close the dialog through the cancel button. Only `cancel_callback` should
+  // be executed.
+  EXPECT_CALL_IN_SCOPE(cancel_callback, Run, {
+    auto* const cancel_button = system_dialog_delegate_view->GetViewByID(
+        ViewID::VIEW_ID_STYLE_SYSTEM_DIALOG_DELEGATE_CANCEL_BUTTON);
+    ASSERT_TRUE(cancel_button);
+    LeftClickOn(cancel_button);
+    views::test::WidgetDestroyedWaiter(system_dialog_delegate_view->GetWidget())
+        .Wait();
+  });
+}
+
+// Verifies that the close callback registered on `SystemDialogDelegateView`
+// should run when the dialog view is destroyed without clicking any buttons.
+TEST_F(SystemDialogDelegateViewTest, CloseCallback) {
+  std::unique_ptr<views::Widget> dialog_widget =
+      CreateSystemDialogWidget(ui::ModalType::MODAL_TYPE_NONE,
+                               /*parent_window=*/Shell::GetPrimaryRootWindow());
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, accept_callback);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, cancel_callback);
+  UNCALLED_MOCK_CALLBACK(base::OnceClosure, close_callback);
+
+  auto* const system_dialog_delegate_view =
+      static_cast<SystemDialogDelegateView*>(dialog_widget->GetContentsView());
+  system_dialog_delegate_view->SetAcceptCallback(accept_callback.Get());
+  system_dialog_delegate_view->SetCancelCallback(cancel_callback.Get());
+  system_dialog_delegate_view->SetCloseCallback(close_callback.Get());
+  EXPECT_CALL_IN_SCOPE(close_callback, Run, dialog_widget.reset());
+}
+
+class SystemDialogSizeTest
+    : public SystemComponentsTest,
+      public testing::WithParamInterface<DialogTestParams> {
  public:
-  SystemDialogTest() = default;
-  SystemDialogTest(const SystemDialogTest&) = delete;
-  SystemDialogTest& operator=(const SystemDialogTest&) = delete;
-  ~SystemDialogTest() override = default;
+  SystemDialogSizeTest() = default;
+  SystemDialogSizeTest(const SystemDialogSizeTest&) = delete;
+  SystemDialogSizeTest& operator=(const SystemDialogSizeTest&) = delete;
+  ~SystemDialogSizeTest() override = default;
 
  protected:
   // Create a dialog according to the give test parameters. Resize the host
@@ -287,15 +367,6 @@ class SystemDialogTest : public SystemComponentsTest,
     // Clear existing dialog and host window instances.
     dialog_.reset();
     host_widget_.reset();
-
-    // Generate a new dialog delegate view.
-    auto dialog_view = views::Builder<SystemDialogDelegateView>()
-                           .SetIcon(kTestIcon)
-                           .SetTitleText(u"Title")
-                           .SetDescription(u"Dialog description.")
-                           .Build();
-
-    dialog_view->SetModalType(params.modal_type);
 
     // Resize the display if the dialog is parented to the root window.
     // Otherwise, create a host window with the given size.
@@ -308,18 +379,10 @@ class SystemDialogTest : public SystemComponentsTest,
                            gfx::Rect(host_size), /*show=*/true);
     }
 
-    // Create a dialog widget.
-    views::Widget::InitParams dialog_params;
-    dialog_params.type = views::Widget::InitParams::TYPE_WINDOW_FRAMELESS;
-    dialog_params.bounds = gfx::Rect(dialog_view->GetPreferredSize());
-    dialog_params.delegate = dialog_view.release();
-    dialog_params.ownership =
-        views::Widget::InitParams::WIDGET_OWNS_NATIVE_WIDGET;
-    dialog_params.parent = params.parent_to_root
-                               ? Shell::GetPrimaryRootWindow()
-                               : host_widget_->GetNativeWindow();
-    dialog_ = std::make_unique<views::Widget>(std::move(dialog_params));
-    dialog_->Show();
+    dialog_ = CreateSystemDialogWidget(params.modal_type,
+                                       params.parent_to_root
+                                           ? Shell::GetPrimaryRootWindow()
+                                           : host_widget_->GetNativeWindow());
   }
 
   // Get the dialog size.
@@ -345,11 +408,11 @@ const DialogTestParams kSystemDialogTestParams[] = {
 };
 
 INSTANTIATE_TEST_SUITE_P(SystemDialogSize,
-                         SystemDialogTest,
+                         SystemDialogSizeTest,
                          testing::ValuesIn(kSystemDialogTestParams));
 
 // Tests the dialog sizes with different sizes of host windows.
-TEST_P(SystemDialogTest, DialogResponsiveSize) {
+TEST_P(SystemDialogSizeTest, DialogResponsiveSize) {
   DialogTestParams params = GetParam();
 
   // When the width of the host window is no smaller than 672, the width of the

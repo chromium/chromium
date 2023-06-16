@@ -265,7 +265,7 @@ SystemDialogDelegateView::SystemDialogDelegateView() {
                                views::MaximumFlexSizeRule::kUnbounded));
 
   // Register the close callback.
-  RegisterWindowWillCloseCallback(
+  RegisterWindowClosingCallback(
       base::BindOnce(&SystemDialogDelegateView::Close, base::Unretained(this)));
 }
 

@@ -77,12 +77,13 @@ TEST_F(WelcomeTourDialogTest, OnDialogClosedWithoutButtonClicked) {
 
   // Close the dialog without clicking any dialog buttons. `close_callback`
   // should be called.
-  EXPECT_CALL_IN_SCOPE(close_callback, Run,
-                       welcome_tour_dialog->GetWidget()->Close());
+  EXPECT_CALL_IN_SCOPE(close_callback, Run, {
+    welcome_tour_dialog->GetWidget()->Close();
 
-  // Wait until `welcome_tour_dialog` gets destroyed.
-  views::test::WidgetDestroyedWaiter(welcome_tour_dialog->GetWidget()).Wait();
-  EXPECT_FALSE(WelcomeTourDialog::Get());
+    // Wait until `welcome_tour_dialog` gets destroyed.
+    views::test::WidgetDestroyedWaiter(welcome_tour_dialog->GetWidget()).Wait();
+    EXPECT_FALSE(WelcomeTourDialog::Get());
+  });
 }
 
 }  // namespace ash
