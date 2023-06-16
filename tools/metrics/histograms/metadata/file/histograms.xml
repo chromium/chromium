@@ -1167,6 +1167,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.Recent.LoadFileSystemProvider" units="ms"
+    expires_after="M125">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Time to load a recently modified file list from a FileSystemProvider file
+    system. It is triggered when the user opens or reloads Recent view in the
+    Files app.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.Recent.LoadTotal" units="ms"
     expires_after="2023-11-12">
   <owner>simmonsjosh@google.com</owner>
