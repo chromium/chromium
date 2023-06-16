@@ -43,6 +43,10 @@ class CompanionSidePanelController : public CompanionTabHelper::Delegate,
   std::unique_ptr<views::View> CreateCompanionWebView();
   GURL GetOpenInNewTabUrl();
 
+  // Returns true if the `url` matches the one used by the Search Companion
+  // website.
+  bool IsSiteTrusted(const GURL& url);
+
   // content::WebContentsObserver:
   void DidOpenRequestedURL(content::WebContents* new_contents,
                            content::RenderFrameHost* source_render_frame_host,
