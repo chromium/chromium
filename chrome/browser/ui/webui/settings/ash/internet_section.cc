@@ -1056,6 +1056,8 @@ void InternetSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
   html_source->AddBoolean(
       "showHiddenToggle",
       base::FeatureList::IsEnabled(::features::kShowHiddenNetworkToggle));
+  html_source->AddBoolean("isSmdsSupportEnabled",
+                          ash::features::IsSmdsSupportEnabled());
   html_source->AddBoolean("isHotspotEnabled",
                           ash::features::IsHotspotEnabled());
   html_source->AddBoolean("isPasspointEnabled",

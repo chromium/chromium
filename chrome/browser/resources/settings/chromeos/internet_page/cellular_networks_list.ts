@@ -21,6 +21,7 @@ import './esim_install_error_dialog.js';
 import {CellularSetupPageName} from 'chrome://resources/ash/common/cellular_setup/cellular_types.js';
 import {ESimManagerListenerBehavior, ESimManagerListenerBehaviorInterface} from 'chrome://resources/ash/common/cellular_setup/esim_manager_listener_behavior.js';
 import {getEuicc, getPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {getSimSlotCount} from 'chrome://resources/ash/common/network/cellular_utils.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {NetworkList} from 'chrome://resources/ash/common/network/network_list_types.js';
@@ -208,6 +209,16 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         computed: 'computeIsDeviceInhibited_(cellularDeviceState,' +
             'cellularDeviceState.inhibitReason)',
       },
+      /**
+       * Return true if SmdsSupportEnabled feature flag is enabled.
+       */
+      smdsSupportEnabled_: {
+        type: Boolean,
+        value() {
+          return loadTimeData.valueExists('isSmdsSupportEnabled') &&
+              loadTimeData.getBoolean('isSmdsSupportEnabled');
+        },
+      },
     };
   }
 
@@ -232,6 +243,7 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   private shouldShowEidDialog_: boolean;
   private shouldShowInstallErrorDialog_: boolean;
   private tetherNetworks_: OncMojo.NetworkStateProperties[];
+  private smdsSupportEnabled_: boolean;
 
   constructor() {
     super();
@@ -263,6 +275,9 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
   }
 
   override async onProfileChanged(profile: ESimProfileRemote): Promise<void> {
+    if (this.smdsSupportEnabled_) {
+      return;
+    }
     const response = await profile.getProperties();
 
     const eSimPendingProfileItem = this.eSimPendingProfileItems_.find(item => {
@@ -283,6 +298,10 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
         return;
       }
       this.euicc_ = euicc;
+
+      if (this.smdsSupportEnabled_) {
+        return;
+      }
 
       // Restricting managed cellular network should not show pending eSIM
       // profiles.
@@ -312,6 +331,9 @@ class CellularNetworksListElement extends CellularNetworksListElementBase {
 
   private async fetchEsimPendingProfileListForEuicc_(euicc: EuiccRemote):
       Promise<void> {
+    if (this.smdsSupportEnabled_) {
+      return;
+    }
     const profiles = await getPendingESimProfiles(euicc);
     this.processEsimPendingProfiles_(profiles);
   }
