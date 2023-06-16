@@ -1012,7 +1012,7 @@ if (is_chromeos_ash) {
       "//ui/ozone/gl:ozone_gl_unittests",
     ]
 
-    if (enable_plugins) {
+    if (enable_ppapi) {
       data_deps += [ "//ppapi/examples/video_decode" ]
     }
 
