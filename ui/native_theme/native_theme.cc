@@ -18,7 +18,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_metrics.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/native_theme/common_theme.h"
 #include "ui/native_theme/native_theme_utils.h"
@@ -40,18 +40,18 @@ bool NativeTheme::SystemDarkModeSupported() {
 }
 #endif
 
-ColorProviderKey NativeTheme::GetColorProviderKey(
-    scoped_refptr<ColorProviderKey::ThemeInitializerSupplier> custom_theme,
+ColorProviderManager::Key NativeTheme::GetColorProviderKey(
+    scoped_refptr<ColorProviderManager::ThemeInitializerSupplier> custom_theme,
     bool use_custom_frame) const {
-  return ColorProviderKey(
+  return ColorProviderManager::Key(
       (GetDefaultSystemColorScheme() == ColorScheme::kDark)
-          ? ColorProviderKey::ColorMode::kDark
-          : ColorProviderKey::ColorMode::kLight,
-      UserHasContrastPreference() ? ColorProviderKey::ContrastMode::kHigh
-                                  : ColorProviderKey::ContrastMode::kNormal,
+          ? ColorProviderManager::ColorMode::kDark
+          : ColorProviderManager::ColorMode::kLight,
+      UserHasContrastPreference() ? ColorProviderManager::ContrastMode::kHigh
+                                  : ColorProviderManager::ContrastMode::kNormal,
       system_theme_,
-      use_custom_frame ? ui::ColorProviderKey::FrameType::kChromium
-                       : ui::ColorProviderKey::FrameType::kNative,
+      use_custom_frame ? ui::ColorProviderManager::FrameType::kChromium
+                       : ui::ColorProviderManager::FrameType::kNative,
       user_color_, scheme_variant_, std::move(custom_theme));
 }
 

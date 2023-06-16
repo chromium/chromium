@@ -9,7 +9,6 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/resources/grit/ui_resources.h"
@@ -67,10 +66,10 @@ class DefaultFaviconModelTest : public ::testing::Test {
 
   void AddDefaultInitializer() {
     const auto initializer = [&](ui::ColorProvider* provider,
-                                 const ui::ColorProviderKey& key) {
+                                 const ui::ColorProviderManager::Key& key) {
       ui::ColorMixer& mixer = provider->AddMixer();
       mixer[ui::kColorWindowBackground] = {
-          key.color_mode == ui::ColorProviderKey::ColorMode::kDark
+          key.color_mode == ui::ColorProviderManager::ColorMode::kDark
               ? kDarkColor
               : kLightColor};
     };
@@ -84,8 +83,8 @@ class DefaultFaviconModelTest : public ::testing::Test {
   }
 
   ui::ColorProvider* GetColorProvider(
-      ui::ColorProviderKey::ColorMode color_mode) {
-    ui::ColorProviderKey key;
+      ui::ColorProviderManager::ColorMode color_mode) {
+    ui::ColorProviderManager::Key key;
     key.color_mode = color_mode;
     return ui::ColorProviderManager::GetForTesting().GetColorProviderFor(key);
   }
@@ -101,7 +100,7 @@ class DefaultFaviconModelTest : public ::testing::Test {
 
 TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_LightBackground) {
   auto* color_provider =
-      GetColorProvider(ui::ColorProviderKey::ColorMode::kLight);
+      GetColorProvider(ui::ColorProviderManager::ColorMode::kLight);
   const auto favicon_image = GetDefaultFaviconModel().Rasterize(color_provider);
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/false)
                   .BackedBySameObjectAs(favicon_image));
@@ -109,7 +108,7 @@ TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_LightBackground) {
 
 TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_DarkBackground) {
   auto* color_provider =
-      GetColorProvider(ui::ColorProviderKey::ColorMode::kDark);
+      GetColorProvider(ui::ColorProviderManager::ColorMode::kDark);
   const auto favicon_image = GetDefaultFaviconModel().Rasterize(color_provider);
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/true)
                   .BackedBySameObjectAs(favicon_image));
@@ -119,18 +118,19 @@ TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_LightBackground_Custom) {
   // Flip the background for a new color id such that it is light in dark mode
   // and vice versa.
   const auto initializer = [&](ui::ColorProvider* provider,
-                               const ui::ColorProviderKey& key) {
+                               const ui::ColorProviderManager::Key& key) {
     ui::ColorMixer& mixer = provider->AddMixer();
     mixer[ui::kColorBubbleBackground] = {
-        key.color_mode == ui::ColorProviderKey::ColorMode::kDark ? kLightColor
-                                                                 : kDarkColor};
+        key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+            ? kLightColor
+            : kDarkColor};
   };
   AddInitializer(base::BindRepeating(initializer));
 
   // Even if the color provider is configured for light mode the default favicon
   // model should match the dark variant when rasterized.
   auto* color_provider =
-      GetColorProvider(ui::ColorProviderKey::ColorMode::kLight);
+      GetColorProvider(ui::ColorProviderManager::ColorMode::kLight);
   const auto favicon_image = GetDefaultFaviconModel(ui::kColorBubbleBackground)
                                  .Rasterize(color_provider);
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/true)
@@ -141,18 +141,19 @@ TEST_F(DefaultFaviconModelTest, UsesCorrectIcon_DarkBackground_Custom) {
   // Flip the background for a new color id such that it is light in dark mode
   // and vice versa.
   const auto initializer = [&](ui::ColorProvider* provider,
-                               const ui::ColorProviderKey& key) {
+                               const ui::ColorProviderManager::Key& key) {
     ui::ColorMixer& mixer = provider->AddMixer();
     mixer[ui::kColorBubbleBackground] = {
-        key.color_mode == ui::ColorProviderKey::ColorMode::kDark ? kLightColor
-                                                                 : kDarkColor};
+        key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+            ? kLightColor
+            : kDarkColor};
   };
   AddInitializer(base::BindRepeating(initializer));
 
   // Even if the color provider is configured for dark mode the default favicon
   // model should match the light variant when rasterized.
   auto* color_provider =
-      GetColorProvider(ui::ColorProviderKey::ColorMode::kDark);
+      GetColorProvider(ui::ColorProviderManager::ColorMode::kDark);
   const auto favicon_image = GetDefaultFaviconModel(ui::kColorBubbleBackground)
                                  .Rasterize(color_provider);
   EXPECT_TRUE(GetDefaultFaviconForColorScheme(/*is_dark=*/false)

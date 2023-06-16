@@ -27,7 +27,6 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/views/views_delegate.h"
@@ -102,13 +101,14 @@ class BrowserFrameColorModeTest : public BrowserFrameTest,
 
  protected:
   static void AddColor(ui::ColorProvider* provider,
-                       const ui::ColorProviderKey& key) {
+                       const ui::ColorProviderManager::Key& key) {
     // Add a postprocessing mixer to ensure it is appended to the end of the
     // pipeline.
     ui::ColorMixer& mixer = provider->AddPostprocessingMixer();
     mixer[ui::kColorSysPrimary] = {
-        key.color_mode == ui::ColorProviderKey::ColorMode::kDark ? kDarkColor
-                                                                 : kLightColor};
+        key.color_mode == ui::ColorProviderManager::ColorMode::kDark
+            ? kDarkColor
+            : kLightColor};
   }
 
   // Sets the `kBrowserColorScheme` pref for the `profile`.
@@ -130,18 +130,21 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
   // mode by setting the widget level color mode override.
   views::Widget* browser_frame =
       BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  browser_frame->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
+  browser_frame->SetColorModeOverride(
+      ui::ColorProviderManager::ColorMode::kLight);
   EXPECT_EQ(kLightColor,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
-  browser_frame->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  browser_frame->SetColorModeOverride(
+      ui::ColorProviderManager::ColorMode::kDark);
   EXPECT_EQ(kDarkColor,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
   // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
   // color mode if running ChromeRefresh2023. Otherwise BrowserFrame should
   // track the system color mode.
-  browser_frame->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kLight);
+  browser_frame->SetColorModeOverride(
+      ui::ColorProviderManager::ColorMode::kLight);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
   if (features::IsChromeRefresh2023()) {
     EXPECT_EQ(kDarkColor, browser_frame->GetColorProvider()->GetColor(
@@ -151,7 +154,8 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
                                ui::kColorSysPrimary));
   }
 
-  browser_frame->SetColorModeOverride(ui::ColorProviderKey::ColorMode::kDark);
+  browser_frame->SetColorModeOverride(
+      ui::ColorProviderManager::ColorMode::kDark);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
   if (features::IsChromeRefresh2023()) {
     EXPECT_EQ(kLightColor, browser_frame->GetColorProvider()->GetColor(

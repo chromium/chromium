@@ -14,7 +14,8 @@
 
 namespace ui {
 
-void AddColorMixers(ColorProvider* provider, const ColorProviderKey& key) {
+void AddColorMixers(ColorProvider* provider,
+                    const ColorProviderManager::Key& key) {
   AddRefColorMixer(provider, key);
   // TODO(tluk): Determine the correct place to insert the sys color mixer.
   AddSysColorMixer(provider, key);

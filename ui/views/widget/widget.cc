@@ -997,7 +997,8 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-ui::ColorProviderKey::ThemeInitializerSupplier* Widget::GetCustomTheme() const {
+ui::ColorProviderManager::ThemeInitializerSupplier* Widget::GetCustomTheme()
+    const {
   return nullptr;
 }
 
@@ -1973,15 +1974,15 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void Widget::SetColorModeOverride(
-    absl::optional<ui::ColorProviderKey::ColorMode> color_mode) {
+    absl::optional<ui::ColorProviderManager::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, ui::ColorProviderSource:
 
-ui::ColorProviderKey Widget::GetColorProviderKey() const {
-  ui::ColorProviderKey key =
+ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
+  ui::ColorProviderManager::Key key =
       GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   key.elevation_mode = background_elevation_;
@@ -2002,7 +2003,7 @@ const ui::ColorProvider* Widget::GetColorProvider() const {
       GetColorProviderKey());
 }
 
-ui::ColorProviderKey::ColorMode Widget::GetColorMode() const {
+ui::ColorProviderManager::ColorMode Widget::GetColorMode() const {
   if (color_mode_override_.has_value()) {
     return color_mode_override_.value();
   }
@@ -2015,8 +2016,8 @@ ui::ColorProviderKey::ColorMode Widget::GetColorMode() const {
 
   // In the default case fall back to the system's default color mode.
   return GetNativeTheme()->ShouldUseDarkColors()
-             ? ui::ColorProviderKey::ColorMode::kDark
-             : ui::ColorProviderKey::ColorMode::kLight;
+             ? ui::ColorProviderManager::ColorMode::kDark
+             : ui::ColorProviderManager::ColorMode::kLight;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

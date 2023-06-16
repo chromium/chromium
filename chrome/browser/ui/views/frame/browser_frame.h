@@ -154,7 +154,7 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   bool GetAccelerator(int command_id,
                       ui::Accelerator* accelerator) const override;
   const ui::ThemeProvider* GetThemeProvider() const override;
-  ui::ColorProviderKey::ThemeInitializerSupplier* GetCustomTheme()
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
       const override;
   void OnNativeWidgetWorkspaceChanged() override;
 
@@ -181,9 +181,9 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
  protected:
   // views::Widget:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
-  ui::ColorProviderKey GetColorProviderKey() const override;
+  ui::ColorProviderManager::Key GetColorProviderKey() const override;
   absl::optional<SkColor> GetUserColor() const override;
-  ui::ColorProviderKey::ColorMode GetColorMode() const override;
+  ui::ColorProviderManager::ColorMode GetColorMode() const override;
 
  private:
   void OnTouchUiChanged();

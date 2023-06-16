@@ -11,7 +11,7 @@
 #include "ui/color/color_recipe.h"
 
 void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
-                                    const ui::ColorProviderKey& key) {
+                                    const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};

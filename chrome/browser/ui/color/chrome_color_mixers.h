@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_
 #define CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_
 
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ui {
 class ColorProvider;
@@ -13,6 +13,6 @@ class ColorProvider;
 
 // Adds all chrome/-side color mixers to `provider`.
 void AddChromeColorMixers(ui::ColorProvider* provider,
-                          const ui::ColorProviderKey& key);
+                          const ui::ColorProviderManager::Key& key);
 
 #endif  // CHROME_BROWSER_UI_COLOR_CHROME_COLOR_MIXERS_H_

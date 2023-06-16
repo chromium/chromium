@@ -231,10 +231,11 @@ void AddNewTabPageDialogColors(ui::ColorMixer& mixer, bool dark_mode) {
 }  // namespace
 
 void AddNewTabPageColorMixer(ui::ColorProvider* provider,
-                             const ui::ColorProviderKey& key) {
-  using ThemeType = ui::ColorProviderKey::ThemeInitializerSupplier::ThemeType;
+                             const ui::ColorProviderManager::Key& key) {
+  using ThemeType =
+      ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType;
   const bool dark_mode =
-      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   // Non-native surfaces in GM3 rely on a prominent color that may or may not
   // match the accent color.
@@ -281,7 +282,7 @@ void AddNewTabPageColorMixer(ui::ColorProvider* provider,
   mixer[kColorRealboxBackground] = {SK_ColorWHITE};
   mixer[kColorRealboxBackgroundHovered] = {SK_ColorWHITE};
   mixer[kColorRealboxBorder] = {
-      key.contrast_mode == ui::ColorProviderKey::ContrastMode::kHigh
+      key.contrast_mode == ui::ColorProviderManager::ContrastMode::kHigh
           ? kColorLocationBarBorder
           : gfx::kGoogleGrey300};
   mixer[kColorRealboxForeground] = {SK_ColorBLACK};

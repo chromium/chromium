@@ -88,7 +88,7 @@ constexpr SkAlpha kTabGroupChipAlpha = 61;
 
 // Apply updates to the Omnibox background color tokens per GM3 spec.
 void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
-                                    const ui::ColorProviderKey& key) {
+                                    const ui::ColorProviderManager::Key& key) {
   const bool gm3_background_color_enabled =
       features::GetChromeRefresh2023Level() ==
           features::ChromeRefresh2023Level::kLevel2 ||
@@ -161,9 +161,9 @@ void ApplyGM3OmniboxBackgroundColor(ui::ColorMixer& mixer,
 }  // namespace
 
 void AddChromeColorMixer(ui::ColorProvider* provider,
-                         const ui::ColorProviderKey& key) {
+                         const ui::ColorProviderManager::Key& key) {
   const bool dark_mode =
-      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
   ui::ColorMixer& mixer = provider->AddMixer();
 
   mixer[kColorAppMenuHighlightSeverityLow] = AdjustHighlightColorForContrast(

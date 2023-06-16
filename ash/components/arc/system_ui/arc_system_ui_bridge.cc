@@ -112,7 +112,8 @@ void ArcSystemUIBridge::OnColorPaletteChanging(
   previous_seed_.emplace(seed);
 
   if (!old_previous || seed.color_mode != old_previous->color_mode) {
-    bool dark_theme = seed.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+    bool dark_theme =
+        seed.color_mode == ui::ColorProviderManager::ColorMode::kDark;
     if (!SendDeviceDarkThemeState(dark_theme)) {
       LOG(ERROR) << "Failed to send theme status of: " << dark_theme;
       return;

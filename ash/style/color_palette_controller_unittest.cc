@@ -230,7 +230,7 @@ TEST_F(ColorPaletteControllerTest, ColorModeTriggersObserver) {
 
   EXPECT_CALL(observer, OnColorPaletteChanging(testing::Field(
                             &ColorPaletteSeed::color_mode,
-                            ui::ColorProviderKey::ColorMode::kDark)))
+                            ui::ColorProviderManager::ColorMode::kDark)))
       .Times(1);
   dark_light_controller()->SetDarkModeEnabledForTest(true);
 }
@@ -263,7 +263,7 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyDisabled) {
   // Pre-Jelly, this should always be TonalSpot.
   EXPECT_THAT(
       observer.last_theme()->scheme_variant(),
-      testing::Optional(ui::ColorProviderKey::SchemeVariant::kTonalSpot));
+      testing::Optional(ui::ColorProviderManager::SchemeVariant::kTonalSpot));
 }
 
 TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
@@ -292,8 +292,9 @@ TEST_F(ColorPaletteControllerTest, NativeTheme_DarkModeChanged_JellyEnabled) {
   EXPECT_EQ(ui::NativeTheme::ColorScheme::kLight,
             observer.last_theme()->GetDefaultSystemColorScheme());
   EXPECT_EQ(kCelebiColor, observer.last_theme()->user_color().value());
-  EXPECT_THAT(observer.last_theme()->scheme_variant(),
-              testing::Optional(ui::ColorProviderKey::SchemeVariant::kVibrant));
+  EXPECT_THAT(
+      observer.last_theme()->scheme_variant(),
+      testing::Optional(ui::ColorProviderManager::SchemeVariant::kVibrant));
 }
 
 // Emulates Dark mode changes on login screen that can result from pod

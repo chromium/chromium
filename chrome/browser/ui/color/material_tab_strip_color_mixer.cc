@@ -20,7 +20,7 @@ constexpr SkAlpha kWebUiTabStripTabSeparatorAlpha = 0.16 * 255;
 }  // namespace
 
 void AddMaterialTabStripColorMixer(ui::ColorProvider* provider,
-                                   const ui::ColorProviderKey& key) {
+                                   const ui::ColorProviderManager::Key& key) {
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }

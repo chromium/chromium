@@ -21,7 +21,7 @@
 #include "third_party/skia/include/core/SkColor.h"
 #include "third_party/skia/include/core/SkRegion.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "url/gurl.h"
 
 class Browser;
@@ -54,10 +54,11 @@ class WebAppBrowserController;
 bool IsSameHostAndPort(const GURL& app_url, const GURL& page_url);
 
 // Class to encapsulate logic to control the browser UI for web apps.
-class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
-                             public TabStripModelObserver,
-                             public content::WebContentsObserver,
-                             public BrowserThemeProviderDelegate {
+class AppBrowserController
+    : public ui::ColorProviderManager::InitializerSupplier,
+      public TabStripModelObserver,
+      public content::WebContentsObserver,
+      public BrowserThemeProviderDelegate {
  public:
   AppBrowserController(const AppBrowserController&) = delete;
   AppBrowserController& operator=(const AppBrowserController&) = delete;
@@ -251,9 +252,9 @@ class AppBrowserController : public ui::ColorProviderKey::InitializerSupplier,
   CustomThemeSupplier* GetThemeSupplier() const override;
   bool ShouldUseCustomFrame() const override;
 
-  // ui::ColorProviderKey::InitializerSupplier
+  // ui::ColorProviderManager::InitializerSupplier
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderKey& key) const override;
+                      const ui::ColorProviderManager::Key& key) const override;
 
   void UpdateDraggableRegion(const SkRegion& region);
   const absl::optional<SkRegion>& draggable_region() const {

@@ -5,7 +5,7 @@
 #ifndef UI_COLOR_CORE_DEFAULT_COLOR_MIXER_H_
 #define UI_COLOR_CORE_DEFAULT_COLOR_MIXER_H_
 
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ui {
 
@@ -13,7 +13,7 @@ class ColorProvider;
 
 // Adds a color mixer to |provider| that provides kColorSetCoreDefaults.
 void AddCoreDefaultColorMixer(ColorProvider* provider,
-                              const ColorProviderKey& key);
+                              const ColorProviderManager::Key& key);
 
 }  // namespace ui
 

@@ -8,7 +8,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
@@ -92,7 +92,7 @@ void AddHighContrastSysColors(ColorMixer& mixer) {
 }
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             const ColorProviderKey& key) {
+                             const ColorProviderManager::Key& key) {
   ColorMixer& mixer = provider->AddMixer();
 
   // TODO(pkasting): Not clear whether this is really the set of interest.
@@ -153,24 +153,23 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
     mixer[kColorAccent] = PickGoogleColor(accent_color.value());
   }
 
-  if (key.contrast_mode == ColorProviderKey::ContrastMode::kHigh) {
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kHigh) {
     AddHighContrastSysColors(mixer);
   }
 }
 
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           const ColorProviderKey& key) {
-  if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal &&
-      !IsFluentScrollbarEnabled()) {
+                           const ColorProviderManager::Key& key) {
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal &&
+      !IsFluentScrollbarEnabled())
     return;
-  }
 
   ColorMixer& mixer = provider->AddMixer();
 
   if (IsFluentScrollbarEnabled()) {
-    if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal) {
+    if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal) {
       const bool dark_mode =
-          key.color_mode == ColorProviderKey::ColorMode::kDark;
+          key.color_mode == ColorProviderManager::ColorMode::kDark;
 
       mixer[kColorScrollbarArrowForeground] = {
           dark_mode ? SkColorSetA(SK_ColorWHITE, 0x8B)
@@ -189,12 +188,11 @@ void AddNativeUiColorMixer(ColorProvider* provider,
     CompleteFluentScrollbarColorsDefinition(mixer);
   }
 
-  if (key.contrast_mode == ColorProviderKey::ContrastMode::kNormal) {
+  if (key.contrast_mode == ColorProviderManager::ContrastMode::kNormal)
     return;
-  }
 
   mixer[kColorRadioButtonForegroundChecked] = {
-      key.color_mode == ColorProviderKey::ColorMode::kDark
+      key.color_mode == ColorProviderManager::ColorMode::kDark
           ? gfx::kGoogleBlue100
           : gfx::kGoogleBlue900};
   mixer[kColorNotificationInputPlaceholderForeground] =

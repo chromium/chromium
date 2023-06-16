@@ -22,7 +22,7 @@ namespace ui {
 namespace {
 
 using material_color_utilities::Hct;
-using SchemeVariant = ColorProviderKey::SchemeVariant;
+using SchemeVariant = ColorProviderManager::SchemeVariant;
 
 // Returns the hue angle for `source_color` modified by the closest match in
 // `hues_to_rotations`.

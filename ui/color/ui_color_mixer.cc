@@ -10,15 +10,17 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
 
 namespace ui {
 
-void AddUiColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
-  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
+void AddUiColorMixer(ColorProvider* provider,
+                     const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
 
   ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAvatarHeaderArt] = {kColorMidground};

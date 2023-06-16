@@ -35,7 +35,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/user_manager/known_user.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/dynamic_color/palette.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/gfx/color_palette.h"
@@ -46,7 +46,7 @@ namespace {
 
 class ColorPaletteControllerImpl;
 
-using ColorMode = ui::ColorProviderKey::ColorMode;
+using ColorMode = ui::ColorProviderManager::ColorMode;
 
 const SkColor kDefaultWallpaperColor = gfx::kGoogleBlue400;
 
@@ -74,7 +74,7 @@ const AccountId& AccountFromSession(const UserSession* session) {
   return session->user_info.account_id;
 }
 
-using SchemeVariant = ui::ColorProviderKey::SchemeVariant;
+using SchemeVariant = ui::ColorProviderManager::SchemeVariant;
 
 SchemeVariant ToVariant(ColorScheme scheme) {
   switch (scheme) {
@@ -230,8 +230,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     }
 
     seed.color_mode = dark_light_mode_controller_->IsDarkModeEnabled()
-                          ? ui::ColorProviderKey::ColorMode::kDark
-                          : ui::ColorProviderKey::ColorMode::kLight;
+                          ? ui::ColorProviderManager::ColorMode::kDark
+                          : ui::ColorProviderManager::ColorMode::kLight;
     seed.seed_color = *seed_color;
     seed.scheme = GetColorScheme(account_id);
 
@@ -411,8 +411,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         // the color computation is done and this will be called again.
         return {};
       }
-      seed.color_mode = dark ? ui::ColorProviderKey::ColorMode::kDark
-                             : ui::ColorProviderKey::ColorMode::kLight;
+      seed.color_mode = dark ? ui::ColorProviderManager::ColorMode::kDark
+                             : ui::ColorProviderManager::ColorMode::kLight;
       seed.seed_color = *seed_color;
       seed.scheme = ColorScheme::kTonalSpot;
 

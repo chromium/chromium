@@ -472,7 +472,7 @@ void QtUi::ScaleFactorMaybeChanged() {
 
 DISABLE_CFI_VCALL
 void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderKey& key) {
+                               const ui::ColorProviderManager::Key& key) {
   if (key.system_theme != ui::SystemTheme::kQt) {
     return;
   }
@@ -529,7 +529,7 @@ void QtUi::AddNativeColorMixer(ui::ColorProvider* provider,
   }
 
   const bool use_custom_frame =
-      key.frame_type == ui::ColorProviderKey::FrameType::kChromium;
+      key.frame_type == ui::ColorProviderManager::FrameType::kChromium;
   mixer[ui::kColorFrameActive] = {
       shim_->GetFrameColor(ColorState::kNormal, use_custom_frame)};
   mixer[ui::kColorFrameInactive] = {

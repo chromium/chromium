@@ -26,7 +26,7 @@ constexpr float kOmniboxHighContrastRatio = 6.0f;
 
 // Apply updates to the Omnibox text color tokens per GM3 spec.
 void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
-                              const ui::ColorProviderKey& key) {
+                              const ui::ColorProviderManager::Key& key) {
   const bool gm3_text_color_enabled =
       features::GetChromeRefresh2023Level() ==
           features::ChromeRefresh2023Level::kLevel2 ||
@@ -94,7 +94,7 @@ void ApplyGM3OmniboxTextColor(ui::ColorMixer& mixer,
 }
 
 void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
-                                  const ui::ColorProviderKey& key) {
+                                  const ui::ColorProviderManager::Key& key) {
   const bool cr2023_icons_colors_enabled =
       features::GetChromeRefresh2023Level() ==
           features::ChromeRefresh2023Level::kLevel2 ||
@@ -114,8 +114,9 @@ void ApplyCR2023OmniboxIconColors(ui::ColorMixer& mixer,
 }
 
 // Apply updates to the Omnibox "expanded state" color tokens per CR2023 spec.
-void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
-                                           const ui::ColorProviderKey& key) {
+void ApplyCR2023OmniboxExpandedStateColors(
+    ui::ColorMixer& mixer,
+    const ui::ColorProviderManager::Key& key) {
   const bool cr2023_expanded_state_colors_enabled =
       features::GetChromeRefresh2023Level() ==
           features::ChromeRefresh2023Level::kLevel2 ||
@@ -176,7 +177,7 @@ void ApplyCR2023OmniboxExpandedStateColors(ui::ColorMixer& mixer,
 
 // Apply updates to the Omnibox color tokens per CR2023 guidelines.
 void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
-                              const ui::ColorProviderKey& key) {
+                              const ui::ColorProviderManager::Key& key) {
   // Do not apply CR2023 Omnibox colors to clients using high-contrast
   // mode or a custom theme.
   // TODO(khalidpeer): Roll out CR2023 color updates for high-contrast clients.
@@ -192,7 +193,7 @@ void ApplyOmniboxCR2023Colors(ui::ColorMixer& mixer,
 }  // namespace
 
 void AddOmniboxColorMixer(ui::ColorProvider* provider,
-                          const ui::ColorProviderKey& key) {
+                          const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   const bool high_contrast_custom_handling = ShouldApplyHighContrastColors(key);

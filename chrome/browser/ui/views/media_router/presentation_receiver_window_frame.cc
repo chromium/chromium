@@ -28,7 +28,7 @@ const ui::ThemeProvider* PresentationReceiverWindowFrame::GetThemeProvider()
   return &ThemeService::GetThemeProviderForProfile(profile_);
 }
 
-ui::ColorProviderKey::ThemeInitializerSupplier*
+ui::ColorProviderManager::ThemeInitializerSupplier*
 PresentationReceiverWindowFrame::GetCustomTheme() const {
   return ThemeService::GetThemeSupplierForProfile(profile_);
 }

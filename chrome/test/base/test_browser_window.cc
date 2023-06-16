@@ -14,7 +14,6 @@
 #include "components/user_education/common/feature_promo_handle.h"
 #include "content/public/browser/keyboard_event_processing_result.h"
 #include "ui/base/interaction/element_identifier.h"
-#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -105,9 +104,10 @@ const ui::ThemeProvider* TestBrowserWindow::GetThemeProvider() const {
 
 const ui::ColorProvider* TestBrowserWindow::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
-      {ui::ColorProviderKey::ColorMode::kLight,
-       ui::ColorProviderKey::ContrastMode::kNormal, ui::SystemTheme::kDefault,
-       ui::ColorProviderKey::FrameType::kChromium});
+      {ui::ColorProviderManager::ColorMode::kLight,
+       ui::ColorProviderManager::ContrastMode::kNormal,
+       ui::SystemTheme::kDefault,
+       ui::ColorProviderManager::FrameType::kChromium});
 }
 
 ui::ElementContext TestBrowserWindow::GetElementContext() {

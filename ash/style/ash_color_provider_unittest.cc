@@ -13,13 +13,13 @@
 #include "base/test/task_environment.h"
 #include "testing/gtest/include/gtest/gtest-param-test.h"
 #include "testing/gtest/include/gtest/gtest.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ash {
 
 namespace {
 
-using ColorMode = ui::ColorProviderKey::ColorMode;
+using ColorMode = ui::ColorProviderManager::ColorMode;
 
 template <class LayerType>
 struct ColorsTestCase {

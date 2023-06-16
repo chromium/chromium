@@ -16,7 +16,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_provider_utils.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
@@ -38,7 +38,7 @@ class FrameColorHelper {
   ~FrameColorHelper() = default;
 
   void AddNativeChromeColors(ui::ColorMixer& mixer,
-                             const ui::ColorProviderKey& key) const;
+                             const ui::ColorProviderManager::Key& key) const;
   void AddBorderAccentColors(ui::ColorMixer& mixer) const;
 
   static FrameColorHelper* Get();
@@ -46,7 +46,8 @@ class FrameColorHelper {
  private:
   // Returns the Tint for the given |id|. If there is no tint, the identity tint
   // {-1, -1, -1} is returned and won't tint the color on which it is used.
-  color_utils::HSL GetTint(int id, const ui::ColorProviderKey& key) const;
+  color_utils::HSL GetTint(int id,
+                           const ui::ColorProviderManager::Key& key) const;
 
   // Callback executed when the accent color is updated. This re-reads the
   // accent color and updates |dwm_frame_color_| and
@@ -77,9 +78,9 @@ FrameColorHelper::FrameColorHelper() {
 
 void FrameColorHelper::AddNativeChromeColors(
     ui::ColorMixer& mixer,
-    const ui::ColorProviderKey& key) const {
+    const ui::ColorProviderManager::Key& key) const {
   using TP = ThemeProperties;
-  using ColorMode = ui::ColorProviderKey::ColorMode;
+  using ColorMode = ui::ColorProviderManager::ColorMode;
 
   auto get_theme_color = [key](int id) -> absl::optional<SkColor> {
     SkColor theme_color;
@@ -151,15 +152,15 @@ FrameColorHelper* FrameColorHelper::Get() {
 
 color_utils::HSL FrameColorHelper::GetTint(
     int id,
-    const ui::ColorProviderKey& key) const {
+    const ui::ColorProviderManager::Key& key) const {
   color_utils::HSL hsl;
   if (key.custom_theme && key.custom_theme->GetTint(id, &hsl))
     return hsl;
   // Always pass false for |incognito| here since the ColorProvider is treating
   // incognito mode as dark mode. If this needs to change, that information will
-  // need to propagate into the ColorProviderKey.
+  // need to propagate into the ColorProviderManager::Key.
   return ThemeProperties::GetDefaultTint(
-      id, false, key.color_mode == ui::ColorProviderKey::ColorMode::kDark);
+      id, false, key.color_mode == ui::ColorProviderManager::ColorMode::kDark);
 }
 
 void FrameColorHelper::OnAccentColorUpdated() {
@@ -198,7 +199,7 @@ ui::ColorTransform GetCaptionForegroundColor(
 }  // namespace
 
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderKey& key) {
+                               const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // NOTE: These cases are always handled, even on Win7, in order to ensure the
@@ -230,13 +231,13 @@ void AddNativeChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTryChromeForeground] = {SkColorSetA(SK_ColorWHITE, 0xAD)};
   mixer[kColorTryChromeHeaderForeground] = {SK_ColorWHITE};
 
-  if (key.color_mode == ui::ColorProviderKey::ColorMode::kLight) {
+  if (key.color_mode == ui::ColorProviderManager::ColorMode::kLight) {
     mixer[kColorNewTabPageBackground] = {ui::kColorNativeWindow};
     mixer[kColorNewTabPageLink] = {ui::kColorNativeHotlight};
     mixer[kColorNewTabPageText] = {ui::kColorNativeWindowText};
   }
 
-  if (key.contrast_mode != ui::ColorProviderKey::ContrastMode::kHigh) {
+  if (key.contrast_mode != ui::ColorProviderManager::ContrastMode::kHigh) {
     FrameColorHelper::Get()->AddNativeChromeColors(mixer, key);
     return;
   }

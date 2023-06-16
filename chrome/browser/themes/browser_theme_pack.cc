@@ -1050,8 +1050,9 @@ bool BrowserThemePack::HasCustomImage(int idr_id) const {
   return false;
 }
 
-void BrowserThemePack::AddColorMixers(ui::ColorProvider* provider,
-                                      const ui::ColorProviderKey& key) const {
+void BrowserThemePack::AddColorMixers(
+    ui::ColorProvider* provider,
+    const ui::ColorProviderManager::Key& key) const {
   ui::ColorMixer& mixer = provider->AddMixer();
 
   // TODO(http://crbug.com/878664): Enable for all cases.

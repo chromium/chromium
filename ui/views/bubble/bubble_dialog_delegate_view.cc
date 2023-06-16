@@ -27,7 +27,7 @@
 #include "ui/base/resource/resource_bundle.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_element.h"
 #include "ui/compositor/layer_animator.h"
@@ -97,7 +97,7 @@ class BubbleWidget : public Widget {
     return anchor ? anchor->GetThemeProvider() : Widget::GetThemeProvider();
   }
 
-  ui::ColorProviderKey::ThemeInitializerSupplier* GetCustomTheme()
+  ui::ColorProviderManager::ThemeInitializerSupplier* GetCustomTheme()
       const override {
     const Widget* const anchor = GetAnchorWidget();
     return anchor ? anchor->GetCustomTheme() : Widget::GetCustomTheme();
@@ -168,7 +168,7 @@ Widget* CreateBubbleWidget(BubbleDialogDelegate* bubble) {
     bubble_params.shadow_type = Widget::InitParams::ShadowType::kNone;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   bubble_params.background_elevation =
-      ui::ColorProviderKey::ElevationMode::kHigh;
+      ui::ColorProviderManager::ElevationMode::kHigh;
 #endif
   gfx::NativeView parent = nullptr;
   if (bubble->has_parent()) {

@@ -22,7 +22,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/l10n/l10n_util.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/message_box_view.h"
@@ -65,7 +65,7 @@ void BorealisSplashScreenView::Show(Profile* profile) {
     // This UI has custom colors to match Steam's and those are close to ash's
     // dark mode.
     g_delegate->GetWidget()->SetColorModeOverride(
-        {ui::ColorProviderKey::ColorMode::kDark});
+        {ui::ColorProviderManager::ColorMode::kDark});
   }
   g_delegate->GetWidget()->Show();
 }

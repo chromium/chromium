@@ -13,7 +13,7 @@
 #include "ui/color/color_transform.h"
 
 void AddMaterialOmniboxColorMixer(ui::ColorProvider* provider,
-                                  const ui::ColorProviderKey& key) {
+                                  const ui::ColorProviderManager::Key& key) {
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }

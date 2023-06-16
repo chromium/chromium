@@ -9,5 +9,5 @@
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_LINUX) && !BUILDFLAG(IS_MAC) && \
     !BUILDFLAG(IS_WIN)
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderKey& key) {}
+                               const ui::ColorProviderManager::Key& key) {}
 #endif

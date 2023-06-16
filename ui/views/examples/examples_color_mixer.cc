@@ -14,9 +14,9 @@
 namespace views::examples {
 
 void AddExamplesColorMixers(ui::ColorProvider* color_provider,
-                            const ui::ColorProviderKey& key) {
+                            const ui::ColorProviderManager::Key& key) {
   const bool dark_mode =
-      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
 
   using Ids = ExamplesColorIds;
   ui::ColorMixer& mixer = color_provider->AddMixer();

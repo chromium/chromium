@@ -5,23 +5,23 @@
 #include "ui/color/native_color_mixers.h"
 
 #include "build/build_config.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ui {
 
 #if !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             const ColorProviderKey& key) {}
+                             const ColorProviderManager::Key& key) {}
 #endif
 
 #if !BUILDFLAG(IS_MAC) && !BUILDFLAG(IS_WIN)
 void AddNativeUiColorMixer(ColorProvider* provider,
-                           const ColorProviderKey& key) {}
+                           const ColorProviderManager::Key& key) {}
 #endif
 
 #if !BUILDFLAG(IS_MAC)
 void AddNativePostprocessingMixer(ColorProvider* provider,
-                                  const ColorProviderKey& key) {}
+                                  const ColorProviderManager::Key& key) {}
 #endif
 
 }  // namespace ui

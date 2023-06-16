@@ -98,9 +98,10 @@ std::vector<std::string> GetSurveyEligibleModuleIds() {
 // custom background images, not just CWS themes.
 bool ShouldForceDarkForegroundColorsForLogo(const ThemeService* theme_service) {
   const auto* theme_supplier = theme_service->GetThemeSupplier();
-  if (!theme_supplier || theme_supplier->get_theme_type() !=
-                             ui::ColorProviderKey::ThemeInitializerSupplier::
-                                 ThemeType::kExtension) {
+  if (!theme_supplier ||
+      theme_supplier->get_theme_type() !=
+          ui::ColorProviderManager::ThemeInitializerSupplier::ThemeType::
+              kExtension) {
     return false;
   }
   static constexpr auto kPrideThemeExtensionIdsDarkForeground =

@@ -10,15 +10,16 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 
 namespace ui {
 
 void AddMaterialUiColorMixer(ColorProvider* provider,
-                             const ColorProviderKey& key) {
-  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
+                             const ColorProviderManager::Key& key) {
+  const bool dark_mode =
+      key.color_mode == ColorProviderManager::ColorMode::kDark;
   DVLOG(2) << "Adding MaterialUiColorMixer to ColorProvider for "
            << (dark_mode ? "Dark" : "Light") << " window.";
   ColorMixer& mixer = provider->AddMixer();

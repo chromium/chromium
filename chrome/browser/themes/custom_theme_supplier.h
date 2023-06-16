@@ -9,7 +9,7 @@
 #include "base/strings/string_piece.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/base/resource/resource_scale_factor.h"
-#include "ui/color/color_provider_key.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace base {
 class RefCountedMemory;
@@ -32,7 +32,7 @@ class NativeTheme;
 // public methods. Subclasses are expected to override all methods which should
 // provide non-default values.
 class CustomThemeSupplier
-    : public ui::ColorProviderKey::ThemeInitializerSupplier {
+    : public ui::ColorProviderManager::ThemeInitializerSupplier {
  public:
   using ThemeInitializerSupplier::ThemeInitializerSupplier;
   CustomThemeSupplier(const CustomThemeSupplier&) = delete;
@@ -75,9 +75,9 @@ class CustomThemeSupplier
   // doesn't supply all the colors it should (http://crbug.com/1045630).
   virtual bool CanUseIncognitoColors() const;
 
-  // ui::ColorProviderKey::ThemeInitializerSupplier:
+  // ui::ColorProviderManager::ThemeInitializerSupplier:
   void AddColorMixers(ui::ColorProvider* provider,
-                      const ui::ColorProviderKey& key) const override {
+                      const ui::ColorProviderManager::Key& key) const override {
     // TODO(pkasting): All classes that override GetColor() should override
     // this.
   }
