@@ -133,6 +133,10 @@ template("single_msvc_toolchain") {
     } else {
       lib = "lib.exe"
       link = "link.exe"
+      cc_linkflags = ""
+      if (toolchain_has_rust) {
+        rust_linkflags = ""
+      }
     }
 
     # If possible, pass system includes as flags to the compiler.  When that's
