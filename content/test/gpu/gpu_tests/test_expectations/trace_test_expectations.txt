@@ -147,11 +147,16 @@ crbug.com/852089 [ fuchsia ] WebGPUTraceTest_* [ Skip ]
 crbug.com/dawn/549 [ chromeos ] WebGPUCachingTraceTest_* [ Skip ]
 crbug.com/dawn/549 [ fuchsia ] WebGPUCachingTraceTest_* [ Skip ]
 
-# Linux and macOS < 11 don't support HEVC decoding.
+# Linux, macOS < 11, and ChromeOS generic don't support HEVC decoding.
 [ linux ] TraceTest_Video_HEVC [ Skip ]
 [ highsierra ] TraceTest_Video_HEVC [ Skip ]
 [ mojave ] TraceTest_Video_HEVC [ Skip ]
 [ catalina ] TraceTest_Video_HEVC [ Skip ]
+[ chromeos chromeos-board-amd64-generic ] TraceTest_Video_HEVC [ Skip ]
+
+# Fuchsia astro doesn't support AV1 or HEVC.
+[ fuchsia fuchsia-board-astro ] TraceTest_Video_AV1 [ Skip ]
+[ fuchsia fuchsia-board-astro ] TraceTest_Video_HEVC [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #

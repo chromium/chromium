@@ -221,11 +221,12 @@ crbug.com/1441056 [ fuchsia ] Pixel_SVGHuge [ Skip ]
 # WebGPU is not shipped on MacOS < 13.
 crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 
-# Linux and macOS < 11 don't support HEVC decoding.
+# Linux, macOS < 11, and ChromeOS generic don't support HEVC decoding.
 [ linux ] Pixel_Video_HEVC [ Skip ]
 [ highsierra ] Pixel_Video_HEVC [ Skip ]
 [ mojave ] Pixel_Video_HEVC [ Skip ]
 [ catalina ] Pixel_Video_HEVC [ Skip ]
+[ chromeos chromeos-board-amd64-generic ] Pixel_Video_HEVC [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
