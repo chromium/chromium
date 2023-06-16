@@ -20,7 +20,7 @@ import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.BaseFeatureList;
+import org.chromium.base.BaseFeatureMap;
 import org.chromium.base.BaseFeatures;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ChildBindingState;
@@ -621,9 +621,9 @@ public class ChildProcessConnection {
                         "Android.ChildMismatch.BrowserVersionChanged2", versionHasChanged);
                 childMismatchError += "; browser version has changed: " + versionHasChanged;
                 Log.e(TAG, "Child process code mismatch: %s", childMismatchError);
-                boolean crashIfBrowserChanged = BaseFeatureList.isEnabled(
+                boolean crashIfBrowserChanged = BaseFeatureMap.isEnabled(
                         BaseFeatures.CRASH_BROWSER_ON_CHILD_MISMATCH_IF_BROWSER_CHANGED);
-                if (BaseFeatureList.isEnabled(BaseFeatures.CRASH_BROWSER_ON_ANY_CHILD_MISMATCH)
+                if (BaseFeatureMap.isEnabled(BaseFeatures.CRASH_BROWSER_ON_ANY_CHILD_MISMATCH)
                         || (versionHasChanged && crashIfBrowserChanged)) {
                     throw new ChildProcessMismatchException(childMismatchError);
                 }
