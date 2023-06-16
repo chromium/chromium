@@ -4701,7 +4701,6 @@
       'message_center_unittests': {},
       'native_theme_unittests': {},
       'pdf_unittests': {},
-      'ppapi_unittests': {},
       'printing_unittests': {},
       'remoting_unittests': {},
       'service_manager_unittests': {}, # https://crbug.com/843134
