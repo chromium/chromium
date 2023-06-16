@@ -12,7 +12,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/internal/identity_manager/account_tracker_service.h"
 #include "components/signin/internal/identity_manager/primary_account_manager.h"
-#include "components/signin/internal/identity_manager/profile_oauth2_token_service.h"
 #include "components/signin/public/base/signin_buildflags.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/base/signin_metrics.h"
@@ -24,29 +23,17 @@ namespace signin {
 
 PrimaryAccountMutatorImpl::PrimaryAccountMutatorImpl(
     AccountTrackerService* account_tracker,
-    ProfileOAuth2TokenService* token_service,
     PrimaryAccountManager* primary_account_manager,
     PrefService* pref_service,
-    SigninClient* signin_client,
-    signin::AccountConsistencyMethod account_consistency)
+    SigninClient* signin_client)
     : account_tracker_(account_tracker),
-      token_service_(token_service),
       primary_account_manager_(primary_account_manager),
       pref_service_(pref_service),
-      signin_client_(signin_client),
-      account_consistency_(account_consistency) {
+      signin_client_(signin_client) {
   DCHECK(account_tracker_);
-  DCHECK(token_service_);
   DCHECK(primary_account_manager_);
   DCHECK(pref_service_);
   DCHECK(signin_client_);
-
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-  // |account_consistency_| is not used on CHROMEOS_ASH, however it is preferred
-  // to have it defined to avoid a lot of ifdefs in the header file.
-  [[maybe_unused]] signin::AccountConsistencyMethod unused =
-      account_consistency_;
-#endif
 }
 
 PrimaryAccountMutatorImpl::~PrimaryAccountMutatorImpl() {}
@@ -109,29 +96,6 @@ PrimaryAccountMutatorImpl::SetPrimaryAccount(
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
-bool PrimaryAccountMutatorImpl::CanTransitionFromSyncToSigninConsentLevel()
-    const {
-  switch (account_consistency_) {
-    case AccountConsistencyMethod::kDice:
-      return true;
-    case AccountConsistencyMethod::kMirror:
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
-      return true;
-#else
-      // TODO(crbug.com/1165785): once kAllowSyncOffForChildAccounts has been
-      // rolled out and assuming it has not revealed any issues, make the
-      // behaviour consistent across all Mirror platforms, by allowing this
-      // transition on iOS too (i.e. return true with no platform checks for
-      // kMirror).
-      return false;
-#endif
-    case AccountConsistencyMethod::kDisabled:
-      return false;
-  }
-}
-#endif
-
-#if !BUILDFLAG(IS_CHROMEOS_ASH)
 // Users cannot revoke the Sync consent on Ash. They can only turn off all Sync
 // data types if they want. Revoking sync consent can lead to breakages in
 // IdentityManager dependencies like `chrome.identity` extension API - that
@@ -140,11 +104,6 @@ void PrimaryAccountMutatorImpl::RevokeSyncConsent(
     signin_metrics::ProfileSignout source_metric,
     signin_metrics::SignoutDelete delete_metric) {
   DCHECK(primary_account_manager_->HasPrimaryAccount(ConsentLevel::kSync));
-
-  if (!CanTransitionFromSyncToSigninConsentLevel()) {
-    ClearPrimaryAccount(source_metric, delete_metric);
-    return;
-  }
   primary_account_manager_->RevokeSyncConsent(source_metric, delete_metric);
 }
 

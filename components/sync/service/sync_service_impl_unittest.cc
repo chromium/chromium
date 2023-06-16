@@ -1033,20 +1033,29 @@ TEST_F(SyncServiceImplTest, DisableSyncOnClient) {
   EXPECT_EQ(SyncService::TransportState::ACTIVE,
             service()->GetTransportState());
   EXPECT_TRUE(service()->IsSyncFeatureDisabledViaDashboard());
-#else
-  EXPECT_FALSE(
-      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+#elif BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
+  // On iOS and Android, the primary account is cleared.
   EXPECT_FALSE(
       identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
-#endif
   EXPECT_EQ(SyncService::DisableReasonSet(
                 {SyncService::DISABLE_REASON_NOT_SIGNED_IN}),
             service()->GetDisableReasons());
   EXPECT_EQ(SyncService::TransportState::DISABLED,
             service()->GetTransportState());
   EXPECT_TRUE(service()->GetLastSyncedTimeForDebugging().is_null());
-#endif
+#else
+  // On Desktop and Lacros, the sync consent is revoked, but the primary account
+  // is left at ConsentLevel::kSignin. Sync will restart in standalone transport
+  // mode.
+  EXPECT_FALSE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSync));
+  EXPECT_TRUE(
+      identity_manager()->HasPrimaryAccount(signin::ConsentLevel::kSignin));
+  EXPECT_TRUE(service()->GetDisableReasons().Empty());
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   EXPECT_GT(get_controller(BOOKMARKS)->model()->clear_metadata_call_count(), 0);
 

@@ -145,9 +145,8 @@ IdentityManager::InitParameters BuildIdentityManagerInitParameters(
 
   init_params.primary_account_mutator =
       std::make_unique<PrimaryAccountMutatorImpl>(
-          account_tracker_service.get(), token_service.get(),
-          primary_account_manager.get(), params->pref_service,
-          params->signin_client, params->account_consistency);
+          account_tracker_service.get(), primary_account_manager.get(),
+          params->pref_service, params->signin_client);
 
   init_params.accounts_mutator =
       BuildAccountsMutator(params->pref_service, account_tracker_service.get(),

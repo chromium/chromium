@@ -232,11 +232,10 @@ void RunRevokeConsentTest(
 
 void RunRevokeSyncConsentTest(
     signin::AccountConsistencyMethod account_consistency_method,
-    RemoveAccountExpectation account_expectation,
-    AuthExpectation auth_expection = AuthExpectation::kAuthNormal) {
+    RemoveAccountExpectation account_expectation) {
   RunRevokeConsentTest(RevokeConsentAction::kRevokeSyncConsent,
                        account_consistency_method, account_expectation,
-                       auth_expection);
+                       AuthExpectation::kAuthNormal);
 }
 
 void RunClearPrimaryAccountTest(
@@ -555,24 +554,12 @@ TEST_F(PrimaryAccountMutatorTest, ClearPrimaryAccount) {
   }
 }
 
-// Test that revoking the sync consent when account consistency is disabled
-// also clears the primary account and removes all accounts.
-TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_DisabledConsistency) {
-  RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kDisabled,
-                           RemoveAccountExpectation::kRemoveAll);
-}
-
 // Test that revoking sync consent when Mirror account consistency is enabled
 // clears the primary account (except for lacros and Android, where users are
 // allowed to revoke sync consent).
 TEST_F(PrimaryAccountMutatorTest, RevokeSyncConsent_MirrorConsistency) {
   RunRevokeSyncConsentTest(signin::AccountConsistencyMethod::kMirror,
-#if BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
-                           RemoveAccountExpectation::kKeepAll
-#else
-                           RemoveAccountExpectation::kRemoveAll
-#endif  // BUILDFLAG(IS_CHROMEOS_LACROS) || BUILDFLAG(IS_ANDROID)
-  );
+                           RemoveAccountExpectation::kKeepAll);
 }
 
 // Test that revoking the sync consent when DICE account consistency is
