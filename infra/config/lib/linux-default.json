@@ -372,6 +372,7 @@
   },
   "goma": {
     "android-archive-dbg-goma-rbe-ats-canary": "Ubuntu-22.04",
+    "chromeos-amd64-generic-rel-goma-rbe-canary": "Ubuntu-22.04",
     "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04",
     "linux-archive-rel-goma-rbe-canary": "Ubuntu-22.04"
   },
