@@ -899,6 +899,61 @@ TEST_F(DualLayerUserPrefStoreTestForTypes,
 }
 
 TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotifyObserversOnDisableIfEffectiveValueChanges) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+  local_store()->SetValueSilently(kPrefName, base::Value("local_value"), 0);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "local_value"));
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotifyObserversOnDisableIfLocalValueDoesNotExist) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("account_value"), 0);
+
+  EXPECT_CALL(observer, OnPrefValueChanged(kPrefName));
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "account_value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIsAbsent(*store(), kPrefName));
+
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
+       ShouldNotNotifyObserversOnDisableIfEffectiveValueDoesNotChange) {
+  store()->EnableType(syncer::PREFERENCES);
+
+  testing::StrictMock<MockPrefStoreObserver> observer;
+  store()->AddObserver(&observer);
+
+  account_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
+  local_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
+
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  ASSERT_TRUE(ValueInStoreIs(*store(), kPrefName, "pref-value"));
+
+  // `observer` was not notified of any pref change.
+  store()->RemoveObserver(&observer);
+}
+
+TEST_F(DualLayerUserPrefStoreTestForTypes,
        ShouldReturnAccountValueForNotActiveTypes) {
   account_store()->SetValueSilently(kPrefName, base::Value("pref-value"), 0);
   ASSERT_TRUE(ValueInStoreIs(*account_store(), kPrefName, "pref-value"));
@@ -2055,6 +2110,60 @@ TEST_F(DualLayerUserPrefStoreMergeTest,
   EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, new_value));
   EXPECT_TRUE(
       ValueInStoreIs(*store()->GetAccountPrefStore(), kPref1, new_value));
+}
+
+TEST_F(
+    DualLayerUserPrefStoreMergeTest,
+    ShouldClearAccountPrefsOnDisableAndNotifyObserversIfEffectiveValueChanges) {
+  base::Value account_dict(
+      base::Value::Dict().Set("common_key", "account_value"));
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, account_dict.Clone(),
+                                                   0);
+  base::Value local_dict(base::Value::Dict().Set("common_key", "local_value"));
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, local_dict.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  base::Value merged_dict(
+      base::Value::Dict().Set("common_key", "account_value"));
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1));
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, merged_dict));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+
+  // Removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref1));
+  // Local store is not affected.
+  EXPECT_TRUE(
+      ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, local_dict));
+  // Effective value has changed.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, local_dict));
+}
+
+TEST_F(
+    DualLayerUserPrefStoreMergeTest,
+    ShouldClearAccountPrefsOnDisableButNotNotifyObserversIfEffectiveValueDoesNotChange) {
+  base::Value dict(base::Value::Dict().Set("common_key", "common_value"));
+
+  store()->GetAccountPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
+  store()->GetLocalPrefStore()->SetValueSilently(kPref1, dict.Clone(), 0);
+
+  pref_model_associator_client_.MarkAsMergeableDictPref(kPref1);
+
+  EXPECT_CALL(observer_, OnPrefValueChanged(kPref1)).Times(0);
+
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, dict));
+  store()->DisableTypeAndClearAccountStore(syncer::PREFERENCES);
+  // Removed from account store.
+  EXPECT_TRUE(ValueInStoreIsAbsent(*store()->GetAccountPrefStore(), kPref1));
+  // Local store is not affected.
+  EXPECT_TRUE(ValueInStoreIs(*store()->GetLocalPrefStore(), kPref1, dict));
+  // Effective value has changed as the local value is same as the previous
+  // account value.
+  EXPECT_TRUE(ValueInStoreIs(*store(), kPref1, dict));
+
+  // `observer_` was not notified of any pref change.
 }
 
 }  // namespace

@@ -452,10 +452,30 @@ void DualLayerUserPrefStore::DisableTypeAndClearAccountStore(
   // Clear all synced preferences from the account store.
   for (const std::string& pref_name : GetPrefNamesInAccountStore()) {
     if (!ShouldSyncPref(pref_name)) {
-      // The write flags only affect persistence, and the default flag is the
-      // safer choice.
-      account_pref_store_->RemoveValue(
-          pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+      const base::Value* value = nullptr;
+      CHECK(GetValue(pref_name, &value));
+
+      // Should only notify observers if the effective value changes.
+      // Note: A notification is still sent if a pref goes from an
+      // explicitly-set value to an equal default value.
+      bool should_notify = true;
+      if (const base::Value* local_value = nullptr;
+          local_pref_store_->GetValue(pref_name, &local_value)) {
+        should_notify = (*local_value != *value);
+      }
+      {
+        base::AutoReset<bool> setting_prefs(&is_setting_prefs_, true);
+        // The write flags only affect persistence, and the default flag is the
+        // safer choice.
+        account_pref_store_->RemoveValue(
+            pref_name, WriteablePrefStore::DEFAULT_PREF_WRITE_FLAGS);
+        merged_prefs_.RemoveValue(pref_name);
+      }
+      if (should_notify) {
+        for (PrefStore::Observer& observer : observers_) {
+          observer.OnPrefValueChanged(pref_name);
+        }
+      }
     }
   }
 
