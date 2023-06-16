@@ -2,20 +2,80 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-// Message format for a generic in-process proto fuzzer for now.
-// This currently is not useful but is intended to be a skeleton guide.
+syntax = "proto3";
+package test.fuzzing.ui_fuzzing;
 
-syntax = "proto2";
-
-package chrome.test.fuzzing.kombucha_in_process_fuzzer.proto;
-
-// KombuchaStep provides a level of indirection which allows Testcase to
-// compactly express repeated sequences of actions.
-message KombuchaStep {
-  repeated uint32 action_name = 1 [packed = true];
+// TODO(xrosado) Actions are not repeated to avoid empty action cases
+// Make actions be repeatable
+message FuzzCase {
+  Action action = 1;
 }
 
-// KombuchaTestcase is the top-level message type interpreted by the fuzzer.
-message KombuchaTestcase {
-  repeated KombuchaStep steps = 1;
+message Action {
+  optional Parallelism parallel_flag = 1;  // Decides if we use InParallel/AnyOf
+  repeated Step steps = 2;
+}
+
+message Step {
+  oneof step_choice {
+    PressButton press_button = 1;
+    SelectTab select_tab = 2;
+    SelectMenuItem select_menu_item = 3;
+    SendAccelerator send_accelerator = 4;
+  }
+
+  message PressButton {
+    Button target = 1;
+  }
+
+  message SelectTab {
+    // We don't actually know how many tabs/which tab to target
+    // Should just function as an index
+    // Use modulo to make sure it doesn't go over
+    uint32 target = 1;
+  }
+
+  message SelectMenuItem {
+    MenuItem target = 1;
+  }
+
+  message SendAccelerator {
+    Accelerator target = 1;
+  }
+}
+
+enum Parallelism {
+  IN_PARALLEL = 0;
+  ANY_OF = 1;
+}
+
+// Targets for SelectButton
+enum Button {
+  kBackButtonElementId = 0;
+  kForwardButtonElementId = 1;
+  kNewTabButtonElementId = 2;
+  kSidePanelCloseButtonElementId = 3;
+  kTabCounterButtonElementId = 4;
+  kDownloadToolbarButtonElementId = 5;
+  kMediaButtonElementId = 6;
+  kSidePanelButtonElementId = 7;
+  kSidePanelOpenInNewTabButtonElementId = 8;
+  kTabAlertIndicatorButtonElementId = 9;
+  kTabSearchButtonElementId = 10;
+}
+// Targets for SelectMenuItem
+enum MenuItem {
+  kBookmarksMenuItem = 0;
+  kHistoryMenuItem = 1;
+  kMoreToolsMenuItem = 2;
+  kDownloadsMenuItem = 3;
+  kExtensionsMenuItem = 4;
+  kPasswordManagerMenuItem = 5;
+}
+
+// Targets for SendAccelerator
+enum Accelerator {
+  fullscreen_accelerator_ = 0;
+  closetab_accelerator_ = 1;
+  grouptab_accelerator_ = 2;
 }
