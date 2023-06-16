@@ -10,6 +10,9 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.components.autofill.EditableOption;
+import org.chromium.ui.modelutil.PropertyKey;
+import org.chromium.ui.modelutil.PropertyModel;
+import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /**
  * The base class for an editor controller.
@@ -21,6 +24,10 @@ public abstract class EditorBase<T extends EditableOption> {
     protected EditorDialogView mEditorDialog;
     @Nullable
     protected Context mContext;
+    @Nullable
+    protected PropertyModel mEditorModel;
+    @Nullable
+    protected PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
 
     /**
      * Sets the user interface to be used for editing contact information.
@@ -52,5 +59,16 @@ public abstract class EditorBase<T extends EditableOption> {
         assert cancelCallback != null;
         assert mEditorDialog != null;
         assert mContext != null;
+    }
+
+    @Nullable
+    public PropertyModel getEditorModelForTesting() {
+        return mEditorModel;
+    }
+
+    protected void reset() {
+        mEditorMCP.destroy();
+        mEditorMCP = null;
+        mEditorModel = null;
     }
 }

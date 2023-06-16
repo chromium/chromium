@@ -15,7 +15,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -136,8 +135,6 @@ public class AddressEditorTest {
     private Callback<AutofillAddress> mCancelCallback;
 
     @Captor
-    private ArgumentCaptor<PropertyModel> mPropertyModelCapture;
-    @Captor
     private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
     // Note: can't initialize this list statically because of how Robolectric
@@ -171,7 +168,6 @@ public class AddressEditorTest {
         setUpSupportedCountries(mSupportedCountries);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
-        doNothing().when(mEditorDialog).show(mPropertyModelCapture.capture());
     }
 
     @After
@@ -304,8 +300,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        assertTrue(mPropertyModelCapture.getValue().get(SHOW_REQUIRED_INDICATOR));
+        assertNotNull(mAddressEditor.getEditorModelForTesting());
+        assertTrue(mAddressEditor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test
@@ -323,8 +319,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -369,8 +366,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -407,7 +405,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
-        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build());
+        validateShownFields(
+                mAddressEditor.getEditorModelForTesting(), AutofillProfile.builder().build());
     }
 
     @Test
@@ -424,7 +423,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(new AutofillAddress(mActivity, sProfile), unused -> {});
 
-        validateShownFields(mPropertyModelCapture.getValue(), sProfile);
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sProfile);
     }
 
     @Test
@@ -448,8 +447,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialog(mEditorDialog);
         mAddressEditor.edit(null, unused -> {});
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
@@ -468,7 +468,7 @@ public class AddressEditorTest {
 
         setDropdownKey(countryDropdown, "DE");
         ListModel<ListItem> editorFieldsGermany =
-                mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - street address field.
         // editorFields[2] - phone number field.
@@ -499,7 +499,7 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
                 mDoneCallback, mCancelCallback);
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
@@ -530,8 +530,8 @@ public class AddressEditorTest {
         mAddressEditor.edit(new AutofillAddress(mActivity, new AutofillProfile(sProfile)),
                 mDoneCallback, mCancelCallback);
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        assertNotNull(mAddressEditor.getEditorModelForTesting());
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         assertEquals(10, editorFields.size());
 

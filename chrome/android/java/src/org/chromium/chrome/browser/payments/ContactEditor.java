@@ -42,13 +42,11 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
-import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.payments.mojom.PayerErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -82,10 +80,10 @@ public class ContactEditor extends EditorBase<AutofillContact> {
     private final Set<String> mPhoneNumbers;
     private final Set<String> mEmailAddresses;
     @Nullable private PayerErrors mPayerErrors;
-    @Nullable private EditorFieldValidator mPhoneValidator;
-    @Nullable private EditorFieldValidator mEmailValidator;
     @Nullable
-    private PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
+    private EditorFieldValidator mPhoneValidator;
+    @Nullable
+    private EditorFieldValidator mEmailValidator;
 
     /**
      * Builds a contact information editor.
@@ -296,7 +294,12 @@ public class ContactEditor extends EditorBase<AutofillContact> {
 
         // If the user clicks [Cancel], send |toEdit| contact back to the caller, which was the
         // original state (could be null, a complete contact, a partial contact).
-        Runnable onCancel = cancelCallback.bind(toEdit);
+        Runnable onCancel = () -> {
+            cancelCallback.onResult(toEdit);
+
+            // Clean up the state of this editor.
+            reset();
+        };
 
         Runnable onDone = () -> {
             String name = null;
@@ -333,22 +336,22 @@ public class ContactEditor extends EditorBase<AutofillContact> {
             profile.setIsLocal(true);
             contact.completeContact(profile.getGUID(), name, phone, email);
             doneCallback.onResult(contact);
+
+            // Clean up the state of this editor.
+            reset();
         };
 
-        PropertyModel editorModel = new PropertyModel.Builder(ALL_KEYS)
-                                            .with(EDITOR_TITLE, editorTitle)
-                                            .with(SHOW_REQUIRED_INDICATOR, true)
-                                            .with(EDITOR_FIELDS, editorFields)
-                                            .with(DONE_RUNNABLE, onDone)
-                                            .with(CANCEL_RUNNABLE, onCancel)
-                                            .build();
+        mEditorModel = new PropertyModel.Builder(ALL_KEYS)
+                               .with(EDITOR_TITLE, editorTitle)
+                               .with(SHOW_REQUIRED_INDICATOR, true)
+                               .with(EDITOR_FIELDS, editorFields)
+                               .with(DONE_RUNNABLE, onDone)
+                               .with(CANCEL_RUNNABLE, onCancel)
+                               .build();
 
-        if (mEditorMCP != null) {
-            mEditorMCP.destroy();
-        }
         mEditorMCP = PropertyModelChangeProcessor.create(
-                editorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
-        mEditorDialog.show(editorModel);
+                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
+        mEditorDialog.show(mEditorModel);
         if (mPayerErrors != null) mEditorDialog.validateForm();
     }
 

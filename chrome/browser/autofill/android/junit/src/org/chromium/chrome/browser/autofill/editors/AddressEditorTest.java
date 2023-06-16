@@ -13,7 +13,6 @@ import static org.mockito.ArgumentMatchers.anyList;
 import static org.mockito.ArgumentMatchers.anyString;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.doAnswer;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.times;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -177,8 +176,6 @@ public class AddressEditorTest {
     private HelpAndFeedbackLauncher mHelpLauncher;
 
     @Captor
-    private ArgumentCaptor<PropertyModel> mPropertyModelCapture;
-    @Captor
     private ArgumentCaptor<AutofillAddress> mAddressCapture;
 
     private final CoreAccountInfo mAccountInfo =
@@ -225,7 +222,6 @@ public class AddressEditorTest {
         setUpSupportedCountries(mSupportedCountries);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
-        doNothing().when(mEditorDialog).show(mPropertyModelCapture.capture());
     }
 
     @After
@@ -376,7 +372,7 @@ public class AddressEditorTest {
         mAddressEditor.setCustomDoneButtonText("Custom done");
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
 
         Assert.assertEquals("Custom done", editorModel.get(CUSTOM_DONE_BUTTON_TEXT));
@@ -398,7 +394,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -422,7 +418,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -442,7 +438,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -466,7 +462,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -486,7 +482,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -510,7 +506,7 @@ public class AddressEditorTest {
         final String sourceNotice = null;
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -535,7 +531,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -563,7 +559,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -587,7 +583,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -611,7 +607,7 @@ public class AddressEditorTest {
                         .replace("$1", USER_EMAIL);
 
         checkModelHasExpectedValues(
-                mPropertyModelCapture.getValue(), deleteTitle, deleteText, sourceNotice);
+                mAddressEditor.getEditorModelForTesting(), deleteTitle, deleteText, sourceNotice);
     }
 
     @Test
@@ -627,8 +623,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        Assert.assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend when nicknames are disabled:
         // editorFields[0] - country dropdown.
@@ -670,8 +667,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        Assert.assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // Following values are set regardless of the UI components list
         // received from backend:
         // editorFields[0] - country dropdown.
@@ -693,7 +691,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mAddressEditor.getEditorModelForTesting(),
+                AutofillProfile.builder().build(),
                 /*shouldMarkFieldsRequired=*/false);
     }
 
@@ -707,7 +706,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), AutofillProfile.builder().build(),
+        validateShownFields(mAddressEditor.getEditorModelForTesting(),
+                AutofillProfile.builder().build(),
                 /*shouldMarkFieldsRequired=*/true,
                 /*shouldMarkFieldsRequiredWhenAddressFieldEmpty=*/true);
     }
@@ -722,7 +722,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), sLocalProfile,
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sLocalProfile,
                 /*shouldMarkFieldsRequired=*/false);
     }
 
@@ -736,7 +736,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), sLocalProfile,
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sLocalProfile,
                 /*shouldMarkFieldsRequired=*/false);
     }
 
@@ -750,8 +750,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(
-                mPropertyModelCapture.getValue(), sLocalProfile, /*shouldMarkFieldsRequired=*/true);
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sLocalProfile,
+                /*shouldMarkFieldsRequired=*/true);
     }
 
     @Test
@@ -764,7 +764,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), sAccountProfile,
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sAccountProfile,
                 /*shouldMarkFieldsRequired=*/true);
     }
 
@@ -778,7 +778,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
 
         mAddressEditor.showEditorDialog();
-        validateShownFields(mPropertyModelCapture.getValue(), sAccountProfile,
+        validateShownFields(mAddressEditor.getEditorModelForTesting(), sAccountProfile,
                 /*shouldMarkFieldsRequired=*/true);
     }
 
@@ -797,8 +797,9 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mPropertyModelCapture.getValue());
-        ListModel<ListItem> editorFields = mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+        Assert.assertNotNull(mAddressEditor.getEditorModelForTesting());
+        ListModel<ListItem> editorFields =
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
 
         // editorFields[0] - country dropdown.
         // editorFields[1] - sorting code field.
@@ -820,7 +821,7 @@ public class AddressEditorTest {
 
         setDropdownKey(countryDropdown, "DE");
         ListModel<ListItem> editorFieldsGermany =
-                mPropertyModelCapture.getValue().get(EDITOR_FIELDS);
+                mAddressEditor.getEditorModelForTesting().get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
         // editorFields[1] - street address field.
         // editorFields[2] - phone number field.
@@ -849,7 +850,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
@@ -879,7 +880,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
@@ -905,8 +906,8 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        Assert.assertNotNull(mPropertyModelCapture.getValue());
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        Assert.assertNotNull(mAddressEditor.getEditorModelForTesting());
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
 
@@ -938,7 +939,7 @@ public class AddressEditorTest {
 
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         // editorFields[0] - country dropdown.
@@ -977,7 +978,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
@@ -1012,7 +1013,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
@@ -1037,7 +1038,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());
@@ -1062,7 +1063,7 @@ public class AddressEditorTest {
         mAddressEditor.setEditorDialogForTesting(mEditorDialog);
         mAddressEditor.showEditorDialog();
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = mAddressEditor.getEditorModelForTesting();
         Assert.assertNotNull(editorModel);
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
         Assert.assertEquals(13, editorFields.size());

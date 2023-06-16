@@ -28,6 +28,8 @@ import java.lang.annotation.RetentionPolicy;
 public class AddressEditorCoordinator {
     private final AddressEditorMediator mMediator;
     private EditorDialogView mEditorDialog;
+    @Nullable
+    private PropertyModel mEditorModel;
 
     /**
      * Delegate used to subscribe to AddressEditor user interactions.
@@ -149,10 +151,10 @@ public class AddressEditorCoordinator {
      * Shows editor dialog to the user.
      */
     public void showEditorDialog() {
-        PropertyModel model = mMediator.buildEditorModel();
+        mEditorModel = mMediator.buildEditorModel();
         PropertyModelChangeProcessor.create(
-                model, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
-        mEditorDialog.show(model);
+                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
+        mEditorDialog.show(mEditorModel);
     }
 
     /**
@@ -176,6 +178,14 @@ public class AddressEditorCoordinator {
      */
     void setEditorDialogForTesting(EditorDialogView editorDialog) {
         mEditorDialog = editorDialog;
+    }
+
+    /**
+     * @return editor dialog model for testing purposes.
+     */
+    @Nullable
+    PropertyModel getEditorModelForTesting() {
+        return mEditorModel;
     }
 
     /**

@@ -54,13 +54,11 @@ import org.chromium.chrome.browser.autofill.PersonalDataManager.AutofillProfile;
 import org.chromium.chrome.browser.autofill.PersonalDataManager.GetSubKeysRequestDelegate;
 import org.chromium.chrome.browser.autofill.PhoneNumberUtil;
 import org.chromium.chrome.browser.autofill.editors.EditorBase;
-import org.chromium.chrome.browser.autofill.editors.EditorDialogView;
 import org.chromium.chrome.browser.autofill.editors.EditorDialogViewBinder;
 import org.chromium.chrome.browser.autofill.editors.EditorProperties.EditorFieldValidator;
 import org.chromium.payments.mojom.AddressErrors;
 import org.chromium.ui.modelutil.ListModel;
 import org.chromium.ui.modelutil.MVCListAdapter.ListItem;
-import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
@@ -98,9 +96,6 @@ public class AddressEditor
     private boolean mAdminAreasLoaded;
     private String mRecentlySelectedCountry;
     private AutofillProfile mProfile;
-    private PropertyModel mEditorModel;
-    @Nullable
-    private PropertyModelChangeProcessor<PropertyModel, EditorDialogView, PropertyKey> mEditorMCP;
     private ProgressDialog mProgressDialog;
     @Nullable
     private AddressErrors mAddressErrors;
@@ -329,6 +324,9 @@ public class AddressEditor
             mAdminAreasLoaded = true;
             PersonalDataManager.getInstance().cancelPendingGetSubKeys();
             cancelCallback.onResult(toEdit);
+
+            // Clean up the state of this editor.
+            reset();
         };
 
         // If the user clicks [Done], save changes on disk, mark the address "complete" if possible,
@@ -339,6 +337,9 @@ public class AddressEditor
             commitChanges(mProfile);
             address.completeAddress(mProfile);
             doneCallback.onResult(address);
+
+            // Clean up the state of this editor.
+            reset();
         };
 
         mEditorModel = new PropertyModel.Builder(ALL_KEYS)
@@ -348,9 +349,6 @@ public class AddressEditor
                                .with(DONE_RUNNABLE, onDone)
                                .with(CANCEL_RUNNABLE, onCancel)
                                .build();
-        if (mEditorMCP != null) {
-            mEditorMCP.destroy();
-        }
         mEditorMCP = PropertyModelChangeProcessor.create(
                 mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
 

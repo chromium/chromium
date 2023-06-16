@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
 
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.CANCEL_RUNNABLE;
@@ -32,8 +31,6 @@ import org.junit.After;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.ArgumentCaptor;
-import org.mockito.Captor;
 import org.mockito.Mock;
 import org.mockito.MockitoAnnotations;
 import org.robolectric.Robolectric;
@@ -73,9 +70,6 @@ public class ContactEditorTest {
     @Mock
     private EditorDialogView mEditorDialog;
 
-    @Captor
-    private ArgumentCaptor<PropertyModel> mPropertyModelCapture;
-
     private Activity mActivity;
 
     @Before
@@ -86,7 +80,6 @@ public class ContactEditorTest {
         mActivity = Robolectric.setupActivity(TestActivity.class);
 
         when(mEditorDialog.getContext()).thenReturn(mActivity);
-        doNothing().when(mEditorDialog).show(mPropertyModelCapture.capture());
     }
 
     @After
@@ -117,8 +110,8 @@ public class ContactEditorTest {
         editor.setEditorDialog(mEditorDialog);
         editor.edit(null, unused -> {});
 
-        assertNotNull(mPropertyModelCapture.getValue());
-        assertTrue(mPropertyModelCapture.getValue().get(SHOW_REQUIRED_INDICATOR));
+        assertNotNull(editor.getEditorModelForTesting());
+        assertTrue(editor.getEditorModelForTesting().get(SHOW_REQUIRED_INDICATOR));
     }
 
     @Test
@@ -131,7 +124,7 @@ public class ContactEditorTest {
         editor.setEditorDialog(mEditorDialog);
         editor.edit(null, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -150,7 +143,7 @@ public class ContactEditorTest {
         editor.setEditorDialog(mEditorDialog);
         editor.edit(null, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -169,7 +162,7 @@ public class ContactEditorTest {
         editor.setEditorDialog(mEditorDialog);
         editor.edit(null, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -188,7 +181,7 @@ public class ContactEditorTest {
         editor.setEditorDialog(mEditorDialog);
         editor.edit(null, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -213,7 +206,7 @@ public class ContactEditorTest {
                 ContactEditor.COMPLETE, true, false, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -234,7 +227,7 @@ public class ContactEditorTest {
                 null, ContactEditor.COMPLETE, false, true, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -255,7 +248,7 @@ public class ContactEditorTest {
                 "Payer email", ContactEditor.COMPLETE, false, false, true);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -276,7 +269,7 @@ public class ContactEditorTest {
                 "Payer phone", "Payer email", ContactEditor.COMPLETE, true, true, true);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -301,7 +294,7 @@ public class ContactEditorTest {
                 "Payer name", null, null, ContactEditor.COMPLETE, true, false, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -327,7 +320,7 @@ public class ContactEditorTest {
                 null, "Payer phone", null, ContactEditor.COMPLETE, false, true, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -353,7 +346,7 @@ public class ContactEditorTest {
                 null, null, "Payer email", ContactEditor.COMPLETE, false, false, true);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -379,7 +372,7 @@ public class ContactEditorTest {
                 "Payer name", null, null, ContactEditor.COMPLETE, true, false, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -405,7 +398,7 @@ public class ContactEditorTest {
                 null, "Payer phone", null, ContactEditor.COMPLETE, false, true, false);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -431,7 +424,7 @@ public class ContactEditorTest {
                 null, null, "Payer email", ContactEditor.COMPLETE, false, false, true);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
@@ -458,7 +451,7 @@ public class ContactEditorTest {
                         "Payer phone", "Payer email", ContactEditor.COMPLETE, true, true, true);
         editor.edit(contact, unused -> {});
 
-        PropertyModel editorModel = mPropertyModelCapture.getValue();
+        PropertyModel editorModel = editor.getEditorModelForTesting();
         assertNotNull(editorModel);
 
         ListModel<ListItem> editorFields = editorModel.get(EDITOR_FIELDS);
