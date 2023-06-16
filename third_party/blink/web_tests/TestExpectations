@@ -6706,3 +6706,4 @@ crbug.com/1455314 external/wpt/longtask-timing/longtask-in-childiframe-crossorig
 
 # Gardener 2023-06-16
 crbug.com/1455487 fast/layers/no-clipping-overflow-hidden-hardware-acceleration.html [ Failure Pass ]
+crbug.com/1429309 [ Mac ] external/wpt/css/css-position/fixed-z-index-blend.html [ Failure Pass ]
