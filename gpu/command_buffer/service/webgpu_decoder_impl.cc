@@ -1045,15 +1045,18 @@ WebGPUDecoder* CreateWebGPUDecoderImpl(
     const DawnCacheOptions& dawn_cache_options,
     IsolationKeyProvider* isolation_key_provider) {
   // Construct a Dawn caching interface if the Dawn configurations enables it.
-  // If a handle was set, pass the relevant handle and DecoderClient so that
+  // If a handle was set, pass the relevant handle and CacheBlob callback so that
   // writing to disk is enabled. Otherwise pass an incognito in-memory version.
   std::unique_ptr<webgpu::DawnCachingInterface> dawn_caching_interface =
       nullptr;
   if (auto* caching_interface_factory =
           dawn_cache_options.caching_interface_factory.get()) {
     if (dawn_cache_options.handle) {
+      // The DecoderClient outlives the DawnCachingInterface, so it is safe
       dawn_caching_interface = caching_interface_factory->CreateInstance(
-          *dawn_cache_options.handle, client);
+          *dawn_cache_options.handle,
+          base::BindRepeating(&DecoderClient::CacheBlob,
+                              base::Unretained(client)));
     } else {
       dawn_caching_interface = caching_interface_factory->CreateInstance();
     }
