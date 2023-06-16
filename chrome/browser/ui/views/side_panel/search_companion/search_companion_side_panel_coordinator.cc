@@ -110,6 +110,14 @@ void SearchCompanionSidePanelCoordinator::OnTabStripModelChanged(
           ->CreateAndRegisterEntry();
     }
   }
+  if (change.type() == TabStripModelChange::Type::kReplaced) {
+    raw_ptr<content::WebContents> new_contents =
+        change.GetReplace()->new_contents;
+    if (new_contents) {
+      companion::CompanionTabHelper::FromWebContents(new_contents)
+          ->CreateAndRegisterEntry();
+    }
+  }
   if (selection.active_tab_changed()) {
     MaybeUpdateCompanionEnabledState();
   }
