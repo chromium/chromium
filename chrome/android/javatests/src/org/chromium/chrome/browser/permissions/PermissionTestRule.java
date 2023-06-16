@@ -90,6 +90,8 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
          * @throws Exception
          */
         public void waitForNumUpdates(int numUpdates) throws Exception {
+            int callbackCountBefore = mCallbackHelper.getCallCount();
+
             // Update might have already happened, check before waiting for title udpdates.
             mExpectedTitle = mPrefix;
             if (numUpdates != 0) mExpectedTitle += numUpdates;
@@ -98,7 +100,7 @@ public class PermissionTestRule extends ChromeTabbedActivityTestRule {
                 return;
             }
 
-            mCallbackHelper.waitForCallback(0);
+            mCallbackHelper.waitForCallback(callbackCountBefore);
         }
     }
 
