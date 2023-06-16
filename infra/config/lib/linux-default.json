@@ -403,6 +403,7 @@
     "android-coverage-launcher": "Ubuntu-22.04",
     "android-launcher": "Ubuntu-22.04",
     "android-x64-launcher": "Ubuntu-22.04",
+    "coverage-runner": "Ubuntu-22.04",
     "fuchsia-coordinator": "Ubuntu-22.04",
     "lacros-coordinator": "Ubuntu-22.04",
     "linux-launcher": "Ubuntu-22.04",
