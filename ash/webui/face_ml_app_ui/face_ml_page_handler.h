@@ -9,6 +9,7 @@
 #include "ash/webui/face_ml_app_ui/mojom/face_ml_app_ui.mojom.h"
 #include "base/memory/raw_ref.h"
 #include "base/memory/weak_ptr.h"
+#include "content/public/browser/web_ui_managed_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -19,19 +20,25 @@ namespace ash {
 class FaceMLAppUI;
 
 // Implements the PageHandler interface.
-class FaceMLPageHandler : public mojom::face_ml_app::PageHandler {
+class FaceMLPageHandler : public mojom::face_ml_app::PageHandler,
+                          public content::WebUIManagedInterfaceBase {
  public:
-  explicit FaceMLPageHandler(FaceMLAppUI* face_ml_app_ui);
+  static void Create(
+      FaceMLAppUI* face_ml_app_ui,
+      mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
+      mojo::PendingRemote<mojom::face_ml_app::Page> pending_page);
+
   ~FaceMLPageHandler() override;
 
   FaceMLPageHandler(const FaceMLPageHandler&) = delete;
   FaceMLPageHandler& operator=(const FaceMLPageHandler&) = delete;
 
-  void BindInterface(
+ private:
+  explicit FaceMLPageHandler(
+      FaceMLAppUI* face_ml_app_ui,
       mojo::PendingReceiver<mojom::face_ml_app::PageHandler> pending_receiver,
       mojo::PendingRemote<mojom::face_ml_app::Page> pending_page);
 
- private:
   void GetCurrentUserInformation(
       GetCurrentUserInformationCallback callback) override;
 

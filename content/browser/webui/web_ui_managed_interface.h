@@ -12,30 +12,13 @@
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/browser/web_ui_managed_interface.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver.h"
 #include "mojo/public/cpp/bindings/remote.h"
 
 namespace content {
-
-// Base class used by Mojo interface implementations whose lifetime is tied
-// to a document and a WebUIController but can't use the templated
-// WebUIManageInterface class below.
-class CONTENT_EXPORT WebUIManagedInterfaceBase {
- public:
-  virtual ~WebUIManagedInterfaceBase() = default;
-};
-
-// Stores an interface implementation instance in the WebUI host Document.
-// This is called when constructing an implementation instance in
-// WebUIManagedInterface::Create().
-void CONTENT_EXPORT
-SaveWebUIManagedInterfaceInDocument(WebUIController*,
-                                    std::unique_ptr<WebUIManagedInterfaceBase>);
-
-CONTENT_EXPORT void RemoveWebUIManagedInterfaces(
-    WebUIController* webui_controller);
 
 using WebUIManagedInterfaceNoPageHandler = void;
 

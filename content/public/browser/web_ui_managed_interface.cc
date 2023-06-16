@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "content/browser/webui/web_ui_managed_interface.h"
+#include "content/public/browser/web_ui_managed_interface.h"
 
 #include <vector>
 
-#include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/browser/webui/web_ui_impl.h"
 #include "content/public/browser/document_user_data.h"
 #include "content/public/browser/navigation_handle.h"
+#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_ui.h"
+#include "content/public/browser/web_ui_controller.h"
 
 namespace content {
 

@@ -6,6 +6,7 @@
 
 #include <utility>
 
+#include "ash/webui/face_ml_app_ui/face_ml_page_handler.h"
 #include "ash/webui/face_ml_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_face_ml_app_resources.h"
 #include "ash/webui/grit/ash_face_ml_app_resources_map.h"
@@ -70,14 +71,7 @@ void FaceMLAppUI::BindInterface(
 void FaceMLAppUI::CreatePageHandler(
     mojo::PendingReceiver<mojom::face_ml_app::PageHandler> handler,
     mojo::PendingRemote<mojom::face_ml_app::Page> page) {
-  DCHECK(page.is_valid());
-  face_ml_page_handler_->BindInterface(std::move(handler), std::move(page));
-}
-
-void FaceMLAppUI::WebUIPrimaryPageChanged(content::Page& page) {
-  // Create a new page handler for each document load. This avoids sharing
-  // states when WebUIController is reused for same-origin navigations.
-  face_ml_page_handler_ = std::make_unique<FaceMLPageHandler>(this);
+  FaceMLPageHandler::Create(this, std::move(handler), std::move(page));
 }
 
 WEB_UI_CONTROLLER_TYPE_IMPL(FaceMLAppUI)
