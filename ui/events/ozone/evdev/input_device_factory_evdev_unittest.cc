@@ -6,10 +6,13 @@
 
 #include "base/files/file_path.h"
 #include "base/functional/bind.h"
+#include "base/strings/string_split.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/bind.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/events/devices/input_device.h"
 #include "ui/events/devices/keyboard_device.h"
@@ -23,7 +26,13 @@
 #include "ui/events/ozone/evdev/input_device_opener.h"
 #include "ui/events/ozone/features.h"
 
+using ::testing::AllOf;
+using ::testing::Contains;
+using ::testing::HasSubstr;
+
 namespace ui {
+
+namespace {
 
 enum DeviceForm : uint32_t {
   KEYBOARD = 1 << 0,
@@ -37,6 +46,21 @@ enum DeviceForm : uint32_t {
   CAPS_LOCK_LED = 1 << 8,
   STYLUS_SWITCH = 1 << 9,
 };
+
+// Fragment of DescribeForLog() information for evdev converters that should
+// appear once per device.
+constexpr char kDescriptionLogInputDeviceHeader[] = "class=ui::InputDevice";
+
+constexpr char kImposterIsTrue[] = "suspected_imposter=1";
+constexpr char kImposterIsFalse[] = "suspected_imposter=0";
+
+// Splits multi-line block of text into array of strings.
+std::vector<std::string> SplitLines(const std::string& param) {
+  return base::SplitString(param, "\n", base::TRIM_WHITESPACE,
+                           base::SPLIT_WANT_NONEMPTY);
+}
+
+}  // namespace
 
 class FakeEventConverterEvdev : public EventConverterEvdev {
  public:
@@ -165,6 +189,35 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
  public:
   InputDeviceFactoryEvdevTest() = default;
 
+  // ::testing::Test:
+  void SetUp() override {
+    dispatcher_ =
+        std::make_unique<StubDeviceEventDispatcherEvdev>(base::BindRepeating(
+            &InputDeviceFactoryEvdevTest::OnKeyboardDevicesRetrieved,
+            base::Unretained(this)));
+  }
+
+ protected:
+  // Synchronously invoke DescribeForLog on an input device factory.
+  void RunDescribeForLog(InputDeviceFactoryEvdev* input_device_factory) {
+    input_device_factory->DescribeForLog(
+        base::BindOnce(&InputDeviceFactoryEvdevTest::OnDescribeForLogComplete,
+                       base::Unretained(this)));
+    // Start the loop, the describe callback will exit.
+    fetch_run_loop_.Run();
+  }
+
+  void OnDescribeForLogComplete(const std::string& response) {
+    log_response_ = response;
+    fetch_run_loop_.Quit();
+  }
+
+  const std::string& GetLogResponse() const { return log_response_; }
+
+  void OnKeyboardDevicesRetrieved(const std::vector<KeyboardDevice>& devices) {
+    keyboards_ = devices;
+  }
+
   std::vector<KeyboardDevice> keyboards_;
   base::test::SingleThreadTaskEnvironment task_environment{
       base::test::TaskEnvironment::MainThreadType::UI};
@@ -173,16 +226,12 @@ class InputDeviceFactoryEvdevTest : public testing::Test {
   InputControllerEvdev input_controller_{nullptr, nullptr, nullptr};
   base::HistogramTester histogram_tester_;
 
-  void SetUp() override {
-    dispatcher_ = std::make_unique<StubDeviceEventDispatcherEvdev>(
-        base::BindRepeating(&InputDeviceFactoryEvdevTest::DispatchCallback,
-                            base::Unretained(this)));
-  }
-
  private:
-  void DispatchCallback(const std::vector<KeyboardDevice>& devices) {
-    keyboards_ = devices;
-  }
+  // Stores results from the log source passed into
+  // FetchDescribeForLogCallback().
+  std::string log_response_;
+  // Used for waiting on fetch results.
+  base::RunLoop fetch_run_loop_;
 };
 
 TEST_F(InputDeviceFactoryEvdevTest,
@@ -572,6 +621,158 @@ TEST_F(InputDeviceFactoryEvdevTest, AttachBluetoothMouseTriggersMetricLogging) {
                                        AttachmentType::kBluetooth, 1);
   histogram_tester_.ExpectUniqueSample(kBluetoothAttachmentFormHistogramName,
                                        AttachmentForm::kMouse, 1);
+}
+
+// Following tests exercise the factory's DescribeForLog() facility, where
+// we need to mock a variety of devices.
+
+TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogSingularMouse) {
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+  std::string response;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "name", "phys_path", 1, 1, 1, DeviceForm::MOUSE);
+
+  converters.push_back(std::move(mouse_converter));
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  RunDescribeForLog(input_device_factory_.get());
+
+  EXPECT_NE(GetLogResponse(), "");
+  EXPECT_THAT(SplitLines(GetLogResponse()),
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+}
+
+TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogAttachInternalKeyboard) {
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "name", "phys_path", 1, 1, 1, DeviceForm::KEYBOARD);
+  converters.push_back(std::move(keyboard_converter));
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  RunDescribeForLog(input_device_factory_.get());
+
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsFalse)));
+}
+
+TEST_F(
+    InputDeviceFactoryEvdevTest,
+    DescribeForLogAttachMouseAndKeyboardSamePhysFakeKeyboardHeuristicDisabled) {
+  scoped_feature_list_.InitAndDisableFeature(kEnableFakeKeyboardHeuristic);
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("mouse_path"), 1,
+          InputDeviceType::INPUT_DEVICE_INTERNAL, "mouse_name", "phys_path", 1,
+          1, 1, DeviceForm::MOUSE);
+  std::unique_ptr<FakeEventConverterEvdev> keyboard_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          2, base::FilePath("keyboard_path"), 2,
+          InputDeviceType::INPUT_DEVICE_USB, "keyboard_name", "phys_path", 2, 2,
+          2, DeviceForm::KEYBOARD);
+  std::unique_ptr<FakeEventConverterEvdev> touchpad_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          3, base::FilePath("touchpad_path"), 3,
+          InputDeviceType::INPUT_DEVICE_USB, "touchpad_name", "phys_path", 3, 3,
+          3, DeviceForm::TOUCHPAD);
+
+  converters.push_back(std::move(mouse_converter));
+  converters.push_back(std::move(keyboard_converter));
+  converters.push_back(std::move(touchpad_converter));
+
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  input_device_factory_->AddInputDevice(2, base::FilePath("unused_value"));
+  input_device_factory_->AddInputDevice(3, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+
+  RunDescribeForLog(input_device_factory_.get());
+
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(3));
+  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsFalse)).Times(3));
+}
+
+TEST_F(InputDeviceFactoryEvdevTest, DescribeForLogOneDeviceMouseAndKeyboard) {
+  std::vector<std::unique_ptr<FakeEventConverterEvdev>> converters;
+  base::RunLoop run_loop;
+
+  std::unique_ptr<FakeEventConverterEvdev> mouse_converter =
+      std::make_unique<FakeEventConverterEvdev>(
+          1, base::FilePath("path"), 1, InputDeviceType::INPUT_DEVICE_INTERNAL,
+          "name", "phys_path", 1, 1, 1,
+          DeviceForm::MOUSE | DeviceForm::KEYBOARD);
+
+  converters.push_back(std::move(mouse_converter));
+  std::unique_ptr<InputDeviceFactoryEvdev> input_device_factory_ =
+      std::make_unique<InputDeviceFactoryEvdev>(
+          std::move(dispatcher_), nullptr,
+          std::make_unique<FakeInputDeviceOpenerEvdev>(std::move(converters)),
+          &input_controller_);
+  input_device_factory_->OnStartupScanComplete();
+  input_device_factory_->AddInputDevice(1, base::FilePath("unused_value"));
+  base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, run_loop.QuitClosure());
+  run_loop.Run();
+  RunDescribeForLog(input_device_factory_.get());
+
+  std::string response = GetLogResponse();
+
+  EXPECT_NE(response, "");
+
+  auto lines = SplitLines(response);
+
+  EXPECT_THAT(lines,
+              Contains(HasSubstr(kDescriptionLogInputDeviceHeader)).Times(1));
+  EXPECT_THAT(lines, Contains(HasSubstr(kImposterIsTrue)));
 }
 
 }  // namespace ui

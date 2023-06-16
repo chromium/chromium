@@ -292,6 +292,16 @@ void InputDeviceFactoryEvdev::GetTouchEventLog(
 #endif
 }
 
+void InputDeviceFactoryEvdev::DescribeForLog(
+    InputController::DescribeForLogReply reply) const {
+  std::stringstream str;
+  for (const auto& it : converters_) {
+    it.second->DescribeForLog(str);
+    str << std::endl;
+  }
+  std::move(reply).Run(str.str());
+}
+
 void InputDeviceFactoryEvdev::GetGesturePropertiesService(
     mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver) {
 #if defined(USE_EVDEV_GESTURES)

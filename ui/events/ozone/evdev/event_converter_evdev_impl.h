@@ -61,7 +61,6 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdevImpl
 
   void ProcessEvents(const struct input_event* inputs, int count);
 
-  // Describe converter for system log
   std::ostream& DescribeForLog(std::ostream& os) const override;
 
  private:

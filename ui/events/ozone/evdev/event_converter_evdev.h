@@ -213,7 +213,7 @@ class COMPONENT_EXPORT(EVDEV) EventConverterEvdev
       HapticTouchpadEffect effect,
       HapticTouchpadEffectStrength strength);
 
-  // Describe converter for system log
+  // Describe converter for system log.
   virtual std::ostream& DescribeForLog(std::ostream& os) const;
 
  protected:

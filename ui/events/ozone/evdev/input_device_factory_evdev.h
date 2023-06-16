@@ -98,6 +98,9 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdev {
   void GetGesturePropertiesService(
       mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver);
 
+  // Describe internal state for system log.
+  void DescribeForLog(InputController::DescribeForLogReply reply) const;
+
   base::WeakPtr<InputDeviceFactoryEvdev> GetWeakPtr();
 
  private:

@@ -48,6 +48,7 @@ class COMPONENT_EXPORT(EVDEV) InputDeviceFactoryEvdevProxy {
   void GetTouchDeviceStatus(InputController::GetTouchDeviceStatusReply reply);
   void GetTouchEventLog(const base::FilePath& out_dir,
                         InputController::GetTouchEventLogReply reply);
+  void DescribeForLog(InputController::DescribeForLogReply reply) const;
   void GetGesturePropertiesService(
       mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver);
   void PlayVibrationEffect(int id, uint8_t amplitude, uint16_t duration_millis);

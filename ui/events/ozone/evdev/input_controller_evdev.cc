@@ -368,6 +368,15 @@ void InputControllerEvdev::GetTouchEventLog(const base::FilePath& out_dir,
     std::move(reply).Run(std::vector<base::FilePath>());
 }
 
+void InputControllerEvdev::DescribeForLog(
+    InputController::DescribeForLogReply reply) const {
+  if (input_device_factory_) {
+    input_device_factory_->DescribeForLog(std::move(reply));
+  } else {
+    std::move(reply).Run(std::string());
+  }
+}
+
 void InputControllerEvdev::GetGesturePropertiesService(
     mojo::PendingReceiver<ozone::mojom::GesturePropertiesService> receiver) {
   if (input_device_factory_)

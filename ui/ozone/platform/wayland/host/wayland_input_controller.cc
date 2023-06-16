@@ -97,6 +97,9 @@ class WaylandInputController : public InputController {
                         GetTouchEventLogReply reply) override {
     std::move(reply).Run(std::vector<base::FilePath>());
   }
+  void DescribeForLog(DescribeForLogReply reply) const override {
+    std::move(reply).Run(std::string());
+  }
   void SetInternalTouchpadEnabled(bool enabled) override {}
   bool IsInternalTouchpadEnabled() const override { return false; }
   void SetTouchscreensEnabled(bool enabled) override {}
