@@ -3851,6 +3851,21 @@
             ]
         }
     ],
+    "CreateNewTabInitializeRenderer": [
+        {
+            "platforms": [
+                "android"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled_Nonstable_20230609",
+                    "enable_features": [
+                        "CreateNewTabInitializeRenderer"
+                    ]
+                }
+            ]
+        }
+    ],
     "CriticalPersistedTabDataV2": [
         {
             "platforms": [
