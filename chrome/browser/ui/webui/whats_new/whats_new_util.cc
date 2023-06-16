@@ -43,14 +43,31 @@ const int64_t kMaxDownloadBytes = 1024 * 1024;
 
 const char kChromeWhatsNewURL[] = "https://www.google.com/chrome/whats-new/";
 const char kChromeWhatsNewURLShort[] = "google.com/chrome/whats-new/";
-// TODO(crbug/1448572): Replace placeholder with production URL.
+// The /m117 URL is reserved for the chrome refresh page.
 const char kChromeWhatsNewRefreshURL[] =
-    "https://www.google.com/chrome/whats-new/";
+    "https://www.google.com/chrome/whats-new/m117";
+
+bool is_minimum_refresh_version = CHROME_VERSION_MAJOR >= 117;
+bool is_refresh_version =
+    CHROME_VERSION_MAJOR == 117 || CHROME_VERSION_MAJOR == 118;
 
 bool g_is_remote_content_disabled = false;
 
 void DisableRemoteContentForTests() {
   g_is_remote_content_disabled = true;
+}
+
+bool IsMinimumRefreshVersion() {
+  return is_minimum_refresh_version;
+}
+
+bool IsRefreshVersion() {
+  return is_refresh_version;
+}
+
+void SetChromeVersionForTests(int chrome_version) {
+  is_minimum_refresh_version = chrome_version >= 117;
+  is_refresh_version = chrome_version == 117 || chrome_version == 118;
 }
 
 void LogStartupType(StartupType type) {
@@ -61,19 +78,17 @@ bool IsRemoteContentDisabled() {
   return g_is_remote_content_disabled;
 }
 
-bool ShouldShowRefresh(PrefService* local_state) {
-  bool has_shown_refresh_whats_new =
-      local_state->GetBoolean(prefs::kHasShownRefreshWhatsNew);
+bool HasShownRefreshWhatsNew(PrefService* local_state) {
+  return local_state->GetBoolean(prefs::kHasShownRefreshWhatsNew);
+}
 
+bool ShouldShowRefresh(PrefService* local_state) {
   // Check pref to see if user has seen refresh page.
-  if (has_shown_refresh_whats_new) {
-    // Do not LogStartupType() here because already seeing the refresh
-    // page does not preclude the browser from attempting to see a
-    // regular What's New Page.
+  if (HasShownRefreshWhatsNew(local_state)) {
     return false;
   }
 
-  // Show refresh page if user has refresh flag enabled.
+  // Show refresh page if user has flag enabled.
   return features::IsChromeRefresh2023();
 }
 
@@ -104,11 +119,20 @@ bool ShouldShowForState(PrefService* local_state,
     return false;
   }
 
-  // The refresh page needs to perform a check every time the
-  // browser starts. The refresh page is not tied to a milestone, so this
-  // needs to happen before the milestone check.
-  if (ShouldShowRefresh(local_state)) {
+  // Prevent showing the refresh page before 117, even if the refresh
+  // flag is enabled.
+  if (IsMinimumRefreshVersion() && ShouldShowRefresh(local_state)) {
     return true;
+  }
+
+  // These releases are dedicated to the refresh page which is served on
+  // the milestone 117 URL. Avoid ever showing content on 117/118
+  // milestone upgrades by returning early.
+  if (IsRefreshVersion()) {
+    if (HasShownRefreshWhatsNew(local_state)) {
+      LogStartupType(StartupType::kAlreadyShown);
+    }
+    return false;
   }
 
   int last_version = local_state->GetInteger(prefs::kLastWhatsNewVersion);
@@ -287,9 +311,10 @@ class WhatsNewFetcher : public BrowserListObserver {
 void StartWhatsNewFetch(Browser* browser) {
   PrefService* local_state = g_browser_process->local_state();
   // Check whether to override the default Whats's New URL
-  if (ShouldShowRefresh(local_state)) {
-    // ShouldShowRefresh should not be called after this boolean is set
-    // to true. This function relies on initial state of this pref.
+  if (IsMinimumRefreshVersion() && ShouldShowRefresh(local_state)) {
+    // Set pref to indicate that the refresh page should not attempt to
+    // display again. ShouldShowRefresh should not be called after this
+    // boolean is set to true.
     local_state->SetBoolean(prefs::kHasShownRefreshWhatsNew, true);
     new WhatsNewFetcher(
         browser, net::AppendQueryParameter(GURL(kChromeWhatsNewRefreshURL),

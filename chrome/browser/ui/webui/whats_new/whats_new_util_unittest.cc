@@ -9,6 +9,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
+#include "chrome/browser/ui/ui_features.h"
 #include "chrome/common/chrome_version.h"
 #include "chrome/common/pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
@@ -36,9 +37,11 @@ class WhatsNewUtilTests : public testing::Test {
   WhatsNewUtilTests& operator=(const WhatsNewUtilTests&) = delete;
 
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kChromeRefresh2023);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kChromeWhatsNewUI, features::kChromeRefresh2023}, {});
     prefs_.registry()->RegisterBooleanPref(prefs::kHasShownRefreshWhatsNew,
                                            false);
+    prefs_.registry()->RegisterIntegerPref(prefs::kLastWhatsNewVersion, 116);
   }
 
   void ToggleRefresh(bool enabled) {
@@ -82,4 +85,29 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
   // kChromeRefresh2023=disabled && hasShownRefreshWhatsNew=false
   ToggleHasShownRefresh(false);
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
+}
+
+TEST_F(WhatsNewUtilTests, ShouldShowForStateUsesChromeVersionForRefresh) {
+  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  whats_new::SetChromeVersionForTests(117);
+  // Refresh page should show
+  EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
+
+  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=true
+  ToggleHasShownRefresh(true);
+  // If refresh page has been shown, and this is a refresh version
+  // (117/118), ShouldShowForState should return false
+  EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
+
+  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  whats_new::SetChromeVersionForTests(116);
+  ToggleHasShownRefresh(false);
+  // Refresh page should not show previous to 117
+  EXPECT_FALSE(whats_new::ShouldShowForState(prefs(), true));
+
+  // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
+  whats_new::SetChromeVersionForTests(119);
+  // Refresh page should show for versions after 118 if it has not been
+  // shown yet
+  EXPECT_TRUE(whats_new::ShouldShowForState(prefs(), true));
 }
