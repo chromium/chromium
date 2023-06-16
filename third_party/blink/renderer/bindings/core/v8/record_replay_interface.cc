@@ -210,25 +210,44 @@ function initMessages() {
 let gNextMessageId = 1;
 
 let gCurrentMessageId;
+
+/**
+ * `gCurrentMessageResult` can be of 3 possible types:
+ * 
+ * 1. ProtocolError (id?, error: (code, message), data?)
+ * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L275
+ * 
+ * 2. Response (id, result) - The response contains the return values defined by CDP.
+ * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L348
+ * 
+ * 3. Notification (method, params) - TODO: we are not handling this yet.
+ * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L370
+ */
 let gCurrentMessageResult;
 
-function sendMessage(method, params, throwOnApiError = true) {
+class CDPMessageError extends Error {
+  constructor(message, code) {
+    super(`${message} (${code})`);
+    this.cdpMessage = message;
+    this.code = code;
+  }
+}
+
+function sendMessage(method, params) {
   const id = gNextMessageId++;
   gCurrentMessageId = id;
   gCurrentMessageResult = undefined;
   const cdpArgs = JSON_stringify({ method, params, id });
   try {
     sendCDPMessage(cdpArgs);
-  }
-  catch (err) {
+  } catch (err) {
     if (!gCurrentMessageResult) {
       throw err;
-    }
-    else {
+    } else {
       // Work around "ghostly" cross-origin (and maybe other?) errors:
       // Generally speaking, CDP commands should not throw.
-      // If they do, there is a chance that the error was triggered by user JS
-      // and only happens to still be pending when Replay commands were 
+      // If they do, there is a chance that the error was triggered by previous
+      // user JS and only happens to still be pending when Replay commands were
       // triggered.
       // E.g.: https://linear.app/replay/issue/RUN-1680#comment-1dfa142b
       log(`[RuntimeError][RUN-1680] sendCDPMessage(${method}) failed: ${err?.message}`);
@@ -236,32 +255,11 @@ function sendMessage(method, params, throwOnApiError = true) {
   }
   gCurrentMessageId = undefined;
   
-  /**
-   * `gCurrentMessageResult` can be of 3 possible types:
-   * 
-   * 1. ProtocolError (id?, error: (code, message), data?)
-   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L275
-   * 
-   * 2. Response (id, result) - The response contains the return values defined by CDP.
-   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L348
-   * 
-   * 3. Notification (method, params) - TODO: we are not handling this yet.
-   * @see https://github.com/replayio/chromium-v8/blob/c5e451943a6d87b44374e7a08d44fa92b9a2c93b/third_party/inspector_protocol/crdtp/dispatch.cc#L370
-   */
-  if (throwOnApiError) {
-    if (gCurrentMessageResult?.result) {
-      return gCurrentMessageResult.result;
-    }
-    if (gCurrentMessageResult?.error) {
-      throw new Error(`${gCurrentMessageResult.error.message} (${gCurrentMessageResult.error.code})`);
-    }
+  if (gCurrentMessageResult?.result) {
+    return gCurrentMessageResult.result;
   }
-  else {
-    const { result, error } = gCurrentMessageResult;
-    return {
-      ...result,
-      commandFailedReason: error
-    };
+  if (gCurrentMessageResult?.error) {
+    throw new CDPMessageError(gCurrentMessageResult.error.message, gCurrentMessageResult.error.code);
   }
   return undefined;
 }
@@ -535,26 +533,18 @@ function getStackFrames() {
 function buildRrpObjectResult(cdpReturnValue) {
   const rrpResult = { data: {} };
   if (cdpReturnValue) {
-    const { result: cdpResult, exceptionDetails, commandFailedReason } = cdpReturnValue;
+    const { result: cdpResult, exceptionDetails } = cdpReturnValue;
     if (exceptionDetails) {
       // exceptionDetails encapsulate a JS exception thrown while handling the command.
       const rrpId = buildRrpObjectFromCdpObject(exceptionDetails);
       rrpResult.exception = rrpId;
-    }
-    else if (commandFailedReason) {
-      // commandFailedReason is a plain object, containing `code` and `message`, indicating 
-      // why the V8 debugger failed to handle the command.
-      const rrpId = registerPlainObject(commandFailedReason);
-      rrpResult.exception = rrpId;
-      rrpResult.failed = true;
     }
     if (cdpResult) {
       // cdpResult is the actual result RemoteObject.
       const rrpId = buildRrpObjectFromCdpObject(cdpResult);
       rrpResult.returned = rrpId;
     }
-  }
-  else {
+  } else {
     // Sometimes things go wrong.
     // E.g. sometimes we get "Cannot find default execution context (-32000) when executing" sendMessage 
     // from Pause_evaluateIn*.
@@ -563,6 +553,16 @@ function buildRrpObjectResult(cdpReturnValue) {
   return { result: rrpResult };
 }
 
+
+function handleEvalError(err) {
+  // RUN-2042 workaround: This fails a lot due to evals on frames in contexts 
+  // that have been destroyed. We want to fix this if we know that this is 
+  // high-impact.
+  log(`[RuntimeError] in eval: ${err?.stack || err}`);
+  return {
+    failed: true
+  };
+}
 
 function Pause_evaluateInFrame({ frameId, expression }) {
   const frames = getStackFrames();
@@ -584,7 +584,11 @@ function Pause_evaluateInFrame({ frameId, expression }) {
   }
 
   const rv = doEvaluation();
-  return buildRrpObjectResult(rv);
+  try {
+    return buildRrpObjectResult(rv);
+  } catch (err) {
+    return handleEvalError(err);
+  }
 
   function doEvaluation() {
     // In order to do the evaluation in the right frame, the same number of
@@ -598,21 +602,24 @@ function Pause_evaluateInFrame({ frameId, expression }) {
         callFrameId: frame.callFrameId,
         expression,
         objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-      },
-      /* throwOnApiError */ false
+      }
     );
   }
 }
 
 function Pause_evaluateInGlobal({ expression }) {
-  const rv = sendMessage(
-    "Runtime.evaluate", 
-    {
-      expression,
-      objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
-    },
-    /* throwOnApiError */ false
-  );
+  let rv;
+  try {
+    rv = sendMessage(
+      "Runtime.evaluate", 
+      {
+        expression,
+        objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
+      }
+    );
+  } catch (err) {
+    return handleEvalError(err);
+  }
   return buildRrpObjectResult(rv);
 }
 
@@ -1242,8 +1249,7 @@ ProtocolObjectPreview.prototype = {
         pageSize: this.pageSize,
         objectGroup: REPLAY_CDT_PAUSE_OBJECT_GROUP
       });
-    }
-    else {
+    } else {
       cdpProperties = { result: [] };
     }
 
@@ -1263,8 +1269,7 @@ ProtocolObjectPreview.prototype = {
         for (const entry of previewers) {
           if (entry instanceof Function) {
             entry.call(this, cdpProperties);
-          }
-          else {
+          } else {
             // entry should be string -> Look it up in results
             const cdpEntry = cdpProperties.result.find(prop => prop.name === entry);
             if (cdpEntry) {
@@ -1619,8 +1624,7 @@ function evalPropRrp(owner, propKey) {
   try {
     const plainValue = owner[propKey];
     return createRrpValueRaw(plainValue);
-  }
-  catch (err) {
+  } catch (err) {
     log(`[RuntimeError] prop evaluation exception - calling ${propKey.toString()} on object: ${err.stack}`);
     return null;
   }
@@ -3775,8 +3779,7 @@ v8::Local<v8::Array> convertCborToJS(v8::Isolate* isolate,
             isolate, entry);
     if (!item.IsEmpty()) {
       result->Set(context, i, item.ToLocalChecked()).Check();
-    }
-    else {
+    } else {
       result->Set(context, i, Null(isolate)).Check();
     }
   }
@@ -4685,8 +4688,7 @@ static void fromJsCollectEventListeners(const v8::FunctionCallbackInfo<v8::Value
   v8::Local<v8::Array> result = v8::Array::New(isolate);
   if (!node) {
     recordreplay::Print("[RuntimeError] fromJsCollectEventListeners invalid argument is not blink Node");
-  }
-  else {
+  } else {
     auto report_for_all_contexts = true;
     V8EventListenerInfoList eventListenerInfos;
     InspectorDOMDebuggerAgent::CollectEventListeners(
