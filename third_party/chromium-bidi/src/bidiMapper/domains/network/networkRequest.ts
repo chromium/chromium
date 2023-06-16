@@ -183,12 +183,9 @@ export class NetworkRequest {
       url: this.#requestWillBeSentEvent?.request.url ?? NetworkRequest.#unknown,
       method:
         this.#requestWillBeSentEvent?.request.method ?? NetworkRequest.#unknown,
-      headers: Object.keys(
-        this.#requestWillBeSentEvent?.request.headers ?? []
-      ).map((key) => ({
-        name: key,
-        value: this.#requestWillBeSentEvent?.request.headers[key],
-      })),
+      headers: NetworkRequest.#getHeaders(
+        this.#requestWillBeSentEvent?.request.headers
+      ),
       cookies,
       // TODO: implement.
       headersSize: -1,
@@ -322,10 +319,14 @@ export class NetworkRequest {
     );
   }
 
-  static #getHeaders(headers: Protocol.Network.Headers): Network.Header[] {
-    return Object.keys(headers).map((key) => ({
-      name: key,
-      value: headers[key],
+  static #getHeaders(headers?: Protocol.Network.Headers): Network.Header[] {
+    if (!headers) {
+      return [];
+    }
+
+    return Object.entries(headers).map(([name, value]) => ({
+      name,
+      value,
     }));
   }
 

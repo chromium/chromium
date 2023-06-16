@@ -56,6 +56,7 @@ export namespace Message {
   export type CommandResponse = ResultData & Pick<RawCommandRequest, 'id'>;
 
   export type EmptyCommand = never;
+  export type EmptyMessage = Record<string, never>;
   export type EmptyParams = Record<string, never>;
   export type EmptyResult = {result: Record<string, never>};
 
