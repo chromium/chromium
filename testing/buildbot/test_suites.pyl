@@ -1201,7 +1201,7 @@
       'android_webview_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1213,7 +1213,7 @@
       'base_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1225,7 +1225,7 @@
       'build_junit_tests':{
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1237,7 +1237,7 @@
       'chrome_java_test_pagecontroller_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1249,7 +1249,7 @@
       'chrome_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1261,7 +1261,7 @@
       'components_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1273,7 +1273,7 @@
       'content_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1285,7 +1285,7 @@
       'device_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1297,7 +1297,7 @@
       'junit_unit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1309,7 +1309,7 @@
       'keyboard_accessory_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1321,7 +1321,7 @@
       'media_base_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1333,7 +1333,7 @@
       'module_installer_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1345,7 +1345,7 @@
       'net_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1357,7 +1357,7 @@
       'paint_preview_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1369,7 +1369,7 @@
       'password_check_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1381,7 +1381,7 @@
       'password_manager_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1393,7 +1393,7 @@
       'services_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1405,7 +1405,7 @@
       'touch_to_fill_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1417,7 +1417,7 @@
       'ui_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1429,7 +1429,7 @@
       'webapk_client_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1441,7 +1441,7 @@
       'webapk_shell_apk_h2o_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
@@ -1453,7 +1453,7 @@
       'webapk_shell_apk_junit_tests': {
         'mixins': [
           'x86-64',
-          'linux-bionic',
+          'linux-jammy',
           'junit-swarming',
         ],
         'remove_mixins': [
