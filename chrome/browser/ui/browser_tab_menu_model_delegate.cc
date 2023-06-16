@@ -16,7 +16,7 @@ BrowserTabMenuModelDelegate::BrowserTabMenuModelDelegate(Browser* browser)
 BrowserTabMenuModelDelegate::~BrowserTabMenuModelDelegate() = default;
 
 std::vector<Browser*>
-BrowserTabMenuModelDelegate::GetExistingWindowsForMoveMenu() {
+BrowserTabMenuModelDelegate::GetOtherTabbedBrowserWindows() {
   std::vector<Browser*> browsers;
 
   for (Browser* browser : BrowserList::GetInstance()->OrderedByActivation()) {

@@ -64,13 +64,14 @@ ExistingWindowSubMenuModelChromeOS::ExistingWindowSubMenuModelChromeOS(
                                  context_index) {
   // If we shouldn't group by desk, ExistingWindowSubMenuModel's ctor has
   // already built the menu.
-  if (!ShouldGroupByDesk(GetDesksHelper(
-          tab_menu_model_delegate->GetExistingWindowsForMoveMenu())))
+  const std::vector<Browser*> tabbed_browser_windows =
+      tab_menu_model_delegate->GetOtherTabbedBrowserWindows();
+  if (!ShouldGroupByDesk(GetDesksHelper(tabbed_browser_windows))) {
     return;
+  }
 
   ClearMenu();
-  BuildMenuGroupedByDesk(
-      tab_menu_model_delegate->GetExistingWindowsForMoveMenu());
+  BuildMenuGroupedByDesk(tabbed_browser_windows);
 }
 
 ExistingWindowSubMenuModelChromeOS::~ExistingWindowSubMenuModelChromeOS() =
