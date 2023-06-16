@@ -32,7 +32,8 @@ const bookmarks::BookmarkNode* AddProductBookmark(
     const std::string& currency_code,
     const absl::optional<int64_t>& last_subscription_change_time) {
   const bookmarks::BookmarkNode* node =
-      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url);
+      bookmark_model->AddURL(bookmark_model->other_node(), 0, title, url,
+                             nullptr, absl::nullopt, absl::nullopt, true);
   std::unique_ptr<power_bookmarks::PowerBookmarkMeta> meta =
       std::make_unique<power_bookmarks::PowerBookmarkMeta>();
   power_bookmarks::ShoppingSpecifics* specifics =

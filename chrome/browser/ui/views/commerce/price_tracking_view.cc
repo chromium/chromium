@@ -12,8 +12,8 @@
 #include "chrome/browser/ui/ui_features.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
 #include "components/bookmarks/browser/bookmark_model.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
-#include "components/commerce/core/shopping_service.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -57,8 +57,11 @@ gfx::Size GetIconSize() {
 PriceTrackingView::PriceTrackingView(Profile* profile,
                                      const GURL& page_url,
                                      const gfx::ImageSkia& product_image,
-                                     bool is_price_track_enabled)
-    : profile_(profile), is_price_track_enabled_(is_price_track_enabled) {
+                                     bool is_price_track_enabled,
+                                     const commerce::ProductInfo& product_info)
+    : profile_(profile),
+      is_price_track_enabled_(is_price_track_enabled),
+      product_info_(product_info) {
   auto* layout_provider = views::LayoutProvider::Get();
   const bool power_bookmarks_side_panel_enabled =
       base::FeatureList::IsEnabled(features::kPowerBookmarksSidePanel);
@@ -140,7 +143,12 @@ PriceTrackingView::PriceTrackingView(Profile* profile,
   toggle_button_ = AddChildView(std::make_unique<views::ToggleButton>(
       base::BindRepeating(&PriceTrackingView::OnToggleButtonPressed,
                           weak_ptr_factory_.GetWeakPtr(), page_url)));
+
   toggle_button_->SetIsOn(is_price_track_enabled_);
+
+  scoped_observation_.Observe(
+      commerce::ShoppingServiceFactory::GetForBrowserContext(profile_));
+
   toggle_button_->SetAccessibleName(GetToggleAccessibleName());
   toggle_button_->SetProperty(views::kMarginsKey,
                               gfx::Insets::TLBR(0, horizontal_spacing, 0, 0));
@@ -177,6 +185,32 @@ bool PriceTrackingView::IsToggleOn() {
   return toggle_button_->GetIsOn();
 }
 
+void PriceTrackingView::OnSubscribe(const commerce::CommerceSubscription& sub,
+                                    bool succeeded) {
+  if (succeeded) {
+    HandleSubscriptionUpdate(sub, true);
+  }
+}
+
+void PriceTrackingView::OnUnsubscribe(const commerce::CommerceSubscription& sub,
+                                      bool succeeded) {
+  if (succeeded) {
+    HandleSubscriptionUpdate(sub, false);
+  }
+}
+
+void PriceTrackingView::HandleSubscriptionUpdate(
+    const commerce::CommerceSubscription& sub,
+    bool is_tracking) {
+  if (sub.id_type == commerce::IdentifierType::kProductClusterId &&
+      base::NumberToString(product_info_.product_cluster_id.value_or(
+          commerce::kInvalidSubscriptionId)) == sub.id) {
+    is_price_track_enabled_ = is_tracking;
+    toggle_button_->SetIsOn(is_tracking);
+    toggle_button_->SetAccessibleName(GetToggleAccessibleName());
+  }
+}
+
 std::u16string PriceTrackingView::GetToggleAccessibleName() {
   return l10n_util::GetStringUTF16(
       IsToggleOn() ? IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY
@@ -202,7 +236,11 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
       BookmarkModelFactory::GetForBrowserContext(profile_);
   const bookmarks::BookmarkNode* node =
       model->GetMostRecentlyAddedUserNodeForURL(url);
-  if (profile_ && is_price_track_enabled_) {
+
+  // If "track by default" is on, we'll show a dialog after saving to offer
+  // email notifications.
+  if (!base::FeatureList::IsEnabled(commerce::kShoppingListTrackByDefault) &&
+      profile_ && is_price_track_enabled_) {
     commerce::MaybeEnableEmailNotifications(profile_->GetPrefs());
   }
 
@@ -217,11 +255,9 @@ void PriceTrackingView::UpdatePriceTrackingState(const GURL& url) {
         service, model, node, is_price_track_enabled_, std::move(callback));
   } else {
     DCHECK(!is_price_track_enabled_);
-    absl::optional<commerce::ProductInfo> info =
-        service->GetAvailableProductInfoForUrl(url);
-    if (commerce::CanTrackPrice(info)) {
+    if (commerce::CanTrackPrice(product_info_)) {
       commerce::SetPriceTrackingStateForClusterId(
-          service, model, info->product_cluster_id.value(),
+          service, model, product_info_.product_cluster_id.value(),
           is_price_track_enabled_, std::move(callback));
     }
   }

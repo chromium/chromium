@@ -7,9 +7,11 @@
 #include <memory>
 #include <vector>
 
+#include "base/feature_list.h"
 #include "base/functional/callback.h"
 #include "base/strings/string_number_conversions.h"
 #include "components/bookmarks/browser/bookmark_node.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/price_tracking_utils.h"
 #include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/subscriptions/commerce_subscription.h"
@@ -76,6 +78,27 @@ void ShoppingBookmarkModelObserver::BookmarkNodeChanged(
   }
 
   node_to_url_map_.erase(node->id());
+}
+
+void ShoppingBookmarkModelObserver::BookmarkNodeAdded(
+    bookmarks::BookmarkModel* model,
+    const bookmarks::BookmarkNode* parent,
+    size_t index,
+    bool added_by_user) {
+  // Skip non-user added bookmarks.
+  if (!added_by_user) {
+    return;
+  }
+
+  // TODO(b:287289351): We should consider listening to metadata changes
+  //                    instead. Presumably, shopping data is primarily being
+  //                    added to new bookmarks, so we could potentially use the
+  //                    node change event.
+  if (base::FeatureList::IsEnabled(kShoppingListTrackByDefault)) {
+    const bookmarks::BookmarkNode* node = parent->children()[index].get();
+    SetPriceTrackingStateForBookmark(shopping_service_, model, node, true,
+                                     base::DoNothing());
+  }
 }
 
 void ShoppingBookmarkModelObserver::BookmarkNodeRemoved(

@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/views/commerce/price_tracking_view.h"
 
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chrome/browser/bookmarks/bookmark_model_factory.h"
 #include "chrome/browser/commerce/shopping_service_factory.h"
@@ -13,8 +14,11 @@
 #include "chrome/test/views/chrome_test_widget.h"
 #include "components/bookmarks/browser/bookmark_utils.h"
 #include "components/bookmarks/test/bookmark_test_helpers.h"
+#include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
 #include "components/commerce/core/pref_names.h"
+#include "components/commerce/core/price_tracking_utils.h"
+#include "components/commerce/core/shopping_service.h"
 #include "components/commerce/core/test_utils.h"
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
@@ -29,6 +33,7 @@
 
 namespace {
 const char kTestURL[] = "about:blank";
+const uint64_t kProductClusterId = 12345L;
 }  // namespace
 
 class PriceTrackingViewTest : public BrowserWithTestWindowTest {
@@ -82,20 +87,22 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
     bitmap.allocN32Pixels(1, 1);
     const auto valid_product_image =
         gfx::Image(gfx::ImageSkia::CreateFrom1xBitmap(bitmap));
+    commerce::ProductInfo info;
+    info.product_cluster_id.emplace(kProductClusterId);
     auto price_tracking_View = std::make_unique<PriceTrackingView>(
         profile(), GURL(kTestURL), *valid_product_image.ToImageSkia(),
-        is_price_track_enabled);
-    price_tracking_View_ =
+        is_price_track_enabled, std::move(info));
+    price_tracking_view_ =
         anchor_widget_->SetContentsView(std::move(price_tracking_View));
     anchor_widget_->Show();
-    return price_tracking_View_;
+    return price_tracking_view_;
   }
 
   void ClickToggle() {
-    auto toggle_button = price_tracking_View_->toggle_button_;
+    auto toggle_button = price_tracking_view_->toggle_button_;
     gfx::Point toggle_center = toggle_button->GetLocalBounds().CenterPoint();
     gfx::Point root_center = toggle_center;
-    views::View::ConvertPointToWidget(price_tracking_View_, &root_center);
+    views::View::ConvertPointToWidget(price_tracking_view_, &root_center);
     ui::MouseEvent pressed_event(ui::ET_MOUSE_PRESSED, toggle_center,
                                  root_center, base::TimeTicks(),
                                  ui::EF_LEFT_MOUSE_BUTTON, 0);
@@ -110,29 +117,30 @@ class PriceTrackingViewTest : public BrowserWithTestWindowTest {
   }
 
   void VerifyToggleState(bool expected_toggle_on) {
-    EXPECT_EQ(price_tracking_View_->IsToggleOn(), expected_toggle_on);
+    EXPECT_EQ(price_tracking_view_->IsToggleOn(), expected_toggle_on);
 
     if (expected_toggle_on) {
-      EXPECT_EQ(price_tracking_View_->toggle_button_->GetAccessibleName(),
+      EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
                 l10n_util::GetStringUTF16(
                     IDS_PRICE_TRACKING_UNTRACK_PRODUCT_ACCESSIBILITY));
     } else {
-      EXPECT_EQ(price_tracking_View_->toggle_button_->GetAccessibleName(),
+      EXPECT_EQ(price_tracking_view_->toggle_button_->GetAccessibleName(),
                 l10n_util::GetStringUTF16(
                     IDS_PRICE_TRACKING_TRACK_PRODUCT_ACCESSIBILITY));
     }
   }
 
   void VerifyBodyMessage(std::u16string expected_message) {
-    EXPECT_EQ(price_tracking_View_->body_label_->GetText(), expected_message);
+    EXPECT_EQ(price_tracking_view_->body_label_->GetText(), expected_message);
   }
 
  protected:
   base::UserActionTester user_action_tester_;
+  base::test::ScopedFeatureList test_features_;
+  raw_ptr<PriceTrackingView> price_tracking_view_;
 
  private:
   views::UniqueWidgetPtr anchor_widget_;
-  raw_ptr<PriceTrackingView> price_tracking_View_;
 };
 
 TEST_F(PriceTrackingViewTest, InitialPriceTrackEnabled) {
@@ -143,6 +151,24 @@ TEST_F(PriceTrackingViewTest, InitialPriceTrackEnabled) {
       IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
+TEST_F(PriceTrackingViewTest, ToggleReactsToSubscriptionChanges) {
+  test_features_.InitAndEnableFeature(commerce::kShoppingListTrackByDefault);
+
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      commerce::kPriceEmailNotificationsEnabled));
+
+  CreateViewAndShow(/*is_price_track_enabled=*/false);
+  VerifyToggleState(/*expected_toggle_on=*/false);
+
+  price_tracking_view_->OnSubscribe(
+      commerce::BuildUserSubscriptionForClusterId(kProductClusterId), true);
+
+  VerifyToggleState(/*expected_toggle_on=*/true);
+
+  ASSERT_FALSE(profile()->GetPrefs()->GetBoolean(
+      commerce::kPriceEmailNotificationsEnabled));
+}
+
 TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
   const bool enabled = false;
   CreateViewAndShow(enabled);
@@ -151,7 +177,7 @@ TEST_F(PriceTrackingViewTest, InitialPriceTrackDisabled) {
       IDS_BOOKMARK_STAR_DIALOG_TRACK_PRICE_DESCRIPTION));
 }
 
-TEST_F(PriceTrackingViewTest, ToggleSuccessed) {
+TEST_F(PriceTrackingViewTest, ToggleSucceeded) {
   SetUpDependencies();
 
   const bool initial_enabled = false;
