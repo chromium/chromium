@@ -1870,6 +1870,24 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
                                          1);
 }
 
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest, UMAStartupTime) {
+  base::HistogramTester histogram_tester;
+
+  constexpr base::TimeDelta kExpectedTimeBucket1 = base::Seconds(0);
+
+  TriggerScreensaverOnLoginScreen();
+  ASSERT_TRUE(GetContainerView());
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_FALSE(GetContainerView());
+  FastForwardByLockScreenInactivityTimeout();
+  ASSERT_TRUE(GetContainerView());
+
+  auto histogram_name = GetManagedScreensaverHistogram(
+      kManagedScreensaverStartupTimeSlideshowUMA);
+  histogram_tester.ExpectTimeBucketCount(histogram_name, kExpectedTimeBucket1,
+                                         2);
+}
+
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginScreen) {
   TriggerScreensaverOnLoginScreen();

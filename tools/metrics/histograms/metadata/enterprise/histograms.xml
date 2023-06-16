@@ -2207,6 +2207,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagedScreensaver.StartupTime.Slideshow"
+    units="ms" expires_after="2024-06-07">
+  <owner>mpetrisor@chromium.org</owner>
+  <owner>imprivata-eng@google.com</owner>
+  <summary>
+    Records the amount of time it takes for the managed screensaver to start.
+    This includes tasks such as getting the list of downloaded images, checking
+    that the list has a minimal amount of images, decoding them, etc. Note this
+    measurement does not include the lock screen inactivity timeout. The metric
+    would be emitted when the first two images are loaded succcessfully.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange"
     enum="BooleanChanged" expires_after="2023-07-15">

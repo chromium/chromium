@@ -18,6 +18,7 @@ namespace {
 // TODO(b/287231044) Move this along with other constants UMA to a shared
 // header.
 constexpr int kManagedScreensaverEngagemenTimeHistogramBuckets = 144;
+constexpr int kManagedScreensaverStartupTimeHistogramBuckets = 144;
 constexpr base::StringPiece kManagedScreensaverHistogramPrefix =
     "Enterprise.ManagedScreensaver.";
 
@@ -59,5 +60,19 @@ void ManagedScreensaverMetricsRecorder::RecordSessionEnd() {
       /*buckets=*/kManagedScreensaverEngagemenTimeHistogramBuckets);
 
   session_elapsed_timer_.reset();
+}
+
+void ManagedScreensaverMetricsRecorder::RecordSessionStartupTime() {
+  if (!session_elapsed_timer_) {
+    return;
+  }
+
+  base::UmaHistogramCustomTimes(
+      /*name=*/GetManagedScreensaverHistogram(
+          kManagedScreensaverStartupTimeSlideshowUMA),
+      /*sample=*/session_elapsed_timer_->Elapsed(),
+      /*min=*/base::Seconds(0),
+      /*max=*/base::Seconds(1000),
+      /*buckets=*/kManagedScreensaverStartupTimeHistogramBuckets);
 }
 }  // namespace ash

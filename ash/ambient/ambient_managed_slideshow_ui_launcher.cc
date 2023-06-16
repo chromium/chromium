@@ -43,6 +43,7 @@ AmbientManagedSlideshowUiLauncher::~AmbientManagedSlideshowUiLauncher() =
 void AmbientManagedSlideshowUiLauncher::OnImagesReady() {
   CHECK(initialization_callback_);
   std::move(initialization_callback_).Run(/*success=*/true);
+  metrics_recorder_.RecordSessionStartupTime();
 }
 
 void AmbientManagedSlideshowUiLauncher::OnErrorStateChanged() {

@@ -16,6 +16,8 @@ namespace ash {
 constexpr char kManagedScreensaverEnabledUMA[] = "Enabled";
 constexpr char kManagedScreensaverEngagementTimeSlideshowUMA[] =
     "EngagementTime.Slideshow";
+constexpr char kManagedScreensaverStartupTimeSlideshowUMA[] =
+    "StartupTime.Slideshow";
 
 ASH_EXPORT std::string GetManagedScreensaverHistogram(
     const base::StringPiece& histogram_suffix);
@@ -32,8 +34,11 @@ class ManagedScreensaverMetricsRecorder {
       const ManagedScreensaverMetricsRecorder&) = delete;
 
   // Starts the session elapsed timer. This is used to keep track of the start
-  // of a session
+  // of a session.
   void RecordSessionStart();
+
+  // Records the amount of time it takes for the managed screensaver to start.
+  void RecordSessionStartupTime();
 
   // Records the engagement time UMA.
   void RecordSessionEnd();
