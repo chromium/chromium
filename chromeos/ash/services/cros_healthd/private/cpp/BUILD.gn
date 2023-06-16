@@ -11,11 +11,14 @@ source_set("cpp") {
   sources = [
     "data_collector.cc",
     "data_collector.h",
+    "dlc_utils.cc",
+    "dlc_utils.h",
   ]
   deps = [
     "//ash:ash",
     "//base",
     "//chromeos/ash/components/audio",
+    "//chromeos/ash/components/dbus/dlcservice",
     "//chromeos/ash/components/mojo_service_manager",
     "//content/public/browser:browser",
     "//ui/events/devices",

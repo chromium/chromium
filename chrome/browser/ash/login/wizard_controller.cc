@@ -208,6 +208,7 @@
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "chromeos/ash/components/timezone/timezone_provider.h"
 #include "chromeos/ash/components/timezone/timezone_request.h"
+#include "chromeos/ash/services/cros_healthd/private/cpp/dlc_utils.h"
 #include "chromeos/ash/services/rollback_network_config/public/mojom/rollback_network_config.mojom.h"
 #include "components/metrics/structured/neutrino_logging.h"
 #include "components/metrics/structured/neutrino_logging_util.h"
@@ -2260,6 +2261,9 @@ void WizardController::PerformPostNetworkScreenActions() {
   DelayNetworkCall(ServicesCustomizationDocument::GetInstance()
                        ->EnsureCustomizationAppliedClosure());
   GetAutoEnrollmentController()->Start();
+
+  // Triggers DLC installation here to ensure network availability
+  cros_healthd::internal::TriggerDlcInstall();
 }
 
 void WizardController::PerformOOBECompletedActions() {
