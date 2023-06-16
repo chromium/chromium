@@ -8333,12 +8333,6 @@ TEST_F(AutofillMetricsFromLogEventsTest, TestShowSuggestionAutofillStatus) {
                form.fields[i].global_id())},
           {UFIT::kFieldSignatureName,
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-          {UFIT::kWasFocusedName, i == 0},
-          {UFIT::kIsFocusableName, true},
-          {UFIT::kSuggestionWasAvailableName, true},
-          {UFIT::kSuggestionWasShownName, true},
-          {UFIT::kSuggestionWasAcceptedName, false},
-          {UFIT::kUserTypedIntoFieldName, false},
           {UFIT::kFormControlTypeName,
            base::to_underlying(FormControlType::kText)},
           {UFIT::kAutocompleteStateName,
@@ -8435,30 +8429,14 @@ TEST_F(AutofillMetricsFromLogEventsTest, AddressSubmittedFormLogEvents) {
                form.fields[i].global_id())},
           {UFIT::kFieldSignatureName,
            Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-          {UFIT::kWasFocusedName, i == 0},
-          {UFIT::kIsFocusableName, true},
-          {UFIT::kWasAutofilledName, i != 2},
           {UFIT::kAutofillSkippedStatusName,
            DenseSet<SkipStatus>{status}.data()[0]},
-          {UFIT::kWasRefillName, false},
-          {UFIT::kHadValueBeforeFillingName, false},
-          {UFIT::kUserTypedIntoFieldName, i == 0},
-          {UFIT::kHadTypedOrFilledValueAtSubmissionName, i != 2},
           {UFIT::kFormControlTypeName,
            base::to_underlying(FormControlType::kText)},
           {UFIT::kAutocompleteStateName,
            base::to_underlying(AutofillMetrics::AutocompleteState::kNone)},
           {UFIT::kAutofillStatusVectorName, autofill_status_vector.data()[0]},
       };
-      if (i == 0) {
-        expected[UFIT::kSuggestionWasAvailableName] = true;
-        expected[UFIT::kSuggestionWasShownName] = true;
-        expected[UFIT::kSuggestionWasAcceptedName] = true;
-      }
-      if (i != 2) {
-        expected[UFIT::kFilledValueWasModifiedName] = i == 0;
-      }
-
       EXPECT_EQ(expected.size(), entry->metrics.size());
       for (const auto& [metric, value] : expected) {
         test_ukm_recorder_->ExpectEntryMetric(entry, metric, value);
@@ -8619,10 +8597,7 @@ TEST_F(AutofillMetricsFromLogEventsTest, AutofillFieldInfoMetricsFieldType) {
         {UFIT::kOverallTypeName, overall_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},
-        {UFIT::kIsFocusableName, true},
         {UFIT::kRankInFieldSignatureGroupName, 1},
-        {UFIT::kWasFocusedName, false},
-        {UFIT::kUserTypedIntoFieldName, false},
         {UFIT::kFormControlTypeName,
          base::to_underlying(FormControlType::kText)},
         {UFIT::kAutocompleteStateName,
@@ -8761,10 +8736,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
          AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-        {UFIT::kWasFocusedName, false},
-        {UFIT::kIsFocusableName, true},
-        {UFIT::kUserTypedIntoFieldName, true},
-        {UFIT::kHadTypedOrFilledValueAtSubmissionName, true},
         {UFIT::kFormControlTypeName,
          base::to_underlying(FormControlType::kText)},
         {UFIT::kAutocompleteStateName,
@@ -9030,9 +9001,6 @@ TEST_F(AutofillMetricsFromLogEventsTest,
          AutofillMetrics::FieldGlobalIdToHash64Bit(form.fields[i].global_id())},
         {UFIT::kFieldSignatureName,
          Collapse(CalculateFieldSignatureForField(form.fields[i])).value()},
-        {UFIT::kWasFocusedName, false},
-        {UFIT::kIsFocusableName, true},
-        {UFIT::kUserTypedIntoFieldName, false},
         {UFIT::kOverallTypeName, field_types[i]},
         {UFIT::kSectionIdName, 1},
         {UFIT::kTypeChangedByRationalizationName, false},

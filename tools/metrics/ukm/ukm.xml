@@ -3287,6 +3287,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="FilledValueWasModified" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the user modified a field after autofilling/autocompleting it.
     </summary>
@@ -3309,12 +3312,18 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="HadTypedOrFilledValueAtSubmission" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether there was a value after user typed or autofilled in the field at
       form submission or form destruction time.
     </summary>
   </metric>
   <metric name="HadValueBeforeFilling" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether there was a value before autofill in the field.
     </summary>
@@ -3367,6 +3376,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="IsFocusable" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the field is focusable to the user. This is an approximation of
       visibility with false positives.
@@ -3430,6 +3442,9 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SuggestionWasAccepted" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the suggestion was accepted. This is only set for a field where a
       suggestion was shown and accepted by the user. It is not the same as
@@ -3440,12 +3455,18 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="SuggestionWasAvailable" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether there was a suggestion available for the field from user data.
       This is only set for a field that was focused by the user.
     </summary>
   </metric>
   <metric name="SuggestionWasShown" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether a suggestion popup was ever shown on this field (i.e. the field
       had focus and user had data on file).
@@ -3457,11 +3478,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="UserTypedIntoField" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the user ever typed into the field (regardless of autofill).
     </summary>
   </metric>
   <metric name="WasAutofilled" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the field was ever filled by autofill. This applies to all the
       fields that were autofilled, not just the field that was clicked. If a
@@ -3471,11 +3498,17 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="WasFocused" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the user ever focused on the field.
     </summary>
   </metric>
   <metric name="WasRefill" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector.
+    </obsolete>
     <summary>
       Whether the form was refilled by autofill.
     </summary>
