@@ -219,6 +219,23 @@ export enum PrivacyGuideStepsEligibleAndReached {
   COUNT = 10,
 }
 
+/**
+ * Contains the possible delete browsing data action types.
+ * This should be kept in sync with the `DeleteBrowsingDataAction` enum in
+ * components/browsing_data/core/browsing_data_utils.h
+ */
+export enum DeleteBrowsingDataAction {
+  CLEAR_BROWSING_DATA_DIALOG = 0,
+  CLEAR_BROWSING_DATA_ON_EXIT = 1,
+  INCOGNITO_CLOSE_TABS = 2,
+  COOKIES_IN_USE_DIALOG = 3,
+  SITES_SETTINGS_PAGE = 4,
+  HISTORY_PAGE_ENTRIES = 5,
+  QUICK_DELETE_LAST_15MINUTES = 6,
+  PAGE_INFO_RESET_PERMISSIONS = 7,
+  MAX_VALUE = 8,
+}
+
 export interface MetricsBrowserProxy {
   /**
    * Helper function that calls recordAction with one action from
@@ -319,6 +336,12 @@ export interface MetricsBrowserProxy {
    */
   recordPrivacyGuideStepsEligibleAndReachedHistogram(
       status: PrivacyGuideStepsEligibleAndReached): void;
+
+  /**
+   * Helper function that delegates the metric recording to the
+   * recordDeleteBrowsingDataAction backend function.
+   */
+  recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void;
 }
 
 export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
@@ -440,6 +463,14 @@ export class MetricsBrowserProxyImpl implements MetricsBrowserProxy {
       'Settings.PrivacyGuide.StepsEligibleAndReached',
       status,
       PrivacyGuideStepsEligibleAndReached.COUNT,
+    ]);
+  }
+
+  recordDeleteBrowsingDataAction(action: DeleteBrowsingDataAction): void {
+    chrome.send('metricsHandler:recordInHistogram', [
+      'Privacy.DeleteBrowsingData.Action',
+      action,
+      DeleteBrowsingDataAction.MAX_VALUE,
     ]);
   }
 

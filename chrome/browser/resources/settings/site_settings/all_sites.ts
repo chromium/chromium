@@ -31,6 +31,7 @@ import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/p
 
 import {GlobalScrollTargetMixin} from '../global_scroll_target_mixin.js';
 import {loadTimeData} from '../i18n_setup.js';
+import {DeleteBrowsingDataAction, MetricsBrowserProxy, MetricsBrowserProxyImpl} from '../metrics_browser_proxy.js';
 import {routes} from '../route.js';
 import {Route, RouteObserverMixin, Router} from '../router.js';
 
@@ -195,6 +196,8 @@ export class AllSitesElement extends AllSitesElementBase {
   private clearAllData_: boolean;
   private sortMethod_?: SortMethod;
   private totalUsage_: string;
+  private metricsBrowserProxy: MetricsBrowserProxy =
+      MetricsBrowserProxyImpl.getInstance();
 
   override ready() {
     super.ready();
@@ -505,6 +508,9 @@ export class AllSitesElement extends AllSitesElementBase {
       origins: [],
     };
 
+    this.metricsBrowserProxy.recordDeleteBrowsingDataAction(
+        DeleteBrowsingDataAction.SITES_SETTINGS_PAGE);
+
     if (actionScope === 'origin') {
       if (isPartitioned) {
         this.browserProxy.recordAction(
@@ -781,7 +787,7 @@ export class AllSitesElement extends AllSitesElementBase {
   }
 
   /**
-   * Helper to remove data and cookies for an group.
+   * Helper to remove data and cookies for a group.
    * @param index The index of the target siteGroup in filteredList_ that should
    *     be cleared.
    */
@@ -838,6 +844,8 @@ export class AllSitesElement extends AllSitesElementBase {
     const anyAppsInstalled = this.filteredList_.some(g => g.hasInstalledPWA);
     const installed = anyAppsInstalled ? 'Installed' : '';
     this.recordUserAction_([...scopes, installed, 'Confirm']);
+    this.metricsBrowserProxy.recordDeleteBrowsingDataAction(
+        DeleteBrowsingDataAction.SITES_SETTINGS_PAGE);
     if (this.isFpsFiltered_()) {
       this.browserProxy.recordAction(AllSitesAction2.DELETE_FOR_ENTIRE_FPS);
     }

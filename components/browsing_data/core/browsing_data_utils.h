@@ -57,6 +57,9 @@ enum class TimePeriod {
 //
 // A Java counterpart will be generated for this enum.
 // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.components.browsing_data
+//
+// Note: Make sure to keep in sync with DeleteBrowsingDataAction defined in
+//   chrome/browser/resources/settings/site_settings/metrics_browser_proxy.ts
 enum class DeleteBrowsingDataAction {
   kClearBrowsingDataDialog = 0,
   kClearBrowsingDataOnExit = 1,
