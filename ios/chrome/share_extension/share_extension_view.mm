@@ -4,6 +4,7 @@
 
 #import "ios/chrome/share_extension/share_extension_view.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
@@ -284,8 +285,8 @@ const CGFloat kButtonFontSize = 17;
                            target:self
                            action:@selector(cancelPressed:)];
 
-  NSString* appName =
-      [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleDisplayName"];
+  NSString* appName = [base::apple::FrameworkBundle()
+      objectForInfoDictionaryKey:@"CFBundleDisplayName"];
   UINavigationItem* titleItem =
       [[UINavigationItem alloc] initWithTitle:appName];
   [titleItem setLeftBarButtonItem:cancelButton];

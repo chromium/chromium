@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/voice/speech_input_locale_match.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -60,10 +61,10 @@ NSString* const kMatchingLanguagesKey = @"MatchingLanguages";
 @end
 
 NSArray<SpeechInputLocaleMatch*>* LoadSpeechInputLocaleMatches() {
-  NSString* path =
-      [[NSBundle mainBundle] pathForResource:@"SpeechInputLocaleMatches"
-                                      ofType:@"plist"
-                                 inDirectory:@"gm-config/ANY"];
+  NSString* path = [base::apple::FrameworkBundle()
+      pathForResource:@"SpeechInputLocaleMatches"
+               ofType:@"plist"
+          inDirectory:@"gm-config/ANY"];
 
   NSMutableArray<SpeechInputLocaleMatch*>* matches = [NSMutableArray array];
   for (id item in [NSArray arrayWithContentsOfFile:path]) {

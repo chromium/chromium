@@ -6,6 +6,7 @@
 
 #import <ostream>
 
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "ios/chrome/common/app_group/app_group_constants.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
@@ -47,12 +48,13 @@ NSString* const kUserDefaulsCredentialProviderSavingPasswordsEnabled =
 // Used to generate a unique AppGroupPrefix to differentiate between different
 // versions of Chrome running in the same device.
 NSString* AppGroupPrefix() {
-  NSDictionary* infoDictionary = [NSBundle mainBundle].infoDictionary;
+  NSBundle* bundle = base::apple::FrameworkBundle();
+  NSDictionary* infoDictionary = bundle.infoDictionary;
   NSString* prefix = infoDictionary[@"MainAppBundleID"];
   if (prefix) {
     return prefix;
   }
-  return [NSBundle mainBundle].bundleIdentifier;
+  return bundle.bundleIdentifier;
 }
 
 }  // namespace
@@ -64,8 +66,9 @@ NSURL* CredentialProviderSharedArchivableStoreURL() {
   // As of 2021Q4, Earl Grey build don't support security groups in their
   // entitlements.
   if (!groupURL) {
+    NSBundle* bundle = base::apple::FrameworkBundle();
     NSNumber* isEarlGreyTest =
-        [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CRIsEarlGreyTest"];
+        [bundle objectForInfoDictionaryKey:@"CRIsEarlGreyTest"];
     if ([isEarlGreyTest boolValue])
       groupURL = [NSURL fileURLWithPath:NSTemporaryDirectory()];
   }

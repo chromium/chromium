@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/safe_mode/safe_mode_crashing_modules_config.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -30,9 +31,9 @@ NSString* const kModuleFriendlyNameKey = @"ModuleFriendlyName";
 - (instancetype)init {
   self = [super init];
   if (self) {
-    NSString* configPath =
-        [[NSBundle mainBundle] pathForResource:@"SafeModeCrashingModules"
-                                        ofType:@"plist"];
+    NSString* configPath = [base::apple::FrameworkBundle()
+        pathForResource:@"SafeModeCrashingModules"
+                 ofType:@"plist"];
     _configuration = [[NSDictionary alloc] initWithContentsOfFile:configPath];
   }
   return self;

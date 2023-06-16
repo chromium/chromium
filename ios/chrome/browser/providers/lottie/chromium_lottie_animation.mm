@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/apple/bundle_locations.h"
 #import "build/build_config.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_api.h"
 #import "ios/public/provider/chrome/browser/lottie/lottie_animation_configuration.h"
@@ -41,7 +42,7 @@
 
     _lottieAnimation = [LOTAnimationView
         animationNamed:config.animationName
-              inBundle:config.bundle == nil ? [NSBundle mainBundle]
+              inBundle:config.bundle == nil ? base::apple::FrameworkBundle()
                                             : config.bundle];
 #endif  // BUILDFLAG(IS_IOS_MACCATALYST)
   }

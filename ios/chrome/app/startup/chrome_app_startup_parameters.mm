@@ -4,6 +4,7 @@
 
 #import "ios/chrome/app/startup/chrome_app_startup_parameters.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_functions.h"
 #import "base/metrics/histogram_macros.h"
@@ -710,8 +711,9 @@ TabOpeningPostOpeningAction XCallbackPoaToPostOpeningAction(
   }
 
   if ([_declaredSourceApp
-          isEqualToString:[[NSBundle mainBundle] bundleIdentifier]])
+          isEqualToString:[base::apple::FrameworkBundle() bundleIdentifier]]) {
     return CALLER_APP_GOOGLE_CHROME;
+  }
   if ([_declaredSourceApp isEqualToString:@"com.google.GoogleMobile"])
     return CALLER_APP_GOOGLE_SEARCH;
   if ([_declaredSourceApp isEqualToString:@"com.google.Gmail"])

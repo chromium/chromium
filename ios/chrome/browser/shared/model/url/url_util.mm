@@ -6,6 +6,7 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/apple/bundle_locations.h"
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/string_util.h"
@@ -92,7 +93,7 @@ bool ShouldLoadUrlInDesktopMode(const GURL& url,
 
 - (NSArray*)allBundleURLSchemes {
   if (!_schemes) {
-    NSDictionary* info = [[NSBundle mainBundle] infoDictionary];
+    NSDictionary* info = [base::apple::FrameworkBundle() infoDictionary];
     NSArray* urlTypes = [info objectForKey:@"CFBundleURLTypes"];
     NSMutableArray* schemes = [[NSMutableArray alloc] init];
     for (NSDictionary* urlType in urlTypes) {

@@ -6,6 +6,7 @@
 
 #import <UniformTypeIdentifiers/UniformTypeIdentifiers.h>
 
+#import "base/apple/bundle_locations.h"
 #import "base/ios/block_types.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
@@ -163,7 +164,7 @@ const CGFloat kMediumAlpha = 0.5;
   NSString* okButton =
       NSLocalizedString(@"IDS_IOS_OK_BUTTON_SHARE_EXTENSION",
                         @"The label of the OK button in share extension.");
-  NSString* applicationName = [[[NSBundle mainBundle] infoDictionary]
+  NSString* applicationName = [[base::apple::FrameworkBundle() infoDictionary]
       valueForKey:@"CFBundleDisplayName"];
   errorMessage =
       [errorMessage stringByReplacingOccurrencesOfString:@"APPLICATION_NAME"

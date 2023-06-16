@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/overlays/infobar_modal/translate/translate_infobar_modal_overlay_mediator.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/ios/ios_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/translate/core/browser/translate_step.h"
@@ -111,7 +112,7 @@ TEST_F(TranslateInfobarModalOverlayMediatorTest, UpdateLanguageInfo) {
   // Skip the test if the locale is no en-US where the indexes have been
   // computed.
   NSString* currentLanguage =
-      [[[NSBundle mainBundle] preferredLocalizations] firstObject];
+      [[base::apple::FrameworkBundle() preferredLocalizations] firstObject];
   if (![currentLanguage isEqualToString:@"en-US"]) {
     return;
   }

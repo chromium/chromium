@@ -6,6 +6,7 @@
 
 #import <Foundation/Foundation.h>
 
+#import "base/apple/bundle_locations.h"
 #import "base/functional/bind.h"
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/app/startup/ios_enable_sandbox_dump_buildflags.h"
@@ -44,8 +45,8 @@ void DumpSandboxIfRequested() {
 
   NSString* application_zip = [dump_directory
       stringByAppendingPathComponent:
-          [NSString stringWithFormat:@"%@.zip",
-                                     [[NSBundle mainBundle] bundleIdentifier]]];
+          [NSString stringWithFormat:@"%@.zip", [base::apple::FrameworkBundle()
+                                                    bundleIdentifier]]];
 
   zip::FilterCallback callback =
       base::BindRepeating(^(const base::FilePath& path) {

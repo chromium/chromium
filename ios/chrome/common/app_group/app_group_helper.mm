@@ -3,6 +3,8 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/common/app_group/app_group_helper.h"
+
+#import "base/apple/bundle_locations.h"
 #import "base/check.h"
 #import "ios/chrome/common/ios_app_bundle_id_prefix_buildflags.h"
 
@@ -13,7 +15,7 @@
 @implementation AppGroupHelper
 
 + (NSString*)applicationGroup {
-  NSBundle* bundle = [NSBundle mainBundle];
+  NSBundle* bundle = base::apple::FrameworkBundle();
   NSString* group = [bundle objectForInfoDictionaryKey:@"KSApplicationGroup"];
   if (![group length]) {
     return [NSString stringWithFormat:@"group.%s.chrome",
