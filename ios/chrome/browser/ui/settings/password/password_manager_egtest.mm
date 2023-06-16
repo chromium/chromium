@@ -2659,7 +2659,8 @@ void CopyPasswordDetailWithID(int detail_id) {
 // Tests that the duplicate credential section alert is shown when the user adds
 // a credential that has the same website as that of an existing credential
 // (does not contain username).
-- (void)testDuplicatedCredentialWithNoUsername {
+// TODO(crbug.com/1351802): The test is flaky.
+- (void)DISABLED_testDuplicatedCredentialWithNoUsername {
   if ([self groupingEnabled]) {
     EARL_GREY_TEST_SKIPPED(
         @"This test isn't implemented with grouped passwords yet.");
