@@ -162,9 +162,30 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
     kTextfield
   };
 
+  class COMPONENT_EXPORT(UI_BASE) Params {
+   public:
+    Params() = default;
+    Params(const Params&) = delete;
+    Params& operator=(const Params&) = delete;
+    ~Params() = default;
+
+    Params& SetVisible(bool is_visible) {
+      is_visible_ = is_visible;
+      return *this;
+    }
+
+   private:
+    friend class DialogModel;
+    friend class DialogModelField;
+
+    bool is_visible_ = true;
+  };
+
   DialogModelField(const DialogModelField&) = delete;
   DialogModelField& operator=(const DialogModelField&) = delete;
   virtual ~DialogModelField();
+
+  bool is_visible() { return is_visible_; }
 
   // Methods with base::PassKey<DialogModelHost> are only intended to be called
   // by the DialogModelHost implementation.
@@ -190,7 +211,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
                    DialogModel* model,
                    Type type,
                    ElementIdentifier id,
-                   base::flat_set<Accelerator> accelerators);
+                   base::flat_set<Accelerator> accelerators,
+                   const DialogModelField::Params& params);
 
   DialogModelButton* AsButton();
   DialogModelParagraph* AsParagraph();
@@ -199,6 +221,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   const DialogModelMenuItem* AsMenuItem() const;
   DialogModelTextfield* AsTextfield();
   DialogModelCustomField* AsCustomField();
+
+  void set_visible(bool visible) { is_visible_ = visible; }
 
  private:
   friend class DialogModel;
@@ -209,12 +233,14 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelField {
   const ElementIdentifier id_;
 
   const base::flat_set<Accelerator> accelerators_;
+
+  bool is_visible_;
 };
 
 // Field class representing a dialog button.
 class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
+  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
    public:
     Params();
     Params(const Params&) = delete;
@@ -227,6 +253,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelButton : public DialogModelField {
     Params& SetEnabled(bool is_enabled);
 
     Params& AddAccelerator(Accelerator accelerator);
+
+    Params& SetVisible(bool is_visible) {
+      DialogModelField::Params::SetVisible(is_visible);
+      return *this;
+    }
 
    private:
     friend class DialogModel;
@@ -303,7 +334,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelParagraph : public DialogModelField {
 // Field class representing a checkbox with descriptive text.
 class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
+  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
    public:
     Params() = default;
     Params(const Params&) = delete;
@@ -312,6 +343,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
 
     Params& SetIsChecked(bool is_checked) {
       is_checked_ = is_checked;
+      return *this;
+    }
+
+    Params& SetVisible(bool is_visible) {
+      DialogModelField::Params::SetVisible(is_visible);
       return *this;
     }
 
@@ -351,7 +387,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCheckbox : public DialogModelField {
 // Ex: Folder    [My Bookmarks]
 class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
+  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
    public:
     Params();
     Params(const Params&) = delete;
@@ -371,6 +407,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
     // combobox menu or navigating it with up/down keys as long as the menu is
     // open.
     Params& SetCallback(base::RepeatingClosure callback);
+
+    Params& SetVisible(bool is_visible) {
+      DialogModelField::Params::SetVisible(is_visible);
+      return *this;
+    }
 
    private:
     friend class DialogModelCombobox;
@@ -424,7 +465,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelCombobox : public DialogModelField {
 // Ex: [icon] Open URL
 class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
+  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
    public:
     Params();
     Params(const Params&) = delete;
@@ -433,6 +474,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuItem : public DialogModelField {
 
     Params& SetIsEnabled(bool is_enabled);
     Params& SetId(ElementIdentifier id);
+
+    Params& SetVisible(bool is_visible) {
+      DialogModelField::Params::SetVisible(is_visible);
+      return *this;
+    }
 
    private:
     friend class DialogModelMenuItem;
@@ -487,7 +533,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelSeparator : public DialogModelField {
 // Ex: Name      [My email]
 class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
  public:
-  class COMPONENT_EXPORT(UI_BASE) Params {
+  class COMPONENT_EXPORT(UI_BASE) Params : public DialogModelField::Params {
    public:
     Params();
     Params(const Params&) = delete;
@@ -498,6 +544,11 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelTextfield : public DialogModelField {
 
     Params& SetAccessibleName(std::u16string accessible_name) {
       accessible_name_ = std::move(accessible_name);
+      return *this;
+    }
+
+    Params& SetVisible(bool is_visible) {
+      DialogModelField::Params::SetVisible(is_visible);
       return *this;
     }
 

@@ -85,6 +85,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   // ui::DialogModelHost:
   void Close() override;
   void OnFieldAdded(ui::DialogModelField* field) override;
+  void OnFieldChanged(ui::DialogModelField* field) override;
 
  private:
   // TODO(pbos): Consider externalizing this functionality into a different
@@ -136,6 +137,7 @@ class VIEWS_EXPORT BubbleDialogModelHost : public BubbleDialogDelegate,
   void AddOrUpdateTextfield(ui::DialogModelTextfield* model_field);
 
   void UpdateSpacingAndMargins();
+  void UpdateFieldVisibility(ui::DialogModelField* field);
 
   void AddViewForLabelAndField(ui::DialogModelField* model_field,
                                const std::u16string& label_text,

@@ -17,11 +17,15 @@ DialogModelMenuModelAdapter::~DialogModelMenuModelAdapter() = default;
 void DialogModelMenuModelAdapter::Close() {
   // TODO(pbos): Implement, or document why menus can't be closed through this
   // interface.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void DialogModelMenuModelAdapter::OnFieldAdded(DialogModelField* field) {
-  NOTREACHED();
+  NOTREACHED_NORETURN();
+}
+
+void DialogModelMenuModelAdapter::OnFieldChanged(DialogModelField* field) {
+  NOTREACHED_NORETURN();
 }
 
 bool DialogModelMenuModelAdapter::HasIcons() const {
@@ -79,8 +83,7 @@ bool DialogModelMenuModelAdapter::IsItemCheckedAt(size_t index) const {
 }
 
 int DialogModelMenuModelAdapter::GetGroupIdAt(size_t index) const {
-  NOTREACHED();
-  return -1;
+  NOTREACHED_NORETURN();
 }
 
 ImageModel DialogModelMenuModelAdapter::GetIconAt(size_t index) const {
@@ -89,8 +92,7 @@ ImageModel DialogModelMenuModelAdapter::GetIconAt(size_t index) const {
 
 ButtonMenuItemModel* DialogModelMenuModelAdapter::GetButtonMenuItemAt(
     size_t index) const {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 bool DialogModelMenuModelAdapter::IsEnabledAt(size_t index) const {
@@ -110,14 +112,13 @@ ui::ElementIdentifier DialogModelMenuModelAdapter::GetElementIdentifierAt(
 }
 
 MenuModel* DialogModelMenuModelAdapter::GetSubmenuModelAt(size_t index) const {
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 void DialogModelMenuModelAdapter::ActivatedAt(size_t index) {
   // If this flags investigate why the ActivatedAt(index, event_flags) isn't
   // being called.
-  NOTREACHED();
+  NOTREACHED_NORETURN();
 }
 
 void DialogModelMenuModelAdapter::ActivatedAt(size_t index, int event_flags) {

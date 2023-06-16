@@ -24,6 +24,7 @@ class COMPONENT_EXPORT(UI_BASE) DialogModelMenuModelAdapter final
   // DialogModelHost:
   void Close() override;
   void OnFieldAdded(DialogModelField* field) override;
+  void OnFieldChanged(DialogModelField* field) override;
 
   // MenuModel:
   bool HasIcons() const override;

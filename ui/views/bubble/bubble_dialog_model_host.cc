@@ -620,8 +620,14 @@ void BubbleDialogModelHost::OnFieldAdded(ui::DialogModelField* field) {
   }
   UpdateSpacingAndMargins();
 
+  UpdateFieldVisibility(field);
+
   if (GetBubbleFrameView())
     SizeToContents();
+}
+
+void BubbleDialogModelHost::OnFieldChanged(ui::DialogModelField* field) {
+  UpdateFieldVisibility(field);
 }
 
 void BubbleDialogModelHost::AddInitialFields() {
@@ -698,6 +704,14 @@ void BubbleDialogModelHost::UpdateSpacingAndMargins() {
       extra_margin;
   set_margins(gfx::Insets::TLBR(top_margin >= 0 ? top_margin : 0, 0,
                                 bottom_margin >= 0 ? bottom_margin : 0, 0));
+}
+
+void BubbleDialogModelHost::UpdateFieldVisibility(ui::DialogModelField* field) {
+  DialogModelHostField host_field = FindDialogModelHostField(field);
+
+  if (host_field.field_view) {
+    host_field.field_view->SetVisible(field->is_visible());
+  }
 }
 
 void BubbleDialogModelHost::OnWindowClosing() {

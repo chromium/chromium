@@ -373,6 +373,8 @@ class COMPONENT_EXPORT(UI_BASE) DialogModel final {
 
   void OnDialogDestroying(base::PassKey<DialogModelHost>);
 
+  void SetVisible(ElementIdentifier id, bool visible);
+
   // Called when added to a DialogModelHost.
   void set_host(base::PassKey<DialogModelHost>, DialogModelHost* host) {
     host_ = host;

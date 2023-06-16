@@ -98,11 +98,13 @@ DialogModelField::DialogModelField(base::PassKey<DialogModel>,
                                    DialogModel* model,
                                    Type type,
                                    ElementIdentifier id,
-                                   base::flat_set<Accelerator> accelerators)
+                                   base::flat_set<Accelerator> accelerators,
+                                   const DialogModelField::Params& params)
     : model_(model),
       type_(type),
       id_(id),
-      accelerators_(std::move(accelerators)) {}
+      accelerators_(std::move(accelerators)),
+      is_visible_(params.is_visible_) {}
 
 DialogModelField::~DialogModelField() = default;
 
@@ -227,7 +229,8 @@ DialogModelButton::DialogModelButton(
                        model,
                        kButton,
                        params.id_,
-                       params.accelerators_),
+                       params.accelerators_,
+                       params),
       label_(std::move(params.label_)),
       style_(params.style_),
       is_enabled_(params.is_enabled_),
@@ -247,7 +250,12 @@ DialogModelParagraph::DialogModelParagraph(base::PassKey<DialogModel> pass_key,
                                            const DialogModelLabel& label,
                                            std::u16string header,
                                            ElementIdentifier id)
-    : DialogModelField(pass_key, model, kParagraph, id, {}),
+    : DialogModelField(pass_key,
+                       model,
+                       kParagraph,
+                       id,
+                       {},
+                       DialogModelField::Params()),
       label_(label),
       header_(header) {}
 
@@ -259,7 +267,7 @@ DialogModelCheckbox::DialogModelCheckbox(
     ElementIdentifier id,
     const DialogModelLabel& label,
     const DialogModelCheckbox::Params& params)
-    : DialogModelField(pass_key, model, kCheckbox, id, {}),
+    : DialogModelField(pass_key, model, kCheckbox, id, {}, params),
       label_(label),
       is_checked_(params.is_checked_) {}
 
@@ -292,7 +300,12 @@ DialogModelCombobox::DialogModelCombobox(
     std::u16string label,
     std::unique_ptr<ui::ComboboxModel> combobox_model,
     const DialogModelCombobox::Params& params)
-    : DialogModelField(pass_key, model, kCombobox, id, params.accelerators_),
+    : DialogModelField(pass_key,
+                       model,
+                       kCombobox,
+                       id,
+                       params.accelerators_,
+                       params),
       label_(std::move(label)),
       accessible_name_(params.accessible_name_),
       selected_index_(combobox_model->GetDefaultIndex().value()),
@@ -335,7 +348,7 @@ DialogModelMenuItem::DialogModelMenuItem(
     std::u16string label,
     base::RepeatingCallback<void(int)> callback,
     const DialogModelMenuItem::Params& params)
-    : DialogModelField(pass_key, model, kMenuItem, params.id_, {}),
+    : DialogModelField(pass_key, model, kMenuItem, params.id_, {}, params),
       icon_(std::move(icon)),
       label_(std::move(label)),
       is_enabled_(params.is_enabled_),
@@ -351,7 +364,12 @@ void DialogModelMenuItem::OnActivated(base::PassKey<DialogModelHost> pass_key,
 
 DialogModelSeparator::DialogModelSeparator(base::PassKey<DialogModel> pass_key,
                                            DialogModel* model)
-    : DialogModelField(pass_key, model, kSeparator, ElementIdentifier(), {}) {}
+    : DialogModelField(pass_key,
+                       model,
+                       kSeparator,
+                       ElementIdentifier(),
+                       {},
+                       DialogModelField::Params()) {}
 
 DialogModelSeparator::~DialogModelSeparator() = default;
 
@@ -371,7 +389,12 @@ DialogModelTextfield::DialogModelTextfield(
     std::u16string label,
     std::u16string text,
     const ui::DialogModelTextfield::Params& params)
-    : DialogModelField(pass_key, model, kTextfield, id, params.accelerators_),
+    : DialogModelField(pass_key,
+                       model,
+                       kTextfield,
+                       id,
+                       params.accelerators_,
+                       params),
       label_(label),
       accessible_name_(params.accessible_name_),
       text_(std::move(text)) {
@@ -394,7 +417,12 @@ DialogModelCustomField::DialogModelCustomField(
     DialogModel* model,
     ElementIdentifier id,
     std::unique_ptr<DialogModelCustomField::Field> field)
-    : DialogModelField(pass_key, model, kCustom, id, {}),
+    : DialogModelField(pass_key,
+                       model,
+                       kCustom,
+                       id,
+                       {},
+                       DialogModelField::Params()),
       field_(std::move(field)) {}
 
 DialogModelCustomField::~DialogModelCustomField() = default;

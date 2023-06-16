@@ -34,6 +34,7 @@ std::unique_ptr<DialogModel> DialogModel::Builder::Build() {
 DialogModel::Builder& DialogModel::Builder::AddOkButton(
     base::OnceClosure callback,
     const DialogModelButton::Params& params) {
+  CHECK(params.is_visible_);
   DCHECK(!model_->accept_action_callback_);
   model_->accept_action_callback_ = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
@@ -48,6 +49,7 @@ DialogModel::Builder& DialogModel::Builder::AddOkButton(
 DialogModel::Builder& DialogModel::Builder::AddCancelButton(
     base::OnceClosure callback,
     const DialogModelButton::Params& params) {
+  CHECK(params.is_visible_);
   DCHECK(!model_->cancel_action_callback_);
   model_->cancel_action_callback_ = std::move(callback);
   // NOTREACHED() is used below to make sure this callback isn't used.
@@ -62,6 +64,7 @@ DialogModel::Builder& DialogModel::Builder::AddCancelButton(
 DialogModel::Builder& DialogModel::Builder::AddExtraButton(
     base::RepeatingCallback<void(const Event&)> callback,
     const DialogModelButton::Params& params) {
+  CHECK(params.is_visible_);
   DCHECK(!model_->extra_button_);
   DCHECK(!model_->extra_link_);
   // Extra buttons are required to have labels.
@@ -196,8 +199,7 @@ DialogModelField* DialogModel::GetFieldByUniqueId(ElementIdentifier id) {
   if (extra_button_ && cancel_button_->id_ == id)
     return &extra_button_.value();
 
-  NOTREACHED();
-  return nullptr;
+  NOTREACHED_NORETURN();
 }
 
 DialogModelCheckbox* DialogModel::GetCheckboxByUniqueId(ElementIdentifier id) {
@@ -231,6 +233,17 @@ void DialogModel::OnDialogCloseAction(base::PassKey<DialogModelHost>) {
 void DialogModel::OnDialogDestroying(base::PassKey<DialogModelHost>) {
   if (dialog_destroying_callback_)
     std::move(dialog_destroying_callback_).Run();
+}
+
+void DialogModel::SetVisible(ElementIdentifier id, bool visible) {
+  DialogModelField* const field = GetFieldByUniqueId(id);
+
+  CHECK(field);
+  field->set_visible(visible);
+
+  if (host_) {
+    host_->OnFieldChanged(field);
+  }
 }
 
 void DialogModel::AddField(std::unique_ptr<DialogModelField> field) {
