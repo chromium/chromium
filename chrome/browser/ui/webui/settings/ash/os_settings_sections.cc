@@ -39,7 +39,6 @@ OsSettingsSections::OsSettingsSections(
     SearchTagRegistry* search_tag_registry,
     multidevice_setup::MultiDeviceSetupClient* multidevice_setup_client,
     phonehub::PhoneHubManager* phone_hub_manager,
-    syncer::SyncService* sync_service,
     KerberosCredentialsManager* kerberos_credentials_manager,
     ArcAppListPrefs* arc_app_list_prefs,
     signin::IdentityManager* identity_manager,
@@ -66,10 +65,9 @@ OsSettingsSections::OsSettingsSections(
           profile, search_tag_registry, multidevice_setup_client,
           phone_hub_manager, android_sms_service, prefs, eche_app_manager));
 
-  AddSection(
-      mojom::Section::kPeople,
-      std::make_unique<PeopleSection>(profile, search_tag_registry,
-                                      sync_service, identity_manager, prefs));
+  AddSection(mojom::Section::kPeople,
+             std::make_unique<PeopleSection>(profile, search_tag_registry,
+                                             identity_manager, prefs));
 
   AddSection(mojom::Section::kDevice, std::make_unique<DeviceSection>(
                                           profile, search_tag_registry, prefs));

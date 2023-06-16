@@ -17,7 +17,6 @@
 #include "chrome/browser/ash/phonehub/phone_hub_manager_factory.h"
 #include "chrome/browser/ash/printing/cups_printers_manager_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
-#include "chrome/browser/sync/sync_service_factory.h"
 #include "chrome/browser/ui/webui/settings/ash/constants/constants_util.h"
 #include "chrome/browser/ui/webui/settings/ash/hierarchy.h"
 #include "chrome/browser/ui/webui/settings/ash/os_settings_manager_factory.h"
@@ -76,7 +75,6 @@ class OsSettingsManagerTest : public testing::Test {
         multidevice_setup::MultiDeviceSetupClientFactory::GetForProfile(
             profile),
         phonehub::PhoneHubManagerFactory::GetForProfile(profile),
-        SyncServiceFactory::GetForProfile(profile),
         KerberosCredentialsManagerFactory::Get(profile),
         ArcAppListPrefsFactory::GetForBrowserContext(profile),
         IdentityManagerFactory::GetForProfile(profile),

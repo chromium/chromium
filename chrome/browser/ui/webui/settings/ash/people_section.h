@@ -16,7 +16,6 @@
 #include "components/account_manager_core/account_manager_facade.h"
 #include "components/account_manager_core/chromeos/account_manager.h"
 #include "components/prefs/pref_change_registrar.h"
-#include "components/sync/service/sync_service_observer.h"
 
 class PrefService;
 class Profile;
@@ -28,10 +27,6 @@ class WebUIDataSource;
 namespace signin {
 class IdentityManager;
 }  // namespace signin
-
-namespace syncer {
-class SyncService;
-}  // namespace syncer
 
 namespace ash {
 
@@ -52,7 +47,6 @@ class PeopleSection : public OsSettingsSection,
  public:
   PeopleSection(Profile* profile,
                 SearchTagRegistry* search_tag_registry,
-                syncer::SyncService* sync_service,
                 signin::IdentityManager* identity_manager,
                 PrefService* pref_service);
   ~PeopleSection() override;

@@ -50,8 +50,6 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/sync/base/features.h"
-#include "components/sync/service/sync_service.h"
-#include "components/sync/service/sync_user_settings.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
 #include "content/public/browser/web_ui.h"
@@ -491,10 +489,8 @@ bool IsSameAccount(const ::account_manager::AccountKey& account_key,
 
 }  // namespace
 
-// TODO(https://crbug.com/1274802): Remove sync_service param.
 PeopleSection::PeopleSection(Profile* profile,
                              SearchTagRegistry* search_tag_registry,
-                             syncer::SyncService* sync_service,
                              signin::IdentityManager* identity_manager,
                              PrefService* pref_service)
     : OsSettingsSection(profile, search_tag_registry),
