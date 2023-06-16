@@ -9,3 +9,6 @@ per-file extension_function_histogram_value.h=file://extensions/common/api/API_O
 # For security review.
 per-file extensions_browser_interface_binders.*=set noparent
 per-file extensions_browser_interface_binders.*=file://ipc/SECURITY_OWNERS
+
+# Prefer rsult over directory owners.
+per-file *browser_context_keyed_service_factories*=rsult@google.com
