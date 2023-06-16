@@ -79,7 +79,7 @@ ui::ImageModel GetIconForDescriptor(
       // multi-file icon.
       icon = descriptor.file_count == 1
                  ? &chromeos::GetIconForPath(base::FilePath(
-                       base::UTF16ToASCII(descriptor.display_text)))
+                       base::UTF16ToUTF8(descriptor.display_text)))
                  : &vector_icons::kContentCopyIcon;
       break;
     }
