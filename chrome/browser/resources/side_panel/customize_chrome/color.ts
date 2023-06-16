@@ -69,10 +69,10 @@ export class ColorElement extends PolymerElement {
   private onColorChange_() {
     this.updateStyles({
       '--customize-chrome-color-foreground-color':
-          skColorToRgba(this.foregroundColor),
+          skColorToRgba(this.foregroundColor ?? 0),
       '--customize-chrome-color-background-color':
-          skColorToRgba(this.backgroundColor),
-      '--customize-chrome-color-base-color': skColorToRgba(this.baseColor),
+          skColorToRgba(this.backgroundColor ?? 0),
+      '--customize-chrome-color-base-color': skColorToRgba(this.baseColor ?? 0),
     });
   }
 }
