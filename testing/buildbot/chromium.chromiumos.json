@@ -1492,7 +1492,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1514,7 +1513,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1536,7 +1534,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1558,7 +1555,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1589,7 +1585,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1620,7 +1615,6 @@
           "has_native_resultdb_integration": true
         },
         "shards": 2,
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && (\"dep:lacros_stable\" || \"dep:lacros\") && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -4889,8 +4883,7 @@
       {
         "isolate_profile_data": true,
         "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
+        "script": "check_network_annotations.py"
       }
     ]
   },

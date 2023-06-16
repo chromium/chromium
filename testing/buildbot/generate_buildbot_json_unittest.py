@@ -3122,12 +3122,6 @@ TEST_QUERY_BOTS_OUTPUT = {
     "gtest_tests": [
       {
         "test": "foo_test",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": False
-        }
       }
     ]
   },
@@ -3197,13 +3191,7 @@ TEST_QUERY_BOTS_OUTPUT = {
 TEST_QUERY_BOTS_TESTS_OUTPUT = {
   "Fake Android M Tester": [
     {
-      "merge": {
-        "script": "//testing/merge_scripts/standard_gtest_merge.py"
-      },
       "test": "foo_test",
-      "swarming": {
-        "can_use_on_swarming_builders": False
-      }
     }
   ],
   "Fake Android L Tester": [

@@ -272,8 +272,6 @@ def process_file(mode, test_name, tests_location, filepath, ninja_targets,
         raise Error('%s: %s / %s is listed multiple times.' %
                     (filename, builder, name))
       seen.add(name)
-      d.setdefault('swarming', {}).setdefault(
-          'can_use_on_swarming_builders', False)
 
     if gtest_tests:
       config[builder]['gtest_tests'] = sorted(

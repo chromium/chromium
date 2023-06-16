@@ -5267,18 +5267,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "context_lost_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5298,18 +5292,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "gpu_process_launch_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5329,18 +5317,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "hardware_accelerated_feature_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5364,18 +5346,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_high_performance_gpu",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "info_collection_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5400,9 +5376,6 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "maps_pixel_validating_test KEVIN_PUBLIC_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -5414,9 +5387,6 @@
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5436,18 +5406,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --force_higher_performance_gpu --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "mediapipe_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5472,9 +5436,6 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "pixel_skia_gold_validating_test KEVIN_PUBLIC_LKGM",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -5486,9 +5447,6 @@
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5509,18 +5467,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "screenshot_sync_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5541,18 +5493,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "trace_test KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5572,18 +5518,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webcodecs_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5606,18 +5546,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-gl=angle --use-angle=gles --use-cmd-decoder=passthrough --force_high_performance_gpu",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl2_conformance_gles_passthrough_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5640,18 +5574,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl2_conformance_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,
@@ -5673,18 +5601,12 @@
         "cros_board": "kevin",
         "cros_img": "kevin-public/R114-15408.0.0",
         "extra_browser_args": "--log-level=0 --js-flags=--expose-gc --use-cmd-decoder=validating --force_high_performance_gpu",
-        "merge": {
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl_conformance_validating_tests KEVIN_PUBLIC_LKGM",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/",
         "timeout_sec": 10800,

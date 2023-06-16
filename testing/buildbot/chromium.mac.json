@@ -11,18 +11,15 @@
           "--allow-coverage-initializer"
         ],
         "name": "check_static_initializers",
-        "script": "check_static_initializers.py",
-        "swarming": {}
+        "script": "check_static_initializers.py"
       },
       {
         "name": "metrics_python_tests",
-        "script": "metrics_python_tests.py",
-        "swarming": {}
+        "script": "metrics_python_tests.py"
       },
       {
         "name": "webkit_lint",
-        "script": "blink_lint_expectations.py",
-        "swarming": {}
+        "script": "blink_lint_expectations.py"
       }
     ]
   },
@@ -12926,8 +12923,7 @@
     "scripts": [
       {
         "name": "check_static_initializers",
-        "script": "check_static_initializers.py",
-        "swarming": {}
+        "script": "check_static_initializers.py"
       }
     ]
   },
