@@ -59,7 +59,7 @@ KeyedService* PermissionAuditingServiceFactory::BuildServiceInstanceFor(
       context->GetPath().Append(FILE_PATH_LITERAL("Permission Auditing Logs"));
   instance->Init(database_path);
   AfterStartupTaskUtils::PostTask(
-      FROM_HERE, backend_task_runner,
+      FROM_HERE, base::SequencedTaskRunner::GetCurrentDefault(),
       base::BindOnce(&permissions::PermissionAuditingService::
                          StartPeriodicCullingOfExpiredSessions,
                      instance->AsWeakPtr()));
