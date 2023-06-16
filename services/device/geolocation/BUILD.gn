@@ -190,6 +190,8 @@ source_set("test_support") {
     "fake_location_provider.h",
     "fake_position_cache.cc",
     "fake_position_cache.h",
+    "mock_wifi_data_provider.cc",
+    "mock_wifi_data_provider.h",
     "position_cache_test_util.cc",
     "position_cache_test_util.h",
   ]

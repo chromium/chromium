@@ -27,6 +27,7 @@
 #include "net/base/net_errors.h"
 #include "services/device/geolocation/fake_position_cache.h"
 #include "services/device/geolocation/location_arbitrator.h"
+#include "services/device/geolocation/mock_wifi_data_provider.h"
 #include "services/device/geolocation/wifi_data_provider.h"
 #include "services/device/public/cpp/geolocation/geoposition.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
@@ -64,68 +65,6 @@ struct LocationUpdateListener {
   int update_count = 0;
   int error_count = 0;
 };
-
-// A mock implementation of WifiDataProvider for testing. Adapted from
-// http://gears.googlecode.com/svn/trunk/gears/geolocation/geolocation_test.cc
-class MockWifiDataProvider : public WifiDataProvider {
- public:
-  // Factory method for use with WifiDataProvider::SetFactoryForTesting.
-  static WifiDataProvider* GetInstance() {
-    CHECK(instance_);
-    return instance_;
-  }
-
-  static MockWifiDataProvider* CreateInstance() {
-    CHECK(!instance_);
-    instance_ = new MockWifiDataProvider;
-    return instance_;
-  }
-
-  MockWifiDataProvider() : start_calls_(0), stop_calls_(0), got_data_(true) {}
-
-  MockWifiDataProvider(const MockWifiDataProvider&) = delete;
-  MockWifiDataProvider& operator=(const MockWifiDataProvider&) = delete;
-
-  // WifiDataProvider implementation.
-  void StartDataProvider() override { ++start_calls_; }
-
-  void StopDataProvider() override { ++stop_calls_; }
-
-  bool DelayedByPolicy() override { return false; }
-
-  bool GetData(WifiData* data_out) override {
-    CHECK(data_out);
-    *data_out = data_;
-    return got_data_;
-  }
-
-  void ForceRescan() override {}
-
-  void SetData(const WifiData& new_data) {
-    got_data_ = true;
-    const bool differs = data_.DiffersSignificantly(new_data);
-    data_ = new_data;
-    if (differs)
-      this->RunCallbacks();
-  }
-
-  void set_got_data(bool got_data) { got_data_ = got_data; }
-  int start_calls_;
-  int stop_calls_;
-
- private:
-  ~MockWifiDataProvider() override {
-    CHECK(this == instance_);
-    instance_ = nullptr;
-  }
-
-  static MockWifiDataProvider* instance_;
-
-  WifiData data_;
-  bool got_data_;
-};
-
-MockWifiDataProvider* MockWifiDataProvider::instance_ = nullptr;
 
 // Main test fixture
 class GeolocationNetworkProviderTest : public testing::Test {
