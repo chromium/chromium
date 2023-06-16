@@ -125,6 +125,54 @@ bool EarlyHintsAreAllowedOn(HttpResponseInfo::ConnectionInfo connection_info) {
   }
 }
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class WebSocketFallbackResult {
+  kSuccessHttp11 = 0,
+  kSuccessHttp2,
+  kSuccessHttp11AfterFallback,
+  kFailure,
+  kFailureAfterFallback,
+  kMaxValue = kFailureAfterFallback,
+};
+
+WebSocketFallbackResult CalculateWebSocketFallbackResult(
+    int result,
+    bool http_1_1_was_required,
+    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
+  if (result == OK) {
+    if (connection_info ==
+        HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_HTTP2) {
+      return WebSocketFallbackResult::kSuccessHttp2;
+    }
+    return http_1_1_was_required
+               ? WebSocketFallbackResult::kSuccessHttp11AfterFallback
+               : WebSocketFallbackResult::kSuccessHttp11;
+  }
+
+  return http_1_1_was_required ? WebSocketFallbackResult::kFailureAfterFallback
+                               : WebSocketFallbackResult::kFailure;
+}
+
+void RecordWebSocketFallbackResult(
+    int result,
+    bool http_1_1_was_required,
+    HttpResponseInfo::ConnectionInfoCoarse connection_info) {
+  CHECK_NE(connection_info,
+           HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_QUIC);
+
+  // `connection_info` could be CONNECTION_INFO_COARSE_OTHER in tests.
+  if (connection_info ==
+      HttpResponseInfo::ConnectionInfoCoarse::CONNECTION_INFO_COARSE_OTHER) {
+    return;
+  }
+
+  base::UmaHistogramEnumeration(
+      "Net.WebSocket.FallbackResult",
+      CalculateWebSocketFallbackResult(result, http_1_1_was_required,
+                                       connection_info));
+}
+
 }  // namespace
 
 const int HttpNetworkTransaction::kDrainBodyBufferSize;
@@ -1156,6 +1204,12 @@ int HttpNetworkTransaction::DoReadHeadersComplete(int result) {
   if (result == ERR_CONNECTION_CLOSED && response_.headers.get())
     result = OK;
 
+  if (ForWebSocketHandshake()) {
+    RecordWebSocketFallbackResult(
+        result, http_1_1_was_required_,
+        HttpResponseInfo::ConnectionInfoToCoarse(response_.connection_info));
+  }
+
   if (result < 0)
     return HandleIOError(result);
 
@@ -1560,6 +1614,8 @@ void HttpNetworkTransaction::GenerateNetworkErrorLoggingReport(int rv) {
 int HttpNetworkTransaction::HandleHttp11Required(int error) {
   DCHECK(error == ERR_HTTP_1_1_REQUIRED ||
          error == ERR_PROXY_HTTP_1_1_REQUIRED);
+
+  http_1_1_was_required_ = true;
 
   // HttpServerProperties should have been updated, so when the request is sent
   // again, it will automatically use HTTP/1.1.

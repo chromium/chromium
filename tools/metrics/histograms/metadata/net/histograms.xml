@@ -5597,6 +5597,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Net.WebSocket.FallbackResult" enum="WebSocketFallbackResult"
+    expires_after="2023-12-16">
+  <owner>bashi@chromium.org</owner>
+  <owner>blink-network-stack@google.com</owner>
+  <summary>
+    Fallback result of WebSocket handshakes. Recorded when a WebSocket handshake
+    completed.
+  </summary>
+</histogram>
+
 <histogram name="Net.WebSocket.HandshakeResult2"
     enum="WebSocketHandshakeResult2" expires_after="never">
 <!-- expires-never: needed for long-term tracking of ecosystem -->

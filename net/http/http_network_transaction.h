@@ -494,6 +494,9 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
 
   bool close_connection_on_destruction_ = false;
 
+  // Set to true when the server required HTTP/1.1 fallback.
+  bool http_1_1_was_required_ = false;
+
   absl::optional<base::TimeDelta> quic_protocol_error_retry_delay_;
 };
 

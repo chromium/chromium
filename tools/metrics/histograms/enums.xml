@@ -111922,6 +111922,14 @@ Called by update_scheduler_enums.py.-->
   <int value="21" label="5000 and over">5000-65535</int>
 </enum>
 
+<enum name="WebSocketFallbackResult">
+  <int value="0" label="Success over HTTP/1.1"/>
+  <int value="1" label="Success over HTTP/2"/>
+  <int value="2" label="Success over HTTP/1.1 after fallback"/>
+  <int value="3" label="Failure without fallback"/>
+  <int value="4" label="Failure after fallback"/>
+</enum>
+
 <enum name="WebSocketHandshakeResult">
   <int value="0" label="Incomplete"/>
   <int value="1" label="Normal"/>
