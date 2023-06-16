@@ -3291,7 +3291,6 @@ static_library("browser") {
       "//chrome/browser/password_manager:password_manager_buildflags",
       "//chrome/browser/password_manager/android:backend_public",
       "//chrome/browser/password_manager/android:jni_headers",
-      "//chrome/browser/password_manager/android/pwd_migration:jni_headers",
       "//chrome/browser/payments/android:jni_headers",
       "//chrome/browser/policy/android:android",
       "//chrome/browser/policy/android:jni_headers",

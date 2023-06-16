@@ -886,6 +886,7 @@ chrome_java_sources = [
   "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerDialogView.java",
   "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerDialogViewBinder.java",
   "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
+  "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
   "java/src/org/chromium/chrome/browser/password_manager/settings/CallbackDelayer.java",
   "java/src/org/chromium/chrome/browser/password_manager/settings/DialogManager.java",
   "java/src/org/chromium/chrome/browser/password_manager/settings/ExportErrorDialogFragment.java",

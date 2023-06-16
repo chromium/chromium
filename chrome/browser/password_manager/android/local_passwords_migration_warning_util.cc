@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chrome/browser/password_manager/android/local_passwords_migration_warning_util.h"
-#include "chrome/browser/password_manager/android/pwd_migration/jni_headers/PasswordMigrationWarningBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/PasswordMigrationWarningBridge_jni.h"
 #include "chrome/browser/profiles/profile_android.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "ui/android/window_android.h"
