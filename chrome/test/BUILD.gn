@@ -25,6 +25,7 @@ import("//chrome/test/include_js_tests.gni")
 import("//chrome/version.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
 import("//components/captive_portal/core/features.gni")
+import("//components/enterprise/buildflags/buildflags.gni")
 import("//components/feed/features.gni")
 import("//components/lens/features.gni")
 import("//components/nacl/features.gni")
@@ -2563,9 +2564,7 @@ if (!is_android) {
         ]
       }
 
-      # TODO(b/283093731): Replace the platforms below with a condition for
-      # cloud content analysis.
-      if (is_win || is_linux || is_mac || is_chromeos) {
+      if (enterprise_cloud_content_analysis) {
         sources += [
           # crbug.com/1230268 These tests need to be fixed for Lacros.
           "../browser/enterprise/connectors/analysis/content_analysis_delegate_browsertest.cc",
@@ -3347,9 +3346,7 @@ if (!is_android) {
         ]
       }
 
-      # TODO(b/283093731): Replace the platforms below with a condition for
-      # cloud content analysis.
-      if (is_win || is_linux || is_mac || is_chromeos) {
+      if (enterprise_cloud_content_analysis) {
         sources += [
           "../browser/enterprise/connectors/analysis/content_analysis_dialog_browsertest.cc",
           "../browser/enterprise/connectors/connectors_service_browsertest.cc",
@@ -8439,7 +8436,7 @@ test("unit_tests") {
       "../renderer/extensions/renderer_permissions_policy_delegate_unittest.cc",
     ]
 
-    if (is_linux || is_mac || is_win) {
+    if (enterprise_local_content_analysis) {
       sources += [
         "../browser/enterprise/connectors/analysis/content_analysis_sdk_manager_unittest.cc",
         "../browser/enterprise/connectors/analysis/local_binary_upload_service_unittest.cc",
@@ -8807,9 +8804,7 @@ test("unit_tests") {
         [ "//components/safe_browsing/android:real_time_url_checks_allowlist" ]
   }
 
-  # TODO(b/283093731): Replace the platforms below to a more specific condition for cloud
-  # content analysis.
-  if (is_win || is_mac || is_linux || is_chromeos) {
+  if (enterprise_cloud_content_analysis) {
     sources += [
       "../browser/enterprise/connectors/analysis/analysis_service_settings_unittest.cc",
       "../browser/enterprise/connectors/analysis/content_analysis_delegate_unittest.cc",
