@@ -2110,7 +2110,7 @@
     },
     {
       name: "LayoutFlexNewRowAlgorithmV2",
-      status: "stable",
+      status: "test",
     },
     {
       name: "LayoutFlexSafeAlignment",
