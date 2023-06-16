@@ -179,6 +179,23 @@ int ExtensionsToolbarButton::GetIconSize() const {
              : kDefaultIconSize;
 }
 
+std::u16string ExtensionsToolbarButton::GetTooltipText(
+    const gfx::Point& p) const {
+  int message_id;
+  switch (state_) {
+    case ExtensionsToolbarButton::State::kDefault:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON;
+      break;
+    case ExtensionsToolbarButton::State::kAllExtensionsBlocked:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ALL_EXTENSIONS_BLOCKED;
+      break;
+    case ExtensionsToolbarButton::State::kAnyExtensionHasAccess:
+      message_id = IDS_TOOLTIP_EXTENSIONS_BUTTON_ANY_EXTENSION_HAS_ACCESS;
+      break;
+  }
+  return l10n_util::GetStringUTF16(message_id);
+}
+
 BEGIN_METADATA(ExtensionsToolbarButton, ToolbarButton)
 ADD_READONLY_PROPERTY_METADATA(bool, ExtensionsMenuShowing)
 ADD_READONLY_PROPERTY_METADATA(int, IconSize)
