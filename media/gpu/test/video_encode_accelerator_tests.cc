@@ -459,104 +459,65 @@ TEST_F(VideoEncoderTest, BitrateCheck) {
     GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
 
   auto config = GetDefaultConfig();
-  config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck;
-  auto encoder = CreateVideoEncoder(g_env->Video(), config);
-  // Set longer event timeout than the default (30 sec) because encoding 2160p
-  // and validating the stream take much time.
-  encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
-
-  encoder->Encode();
-  EXPECT_TRUE(encoder->WaitForFlushDone());
-
-  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
-  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
   // TODO(b/181797390): Reconsider bitrate check for VBR encoding if this fails
   // on some boards.
+  const bool vbr_encoding =
+      config.bitrate_allocation.GetMode() == Bitrate::Mode::kVariable;
   const double tolerance =
-      config.bitrate_allocation.GetMode() == Bitrate::Mode::kConstant
-          ? kBitrateTolerance
-          : kVariableBitrateTolerance;
-  EXPECT_NEAR(encoder->GetStats().Bitrate(),
-              config.bitrate_allocation.GetSumBps(),
-              tolerance * config.bitrate_allocation.GetSumBps());
-}
-
-TEST_F(VideoEncoderTest, BitrateCheck_DynamicBitrate) {
-  if (g_env->SpatialLayers().size() > 1)
-    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-  if (g_env->BitrateAllocation().GetMode() != Bitrate::Mode::kConstant) {
-    GTEST_SKIP()
-        << "Skip Dynamic bitrate change checks for non-CBR bitrate mode";
+      vbr_encoding ? kBitrateTolerance : kVariableBitrateTolerance;
+  if (!vbr_encoding) {
+    config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 3;
   }
 
-  auto config = GetDefaultConfig();
-  config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
   auto encoder = CreateVideoEncoder(g_env->Video(), config);
   // Set longer event timeout than the default (30 sec) because encoding 2160p
   // and validating the stream take much time.
   encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
 
-  // Encode the video with the first bitrate.
   const uint32_t first_bitrate = config.bitrate_allocation.GetSumBps();
-  encoder->EncodeUntil(VideoEncoder::kFrameReleased,
-                       kNumFramesToEncodeForBitrateCheck);
-  EXPECT_TRUE(encoder->WaitUntilIdle());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), first_bitrate,
-              kBitrateTolerance * first_bitrate);
-
-  // Encode the video with the second bitrate.
-  const uint32_t second_bitrate = first_bitrate * 3 / 2;
-  encoder->ResetStats();
-  encoder->UpdateBitrate(
-      AllocateDefaultBitrateForTesting(
-          config.num_spatial_layers, config.num_temporal_layers,
-          Bitrate::ConstantBitrate(second_bitrate)),
-      config.framerate);
-  encoder->Encode();
-  EXPECT_TRUE(encoder->WaitForFlushDone());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
-              kBitrateTolerance * second_bitrate);
-
-  EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
-  EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
-  EXPECT_TRUE(encoder->WaitForBitstreamProcessors());
-}
-
-TEST_F(VideoEncoderTest, BitrateCheck_DynamicFramerate) {
-  if (g_env->SpatialLayers().size() > 1)
-    GTEST_SKIP() << "Skip SHMEM input test cases in spatial SVC encoding";
-  if (g_env->BitrateAllocation().GetMode() != Bitrate::Mode::kConstant) {
-    GTEST_SKIP()
-        << "Skip dynamic framerate change checks for non-CBR bitrate mode";
-  }
-
-  auto config = GetDefaultConfig();
-  config.num_frames_to_encode = kNumFramesToEncodeForBitrateCheck * 2;
-  auto encoder = CreateVideoEncoder(g_env->Video(), config);
-  // Set longer event timeout than the default (30 sec) because encoding 2160p
-  // and validating the stream take much time.
-  encoder->SetEventWaitTimeout(kBitrateCheckEventTimeout);
-
-  // Encode the video with the first framerate.
   const uint32_t first_framerate = config.framerate;
+  if (vbr_encoding) {
+    encoder->Encode();
+    EXPECT_TRUE(encoder->WaitForFlushDone());
+  } else {
+    encoder->EncodeUntil(VideoEncoder::kFrameReleased,
+                         kNumFramesToEncodeForBitrateCheck);
+    EXPECT_TRUE(encoder->WaitUntilIdle());
+  }
+  EXPECT_NEAR(encoder->GetStats().Bitrate(), first_bitrate,
+              tolerance * first_bitrate);
 
-  encoder->EncodeUntil(VideoEncoder::kFrameReleased,
-                       kNumFramesToEncodeForBitrateCheck);
-  EXPECT_TRUE(encoder->WaitUntilIdle());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(),
-              config.bitrate_allocation.GetSumBps(),
-              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
+  if (!vbr_encoding) {
+    // Change bitrate only.
+    const uint32_t second_bitrate = first_bitrate * 3 / 2;
+    const uint32_t second_framerate = first_framerate;
+    encoder->ResetStats();
+    encoder->UpdateBitrate(
+        AllocateDefaultBitrateForTesting(
+            config.num_spatial_layers, config.num_temporal_layers,
+            Bitrate::ConstantBitrate(second_bitrate)),
+        second_framerate);
+    encoder->EncodeUntil(VideoEncoder::kFrameReleased,
+                         kNumFramesToEncodeForBitrateCheck * 2);
+    EXPECT_TRUE(encoder->WaitUntilIdle());
+    EXPECT_NEAR(encoder->GetStats().Bitrate(), second_bitrate,
+                tolerance * second_bitrate);
 
-  // Encode the video with the second framerate.
-  const uint32_t second_framerate = std::max(first_framerate * 2 / 3, 10u);
-  encoder->ResetStats();
-  encoder->UpdateBitrate(config.bitrate_allocation, second_framerate);
-  encoder->Encode();
-  EXPECT_TRUE(encoder->WaitForFlushDone());
-  EXPECT_NEAR(encoder->GetStats().Bitrate(),
-              config.bitrate_allocation.GetSumBps(),
-              kBitrateTolerance * config.bitrate_allocation.GetSumBps());
+    // Change bitrate and framerate.
+    const uint32_t third_bitrate = first_bitrate;
+    const uint32_t third_framerate = std::max(first_framerate * 2 / 3, 10u);
+    encoder->ResetStats();
+    encoder->UpdateBitrate(
+        AllocateDefaultBitrateForTesting(
+            config.num_spatial_layers, config.num_temporal_layers,
+            // TODO(b/181797390): Reconsider if this peak bitrate is reasonable.
+            Bitrate::ConstantBitrate(third_bitrate)),
+        third_framerate);
+    encoder->Encode();
+    EXPECT_TRUE(encoder->WaitForFlushDone());
+    EXPECT_NEAR(encoder->GetStats().Bitrate(), third_bitrate,
+                tolerance * third_bitrate);
+  }
 
   EXPECT_EQ(encoder->GetFlushDoneCount(), 1u);
   EXPECT_EQ(encoder->GetFrameReleasedCount(), config.num_frames_to_encode);
