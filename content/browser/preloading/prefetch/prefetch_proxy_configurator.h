@@ -35,8 +35,7 @@ class CONTENT_EXPORT PrefetchProxyConfigurator
   MaybeCreatePrefetchProxyConfigurator(const GURL& proxy_url,
                                        const std::string& api_key);
 
-  explicit PrefetchProxyConfigurator(const GURL& proxy_url,
-                                     const std::string api_key);
+  PrefetchProxyConfigurator(const GURL& proxy_url, const std::string api_key);
   ~PrefetchProxyConfigurator() override;
 
   PrefetchProxyConfigurator(const PrefetchProxyConfigurator&) = delete;

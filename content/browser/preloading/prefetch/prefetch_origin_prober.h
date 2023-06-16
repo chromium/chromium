@@ -25,9 +25,9 @@ class PrefetchCanaryChecker;
 // http://crbug.com/1109992 for more details.
 class CONTENT_EXPORT PrefetchOriginProber {
  public:
-  explicit PrefetchOriginProber(BrowserContext* browser_context,
-                                const GURL& dns_canary_check_url,
-                                const GURL& tls_canary_check_url);
+  PrefetchOriginProber(BrowserContext* browser_context,
+                       const GURL& dns_canary_check_url,
+                       const GURL& tls_canary_check_url);
   virtual ~PrefetchOriginProber();
 
   PrefetchOriginProber(const PrefetchOriginProber&) = delete;

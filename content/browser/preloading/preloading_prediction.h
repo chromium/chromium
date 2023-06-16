@@ -40,7 +40,7 @@ class PreloadingPrediction {
 
   bool IsAccuratePrediction() const { return is_accurate_prediction_; }
 
-  explicit PreloadingPrediction(
+  PreloadingPrediction(
       PreloadingPredictor predictor,
       double confidence,
       ukm::SourceId triggered_primary_page_source_id,

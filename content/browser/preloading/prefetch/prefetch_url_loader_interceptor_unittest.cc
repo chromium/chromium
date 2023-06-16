@@ -202,7 +202,7 @@ class TestPrefetchService : public PrefetchService {
 
 class TestPrefetchURLLoaderInterceptor : public PrefetchURLLoaderInterceptor {
  public:
-  explicit TestPrefetchURLLoaderInterceptor(
+  TestPrefetchURLLoaderInterceptor(
       int frame_tree_node_id,
       const GlobalRenderFrameHostId& previous_render_frame_host_id)
       : PrefetchURLLoaderInterceptor(frame_tree_node_id,
