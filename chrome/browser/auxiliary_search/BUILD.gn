@@ -10,6 +10,7 @@ android_library("java") {
   sources = [ "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerFactory.java" ]
 
   deps = [
+    "//chrome/browser/flags:java",
     "//chrome/browser/profiles/android:java",
     "//chrome/browser/tabmodel:java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -21,7 +22,6 @@ android_library("java") {
 android_library("delegate_java") {
   sources = [
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchController.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooks.java",
     "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooksImpl.java",
   ]
@@ -35,17 +35,11 @@ android_library("delegate_java") {
 
   # Add the actual implementation where necessary so that downstream targets
   # can provide their own implementations.
-  jar_excluded_patterns = [
-    "*/AuxiliarySearchControllerImpl.class",
-    "*/AuxiliarySearchHooksImpl.class",
-  ]
+  jar_excluded_patterns = [ "*/AuxiliarySearchHooksImpl.class" ]
 }
 
 android_library("delegate_public_impl_java") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchControllerImpl.java",
-    "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooksImpl.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/auxiliary_search/AuxiliarySearchHooksImpl.java" ]
 
   deps = [
     ":java",

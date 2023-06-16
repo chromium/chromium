@@ -332,7 +332,7 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
     /**
      *  The controller for the auxiliary search.
      */
-    private AuxiliarySearchController mAuxiliarySearchController;
+    private @Nullable AuxiliarySearchController mAuxiliarySearchController;
 
     // This is the cached value of mIntentHandler#shouldIgnoreIntent and shouldn't be read directly.
     // Use #shouldIgnoreIntent instead.
@@ -1361,7 +1361,9 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
             mAuxiliarySearchController =
                     AuxiliarySearchControllerFactory.createAuxiliarySearchController(
                             Profile.getLastUsedRegularProfile(), mTabModelSelector);
-            mAuxiliarySearchController.register(this.getLifecycleDispatcher());
+            if (mAuxiliarySearchController != null) {
+                mAuxiliarySearchController.register(this.getLifecycleDispatcher());
+            }
             mInactivityTracker.register(this.getLifecycleDispatcher());
             boolean isIntentWithEffect = false;
             boolean isMainIntentFromLauncher = false;
@@ -2851,6 +2853,10 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
         if (mTabDelegateFactory != null) mTabDelegateFactory.destroy();
 
         mAppLaunchDrawBlocker.destroy();
+
+        if (mAuxiliarySearchController != null) {
+            mAuxiliarySearchController.destroy();
+        }
 
         super.onDestroyInternal();
     }
