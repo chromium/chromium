@@ -186,6 +186,17 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
   }
 }
 
+void CopyOrMoveIOTaskPolicyImpl::Complete(State state) {
+  if (has_blocked_files_) {
+    // It doesn't matter here which policy error we set because the panel
+    // strings in the files app are the same for all of them.
+    progress_->policy_error = PolicyErrorType::kDlp;
+    state = State::kError;
+  }
+
+  CopyOrMoveIOTaskImpl::Complete(state);
+}
+
 void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
   auto on_check_transfer_cb =
       base::BindOnce(&CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed,
@@ -210,6 +221,52 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
   }
 
   std::move(on_check_transfer_cb).Run(/*blocked_entries=*/{});
+}
+
+storage::FileSystemOperation::ErrorBehavior
+CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
+  if (report_only_scans_) {
+    return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
+  }
+  // For the enterprise connectors, we want files to be copied/moved if they are
+  // allowed and files to be prevented from copying/moving if they are blocked.
+  // With `ERROR_BEHAVIOR_ABORT`, the first blocked file would result in the
+  // copy/move operation to be aborted.
+  // With `ERROR_BEHAVIOR_SKIP`, blocked files are ignored and all allowed files
+  // will be copied.
+  return storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP;
+}
+
+std::unique_ptr<storage::CopyOrMoveHookDelegate>
+CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
+  // For all callbacks, we are using CreateRelayCallback to ensure that the
+  // callbacks are executed on the current (i.e., UI) thread.
+  auto progress_callback = google_apis::CreateRelayCallback(
+      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::OnCopyOrMoveProgress,
+                          weak_ptr_factory_.GetWeakPtr(), idx));
+
+  if (report_only_scans_) {
+    // For report-only scans, no blocking should be performed, so we use the
+    // normal delegate.
+    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
+        progress_callback);
+  }
+
+  DCHECK_LT(idx, file_transfer_analysis_delegates_.size());
+  if (!file_transfer_analysis_delegates_[idx]) {
+    // If scanning is disabled, use the normal delegate.
+    // Scanning can be disabled if some source_urls lie on a file system for
+    // which scanning is enabled, while other source_urls lie on a file system
+    // for which scanning is disabled.
+    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
+        progress_callback);
+  }
+
+  auto file_check_callback = google_apis::CreateRelayCallback(
+      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed,
+                          weak_ptr_factory_.GetWeakPtr(), idx));
+  return std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
+      file_system_context_, progress_callback, file_check_callback);
 }
 
 void CopyOrMoveIOTaskPolicyImpl::MaybeScanForDisallowedFiles(size_t idx) {
@@ -275,58 +332,16 @@ void CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed(
   std::move(callback).Run(base::File::FILE_ERROR_SECURITY);
 }
 
-storage::FileSystemOperation::ErrorBehavior
-CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
-  if (report_only_scans_) {
-    return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
-  }
-  // For the enterprise connectors, we want files to be copied/moved if they are
-  // allowed and files to be prevented from copying/moving if they are blocked.
-  // With `ERROR_BEHAVIOR_ABORT`, the first blocked file would result in the
-  // copy/move operation to be aborted.
-  // With `ERROR_BEHAVIOR_SKIP`, blocked files are ignored and all allowed files
-  // will be copied.
-  return storage::FileSystemOperation::ERROR_BEHAVIOR_SKIP;
-}
-
-std::unique_ptr<storage::CopyOrMoveHookDelegate>
-CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
-  // For all callbacks, we are using CreateRelayCallback to ensure that the
-  // callbacks are executed on the current (i.e., UI) thread.
-  auto progress_callback = google_apis::CreateRelayCallback(
-      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::OnCopyOrMoveProgress,
-                          weak_ptr_factory_.GetWeakPtr(), idx));
-
-  if (report_only_scans_) {
-    // For report-only scans, no blocking should be performed, so we use the
-    // normal delegate.
-    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
-        progress_callback);
-  }
-
-  DCHECK_LT(idx, file_transfer_analysis_delegates_.size());
-  if (!file_transfer_analysis_delegates_[idx]) {
-    // If scanning is disabled, use the normal delegate.
-    // Scanning can be disabled if some source_urls lie on a file system for
-    // which scanning is enabled, while other source_urls lie on a file system
-    // for which scanning is disabled.
-    return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
-        progress_callback);
-  }
-
-  auto file_check_callback = google_apis::CreateRelayCallback(
-      base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::IsTransferAllowed,
-                          weak_ptr_factory_.GetWeakPtr(), idx));
-  return std::make_unique<FileManagerCopyOrMoveHookFileCheckDelegate>(
-      file_system_context_, progress_callback, file_check_callback);
-}
-
 void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
     std::vector<storage::FileSystemURL> blocked_entries) {
   // This function won't be reached if the user cancelled the DLP warning or the
   // DLP warning timed out.
   // TODO(b/279029167): If there's any file blocked by DLP, skip Enterprise
   // Connectors scanning for them.
+
+  if (!blocked_entries.empty()) {
+    has_blocked_files_ = true;
+  }
 
   if (report_only_scans_) {
     // Don't do any scans. Instead, the scans are performed after the copy/move

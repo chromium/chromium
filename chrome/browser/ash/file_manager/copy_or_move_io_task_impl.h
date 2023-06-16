@@ -79,9 +79,11 @@ class CopyOrMoveIOTaskImpl {
   // Cancels the copy or move.
   void Cancel();
 
-  // Completes the copy or move. |progress_| should not be
-  // accessed after calling this.
-  void Complete(State state);
+  // Completes the copy or move. Called when the copy or move completes
+  // successfully or completes with error. Runs the |complete_callback_|.
+  // |progress_| should not be accessed after calling this. If you override this
+  // method, make sure to explicitly call CopyOrMoveIOTaskImpl::Complete.
+  virtual void Complete(State state);
 
   // Helper function for copy or move tasks that determines whether or not
   // entries identified by their URLs should be considered as being on the
@@ -123,8 +125,8 @@ class CopyOrMoveIOTaskImpl {
   friend class CopyOrMoveIOTaskTest;
   FRIEND_TEST_ALL_PREFIXES(CopyOrMoveIOTaskTest, DriveQuota);
 
-  // Verifies the transfer, e.g., by using enterprise connectors for checking
-  // whether a transfer is allowed.
+  // Verifies the transfer, e.g., by using policies set by admins (if there are
+  // any) for checking whether a transfer is allowed.
   virtual void VerifyTransfer();
   // Returns the error behavior to be used for the copy or move operation.
   virtual storage::FileSystemOperation::ErrorBehavior GetErrorBehavior();

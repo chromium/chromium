@@ -903,6 +903,9 @@ class CopyOrMoveIOTaskWithScansTest
                             GetExpectedOutputUrlsFromFileInfos(file_infos))),
                   Field(&ProgressStatus::outputs,
                         EntryStatusErrors(ElementsAreArray(expected_errors))),
+                  Field(&ProgressStatus::policy_error,
+                        has_error ? absl::make_optional(PolicyErrorType::kDlp)
+                                  : absl::nullopt),
                   GetBaseMatcher(file_infos, dest, total_num_files))))
         .WillOnce(RunClosure(quit_closure));
   }

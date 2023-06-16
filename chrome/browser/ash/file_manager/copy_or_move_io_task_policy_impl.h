@@ -45,14 +45,11 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   using IsTransferAllowedCallback = base::OnceCallback<void(base::File::Error)>;
 
  public:
-  // `type` must be either kCopy or kMove.
-  // Use this constructor if you require the destination entries to have
-  // different file names to the source entries. The size of `source_urls` and
-  // `destination_file_names` must be the same.
-  // `settings` should be the settings returned by
-  // `FileTransferAnalysisDelegate::IsEnabledVec()` and contain separate
-  // settings for each source url. A setting for a source url can be null if
-  // scanning is not enabled for that source url.
+  // `type` must be either kCopy or kMove. The size of `source_urls` and
+  // `destination_file_names` must be the same. `settings` should be the
+  // settings returned by `FileTransferAnalysisDelegate::IsEnabledVec()` and
+  // contain separate settings for each source url. A setting for a source url
+  // can be null if scanning is not enabled for that source url.
   CopyOrMoveIOTaskPolicyImpl(
       OperationType type,
       ProgressStatus& progress,
@@ -65,14 +62,20 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
       bool show_notification = true);
   ~CopyOrMoveIOTaskPolicyImpl() override;
 
+  // CopyOrMoveIOTaskImpl overrides:
   void Execute(ProgressCallback progress_callback,
                CompleteCallback complete_callback) override;
-
   void Resume(ResumeParams params) override;
+  void Complete(State state) override;
 
  private:
-  // Verifies the transfer by performing enterprise connector scans.
+  // CopyOrMoveIOTaskImpl overrides:
+  // Verifies the transfer by applying Data Leak Prevention files restrictions
+  // and enterprise connectors scans.
   void VerifyTransfer() override;
+  storage::FileSystemOperation::ErrorBehavior GetErrorBehavior() override;
+  std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
+      size_t idx) override;
 
   // This function scans the source associated with `idx` if scanning is enabled
   // for the respective source-destination-pair.
@@ -94,13 +97,6 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
                          const storage::FileSystemURL& source_url,
                          const storage::FileSystemURL& destination_url,
                          IsTransferAllowedCallback callback);
-
-  // Returns the error behavior to be used for the copy or move operation.
-  storage::FileSystemOperation::ErrorBehavior GetErrorBehavior() override;
-  // Returns the storage::CopyOrMoveHookDelegate to be used for the copy or move
-  // operation.
-  std::unique_ptr<storage::CopyOrMoveHookDelegate> GetHookDelegate(
-      size_t idx) override;
 
   // Continues executing the IO task after DLP checks are done.
   void OnCheckIfTransferAllowed(
@@ -125,7 +121,8 @@ class CopyOrMoveIOTaskPolicyImpl : public CopyOrMoveIOTaskImpl {
   // This is set to true if `block_until_verdict` is 0.
   bool report_only_scans_ = false;
 
-  // Whether transferring at least one file was blocked after scanning.
+  // Whether transferring at least one file was blocked after applying DLP
+  // restrictions or Enterprise Connectors scanning.
   bool has_blocked_files_ = false;
 
   base::WeakPtrFactory<CopyOrMoveIOTaskPolicyImpl> weak_ptr_factory_{this};
