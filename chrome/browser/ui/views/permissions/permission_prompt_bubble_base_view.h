@@ -55,6 +55,14 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
       const PermissionPromptBubbleBaseView&) = delete;
   ~PermissionPromptBubbleBaseView() override;
 
+  // Dialog button identifiers used to specify which buttons to show the user.
+  enum class PermissionDialogButton {
+    kAccept = 0,
+    kAcceptOnce = 1,
+    kDeny = 2,
+    kNum = kDeny,
+  };
+
   virtual void Show();
 
   // Anchors the bubble to the view or rectangle returned from
@@ -76,10 +84,13 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
       View* button,
       const ui::Event& event) const override;
 
-  void AcceptPermission();
-  void AcceptPermissionThisTime();
-  void DenyPermission();
   void ClosingPermission();
+
+  // Performs clickjacking checks and executes the button callback if the click
+  // is valid.
+  void FilterUnintenedEventsAndRunCallbacks(PermissionDialogButton type,
+                                            const ui::Event& event);
+  void RunButtonCallbacks(PermissionDialogButton type);
 
  protected:
   void CreateWidget();
@@ -104,6 +115,11 @@ class PermissionPromptBubbleBaseView : public views::BubbleDialogDelegateView {
   // Permissions.Prompt.TimeToDecision.* or Permissions.Chip.TimeToDecision.*,
   // depending on which UI is used.
   void RecordDecision(permissions::PermissionAction action);
+
+  // Convenience method to convert enum class values to an int used as ViewId
+  int GetViewId(PermissionDialogButton button) const {
+    return static_cast<int>(button);
+  }
 
   const raw_ptr<Browser> browser_;
   base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
