@@ -50,7 +50,7 @@ def WriteSource(base_name,
       '#endif  // ' + define])
   header += '\n'
 
-  with open(os.path.join(output_dir, base_name + '.h'), 'w') as f:
+  with open(os.path.join(output_dir, base_name + '.h'), 'w', encoding='utf-8') as f:
     f.write(header)
 
   # Write cc file.
@@ -75,5 +75,5 @@ def WriteSource(base_name,
       '\n'.join(definitions)])
   cc += '\n'
 
-  with open(os.path.join(output_dir, base_name + '.cc'), 'w') as f:
+  with open(os.path.join(output_dir, base_name + '.cc'), 'w', encoding='utf-8') as f:
     f.write(cc)
