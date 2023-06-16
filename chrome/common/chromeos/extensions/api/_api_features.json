@@ -54,18 +54,6 @@
     "channel": "stable",
     "feature_flag": "TelemetryExtensionPendingApprovalApi"
   },
-  "os.events.onKeyboardDiagnosticEvent": {
-    "dependencies": [ "permission:os.events" ],
-    "contexts": [
-      "blessed_extension"
-    ],
-    "platforms": [
-      "chromeos",
-      "lacros"
-    ],
-    "channel": "stable",
-    "feature_flag": "TelemetryExtensionPendingApprovalApi"
-  },
   "os.events.onStylusGarageEvent": {
     "dependencies": [ "permission:os.events" ],
     "contexts": [

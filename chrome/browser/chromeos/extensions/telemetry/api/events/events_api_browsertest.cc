@@ -99,7 +99,8 @@ class TelemetryExtensionEventsApiBrowserTest
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        CheckCorrectEventsAvailable) {
   constexpr char kEnabledEvents[] =
-      "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent']";
+      "['onAudioJackEvent', 'onLidEvent', 'onUsbEvent', "
+      "'onKeyboardDiagnosticEvent']";
 
   CreateExtensionAndRunServiceWorker(base::StringPrintf(R"(
     chrome.test.runTests([
@@ -366,6 +367,66 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
+                       OnKeyboardDiagnosticEvent_Success) {
+  // Open the PWA.
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
+
+  GetFakeService()->SetOnSubscriptionChange(
+      base::BindLambdaForTesting([this]() {
+        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
+        keyboard_info->id = crosapi::UInt32Value::New(1);
+        keyboard_info->connection_type =
+            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
+        keyboard_info->name = "TestName";
+        keyboard_info->physical_layout =
+            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
+        keyboard_info->mechanical_layout =
+            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
+        keyboard_info->region_code = "de";
+        keyboard_info->number_pad_present =
+            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
+
+        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
+        info->keyboard_info = std::move(keyboard_info);
+        info->tested_keys = {1, 2, 3};
+        info->tested_top_row_keys = {4, 5, 6};
+
+        GetFakeService()->EmitEventForCategory(
+            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
+            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
+                std::move(info)));
+      }));
+
+  CreateExtensionAndRunServiceWorker(R"(
+    chrome.test.runTests([
+      async function startCapturingEvents() {
+        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
+          chrome.test.assertEq(event, {
+            "keyboardInfo": {
+              "connectionType":"bluetooth",
+              "id":1,
+              "mechanicalLayout":"ansi",
+              "name":"TestName",
+              "numberPadPresent":"present",
+              "physicalLayout":"chrome_os",
+              "regionCode":"de",
+              "topRowKeys":[]
+            },
+            "testedKeys":[1,2,3],
+            "testedTopRowKeys":[4,5,6]
+            }
+          );
+
+          chrome.test.succeed();
+        });
+
+        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
+      }
+    ]);
+  )");
+}
+
+IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
                        CheckSdCardApiWithoutFeatureFlagFail) {
   // Open the PWA.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
@@ -397,28 +458,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
       function powerNotWorking() {
         chrome.test.assertThrows(() => {
           chrome.os.events.onPowerEvent.addListener((event) => {
-            // unreachable.
-          });
-        }, [],
-          'Cannot read properties of undefined (reading \'addListener\')'
-        );
-
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionEventsApiBrowserTest,
-                       CheckKeyboardDiagnosticApiWithoutFeatureFlagFail) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      function keyboardDiagnosticsNotWorking() {
-        chrome.test.assertThrows(() => {
-          chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
             // unreachable.
           });
         }, [],
@@ -527,66 +566,6 @@ IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
         });
 
         await chrome.os.events.startCapturingEvents("power");
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(PendingApprovalTelemetryExtensionEventsApiBrowserTest,
-                       CheckKeyboardDiagnosticApiWithFeatureFlagWork) {
-  // Open the PWA.
-  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), GURL(pwa_page_url())));
-
-  GetFakeService()->SetOnSubscriptionChange(
-      base::BindLambdaForTesting([this]() {
-        auto keyboard_info = crosapi::TelemetryKeyboardInfo::New();
-        keyboard_info->id = crosapi::UInt32Value::New(1);
-        keyboard_info->connection_type =
-            crosapi::TelemetryKeyboardConnectionType::kBluetooth;
-        keyboard_info->name = "TestName";
-        keyboard_info->physical_layout =
-            crosapi::TelemetryKeyboardPhysicalLayout::kChromeOS;
-        keyboard_info->mechanical_layout =
-            crosapi::TelemetryKeyboardMechanicalLayout::kAnsi;
-        keyboard_info->region_code = "de";
-        keyboard_info->number_pad_present =
-            crosapi::TelemetryKeyboardNumberPadPresence::kPresent;
-
-        auto info = crosapi::TelemetryKeyboardDiagnosticEventInfo::New();
-        info->keyboard_info = std::move(keyboard_info);
-        info->tested_keys = {1, 2, 3};
-        info->tested_top_row_keys = {4, 5, 6};
-
-        GetFakeService()->EmitEventForCategory(
-            crosapi::TelemetryEventCategoryEnum::kKeyboardDiagnostic,
-            crosapi::TelemetryEventInfo::NewKeyboardDiagnosticEventInfo(
-                std::move(info)));
-      }));
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function startCapturingEvents() {
-        chrome.os.events.onKeyboardDiagnosticEvent.addListener((event) => {
-          chrome.test.assertEq(event, {
-            "keyboardInfo": {
-              "connectionType":"bluetooth",
-              "id":1,
-              "mechanicalLayout":"ansi",
-              "name":"TestName",
-              "numberPadPresent":"present",
-              "physicalLayout":"chrome_os",
-              "regionCode":"de",
-              "topRowKeys":[]
-            },
-            "testedKeys":[1,2,3],
-            "testedTopRowKeys":[4,5,6]
-            }
-          );
-
-          chrome.test.succeed();
-        });
-
-        await chrome.os.events.startCapturingEvents("keyboard_diagnostic");
       }
     ]);
   )");
