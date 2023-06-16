@@ -20,7 +20,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1478370723027452770">Get help with Chrome for testing</translation>
 <translation id="1524282610922162960">Share a Chromium tab</translation>
 <translation id="1553461853655228091">Chromium needs permission to access your camera to create a 3D map of your surroundings</translation>
-<translation id="1555506416658437797">edit payment methods.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Your administrator requires that you relaunch Chromium to apply an update}=1{Your administrator requires that you relaunch Chromium to apply an update. Your Incognito window won't reopen.}other{Your administrator requires that you relaunch Chromium to apply an update. Your # Incognito windows won't reopen.}}</translation>
 <translation id="1625909126243026060">Review key privacy and security controls in Chromium</translation>
 <translation id="1632539827495546968">If you only want to use this account once, you can use <ph name="GUEST_LINK_BEGIN" />guest mode<ph name="GUEST_LINK_END" /> in Chromium browser. If you want to add an account for someone else, <ph name="LINK_BEGIN" />add a new person<ph name="LINK_END" /> to your <ph name="DEVICE_TYPE" />.
@@ -97,7 +96,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="3179665906251668410">Open Link in Chromium Inco&amp;gnito Window</translation>
 <translation id="3185330573522821672">Customise your new Chromium profile</translation>
 <translation id="3190315855212034486">Whoa! Chromium has crashed. Relaunch now?</translation>
-<translation id="3255926992597692024">Chromium is trying to modify settings for filling payment methods.</translation>
 <translation id="3258596308407688501">Chromium cannot read and write to its data directory:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,8 +142,8 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="4019629340646866719">Chromium OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />, as is <ph name="BEGIN_LINK_LINUX_OSS" />Linux development environment<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Help make Chromium better by reporting the <ph name="BEGIN_LINK" />current settings<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Important security improvements and new features are available in the latest version.</translation>
-<translation id="4050599136622776556">Chromium is trying to edit payment methods.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chromium automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="4148957013307229264">Installing...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Network sign-in – Chromium</translation>
 <translation id="421369550622382712">Discover great apps, games, extensions and themes for Chromium.</translation>
@@ -182,6 +180,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="479167709087336770">This uses the same spell checker that's used in Google search. Text that you type in the browser is sent to Google. You can always change this behaviour in settings.</translation>
 <translation id="4888717733111232871">Inbound rule for Chromium to allow mDNS traffic.</translation>
 <translation id="4893347770495441059">Relaunch to Update &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chromium isn't used for one minute. This could include history, autofill and downloads. Your existing tabs will remain open.}other{Your organisation deletes browsing data automatically when Chromium isn't used for # minutes. This could include history, autofill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="4943838377383847465">Chromium is in background mode.</translation>
 <translation id="4987820182225656817">Guests can use Chromium without leaving anything behind.</translation>
 <translation id="4994636714258228724">Add yourself to Chromium</translation>
@@ -208,7 +207,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5653831366781983928">Please restart Chromium now</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Display Chromium in this language</translation>
-<translation id="585620188971323280">modify settings for filling payment methods.</translation>
 <translation id="5862307444128926510">Welcome to Chromium</translation>
 <translation id="5883558403894052917">Chromium found that these items contain malware:</translation>
 <translation id="5895138241574237353">Restart</translation>
@@ -216,6 +214,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="5924017743176219022">Connecting to the Internet…</translation>
 <translation id="5941711191222866238">Minimise</translation>
 <translation id="5972142260211327093">If Chromium has randomly placed you in an active trial, your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chromium deletes your interests on a rolling basis each month. Interests refresh unless you remove them.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Your organisation closes Chromium automatically when it isn't used for one minute.}other{Your organisation closes Chromium automatically when it isn't used for # minutes.}}</translation>
 <translation id="5987687638152509985">Update Chromium to start sync</translation>
 <translation id="5988505247484123880">It's common for sites that you visit to remember things that you're interested in, to personalise your experience. Sites can also store information with Chromium about your interests.</translation>
 <translation id="6003112304606738118">Downloading… <ph name="HOURS" /> hour(s) remaining</translation>

@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">Познате мреже</translation>
 <translation id="1239161794459865856">Функција <ph name="FEATURE_NAME" /> је повезана.</translation>
 <translation id="1240638468526743569">Апликација</translation>
-<translation id="1242704516557658755">Померај уназад на листи најскорије коришћених прозора</translation>
 <translation id="124678866338384709">Затварање актуелне картице</translation>
 <translation id="1246890715821376239">Неподржане апликације</translation>
 <translation id="1247372569136754018">Микрофон (интерни)</translation>
@@ -1121,7 +1120,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Укључено</translation>
 <translation id="5920710855273935292">Микрофон је искључен.</translation>
-<translation id="5922962980596822074">Прођи кроз прозоре од најскорије коришћеног прозора</translation>
 <translation id="5924855612669061715">Хотспот је укључен</translation>
 <translation id="5946788582095584774">Функција <ph name="FEATURE_NAME" /> је укључена.</translation>
 <translation id="5947494881799873997">Врати</translation>
@@ -1240,7 +1238,6 @@
 <translation id="6469104339369989396">Укључите или искључите хотспот</translation>
 <translation id="6477681113376365978">Преузимање фајла није успело</translation>
 <translation id="6482559668224714696">Лупа за цео екран</translation>
-<translation id="6483727822843292440">Прођи кроз прозоре од најмање коришћеног прозора</translation>
 <translation id="6490471652906364588">Уређај са USB прикључком типа C (десни порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> тражи да ажурирате <ph name="DEVICE_TYPE" /> пре истека рока</translation>
 <translation id="649452524636452238">PIN паметне картице</translation>

@@ -1419,7 +1419,6 @@
 <translation id="4349810866125026513">Качване въпреки това</translation>
 <translation id="4350629523305688469">Мултифункционална тава</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> иска да сканира за устройства с Bluetooth в близост. Намерени са следните:</translation>
-<translation id="4351175281479794167">Въвеждане на код за потвърждение</translation>
 <translation id="4355383636893709732">Актуализация на ChromeOS за приложения за Android</translation>
 <translation id="4356973930735388585">Извършители на атака, използващи този сайт, може да опитат да инсталират опасни програми на компютъра ви, които крадат или изтриват информацията ви (например снимки, пароли, съобщения и номера на кредитни карти).</translation>
 <translation id="4358059973562876591">Прилагането на посочените от вас шаблони не е възможно поради грешка в правилото DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@
 <translation id="460848736049414407">Блокирано от администратора</translation>
 <translation id="4610279718074907952">Този сайт е в група, дефинирана от <ph name="SET_OWNER" />, която може да вижда активността ви</translation>
 <translation id="4617273035598175554">Софтуер за графика и анимация</translation>
+<translation id="4619564267100705184">Потвърдете, че сте вие</translation>
 <translation id="4622292761762557753">Прехвърляне въпреки това</translation>
 <translation id="4627675673814409125">Това правило не може да се зададе на ниво потребителски профил в Chrome и ще бъде пренебрегнато.</translation>
 <translation id="4628948037717959914">Снимка</translation>
@@ -1740,7 +1740,6 @@
 <translation id="5123433949759960244">Баскетболна топка</translation>
 <translation id="5125751979347152379">Невалиден URL адрес.</translation>
 <translation id="512592033764059484">Футбол</translation>
-<translation id="5126510351761255129">Потвърдете картата</translation>
 <translation id="512670116361803001">Възможно е приложението <ph name="APP_NAME" /> да не функционира правилно след преоразмеряване. За да предотвратите възникване на проблеми, използвайте предварително зададените размери за прозорците.</translation>
 <translation id="5127934926273826089">Цветя</translation>
 <translation id="5129534298163637277">Диалогов прозорец за потвърждаване</translation>
@@ -2035,7 +2034,6 @@
 <translation id="5869405914158311789">Няма достъп до този сайт</translation>
 <translation id="5869522115854928033">Запазени пароли</translation>
 <translation id="5872692522325383488">IBAN номерът е запазен</translation>
-<translation id="5873013647450402046">Банката иска да потвърди самоличността ви.</translation>
 <translation id="5877831137320480913">Козметика и фитнес</translation>
 <translation id="5879989559903563723">Не е разрешено в режим на гост</translation>
 <translation id="5884465125445718607">Плик, китайски №6</translation>
@@ -2454,7 +2452,6 @@
 <translation id="6896758677409633944">Копиране</translation>
 <translation id="6897140037006041989">Потребителски агент</translation>
 <translation id="6898699227549475383">Организация (О)</translation>
-<translation id="6899000063526916106">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> иска да получи пълен контрол над MIDI устройствата ви</translation>
 <translation id="691024665142758461">Изтегляне на няколко файла</translation>
@@ -3070,6 +3067,7 @@
 <translation id="8296205692406981542">Регионални паркове и градини</translation>
 <translation id="8297545700510100061">„Бисквитките“ и другите данни за сайтовете се използват с цел да бъдете запомнени, като например за влизане в профила ви или за персонализиране на реклами. За да управлявате „бисквитките“ за всички сайтове, вижте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Използваната от вас Wi-Fi мрежа (<ph name="WIFI_NAME" />) може да изисква да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Въвеждане на кодa</translation>
 <translation id="8303854710873047864">Секцията „<ph name="SECTION" />“ бе показана</translation>
 <translation id="830498451218851433">Сгъване в средата</translation>
 <translation id="831997045666694187">Вечерта</translation>
@@ -3421,7 +3419,6 @@
 <translation id="9191834167571392248">Перфориране долу вляво</translation>
 <translation id="9199905725844810519">Отпечатването е блокирано</translation>
 <translation id="9205078245616868884">Данните ви са шифровани с пропуска ви за синхронизиране. Въведете го, за да стартирате синхронизирането.</translation>
-<translation id="920511547311754821">Не можете да намерите кода си? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Добавянето на статията не бе успешно.</translation>
 <translation id="9213433120051936369">Персонализиране на облика</translation>
 <translation id="9215416866750762878">Приложение пречи на Chrome да се свърже безопасно с този сайт</translation>

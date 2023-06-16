@@ -3,13 +3,16 @@
 <translationbundle lang="hu">
 <translation id="1016765312371154165">A Chrome nem záródott be megfelelően.</translation>
 <translation id="130631256467250065">A módosítások az eszköz következő újraindításakor lépnek életbe.</translation>
+<translation id="1555506416658437797">fizetési módok szerkesztése.</translation>
 <translation id="1635457557763038537">Módosításai a Chrome újraindítása után lépnek érvénybe.</translation>
+<translation id="2399868464369312507">A Google Chrome szerkeszteni próbálja a fizetési módokat.</translation>
 <translation id="2447485272386224171">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek és további <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftvereknek<ph name="END_LINK_OSS" /> köszönhetően jött létre.</translation>
 <translation id="2588322182880276190">Chrome embléma</translation>
 <translation id="3444832043240812445">Ez az oldal csak akkor jelenít meg információkat a legutóbbi rendszerösszeomlásokról, ha <ph name="BEGIN_LINK" />engedélyezi a hibabejelentést<ph name="END_LINK" /> .</translation>
 <translation id="3875312571075912821">A hálózat elérésének engedélyezése a Chrome számára a tűzfal-
           vagy vírusirtó-beállításokban.</translation>
 <translation id="5005121315113832363">Ezt az oldalt a Chrome blokkolja</translation>
+<translation id="585620188971323280">módosítani próbálja a fizetési módok kitöltési beállításait.</translation>
 <translation id="6011049234605203654">Lépjen ide:
           Chrome menü &gt;
           <ph name="SETTINGS_TITLE" />
@@ -40,4 +43,5 @@
 <translation id="8187289872471304532">Az Applications &gt; System Preferences &gt; Network &gt; Advanced &gt; Proxies (Alkalmazások &gt; Rendszerbeállítások &gt; Hálózat &gt; Speciális &gt; Proxyk) menüpont alatt törölje a jelet minden kijelölt proxy mellől.</translation>
 <translation id="8232971017369963250">A Chrome a <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> nyílt forráskódú projektnek köszönhetően jött létre.</translation>
 <translation id="8279509328145658601">A Chrome létrejöttéhez más <ph name="BEGIN_LINK_OSS" />nyílt forráskódú szoftverek<ph name="END_LINK_OSS" /> is hozzájárultak.</translation>
+<translation id="8544217240017914508">A Google Chrome módosítani próbálja a fizetési módok kitöltési beállításait.</translation>
 </translationbundle>

@@ -1415,7 +1415,6 @@
 <translation id="4349810866125026513">İstənilən halda yükləyin</translation>
 <translation id="4350629523305688469">Çoxfunksiyalı Qab</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> yaxınlıqdakı Bluetooth cihazlarını axtarmaq istəyir. Aşağıdakı cihazlar tapıldı:</translation>
-<translation id="4351175281479794167">Doğrulama Kodunu daxil edin</translation>
 <translation id="4355383636893709732">Android tətbiqləri üçün ChromeOS güncəllənməsi</translation>
 <translation id="4356973930735388585">Saytdakı hücumçular kompüterinizə təhlükəli proqramlar yükləyərək məlumatlarınızı (məsələn, foto, parol, mesaj və kredit kart) oğurlamağa və ya silməyə cəhd edə bilər.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode siyasətində xəta olduğuna görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
@@ -1510,6 +1509,7 @@
 <translation id="460848736049414407">Admin tərəfindən bloklanıb</translation>
 <translation id="4610279718074907952">Bu sayt fəaliyyətinizi görən <ph name="SET_OWNER" /> tərəfindən təyin edilən qrupdadır</translation>
 <translation id="4617273035598175554">Qrafika və animasiya proqramı</translation>
+<translation id="4619564267100705184">Kimliyinizi doğrulayın</translation>
 <translation id="4622292761762557753">İstənilən halda ötürün</translation>
 <translation id="4627675673814409125">Bu siyasət Chrome profil səviyyəsində ayarlana bilməz və nəzərə alınmayacaq.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1736,7 +1736,6 @@
 <translation id="5123433949759960244">Basketbol</translation>
 <translation id="5125751979347152379">Yanlış URL.</translation>
 <translation id="512592033764059484">Futbol</translation>
-<translation id="5126510351761255129">Kartı təsdiq edin</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ölçüsü lazımi şəkildə dəyişdirilməyə bilər. Tətbiqin problemlərlə üzləşməməsi üçün əvvəlcədən ayarlanmış pəncərə ölçülərindən istifadə edin.</translation>
 <translation id="5127934926273826089">Güllər</translation>
 <translation id="5129534298163637277">Təsdiq pəncərəsi</translation>
@@ -2031,7 +2030,6 @@
 <translation id="5869405914158311789">Bu sayta qoşulmaq olmur</translation>
 <translation id="5869522115854928033">Saxlanılmış parollar</translation>
 <translation id="5872692522325383488">IBAN yadda saxlanıldı</translation>
-<translation id="5873013647450402046">Bankınız bunun siz olduğunuzu təsdiq etmək istəyir.</translation>
 <translation id="5877831137320480913">Gözəllik və fitnes</translation>
 <translation id="5879989559903563723">Qonaq rejimində icazə verilmir</translation>
 <translation id="5884465125445718607">Zərf Çin #6</translation>
@@ -2450,7 +2448,6 @@
 <translation id="6896758677409633944">Kopyalayın</translation>
 <translation id="6897140037006041989">İstifadəçi Agent</translation>
 <translation id="6898699227549475383">Təşkilat (T)</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> rəqəmli kodu daxil edin</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763"><ph name="URL" /> MIDI cihazlarda tam nəzarət əldə etmək istəyir</translation>
 <translation id="691024665142758461">Bir çox faylları endirin</translation>
@@ -3066,6 +3063,7 @@
 <translation id="8296205692406981542">Regional parklar və bağlar</translation>
 <translation id="8297545700510100061">Kukilər və digər sayt datası sizin yadda saxlamaq üçün istifadə edilir, məsələn, daxil olmanıza və ya reklamları fərdiləşdirməyə imkan yaradır. Bütün saytlar üzrə kukiləri idarə etmək üçün baxın: <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">İstifadə etdiyiniz Wi-Fi (<ph name="WIFI_NAME" />) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> səhifəsinə daxil olmağınızı tələb edə bilər.</translation>
+<translation id="8301894345671534559">Kod daxil edin</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" bölməsi göstərilir</translation>
 <translation id="830498451218851433">Yarımçıq qatlayın</translation>
 <translation id="831997045666694187">Axşam</translation>
@@ -3417,7 +3415,6 @@
 <translation id="9191834167571392248">Aşağı soldan deşik açın</translation>
 <translation id="9199905725844810519">Çap funksiyası bloklanıb</translation>
 <translation id="9205078245616868884">Datanız sinxronizasiya parol sözü ilə şifrələnib. Sinxronizasiyanı başlamaq üçün onu daxil edin.</translation>
-<translation id="920511547311754821">Kodunuzu tapa bilmirsiniz? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Məqalə əlavə etmək olmadı.</translation>
 <translation id="9213433120051936369">Görünüşü fərdiləşdirin</translation>
 <translation id="9215416866750762878">Tətbiq Chrome'un bu sayta təhlükəsiz şəkildə qoşulmasını dayandırır</translation>

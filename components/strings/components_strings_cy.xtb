@@ -1419,7 +1419,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="4349810866125026513">Uwchlwytho beth bynnag</translation>
 <translation id="4350629523305688469">Hambwrdd Aml-Bwrpas</translation>
 <translation id="4351060348582610152">Mae <ph name="ORIGIN" /> eisiau sganio am ddyfeisiau Bluetooth gerllaw. Canfuwyd y dyfeisiau canlynol:</translation>
-<translation id="4351175281479794167">Rhowch y cod dilysu</translation>
 <translation id="4355383636893709732">Diweddariad ChromeOS ar gyfer apiau Android</translation>
 <translation id="4356973930735388585">Mae'n bosib y bydd ymosodwyr sydd ar y wefan hon ar hyn o bryd yn ceisio gosod rhaglenni peryglus ar eich cyfrifiadur sy'n dwyn neu'n dileu eich gwybodaeth (er enghraifft, lluniau, cyfrineiriau, negeseuon a chardiau credyd).</translation>
 <translation id="4358059973562876591">Mae'n bosib na fydd y templedi rydych wedi'u nodi yn cael eu cymhwyso oherwydd gwall gyda'r polisi DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="460848736049414407">Wedi'i rwystro gan y Gweinyddwr</translation>
 <translation id="4610279718074907952">Mae'r wefan hon mewn grŵp, a ddiffinnir gan <ph name="SET_OWNER" />, sy'n gallu gweld eich gweithgarwch</translation>
 <translation id="4617273035598175554">Meddalwedd graffeg ac animeiddio</translation>
+<translation id="4619564267100705184">Cadarnhewch mai chi sydd yno</translation>
 <translation id="4622292761762557753">Trosglwyddo beth bynnag</translation>
 <translation id="4627675673814409125">Ni ellir gosod y polisi hwn ar lefel proffil Chrome a bydd yn cael ei anwybyddu.</translation>
 <translation id="4628948037717959914">Llun</translation>
@@ -1740,7 +1740,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5123433949759960244">Pêl-fasged</translation>
 <translation id="5125751979347152379">URL annilys.</translation>
 <translation id="512592033764059484">Pêl-droed</translation>
-<translation id="5126510351761255129">Dilyswch eich cerdyn</translation>
 <translation id="512670116361803001">Mae'n bosib na fydd <ph name="APP_NAME" /> yn newid maint yn dda. Defnyddiwch feintiau ffenestri rhagosodedig i atal yr ap rhag profi problemau.</translation>
 <translation id="5127934926273826089">Blodau</translation>
 <translation id="5129534298163637277">Deialog cadarnhad</translation>
@@ -2035,7 +2034,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="5869405914158311789">Methu â chyrraedd y wefan hon</translation>
 <translation id="5869522115854928033">Cyfrineiriau sydd wedi'u cadw</translation>
 <translation id="5872692522325383488">IBAN wedi'i gadw</translation>
-<translation id="5873013647450402046">Mae eich banc eisiau cadarnhau mai chi sydd yno.</translation>
 <translation id="5877831137320480913">Harddwch a ffitrwydd</translation>
 <translation id="5879989559903563723">Ni chaniateir yn y modd Gwestai</translation>
 <translation id="5884465125445718607">Amlen Chinese #6</translation>
@@ -2454,7 +2452,6 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6897140037006041989">Asiant Defnyddiwr</translation>
 <translation id="6898699227549475383">Sefydliad (O)</translation>
-<translation id="6899000063526916106">Rhowch y cod <ph name="NUMBER_OF_DIGITS" /> digid</translation>
 <translation id="6907458757809079309">Cadw'n heini</translation>
 <translation id="6910240653697687763">Mae <ph name="URL" /> am gael rheolaeth lawn o'ch dyfeisiau MIDI</translation>
 <translation id="691024665142758461">Lawrlwytho mwy nag un ffeil</translation>
@@ -3421,7 +3418,6 @@ Manylion ychwanegol:
 <translation id="9191834167571392248">Twll ar y chwith isaf</translation>
 <translation id="9199905725844810519">Ni chewch argraffu</translation>
 <translation id="9205078245616868884">Mae eich data wedi'u hamgryptio â'ch cyfrinymadrodd cysoni. Rhowch eich cyfrinymadrodd i ddechrau cysoni.</translation>
-<translation id="920511547311754821">Methu â dod o hyd i'ch cod? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Wedi methu ag ychwanegu erthygl.</translation>
 <translation id="9213433120051936369">Personoleiddio'r wedd</translation>
 <translation id="9215416866750762878">Mae ap yn atal Chrome rhag cysylltu'n ddiogel â'r wefan hon</translation>

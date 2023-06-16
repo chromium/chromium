@@ -1419,7 +1419,6 @@
 <translation id="4349810866125026513">Ипак отпреми</translation>
 <translation id="4350629523305688469">Вишенаменска фиока</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> жели да тражи Bluetooth уређаје у близини. Пронађени су следећи уређаји:</translation>
-<translation id="4351175281479794167">Унесите верификациони кôд</translation>
 <translation id="4355383636893709732">Ажурирање ChromeOS-а за Android апликације</translation>
 <translation id="4356973930735388585">Нападачи на овом сајту ће можда покушати да инсталирају опасне програме на рачунару који краду или бришу информације (на пример, слике, лозинке, поруке и бројеве кредитних картица).</translation>
 <translation id="4358059973562876591">Није могуће применити шаблоне које сте навели због грешке у DnsOverHttpsMode смерницама.</translation>
@@ -1514,6 +1513,7 @@
 <translation id="460848736049414407">Блокирао је администратор</translation>
 <translation id="4610279718074907952">Овај сајт је у групи, коју дефинише <ph name="SET_OWNER" />, који може да види ваше активности</translation>
 <translation id="4617273035598175554">Софтвер за графику и анимацију</translation>
+<translation id="4619564267100705184">Потврдите свој идентитет</translation>
 <translation id="4622292761762557753">Ипак пренеси</translation>
 <translation id="4627675673814409125">Ове смернице не могу да се подесе на нивоу Chrome профила и биће занемарене.</translation>
 <translation id="4628948037717959914">Слика</translation>
@@ -1740,7 +1740,6 @@
 <translation id="5123433949759960244">Кошаркашка лопта</translation>
 <translation id="5125751979347152379">Неважећа URL адреса.</translation>
 <translation id="512592033764059484">Фудбал</translation>
-<translation id="5126510351761255129">Верификујте картицу</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> можда неће променити величину на правилан начин. Користите унапред одређене величине прозора да бисте спречили да апликација има проблеме.</translation>
 <translation id="5127934926273826089">Цвеће</translation>
 <translation id="5129534298163637277">Дијалог за потврду</translation>
@@ -2035,7 +2034,6 @@
 <translation id="5869405914158311789">Овај сајт није доступан</translation>
 <translation id="5869522115854928033">Сачуване лозинке</translation>
 <translation id="5872692522325383488">IBAN је сачуван</translation>
-<translation id="5873013647450402046">Банка жели да потврди да сте то ви.</translation>
 <translation id="5877831137320480913">Лепота и фитнес</translation>
 <translation id="5879989559903563723">Није дозвољено у режиму госта</translation>
 <translation id="5884465125445718607">Кинеска коверта бр. 6</translation>
@@ -2453,7 +2451,6 @@
 <translation id="6896758677409633944">Копирај</translation>
 <translation id="6897140037006041989">Кориснички агент</translation>
 <translation id="6898699227549475383">Организација (O)</translation>
-<translation id="6899000063526916106">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени кôд</translation>
 <translation id="6907458757809079309">Фитнес</translation>
 <translation id="6910240653697687763"><ph name="URL" /> жели да у потпуности контролише MIDI уређаје</translation>
 <translation id="691024665142758461">да преузме више датотека</translation>
@@ -3069,6 +3066,7 @@
 <translation id="8296205692406981542">Регионални паркови и баште</translation>
 <translation id="8297545700510100061">Колачићи и други подаци о сајтовима се користе да бисте били запамћени, на пример, ради пријављивања или персонализовања огласа. Да бисте управљали колачићима за све сајтове, погледајте <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi мрежа коју користите (<ph name="WIFI_NAME" />) ће можда захтевати да посетите <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Унеси кôд</translation>
 <translation id="8303854710873047864">Приказује се одељак „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">Пресавијање напола</translation>
 <translation id="831997045666694187">Увече</translation>
@@ -3421,7 +3419,6 @@
 <translation id="9191834167571392248">Бушење у доњем левом углу</translation>
 <translation id="9199905725844810519">Штампање је блокирано</translation>
 <translation id="9205078245616868884">Подаци се шифрују помоћу приступне фразе за синхронизацију. Унесите је да бисте започели синхронизацију.</translation>
-<translation id="920511547311754821">Не можете да пронађете кôд? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Додавање чланка није успело.</translation>
 <translation id="9213433120051936369">Прилагодите изглед</translation>
 <translation id="9215416866750762878">Апликација онемогућава Chrome-у да се безбедно повеже са овим сајтом</translation>

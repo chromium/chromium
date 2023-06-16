@@ -3,13 +3,16 @@
 <translationbundle lang="is">
 <translation id="1016765312371154165">Chrome lokaðist ekki á réttan hátt.</translation>
 <translation id="130631256467250065">Breytingarnar taka gildi næst þegar þú endurræsir tækið.</translation>
+<translation id="1555506416658437797">breyta greiðslumátum.</translation>
 <translation id="1635457557763038537">Breytingarnar taka gildi næst þegar þú endurræsir Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome er að reyna að breyta greiðslumátum.</translation>
 <translation id="2447485272386224171">Opna kóðaverkefnið <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annar <ph name="BEGIN_LINK_OSS" />opinn hugbúnaður<ph name="END_LINK_OSS" /> gerir Chrome mögulegt.</translation>
 <translation id="2588322182880276190">Chrome lógóið</translation>
 <translation id="3444832043240812445">Þessi síða sýnir aðeins upplýsingar um nýleg hrun ef þú <ph name="BEGIN_LINK" />kveikir á tilkynningum um hrun<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Veittu Chrome aðgang að netkerfinu þínu í eldveggsstillingunum þínum eða
            vírusvarnarstillingunum.</translation>
 <translation id="5005121315113832363">Chrome setti þessa síðu á bannlista</translation>
+<translation id="585620188971323280">breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="6011049234605203654">Farðu í
           valmynd Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           og taktu valið af öllum proxy-þjónum sem hafa verið valdir.</translation>
 <translation id="8232971017369963250">Chrome virkar í krafti verkefnis <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> um opinn kóða.</translation>
 <translation id="8279509328145658601">Chrome virkar einnig í krafti annars <ph name="BEGIN_LINK_OSS" />hugbúnaðar með opinn kóða<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 </translationbundle>

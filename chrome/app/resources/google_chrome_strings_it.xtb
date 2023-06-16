@@ -29,7 +29,6 @@
 <translation id="1516530951338665275">Google Chrome richiede l'accesso al Bluetooth per continuare l'accoppiamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">La realizzazione di ChromeOS è stata possibile grazie a <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivi.</translation>
 <translation id="1553358976309200471">Aggiorna Chrome</translation>
-<translation id="1555506416658437797">modifica metodi di pagamento.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ha già eseguito l'accesso a questo profilo Chrome. Questa operazione creerà un nuovo profilo Chrome per <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome sta utilizzando la videocamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> è pericoloso, pertanto è stato bloccato da Chrome.</translation>
@@ -78,7 +77,6 @@
 <translation id="234869673307233423">Chrome non può controllare le tue password. Riprova più tardi.</translation>
 <translation id="235650106824528204">Tutti i dati di Chrome generati durante l'utilizzo di questo profilo (come i preferiti, la cronologia, le password e altre impostazioni) possono essere rimossi dall'amministratore del profilo di lavoro. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continua</translation>
-<translation id="2399868464369312507">Google Chrome sta tentando di modificare i metodi di pagamento.</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2424440923901031101">Questa estensione viola le norme del Chrome Web Store e potrebbe non essere sicura. Rimuovila da Chrome in modo che non possa più vedere e modificare i tuoi dati sui siti che visiti, incluse le tue informazioni personali.</translation>
 <translation id="2467438592969358367">Google Chrome vuole esportare le password. Per consentire l'esportazione, digita la tua password Windows.</translation>
@@ -252,7 +250,6 @@
 <translation id="5756509061973259733">Esiste già un profilo Chrome con questo account su questo dispositivo</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Impossibile avviare Chrome. Riprova.</translation>
-<translation id="585620188971323280">modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="5895138241574237353">Riavvia</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Accesso rete</translation>
 <translation id="5924017743176219022">Connessione a Internet in corso…</translation>
@@ -392,7 +389,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8504220326736535258">Chrome ha bloccato questo file perché ha un malware</translation>
 <translation id="8516431725144212809">I tuoi interessi stimati da Chrome</translation>
 <translation id="8521348052903287641">Regola inbound per consentire il traffico mDNS in Google Chrome Dev.</translation>
-<translation id="8544217240017914508">Google Chrome sta cercando di modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="8550334526674375523">Questo profilo di lavoro è completamente separato dal tuo profilo personale.</translation>
 <translation id="8556340503434111824">È disponibile una nuova versione di Google Chrome con una velocità senza precedenti.</translation>
 <translation id="8571790202382503603">Con i profili Chrome puoi separare tutti i tuoi contenuti di Chrome. In questo modo potrai alternare lavoro e divertimento con più facilità.</translation>

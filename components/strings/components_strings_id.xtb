@@ -1418,7 +1418,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="4349810866125026513">Tetap upload</translation>
 <translation id="4350629523305688469">Baki Multifungsi</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ingin memindai perangkat Bluetooth di sekitar. Perangkat berikut telah ditemukan:</translation>
-<translation id="4351175281479794167">Masukkan kode verifikasi</translation>
 <translation id="4355383636893709732">Update ChromeOS untuk aplikasi Android</translation>
 <translation id="4356973930735388585">Penyerang di situs ini mungkin berusaha memasang program berbahaya di komputer Anda yang dapat mencuri atau menghapus informasi (misalnya, foto, sandi, pesan, dan kartu kredit).</translation>
 <translation id="4358059973562876591">Template yang telah Anda tentukan mungkin tidak diterapkan karena terjadi error dengan kebijakan DnsOverHttpsMode.</translation>
@@ -1513,6 +1512,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="460848736049414407">Diblokir oleh Admin</translation>
 <translation id="4610279718074907952">Situs ini berada dalam grup, yang ditentukan oleh <ph name="SET_OWNER" />, yang dapat melihat aktivitas Anda</translation>
 <translation id="4617273035598175554">Software grafis &amp; animasi</translation>
+<translation id="4619564267100705184">Verifikasi diri Anda</translation>
 <translation id="4622292761762557753">Tetap transfer</translation>
 <translation id="4627675673814409125">Kebijakan ini tidak dapat disetel di tingkat profil Chrome dan akan diabaikan.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1739,7 +1739,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5123433949759960244">Bola basket</translation>
 <translation id="5125751979347152379">URL tidak valid.</translation>
 <translation id="512592033764059484">Sepak bola</translation>
-<translation id="5126510351761255129">Verifikasi kartu</translation>
 <translation id="512670116361803001">Perubahan ukuran <ph name="APP_NAME" /> mungkin tidak sesuai. Gunakan ukuran jendela preset untuk mencegah aplikasi mengalami masalah.</translation>
 <translation id="5127934926273826089">Bunga</translation>
 <translation id="5129534298163637277">Dialog konfirmasi</translation>
@@ -2034,7 +2033,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="5869405914158311789">Situs ini tidak dapat dijangkau</translation>
 <translation id="5869522115854928033">Sandi tersimpan</translation>
 <translation id="5872692522325383488">IBAN disimpan</translation>
-<translation id="5873013647450402046">Bank Anda ingin memastikan bahwa ini memang Anda.</translation>
 <translation id="5877831137320480913">Kecantikan &amp; kebugaran</translation>
 <translation id="5879989559903563723">Tidak diizinkan dalam mode Tamu</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2453,7 +2451,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6897140037006041989">Agen Pengguna</translation>
 <translation id="6898699227549475383">Organisasi (O)</translation>
-<translation id="6899000063526916106">Masukkan kode <ph name="NUMBER_OF_DIGITS" /> digit</translation>
 <translation id="6907458757809079309">Kebugaran</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ingin mengontrol penuh perangkat MIDI Anda</translation>
 <translation id="691024665142758461">Mendownload beberapa file</translation>
@@ -3067,6 +3064,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="8296205692406981542">Taman &amp; kebun daerah</translation>
 <translation id="8297545700510100061">Cookie dan data situs lainnya digunakan untuk mengingat Anda, misalnya untuk login atau personalisasi iklan. Untuk mengelola cookie semua situs, lihat <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi yang digunakan (<ph name="WIFI_NAME" />) mungkin mewajibkan Anda mengunjungi <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Masukkan kode</translation>
 <translation id="8303854710873047864">Bagian "<ph name="SECTION" />" ditampilkan</translation>
 <translation id="830498451218851433">Lipatan setengah</translation>
 <translation id="831997045666694187">Sore</translation>
@@ -3416,7 +3414,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="9191834167571392248">Lubang di kiri bawah</translation>
 <translation id="9199905725844810519">Pencetakan diblokir</translation>
 <translation id="9205078245616868884">Data Anda dienkripsi dengan frasa sandi sinkronisasi. Masukkan frasa sandi untuk memulai sinkronisasi.</translation>
-<translation id="920511547311754821">Tidak dapat menemukan kode? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Gagal menambahkan artikel.</translation>
 <translation id="9213433120051936369">Sesuaikan tampilan</translation>
 <translation id="9215416866750762878">Aplikasi membuat Chrome tidak terhubung dengan aman ke situs ini</translation>

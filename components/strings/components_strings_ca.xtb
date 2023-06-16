@@ -1410,7 +1410,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="4349810866125026513">Penja igualment</translation>
 <translation id="4350629523305688469">Safata multifuncional</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vol cercar dispositius Bluetooth propers. S'han trobat els dispositius següents:</translation>
-<translation id="4351175281479794167">Introdueix el codi de verificació</translation>
 <translation id="4355383636893709732">Actualització de ChromeOS per a aplicacions d'Android</translation>
 <translation id="4356973930735388585">Els atacants d'aquest lloc poden provar d'instal·lar programes perillosos a l'ordinador per robar o suprimir la teva informació (per exemple, les fotos, les contrasenyes, els missatges i les targetes de crèdit).</translation>
 <translation id="4358059973562876591">Pot ser que les plantilles que has especificat no s'apliquin a causa d'un error amb la política DnsOverHttpsMode.</translation>
@@ -1504,6 +1503,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="460848736049414407">Bloquejat per l'administrador</translation>
 <translation id="4610279718074907952">Aquest lloc web forma part d'un grup, definit per <ph name="SET_OWNER" />, que pot veure la teva activitat</translation>
 <translation id="4617273035598175554">Programari d'animació i gràfics</translation>
+<translation id="4619564267100705184">Verifica la teva identitat</translation>
 <translation id="4622292761762557753">Transfereix igualment</translation>
 <translation id="4627675673814409125">Aquesta política no es pot establir a nivell del perfil de Chrome i s'ignorarà.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1729,7 +1729,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5123433949759960244">Pilota de bàsquet</translation>
 <translation id="5125751979347152379">URL no vàlid.</translation>
 <translation id="512592033764059484">Futbol</translation>
-<translation id="5126510351761255129">Verifica la targeta</translation>
 <translation id="512670116361803001">És possible que l'aplicació <ph name="APP_NAME" /> no canviï de mida correctament. Utilitza les mides de la finestra predefinides per evitar que l'aplicació tingui problemes.</translation>
 <translation id="5127934926273826089">Flors</translation>
 <translation id="5129534298163637277">Quadre de diàleg de confirmació</translation>
@@ -2022,7 +2021,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="5869405914158311789">No es pot accedir a aquest lloc web</translation>
 <translation id="5869522115854928033">Contrasenyes desades</translation>
 <translation id="5872692522325383488">L'IBAN s'ha desat</translation>
-<translation id="5873013647450402046">El banc vol confirmar la teva identitat.</translation>
 <translation id="5877831137320480913">Bellesa i fitnes</translation>
 <translation id="5879989559903563723">No es permet en mode de convidat</translation>
 <translation id="5884465125445718607">Sobre xinès número 6</translation>
@@ -2437,7 +2435,6 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6897140037006041989">Agent d'usuari</translation>
 <translation id="6898699227549475383">Organització (O)</translation>
-<translation id="6899000063526916106">Introdueix el codi de <ph name="NUMBER_OF_DIGITS" /> dígits</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763"><ph name="URL" /> vol obtenir un control total dels teus dispositius MIDI</translation>
 <translation id="691024665142758461">Baixa diversos fitxers</translation>
@@ -3049,6 +3046,7 @@ Detalls addicionals:
 <translation id="8296205692406981542">Parcs i jardins regionals</translation>
 <translation id="8297545700510100061">Les galetes i altres dades dels llocs web s'utilitzen per recordar-te amb finalitats com ara iniciar la teva sessió o personalitzar anuncis. Per gestionar les galetes de tots els llocs web, consulta <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">És possible que la xarxa Wi-Fi (<ph name="WIFI_NAME" />) que esteu fent servir requereixi que visiteu <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Introdueix el codi</translation>
 <translation id="8303854710873047864">S'ha mostrat la secció "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Plegat per la meitat</translation>
 <translation id="831997045666694187">Tarda</translation>
@@ -3397,7 +3395,6 @@ Detalls addicionals:
 <translation id="9191834167571392248">Encunyació a la part inferior esquerra</translation>
 <translation id="9199905725844810519">La impressió està bloquejada</translation>
 <translation id="9205078245616868884">Les vostres dades estan encriptades amb la vostra frase de contrasenya de sincronització. Introduïu-la per començar la sincronització.</translation>
-<translation id="920511547311754821">No trobes el codi? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">No s'ha pogut afegir l'article.</translation>
 <translation id="9213433120051936369">Personalitza l'aspecte</translation>
 <translation id="9215416866750762878">Una aplicació impedeix que Chrome es connecti de manera segura a aquest lloc web</translation>

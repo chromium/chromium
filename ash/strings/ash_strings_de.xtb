@@ -63,7 +63,6 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1235458158152011030">Bekannte Netzwerke</translation>
 <translation id="1239161794459865856">"<ph name="FEATURE_NAME" />" ist verbunden.</translation>
 <translation id="1240638468526743569">Eine App</translation>
-<translation id="1242704516557658755">In der zuletzt verwendeten Fensterliste rückwärts blättern</translation>
 <translation id="124678866338384709">Aktuellen Tab schließen</translation>
 <translation id="1246890715821376239">Nicht unterstützte Apps</translation>
 <translation id="1247372569136754018">Mikrofon (intern)</translation>
@@ -141,6 +140,7 @@ Hier sind ein paar Dinge, die du tun kannst, um loszulegen.</translation>
 <translation id="1550406609415860283">Verfügbare Geräte</translation>
 <translation id="1550523713251050646">Für weitere Optionen klicken</translation>
 <translation id="1555130319947370107">Blau</translation>
+<translation id="1576511610858879060">Dein Chromebook oder Bluetooth-Gerät verwendet eine ältere Bluetooth-Version. Nutze eine andere Eingangsquelle für bessere Audioqualität.</translation>
 <translation id="1576623706766186887">Herauszoomen, wenn die Lupe aktiviert ist</translation>
 <translation id="1586324912145647027">Zu Desktop 1–8 wechseln</translation>
 <translation id="1589090746204042747">Auf alle deine Aktivitäten in dieser Sitzung zugreifen</translation>
@@ -1114,7 +1114,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">An</translation>
 <translation id="5920710855273935292">Mikrofon ist stummgeschaltet.</translation>
-<translation id="5922962980596822074">Fenster vom zuletzt verwendeten Fenster durchgehen</translation>
 <translation id="5924855612669061715">Hotspot aktiviert</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ist aktiviert.</translation>
 <translation id="5947494881799873997">Rückgängig machen</translation>
@@ -1233,7 +1232,6 @@ Schließe dein Gerät an eine Steckdose an.</translation>
 <translation id="6469104339369989396">Hotspot ein-/ausschalten</translation>
 <translation id="6477681113376365978">Datei kann nicht heruntergeladen werden</translation>
 <translation id="6482559668224714696">Vollbildlupe</translation>
-<translation id="6483727822843292440">Fenster vom am wenigsten verwendeten Fenster durchgehen</translation>
 <translation id="6490471652906364588">USB-C-Gerät (Port rechts)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> erfordert, dass dein Gerät (<ph name="DEVICE_TYPE" />) vor Ablauf der Frist aktualisiert wird</translation>
 <translation id="649452524636452238">Smartcard-PIN</translation>

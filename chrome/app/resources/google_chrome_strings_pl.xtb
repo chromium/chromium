@@ -29,7 +29,6 @@
 <translation id="1516530951338665275">Aby kontynuować parowanie, Google Chrome potrzebuje dostępu do Bluetootha. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Opracowanie Chrome OS było możliwe dzięki dodatkowemu <ph name="BEGIN_LINK_CROS_OSS" />oprogramowaniu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Zaktualizuj Chrome</translation>
-<translation id="1555506416658437797">edytować formy płatności.</translation>
 <translation id="1583073672411044740">W tym profilu Chrome jest już zalogowany użytkownik <ph name="EXISTING_USER" />. Spowoduje to utworzenie nowego profilu Chrome dla użytkownika <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">Google Chrome używa Twojej kamery.</translation>
 <translation id="1587325591171447154">Plik <ph name="FILE_NAME" /> jest niebezpieczny, dlatego został zablokowany przez Chrome.</translation>
@@ -78,7 +77,6 @@
 <translation id="234869673307233423">Chrome nie może sprawdzić Twoich haseł. Spróbuj później.</translation>
 <translation id="235650106824528204">Wszystkie dane Chrome wygenerowane podczas używania tego profilu (takie jak zakładki, historia, hasła i inne ustawienia) mogą zostać usunięte przez administratora profilu służbowego. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Dalej</translation>
-<translation id="2399868464369312507">Google Chrome próbuje edytować formy płatności.</translation>
 <translation id="2401189691232800402">System operacyjny Chrome</translation>
 <translation id="2424440923901031101">To rozszerzenie narusza zasady Chrome Web Store i może być niebezpieczne. Usuń je z Chrome, aby nie odczytywało ani nie zmieniało Twoich danych na stronach, które odwiedzasz. Dotyczy to także Twoich danych osobowych.</translation>
 <translation id="2467438592969358367">Google Chrome chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
@@ -252,7 +250,6 @@
 <translation id="5756509061973259733">Na tym urządzeniu istnieje już profil Chrome z tym kontem</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Nie udało się uruchomić Chrome. Spróbuj ponownie.</translation>
-<translation id="585620188971323280">zmienić ustawienia wypełniania form płatności.</translation>
 <translation id="5895138241574237353">Uruchom ponownie</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – logowanie do sieci</translation>
 <translation id="5924017743176219022">Łączę z internetem…</translation>
@@ -392,7 +389,6 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="8504220326736535258">Ten plik został zablokowany przez Chrome, bo zawiera złośliwe oprogramowanie</translation>
 <translation id="8516431725144212809">Twoje zainteresowania oszacowane według Chrome</translation>
 <translation id="8521348052903287641">Reguła dla ruchu przychodzącego w wersji deweloperskiej Google Chrome zezwalająca na ruch mDNS.</translation>
-<translation id="8544217240017914508">Google Chrome próbuje zmienić ustawienia wypełniania form płatności.</translation>
 <translation id="8550334526674375523">Ten profil służbowy jest całkowicie oddzielony od Twojego profilu osobistego.</translation>
 <translation id="8556340503434111824">Dostępna jest nowa, szybsza niż kiedykolwiek wersja przeglądarki Google Chrome.</translation>
 <translation id="8571790202382503603">Dzięki profilom Chrome wszystkie swoje rzeczy z tej przeglądarki możesz przechowywać osobno. To pozwala łatwo oddzielić pracę od rozrywki.</translation>

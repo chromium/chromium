@@ -376,6 +376,7 @@
 <translation id="1307431692088049276">不再询问</translation>
 <translation id="1307559529304613120">糟糕！系统无法为该设备存储长期的 API 访问令牌。</translation>
 <translation id="131112695174432497">对广告个性化有影响的数据会被删除</translation>
+<translation id="1311294419381837540">您正在投放一个标签页。您可随时暂停或停止投放。</translation>
 <translation id="1312811472299082263">基于 Ansible Playbook 或 Crostini 备份文件进行创建</translation>
 <translation id="13130607084115184">已保存的密码将显示在这里。如需将密码导入此设备上的 <ph name="BRAND" />，请<ph name="BEGIN_LINK" />选择一个 CSV 文件<ph name="END_LINK" />。</translation>
 <translation id="1313264149528821971">已撤消<ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />和<ph name="PERMISSION_3" />使用权</translation>
@@ -412,6 +413,7 @@
 <translation id="1341871421050612057">无法与 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">授权 Linux 应用访问 USB 设备。Linux 不会记住已被拔出的 USB 设备。</translation>
 <translation id="1343920184519992513">继续浏览上次打开的网页并打开一组特定网页</translation>
+<translation id="1344141078024003905">您正在投放屏幕画面。您可随时暂停或停止投屏。</translation>
 <translation id="1346630054604077329">确认并重启</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安装更新和应用。继续操作即表示您同意此设备还可从 Google、您的运营商以及您设备的制造商处自动下载并安装更新和应用（可能会使用移动数据网络）。部分应用可能会提供应用内购商品。<ph name="BEGIN_LINK1" />了解详情<ph name="END_LINK1" /></translation>
@@ -1676,6 +1678,7 @@
 <translation id="2378982052244864789">选择扩展程序目录。</translation>
 <translation id="2379281330731083556">使用系统对话框进行打印...<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">已分享的标签页的预览视图</translation>
+<translation id="2382875860893882175">目前已暂停投放。您可随时恢复投放或停止投放。</translation>
 <translation id="2383825469508278924">更改键盘按键映射、功能键等设置</translation>
 <translation id="2387052489799050037">转到主屏幕</translation>
 <translation id="2387602571959163792">“<ph name="DESK_NAME" />”（当前）</translation>
@@ -3747,11 +3750,6 @@
 <translation id="4169535189173047238">不允许</translation>
 <translation id="4170314459383239649">退出时清除</translation>
 <translation id="417096670996204801">选择一份个人资料</translation>
-<translation id="4174651450391857911">这份个人资料由贵组织管理。根据贵组织的要求，如果想继续使用这份受管理的个人资料，您必须共享设备信号。
-
-设备信号可能包括您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息。
-
-如果您选择不共享信号，系统会关闭这份个人资料。</translation>
 <translation id="4175137578744761569">浅紫色和白色</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176864026061939326">此设备是受管设备。设备管理员要求您为帐号 <ph name="USER_EMAIL_ADDRESS" /> 创建一份新的个人资料</translation>
@@ -3802,6 +3800,7 @@
 <translation id="4223845867739585293">创建通行密钥</translation>
 <translation id="4225397296022057997">在所有网站上</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允许使用这个扩展程序}other{不允许使用某些扩展程序}}</translation>
+<translation id="4231053948789591973">目前已暂停投放。您可随时恢复投放或停止投放屏幕。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上通过 Google Play 安装各种应用和游戏。<ph name="LINK_BEGIN" />了解详情<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">关闭游戏控制器</translation>
 <translation id="4231231258999726714">正在设置 Steam for Chromebook</translation>
@@ -5727,6 +5726,7 @@
     <ph name="LINE_BREAK" />
     此图片将会显示在 Chromebook 的登录屏幕和锁定屏幕上。</translation>
 <translation id="5925147183566400388">核证作业准则 (Certification Practice Statement) 指针</translation>
+<translation id="5927132638760172455">正在投放至未知接收器</translation>
 <translation id="5927232971138258197">此扩展程序可以读取和更改 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
@@ -6427,6 +6427,7 @@
 <translation id="653983593749614101">正在恢复…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您有意这么做或被要求这样做，否则请不要随意启用这项功能，因为收集数据可能会降低性能。</translation>
 <translation id="6541638731489116978">此网站已被禁止使用您的移动传感器。</translation>
+<translation id="6542521951477560771">正在投放到<ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">重复速度</translation>
 <translation id="6545867563032584178">已在 Mac 系统偏好设置中关闭麦克风</translation>
 <translation id="6546856949879953071">如需了解详细的升级信息，请参阅“文件”&gt;“我的文件”&gt;“<ph name="LOG_FILE" />”中的已存日志</translation>
@@ -8650,11 +8651,7 @@
 <translation id="8428271547607112339">添加学校帐号</translation>
 <translation id="84297032718407999">您将在 <ph name="LOGOUT_TIME_LEFT" />后退出登录</translation>
 <translation id="8431190899827883166">显示点按操作反馈</translation>
-<translation id="8431496281632382473">这份个人资料由 <ph name="DOMAIN" /> 管理。根据贵组织的要求，如果想继续使用这份受管理的个人资料，您必须共享设备信号。
-
-设备信号可能包括您的浏览器、操作系统、设备、已安装的软件以及文件的相关信息。
-
-如果您选择不共享信号，系统会关闭这份个人资料。</translation>
+<translation id="8433186206711564395">网络设置</translation>
 <translation id="8434480141477525001">NaCl调试端口</translation>
 <translation id="8437209419043462667">美国英语</translation>
 <translation id="8438328416656800239">改用智能浏览器</translation>

@@ -30,7 +30,6 @@
  pareamento. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">A criação do ChromeOS só foi possível graças a um outro <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Atualizar o Google Chrome</translation>
-<translation id="1555506416658437797">editar formas de pagamento.</translation>
 <translation id="1583073672411044740">A conta de <ph name="EXISTING_USER" /> já está conectada a este perfil do Chrome. Isso criará um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">O Google Chrome está usando sua câmera.</translation>
 <translation id="1587325591171447154">O arquivo <ph name="FILE_NAME" /> é perigoso. Por isso ele foi bloqueado pelo Chrome.</translation>
@@ -79,7 +78,6 @@
 <translation id="234869673307233423">O Chrome não pode verificar suas senhas. Tente mais tarde.</translation>
 <translation id="235650106824528204">Quaisquer dados do Chrome gerados quando este perfil estiver sendo usado (como a criação de favoritos, histórico, senhas e outras configurações) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2399868464369312507">O Google Chrome está tentando editar formas de pagamento.</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2424440923901031101">Esta extensão viola a política da Chrome Web Store e pode não ser segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome quer exportar suas senhas. Digite sua senha do Windows para permitir isso.</translation>
@@ -253,7 +251,6 @@
 <translation id="5756509061973259733">Este dispositivo já tem um perfil do Chrome com essa conta</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" />: Google Chrome Canary</translation>
 <translation id="5804318322022881572">Não foi possível iniciar o Chrome. Tente novamente.</translation>
-<translation id="585620188971323280">modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Login na rede</translation>
 <translation id="5924017743176219022">Conectando-se à Internet...</translation>
@@ -284,6 +281,7 @@
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6360449101159168105">Enquanto esta guia estava inativa, a memória foi liberada para manter o Chrome rápido. Você pode optar por sempre excluir este site do status de inatividade.</translation>
 <translation id="6412673304250309937">Verifica se os URLs estão em uma lista de sites não seguros armazenada no Chrome. Se um site tentar roubar sua senha ou se você fizer o download de um arquivo nocivo, o Chrome também poderá enviar URLs, incluindo partes do conteúdo da página, para o "Navegação segura".</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{A organização vai fechar o Chrome automaticamente se ele não for usado por 1 minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}one{A organização vai fechar o Chrome automaticamente se ele não for usado por # minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}other{A organização vai fechar o Chrome automaticamente se ele não for usado por # minutos. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}}</translation>
 <translation id="6418662306461808273">Mudar para um perfil do Chrome existente?</translation>
 <translation id="648319183876919572">O recurso "Navegação segura com maior proteção" protege você ainda mais contra sites e downloads perigosos</translation>
 <translation id="6493527311031785448">O Google Chrome está tentando <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -333,6 +331,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="7398801000654795464">Você estava conectado ao Google Chrome como <ph name="USER_EMAIL_ADDRESS" />. Use a mesma conta para fazer login novamente.</translation>
 <translation id="7410958280246779049">O Chrome bloqueou esse arquivo por ser perigoso</translation>
 <translation id="7426611252293106642">É possível que o Google Chrome não funcione corretamente, porque esta distribuição do Linux não tem mais suporte a ele</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{A organização vai fechar o Chrome automaticamente se ele não for usado por 1 minuto.}one{A organização vai fechar o Chrome automaticamente se ele não for usado por # minuto.}other{A organização vai fechar o Chrome automaticamente se ele não for usado por # minutos.}}</translation>
 <translation id="7481213027396403996">Use o nível mais alto de segurança do Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
@@ -367,6 +366,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tentará fornecer uma para você. As imagens serão enviadas ao Google para a criação de descrições.</translation>
 <translation id="8019103195866286235">A publicação desta extensão foi cancelada pelo desenvolvedor, e ela pode não ser segura. Remova do Chrome para que ela não apareça mais e altere seus dados nos sites que você visitar, incluindo suas informações pessoais.</translation>
 <translation id="80471789339884597">Agradecemos por fazer a instalação. É necessário reiniciar todos os navegadores antes de utilizar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chrome não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Sobre o Google Chrome</translation>
 <translation id="813913629614996137">Inicializando…</translation>
@@ -390,7 +390,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="8504220326736535258">O Chrome bloqueou esse arquivo porque ele contém malware</translation>
 <translation id="8516431725144212809">Seus interesses estimados pelo Chrome</translation>
 <translation id="8521348052903287641">Regra interna do Google Chrome Dev que permite o tráfego mDNS.</translation>
-<translation id="8544217240017914508">O Google Chrome está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="8550334526674375523">Este perfil de trabalho é completamente separado do seu perfil pessoal.</translation>
 <translation id="8556340503434111824">Há uma nova versão ainda mais rápida do Google Chrome disponível.</translation>
 <translation id="8571790202382503603">Você pode usar os perfis do Chrome para separar todos os seus dados nele. Assim, fica mais fácil dividir suas atividades entre trabalho e diversão.</translation>

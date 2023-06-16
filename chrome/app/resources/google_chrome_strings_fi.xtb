@@ -30,7 +30,6 @@
  laiteparin muodostusta. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chrome-käyttöjärjestelmää.</translation>
 <translation id="1553358976309200471">Päivitä Chrome</translation>
-<translation id="1555506416658437797">muokata maksutapoja.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> on jo kirjautunut tähän Chrome-profiiliin. Tämä luo uuden Chrome-profiilin: <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome käyttää kameraasi.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> on vaarallinen, joten Chrome on estänyt sen.</translation>
@@ -79,7 +78,6 @@
 <translation id="234869673307233423">Chrome ei voi tarkistaa salasanojasi. Yritä myöhemmin uudelleen.</translation>
 <translation id="235650106824528204">Työprofiilin järjestelmänvalvoja voi poistaa tämän profiilin käytön aikana luotua Chrome-dataa (esim. kirjanmerkit, historia, salasanat ja muut asetukset). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Jatka</translation>
-<translation id="2399868464369312507">Google Chrome yrittää muokata maksutapoja.</translation>
 <translation id="2401189691232800402">Chrome-käyttöjärjestelmä</translation>
 <translation id="2424440923901031101">Tämä laajennus rikkoo Chrome Web Storen käytäntöä ja saattaa olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="2467438592969358367">Google Chrome yrittää viedä salasanojasi tiedostoon. Salli tämä kirjoittamalla Windows-salasanasi.</translation>
@@ -253,7 +251,6 @@
 <translation id="5756509061973259733">Tämän tilin Chrome-profiili on jo tällä laitteella</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chromen käynnistäminen epäonnistui. Yritä uudelleen.</translation>
-<translation id="585620188971323280">muuttaa maksutapojen täyttämisen asetuksia.</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon</translation>
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
@@ -284,6 +281,7 @@
 <translation id="6327105987658262776">Päivityksiä ei ole saatavilla.</translation>
 <translation id="6360449101159168105">Kun tämä välilehti ei ollut aktiivinen, muistia vapautettiin Chromen pitämiseksi nopeana. Voit halutessasi valita, että tämä sivusto ei ole koskaan ei-aktiivinen.</translation>
 <translation id="6412673304250309937">Tarkistaa URL-osoitteet Chromeen tallennetun vaarallisten sivustojen luettelon avulla. Jos sivusto yrittää varastaa salasanaasi tai jos lataat haitallisen tiedoston, Chrome voi myös lähettää Selaussuojan tarkistettavaksi URL-osoitteita, mukaan lukien osia sivujen sisällöstä.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="6418662306461808273">Vaihdetaanko nykyiseen Chrome-profiiliin?</translation>
 <translation id="648319183876919572">Parannettu selaussuoja suojaa sinua entistä paremmin vaarallisilta sivustoilta ja latauksilta</translation>
 <translation id="6493527311031785448">Google Chrome yrittää seuraavaa: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -333,6 +331,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="7398801000654795464">Chromeen kirjautunut käyttäjä: <ph name="USER_EMAIL_ADDRESS" />. Kirjaudu uudelleen sisään samalla tilillä.</translation>
 <translation id="7410958280246779049">Chrome esti tämän tiedoston, koska se on vaarallinen</translation>
 <translation id="7426611252293106642">Google Chrome ei välttämättä toimi oikein, koska tämä Linux-jakelu ei enää tue sitä</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty 1 minuuttiin.}other{Organisaatiosi sulkee Chromen automaattisesti, kun sitä ei ole käytetty # minuuttiin.}}</translation>
 <translation id="7481213027396403996">Ota Chromen tehokkain suojaus käyttöön</translation>
 <translation id="7535429826459677826">Google Chromen kehittäjäversio</translation>
 <translation id="7583399374488819119">Asennusohjelma: <ph name="COMPANY_NAME" /></translation>
@@ -367,6 +366,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8013993649590906847">Jos kuvalla ei ole hyödyllistä kuvausta, Chrome yrittää luoda sellaisen. Kuvat lähetetään Googlelle kuvausten luomista varten.</translation>
 <translation id="8019103195866286235">Kehittäjä on perunut laajennuksen julkaisun, joten se voi olla vaarallinen. Poista se Chromesta, jotta se ei enää voi nähdä tai muuttaa dataasi sivustoilla, joilla vierailet, mukaan lukien henkilökohtaisia tietojasi.</translation>
 <translation id="80471789339884597">Kiitos asennuksesta. Kaikki selaimet pitää käynnistää uudelleen ennen kuin <ph name="BUNDLE_NAME" /> otetaan käyttöön.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromea ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Tietoja &amp;Google Chromesta</translation>
 <translation id="813913629614996137">Käynnistetään…</translation>
@@ -390,7 +390,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="8504220326736535258">Chrome on estänyt tämän tiedoston, koska se sisältää haittaohjelmia</translation>
 <translation id="8516431725144212809">Chromen arvio siitä, mitkä ovat kiinnostuksen kohteitasi</translation>
 <translation id="8521348052903287641">Google Chromen kehittäjäversion saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
-<translation id="8544217240017914508">Google Chrome yrittää muuttaa maksutapojen täytön asetuksia.</translation>
 <translation id="8550334526674375523">Tämä työprofiili on täysin erillinen henkilökohtaisesta profiilistasi.</translation>
 <translation id="8556340503434111824">Chromesta on saatavissa uusi versio, joka on entistäkin nopeampi.</translation>
 <translation id="8571790202382503603">Kun käytät Chrome-profiileja, voit pitää kaiken Chrome-sisällön erillään. Näin työ ja hauskanpito on helpompi erottaa toisistaan.</translation>

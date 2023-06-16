@@ -20,7 +20,6 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="1478370723027452770">Pomoč za Chrome for Testing</translation>
 <translation id="1524282610922162960">Deljenje zavihka v Chromiumu</translation>
 <translation id="1553461853655228091">Chromium potrebuje dovoljenje za dostop do fotoaparata zaradi ustvarjanja tridimenzionalnega zemljevida okolice.</translation>
-<translation id="1555506416658437797">urediti plačilna sredstva.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium.}=1{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. Anonimno okno se ne bo znova odprlo.}one{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimno okno se ne bo znova odprlo.}two{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimni okni se ne bosta znova odprli.}few{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimna okna se ne bodo znova odprla.}other{Skrbnik zahteva, da za uveljavitev te posodobitve znova zaženete Chromium. # anonimnih oken se ne bo znova odprlo.}}</translation>
 <translation id="1625909126243026060">Oglejte si ključne kontrolnike zasebnosti in varnosti v Chromiumu.</translation>
 <translation id="1632539827495546968">Če želite ta račun uporabiti samo enkrat, lahko v brskalniku Chromium uporabite <ph name="GUEST_LINK_BEGIN" />način za goste<ph name="GUEST_LINK_END" />. Če želite dodati račun za nekoga drugega, v napravi <ph name="DEVICE_TYPE" /> <ph name="LINK_BEGIN" />dodajte novo osebo<ph name="LINK_END" />.
@@ -97,7 +96,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="3179665906251668410">Odpri povezavo v Chromiumovem oknu brez bele&amp;ženja zgodovine</translation>
 <translation id="3185330573522821672">Prilagajanje novega profila v Chromiumu</translation>
 <translation id="3190315855212034486">Opa! Chromium se je zrušil. Ga želite znova zagnati?</translation>
-<translation id="3255926992597692024">Chromium poskuša spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
 <translation id="3258596308407688501">Chromium ne more brati svojega imenika s podatki ali pisati vanj:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="4019629340646866719">Chromium OS omogoča dodatna <ph name="BEGIN_LINK_CROS_OSS" />odprtokodna programska oprema<ph name="END_LINK_CROS_OSS" />, enako kot <ph name="BEGIN_LINK_LINUX_OSS" />razvojno okolje Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Pomagajte izboljšati Chromium s poročanjem o <ph name="BEGIN_LINK" />trenutnih nastavitvah<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">V najnovejši različici so na voljo pomembne varnostne izboljšave in nove funkcije.</translation>
-<translation id="4050599136622776556">Chromium poskuša urediti plačilna sredstva.</translation>
 <translation id="4055805654398742145">Upravitelj g&amp;esel</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizacija samodejno zapre Chromium, če ga ne uporabljate 1 minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}one{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minuto. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}two{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minuti. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}few{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minute. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}other{Organizacija samodejno zapre Chromium, če ga ne uporabljate # minut. Podatki brskanja so izbrisani. To lahko vključuje zgodovino, samodejno izpolnjevanje in prenose.}}</translation>
 <translation id="4148957013307229264">Nameščanje ...</translation>
@@ -210,7 +207,6 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="5653831366781983928">Znova zaženite Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium v tem jeziku</translation>
-<translation id="585620188971323280">spremeniti nastavitve za izpolnjevanje podatkov o plačilnih sredstvih.</translation>
 <translation id="5862307444128926510">Pozdravljeni v Chromiumu</translation>
 <translation id="5883558403894052917">Chromium je ugotovil, da ti elementi vsebujejo zlonamerno programsko opremo:</translation>
 <translation id="5895138241574237353">Znova zaženi</translation>

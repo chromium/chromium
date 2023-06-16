@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">သိထားသည့် ကွန်ရက်များ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ချိတ်ဆက်ထားသည်။</translation>
 <translation id="1240638468526743569">အက်ပ်တစ်ခု</translation>
-<translation id="1242704516557658755">နောက်ဆုံး သုံးထားသည့် ဝင်းဒိုးစာရင်းကို စက်ဝိုင်းဒလက်ပုံ နောက်ပြန်လှည့်ရန်</translation>
 <translation id="124678866338384709">လက်ရှိတဘ်ကို ပိတ်ရန်</translation>
 <translation id="1246890715821376239">ထောက်ပံ့ပေးမထားသော အက်ပ်များ</translation>
 <translation id="1247372569136754018">မိုက်ခရိုဖုန်း (စက်တွင်း)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ဖွင့်ရန်</translation>
 <translation id="5920710855273935292">မိုက်ပိတ်ထားသည်။</translation>
-<translation id="5922962980596822074">လတ်တလော အသုံးအများဆုံးဝင်းဒိုးမှစ၍ ဝင်ဒိုးများ တစ်ခုစီကြည့်သွားရန်</translation>
 <translation id="5924855612669061715">ဟော့စပေါ့ ဖွင့်လိုက်သည်</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ဖွင့်ထားသည်။</translation>
 <translation id="5947494881799873997">မူလအခြေအနေ ပြန်သွားရန်</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်ရန်</translation>
 <translation id="6477681113376365978">ဖိုင်ကို ဒေါင်းလုဒ်လုပ်၍မရပါ</translation>
 <translation id="6482559668224714696">မျက်နှာပြင်အပြည့် မှန်ဘီလူး</translation>
-<translation id="6483727822843292440">အသုံးအနည်းဆုံးဝင်ဒိုးမှစ၍ ဝင်းဒိုးများ တစ်ခုစီကြည့်သွားရန်</translation>
 <translation id="6490471652906364588">USB-C ကိရိယာ (ညာ ပို့တ်)</translation>
 <translation id="6491071886865974820">နောက်ဆုံးသတ်မှတ်ချိန်မတိုင်မီ သင့် <ph name="DEVICE_TYPE" /> ကိုအပ်ဒိတ်လုပ်ရန် <ph name="MANAGER" /> ကသတ်မှတ်ထားသည်</translation>
 <translation id="649452524636452238">အဆင့်မြင့်ကတ် ပင်နံပါတ်</translation>

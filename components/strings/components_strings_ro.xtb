@@ -398,6 +398,7 @@
 <translation id="1864927262126810325">De la <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Configurația proxy este setată să utilizeze servere proxy fixe, și nu o adresă URL pentru scripturi .pac.</translation>
 <translation id="1871284979644508959">Câmp obligatoriu</translation>
+<translation id="1871739799120352748">Prețul este mare</translation>
 <translation id="1873899211667975540">Muzică rock</translation>
 <translation id="1874224422119691492">Poți modifica dacă folosești blocarea ecranului pentru completarea parolelor în <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Tava foto</translation>
@@ -441,6 +442,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> dorește să stocheze permanent cantități mari de date pe computer</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{și încă una}few{și încă #}other{și încă #}}</translation>
+<translation id="2001469757375372617">A apărut o eroare. Modificarea nu a fost salvată.</translation>
 <translation id="2003709556000175978">Resetează parola acum</translation>
 <translation id="2003775180883135320">Perforare cvadruplă în partea de sus</translation>
 <translation id="2009942480257059311">Butonul Creează un eveniment, activează pentru a crea rapid un eveniment în Google Calendar</translation>
@@ -498,6 +500,7 @@
 <translation id="2118132148597630479">Plic C5</translation>
 <translation id="2119505898009119320">Emis către: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Perforare în dreapta jos</translation>
+<translation id="2122214041802369259">Prețul este mare</translation>
 <translation id="2122719317867821810">Politica funcționează corespunzător, dar în altă sursă a fost setată o valoare conflictuală, care este modificată de această politică.</translation>
 <translation id="2126374524350484896">PDF Producer:</translation>
 <translation id="2130448033692577677">Șabloanele specificate nu pot fi aplicate, deoarece politica DnsOverHttpsMode nu este setată.</translation>
@@ -856,6 +859,7 @@
 <translation id="3052964831964880138">Scădere de preț de <ph name="PRICE_DROP" /> pentru <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Serviciu de corecție</translation>
 <translation id="306573536155379004">Jocul a început.</translation>
+<translation id="3067505415088964188">Prețul este mic</translation>
 <translation id="3068991664510324412">Jocuri video și pe computer</translation>
 <translation id="3080254622891793721">Grafică</translation>
 <translation id="3081538120861307764">Pentru a măsura performanța unui anunț, sunt trimise tipuri de date limitate între site-uri, cum ar fi ora la care ți-a fost afișat un anunț.</translation>
@@ -1419,7 +1423,6 @@
 <translation id="4349810866125026513">Încarcă oricum</translation>
 <translation id="4350629523305688469">Tava multifuncțională</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vrea să caute dispozitive Bluetooth în apropiere. Următoarele dispozitive au fost găsite:</translation>
-<translation id="4351175281479794167">Introdu codul de verificare</translation>
 <translation id="4355383636893709732">Actualizare ChromeOS pentru aplicațiile Android</translation>
 <translation id="4356973930735388585">Atacatorii de pe acest site pot încerca să instaleze programe periculoase pe computerul tău, care să îți fure sau să îți șteargă informațiile (de exemplu, fotografiile, parolele, mesajele sau informațiile despre cardurile de credit).</translation>
 <translation id="4358059973562876591">Șabloanele specificate nu pot fi aplicate din cauza unei erori legate de politica DnsOverHttpsMode.</translation>
@@ -1514,6 +1517,7 @@
 <translation id="460848736049414407">Blocat de administrator</translation>
 <translation id="4610279718074907952">Site-ul face parte dintr-un grup, definit de <ph name="SET_OWNER" />, care îți poate vedea activitatea</translation>
 <translation id="4617273035598175554">Software pentru elemente grafice și animație</translation>
+<translation id="4619564267100705184">Confirmă-ți identitatea</translation>
 <translation id="4622292761762557753">Transferă oricum</translation>
 <translation id="4627675673814409125">Această politică nu se poate seta la nivelul profilului Chrome și va fi ignorată.</translation>
 <translation id="4628948037717959914">Fotografie</translation>
@@ -1740,7 +1744,6 @@
 <translation id="5123433949759960244">Baschet</translation>
 <translation id="5125751979347152379">Adresă URL nevalidă.</translation>
 <translation id="512592033764059484">Fotbal</translation>
-<translation id="5126510351761255129">Confirmă cardul</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> poate să nu fie redimensionată corect. Folosește dimensiunile de fereastră presetate pentru a evita eventualele erori ale aplicației.</translation>
 <translation id="5127934926273826089">Flori</translation>
 <translation id="5129534298163637277">Dialog de confirmare</translation>
@@ -2035,7 +2038,6 @@
 <translation id="5869405914158311789">Acest site nu poate fi accesat</translation>
 <translation id="5869522115854928033">Parole salvate</translation>
 <translation id="5872692522325383488">Codul IBAN a fost salvat</translation>
-<translation id="5873013647450402046">Banca dorește să îți confirme identitatea.</translation>
 <translation id="5877831137320480913">Frumusețe și fitness</translation>
 <translation id="5879989559903563723">Nu se permite în modul pentru invitați</translation>
 <translation id="5884465125445718607">Plic chinezesc 6</translation>
@@ -2071,6 +2073,7 @@
 <translation id="5967592137238574583">Editează informațiile de contact</translation>
 <translation id="5967867314010545767">Eliminați din istoric</translation>
 <translation id="5968022600320704045">Niciun rezultat al căutării</translation>
+<translation id="5969199813874624822">Salvează și urmărește prețul</translation>
 <translation id="5974052231147553524">A șasea rolă</translation>
 <translation id="5975083100439434680">Micșorează</translation>
 <translation id="5979084224081478209">Verifică parolele</translation>
@@ -2454,7 +2457,6 @@
 <translation id="6896758677409633944">Copiază</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Organizația (O)</translation>
-<translation id="6899000063526916106">Introdu codul de <ph name="NUMBER_OF_DIGITS" /> cifre</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763">Adresa <ph name="URL" /> dorește să preia controlul complet asupra dispozitivelor MIDI</translation>
 <translation id="691024665142758461">să descarce mai multe fișiere</translation>
@@ -3070,6 +3072,7 @@ Detalii suplimentare:
 <translation id="8296205692406981542">Parcuri și grădini regionale</translation>
 <translation id="8297545700510100061">Cookie-urile și alte date ale site-urilor sunt folosite pentru a te reține, de exemplu, pentru a te conecta sau pentru a personaliza anunțuri. Pentru a gestiona cookie-urile pentru toate site-urile, consultă <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Rețeaua Wi-Fi pe care o folosești (<ph name="WIFI_NAME" />) poate solicita accesarea adresei <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Introdu codul</translation>
 <translation id="8303854710873047864">Secțiunea „<ph name="SECTION" />” s-a afișat</translation>
 <translation id="830498451218851433">Îndoire la jumătate</translation>
 <translation id="831997045666694187">Seara</translation>
@@ -3394,6 +3397,7 @@ Detalii suplimentare:
 <translation id="9141013498910525015">Gestionează adresele</translation>
 <translation id="9144951720726881238">Data expirării:</translation>
 <translation id="9148507642005240123">&amp;Anulați editarea</translation>
+<translation id="9148599396704355100">Prețul este mic</translation>
 <translation id="9150045010208374699">Utilizează camera foto</translation>
 <translation id="9150685862434908345">Administratorul poate schimba configurația browserului de la distanță. Este posibil ca activitatea de pe acest dispozitiv să fie gestionată și din afara Chrome. <ph name="BEGIN_LINK" />Află mai multe<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Actualizat</translation>
@@ -3422,7 +3426,6 @@ Detalii suplimentare:
 <translation id="9191834167571392248">Perforare în stânga jos</translation>
 <translation id="9199905725844810519">Printarea este blocată</translation>
 <translation id="9205078245616868884">Datele sunt criptate cu expresia de acces pentru sincronizare. Introdu-o pentru a începe sincronizarea.</translation>
-<translation id="920511547311754821">Nu găsești codul? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Articolul nu a fost adăugat.</translation>
 <translation id="9213433120051936369">Personalizează aspectul</translation>
 <translation id="9215416866750762878">O aplicație împiedică browserul Chrome să se conecteze în siguranță la acest site</translation>

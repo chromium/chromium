@@ -20,6 +20,7 @@
 <translation id="1128128132059598906">EAP-TTLS</translation>
 <translation id="1145018782460575098">نافذة تحديث البرامج الثابتة للأجهزة الخارجية مفتوحة. عدد التحديثات المتاحة: <ph name="NUM_UPDATES" />.</translation>
 <translation id="1145516343487477149">‏البحث عن مقالات مساعدة وإجابات عن الأسئلة الشائعة حول أجهزة Chromebook</translation>
+<translation id="1164939766849482256">شاشة استراحة تعرض منظرًا من الفجر إلى الليل</translation>
 <translation id="1167755866710282443">افتح القائمة لتخصيص المفاتيح. اسحب القائمة لنقلها.</translation>
 <translation id="1175697296044146566">تتم إدارة جهاز <ph name="DEVICE_TYPE" /> هذا من خلال <ph name="MANAGER" />.</translation>
 <translation id="1175951029573070619">إشارة متوسطة (<ph name="SIGNAL_STRENGTH" />)</translation>
@@ -239,6 +240,7 @@
 <translation id="2873483161362553159">التنقّل في المتصفِّح</translation>
 <translation id="2874939134665556319">المقطع الصوتي السابق</translation>
 <translation id="2878387241690264070">تم نفاد <ph name="RATE" /> خلال <ph name="NUM_SECONDS" /> ثانية.</translation>
+<translation id="2880569433548999039">شاشة استراحة تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="2926057806159140518">أدخِل اسم المستخدم وكلمة المرور أو امسَح رمز الاستجابة السريعة ضوئيًا.</translation>
 <translation id="2940811910881150316">يتعذّر اختبار لوحة المفاتيح الخاصة بالجهاز. أعِد فتح غطاء الجهاز لاختبار لوحة المفاتيح.</translation>
 <translation id="3008341117444806826">إعادة التحميل</translation>
@@ -261,6 +263,7 @@
 <translation id="315738237743207937">تم رصد مدخل مشروط الوصول إليه.</translation>
 <translation id="3160172848211257835">إرسال <ph name="BEGIN_LINK1" />معلومات النظام والتطبيق<ph name="END_LINK1" /> و<ph name="BEGIN_LINK2" />المقاييس<ph name="END_LINK2" /></translation>
 <translation id="3170673040743561620">يُرجى وضع المستند على الماسح الضوئي.</translation>
+<translation id="3174321110679064523">خلفية تعرض منظرًا من الفجر إلى الليل</translation>
 <translation id="3188257591659621405">ملفاتي</translation>
 <translation id="319101249942218879">تم تغيير الصورة الرمزية.</translation>
 <translation id="3192947282887913208">ملفات صوتية</translation>
@@ -287,6 +290,7 @@
 <translation id="3360306038446926262">‏نظام التشغيل Windows</translation>
 <translation id="3368922792935385530">متصل</translation>
 <translation id="3369013195428705271">هل تريد فعلاً محو سجلّ الطباعة بالكامل؟ لن يتم محو مهام الطباعة الجارية.</translation>
+<translation id="3373141842870501561">خلفية تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="3404249063913988450">تفعيل شاشة التوقف</translation>
 <translation id="3413935475507503304">لمواصلة عملية التحديث، انقر على "التالي".</translation>
 <translation id="3434107140712555581"><ph name="BATTERY_PERCENTAGE" />%</translation>
@@ -324,6 +328,7 @@
 <translation id="3639846061339007994">الجانب العلوي</translation>
 <translation id="3651050199673793219">اختيار وحدة قياس درجة الحرارة</translation>
 <translation id="3663574643422533538">اختيار عمل فني حصري لجهاز <ph name="PRODUCT_NAME" /></translation>
+<translation id="3668449597372804501">خلفية تعرض منظرًا انسيابيًا للسُحب</translation>
 <translation id="3689839747745352263">اختبار <ph name="TEST_NAME" /></translation>
 <translation id="370665806235115550">جارٍ التحميل...</translation>
 <translation id="3708186454126126312">الأجهزة المتصلة سابقًا</translation>
@@ -335,6 +340,7 @@
 <translation id="380097101658023925">‏عناصر التحكُّم في ألوان الأحمر والأخضر والأزرق (RGB) للإضاءة الخلفية</translation>
 <translation id="38114475217616659">محو السجلّ بأكمله</translation>
 <translation id="3820172043799983114">رقم التعريف الشخصي غير صالح.</translation>
+<translation id="382043424867370667">خلفية تعرض غروب الشمس</translation>
 <translation id="3824259034819781947">إرفاق ملفات</translation>
 <translation id="3838338534323494292">كلمة المرور الجديدة</translation>
 <translation id="3845880861638660475">‏اضغط على <ph name="ALT_SHORTCUT_START" />Alt<ph name="ALT_SHORTCUT_END" /> + <ph name="ESC_SHORTCUT_START" />مفتاح الخروج (Esc)<ph name="ESC_SHORTCUT_END" /> لإغلاق مربع الحوار.</translation>
@@ -420,6 +426,7 @@
 <translation id="445059817448385655">كلمة المرور القديمة</translation>
 <translation id="4453205916657964690">قناع الشبكة الفرعية</translation>
 <translation id="4454245904991689773">حفظ الملفات التي تم مسحها ضوئيًا في</translation>
+<translation id="4469288414739283461">شاشة استراحة تعرض منظرًا انسيابيًا للأرض</translation>
 <translation id="4479639480957787382">إيثرنت</translation>
 <translation id="4483049906298469269">تعذَّر فحص اتصال بوابة الشبكة غير التلقائية.</translation>
 <translation id="4500966230243561393">لون الواجهة</translation>
@@ -531,8 +538,10 @@
 <translation id="5275828089655680674">إعادة تشغيل سلاسل الإجراءات</translation>
 <translation id="5286252187236914003">L2TP/IPsec</translation>
 <translation id="5286263799730375393">لون الإضاءة الخلفية</translation>
+<translation id="5292579816060236070">خلفية تعرض شروق الشمس</translation>
 <translation id="5294769550414936029">الإصدار <ph name="MILESTONE_VERSION" /></translation>
 <translation id="5300814202279832142">نقل النافذة إلى سطح المكتب</translation>
+<translation id="5303837385540978511">خلفية حصرية على <ph name="PRODUCT_NAME" /></translation>
 <translation id="5304899856529773394">EVDO</translation>
 <translation id="5315873049536339193">الهوية</translation>
 <translation id="5317780077021120954">حفظ</translation>
@@ -682,6 +691,7 @@
 <translation id="6463239094587744704">{PAGE_NUMBER,plural, =0{هل تريد إعادة مسح الصفحة ضوئيًا؟}=1{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}two{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}few{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}many{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}other{هل تريد إعادة مسح الصفحة {PAGE_NUMBER} ضوئيًا؟}}</translation>
 <translation id="6472207088655375767">‏كلمة المرور لمرة واحدة (OTP)</translation>
 <translation id="6480327114083866287">تتم الإدارة من خلال <ph name="MANAGER" /></translation>
+<translation id="6488559935020624631">شاشة استراحة حصرية على <ph name="PRODUCT_NAME" /></translation>
 <translation id="649050271426829538">توقّفت الطابعة - الورق مكدّس</translation>
 <translation id="6494974875566443634">إعدادات التخصيص</translation>
 <translation id="6500818810472529210">‏عرض النتيجة في "بحث Google"</translation>

@@ -1417,7 +1417,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="4349810866125026513">Feltöltés mindenképp</translation>
 <translation id="4350629523305688469">Többfunkciós tálca</translation>
 <translation id="4351060348582610152">A(z) <ph name="ORIGIN" /> szeretné megkeresni a közeli Bluetooth-eszközöket. A következő eszközöket találta:</translation>
-<translation id="4351175281479794167">Ellenőrző kód megadása</translation>
 <translation id="4355383636893709732">ChromeOS-frissítés Android-alkalmazásokhoz</translation>
 <translation id="4356973930735388585">Előfordulhat, hogy a támadók ezen a webhelyen olyan veszélyes programokat próbálnak telepíteni számítógépére, amelyek ellopják vagy törlik adatait (például fotóit, jelszavait, üzeneteit vagy bankkártyájának adatait).</translation>
 <translation id="4358059973562876591">A DnsOverHttpsMode házirenddel kapcsolatos hiba miatt előfordulhat, hogy a megadott sablonok nem alkalmazhatók.</translation>
@@ -1512,6 +1511,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="460848736049414407">Rendszergazda által letiltva</translation>
 <translation id="4610279718074907952">Ez a webhely egy olyan, a(z) <ph name="SET_OWNER" /> által meghatározott csoportban található, amely láthatja az Ön tevékenységeit</translation>
 <translation id="4617273035598175554">Grafikai és animációs szoftverek</translation>
+<translation id="4619564267100705184">Igazolja személyazonosságát</translation>
 <translation id="4622292761762557753">Átvitel mégis</translation>
 <translation id="4627675673814409125">Ez az irányelv nem állítható be a Chrome-profil szintjén, ezért figyelmen kívül hagyja a rendszer.</translation>
 <translation id="4628948037717959914">Fénykép</translation>
@@ -1738,7 +1738,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5123433949759960244">Kosárlabda</translation>
 <translation id="5125751979347152379">Érvénytelen URL</translation>
 <translation id="512592033764059484">Labdarúgás</translation>
-<translation id="5126510351761255129">Kártya ellenőrzése</translation>
 <translation id="512670116361803001">Előfordulhat, hogy a(z) <ph name="APP_NAME" /> átméretezése nem működik megfelelően. Használjon előre beállított ablakméreteket a problémák elkerülése érdekében.</translation>
 <translation id="5127934926273826089">Virágok</translation>
 <translation id="5129534298163637277">Megerősítő párbeszédpanel</translation>
@@ -2033,7 +2032,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="5869405914158311789">A webhely nem érhető el</translation>
 <translation id="5869522115854928033">Mentett jelszavak</translation>
 <translation id="5872692522325383488">IBAN-kód mentve</translation>
-<translation id="5873013647450402046">Bankja szeretné, ha megerősítené személyazonosságát.</translation>
 <translation id="5877831137320480913">Szépség és fitnesz</translation>
 <translation id="5879989559903563723">Vendég módban nem engedélyezett</translation>
 <translation id="5884465125445718607">6. kínai boríték</translation>
@@ -2452,7 +2450,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">Szervezet (O)</translation>
-<translation id="6899000063526916106">Adja meg a kapott, <ph name="NUMBER_OF_DIGITS" /> számjegyből álló kódot</translation>
 <translation id="6907458757809079309">Fitnesz</translation>
 <translation id="6910240653697687763">A(z) <ph name="URL" /> webhely teljes hozzáférést kér a MIDI-eszközökhöz</translation>
 <translation id="691024665142758461">Több fájl letöltése</translation>
@@ -3068,6 +3065,7 @@ További részletek:
 <translation id="8296205692406981542">Regionális parkok és kertek</translation>
 <translation id="8297545700510100061">A cookie-k és az egyéb webhelyadatok arra szolgálnak, hogy a webhelyek emlékezzenek Önre, és így például bejelentkeztessék, vagy személyre szabják a hirdetéseket. A <ph name="SETTINGS" /> szakaszban kezelheti a webhelyek cookie-jait.</translation>
 <translation id="8298115750975731693">Az Ön által használt Wi-Fi-hálózat (<ph name="WIFI_NAME" />) megkövetelheti a(z) <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> felkeresését.</translation>
+<translation id="8301894345671534559">Kód megadása</translation>
 <translation id="8303854710873047864">A(z) „<ph name="SECTION" />” szakasz megjelenítve</translation>
 <translation id="830498451218851433">Félbehajtás</translation>
 <translation id="831997045666694187">Este</translation>
@@ -3420,7 +3418,6 @@ További részletek:
 <translation id="9191834167571392248">Lyuk balra lent</translation>
 <translation id="9199905725844810519">A nyomtatás le van tiltva</translation>
 <translation id="9205078245616868884">Adatai az összetett szinkronizálási jelszavával vannak titkosítva. Adja meg a jelszót a szinkronizálás megkezdéséhez.</translation>
-<translation id="920511547311754821">Nem találja a kódját? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">A cikk hozzáadása sikertelen.</translation>
 <translation id="9213433120051936369">Megjelenés személyre szabása</translation>
 <translation id="9215416866750762878">Valamelyik alkalmazás megakadályozza a Chrome-ot abban, hogy biztonságosan csatlakozzon a webhelyhez</translation>

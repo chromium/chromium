@@ -1419,7 +1419,6 @@
 <translation id="4349810866125026513">להעלות בכל זאת</translation>
 <translation id="4350629523305688469">מגש מרובה פונקציות</translation>
 <translation id="4351060348582610152">‏<ph name="ORIGIN" /> מבקש לבצע סריקה כדי לאתר מכשירי Bluetooth בקרבת מקום. המכשירים הבאים נמצאו:</translation>
-<translation id="4351175281479794167">עליך להזין קוד אימות</translation>
 <translation id="4355383636893709732">‏עדכון של ChromeOS לאפליקציות ל-Android</translation>
 <translation id="4356973930735388585">תוקפים באתר הזה עשויים לנסות להתקין במחשב שלך תוכניות מסוכנות שגונבות או מוחקות מידע שלך (לדוגמה: תמונות, סיסמאות, הודעות ופרטי כרטיסי אשראי).</translation>
 <translation id="4358059973562876591">‏לא ניתן להחיל את התבניות שבחרת עקב שגיאה במדיניות DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@
 <translation id="460848736049414407">הכתובת נחסמה על ידי האדמין</translation>
 <translation id="4610279718074907952">האתר הזה שייך לקבוצת אתרים שיש להם הרשאה לראות את הפעילות שלך. הקבוצה הוגדרה על ידי <ph name="SET_OWNER" /></translation>
 <translation id="4617273035598175554">תוכנות גרפיקה ואנימציה</translation>
+<translation id="4619564267100705184">אימות הזהות שלך</translation>
 <translation id="4622292761762557753">אעביר בכל זאת</translation>
 <translation id="4627675673814409125">‏לא ניתן להגדיר את המדיניות הזאת ברמה של פרופיל Chrome. המערכת תתעלם מהמדיניות.</translation>
 <translation id="4628948037717959914">תמונה</translation>
@@ -1744,7 +1744,6 @@ Del</translation>
 <translation id="5123433949759960244">כדורסל</translation>
 <translation id="5125751979347152379">כתובת אתר לא חוקית.</translation>
 <translation id="512592033764059484">כדורגל</translation>
-<translation id="5126510351761255129">אימות הכרטיס</translation>
 <translation id="512670116361803001">ייתכן ששינוי הגודל של <ph name="APP_NAME" /> לא יפעל כראוי. כדאי להשתמש בגדלים של חלונות בהגדרה קבועה מראש כדי למנוע בעיות באפליקציה.</translation>
 <translation id="5127934926273826089">פרחים</translation>
 <translation id="5129534298163637277">תיבת דו-שיח לאישור</translation>
@@ -2040,7 +2039,6 @@ Del</translation>
 <translation id="5869405914158311789">לא ניתן לגשת לאתר הזה</translation>
 <translation id="5869522115854928033">סיסמאות שמורות</translation>
 <translation id="5872692522325383488">‏מספר IBAN נשמר</translation>
-<translation id="5873013647450402046">הבנק שלך רוצה לאמת את זהותך.</translation>
 <translation id="5877831137320480913">יופי וכושר גופני</translation>
 <translation id="5879989559903563723">אין הרשאה במצב אורח</translation>
 <translation id="5884465125445718607">מעטפה – סינית 6</translation>
@@ -2293,6 +2291,7 @@ Del</translation>
 <translation id="6468485451923838994">גופנים</translation>
 <translation id="647261751007945333">מדיניות המכשיר</translation>
 <translation id="647330291963761005">מתבצעת התקנה של עדכונים</translation>
+<translation id="6474220430271405609">בדיקות מדיניות</translation>
 <translation id="6475672344094591109">‏אתרים שבחרת לבקר בהם יכולים לשלוח ל-Chrome בקשה לקבלת מידע שיעזור להם למדוד את ביצועי המודעות שלהם. Chrome מגן על הפרטיות שלך על ידי הגבלת המידע שאתרים יכולים לשתף ביניהם.</translation>
 <translation id="6476284679642588870">ניהול אמצעי תשלום</translation>
 <translation id="6486200200930923183">סרטים תיעודיים</translation>
@@ -2458,7 +2457,6 @@ Del</translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6897140037006041989">User agent</translation>
 <translation id="6898699227549475383">‏ארגון (O)</translation>
-<translation id="6899000063526916106">צריך להזין קוד בן <ph name="NUMBER_OF_DIGITS" /> ספרות</translation>
 <translation id="6907458757809079309">כושר גופני</translation>
 <translation id="6910240653697687763">‏<ph name="URL" /> רוצה לקבל שליטה מלאה על מכשירי ה-MIDI שלך</translation>
 <translation id="691024665142758461">להוריד מספר קבצים</translation>
@@ -3074,6 +3072,7 @@ Del</translation>
 <translation id="8296205692406981542">פארקים וגנים אזוריים</translation>
 <translation id="8297545700510100061">‏קובצי cookie ונתונים אחרים מאתרים משמשים כדי לזכור את הפרטים שלך, למשל כדי להכניס אותך לחשבון או להציג מודעות בהתאמה אישית. ב<ph name="SETTINGS" /> אפשר לנהל את קובצי ה-cookie מכל האתרים.</translation>
 <translation id="8298115750975731693">‏ייתכן שרשת ה-Wi-Fi שנעשה בה שימוש (<ph name="WIFI_NAME" />) תחייב כניסה ל-<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">הזנת הקוד</translation>
 <translation id="8303854710873047864">הקטע "<ph name="SECTION" />" מוצג</translation>
 <translation id="830498451218851433">קיפול באמצע</translation>
 <translation id="831997045666694187">ערב</translation>
@@ -3425,7 +3424,6 @@ Del</translation>
 <translation id="9191834167571392248">ניקוב בפינה השמאלית התחתונה</translation>
 <translation id="9199905725844810519">ההדפסה חסומה</translation>
 <translation id="9205078245616868884">הנתונים שלך מוצפנים באמצעות ביטוי הסיסמה לסנכרון. יש להזין אותו כדי להתחיל בסנכרון.</translation>
-<translation id="920511547311754821">הקוד לא נמצא? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">הוספת הפריט נכשלה.</translation>
 <translation id="9213433120051936369">התאמה אישית של המראה</translation>
 <translation id="9215416866750762878">‏יישום כלשהו לא מאפשר ל-Chrome להתחבר באופן מאובטח לאתר זה</translation>

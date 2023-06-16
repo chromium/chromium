@@ -63,7 +63,6 @@ Her er nogle af de ting, du kan prøve for at komme godt i gang.</translation>
 <translation id="1235458158152011030">Kendte netværk</translation>
 <translation id="1239161794459865856">Der er forbindelse til <ph name="FEATURE_NAME" />.</translation>
 <translation id="1240638468526743569">En app</translation>
-<translation id="1242704516557658755">Gennemgå listen over senest anvendte vinduer bagfra</translation>
 <translation id="124678866338384709">Luk aktuel fane</translation>
 <translation id="1246890715821376239">Apps, der ikke understøttes</translation>
 <translation id="1247372569136754018">Mikrofon (indbygget)</translation>
@@ -1120,7 +1119,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Til</translation>
 <translation id="5920710855273935292">Mikrofonen er slået fra.</translation>
-<translation id="5922962980596822074">Gennemse vinduer fra det senest anvendte vindue</translation>
 <translation id="5924855612669061715">Hotspottet er aktiveret</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> er aktiveret.</translation>
 <translation id="5947494881799873997">Fortryd</translation>
@@ -1239,7 +1237,6 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="6469104339369989396">Slå hotspot til/fra</translation>
 <translation id="6477681113376365978">Filen kan ikke downloades</translation>
 <translation id="6482559668224714696">Forstørrelse af fuld skærm</translation>
-<translation id="6483727822843292440">Gennemse vinduer fra det mindst anvendte vindue</translation>
 <translation id="6490471652906364588">USB-C-enhed (højre port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> kræver, at du opdaterer din <ph name="DEVICE_TYPE" />, før fristen udløber</translation>
 <translation id="649452524636452238">Pinkode til chipkort</translation>

@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">알려진 네트워크</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" />이 연결되었습니다.</translation>
 <translation id="1240638468526743569">앱</translation>
-<translation id="1242704516557658755">가장 최근에 사용한 창 목록에서 뒤로 전환</translation>
 <translation id="124678866338384709">현재 탭 닫기</translation>
 <translation id="1246890715821376239">지원되지 않는 앱</translation>
 <translation id="1247372569136754018">마이크(내부)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" />(<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">사용</translation>
 <translation id="5920710855273935292">마이크가 음소거되어 있습니다.</translation>
-<translation id="5922962980596822074">가장 최근에 사용한 창부터 창 살펴보기</translation>
 <translation id="5924855612669061715">핫스팟 사용 중</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> 기능이 켜져 있습니다.</translation>
 <translation id="5947494881799873997">되돌리기</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">핫스팟을 전환합니다.</translation>
 <translation id="6477681113376365978">파일을 다운로드할 수 없음</translation>
 <translation id="6482559668224714696">전체 화면 돋보기</translation>
-<translation id="6483727822843292440">가장 적게 사용된 창부터 창 살펴보기</translation>
 <translation id="6490471652906364588">USB-C 기기(오른쪽 포트)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" />에서 기한 전에 <ph name="DEVICE_TYPE" /> 기기를 업데이트할 것을 요구합니다.</translation>
 <translation id="649452524636452238">스마트 카드 PIN</translation>

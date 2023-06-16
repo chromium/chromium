@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">የታወቁ አውታረ መረቦች</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ተገናኝቷል።</translation>
 <translation id="1240638468526743569">መተግበሪያ</translation>
-<translation id="1242704516557658755">በጣም በቅርብ ጊዜ ጥቅም ላይ የዋለው የመስኮት ዝርዝር ውስጥ ወደኋላ ዞረው ይመለሱ</translation>
 <translation id="124678866338384709">የአሁኑን ትር ዝጋ</translation>
 <translation id="1246890715821376239">የማይደገፉ መተግበሪያዎች</translation>
 <translation id="1247372569136754018">ማይክሮፎን (ውስጣዊ)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">በርቷል</translation>
 <translation id="5920710855273935292">የማይክሮፎን ድምፅ ተዘግቷል።</translation>
-<translation id="5922962980596822074">በጣም በቅርብ ጊዜ ጥቅም ላይ ከዋለው መስኮት ጀምሮ በመስኮቶቹ ይሂዱ</translation>
 <translation id="5924855612669061715">መገናኛ ነጥብ በርቷል</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> በርቷል።</translation>
 <translation id="5947494881799873997">አድህር</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">መገናኛ ነጥብን ቀያይር</translation>
 <translation id="6477681113376365978">ፋይል ማውረድ አልተቻለም</translation>
 <translation id="6482559668224714696">የሙሉ ማያ ገፅ ማጉያ</translation>
-<translation id="6483727822843292440">በትንሹ ጥቅም ላይ ከዋለው መስኮት ጀምሮ በመስኮቶቹ ይሂዱ</translation>
 <translation id="6490471652906364588">USB-C መሣሪያ (የቀኝ ወደብ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> የእርስዎን <ph name="DEVICE_TYPE" /> ከቀነገደቡ በፊት እንዲያዘምኑት ይፈልግብዎታል።</translation>
 <translation id="649452524636452238">የዘመናዊ ካርድ ፒን</translation>

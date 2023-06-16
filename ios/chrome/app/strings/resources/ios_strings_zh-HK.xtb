@@ -467,6 +467,7 @@
 <translation id="4045648459118332842">輕按一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
 <translation id="4063300985191096908">前往「動態消息」</translation>
+<translation id="4066639687323968621">登入 Google 帳戶就能同步處理書籤、歷史記錄等資料。</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="4092655288299341041">顯示說明</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
@@ -1273,6 +1274,7 @@
 <translation id="9157836665414082580">隱藏對話框</translation>
 <translation id="9162432979321511934">開啟「自動填入密碼」功能</translation>
 <translation id="9165320910061267720">如要接收減價通知，請在 iOS 設定中開啟通知功能。</translation>
+<translation id="9172603439892261948">同步處理書籤、歷史記錄等資料。</translation>
 <translation id="9177438225260810839">在開啟的分頁中搜尋</translation>
 <translation id="9187853111759024059">要關閉超過 99 個閒置分頁嗎？</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>

@@ -1388,7 +1388,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="4349810866125026513">Trotzdem hochladen</translation>
 <translation id="4350629523305688469">Multifunktionsfach</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> möchte nach Bluetooth-Geräten in der Nähe suchen. Die folgenden Geräte wurden gefunden:</translation>
-<translation id="4351175281479794167">Bestätigungscode eingeben</translation>
 <translation id="4355383636893709732">ChromeOS-Update für Android-Apps</translation>
 <translation id="4356973930735388585">Unbefugte Dritte auf dieser Website versuchen unter Umständen, gefährliche Programme auf deinem Computer zu installieren, um deine Daten zu stehlen oder zu löschen, zum Beispiel Fotos, Passwörter, Nachrichten und Kreditkartendaten.</translation>
 <translation id="4358059973562876591">Die von dir angegebenen Vorlagen können wegen eines Fehlers bei der Richtlinie "DnsOverHttpsMode" nicht angewendet werden.</translation>
@@ -1481,6 +1480,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="460848736049414407">Vom Administrator blockiert</translation>
 <translation id="4610279718074907952">Diese Website ist einer durch <ph name="SET_OWNER" /> definierten Gruppe zugeordnet, die deine Aktivitäten sehen kann</translation>
 <translation id="4617273035598175554">Grafik- und Animationssoftware</translation>
+<translation id="4619564267100705184">Identität bestätigen</translation>
 <translation id="4622292761762557753">Trotzdem übertragen</translation>
 <translation id="4627675673814409125">Diese Richtlinie kann nicht auf der Chrome-Profilebene festgelegt werden und wird ignoriert.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1703,7 +1703,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Ungültige URL</translation>
 <translation id="512592033764059484">Fußball</translation>
-<translation id="5126510351761255129">Karte bestätigen</translation>
 <translation id="512670116361803001">Die Größe von <ph name="APP_NAME" /> kann eventuell nicht richtig angepasst werden. Verwende voreingestellte Fenstergrößen, damit die App ordnungsgemäß funktioniert.</translation>
 <translation id="5127934926273826089">Blumen</translation>
 <translation id="5129534298163637277">Bestätigungsdialogfeld</translation>
@@ -1993,7 +1992,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="5869405914158311789">Die Website ist nicht erreichbar</translation>
 <translation id="5869522115854928033">Gespeicherte Passwörter</translation>
 <translation id="5872692522325383488">IBAN gespeichert</translation>
-<translation id="5873013647450402046">Deine Bank muss deine Identität bestätigen.</translation>
 <translation id="5877831137320480913">Schönheit und Fitness</translation>
 <translation id="5879989559903563723">Im Gastmodus nicht zulässig</translation>
 <translation id="5884465125445718607">Umschlag Chinesisch Nr. 6</translation>
@@ -2244,6 +2242,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6468485451923838994">Schriftarten</translation>
 <translation id="647261751007945333">Geräterichtlinien</translation>
 <translation id="647330291963761005">Updates werden installiert</translation>
+<translation id="6474220430271405609">Richtlinientests</translation>
 <translation id="6475672344094591109">Von dir besuchte Websites können von Chrome Informationen abfragen, um die Leistung ihrer Anzeigen messen zu können. Chrome trägt zum Schutz deiner Daten bei, indem die Informationen beschränkt werden, die Websites miteinander teilen können.</translation>
 <translation id="6476284679642588870">Zahlungsmethoden verwalten</translation>
 <translation id="6486200200930923183">Dokumentarfilme</translation>
@@ -2402,7 +2401,6 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6896758677409633944">Kopieren</translation>
 <translation id="6897140037006041989">User-Agent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-stelligen Code eingeben</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> fordert die vollständige Kontrolle über deine MIDI-Geräte</translation>
 <translation id="691024665142758461">Mehrere Dateien herunterladen</translation>
@@ -3010,6 +3008,7 @@ Weitere Details:
 <translation id="8296205692406981542">Nationalparks, Naturschutzgebiete, Parks und botanische Gärten</translation>
 <translation id="8297545700510100061">Durch Cookies und andere Websitedaten erinnert sich die Website an dich, z. B. für die Anmeldung oder personalisierte Werbung. Du kannst Cookies für alle Websites in den <ph name="SETTINGS" /> verwalten.</translation>
 <translation id="8298115750975731693">Unter Umständen erfordert das verwendete WLAN (<ph name="WIFI_NAME" />), dass du <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> aufrufst.</translation>
+<translation id="8301894345671534559">Code eingeben</translation>
 <translation id="8303854710873047864">Abschnitt "<ph name="SECTION" />" eingeblendet</translation>
 <translation id="830498451218851433">Zur Hälfte falten</translation>
 <translation id="831997045666694187">Abends</translation>
@@ -3357,7 +3356,6 @@ Weitere Details:
 <translation id="9191834167571392248">Lochung unten links</translation>
 <translation id="9199905725844810519">Drucken ist blockiert</translation>
 <translation id="9205078245616868884">Deine Daten sind mit deiner Synchronisierungspassphrase verschlüsselt. Gib diese ein, um die Synchronisierung zu starten.</translation>
-<translation id="920511547311754821">Du kannst den Code nicht finden? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Der Artikel konnte nicht hinzugefügt werden.</translation>
 <translation id="9213433120051936369">Layout anpassen</translation>
 <translation id="9215416866750762878">Eine Anwendung verhindert, dass Chrome eine sichere Internetverbindung zu dieser Website herstellt</translation>

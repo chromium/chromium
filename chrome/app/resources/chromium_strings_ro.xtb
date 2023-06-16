@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Primește ajutor pentru Chrome for Testing</translation>
 <translation id="1524282610922162960">Distribuie o filă Chromium</translation>
 <translation id="1553461853655228091">Chromium are nevoie de permisiunea de a accesa camera foto pentru a crea o hartă 3D a lucrurilor din jurul tău</translation>
-<translation id="1555506416658437797">să modifice metodele de plată.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare}=1{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Fereastra incognito nu se va mai deschide.}few{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # ferestre incognito nu se vor mai deschide.}other{Administratorul solicită să relansezi Chromium pentru a aplica o actualizare. Cele # de ferestre incognito nu se vor mai deschide.}}</translation>
 <translation id="1625909126243026060">Examinează cele mai importante opțiuni de confidențialitate și de securitate din Chromium</translation>
 <translation id="1632539827495546968">Dacă vrei să folosești contul o singură dată, poți utiliza <ph name="GUEST_LINK_BEGIN" />modul pentru invitați<ph name="GUEST_LINK_END" /> în browserul Chromium. Dacă vrei să adaugi un cont pentru altcineva, <ph name="LINK_BEGIN" />adaugă o nouă persoană<ph name="LINK_END" /> pe <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="3179665906251668410">Deschide linkul într-o fereastră Chromium inco&amp;gnito</translation>
 <translation id="3185330573522821672">Personalizează noul profil Chromium</translation>
 <translation id="3190315855212034486">Hopa! Chromium s-a închis cu eroare. Reporniți acum?</translation>
-<translation id="3255926992597692024">Chromium încearcă să modifice setările pentru completarea metodelor de plată.</translation>
 <translation id="3258596308407688501">Chromium nu poate citi și scrie în directorul propriu de date:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="4019629340646866719">Sistemul de operare Chromium este posibil datorită unui <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> suplimentar, la fel cum este și <ph name="BEGIN_LINK_LINUX_OSS" />mediul de dezvoltare Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Contribuie la îmbunătățirea browserului Chromium raportând <ph name="BEGIN_LINK" />setările actuale<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">În cea mai recentă versiune sunt disponibile îmbunătățiri de securitate și funcții noi importante.</translation>
-<translation id="4050599136622776556">Chromium încearcă să modifice metodele de plată.</translation>
 <translation id="4055805654398742145">M&amp;anager de parole</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organizația ta închide automat Chromium dacă nu este folosit timp de un minut. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}few{Organizația ta închide automat Chromium dacă nu este folosit timp de # minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}other{Organizația ta închide automat Chromium dacă nu este folosit timp de # de minute. Datele de navigare sunt șterse. Aici pot fi incluse istoricul, completările automate și descărcările.}}</translation>
 <translation id="4148957013307229264">Se instalează...</translation>
@@ -208,7 +205,6 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5653831366781983928">Repornește Chromium acum</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Afișează Chromium în această limbă</translation>
-<translation id="585620188971323280">să modifice setările pentru completarea metodelor de plată.</translation>
 <translation id="5862307444128926510">Bun venit la Chromium</translation>
 <translation id="5883558403894052917">Chromium a descoperit că următoarele elemente conțin programe malware:</translation>
 <translation id="5895138241574237353">Reîncepe</translation>

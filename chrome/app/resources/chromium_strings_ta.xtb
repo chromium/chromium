@@ -16,7 +16,6 @@
 <translation id="1414495520565016063">Chromium இல் உள்நுழைந்துள்ளீர்கள்!</translation>
 <translation id="1524282610922162960">Chromium தாவலைப் பகிர்தல்</translation>
 <translation id="1553461853655228091">உங்களைச் சுற்றியுள்ள இடங்களின் 3D வரைபடத்தை உருவாக்க, Chromiumமுக்கு உங்கள் கேமராவை அணுக அனுமதி தேவை</translation>
-<translation id="1555506416658437797">பேமெண்ட் முறைகளை மாற்ற முயல்கிறது.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{புதுப்பிப்பைப் பயன்படுத்த Chromiumமை மீண்டும் தொடங்கும்படி உங்கள் நிர்வாகி சொல்கிறார்}=1{புதுப்பிப்பைப் பயன்படுத்த Chromiumமை மீண்டும் தொடங்கும்படி உங்கள் நிர்வாகி சொல்கிறார். உங்கள் மறைநிலை சாளரம் மீண்டும் திறக்காது.}other{புதுப்பிப்பைப் பயன்படுத்த Chromiumமை மீண்டும் தொடங்கும்படி உங்கள் நிர்வாகி சொல்கிறார். உங்கள் # மறைநிலை சாளரங்கள் மீண்டும் திறக்காது.}}</translation>
 <translation id="1625909126243026060">Chromiumமில் உள்ள முக்கியமான தனியுரிமை மற்றும் பாதுகாப்புக் கட்டுப்பாடுகளைச் சரிபாருங்கள்</translation>
 <translation id="1632539827495546968">Chromium உலாவியில் ஒருமுறை மட்டும் இந்தக் கணக்கைப் பயன்படுத்த விரும்பினால் <ph name="GUEST_LINK_BEGIN" />கெஸ்ட் பயன்முறையைப்<ph name="GUEST_LINK_END" /> பயன்படுத்தலாம். வேறு ஒருவரின் கணக்கைச் சேர்க்க விரும்பினால் உங்கள் <ph name="DEVICE_TYPE" /> இல் <ph name="LINK_BEGIN" />புதிய பயனரைச் சேருங்கள்<ph name="LINK_END" />.
@@ -92,7 +91,6 @@
 <translation id="3179665906251668410">Chromium மறை&amp;நிலை சாளரத்தில் இணைப்பைத் திற</translation>
 <translation id="3185330573522821672">புதிய Chromium சுயவிவரத்தைப் பிரத்தியேகமாக்குங்கள்</translation>
 <translation id="3190315855212034486">ஓ! Chromium செயலிழந்தது. இப்போது மீண்டும் தொடங்கவா?</translation>
-<translation id="3255926992597692024">பேமெண்ட் விவரங்களை நிரப்பும் முறைகளுக்கான அமைப்புகளை Chromium மாற்ற முயல்கிறது.</translation>
 <translation id="3258596308407688501">தன்னுடைய தரவுக் கோப்பகத்தில் Chromium படிக்கவும் எழுதவும் செய்யாது:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -137,7 +135,6 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux டெவெலப்மெண்ட் சூழல்<ph name="END_LINK_LINUX_OSS" /> போலவே, கூடுதல் <ph name="BEGIN_LINK_CROS_OSS" />ஓப்பன் சோர்ஸ் மென்பொருள்<ph name="END_LINK_CROS_OSS" /> மூலம் ChromiumOS உருவாக்கப்பட்டுள்ளது.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />தற்போதைய அமைப்புகளைப்<ph name="END_LINK" /> பற்றிய அறிக்கையை அனுப்பி, Chromiumஐ இன்னும் சிறந்ததாக்க உதவவும்</translation>
 <translation id="4050175100176540509">முக்கியப் பாதுகாப்பு மேம்பாடுகளும், புதிய அம்சங்களும் சமீபத்திய பதிப்பில் கிடைக்கின்றன.</translation>
-<translation id="4050599136622776556">பேமெண்ட் முறைகளை Chromium மாற்ற முயல்கிறது.</translation>
 <translation id="4055805654398742145">P&amp;assword Manager</translation>
 <translation id="4148957013307229264">நிறுவுகிறது...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - நெட்வொர்க் உள்நுழைவு - Chromium</translation>
@@ -200,7 +197,6 @@
 <translation id="5653831366781983928">Chromiumமை இப்போது மீண்டும் தொடங்கவும்</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumமை இந்த மொழியில் காட்டு</translation>
-<translation id="585620188971323280">பேமெண்ட் விவரங்களை நிரப்பும் முறைகளுக்கான அமைப்புகளை மாற்றுங்கள்.</translation>
 <translation id="5862307444128926510">Chromium க்கு வரவேற்கிறோம்</translation>
 <translation id="5883558403894052917">இவற்றில் மால்வேர் இருப்பதை Chromium கண்டறிந்துள்ளது:</translation>
 <translation id="5895138241574237353">மறுதொடக்கம்</translation>

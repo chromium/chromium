@@ -1416,7 +1416,6 @@
 <translation id="4349810866125026513">ਫਿਰ ਵੀ ਅੱਪਲੋਡ ਕਰੋ</translation>
 <translation id="4350629523305688469">ਮਲਟੀ-ਫੰਕਸ਼ਨ ਟ੍ਰੇਅ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ਦੀ ਨਜ਼ਦੀਕੀ ਬਲੂਟੁੱਥ ਡੀਵਾਈਸਾਂ ਲਈ ਸਕੈਨ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ, ਅੱਗੇ ਦਿੱਤੇ ਡੀਵਾਈਸ ਮਿਲੇ ਹਨ:</translation>
-<translation id="4351175281479794167">ਪੁਸ਼ਟੀਕਰਨ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="4355383636893709732">Android ਐਪਾਂ ਲਈ ChromeOS ਅੱਪਡੇਟ</translation>
 <translation id="4356973930735388585">ਇਸ ਸਾਈਟ 'ਤੇ ਹਮਲਾਵਰ ਤੁਹਾਡੇ ਕੰਪਿਊਟਰ 'ਤੇ ਖਤਰਨਾਕ ਪ੍ਰੋਗਰਾਮ ਸਥਾਪਤ ਕਰਨ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਸਕਦੇ ਹਨ ਜੋ ਕਿ ਤੁਹਾਡੀ ਜਾਣਕਾਰੀ (ਉਦਾਹਰਨ ਲਈ ਫ਼ੋਟੋਆਂ, ਪਾਸਵਰਡ, ਸੁਨੇਹੇ, ਅਤੇ ਕ੍ਰੈਡਿਟ ਕਾਰਡ) ਨੂੰ ਚੋਰੀ ਕਰ ਸਕਦੇ ਹਨ ਜਾਂ ਮਿਟਾ ਸਕਦੇ ਹਨ।</translation>
 <translation id="4358059973562876591">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਵਿੱਚ ਕਿਸੇ ਗੜਬੜ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
@@ -1511,6 +1510,7 @@
 <translation id="460848736049414407">ਪ੍ਰਸ਼ਾਸਕ ਵੱਲੋਂ ਬਲਾਕ ਕੀਤਾ ਗਿਆ</translation>
 <translation id="4610279718074907952">ਇਹ ਸਾਈਟ <ph name="SET_OWNER" /> ਵੱਲੋਂ ਪਰਿਭਾਸ਼ਿਤ ਕੀਤੇ ਗਰੁੱਪ ਦਾ ਹਿੱਸਾ ਹੈ, ਜਿਸਨੂੰ ਤੁਹਾਡੀ ਸਰਗਰਮੀ ਦਿਖਣਯੋਗ ਹੈ</translation>
 <translation id="4617273035598175554">ਗ੍ਰਾਫ਼ਿਕ ਅਤੇ ਐਨੀਮੇਸ਼ਨ ਸਾਫ਼ਟਵੇਅਰ</translation>
+<translation id="4619564267100705184">ਆਪਣੀ ਪਛਾਣ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="4622292761762557753">ਫਿਰ ਵੀ ਟ੍ਰਾਂਸਫ਼ਰ ਕਰੋ</translation>
 <translation id="4627675673814409125">ਇਹ ਨੀਤੀ Chrome ਪ੍ਰੋਫਾਈਲ ਪੱਧਰ 'ਤੇ ਸੈੱਟ ਨਹੀਂ ਕੀਤੀ ਜਾ ਸਕਦੀ ਅਤੇ ਇਸਨੂੰ ਅਣਡਿੱਠ ਕੀਤਾ ਜਾਵੇਗਾ।</translation>
 <translation id="4628948037717959914">ਫ਼ੋਟੋ</translation>
@@ -1737,7 +1737,6 @@
 <translation id="5123433949759960244">ਬਾਸਕਟਬਾਲ</translation>
 <translation id="5125751979347152379">ਅਵੈਧ URL.</translation>
 <translation id="512592033764059484">ਫੁੱਟਬਾਲ</translation>
-<translation id="5126510351761255129">ਆਪਣੇ ਕਾਰਡ ਦੀ ਪੁਸ਼ਟੀ ਕਰੋ</translation>
 <translation id="512670116361803001">ਹੋ ਸਕਦਾ ਹੈ ਕਿ <ph name="APP_NAME" /> ਦਾ ਆਕਾਰ ਸਹੀ ਤਰੀਕੇ ਨਾਲ ਨਾ ਬਦਲੇ। ਐਪਾਂ ਵਿਚ ਸਮੱਸਿਆਵਾਂ ਆਉਣ ਤੋਂ ਰੋਕਣ ਲਈ ਵਿੰਡੋ ਦੇ ਪ੍ਰੀਸੈੱਟ ਆਕਾਰਾਂ ਨੂੰ ਵਰਤੋ।</translation>
 <translation id="5127934926273826089">ਫੁੱਲ</translation>
 <translation id="5129534298163637277">ਤਸਦੀਕ ਵਿੰਡੋ</translation>
@@ -2032,7 +2031,6 @@
 <translation id="5869405914158311789">ਇਸ ਸਾਈਟ 'ਤੇ ਪਹੁੰਚਿਆ ਨਹੀਂ ਜਾ ਸਕਦਾ</translation>
 <translation id="5869522115854928033">ਸੁਰੱਖਿਅਤ ਕੀਤੇ ਪਾਸਵਰਡ</translation>
 <translation id="5872692522325383488">IBAN ਰੱਖਿਅਤ ਕੀਤਾ ਗਿਆ</translation>
-<translation id="5873013647450402046">ਤੁਹਾਡਾ ਬੈਂਕ ਤਸਦੀਕ ਕਰਨਾ ਚਾਹੁੰਦਾ ਹੈ ਕਿ ਇਹ ਤੁਸੀਂ ਹੀ ਹੋ।</translation>
 <translation id="5877831137320480913">ਸੁੰਦਰਤਾ ਅਤੇ ਫਿੱਟਨੈੱਸ</translation>
 <translation id="5879989559903563723">ਮਹਿਮਾਨ ਮੋਡ ਵਿੱਚ ਆਗਿਆ ਨਹੀਂ ਹੈ</translation>
 <translation id="5884465125445718607">ਚੀਨੀ #6 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
@@ -2284,6 +2282,7 @@
 <translation id="6468485451923838994">ਫੌਂਟ</translation>
 <translation id="647261751007945333">ਡੀਵਾਈਸ ਨੀਤੀਆਂ</translation>
 <translation id="647330291963761005">ਅੱਪਡੇਟ ਸਥਾਪਤ ਹੋ ਰਹੇ ਹਨ</translation>
+<translation id="6474220430271405609">ਨੀਤੀ ਸੰਬੰਧੀ ਜਾਂਚਾਂ</translation>
 <translation id="6475672344094591109">ਤੁਸੀਂ ਜਿਨ੍ਹਾਂ ਸਾਈਟਾਂ 'ਤੇ ਜਾਂਦੇ ਹੋ, ਉਹ Chrome ਤੋਂ ਉਸ ਜਾਣਕਾਰੀ ਦੀ ਮੰਗ ਕਰ ਸਕਦੀਆਂ ਹਨ ਜੋ ਉਨ੍ਹਾਂ ਦੇ ਵਿਗਿਆਪਨਾਂ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਵਿੱਚ ਮਦਦ ਕਰਦੀ ਹੈ। Chrome ਸਾਈਟਾਂ ਵੱਲੋਂ ਇੱਕ-ਦੂਜੇ ਨਾਲ ਸਾਂਝੀ ਕੀਤੀ ਜਾਣ ਵਾਲੀ ਜਾਣਕਾਰੀ ਨੂੰ ਸੀਮਤ ਕਰ ਕੇ ਤੁਹਾਡੀ ਪਰਦੇਦਾਰੀ ਨੂੰ ਸੁਰੱਖਿਅਤ ਰੱਖਦਾ ਹੈ।</translation>
 <translation id="6476284679642588870">ਭੁਗਤਾਨ ਵਿਧੀਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="6486200200930923183">ਦਸਤਾਵੇਜ਼ੀ ਫ਼ਿਲਮਾਂ</translation>
@@ -2449,7 +2448,6 @@
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6897140037006041989">ਵਰਤੋਂਕਾਰ ਏਜੰਟ</translation>
 <translation id="6898699227549475383">ਕੰਪਨੀ (O)</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-ਅੰਕਾਂ ਦਾ ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="6907458757809079309">ਫਿੱਟਨੈੱਸ</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ MIDI ਡੀਵਾਈਸਾਂ 'ਤੇ ਪੂਰਾ ਕੰਟਰੋਲ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="691024665142758461">ਕਈ ਫ਼ਾਈਲਾਂ ਡਾਊਨਲੋਡ ਕਰੋ</translation>
@@ -3065,6 +3063,7 @@
 <translation id="8296205692406981542">ਇਲਾਕਾਈ ਪਾਰਕ ਅਤੇ ਬਗੀਚੇ</translation>
 <translation id="8297545700510100061">ਕੁਕੀਜ਼ ਅਤੇ ਹੋਰ ਸਾਈਟ ਡਾਟੇ ਦੀ ਵਰਤੋਂ ਤੁਹਾਨੂੰ ਯਾਦ ਰੱਖਣ ਲਈ ਕੀਤੀ ਜਾਂਦੀ ਹੈ, ਉਦਾਹਰਨ ਦੇ ਤੌਰ 'ਤੇ ਤੁਹਾਨੂੰ ਸਾਈਨ-ਇਨ ਕਰਨ ਲਈ ਜਾਂ ਵਿਗਿਆਪਨਾਂ ਨੂੰ ਵਿਅਕਤੀਗਤ ਬਣਾਉਣ ਲਈ। ਸਾਰੀਆਂ ਸਾਈਟਾਂ ਲਈ ਕੁਕੀਜ਼ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰਨ ਲਈ, <ph name="SETTINGS" /> ਦੇਖੋ।</translation>
 <translation id="8298115750975731693">ਜੋ Wi-Fi (<ph name="WIFI_NAME" />) ਤੁਸੀਂ ਵਰਤ ਰਹੇ ਹੋ, ਉਸ ਲਈ ਤੁਹਾਨੂੰ <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> ਤੇ ਵਿਜਿਟ ਕਰਨ ਦੀ ਲੋੜ ਹੋ ਸਕਦੀ ਹੈ।</translation>
+<translation id="8301894345671534559">ਕੋਡ ਦਾਖਲ ਕਰੋ</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" ਸੈਕਸ਼ਨ ਦਿਖਾਇਆ ਗਿਆ</translation>
 <translation id="830498451218851433">ਅੱਧੀ ਤਹਿ</translation>
 <translation id="831997045666694187">ਸ਼ਾਮ</translation>
@@ -3416,7 +3415,6 @@
 <translation id="9191834167571392248">ਹੇਠਾਂ ਖੱਬੇ ਪਾਸੇ ਮੋਰੀ</translation>
 <translation id="9199905725844810519">ਪ੍ਰਿੰਟ ਕਰਨਾ ਬਲਾਕ ਕੀਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="9205078245616868884">ਤੁਹਾਡਾ ਡਾਟਾ ਤੁਹਾਡੇ ਸਿੰਕ ਪਾਸਫਰੇਜ਼ ਨਾਲ ਇਨਕ੍ਰਿਪਟ ਕੀਤਾ ਗਿਆ ਹੈ। ਸਿੰਕ ਸ਼ੁਰੂ ਕਰਨ ਲਈ ਇਸਨੂੰ ਦਾਖਲ ਕਰੋ।</translation>
-<translation id="920511547311754821">ਕੀ ਤੁਸੀਂ ਆਪਣਾ ਕੋਡ ਨਹੀਂ ਲੱਭ ਪਾ ਰਹੇ ਹੋ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">ਲੇਖ ਜੋੜਨ ਵਿੱਚ ਅਸਫਲ।</translation>
 <translation id="9213433120051936369">ਦਿੱਖ ਨੂੰ ਵਿਉਂਤਬੱਧ ਕਰੋ</translation>
 <translation id="9215416866750762878">ਕੋਈ ਐਪਲੀਕੇਸ਼ਨ Chrome ਨੂੰ ਸੁਰੱਖਿਅਤ ਢੰਗ ਨਾਲ ਇਸ ਸਾਈਟ ਨਾਲ ਕਨੈਕਟ ਹੋਣ ਤੋਂ ਰੋਕ ਰਹੀ ਹੈ</translation>

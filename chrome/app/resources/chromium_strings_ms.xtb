@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Dapatkan bantuan tentang Chrome for Testing</translation>
 <translation id="1524282610922162960">Kongsi tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan kebenaran untuk mengakses kamera anda untuk membuat peta 3D persekitaran anda</translation>
-<translation id="1555506416658437797">edit kaedah pembayaran.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini}=1{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini. Tetingkap Inkognito anda tidak dapat dibuka semula.}other{Pentadbir anda menghendaki anda melancarkan semula Chromium untuk menggunakan kemas kini. # tetingkap Inkognito anda tidak dapat dibuka semula.}}</translation>
 <translation id="1625909126243026060">Semak privasi dan kawalan keselamatan utama dalam Chromium</translation>
 <translation id="1632539827495546968">Jika anda ingin menggunakan akaun ini sekali sahaja, anda boleh menggunakan <ph name="GUEST_LINK_BEGIN" />Mod Tetamu<ph name="GUEST_LINK_END" /> dalam penyemak imbas Chromium. Jika anda ingin menambah akaun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan orang baharu<ph name="LINK_END" /> pada <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="3179665906251668410">Buka Pautan dalam Tetingkap Inko&amp;gnito Chromium</translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baharu anda</translation>
 <translation id="3190315855212034486">Alamak! Chromium mengalami ranap sistem. Lancarkan semula sekarang?</translation>
-<translation id="3255926992597692024">Chromium sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca atau menulis pada direktori datanya:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="4019629340646866719">Chromium OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan, sebagaimana <ph name="BEGIN_LINK_LINUX_OSS" />persekitaran pembangunan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Bantu jadikan Chromium lebih baik dengan melaporkan <ph name="BEGIN_LINK" />tetapan semasa<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Peningkatan keselamatan penting dan ciri baharu tersedia dalam versi terkini.</translation>
-<translation id="4050599136622776556">Chromium sedang cuba mengedit kaedah pembayaran.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama 1 minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}other{Organisasi anda akan menutup Chromium secara automatik apabila Chromium tidak digunakan selama # minit. Data semakan imbas dipadamkan. Pemadaman ini termasuk sejarah, autolengkap dan muat turun.}}</translation>
 <translation id="4148957013307229264">Memasang...</translation>
@@ -208,7 +205,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="5653831366781983928">Sila mulakan semula Chromium sekarang</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Paparkan Chromium dalam bahasa ini</translation>
-<translation id="585620188971323280">mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="5862307444128926510">Selamat datang ke Chromium</translation>
 <translation id="5883558403894052917">Chromium mendapati bahawa item ini mengandungi perisian hasad:</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>

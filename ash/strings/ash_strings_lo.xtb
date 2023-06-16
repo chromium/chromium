@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">ເຄືອຂ່າຍທີ່ຮູ້ຈັກ</translation>
 <translation id="1239161794459865856">ເຊື່ອມຕໍ່ <ph name="FEATURE_NAME" /> ແລ້ວ.</translation>
 <translation id="1240638468526743569">ແອັບ</translation>
-<translation id="1242704516557658755">ເລື່ອນກັບຄືນໃນລາຍຊື່ໜ້າຈໍທີ່ໃຊ້ຫຼ້າສຸດ</translation>
 <translation id="124678866338384709">ປິດແຖບປັດຈຸບັນ</translation>
 <translation id="1246890715821376239">ແອັບທີ່ບໍ່ຮອງຮັບ</translation>
 <translation id="1247372569136754018">ໄມໂຄຣໂຟນ (ພາຍໃນ)</translation>
@@ -1122,7 +1121,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ເປີດ</translation>
 <translation id="5920710855273935292">ໄມປິດສຽງຢູ່.</translation>
-<translation id="5922962980596822074">ເຂົ້າໄປໜ້າຈໍຕ່າງໆຈາກໜ້າຈໍທີ່ນຳໃຊ້ຫຼ້າສຸດ</translation>
 <translation id="5924855612669061715">ຮັອດສະປອດເປີດຢູ່</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ເປີດຢູ່.</translation>
 <translation id="5947494881799873997">ກັບຄືນ</translation>
@@ -1242,7 +1240,6 @@
 <translation id="6469104339369989396">ສະຫຼັບຮັອດສະປອດ</translation>
 <translation id="6477681113376365978">ບໍ່ສາມາດດາວໂຫຼດໄຟລ໌ໄດ້</translation>
 <translation id="6482559668224714696">ແວ່ນຂະຫຍາຍເຕັມຈໍ</translation>
-<translation id="6483727822843292440">ເຂົ້າໄປໜ້າຈໍຕ່າງໆຈາກໜ້າຈໍທີ່ນຳໃຊ້ໜ້ອຍທີ່ສຸດ</translation>
 <translation id="6490471652906364588">ອຸ​ປະ​ກອນ USB-C (ຊ່ອງ​ຂວາ)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ຕ້ອງການໃຫ້ທ່ານອັບເດດ <ph name="DEVICE_TYPE" /> ຂອງທ່ານກ່ອນເວລາທີ່ກຳນົດໄວ້</translation>
 <translation id="649452524636452238">PIN ບັດອັດສະລິຍະ</translation>

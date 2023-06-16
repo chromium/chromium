@@ -20,7 +20,6 @@ Neke funkcije možda neće biti dostupne i promjene postavki se neće sačuvati.
 <translation id="1478370723027452770">Potražite pomoć za Chrome for Testing</translation>
 <translation id="1524282610922162960">Dijelite Chromium karticu</translation>
 <translation id="1553461853655228091">Chromiumu je potrebno odobrenje da pristupi kameri radi kreiranja 3D mape vašeg okruženja</translation>
-<translation id="1555506416658437797">urediti načine plaćanja.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja}=1{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaš anonimni prozor se neće ponovo otvoriti.}one{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaš # anonimni prozor se neće ponovo otvoriti.}few{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaša # anonimna prozora se neće ponovo otvoriti.}other{Administrator traži da ponovo pokrenete Chromium radi primjene ažuriranja. Vaših # anonimnih prozora se neće ponovo otvoriti.}}</translation>
 <translation id="1625909126243026060">Pregledajte ključne kontrole privatnosti i sigurnosti na Chromiumu</translation>
 <translation id="1632539827495546968">Ako želite koristiti ovaj račun samo jednom, možete koristiti <ph name="GUEST_LINK_BEGIN" />Način rada za gosta<ph name="GUEST_LINK_END" /> u pregledniku Chromium. Ako želite dodati račun za nekog drugog, <ph name="LINK_BEGIN" />dodajte novu osobu<ph name="LINK_END" /> na uređaj <ph name="DEVICE_TYPE" />.
@@ -97,7 +96,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="3179665906251668410">Otvori link u anonimnom prozoru Chromiuma</translation>
 <translation id="3185330573522821672">Prilagodite novi Chromium profil</translation>
 <translation id="3190315855212034486">Ups! Došlo je do pada Chromiuma. Ponovo pokrenuti sada?</translation>
-<translation id="3255926992597692024">Chromium pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
 <translation id="3258596308407688501">Chromium ne može čitati iz svog direktorija podataka niti u njega pisati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,8 +142,8 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="4019629340646866719">ChromiumOS je moguć zahvaljujući dodatnom <ph name="BEGIN_LINK_CROS_OSS" />softveru otvorenog koda<ph name="END_LINK_CROS_OSS" />, isto kao i <ph name="BEGIN_LINK_LINUX_OSS" />Linuxovo okruženje za razvoj<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Pomozite nam da poboljšamo Chromium tako što ćete nam prijaviti <ph name="BEGIN_LINK" />trenutne postavke<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">U najnovijoj verziji su dostupna važna poboljšanja sigurnosti i nove funkcije.</translation>
-<translation id="4050599136622776556">Chromium pokušava urediti načine plaćanja.</translation>
 <translation id="4055805654398742145">Upravitelj l&amp;ozinki</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minutu. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minutu. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minute. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta. Podaci o pregledanju se brišu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja.}}</translation>
 <translation id="4148957013307229264">Instaliranje…</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – prijava na mrežu – Chromium</translation>
 <translation id="421369550622382712">Otkrijte odlične aplikacije, igre, ekstenzije i teme za Chromium.</translation>
@@ -182,6 +180,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="479167709087336770">Ova usluga koristi isti alat za provjeru pravopisa koji se koristi u Google Pretraživanju. Tekst koji pišete u pregledniku šalje se Googleu. Ovo ponašanje možete uvijek promijeniti u postavkama.</translation>
 <translation id="4888717733111232871">Ulazno pravilo da Chromium dozvoli mDNS saobraćaj.</translation>
 <translation id="4893347770495441059">Ponovo pokrenite da ažurirate &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi 1 minutu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}one{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minutu. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}few{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minute. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}other{Organizacija automatski briše podatke o pregledanju kada se Chromium ne koristi # minuta. Ovo može uključivati historiju, automatsko popunjavanje i preuzimanja. Postojeće kartice će ostati otvorene.}}</translation>
 <translation id="4943838377383847465">Chromium je u pozadinskom načinu rada.</translation>
 <translation id="4987820182225656817">Gosti mogu koristiti Chromium, a da ne ostave tragove o korištenju.</translation>
 <translation id="4994636714258228724">Dodajte se u Chromium</translation>
@@ -208,7 +207,6 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5653831366781983928">Ponovo pokrenite Chromium sada</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Prikaži Chromium na ovom jeziku.</translation>
-<translation id="585620188971323280">izmijeniti postavke za popunjavanje načina plaćanja.</translation>
 <translation id="5862307444128926510">Dobro došli u Chromium</translation>
 <translation id="5883558403894052917">Chromium je otkrio da ove stavke sadržavaju zlonamjerni softver:</translation>
 <translation id="5895138241574237353">Ponovo pokreni</translation>
@@ -216,6 +214,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="5924017743176219022">Povezivanje s internetom...</translation>
 <translation id="5941711191222866238">Minimiziraj</translation>
 <translation id="5972142260211327093">Ako vas je Chromium nasumično ubacio u aktivni probni period, vaša historija pregledanja utiče na oglase koje vidite i interesovanja, kao što je procijenjeno u nastavku. Da zaštiti vašu privatnost, Chromium automatski briše interesovanja na mjesečnoj osnovi. Interesovanja se osvježavaju ukoliko ih ne uklonite.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Organizacija automatski zatvara Chromium kada se ne koristi 1 minutu.}one{Organizacija automatski zatvara Chromium kada se ne koristi # minutu.}few{Organizacija automatski zatvara Chromium kada se ne koristi # minute.}other{Organizacija automatski zatvara Chromium kada se ne koristi # minuta.}}</translation>
 <translation id="5987687638152509985">Ažurirajte Chromium da započnete sinhronizaciju</translation>
 <translation id="5988505247484123880">Uobičajeno je da web lokacije koje posjetite pamte stvari koje vas interesiraju radi personalizacije vašeg iskustva. Web lokacije mogu pohranjivati informacije o vašim interesovanjima i u Chromiumu.</translation>
 <translation id="6003112304606738118">Preuzimanje… Preostalo je <ph name="HOURS" /> h</translation>

@@ -1419,7 +1419,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="4349810866125026513">Upload alligevel</translation>
 <translation id="4350629523305688469">Multifunktionsbakke</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vil gerne søge efter Bluetooth-enheder i nærheden. Følgende enheder blev fundet:</translation>
-<translation id="4351175281479794167">Angiv verificeringskode</translation>
 <translation id="4355383636893709732">ChromeOS-opdatering til Android-apps</translation>
 <translation id="4356973930735388585">Hackere på dette website vil muligvis forsøge at installere skadelige programmer på din computer, som stjæler eller sletter dine oplysninger (f.eks. billeder, adgangskoder, beskeder og kreditkortoplysninger).</translation>
 <translation id="4358059973562876591">De skabeloner, du har angivet, anvendes muligvis ikke på grund af en fejl med politikken DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="460848736049414407">Blokeret af administrator</translation>
 <translation id="4610279718074907952">Dette website er i en gruppe, der er defineret af <ph name="SET_OWNER" />, og som kan se din aktivitet</translation>
 <translation id="4617273035598175554">Grafik og animationssoftware</translation>
+<translation id="4619564267100705184">Verificer din identitet</translation>
 <translation id="4622292761762557753">Overfør alligevel</translation>
 <translation id="4627675673814409125">Denne politik kan ikke angives på Chrome-profilniveauet og ignoreres.</translation>
 <translation id="4628948037717959914">Billede</translation>
@@ -1740,7 +1740,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Ugyldig webadresse.</translation>
 <translation id="512592033764059484">Fodbold</translation>
-<translation id="5126510351761255129">Verificer dit kort</translation>
 <translation id="512670116361803001">Størrelsen på <ph name="APP_NAME" /> kan muligvis ikke tilpasses uden problemer. Brug forindstillede vinduestørrelser for at sikre, at appen fungerer korrekt.</translation>
 <translation id="5127934926273826089">Blomster</translation>
 <translation id="5129534298163637277">Dialogboks til bekræftelse</translation>
@@ -2035,7 +2034,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="5869405914158311789">Der kan ikke oprettes forbindelse til dette website</translation>
 <translation id="5869522115854928033">Gemte adgangskoder</translation>
 <translation id="5872692522325383488">IBAN er gemt</translation>
-<translation id="5873013647450402046">Din bank vil gerne bekræfte, at det er dig.</translation>
 <translation id="5877831137320480913">Skønhed og fitness</translation>
 <translation id="5879989559903563723">Ikke tilladt i gæstetilstand</translation>
 <translation id="5884465125445718607">Konvolut Kinesisk nr. 6</translation>
@@ -2454,7 +2452,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6897140037006041989">Brugeragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
-<translation id="6899000063526916106">Angiv <ph name="NUMBER_OF_DIGITS" />-cifret kode</translation>
 <translation id="6907458757809079309">Træning</translation>
 <translation id="6910240653697687763"><ph name="URL" /> anmoder om fuld kontrol over dine MIDI-enheder</translation>
 <translation id="691024665142758461">Download flere filer</translation>
@@ -3070,6 +3067,7 @@ Yderligere oplysninger:
 <translation id="8296205692406981542">Regionale parker og haver</translation>
 <translation id="8297545700510100061">Cookies og andre websitedata bruges til at huske dig, f.eks. for at logge dig ind eller give dig personligt tilpassede annoncer. Gå til <ph name="SETTINGS" /> for at administrere cookies for alle websites.</translation>
 <translation id="8298115750975731693">Det Wi-Fi-netværk, du bruger (<ph name="WIFI_NAME" />), kan kræve, at du går til <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Angiv kode</translation>
 <translation id="8303854710873047864">Sektionen "<ph name="SECTION" />" vises</translation>
 <translation id="830498451218851433">Fals halvt</translation>
 <translation id="831997045666694187">Aften</translation>
@@ -3422,7 +3420,6 @@ Yderligere oplysninger:
 <translation id="9191834167571392248">Hul nederst til venstre</translation>
 <translation id="9199905725844810519">Udskrivning er blokeret</translation>
 <translation id="9205078245616868884">Dine data er krypteret med din adgangssætning til synkronisering. Angiv den for at starte synkroniseringen.</translation>
-<translation id="920511547311754821">Kan du ikke finde din kode? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Artiklen kunne ikke tilføjes.</translation>
 <translation id="9213433120051936369">Tilpas udseende</translation>
 <translation id="9215416866750762878">En app forhindrer Chrome i at oprette sikker forbindelse til dette website</translation>

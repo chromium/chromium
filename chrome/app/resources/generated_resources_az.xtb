@@ -374,6 +374,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1307431692088049276">Daha məndən soruşmayın</translation>
 <translation id="1307559529304613120">Sistem bu cihaz üçün uzunmüddətli API girişini saxlaya bilmədi.</translation>
 <translation id="131112695174432497">Reklamın fərdiləşdirilməsinə təsir edən data silinir</translation>
+<translation id="1311294419381837540">Tab yayımlayırsınız. İstənilən vaxt yayımı durdura, yaxud dayandıra bilərsiniz.</translation>
 <translation id="1312811472299082263">Ansible Təlimat Kitabçası və ya Crostini yedək faylından yaradın</translation>
 <translation id="13130607084115184">Saxlanmış parollar burada görünəcək. Bu cihazda parolları <ph name="BRAND" /> bölməsinə import etmək üçün <ph name="BEGIN_LINK" /> CSV faylı seçin.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> silinib</translation>
@@ -410,6 +411,7 @@ Parollarınızı istənilən vaxt <ph name="GOOGLE_PASSWORD_MANAGER" /> bölməs
 <translation id="1341871421050612057"><ph name="USERNAME" /> ilə sinxronizasiya mümkün deyil</translation>
 <translation id="1343865611738742294">USB cihazlarına daxil olmaq üçün Linux tətbiqlərinə giriş icazəsi verin. Linux USB cihazı silindikdən sonra onu yadda saxlamayacaq.</translation>
 <translation id="1343920184519992513">Qaldığınız yerdən davam edin və xüsusi səhifələr dəstini açın</translation>
+<translation id="1344141078024003905">Ekranı yayımlayırsınız. İstənilən vaxt ekran yayımını durdura, yaxud dayandıra bilərsiniz.</translation>
 <translation id="1346630054604077329">Təsdiqləyin və yenidən başladın</translation>
 <translation id="1346748346194534595">Sağ</translation>
 <translation id="1347256498747320987">Güncəlləmə və tətbiqləri quraşdırın. Davam etməklə razılaşırsınız ki, bu cihaz Google, operator və cihaz istehsalçınızın güncəlləmə və tətbiqlərini mobil data istifadə etməklə avtomatik endirə və quraşdıra bilər. Bu tətbiqlərdən bəzisi tətbiqdaxili alışlar təklif edə bilər. <ph name="BEGIN_LINK1" />Ətraflı Məlumat<ph name="END_LINK1" /></translation>
@@ -1682,6 +1684,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2378982052244864789">Artırma direktivini seçin.</translation>
 <translation id="2379281330731083556">İstifadəçi sistemi dialoqu çap edin... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Paylaşılan tabın önizləməsi</translation>
+<translation id="2382875860893882175">Yayım durdurulub. İstənilən vaxt yayımı bərpa edə, yaxud dayandıra bilərsiniz.</translation>
 <translation id="2383825469508278924">Klaviatura düymələrinin yerləşməsini, funksiya düymələrini və s. dəyişdirin</translation>
 <translation id="2387052489799050037">Əsas səhifəyə keçin</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Cari)</translation>
@@ -3755,11 +3758,6 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4169535189173047238">İcazə verməyin</translation>
 <translation id="4170314459383239649">Çıxarkən silin</translation>
 <translation id="417096670996204801">Profil seçin</translation>
-<translation id="4174651450391857911">Bu profili təşkilat idarə edir. Bu idarə edilən profildən istifadəyə davam etmək üçün təşkilat cihaz siqnallarını paylaşmağı tələb edir.
-
-Cihaz siqnallarına brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat daxil ola bilər.
-
-Siqnalları paylaşmasanız, bu profil bağlanacaq.</translation>
 <translation id="4175137578744761569">Açıq-bənövşəyi və ağ</translation>
 <translation id="4176463684765177261">Deaktiv edildi</translation>
 <translation id="4176864026061939326">Bu cihaz idarə olunur. Cihaz administratorunuz tərəfindən <ph name="USER_EMAIL_ADDRESS" /> hesabı üçün yeni profil tələb olunur</translation>
@@ -3810,6 +3808,7 @@ Siqnalları paylaşmasanız, bu profil bağlanacaq.</translation>
 <translation id="4223845867739585293">Parol yaradın</translation>
 <translation id="4225397296022057997">Bütün saytlarda</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Bu artırmaya icazə verilmir}other{Bəzi artırmalara icazə verilmir}}</translation>
+<translation id="4231053948789591973">Yayım durdurulub. İstənilən vaxt ekran yayımını bərpa edə, yaxud dayandıra bilərsiniz.</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" /> cihazında Google Play'dən tətbiq və oyunlar quraşdırın. <ph name="LINK_BEGIN" />Ətraflı məlumat<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Oyun nəzarətlərini bağlayın</translation>
 <translation id="4231231258999726714">Chromebook üçün Steam ayarlanır</translation>
@@ -5739,6 +5738,7 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="5924047253200400718">Yardım alın<ph name="SCANNING_STATUS" /></translation>
 <translation id="5924527146239595929">Yeni foto çəkin və ya mövcud foto, yaxud ikona seçin. <ph name="LINE_BREAK" /> Bu şəkil, Chromebook giriş və kilid ekranında görünəcək.</translation>
 <translation id="5925147183566400388">Sertifikatlaşdırma Praktikası Bəyanat Göstəricisi</translation>
+<translation id="5927132638760172455">Naməlum alıcı Döküm</translation>
 <translation id="5927232971138258197">Bu artırma <ph name="HOST" /> domenini oxuya və dəyişə bilər</translation>
 <translation id="592740088639760830">Bu konteyneri dayandırın</translation>
 <translation id="592880897588170157">PDF faylları Chrome'da avtomatik açmaq əvəzinə onları endirin</translation>
@@ -6440,6 +6440,7 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="653983593749614101">Davam etdirilir...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Qeyd:<ph name="END_BOLD" /> Yalnız nə etdiyinizi bildiyiniz halda aktivləşdirin.</translation>
 <translation id="6541638731489116978">Bu saytın hərəkət sensorlarınıza girişini blok edilib.</translation>
+<translation id="6542521951477560771"><ph name="RECEIVER_NAME" /> ilə paylaşılır</translation>
 <translation id="6545665334409411530">Təkrar dərəcəsi</translation>
 <translation id="6545867563032584178">Mikrofon Mac Sistem Tərcihlərində deaktivdir</translation>
 <translation id="6546856949879953071">Ətraflı təkmilləşdirmə məlumatı üçün qeydlər burada saxlanılıb: Fayllar &gt; Fayllarım &gt; <ph name="LOG_FILE" /></translation>
@@ -8662,11 +8663,7 @@ Bu saytın blok edilməsini düşünmürəm!</translation>
 <translation id="8428271547607112339">Məktəb hesabı əlavə edin</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> ərzində çıxış edəcəksiniz</translation>
 <translation id="8431190899827883166">Vizual reaksiya</translation>
-<translation id="8431496281632382473">Bu profil <ph name="DOMAIN" /> tərəfindən idarə olunur. Bu idarə edilən profildən istifadəyə davam etmək üçün təşkilat cihaz siqnallarını paylaşmağınızı tələb edir.
-
-Cihaz siqnallarına brauzer, OS, cihaz, quraşdırılmış proqram təminatı və fayllar haqqında məlumat daxil ola bilər.
-
-Siqnalları paylaşmasanız, bu profil bağlanacaq.</translation>
+<translation id="8433186206711564395">Şəbəkə ayarları</translation>
 <translation id="8434480141477525001">NaCl Debaq Portu</translation>
 <translation id="8437209419043462667">ABŞ</translation>
 <translation id="8438328416656800239">Ağıllı brauzerə keçin</translation>

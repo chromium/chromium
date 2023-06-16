@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Chrome for Testing のヘルプを見る</translation>
 <translation id="1524282610922162960">Chromium タブの共有</translation>
 <translation id="1553461853655228091">周囲の 3D マップを作成するには、Chromium にカメラの使用を許可する必要があります</translation>
-<translation id="1555506416658437797">お支払い方法を編集します。</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{管理者が、アップデートを適用するために Chromium を再起動するよう求めています}=1{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。シークレット ウィンドウは、再起動後は自動的には開きません。}other{管理者が、アップデートを適用するために Chromium を再起動するよう求めています。現在開いている # 個のシークレット ウィンドウは、再起動後は自動的には開きません。}}</translation>
 <translation id="1625909126243026060">Chromium のプライバシーとセキュリティに関する重要な設定を確認します</translation>
 <translation id="1632539827495546968">このアカウントを 1 回だけ使用する場合は、Chromium ブラウザの<ph name="GUEST_LINK_BEGIN" />ゲストモード<ph name="GUEST_LINK_END" />を使用できます。他のユーザーのアカウントを追加する場合は、<ph name="DEVICE_TYPE" /> に<ph name="LINK_BEGIN" />新しいユーザーを追加<ph name="LINK_END" />します。
@@ -95,7 +94,6 @@
 <translation id="3179665906251668410">Chromium のシークレット ウインドウでリンクを開く(&amp;G)</translation>
 <translation id="3185330573522821672">新しい Chromium プロフィールをカスタマイズ</translation>
 <translation id="3190315855212034486">エラー: Chromium で問題が発生しました。今すぐ再起動しますか？</translation>
-<translation id="3255926992597692024">Chromium がお支払い方法の入力の設定を変更しようとしています。</translation>
 <translation id="3258596308407688501">Chromium はこのデータ ディレクトリへの読み書きを実行できません:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@
 <translation id="4019629340646866719">Chromium OS は、<ph name="BEGIN_LINK_LINUX_OSS" />Linux 開発環境<ph name="END_LINK_LINUX_OSS" />と同様に、追加の<ph name="BEGIN_LINK_CROS_OSS" />オープンソース ソフトウェア<ph name="END_LINK_CROS_OSS" />によって実現しました。</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />現在の設定<ph name="END_LINK" />を送信して Chromium の品質向上にご協力ください</translation>
 <translation id="4050175100176540509">最新バージョンに更新すると、重要なセキュリティ更新と新機能が適用されます。</translation>
-<translation id="4050599136622776556">Chromium がお支払い方法を編集しようとしています。</translation>
 <translation id="4055805654398742145">パスワード マネージャー(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{1 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}other{# 分間使用しなかった場合、組織は Chromium を自動的に終了します。閲覧データは削除されます。これには、履歴、自動入力、ダウンロードが含まれます。}}</translation>
 <translation id="4148957013307229264">インストール中...</translation>
@@ -208,7 +205,6 @@
 <translation id="5653831366781983928">今すぐ Chromium を再起動してください</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium をこの言語で表示</translation>
-<translation id="585620188971323280">お支払い方法の入力の設定を変更します。</translation>
 <translation id="5862307444128926510">Chromium へようこそ</translation>
 <translation id="5883558403894052917">Chromium で次のアイテムに不正なソフトウェアが含まれていることが検出されました。</translation>
 <translation id="5895138241574237353">再起動</translation>

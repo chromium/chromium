@@ -3,13 +3,16 @@
 <translationbundle lang="fr">
 <translation id="1016765312371154165">Chrome ne s'est pas correctement arrêté.</translation>
 <translation id="130631256467250065">Vos modifications seront prises en compte au prochain démarrage de l'appareil.</translation>
+<translation id="1555506416658437797">modifier les modes de paiement.</translation>
 <translation id="1635457557763038537">Vos modifications seront prises en compte au prochain redémarrage de Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome tente de modifier les modes de paiement.</translation>
 <translation id="2447485272386224171">Chrome fonctionne grâce au projet Open Source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> et à d'autres <ph name="BEGIN_LINK_OSS" />logiciels libres<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo Google Chrome</translation>
 <translation id="3444832043240812445">Cette page affiche uniquement des informations sur les erreurs récentes si vous <ph name="BEGIN_LINK" />activez l'envoi de rapports d'erreur<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Autorisez Chrome à accéder au réseau dans les paramètres du pare-feu ou
         de l'antivirus.</translation>
 <translation id="5005121315113832363">Cette page a été bloquée par Chrome</translation>
+<translation id="585620188971323280">modifier les paramètres de saisie des modes de paiement.</translation>
 <translation id="6011049234605203654">Accédez au
           menu Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           et désélectionnez les serveurs proxy sélectionnés.</translation>
 <translation id="8232971017369963250">Chrome fonctionne grâce au projet Open Source <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome fonctionne également grâce à d'autres <ph name="BEGIN_LINK_OSS" />logiciels Open Source<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome tente de modifier les paramètres de saisie des modes de paiement.</translation>
 </translationbundle>

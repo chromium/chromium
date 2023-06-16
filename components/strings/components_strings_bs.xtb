@@ -1419,7 +1419,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="4349810866125026513">Ipak otpremi</translation>
 <translation id="4350629523305688469">Multifunkcionalna ladica</translation>
 <translation id="4351060348582610152">Web lokacija <ph name="ORIGIN" /> želi skenirati Bluetooth uređaje u blizini. Pronađeni su sljedeći uređaji:</translation>
-<translation id="4351175281479794167">Unesite kôd za potvrdu</translation>
 <translation id="4355383636893709732">Ažuriranje ChromeOS-a za Android aplikacije</translation>
 <translation id="4356973930735388585">Napadači ove web lokacije mogu pokušati instalirati opasne programe na vaš računar koji kradu ili brišu informacije (npr., fotografije, lozinke, poruke i podatke s kreditnih kartica).</translation>
 <translation id="4358059973562876591">Šabloni koje ste naveli ne mogu se primijeniti zbog greške s pravilom DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="460848736049414407">Blokirao administrator</translation>
 <translation id="4610279718074907952">Ova web lokacija je u grupi koju definira <ph name="SET_OWNER" /> koji može vidjeti vašu aktivnost</translation>
 <translation id="4617273035598175554">Softver za grafiku i animaciju</translation>
+<translation id="4619564267100705184">Potvrdite identitet</translation>
 <translation id="4622292761762557753">Ipak prenesi</translation>
 <translation id="4627675673814409125">Nije moguće postaviti ovo pravilo na nivou Chrome profila i bit će zanemareno.</translation>
 <translation id="4628948037717959914">Fotografija</translation>
@@ -1740,7 +1740,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5123433949759960244">Košarka</translation>
 <translation id="5125751979347152379">Nevažeći URL.</translation>
 <translation id="512592033764059484">Fudbal</translation>
-<translation id="5126510351761255129">Potvrdite karticu</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> možda neće dobro promijeniti veličinu. Koristite zadane postavke veličina prozora da spriječite probleme s aplikacijom.</translation>
 <translation id="5127934926273826089">Cvijeće</translation>
 <translation id="5129534298163637277">Dijaloški okvir za potvrdu</translation>
@@ -2035,7 +2034,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="5869405914158311789">Web lokacija nije dostupna</translation>
 <translation id="5869522115854928033">Sačuvane lozinke</translation>
 <translation id="5872692522325383488">IBAN je sačuvan</translation>
-<translation id="5873013647450402046">Vaša banka želi potvrditi vaš identitet.</translation>
 <translation id="5877831137320480913">Ljepota i fitnes</translation>
 <translation id="5879989559903563723">Nije dozvoljeno u Načinu rada za gosta</translation>
 <translation id="5884465125445718607">Koverta Chinese #6</translation>
@@ -2288,6 +2286,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6468485451923838994">Fontovi</translation>
 <translation id="647261751007945333">Pravila uređaja</translation>
 <translation id="647330291963761005">Instaliranje ažuriranja</translation>
+<translation id="6474220430271405609">Testiranja pravila</translation>
 <translation id="6475672344094591109">Web lokacije koje posjetite mogu od Chromea zatražiti informacije koje im pomažu da izmjere performanse svojih oglasa. Chrome štiti vašu privatnost ograničivanjem informacija koje web lokacije mogu dijeliti jedna s drugom.</translation>
 <translation id="6476284679642588870">Upravljajte načinima plaćanja</translation>
 <translation id="6486200200930923183">Dokumentarni filmovi</translation>
@@ -2453,7 +2452,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6897140037006041989">Korisnički agent</translation>
 <translation id="6898699227549475383">Organizacija (O)</translation>
-<translation id="6899000063526916106">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni kôd</translation>
 <translation id="6907458757809079309">Fitnes</translation>
 <translation id="6910240653697687763">Web lokacija <ph name="URL" /> želi u potpunosti kontrolirati vaše MIDI uređaje</translation>
 <translation id="691024665142758461">Preuzeti više fajlova</translation>
@@ -3069,6 +3067,7 @@ Dodatni detalji:
 <translation id="8296205692406981542">Lokalni parkovi i vrtovi</translation>
 <translation id="8297545700510100061">Kolačići i drugi podaci web lokacije se koriste da vas web lokacija zapamti, naprimjer radi vaše prijave ili personaliziranja oglasa. Da upravljate kolačićima za sve web lokacije, pogledajte <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi koji koristite (<ph name="WIFI_NAME" />) može tražiti da posjetite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Unesite kôd</translation>
 <translation id="8303854710873047864">Prikazan je odjeljak "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Presavijanje napola</translation>
 <translation id="831997045666694187">Večer</translation>
@@ -3420,7 +3419,6 @@ Dodatni detalji:
 <translation id="9191834167571392248">Bušenje u donjem lijevom uglu</translation>
 <translation id="9199905725844810519">Štampanje je blokirano</translation>
 <translation id="9205078245616868884">Vaši podaci su šifrirani pristupnim izrazom za sinhronizaciju. Unesite ga da počnete sinhronizaciju.</translation>
-<translation id="920511547311754821">Ne možete pronaći kôd? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Dodavanje članka nije uspjelo.</translation>
 <translation id="9213433120051936369">Prilagodite izgled</translation>
 <translation id="9215416866750762878">Jedna aplikacija sprečava sigurno povezivanje Chromea na ovu web lokaciju</translation>

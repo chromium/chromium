@@ -378,6 +378,7 @@
 <translation id="1307431692088049276">다시 묻지 않음</translation>
 <translation id="1307559529304613120">시스템이 이 기기에 대한 장기 API 액세스 토큰을 저장하지 못했습니다.</translation>
 <translation id="131112695174432497">광고 개인 최적화에 영향을 미치는 데이터가 삭제됨</translation>
+<translation id="1311294419381837540">탭을 전송하고 있습니다. 언제든지 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1312811472299082263">Ansible Playbook 또는 Crostini 백업 파일에서 만들기</translation>
 <translation id="13130607084115184">저장한 비밀번호가 여기에 표시됩니다. 이 기기에서 <ph name="BRAND" />로 비밀번호를 가져오려면 <ph name="BEGIN_LINK" />CSV 파일을 선택하세요.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971"><ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /> 권한 삭제됨</translation>
@@ -414,6 +415,7 @@
 <translation id="1341871421050612057"><ph name="USERNAME" /> 계정과 동기화할 수 없음</translation>
 <translation id="1343865611738742294">Linux 앱에 USB 기기 액세스 권한을 부여합니다. Linux는 삭제된 USB 기기를 기억하지 않습니다.</translation>
 <translation id="1343920184519992513">중단한 위치에서 계속하고 특정 페이지 모음 열기</translation>
+<translation id="1344141078024003905">화면을 전송하고 있습니다. 언제든지 화면 전송을 일시중지하거나 중지할 수 있습니다.</translation>
 <translation id="1346630054604077329">확인 후 다시 시작</translation>
 <translation id="1346748346194534595">오른쪽</translation>
 <translation id="1347256498747320987">업데이트 및 앱을 설치합니다. 계속하면 이 기기에서 Google, 이동통신사, 기기 제조업체로부터 업데이트와 앱을 자동으로 다운로드하고 설치하는 데에도 동의하는 것으로 간주됩니다(이때 모바일 데이터가 사용될 수 있음). 일부 앱에서는 인앱 구매가 제공될 수도 있습니다. <ph name="BEGIN_LINK1" />자세히 알아보기<ph name="END_LINK1" /></translation>
@@ -1700,6 +1702,7 @@
 <translation id="2378982052244864789">확장 프로그램 디렉터리를 선택합니다.</translation>
 <translation id="2379281330731083556">시스템 대화상자를 사용하여 인쇄... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">공유 탭 미리보기</translation>
+<translation id="2382875860893882175">현재 전송이 일시중지되어 있습니다. 언제든지 전송을 재개하거나 중지할 수 있습니다.</translation>
 <translation id="2383825469508278924">키보드 키 매핑, 기능 키 등을 변경하세요</translation>
 <translation id="2387052489799050037">홈으로 이동</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" />(현재)</translation>
@@ -2542,6 +2545,7 @@
 <translation id="3088325635286126843">이름 바꾸기(&amp;R)...</translation>
 <translation id="3089137131053189723">검색 기록이 삭제되었습니다</translation>
 <translation id="3089941350495701096">읽기 목록</translation>
+<translation id="3089948625237571254">동영상 프레임 복사</translation>
 <translation id="3090227230165225418">다운로드 알림 표시</translation>
 <translation id="3090589793601454425">이동 안함</translation>
 <translation id="3090819949319990166">외부 crx 파일을 <ph name="TEMP_CRX_FILE" />에 복사할 수 없습니다.</translation>
@@ -3045,6 +3049,7 @@
 <translation id="3559262020195162408">기기에 정책을 설치하지 못했습니다.</translation>
 <translation id="3559533181353831840">약 <ph name="TIME_LEFT" /> 남음</translation>
 <translation id="3560034655160545939">맞춤법 검사(&amp;S)</translation>
+<translation id="3561201631376780358">측면 패널을 열어 모든 북마크 보기</translation>
 <translation id="3562423906127931518">이 과정은 몇 분 정도 걸릴 수 있습니다. Linux 컨테이너를 설정합니다.</translation>
 <translation id="3562655211539199254">휴대전화의 최근 Chrome 탭을 봅니다.</translation>
 <translation id="3563432852173030730">키오스크 애플리케이션을 다운로드할 수 없습니다.</translation>
@@ -3771,11 +3776,6 @@
 <translation id="4169535189173047238">허용 안함</translation>
 <translation id="4170314459383239649">종료 시 삭제</translation>
 <translation id="417096670996204801">프로필 선택</translation>
-<translation id="4174651450391857911">조직에서 관리하는 프로필입니다. 이 관리 프로필을 계속 사용하려면 조직에서 기기 신호를 공유해야 합니다.
-
-기기 신호에는 브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보가 포함될 수 있습니다.
-
-신호를 공유하지 않기로 선택하면 이 프로필이 닫힙니다.</translation>
 <translation id="4175137578744761569">연한 보라색 및 흰색</translation>
 <translation id="4176463684765177261">사용 중지됨</translation>
 <translation id="4176864026061939326">관리되는 기기입니다. 기기 관리자에게 <ph name="USER_EMAIL_ADDRESS" /> 계정에 대한 새 프로필이 필요합니다</translation>
@@ -3826,6 +3826,7 @@
 <translation id="4223845867739585293">패스키 생성</translation>
 <translation id="4225397296022057997">모든 사이트에서</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{확장 프로그램이 허용되지 않음}other{일부 확장 프로그램이 허용되지 않음}}</translation>
+<translation id="4231053948789591973">현재 전송이 일시중지되어 있습니다. 언제든지 화면 전송을 재개하거나 중지할 수 있습니다.</translation>
 <translation id="4231095370974836764"><ph name="DEVICE_TYPE" />에서 Google Play 앱 및 게임을 설치하세요. <ph name="LINK_BEGIN" />자세히 알아보기<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">게임 컨트롤 닫기</translation>
 <translation id="4231231258999726714">Chromebook용 Steam 설정</translation>
@@ -4897,6 +4898,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5173668317844998239">보안 키에 저장된 지문을 추가 및 삭제합니다.</translation>
 <translation id="5174169235862638850">비밀번호가 클립보드에 복사되었습니다.</translation>
 <translation id="5175379009094579629">잘못된 기기 이름입니다. 올바른 기기 이름을 입력하고 다시 시도해 보세요.</translation>
+<translation id="5176787661653201403">동영상 프레임 복사</translation>
 <translation id="5177479852722101802">카메라 및 마이크 액세스 계속 차단</translation>
 <translation id="5177549709747445269">모바일 데이터 사용 중</translation>
 <translation id="5178667623289523808">이전 찾기</translation>
@@ -5346,6 +5348,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5571066253365925590">블루투스를 사용함</translation>
 <translation id="5571092938913434726">전체 미디어 컨트롤</translation>
 <translation id="5571832155627049070">프로필 맞춤설정</translation>
+<translation id="5572166921642484567">색 구성표 모드 선택</translation>
 <translation id="5572252023412311448"><ph name="SITE_GROUP" />의 사이트 세부정보 표시</translation>
 <translation id="5572648434713976849">주소 표시줄에 더 개선된 추천 항목이 표시됩니다.</translation>
 <translation id="557506220935336383">다른 사이트에 관한 확장 프로그램 권한 보기</translation>
@@ -5756,6 +5759,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
     <ph name="LINE_BREAK" />
     이 사진이 Chromebook 로그인 화면과 잠금 화면에 표시됩니다.</translation>
 <translation id="5925147183566400388">인증 업무 준칙 URI</translation>
+<translation id="5927132638760172455">알 수 없는 수신자로 전송 중</translation>
 <translation id="5927232971138258197">이 확장 프로그램은 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="592740088639760830">컨테이너 중단</translation>
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
@@ -6457,6 +6461,7 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="653983593749614101">재개하는 중…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />참고:<ph name="END_BOLD" /> 데이터 수집으로 인해 성능이 감소할 수 있으므로 확신이 있는 경우 또는 요청을 받은 경우에만 사용하도록 설정합니다.</translation>
 <translation id="6541638731489116978">움직임 감지 센서 액세스가 차단된 사이트입니다.</translation>
+<translation id="6542521951477560771"><ph name="RECEIVER_NAME" />(으)로 전송 중</translation>
 <translation id="6545665334409411530">반복 속도</translation>
 <translation id="6545867563032584178">Mac 시스템 환경설정에서 마이크가 사용 중지되었습니다</translation>
 <translation id="6546856949879953071">자세한 업그레이드 정보는 파일 &gt; 내 파일 &gt; <ph name="LOG_FILE" />에 저장된 로그에서 확인하세요.</translation>
@@ -8680,11 +8685,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8428271547607112339">학교 계정 추가</translation>
 <translation id="84297032718407999"><ph name="LOGOUT_TIME_LEFT" /> 후 로그아웃됩니다</translation>
 <translation id="8431190899827883166">탭한 항목 표시</translation>
-<translation id="8431496281632382473"><ph name="DOMAIN" />에서 관리하는 프로필입니다. 이 관리 프로필을 계속 사용하려면 조직에서 기기 신호를 공유해야 합니다.
-
-기기 신호에는 브라우저, OS, 기기, 설치된 소프트웨어, 파일에 관한 정보가 포함될 수 있습니다.
-
-신호를 공유하지 않기로 선택하면 이 프로필이 닫힙니다.</translation>
+<translation id="8433186206711564395">네트워크 설정</translation>
 <translation id="8434480141477525001">NaCl 디버그 포트</translation>
 <translation id="8437209419043462667">영어(미국)</translation>
 <translation id="8438328416656800239">스마트 브라우저로 전환</translation>

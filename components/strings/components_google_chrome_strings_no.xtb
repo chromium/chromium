@@ -3,13 +3,16 @@
 <translationbundle lang="no">
 <translation id="1016765312371154165">Chrome ble ikke avsluttet på riktig måte.</translation>
 <translation id="130631256467250065">Endringene trer i kraft neste gang du starter enheten på nytt.</translation>
+<translation id="1555506416658437797">redigere betalingsmåter.</translation>
 <translation id="1635457557763038537">Endringene dine trer i kraft neste gang du starter Chrome på nytt.</translation>
+<translation id="2399868464369312507">Google Chrome prøver å redigere betalingsmåter.</translation>
 <translation id="2447485272386224171">Chrome er gjort mulig av åpen kildekode-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> og annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Chrome-logo</translation>
 <translation id="3444832043240812445">Denne siden viser kun informasjon om nylige krasj hvis du <ph name="BEGIN_LINK" />aktiverer rapportering av krasj<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Tillat at Chrome bruker nettverket, i brannmur- eller
           antivirusinnstillingene dine.</translation>
 <translation id="5005121315113832363">Denne siden er blokkert av Chrome</translation>
+<translation id="585620188971323280">endre innstillingene for utfylling av betalingsmåter</translation>
 <translation id="6011049234605203654">Gå til
           Chrome-menyen &gt;
           <ph name="SETTINGS_TITLE" />
@@ -40,4 +43,5 @@
 <translation id="8187289872471304532">Gå til Programmer &gt; Systeminnstillinger &gt; Nettverk &gt; Avansert &gt; Proxy-tjenere og fjern avmerkingen for alle valgte proxy-tjenere.</translation>
 <translation id="8232971017369963250">Chrome er tilgjengelig som følge av åpen-kildekode-prosjektet <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />.</translation>
 <translation id="8279509328145658601">Chrome er også tilgjengelig takket være annen <ph name="BEGIN_LINK_OSS" />programvare med åpen kildekode<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome prøver å endre innstillingene for utfylling av betalingsmåter.</translation>
 </translationbundle>

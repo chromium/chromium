@@ -63,7 +63,6 @@ Hona hemen hasteko egin ditzakezun gauza batzuk.</translation>
 <translation id="1235458158152011030">Sare ezagunak</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> konektatuta dago.</translation>
 <translation id="1240638468526743569">Aplikazio bat</translation>
-<translation id="1242704516557658755">Itzuli leiho batetik bestera, azkenekoz erabili denetik hasita</translation>
 <translation id="124678866338384709">Itxi oraingo fitxa</translation>
 <translation id="1246890715821376239">Aplikazio bateraezinak</translation>
 <translation id="1247372569136754018">Mikrofonoa (barnekoa)</translation>
@@ -1121,7 +1120,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Aktibatuta</translation>
 <translation id="5920710855273935292">Mikrofonoa desaktibatuta dago.</translation>
-<translation id="5922962980596822074">Pasatu leiho batetik bestera, azkenekoz erabili denetik hasita</translation>
 <translation id="5924855612669061715">Wifi-gunea aktibatuta dago</translation>
 <translation id="5946788582095584774">Aktibatuta dago <ph name="FEATURE_NAME" />.</translation>
 <translation id="5947494881799873997">Leheneratu</translation>
@@ -1240,7 +1238,6 @@ Jarraitu ahal izateko, erabiltzaile guztiek saioa amaitu behar dute.</translatio
 <translation id="6469104339369989396">Aktibatu/Desaktibatu wifi-gunea</translation>
 <translation id="6477681113376365978">Ezin da deskargatu fitxategia</translation>
 <translation id="6482559668224714696">Pantaila osoko lupa</translation>
-<translation id="6483727822843292440">Pasatu leiho batetik bestera, gutxien erabili denetik hasita</translation>
 <translation id="6490471652906364588">USB-C gailua (eskuinaldeko ataka)</translation>
 <translation id="6491071886865974820"><ph name="DEVICE_TYPE" /> gailua epemuga heldu aurretik eguneratzea eskatu dizu <ph name="MANAGER" /> kudeatzaileak</translation>
 <translation id="649452524636452238">Txartel adimendunaren PINa</translation>

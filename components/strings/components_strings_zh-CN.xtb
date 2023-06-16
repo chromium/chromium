@@ -1406,7 +1406,6 @@
 <translation id="4349810866125026513">仍然上传</translation>
 <translation id="4350629523305688469">多功能纸匣</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> 想搜索附近的蓝牙设备，并发现了以下设备：</translation>
-<translation id="4351175281479794167">输入验证码</translation>
 <translation id="4355383636893709732">有一项对 Android 应用有益的 ChromeOS 更新</translation>
 <translation id="4356973930735388585">此网站上的攻击者可能会试图在您的计算机上安装危险程序，以窃取或删除您的信息（例如：照片、密码、通讯内容和信用卡信息）。</translation>
 <translation id="4358059973562876591">您指定的模板未必会被应用，因为 DnsOverHttpsMode 政策出错了。</translation>
@@ -1500,6 +1499,7 @@
 <translation id="460848736049414407">已被管理员屏蔽</translation>
 <translation id="4610279718074907952">此网站属于由 <ph name="SET_OWNER" /> 定义的群组，该群组可查看您的活动记录</translation>
 <translation id="4617273035598175554">图形与动画软件</translation>
+<translation id="4619564267100705184">请验证是您本人在操作</translation>
 <translation id="4622292761762557753">仍然转移</translation>
 <translation id="4627675673814409125">此政策无法在 Chrome 个人资料级别设置，因而会被忽略。</translation>
 <translation id="4628948037717959914">照片</translation>
@@ -1725,7 +1725,6 @@
 <translation id="5123433949759960244">篮球</translation>
 <translation id="5125751979347152379">网址无效。</translation>
 <translation id="512592033764059484">足球</translation>
-<translation id="5126510351761255129">验证您的银行卡</translation>
 <translation id="512670116361803001">“<ph name="APP_NAME" />”可能无法妥当地调整大小。请使用预设窗口大小，以防止该应用出现问题。</translation>
 <translation id="5127934926273826089">鲜花/礼品</translation>
 <translation id="5129534298163637277">确认对话框</translation>
@@ -2018,7 +2017,6 @@
 <translation id="5869405914158311789">无法访问此网站</translation>
 <translation id="5869522115854928033">已保存的密码</translation>
 <translation id="5872692522325383488">已保存 IBAN</translation>
-<translation id="5873013647450402046">银行需要确认您的身份。</translation>
 <translation id="5877831137320480913">美容与健身</translation>
 <translation id="5879989559903563723">在访客模式下不支持</translation>
 <translation id="5884465125445718607">中式 #6 信封</translation>
@@ -2432,7 +2430,6 @@
 <translation id="6896758677409633944">复制</translation>
 <translation id="6897140037006041989">用户代理</translation>
 <translation id="6898699227549475383">组织 (O)</translation>
-<translation id="6899000063526916106">输入 <ph name="NUMBER_OF_DIGITS" /> 位数的动态密码</translation>
 <translation id="6907458757809079309">健身</translation>
 <translation id="6910240653697687763"><ph name="URL" /> 想完全控制您的 MIDI 设备</translation>
 <translation id="691024665142758461">下载多个文件</translation>
@@ -3044,6 +3041,7 @@
 <translation id="8296205692406981542">地区公园与园林</translation>
 <translation id="8297545700510100061">系统会使用 Cookie 和其他网站数据来记住您，以便实现某些功能或目的（例如帮您登录或向您展示个性化广告）。如需管理所有网站的 Cookie，请查看<ph name="SETTINGS" />。</translation>
 <translation id="8298115750975731693">您要使用的 Wi-Fi 网络（<ph name="WIFI_NAME" />）可能需要您访问 <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />。</translation>
+<translation id="8301894345671534559">输入验证码</translation>
 <translation id="8303854710873047864">已显示“<ph name="SECTION" />”部分</translation>
 <translation id="830498451218851433">对折</translation>
 <translation id="831997045666694187">晚上</translation>
@@ -3393,7 +3391,6 @@
 <translation id="9191834167571392248">打孔（左下角）</translation>
 <translation id="9199905725844810519">打印功能已被禁用</translation>
 <translation id="9205078245616868884">您的数据已使用您的同步密码加密。输入该密码即可开始同步。</translation>
-<translation id="920511547311754821">找不到动态密码？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">无法添加文章。</translation>
 <translation id="9213433120051936369">自定义外观</translation>
 <translation id="9215416866750762878">有一款应用正在阻止 Chrome 安全地连接到此网站</translation>

@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Chrome for Testing yuzasidan yordam olish</translation>
 <translation id="1524282610922162960">Chromium sahifasini namoyish qilish</translation>
 <translation id="1553461853655228091">Chromium atrofingiz 3D xaritasini yaratishi uchun unga kamera ruxsati zarur</translation>
-<translation id="1555506416658437797">toʻlov usullarini oʻzgartirishga urinmoqda.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda}=1{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda Inkognito oynalar qayta ochilmaydi.}other{Administrator yangilishlarni oʻrnatish uchun Chromium brauzerini qayta ishga tushirishni talab qilmoqda # ta inkognito oyna qayta ochilmaydi.}}</translation>
 <translation id="1625909126243026060">Chromium ichida asosiy maxfiylik va xavfsizlik boshqaruvini tekshiring</translation>
 <translation id="1632539827495546968">Bu hisobdan bir marta foydalanish uchun Chromium brauzerida <ph name="GUEST_LINK_BEGIN" />Mehmon rejimidan<ph name="GUEST_LINK_END" /> foydalanishingiz mumkin. Biror kishi uchun hisob qoʻshmoqchi boʻlsangiz, <ph name="LINK_BEGIN" />yangi shaxsni<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> qurilmasiga qoʻshing.
@@ -95,7 +94,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="3179665906251668410">Havolani Chromium &amp;inkognito oynasida ochish</translation>
 <translation id="3185330573522821672">Yangi Chromium profilini moslash</translation>
 <translation id="3190315855212034486">Voy! Chromium ishdan chiqdi. Qaytadan ishga tushirilsinmi?</translation>
-<translation id="3255926992597692024">Chromium toʻlov usuli kiritilishi sozlamasini oʻzgaritishga urinmoqda.</translation>
 <translation id="3258596308407688501">Chromium o‘z jildidan ma’lumotlarni o‘qib yoki yozib ololmadi: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium <ph name="PRODUCT_VERSION" /> versiyasi oʻrnatildi</translation>
 <translation id="3286538390144397061">Hozir qaytadan ishga tushirish</translation>
@@ -140,7 +138,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="4019629340646866719">ChromiumOS tizimini ishlab chiqishda <ph name="BEGIN_LINK_LINUX_OSS" />Linux dasturlash muhiti<ph name="END_LINK_LINUX_OSS" /> <ph name="BEGIN_LINK_CROS_OSS" />ochiq kodli DT<ph name="END_LINK_CROS_OSS" /> vositalaridan foydalanilgan.</translation>
 <translation id="4036079820698952681">Chromium brauzerining <ph name="BEGIN_LINK" />joriy sozlamalari<ph name="END_LINK" /> asosida hisobot yuboring va brauzerning ishlashini yaxshilashga yordamlashing</translation>
 <translation id="4050175100176540509">So‘nggi versiyada himoya devori yaxshilandi va yangi funksiyalar qo‘shildi.</translation>
-<translation id="4050599136622776556">Chromium toʻlov usullarini oʻzgartirishga urinmoqda.</translation>
 <translation id="4055805654398742145">Parollar menejeri</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium 1 daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}other{Chromium # daqiqa ishlatilmasa, tashkilot avtomatik ravishda yopadi. Brauzerning ishlashi haqida axborot oʻchiriladi. Bunga tarix, avtomatik kiritish va yuklanmalar kirishi mumkin.}}</translation>
 <translation id="4148957013307229264">O‘rnatilmoqda..</translation>
@@ -206,7 +203,6 @@ Sayt va ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Google 
 <translation id="5653831366781983928">Chromiumni hozir qayta ishga tushiring</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium shu tilda ko‘rsatilsin</translation>
-<translation id="585620188971323280">toʻlov usuli kiritilishi sozlamalarini oʻzgartirish.</translation>
 <translation id="5862307444128926510">Chromium brauzeriga xush kelibsiz</translation>
 <translation id="5883558403894052917">Chromium tarkibida zararli dasturi bor quyidagi fayllarni aniqladi:</translation>
 <translation id="5895138241574237353">Qayta ishga tushirish</translation>

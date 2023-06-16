@@ -378,6 +378,7 @@
 <translation id="1307431692088049276">不要再問我</translation>
 <translation id="1307559529304613120">糟糕！系統無法為這部裝置儲存長期 API 存取憑證。</translation>
 <translation id="131112695174432497">系統將刪除會影響廣告個人化的資料</translation>
+<translation id="1311294419381837540">您正在投放分頁。您可以隨時暫停或停止投放。</translation>
 <translation id="1312811472299082263">使用 Ansible Playbook 或 Crostini 備份檔案建立</translation>
 <translation id="13130607084115184">已儲存的密碼會在這裡顯示。如要在此裝置上將密碼匯入「<ph name="BRAND" />」，請<ph name="BEGIN_LINK" />選取 CSV 檔案<ph name="END_LINK" />。</translation>
 <translation id="1313264149528821971">已移除 <ph name="PERMISSION_1" />、<ph name="PERMISSION_2" />、<ph name="PERMISSION_3" /></translation>
@@ -414,6 +415,7 @@
 <translation id="1341871421050612057">無法與 <ph name="USERNAME" /> 同步</translation>
 <translation id="1343865611738742294">請授權 Linux 應用程式存取 USB 裝置。移除後，Linux 將不會記住 USB 裝置。</translation>
 <translation id="1343920184519992513">繼續瀏覽上次開啟的網頁並開啟某組特定網頁</translation>
+<translation id="1344141078024003905">您正在投放螢幕畫面。您可以隨時暫停或停止投放螢幕畫面。</translation>
 <translation id="1346630054604077329">確認並重新啟動</translation>
 <translation id="1346748346194534595">向右</translation>
 <translation id="1347256498747320987">安裝更新和應用程式。如果繼續操作，即表示您亦允許此裝置自動下載和安裝來自 Google、您的流動網絡供應商和裝置製造商的更新內容和應用程式，當中可能會耗用流動數據。部分應用程式可能會提供應用程式內購買產品。<ph name="BEGIN_LINK1" />瞭解詳情<ph name="END_LINK1" /></translation>
@@ -1698,6 +1700,7 @@
 <translation id="2378982052244864789">選取擴充功能目錄。</translation>
 <translation id="2379281330731083556">使用系統對話方塊列印…<ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">共用分頁嘅預覽畫面</translation>
+<translation id="2382875860893882175">投放已暫停。您可以隨時繼續或停止投放。</translation>
 <translation id="2383825469508278924">變更鍵盤機碼對應、功能鍵等等</translation>
 <translation id="2387052489799050037">前往主畫面</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (目前)</translation>
@@ -2540,6 +2543,7 @@
 <translation id="3088325635286126843">重新命名(&amp;R)…</translation>
 <translation id="3089137131053189723">已清除搜尋</translation>
 <translation id="3089941350495701096">閱讀清單(&amp;R)</translation>
+<translation id="3089948625237571254">複製視訊畫面頁框(&amp;O)</translation>
 <translation id="3090227230165225418">朗讀下載通知</translation>
 <translation id="3090589793601454425">不要移動</translation>
 <translation id="3090819949319990166">無法將外部 crx 檔案複製到 <ph name="TEMP_CRX_FILE" />。</translation>
@@ -3043,6 +3047,7 @@
 <translation id="3559262020195162408">無法在裝置上安裝政策。</translation>
 <translation id="3559533181353831840">大約剩餘 <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">拼字檢查(&amp;S)</translation>
+<translation id="3561201631376780358">開啟側邊面板可查看所有書籤</translation>
 <translation id="3562423906127931518">此程序可能需時幾分鐘。正在設定 Linux 容器。</translation>
 <translation id="3562655211539199254">查看最近透過手機開啟的 Chrome 分頁</translation>
 <translation id="3563432852173030730">無法下載 Kiosk 應用程式。</translation>
@@ -3771,11 +3776,6 @@
 <translation id="4169535189173047238">不允許</translation>
 <translation id="4170314459383239649">退出時清除</translation>
 <translation id="417096670996204801">選擇設定檔</translation>
-<translation id="4174651450391857911">此個人檔案由您的機構管理。您的機構要求您分享裝置訊號，才能繼續使用此受管理的個人檔案。
-
-裝置訊號可能包括瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料。
-
-如果您選擇不分享訊號，此個人檔案將會關閉。</translation>
 <translation id="4175137578744761569">淺紫色和白色</translation>
 <translation id="4176463684765177261">已停用</translation>
 <translation id="4176864026061939326">此裝置已受管理。裝置管理員要求為 <ph name="USER_EMAIL_ADDRESS" /> 帳戶建立新的個人檔案</translation>
@@ -3826,6 +3826,7 @@
 <translation id="4223845867739585293">建立密鑰</translation>
 <translation id="4225397296022057997">在所有網站上</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{不允許這個擴充程式}other{不允許部分擴充程式}}</translation>
+<translation id="4231053948789591973">投放已暫停。您可以隨時繼續或停止投放螢幕畫面。</translation>
 <translation id="4231095370974836764">在 <ph name="DEVICE_TYPE" /> 上透過 Google Play 安裝應用程式和遊戲。<ph name="LINK_BEGIN" />瞭解詳情<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">關閉遊戲控制項</translation>
 <translation id="4231231258999726714">正在設定 Chromebook 版 Steam</translation>
@@ -4897,6 +4898,7 @@
 <translation id="5173668317844998239">新增及刪除安全密鑰上儲存的指紋</translation>
 <translation id="5174169235862638850">密碼已複製到剪貼簿</translation>
 <translation id="5175379009094579629">裝置名稱無效。請輸入有效的裝置名稱並再試一次。</translation>
+<translation id="5176787661653201403">複製視訊畫面頁框(&amp;O)</translation>
 <translation id="5177479852722101802">繼續封鎖存取相機和麥克風</translation>
 <translation id="5177549709747445269">您正在使用流動數據</translation>
 <translation id="5178667623289523808">尋找上一個項目</translation>
@@ -5346,6 +5348,7 @@
 <translation id="5571066253365925590">藍牙已啟用</translation>
 <translation id="5571092938913434726">全域媒體控制項</translation>
 <translation id="5571832155627049070">自訂你的設定檔</translation>
+<translation id="5572166921642484567">選擇色彩配置模式</translation>
 <translation id="5572252023412311448">顯示 <ph name="SITE_GROUP" /> 嘅網站詳情</translation>
 <translation id="5572648434713976849">您會在網址列取得更貼近需求的建議</translation>
 <translation id="557506220935336383">查看其他網站的擴充程式權限</translation>
@@ -5754,6 +5757,7 @@
     <ph name="LINE_BREAK" />
     這張圖片會在 Chromebook 的登入畫面和上鎖畫面上顯示。</translation>
 <translation id="5925147183566400388">憑證實務基準指標</translation>
+<translation id="5927132638760172455">正在投放到不明接收端</translation>
 <translation id="5927232971138258197">此擴充程式可以讀取並變更 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止執行這個容器</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不是在 Chrome 中自動開啟</translation>
@@ -6455,6 +6459,7 @@
 <translation id="653983593749614101">正在恢復…</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />注意：<ph name="END_BOLD" />除非您瞭解這項功能的用途或是收到相關指示，否則請不要啟用這項功能，因為收集數據可能會導致系統效能降低。</translation>
 <translation id="6541638731489116978">此網站被禁止存取您的動作感應器。</translation>
+<translation id="6542521951477560771">正在投放至<ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">重複頻率</translation>
 <translation id="6545867563032584178">已關閉 Mac 系統偏好設定中的麥克風</translation>
 <translation id="6546856949879953071">有關升級的詳細資訊，相關記錄已儲存至「檔案」&gt;「我的檔案」&gt; <ph name="LOG_FILE" /></translation>
@@ -8677,11 +8682,7 @@
 <translation id="8428271547607112339">新增學校帳戶</translation>
 <translation id="84297032718407999">您將於 <ph name="LOGOUT_TIME_LEFT" />後登出</translation>
 <translation id="8431190899827883166">顯示輕按選項</translation>
-<translation id="8431496281632382473">此個人檔案由 <ph name="DOMAIN" /> 管理。您的機構要求您分享裝置訊號，才能繼續使用此受管理的個人檔案。
-
-裝置訊號可能包括瀏覽器、OS、裝置、已安裝的軟件和檔案的相關資料。
-
-如果您選擇不分享訊號，此個人檔案將會關閉。</translation>
+<translation id="8433186206711564395">網絡設定</translation>
 <translation id="8434480141477525001">NaCl 偵錯連接埠</translation>
 <translation id="8437209419043462667">美式鍵盤</translation>
 <translation id="8438328416656800239">改用智能瀏覽器</translation>

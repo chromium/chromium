@@ -20,7 +20,6 @@ Disa funksione mund të mos ofrohen dhe ndryshimet në preferenca nuk do të ruh
 <translation id="1478370723027452770">Merr ndihmë për Chrome for Testing</translation>
 <translation id="1524282610922162960">Ndaj një skedë të Chromium</translation>
 <translation id="1553461853655228091">Chromium ka nevojë për leje për t'u qasur te kamera jote për të krijuar një hartë 3D të ambientit tënd rrethues</translation>
-<translation id="1555506416658437797">të modifikojë mënyrat e pagesës.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim}=1{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim Dritarja jote "e fshehtë" nuk do të rihapet.}other{Administratori yt kërkon që të hapësh përsëri Chromium për të zbatuar këtë përditësim # dritaret e tua "të fshehta" nuk do të rihapen.}}</translation>
 <translation id="1625909126243026060">Shqyrto kontrollet kryesore të sigurisë dhe privatësisë në Chromium</translation>
 <translation id="1632539827495546968">Nëse dëshiron ta përdorësh këtë llogari vetëm një herë, mund të përdorësh <ph name="GUEST_LINK_BEGIN" />modalitetin "Vizitor"<ph name="GUEST_LINK_END" /> në shfletuesin Chromium. Nëse dëshiron të shtosh një llogari për dikë tjetër, <ph name="LINK_BEGIN" />shto një person të ri<ph name="LINK_END" /> në <ph name="DEVICE_TYPE" />.
@@ -97,7 +96,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="3179665906251668410">Hape lidhjen në një dritare të fshe&amp;htë të Chromium</translation>
 <translation id="3185330573522821672">Personalizo profilin tënd të ri të Chromium</translation>
 <translation id="3190315855212034486">Chromium pësoi një ndërprerje aksidentale. Dëshiron ta rinisësh tani?</translation>
-<translation id="3255926992597692024">Chromium po përpiqet të modifikojë cilësimet për plotësimin e mënyrave të pagesave.</translation>
 <translation id="3258596308407688501">Chromium nuk mund të lexojë dhe shkruajë në direktorinë e tij të të dhënave:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,8 +142,8 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="4019629340646866719">ChromiumOS mundësohet nga <ph name="BEGIN_LINK_CROS_OSS" />softuerë shtesë me burim të hapur<ph name="END_LINK_CROS_OSS" />, si p.sh. <ph name="BEGIN_LINK_LINUX_OSS" />mjedisi i zhvillimit të Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Ndihmo në përmirësimin e Chromium duke raportuar <ph name="BEGIN_LINK" />cilësimet aktuale<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Përmirësime të rëndësishme sigurie dhe funksione të reja ofrohen në versionin e fundit.</translation>
-<translation id="4050599136622776556">Chromium po përpiqet të modifikojë mënyrat e pagesës.</translation>
 <translation id="4055805654398742145">Men&amp;axheri i fjalëkalimeve</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta. Të dhënat e shfletimit do të fshihen. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet.}}</translation>
 <translation id="4148957013307229264">Po instalohet...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - identifikimi në rrjet - Chromium</translation>
 <translation id="421369550622382712">Zbulo aplikacione, lojëra, shtesa dhe tema të mrekullueshme për Chromium.</translation>
@@ -182,6 +180,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="479167709087336770">Kjo përdor të njëjtin kontrollues drejtshkrimor që përdoret në kërkimin e Google. Teksti që shkruan në shfletues dërgohet te Google. Mund ta ndryshosh këtë sjellje gjithmonë te cilësimet.</translation>
 <translation id="4888717733111232871">Rregulli hyrës për Chromium për të lejuar trafikun mDNS.</translation>
 <translation id="4893347770495441059">Nise përsëri për të përditësuar &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për 1 minutë. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua ekzistuese do të qëndrojnë të hapura.}other{Organizata jote i fshin automatikisht të dhënat e shfletimit kur Chromium nuk përdoret për # minuta. Kjo mund të përfshijë historikun, plotësimin automatik dhe shkarkimet. Skedat e tua ekzistuese do të qëndrojnë të hapura.}}</translation>
 <translation id="4943838377383847465">Chromium është në modalitetin e sfondit.</translation>
 <translation id="4987820182225656817">Vizitorët mund të përdorin Chromium pa lënë asgjë prapa.</translation>
 <translation id="4994636714258228724">Shtoje veten te Chromium</translation>
@@ -208,7 +207,6 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5653831366781983928">Rinise Chromium tani</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Shfaqe Chromium në këtë gjuhë</translation>
-<translation id="585620188971323280">modifiko cilësimet për plotësimin e mënyrave të pagesave.</translation>
 <translation id="5862307444128926510">Mirë se vjen në Chromium</translation>
 <translation id="5883558403894052917">Chromium vuri re se këta artikuj përmbajnë softuer keqdashës:</translation>
 <translation id="5895138241574237353">Rinis</translation>
@@ -216,6 +214,7 @@ Lejet që u ke dhënë sajteve të uebit dhe aplikacioneve mund të zbatohen pë
 <translation id="5924017743176219022">Po lidhet me internetin...</translation>
 <translation id="5941711191222866238">Minimizo</translation>
 <translation id="5972142260211327093">Nëse Chromium të ka vendosur rastësisht në një provë aktive, historiku yt i shfletimit ndikon te reklamat që shikon dhe tek interesat sipas përllogaritjes më poshtë. Për të mbrojtur privatësinë tënde, Chromium fshin interesat e tua në vazhdimësi çdo muaj. Interesat rifreskohen, përveçse nëse ti i heq ato.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për 1 minutë.}other{Organizata jote e mbyll automatikisht Chromium kur ai nuk përdoret për # minuta.}}</translation>
 <translation id="5987687638152509985">Përditëso Chromium për të nisur sinkronizimin</translation>
 <translation id="5988505247484123880">Zakonisht, sajtet që ti viziton i kujtojnë gjërat që të interesojnë për të personalizuar përvojën tënde. Gjithashtu, sajtet mund të ruajnë informacione për interesat e tua në Chromium.</translation>
 <translation id="6003112304606738118">Po shkarkohet... Kanë mbetur edhe <ph name="HOURS" /> orë</translation>

@@ -378,6 +378,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1307431692088049276">Jangan tanya saya lagi</translation>
 <translation id="1307559529304613120">Ups! Sistem gagal menyimpan token akses API jangka panjang untuk perangkat ini.</translation>
 <translation id="131112695174432497">Data yang memengaruhi personalisasi iklan dihapus</translation>
+<translation id="1311294419381837540">Anda sedang mentransmisikan tab. Anda dapat menjeda atau menghentikan transmisi kapan saja.</translation>
 <translation id="1312811472299082263">Buat dari Playbook Ansible atau file cadangan Crostini</translation>
 <translation id="13130607084115184">Sandi tersimpan akan muncul di sini. Untuk mengimpor sandi ke <ph name="BRAND" /> di perangkat ini, <ph name="BEGIN_LINK" />pilih file CSV.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Menghapus <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -414,6 +415,7 @@ Periksa sandi Anda kapan saja di <ph name="GOOGLE_PASSWORD_MANAGER" />.</transla
 <translation id="1341871421050612057">Sinkronisasi tidak dapat digunakan dengan <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Berikan izin aplikasi ke Linux untuk mengakses perangkat USB. Linux tidak akan mengingat perangkat USB setelah perangkat tersebut dilepas.</translation>
 <translation id="1343920184519992513">Lanjutkan dari halaman terakhir yang dibuka dan buka rangkaian halaman tertentu</translation>
+<translation id="1344141078024003905">Anda mentransmisikan layar Anda. Anda dapat menjeda atau menghentikan transmisi layar kapan saja.</translation>
 <translation id="1346630054604077329">Konfirmasi dan mulai ulang</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1347256498747320987">Instal update &amp; aplikasi. Dengan melanjutkan, artinya Anda menyetujui bahwa perangkat ini juga dapat mendownload serta menginstal update dan aplikasi secara otomatis dari Google, operator, dan produsen perangkat, yang kemungkinan menggunakan kuota. Sebagian aplikasi ini mungkin menawarkan pembelian dalam aplikasi. <ph name="BEGIN_LINK1" />Pelajari Lebih Lanjut<ph name="END_LINK1" /></translation>
@@ -1698,6 +1700,7 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="2378982052244864789">Pilih direktori ekstensi.</translation>
 <translation id="2379281330731083556">Cetak menggunakan dialog sistem... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Pratinjau tab yang dibagikan</translation>
+<translation id="2382875860893882175">Transmisi saat ini dijeda. Anda dapat melanjutkan transmisi atau menghentikan transmisi kapan saja.</translation>
 <translation id="2383825469508278924">Ubah konfigurasi tombol keyboard, tombol fungsi, dan lainnya</translation>
 <translation id="2387052489799050037">Ke Layar Utama</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Saat ini)</translation>
@@ -3773,11 +3776,6 @@ Anda dapat mengelola setelan akun ini dengan menginstal aplikasi Family Link di 
 <translation id="4169535189173047238">Jangan izinkan</translation>
 <translation id="4170314459383239649">Hapus Saat Keluar</translation>
 <translation id="417096670996204801">Pilih profil</translation>
-<translation id="4174651450391857911">Profil ini dikelola oleh organisasi Anda. Untuk terus menggunakan profil terkelola ini, organisasi mengharuskan Anda membagikan sinyal perangkat.
-
-Sinyal perangkat dapat mencakup informasi tentang browser, OS, perangkat, software terinstal, dan file.
-
-Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</translation>
 <translation id="4175137578744761569">Ungu muda dan putih</translation>
 <translation id="4176463684765177261">Dinonaktifkan</translation>
 <translation id="4176864026061939326">Perangkat ini dikelola. Administrator perangkat mengharuskan Anda membuat profil baru untuk akun <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3828,6 +3826,7 @@ Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</trans
 <translation id="4223845867739585293">Buat kunci sandi</translation>
 <translation id="4225397296022057997">Di semua situs</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Ekstensi ini tidak diizinkan}other{Beberapa ekstensi tidak diizinkan}}</translation>
+<translation id="4231053948789591973">Transmisi saat ini dijeda. Anda dapat melanjutkan transmisi atau menghentikan transmisi layar kapan saja.</translation>
 <translation id="4231095370974836764">Instal aplikasi dan game dari Google Play di <ph name="DEVICE_TYPE" /> Anda. <ph name="LINK_BEGIN" />Pelajari lebih lanjut<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Tutup kontrol game</translation>
 <translation id="4231231258999726714">Menyiapkan Steam untuk Chromebook</translation>
@@ -5760,6 +5759,7 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
     <ph name="LINE_BREAK" />
     Gambar ini akan ditampilkan di layar login dan layar kunci Chromebook.</translation>
 <translation id="5925147183566400388">Pengarah Pernyataan Praktik Sertifikasi</translation>
+<translation id="5927132638760172455">Mentransmisi ke penerima tak dikenal</translation>
 <translation id="5927232971138258197">Ekstensi ini dapat membaca &amp; mengubah <ph name="HOST" /></translation>
 <translation id="592740088639760830">Hentikan penampung ini</translation>
 <translation id="592880897588170157">Download file PDF tanpa otomatis membukanya di Chrome</translation>
@@ -6461,6 +6461,7 @@ Anda dapat mengirimkannya ke Google untuk memeriksa apakah file tersebut tidak a
 <translation id="653983593749614101">Melanjutkan...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Catatan:<ph name="END_BOLD" /> Hanya aktif jika Anda tahu sedang melakukan apa atau jika ditanyai untuk melakukan hal tersebut, karena koleksi data dapat mengurangi kinerja.</translation>
 <translation id="6541638731489116978">Situs ini telah diblokir agar tidak dapat mengakses sensor gerakan.</translation>
+<translation id="6542521951477560771">Transmisikan ke <ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">Tingkat pengulangan</translation>
 <translation id="6545867563032584178">Mikrofon dinonaktifkan di Preferensi Sistem Mac</translation>
 <translation id="6546856949879953071">Untuk informasi mendetail tentang upgrade, log telah disimpan di File &gt; File saya &gt; <ph name="LOG_FILE" /></translation>
@@ -8683,11 +8684,7 @@ Simpan file kunci Anda di tempat yang aman. Anda akan membutuhkannya untuk membu
 <translation id="8428271547607112339">Tambahkan akun sekolah</translation>
 <translation id="84297032718407999">Anda akan logout dalam <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Show taps</translation>
-<translation id="8431496281632382473">Profil ini dikelola oleh <ph name="DOMAIN" />. Untuk terus menggunakan profil terkelola ini, organisasi mengharuskan Anda membagikan sinyal perangkat.
-
-Sinyal perangkat dapat mencakup informasi tentang browser, OS, perangkat, software terinstal, dan file.
-
-Jika Anda memilih untuk tidak membagikan sinyal, profil ini akan ditutup.</translation>
+<translation id="8433186206711564395">Setelan jaringan</translation>
 <translation id="8434480141477525001">Port Debug NaCl</translation>
 <translation id="8437209419043462667">AS</translation>
 <translation id="8438328416656800239">Beralih ke browser cerdas</translation>

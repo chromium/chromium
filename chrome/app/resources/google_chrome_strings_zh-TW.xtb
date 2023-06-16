@@ -29,7 +29,6 @@
 <translation id="1516530951338665275">Google Chrome 需要藍牙存取權才能繼續配對。<ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS 受惠於其他<ph name="BEGIN_LINK_CROS_OSS" />開放原始碼軟體<ph name="END_LINK_CROS_OSS" />技術才能成功發布。</translation>
 <translation id="1553358976309200471">更新 Chrome</translation>
-<translation id="1555506416658437797">編輯付款方式。</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" />已登入這個 Chrome 設定檔。這項操作會為 <ph name="USER_EMAIL_ADDRESS" /> 建立新的 Chrome 設定檔</translation>
 <translation id="1587223624401073077">Google Chrome 正在使用你的攝影機。</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> 並不安全，因此遭到 Chrome 封鎖。</translation>
@@ -79,7 +78,6 @@
 <translation id="234869673307233423">Chrome 無法檢查你的密碼，請稍後再試。</translation>
 <translation id="235650106824528204">凡是在使用這個資料夾期間產生的 Chrome 資料 (例如建立的書籤、歷史記錄、密碼和其他設定)，工作資料夾管理員皆可予以移除。<ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">繼續</translation>
-<translation id="2399868464369312507">Google Chrome 正在嘗試編輯付款方式。</translation>
 <translation id="2401189691232800402">Chrome OS 系統</translation>
 <translation id="2424440923901031101">這項擴充功能違反 Chrome 線上應用程式商店政策，可能不安全。請從 Chrome 中移除這項擴充功能，使其無法再查看及變更你造訪的網站相關資料，包括你的個人資訊。</translation>
 <translation id="2467438592969358367">Google Chrome 要求匯出你的密碼。如果允許，請輸入你的 Windows 密碼。</translation>
@@ -255,7 +253,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="5756509061973259733">這部裝置已有與此帳戶相關聯的 Chrome 設定檔</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary 版</translation>
 <translation id="5804318322022881572">無法啟動 Chrome，請再試一次。</translation>
-<translation id="585620188971323280">修改填入付款方式的設定。</translation>
 <translation id="5895138241574237353">重新啟動</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - 網路登入</translation>
 <translation id="5924017743176219022">正在連線至網際網路...</translation>
@@ -395,7 +392,6 @@ Google Chrome 無法復原你的設定。</translation>
 <translation id="8504220326736535258">這個檔案含有惡意軟體，因此遭到 Chrome 封鎖</translation>
 <translation id="8516431725144212809">Chrome 推測的興趣喜好</translation>
 <translation id="8521348052903287641">允許 mDNS 流量的 Google Chrome 開發人員版輸入規則。</translation>
-<translation id="8544217240017914508">Google Chrome 正嘗試修改填入付款方式的設定。</translation>
 <translation id="8550334526674375523">這個工作資料夾與個人資料夾各自獨立。</translation>
 <translation id="8556340503434111824">Google Chrome 推出全新版本，速度更勝以往。</translation>
 <translation id="8571790202382503603">你可以運用 Chrome 設定檔區隔各種 Chrome 資料，更輕鬆區分工作和娛樂。</translation>

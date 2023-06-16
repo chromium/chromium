@@ -1418,7 +1418,6 @@
 <translation id="4349810866125026513">Усё роўна запампаваць</translation>
 <translation id="4350629523305688469">Шматфункцыянальны латок</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> запытвае пошук прылад Bluetooth паблізу. Знойдзены наступныя прылады:</translation>
-<translation id="4351175281479794167">Увядзіце код спраўджання</translation>
 <translation id="4355383636893709732">Абнаўленне ChromeOS для праграм Android</translation>
 <translation id="4356973930735388585">Зламыснікі на гэтым сайце могуць імкнуцца ўсталяваць небяспечныя праграмы на вашым камп'ютары, якія крадуць або выдаляюць вашу інфармацыю (напрыклад, фота, паролі, паведамленні, даныя крэдытных картак).</translation>
 <translation id="4358059973562876591">Зададзеныя вамі шаблоны могуць не прымяніцца з-за памылкі палітыкі DnsOverHttpsMode.</translation>
@@ -1513,6 +1512,7 @@
 <translation id="460848736049414407">Заблакіравана адміністратарам</translation>
 <translation id="4610279718074907952">Гэты сайт належыць да вызначанай даменам <ph name="SET_OWNER" /> групы сайтаў, якія маюць доступ да звестак пра вашы дзеянні</translation>
 <translation id="4617273035598175554">Праграмнае забеспячэнне для графікі і анімацыі</translation>
+<translation id="4619564267100705184">Пацвердзіць маю асобу</translation>
 <translation id="4622292761762557753">Усё роўна перанесці</translation>
 <translation id="4627675673814409125">Гэту палітыку нельга задаць на ўзроўні профілю Chrome, таму яна будзе ігнаравацца.</translation>
 <translation id="4628948037717959914">Фота</translation>
@@ -1739,7 +1739,6 @@
 <translation id="5123433949759960244">Баскетбол</translation>
 <translation id="5125751979347152379">Няправільны URL-адрас.</translation>
 <translation id="512592033764059484">Футбол</translation>
-<translation id="5126510351761255129">Спраўджанне карткі</translation>
 <translation id="512670116361803001">Змяненне памеру праграмы "<ph name="APP_NAME" />" можа выклікаць памылкі. Каб пазбегнуць іх, выкарыстоўвайце загадзя зададзеныя памеры вокнаў.</translation>
 <translation id="5127934926273826089">Кветкі</translation>
 <translation id="5129534298163637277">Дыялогавае акно пацвярджэння</translation>
@@ -2034,7 +2033,6 @@
 <translation id="5869405914158311789">Гэты сайт недаступны</translation>
 <translation id="5869522115854928033">Захаваныя паролі</translation>
 <translation id="5872692522325383488">Нумар IBAN захаваны</translation>
-<translation id="5873013647450402046">Ваш банк хоча пацвердзіць, што гэта вы.</translation>
 <translation id="5877831137320480913">Прыгажосць і фітнес</translation>
 <translation id="5879989559903563723">Не дазволена ў гасцявым рэжыме</translation>
 <translation id="5884465125445718607">Канверт Chinese № 6</translation>
@@ -2287,6 +2285,7 @@
 <translation id="6468485451923838994">Шрыфты</translation>
 <translation id="647261751007945333">Палітыкі прылады</translation>
 <translation id="647330291963761005">Усталяванне абнаўленняў</translation>
+<translation id="6474220430271405609">Тэсціраванне палітык</translation>
 <translation id="6475672344094591109">Сайты, якія вы наведваеце, могуць запытваць у браўзера Chrome інфармацыю, каб выкарыстоўваць яе для ацэнкі эфектыўнасці сваёй рэкламы. Chrome абараняе вашу прыватнасць, абмяжоўваючы даныя, якія сайты могуць абагульваць адзін з адным.</translation>
 <translation id="6476284679642588870">Наладзіць спосабы аплаты</translation>
 <translation id="6486200200930923183">Дакументальныя фільмы</translation>
@@ -2452,7 +2451,6 @@
 <translation id="6896758677409633944">Капіраваць</translation>
 <translation id="6897140037006041989">Агент карыстальніка</translation>
 <translation id="6898699227549475383">Арганізацыя (А)</translation>
-<translation id="6899000063526916106">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код</translation>
 <translation id="6907458757809079309">Фітнес</translation>
 <translation id="6910240653697687763">Сайт <ph name="URL" /> запытвае поўны кантроль над прыладамі MIDI</translation>
 <translation id="691024665142758461">Спампаваць некалькі файлаў</translation>
@@ -3069,6 +3067,7 @@
 <translation id="8296205692406981542">Рэгіянальныя паркі і сады</translation>
 <translation id="8297545700510100061">Файлы cookie і іншыя даныя сайтаў выкарыстоўваюцца, каб захоўваць звесткі пра вас, у тым ліку для ўваходу ва ўліковы запіс і персаналізацыі рэкламы. Кіраваць файламі cookie для ўсіх сайтаў можна ў раздзеле <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Сетка Wi-Fi, якую вы выкарыстоўваеце (<ph name="WIFI_NAME" />), можа запатрабаваць ад вас наведаць старонку <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Увядзіце код</translation>
 <translation id="8303854710873047864">Паказваецца раздзел "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Згіб напалову</translation>
 <translation id="831997045666694187">Вечар</translation>
@@ -3420,7 +3419,6 @@
 <translation id="9191834167571392248">Дзірка знізу злева</translation>
 <translation id="9199905725844810519">Друкаванне заблакіравана</translation>
 <translation id="9205078245616868884">Вашы даныя зашыфраваны з дапамогай фразы-пароля для сінхранізацыі. Увядзіце яе, каб пачаць сінхранізацыю.</translation>
-<translation id="920511547311754821">Не знайшлі код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Не ўдалося дадаць артыкул.</translation>
 <translation id="9213433120051936369">Наладжванне выгляду</translation>
 <translation id="9215416866750762878">Нейкая праграма не дае браўзеру Chrome устанавіць бяспечнае падключэнне да гэтага сайта</translation>

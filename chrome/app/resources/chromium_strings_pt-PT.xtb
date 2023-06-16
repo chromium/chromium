@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Obter ajuda com o Chrome for Testing</translation>
 <translation id="1524282610922162960">Partilhe um separador do Chromium</translation>
 <translation id="1553461853655228091">O Chromium necessita de autorização de acesso à câmara para criar um mapa 3D do ambiente à sua volta.</translation>
-<translation id="1555506416658437797">editar os métodos de pagamento.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização.}=1{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir a sua janela de navegação anónima.}other{O seu administrador necessita que reinicie o Chromium para aplicar uma atualização. Não é possível reabrir as suas # janelas de navegação anónima.}}</translation>
 <translation id="1625909126243026060">Reveja os principais controlos de privacidade e segurança no Chromium</translation>
 <translation id="1632539827495546968">Se quiser utilizar esta conta apenas uma vez, pode utilizar o <ph name="GUEST_LINK_BEGIN" />Modo convidado<ph name="GUEST_LINK_END" /> no navegador Chromium. Se quiser adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao seu dispositivo <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="3179665906251668410">Abrir link numa janela de nave&amp;gação anónima do Chromium</translation>
 <translation id="3185330573522821672">Personalize o seu novo perfil do Chromium</translation>
 <translation id="3190315855212034486">Ups! O Chromium falhou. Reiniciar agora?</translation>
-<translation id="3255926992597692024">O Chromium está a tentar modificar as definições de preenchimento dos métodos de pagamento.</translation>
 <translation id="3258596308407688501">O Chromium não consegue ler e escrever no respetivo diretório de dados:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,8 +140,8 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="4019629340646866719">A criação do ChromiumOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente de programação Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Ajude a melhorar o Chromium ao comunicar as <ph name="BEGIN_LINK" />definições atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Estão disponíveis na versão mais recente melhorias de segurança importantes e novas funcionalidades.</translation>
-<translation id="4050599136622776556">O Chromium está a tentar editar os métodos de pagamento.</translation>
 <translation id="4055805654398742145">Gestor de P&amp;alavras-passe</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="4148957013307229264">A instalar...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Início de sessão na rede – Chromium</translation>
 <translation id="421369550622382712">Descubra aplicações, jogos, extensões e temas fantásticos para o Chromium.</translation>
@@ -180,6 +178,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="479167709087336770">Utiliza o mesmo corretor ortográfico utilizado na Pesquisa Google. O texto que introduzir no navegador é enviado à Google. Pode alterar este comportamento nas definições.</translation>
 <translation id="4888717733111232871">Regra de importação para o Chromium permitir o tráfego mDNS.</translation>
 <translation id="4893347770495441059">Reiniciar para atualizar o &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chromium não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}}</translation>
 <translation id="4943838377383847465">O Chromium está no modo em segundo plano.</translation>
 <translation id="4987820182225656817">Os convidados podem utilizar o Chromium sem perder qualquer funcionalidade.</translation>
 <translation id="4994636714258228724">Adicionar-se ao Chromium</translation>
@@ -206,7 +205,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Apresentar o Chromium neste idioma</translation>
-<translation id="585620188971323280">modificar as definições de preenchimento dos métodos de pagamento.</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5883558403894052917">O Chromium encontrou software malicioso nestes itens:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -214,6 +212,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="5924017743176219022">A ligar à Internet…</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5972142260211327093">Se o Chromium tiver colocado o utilizador aleatoriamente numa avaliação ativa, o histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chromium elimina os seus interesses todos os meses. Os interesses são atualizados, a menos que os remova.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{A sua organização fecha automaticamente o Chromium quando não é usado durante 1 minuto.}other{A sua organização fecha automaticamente o Chromium quando não é usado durante # minutos.}}</translation>
 <translation id="5987687638152509985">Atualize o Chromium para iniciar a sincronização</translation>
 <translation id="5988505247484123880">É comum que os sites que visita se lembrem de assuntos que lhe interessam para personalizar a sua experiência. Os sites também podem armazenar informações no Chromium sobre os seus interesses.</translation>
 <translation id="6003112304606738118">A transferir… Falta(m) <ph name="HOURS" /> hora(s)</translation>

@@ -63,7 +63,6 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1235458158152011030">Poznate mreže</translation>
 <translation id="1239161794459865856">Značajka <ph name="FEATURE_NAME" /> je povezana.</translation>
 <translation id="1240638468526743569">Aplikacija</translation>
-<translation id="1242704516557658755">Pregledavanje unatrag na posljednjem popisu prozora</translation>
 <translation id="124678866338384709">Zatvaranje trenutačne kartice</translation>
 <translation id="1246890715821376239">Nepodržane aplikacije</translation>
 <translation id="1247372569136754018">Mikrofon (ugrađeni)</translation>
@@ -141,7 +140,7 @@ Evo nekih stvari koje možete pokušati pokrenuti.</translation>
 <translation id="1550406609415860283">Dostupni uređaji</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
-<translation id="1576511610858879060">Chromebook ili Bluetooth uređaj upotrebljava stariju verziju Bluetootha. Upotrijebite drugi izvor ulaza za bolju kvalitetu zvuka.</translation>
+<translation id="1576511610858879060">Chromebook ili Bluetooth uređaj upotrebljava stariju verziju Bluetootha. Upotrijebite drugi izvor signala za bolju kvalitetu zvuka.</translation>
 <translation id="1576623706766186887">Smanjivanje kad je povećalo uključeno</translation>
 <translation id="1586324912145647027">Otvaranje radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristup svim vašim aktivnostima u ovoj sesiji</translation>
@@ -1119,7 +1118,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Uključi</translation>
 <translation id="5920710855273935292">Mikrofon je isključen.</translation>
-<translation id="5922962980596822074">Pregledavanje prozora iz posljednjeg upotrijebljenog prozora</translation>
 <translation id="5924855612669061715">Žarišna je točka uključena</translation>
 <translation id="5946788582095584774">Značajka <ph name="FEATURE_NAME" /> je uključena.</translation>
 <translation id="5947494881799873997">Vrati</translation>
@@ -1238,7 +1236,6 @@ Priključite uređaj na napajanje.</translation>
 <translation id="6469104339369989396">Uključite/isključite žarišnu točku</translation>
 <translation id="6477681113376365978">Datoteku nije moguće preuzeti</translation>
 <translation id="6482559668224714696">Povećalo za cijeli zaslon</translation>
-<translation id="6483727822843292440">Pregledavanje prozora iz najmanje upotrijebljenog prozora</translation>
 <translation id="6490471652906364588">USB-C uređaj (desni priključak)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> zahtijeva da ažurirate svoj uređaj <ph name="DEVICE_TYPE" /> prije roka</translation>
 <translation id="649452524636452238">PIN za pametnu karticu</translation>

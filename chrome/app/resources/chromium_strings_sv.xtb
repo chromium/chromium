@@ -20,7 +20,6 @@ Vissa funktioner kanske inte är tillgängliga och ändringar i inställningarna
 <translation id="1478370723027452770">Få hjälp med Chrome for Testing</translation>
 <translation id="1524282610922162960">Dela en flik i Chromium</translation>
 <translation id="1553461853655228091">Du behöver ge Chromium behörighet att använda kameran om du vill skapa en 3D-karta över dina omgivningar</translation>
-<translation id="1555506416658437797">redigera betalningsmetoder.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas}=1{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. Inkognitofönstret öppnas inte igen.}other{Administratören meddelar att du måste starta om Chromium så att en uppdatering tillämpas. De # inkognitofönstren öppnas inte igen.}}</translation>
 <translation id="1625909126243026060">Granska viktiga integritets- och säkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Om du bara vill använda det här kontot en enda gång kan du använda <ph name="GUEST_LINK_BEGIN" />gästläget<ph name="GUEST_LINK_END" /> i webbläsaren Chromium. Om du vill lägga till ett konto åt någon annan <ph name="LINK_BEGIN" />lägger du till en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -97,7 +96,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="3179665906251668410">Öppna länken i ett inko&amp;gnitofönster i Chromium</translation>
 <translation id="3185330573522821672">Anpassa din nya Chromium-profil</translation>
 <translation id="3190315855212034486">Hoppsan! Chromium har kraschat. Vill du starta om nu?</translation>
-<translation id="3255926992597692024">Chromium försöker ändra inställningarna för att fylla i betalningsmetoder.</translation>
 <translation id="3258596308407688501">Chromium kan inte läsa och skriva till datakatalogen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="4019629340646866719">Chromium OS fungerar tack vare ytterligare <ph name="BEGIN_LINK_CROS_OSS" />program med öppen källkod<ph name="END_LINK_CROS_OSS" />, liksom <ph name="BEGIN_LINK_LINUX_OSS" />utvecklingsmiljön för Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Hjälp oss att förbättra Chromium genom att rapportera dina <ph name="BEGIN_LINK" />aktuella inställningar<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Den senaste versionen har viktiga säkerhetsförbättringar och nya funktioner.</translation>
-<translation id="4050599136622776556">Chromium försöker redigera betalningsmetoder.</translation>
 <translation id="4055805654398742145">Lösenordshantering</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisationen avslutar Chromium automatiskt när det inte har använts på 1 minut. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}other{Organisationen avslutar Chromium automatiskt när det inte har använts på # minuter. Webbinformation raderas. Detta kan innefatta historik, autofyll och nedladdningar.}}</translation>
 <translation id="4148957013307229264">Installerar...</translation>
@@ -210,7 +207,6 @@ Behörigheter som du redan har gett webbplatser och appar kan gälla för det h�
 <translation id="5653831366781983928">Starta om Chromium nu</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visa Chromium på det här språket</translation>
-<translation id="585620188971323280">ändra inställningarna för att fylla i betalningsmetoder.</translation>
 <translation id="5862307444128926510">Välkommen till Chromium</translation>
 <translation id="5883558403894052917">Chromium har upptäckt att dessa objekt innehåller skadlig programvara:</translation>
 <translation id="5895138241574237353">Starta om</translation>

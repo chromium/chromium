@@ -1419,7 +1419,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="4349810866125026513">Carregar mesmo assim</translation>
 <translation id="4350629523305688469">Tabuleiro multifunções</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> pretende procurar dispositivos Bluetooth próximos. Foram encontrados os seguintes dispositivos:</translation>
-<translation id="4351175281479794167">Introduza o código de validação</translation>
 <translation id="4355383636893709732">Atualização do ChromeOS para apps Android</translation>
 <translation id="4356973930735388585">Os utilizadores mal intencionados neste site podem tentar instalar programas perigosos no seu computador que roubam ou eliminam as suas informações (por exemplo, fotos, palavras-passe, mensagens e cartões de crédito).</translation>
 <translation id="4358059973562876591">Os modelos que especificou podem não ser aplicados devido a um erro com a política DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="460848736049414407">Bloqueado pelo administrador</translation>
 <translation id="4610279718074907952">Este site está num grupo, definido por <ph name="SET_OWNER" />, que pode ver a sua atividade</translation>
 <translation id="4617273035598175554">Software de animação e gráficos</translation>
+<translation id="4619564267100705184">Validar identidade</translation>
 <translation id="4622292761762557753">Transferir mesmo assim</translation>
 <translation id="4627675673814409125">Não é possível definir esta política ao nível do perfil do Chrome e a mesma será ignorada.</translation>
 <translation id="4628948037717959914">Fotografia</translation>
@@ -1740,7 +1740,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5123433949759960244">Bola de basquetebol</translation>
 <translation id="5125751979347152379">URL inválido.</translation>
 <translation id="512592033764059484">Futebol</translation>
-<translation id="5126510351761255129">Valide o cartão</translation>
 <translation id="512670116361803001">A app <ph name="APP_NAME" /> pode não ser redimensionada corretamente. Utilize os tamanhos da janela predefinidos para impedir que a app tenha problemas.</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5129534298163637277">Caixa de diálogo de confirmação</translation>
@@ -2035,7 +2034,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="5869405914158311789">Não é possível aceder a este site</translation>
 <translation id="5869522115854928033">Palavras-passe guardadas</translation>
 <translation id="5872692522325383488">IBAN (Número Internacional de Conta Bancária) guardado</translation>
-<translation id="5873013647450402046">O banco quer confirmar a sua identidade.</translation>
 <translation id="5877831137320480913">Beleza e fitness</translation>
 <translation id="5879989559903563723">Não permitido no Modo convidado</translation>
 <translation id="5884465125445718607">Envelope Chinese n.º 6</translation>
@@ -2288,6 +2286,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6468485451923838994">Tipos de letra</translation>
 <translation id="647261751007945333">Políticas do dispositivo</translation>
 <translation id="647330291963761005">A instalar atualizações</translation>
+<translation id="6474220430271405609">Testes de políticas</translation>
 <translation id="6475672344094591109">Os sites que visitar podem pedir informações ao Chrome para os ajudar a medir o desempenho dos respetivos anúncios. O Chrome protege a sua privacidade ao limitar as informações que os sites podem partilhar entre si.</translation>
 <translation id="6476284679642588870">Gerir métodos de pagamento</translation>
 <translation id="6486200200930923183">Documentários</translation>
@@ -2453,7 +2452,6 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Agente do utilizador</translation>
 <translation id="6898699227549475383">Organização (O)</translation>
-<translation id="6899000063526916106">Introduza um código de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> pretende obter o controlo total sobre os seus dispositivos MIDI.</translation>
 <translation id="691024665142758461">Transferir vários ficheiros</translation>
@@ -3068,6 +3066,7 @@ Detalhes adicionais:
 <translation id="8296205692406981542">Parques e jardins regionais</translation>
 <translation id="8297545700510100061">Os cookies e outros dados de sites são usados para memorizar o seu perfil, por exemplo, para iniciar a sua sessão ou personalizar anúncios. Para gerir cookies de todos os sites, veja <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">A rede Wi-Fi que está a utilizar (<ph name="WIFI_NAME" />) pode exigir que visite <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Introduzir código</translation>
 <translation id="8303854710873047864">Secção "<ph name="SECTION" />" apresentada</translation>
 <translation id="830498451218851433">Dobrar a meio</translation>
 <translation id="831997045666694187">Noite</translation>
@@ -3420,7 +3419,6 @@ Detalhes adicionais:
 <translation id="9191834167571392248">Perfurar na parte inferior esquerda</translation>
 <translation id="9199905725844810519">A impressão está bloqueada.</translation>
 <translation id="9205078245616868884">Os dados estão encriptados com a sua frase de acesso de sincronização. Introduza-a para iniciar a sincronização.</translation>
-<translation id="920511547311754821">Não consegue encontrar o seu código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Falha ao adicionar o artigo.</translation>
 <translation id="9213433120051936369">Personalize o aspeto</translation>
 <translation id="9215416866750762878">Uma aplicação está a impedir que o Chrome se ligue a este site em segurança</translation>

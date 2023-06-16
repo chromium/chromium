@@ -3086,6 +3086,7 @@ Từ phiên bản 114 trở lên, bạn không bắt buộc phải đặt <ph na
       Nếu bạn không đặt chính sách này, thì tùy chọn cài đặt mặc định sẽ không được cho phép cho người dùng do doanh nghiệp quan lý và được cho phép cho người dùng không được quản lý.</translation>
 <translation id="3791179836066841809">Tài liệu chính sách</translation>
 <translation id="3791556154364029875">Bật chế độ không gian làm việc nổi và chạy cửa sổ trình duyệt từ xa khi đăng nhập</translation>
+<translation id="379318040165550702">Cho phép người dùng chọn</translation>
 <translation id="3793998702484455655">Chrome sẽ nỗ lực nâng cấp một số loại nguồn phụ của nội dung hỗn hợp (HTTP trên trang web HTTPS) trên iOS.
 Truy cập https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md để biết thông tin chi tiết.
 
@@ -4727,6 +4728,13 @@ Lưu ý: Chính sách này không áp dụng cho bản nâng cấp HSTS.</transl
 <translation id="5345910753471481870">Không hiện nút Google Ống kính trong hộp tìm kiếm trên trang Thẻ mới.</translation>
 <translation id="5346587320074666194">Chặn quyền sử dụng cảm biến trên các trang web này</translation>
 <translation id="534836255587440809">Tắt tính năng tự động nhấp trên màn hình đăng nhập</translation>
+<translation id="5361708558735884308">Việc đặt chính sách này sẽ cho phép truy cập vào các URL có trong danh sách dưới dạng trường hợp ngoại lệ đối với <ph name="URL_BLOCKLIST_POLICY_NAME" />. Hãy xem thông tin mô tả của chính sách đó để biết định dạng của các mục trong danh sách này. Ví dụ: Khi bạn đặt <ph name="URL_BLOCKLIST_POLICY_NAME" /> thành *, tất cả yêu cầu sẽ bị chặn và bạn có thể dùng chính sách này để cho phép truy cập vào một danh sách hạn chế gồm các URL. Hãy dùng danh sách này để mở các trường hợp ngoại lệ đối với một số tên giao thức, miền con của các miền khác, cổng hoặc đường dẫn cụ thể theo định dạng được nêu tại (https://support.google.com/chrome/a?p=url_blocklist_filter_format). Bộ lọc cụ thể nhất sẽ xác định liệu một URL bị chặn hay được phép. Chính sách <ph name="URL_ALLOWLIST_POLICY_NAME" /> sẽ được ưu tiên hơn chính sách <ph name="URL_BLOCKLIST_POLICY_NAME" />. Chính sách này chỉ áp dụng cho 1.000 mục.
+
+Chính sách này cũng cho phép trình duyệt tự động gọi ứng dụng bên ngoài được đăng ký ở dạng trình xử lý giao thức cho các giao thức có trong danh sách, chẳng hạn như "tel:" hoặc "ssh:".
+
+Việc không đặt chính sách này sẽ không cho phép trường hợp ngoại lệ đối với <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+Từ <ph name="PRODUCT_NAME" /> phiên bản 92, chính sách này cũng được hỗ trợ ở chế độ không có giao diện người dùng.</translation>
 <translation id="5362531528507578966">Ghi đè chế độ in đồ họa nền mặc định.</translation>
 <translation id="5365476955714838841">Các tham số dòng lệnh cho trình duyệt thay thế.</translation>
 <translation id="5365946944967967336">Hiển thị nút Trang chủ trên thanh công cụ</translation>

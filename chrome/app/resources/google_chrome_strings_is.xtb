@@ -31,7 +31,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="1516530951338665275">Google Chrome þarf Bluetooth-aðgang til að halda pörun áfram. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS á tilvist sína að þakka öðrum <ph name="BEGIN_LINK_CROS_OSS" />opnum hugbúnaði<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Uppfæra Chrome</translation>
-<translation id="1555506416658437797">breyta greiðslumátum.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> er þegar innskráð(ur) á þennan Chrome prófíl. Þetta býr til nýjan Chrome prófíl fyrir <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome er að nota myndavélina þína.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> er skaðleg skrá og Chrome útilokaði hana.</translation>
@@ -82,7 +81,6 @@ Sumir eiginleikar kunna að vera óaðgengilegir og breytingar á kjörstillingu
 <translation id="234869673307233423">Chrome getur ekki athugað aðgangsorðin þín. Reyndu aftur síðar.</translation>
 <translation id="235650106824528204">Stjórnandi vinnuprófíla getur fjarlægt öll Chrome gögn sem verða til við notkun þessa prófíls (þ.m.t. bókamerki, feril, aðgangsorð og aðrar stillingar). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Halda áfram</translation>
-<translation id="2399868464369312507">Google Chrome er að reyna að breyta greiðslumátum.</translation>
 <translation id="2401189691232800402">ChromeOS kerfi</translation>
 <translation id="2424440923901031101">Þessi viðbót brýtur gegn reglum Vefverslunar Chrome og kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
 <translation id="2467438592969358367">Google Chrome vill flytja út aðgangsorðin þín. Sláðu inn Windows-aðgangsorðið þitt til að leyfa það.</translation>
@@ -260,7 +258,6 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="5756509061973259733">Chrome prófíll með þessum reikningi er þegar til í þessu tæki</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Ekki var hægt að ræsa Chrome. Reyndu aftur.</translation>
-<translation id="585620188971323280">breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="5895138241574237353">Endurræsa</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – innskráning á net</translation>
 <translation id="5924017743176219022">Tengist internetinu…</translation>
@@ -291,6 +288,7 @@ Google Chrome getur ekki endurheimt stillingarnar þínar.</translation>
 <translation id="6327105987658262776">Uppfærsla er ekki tiltæk.</translation>
 <translation id="6360449101159168105">Meðan þessi flipi var óvirkur var losað um minni til að gera Chrome hraðari. Þú getur valið að undanskilja þetta vefsvæði alltaf frá því að vera óvirkt.</translation>
 <translation id="6412673304250309937">Ber vefslóðir saman við lista yfir óörugg vefsvæði sem er vistaður í Chrome. Ef vefsvæði reynir að stela aðgangsorðinu þínu, eða ef þú sækir skaðlega skrá, gæti Chrome einnig sent vefslóðir í Örugga vefskoðun, þar á meðal hluta af innihaldi síðna.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur. Vefskoðunargögnum er eytt. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal.}}</translation>
 <translation id="6418662306461808273">Skipta yfir í Chrome prófíl sem er til?</translation>
 <translation id="648319183876919572">Enn öruggari vefskoðun gerir viðbótarráðstafanir til að vernda þig gegn skaðlegum vefsvæðum og niðurhali</translation>
 <translation id="6493527311031785448">Google Chrome er að reyna að <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -340,6 +338,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="7398801000654795464">Þú varst skráð(ur) inn á Chrome sem <ph name="USER_EMAIL_ADDRESS" />. Notaðu sama reikning til að skrá þig inn aftur.</translation>
 <translation id="7410958280246779049">Chrome setti þessa skrá á bannlista því hún er hættuleg</translation>
 <translation id="7426611252293106642">Vera kann að Chrome virki ekki sem skyldi vegna þess að vafrinn er ekki lengur studdur í þessu Linux-kerfi.</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í 1 mínútu.}one{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútu.}other{Fyrirtækið lokar Chrome sjálfkrafa eftir aðgerðaleysi í # mínútur.}}</translation>
 <translation id="7481213027396403996">Njóttu hámarksöryggis Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Uppsetningarforrit <ph name="COMPANY_NAME" /></translation>
@@ -374,6 +373,7 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8013993649590906847">Ef gagnlega lýsingu vantar við mynd reynir Chrome að útvega þér lýsingu. Til að búa til lýsingar eru myndir sendar til Google.</translation>
 <translation id="8019103195866286235">Útgefandi þessarar viðbótar afturkallaði hana og hún kann að vera óörugg. Fjarlægðu hana úr Chrome svo hún geti ekki lengur séð og breytt gögnunum þínum á vefsvæðum sem þú heimsækir, þ.m.t. persónuupplýsingunum þínum.</translation>
 <translation id="80471789339884597">Takk fyrir að setja upp. Þú þarft að endurræsa alla vafra áður en þú getur notað <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í 1 mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}one{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í # mínútu. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}other{Fyrirtækið eyðir vefskoðunargögnum sjálfkrafa þegar Chrome er ekki notað í # mínútur. Þetta getur falið í sér feril, sjálfvirka útfyllingu og niðurhal. Fyrirliggjandi flipar verða áfram opnir.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Um &amp;Google Chrome</translation>
 <translation id="813913629614996137">Frumstillir...</translation>
@@ -397,7 +397,6 @@ Heimildir sem þú hefur þegar veitt vefsvæðum og forritum kunna að gilda á
 <translation id="8504220326736535258">Chrome setti þessa skrá á bannlista því að hún inniheldur spilliforrit</translation>
 <translation id="8516431725144212809">Mat Chrome á áhugasviðum þínum</translation>
 <translation id="8521348052903287641">Innleiðarregla til að láta Google Chrome Dev leyfa mDNS-umferð.</translation>
-<translation id="8544217240017914508">Google Chrome er að reyna að breyta stillingum fyrir útfyllingu greiðslumáta.</translation>
 <translation id="8550334526674375523">Þessi vinnuprófíll er algjörlega aðskilinn þínum eigin prófíl.</translation>
 <translation id="8556340503434111824">Ný útgáfa af Google Chrome er í boði, og hún er hraðari en nokkru sinni fyrr.</translation>
 <translation id="8571790202382503603">Þú getur aðskilið allt efnið þitt á Chrome með Chrome prófílum. Á þann hátt er auðveldara að skipta á milli vinnu og afþreyingar.</translation>

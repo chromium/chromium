@@ -1419,7 +1419,6 @@
 <translation id="4349810866125026513">მაინც ატვირთვა</translation>
 <translation id="4350629523305688469">მულტიფუნქციური ლანგარი</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> ითხოვს ახლომდებარე Bluetooth მოწყობილობების სკანირებას. ნაპოვნია შემდეგი მოწყობილობები:</translation>
-<translation id="4351175281479794167">შეიყვანეთ დამადასტურებელი კოდი</translation>
 <translation id="4355383636893709732">ChromeOS-ის განახლება Android აპებისთვის</translation>
 <translation id="4356973930735388585">თავდამსხმელებმა ამ საიტზე შეიძლება ცადონ თქვენს კომპიუტერში ისეთი სახიფათო პროგრამების დაინსტალირება, რომლებიც წაშლის ან მოიპარავს თქვენს ინფორმაციას (მაგალითად, ფოტოებს, პაროლებს, შეტყობინებებს და საკრედიტო ბარათების მონაცემებს).</translation>
 <translation id="4358059973562876591">თქვენ მიერ მითითებული შაბლონების მისადაგება შეიძლება ვერ მოხერხდეს „DnsOverHttpsMode“ წესებთან დაკავშირებული პრობლემის გამო.</translation>
@@ -1514,6 +1513,7 @@
 <translation id="460848736049414407">დაბლოკილია ადმინისტრატორის მიერ</translation>
 <translation id="4610279718074907952">ეს საიტი არის <ph name="SET_OWNER" />-ის მიერ განსაზღვრულ ჯგუფში, რომელსაც შეუძლია თქვენი აქტივობის ნახვა</translation>
 <translation id="4617273035598175554">გრაფიკული და ანიმაციური პროგრამული უზრუნველყოფა</translation>
+<translation id="4619564267100705184">ვინაობის დადასტურება</translation>
 <translation id="4622292761762557753">მაინც გადაცემა</translation>
 <translation id="4627675673814409125">ამ წესების განსაზღვრა Chrome პროფილის დონეზე ვერ მოხერხდება, ამიტომ ისინი იგნორირებული იქნება.</translation>
 <translation id="4628948037717959914">ფოტო</translation>
@@ -1740,7 +1740,6 @@
 <translation id="5123433949759960244">კალათბურთის ბურთი</translation>
 <translation id="5125751979347152379">არასწორი URL.</translation>
 <translation id="512592033764059484">ფეხბურთი</translation>
-<translation id="5126510351761255129">დაადასტურეთ თქვენი ბარათი</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" />, შესაძლოა, ზომას არასათანადოდ იცვლიდეს. გამოიყენეთ ფანჯრის წინასწარ დაყენებული ზომები, რათა თავიდან აიცილოთ აპთან დაკავშირებული პრობლემები.</translation>
 <translation id="5127934926273826089">ყვავილები</translation>
 <translation id="5129534298163637277">დადასტურების დიალოგი</translation>
@@ -2035,7 +2034,6 @@
 <translation id="5869405914158311789">ეს საიტი მიუწვდომელია</translation>
 <translation id="5869522115854928033">შენახული პაროლები</translation>
 <translation id="5872692522325383488">IBAN შენახულია</translation>
-<translation id="5873013647450402046">თქვენს ბანკს სურს, დაადასტუროს, რომ ეს ნამდვილად თქვენ ხართ.</translation>
 <translation id="5877831137320480913">სილამაზე და ფიტნესი</translation>
 <translation id="5879989559903563723">დაუშვებელია სტუმრის რეჟიმში</translation>
 <translation id="5884465125445718607">კონვერტი Chinese 6</translation>
@@ -2454,7 +2452,6 @@
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6897140037006041989">მომხმარებლის აგენტი</translation>
 <translation id="6898699227549475383">ორგანიზაცია (O)</translation>
-<translation id="6899000063526916106">შეიყვანეთ <ph name="NUMBER_OF_DIGITS" />-ციფრიანი კოდი</translation>
 <translation id="6907458757809079309">ფიტნესი</translation>
 <translation id="6910240653697687763"><ph name="URL" /> ითხოვს თქვენი MIDI მოწყობილობების სრულად გაკონტროლების ნებართვას</translation>
 <translation id="691024665142758461">მრავლობითი ფაილების ჩამოტვირთვა</translation>
@@ -3070,6 +3067,7 @@
 <translation id="8296205692406981542">რეგიონული პარკები და ბაღები</translation>
 <translation id="8297545700510100061">ქუქი-ჩანაწერები და საიტების სხვა მონაცემები გამოიყენება თქვენ დასამახსოვრებლად, რომ, მაგალითად, შეგიყვანოთ სისტემაში ან რეკლამა მოგარგოთ. ყველა საიტისთვის ქუქი-ჩანაწერების სამართავად მოინახულეთ <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi-მ, რომელსაც თქვენ იყენებთ (<ph name="WIFI_NAME" />) შეიძლება მოითხოვოს თქვენი სტუმრობა <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">შეიყვანეთ კოდი</translation>
 <translation id="8303854710873047864">ნაჩვენებია სექცია „<ph name="SECTION" />“</translation>
 <translation id="830498451218851433">დაკეცვა ნახევრად</translation>
 <translation id="831997045666694187">საღამო</translation>
@@ -3421,7 +3419,6 @@
 <translation id="9191834167571392248">ქვედა მარცხენა ნაწილის გახვრეტა</translation>
 <translation id="9199905725844810519">ბეჭდვა დაბლოკილია</translation>
 <translation id="9205078245616868884">თქვენი მონაცემები დაშიფრულია სინქრონიზაციის საიდუმლო ფრაზის მეშვეობით. სინქრონიზაციის დასაწყებად, შეიყვანეთ საიდუმლო ფრაზა.</translation>
-<translation id="920511547311754821">ვერ პოულობთ თქვენს კოდს? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">ვერ მოხერხდა სტატიის დამატება.</translation>
 <translation id="9213433120051936369">მოირგეთ იერსახე</translation>
 <translation id="9215416866750762878">აპლიკაცია ხელს უშლის Chrome-ს ამ საიტთან უსაფრთხოდ დაკავშირებაში</translation>

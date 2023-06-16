@@ -63,7 +63,6 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1235458158152011030">Rețele cunoscute</translation>
 <translation id="1239161794459865856">Opțiunea <ph name="FEATURE_NAME" /> s-a conectat.</translation>
 <translation id="1240638468526743569">O aplicație</translation>
-<translation id="1242704516557658755">Parcurge înapoi lista cu ferestrele folosite cel mai recent</translation>
 <translation id="124678866338384709">Închide fila actuală</translation>
 <translation id="1246890715821376239">Aplicații neacceptate</translation>
 <translation id="1247372569136754018">Microfon (intern)</translation>
@@ -141,6 +140,7 @@ Iată câteva lucruri pe care le poți încerca pentru început.</translation>
 <translation id="1550406609415860283">Dispozitive disponibile</translation>
 <translation id="1550523713251050646">Dă clic pentru mai multe opțiuni</translation>
 <translation id="1555130319947370107">Albastru</translation>
+<translation id="1557622599341396706">Afișează numele desktopului</translation>
 <translation id="1576511610858879060">Chromebookul sau dispozitivul Bluetooth folosește o versiune Bluetooth mai veche. Folosește altă sursă de intrare pentru o calitate audio mai bună.</translation>
 <translation id="1576623706766186887">Micșorează când este activată lupa</translation>
 <translation id="1586324912145647027">Accesează un desktop de la 1 la 8</translation>
@@ -986,6 +986,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5317780077021120954">Salvează</translation>
 <translation id="5319712128756744240">Asociază un nou dispozitiv</translation>
 <translation id="5322611492012084517">Telefonul nu a fost găsit</translation>
+<translation id="5323994101633366939">Ascunde numele desktopului</translation>
 <translation id="5327248766486351172">Nume</translation>
 <translation id="5329548388331921293">Se conectează…</translation>
 <translation id="5331975486040154427">Dispozitiv USB-C (portul din stânga spate)</translation>
@@ -1120,7 +1121,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activat</translation>
 <translation id="5920710855273935292">Microfonul este dezactivat.</translation>
-<translation id="5922962980596822074">Treci prin ferestre începând de la fereastra folosită cel mai recent</translation>
 <translation id="5924855612669061715">Hotspotul este activat</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> este activat.</translation>
 <translation id="5947494881799873997">Reveniți</translation>
@@ -1168,6 +1168,7 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Fișierele de redare în scris a vorbirii în <ph name="LANGUAGE" /> s-au descărcat</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Corecția culorilor</translation>
 <translation id="6121838516699723042">Confirmă descărcarea fișierului <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Asistentul Google nu este disponibil într-o sesiune pentru invitați.</translation>
 <translation id="6129953537138746214">Spațiu</translation>
@@ -1239,7 +1240,6 @@ Conectează dispozitivul la o sursă de alimentare.</translation>
 <translation id="6469104339369989396">Comută hotspotul</translation>
 <translation id="6477681113376365978">Nu s-a putut descărca fișierul</translation>
 <translation id="6482559668224714696">Lupă de ecran complet</translation>
-<translation id="6483727822843292440">Treci prin ferestre începând de la fereastra folosită cel mai puțin</translation>
 <translation id="6490471652906364588">Dispozitiv USB-C (portul din dreapta)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> solicită să actualizezi dispozitivul <ph name="DEVICE_TYPE" /> înainte de termenul limită</translation>
 <translation id="649452524636452238">Codul PIN al cardului inteligent</translation>
@@ -1637,6 +1637,7 @@ Pentru a închide dispozitivul, apasă lung pe butonul de pornire al dispozitivu
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplicație</translation>
 <translation id="8255234195843591763">Resetează pentru a actualiza</translation>
 <translation id="8261506727792406068">Șterge</translation>
+<translation id="8262312463845990408">Schimbă redarea</translation>
 <translation id="8270450402312105425">{0,plural, =1{Treci la versiunea anterioară a dispozitivului în cel mult o oră}few{Treci la versiunea anterioară a dispozitivului în # ore}other{Treci la versiunea anterioară a dispozitivului în # de ore}}</translation>
 <translation id="8277261673056602147">Evidențiază textul pe ecran</translation>
 <translation id="8284362522226889623">Glisează spre stânga cu patru degete pentru a comuta la desktopul anterior</translation>

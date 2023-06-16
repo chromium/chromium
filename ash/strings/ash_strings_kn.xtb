@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">ತಿಳಿದಿರುವ ನೆಟ್‌ವರ್ಕ್‌ಗಳು</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ಅನ್ನು ಕನೆಕ್ಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
 <translation id="1240638468526743569">ಆ್ಯಪ್</translation>
-<translation id="1242704516557658755">ಇತ್ತೀಚೆಗೆ ಬಳಸಿದ ವಿಂಡೋಗಳ ಪಟ್ಟಿಯ ಮೂಲಕ ಹಿಂದಕ್ಕೆ ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="124678866338384709">ಪ್ರಸ್ತುತ ಟ್ಯಾಬ್ ಮುಚ್ಚಿ</translation>
 <translation id="1246890715821376239">ಬೆಂಬಲಿಸದ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="1247372569136754018">ಮೈಕ್ರೊಫೋನ್ (ಆಂತರಿಕ)</translation>
@@ -111,7 +110,7 @@
 <translation id="1414271762428216854"><ph name="APP_NAME" />, ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಿದ ಆ್ಯಪ್</translation>
 <translation id="1414919006379339073">ಪ್ರಸ್ತುತ ವಿಂಡೋವನ್ನು ಮುಚ್ಚಿ</translation>
 <translation id="1415846719612499304">ನೆಟ್‌ವರ್ಕ್ ಪಟ್ಟಿಯನ್ನು ತೋರಿಸಿ. <ph name="STATE_TEXT" />.</translation>
-<translation id="1419738280318246476">ಅಧಿಸೂಚನೆ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="1419738280318246476">ನೋಟಿಫಿಕೇಶನ್ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="1420408895951708260">ನೈಟ್ ಲೈಟ್ ಟಾಗಲ್ ಮಾಡಿ. <ph name="STATE_TEXT" /></translation>
 <translation id="1420732223884894666">ನಿಮ್ಮ ಫೋನ್‌ನ ಇತ್ತೀಚಿನ ಫೋಟೋಗಳು ಮತ್ತು ಮೀಡಿಯಾವನ್ನು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ವೀಕ್ಷಿಸಿ</translation>
 <translation id="1426410128494586442">ಹೌದು</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ಆನ್‌</translation>
 <translation id="5920710855273935292">ಮೈಕ್ ಅನ್ನು ಮ್ಯೂಟ್ ಮಾಡಲಾಗಿದೆ.</translation>
-<translation id="5922962980596822074">ತೀರಾ ಇತ್ತೀಚಿಗೆ ಬಳಸಿದ ವಿಂಡೋ ಪ್ರಕಾರ ವಿಂಡೋಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="5924855612669061715">ಹಾಟ್‌ಸ್ಪಾಟ್ ಆನ್ ಆಗಿದೆ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ಆನ್ ಆಗಿದೆ.</translation>
 <translation id="5947494881799873997">ಹಿಂತಿರುಗಿಸು</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">ಹಾಟ್‌ಸ್ಪಾಟ್ ಅನ್ನು ಟಾಗಲ್ ಮಾಡಿ</translation>
 <translation id="6477681113376365978">ಫೈಲ್ ಡೌನ್‌ಲೋಡ್ ಮಾಡಲು ಸಾಧ್ಯವಿಲ್ಲ</translation>
 <translation id="6482559668224714696">ಪೂರ್ಣಪರದೆ ವರ್ಧಕ</translation>
-<translation id="6483727822843292440">ಕಡಿಮೆ ಬಳಸಿದ ವಿಂಡೋ ಪ್ರಕಾರ ವಿಂಡೋಗಳನ್ನು ಬ್ರೌಸ್ ಮಾಡಿ</translation>
 <translation id="6490471652906364588">USB-C ಸಾಧನ (ಬಲ ಪೋರ್ಟ್)</translation>
 <translation id="6491071886865974820">ಗಡುವಿನ ಮೊದಲು ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಅನ್ನು ನೀವು ಅಪ್‌ಡೇಟ್ ಮಾಡಬೇಕೆಂದು <ph name="MANAGER" /> ಬಯಸುತ್ತದೆ</translation>
 <translation id="649452524636452238">ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಪಿನ್</translation>
@@ -1787,7 +1784,7 @@
 <translation id="8983038754672563810">HSPA</translation>
 <translation id="8990809378771970590"><ph name="IME_NAME" /> ಬಳಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="8991617137207906966">ಬಣ್ಣ ವಿಲೋಮದ ಮೋಡ್ ಅನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲಾಗಿದೆ ಅದನ್ನು ಟಾಗಲ್ ಆಫ್ ಮಾಡಲು Ctrl+Search+H ಅನ್ನು ಪುನಃ ಒತ್ತಿ.</translation>
-<translation id="899350903320462459">ಅಧಿಸೂಚನೆ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು <ph name="LOGIN_ID" /> ನಂತೆ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
+<translation id="899350903320462459">ನೋಟಿಫಿಕೇಶನ್ ಕ್ರಿಯೆಯನ್ನು ನಿರ್ವಹಿಸಲು ಸಾಧನವನ್ನು <ph name="LOGIN_ID" /> ನಂತೆ ಅನ್‌ಲಾಕ್ ಮಾಡಿ</translation>
 <translation id="8993733019280019776">ನೀವು ಮಾತನಾಡುತ್ತಿದ್ದೀರಾ? ನಿಮ್ಮ ಮೈಕ್ ಆಫ್ ಆಗಿದೆ. ಮೈಕ್ ಅನ್ನು ಆನ್ ಮಾಡಲು ಆಯ್ಕೆಮಾಡಿ.</translation>
 <translation id="9000771174482730261">ಸಂಗ್ರಹಣೆಯನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="9005984960510803406">Crosh ವಿಂಡೋವನ್ನು ತೆರೆಯಿರಿ</translation>

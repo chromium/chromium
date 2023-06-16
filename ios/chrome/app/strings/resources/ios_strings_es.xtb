@@ -467,6 +467,7 @@ Consulta las instrucciones del buscador para eliminar tu historial de búsqueda 
 <translation id="4045648459118332842">Obtén tus contraseñas guardadas en cualquier aplicación con un toque</translation>
 <translation id="4049507953662678203">Comprueba que tienes una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4063300985191096908">Ir al Feed</translation>
+<translation id="4066639687323968621">Inicia sesión con tu cuenta de Google para sincronizar tus marcadores, tu historial y más.</translation>
 <translation id="408404951701638773">Ahora es más fácil ir a la barra de búsqueda</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eliminar dirección}other{Eliminar direcciones}}</translation>
@@ -1145,6 +1146,7 @@ Los sitios pueden usar cookies para ver tu actividad de navegación en otros sit
 <translation id="8323906514956095947">Mantén pulsado el botón para ver más opciones de pestañas</translation>
 <translation id="8328777765163860529">Cerrar todo</translation>
 <translation id="8343993175958086504">Crea una copia de seguridad de tus cosas y úsala en cualquier dispositivo.</translation>
+<translation id="834783239627985533">Sitios más visitados</translation>
 <translation id="8378714024927312812">Gestionado por tu organización</translation>
 <translation id="8386068868580335421">Restablecer</translation>
 <translation id="838867811594159347">Introducir frase de contraseña…</translation>
@@ -1274,6 +1276,7 @@ Tus datos se han cifrado con tu frase de contraseña el <ph name="TIME" />. Intr
 <translation id="9157836665414082580">Quitar cuadros de diálogo</translation>
 <translation id="9162432979321511934">Activa Autocompletar contraseñas</translation>
 <translation id="9165320910061267720">Para recibir notificaciones de alertas por bajada de precio, deberás activarlas en los ajustes de iOS.</translation>
+<translation id="9172603439892261948">Sincroniza tus marcadores, tu historial y más.</translation>
 <translation id="9177438225260810839">Buscar en las pestañas abiertas</translation>
 <translation id="9187853111759024059">¿Cerrar más de 99 pestañas inactivas?</translation>
 <translation id="9188680907066685419">Cierra sesión en la cuenta gestionada</translation>

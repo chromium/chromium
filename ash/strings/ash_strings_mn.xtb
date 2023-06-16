@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">Мэдэгдэж байгаа сүлжээ</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> холбогдсон.</translation>
 <translation id="1240638468526743569">Апп</translation>
-<translation id="1242704516557658755">Хамгийн сүүлд ашигласан цонхны жагсаалтад арагш гүйлгэх</translation>
 <translation id="124678866338384709">Үндсэн чихтэй хуудсыг хаах</translation>
 <translation id="1246890715821376239">Дэмжигдээгүй аппууд</translation>
 <translation id="1247372569136754018">Микрофон (дотоод)</translation>
@@ -1121,7 +1120,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Асаах</translation>
 <translation id="5920710855273935292">Микрофоны дууг хаасан.</translation>
-<translation id="5922962980596822074">Хамгийн сүүлд ашигласан цонхноос эхлэн цонхнуудаар дамжих</translation>
 <translation id="5924855612669061715">Сүлжээний цэг асаалттай байна</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> асаалттай байна.</translation>
 <translation id="5947494881799873997">Буцаах</translation>
@@ -1240,7 +1238,6 @@
 <translation id="6469104339369989396">Сүлжээний цэгийг асаана уу/унтраана уу</translation>
 <translation id="6477681113376365978">Файлыг татах боломжгүй</translation>
 <translation id="6482559668224714696">Бүтэн дэлгэц томруулагч</translation>
-<translation id="6483727822843292440">Хамгийн бага ашигласан цонхноос эхлэн цонхнуудаар дамжих</translation>
 <translation id="6490471652906364588">USB-C төхөөрөмж (баруун талын порт)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> таныг өөрийн <ph name="DEVICE_TYPE" />-г эцсийн хугацаанаас өмнө шинэчлэхийг шаардаж байна</translation>
 <translation id="649452524636452238">Ухаалаг картын ПИН</translation>

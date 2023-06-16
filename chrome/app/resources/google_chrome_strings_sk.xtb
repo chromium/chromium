@@ -32,7 +32,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
  v párovaní. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS mohol vzniknúť vďaka ďalšiemu <ph name="BEGIN_LINK_CROS_OSS" />softvéru typu open source<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Aktualizovať Chrome</translation>
-<translation id="1555506416658437797">upravte spôsoby platby.</translation>
 <translation id="1583073672411044740">Používateľ <ph name="EXISTING_USER" /> je už do tohto profilu Chromu prihlásený. Týmto sa vytvorí nový profil Chromu pre <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome používa vašu kameru.</translation>
 <translation id="1587325591171447154">Súbor <ph name="FILE_NAME" /> je nebezpečný, a preto ho Chrome zablokoval.</translation>
@@ -81,7 +80,6 @@ Niektoré funkcie nemusia byť k dispozícii a zmeny vykonané v predvoľbách s
 <translation id="234869673307233423">Chrome nemôže skontrolovať heslá. Skúste to neskôr.</translation>
 <translation id="235650106824528204">Všetky údaje prehliadača Chrome vygenerované počas používania tohto profilu (napríklad vytvorenie záložiek, histórie, hesiel a ďalších nastavení) môžu byť odstránené správcom pracovného profilu. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Pokračovať</translation>
-<translation id="2399868464369312507">Google Chrome sa snaží upraviť spôsoby platby.</translation>
 <translation id="2401189691232800402">Systém Chrome OS</translation>
 <translation id="2424440923901031101">Toto rozšírenie porušuje pravidlá Internetového obchodu Chrome a môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="2467438592969358367">Google Chrome sa pokúša exportovať vaše heslá. Ak to chcete povoliť, zadajte heslo systému Windows.</translation>
@@ -259,7 +257,6 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="5756509061973259733">Profil Chromu s týmto účtom už v tomto zariadení existuje</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome sa nepodarilo spustiť. Skúste to znova.</translation>
-<translation id="585620188971323280">upraviť nastavenia vypĺňania spôsobov platby.</translation>
 <translation id="5895138241574237353">Reštartovať</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – prihlásenie do siete</translation>
 <translation id="5924017743176219022">Pripája sa k internetu…</translation>
@@ -290,6 +287,7 @@ Prehliadač Google Chrome nedokáže obnoviť vaše nastavenia.</translation>
 <translation id="6327105987658262776">K dispozícii nie je žiadna aktualizácia.</translation>
 <translation id="6360449101159168105">Keď bola táto karta neaktívna, bola uvoľnená pamäť, aby Chrome zostal rýchly. Môžete nastaviť, aby bol tento web vždy vylúčený z nečinnosti.</translation>
 <translation id="6412673304250309937">Kontroluje webové adresy podľa zoznamu nebezpečných webov uloženého v Chrome. Ak sa vám určitý web pokúsi ukradnúť heslo alebo stiahnete škodlivý súbor, Chrome môže tiež odoslať webové adresy vrátane častí obsahu stránky Bezpečnému prehliadaniu.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať jednu minútu. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}few{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}many{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}other{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty. Dáta prehliadania budú odstránené. Môže v nich byť zahrnutá história, automatické dopĺňanie a stiahnuté súbory.}}</translation>
 <translation id="6418662306461808273">Chcete prepnúť na existujúci profil Chromu?</translation>
 <translation id="648319183876919572">Zlepšené bezpečné prehliadanie vás chráni viac pred nebezpečnými webmi a stiahnutými súbormi</translation>
 <translation id="6493527311031785448">Google Chrome sa pokúša <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -339,6 +337,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="7398801000654795464">Do prehliadača Chrome ste boli prihlásený/-á ako <ph name="USER_EMAIL_ADDRESS" />. Ak sa chcete prihlásiť znova, použite rovnaký účet.</translation>
 <translation id="7410958280246779049">Chrome zablokoval tento súbor, pretože je nebezpečný</translation>
 <translation id="7426611252293106642">Google Chrome nemusí fungovať správne, pretože v tejto verzii systému Linux už nie je podporovaný</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať jednu minútu.}few{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty.}many{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minúty.}other{Vaša organizácia Chrome automaticky zavrie, keď sa nebude používať # minút.}}</translation>
 <translation id="7481213027396403996">Získajte najsilnejšie zabezpečenie Chromu</translation>
 <translation id="7535429826459677826">Google Chrome verzie pre vývojárov</translation>
 <translation id="7583399374488819119">Inštalátor aplikácie <ph name="COMPANY_NAME" /></translation>
@@ -373,6 +372,7 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8013993649590906847">Ak obrázok nemá užitočný popis, Chrome sa vám ho pokúsi poskytnúť. Obrázky sa odosielajú Googlu, aby bolo možné vytvoriť popisy.</translation>
 <translation id="8019103195866286235">Zverejnenie tohto rozšírenia bolo zrušené jeho vývojárom. Môže byť nebezpečné. Odstráňte ho z Chromu, aby sa mu nezobrazovali vaše údaje na weboch, ktoré navštevujete (vrátane vašich osobných údajov), a nemohlo ich meniť.</translation>
 <translation id="80471789339884597">Ďakujeme za inštaláciu. Než začnete aplikáciu <ph name="BUNDLE_NAME" /> používať, musíte reštartovať všetky svoje prehliadače.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chrome nebude používať jednu minútu. Dáta môžu zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory. Existujúce karty zostanú otvorené.}few{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chrome nebude používať # minúty. Dáta môžu zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory. Existujúce karty zostanú otvorené.}many{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chrome nebude používať # minúty. Dáta môžu zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory. Existujúce karty zostanú otvorené.}other{Vaša organizácia automaticky odstráni dáta prehliadania, keď sa Chrome nebude používať # minút. Dáta môžu zahŕňať históriu, automatické dopĺňanie a stiahnuté súbory. Existujúce karty zostanú otvorené.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Informácie o prehliadači &amp;Google Chrome</translation>
 <translation id="813913629614996137">Prebieha inicializácia...</translation>
@@ -396,7 +396,6 @@ Povolenia, ktoré ste už udelili webom a aplikáciám, sa môžu vzťahovať n
 <translation id="8504220326736535258">Chrome zablokoval tento súbor, pretože obsahuje malvér</translation>
 <translation id="8516431725144212809">Vaše záujmy podľa odhadu Chromu</translation>
 <translation id="8521348052903287641">Pravidlo pre prichádzajúce prenosy pre prehliadač Google Chrome verzie pre vývojárov, ktoré povoľuje prenos dát mDNS.</translation>
-<translation id="8544217240017914508">Google Chrome sa pokúša upraviť nastavenia dopĺňania spôsobov platby.</translation>
 <translation id="8550334526674375523">Tento pracovný profil je úplne oddelený od vášho osobného.</translation>
 <translation id="8556340503434111824">K dispozícii je nová verzia prehliadača Google Chrome, ktorá je rýchlejšia ako kedykoľvek predtým.</translation>
 <translation id="8571790202382503603">Profilmi Chromu môžete oddeliť všetok svoj obsah v Chrome. Jednoduchšie tak rozdelíte prácu a zábavu.</translation>

@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Chrome for Testing ile ilgili yardım alın</translation>
 <translation id="1524282610922162960">Chromium sekmesini paylaşın</translation>
 <translation id="1553461853655228091">Çevrenizin 3D haritasını oluşturmak için Chromium'un kameranıza erişim iznine ihtiyacı var</translation>
-<translation id="1555506416658437797">Ödeme yöntemlerini düzenleyin.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor}=1{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. Gizli pencereniz yeniden açılmayacak.}other{Yöneticiniz bir güncellemeyi uygulamak için Chromium'u yeniden başlatmanızı gerektiriyor. # Gizli pencereniz yeniden açılmayacak.}}</translation>
 <translation id="1625909126243026060">Chromium'daki önemli gizlilik ve güvenlik kontrollerini inceleyin</translation>
 <translation id="1632539827495546968">Bu hesabı yalnızca bir kez kullanmak istiyorsanız Chromium tarayıcıda <ph name="GUEST_LINK_BEGIN" />misafir modunu<ph name="GUEST_LINK_END" /> kullanabilirsiniz. Başka biri için hesap eklemek isterseniz <ph name="DEVICE_TYPE" /> cihazınıza <ph name="LINK_BEGIN" />yeni bir kişi ekleyin<ph name="LINK_END" />.
@@ -95,7 +94,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="3179665906251668410">Bağlantıyı Chromium &amp;Gizli Penceresinde Aç</translation>
 <translation id="3185330573522821672">Yeni Chromium profilinizi özelleştirin</translation>
 <translation id="3190315855212034486">Hata! Chromium kilitlendi. Yeniden başlatılsın mı?</translation>
-<translation id="3255926992597692024">Chromium, ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="3258596308407688501">Chromium veri dizini üzerinde okuma ve yazma işlemi yapamıyor: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium sürümü <ph name="PRODUCT_VERSION" /> yüklendi</translation>
 <translation id="3286538390144397061">Şimdi yeniden başlat</translation>
@@ -140,8 +138,8 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="4019629340646866719">ChromiumOS, <ph name="BEGIN_LINK_LINUX_OSS" />Linux geliştirme ortamında<ph name="END_LINK_LINUX_OSS" /> olduğu gibi ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />Mevcut ayarlarınızı<ph name="END_LINK" /> bildirerek Chromium'u daha iyi hale getirmemize yardımcı olun</translation>
 <translation id="4050175100176540509">Son sürümde güvenlikle ilgili önemli iyileştirmeler ve yeni özellikler mevcuttur.</translation>
-<translation id="4050599136622776556">Chromium ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
 <translation id="4055805654398742145">Ş&amp;ifre Yöneticisi</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="4148957013307229264">Yükleniyor...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın - Chromium</translation>
 <translation id="421369550622382712">Chromium'a özgü harika uygulamaları, oyunları, uzantıları ve temaları keşfedin.</translation>
@@ -178,6 +176,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="479167709087336770">Bu işlev, Google Arama'da kullanılan yazım denetiminin aynısını kullanır. Tarayıcıda yazdığınız metin Google'a gönderilir. Bu davranışı istediğiniz zaman ayarlardan değiştirebilirsiniz.</translation>
 <translation id="4888717733111232871">Chromium'un mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
 <translation id="4893347770495441059">&amp;Chromium'u Güncellemek İçin Yeniden Başlat</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Chromium 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}other{Chromium # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}}</translation>
 <translation id="4943838377383847465">Chromium arka plan modunda.</translation>
 <translation id="4987820182225656817">Misafirler Chromium'u geride hiçbir şey bırakmadan kullanabilir.</translation>
 <translation id="4994636714258228724">Kendinizi Chromium'a ekleyin</translation>
@@ -204,7 +203,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5653831366781983928">Lütfen Chromium'u şimdi yeniden başlatın</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium'u bu dilde görüntüle</translation>
-<translation id="585620188971323280">ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="5862307444128926510">Chromium'a Hoş Geldiniz</translation>
 <translation id="5883558403894052917">Chromium, aşağıdaki öğelerde kötü amaçlı yazılım tespit etti:</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
@@ -212,6 +210,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
 <translation id="5941711191222866238">Küçült</translation>
 <translation id="5972142260211327093">Chromium tarafından etkin bir denemeye rastgele yerleştirildiyseniz tarama geçmişiniz gördüğünüz reklamları ve aşağıdaki şekilde tahmin edilen ilgi alanlarınızı etkiler. Chromium, gizliliğinizi korumak için ilgi alanlarınızı her ay sürekli olarak siler. Kaldırmadığınız sürece ilgi alanlarınız yenilenmeye devam eder.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}other{Kuruluşunuz, # dakika kullanılmadığında Chromium'u otomatik olarak kapatır.}}</translation>
 <translation id="5987687638152509985">Senkronizasyonu başlatmak için Chromium'u güncelleyin</translation>
 <translation id="5988505247484123880">Ziyaret ettiğiniz sitelerin deneyiminizi kişiselleştirmek için ilgi alanlarınızı hatırlaması olağan bir durumdur. Siteler, ilgi alanlarınız hakkındaki bilgileri Chromium'da da saklayabilir.</translation>
 <translation id="6003112304606738118">İndiriliyor... <ph name="HOURS" /> saat kaldı</translation>

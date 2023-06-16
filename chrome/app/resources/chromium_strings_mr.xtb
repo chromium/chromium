@@ -19,7 +19,6 @@
 <translation id="1478370723027452770">Chrome for Testing शी संबंधित मदत मिळवा</translation>
 <translation id="1524282610922162960">Chromium टॅब शेअर करा</translation>
 <translation id="1553461853655228091">तुमच्या आसपासचा 3D नकाशा तयार करण्यासाठी Chromium ला तुमचा कॅमेरा अ‍ॅक्सेस करण्याची परवानगी हवी आहे</translation>
-<translation id="1555506416658437797">पेमेंट पद्धती संपादित करा.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे}=1{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमची गुप्त विंडो पुन्हा उघडणार नाही.}other{अपडेट लागू करता यावे यासाठी तुम्ही Chromium पुन्हा लाँच करण्याची तुमच्या ॲडमिनिस्ट्रेटरला गरज आहे. तुमच्या # गुप्त विंडो पुन्हा उघडणार नाहीत.}}</translation>
 <translation id="1625909126243026060">Chromium मधील महत्त्वाच्या गोपनीयता आणि सुरक्षा नियंत्रणांचे पुनरावलोकन करा</translation>
 <translation id="1632539827495546968">तुम्हाला हे खाते फक्त एकदाच वापरायचे असल्यास, तुम्ही Chromium ब्राउझरमध्ये <ph name="GUEST_LINK_BEGIN" />अतिथी मोड<ph name="GUEST_LINK_END" /> वापरू शकता. तुम्हाला दुसऱ्या व्यक्तीसाठी खाते जोडायचे असल्यास, तुमच्या <ph name="DEVICE_TYPE" /> मध्ये <ph name="LINK_BEGIN" />नवीन व्यक्ती जोडा<ph name="LINK_END" />.
@@ -96,7 +95,6 @@
 <translation id="3179665906251668410">लिंक Chromium गुप्त विंडो मध्ये उघडा</translation>
 <translation id="3185330573522821672">तुमची नवीन Chromium प्रोफाइल कस्टमाइझ करा</translation>
 <translation id="3190315855212034486">ओहो! Chromium क्रॅश झाले आहे. आता पुन्हा लाँच करायचे?</translation>
-<translation id="3255926992597692024">Chromium पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="3258596308407688501">Chromium त्याची डेटा डिरेक्टरी वाचू किंवा लिहू शकत नाही:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -143,7 +141,6 @@
 <translation id="4019629340646866719">ChromiumOS हे <ph name="BEGIN_LINK_LINUX_OSS" />Linux डेव्हलपमेंट पद्धत<ph name="END_LINK_LINUX_OSS" /> यासारखे अतिरिक्त <ph name="BEGIN_LINK_CROS_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_CROS_OSS" /> याद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />वर्तमान सेटिंग्ज<ph name="END_LINK" /> चा अहवाल देऊन Chromium उत्कृष्ट बनव‍िण्यात मदत करा</translation>
 <translation id="4050175100176540509">नवीनतम आवृत्तीमध्‍ये महत्त्वाच्या सुरक्षितता सुधारणा आणि नवीन वैशिष्ट्ये उपलब्‍ध आहेत.</translation>
-<translation id="4050599136622776556">Chromium हे पेमेंट पद्धती संपादित करण्याचा प्रयत्‍न करत आहे.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium १ मिनिटासाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते. ब्राउझिंग डेटा हटवला जातो. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.}other{Chromium # मिनिटांसाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते. ब्राउझिंग डेटा हटवला जातो. यात इतिहास, ऑटोफिल आणि डाउनलोड यांचा समावेश असू शकतो.}}</translation>
 <translation id="4148957013307229264">स्थापना करत आहे...</translation>
@@ -209,7 +206,6 @@
 <translation id="5653831366781983928">कृपया आता Chromium रीस्टार्ट करा</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium या भाषेत डिस्प्ले करा</translation>
-<translation id="585620188971323280">पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करा.</translation>
 <translation id="5862307444128926510">Chromium वर तुमचे स्‍वागत आहे</translation>
 <translation id="5883558403894052917">Chromium ला या आयटममध्ये मालवेअरचा समावेश असल्याचे आढळले:</translation>
 <translation id="5895138241574237353">रीस्टार्ट करा</translation>

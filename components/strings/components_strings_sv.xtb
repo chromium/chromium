@@ -1419,7 +1419,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="4349810866125026513">Ladda upp ändå</translation>
 <translation id="4350629523305688469">Flerfunktionsfack</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vill söka efter Bluetooth-enheter i närheten. Följande enheter har hittats:</translation>
-<translation id="4351175281479794167">Ange verifieringskod</translation>
 <translation id="4355383636893709732">ChromeOS-uppdatering för Android-appar</translation>
 <translation id="4356973930735388585">Det kan hända att angripare på den här webbplatsen försöker installera skadliga program på datorn som stjäl eller raderar dina uppgifter (t.ex. foton, lösenord, meddelanden och kreditkort).</translation>
 <translation id="4358059973562876591">Det gick inte att tillämpa de angivna mallarna på grund av ett fel i principen DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="460848736049414407">Blockeras av administratören</translation>
 <translation id="4610279718074907952">Den här webbplatsen ingår i en grupp som definierats av <ph name="SET_OWNER" /> och som kan se din aktivitet</translation>
 <translation id="4617273035598175554">Grafik- och animationsprogramvara</translation>
+<translation id="4619564267100705184">Verifiera din identitet</translation>
 <translation id="4622292761762557753">Överför ändå</translation>
 <translation id="4627675673814409125">Den här policyn kan inte ställas in på Chrome-profilnivå och kommer att ignoreras.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1740,7 +1740,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5123433949759960244">Basketboll</translation>
 <translation id="5125751979347152379">Ogiltig webbadress.</translation>
 <translation id="512592033764059484">Fotboll</translation>
-<translation id="5126510351761255129">Verifiera kortet</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> kan påverkas om storleken ändras. Använd förinställda fönsterstorlekar för att appen ska fungera som avsett.</translation>
 <translation id="5127934926273826089">Blommor</translation>
 <translation id="5129534298163637277">Bekräftelseruta</translation>
@@ -2035,7 +2034,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="5869405914158311789">Webbplatsen kan inte nås</translation>
 <translation id="5869522115854928033">Sparade lösenord</translation>
 <translation id="5872692522325383488">IBAN har sparats</translation>
-<translation id="5873013647450402046">Din bank vill bekräfta att det är du.</translation>
 <translation id="5877831137320480913">Skönhet och träning</translation>
 <translation id="5879989559903563723">Tillåts inte i gästläget</translation>
 <translation id="5884465125445718607">Kinesiskt nr 6-kuvert</translation>
@@ -2454,7 +2452,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6897140037006041989">Användaragent</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
-<translation id="6899000063526916106">Ange den <ph name="NUMBER_OF_DIGITS" />-siffriga koden</translation>
 <translation id="6907458757809079309">Träning</translation>
 <translation id="6910240653697687763"><ph name="URL" /> vill ha fullständig kontroll över dina MIDI-enheter</translation>
 <translation id="691024665142758461">Hämta flera filer</translation>
@@ -3070,6 +3067,7 @@ Mer information.
 <translation id="8296205692406981542">Parker och trädgårdar</translation>
 <translation id="8297545700510100061">Cookies och annan webbplatsdata används för att komma ihåg dig, till exempel vid inloggning och annonsanpassning. Du kan hantera cookies för alla webbplatser i <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">wifi-nätverket du använder (<ph name="WIFI_NAME" />) kanske kräver att du besöker <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Ange koden</translation>
 <translation id="8303854710873047864">Avsnittet <ph name="SECTION" /> visades</translation>
 <translation id="830498451218851433">Enkelfalsning</translation>
 <translation id="831997045666694187">kvällen</translation>
@@ -3422,7 +3420,6 @@ Mer information:
 <translation id="9191834167571392248">Hål nere till vänster</translation>
 <translation id="9199905725844810519">Utskrift har blockerats</translation>
 <translation id="9205078245616868884">Din data har krypterats med din lösenfras för synkronisering. Ange den om du vill starta synkroniseringen.</translation>
-<translation id="920511547311754821">Kan du inte hitta koden? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Det gick inte att lägga till artikeln.</translation>
 <translation id="9213433120051936369">Anpassa utseendet</translation>
 <translation id="9215416866750762878">Ett program förhindrar att Chrome ansluter till den här webbplatsen på ett säkert sätt</translation>

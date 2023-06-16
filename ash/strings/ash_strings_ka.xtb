@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">ცნობილი ქსელები</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> დაკავშირებულია.</translation>
 <translation id="1240638468526743569">აპი</translation>
-<translation id="1242704516557658755">უკან გადაადგილება ყველაზე ბოლოს გამოყენებული ფანჯრების სიაში</translation>
 <translation id="124678866338384709">მიმდინარე ჩანართის დახურვა</translation>
 <translation id="1246890715821376239">მხარდაუჭერელი აპები</translation>
 <translation id="1247372569136754018">მიკროფონი (შიდა)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">ჩართვა</translation>
 <translation id="5920710855273935292">მიკროფონი დადუმებულია.</translation>
-<translation id="5922962980596822074">ფანჯრებს შორის გადაადგილება ყველაზე ბოლოს გამოყენებული ფანჯრიდან</translation>
 <translation id="5924855612669061715">უსადენო ქსელი ჩართულია</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> ჩართულია.</translation>
 <translation id="5947494881799873997">დაბრუნება</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">უსადენო ქსელის გადართვა</translation>
 <translation id="6477681113376365978">ფაილი ვერ ჩამოიტვირთა</translation>
 <translation id="6482559668224714696">სრულეკრანიანი ლუპა</translation>
-<translation id="6483727822843292440">ფანჯრებს შორის გადაადგილება ყველაზე ნაკლებად გამოყენებული ფანჯრიდან</translation>
 <translation id="6490471652906364588">USB-C მოწყობილობა (მარჯვენა პორტი)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> ითხოვს, განაახლოთ თქვენი <ph name="DEVICE_TYPE" /> ბოლო ვადამდე</translation>
 <translation id="649452524636452238">სმარტ-ბარათის PIN-კოდი</translation>

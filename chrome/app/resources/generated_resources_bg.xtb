@@ -378,6 +378,7 @@
 <translation id="1307431692088049276">Не ме питайте отново</translation>
 <translation id="1307559529304613120">Ами сега!  Системата не успя да съхрани дългосрочното означение за достъп на това устройство до приложния програмен интерфейс (API).</translation>
 <translation id="131112695174432497">Данните, които засягат персонализирането на рекламите, се изтриват</translation>
+<translation id="1311294419381837540">Предавате раздел. Можете да поставите предаването на пауза или да го спрете по всяко време.</translation>
 <translation id="1312811472299082263">Създаване от наръчник за Ansible или файл с резервно копие в Crostini</translation>
 <translation id="13130607084115184">Запазените пароли ще се показват тук. За да импортирате пароли в <ph name="BRAND" /> на това устройство, <ph name="BEGIN_LINK" />изберете CSV файл<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Разрешенията „<ph name="PERMISSION_1" />“, „<ph name="PERMISSION_2" />“ и „<ph name="PERMISSION_3" />“ бяха премахнати</translation>
@@ -414,6 +415,7 @@
 <translation id="1341871421050612057">Синхронизирането с(ъс) <ph name="USERNAME" /> не е възможно</translation>
 <translation id="1343865611738742294">Разрешаване на приложенията за Linux да осъществяват достъп до USB устройства. Linux няма да запомни дадено USB устройство, след като бъде премахнато.</translation>
 <translation id="1343920184519992513">Продължаване оттам, откъдето сте прекъснали, и отваряне на определен набор от страници</translation>
+<translation id="1344141078024003905">Предавате съдържанието на екрана. Можете да поставите предаването на пауза или да го спрете по всяко време.</translation>
 <translation id="1346630054604077329">Потвърждаване и рестартиране</translation>
 <translation id="1346748346194534595">Надясно</translation>
 <translation id="1347256498747320987">Инсталиране на актуализации и приложения. С продължаването си приемате, че това устройство може също автоматично да изтегля и инсталира актуализации и приложения от Google, оператора ви и производителя си, при което е възможно да използва мобилни данни. В някои от тези приложения може да се предлагат покупки. <ph name="BEGIN_LINK1" />Научете повече<ph name="END_LINK1" /></translation>
@@ -1694,6 +1696,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2378982052244864789">Изберете директорията на разширението.</translation>
 <translation id="2379281330731083556">Печат чрез системния диалогов прозорец... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Преглед на споделения шрифт</translation>
+<translation id="2382875860893882175">Предаването е поставено на пауза. Можете да го възобновите или спрете по всяко време.</translation>
 <translation id="2383825469508278924">Промяна на клавишната карта за клавиатурата, функционалните клавиши и др.</translation>
 <translation id="2387052489799050037">Преминаване към началния екран</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (текущ)</translation>
@@ -3770,11 +3773,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4169535189173047238">Забраняване</translation>
 <translation id="4170314459383239649">Изчистване при изход</translation>
 <translation id="417096670996204801">Избор на потребителски профил</translation>
-<translation id="4174651450391857911">Потребителският профил се управлява от организацията ви За да продължите да го използвате, организацията ви изисква да споделите сигналите от устройството си.
-
-Те могат да включват информация за вашите браузър, операционна система, устройство, инсталиран софтуер и файлове.
-
-Ако не споделите сигналите, този потребителски профил ще бъде закрит.</translation>
 <translation id="4175137578744761569">Светлолилаво и бяло</translation>
 <translation id="4176463684765177261">Деактивирано</translation>
 <translation id="4176864026061939326">Това устройство се управлява. Администраторът му изисква нов потребителски профил за профила <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3825,6 +3823,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4223845867739585293">Създайте код за достъп</translation>
 <translation id="4225397296022057997">На всички сайтове</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Това разширение не е разрешено}other{Някои разширения не са разрешени}}</translation>
+<translation id="4231053948789591973">Предаването е поставено на пауза. Можете да го възобновите или спрете по всяко време.</translation>
 <translation id="4231095370974836764">Инсталирайте приложения и игри от Google Play на своя <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Научете повече<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Затваряне на игровите контроли</translation>
 <translation id="4231231258999726714">Steam за Chromebook се настройва</translation>
@@ -5758,6 +5757,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
     <ph name="LINE_BREAK" />
    Снимката ще се показва на заключения екран и на този за вход в Chromebook.</translation>
 <translation id="5925147183566400388">Показалец на Практиката при предоставяне на удостоверителни услуги</translation>
+<translation id="5927132638760172455">Предава се към неизвестен приемник</translation>
 <translation id="5927232971138258197">Това разширение може да чете и променя <ph name="HOST" /></translation>
 <translation id="592740088639760830">Спиране на този контейнер</translation>
 <translation id="592880897588170157">PDF файловете да се изтеглят, вместо да се отварят автоматично в Chrome</translation>
@@ -6459,6 +6459,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="653983593749614101">Възобновява се...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Забележка<ph name="END_BOLD" />: Активирайте само ако знаете какви ще са последствията или сте помолени да го направите, тъй като събирането на данни може да намали ефективността.</translation>
 <translation id="6541638731489116978">Достъпът на този сайт до сензорите ви за движение е блокиран.</translation>
+<translation id="6542521951477560771">Предава се към „<ph name="RECEIVER_NAME" />“</translation>
 <translation id="6545665334409411530">Честота на повтаряне</translation>
 <translation id="6545867563032584178">Микрофонът е изключен в системните предпочитания за Mac</translation>
 <translation id="6546856949879953071">За подробна информация относно надстройването можете да намерите регистрационните файлове във „Файлове &gt; Моите файлове &gt; <ph name="LOG_FILE" />“</translation>
@@ -8682,11 +8683,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="8428271547607112339">Нов училищен профил</translation>
 <translation id="84297032718407999">Ще излезете от профила си след <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Показване на докосванията</translation>
-<translation id="8431496281632382473">Този потребителски профил се управлява от <ph name="DOMAIN" />. За да продължите да го използвате, организацията ви изисква да споделите сигналите от устройството си.
-
-Те могат да включват информация за вашите браузър, операционна система, устройство, инсталиран софтуер и файлове.
-
-Ако не споделите сигналите, този потребителски профил ще бъде закрит.</translation>
+<translation id="8433186206711564395">Настройки на мрежата</translation>
 <translation id="8434480141477525001">Порт за отстраняване на грешки в клиента с директно изпълнение</translation>
 <translation id="8437209419043462667">Американска клавиатура</translation>
 <translation id="8438328416656800239">Преминете към интелигентен браузър</translation>

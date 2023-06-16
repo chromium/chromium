@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">已知網路</translation>
 <translation id="1239161794459865856">「<ph name="FEATURE_NAME" />」已連線。</translation>
 <translation id="1240638468526743569">某個應用程式</translation>
-<translation id="1242704516557658755">在最近使用的視窗清單中反向移動</translation>
 <translation id="124678866338384709">關閉目前的分頁</translation>
 <translation id="1246890715821376239">不支援的應用程式</translation>
 <translation id="1247372569136754018">麥克風 (內部)</translation>
@@ -250,7 +249,7 @@
 <translation id="2023558322300866873">你隨時可以停止封包擷取作業</translation>
 <translation id="2034971124472263449">繼續儲存</translation>
 <translation id="2049240716062114887">已將桌面名稱變更為「<ph name="DESK_NAME" />」</translation>
-<translation id="206377500836174974">100%</translation>
+<translation id="206377500836174974">完全</translation>
 <translation id="2064048859448024834">已開啟攝影機預覽畫面</translation>
 <translation id="2067602449040652523">鍵盤亮度</translation>
 <translation id="2075520525463668108">切換<ph name="CAPTURE_MEDIUM" />。<ph name="CAPTURE_MEDIUM" /><ph name="CAPTURE_STATE" /></translation>
@@ -1117,14 +1116,13 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">開啟</translation>
 <translation id="5920710855273935292">麥克風已設為靜音。</translation>
-<translation id="5922962980596822074">從最近使用的視窗開始略過</translation>
 <translation id="5924855612669061715">無線基地台已開啟</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" />功能已開啟。</translation>
 <translation id="5947494881799873997">還原</translation>
 <translation id="595202126637698455">效能追蹤已啟用</translation>
 <translation id="5955304353782037793">應用程式</translation>
 <translation id="5958529069007801266">受監管的使用者</translation>
-<translation id="5961960957587052807">亮度</translation>
+<translation id="5961960957587052807">輕微</translation>
 <translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
 <translation id="5976112937189445008">按下 Enter 鍵以錄製視窗畫面</translation>
 <translation id="5978382165065462689">透過遠端協助分享螢幕控制功能。</translation>
@@ -1236,7 +1234,6 @@
 <translation id="6469104339369989396">切換無線基地台</translation>
 <translation id="6477681113376365978">無法下載檔案</translation>
 <translation id="6482559668224714696">全螢幕放大鏡</translation>
-<translation id="6483727822843292440">從最少用的視窗開始略過</translation>
 <translation id="6490471652906364588">USB-C 裝置 (右側連接埠)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> 要求你在期限內更新 <ph name="DEVICE_TYPE" /></translation>
 <translation id="649452524636452238">智慧型卡片 PIN 碼</translation>

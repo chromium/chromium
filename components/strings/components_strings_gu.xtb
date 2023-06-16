@@ -1419,7 +1419,6 @@
 <translation id="4349810866125026513">કોઈપણ રીતે અપલોડ કરો</translation>
 <translation id="4350629523305688469">મલ્ટિ ફંક્શન ટ્રે</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> નજીકના બ્લૂટૂથ ડિવાઇસ માટે સ્કૅન કરવા માગે છે. નીચે મુજબના ડિવાઇસ મળ્યા છે:</translation>
-<translation id="4351175281479794167">ચકાસણી કોડ દાખલ કરો</translation>
 <translation id="4355383636893709732">Android ઍપ માટે ChromeOSની અપડેટ</translation>
 <translation id="4356973930735388585">આ સાઇટ પરના હુમલાખોરો તમારા કમ્પ્યુટર પર તમારી માહિતી (ઉદાહરણ તરીકે, ફોટા, પાસવર્ડ, મેસેજ અને ક્રેડિટ કાર્ડ)ને ચોરી શકે કે ડિલીટ કરી શકે એવા જોખમી પ્રોગ્રામને ઇન્સ્ટૉલ કરવાનો પ્રયાસ કરી શકે છે.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode નીતિમાં ભૂલના કારણે તમે ઉલ્લેખ કરેલા નમૂનાઓને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
@@ -1514,6 +1513,7 @@
 <translation id="460848736049414407">ઍડમિન દ્વારા બ્લૉક કરવામાં આવ્યું છે</translation>
 <translation id="4610279718074907952">આ સાઇટ <ph name="SET_OWNER" /> દ્વારા નિર્ધારિત ગ્રૂપમાં છે, જે તમારી પ્રવૃત્તિ જોઈ શકે છે</translation>
 <translation id="4617273035598175554">ગ્રાફિક અને ઍનિમેશન સૉફ્ટવેર</translation>
+<translation id="4619564267100705184">આ તમે જ છો તેની ચકાસણી કરો</translation>
 <translation id="4622292761762557753">તેમ છતાં ટ્રાન્સફર કરો</translation>
 <translation id="4627675673814409125">Chrome પ્રોફાઇલના લેવલ પર આ પૉલિસી સેટ કરી શકાતી નથી અને તેને અવગણવામાં આવશે.</translation>
 <translation id="4628948037717959914">ફોટો</translation>
@@ -1740,7 +1740,6 @@
 <translation id="5123433949759960244">બાસ્કેટબૉલ</translation>
 <translation id="5125751979347152379">અમાન્ય URL.</translation>
 <translation id="512592033764059484">સૉકર</translation>
-<translation id="5126510351761255129">તમારું કાર્ડ ચકાસો</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> કદાચ યોગ્ય રીતે કદ બદલી શકશે નહીં. ઍપમાં અનુભવાતી સમસ્યા અટકાવવા માટે, વિન્ડોના પ્રીસેટ કરેલા કદનો ઉપયોગ કરો.</translation>
 <translation id="5127934926273826089">ફૂલો</translation>
 <translation id="5129534298163637277">કન્ફર્મેશન માટેનો સંવાદ</translation>
@@ -2035,7 +2034,6 @@
 <translation id="5869405914158311789">આ સાઇટ પર પહોંચી શકાતું નથી</translation>
 <translation id="5869522115854928033">સાચવેલા પાસવર્ડ્સ</translation>
 <translation id="5872692522325383488">IBAN સાચવ્યો</translation>
-<translation id="5873013647450402046">તમારી બેંક કન્ફર્મ કરવા માગે છે કે આ તમે જ છો.</translation>
 <translation id="5877831137320480913">બ્યુટી અને ફિટનેસ</translation>
 <translation id="5879989559903563723">અતિથિ મોડમાં મંજૂરી નથી</translation>
 <translation id="5884465125445718607">એન્વલપ ચાઇનીઝ #6</translation>
@@ -2454,7 +2452,6 @@
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6897140037006041989">વપરાશકર્તા એજન્ટ</translation>
 <translation id="6898699227549475383">ઑર્ગેનાઇઝેશન (O)</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> અંકનો કોડ દાખલ કરો</translation>
 <translation id="6907458757809079309">ફિટનેસ</translation>
 <translation id="6910240653697687763"><ph name="URL" /> તમારા MIDI ઉપકરણોનું પૂર્ણ નિયંત્રણ મેળવવા માગે છે</translation>
 <translation id="691024665142758461">બહુવિધ ફાઇલોને ડાઉનલોડ કરવા</translation>
@@ -3070,6 +3067,7 @@
 <translation id="8296205692406981542">પ્રાદેશિક પાર્ક અને બગીચા</translation>
 <translation id="8297545700510100061">કુકી અને અન્ય સાઇટ ડેટાનો ઉપયોગ તમને યાદ રાખવા માટે કરવામાં આવે છે, ઉદાહરણ તરીકે, તમને સાઇન ઇન કરવા માટે અથવા જાહેરાતો મનગમતી બનાવવા માટે. બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="SETTINGS" /> જુઓ.</translation>
 <translation id="8298115750975731693">તમે વાપરી રહેલા વાઇ-ફાઇ (<ph name="WIFI_NAME" />)ના <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ની જવું પડી શકે.</translation>
+<translation id="8301894345671534559">કોડ દાખલ કરો</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" વિભાગ બતાવ્યો</translation>
 <translation id="830498451218851433">અડધું વાળો</translation>
 <translation id="831997045666694187">સાંજ</translation>
@@ -3421,7 +3419,6 @@
 <translation id="9191834167571392248">નીચે ડાબી બાજુએ કાણું પાડો</translation>
 <translation id="9199905725844810519">પ્રિન્ટ કરવાની સુવિધા બ્લૉક કરવામાં આવી છે</translation>
 <translation id="9205078245616868884">તમારો ડેટા તમારા સિંક પાસફ્રેઝ સાથે એન્ક્રિપ્ટ કરવામાં આવ્યો છે. સિંક શરૂ કરવા માટે એ દાખલ કરો.</translation>
-<translation id="920511547311754821">શું તમારો કોડ મળી રહ્યો નથી? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">લેખ ઉમેરવામાં નિષ્ફળ થયાં.</translation>
 <translation id="9213433120051936369">દેખાવને કસ્ટમાઇઝ કરો</translation>
 <translation id="9215416866750762878">કોઈ ઍપ્લિકેશન Chromeને આ સાઇટ સાથે સુરક્ષિત રીતે કનેક્ટ થવાથી અટકાવી રહી છે</translation>

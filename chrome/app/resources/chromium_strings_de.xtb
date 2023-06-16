@@ -16,7 +16,6 @@
 <translation id="1414495520565016063">Du bist in Chromium angemeldet.</translation>
 <translation id="1524282610922162960">Chromium-Tab freigeben</translation>
 <translation id="1553461853655228091">Chromium benötigt Zugriff auf die Kamera, um eine 3D-Karte deiner Umgebung zu erstellen</translation>
-<translation id="1555506416658437797">Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Laut deinem Administrator musst du Chromium neu starten, um ein Update durchzuführen}=1{Laut deinem Administrator musst du Chromium neu starten, um ein Update durchzuführen. Dein Inkognitofenster wird nicht wieder geöffnet.}other{Laut deinem Administrator musst du Chromium neu starten, um ein Update durchzuführen. Deine # Inkognitofenster werden nicht wieder geöffnet.}}</translation>
 <translation id="1625909126243026060">Hiermit kannst du dir die wichtigsten Datenschutz- und Sicherheitseinstellungen in Chromium ansehen</translation>
 <translation id="1632539827495546968">Wenn du dieses Konto nur einmal verwenden möchtest, kannst du den <ph name="GUEST_LINK_BEGIN" />Gastmodus<ph name="GUEST_LINK_END" /> in Chromium nutzen. Wenn du ein Konto für jemand anderen hinzufügen möchten, kannst du <ph name="LINK_BEGIN" />deinem <ph name="DEVICE_TYPE" /> eine neue Person hinzufügen<ph name="LINK_END" />.
@@ -92,7 +91,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="3179665906251668410">Link in Chromium-Inkognitofenster öffnen</translation>
 <translation id="3185330573522821672">Personalisiere dein neues Chromium-Profil</translation>
 <translation id="3190315855212034486">Chromium ist abgestürzt. Jetzt neu starten?</translation>
-<translation id="3255926992597692024">Chromium versucht, Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="3258596308407688501">Chromium kann im folgenden Datenverzeichnis weder lesen noch schreiben:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -137,8 +135,8 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="4019629340646866719">Chromium OS und die <ph name="BEGIN_LINK_LINUX_OSS" />Linux-Entwicklungsumgebung<ph name="END_LINK_LINUX_OSS" /> werden durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="4036079820698952681">Hilf uns mit deinem Feedback zu den <ph name="BEGIN_LINK" />aktuellen Einstellungen<ph name="END_LINK" /> bei der Verbesserung von Chromium</translation>
 <translation id="4050175100176540509">Wichtige Sicherheitsverbesserungen und neue Funktionen sind in der aktuellen Version verfügbar.</translation>
-<translation id="4050599136622776556">Chromium versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="4055805654398742145">P&amp;asswortmanager</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="4148957013307229264">Installation wird ausgeführt...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung – Chromium</translation>
 <translation id="421369550622382712">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Chromium.</translation>
@@ -174,6 +172,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="479167709087336770">Es wird dieselbe Rechtschreibprüfung wie in der Google Suche verwendet. Der in den Browser eingegebene Text wird an Google gesendet. Du kannst dies jederzeit in den Einstellungen ändern.</translation>
 <translation id="4888717733111232871">Eingangsregel für die Zulassung von mDNS-Verkehr in Chromium</translation>
 <translation id="4893347770495441059">Neu starten, um &amp;Chromium zu aktualisieren</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Deine Organisation löscht Browserdaten automatisch, wenn Chromium eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}other{Deine Organisation löscht Browserdaten automatisch, wenn Chromium # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}}</translation>
 <translation id="4943838377383847465">Chromium wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="4987820182225656817">Gastnutzer können Chromium verwenden, ohne Daten zu hinterlassen.</translation>
 <translation id="4994636714258228724">Mich zu Chromium hinzufügen</translation>
@@ -200,7 +199,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5653831366781983928">Starte Chromium jetzt neu</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromium in dieser Sprache anzeigen</translation>
-<translation id="585620188971323280">Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="5862307444128926510">Willkommen bei Chromium</translation>
 <translation id="5883558403894052917">Chromium hat festgestellt, dass diese Elemente Malware enthalten:</translation>
 <translation id="5895138241574237353">Neu starten</translation>
@@ -208,6 +206,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5924017743176219022">Internetverbindung wird hergestellt…</translation>
 <translation id="5941711191222866238">Minimieren</translation>
 <translation id="5972142260211327093">Wenn Chromium dich zufällig für einen aktiven Test angemeldet hat, hat dein Browserverlauf Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chromium jeden Monat fortlaufend deine Interessen. Solange du deine Interessen nicht entfernst, werden sie aktualisiert.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Deine Organisation hat festgelegt, dass Chromium automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="5987687638152509985">Aktualisiere Chromium, um die Synchronisierung zu starten</translation>
 <translation id="5988505247484123880">Von dir besuchte Websites können deine Interessen speichern und zur Personalisierung verwenden. Websites können außerdem Daten zu deinen Interessen bei Chromium speichern.</translation>
 <translation id="6003112304606738118">Wird heruntergeladen… Noch <ph name="HOURS" /> Stunde(n)</translation>

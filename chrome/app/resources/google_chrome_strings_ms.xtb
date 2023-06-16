@@ -30,7 +30,6 @@
  penggandingan. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS menjadi kenyataan dengan <ph name="BEGIN_LINK_CROS_OSS" />perisian sumber terbuka<ph name="END_LINK_CROS_OSS" /> tambahan.</translation>
 <translation id="1553358976309200471">Kemas Kini Chrome</translation>
-<translation id="1555506416658437797">edit kaedah pembayaran.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> telah pun dilog masuk ke profil Chrome ini. Tindakan ini akan membuat profil Chrome baharu untuk <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome menggunakan kamera anda.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> berbahaya, jadi Chrome telah menyekat fail itu.</translation>
@@ -79,7 +78,6 @@
 <translation id="234869673307233423">Chrome tidak dapat menyemak kata laluan anda. Cuba lagi nanti.</translation>
 <translation id="235650106824528204">Sebarang data Chrome yang dijana semasa penggunaan profil ini (seperti pembuatan penanda halaman, sejarah, kata laluan dan tetapan lain) boleh dialih keluar oleh pentadbir profil kerja. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Teruskan</translation>
-<translation id="2399868464369312507">Google Chrome sedang cuba mengedit kaedah pembayaran.</translation>
 <translation id="2401189691232800402">Sistem Chrome OS</translation>
 <translation id="2424440923901031101">Sambungan ini melanggar dasar Gedung Web Chrome dan mungkin tidak selamat. Alih keluar sambungan ini daripada Chrome supaya sambungan ini tidak dapat melihat dan mengubah data anda pada laman yang anda lawati lagi, termasuk maklumat peribadi anda.</translation>
 <translation id="2467438592969358367">Google Chrome mahu mengeksport kata laluan anda. Taip kata laluan Windows anda untuk membenarkannya.</translation>
@@ -253,7 +251,6 @@
 <translation id="5756509061973259733">Profil Chrome dengan akaun ini telah pun wujud pada peranti ini</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Tidak dapat melancarkan Chrome. Cuba lagi.</translation>
-<translation id="585620188971323280">mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="5895138241574237353">Mulakan Semula</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Log Masuk Rangkaian</translation>
 <translation id="5924017743176219022">Menyambung ke Internet...</translation>
@@ -393,7 +390,6 @@ Kebenaran yang telah anda berikan kepada laman web dan apl mungkin dikenakan pad
 <translation id="8504220326736535258">Chrome menyekat fail ini kerana mengandungi perisian hasad</translation>
 <translation id="8516431725144212809">Minat anda seperti yang dianggarkan oleh Chrome</translation>
 <translation id="8521348052903287641">Peraturan masuk bagi Google Chrome Dev untuk membenarkan trafik mDNS.</translation>
-<translation id="8544217240017914508">Google Chrome sedang cuba mengubah suai tetapan untuk pengisian kaedah pembayaran.</translation>
 <translation id="8550334526674375523">Profil kerja ini terpisah sepenuhnya daripada profil peribadi anda.</translation>
 <translation id="8556340503434111824">Terdapat versi baharu Google Chrome yang tersedia, dan ia lebih pantas daripada biasa.</translation>
 <translation id="8571790202382503603">Dengan profil Chrome anda dapat mengasingkan semua bahan Chrome anda. Ini akan lebih memudahkan pengasingan antara bahan kerja dengan bahan untuk keseronokan.</translation>

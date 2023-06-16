@@ -1410,7 +1410,6 @@
 <translation id="4349810866125026513">そのままアップロード</translation>
 <translation id="4350629523305688469">多機能トレイ</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> が近くの Bluetooth デバイスのスキャンを求めています。検出済みのデバイスは次のとおりです。</translation>
-<translation id="4351175281479794167">確認コードの入力</translation>
 <translation id="4355383636893709732">Android アプリ向け ChromeOS の更新</translation>
 <translation id="4356973930735388585">このサイトを利用すると、悪意のあるユーザーによって、危険なプログラム（写真、パスワード、メッセージ、クレジット カード番号などの情報を盗み取るか削除するプログラム）がお使いのパソコンにインストールされる可能性があります。</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode ポリシーに問題があるため、指定したテンプレートを適用できない可能性があります。</translation>
@@ -1504,6 +1503,7 @@
 <translation id="460848736049414407">管理者によりブロック済み</translation>
 <translation id="4610279718074907952">このサイトは、<ph name="SET_OWNER" /> により定義され、アクティビティを確認できるグループに属しています</translation>
 <translation id="4617273035598175554">グラフィック、アニメーション ソフトウェア</translation>
+<translation id="4619564267100705184">本人確認</translation>
 <translation id="4622292761762557753">このまま転送</translation>
 <translation id="4627675673814409125">このポリシーは、Chrome プロフィール単位では設定できないため、無視されます。</translation>
 <translation id="4628948037717959914">写真</translation>
@@ -1729,7 +1729,6 @@
 <translation id="5123433949759960244">バスケットボール</translation>
 <translation id="5125751979347152379">URL が無効です。</translation>
 <translation id="512592033764059484">サッカー</translation>
-<translation id="5126510351761255129">カードの確認</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> は適切にサイズ変更されない可能性があります。アプリに問題が生じないようにするには、プリセットのウィンドウ サイズを使用してください。</translation>
 <translation id="5127934926273826089">花</translation>
 <translation id="5129534298163637277">確認ダイアログ</translation>
@@ -2022,7 +2021,6 @@
 <translation id="5869405914158311789">このサイトにアクセスできません</translation>
 <translation id="5869522115854928033">保存したパスワード</translation>
 <translation id="5872692522325383488">IBAN を保存しました</translation>
-<translation id="5873013647450402046">ご利用の銀行またはカード発行会社が本人確認を求めています。</translation>
 <translation id="5877831137320480913">美容、フィットネス</translation>
 <translation id="5879989559903563723">ゲストモードで許可しないサイト</translation>
 <translation id="5884465125445718607">中国 #6 封筒</translation>
@@ -2437,7 +2435,6 @@
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6897140037006041989">ユーザー エージェント</translation>
 <translation id="6898699227549475383">組織（O）</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" /> 桁のコードを入力してください</translation>
 <translation id="6907458757809079309">フィットネス</translation>
 <translation id="6910240653697687763"><ph name="URL" /> から、MIDI デバイスをフル コントロールする許可を求められています</translation>
 <translation id="691024665142758461">複数ファイルのダウンロード</translation>
@@ -3049,6 +3046,7 @@
 <translation id="8296205692406981542">公園、庭園</translation>
 <translation id="8297545700510100061">Cookie と他のサイトデータは、ログインや広告のパーソナライズなどでユーザーを覚えておくために使用されます。すべてのサイトの Cookie を管理するには、<ph name="SETTINGS" /> をご覧ください。</translation>
 <translation id="8298115750975731693">ご利用の Wi-Fi（<ph name="WIFI_NAME" />）では、<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> へのアクセスが必要な可能性があります。</translation>
+<translation id="8301894345671534559">コードを入力</translation>
 <translation id="8303854710873047864">「<ph name="SECTION" />」セクションを表示しています</translation>
 <translation id="830498451218851433">2 つ折り</translation>
 <translation id="831997045666694187">夕方</translation>
@@ -3398,7 +3396,6 @@
 <translation id="9191834167571392248">パンチ（左下）</translation>
 <translation id="9199905725844810519">印刷はブロックされています</translation>
 <translation id="9205078245616868884">データは同期パスフレーズで暗号化されます。同期を開始するには、同期パスフレーズを入力してください。</translation>
-<translation id="920511547311754821">コードが表示されない場合は、<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">記事を追加できませんでした。</translation>
 <translation id="9213433120051936369">デザインをカスタマイズする</translation>
 <translation id="9215416866750762878">アプリケーションが原因で、Chrome からこのサイトに安全に接続することができません</translation>

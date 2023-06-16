@@ -63,7 +63,6 @@ Dyma rai pethau y gallwch eu gwneud i roi cychwyn arni.</translation>
 <translation id="1235458158152011030">Rhwydweithiau hysbys</translation>
 <translation id="1239161794459865856">Mae <ph name="FEATURE_NAME" /> wedi'i gysylltu.</translation>
 <translation id="1240638468526743569">Ap</translation>
-<translation id="1242704516557658755">Seiclo yn ôl yn y rhestr ffenestri a ddefnyddiwyd yn fwyaf diweddar</translation>
 <translation id="124678866338384709">Cau'r tab presennol</translation>
 <translation id="1246890715821376239">Apiau heb eu cefnogi</translation>
 <translation id="1247372569136754018">Meicroffon (mewnol)</translation>
@@ -1120,7 +1119,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ymlaen</translation>
 <translation id="5920710855273935292">Mae'r meic wedi'i ddistewi.</translation>
-<translation id="5922962980596822074">Mynd trwy ffenestri o'r ffenestr a ddefnyddiwyd yn fwyaf diweddar</translation>
 <translation id="5924855612669061715">Mae'r Boethfan wedi'i throi ymlaen</translation>
 <translation id="5946788582095584774">Mae <ph name="FEATURE_NAME" /> wedi'i droi ymlaen.</translation>
 <translation id="5947494881799873997">Dychwelyd</translation>
@@ -1239,7 +1237,6 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="6469104339369989396">Toglo'r boethfan</translation>
 <translation id="6477681113376365978">Methu â lawrlwytho'r ffeil</translation>
 <translation id="6482559668224714696">Chwyddwr sgrîn lawn</translation>
-<translation id="6483727822843292440">Mynd trwy ffenestri o'r ffenestr a ddefnyddir leiaf</translation>
 <translation id="6490471652906364588">Dyfais USB-C (porth de)</translation>
 <translation id="6491071886865974820">Mae <ph name="MANAGER" /> gofyn i chi ddiweddaru eich <ph name="DEVICE_TYPE" /> cyn y dyddiad terfyn</translation>
 <translation id="649452524636452238">PIN cerdyn smart</translation>

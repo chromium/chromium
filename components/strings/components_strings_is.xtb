@@ -1419,7 +1419,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="4349810866125026513">Hlaða samt upp</translation>
 <translation id="4350629523305688469">Fjölnota bakki</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> vill leita að nálægum Bluetooth-tækjum. Eftirfarandi tæki hafa fundist:</translation>
-<translation id="4351175281479794167">Sláðu inn staðfestingarkóða</translation>
 <translation id="4355383636893709732">ChromeOS-uppfærsla fyrir Android-forrit</translation>
 <translation id="4356973930735388585">Tölvuþrjótar á þessu vefsvæði kunna að reyna að setja hættuleg forrit upp í tölvunni þinni, sem ætlað er að stela eða eyða upplýsingunum þínum (t.d. myndum, aðgangsorðum, skilaboðum og kreditkortum).</translation>
 <translation id="4358059973562876591">Hugsanlega er ekki hægt að nota sniðmátin sem þú tilgreindir vegna villu með regluna DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="460848736049414407">Lokað af stjórnanda</translation>
 <translation id="4610279718074907952"><ph name="SET_OWNER" /> skilgreindi hópinn sem þetta vefsvæði er í og getur séð virkni þína</translation>
 <translation id="4617273035598175554">Hugbúnaður fyrir grafíska vinnslu og hreyfimyndagerð</translation>
+<translation id="4619564267100705184">Staðfestu hver þú ert</translation>
 <translation id="4622292761762557753">Flytja samt</translation>
 <translation id="4627675673814409125">Ekki er hægt að stilla þessa reglu á prófílstigi Chrome og hún verður hunsuð.</translation>
 <translation id="4628948037717959914">Mynd</translation>
@@ -1740,7 +1740,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5123433949759960244">Körfubolti</translation>
 <translation id="5125751979347152379">Ógild vefslóð.</translation>
 <translation id="512592033764059484">Fótbolti</translation>
-<translation id="5126510351761255129">Staðfestu kortið þitt</translation>
 <translation id="512670116361803001">Óvíst er að breytingar á stærð <ph name="APP_NAME" /> komi vel út. Notaðu forstilltar gluggastærðir til að koma í veg fyrir vandamál í forritinu.</translation>
 <translation id="5127934926273826089">Blóm</translation>
 <translation id="5129534298163637277">Staðfestingargluggi</translation>
@@ -2035,7 +2034,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="5869405914158311789">Ekki næst í vefsvæðið</translation>
 <translation id="5869522115854928033">Vistuð aðgangsorð</translation>
 <translation id="5872692522325383488">IBAN vistað</translation>
-<translation id="5873013647450402046">Bankinn þinn vill staðfesta að um þig sé að ræða.</translation>
 <translation id="5877831137320480913">Fegurð og hreysti</translation>
 <translation id="5879989559903563723">Ekki leyfilegt í gestastillingu</translation>
 <translation id="5884465125445718607">Umslag: kínverskt #6</translation>
@@ -2288,6 +2286,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6468485451923838994">Leturgerðir</translation>
 <translation id="647261751007945333">Reglur tækis</translation>
 <translation id="647330291963761005">Setur upp uppfærslur</translation>
+<translation id="6474220430271405609">Prófanir á reglum</translation>
 <translation id="6475672344094591109">Vefsvæði sem þú heimsækir geta beðið Chrome um upplýsingar til að hjálpa þeim að mæla árangur auglýsinga sinna. Chrome gætir að persónuvernd þinni með því að takmarka upplýsingarnar sem vefsvæði geta deilt sín á milli.</translation>
 <translation id="6476284679642588870">Stjórna greiðslumátum</translation>
 <translation id="6486200200930923183">Heimildarmyndir</translation>
@@ -2453,7 +2452,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6896758677409633944">Afrita</translation>
 <translation id="6897140037006041989">Vafraupplýsingar</translation>
 <translation id="6898699227549475383">Notendaskipan (O)</translation>
-<translation id="6899000063526916106">Sláðu inn <ph name="NUMBER_OF_DIGITS" /> stafa kóða</translation>
 <translation id="6907458757809079309">Hreysti</translation>
 <translation id="6910240653697687763"><ph name="URL" /> vill fá fulla stjórn á MIDI-tækjunum þínum</translation>
 <translation id="691024665142758461">Sækja margar skrár</translation>
@@ -3069,6 +3067,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8296205692406981542">Almenningsgarðar og þjóðgarðar</translation>
 <translation id="8297545700510100061">Fótspor og önnur vefsvæðagögn eru notuð til að muna eftir þér, t.d. til að skrá þig inn eða sérsníða auglýsingar. Upplýsingar um stjórnun fótspora fyrir öll vefsvæði eru í <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Wi-Fi netið sem þú notar (<ph name="WIFI_NAME" />) kann að fara fram á að þú farir á <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /></translation>
+<translation id="8301894345671534559">Sláðu inn kóðann</translation>
 <translation id="8303854710873047864">„<ph name="SECTION" />“ hluti sýndur</translation>
 <translation id="830498451218851433">Brotið í miðju</translation>
 <translation id="831997045666694187">Kvöld</translation>
@@ -3420,7 +3419,6 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="9191834167571392248">Gat neðst til vinstri</translation>
 <translation id="9199905725844810519">Lokað er fyrir prentun</translation>
 <translation id="9205078245616868884">Gögnin þín eru dulkóðuð með aðgangsorði samstillingar. Sláðu það inn til að hefja samstillingu.</translation>
-<translation id="920511547311754821">Finnurðu ekki kóðann? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Ekki tókst að bæta greininni við.</translation>
 <translation id="9213433120051936369">Sérsníða útlit</translation>
 <translation id="9215416866750762878">Forrit kemur í veg fyrir að Chrome geti tengst vefsvæðinu á öruggan máta</translation>

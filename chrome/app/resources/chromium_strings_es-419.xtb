@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Obtener ayuda con Chrome for Testing</translation>
 <translation id="1524282610922162960">Compartir una pestaña de Chromium</translation>
 <translation id="1553461853655228091">Chromium necesita permiso para acceder a la cámara a fin de crear un mapa 3D de tu entorno</translation>
-<translation id="1555506416658437797">editar formas de pago.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Tu administrador necesita que reinicies Chromium para aplicar una actualización}=1{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverá a abrir la ventana de incógnito.}other{Tu administrador necesita que reinicies Chromium para aplicar una actualización. No se volverán a abrir las # ventanas de incógnito.}}</translation>
 <translation id="1625909126243026060">Revisa los controles de seguridad y privacidad más importantes en Chromium</translation>
 <translation id="1632539827495546968">Si deseas usar esta cuenta solo una vez, puedes usar el <ph name="GUEST_LINK_BEGIN" />Modo de Invitado<ph name="GUEST_LINK_END" /> en el navegador Chromium. Si quieres agregar una cuenta para otra persona, <ph name="LINK_BEGIN" />agrega una nueva persona<ph name="LINK_END" /> a tu <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="3179665906251668410">Abrir vínculo en una ventana de navegación de incó&amp;gnito de Chromium</translation>
 <translation id="3185330573522821672">Personaliza tu nuevo perfil de Chromium.</translation>
 <translation id="3190315855212034486">¡Vaya! Se ha producido un bloqueo en Chromium. ¿Quieres reiniciar el navegador ahora?</translation>
-<translation id="3255926992597692024">Chromium está intentando modificar la configuración para completar formas de pago.</translation>
 <translation id="3258596308407688501">Chromium no puede leer y escribir en su directorio de datos: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Se instaló la versión <ph name="PRODUCT_VERSION" /> de Chromium</translation>
 <translation id="3286538390144397061">Reiniciar ahora</translation>
@@ -140,8 +138,8 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="4019629340646866719">Chromium OS funciona gracias a <ph name="BEGIN_LINK_CROS_OSS" />software de código abierto<ph name="END_LINK_CROS_OSS" /> adicional, como <ph name="BEGIN_LINK_LINUX_OSS" />el entorno de desarrollo de Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Informa tu <ph name="BEGIN_LINK" />configuración actual<ph name="END_LINK" /> para ayudarnos a mejorar Chromium</translation>
 <translation id="4050175100176540509">La última versión proporciona importantes mejoras de seguridad y nuevas funciones.</translation>
-<translation id="4050599136622776556">Chromium está intentando editar formas de pago.</translation>
 <translation id="4055805654398742145">Administrador de contraseñas</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{La organización cierra Chromium automáticamente si no lo usas durante 1 minuto. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}other{La organización cierra Chromium automáticamente si no lo usas durante # minutos. Se borran los datos de navegación. Esto puede incluir el historial, los datos de Autocompletar y las descargas.}}</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" />: Acceso a la red - Chromium</translation>
 <translation id="421369550622382712">Descubre aplicaciones, juegos, extensiones y temas increíbles para Chromium.</translation>
@@ -178,6 +176,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="479167709087336770">Se usará el mismo corrector ortográfico que se emplea en la Búsqueda de Google. El texto que escribes en el navegador se envía a Google. Puedes modificar este comportamiento en la configuración en cualquier momento.</translation>
 <translation id="4888717733111232871">Regla de entrada para que Chromium permita el tráfico mDNS.</translation>
 <translation id="4893347770495441059">Reiniciar para actualizar &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Tu organización borra automáticamente los datos de navegación si no usas Chromium durante 1 minuto. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}other{Tu organización borra automáticamente los datos de navegación si no usas Chromium durante # minutos. Esto puede incluir el historial, los datos de Autocompletar y las descargas. Las pestañas existentes permanecerán abiertas.}}</translation>
 <translation id="4943838377383847465">Chromium está en modo de segundo plano</translation>
 <translation id="4987820182225656817">Los invitados pueden utilizar Chromium sin dejar nada detrás.</translation>
 <translation id="4994636714258228724">Agregarte a Chromium</translation>
@@ -204,7 +203,6 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5653831366781983928">Reinicia Chromium ahora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Mostrar Chromium en este idioma</translation>
-<translation id="585620188971323280">modificar la configuración para completar formas de pago.</translation>
 <translation id="5862307444128926510">Bienvenido a Chromium</translation>
 <translation id="5883558403894052917">Chromium detectó que estos elementos contienen software malicioso:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -212,6 +210,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5924017743176219022">Conectando a Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5972142260211327093">Si Chromium te ubicó de manera aleatoria en una prueba activa, tu historial de navegación afecta los anuncios que ves y los intereses como se estima a continuación. Para proteger tu privacidad, Chromium borra tus intereses de manera continua todos los meses. Los intereses se actualizan a no ser que los quites.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{La organización cierra Chromium automáticamente si no lo usas durante 1 minuto.}other{La organización cierra Chromium automáticamente si no lo usas durante # minutos.}}</translation>
 <translation id="5987687638152509985">Actualiza Chromium para iniciar la sincronización</translation>
 <translation id="5988505247484123880">Es normal que los sitios que visitas recuerden tus intereses, a fin de personalizar la experiencia. Los sitios también pueden almacenar información sobre tus intereses con Chromium.</translation>
 <translation id="6003112304606738118">Descargando… Horas restantes: <ph name="HOURS" /></translation>

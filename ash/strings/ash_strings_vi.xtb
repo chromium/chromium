@@ -63,7 +63,6 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1235458158152011030">Mạng đã biết</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> đã kết nối.</translation>
 <translation id="1240638468526743569">Một ứng dụng</translation>
-<translation id="1242704516557658755">Quay trở lại trong danh sách cửa sổ được sử dụng gần đây nhất</translation>
 <translation id="124678866338384709">Đóng thẻ hiện tại</translation>
 <translation id="1246890715821376239">Các ứng dụng không được hỗ trợ</translation>
 <translation id="1247372569136754018">Micrô (bên trong)</translation>
@@ -90,7 +89,7 @@ Dưới đây là một số việc bạn có thể thử để bắt đầu.</t
 <translation id="1306549533752902673">ỨNG DỤNG ĐỀ XUẤT</translation>
 <translation id="1311294419381837540">Bạn đang truyền một thẻ. Bạn có thể tạm dừng hoặc ngừng truyền bất cứ lúc nào.</translation>
 <translation id="1312604459020188865">Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" /></translation>
-<translation id="1316069254387866896">Luôn hiển thị giá</translation>
+<translation id="1316069254387866896">Luôn hiển thị kệ</translation>
 <translation id="132346741904777634">Máy ảnh được chuyển đến góc trên bên trái Xung đột với khu vực hệ thống.</translation>
 <translation id="1333308631814936910">Đã kết nối <ph name="DISPLAY_NAME" /></translation>
 <translation id="1340378040547539434">Thu nhỏ trang</translation>
@@ -1120,7 +1119,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Bật</translation>
 <translation id="5920710855273935292">Micrô đang tắt.</translation>
-<translation id="5922962980596822074">Di chuyển qua các cửa sổ từ cửa sổ được sử dụng gần đây nhất</translation>
 <translation id="5924855612669061715">Điểm phát sóng đang bật</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> đang bật.</translation>
 <translation id="5947494881799873997">Hoàn nguyên</translation>
@@ -1145,7 +1143,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="6025324406281560198"><ph name="SECURITY_STATUS" />, <ph name="CONNECTION_STATUS" />, Cường độ tín hiệu <ph name="SIGNAL_STRENGTH" />, Do quản trị viên của bạn quản lý</translation>
 <translation id="6027518778343897451">Không có sự kiện nào vào <ph name="CURRENT_MONTH_DAY" />. Nhấn Enter để mở Lịch Google trên trình duyệt này.</translation>
 <translation id="6030495522958826102">Đã di chuyển trình đơn vào góc dưới cùng bên trái màn hình.</translation>
-<translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để chụp toàn màn hình</translation>
+<translation id="6032620807120418574">Nhấp vào vị trí bất kỳ để quay toàn màn hình</translation>
 <translation id="6040071906258664830">Ghi âm <ph name="STATE" /></translation>
 <translation id="6040143037577758943">Đóng</translation>
 <translation id="6043212731627905357">Màn hình này không tương thích với <ph name="DEVICE_TYPE" /> của bạn (màn hình không được hỗ trợ).</translation>
@@ -1239,7 +1237,6 @@ Hãy sạc thiết bị.</translation>
 <translation id="6469104339369989396">Bật/tắt điểm phát sóng</translation>
 <translation id="6477681113376365978">Không tải được tệp xuống</translation>
 <translation id="6482559668224714696">Phóng to toàn màn hình</translation>
-<translation id="6483727822843292440">Di chuyển qua các cửa sổ từ cửa sổ ít được sử dụng nhất</translation>
 <translation id="6490471652906364588">Thiết bị USB-C (cổng bên phải)</translation>
 <translation id="6491071886865974820">Theo yêu cầu của <ph name="MANAGER" />, bạn phải cập nhật thiết bị <ph name="DEVICE_TYPE" /> của mình trước thời hạn</translation>
 <translation id="649452524636452238">Mã PIN của thẻ thông minh</translation>

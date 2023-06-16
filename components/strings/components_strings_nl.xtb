@@ -1405,7 +1405,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="4349810866125026513">Toch uploaden</translation>
 <translation id="4350629523305688469">Multifunctionele lade</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil scannen naar Bluetooth-apparaten in de buurt. De volgende apparaten zijn gevonden:</translation>
-<translation id="4351175281479794167">Verificatiecode opgeven</translation>
 <translation id="4355383636893709732">ChromeOS-update voor Android-apps</translation>
 <translation id="4356973930735388585">Cybercriminelen op deze site proberen mogelijk gevaarlijke programma's op je computer te installeren waarmee je gegevens worden gestolen of verwijderd (bijvoorbeeld foto's, wachtwoorden, berichten en creditcards).</translation>
 <translation id="4358059973562876591">De gespecificeerde templates worden misschien niet toegepast door een fout met het beleid DnsOverHttpsMode.</translation>
@@ -1499,6 +1498,7 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="460848736049414407">Geblokkeerd door beheerder</translation>
 <translation id="4610279718074907952">Deze site maakt deel uit van een groep die is gedefinieerd door <ph name="SET_OWNER" /> en die je activiteit kan bekijken</translation>
 <translation id="4617273035598175554">Graphics- en animatiesoftware</translation>
+<translation id="4619564267100705184">Bevestigen dat jij het bent</translation>
 <translation id="4622292761762557753">Toch overzetten</translation>
 <translation id="4627675673814409125">Je kunt dit beleid niet instellen op Chrome-profielniveau. Het beleid wordt genegeerd.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1724,7 +1724,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="512592033764059484">Voetbal</translation>
-<translation id="5126510351761255129">Je kaart verifiëren</translation>
 <translation id="512670116361803001">Het formaat van <ph name="APP_NAME" /> wordt misschien niet goed aangepast. Gebruik vooraf ingestelde vensterformaten om te zorgen dat de app geen problemen ondervindt.</translation>
 <translation id="5127934926273826089">Bloemen</translation>
 <translation id="5129534298163637277">Bevestigingsdialoogvenster</translation>
@@ -2017,7 +2016,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="5869405914158311789">Deze site is niet bereikbaar</translation>
 <translation id="5869522115854928033">Opgeslagen wachtwoorden</translation>
 <translation id="5872692522325383488">IBAN opgeslagen</translation>
-<translation id="5873013647450402046">Je bank wil bevestigen dat jij het bent.</translation>
 <translation id="5877831137320480913">Beauty en fitness</translation>
 <translation id="5879989559903563723">Niet toegestaan in gastmodus</translation>
 <translation id="5884465125445718607">Envelop Chinees #6</translation>
@@ -2431,7 +2429,6 @@ Het kan langer dan normaal duren voordat je app wordt gestart.</translation>
 <translation id="6896758677409633944">Kopiëren</translation>
 <translation id="6897140037006041989">User-agent</translation>
 <translation id="6898699227549475383">Organisatie (O)</translation>
-<translation id="6899000063526916106">Geef de <ph name="NUMBER_OF_DIGITS" />-cijferige code op</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wil volledig beheer van je MIDI-apparaten hebben</translation>
 <translation id="691024665142758461">Meerdere bestanden downloaden</translation>
@@ -3043,6 +3040,7 @@ Aanvullende informatie:
 <translation id="8296205692406981542">Natuurparken en tuinen</translation>
 <translation id="8297545700510100061">Cookies en andere sitegegevens worden gebruikt om je te onthouden, bijvoorbeeld voor inloggen of gepersonaliseerde advertenties. Ga naar <ph name="SETTINGS" /> om de cookies voor alle sites te beheren.</translation>
 <translation id="8298115750975731693">Het is mogelijk dat je <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> moet bezoeken van het wifi-netwerk (<ph name="WIFI_NAME" />) dat je gebruikt.</translation>
+<translation id="8301894345671534559">Code opgeven</translation>
 <translation id="8303854710873047864">Het gedeelte <ph name="SECTION" /> is zichtbaar</translation>
 <translation id="830498451218851433">Enkele vouw</translation>
 <translation id="831997045666694187">Avond</translation>
@@ -3391,7 +3389,6 @@ Aanvullende informatie:
 <translation id="9191834167571392248">Perforatie linksonder</translation>
 <translation id="9199905725844810519">Afdrukken is geblokkeerd</translation>
 <translation id="9205078245616868884">Je gegevens zijn versleuteld met je wachtwoordzin voor synchronisatie. Geef deze op om de synchronisatie te starten.</translation>
-<translation id="920511547311754821">Kun je de code niet vinden? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Kan artikel niet toevoegen.</translation>
 <translation id="9213433120051936369">Weergave aanpassen</translation>
 <translation id="9215416866750762878">Een app voorkomt dat Chrome veilig verbinding kan maken met deze site</translation>

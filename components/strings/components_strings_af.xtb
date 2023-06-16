@@ -1410,7 +1410,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="4349810866125026513">Laai tog op</translation>
 <translation id="4350629523305688469">Multifunksionele laai</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> wil vir Bluetooth-toestelle in die omtrek soek. Die volgende toestelle is gekry:</translation>
-<translation id="4351175281479794167">Voer verifikasiekode in</translation>
 <translation id="4355383636893709732">ChromeOS-opdatering vir Android-programme</translation>
 <translation id="4356973930735388585">Aanvallers op hierdie werf kan probeer om gevaarlike programme op jou rekenaar te installeer wat jou inligting (byvoorbeeld foto's, wagwoorde, boodskappe en kredietkaarte) steel of uitvee.</translation>
 <translation id="4358059973562876591">Die template wat jy gespesifiseer het, kan weens 'n fout met die DnsOverHttpsMode-beleid dalk nie toegepas word nie.</translation>
@@ -1504,6 +1503,7 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="460848736049414407">Geblokkeer deur admin</translation>
 <translation id="4610279718074907952">Hierdie werf is in ’n groep, wat deur <ph name="SET_OWNER" /> gedefinieer is, en wat jou aktiwiteit kan sien</translation>
 <translation id="4617273035598175554">Grafika- en animasiesagteware</translation>
+<translation id="4619564267100705184">Verifieer dis jy</translation>
 <translation id="4622292761762557753">Dra nogtans oor</translation>
 <translation id="4627675673814409125">Hierdie beleid kan nie op die Chrome-profielvlak gestel word nie en sal geïgnoreer word.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1729,7 +1729,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5123433949759960244">Basketbal</translation>
 <translation id="5125751979347152379">Ongeldige URL.</translation>
 <translation id="512592033764059484">Sokker</translation>
-<translation id="5126510351761255129">Verifieer jou kaart</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> se grootte is dalk nie maklik om te verander nie. Gebruik voorafgestelde venstergroottes om te verhoed dat die program kwessies ervaar.</translation>
 <translation id="5127934926273826089">Blomme</translation>
 <translation id="5129534298163637277">Bevestigingdialoog</translation>
@@ -2022,7 +2021,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="5869405914158311789">Hierdie werf kan nie bereik word nie</translation>
 <translation id="5869522115854928033">Gestoorde wagwoorde</translation>
 <translation id="5872692522325383488">IBAN is gestoor</translation>
-<translation id="5873013647450402046">Jou bank wil bevestig dis jy.</translation>
 <translation id="5877831137320480913">Skoonheid en fiksheid</translation>
 <translation id="5879989559903563723">Word nie in Gasmodus toegelaat nie</translation>
 <translation id="5884465125445718607">Koevert Chinees #6</translation>
@@ -2437,7 +2435,6 @@ Dit sal andersins deur jou privaatheidinstellings geblokkeer word. Dit sal die i
 <translation id="6896758677409633944">Kopieer</translation>
 <translation id="6897140037006041989">Gebruikeragent</translation>
 <translation id="6898699227549475383">Organisasie (O)</translation>
-<translation id="6899000063526916106">Voer <ph name="NUMBER_OF_DIGITS" />-syferkode in</translation>
 <translation id="6907458757809079309">Fiksheid</translation>
 <translation id="6910240653697687763"><ph name="URL" /> wil volle beheer van jou MIDI-toestelle oorneem</translation>
 <translation id="691024665142758461">Veelvuldige lêers aflaai</translation>
@@ -3049,6 +3046,7 @@ om uit te vind hoe om die sagteware permanent van jou rekenaar te verwyder&lt;/o
 <translation id="8296205692406981542">Streeksparke en -tuine</translation>
 <translation id="8297545700510100061">Webkoekies en ander werfdata word gebruik om jou te onthou, byvoorbeeld om jou aan te meld of om advertensies te personaliseer. Sien <ph name="SETTINGS" /> om webkoekies vir alle werwe te bestuur.</translation>
 <translation id="8298115750975731693">Die Wi-Fi wat jy gebruik (<ph name="WIFI_NAME" />), kan vereis dat jy <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> besoek.</translation>
+<translation id="8301894345671534559">Voer kode in</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />"-afdeling is gewys</translation>
 <translation id="830498451218851433">Halfgevou</translation>
 <translation id="831997045666694187">Aand</translation>
@@ -3397,7 +3395,6 @@ Bykomende besonderhede:
 <translation id="9191834167571392248">Pons links onder</translation>
 <translation id="9199905725844810519">Druk word geblokkeer</translation>
 <translation id="9205078245616868884">Jou data is met jou sinkroniseringwagfrase geënkripteer. Voer dit in om sinkronisering te begin.</translation>
-<translation id="920511547311754821">Kan jy nie jou kode kry nie? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Kon nie artikel bevoeg nie.</translation>
 <translation id="9213433120051936369">Pasmaak voorkoms</translation>
 <translation id="9215416866750762878">'n Program verhinder Chrome om veilig aan hierdie werf te koppel</translation>

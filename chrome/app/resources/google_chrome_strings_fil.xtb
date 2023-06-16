@@ -32,7 +32,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
  pagpapares. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Pinapagana ng karagdagang <ph name="BEGIN_LINK_CROS_OSS" />open source na software<ph name="END_LINK_CROS_OSS" /> ang ChromeOS.</translation>
 <translation id="1553358976309200471">I-update ang Chrome</translation>
-<translation id="1555506416658437797">i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="1583073672411044740">Naka-sign in na si <ph name="EXISTING_USER" /> sa profile sa Chrome na ito. Gagawa ito ng bagong profile sa Chrome para sa <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Ginagamit ng Google Chrome ang iyong camera.</translation>
 <translation id="1587325591171447154">Mapanganib ang <ph name="FILE_NAME" />, kaya na-block ito ng Chrome.</translation>
@@ -83,7 +82,6 @@ Maaaring hindi available ang ilang tampok at hindi mase-save ang mga pagbabago s
 <translation id="234869673307233423">Hindi masuri ng Chrome ang iyong mga password. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="235650106824528204">Puwedeng alisin ng administrator ng profile sa trabaho ang anumang data ng Chrome na nabuo sa panahon ng paggamit sa profile na ito (gaya ng paggawa ng mga bookmark, history, mga password, at iba pang setting). <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Magpatuloy</translation>
-<translation id="2399868464369312507">Sinusubukan ng Google Chrome na i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="2401189691232800402">ChromeOS system</translation>
 <translation id="2424440923901031101">Lumalabag ang extension na ito sa patakaran ng Chrome Web Store, at posibleng hindi ito ligtas. Alisin ito sa Chrome para hindi na nito makita at mabago ang iyong data sa mga site na binibisita mo, kabilang ang iyong personal na impormasyon.</translation>
 <translation id="2467438592969358367">Gustong i-export ng Google Chrome ang iyong mga password. I-type ang password mo sa Windows para payagan ito.</translation>
@@ -261,7 +259,6 @@ Hindi magawang bawiin ng Google Chrome ang iyong mga setting.</translation>
 <translation id="5756509061973259733">Mayroon nang profile sa Chrome na gumagamit ng account na ito sa device na ito</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Hindi mailunsad ang Chrome. Subukang muli.</translation>
-<translation id="585620188971323280">baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="5895138241574237353">I-restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Pag-sign in sa Network</translation>
 <translation id="5924017743176219022">Kumokonekta sa Internet...</translation>
@@ -401,7 +398,6 @@ Posibleng malapat sa account na ito ang mga pahintulot na naibigay mo na sa mga 
 <translation id="8504220326736535258">Na-block ng Chrome ang file na ito dahil mayroon itong malware</translation>
 <translation id="8516431725144212809">Iyong mga interes tulad ng tinatantya ng Chrome</translation>
 <translation id="8521348052903287641">Inbound na panuntunan para sa Google Chrome Dev upang payagan ang trapiko ng mDNS.</translation>
-<translation id="8544217240017914508">Sinusubukan ng Google Chrome na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="8550334526674375523">Ang profile sa trabaho na ito ay ganap na hiwalay sa iyong personal na profile.</translation>
 <translation id="8556340503434111824">May available na bagong bersyon ng Google Chrome, at mas mabilis ito kaysa sa dati.</translation>
 <translation id="8571790202382503603">Gamit ang mga profile sa Chrome, magagawa mong paghiwalayin ang lahat ng iyong bagay-bagay sa Chrome. Pinapadali nitong mapaghiwalay ang trabaho at kasiyahan.</translation>

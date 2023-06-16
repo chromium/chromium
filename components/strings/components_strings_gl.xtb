@@ -1419,7 +1419,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="4349810866125026513">Cargar igualmente</translation>
 <translation id="4350629523305688469">Bandexa multifunción</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> quere buscar dispositivos Bluetooth cerca. Atopáronse os seguintes dispositivos:</translation>
-<translation id="4351175281479794167">Mete o código de verificación</translation>
 <translation id="4355383636893709732">Actualización de ChromeOS para as aplicacións para Android</translation>
 <translation id="4356973930735388585">Os atacantes deste sitio poden tentar instalar programas perigosos no teu ordenador e roubar ou eliminar os teus datos (por exemplo, fotos, contrasinais, mensaxes e información das túas tarxetas de crédito).</translation>
 <translation id="4358059973562876591">Os modelos que especificaches poden non aplicarse debido a un erro coa política DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="460848736049414407">Bloqueado polo administrador</translation>
 <translation id="4610279718074907952">Este sitio está nun grupo definido por <ph name="SET_OWNER" />, que pode ver a túa actividade</translation>
 <translation id="4617273035598175554">Software de animación e gráficos</translation>
+<translation id="4619564267100705184">Verificar a túa identidade</translation>
 <translation id="4622292761762557753">Transferir de todos os xeitos</translation>
 <translation id="4627675673814409125">Esta política non se pode configurar no perfil de Chrome e, polo tanto, ignorarase.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1740,7 +1740,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5123433949759960244">Baloncesto</translation>
 <translation id="5125751979347152379">URL non válido.</translation>
 <translation id="512592033764059484">Fútbol</translation>
-<translation id="5126510351761255129">Verificar a túa tarxeta</translation>
 <translation id="512670116361803001">É posible que <ph name="APP_NAME" /> non cambie ben de tamaño. Para evitar que se produzan problemas co funcionamento da aplicación, usa os tamaños de ventá predeterminados.</translation>
 <translation id="5127934926273826089">Flores</translation>
 <translation id="5129534298163637277">Cadro de diálogo de confirmación</translation>
@@ -2035,7 +2034,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="5869405914158311789">Non se pode acceder a este sitio</translation>
 <translation id="5869522115854928033">Contrasinais gardados</translation>
 <translation id="5872692522325383488">Gardouse o IBAN</translation>
-<translation id="5873013647450402046">O teu banco quere confirmar a túa identidade.</translation>
 <translation id="5877831137320480913">Beleza e actividade física</translation>
 <translation id="5879989559903563723">Non se permite no modo Convidados</translation>
 <translation id="5884465125445718607">Sobre chinés n.º 6</translation>
@@ -2454,7 +2452,6 @@ En caso contrario, a configuración de privacidade impedirao. Se o permites, o c
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6897140037006041989">Axente de usuario</translation>
 <translation id="6898699227549475383">Organización (O)</translation>
-<translation id="6899000063526916106">Mete un código de <ph name="NUMBER_OF_DIGITS" /> díxitos</translation>
 <translation id="6907458757809079309">Actividade física</translation>
 <translation id="6910240653697687763">O URL <ph name="URL" /> quere obter o control total dos teus dispositivos MIDI</translation>
 <translation id="691024665142758461">Descargar varios ficheiros</translation>
@@ -3070,6 +3067,7 @@ Detalles adicionais:
 <translation id="8296205692406981542">Parques e xardíns rexionais</translation>
 <translation id="8297545700510100061">As cookies e outros datos do sitio utilízanse para lembrarte (por exemplo, á hora de iniciar sesión ou de personalizar anuncios). Se queres xestionar as cookies para todos os sitios, vai a <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">É posible que a rede wifi que utilizas (<ph name="WIFI_NAME" />) requira o acceso a <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Introducir código</translation>
 <translation id="8303854710873047864">Mostrouse a sección <ph name="SECTION" /></translation>
 <translation id="830498451218851433">Dobrez á metade</translation>
 <translation id="831997045666694187">Serán</translation>
@@ -3421,7 +3419,6 @@ Detalles adicionais:
 <translation id="9191834167571392248">Perforación na parte inferior esquerda</translation>
 <translation id="9199905725844810519">A opción de impresión está bloqueada</translation>
 <translation id="9205078245616868884">Os teus datos encriptáronse co teu contrasinal de sincronización. Introdúceo para comezar a sincronización.</translation>
-<translation id="920511547311754821">Non es quen de atopar o código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Non se puido engadir o artigo.</translation>
 <translation id="9213433120051936369">Personalizar a aparencia</translation>
 <translation id="9215416866750762878">Unha aplicación está evitando que Chrome se conecte de forma segura a este sitio</translation>

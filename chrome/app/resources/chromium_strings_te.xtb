@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Chrome for Testingకు సంబంధించి సహాయాన్ని పొందండి</translation>
 <translation id="1524282610922162960">Chromium ట్యాబ్‌ను షేర్ చేయండి</translation>
 <translation id="1553461853655228091">మీ పరిసరాల 3D మ్యాప్‌ను క్రియేట్ చేయడానికి Chromiumకు మీ కెమెరాను యాక్సెస్ చేసే అనుమతి కావాలి</translation>
-<translation id="1555506416658437797">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయండి.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు}=1{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ అజ్ఞాత విండో మళ్లీ తెరవబడదు.}other{అప్‌డేట్‌ను వర్తింపజేయడం కోసం మీరు Chromiumను పునఃప్రారంభించాలని మీ నిర్వాహకుడు కోరుతున్నారు. మీ # అజ్ఞాత విండోలు మళ్లీ తెరవబడవు.}}</translation>
 <translation id="1625909126243026060">Chromiumలోని ముఖ్య గోప్యతా, సెక్యూరిటీ కంట్రోల్స్‌ను రివ్యూ చేయండి</translation>
 <translation id="1632539827495546968">మీరు ఈ ఖాతాను ఒకసారి మాత్రమే ఉపయోగించాలనుకుంటే, Chromium బ్రౌజర్‌లో <ph name="GUEST_LINK_BEGIN" />గెస్ట్ మోడ్‌ను<ph name="GUEST_LINK_END" /> ఉపయోగించండి. వేరెవరి కోసం అయినా మీరు ఖాతాను జోడించాలనుకుంటే, మీ <ph name="DEVICE_TYPE" />‌కు <ph name="LINK_BEGIN" />కొత్త వ్యక్తిని జోడించండి<ph name="LINK_END" />.
@@ -95,7 +94,6 @@
 <translation id="3179665906251668410">Chromium అజ్ఞా&amp;త విండోలో లింక్‌ను తెరువు</translation>
 <translation id="3185330573522821672">మీ కొత్త Chromium ప్రొఫైల్‌ను అనుకూలంగా మార్చుకోండి</translation>
 <translation id="3190315855212034486">అయ్యో! Chromium క్రాష్ అయ్యింది. ఇప్పుడే మళ్లీ ప్రారంభించాలా?</translation>
-<translation id="3255926992597692024">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
 <translation id="3258596308407688501">Chromium దీని డేటా డైరెక్టరీని చదవలేదు మరియు దీనిలో రాయ‌లేదు: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">Chromium వెర్షన్ <ph name="PRODUCT_VERSION" /> ఇన్‌స్టాల్ చేయబడింది</translation>
 <translation id="3286538390144397061">ఇప్పుడు పునఃప్రారంభించండి</translation>
@@ -140,7 +138,6 @@
 <translation id="4019629340646866719">ChromiumOS అనేది <ph name="BEGIN_LINK_LINUX_OSS" />Linux డెవలప్‌మెంట్ ఎన్విరాన్‌మెంట్<ph name="END_LINK_LINUX_OSS" /> తరహాలోనే, అదనపు <ph name="BEGIN_LINK_CROS_OSS" />ఓపెన్ సోర్స్ సాఫ్ట్‌వేర్<ph name="END_LINK_CROS_OSS" /> ద్వారా సాధ్యమైంది.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />ప్రస్తుత సెట్టింగ్‌లను<ph name="END_LINK" /> రిపోర్ట్ చేయడం ద్వారా Chromiumను మెరుగుపరచడంలో సహాయపడండి</translation>
 <translation id="4050175100176540509">ముఖ్యమైన భద్రతా మెరుగుదలలు మరియు కొత్త ఫీచర్‌లు తాజా వెర్షన్‌లో అందుబాటులో ఉన్నాయి.</translation>
-<translation id="4050599136622776556">పేమెంట్ ఆప్షన్‌లను ఎడిట్ చేయడానికి Chromium ట్రై చేస్తోంది.</translation>
 <translation id="4055805654398742145">Password Manager</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromiumను 1 నిమిషం పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}other{Chromiumను # నిమిషాల పాటు ఉపయోగించనప్పుడు, మీ సంస్థ ఆటోమేటిక్‌గా దాన్ని మూసివేస్తుంది. బ్రౌజింగ్ డేటాను తొలగించడం జరుగుతుంది. ఇందులో భాగంగా హిస్టరీ, ఆటోఫిల్, డౌన్‌లోడ్‌లు ఉండవచ్చు.}}</translation>
 <translation id="4148957013307229264">వ్యవస్థాపిస్తోంది...</translation>
@@ -206,7 +203,6 @@
 <translation id="5653831366781983928">దయచేసి ఇప్పుడు Chromiumను మళ్ళీ ప్రారంభించండి</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Chromiumను ఈ భాషలో ప్రదర్శించు</translation>
-<translation id="585620188971323280">పేమెంట్ ఆప్షన్‌లను పూరించడానికి సంబంధించిన సెట్టింగ్‌లను ఎడిట్ చేయండి.</translation>
 <translation id="5862307444128926510">Chromiumకు స్వాగతం</translation>
 <translation id="5883558403894052917">ఈ ఐటెమ్‌లు మాల్‌వేర్‌ను కలిగి ఉన్నట్టుగా Chromium కనుగొన్నది:</translation>
 <translation id="5895138241574237353">మళ్ళీ ప్రారంభించండి</translation>

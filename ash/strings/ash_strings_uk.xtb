@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">Відомі мережі</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> підключено.</translation>
 <translation id="1240638468526743569">Додаток</translation>
-<translation id="1242704516557658755">Переглядати вікна зі списку нещодавніх, починаючи з того, яке використовувалось останнім</translation>
 <translation id="124678866338384709">Закрити поточну вкладку</translation>
 <translation id="1246890715821376239">Непідтримувані додатки</translation>
 <translation id="1247372569136754018">Мікрофон (внутрішній)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Увімкнено</translation>
 <translation id="5920710855273935292">Мікрофон вимкнено.</translation>
-<translation id="5922962980596822074">Переглядати вікна, починаючи з того, яке використовувалось останнім</translation>
 <translation id="5924855612669061715">Точку доступу ввімкнено</translation>
 <translation id="5946788582095584774">Функцію "<ph name="FEATURE_NAME" />" увімкнено.</translation>
 <translation id="5947494881799873997">Повернути</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">Увімкнути або вимкнути точку доступу</translation>
 <translation id="6477681113376365978">Не вдалося завантажити файл</translation>
 <translation id="6482559668224714696">Лупа для всього екрана</translation>
-<translation id="6483727822843292440">Переглядати вікна, починаючи з того, яке використовувалося найменше</translation>
 <translation id="6490471652906364588">Пристрій із портом USB типу C (праворуч)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> вимагає, щоб ви оновили пристрій <ph name="DEVICE_TYPE" /> до кінцевого терміну</translation>
 <translation id="649452524636452238">PIN-код розумної картки</translation>

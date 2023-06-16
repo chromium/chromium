@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">Ismert hálózatok</translation>
 <translation id="1239161794459865856">A(z) <ph name="FEATURE_NAME" /> csatlakozik.</translation>
 <translation id="1240638468526743569">Az egyik alkalmazás</translation>
-<translation id="1242704516557658755">Visszafelé lépkedés a legutóbb használt ablakok listájában</translation>
 <translation id="124678866338384709">Az aktuális lap bezárása</translation>
 <translation id="1246890715821376239">Nem támogatott alkalmazások</translation>
 <translation id="1247372569136754018">Mikrofon (belső)</translation>
@@ -1121,7 +1120,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Be</translation>
 <translation id="5920710855273935292">A mikrofon le van némítva.</translation>
-<translation id="5922962980596822074">Ablakok léptetése a legutóbb használt ablaktól kezdve</translation>
 <translation id="5924855612669061715">A hotspot be van kapcsolva</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> bekapcsolva.</translation>
 <translation id="5947494881799873997">Visszavonás</translation>
@@ -1240,7 +1238,6 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="6469104339369989396">Hotspot be- vagy kikapcsolása</translation>
 <translation id="6477681113376365978">Nem sikerült a fájl letöltése</translation>
 <translation id="6482559668224714696">Teljes képernyős nagyító</translation>
-<translation id="6483727822843292440">Ablakok léptetése a legrégebben használt ablaktól kezdve</translation>
 <translation id="6490471652906364588">C típusú USB-vel kompatibilis eszköz (jobb oldali port)</translation>
 <translation id="6491071886865974820">A(z) <ph name="MANAGER" /> megköveteli, hogy frissítse <ph name="DEVICE_TYPE" /> eszközét a határidőig</translation>
 <translation id="649452524636452238">Az intelligens kártya PIN-kódja</translation>

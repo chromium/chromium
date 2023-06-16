@@ -467,6 +467,7 @@ Ako je primjenjivo, pogledajte uputstva pretraživača da saznate kako izbrisati
 <translation id="4045648459118332842">Dobijte sačuvane lozinke u bilo kojoj aplikaciji jednim dodirom</translation>
 <translation id="4049507953662678203">Provjerite imate li mrežnu vezu i pokušajte ponovo.</translation>
 <translation id="4063300985191096908">Idi u sažetak sadržaja</translation>
+<translation id="4066639687323968621">Prijavite se Google računom da biste sinkronizirali oznake, povijest i ostalo.</translation>
 <translation id="408404951701638773">Sada je lakše prići traci za pretraživanje</translation>
 <translation id="4092655288299341041">Prikaz pomoći</translation>
 <translation id="4105841739161771091">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
@@ -1145,6 +1146,7 @@ Web lokacije mogu koristiti kolačiće da vide vašu aktivnost pregledanja na ra
 <translation id="8323906514956095947">Dodirnite i zadržite za više opcija za karticu</translation>
 <translation id="8328777765163860529">Zatvori sve</translation>
 <translation id="8343993175958086504">Napravite sigurnosnu kopiju svojih stvari i koristite ih na bilo kojem uređaju.</translation>
+<translation id="834783239627985533">Najposjećenije web lokacije</translation>
 <translation id="8378714024927312812">Ovim upravlja vaša organizacija</translation>
 <translation id="8386068868580335421">Vrati na zadano</translation>
 <translation id="838867811594159347">Unesite pristupni izraz…</translation>
@@ -1274,6 +1276,7 @@ Vaši podaci su šifrirani vašim pristupnim izrazom <ph name="TIME" />. Unesite
 <translation id="9157836665414082580">Spriječi dijaloge</translation>
 <translation id="9162432979321511934">Uključite automatsko popunjavanje lozinki</translation>
 <translation id="9165320910061267720">Da primate obavještenja o padovima cijena, morate uključiti obavještenja u postavkama iOS-a.</translation>
+<translation id="9172603439892261948">Sinkronizirajte svoje oznake, povijest i ostalo.</translation>
 <translation id="9177438225260810839">Pretraži otvorene kartice</translation>
 <translation id="9187853111759024059">Zatvoriti više od 99 neaktivnih kartica?</translation>
 <translation id="9188680907066685419">Odjava s upravljanog računa</translation>

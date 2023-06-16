@@ -34,7 +34,7 @@
 <translation id="1058344460600311577"><ph name="PLAY_CHROME_DINO_GAME_FOCUSED_FRIENDLY_MATCH_TEXT" />, appuyez sur la touche Tabulation, puis sur la touche Entrée pour jouer au jeu du dinosaure dans Chrome</translation>
 <translation id="1058479211578257048">Enregistrement des cartes en cours…</translation>
 <translation id="1060320201901229167">Enveloppe Kaku nᵒ 5</translation>
-<translation id="10614374240317010">Jamais enregistré</translation>
+<translation id="10614374240317010">Jamais enregistrés</translation>
 <translation id="1064054731605354900">A3 x 5</translation>
 <translation id="106701514854093668">Favoris d'ordinateur de bureau</translation>
 <translation id="1068672505746868501">Ne jamais traduire les pages en <ph name="SOURCE_LANGUAGE" /></translation>
@@ -1390,7 +1390,6 @@
 <translation id="4349810866125026513">Téléverser quand même</translation>
 <translation id="4350629523305688469">Plateau multifonction</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> veut rechercher des appareils Bluetooth à proximité. Les appareils suivants ont été détectés :</translation>
-<translation id="4351175281479794167">Entrez le code de vérification</translation>
 <translation id="4355383636893709732">Mise à jour ChromeOS pour les applications Android</translation>
 <translation id="4356973930735388585">Les cyberpirates sur le site pourraient tenter d'installer des programmes dangereux sur votre ordinateur afin de voler ou de supprimer vos données (par exemple des photos, des mots de passe, des messages et des données de carte de crédit).</translation>
 <translation id="4358059973562876591">Les modèles que vous avez indiqués pourraient ne pas être appliqués en raison d'une erreur avec la politique DnsOverHttpsMode.</translation>
@@ -1483,6 +1482,7 @@
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4617273035598175554">Logiciels de graphisme et d'animation</translation>
+<translation id="4619564267100705184">Confirmer que c'est bien vous</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
 <translation id="4627675673814409125">Cette politique ne peut pas être réglée au niveau du profil Chrome et elle sera ignorée.</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -1705,7 +1705,6 @@
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">URL incorrecte.</translation>
 <translation id="512592033764059484">Soccer</translation>
-<translation id="5126510351761255129">Vérifier votre carte</translation>
 <translation id="512670116361803001">L'application <ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Utilisez des tailles de fenêtre préréglées pour éviter que l'application rencontre des problèmes.</translation>
 <translation id="5127934926273826089">Fleurs</translation>
 <translation id="5129534298163637277">Boîte de dialogue de confirmation</translation>
@@ -1995,7 +1994,6 @@
 <translation id="5869405914158311789">Impossible d'accéder à ce site</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5872692522325383488">IBAN enregistré</translation>
-<translation id="5873013647450402046">Votre banque veut confirmer votre identité.</translation>
 <translation id="5877831137320480913">Soins du corps et mise en forme</translation>
 <translation id="5879989559903563723">Non autorisé en mode Invité</translation>
 <translation id="5884465125445718607">Enveloppe chinoise nᵒ 6</translation>
@@ -2405,7 +2403,6 @@
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6897140037006041989">Agent utilisateur</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
-<translation id="6899000063526916106">Entrez le code à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="6907458757809079309">Mise en forme</translation>
 <translation id="6910240653697687763">L'URL <ph name="URL" /> veut obtenir le plein contrôle de vos appareils MIDI</translation>
 <translation id="691024665142758461">Télécharger plusieurs fichiers</translation>
@@ -3013,6 +3010,7 @@ Détails supplémentaires :
 <translation id="8296205692406981542">Parcs régionaux et jardins publics</translation>
 <translation id="8297545700510100061">Les témoins et d'autres données relatives aux sites sont utilisés pour se souvenir de vous, comme pour vous connecter à votre compte ou pour personnaliser les annonces. Pour gérer les témoins pour tous les sites, voir <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Le réseau Wi-Fi que vous utilisez (<ph name="WIFI_NAME" />) peut vous demander de visiter <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Entrer le code</translation>
 <translation id="8303854710873047864">Section « <ph name="SECTION" /> » affichée</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="831997045666694187">Soirée</translation>
@@ -3358,7 +3356,6 @@ Détails supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9199905725844810519">L'impression est bloquée</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase de passe de synchronisation. Veuillez l'entrer pour commencer la synchronisation.</translation>
-<translation id="920511547311754821">Vous ne trouvez pas votre code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Échec de l'ajout d'un article.</translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>
 <translation id="9215416866750762878">Une application empêche Chrome de se connecter à ce site en toute sécurité</translation>

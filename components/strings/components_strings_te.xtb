@@ -1421,7 +1421,6 @@
 <translation id="4349810866125026513">ఏదేమైనా అప్‌లోడ్ చేయండి</translation>
 <translation id="4350629523305688469">మల్టీఫంక్షన్ ట్రే</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> సమీపంలోని బ్లూటూత్ పరికరాల కోసం స్కాన్ చేయాలనుకుంటోంది. కింది పరికరాలు కనుగొనబడ్డాయి:</translation>
-<translation id="4351175281479794167">వెరిఫికేషన్ కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="4355383636893709732">Android యాప్‌ల కోసం ChromeOS అప్‌డేట్</translation>
 <translation id="4356973930735388585">ఈ సైట్‌లోని దాడి చేసేవారు మీ సమాచారాన్ని (ఉదాహరణకు, ఫోటోలు, పాస్‌వర్డ్‌లు, మెసేజ్‌లు మరియు క్రెడిట్ కార్డ్‌లు) దొంగిలించడం కోసం లేదా తొలగించడం కోసం మీ కంప్యూటర్‌లో ప్రమాదకరమైన ప్రోగ్రామ్‌లను ఇన్‌స్టాల్ చేయడానికి ప్రయత్నించవచ్చు.</translation>
 <translation id="4358059973562876591">DnsOverHttpsMode విధానానికి సంబంధించి ఏర్పడిన ఎర్రర్ కారణంగా మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలు కాకపోవచ్చు.</translation>
@@ -1516,6 +1515,7 @@
 <translation id="460848736049414407">అడ్మిన్ బ్లాక్ చేశారు</translation>
 <translation id="4610279718074907952">ఈ సైట్ <ph name="SET_OWNER" /> ద్వారా నిర్వచించబడిన గ్రూప్‌లో ఉంది, అది మీ యాక్టివిటీని చూడగలదు</translation>
 <translation id="4617273035598175554">గ్రాఫిక్స్ &amp; యానిమేషన్ సాఫ్ట్‌వేర్</translation>
+<translation id="4619564267100705184">ఇది మీరే అని వెరిఫై చేయండి</translation>
 <translation id="4622292761762557753">ఏదేమైనా బదిలీ చేయండి</translation>
 <translation id="4627675673814409125">Chrome ప్రొఫైల్ స్థాయిలో ఈ పాలసీని సెట్ చేయడం సాధ్యం కాదు, కాబట్టి ఇది విస్మరించబడుతుంది.</translation>
 <translation id="4628948037717959914">ఫోటో</translation>
@@ -1742,7 +1742,6 @@
 <translation id="5123433949759960244">బాస్కెట్‌బాల్</translation>
 <translation id="5125751979347152379">చెల్లని URL.</translation>
 <translation id="512592033764059484">సాకర్</translation>
-<translation id="5126510351761255129">మీ కార్డ్‌ను ధృవీకరించండి</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> పరిమాణాన్ని మార్చడం సాధ్యం కాకపోవచ్చు. యాప్‌లో సమస్యలు ఎదురుకాకుండా నివారించడానికి, ప్రీసెట్ చేసిన విండో పరిమాణాలను ఉపయోగించండి.</translation>
 <translation id="5127934926273826089">పుష్పాలు</translation>
 <translation id="5129534298163637277">నిర్ధారణ డైలాగ్</translation>
@@ -2037,7 +2036,6 @@
 <translation id="5869405914158311789">ఈ సైట్‌ను చేరుకోలేకపోయాము</translation>
 <translation id="5869522115854928033">సేవ్  చేసిన పాస్‌వర్డ్‌లు</translation>
 <translation id="5872692522325383488">IBAN సేవ్ చేయబడింది</translation>
-<translation id="5873013647450402046">ఇది మీరేనని మీ బ్యాంక్ నిర్ధారించుకోవాలనుకుంటోంది.</translation>
 <translation id="5877831137320480913">అందం &amp; ఆరోగ్యం</translation>
 <translation id="5879989559903563723">గెస్ట్ మోడ్‌లో అనుమతి లేదు</translation>
 <translation id="5884465125445718607">ఎన్వలప్ చైనీస్ #6</translation>
@@ -2456,7 +2454,6 @@
 <translation id="6896758677409633944">కాపీ చేయి</translation>
 <translation id="6897140037006041989">వినియోగదారు ప్రతినిధి</translation>
 <translation id="6898699227549475383">సంస్థ (O)</translation>
-<translation id="6899000063526916106"><ph name="NUMBER_OF_DIGITS" />-అంకెల కోడ్‌ను ఎంటర్ చేయండి</translation>
 <translation id="6907458757809079309">ఫిట్‌నెస్</translation>
 <translation id="6910240653697687763"><ph name="URL" /> మీ MIDI పరికరాలకు పూర్తి నియంత్రణను పొందాలనుకుంటోంది</translation>
 <translation id="691024665142758461">బహుళ ఫైళ్లను డౌన్‌లోడ్ చేయాలనుకుంటోంది</translation>
@@ -3072,6 +3069,7 @@
 <translation id="8296205692406981542">ప్రాంతీయ పార్క్‌లు &amp; గార్డెన్‌లు</translation>
 <translation id="8297545700510100061">మీ సందర్శన సమాచారాన్ని గుర్తుంచుకోవడానికి కుక్కీలు, ఇతర సైట్ డేటా ఉపయోగించబడతాయి, ఉదాహరణకు, సైన్ ఇన్ చేయడానికి మిమ్మల్ని అనుమతించడం లేదా మీకు వ్యక్తిగతీకరించిన యాడ్‌లను చూపడం. అన్ని సైట్‌లకు కుక్కీలను మేనేజ్ చేయడానికి, <ph name="SETTINGS" />‌ను చూడండి.</translation>
 <translation id="8298115750975731693">మీరు ఉపయోగిస్తున్న Wi-Fi (<ph name="WIFI_NAME" />)కు మీరు<ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />ను సందర్శించడం అవసరం.</translation>
+<translation id="8301894345671534559">కోడ్‌ను నమోదు చేయండి</translation>
 <translation id="8303854710873047864">"<ph name="SECTION" />" విభాగం చూపబడింది</translation>
 <translation id="830498451218851433">సగం ఫోల్డ్</translation>
 <translation id="831997045666694187">సాయంత్రం</translation>
@@ -3423,7 +3421,6 @@
 <translation id="9191834167571392248">ఎడమవైపు దిగువ భాగంలో రంధ్రం</translation>
 <translation id="9199905725844810519">ప్రింటింగ్ బ్లాక్ చేయబడింది</translation>
 <translation id="9205078245616868884">మీ సింక్‌ రహస్య పదబంధంతో మీ డేటా ఎన్‌క్రిప్ట్ చేయ‌బ‌డింది. సింక్‌ను ప్రారంభించడానికి దీన్ని నమోదు చేయండి.</translation>
-<translation id="920511547311754821">మీ కోడ్‌ను కనుగొనలేకపోయారా? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">కథనాన్ని జోడించడంలో విఫలమైంది.</translation>
 <translation id="9213433120051936369">కనిపించే తీరును అనుకూలంగా మార్చండి</translation>
 <translation id="9215416866750762878">ఒక అప్లికేషన్ కారణంగా Chrome ఈ సైట్‌కు సురక్షితంగా కనెక్ట్ కాలేకపోతోంది</translation>

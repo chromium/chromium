@@ -1419,7 +1419,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="4349810866125026513">Laadi siiski üles</translation>
 <translation id="4350629523305688469">Multifunktsionaalne salv</translation>
 <translation id="4351060348582610152"><ph name="ORIGIN" /> soovib otsida läheduses olevaid Bluetooth-seadmeid. Leiti järgmised seadmed:</translation>
-<translation id="4351175281479794167">Sisestage kinnituskood</translation>
 <translation id="4355383636893709732">ChromeOS-i värskendus Androidi rakenduste jaoks</translation>
 <translation id="4356973930735388585">Saidil olevad ründajad võivad proovida installida teie arvutisse ohtlikke programme, mis varastavad teie teavet või kustutavad selle (nt fotod, paroolid, sõnumid ja krediitkaardiandmed).</translation>
 <translation id="4358059973562876591">Teie määratud malle ei pruugita rakendada, kuna reeglis DnsOverHttpsMode on viga.</translation>
@@ -1514,6 +1513,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="460848736049414407">Administraator on blokeerinud</translation>
 <translation id="4610279718074907952">See sait on omaniku <ph name="SET_OWNER" /> määratud grupis, mis näeb teie tegevusi</translation>
 <translation id="4617273035598175554">Jooniste ja animatsiooni tarkvara</translation>
+<translation id="4619564267100705184">Kinnitage, et see olete teie</translation>
 <translation id="4622292761762557753">Kanna ikkagi üle</translation>
 <translation id="4627675673814409125">Seda reeglit ei saa Chrome'i profiili tasemel määrata ja seda eiratakse.</translation>
 <translation id="4628948037717959914">Foto</translation>
@@ -1740,7 +1740,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5123433949759960244">Korvpall</translation>
 <translation id="5125751979347152379">Vale URL.</translation>
 <translation id="512592033764059484">Jalgpall</translation>
-<translation id="5126510351761255129">Kaardi kinnitamine</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ei pruugi hästi toimida, kui selle suurust muudetakse. Rakenduse probleemide vältimiseks kasutage akna eelseadistatud suurusi.</translation>
 <translation id="5127934926273826089">Lilled</translation>
 <translation id="5129534298163637277">Kinnitusdialoog</translation>
@@ -2035,7 +2034,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="5869405914158311789">Selle saidiga ei saa ühendust</translation>
 <translation id="5869522115854928033">Salvestatud paroolid</translation>
 <translation id="5872692522325383488">IBAN salvestati</translation>
-<translation id="5873013647450402046">Teie pank soovib teie isikut kinnitada.</translation>
 <translation id="5877831137320480913">Ilu ja fitness</translation>
 <translation id="5879989559903563723">Pole külalisrežiimis lubatud</translation>
 <translation id="5884465125445718607">Ümbrik Hiina nr 6</translation>
@@ -2454,7 +2452,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6897140037006041989">Kasutajaagent</translation>
 <translation id="6898699227549475383">Organisatsioon (O)</translation>
-<translation id="6899000063526916106">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline kood</translation>
 <translation id="6907458757809079309">Treening</translation>
 <translation id="6910240653697687763"><ph name="URL" /> soovib teie MIDI-seadmeid täielikult juhtida</translation>
 <translation id="691024665142758461">Mitme faili allalaadimine</translation>
@@ -3070,6 +3067,7 @@ Lisateave:
 <translation id="8296205692406981542">Pargid ja aiad</translation>
 <translation id="8297545700510100061">Küpsisefaile ja muid saidi andmeid kasutatakse teie meeldejätmiseks, näiteks selleks, et teid sisse logida või reklaame isikupärastada. Kõigi saitide küpsisefailide haldamiseks vaadake jaotist <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">WiFi-võrk, mida kasutate (<ph name="WIFI_NAME" />), võib nõuda veebilehe <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" /> külastamist.</translation>
+<translation id="8301894345671534559">Sisesta kood</translation>
 <translation id="8303854710873047864">Jaotis „<ph name="SECTION" />” on kuvatud</translation>
 <translation id="830498451218851433">Pooleks volditud</translation>
 <translation id="831997045666694187">Õhtu</translation>
@@ -3421,7 +3419,6 @@ Lisateave:
 <translation id="9191834167571392248">Auk vasakul all</translation>
 <translation id="9199905725844810519">Printimine on blokeeritud</translation>
 <translation id="9205078245616868884">Teie andmed on krüpteeritud teie sünkroonimisparooliga. Sisestage see sünkroonimise alustamiseks.</translation>
-<translation id="920511547311754821">Kas te ei leia oma koodi? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Artikli lisamine ebaõnnestus.</translation>
 <translation id="9213433120051936369">Ilme kohandamine</translation>
 <translation id="9215416866750762878">Rakendus ei luba Chrome'il selle saidiga ohutult ühendust luua</translation>

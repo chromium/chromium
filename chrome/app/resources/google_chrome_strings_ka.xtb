@@ -31,7 +31,6 @@
 <translation id="1516530951338665275">დაწყვილების გასაგრძელებლად Google Chrome საჭიროებს Bluetooth-ზე წვდომას. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS მუშაობს <ph name="BEGIN_LINK_CROS_OSS" />ღია კოდის პროგრამული უზრუნველყოფის<ph name="END_LINK_CROS_OSS" /> დამსახურებით.</translation>
 <translation id="1553358976309200471">Chrome-ის განახლება</translation>
-<translation id="1555506416658437797">გადახდის მეთოდების რედაქტირება.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> უკვე შესულია ამ Chrome პროფილში. ეს მოქმედება შექმნის ახალ Chrome პროფილს <ph name="USER_EMAIL_ADDRESS" />-ისთვის</translation>
 <translation id="1587223624401073077">Google Chrome იყენებს თქვენს კამერას.</translation>
 <translation id="1587325591171447154">Chrome-მა დაბლოკა <ph name="FILE_NAME" />, რადგან ის სახიფათოა.</translation>
@@ -82,7 +81,6 @@
 <translation id="234869673307233423">Chrome ვერ ახერხებს პაროლების შემოწმებას. ცადეთ მოგვიანებით.</translation>
 <translation id="235650106824528204">ამ პროფილის გამოყენებისას შექმნილი Chrome მონაცემების (მაგ., შექმნილი სანიშნეების, ისტორიის, პაროლებისა და სხვა პარამეტრების) ამოშლა შეუძლია სამსახურის პროფილის ადმინისტრატორს. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">გაგრძელება</translation>
-<translation id="2399868464369312507">Google Chrome ცდილობს გადახდის მეთოდების რედაქტირებას.</translation>
 <translation id="2401189691232800402">ChromeOS სისტემა</translation>
 <translation id="2424440923901031101">ეს გაფართოება არღვევს Chrome Web Store-ის წესებს და ის, შესაძლოა, არ იყოს უსაფრთხო. წაშალეთ ის Chrome-იდან, რომ მას აღარ შეეძლოს თქვენი მონაცემების (მათ შორის, პერსონალური ინფორმაციის) ნახვა და შეცვლა თქვენ მიერ მონახულებულ საიტებზე.</translation>
 <translation id="2467438592969358367">Google Chrome ითხოვს თქვენი პაროლების ექსპორტირებას. აღნიშნულის დასაშვებად აკრიფეთ თქვენი Windows-ის პაროლი.</translation>
@@ -260,7 +258,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="5756509061973259733">Chrome პროფილი ამ ანგარიშით უკვე არსებობს ამ მოწყობილობაზე</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> — Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome-ის გაშვება ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
-<translation id="585620188971323280">პარამეტრების შეცვლა გადახდის მეთოდების შესავსებად.</translation>
 <translation id="5895138241574237353">გადატვირთვა</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> — ქსელში შესვლა</translation>
 <translation id="5924017743176219022">მიმდინარეობს ინტერნეტთან დაკავშირება...</translation>
@@ -400,7 +397,6 @@ Google Chrome ვერ შეძლებს თქვენი პარამ
 <translation id="8504220326736535258">Chrome-მა დაბლოკა ეს ფაილი, რადგან ის შეიცავს მავნე პროგრამას</translation>
 <translation id="8516431725144212809">Chrome-ის მიერ პროგნოზირებული თქვენი ინტერესები</translation>
 <translation id="8521348052903287641">შემომავალი წესი Google Chrome Dev-ისთვის mDNS ტრაფიკის დასაშვებად.</translation>
-<translation id="8544217240017914508">Google Chrome ცდილობს გადახდის მეთოდების შევსების პარამეტრების შეცვლას.</translation>
 <translation id="8550334526674375523">სამსახურის ეს პროფილი თქვენი პირადი პროფილისგან სრულიად დამოუკიდებლად ფუნქციონირებს.</translation>
 <translation id="8556340503434111824">ხელმისაწვდომია Google Chrome-ის უფრო ახალი ვერსია, რომელიც უფრო სწრაფია.</translation>
 <translation id="8571790202382503603">Chrome პროფილები Chrome-ში არსებული თქვენი კონტენტის განცალკევების საშუალებას გაძლევთ. მაგალითად, სამსახურებრივი და პირადი მონაცემების.</translation>

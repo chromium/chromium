@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">Γνωστά δίκτυα</translation>
 <translation id="1239161794459865856">Η λειτουργία <ph name="FEATURE_NAME" /> συνδέθηκε.</translation>
 <translation id="1240638468526743569">Μια εφαρμογή</translation>
-<translation id="1242704516557658755">Περιήγηση προς τα πίσω στη λίστα με τα παράθυρα που χρησιμοποιήσατε πιο πρόσφατα</translation>
 <translation id="124678866338384709">Κλείσιμο τρέχουσας καρτέλας</translation>
 <translation id="1246890715821376239">Μη υποστηριζόμενες εφαρμογές</translation>
 <translation id="1247372569136754018">Μικρόφωνο (εσωτερικό)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Ενεργό</translation>
 <translation id="5920710855273935292">Έγινε σίγαση του μικροφώνου</translation>
-<translation id="5922962980596822074">Πλοηγηθείτε σε παράθυρα από το παράθυρο που χρησιμοποιήσατε πιο πρόσφατα</translation>
 <translation id="5924855612669061715">Σημείο πρόσβασης Wi-Fi ενεργό</translation>
 <translation id="5946788582095584774">Η λειτουργία <ph name="FEATURE_NAME" /> είναι ενεργοποιημένη.</translation>
 <translation id="5947494881799873997">Επαναφορά</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">Εναλλαγή σημείου πρόσβασης Wi-Fi</translation>
 <translation id="6477681113376365978">Δεν είναι δυνατή η λήψη του αρχείου</translation>
 <translation id="6482559668224714696">Μεγεθυντικός φακός πλήρους οθόνης</translation>
-<translation id="6483727822843292440">Πλοηγηθείτε σε παράθυρα από το παράθυρο που χρησιμοποιείτε λιγότερο</translation>
 <translation id="6490471652906364588">Συσκευή USB-C (δεξιά θύρα)</translation>
 <translation id="6491071886865974820">Ο τομέας <ph name="MANAGER" /> απαιτεί να ενημερώσετε τη συσκευή <ph name="DEVICE_TYPE" /> πριν από την προθεσμία</translation>
 <translation id="649452524636452238">PIN έξυπνης κάρτας</translation>

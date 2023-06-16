@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्क</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट हो गया है.</translation>
 <translation id="1240638468526743569">कोई ऐप्लिकेशन</translation>
-<translation id="1242704516557658755">सबसे हाल ही में इस्तेमाल की गई विंडो की सूची के ज़रिए वापस जाएं</translation>
 <translation id="124678866338384709">वर्तमान टैब को बंद करें</translation>
 <translation id="1246890715821376239">काम नहीं करने वाले ऐप्लिकेशन</translation>
 <translation id="1247372569136754018">माइक्रोफ़ोन (आंतरिक)</translation>
@@ -1121,7 +1120,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">चालू है</translation>
 <translation id="5920710855273935292">माइक म्यूट है.</translation>
-<translation id="5922962980596822074">सबसे हाल ही में इस्तेमाल होने वाली विंडो से विंडो देखें</translation>
 <translation id="5924855612669061715">हॉटस्पॉट चालू है</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> चालू है.</translation>
 <translation id="5947494881799873997">वापस लाएं</translation>
@@ -1240,7 +1238,6 @@
 <translation id="6469104339369989396">हॉटस्पॉट टॉगल</translation>
 <translation id="6477681113376365978">फ़ाइल डाउनलोड नहीं की जा सकी</translation>
 <translation id="6482559668224714696">फ़ुल-स्क्रीन पर सामग्री को बड़ा दिखाने वाला</translation>
-<translation id="6483727822843292440">सबसे कम इस्तेमाल होने वाली विंडो से विंडो देखें</translation>
 <translation id="6490471652906364588">USB-C डिवाइस (दायां पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> के लिए ज़रूरी है आप अपने <ph name="DEVICE_TYPE" /> को समयसीमा खत्म होने से पहले अपडेट करें</translation>
 <translation id="649452524636452238">स्मार्ट कार्ड पिन</translation>

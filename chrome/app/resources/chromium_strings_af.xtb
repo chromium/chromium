@@ -20,7 +20,6 @@ Sommige kenmerke kan dalk nie beskikbaar wees nie en veranderings aan voorkeure 
 <translation id="1478370723027452770">Kry hulp met Chrome-toetsweergawe</translation>
 <translation id="1524282610922162960">Deel 'n Chromium-oortjie</translation>
 <translation id="1553461853655228091">Chromium moet toestemming hê om toegang te kry tot jou kamera om 'n 3D-kaart van jou omgewing te skep</translation>
-<translation id="1555506416658437797">wysig betaalmetodes.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas}=1{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou incognitovenster sal nie weer oopgemaak word nie.}other{Jou administrateur vereis dat jy Chromium herbegin om 'n opdatering toe te pas. Jou # incognitovensters sal nie weer oopgemaak word nie.}}</translation>
 <translation id="1625909126243026060">Gaan belangrike privaatheid- en sekuriteitkontroles in Chromium na</translation>
 <translation id="1632539827495546968">Jy kan <ph name="GUEST_LINK_BEGIN" />gasmodus<ph name="GUEST_LINK_END" /> in Chromium-blaaier gebruik as jy hierdie rekening net een keer wil gebruik. <ph name="LINK_BEGIN" />Voeg ’n nuwe persoon<ph name="LINK_END" /> by jou <ph name="DEVICE_TYPE" /> as jy ’n rekening vir iemand anders wil byvoeg.
@@ -97,7 +96,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="3179665906251668410">Maak skakel in 'n incognitovenster in Chromium oop</translation>
 <translation id="3185330573522821672">Pasmaak jou nuwe Chromium-profiel</translation>
 <translation id="3190315855212034486">Sjoe! Chromium het omgeval. Wil jy nou herbegin?</translation>
-<translation id="3255926992597692024">Chromium probeer tans instellings vir die invul van betaalmetodes wysig.</translation>
 <translation id="3258596308407688501">Chromium kan nie sy datagids lees of daarheen skryf nie:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="4019629340646866719">Chromium-bedryfstelsel word moontlik gemaak deur bykomende <ph name="BEGIN_LINK_CROS_OSS" />oopbronsagteware<ph name="END_LINK_CROS_OSS" />, soos die geval ook is met <ph name="BEGIN_LINK_LINUX_OSS" />Linux-ontwikkelingomgewing<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Help om Chromium te verbeter deur die <ph name="BEGIN_LINK" />huidige instellings<ph name="END_LINK" /> aan te gee</translation>
 <translation id="4050175100176540509">Belangrike sekuriteitverbeterings en nuwe kenmerke is in die jongste weergawe beskikbaar.</translation>
-<translation id="4050599136622776556">Chromium probeer tans om betaalmetodes te wysig.</translation>
 <translation id="4055805654398742145">W&amp;agwoordbestuurder</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Jou organisasie maak Chromium outomaties toe nadat dit 1 minuut lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}other{Jou organisasie maak Chromium outomaties toe nadat dit # minute lank nie gebruik is nie. Blaaierdata word uitgevee. Dit kan geskiedenis, outovul en aflaaie insluit.}}</translation>
 <translation id="4148957013307229264">Installeer tans …</translation>
@@ -210,7 +207,6 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5653831366781983928">Herbegin Chromium asseblief nou</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Wys Chromium in hierdie taal</translation>
-<translation id="585620188971323280">wysig instellings vir die invul van betaalmetodes.</translation>
 <translation id="5862307444128926510">Welkom by Chromium</translation>
 <translation id="5883558403894052917">Chromium het bevind dat hierdie items wanware bevat:</translation>
 <translation id="5895138241574237353">Herbegin</translation>

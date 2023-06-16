@@ -3,13 +3,16 @@
 <translationbundle lang="mr">
 <translation id="1016765312371154165">Chrome योग्यरित्या बंद झाले नाही.</translation>
 <translation id="130631256467250065">तुम्ही आपल्या डिव्हाइसचा पुढील वेळी पुनरारंभ कराल तेव्हा तुमचे बदल प्रभावी होतील.</translation>
+<translation id="1555506416658437797">पेमेंट पद्धती संपादित करा.</translation>
 <translation id="1635457557763038537">पुढील वेळी तुम्ही Chrome पुन्हा लाँच केल्यानंतर तुमचे बदल लागू होतील.</translation>
+<translation id="2399868464369312507">Google Chrome हे पेमेंट पद्धती संपादित करण्याचा प्रयत्न करत आहे.</translation>
 <translation id="2447485272386224171"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> मुक्त स्रोत प्रोजेक्ट आणि इतर <ph name="BEGIN_LINK_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारे Chrome ची निर्मिती करणे शक्य झाले.</translation>
 <translation id="2588322182880276190">Chrome लोगो</translation>
 <translation id="3444832043240812445">हे पेज तुम्ही <ph name="BEGIN_LINK" />कॅशे अहवाल सुरू<ph name="END_LINK" /> केल्यास केवळ तुम्हाला अलीकडील क्रॅशची माहिती दाखवते.</translation>
 <translation id="3875312571075912821">तुमच्या फायरवॉल किंवा अँटीव्हायरस सेटिंग्जमधील नेटवर्क ॲक्सेस करण्यास
         Chrome ला परवानगी  द्या.</translation>
 <translation id="5005121315113832363">हे पेज Chrome ने ब्लॉक केले आहे</translation>
+<translation id="585620188971323280">पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करा.</translation>
 <translation id="6011049234605203654">Chrome मेनू &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -38,4 +41,5 @@
           वर जा आणि निवडलेल्या कोणत्याही प्रॉक्सींची निवड रद्द करा.</translation>
 <translation id="8232971017369963250">Chrome हे <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> मुक्त स्रोत प्रोजेक्टद्वारे तयार करण्यात आले आहे.</translation>
 <translation id="8279509328145658601">Chrome हे इतर <ph name="BEGIN_LINK_OSS" />मुक्त स्रोत सॉफ्टवेअर<ph name="END_LINK_OSS" /> द्वारेदेखील तयार करण्यात आले आहे.</translation>
+<translation id="8544217240017914508">Google Chrome पेमेंट पद्धती भरण्यासाठी सेटिंग्जमध्ये फेरबदल करण्याचा प्रयत्न करत आहे.</translation>
 </translationbundle>

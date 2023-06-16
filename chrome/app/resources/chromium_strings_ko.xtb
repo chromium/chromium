@@ -20,7 +20,6 @@
 <translation id="1478370723027452770">Chrome for Testing 관련 지원받기</translation>
 <translation id="1524282610922162960">Chromium 탭 공유</translation>
 <translation id="1553461853655228091">Chromium에서 주변 3D 지도를 만들려면 카메라 액세스 권한이 필요합니다.</translation>
-<translation id="1555506416658437797">결제 수단을 수정합니다.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다.}=1{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창이 다시 열리지 않습니다.}other{관리자의 요구에 따라 업데이트를 적용하려면 Chromium을 다시 실행해야 합니다. 시크릿 창 #개가 다시 열리지 않습니다.}}</translation>
 <translation id="1625909126243026060">Chromium의 주요 개인 정보 보호 및 보안 제어 기능을 검토합니다.</translation>
 <translation id="1632539827495546968">이 계정을 한 번만 사용하려면 Chromium 브라우저에서 <ph name="GUEST_LINK_BEGIN" />게스트 모드<ph name="GUEST_LINK_END" />를 사용하세요. 다른 사용자를 위해 계정을 추가하려면 <ph name="DEVICE_TYPE" />에 <ph name="LINK_BEGIN" />새 사용자를 추가<ph name="LINK_END" />하세요.
@@ -97,7 +96,6 @@
 <translation id="3179665906251668410">Chromium 시크릿 창에서 링크 열기(&amp;G)</translation>
 <translation id="3185330573522821672">새로운 Chromium 프로필 맞춤설정</translation>
 <translation id="3190315855212034486">Chromium이 다운되었습니다. 다시 시작하시겠습니까?</translation>
-<translation id="3255926992597692024">Chromium에서 결제 수단 입력 설정을 수정하려고 합니다.</translation>
 <translation id="3258596308407688501">Chromium에서 데이터 디렉터리를 읽고 쓸 수 없습니다.
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_LINUX_OSS" />Linux 개발 환경<ph name="END_LINK_LINUX_OSS" />과 마찬가지로, ChromiumOS는 추가 <ph name="BEGIN_LINK_CROS_OSS" />오픈소스 소프트웨어<ph name="END_LINK_CROS_OSS" />를 사용하여 개발되었습니다.</translation>
 <translation id="4036079820698952681"><ph name="BEGIN_LINK" />현재 설정<ph name="END_LINK" />을 보고하여 Chromium 개선에 참여</translation>
 <translation id="4050175100176540509">최신 버전에는 중요한 보안 개선사항 및 새로운 기능이 포함되어 있습니다.</translation>
-<translation id="4050599136622776556">Chromium에서 결제 수단을 수정하려고 합니다.</translation>
 <translation id="4055805654398742145">비밀번호 관리자(&amp;A)</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Chromium을 1분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}other{Chromium을 #분 동안 사용하지 않으면 조직에서 자동으로 종료합니다. 인터넷 사용 기록이 삭제됩니다. 여기에는 방문 기록, 자동 완성, 다운로드가 포함될 수 있습니다.}}</translation>
 <translation id="4148957013307229264">설치 중...</translation>
@@ -210,7 +207,6 @@
 <translation id="5653831366781983928">지금 Chromium을 다시 시작하세요</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">이 언어로 Chromium 표시</translation>
-<translation id="585620188971323280">결제 수단 입력 설정을 수정합니다.</translation>
 <translation id="5862307444128926510">Chromium에 오신 것을 환영합니다.</translation>
 <translation id="5883558403894052917">Chromium에서 다음 항목에 멀웨어가 포함된 것을 발견했습니다.</translation>
 <translation id="5895138241574237353">다시 시작</translation>

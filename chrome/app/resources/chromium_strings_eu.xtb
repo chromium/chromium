@@ -20,7 +20,6 @@ Eginbide batzuk agian dira erabilgarri egongo eta hobespenei egindako aldaketak 
 <translation id="1478370723027452770">Lortu Chrome for Testing-en inguruko laguntza</translation>
 <translation id="1524282610922162960">Partekatu Chromium-eko fitxa bat</translation>
 <translation id="1553461853655228091">Chromium-ek kamera erabiltzeko baimena behar du, ingurunearen hiru dimentsioko mapa bat sortzeko</translation>
-<translation id="1555506416658437797">ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko}=1{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko leihoa ez da berriro irekiko.}other{Chromium berrabiaraz dezazun behar du administratzaileak, eguneratzea aplikatzeko. Ezkutuko moduko # leihoak ez dira berriro irekiko.}}</translation>
 <translation id="1625909126243026060">Berrikusi pribatutasuna eta segurtasuna kontrolatzeko aukera garrantzitsuenak Chromium-en</translation>
 <translation id="1632539827495546968">Kontu hau behin bakarrik erabili nahi baduzu, <ph name="GUEST_LINK_BEGIN" />gonbidatu modua<ph name="GUEST_LINK_END" /> erabil dezakezu Chromium arakatzailean. Kontu bat beste norbaitentzat gehitu nahi baduzu, <ph name="LINK_BEGIN" />gehitu beste pertsona bat<ph name="LINK_END" /> <ph name="DEVICE_TYPE" /> gailuan.
@@ -97,7 +96,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="3179665906251668410">Ireki esteka Chromium-eko &amp;ezkutuko moduko leiho batean</translation>
 <translation id="3185330573522821672">Pertsonalizatu Chromium-eko profil berria</translation>
 <translation id="3190315855212034486">Chromium-ek huts egin du. Berriro abiarazi nahi duzu?</translation>
-<translation id="3255926992597692024">Chromium-ek ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>
 <translation id="3258596308407688501">Chromium-ek ezin du irakurri bere datu-direktorioa eta ezin du idatzi bertan:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="4019629340646866719"><ph name="BEGIN_LINK_CROS_OSS" />Kode irekiko software<ph name="END_LINK_CROS_OSS" /> gehigarriari esker da posible Chromium OS; adibidez, <ph name="BEGIN_LINK_LINUX_OSS" />Linux-eko garapen-ingurunea<ph name="END_LINK_LINUX_OSS" /> erabiltzen da.</translation>
 <translation id="4036079820698952681">Lagundu Chromium hobetzen <ph name="BEGIN_LINK" />oraingo ezarpenen<ph name="END_LINK" /> berri emanda</translation>
 <translation id="4050175100176540509">Segurtasun-hobekuntza garrantzitsuak eta eginbide berriak dituzu erabilgarri azken bertsioan.</translation>
-<translation id="4050599136622776556">Chromium-ek ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="4055805654398742145">Pasahitz-kudeatzailea</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Erakundeak automatikoki itxiko du Chromium minutu batez erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude.}other{Erakundeak automatikoki itxiko du Chromium # minutuz erabiltzen ez bada. Arakatze-datuak ezabatuko dira. Arakatze-datuetan, historia, automatikoki betetako datuak eta deskargak daude.}}</translation>
 <translation id="4148957013307229264">Instalatzen…</translation>
@@ -210,7 +207,6 @@ Baliteke webguneei eta aplikazioei emandako baimenak kontu honi aplikatzea. Goog
 <translation id="5653831366781983928">Berrabiarazi Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Bistaratu Chromium hizkuntza honetan</translation>
-<translation id="585620188971323280">ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>
 <translation id="5862307444128926510">Ongi etorri Chromium-era</translation>
 <translation id="5883558403894052917">Elementuok malwarea dutela hauteman du Chromium-ek:</translation>
 <translation id="5895138241574237353">Berrabiarazi</translation>

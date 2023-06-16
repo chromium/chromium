@@ -3,13 +3,16 @@
 <translationbundle lang="ne">
 <translation id="1016765312371154165">क्रोम सही तवरले बन्द भएन।</translation>
 <translation id="130631256467250065">तपाईंले अर्को पटक तपाईंको यन्त्रलाई पुन: सुरु गर्दा तपाईंका परिवर्तनहरू प्रभावकारी हुनेछन्।</translation>
+<translation id="1555506416658437797">भुक्तानी विधिहरू सम्पादन गर्नुहोस्।</translation>
 <translation id="1635457557763038537">तपाईंले अर्को पटक Chrome खोल्दा तपाईंले गर्नुभएका परिवर्तनहरू लागू हुने छन्।</translation>
+<translation id="2399868464369312507">Google Chrome ले भुक्तानी विधिहरू सम्पादन गर्न खोज्दै छ।</translation>
 <translation id="2447485272386224171"><ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजना र अन्य <ph name="BEGIN_LINK_OSS" />खुला स्रोतको सफ्टवेयर<ph name="END_LINK_OSS" /> प्रयोग गरी Chrome निर्माण गरिएको हो।</translation>
 <translation id="2588322182880276190">Chrome चिन्ह</translation>
 <translation id="3444832043240812445">यदि तपाइँले <ph name="BEGIN_LINK" />क्रयास प्रतिवेदन सक्षम<ph name="END_LINK" /> गर्नुभयो बने यस पृष्ठले तपाइँका भर्खरैका क्रयासहरूमा जानकारी देखाउँछ।</translation>
 <translation id="3875312571075912821">Chrome लाई आफ्नो फायरवाल वा एन्टिभाइरसका सेटिङहरूमा
           नेटवर्कमा पहुँच गर्ने अनुमति दिनुहोस्।</translation>
 <translation id="5005121315113832363">Chrome ले यो पेज ब्लक गरेको छ</translation>
+<translation id="585620188971323280">भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउनुहोस्।</translation>
 <translation id="6011049234605203654">Chrome मेनु &gt;
           <ph name="SETTINGS_TITLE" />
           &gt;
@@ -39,4 +42,5 @@
           र तपाइँले चयन गर्नुका कुनै पनि प्रोक्सीहरूको चयन हटाउनुहोस्।</translation>
 <translation id="8232971017369963250">Chrome बनाउँदा <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> खुला स्रोतको परियोजनाको मद्दत लिइएको छ।</translation>
 <translation id="8279509328145658601">Chrome बनाउँदा <ph name="BEGIN_LINK_OSS" />खुला स्रोतका अन्य सफ्टवेयर<ph name="END_LINK_OSS" />को पनि मद्दत लिइएको छ।</translation>
+<translation id="8544217240017914508">Google Chrome ले भुक्तानी विधिहरू हाल्नका निम्ति सेटिङ मिलाउन खोज्दै छ।</translation>
 </translationbundle>

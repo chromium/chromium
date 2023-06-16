@@ -29,7 +29,6 @@
 <translation id="1516530951338665275">Google Chrome'un eşlemeye devam edebilmesi için Bluetooth'a erişmesi gerekiyor. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">ChromeOS, ek <ph name="BEGIN_LINK_CROS_OSS" />açık kaynak yazılımlardan<ph name="END_LINK_CROS_OSS" /> yararlanılarak geliştirilmiştir.</translation>
 <translation id="1553358976309200471">Chrome'u güncelle</translation>
-<translation id="1555506416658437797">Ödeme yöntemlerini düzenleyin.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> kullanıcısının oturumu halihazırda bu Chrome profilinde açık. Bu işlem, <ph name="USER_EMAIL_ADDRESS" /> için yeni bir Chrome profili oluşturacak</translation>
 <translation id="1587223624401073077">Google Chrome kameranızı kullanıyor.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> tehlikeli olduğu için Chrome tarafından engellendi.</translation>
@@ -78,7 +77,6 @@
 <translation id="234869673307233423">Chrome, şifrelerinizi kontrol edemiyor. Daha sonra tekrar deneyin.</translation>
 <translation id="235650106824528204">Bu profil kullanılırken oluşturulan tüm Chrome verileri (yer işaretlerinin oluşturulması, geçmiş, şifreler ve diğer ayarlar gibi) iş profili yöneticisi tarafından kaldırılabilir. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Devam et</translation>
-<translation id="2399868464369312507">Google Chrome ödeme yöntemlerini düzenlemeye çalışıyor.</translation>
 <translation id="2401189691232800402">ChromeOS sistemi</translation>
 <translation id="2424440923901031101">Bu uzantı Chrome Web Mağazası politikasını ihlal ettiği için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
 <translation id="2467438592969358367">Google Chrome şifrelerinizi dışa aktarmak istiyor. Buna izin vermek için Windows şifrenizi yazın.</translation>
@@ -254,7 +252,6 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="5756509061973259733">Cihazda bu hesaba sahip bir Chrome profili zaten var</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> - Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome başlatılamadı. Tekrar deneyin.</translation>
-<translation id="585620188971323280">ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="5895138241574237353">Yeniden başlat</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> - Ağda Oturum Açın</translation>
 <translation id="5924017743176219022">İnternete bağlanılıyor...</translation>
@@ -285,6 +282,7 @@ Bazı özellikler kullanılamayabilir. Lütfen farklı bir profil dizini belirti
 <translation id="6327105987658262776">Kullanılabilir güncelleme yok.</translation>
 <translation id="6360449101159168105">Bu sekme etkin değilken Chrome'un hızlı çalışmaya devam etmesi için bellekte yer açıldı. Bu siteyi, etkin olmayan sitelerden her zaman hariç tutabilirsiniz.</translation>
 <translation id="6412673304250309937">URL'leri, Chrome'da kayıtlı güvenli olmayan siteler listesine göre kontrol eder. Chrome, bir sitenin şifrenizi çalmaya çalışması veya zararlı bir dosya indirmeniz halinde de Güvenli Tarama'ya sayfa içeriğinden parçalarla birlikte URL'ler gönderebilir.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}other{Kuruluşunuz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır. Tarama verileri silinir. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir.}}</translation>
 <translation id="6418662306461808273">Mevcut Chrome profiline geçilsin mi?</translation>
 <translation id="648319183876919572">Gelişmiş Güvenli Tarama sizi tehlikeli web sitelerinden ve indirmelerden korumak için daha fazlasını yapar</translation>
 <translation id="6493527311031785448">Google Chrome şunu yapmaya çalışıyor: <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -334,6 +332,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="7398801000654795464">Chrome'da <ph name="USER_EMAIL_ADDRESS" /> olarak oturum açtınız. Tekrar oturum açmak için lütfen aynı hesabı kullanın.</translation>
 <translation id="7410958280246779049">Chrome bu dosyayı tehlikeli olduğu için engelledi</translation>
 <translation id="7426611252293106642">Google Chrome artık bu Linux dağıtımında desteklenmediği için doğru şekilde çalışmayabilir</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Kuruluşunuz, 1 dakika kullanılmadığında Chrome'u otomatik olarak kapatır.}other{Kuruluşunuz, # dakika kullanılmadığında Chrome'u otomatik olarak kapatır.}}</translation>
 <translation id="7481213027396403996">Chrome’un en güçlü güvenlik özelliklerinden faydalanın</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> Yükleyici</translation>
@@ -368,6 +367,7 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8013993649590906847">Bir resmin işe yarar bir açıklaması yoksa, Chrome sizin için bir açıklama sağlamaya çalışır. Açıklama oluşturmak için resimler Google'a gönderilir.</translation>
 <translation id="8019103195866286235">Bu uzantı, geliştiricisi tarafından yayından kaldırıldığı için güvenli olmayabilir. Kişisel bilgileriniz de dahil olmak üzere ziyaret ettiğiniz sitelerdeki verilerinizi artık görememesi ve değiştirememesi için bu uzantıyı Chrome'dan kaldırın.</translation>
 <translation id="80471789339884597">Yüklediğiniz için teşekkür ederiz. <ph name="BUNDLE_NAME" /> uygulamasını kullanmadan önce tüm tarayıcılarınızı yeniden başlatmanız gerekir.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Chrome 1 dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}other{Chrome # dakika boyunca kullanılmadığında kuruluşunuz tarama verilerini otomatik olarak siler. Bu veriler geçmiş, otomatik doldurma ve indirilenleri içerebilir. Mevcut sekmeleriniz açık kalır.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">&amp;Google Chrome hakkında</translation>
 <translation id="813913629614996137">İlk kullanıma hazırlanıyor...</translation>
@@ -391,7 +391,6 @@ Web sitelerine ve uygulamalara verdiğiniz izinler, bu hesap için geçerli olab
 <translation id="8504220326736535258">Kötü amaçlı yazılım içermesi nedeniyle bu dosya Chrome tarafından engellendi</translation>
 <translation id="8516431725144212809">Chrome'un tahmin ettiği ilgi alanlarınız</translation>
 <translation id="8521348052903287641">Google Chrome Dev'in mDNS trafiğine izin vermeyi sağlayan gelen trafik kuralı.</translation>
-<translation id="8544217240017914508">Google Chrome, ödeme yöntemi girmeyle ilgili ayarları değiştirmeye çalışıyor.</translation>
 <translation id="8550334526674375523">Bu iş profili, kişisel profilinizden tamamen ayrıdır.</translation>
 <translation id="8556340503434111824">Kullanabileceğiniz yeni bir Google Chrome sürümü var ve bu sürüm, her zamankinden daha hızlı.</translation>
 <translation id="8571790202382503603">Chrome profilleri ile tüm Chrome öğelerinizi ayırabilirsiniz. Bu özellik, iş ile eğlenceyi daha kolay ayırmayı sağlar.</translation>

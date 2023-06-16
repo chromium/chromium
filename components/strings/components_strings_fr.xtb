@@ -1410,7 +1410,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="4349810866125026513">Importer quand même</translation>
 <translation id="4350629523305688469">Bac multifonction</translation>
 <translation id="4351060348582610152">Le site <ph name="ORIGIN" /> souhaite rechercher les appareils Bluetooth à proximité. Les appareils suivants ont été détectés :</translation>
-<translation id="4351175281479794167">Saisir le code de validation</translation>
 <translation id="4355383636893709732">Mise à jour de ChromeOS pour les applis Android</translation>
 <translation id="4356973930735388585">Des individus malveillants à l'œuvre sur ce site pourraient tenter d'installer des applications dangereuses sur votre ordinateur afin de récupérer ou de supprimer certaines informations : photos, mots de passe, messages, numéros de carte de paiement, etc.</translation>
 <translation id="4358059973562876591">Les modèles que vous avez spécifiés risquent de ne pas être appliqués en raison d'une erreur liée à la règle DnsOverHttpsMode.</translation>
@@ -1504,6 +1503,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="460848736049414407">Bloqué par l'administrateur</translation>
 <translation id="4610279718074907952">Ce site fait partie d'un groupe, défini par <ph name="SET_OWNER" />, qui peut voir votre activité</translation>
 <translation id="4617273035598175554">Logiciels de graphisme et d'animation</translation>
+<translation id="4619564267100705184">Confirmer votre identité</translation>
 <translation id="4622292761762557753">Transférer quand même</translation>
 <translation id="4627675673814409125">Cette règle sera ignorée, car elle ne peut pas être définie au niveau du profil Chrome.</translation>
 <translation id="4628948037717959914">Photo</translation>
@@ -1729,7 +1729,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5123433949759960244">Basket-ball</translation>
 <translation id="5125751979347152379">URL incorrecte</translation>
 <translation id="512592033764059484">Football</translation>
-<translation id="5126510351761255129">Valider votre carte</translation>
 <translation id="512670116361803001"><ph name="APP_NAME" /> ne sera peut-être pas bien redimensionnée. Pour que l'appli fonctionne correctement, utilisez des tailles de fenêtre prédéfinies.</translation>
 <translation id="5127934926273826089">Fleurs</translation>
 <translation id="5129534298163637277">Boîte de dialogue de confirmation</translation>
@@ -2022,7 +2021,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="5869405914158311789">Ce site est inaccessible</translation>
 <translation id="5869522115854928033">Mots de passe enregistrés</translation>
 <translation id="5872692522325383488">IBAN enregistré</translation>
-<translation id="5873013647450402046">Vous devez confirmer votre identité auprès de votre banque.</translation>
 <translation id="5877831137320480913">Soins du corps et remise en forme</translation>
 <translation id="5879989559903563723">Non accordée en mode Invité</translation>
 <translation id="5884465125445718607">Enveloppe chinoise n°6</translation>
@@ -2274,6 +2272,7 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6468485451923838994">Polices</translation>
 <translation id="647261751007945333">Règles relatives aux appareils</translation>
 <translation id="647330291963761005">Installation des mises à jour…</translation>
+<translation id="6474220430271405609">Tests des règles</translation>
 <translation id="6475672344094591109">Les sites que vous consultez peuvent demander à Chrome des informations qui les aident à mesurer les performances de leurs annonces. Chrome protège votre confidentialité en limitant les informations que les sites peuvent partager entre eux.</translation>
 <translation id="6476284679642588870">Gérer les modes de paiement</translation>
 <translation id="6486200200930923183">Films documentaires</translation>
@@ -2436,7 +2435,6 @@ Par défaut, ce type d'accès est bloqué par vos paramètres de confidentialit�
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6897140037006041989">Agent utilisateur</translation>
 <translation id="6898699227549475383">Organisation (O)</translation>
-<translation id="6899000063526916106">Saisissez le code à <ph name="NUMBER_OF_DIGITS" /> chiffres</translation>
 <translation id="6907458757809079309">Remise en forme</translation>
 <translation id="6910240653697687763"><ph name="URL" /> souhaite obtenir le contrôle total de vos appareils MIDI</translation>
 <translation id="691024665142758461">Télécharger plusieurs fichiers</translation>
@@ -3049,6 +3047,7 @@ Informations supplémentaires :
 <translation id="8296205692406981542">Parcs et jardins régionaux</translation>
 <translation id="8297545700510100061">Les cookies et les autres données des sites servent à se souvenir de vous (par exemple, pour vous permettre de vous connecter ou pour personnaliser les annonces). Pour gérer les cookies pour l'ensemble des sites, accédez aux <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Pour utiliser ce réseau Wi-Fi (<ph name="WIFI_NAME" />), il est possible que vous deviez vous rendre sur la page <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Saisir le code</translation>
 <translation id="8303854710873047864">Section "<ph name="SECTION" />" affichée</translation>
 <translation id="830498451218851433">Plier en deux</translation>
 <translation id="831997045666694187">Soirée</translation>
@@ -3397,7 +3396,6 @@ Informations supplémentaires :
 <translation id="9191834167571392248">Perforation en bas à gauche</translation>
 <translation id="9199905725844810519">Impression bloquée</translation>
 <translation id="9205078245616868884">Vos données sont chiffrées avec votre phrase secrète de synchronisation. Saisissez-la pour lancer la synchronisation.</translation>
-<translation id="920511547311754821">Vous ne retrouvez pas votre code ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Échec de l'ajout de l'article.</translation>
 <translation id="9213433120051936369">Personnaliser l'apparence</translation>
 <translation id="9215416866750762878">Une application empêche Chrome de se connecter à ce site de manière sécurisée</translation>

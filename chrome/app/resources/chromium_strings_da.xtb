@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Få hjælp til Chrome for Testing</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium skal have adgangstilladelse til dit kamera for at oprette et 3D-kort over dine omgivelser</translation>
-<translation id="1555506416658437797">redigere betalingsmetoder.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering}=1{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dit inkognitovindue åbnes ikke igen.}one{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. # inkognitovindue åbnes ikke igen.}other{Din administrator kræver, at du genstarter Chromium for at anvende en opdatering. Dine # inkognitovinduer åbnes ikke igen.}}</translation>
 <translation id="1625909126243026060">Gennemgå vigtige privatlivs- og sikkerhedsindstillinger i Chromium</translation>
 <translation id="1632539827495546968">Hvis du kun vil bruge denne konto én gang, kan du anvende <ph name="GUEST_LINK_BEGIN" />Gæstetilstand<ph name="GUEST_LINK_END" /> i Chromium-browseren. Hvis du vil tilføje en konto for en anden person, kan du <ph name="LINK_BEGIN" />føje en ny person<ph name="LINK_END" /> til din <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="3179665906251668410">Åbn linket i et Chromium-inko&amp;gnitovindue</translation>
 <translation id="3185330573522821672">Tilpas din nye Chromium-profil</translation>
 <translation id="3190315855212034486">Hov! Chromium er gået ned. Vil du genstarte nu?</translation>
-<translation id="3255926992597692024">Chromium forsøger at ændre indstillinger for udfyldning af betalingsmetoder.</translation>
 <translation id="3258596308407688501">Chromium kan ikke læse og skrive til sin datamappe:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="4019629340646866719">Chromium OS leveres ved hjælp af <ph name="BEGIN_LINK_CROS_OSS" />open source-software<ph name="END_LINK_CROS_OSS" />. Det samme gælder for <ph name="BEGIN_LINK_LINUX_OSS" />Linux-udviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Hjælp med at gøre Chromium bedre ved at rapportere de <ph name="BEGIN_LINK" />aktuelle indstillinger<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Vigtige sikkerhedsforbedringer og nye funktioner er tilgængelige i den seneste version.</translation>
-<translation id="4050599136622776556">Chromium forsøger at redigere betalingsmetoder.</translation>
 <translation id="4055805654398742145">Adgangskodeadministrator</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Din organisation lukker automatisk Chromium, når den ikke bruges i 1 minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}one{Din organisation lukker automatisk Chromium, når den ikke bruges i # minut. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}other{Din organisation lukker automatisk Chromium, når den ikke bruges i # minutter. Browserdataene slettes. Disse kan omfatte historik, autofyld og downloads.}}</translation>
 <translation id="4148957013307229264">Installerer...</translation>
@@ -208,7 +205,6 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5653831366781983928">Genstart Chromium nu</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette sprog</translation>
-<translation id="585620188971323280">at ændre indstillingerne for udfyldning af betalingsmetoder.</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5883558403894052917">Chromium har registreret malware i disse elementer:</translation>
 <translation id="5895138241574237353">Genstart</translation>

@@ -1419,7 +1419,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="4349810866125026513">I-upload pa rin</translation>
 <translation id="4350629523305688469">Multifunction na Tray</translation>
 <translation id="4351060348582610152">Gustong mag-scan ng <ph name="ORIGIN" /> para sa mga Bluetooth device na nasa malapit. Nahanap ang mga sumusunod na device:</translation>
-<translation id="4351175281479794167">Ilagay ang code sa pag-verify</translation>
 <translation id="4355383636893709732">Update sa ChromeOS para sa mga Android app</translation>
 <translation id="4356973930735388585">Maaaring subukan ng mga attacker sa site na ito na mag-install ng mga mapanganib na program sa iyong computer na magnanakaw o magde-delete ng impormasyon mo (halimbawa, mga larawan, password, mensahe at credit card).</translation>
 <translation id="4358059973562876591">Posibleng hindi mailapat ang mga template na tinukoy mo dahil sa error sa patakarang DnsOverHttpsMode.</translation>
@@ -1514,6 +1513,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="460848736049414407">Na-block ng Admin</translation>
 <translation id="4610279718074907952">Ang site na ito ay nasa isang grupo, na tinukoy ng <ph name="SET_OWNER" />, na makakakita ng iyong aktibidad</translation>
 <translation id="4617273035598175554">Graphics at animation software</translation>
+<translation id="4619564267100705184">I-verify na ikaw ito</translation>
 <translation id="4622292761762557753">Ilipat pa rin</translation>
 <translation id="4627675673814409125">Hindi maitatakda ang patakarang ito sa antas ng profile ng Chrome at babalewalain ito.</translation>
 <translation id="4628948037717959914">Larawan</translation>
@@ -1740,7 +1740,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5123433949759960244">Basketball</translation>
 <translation id="5125751979347152379">Di-wastong URL.</translation>
 <translation id="512592033764059484">Soccer</translation>
-<translation id="5126510351761255129">I-verify ang iyong card</translation>
 <translation id="512670116361803001">Posibleng hindi ma-resize nang maayos ang <ph name="APP_NAME" />. Gamitin ang mga preset na laki ng window para mapigilang makaranas ng mga isyu ang app.</translation>
 <translation id="5127934926273826089">Mga bulaklak</translation>
 <translation id="5129534298163637277">Dialog ng kumpirmasyon</translation>
@@ -2035,7 +2034,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="5869405914158311789">Hindi makakonekta sa site na ito</translation>
 <translation id="5869522115854928033">Mga naka-save na password</translation>
 <translation id="5872692522325383488">Na-save ang IBAN</translation>
-<translation id="5873013647450402046">Gustong kumpirmahin ng iyong bangko na ikaw ito.</translation>
 <translation id="5877831137320480913">Pagpapaganda at fitness</translation>
 <translation id="5879989559903563723">Hindi pinapayagan sa Guest mode</translation>
 <translation id="5884465125445718607">Envelope Chinese #6</translation>
@@ -2454,7 +2452,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6897140037006041989">User Agent</translation>
 <translation id="6898699227549475383">Samahan (O)</translation>
-<translation id="6899000063526916106">Ilagay ang <ph name="NUMBER_OF_DIGITS" /> (na) digit na code</translation>
 <translation id="6907458757809079309">Fitness</translation>
 <translation id="6910240653697687763">Gusto ng <ph name="URL" /> na magkaroon ng buong kontrol sa iyong mga MIDI device</translation>
 <translation id="691024665142758461">Mag-download ng maraming file</translation>
@@ -3070,6 +3067,7 @@ Mga karagdagang detalye:
 <translation id="8296205692406981542">Mga parke at harding panrehiyon</translation>
 <translation id="8297545700510100061">Ginagamit ang cookies at iba pang data ng site para tandaan ka, halimbawa para i-sign in ka o i-personalize ang mga ad. Para mapamahalaan ang cookies para sa lahat ng site, tingnan ang <ph name="SETTINGS" />.</translation>
 <translation id="8298115750975731693">Maaaring hilingin ng Wi-Fi na ginagamit mo (<ph name="WIFI_NAME" />) na bisitahin mo ang <ph name="BEGIN_BOLD" /><ph name="LOGIN_URL" /><ph name="END_BOLD" />.</translation>
+<translation id="8301894345671534559">Ilagay ang code</translation>
 <translation id="8303854710873047864">Ipinapakita ang seksyong "<ph name="SECTION" />"</translation>
 <translation id="830498451218851433">Fold half</translation>
 <translation id="831997045666694187">Gabi</translation>
@@ -3421,7 +3419,6 @@ Mga karagdagang detalye:
 <translation id="9191834167571392248">Punch bottom left</translation>
 <translation id="9199905725844810519">Naka-block ang pag-print</translation>
 <translation id="9205078245616868884">Na-encrypt ang iyong data gamit ang iyong passphrase sa pag-sync. Ilagay ito upang simulan ang pag-sync.</translation>
-<translation id="920511547311754821">Hindi makita ang iyong code? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="9207861905230894330">Hindi naidagdag ang artikulo.</translation>
 <translation id="9213433120051936369">I-customize ang hitsura</translation>
 <translation id="9215416866750762878">Pinipigilan ng isang application na makakonekta nang ligtas ang Chrome sa site na ito</translation>

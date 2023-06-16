@@ -63,7 +63,6 @@ Pro začátek můžete vyzkoušet třeba tohle.</translation>
 <translation id="1235458158152011030">Známé sítě</translation>
 <translation id="1239161794459865856">Funkce <ph name="FEATURE_NAME" /> je připojena.</translation>
 <translation id="1240638468526743569">Aplikace</translation>
-<translation id="1242704516557658755">Procházet seznam naposledy použitých oken směrem zpět</translation>
 <translation id="124678866338384709">Zavřít aktuální kartu</translation>
 <translation id="1246890715821376239">Nepodporované aplikace</translation>
 <translation id="1247372569136754018">Mikrofon (interní)</translation>
@@ -1120,7 +1119,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> <ph name="MAIL" /></translation>
 <translation id="5916664084637901428">Zapnuto</translation>
 <translation id="5920710855273935292">Mikrofon je ztlumen.</translation>
-<translation id="5922962980596822074">Procházet okna od naposledy použitého</translation>
 <translation id="5924855612669061715">Hotspot je zapnutý</translation>
 <translation id="5946788582095584774">Funkce <ph name="FEATURE_NAME" /> je zapnutá.</translation>
 <translation id="5947494881799873997">Vrátit zpět</translation>
@@ -1239,7 +1237,6 @@ Připojte zařízení k napájení.</translation>
 <translation id="6469104339369989396">Přepnout hotspot</translation>
 <translation id="6477681113376365978">Soubor nelze stáhnout</translation>
 <translation id="6482559668224714696">Lupa celé obrazovky</translation>
-<translation id="6483727822843292440">Procházet okna od nejméně používaného</translation>
 <translation id="6490471652906364588">Zařízení USB Type-C (pravý port)</translation>
 <translation id="6491071886865974820">Organizace <ph name="MANAGER" /> vyžaduje, abyste toto zařízení <ph name="DEVICE_TYPE" /> do stanoveného termínu aktualizovali.</translation>
 <translation id="649452524636452238">PIN chytré karty</translation>
@@ -1837,7 +1834,7 @@ Pokud zařízení chcete vypnout, znovu podržte tlačítko napájení na zaří
 <translation id="9215934040295798075">Nastavit tapetu</translation>
 <translation id="9219103736887031265">Obrázky</translation>
 <translation id="921989828232331238">Rodič zařízení na celý den uzamkl</translation>
-<translation id="9220525904950070496">Odebrat účet</translation>
+<translation id="9220525904950070496">Odstranit účet</translation>
 <translation id="923686485342484400">Odhlásíte se dvojitým stisknutím kombinace kláves Control Shift Q.</translation>
 <translation id="92580429198593979">Stiskli jste klávesovou zkratku pro převrácení barev. Chcete ho zapnout?</translation>
 <translation id="925832987464884575">Skrýt náhledy</translation>

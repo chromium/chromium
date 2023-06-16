@@ -63,7 +63,6 @@ Başlamak için şunları deneyebilirsin.</translation>
 <translation id="1235458158152011030">Bilinen ağlar</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> bağlı.</translation>
 <translation id="1240638468526743569">Uygulama</translation>
-<translation id="1242704516557658755">En son kullanılan pencere listesinde geriye doğru geçiş yapın</translation>
 <translation id="124678866338384709">Geçerli sekmeyi kapatır</translation>
 <translation id="1246890715821376239">Desteklenmeyen uygulamalar</translation>
 <translation id="1247372569136754018">Mikrofon (dahili)</translation>
@@ -1120,7 +1119,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Açık</translation>
 <translation id="5920710855273935292">Mikrofonun sesi kapalı.</translation>
-<translation id="5922962980596822074">En son kullanılandan başlayarak pencereler arasında geçiş yap</translation>
 <translation id="5924855612669061715">Hotspot açık</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> özelliği açık.</translation>
 <translation id="5947494881799873997">Geri döndür</translation>
@@ -1239,7 +1237,6 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="6469104339369989396">Hotspot'u aç/kapat</translation>
 <translation id="6477681113376365978">Dosya indirilemiyor</translation>
 <translation id="6482559668224714696">Tam ekran büyüteci</translation>
-<translation id="6483727822843292440">En az kullanılandan başlayarak pencereler arasında geçiş yap</translation>
 <translation id="6490471652906364588">USB-C cihaz (sağ bağlantı noktası)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> son tarihten önce bu <ph name="DEVICE_TYPE" /> cihazı güncellemenizi gerektiriyor</translation>
 <translation id="649452524636452238">Akıllı kart PIN'i</translation>

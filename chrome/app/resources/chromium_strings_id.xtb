@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Dapatkan bantuan untuk Chrome for Testing</translation>
 <translation id="1524282610922162960">Bagikan tab Chromium</translation>
 <translation id="1553461853655228091">Chromium memerlukan izin untuk mengakses kamera guna membuat peta 3D untuk area di sekeliling Anda.</translation>
-<translation id="1555506416658437797">mengedit metode pembayaran.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update}=1{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. Jendela Samaran Anda tidak akan dibuka kembali.}other{Administrator mewajibkan Anda meluncurkan kembali Chromium untuk menerapkan update. # jendela Samaran Anda tidak akan dibuka kembali.}}</translation>
 <translation id="1625909126243026060">Meninjau kontrol privasi dan keamanan utama di Chromium</translation>
 <translation id="1632539827495546968">Jika Anda hanya ingin menggunakan akun ini sekali, Anda dapat menggunakan <ph name="GUEST_LINK_BEGIN" />mode Tamu<ph name="GUEST_LINK_END" /> di browser Chromium. Jika Anda ingin menambahkan akun untuk orang lain, <ph name="LINK_BEGIN" />tambahkan pengguna baru<ph name="LINK_END" /> ke <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="3179665906251668410">Buka Link di Jendela Sa&amp;maran Chromium</translation>
 <translation id="3185330573522821672">Sesuaikan profil Chromium baru Anda</translation>
 <translation id="3190315855212034486">Aduh! Chromium ngadat. Luncurkan ulang sekarang?</translation>
-<translation id="3255926992597692024">Chromium mencoba mengubah setelan pengisian metode pembayaran.</translation>
 <translation id="3258596308407688501">Chromium tidak dapat membaca dan menulis ke direktori datanya:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="4019629340646866719">ChromiumOS terwujud karena adanya <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> tambahan, seperti <ph name="BEGIN_LINK_LINUX_OSS" />lingkungan pengembangan Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Bantu Chromium jadi lebih baik dengan melaporkan <ph name="BEGIN_LINK" />setelan saat ini<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Peningkatan keamanan dan fitur baru yang penting tersedia di versi terbaru.</translation>
-<translation id="4050599136622776556">Chromium mencoba mengedit metode pembayaran.</translation>
 <translation id="4055805654398742145">Pengelola S&amp;andi</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama 1 menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}other{Organisasi akan otomatis menutup Chromium jika tidak digunakan selama # menit. Data penjelajahan akan dihapus. Data ini dapat mencakup histori, isi otomatis, dan download.}}</translation>
 <translation id="4148957013307229264">Memasang...</translation>
@@ -208,7 +205,6 @@ Izin yang telah Anda berikan ke situs dan aplikasi dapat berlaku untuk akun ini.
 <translation id="5653831366781983928">Mulai ulang Chromium sekarang</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Tampilkan Chromium dalam bahasa ini</translation>
-<translation id="585620188971323280">mengubah setelan pengisian metode pembayaran.</translation>
 <translation id="5862307444128926510">Selamat Datang di Chromium</translation>
 <translation id="5883558403894052917">Chromium menemukan bahwa item berikut berisi malware:</translation>
 <translation id="5895138241574237353">Mulai Ulang</translation>

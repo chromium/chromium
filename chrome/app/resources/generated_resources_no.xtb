@@ -378,6 +378,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1307431692088049276">Ikke spør meg igjen</translation>
 <translation id="1307559529304613120">Beklager. Systemet kunne ikke lagre noe langvarig API-tilgangstoken for denne enheten.</translation>
 <translation id="131112695174432497">Data som påvirker personlig tilpasning av annonser, blir slettet</translation>
+<translation id="1311294419381837540">Du caster en fane. Du kan når som helst stoppe castingen eller sette den på pause.</translation>
 <translation id="1312811472299082263">Opprett fra en Ansible Playbook-fil eller Crostini-sikkerhetskopifil</translation>
 <translation id="13130607084115184">Lagrede passord vises her. For å importere passord til <ph name="BRAND" /> på denne enheten, <ph name="BEGIN_LINK" />velg en CSV-fil<ph name="END_LINK" />.</translation>
 <translation id="1313264149528821971">Fjernet <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" /> og <ph name="PERMISSION_3" /></translation>
@@ -414,6 +415,7 @@ Du kan når som helst sjekke passordene dine i <ph name="GOOGLE_PASSWORD_MANAGER
 <translation id="1341871421050612057">Kan ikke synkronisere med <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Gi Linux-apper tilgang til USB-enheter. Linux husker ikke USB-enheter etter at de er fjernet.</translation>
 <translation id="1343920184519992513">Fortsett der du slapp, og åpne et spesifikt sett med sider</translation>
+<translation id="1344141078024003905">Du caster skjermen. Du kan når som helst stoppe castingen av skjermen eller sette den på pause.</translation>
 <translation id="1346630054604077329">Bekreft og start på nytt</translation>
 <translation id="1346748346194534595">Høyre</translation>
 <translation id="1347256498747320987">Installer oppdateringer og apper. Hvis du fortsetter, godtar du at denne enheten også kan laste ned og installere oppdateringer automatisk fra Google, operatøren din og produsenten av enheten. Dette bruker muligens mobildata. Noen av disse appene kan inneholde kjøp i app-funksjonalitet. <ph name="BEGIN_LINK1" />Finn ut mer<ph name="END_LINK1" /></translation>
@@ -1693,6 +1695,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="2378982052244864789">Velg katalog for utvidelsen.</translation>
 <translation id="2379281330731083556">Skriv ut med systemdialogen <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Forhåndsvisning av delt fane</translation>
+<translation id="2382875860893882175">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen.</translation>
 <translation id="2383825469508278924">Endre tastaturtilordninger, funksjonstaster med mer</translation>
 <translation id="2387052489799050037">Gå til startsiden</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (gjeldende)</translation>
@@ -3766,11 +3769,6 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4169535189173047238">Ikke tillat</translation>
 <translation id="4170314459383239649">Slett ved avslutning</translation>
 <translation id="417096670996204801">Velg en profil</translation>
-<translation id="4174651450391857911">Denne profilen administreres av organisasjonen din. For at du skal kunne fortsette å bruke denne administrerte profilen, krever organisasjonen din at du deler enhetssignaler.
-
-Enhetssignaler kan inkludere informasjon om nettleseren, OS-et, enheten, installert programvare og filer.
-
-Hvis du velger å ikke dele signaler, blir denne profilen lukket.</translation>
 <translation id="4175137578744761569">Lys lilla og hvit</translation>
 <translation id="4176463684765177261">Deaktivert</translation>
 <translation id="4176864026061939326">Denne enheten administreres. En ny profil for kontoen <ph name="USER_EMAIL_ADDRESS" /> kreves av enhetsadministratoren</translation>
@@ -3821,6 +3819,7 @@ Hvis du velger å ikke dele signaler, blir denne profilen lukket.</translation>
 <translation id="4223845867739585293">Lag en passnøkkel</translation>
 <translation id="4225397296022057997">På alle nettsteder</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Denne utvidelsen er ikke tillatt}other{Noen utvidelser er ikke tillatt}}</translation>
+<translation id="4231053948789591973">Castingen er satt på pause. Du kan når som helst gjenoppta eller stoppe castingen av skjermen.</translation>
 <translation id="4231095370974836764">Installer apper og spill fra Google Play på <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Finn ut mer<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Lukk spillkontrollene</translation>
 <translation id="4231231258999726714">Konfigurerer Steam for Chromebook</translation>
@@ -5751,6 +5750,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
    <ph name="LINE_BREAK" />
    Dette bildet vises på låse- og påloggingsskjermen på Chromebooken.</translation>
 <translation id="5925147183566400388">Peker til erklæring om sertifiseringspraksis</translation>
+<translation id="5927132638760172455">Caster til en ukjent mottaker</translation>
 <translation id="5927232971138258197">Denne utvidelsen kan lese og endre <ph name="HOST" /></translation>
 <translation id="592740088639760830">Stopp denne beholderen</translation>
 <translation id="592880897588170157">Last ned PDF-filer i stedet for at de åpnes automatisk i Chrome</translation>
@@ -6452,6 +6452,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="653983593749614101">Gjenopptar …</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Merk:<ph name="END_BOLD" /> Ettersom innsamling av data kan redusere ytelsen bør du bare aktivere dette hvis du vet hva du gjør eller har blitt bedt om å gjøre dette.</translation>
 <translation id="6541638731489116978">Dette nettstedet er blokkert fra å få tilgang til bevegelsessensorene dine.</translation>
+<translation id="6542521951477560771">Caster til <ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">Gjentakelsesfrekvens</translation>
 <translation id="6545867563032584178">Mikrofonen er slått av i Mac-systemvalgene</translation>
 <translation id="6546856949879953071">For å se detaljert informasjon om oppgraderingen, se loggene som er lagret i Filer &gt; Mine filer &gt; <ph name="LOG_FILE" /></translation>
@@ -8675,11 +8676,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8428271547607112339">Legg til en skolekonto</translation>
 <translation id="84297032718407999">Du logges av om <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Vis trykk</translation>
-<translation id="8431496281632382473">Denne profilen administreres av <ph name="DOMAIN" />. For at du skal kunne fortsette å bruke denne administrerte profilen, krever organisasjonen din at du deler enhetssignaler.
-
-Enhetssignaler kan inkludere informasjon om nettleseren, OS-et, enheten, installert programvare og filer.
-
-Hvis du velger å ikke dele signaler, blir denne profilen lukket.</translation>
+<translation id="8433186206711564395">Nettverksinnstillinger</translation>
 <translation id="8434480141477525001">Feilsøkingsport for NaCl</translation>
 <translation id="8437209419043462667">Amerikansk</translation>
 <translation id="8438328416656800239">Bytt til en smart nettleser</translation>

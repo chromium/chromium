@@ -63,7 +63,6 @@ Alustamiseks võite proovida neid toiminguid.</translation>
 <translation id="1235458158152011030">Teadaolevad võrgud</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> on ühendatud.</translation>
 <translation id="1240638468526743569">Rakendus</translation>
-<translation id="1242704516557658755">Klõpsake viimati kasutatud akende loendis tagasinoolel</translation>
 <translation id="124678866338384709">Aktiivse vahelehe sulgemine</translation>
 <translation id="1246890715821376239">Toetamata rakendused</translation>
 <translation id="1247372569136754018">Mikrofon (sisemine)</translation>
@@ -1121,7 +1120,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Sees</translation>
 <translation id="5920710855273935292">Mikrofon on vaigistatud.</translation>
-<translation id="5922962980596822074">Sirvi aknaid alates kõige viimati kasutatud aknast</translation>
 <translation id="5924855612669061715">Kuumkoht on sees</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> on sees.</translation>
 <translation id="5947494881799873997">Ennista</translation>
@@ -1240,7 +1238,6 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="6469104339369989396">Kuumkoha sisse-/väljalülitamine</translation>
 <translation id="6477681113376365978">Faili ei saa alla laadida</translation>
 <translation id="6482559668224714696">Täisekraani luup</translation>
-<translation id="6483727822843292440">Sirvi aknaid alates kõige vähem kasutatud aknast</translation>
 <translation id="6490471652906364588">C-tüüpi USB-seade (parempoolne port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> nõuab, et värskendaksite seadme <ph name="DEVICE_TYPE" /> operatsioonisüsteemi enne tähtaega</translation>
 <translation id="649452524636452238">Kiipkaardi PIN-kood</translation>

@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Ohjeita Chrome for Testingin käyttöön</translation>
 <translation id="1524282610922162960">Jaa Chromium-välilehti</translation>
 <translation id="1553461853655228091">Chromium tarvitsee luvan käyttää kameraasi ympäristön 3D-kartoittamiseen</translation>
-<translation id="1555506416658437797">muokata maksutapoja.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön.}=1{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. Incognito-ikkunaasi ei avata uudelleen.}other{Ylläpitäjä vaatii Chromiumin uudelleenkäynnistystä, jotta päivitys voidaan ottaa käyttöön. # incognito-ikkunaasi ei avata uudelleen.}}</translation>
 <translation id="1625909126243026060">Tarkista Chromiumin tärkeimmät yksityisyys‑ ja turvallisuusasetukset</translation>
 <translation id="1632539827495546968">Jos haluat käyttää tiliä vain tämän kerran, voit käyttää Chromium-selaimen <ph name="GUEST_LINK_BEGIN" />vierastilaa<ph name="GUEST_LINK_END" />. Jos haluat lisätä tilin jollekulle toiselle, <ph name="LINK_BEGIN" />lisää uusi henkilö<ph name="LINK_END" /> <ph name="DEVICE_TYPE" />‑laitteelle.
@@ -95,7 +94,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="3179665906251668410">Avaa linkki Chromiumin inco&amp;gnito-ikkunassa</translation>
 <translation id="3185330573522821672">Muokkaa uusi Chromium-profiili näköiseksesi</translation>
 <translation id="3190315855212034486">Hups! Chromium kaatui. Käynnistetäänkö uudelleen?</translation>
-<translation id="3255926992597692024">Chromium yrittää muuttaa maksutapojen täyttämisen asetuksia.</translation>
 <translation id="3258596308407688501">Chromium ei voi lukea tietohakemistoaan ja kirjoittaa siihen:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,8 +140,8 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="4019629340646866719">Toinen <ph name="BEGIN_LINK_CROS_OSS" />avoimen lähdekoodin ohjelmisto<ph name="END_LINK_CROS_OSS" /> tukee Chromium-käyttöjärjestelmää, kuten myös <ph name="BEGIN_LINK_LINUX_OSS" />Linux-kehitysympäristöä<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Auta parantamaan Chromiumia ilmoittamalla <ph name="BEGIN_LINK" />nykyiset asetukset<ph name="END_LINK" />.</translation>
 <translation id="4050175100176540509">Uusimmassa versiossa on käytettävissä tärkeitä turvallisuusparannuksia ja uusia ominaisuuksia.</translation>
-<translation id="4050599136622776556">Chromium yrittää muokata maksutapoja.</translation>
 <translation id="4055805654398742145">S&amp;alasanat</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin. Selausdata poistetaan. Tämä voi sisältää historian, automaattisen täytön ja lataukset.}}</translation>
 <translation id="4148957013307229264">Asennetaan...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> – Kirjautuminen verkkoon – Chromium</translation>
 <translation id="421369550622382712">Löydät hienoja sovelluksia, pelejä, laajennuksia ja teemoja Chromiumille.</translation>
@@ -180,6 +178,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="479167709087336770">Tämä käyttää samaa oikeinkirjoituksen tarkistusta kuin Google Haku. Selaimeen kirjoittamasi teksti lähetetään Googlelle. Voit vaihtaa valintasi milloin tahansa asetuksista.</translation>
 <translation id="4888717733111232871">Chromiumin saapuvien yhteyksien sääntö, joka sallii mDNS-liikenteen.</translation>
 <translation id="4893347770495441059">Päivitä &amp;Chromium käynnistämällä se uudelleen</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty 1 minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}other{Organisaatiosi poistaa selausdatan automaattisesti, kun Chromiumia ei ole käytetty # minuuttiin. Tämä voi sisältää historian, automaattisen täytön ja lataukset. Välilehdet pysyvät auki.}}</translation>
 <translation id="4943838377383847465">Chromium on käynnissä taustalla</translation>
 <translation id="4987820182225656817">Vierailijat voivat käyttää Chromiumia jälkiä jättämättä.</translation>
 <translation id="4994636714258228724">Lisää itsesi Chromiumiin</translation>
@@ -206,7 +205,6 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5653831366781983928">Käynnistä Chromium uudelleen nyt</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Näytä Chromium tällä kielellä</translation>
-<translation id="585620188971323280">muuttaa maksutapojen täyttämisen asetuksia.</translation>
 <translation id="5862307444128926510">Tervetuloa Chromiumiin</translation>
 <translation id="5883558403894052917">Chromium havaitsi, että näissä kohteissa on haittaohjelmia:</translation>
 <translation id="5895138241574237353">Käynnistä uudelleen</translation>
@@ -214,6 +212,7 @@ Sivustoille ja sovelluksille myöntämäsi luvat saattavat koskea tätä tiliä.
 <translation id="5924017743176219022">Muodostetaan internetyhteyttä…</translation>
 <translation id="5941711191222866238">Pienennä</translation>
 <translation id="5972142260211327093">Jos Chromium on sijoittanut sinut aktiiviseen kokeiluun satunnaisesti, selaushistoriasi vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiin. Yksityisyytesi suojaamiseksi Chromium poistaa kiinnostuksen kohteesi kuukausittain. Kiinnostuksen kohteet päivittyvät, ellet poista niitä.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty 1 minuuttiin.}other{Organisaatiosi sulkee Chromiumin automaattisesti, kun sitä ei ole käytetty # minuuttiin.}}</translation>
 <translation id="5987687638152509985">Aloita synkronointi päivittämällä Chromium.</translation>
 <translation id="5988505247484123880">On tavallista, että avaamasi sivustot muistavat sinua kiinnostavat asiat personoidakseen käyttökokemustasi. Sivustot voivat myös tallentaa Chromiumiin tietoja kiinnostuksen kohteistasi.</translation>
 <translation id="6003112304606738118">Ladataan… <ph name="HOURS" /> tuntia jäljellä</translation>

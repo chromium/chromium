@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Få hjelp med Chrome for testing</translation>
 <translation id="1524282610922162960">Del en Chromium-fane</translation>
 <translation id="1553461853655228091">Chromium trenger tilgang til kameraet for å lage et 3D-kart av omgivelsene</translation>
-<translation id="1555506416658437797">redigere betalingsmåter.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering}=1{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. Inkognitovinduet ditt blir ikke gjenåpnet.}other{Administratoren din krever at du starter Chromium på nytt for å ta i bruk en oppdatering. De # inkognitovinduene dine blir ikke gjenåpnet.}}</translation>
 <translation id="1625909126243026060">Gjennomgå viktige personvern- og sikkerhetskontroller i Chromium</translation>
 <translation id="1632539827495546968">Hvis du vil bruke denne kontoen kun én gang, kan du bruke <ph name="GUEST_LINK_BEGIN" />gjestemodus<ph name="GUEST_LINK_END" /> i Chromium-nettleseren. Hvis du vil legge til en konto for noen andre, kan du <ph name="LINK_BEGIN" />legge til en ny person<ph name="LINK_END" /> på <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="3179665906251668410">Åpne linken i et inkognitovindu i Chromium</translation>
 <translation id="3185330573522821672">Tilpass den nye Chromium-profilen din</translation>
 <translation id="3190315855212034486">Chromium har krasjet. Vil du starte den på nytt nå?</translation>
-<translation id="3255926992597692024">Chromium prøver å endre innstillingene for utfylling av betalingsmåter.</translation>
 <translation id="3258596308407688501">Chromium kan ikke lese og skrive til egen datakatalog:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="4019629340646866719">ChromiumOS er basert på <ph name="BEGIN_LINK_CROS_OSS" />tilleggsprogramvare med åpen kildekode<ph name="END_LINK_CROS_OSS" />, i likhet med <ph name="BEGIN_LINK_LINUX_OSS" />Linux-utviklingsmiljøet<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Bidra til å gjøre Chromium bedre ved å rapportere de <ph name="BEGIN_LINK" />nåværende innstillingene<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Viktige sikkerhetsforbedringer og nye funksjoner er tilgjengelige i den nyeste versjonen.</translation>
-<translation id="4050599136622776556">Chromium prøver å redigere betalingsmåter.</translation>
 <translation id="4055805654398742145">P&amp;assordlagring</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på ett minutt. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}other{Organisasjonen din lukker Chromium-nettleseren automatisk når den ikke har vært i bruk på # minutter. Nettlesingsdata slettes. Dette kan omfatte loggen, autofyll og nedlastinger.}}</translation>
 <translation id="4148957013307229264">Installerer …</translation>
@@ -208,7 +205,6 @@ Tillatelser du allerede har gitt nettsteder og apper, kan gjelde for denne konto
 <translation id="5653831366781983928">Start Chromium på nytt nå</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Vis Chromium på dette språket</translation>
-<translation id="585620188971323280">endre innstillingene for utfylling av betalingsmåter</translation>
 <translation id="5862307444128926510">Velkommen til Chromium</translation>
 <translation id="5883558403894052917">Chromium har oppdaget at disse elementene inneholder skadelig programvare:</translation>
 <translation id="5895138241574237353">Start på nytt</translation>

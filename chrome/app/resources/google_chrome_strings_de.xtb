@@ -30,7 +30,6 @@
  fortzufahren. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS wird durch zusätzliche <ph name="BEGIN_LINK_CROS_OSS" />Open-Source-Software<ph name="END_LINK_CROS_OSS" /> ermöglicht.</translation>
 <translation id="1553358976309200471">Chrome aktualisieren</translation>
-<translation id="1555506416658437797">Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> ist bereits in diesem Chrome-Profil angemeldet. Dadurch wird ein neues Chrome-Profil für <ph name="USER_EMAIL_ADDRESS" /> erstellt.</translation>
 <translation id="1587223624401073077">Google Chrome verwendet deine Kamera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> ist schädlich und wurde daher von Chrome blockiert.</translation>
@@ -79,7 +78,6 @@
 <translation id="234869673307233423">Chrome kann deine Passwörter nicht prüfen. Versuche es später noch einmal.</translation>
 <translation id="235650106824528204">Alle Chrome-Daten, die während der Nutzung dieses Profils erstellt werden, wie Lesezeichen, Verlauf, Passwörter und andere Einstellungen, können vom Administrator des Arbeitsprofils entfernt werden. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Weiter</translation>
-<translation id="2399868464369312507">Google Chrome versucht, Zahlungsmethoden zu bearbeiten.</translation>
 <translation id="2401189691232800402">Chrome OS-System</translation>
 <translation id="2467438592969358367">Google Chrome möchte deine Passwörter exportieren. Wenn du dies zulassen möchtest, gib dein Windows-Passwort ein.</translation>
 <translation id="2485422356828889247">Deinstallieren</translation>
@@ -251,7 +249,6 @@
 <translation id="5756509061973259733">Ein Chrome-Profil mit diesem Konto ist auf diesem Gerät bereits vorhanden</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome konnte nicht gestartet werden. Versuche es noch einmal.</translation>
-<translation id="585620188971323280">Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="5895138241574237353">Neu starten</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Netzwerkanmeldung</translation>
 <translation id="5924017743176219022">Internetverbindung wird hergestellt…</translation>
@@ -281,6 +278,7 @@
 <translation id="6326175484149238433">Aus Chrome entfernen</translation>
 <translation id="6327105987658262776">Es ist kein Update verfügbar.</translation>
 <translation id="6412673304250309937">Prüft URLs anhand einer Liste unsicherer Websites, die in Chrome gespeichert wird. Wenn eine Website versucht, dein Passwort zu stehlen, oder wenn du eine schädliche Datei herunterlädst, kann Chrome auch URLs, einschließlich Teile von Seiteninhalten, an Safe Browsing senden.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird. Browserdaten werden gelöscht. Dazu können der Verlauf, Autofill-Daten und Downloads gehören.}}</translation>
 <translation id="6418662306461808273">Zu bestehendem Chrome-Profil wechseln?</translation>
 <translation id="648319183876919572">Erweitertes Safe Browsing schützt dich besser vor gefährlichen Websites und Downloads</translation>
 <translation id="6493527311031785448">Google Chrome versucht, <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -330,6 +328,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7410958280246779049">Chrome hat diese Datei blockiert, weil sie gefährlich ist</translation>
 <translation id="7426611252293106642">Google Chrome funktioniert unter Umständen nicht ordnungsgemäß, da es unter dieser Linux-Distribution nicht mehr unterstützt wird</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" />-Installationsprogramm</translation>
@@ -363,6 +362,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8008534537613507642">Chrome erneut installieren</translation>
 <translation id="8013993649590906847">Wenn ein Bild keine brauchbare Beschreibung hat, versucht Chrome, eine für dich zu finden. Damit entsprechende Beschreibungen erstellt werden können, werden die Bilder an Google gesendet.</translation>
 <translation id="80471789339884597">Vielen Dank für die Installation. Du musst alle Browser neu starten, bevor du <ph name="BUNDLE_NAME" /> verwenden kannst.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Deine Organisation löscht Browserdaten automatisch, wenn Chrome eine Minute lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}other{Deine Organisation löscht Browserdaten automatisch, wenn Chrome # Minuten lang nicht verwendet wird. Dazu können der Verlauf, Autofill-Daten und Downloads gehören. Deine aktuellen Tabs bleiben geöffnet.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">Über &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialisierung…</translation>
@@ -386,7 +386,6 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="8504220326736535258">Chrome hat diese Datei blockiert, weil sie Malware enthält</translation>
 <translation id="8516431725144212809">Deine von Chrome geschätzten Interessen</translation>
 <translation id="8521348052903287641">Eingangsregel für die Zulassung von mDNS-Verkehr in Google Chrome Dev.</translation>
-<translation id="8544217240017914508">Google Chrome versucht, die Einstellungen für das Ausfüllen von Zahlungsmethoden zu ändern.</translation>
 <translation id="8550334526674375523">Dieses Arbeitsprofil wird getrennt von deinem persönlichen Profil verwaltet.</translation>
 <translation id="8556340503434111824">Es gibt eine neue Version von Google Chrome, die schneller ist, als anderen zuvor.</translation>
 <translation id="8571790202382503603">Mit Chrome-Profilen kannst du verschiedene Chrome-Inhalte voneinander trennen. Das macht es einfacher, Arbeit und Freizeitspaß auseinanderzuhalten.</translation>

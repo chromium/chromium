@@ -63,7 +63,6 @@ Aquí tienes algunas cosas que puedes probar para empezar.</translation>
 <translation id="1235458158152011030">Redes conocidas</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> se ha conectado.</translation>
 <translation id="1240638468526743569">Una aplicación</translation>
-<translation id="1242704516557658755">Desplázate hacia atrás en la lista de ventanas usadas más recientemente</translation>
 <translation id="124678866338384709">Cierra la pestaña actual</translation>
 <translation id="1246890715821376239">Aplicaciones no admitidas</translation>
 <translation id="1247372569136754018">Micrófono (interno)</translation>
@@ -744,7 +743,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="4279490309300973883">Duplicando</translation>
 <translation id="4280601795273309128">Actualizaciones de seguridad completadas. Actualiza tu dispositivo.</translation>
 <translation id="4283888303416325161">Escribe la contraseña como medida de seguridad adicional</translation>
-<translation id="4285498937028063278">No fijar</translation>
+<translation id="4285498937028063278">Desfijar</translation>
 <translation id="428715201724021596">Conectándose al perfil. Este proceso puede durar unos minutos.</translation>
 <translation id="4294319844246081198">Buenos días, <ph name="GIVEN_NAME" /></translation>
 <translation id="4296136865091727875">Borrar las <ph name="COUNT" /> notificaciones</translation>
@@ -1121,7 +1120,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">Activado</translation>
 <translation id="5920710855273935292">El micrófono está silenciado.</translation>
-<translation id="5922962980596822074">Examinar ventanas desde la ventana usada más recientemente</translation>
 <translation id="5924855612669061715">Punto de acceso activado</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> está activado.</translation>
 <translation id="5947494881799873997">Deshacer</translation>
@@ -1240,7 +1238,6 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="6469104339369989396">Activar o desactivar punto de acceso</translation>
 <translation id="6477681113376365978">No se puede descargar el archivo</translation>
 <translation id="6482559668224714696">Lupa de pantalla completa</translation>
-<translation id="6483727822843292440">Examinar ventanas desde la ventana menos utilizada</translation>
 <translation id="6490471652906364588">Dispositivo USB-C (puerto derecho)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requiere que actualices tu <ph name="DEVICE_TYPE" /> antes del plazo límite</translation>
 <translation id="649452524636452238">PIN de la tarjeta inteligente</translation>

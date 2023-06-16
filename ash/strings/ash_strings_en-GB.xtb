@@ -63,7 +63,6 @@ Here are some things that you can try to get started.</translation>
 <translation id="1235458158152011030">Known networks</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> is connected.</translation>
 <translation id="1240638468526743569">An app</translation>
-<translation id="1242704516557658755">Cycle backwards in the most recently used window list</translation>
 <translation id="124678866338384709">Close current tab</translation>
 <translation id="1246890715821376239">Unsupported apps</translation>
 <translation id="1247372569136754018">Microphone (internal)</translation>
@@ -1120,7 +1119,6 @@ Connect your device to power.</translation>
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">On</translation>
 <translation id="5920710855273935292">Mic is muted.</translation>
-<translation id="5922962980596822074">Go through windows from the most recently used window</translation>
 <translation id="5924855612669061715">Hotspot is on</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> is on.</translation>
 <translation id="5947494881799873997">Revert</translation>
@@ -1239,7 +1237,6 @@ Connect your device to power.</translation>
 <translation id="6469104339369989396">Toggle hotspot.</translation>
 <translation id="6477681113376365978">Can’t download file</translation>
 <translation id="6482559668224714696">Full-screen magnifier</translation>
-<translation id="6483727822843292440">Go through windows from the least-used window</translation>
 <translation id="6490471652906364588">USB-C device (right port)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> requires you to update your <ph name="DEVICE_TYPE" /> before the deadline</translation>
 <translation id="649452524636452238">Smart card PIN</translation>

@@ -31,7 +31,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1516530951338665275">Google Chrome needs Bluetooth access to continue pairing. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS is made possible by additional <ph name="BEGIN_LINK_CROS_OSS" />open-source software<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Update Chrome</translation>
-<translation id="1555506416658437797">edit payment methods.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> is already signed in to this Chrome profile. This will create a new Chrome profile for <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome is using your camera.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> is dangerous, so Chrome has blocked it.</translation>
@@ -82,7 +81,6 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="234869673307233423">Chrome can't check your passwords. Try again later.</translation>
 <translation id="235650106824528204">Any Chrome data that is generated during the use of this profile (such as the creation of bookmarks, history, passwords and other settings) can be removed by the work profile administrator. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continue</translation>
-<translation id="2399868464369312507">Google Chrome is trying to edit payment methods.</translation>
 <translation id="2401189691232800402">Chrome OS system</translation>
 <translation id="2424440923901031101">This extension violates the Chrome Web Store policy and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="2467438592969358367">Google Chrome wants to export your passwords. Type your Windows password to allow this.</translation>
@@ -260,7 +258,6 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="5756509061973259733">A Chrome profile with this account already exists on this device</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Couldn't launch Chrome. Try again.</translation>
-<translation id="585620188971323280">modify settings for filling payment methods.</translation>
 <translation id="5895138241574237353">Restart</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Network sign-in</translation>
 <translation id="5924017743176219022">Connecting to the Internet…</translation>
@@ -291,6 +288,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="6327105987658262776">No update is available.</translation>
 <translation id="6360449101159168105">While this tab was inactive, memory was freed up to keep Chrome fast. You can choose to always exclude this site from being inactive.</translation>
 <translation id="6412673304250309937">Checks URLs with a list of unsafe sites stored in Chrome. If a site tries to steal your password, or when you download a harmful file, Chrome may also send URLs, including bits of page content, to Safe Browsing.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute. Browsing data is deleted. This could include history, autofill and downloads.}other{Your organisation closes Chrome automatically when it isn't used for # minutes. Browsing data is deleted. This could include history, autofill and downloads.}}</translation>
 <translation id="6418662306461808273">Switch to existing Chrome profile?</translation>
 <translation id="648319183876919572">Enhanced Safe Browsing does more to protect you against dangerous websites and downloads</translation>
 <translation id="6493527311031785448">Google Chrome is trying to <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -340,6 +338,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
 <translation id="7426611252293106642">Google Chrome may not function correctly because it is no longer supported on this Linux distribution</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute.}other{Your organisation closes Chrome automatically when it isn't used for # minutes.}}</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119"><ph name="COMPANY_NAME" /> installer</translation>
@@ -374,6 +373,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8013993649590906847">If an image doesn’t have a useful description, Chrome will try to provide one for you. To create descriptions, images are sent to Google.</translation>
 <translation id="8019103195866286235">This extension was unpublished by its developer and might be unsafe. Remove it from Chrome so that it can no longer see and change your data on sites that you visit, including your personal info.</translation>
 <translation id="80471789339884597">Thanks for installing. You must restart all your browsers before using <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{Your organisation deletes browsing data automatically when Chrome isn't used for one minute. This could include history, autofill and downloads. Your existing tabs will remain open.}other{Your organisation deletes browsing data automatically when Chrome isn't used for # minutes. This could include history, autofill and downloads. Your existing tabs will remain open.}}</translation>
 <translation id="8064015586118426197">Chrome OS Flex</translation>
 <translation id="8129812357326543296">About &amp;Google Chrome</translation>
 <translation id="813913629614996137">Initialising...</translation>
@@ -397,7 +397,6 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8504220326736535258">Chrome blocked this file because it has malware</translation>
 <translation id="8516431725144212809">Your interests as estimated by Chrome</translation>
 <translation id="8521348052903287641">Inbound rule for Google Chrome Dev to allow mDNS traffic.</translation>
-<translation id="8544217240017914508">Google Chrome is trying to modify settings for filling payment methods.</translation>
 <translation id="8550334526674375523">This work profile is completely separate from your personal profile.</translation>
 <translation id="8556340503434111824">There's a new version of Google Chrome available and it's faster than ever.</translation>
 <translation id="8571790202382503603">With Chrome profiles you can separate all of your Chrome things. This makes it easier to split between work and fun.</translation>

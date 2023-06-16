@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Richiedi assistenza per Chrome for Testing</translation>
 <translation id="1524282610922162960">Condividi una scheda di Chromium</translation>
 <translation id="1553461853655228091">Chromium ha bisogno dell'autorizzazione ad accedere alla fotocamera per creare una mappa 3D dell'ambiente circostante</translation>
-<translation id="1555506416658437797">modifica metodi di pagamento.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento}=1{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. La finestra di navigazione in incognito non verrà riaperta.}other{L'amministratore richiede il riavvio di Chromium per installare un aggiornamento. Le # finestre di navigazione in incognito non verranno riaperte.}}</translation>
 <translation id="1625909126243026060">Esamina i controlli per la privacy e la sicurezza più importanti in Chromium</translation>
 <translation id="1632539827495546968">Se vuoi utilizzare questo account solo una volta, puoi utilizzare la <ph name="GUEST_LINK_BEGIN" />modalità Ospite<ph name="GUEST_LINK_END" /> del browser Chromium. Se vuoi aggiungere un account per qualcun altro, <ph name="LINK_BEGIN" />aggiungi una nuova persona<ph name="LINK_END" /> a <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="3179665906251668410">Apri link in una finestra di navigazione in inco&amp;gnito di Chromium</translation>
 <translation id="3185330573522821672">Personalizza il tuo nuovo profilo Chromium</translation>
 <translation id="3190315855212034486">Spiacenti, si è verificato un arresto anomalo di Chromium. Riavviarlo ora?</translation>
-<translation id="3255926992597692024">Chromium sta cercando di modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="3258596308407688501">Chromium non è in grado di leggere e scrivere nella directory dei dati:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="4019629340646866719">La realizzazione di Chromium OS è stata possibile grazie a un <ph name="BEGIN_LINK_CROS_OSS" />software open source<ph name="END_LINK_CROS_OSS" /> aggiuntivo, noto come <ph name="BEGIN_LINK_LINUX_OSS" />ambiente di sviluppo Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Contribuisci a migliorare Chromium indicando le <ph name="BEGIN_LINK" />impostazioni attuali<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Nell'ultima versione sono stati apportati miglioramenti rilevanti in materia di sicurezza e sono state aggiunte nuove funzioni.</translation>
-<translation id="4050599136622776556">Chromium sta cercando di modificare i metodi di pagamento.</translation>
 <translation id="4055805654398742145">Gestore delle p&amp;assword</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per 1 minuto. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}other{La tua organizzazione chiude automaticamente Chromium quando non viene utilizzato per # minuti. I dati di navigazione vengono eliminati. Potrebbero essere inclusi cronologia, compilazione automatica e download.}}</translation>
 <translation id="4148957013307229264">Installazione...</translation>
@@ -208,7 +205,6 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="5653831366781983928">Riavvia subito Chromium</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Visualizza Chromium in questa lingua</translation>
-<translation id="585620188971323280">modificare le impostazioni per la compilazione dei metodi di pagamento.</translation>
 <translation id="5862307444128926510">Benvenuto in Chromium</translation>
 <translation id="5883558403894052917">Chromium ha rilevato che i seguenti elementi contengono malware:</translation>
 <translation id="5895138241574237353">Riavvia</translation>

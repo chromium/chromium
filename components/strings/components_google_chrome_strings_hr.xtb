@@ -3,12 +3,15 @@
 <translationbundle lang="hr">
 <translation id="1016765312371154165">Chrome se nije ispravno zatvorio.</translation>
 <translation id="130631256467250065">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete uređaj.</translation>
+<translation id="1555506416658437797">urediti načine plaćanja.</translation>
 <translation id="1635457557763038537">Promjene će početi vrijediti sljedeći put kad ponovo pokrenete Chrome.</translation>
+<translation id="2399868464369312507">Google Chrome pokušava urediti načine plaćanja.</translation>
 <translation id="2447485272386224171">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog koda i drugi <ph name="BEGIN_LINK_OSS" />softveri otvorenog koda<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logotip Chrome</translation>
 <translation id="3444832043240812445">Ova stranica prikazuje samo informacije o vašim nedavnim padovima ako <ph name="BEGIN_LINK" />omogućite izvješćivanja o padu<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">U postavkama vatrozida ili antivirusnog programa omogućite Chromeu da pristupa mreži.</translation>
 <translation id="5005121315113832363">Chrome je blokirao ovu stranicu</translation>
+<translation id="585620188971323280">izmjena postavki za popunjavanje načina plaćanja.</translation>
 <translation id="6011049234605203654">Idite na
           izbornik Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -40,4 +43,5 @@
           i poništite odabir proxy poslužitelja.</translation>
 <translation id="8232971017369963250">Chrome je omogućio <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" />, projekt otvorenog izvornog koda.</translation>
 <translation id="8279509328145658601">Chrome je omogućio i drugi <ph name="BEGIN_LINK_OSS" />softver otvorenog izvornog koda<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Google Chrome pokušava izmijeniti postavke za popunjavanje načina plaćanja.</translation>
 </translationbundle>

@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Receber ajuda com o Chrome for Testing</translation>
 <translation id="1524282610922162960">Compartilhar uma guia do Chromium</translation>
 <translation id="1553461853655228091">O Chromium precisa de permissão para acessar sua câmera e criar um mapa 3D do ambiente a sua volta</translation>
-<translation id="1555506416658437797">editar formas de pagamento.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita.}=1{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}one{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Sua janela anônima não será aberta novamente.}other{Seu administrador exige que você reinicie o Chromium para que uma atualização seja feita. Suas # janelas anônimas não serão abertas novamente.}}</translation>
 <translation id="1625909126243026060">Revise os principais controles de privacidade e segurança no Chromium</translation>
 <translation id="1632539827495546968">Se você quer usar essa conta apenas uma vez, use o <ph name="GUEST_LINK_BEGIN" />Modo convidado<ph name="GUEST_LINK_END" /> no navegador Chromium. Se quer adicionar uma conta para outra pessoa, <ph name="LINK_BEGIN" />adicione uma nova pessoa<ph name="LINK_END" /> ao <ph name="DEVICE_TYPE" />.
@@ -95,7 +94,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="3179665906251668410">Abrir link na janela &amp;sem rastros do Chromium</translation>
 <translation id="3185330573522821672">Personalize seu novo perfil do Chromium</translation>
 <translation id="3190315855212034486">O Chromium travou. Reiniciar agora?</translation>
-<translation id="3255926992597692024">O Chromium está tentando modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="3258596308407688501">O Chromium não pode ler e gravar neste diretório de dados: <ph name="USER_DATA_DIRECTORY" /></translation>
 <translation id="3283186697780795848">O Chromium versão <ph name="PRODUCT_VERSION" /> está instalado</translation>
 <translation id="3286538390144397061">Reiniciar agora</translation>
@@ -140,8 +138,8 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="4019629340646866719">A existência do ChromiumOS tornou-se possível graças a outros <ph name="BEGIN_LINK_CROS_OSS" />softwares de código aberto<ph name="END_LINK_CROS_OSS" />, como o <ph name="BEGIN_LINK_LINUX_OSS" />ambiente para desenvolvedores do Linux<ph name="END_LINK_LINUX_OSS" />.</translation>
 <translation id="4036079820698952681">Ajude a melhorar o Chromium informando as <ph name="BEGIN_LINK" />configurações atuais<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Melhorias de segurança importantes e novos recursos estão disponíveis na versão mais recente.</translation>
-<translation id="4050599136622776556">O Chromium está tentando editar formas de pagamento.</translation>
 <translation id="4055805654398742145">Gerenciador de senhas</translation>
+<translation id="4095980151185649725">{COUNT,plural, =1{A organização vai fechar o Chromium automaticamente se ele não for usado por 1 minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}one{A organização vai fechar o Chromium automaticamente se ele não for usado por # minuto. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}other{A organização vai fechar o Chromium automaticamente se ele não for usado por # minutos. Os dados de navegação serão excluídos. Isso pode incluir o histórico, o preenchimento automático e os downloads.}}</translation>
 <translation id="4148957013307229264">Instalando...</translation>
 <translation id="419998258129752635"><ph name="PAGE_TITLE" /> - Login na rede - Chromium</translation>
 <translation id="421369550622382712">Descubra ótimos aplicativos, jogos, extensões e temas para o Chromium.</translation>
@@ -178,6 +176,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="479167709087336770">Esta opção usa o mesmo corretor ortográfico usado na Pesquisa Google. O texto digitado no navegador é enviado para o Google. É possível alterar esse comportamento nas configurações a qualquer momento.</translation>
 <translation id="4888717733111232871">Regra interna para que o Chromium permita tráfego mDNS.</translation>
 <translation id="4893347770495441059">Reinicializar para atualizar o &amp;Chromium</translation>
+<translation id="4927674536707046009">{COUNT,plural, =1{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por 1 minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}one{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minuto. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}other{A organização exclui automaticamente os dados de navegação quando o Chromium não é usado por # minutos. Isso pode incluir o histórico, o preenchimento automático e os downloads. As guias vão continuar abertas.}}</translation>
 <translation id="4943838377383847465">O Chromium está em modo de segundo plano.</translation>
 <translation id="4987820182225656817">Convidados podem usar o Chromium sem deixar nada para trás.</translation>
 <translation id="4994636714258228724">Cadastrar-se no Chromium</translation>
@@ -204,7 +203,6 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5653831366781983928">Reinicie o Chromium agora</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Exibir Chromium neste idioma</translation>
-<translation id="585620188971323280">modificar as configurações para preenchimento de formas de pagamento.</translation>
 <translation id="5862307444128926510">Bem-vindo ao Chromium</translation>
 <translation id="5883558403894052917">O Chromium encontrou malware nestes itens:</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
@@ -212,6 +210,7 @@ As permissões que você já concedeu a sites e apps podem ser aplicadas a essa 
 <translation id="5924017743176219022">Conectando-se à Internet...</translation>
 <translation id="5941711191222866238">Minimizar</translation>
 <translation id="5972142260211327093">Se o Chromium colocou você aleatoriamente em um teste ativo, seu histórico de navegação vai afetar os anúncios que você vê e os interesses estimados abaixo. Para proteger sua privacidade, o Chromium exclui seus interesses mais antigos do que um mês. Os interesses são atualizados, a menos que você os remova.</translation>
+<translation id="5986585015444752010">{COUNT,plural, =1{A organização vai fechar o Chromium automaticamente se ele não for usado por 1 minuto.}one{A organização vai fechar o Chromium automaticamente se ele não for usado por # minuto.}other{A organização vai fechar o Chromium automaticamente se ele não for usado por # minutos.}}</translation>
 <translation id="5987687638152509985">Atualize o Chromium para começar a sincronizar</translation>
 <translation id="5988505247484123880">É comum os sites que você visita lembrarem dos seus interesses para personalizar sua experiência. Sites também podem armazenar informações sobre seus interesses com o Chromium.</translation>
 <translation id="6003112304606738118">Fazendo o download… <ph name="HOURS" /> hora(s) restante(s)</translation>

@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">ज्ञात नेटवर्कहरू</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> कनेक्ट गरिएको छ।</translation>
 <translation id="1240638468526743569">कुनै एप</translation>
-<translation id="1242704516557658755">हालसालै प्रयोग गरिएका विन्डोको सूचीमा भएका विन्डोहरू उल्टो क्रममा खोल्नुहोस्</translation>
 <translation id="124678866338384709">हालको ट्याब बन्द गर्नुहोस्</translation>
 <translation id="1246890715821376239">प्रयोग गर्न नमिल्ने एपहरू</translation>
 <translation id="1247372569136754018">माइक्रोफोन (आन्तरिक)</translation>
@@ -1115,7 +1114,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">अन</translation>
 <translation id="5920710855273935292">माइक म्युट गरिएको छ।</translation>
-<translation id="5922962980596822074">सबैभन्दा पछिल्लो पटक प्रयोग गरिएका विन्डोहरू क्रमैसँग खोल्नुहोस्</translation>
 <translation id="5924855612669061715">हटस्पट अन गरिएको छ</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> अन छ।</translation>
 <translation id="5947494881799873997">उल्टाउनुहोस्</translation>
@@ -1234,7 +1232,6 @@
 <translation id="6469104339369989396">हटस्पट टगल गर्नुहोस्</translation>
 <translation id="6477681113376365978">यो फाइल डाउनलोड गर्न सकिएन</translation>
 <translation id="6482559668224714696">फुल स्क्रिन म्याग्निफायर</translation>
-<translation id="6483727822843292440">सबैभन्दा कम प्रयोग गरिएका विन्डोहरू क्रमैसँग खोल्नुहोस्</translation>
 <translation id="6490471652906364588">USB-C यन्त्र (दायाँ पोर्ट)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> का अनुसार तपाईंले म्याद सकिनुअघि नै आफ्नो <ph name="DEVICE_TYPE" /> अपडेट गर्नु पर्ने हुन्छ</translation>
 <translation id="649452524636452238">स्मार्ट कार्डको PIN</translation>

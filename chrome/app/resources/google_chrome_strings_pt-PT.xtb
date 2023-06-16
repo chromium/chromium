@@ -30,7 +30,6 @@
 a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">A criação do ChromeOS foi possível devido a <ph name="BEGIN_LINK_CROS_OSS" />software de código aberto<ph name="END_LINK_CROS_OSS" /> adicional.</translation>
 <translation id="1553358976309200471">Atualizar o Chrome</translation>
-<translation id="1555506416658437797">editar os métodos de pagamento.</translation>
 <translation id="1583073672411044740"><ph name="EXISTING_USER" /> já tem sessão iniciada neste perfil do Chrome. Esta ação cria um novo perfil do Chrome para <ph name="USER_EMAIL_ADDRESS" />.</translation>
 <translation id="1587223624401073077">O Google Chrome está a utilizar a câmara.</translation>
 <translation id="1587325591171447154"><ph name="FILE_NAME" /> é perigoso, por isso o Chrome bloqueou-o.</translation>
@@ -79,7 +78,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="234869673307233423">O Chrome não consegue verificar as suas palavras-passe. Tente mais tarde.</translation>
 <translation id="235650106824528204">Os dados do Chromium gerados durante a utilização deste perfil (como a criação de marcadores, histórico, palavras-passe e outras definições) podem ser removidos pelo administrador do perfil de trabalho. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Continuar</translation>
-<translation id="2399868464369312507">O Google Chrome está a tentar editar os métodos de pagamento.</translation>
 <translation id="2401189691232800402">Sistema ChromeOS</translation>
 <translation id="2424440923901031101">Esta extensão viola a Política da Web Store do Chrome e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="2467438592969358367">O Google Chrome pretende exportar as suas palavras-passe. Escreva a sua palavra-passe do Windows para permitir esta ação.</translation>
@@ -253,7 +251,6 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="5756509061973259733">Já existe um perfil do Chrome com esta conta neste dispositivo.</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Não foi possível iniciar o Chrome. Tente novamente.</translation>
-<translation id="585620188971323280">modificar as definições de preenchimento dos métodos de pagamento.</translation>
 <translation id="5895138241574237353">Reiniciar</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Início de sessão na rede</translation>
 <translation id="5924017743176219022">A ligar à Internet…</translation>
@@ -284,6 +281,7 @@ a sincronização. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LI
 <translation id="6327105987658262776">Nenhuma atualização disponível.</translation>
 <translation id="6360449101159168105">Enquanto este separador estava inativo, foi libertada memória para manter o Chrome rápido. Pode optar por evitar sempre que este site fique inativo.</translation>
 <translation id="6412673304250309937">Verifica os URLs com listas de sites inseguros armazenados no Chrome. Se um site tentar roubar a sua palavra-passe, ou quando transferir um ficheiro prejudicial, o Chrome também pode enviar URLs, incluindo bits de conteúdo das páginas, para a Navegação segura.</translation>
+<translation id="6417690341895039567">{COUNT,plural, =1{A sua organização fecha automaticamente o Chrome quando não é usado durante 1 minuto. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}other{A sua organização fecha automaticamente o Chrome quando não é usado durante # minutos. Os dados de navegação são eliminados. Estas informações podem incluir o histórico, o preenchimento automático e as transferências.}}</translation>
 <translation id="6418662306461808273">Mudar para o perfil do Chrome existente?</translation>
 <translation id="648319183876919572">A Navegação segura melhorada faz mais para proteger contra transferências e Websites perigosos</translation>
 <translation id="6493527311031785448">O Google Chrome está a tentar <ph name="AUTHENTICATION_PURPOSE" /></translation>
@@ -333,6 +331,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="7398801000654795464">Iniciou sessão no Chrome com a conta <ph name="USER_EMAIL_ADDRESS" />. Utilize a mesma conta para iniciar sessão novamente.</translation>
 <translation id="7410958280246779049">O Chrome bloqueou este ficheiro porque é perigoso</translation>
 <translation id="7426611252293106642">O Google Chrome pode não funcionar corretamente, uma vez que já não é suportado nesta distribuição do Linux</translation>
+<translation id="7449333426561673451">{COUNT,plural, =1{A sua organização fecha automaticamente o Chrome quando não é usado durante 1 minuto.}other{A sua organização fecha automaticamente o Chrome quando não é usado durante # minutos.}}</translation>
 <translation id="7481213027396403996">Obtenha a segurança mais avançada do Chrome</translation>
 <translation id="7535429826459677826">Google Chrome Dev</translation>
 <translation id="7583399374488819119">Instalador do <ph name="COMPANY_NAME" /></translation>
@@ -367,6 +366,7 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8013993649590906847">Se uma imagem não tiver uma descrição útil, o Chrome tenta fornecer uma. Para criar as descrições, são enviadas imagens para a Google.</translation>
 <translation id="8019103195866286235">A publicação desta extensão foi anulada pelo programador e pode não ser segura. Remova-a do Chrome para que deixe de poder ver e alterar os seus dados nos sites que visita, incluindo as suas informações pessoais.</translation>
 <translation id="80471789339884597">Agradecemos a instalação. Tem de reiniciar todos os navegadores antes de usar o <ph name="BUNDLE_NAME" />.</translation>
+<translation id="8057070436257749375">{COUNT,plural, =1{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante 1 minuto. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}other{A sua organização elimina automaticamente os dados de navegação quando o Chrome não é usado durante # minutos. Estas informações podem incluir o histórico, o preenchimento automático e as transferências. Os separadores existentes permanecem abertos.}}</translation>
 <translation id="8064015586118426197">ChromeOS Flex</translation>
 <translation id="8129812357326543296">Acerca do &amp;Google Chrome</translation>
 <translation id="813913629614996137">A inicializar...</translation>
@@ -390,7 +390,6 @@ As autorizações que já concedeu aos Websites e apps podem aplicar-se a esta c
 <translation id="8504220326736535258">O Chrome bloqueou este ficheiro porque tem software malicioso</translation>
 <translation id="8516431725144212809">Os seus interesses conforme estimados pelo Chrome</translation>
 <translation id="8521348052903287641">Regra de importação para o Google Chrome Dev permitir o tráfego mDNS.</translation>
-<translation id="8544217240017914508">O Google Chrome está a tentar modificar as definições de preenchimento dos métodos de pagamento.</translation>
 <translation id="8550334526674375523">Este perfil de trabalho está completamente separado do seu perfil pessoal.</translation>
 <translation id="8556340503434111824">Está disponível uma nova versão do Google Chrome, mais rápida do que nunca.</translation>
 <translation id="8571790202382503603">Com os perfis do Chrome, pode separar todos os seus itens do Chrome. Desta forma, é mais fácil alternar entre o trabalho e o lazer.</translation>

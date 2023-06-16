@@ -18,7 +18,6 @@
 <translation id="1478370723027452770">Hankige abi seoses brauseriga Chrome for Testing</translation>
 <translation id="1524282610922162960">Chromiumi vahekaardi jagamine</translation>
 <translation id="1553461853655228091">Chromium vajab luba teie kaamerale juurdepääsemiseks, et luua teid ümbritsevast 3D-kaart</translation>
-<translation id="1555506416658437797">muuta makseviise.</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti}=1{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie inkognito akent ei avata uuesti.}other{Administraator nõuab, et käivitaksite Chromiumi värskenduse rakendamiseks uuesti. Teie # inkognito akent ei avata uuesti.}}</translation>
 <translation id="1625909126243026060">Vaadake üle Chromiumi peamised privaatsus- ja turvaseaded</translation>
 <translation id="1632539827495546968">Kui soovite seda kontot kasutada ainult ühe korra, võite Chromiumi brauseris kasutada <ph name="GUEST_LINK_BEGIN" />külalisrežiimi<ph name="GUEST_LINK_END" />. Kui soovite konto lisada kellegi teise jaoks, <ph name="LINK_BEGIN" />lisage oma seadmesse <ph name="DEVICE_TYPE" /> uus inimene<ph name="LINK_END" />.
@@ -95,7 +94,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="3179665906251668410">Ava link Chromiumi inko&amp;gnito aknas</translation>
 <translation id="3185330573522821672">Kohandage oma uut Chromiumi profiili</translation>
 <translation id="3190315855212034486">Chromium jooksis kokku. Kas soovite kohe taaskäivitada?</translation>
-<translation id="3255926992597692024">Chromium proovib muuta makseviiside sisestamise seadeid.</translation>
 <translation id="3258596308407688501">Chromium ei saa andmekataloogi lugeda ega sellesse kirjutada:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -142,7 +140,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="4019629340646866719">Chromium OS-i ja ka <ph name="BEGIN_LINK_LINUX_OSS" />Linuxi arenduskeskkonna<ph name="END_LINK_LINUX_OSS" /> aluseks on <ph name="BEGIN_LINK_CROS_OSS" />avatud lähtekoodiga lisatarkvara<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="4036079820698952681">Aidake Chromiumi paremaks muuta, teavitades meid <ph name="BEGIN_LINK" />praegustest seadetest<ph name="END_LINK" /></translation>
 <translation id="4050175100176540509">Uusimas versioonis on saadaval olulised turvatäiendused ja uued funktsioonid.</translation>
-<translation id="4050599136622776556">Chromium üritab muuta makseviise.</translation>
 <translation id="4055805654398742145">Paroolihaldur</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata 1 minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}other{Teie organisatsioon sulgeb Chromiumi automaatselt, kui seda ei kasutata # minuti jooksul. Sirvimisandmed kustutatakse. Need võivad hõlmata ajalugu, automaattäidet ja allalaadimisi.}}</translation>
 <translation id="4148957013307229264">Installimine ...</translation>
@@ -208,7 +205,6 @@ Load, mille olete juba veebisaitidele ja rakendustele andnud, võivad selle kont
 <translation id="5653831366781983928">Käivitage Chromium kohe uuesti</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">Kuva Chromium selles keeles</translation>
-<translation id="585620188971323280">muuta makseviiside sisestamise seadeid.</translation>
 <translation id="5862307444128926510">Tere tulemast Chromiumi</translation>
 <translation id="5883558403894052917">Chromium leidis, et need üksused sisaldavad pahavara:</translation>
 <translation id="5895138241574237353">Taaskäivitamine</translation>

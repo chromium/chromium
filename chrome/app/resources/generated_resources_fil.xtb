@@ -379,6 +379,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1307431692088049276">Huwag akong tanungin ulit</translation>
 <translation id="1307559529304613120">Oops!  Nabigo ang system na i-imbak ang pangmatagalang token sa pag-access sa API para sa device na ito.</translation>
 <translation id="131112695174432497">Dine-delete ang data na nakakaapekto sa pag-personalize ng ad</translation>
+<translation id="1311294419381837540">Nagka-cast ka ng tab. Puwede mong i-pause o ihinto ang pag-cast sa anumang oras.</translation>
 <translation id="1312811472299082263">Gumawa mula sa isang Ansible Playbook o Crostini na backup file</translation>
 <translation id="13130607084115184">Lalabas dito ang mga naka-save na password. Para mag-import ng mga password sa <ph name="BRAND" /> sa device na ito, <ph name="BEGIN_LINK" /> pumili ng CSV file.<ph name="END_LINK" /></translation>
 <translation id="1313264149528821971">Inalis ang <ph name="PERMISSION_1" />, <ph name="PERMISSION_2" />, <ph name="PERMISSION_3" /></translation>
@@ -415,6 +416,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="1341871421050612057">Hindi makapag-sync sa <ph name="USERNAME" /></translation>
 <translation id="1343865611738742294">Bugyan ang mga Linux app ng pahintulot na i-access ang mga USB device. Hindi maaalala ng Linux ang isang USB device pagkatapos itong alisin.</translation>
 <translation id="1343920184519992513">Magpatuloy kung saan ka huminto at magbukas ng partikular na hanay ng mga page</translation>
+<translation id="1344141078024003905">Kina-cast mo ang iyong screen. Puwede mong i-pause o ihinto ang pag-cast ng iyong screen sa anumang oras.</translation>
 <translation id="1346630054604077329">Kumpirmahin at i-restart</translation>
 <translation id="1346748346194534595">Kanan</translation>
 <translation id="1347256498747320987">Mag-install ng mga update at app. Sa pamamagitan ng pagpapatuloy, sumasang-ayon kang maaari ding awtomatikong mag-download at mag-install ang device na ito ng mga update at app mula sa Google, iyong carrier, at manufacturer ng device mo, na posibleng gumamit ng cellular data. Maaaring nag-aalok ang ilan sa mga app na ito ng mga in-app na pagbili. <ph name="BEGIN_LINK1" />Matuto Pa<ph name="END_LINK1" /></translation>
@@ -1699,6 +1701,7 @@ Puwede mong pamahalaan ang mga setting ng account na ito sa pamamagitan ng pag-i
 <translation id="2378982052244864789">Piliin ang direktoryo ng extension.</translation>
 <translation id="2379281330731083556">I-print gamit ang dialog ng system... <ph name="SHORTCUT_KEY" /></translation>
 <translation id="2381499968174336913">Preview ng nakabahaging tab</translation>
+<translation id="2382875860893882175">Kasalukuyang naka-pause ang pag-cast. Puwede mong ituloy ang pag-cast o ihinto ang pag-cast sa anumang oras.</translation>
 <translation id="2383825469508278924">Baguhin ang pagmamapa ng key ng keyboard, mga function key, at higit pa</translation>
 <translation id="2387052489799050037">Pumunta sa Home</translation>
 <translation id="2387602571959163792"><ph name="DESK_NAME" /> (Kasalukuyan)</translation>
@@ -3774,11 +3777,6 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="4169535189173047238">Huwag payagan</translation>
 <translation id="4170314459383239649">I-clear sa Paglabas</translation>
 <translation id="417096670996204801">Pumili ng profile</translation>
-<translation id="4174651450391857911">Pinapamahalaan ng iyong organisasyon ang profile na ito. Para magpatuloy sa paggamit ng pinapamahalaang profile na ito, nire-require ka ng iyong organisasyon na i-share ang mga signal ng device mo.
-
-Puwedeng kasama sa mga signal ng device ang impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file.
-
-Kung pipiliin mong hindi i-share ang mga signal, isasara ang profile na ito.</translation>
 <translation id="4175137578744761569">Light purple at puti</translation>
 <translation id="4176463684765177261">Hindi pinapagana</translation>
 <translation id="4176864026061939326">Pinapamahalaan ang device na ito. Humihiling ang administrator ng iyong device ng bagong profile para sa account na <ph name="USER_EMAIL_ADDRESS" /></translation>
@@ -3829,6 +3827,7 @@ Kung pipiliin mong hindi i-share ang mga signal, isasara ang profile na ito.</tr
 <translation id="4223845867739585293">Gumawa ng passkey</translation>
 <translation id="4225397296022057997">Sa lahat ng site</translation>
 <translation id="4228209296591583948">{NUM_EXTENSIONS,plural, =1{Hindi pinapayagan ang extension na ito}one{Hindi pinapayagan ang ilang extension}other{Hindi pinapayagan ang ilang extension}}</translation>
+<translation id="4231053948789591973">Kasalukuyang naka-pause ang pag-cast. Puwede mong ituloy ang pag-cast o ihinto ang pag-cast ng iyong screen sa anumang oras.</translation>
 <translation id="4231095370974836764">Mag-install ng mga app at laro mula sa Google Play sa iyong <ph name="DEVICE_TYPE" />. <ph name="LINK_BEGIN" />Matuto pa<ph name="LINK_END" /></translation>
 <translation id="4231141543165771749">Isara ang mga kontrol sa laro</translation>
 <translation id="4231231258999726714">Sine-set up ang Steam para sa Chromebook</translation>
@@ -5761,6 +5760,7 @@ Puwede mo itong ipadala sa Google para masuri kung hindi ito ligtas. Kadalasang 
     <ph name="LINE_BREAK" />
     Lalabas ang larawang ito sa screen ng pag-sign in at lock screen ng Chromebook.</translation>
 <translation id="5925147183566400388">Pointer ng Pahayag ng Kasanayan sa Pagpapatunay</translation>
+<translation id="5927132638760172455">Ikina-cast sa isang hindi kilalang tatanggap</translation>
 <translation id="5927232971138258197">Puwedeng basahin at baguhin ng extension na ito ang <ph name="HOST" /></translation>
 <translation id="592740088639760830">Ihinto ang container na ito</translation>
 <translation id="592880897588170157">I-download ang mga PDF file sa halip na awtomatikong buksan ang mga ito sa Chrome</translation>
@@ -6462,6 +6462,7 @@ Inaatasan ka ng <ph name="DOMAIN" /> na panatilihing nakalagay ang iyong smart c
 <translation id="653983593749614101">Itinutuloy...</translation>
 <translation id="654039047105555694"><ph name="BEGIN_BOLD" />Tandaan:<ph name="END_BOLD" /> I-enable lang kung alam mo kung ano ang iyong ginagawa o kung hiniling kang gawin ito, dahil maaaring mabawasan ng pagkolekta ng data ang pagganap.</translation>
 <translation id="6541638731489116978">Na-block ang site na ito sa pag-access sa iyong mga sensor ng paggalaw.</translation>
+<translation id="6542521951477560771">Nagka-cast sa <ph name="RECEIVER_NAME" /></translation>
 <translation id="6545665334409411530">Rate ng pag-uulit</translation>
 <translation id="6545867563032584178">Naka-off ang mikropono sa System Preferences ng Mac</translation>
 <translation id="6546856949879953071">Para sa detalyadong impormasyon sa pag-upgrade, na-save ang mga log sa Mga File &gt; Aking mga file &gt; <ph name="LOG_FILE" /></translation>
@@ -8687,11 +8688,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8428271547607112339">Magdagdag ng pampaaralang account</translation>
 <translation id="84297032718407999">Masa-sign out ka sa loob ng <ph name="LOGOUT_TIME_LEFT" /></translation>
 <translation id="8431190899827883166">Ipakita ang mga pag-tap</translation>
-<translation id="8431496281632382473">Pinapamahalaan ng <ph name="DOMAIN" /> ang profile na ito. Para magpatuloy sa paggamit ng pinapamahalaang profile na ito, nire-require ka ng iyong organisasyon na i-share ang mga signal ng device mo.
-
-Puwedeng kasama sa mga signal ng device ang impormasyon tungkol sa iyong browser, OS, device, naka-install na software, at mga file.
-
-Kung pipiliin mong hindi i-share ang mga signal, isasara ang profile na ito.</translation>
+<translation id="8433186206711564395">Mga setting ng network</translation>
 <translation id="8434480141477525001">NaCl Debug Port</translation>
 <translation id="8437209419043462667">US</translation>
 <translation id="8438328416656800239">Lumipat sa isang mahusay na browser</translation>

@@ -3,13 +3,16 @@
 <translationbundle lang="fil">
 <translation id="1016765312371154165">Hindi nag-shut down nang tama ang Chrome.</translation>
 <translation id="130631256467250065">Magkakabisa ang iyong mga pagbabago sa susunod na i-restart ang iyong device.</translation>
+<translation id="1555506416658437797">i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="1635457557763038537">Magkakabisa ang iyong mga pagbabago sa susunod na ilunsad mo ulit ang Chrome.</translation>
+<translation id="2399868464369312507">Sinusubukan ng Google Chrome na i-edit ang mga paraan ng pagbabayad.</translation>
 <translation id="2447485272386224171">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project at iba pang <ph name="BEGIN_LINK_OSS" />open source software<ph name="END_LINK_OSS" />.</translation>
 <translation id="2588322182880276190">Logo ng Chrome</translation>
 <translation id="3444832043240812445">Ipinapakita lang ng pahinang ito ang impormasyon ng iyong kamakailang mga pag-crash kung <ph name="BEGIN_LINK" />papaganahin mo ang pag-uulat ng pag-crash<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Pahintulutan ang Chrome na i-access ang network
           sa mga setting ng iyong firewall o antivirus.</translation>
 <translation id="5005121315113832363">Na-block ng Chrome ang page na ito</translation>
+<translation id="585620188971323280">baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 <translation id="6011049234605203654">Pumunta sa
           menu ng Chrome &gt;
           <ph name="SETTINGS_TITLE" />
@@ -42,4 +45,5 @@
           at alisin sa pagkakapili ang anumang mga napiling proxy.</translation>
 <translation id="8232971017369963250">Nagiging posible ang Chrome sa pamamagitan ng <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> open source project.</translation>
 <translation id="8279509328145658601">Nagiging posible rin ang Chrome sa pamamagitan ng iba pang <ph name="BEGIN_LINK_OSS" />open source na software<ph name="END_LINK_OSS" />.</translation>
+<translation id="8544217240017914508">Sinusubukan ng Google Chrome na baguhin ang mga setting para sa paglalagay ng mga paraan ng pagbabayad.</translation>
 </translationbundle>

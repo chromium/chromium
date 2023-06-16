@@ -20,7 +20,6 @@
 <translation id="1478370723027452770">‏Chrome for Testing کے سلسلے میں مدد حاصل کریں</translation>
 <translation id="1524282610922162960">‏ایک Chromium ٹیب کا اشتراک کریں</translation>
 <translation id="1553461853655228091">‏پنے اطراف کا 3D نقشہ تخلیق کرنے کی خاطر Chromium کو آپ کے کیمرے تک رسائی کی اجازت درکار ہے</translation>
-<translation id="1555506416658437797">ادائیگی کے طریقوں میں ترمیم کریں۔</translation>
 <translation id="1607715478322902680">{COUNT,plural, =0{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں}=1{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں۔ آپ کی پوشیدگی ونڈو دوبارہ نہیں کھلے گی۔}other{‏آپ کے منتظم کا مطالبہ ہے کہ آپ اپ ڈیٹ کو لاگو کرنے کیلئے Chromium کو بند کر کے دوبارہ چلائیں۔ آپ کی # پوشیدگی ونڈوز دوبارہ نہیں کھلیں گی۔}}</translation>
 <translation id="1625909126243026060">‏Chromium میں کلیدی رازداری اور سیکیورٹی کنٹرولز کا جائزہ لیں</translation>
 <translation id="1632539827495546968">‏اگر آپ اس اکاؤنٹ کو صرف ایک بار استعمال کرنا چاہتے ہیں تو آپ Chromium براؤزر میں <ph name="GUEST_LINK_BEGIN" />مہمان وضع<ph name="GUEST_LINK_END" /> کا استعمال کر سکتے ہیں۔ اگر آپ کسی اور کے لیے کوئی اکاؤنٹ شامل کرنا چاہتے ہیں تو اپنے <ph name="DEVICE_TYPE" /> میں <ph name="LINK_BEGIN" />ایک نیا شخص شامل کریں<ph name="LINK_END" />۔
@@ -97,7 +96,6 @@
 <translation id="3179665906251668410">‏لنک کو Chromium &amp;پوشیدگی ونڈو میں کھولیں</translation>
 <translation id="3185330573522821672">‏اپنی نئی Chromium پروفائل کو حسب ضرورت بنائیں</translation>
 <translation id="3190315855212034486">‏افوہ! Chromium کریش ہوگیا ہے۔ دوبارہ شروع کریں؟</translation>
-<translation id="3255926992597692024">‏ادائیگی کے طریقوں پُر کرنے کی خاطر ترتیبات میں ترمیم کرنے کے لیے Chromium کوشش کر رہا ہے۔</translation>
 <translation id="3258596308407688501">‏Chromium اپنی ڈیٹا ڈائریکٹری میں پڑھ اور لکھ نہیں سکتا ہے:
 
 <ph name="USER_DATA_DIRECTORY" /></translation>
@@ -144,7 +142,6 @@
 <translation id="4019629340646866719">‏ChromiumOS کو اضافی <ph name="BEGIN_LINK_CROS_OSS" />اوپن سورس سافٹ ویئر<ph name="END_LINK_CROS_OSS" /> کے ذریعے ممکن بنایا گیا ہے، جیسے کہ <ph name="BEGIN_LINK_LINUX_OSS" />Linux ڈیولپمنٹ انوائرنمنٹ<ph name="END_LINK_LINUX_OSS" />۔</translation>
 <translation id="4036079820698952681">‏<ph name="BEGIN_LINK" />موجودہ ترتیبات<ph name="END_LINK" /> کی اطلاع دے کر Chromium کو بہتر بنانے میں مدد کریں</translation>
 <translation id="4050175100176540509">اہم سیکیورٹی اصلاحات اور نئی خصوصیات تازہ ترین ورژن میں دستیاب ہیں۔</translation>
-<translation id="4050599136622776556">‏Chromium ادائیگی کے طریقوں میں ترمیم کرنے کی کوشش کر رہا ہے۔</translation>
 <translation id="4055805654398742145">پاس ورڈ مینیجر</translation>
 <translation id="4095980151185649725">{COUNT,plural, =1{‏1 منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}other{‏# منٹ تک Chromium کا استعمال نہ ہونے پر آپ کی تنظیم خودکار طور پر اسے بند کر دیتی ہے۔ براؤزنگ ڈیٹا کو حذف کر دیا جاتا ہے۔ اس میں سرگزشت، آٹو فل اور ڈاؤن لوڈز شامل ہو سکتے ہیں۔}}</translation>
 <translation id="4148957013307229264">انسٹال جاری…</translation>
@@ -210,7 +207,6 @@
 <translation id="5653831366781983928">‏براہ کرم ابھی Chromium کو ری اسٹارٹ کریں</translation>
 <translation id="5690427481109656848">Google LLC</translation>
 <translation id="5698481217667032250">‏Chromium کو اس زبان میں ڈسپلے کریں</translation>
-<translation id="585620188971323280">ادائیگی کے طریقوں کو پُر کرنے کے لیے ترتیبات میں ترمیم کریں۔</translation>
 <translation id="5862307444128926510">‏Chromium میں خوش آمدید</translation>
 <translation id="5883558403894052917">‏Chromium کو پتا چلا ہے کہ یہ آئٹمز میلوئیر پر مشتمل ہیں:</translation>
 <translation id="5895138241574237353">دوبارہ شروع کریں</translation>

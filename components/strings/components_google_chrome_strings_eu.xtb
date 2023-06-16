@@ -3,12 +3,15 @@
 <translationbundle lang="eu">
 <translation id="1016765312371154165">Chrome ez da behar bezala itxi.</translation>
 <translation id="130631256467250065">Aldaketek gailua abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="1555506416658437797">ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="1635457557763038537">Aldaketek Chrome abiarazten duzun hurrengo aldian izango dute eragina.</translation>
+<translation id="2399868464369312507">Google Chrome-k ordainketa-metodoak editatu behar ditu.</translation>
 <translation id="2447485272386224171">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak eta <ph name="BEGIN_LINK_OSS" />kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek egiten dute Chrome posible.</translation>
 <translation id="2588322182880276190">Chrome logotipoa</translation>
 <translation id="3444832043240812445">Orri honek azken hutsegiteei buruzko informazioa soilik bistaratzen du, <ph name="BEGIN_LINK" />hutsegiteen berri ematea gaitzen baduzu<ph name="END_LINK" />.</translation>
 <translation id="3875312571075912821">Ez eman suebakiaren edo birusen aurkako softwarearen ezarpenetan sarea erabiltzeko baimena Chrome-ri.</translation>
 <translation id="5005121315113832363">Chrome-k blokeatu du orria</translation>
+<translation id="585620188971323280">ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>
 <translation id="6011049234605203654">Sakatu Chrome-ko menua &gt; <ph name="SETTINGS_TITLE" /> &gt; <ph name="ADVANCED_TITLE" /> &gt; <ph name="PROXIES_TITLE" /> eta ziurtatu konfigurazioa "proxyrik ez" edo "zuzena" gisa ezarrita dagoela.</translation>
 <translation id="6341737370356890233">Sakatu
           Chrome-ko menua &gt;
@@ -33,4 +36,5 @@
           atalera eta desautatu hautatutako proxy guztiak.</translation>
 <translation id="8232971017369963250">Kode irekiko <ph name="BEGIN_LINK_CHROMIUM" />Chromium<ph name="END_LINK_CHROMIUM" /> proiektuak egiten du posible Chrome.</translation>
 <translation id="8279509328145658601"><ph name="BEGIN_LINK_OSS" />Kode irekiko beste software<ph name="END_LINK_OSS" /> batzuek ere posible egiten dute Chrome.</translation>
+<translation id="8544217240017914508">Google Chrome-k ordainketa-metodoak betetzeko ezarpenak aldatu behar ditu.</translation>
 </translationbundle>

@@ -63,7 +63,6 @@
 <translation id="1235458158152011030">পরিচিত নেটওয়ার্কগুলি</translation>
 <translation id="1239161794459865856"><ph name="FEATURE_NAME" /> ফিচারটি কানেক্ট করা আছে।</translation>
 <translation id="1240638468526743569">একটি অ্যাপ</translation>
-<translation id="1242704516557658755">খুব সম্প্রতি ব্যবহার করা উইন্ডোর তালিকায় পিছনের দিকে ব্রাউজ করুন</translation>
 <translation id="124678866338384709">বর্তমান ট্যাব বন্ধ করুন</translation>
 <translation id="1246890715821376239">কাজ করে না এমন অ্যাপ</translation>
 <translation id="1247372569136754018">মাইক্রোফোন (অভ্যন্তরীণ)</translation>
@@ -1120,7 +1119,6 @@
 <translation id="5911909173233110115"><ph name="USERNAME" /> (<ph name="MAIL" />)</translation>
 <translation id="5916664084637901428">চালু</translation>
 <translation id="5920710855273935292">মাইক্রোফোন মিউট করা আছে।</translation>
-<translation id="5922962980596822074">অতি সম্প্রতি ব্যবহৃত উইন্ডো থেকে উইন্ডো ব্রাউজ করুন</translation>
 <translation id="5924855612669061715">হটস্পট চালু আছে</translation>
 <translation id="5946788582095584774"><ph name="FEATURE_NAME" /> চালু আছে।</translation>
 <translation id="5947494881799873997">ফেরান</translation>
@@ -1239,7 +1237,6 @@
 <translation id="6469104339369989396">হটস্পট টগল করুন</translation>
 <translation id="6477681113376365978">ফাইল ডাউনলোড করা যাচ্ছে না</translation>
 <translation id="6482559668224714696">ফুল-স্ক্রিন ম্যাগনিফায়ার</translation>
-<translation id="6483727822843292440">সবচেয়ে কম ব্যবহৃত উইন্ডো থেকে উইন্ডো ব্রাউজ করুন</translation>
 <translation id="6490471652906364588">USB-C ডিভাইস (ডান পোর্ট)</translation>
 <translation id="6491071886865974820"><ph name="MANAGER" /> আপনাকে ডেডলাইনের আগে <ph name="DEVICE_TYPE" /> আপডেট করতে বলছে</translation>
 <translation id="649452524636452238">স্মার্ট কার্ড পিন</translation>

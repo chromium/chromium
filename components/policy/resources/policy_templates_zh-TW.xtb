@@ -3005,6 +3005,7 @@
       如未設定這項政策，在預設情況下，受企業管理的使用者將無法使用 Smart Lock 登入功能，其他一般的使用者則可使用這項登入功能。</translation>
 <translation id="3791179836066841809">政策說明文件</translation>
 <translation id="3791556154364029875">啟用浮動工作區，並在登入時啟動遠端瀏覽器視窗</translation>
+<translation id="379318040165550702">允許使用者選擇</translation>
 <translation id="3793998702484455655">Chrome 會嘗試在 iOS 上升級某些類型的複合型內容 (HTTPS 網站上的 HTTP) 子資源。
 詳情請參閱 https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md。
 
@@ -4581,6 +4582,13 @@
 <translation id="5345910753471481870">不要在「新分頁」頁面的搜尋框中顯示 Google 智慧鏡頭按鈕。</translation>
 <translation id="5346587320074666194">禁止在這些網站上存取感應器</translation>
 <translation id="534836255587440809">在登入畫面上停用自動點選功能</translation>
+<translation id="5361708558735884308">如果設定這項政策，使用者可以存取許可清單中的網址，這些網址是 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外項目。請參閱該項政策的說明，瞭解這份清單採用的項目格式。舉例來說，如果將 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 設為「*」，系統會封鎖所有要求。你可以透過這項政策允許使用者存取一些特定的網址。請使用 https://support.google.com/chrome/a?p=url_blocklist_filter_format 網頁中指定的格式，透過這項政策將特定的網路協定、其他網域的子網域、通訊埠或特定路徑設為例外。如要判定是否封鎖某個網址，系統會以條件最精確的篩選器做為判定依據。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的優先順序高於 <ph name="URL_BLOCKLIST_POLICY_NAME" />。這項政策最多只能輸入 1,000 個項目。
+
+這項政策還可以讓瀏覽器自動叫用已註冊為通訊協定處理常式的外部應用程式，用於處理許可清單中的「tel:」或「ssh:」等通訊協定。
+
+如果未設定這項政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 就不會有例外項目。
+
+自 <ph name="PRODUCT_NAME" /> 92 版起，系統在無頭模式下也會支援這項政策。</translation>
 <translation id="5362531528507578966">覆寫預設的背景圖形列印模式。</translation>
 <translation id="5365476955714838841">替代瀏覽器的指令行參數。</translation>
 <translation id="5365946944967967336">在工具列上顯示 [首頁] 按鈕</translation>

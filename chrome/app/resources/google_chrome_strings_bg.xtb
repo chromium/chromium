@@ -30,7 +30,6 @@
 сдвояването. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></translation>
 <translation id="1547295885616600893">Chrome OS е възможна благодарение на допълнителен <ph name="BEGIN_LINK_CROS_OSS" />софтуер с отворен код<ph name="END_LINK_CROS_OSS" />.</translation>
 <translation id="1553358976309200471">Актуализиране на Chrome</translation>
-<translation id="1555506416658437797">редактира начините на плащане.</translation>
 <translation id="1583073672411044740">Този потребителски профил в Chrome вече се използва от <ph name="EXISTING_USER" />. Това ще създаде нов потребителски профил в браузъра за <ph name="USER_EMAIL_ADDRESS" /></translation>
 <translation id="1587223624401073077">Google Chrome използва камерата ви.</translation>
 <translation id="1587325591171447154">Chrome блокира „<ph name="FILE_NAME" />“, тъй като файлът е опасен.</translation>
@@ -81,7 +80,6 @@
 <translation id="234869673307233423">Chrome не може да провери паролите ви. Опитайте пак по-късно.</translation>
 <translation id="235650106824528204">Данните в Chrome, които са генерирани при използването на този служебен потребителски профил (напр. създаването на отметки, историята, паролите и други настройки), могат да бъдат премахнати от администратора му. <ph name="LEARN_MORE" /></translation>
 <translation id="2359808026110333948">Напред</translation>
-<translation id="2399868464369312507">Google Chrome се опитва да редактира начините на плащане.</translation>
 <translation id="2401189691232800402">Система Chrome OS</translation>
 <translation id="2424440923901031101">Това разширение нарушава правилата на уеб магазина на Chrome и може да е опасно. Премахнете го от Chrome, така че повече да не може да преглежда и променя данните ви в посещаваните от вас сайтове, включително личната ви информация.</translation>
 <translation id="2467438592969358367">Google Chrome иска да експортира паролите ви. За да разрешите това, въведете паролата си за Windows.</translation>
@@ -255,7 +253,6 @@
 <translation id="5756509061973259733">На това устройство вече съществува потребителски профил в Chrome за този профил</translation>
 <translation id="5795887333006832406"><ph name="PAGE_TITLE" /> – Google Chrome Canary</translation>
 <translation id="5804318322022881572">Chrome не можа да се стартира. Опитайте отново.</translation>
-<translation id="585620188971323280">промени настройките за попълване на начините на плащане.</translation>
 <translation id="5895138241574237353">Рестартиране</translation>
 <translation id="5903106910045431592"><ph name="PAGE_TITLE" /> – Вход в мрежата</translation>
 <translation id="5924017743176219022">Установява се връзка с интернет...</translation>
@@ -395,7 +392,6 @@
 <translation id="8504220326736535258">Chrome блокира този файл, защото съдържа злонамерен софтуер</translation>
 <translation id="8516431725144212809">Вашите интереси според прогнозата на Chrome</translation>
 <translation id="8521348052903287641">Правило за Google Chrome Dev за допускане на входящия трафик за mDNS.</translation>
-<translation id="8544217240017914508">Google Chrome се опитва да промени настройките за попълване на начините на плащане.</translation>
 <translation id="8550334526674375523">Този служебен потребителски профил е изцяло отделен от личния ви.</translation>
 <translation id="8556340503434111824">Налице е нова версия на Google Chrome, която е по-бърза от всякога.</translation>
 <translation id="8571790202382503603">С помощта на потребителските профили в Chrome можете да разделите нещата си в браузъра. Това улеснява разграничаването на работата и забавленията.</translation>
