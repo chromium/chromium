@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/files/file_path.h"
+#include "base/files/safe_base_name.h"
 #include "base/strings/string_number_conversions.h"
 #include "storage/browser/file_system/file_system_features.h"
 #include "storage/common/file_system/file_system_types.h"
@@ -70,6 +71,152 @@ TEST(FileSystemURLTest, ParseTemporary) {
   EXPECT_EQ(kFileSystemTypeTemporary, url.type());
   EXPECT_EQ(FPL("file"), VirtualPath::BaseName(url.path()).value());
   EXPECT_EQ(FPL("directory"), url.path().DirName().value());
+}
+
+TEST(FileSystemURLTest, CreateSibling) {
+  // sibling_name is the common CreateSibling argument used further below.
+  //
+  // Another CreateSibling precondition is that the sibling_name is non-empty.
+  // We don't test for that here because a base::SafeBaseName is designed to be
+  // non-empty by construction: the base::SafeBaseName::Create factory function
+  // returns absl::Optional<base::SafeBaseName> not base::SafeBaseName.
+  //
+  // See also TODO(crbug.com/1269986)
+  const base::SafeBaseName sibling_name =
+      *base::SafeBaseName::Create(FPL("sister"));
+
+  // Test the happy case.
+  {
+    FileSystemURL original = CreateFileSystemURL(
+        "filesystem:http://chromium.org/temporary/parent/brother");
+    FileSystemURL sibling = original.CreateSibling(sibling_name);
+
+    ASSERT_TRUE(original.is_valid());
+    ASSERT_TRUE(sibling.is_valid());
+    EXPECT_EQ("filesystem:http://chromium.org/temporary/parent/sister",
+              sibling.ToGURL().spec());
+    EXPECT_EQ("http://chromium.org/", sibling.origin().GetURL().spec());
+    EXPECT_EQ(kFileSystemTypeTemporary, sibling.type());
+
+    EXPECT_FALSE(original.virtual_path().empty());
+    EXPECT_FALSE(original.path().empty());
+
+    EXPECT_FALSE(sibling.virtual_path().empty());
+    EXPECT_EQ(FPL("parent"),
+              VirtualPath::DirName(sibling.virtual_path()).value());
+    EXPECT_EQ(FPL("sister"),
+              VirtualPath::BaseName(sibling.virtual_path()).value());
+
+    EXPECT_FALSE(sibling.path().empty());
+    EXPECT_EQ(FPL("parent"), sibling.path().DirName().value());
+    EXPECT_EQ(FPL("sister"), sibling.path().BaseName().value());
+  }
+
+  // Test starting from an empty virtual path (whether by a "" or "/." suffix).
+  // CreateSibling is also happy here.
+  const std::string string_forms[] = {
+      "filesystem:http://chromium.org/temporary",
+      "filesystem:http://chromium.org/temporary/.",
+  };
+  for (const auto& string_form : string_forms) {
+    FileSystemURL original = CreateFileSystemURL(string_form);
+    FileSystemURL sibling = original.CreateSibling(sibling_name);
+
+    SCOPED_TRACE(testing::Message() << "string_form=" << string_form);
+
+    ASSERT_TRUE(original.is_valid());
+    ASSERT_TRUE(sibling.is_valid());
+    EXPECT_EQ("filesystem:http://chromium.org/temporary/sister",
+              sibling.ToGURL().spec());
+    EXPECT_EQ("http://chromium.org/", sibling.origin().GetURL().spec());
+    EXPECT_EQ(kFileSystemTypeTemporary, sibling.type());
+
+    EXPECT_TRUE(original.virtual_path().empty());
+    EXPECT_TRUE(original.path().empty());
+
+    EXPECT_FALSE(sibling.virtual_path().empty());
+    EXPECT_EQ(FPL("."), VirtualPath::DirName(sibling.virtual_path()).value());
+    EXPECT_EQ(FPL("sister"),
+              VirtualPath::BaseName(sibling.virtual_path()).value());
+
+    EXPECT_TRUE(sibling.path().empty());
+  }
+
+  // Test starting from an invalid URL.
+  {
+    FileSystemURL original;
+    FileSystemURL sibling = original.CreateSibling(sibling_name);
+    EXPECT_FALSE(sibling.is_valid());
+  }
+
+  const base::FilePath::StringType path_pairs[][2] = {
+      // Empty cracked path.
+      {FPL(""), FPL("")},
+      // Absolute cracked paths.
+      {FPL("/apple"), FPL("/sister")},
+      {FPL("/banana"), FPL("")},
+      {FPL("/green/apple"), FPL("/green/sister")},
+      {FPL("/green/banana"), FPL("")},
+      {FPL("/its/a/trapple"), FPL("")},
+      // Relative cracked paths.
+      {FPL("."), FPL("")},
+      {FPL("./apple"), FPL("sister")},
+      {FPL("./banana"), FPL("")},
+      {FPL("apple"), FPL("sister")},
+      {FPL("banana"), FPL("")},
+      {FPL("green/apple"), FPL("green/sister")},
+      {FPL("green/banana"), FPL("")},
+      {FPL("its/a/trapple"), FPL("")},
+  };
+  for (const auto& path_pair : path_pairs) {
+    // Interesting CreateForTest arguments, derived from the path_pair.
+    const base::FilePath virtual_path(FPL("red/apple"));
+    const base::FilePath cracked_path =
+        base::FilePath(path_pair[0]).NormalizePathSeparators();
+
+    // Non-interesting CreateForTest arguments, independent of path_pair.
+    const blink::StorageKey storage_key =
+        blink::StorageKey::CreateFromStringForTesting("http://foo");
+    const FileSystemType mount_type = kFileSystemTypeExternal;
+    const std::string mount_filesystem_id = "";
+    const FileSystemType cracked_type = kFileSystemTypeTest;
+    const std::string filesystem_id = "";
+    const FileSystemMountOption mount_option;
+
+    SCOPED_TRACE(testing::Message() << "cracked_path=" << cracked_path);
+
+    FileSystemURL original = FileSystemURL::CreateForTest(
+        storage_key, mount_type, virtual_path, mount_filesystem_id,
+        cracked_type, cracked_path, filesystem_id, mount_option);
+    FileSystemURL sibling = original.CreateSibling(sibling_name);
+
+    // Expected values.
+    const base::FilePath expected_sibling_path =
+        base::FilePath(path_pair[1]).NormalizePathSeparators();
+    const bool expected_sibling_is_valid =
+        cracked_path.empty() || !expected_sibling_path.empty();
+
+    EXPECT_EQ(expected_sibling_is_valid, sibling.is_valid());
+    EXPECT_EQ(expected_sibling_path, sibling.path());
+  }
+}
+
+TEST(FileSystemURLTest, CreateSiblingPreservesBuckets) {
+  BucketLocator bucket = CreateNonDefaultBucket();
+
+  FileSystemURL a_bucket = CreateFileSystemURL(
+      "filesystem:http://chromium.org/temporary/i/has/a.bucket");
+  a_bucket.SetBucket(bucket);
+  FileSystemURL with =
+      a_bucket.CreateSibling(*base::SafeBaseName::Create(FPL("with")));
+
+  FileSystemURL no_bucket = CreateFileSystemURL(
+      "filesystem:http://chromium.org/temporary/i/has/no.bucket");
+  FileSystemURL without =
+      no_bucket.CreateSibling(*base::SafeBaseName::Create(FPL("without")));
+
+  EXPECT_EQ(with.bucket(), bucket);
+  EXPECT_EQ(without.bucket(), absl::nullopt);
 }
 
 TEST(FileSystemURLTest, EnsureFilePathIsRelative) {

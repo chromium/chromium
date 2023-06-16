@@ -168,6 +168,19 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) FileSystemURL {
 
   ~FileSystemURL();
 
+  // Returns a new FileSystemURL that is a sibling (it has the same parent
+  // directory) to this one. Starting from "filesystem:etc/foo/bar", it
+  // produces "filesystem:etc/foo/sibling_name".
+  //
+  // Its `virtual_path()` and `path()` are derived from this FileSystemURL's
+  // `virtual_path()` and `path()`, with the base names changed over. The
+  // `path()` is unchanged if empty. All other fields (whether parsed from the
+  // URL string form or obtained from cracking) are copied from this.
+  //
+  // It returns an invalid FileSystemURL if `!is_valid()` or if `path()` is
+  // non-empty and its base name does not match the `virtual_path()` base name.
+  FileSystemURL CreateSibling(const base::SafeBaseName& sibling_name) const;
+
   // Methods for creating FileSystemURL without attempting to crack them.
   // Should be used only in tests.
   static FileSystemURL CreateForTest(const GURL& url);

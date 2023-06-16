@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/feature_list.h"
+#include "base/files/safe_base_name.h"
 #include "base/strings/escape.h"
 #include "base/strings/string_util.h"
 #include "storage/browser/file_system/file_system_features.h"
@@ -58,6 +59,27 @@ FileSystemURL& FileSystemURL::operator=(const FileSystemURL&) = default;
 FileSystemURL& FileSystemURL::operator=(FileSystemURL&&) noexcept = default;
 
 FileSystemURL::~FileSystemURL() = default;
+
+FileSystemURL FileSystemURL::CreateSibling(
+    const base::SafeBaseName& sibling_name) const {
+  const base::FilePath& new_base_name = sibling_name.path();
+  if (!is_valid_ || new_base_name.empty()) {
+    return FileSystemURL();
+  }
+
+  const base::FilePath old_base_name = VirtualPath::BaseName(virtual_path_);
+  if (!path_.empty() && (path_.BaseName() != old_base_name)) {
+    return FileSystemURL();
+  }
+
+  FileSystemURL sibling(*this);
+  sibling.virtual_path_ =
+      VirtualPath::DirName(virtual_path_).Append(new_base_name);
+  if (!path_.empty()) {
+    sibling.path_ = path_.DirName().Append(new_base_name);
+  }
+  return sibling;
+}
 
 // static
 FileSystemURL FileSystemURL::CreateForTest(const GURL& url) {

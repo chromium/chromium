@@ -6,6 +6,7 @@
 
 #include "base/files/file_error_or.h"
 #include "base/files/file_util.h"
+#include "base/files/safe_base_name.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
 #include "base/logging.h"
@@ -515,15 +516,12 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
       std::move(callback));
 }
 
+// TODO(nigeltao): inline this function at its call sites.
 storage::FileSystemURL FileSystemAccessFileHandleImpl::GetSwapURL(
     const base::FilePath& swap_path) {
-  storage::FileSystemURL swap_url =
-      manager()->context()->CreateCrackedFileSystemURL(
-          url().storage_key(), url().mount_type(), swap_path);
-  if (url().bucket()) {
-    swap_url.SetBucket(url().bucket().value());
-  }
-  return swap_url;
+  absl::optional<base::SafeBaseName> opt =
+      base::SafeBaseName::Create(swap_path);
+  return opt ? url().CreateSibling(*opt) : storage::FileSystemURL();
 }
 
 void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
