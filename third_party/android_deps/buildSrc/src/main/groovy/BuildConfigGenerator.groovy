@@ -652,6 +652,9 @@ class BuildConfigGenerator extends DefaultTask {
                 sb.append('  jar_excluded_patterns = [ "META-INF/proguard/*" ]\n')
                 sb.append('  proguard_configs = [ "androidx_annotations.flags" ]\n')
                 break
+            case 'androidx_benchmark_benchmark_common':
+                sb.append('  ignore_native_libraries = true\n')
+                break
             case 'androidx_benchmark_benchmark_macro':
                 // Manually add dep onto DISALLOWED_DEP androidx.profileinstaller.
                 sb.append('  deps += [ ":androidx_profileinstaller_profileinstaller_java" ]\n')
