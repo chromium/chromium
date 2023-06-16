@@ -432,18 +432,6 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     }
     prefs->SetLastLaunchTime(app_id);
     return true;
-  } else if (app_id == kPlayStoreAppId) {
-    // Record launch request time in order to track Play Store default launch
-    // performance.
-    if (!launch_intent_to_send) {
-      launch_intent_to_send =
-          std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
-      launch_intent_to_send->categories.push_back(kCategoryLauncher);
-      launch_intent_to_send->activity_name = kPlayStoreActivity;
-    }
-    launch_intent_to_send->extras[kRequestStartTimeParamKey] =
-        base::NumberToString(
-            (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
   } else if (IsArcVmAndSwappedOut(context) &&
              !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
                                                                  app_id)) {
@@ -456,6 +444,18 @@ bool LaunchAppWithIntent(content::BrowserContext* context,
     }
     VLOG(2) << "Failed to launch ghost window for swapped state, fallback to "
                "launch directly.";
+  } else if (app_id == kPlayStoreAppId) {
+    // Record launch request time in order to track Play Store default launch
+    // performance.
+    if (!launch_intent_to_send) {
+      launch_intent_to_send =
+          std::make_unique<apps::Intent>(apps_util::kIntentActionMain);
+      launch_intent_to_send->categories.push_back(kCategoryLauncher);
+      launch_intent_to_send->activity_name = kPlayStoreActivity;
+    }
+    launch_intent_to_send->extras[kRequestStartTimeParamKey] =
+        base::NumberToString(
+            (base::TimeTicks::Now() - base::TimeTicks()).InMilliseconds());
   } else if (IsInstantResponseOpenEnabled() &&
              !WindowPredictor::GetInstance()->IsAppPendingLaunch(profile,
                                                                  app_id)) {
