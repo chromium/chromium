@@ -25,8 +25,8 @@
 #include "build/build_config.h"
 #include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/base/locale_util.h"
-#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_setup_controller.h"
 #include "chrome/browser/ash/login/enrollment/enrollment_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_auto_enrollment_check_screen.h"
 #include "chrome/browser/ash/login/enrollment/mock_enrollment_screen.h"
@@ -82,6 +82,7 @@
 #include "chrome/browser/lifetime/termination_notification.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/webui/ash/login/consolidated_consent_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/display_size_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/error_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_info_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/gaia_screen_handler.h"
@@ -91,6 +92,7 @@
 #include "chrome/browser/ui/webui/ash/login/oobe_ui.h"
 #include "chrome/browser/ui/webui/ash/login/reset_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/theme_selection_screen_handler.h"
+#include "chrome/browser/ui/webui/ash/login/touchpad_scroll_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/update_required_screen_handler.h"
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/chrome_switches.h"
@@ -3092,8 +3094,18 @@ IN_PROC_BROWSER_TEST_F(WizardControllerThemeSelectionTest,
       ->skip_choobe_for_tests = true;
 
   login_mixin_.LoginAsNewRegularUser();
-  WizardController::default_controller()->AdvanceToScreen(
-      GestureNavigationScreenView::kScreenId);
+  if (features::IsOobeDisplaySizeEnabled()) {
+    WizardController::default_controller()->AdvanceToScreen(
+        DisplaySizeScreenView::kScreenId);
+    test::OobeJS().ClickOnPath({"display-size", "nextButton"});
+  } else if (features::IsOobeTouchpadScrollEnabled()) {
+    WizardController::default_controller()->AdvanceToScreen(
+        TouchpadScrollScreenView::kScreenId);
+    test::OobeJS().ClickOnPath({"touchpad-scroll", "nextButton"});
+  } else {
+    WizardController::default_controller()->AdvanceToScreen(
+        GestureNavigationScreenView::kScreenId);
+  }
   OobeScreenWaiter(ThemeSelectionScreenView::kScreenId).Wait();
 }
 
