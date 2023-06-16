@@ -136,6 +136,7 @@
     "Mac10.13 Tests": "Ubuntu-22.04",
     "Mac10.15 Tests": "Ubuntu-22.04",
     "Network Service Linux": "Ubuntu-22.04",
+    "Nougat Phone Tester": "Ubuntu-22.04",
     "Oreo Phone Tester": "Ubuntu-22.04",
     "Site Isolation Android": "Ubuntu-22.04",
     "ToTAndroid": "Ubuntu-22.04",
