@@ -327,6 +327,7 @@
     "mac12-arm64-updater-tester-rel": "Ubuntu-22.04",
     "mac12-x64-updater-tester-asan-dbg": "Ubuntu-22.04",
     "mac13-arm64-rel-tests": "Ubuntu-22.04",
+    "mac13-arm64-updater-tester-dbg": "Ubuntu-22.04",
     "metadata-exporter": "Ubuntu-22.04",
     "rts-model-packager": "Ubuntu-22.04",
     "win-annotator-rel": "Ubuntu-22.04",
