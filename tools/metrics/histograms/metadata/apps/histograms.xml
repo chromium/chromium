@@ -2249,16 +2249,6 @@ chromium-metrics-reviews@google.com.
   <token key="TabletOrClamshell" variants="AppDisplayModes"/>
 </histogram>
 
-<histogram name="Apps.Launcher.InstallAppFromLinkResult"
-    enum="WebAppInstallResultCode" expires_after="2022-09-25">
-  <owner>dmurph@chromium.org</owner>
-  <owner>desktop-pwas-team@google.com</owner>
-  <summary>
-    Records the result of installing an app on the chrome://apps page. This
-    happens when a user drags a link to this page.
-  </summary>
-</histogram>
-
 <histogram name="Apps.Launcher.ProductivityReorderAction.{TabletOrClamshell}"
     enum="AppListSortOrder" expires_after="M112">
   <owner>andrewxu@chromium.org</owner>

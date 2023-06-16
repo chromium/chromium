@@ -1287,10 +1287,6 @@ void AppLauncherHandler::OnFaviconForAppInstallFromLink(
       [](base::WeakPtr<AppLauncherHandler> app_launcher_handler,
          const web_app::AppId& app_id,
          webapps::InstallResultCode install_result) {
-        // Note: this installation path only happens when the user drags a
-        // link to chrome://apps, hence the specific metric name.
-        base::UmaHistogramEnumeration("Apps.Launcher.InstallAppFromLinkResult",
-                                      install_result);
         if (!app_launcher_handler)
           return;
         if (install_result != webapps::InstallResultCode::kSuccessNewInstall) {
