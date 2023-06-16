@@ -74,7 +74,8 @@ SkiaOutputSurfaceDependencyImpl::GetVulkanContextProvider() {
   return gpu_service_impl_->vulkan_context_provider();
 }
 
-DawnContextProvider* SkiaOutputSurfaceDependencyImpl::GetDawnContextProvider() {
+gpu::DawnContextProvider*
+SkiaOutputSurfaceDependencyImpl::GetDawnContextProvider() {
   return gpu_service_impl_->dawn_context_provider();
 }
 

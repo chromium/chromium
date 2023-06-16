@@ -29,6 +29,7 @@ class Presenter;
 
 namespace gpu {
 
+class DawnContextProvider;
 class GpuDriverBugWorkarounds;
 class ImageTransportSurfaceDelegate;
 class MailboxManager;
@@ -46,7 +47,6 @@ class GrShaderCache;
 
 namespace viz {
 
-class DawnContextProvider;
 class VulkanContextProvider;
 
 // This class exists to allow SkiaOutputSurfaceImpl to ignore differences
@@ -72,7 +72,7 @@ class VIZ_SERVICE_EXPORT SkiaOutputSurfaceDependency {
   // May return null.
   virtual VulkanContextProvider* GetVulkanContextProvider() = 0;
   // May return null.
-  virtual DawnContextProvider* GetDawnContextProvider() = 0;
+  virtual gpu::DawnContextProvider* GetDawnContextProvider() = 0;
   virtual const gpu::GpuPreferences& GetGpuPreferences() const = 0;
   virtual const gpu::GpuFeatureInfo& GetGpuFeatureInfo() = 0;
   virtual gpu::MailboxManager* GetMailboxManager() = 0;

@@ -32,7 +32,7 @@
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
@@ -144,7 +144,7 @@ void SharedImageTestBase::InitializeContext(GrContextType context_type) {
 
   if (context_type == GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    dawn_context_provider_ = viz::DawnContextProvider::Create();
+    dawn_context_provider_ = DawnContextProvider::Create();
     ASSERT_TRUE(dawn_context_provider_);
 #else
     FAIL() << "Graphite-Dawn not available";

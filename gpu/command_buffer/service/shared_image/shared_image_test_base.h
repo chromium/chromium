@@ -81,7 +81,7 @@ class SharedImageTestBase : public testing::Test {
   std::unique_ptr<viz::MetalContextProvider> metal_context_provider_;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<viz::DawnContextProvider> dawn_context_provider_;
+  std::unique_ptr<DawnContextProvider> dawn_context_provider_;
 #endif
 
   scoped_refptr<gl::GLSurface> gl_surface_;

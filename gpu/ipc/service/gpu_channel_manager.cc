@@ -34,6 +34,7 @@
 #if BUILDFLAG(USE_DAWN)
 #include "gpu/command_buffer/service/dawn_caching_interface.h"
 #endif
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -326,7 +327,7 @@ GpuChannelManager::GpuChannelManager(
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
-    viz::DawnContextProvider* dawn_context_provider)
+    DawnContextProvider* dawn_context_provider)
     : task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       gpu_preferences_(gpu_preferences),

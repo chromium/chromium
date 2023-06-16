@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 
 #include <memory>
 #include <vector>
@@ -22,7 +22,7 @@
 #include "third_party/dawn/include/dawn/native/D3D11Backend.h"
 #endif
 
-namespace viz {
+namespace gpu {
 
 namespace {
 
@@ -74,13 +74,6 @@ DawnContextProvider::DawnContextProvider() {
 }
 
 DawnContextProvider::~DawnContextProvider() = default;
-
-#if BUILDFLAG(IS_WIN)
-Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
-    const {
-  return dawn::native::d3d11::GetD3D11Device(device_.Get());
-}
-#endif
 
 wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
 #if DCHECK_IS_ON()
@@ -155,4 +148,11 @@ bool DawnContextProvider::InitializeGraphiteContext(
   return !!graphite_context_;
 }
 
-}  // namespace viz
+#if BUILDFLAG(IS_WIN)
+Microsoft::WRL::ComPtr<ID3D11Device> DawnContextProvider::GetD3D11Device()
+    const {
+  return dawn::native::d3d11::GetD3D11Device(device_.Get());
+}
+#endif
+
+}  // namespace gpu

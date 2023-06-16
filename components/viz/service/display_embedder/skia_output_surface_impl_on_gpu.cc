@@ -119,7 +119,7 @@
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #if BUILDFLAG(IS_WIN)
 #include "components/viz/service/display_embedder/skia_output_device_dawn.h"
 #endif

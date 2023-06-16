@@ -73,7 +73,7 @@ SkiaOutputSurfaceDependencyWebView::GetVulkanContextProvider() {
   return shared_context_state_->vk_context_provider();
 }
 
-viz::DawnContextProvider*
+gpu::DawnContextProvider*
 SkiaOutputSurfaceDependencyWebView::GetDawnContextProvider() {
   return nullptr;
 }

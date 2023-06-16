@@ -135,33 +135,6 @@ if (enable_vulkan) {
   }
 }
 
-if (skia_use_dawn) {
-  viz_component("dawn_context_provider") {
-    output_name = "viz_dawn_context_provider"
-
-    defines = [ "VIZ_DAWN_CONTEXT_PROVIDER_IMPLEMENTATION" ]
-
-    sources = [
-      "gpu/dawn_context_provider.cc",
-      "gpu/dawn_context_provider.h",
-      "viz_dawn_context_provider_export.h",
-    ]
-
-    public_deps = [
-      "//gpu/config",
-      "//skia",
-      "//third_party/dawn/include/dawn:headers",
-    ]
-
-    deps = [
-      "//base",
-      "//third_party/dawn/src/dawn:cpp",
-      "//third_party/dawn/src/dawn:proc",
-      "//third_party/dawn/src/dawn/native",
-    ]
-  }
-}
-
 viz_component("common") {
   output_name = "viz_common"
 
@@ -373,9 +346,6 @@ viz_component("common") {
   }
   if (skia_use_metal) {
     public_deps += [ ":metal_context_provider" ]
-  }
-  if (skia_use_dawn) {
-    public_deps += [ ":dawn_context_provider" ]
   }
 }
 

@@ -65,6 +65,7 @@ class ProtectedBufferManager;
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace gpu {
+class DawnContextProvider;
 class GpuMemoryBufferFactory;
 class GpuWatchdogThread;
 class ImageDecodeAcceleratorWorker;
@@ -83,7 +84,6 @@ namespace viz {
 
 class VulkanContextProvider;
 class MetalContextProvider;
-class DawnContextProvider;
 
 enum class ExitCode {
   // Matches service_manager::ResultCode::RESULT_CODE_NORMAL_EXIT
@@ -374,11 +374,11 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-  DawnContextProvider* dawn_context_provider() const {
+  gpu::DawnContextProvider* dawn_context_provider() const {
     return dawn_context_provider_.get();
   }
 #else
-  DawnContextProvider* dawn_context_provider() const { return nullptr; }
+  gpu::DawnContextProvider* dawn_context_provider() const { return nullptr; }
 #endif
 
   base::ProcessId host_process_id() const { return host_process_id_; }
@@ -561,7 +561,7 @@ class VIZ_SERVICE_EXPORT GpuServiceImpl
   std::unique_ptr<MetalContextProvider> metal_context_provider_;
 #endif
 #if BUILDFLAG(SKIA_USE_DAWN)
-  std::unique_ptr<DawnContextProvider> dawn_context_provider_;
+  std::unique_ptr<gpu::DawnContextProvider> dawn_context_provider_;
 #endif
 
   std::unique_ptr<gpu::GpuMemoryBufferFactory> gpu_memory_buffer_factory_;

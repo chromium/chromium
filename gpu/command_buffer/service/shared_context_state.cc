@@ -51,7 +51,7 @@
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
 #if BUILDFLAG(IS_WIN)
@@ -157,7 +157,7 @@ SharedContextState::SharedContextState(
     GrContextType gr_context_type,
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
-    viz::DawnContextProvider* dawn_context_provider,
+    DawnContextProvider* dawn_context_provider,
     base::WeakPtr<gpu::MemoryTracker::Observer> peak_memory_monitor,
     bool created_on_compositor_gpu_thread)
     : use_virtualized_gl_contexts_(use_virtualized_gl_contexts),

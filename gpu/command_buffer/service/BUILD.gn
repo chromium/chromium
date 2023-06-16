@@ -513,11 +513,12 @@ target(link_target_type, "gles2_sources") {
 
   if (skia_use_dawn) {
     sources += [
+      "dawn_context_provider.cc",
+      "dawn_context_provider.h",
       "shared_image/skia_graphite_dawn_image_representation.cc",
       "shared_image/skia_graphite_dawn_image_representation.h",
     ]
     deps += [
-      "//components/viz/common:dawn_context_provider",
       "//third_party/dawn/src/dawn:cpp",
       "//third_party/dawn/src/dawn:proc",
     ]

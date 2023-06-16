@@ -56,6 +56,7 @@ class Presenter;
 }  // namespace gl
 
 namespace gpu {
+class DawnContextProvider;
 class DisplayCompositorMemoryAndTaskControllerOnGpu;
 class SharedImageRepresentationFactory;
 class SharedImageFactory;
@@ -77,7 +78,6 @@ namespace viz {
 
 class AsyncReadResultHelper;
 class AsyncReadResultLock;
-class DawnContextProvider;
 class ImageContextImpl;
 class SkiaOutputSurfaceDependency;
 class VulkanContextProvider;
@@ -489,7 +489,7 @@ class SkiaOutputSurfaceImplOnGpu
   std::unique_ptr<gpu::SharedImageRepresentationFactory>
       shared_image_representation_factory_;
   const raw_ptr<VulkanContextProvider> vulkan_context_provider_;
-  const raw_ptr<DawnContextProvider> dawn_context_provider_;
+  const raw_ptr<gpu::DawnContextProvider> dawn_context_provider_;
   const RendererSettings renderer_settings_;
 
   // Should only be run on the client thread with PostTaskToClientThread().

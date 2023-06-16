@@ -35,7 +35,7 @@
 #include "ui/gl/progress_reporter.h"
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
 #if BUILDFLAG(USE_DAWN)

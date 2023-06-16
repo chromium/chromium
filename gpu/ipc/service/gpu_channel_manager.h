@@ -107,7 +107,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
       ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
       viz::VulkanContextProvider* vulkan_context_provider = nullptr,
       viz::MetalContextProvider* metal_context_provider = nullptr,
-      viz::DawnContextProvider* dawn_context_provider = nullptr);
+      DawnContextProvider* dawn_context_provider = nullptr);
 
   GpuChannelManager(const GpuChannelManager&) = delete;
   GpuChannelManager& operator=(const GpuChannelManager&) = delete;
@@ -402,7 +402,7 @@ class GPU_IPC_SERVICE_EXPORT GpuChannelManager
 
   // With features::SkiaGraphite, |dawn_context_provider_| will be set from
   // viz::GpuServiceImpl. The raster decoders may use it for rasterization.
-  raw_ptr<viz::DawnContextProvider> dawn_context_provider_ = nullptr;
+  raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
 
   GpuPeakMemoryMonitor peak_memory_monitor_;
 

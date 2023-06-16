@@ -117,7 +117,7 @@
 #endif
 
 #if BUILDFLAG(SKIA_USE_DAWN)
-#include "components/viz/common/gpu/dawn_context_provider.h"
+#include "gpu/command_buffer/service/dawn_context_provider.h"
 #endif
 
 #if BUILDFLAG(SKIA_USE_METAL)
@@ -373,7 +373,7 @@ GpuServiceImpl::GpuServiceImpl(
 
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    dawn_context_provider_ = DawnContextProvider::Create();
+    dawn_context_provider_ = gpu::DawnContextProvider::Create();
     if (!dawn_context_provider_) {
       DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }
