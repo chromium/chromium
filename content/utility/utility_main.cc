@@ -80,6 +80,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "content/utility/sandbox_delegate_data.mojom.h"
+#include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
 #endif  // BUILDFLAG(IS_WIN)
 
@@ -377,10 +378,8 @@ int UtilityMain(MainFunctionParams parameters) {
       sandbox_type != sandbox::mojom::Sandbox::kWindowsSystemProxyResolver) {
     if (!g_utility_target_services)
       return false;
-    char buffer;
-    // Ensure RtlGenRandom is warm before the token is lowered; otherwise,
-    // base::RandBytes() will CHECK fail when v8 is initialized.
-    base::RandBytes(&buffer, sizeof(buffer));
+
+    sandbox::policy::WarmupRandomnessInfrastructure();
 
     g_utility_target_services->LowerToken();
   }

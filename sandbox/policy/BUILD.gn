@@ -145,6 +145,8 @@ component("policy") {
       "win/lpac_capability.h",
       "win/sandbox_diagnostics.cc",
       "win/sandbox_diagnostics.h",
+      "win/sandbox_warmup.cc",
+      "win/sandbox_warmup.h",
       "win/sandbox_win.cc",
       "win/sandbox_win.h",
     ]

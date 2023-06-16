@@ -52,6 +52,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "base/win/win_util.h"
 #include "content/child/font_warmup_win.h"
+#include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
 
@@ -303,9 +304,7 @@ void PpapiThread::OnLoadPlugin(const base::FilePath& path,
   // can be loaded. TODO(cpu): consider changing to the loading style of
   // regular plugins.
   if (g_target_services) {
-    // Cause advapi32 to load before the sandbox is turned on.
-    unsigned int dummy_rand;
-    rand_s(&dummy_rand);
+    sandbox::policy::WarmupRandomnessInfrastructure();
 
     WarmupWindowsLocales(permissions);
 

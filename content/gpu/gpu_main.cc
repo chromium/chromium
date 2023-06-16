@@ -86,6 +86,7 @@
 #include "base/win/win_util.h"
 #include "base/win/windows_version.h"
 #include "media/base/win/mf_initializer.h"
+#include "sandbox/policy/win/sandbox_warmup.h"
 #include "sandbox/win/src/sandbox.h"
 #endif
 
@@ -142,7 +143,11 @@ class ContentSandboxHelper : public gpu::GpuSandboxHelper {
       TRACE_EVENT0("gpu", "Warm up rand");
       // Warm up the random subsystem, which needs to be done pre-sandbox on all
       // platforms.
+#if BUILDFLAG(IS_WIN)
+      sandbox::policy::WarmupRandomnessInfrastructure();
+#else
       std::ignore = base::RandUint64();
+#endif  // BUILDFLAG(IS_WIN)
     }
 
 #if BUILDFLAG(USE_VAAPI)
