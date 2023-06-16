@@ -3730,23 +3730,21 @@ TEST_F(ShelfViewDeskButtonTest, TabletModeVisibility) {
   EXPECT_TRUE(desk_button_widget()->GetLayer()->GetTargetVisibility());
 }
 
-// Verify that the desk button is 136px wide if the screen width is greater than
-// 1280px, 96px if the screen width is less than or equal to 1280px, and 36px if
-// the screen width is small enough to cause shelf overflow. We also test that
-// the button is 36x36 in vertical alignment.
+// Verify that the desk button is 136 wide if the screen width is greater than
+// 1280px, and 96 otherwise, and that the button is 36x36 in vertical alignment.
 TEST_F(ShelfViewDeskButtonTest, Position) {
   SetShowDeskButtonInShelfPref(prefs_, true);
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kBottom);
   UpdateDisplay("1281x400");
-  EXPECT_EQ(136, desk_button_widget()->GetTargetBounds().width());
-  UpdateDisplay("200x1281");
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 136);
+  UpdateDisplay("400x1281");
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
   UpdateDisplay("1280x400");
-  EXPECT_EQ(96, desk_button_widget()->GetTargetBounds().width());
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 96);
 
-  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kLeft);
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().width());
-  EXPECT_EQ(36, desk_button_widget()->GetTargetBounds().height());
+  test_api_->shelf_view()->shelf()->SetAlignment(ShelfAlignment::kLeft);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().width(), 36);
+  EXPECT_EQ(desk_button_widget()->GetTargetBounds().height(), 36);
 }
 
 // Verify that the desk button does not appear by default, appears when the user
