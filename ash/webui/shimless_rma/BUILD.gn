@@ -18,6 +18,7 @@ static_library("shimless_rma") {
     "//ash/constants",
     "//ash/public/cpp:cpp",
     "//ash/webui/common:chrome_os_webui_config",
+    "//ash/webui/common:trusted_types_util",
     "//ash/webui/resources:shimless_rma_resources",
     "//ash/webui/shimless_rma/backend",
     "//ash/webui/shimless_rma/mojom",

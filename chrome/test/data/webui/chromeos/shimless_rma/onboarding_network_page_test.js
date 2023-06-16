@@ -24,7 +24,7 @@ suite('onboardingNetworkPageTest', function() {
   let networkConfigService = null;
 
   setup(() => {
-    document.body.innerHTML = '';
+    document.body.innerHTML = trustedTypes.emptyHTML;
     shimlessRmaService = new FakeShimlessRmaService();
     setShimlessRmaServiceForTesting(shimlessRmaService);
     networkConfigService = new FakeNetworkConfig();

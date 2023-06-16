@@ -189,6 +189,8 @@ class ChromeURLDataManagerWebUITrustedTypesTest
 #endif
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     enabled_features.push_back(ash::features::kDriveFsMirroring);
+    enabled_features.push_back(ash::features::kShimlessRMADiagnosticPage);
+    enabled_features.push_back(ash::features::kShimlessRMAOsUpdate);
     enabled_features.push_back(chromeos::features::kUploadOfficeToCloud);
 #else
     enabled_features.push_back(kForYouFre);
@@ -246,6 +248,9 @@ class ChromeURLDataManagerWebUITrustedTypesTest
   void SetUpCommandLine(base::CommandLine* command_line) override {
     command_line->AppendSwitchASCII(ash::switches::kSamlPasswordChangeUrl,
                                     "http://password-change.example");
+    if (GetParam() == base::StringPiece("chrome://shimless-rma")) {
+      command_line->AppendSwitchASCII(ash::switches::kLaunchRma, "");
+    }
   }
 
   void SetUpOnMainThread() override {
@@ -428,6 +433,7 @@ static constexpr const char* const kChromeUrls[] = {
     "chrome://projector",
     "chrome://proximity-auth/proximity_auth.html",
     "chrome://set-time",
+    "chrome://shimless-rma",
     "chrome://shortcut-customization",
     "chrome://slow",
     "chrome://smb-credentials-dialog/",
