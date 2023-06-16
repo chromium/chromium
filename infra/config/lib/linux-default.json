@@ -379,6 +379,7 @@
   "reclient": {
     "Comparison Linux (reclient vs reclient remote links)": "Ubuntu-22.04",
     "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04",
+    "Linux Builder reclient staging untrusted": "Ubuntu-22.04",
     "Linux Builder reclient test (unified uploads)": "Ubuntu-22.04",
     "Simple Chrome Builder reclient staging": "Ubuntu-22.04"
   },
