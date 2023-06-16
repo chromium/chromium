@@ -105,11 +105,10 @@ component("url") {
 
 if (is_android || is_robolectric) {
   generate_jni("url_jni_headers") {
-    sources = [ "android/java/src/org/chromium/url/IDNStringUtil.java" ]
-  }
-
-  generate_jni("origin_jni_headers") {
-    sources = [ "android/java/src/org/chromium/url/Origin.java" ]
+    sources = [
+      "android/java/src/org/chromium/url/IDNStringUtil.java",
+      "android/java/src/org/chromium/url/Origin.java",
+    ]
   }
 
   generate_jni("gurl_jni_headers") {
@@ -144,8 +143,8 @@ if (is_android || is_robolectric) {
 
     deps = [
       ":gurl_android",
-      ":origin_jni_headers",
       ":url",
+      ":url_jni_headers",
       "//base",
     ]
   }
@@ -160,7 +159,6 @@ if (is_android) {
 
 if (is_android && !is_cronet_build) {
   android_library("gurl_java") {
-    srcjar_deps = [ ":gurl_jni_headers" ]
     sources = [
       "android/java/src/org/chromium/url/GURL.java",
       "android/java/src/org/chromium/url/Parsed.java",
@@ -174,10 +172,10 @@ if (is_android && !is_cronet_build) {
       "//third_party/androidx:androidx_annotation_annotation_java",
       "//url/mojom:url_mojom_gurl_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("origin_java") {
-    srcjar_deps = [ ":origin_jni_headers" ]
     sources = [ "android/java/src/org/chromium/url/Origin.java" ]
     deps = [
       ":gurl_java",
@@ -187,6 +185,7 @@ if (is_android && !is_cronet_build) {
       "//mojo/public/mojom/base:base_java",
       "//url/mojom:url_mojom_origin_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 }
 
@@ -310,8 +309,7 @@ if (is_android && !is_cronet_build) {
 
   android_library("android_test_helper_java") {
     testonly = true
-
-    srcjar_deps = [ ":j_test_jni_headers" ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
     sources = [
       "android/javatests/src/org/chromium/url/GURLJavaTestHelper.java",
       "android/javatests/src/org/chromium/url/OriginJavaTestHelper.java",
@@ -366,6 +364,7 @@ if (is_android && !is_cronet_build) {
       "//url/mojom:url_mojom_gurl_java",
       "//url/mojom:url_mojom_origin_java",
     ]
+    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   # See https://bugs.chromium.org/p/chromium/issues/detail?id=908819 for why we

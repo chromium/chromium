@@ -15,8 +15,7 @@ source_set("native_test_support") {
     "native_test_util.h",
   ]
   deps = [
-    ":native_main_runner_jni",
-    ":native_test_jni",
+    ":native_test_jni_headers",
     "//base",
     "//base/test:test_support",
     "//base/third_party/dynamic_annotations",
@@ -30,7 +29,7 @@ source_set("native_browser_test_support") {
     "native_browser_test_support.cc",
     "native_browser_test_support.h",
   ]
-  deps = [ ":native_test_jni" ]
+  deps = [ ":native_browser_test_jni_headers" ]
   public_deps = [ "//base" ]
 }
 
@@ -44,22 +43,16 @@ source_set("native_test_native_code") {
   ]
 }
 
-generate_jni("native_main_runner_jni") {
-  testonly = true
-  sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
-}
-
 android_library("native_main_runner_java") {
   testonly = true
-
-  srcjar_deps = [ ":native_main_runner_jni" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [ "java/src/org/chromium/native_test/MainRunner.java" ]
   deps = [ "//base:jni_java" ]
 }
 
 android_library("native_test_java") {
   testonly = true
-
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     ":native_main_runner_java",
     "//base:base_java",
@@ -70,7 +63,6 @@ android_library("native_test_java") {
     "//testing/android/reporter:reporter_java",
     "//third_party/androidx:androidx_fragment_fragment_java",
   ]
-  srcjar_deps = [ ":native_test_jni" ]
   sources = [
     "java/src/org/chromium/native_test/NativeBrowserTest.java",
     "java/src/org/chromium/native_test/NativeBrowserTestActivity.java",
@@ -83,10 +75,15 @@ android_library("native_test_java") {
   ]
 }
 
-generate_jni("native_test_jni") {
+generate_jni("native_test_jni_headers") {
   testonly = true
   sources = [
-    "java/src/org/chromium/native_test/NativeBrowserTest.java",
+    "java/src/org/chromium/native_test/MainRunner.java",
     "java/src/org/chromium/native_test/NativeTest.java",
   ]
+}
+
+generate_jni("native_browser_test_jni_headers") {
+  testonly = true
+  sources = [ "java/src/org/chromium/native_test/NativeBrowserTest.java" ]
 }

@@ -109,18 +109,12 @@ static_library("test_support") {
 generate_jni("ui_android_jni_headers") {
   sources = [
     "java/src/org/chromium/ui/OverscrollRefreshHandler.java",
-    "java/src/org/chromium/ui/base/Clipboard.java",
     "java/src/org/chromium/ui/base/EventForwarder.java",
-    "java/src/org/chromium/ui/base/LocalizationUtils.java",
-    "java/src/org/chromium/ui/base/SelectFileDialog.java",
     "java/src/org/chromium/ui/base/UiAndroidFeatureMap.java",
     "java/src/org/chromium/ui/base/ViewAndroidDelegate.java",
     "java/src/org/chromium/ui/base/WindowAndroid.java",
     "java/src/org/chromium/ui/display/DisplayAndroidManager.java",
     "java/src/org/chromium/ui/dragdrop/DropDataAndroid.java",
-    "java/src/org/chromium/ui/events/devices/InputDeviceObserver.java",
-    "java/src/org/chromium/ui/gfx/ViewConfigurationHelper.java",
-    "java/src/org/chromium/ui/gl/SurfaceTextureListener.java",
     "java/src/org/chromium/ui/resources/HandleViewResources.java",
     "java/src/org/chromium/ui/resources/ResourceFactory.java",
     "java/src/org/chromium/ui/resources/ResourceManager.java",
@@ -427,11 +421,8 @@ android_library("ui_no_recycler_view_java") {
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
   ]
-
-  srcjar_deps = [
-    ":java_enums_srcjar",
-    ":ui_android_jni_headers",
-  ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":java_enums_srcjar" ]
   resources_package = "org.chromium.ui"
 }
 
@@ -442,6 +433,7 @@ android_library("ui_recycler_view_java") {
     "java/src/org/chromium/ui/modelutil/SimpleRecyclerViewMcp.java",
     "java/src/org/chromium/ui/modelutil/SimpleRecyclerViewMcpBase.java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   deps = [
     ":ui_no_recycler_view_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
@@ -572,6 +564,7 @@ robolectric_binary("ui_junit_tests") {
     "junit/src/org/chromium/ui/widget/ViewRectProviderTest.java",
   ]
   deps = [
+    ":ui_android_jni_headers",
     ":ui_java",
     ":ui_java_test_support",
     ":ui_javatest_resources",
@@ -636,8 +629,8 @@ test("ui_android_unittests") {
 
 android_library("clipboard_java_test_support") {
   testonly = true
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
-  srcjar_deps = [ ":ui_javatest_jni_headers" ]
   sources =
       [ "javatests/src/org/chromium/ui/base/ClipboardAndroidTestSupport.java" ]
 

@@ -196,8 +196,8 @@ generate_jni("draw_fn_impl_jni_headers") {
 android_library("draw_fn_impl_java") {
   sources =
       [ "shell/src/org/chromium/android_webview/shell/ContextManager.java" ]
-  srcjar_deps = [ ":draw_fn_impl_jni_headers" ]
   deps = [ "//base:jni_java" ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 shared_library_with_jni("libstandalonelibwebviewchromium") {
@@ -233,11 +233,6 @@ shared_library_with_jni("libstandalonelibwebviewchromium") {
   configs -= [ "//build/config/android:hide_all_but_jni_onload" ]
   configs += [ "//build/config/android:hide_all_but_jni" ]
   java_targets = [ ":webview_instrumentation_apk" ]
-}
-
-generate_jni("webview_instrumentation_test_jni") {
-  testonly = true
-  sources = [ "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java" ]
 }
 
 instrumentation_test_apk("webview_instrumentation_test_apk") {
@@ -498,10 +493,7 @@ instrumentation_test_apk("webview_instrumentation_test_apk") {
     "//android_webview/test/embedded_test_server:aw_net_test_support_apk",
     "//net/android:net_test_support_apk",
   ]
-  srcjar_deps = [
-    ":libstandalonelibwebviewchromium__jni_registration",
-    ":webview_instrumentation_test_jni",
-  ]
+  srcjar_deps = [ ":libstandalonelibwebviewchromium__jni_registration" ]
 }
 
 android_library("webview_instrumentation_test_mock_services_java") {
@@ -531,7 +523,6 @@ android_library("webview_instrumentation_test_utils_java") {
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
     "shell/src/org/chromium/android_webview/test/util/MemoryMetricsLoggerUtils.java",
   ]
-  srcjar_deps = [ ":webview_instrumentation_test_native_jni" ]
   deps = [
     "//android_webview:common_variations_java",
     "//base:base_java_test_support",
@@ -542,11 +533,13 @@ android_library("webview_instrumentation_test_utils_java") {
     "//third_party/junit",
     "//third_party/mockito:mockito_java",
   ]
+  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 generate_jni("webview_instrumentation_test_native_jni") {
   testonly = true
   sources = [
+    "../javatests/src/org/chromium/android_webview/test/component_updater/EmbeddedComponentLoaderTest.java",
     "../javatests/src/org/chromium/android_webview/test/util/EmbeddedComponentLoaderFactory.java",
     "../javatests/src/org/chromium/android_webview/test/util/RendererProcessMetricsProviderUtils.java",
     "../javatests/src/org/chromium/android_webview/test/util/VariationsTestUtils.java",
@@ -563,7 +556,6 @@ source_set("webview_instrumentation_test_native_jni_impl") {
   ]
 
   deps = [
-    ":webview_instrumentation_test_jni",
     ":webview_instrumentation_test_native_jni",
     "//android_webview/browser",
     "//android_webview/browser/metrics",
@@ -682,7 +674,6 @@ android_library("android_webview_unittests_java") {
     "//content/public/test/android:content_java_test_support",
   ]
   sources = [ "../unittestjava/src/org/chromium/android_webview/unittest/MockAwContentsClientBridge.java" ]
-  srcjar_deps = [ ":android_webview_unittests_jni" ]
 }
 
 generate_jni("android_webview_unittests_jni") {
