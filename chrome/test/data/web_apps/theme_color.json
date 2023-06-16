@@ -1,0 +1,13 @@
+{
+  "name": "theme_color web app",
+  "icons": [
+    {
+      "src": "basic-192.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    }
+  ],
+  "start_url": "basic.html",
+  "display": "standalone",
+  "theme_color": "blue"
+}

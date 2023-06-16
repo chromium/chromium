@@ -16,10 +16,6 @@
 
 static_assert(BUILDFLAG(IS_CHROMEOS), "For Chrome OS only");
 
-namespace content {
-class WebContents;
-}
-
 namespace web_app {
 
 // This class contains short-term experiments to specific web apps for testing
@@ -45,11 +41,9 @@ class ChromeOsWebAppExperiments {
   static size_t GetExtendedScopeScore(const AppId& app_id,
                                       base::StringPiece url_spec);
 
-  // A theme color to use for the given page.
-  // This should be used if <meta name="theme_color"> is unset on the page.
-  static absl::optional<SkColor> GetFallbackPageThemeColor(
-      const AppId& app_id,
-      content::WebContents* web_contents);
+  // Whether the manifest theme_color and background_color should be ignored for
+  // `app_id`.
+  static bool IgnoreManifestColor(const AppId& app_id);
 
   static void SetAlwaysEnabledForTesting();
   static void SetScopeExtensionsForTesting(

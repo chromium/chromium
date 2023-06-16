@@ -388,13 +388,9 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
     return web_theme_color;
 
 #if BUILDFLAG(IS_CHROMEOS)
-  if (chromeos::features::IsUploadOfficeToCloudEnabled()) {
-    if (absl::optional<SkColor> fallback_page_theme_color =
-            ChromeOsWebAppExperiments::GetFallbackPageThemeColor(
-                app_id(),
-                browser()->tab_strip_model()->GetActiveWebContents())) {
-      return fallback_page_theme_color;
-    }
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+    return absl::nullopt;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
@@ -420,8 +416,17 @@ absl::optional<SkColor> WebAppBrowserController::GetThemeColor() const {
 }
 
 absl::optional<SkColor> WebAppBrowserController::GetBackgroundColor() const {
-  auto web_contents_color = AppBrowserController::GetBackgroundColor();
-  auto manifest_color = GetResolvedManifestBackgroundColor();
+  absl::optional<SkColor> web_contents_color =
+      AppBrowserController::GetBackgroundColor();
+  absl::optional<SkColor> manifest_color = GetResolvedManifestBackgroundColor();
+
+#if BUILDFLAG(IS_CHROMEOS)
+  if (chromeos::features::IsUploadOfficeToCloudEnabled() &&
+      ChromeOsWebAppExperiments::IgnoreManifestColor(app_id())) {
+    manifest_color = absl::nullopt;
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS)
+
   // Prefer an available web contents color but when such a color is
   // unavailable (i.e. in the time between when a window launches and it's web
   // content loads) attempt to pull the background color from the manifest.
