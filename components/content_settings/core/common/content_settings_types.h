@@ -111,9 +111,6 @@ enum class ContentSettingsType : int32_t {
   // Used to store whether to allow a website to detect user active/idle state.
   IDLE_DETECTION,
 
-  // Setting for enabling auto-select of all screens for getDisplayMediaSet.
-  GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
-
   // Content settings for access to serial ports. The "guard" content setting
   // stores whether to allow sites to ask for permission to access a port. The
   // permissions granted to access particular ports are stored in the "chooser
@@ -329,6 +326,10 @@ enum class ContentSettingsType : int32_t {
 
   // Used to indicate whether HTTPS-First Mode is enabled on the hostname.
   HTTPS_ENFORCED,
+
+  // Setting for enabling the `getAllScreensMedia` API. Spec link:
+  // https://github.com/screen-share/capture-all-screens
+  ALL_SCREEN_CAPTURE,
 
   NUM_TYPES,
 };

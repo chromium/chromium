@@ -122,8 +122,9 @@ constexpr auto kHistogramValue = base::MakeFixedFlatMap<ContentSettingsType,
     {ContentSettingsType::HTTPS_ENFORCED, 98},
     {ContentSettingsType::USB_CHOOSER_DATA, 99},
     // The value 100 is assigned to COOKIES!
-    {ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS, 101},
+    // Removed GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS in M116.
     {ContentSettingsType::MIDI, 102},
+    {ContentSettingsType::ALL_SCREEN_CAPTURE, 103},
 
     // As mentioned at the top, please don't forget to update ContentType in
     // enums.xml when you add entries here!

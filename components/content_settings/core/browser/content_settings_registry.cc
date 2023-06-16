@@ -110,9 +110,9 @@ void ContentSettingsRegistry::Init() {
            ContentSettingsInfo::INHERIT_IN_INCOGNITO,
            ContentSettingsInfo::EXCEPTIONS_ON_SECURE_AND_INSECURE_ORIGINS);
 
-  Register(ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
-           "get-display-media-set-select-all-screens", CONTENT_SETTING_BLOCK,
-           WebsiteSettingsInfo::SYNCABLE, /*allowlisted_schemes=*/{},
+  Register(ContentSettingsType::ALL_SCREEN_CAPTURE,
+           "access-to-get-all-screens-media-in-session", CONTENT_SETTING_BLOCK,
+           WebsiteSettingsInfo::UNSYNCABLE, /*allowlisted_schemes=*/{},
            /*valid_settings=*/{CONTENT_SETTING_ALLOW, CONTENT_SETTING_BLOCK},
            WebsiteSettingsInfo::REQUESTING_ORIGIN_ONLY_SCOPE,
            WebsiteSettingsRegistry::ALL_PLATFORMS,

@@ -899,4 +899,4 @@ ChromeSyncablePrefsDatabase::GetSyncablePrefMetadata(
   // Check in `common_syncable_prefs_database_`.
   return common_syncable_prefs_database_.GetSyncablePrefMetadata(pref_name);
 }
-} // namespace browser_sync
+}  // namespace browser_sync

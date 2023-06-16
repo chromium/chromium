@@ -6464,7 +6464,6 @@
   "GetDisplayMediaSetSelectAllScreensAllowedForUrls": {
     "os": [
       "chromeos_ash",
-      "chromeos_lacros",
       "linux"
     ],
     "policy_pref_mapping_tests": [
@@ -6475,13 +6474,13 @@
           ]
         },
         "prefs": {
-          "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls": {}
+          "profile.managed_access_to_get_all_screens_media_allowed_for_urls": {}
         }
       },
       {
         "policies": {},
         "prefs": {
-          "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls": {
+          "profile.managed_access_to_get_all_screens_media_allowed_for_urls": {
             "default_value": []
           }
         }

@@ -10,12 +10,18 @@
 #include "base/functional/callback.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/values.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/browser/media/webrtc/capture_policy_utils.h"
 #include "chrome/browser/notifications/system_notification_helper.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/grit/generated_resources.h"
 #include "chromeos/ash/components/browser_context_helper/browser_context_helper.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_service.h"
 #include "components/user_manager/user.h"
 #include "components/user_manager/user_manager.h"
+#include "content/public/browser/browser_context.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/message_center/public/cpp/notification.h"
@@ -28,6 +34,21 @@ absl::optional<bool> g_is_multi_capture_allowed_for_testing;
 constexpr char kMultiCaptureOnLoginId[] = "multi_capture_on_login";
 constexpr char kNotifierMultiCaptureOnLogin[] = "ash.multi_capture_on_login";
 
+void TransferGetAllScreensMediaPolicyValue(
+    content::BrowserContext* browser_context) {
+  DCHECK(browser_context);
+  Profile* profile = Profile::FromBrowserContext(browser_context);
+  PrefService* pref_service = profile->GetPrefs();
+  if (!pref_service) {
+    return;
+  }
+  const base::Value::List& allowed_origins = pref_service->GetList(
+      capture_policy::kManagedAccessToGetAllScreensMediaAllowedForUrls);
+  pref_service->SetList(
+      prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
+      allowed_origins.Clone());
+}
+
 bool IsMultiCaptureAllowed() {
   if (g_is_multi_capture_allowed_for_testing) {
     return *g_is_multi_capture_allowed_for_testing;
@@ -37,11 +58,14 @@ bool IsMultiCaptureAllowed() {
   if (!active_user) {
     return false;
   }
-  auto* browser_context =
+  content::BrowserContext* browser_context =
       ash::BrowserContextHelper::Get()->GetBrowserContextByUser(active_user);
   if (!browser_context) {
     return false;
   }
+
+  TransferGetAllScreensMediaPolicyValue(browser_context);
+
   return capture_policy::IsGetAllScreensMediaAllowedForAnySite(browser_context);
 }
 

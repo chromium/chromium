@@ -18,6 +18,8 @@
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/content_settings/core/common/content_settings_pattern.h"
+#include "components/content_settings/core/common/pref_names.h"
+#include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/web_contents.h"
@@ -33,6 +35,15 @@
 #endif
 
 namespace capture_policy {
+
+// This pref connects to the GetDisplayMediaSetSelectAllScreensAllowedForUrls
+// policy. To avoid dynamic refresh, this pref will not be read directly, but
+// the value will be copied manually to the
+// kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls pref, which is then
+// consumed by content settings to check if access to `getAllScreensMedia` shall
+// be permitted for a given origin.
+const char kManagedAccessToGetAllScreensMediaAllowedForUrls[] =
+    "profile.managed_access_to_get_all_screens_media_allowed_for_urls";
 
 namespace {
 
@@ -123,6 +134,10 @@ AllowedScreenCaptureLevel GetAllowedCaptureLevel(const GURL& request_origin,
   return AllowedScreenCaptureLevel::kDisallowed;
 }
 
+void RegisterProfilePrefs(PrefRegistrySimple* registry) {
+  registry->RegisterListPref(kManagedAccessToGetAllScreensMediaAllowedForUrls);
+}
+
 bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
 #if BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_LINUX)
   Profile* profile = Profile::FromBrowserContext(context);
@@ -146,8 +161,7 @@ bool IsGetAllScreensMediaAllowedForAnySite(content::BrowserContext* context) {
   }
   ContentSettingsForOneType content_settings;
   host_content_settings_map->GetSettingsForOneType(
-      ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
-      &content_settings);
+      ContentSettingsType::ALL_SCREEN_CAPTURE, &content_settings);
   return base::ranges::any_of(content_settings,
                               [](const ContentSettingPatternSource& source) {
                                 return source.GetContentSetting() ==
@@ -182,8 +196,7 @@ bool IsGetAllScreensMediaAllowed(content::BrowserContext* context,
   }
   ContentSetting auto_accept_enabled =
       host_content_settings_map->GetContentSetting(
-          url, url,
-          ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS);
+          url, url, ContentSettingsType::ALL_SCREEN_CAPTURE);
   return auto_accept_enabled == ContentSetting::CONTENT_SETTING_ALLOW;
 #else
   // This API is currently only available on ChromeOS and Linux.

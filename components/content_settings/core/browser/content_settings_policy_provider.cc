@@ -40,9 +40,8 @@ constexpr PrefsForManagedContentSettingsMapEntry
          CONTENT_SETTING_BLOCK},
         {prefs::kManagedCookiesSessionOnlyForUrls, ContentSettingsType::COOKIES,
          CONTENT_SETTING_SESSION_ONLY},
-        {prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
-         ContentSettingsType::GET_DISPLAY_MEDIA_SET_SELECT_ALL_SCREENS,
-         CONTENT_SETTING_ALLOW},
+        {prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
+         ContentSettingsType::ALL_SCREEN_CAPTURE, CONTENT_SETTING_ALLOW},
         {prefs::kManagedImagesAllowedForUrls, ContentSettingsType::IMAGES,
          CONTENT_SETTING_ALLOW},
         {prefs::kManagedImagesBlockedForUrls, ContentSettingsType::IMAGES,
@@ -123,7 +122,7 @@ constexpr const char* kManagedPrefs[] = {
     prefs::kManagedFileSystemReadBlockedForUrls,
     prefs::kManagedFileSystemWriteAskForUrls,
     prefs::kManagedFileSystemWriteBlockedForUrls,
-    prefs::kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls,
+    prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls,
     prefs::kManagedImagesAllowedForUrls,
     prefs::kManagedImagesBlockedForUrls,
     prefs::kManagedInsecureContentAllowedForUrls,
@@ -289,7 +288,13 @@ void PolicyProvider::GetContentSettingsFromPreferences() {
     const PrefService::Preference* pref =
         prefs_->FindPreference(entry.pref_name);
     DCHECK(pref);
-    DCHECK(!pref->HasUserSetting());
+    // Prefs must not be user settings, except for the special case of
+    // kManagedGetAllScreensMediaAfterLoginAllowedForUrls. This pref is used to
+    // make sure content settings are only updated once on user login.
+    DCHECK(
+        !pref->HasUserSetting() ||
+        pref->name() ==
+            prefs::kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls);
     DCHECK(!pref->HasExtensionSetting());
 
     if (!pref->GetValue()->is_list()) {

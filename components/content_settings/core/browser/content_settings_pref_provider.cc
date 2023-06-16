@@ -69,6 +69,10 @@ const char kObsoletePpapiBrokerExceptionsPref[] =
     "profile.content_settings.exceptions.ppapi_broker";
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+const char
+    kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref
+        [] = "profile.content_settings.exceptions.get_display_media_set_select_"
+             "all_screens";
 
 }  // namespace
 
@@ -114,6 +118,8 @@ void PrefProvider::RegisterProfilePrefs(
   registry->RegisterDictionaryPref(kObsoletePpapiBrokerExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  registry->RegisterListPref(
+      kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
 }
 
 PrefProvider::PrefProvider(PrefService* prefs,
@@ -354,6 +360,8 @@ void PrefProvider::DiscardOrMigrateObsoletePreferences() {
   prefs_->ClearPref(kObsoletePpapiBrokerExceptionsPref);
 #endif  // !BUILDFLAG(IS_ANDROID)
 #endif  // !BUILDFLAG(IS_IOS)
+  prefs_->ClearPref(
+      kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
 }
 
 void PrefProvider::SetClockForTesting(base::Clock* clock) {

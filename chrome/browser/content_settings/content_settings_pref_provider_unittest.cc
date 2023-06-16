@@ -164,6 +164,9 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
 #endif
   static const char kGeolocationPrefPath[] =
       "profile.content_settings.exceptions.geolocation";
+  static const char kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref[] =
+      "profile.content_settings.exceptions.get_display_media_set_select_all_"
+      "screens";
   static const char kPattern[] = "[*.]example.com";
 
   TestingProfile profile;
@@ -178,6 +181,7 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   base::Value::Dict data_for_pattern;
   data_for_pattern.Set("setting", static_cast<int>(CONTENT_SETTING_ALLOW));
   base::Value::Dict pref_data;
+  base::Value::List pref_list;
   pref_data.Set(kPattern, std::move(data_for_pattern));
   prefs->SetDict(kNfcPrefPath, pref_data.Clone());
 #if !BUILDFLAG(IS_ANDROID)
@@ -189,6 +193,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
                  std::move(plugins_data_pref));
 #endif
   prefs->SetDict(kGeolocationPrefPath, std::move(pref_data));
+  prefs->SetList(kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref,
+                 std::move(pref_list));
 
   // Instantiate a new PrefProvider here, because we want to test the
   // constructor's behavior after setting the above.
@@ -206,6 +212,8 @@ TEST_F(PrefProviderTest, DiscardObsoletePreferences) {
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsExceptionsPref));
   EXPECT_FALSE(prefs->HasPrefPath(kObsoletePluginsDataExceptionsPref));
 #endif
+  EXPECT_FALSE(prefs->HasPrefPath(
+      kGetDisplayMediaSetSelectAllScreensAllowedForUrlsPref));
   EXPECT_TRUE(prefs->HasPrefPath(kGeolocationPrefPath));
   GURL primary_url("http://example.com/");
   EXPECT_EQ(

@@ -82,8 +82,9 @@ const char kManagedCookiesBlockedForUrls[] =
     "profile.managed_cookies_blocked_for_urls";
 const char kManagedCookiesSessionOnlyForUrls[] =
     "profile.managed_cookies_sessiononly_for_urls";
-const char kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls[] =
-    "profile.managed_get_display_media_set_select_all_screens_allowed_for_urls";
+const char kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[] =
+    "profile.managed_access_to_get_all_screens_media_in_session_allowed_for_"
+    "urls";
 const char kManagedImagesAllowedForUrls[] =
     "profile.managed_images_allowed_for_urls";
 const char kManagedImagesBlockedForUrls[] =

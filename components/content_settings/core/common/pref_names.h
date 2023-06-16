@@ -46,7 +46,7 @@ extern const char kManagedClipboardBlockedForUrls[];
 extern const char kManagedCookiesAllowedForUrls[];
 extern const char kManagedCookiesBlockedForUrls[];
 extern const char kManagedCookiesSessionOnlyForUrls[];
-extern const char kManagedGetDisplayMediaSetSelectAllScreensAllowedForUrls[];
+extern const char kManagedAccessToGetAllScreensMediaInSessionAllowedForUrls[];
 extern const char kManagedImagesAllowedForUrls[];
 extern const char kManagedImagesBlockedForUrls[];
 extern const char kManagedInsecureContentAllowedForUrls[];
