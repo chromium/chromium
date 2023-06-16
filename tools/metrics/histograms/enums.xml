@@ -33845,15 +33845,6 @@ Called by update_document_policy_enum.py.-->
   <int value="2" label="Failure"/>
 </enum>
 
-<!-- This must be kept current with explore_sites_bridge.h's
-     ExploreSitesCatalogUpdateRequestSource -->
-
-<enum name="ExploreSitesCatalogUpdateRequestSource">
-  <int value="0" label="New Tab Page"/>
-  <int value="1" label="Explore Sites Page"/>
-  <int value="2" label="Background"/>
-</enum>
-
 <!-- This must be kept current with
      //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
 

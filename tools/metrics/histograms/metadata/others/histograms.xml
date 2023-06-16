@@ -5562,16 +5562,6 @@ chromium-metrics-reviews@google.com.
   <summary>Results of the Explore Sites network request for a catalog.</summary>
 </histogram>
 
-<histogram name="ExploreSites.CatalogUpdateRequestSource"
-    enum="ExploreSitesCatalogUpdateRequestSource" expires_after="2020-03-22">
-  <owner>dewittj@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    The Explore Sites catalog can be requested in several code paths. This
-    identifies which code path was used for the request.
-  </summary>
-</histogram>
-
 <histogram name="ExploreSites.CategoryClick" enum="ExploreSitesCategories"
     expires_after="never">
 <!-- expires-never: part of top-line metric (internal: go/chrome-browser-nsm) -->
@@ -5631,16 +5621,6 @@ chromium-metrics-reviews@google.com.
     back to it within 30 seconds on the same tab. This is used to measure
     accidental clicks, where we expect users who navigate to the wrong page will
     navigate back to the ExploreSites page immediately afterward.
-  </summary>
-</histogram>
-
-<histogram name="ExploreSites.NTPLoadingCatalogFromNetwork" enum="Boolean"
-    expires_after="2020-02-16">
-  <owner>dimich@chromium.org</owner>
-  <summary>
-    Recorded every time NTP is opened while ExploreSites feature is enabled.
-    Indicates whether or not the local cached version of ExploreSites catalog
-    was available or a network request was initiated to load one.
   </summary>
 </histogram>
 
