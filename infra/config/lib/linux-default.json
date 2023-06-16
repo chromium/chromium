@@ -172,6 +172,7 @@
     "Win10 x64 Debug (NVIDIA)": "Ubuntu-22.04",
     "Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
     "android-12-x64-fyi-rel": "Ubuntu-22.04",
+    "android-13-x64-fyi-rel": "Ubuntu-22.04",
     "android-androidx-packager": "Ubuntu-22.04",
     "android-angle-chromium-arm64-builder": "Ubuntu-22.04",
     "android-angle-chromium-arm64-nexus5x": "Ubuntu-22.04",
