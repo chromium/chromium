@@ -228,7 +228,9 @@ public class CardUnmaskPrompt implements EmptyTextWatcher, OnClickListener,
                         .with(ModalDialogProperties.CUSTOM_VIEW, mMainView)
                         .with(ModalDialogProperties.POSITIVE_BUTTON_TEXT, confirmButtonLabel)
                         .with(ModalDialogProperties.NEGATIVE_BUTTON_TEXT, context.getResources(),
-                                R.string.cancel);
+                                R.string.cancel)
+                        .with(ModalDialogProperties.BUTTON_STYLES,
+                                ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
         mDialogModel = dialogModelBuilder.build();
 
         mShouldRequestExpirationDate = shouldRequestExpirationDate;
