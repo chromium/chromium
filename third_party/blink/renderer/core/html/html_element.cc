@@ -1812,7 +1812,8 @@ void HTMLElement::HidePopoverInternal(
             },
             WrapPersistent(this), WrapPersistent(after_event))));
 
-    document.ScheduleForTopLayerRemoval(this);
+    document.ScheduleForTopLayerRemoval(this,
+                                        Document::TopLayerReason::kPopover);
   } else {
     document.RemoveFromTopLayerImmediately(this);
   }

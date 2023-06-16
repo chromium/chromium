@@ -7946,7 +7946,7 @@ void Document::AddConsoleMessage(ConsoleMessage* message,
 void Document::AddToTopLayer(Element* element, const Element* before) {
   if (element->IsInTopLayer()) {
     if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled() &&
-        top_layer_elements_pending_removal_.Contains(element)) {
+        IsScheduledForTopLayerRemoval(element)) {
       // Since the html spec currently says close() should remove the dialog
       // element from the top layer immediately, we need to remove any
       // transitioning elements out of the top layer in order to keep the
@@ -7962,7 +7962,7 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
     }
   }
 
-  DCHECK(!top_layer_elements_pending_removal_.Contains(element));
+  DCHECK(!IsScheduledForTopLayerRemoval(element));
   DCHECK(!before || top_layer_elements_.Contains(before));
 
   if (before) {
@@ -7981,7 +7981,8 @@ void Document::AddToTopLayer(Element* element, const Element* before) {
   probe::TopLayerElementsChanged(this);
 }
 
-void Document::ScheduleForTopLayerRemoval(Element* element) {
+void Document::ScheduleForTopLayerRemoval(Element* element,
+                                          TopLayerReason reason) {
   if (!RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
     RemoveFromTopLayerImmediately(element);
     return;
@@ -7989,7 +7990,8 @@ void Document::ScheduleForTopLayerRemoval(Element* element) {
   if (!element->IsInTopLayer()) {
     return;
   }
-  top_layer_elements_pending_removal_.insert(element);
+  top_layer_elements_pending_removal_.push_back(
+      MakeGarbageCollected<TopLayerPendingRemoval>(element, reason));
   ScheduleLayoutTreeUpdateIfNeeded();
 }
 
@@ -7999,7 +8001,8 @@ void Document::RemoveFinishedTopLayerElements() {
   }
   DCHECK(RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled());
   HeapVector<Member<Element>> to_remove;
-  for (Element* element : top_layer_elements_pending_removal_) {
+  for (const auto& pending_removal : top_layer_elements_pending_removal_) {
+    Element* element = pending_removal->element;
     const ComputedStyle* style = element->GetComputedStyle();
     if (!style || style->Overlay() == EOverlay::kNone) {
       to_remove.push_back(element);
@@ -8018,12 +8021,27 @@ void Document::RemoveFromTopLayerImmediately(Element* element) {
   DCHECK_NE(position, kNotFound);
   top_layer_elements_.EraseAt(position);
   if (RuntimeEnabledFeatures::CSSTopLayerForTransitionsEnabled()) {
-    top_layer_elements_pending_removal_.erase(element);
+    for (unsigned i = 0; i < top_layer_elements_pending_removal_.size(); i++) {
+      if (top_layer_elements_pending_removal_[i]->element == element) {
+        top_layer_elements_pending_removal_.EraseAt(i);
+        break;
+      }
+    }
   }
   element->SetIsInTopLayer(false);
   display_lock_document_state_->ElementRemovedFromTopLayer(element);
 
   probe::TopLayerElementsChanged(this);
+}
+
+absl::optional<Document::TopLayerReason>
+Document::IsScheduledForTopLayerRemoval(Element* element) const {
+  for (const auto& entry : top_layer_elements_pending_removal_) {
+    if (entry->element == element) {
+      return entry->reason;
+    }
+  }
+  return absl::nullopt;
 }
 
 HTMLDialogElement* Document::ActiveModalDialog() const {
@@ -8032,7 +8050,7 @@ HTMLDialogElement* Document::ActiveModalDialog() const {
       if (dialog->IsModal()) {
         // Modal dialogs transitioning out after being closed are not considered
         // to be active.
-        if (!top_layer_elements_pending_removal_.Contains(dialog)) {
+        if (!IsScheduledForTopLayerRemoval(dialog)) {
           return dialog;
         }
       }

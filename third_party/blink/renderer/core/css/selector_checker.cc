@@ -1690,6 +1690,26 @@ bool SelectorChecker::CheckPseudoClass(const SelectorCheckingContext& context,
       }
       break;
     }
+    case CSSSelector::kPseudoPopoverInTopLayer:
+      if (auto* html_element = DynamicTo<HTMLElement>(element);
+          html_element && html_element->HasPopoverAttribute()) {
+        // When the popover is open and is not transitioning to closed,
+        // popoverOpen will return true.
+        if (html_element->popoverOpen()) {
+          DCHECK(html_element->GetDocument().TopLayerElements().Contains(
+              html_element));
+          return true;
+        }
+        // When the popover is transitioning to closed, popoverOpen won't return
+        // true and we have to check the elements which are in the top layer but
+        // are pending removal to see if this element used to be popoverOpen.
+        absl::optional<Document::TopLayerReason> top_layer_reason =
+            html_element->GetDocument().IsScheduledForTopLayerRemoval(
+                html_element);
+        return top_layer_reason &&
+               *top_layer_reason == Document::TopLayerReason::kPopover;
+      }
+      return false;
     case CSSSelector::kPseudoPopoverOpen:
       if (auto* html_element = DynamicTo<HTMLElement>(element);
           html_element && html_element->HasPopoverAttribute()) {

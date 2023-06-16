@@ -235,7 +235,8 @@ void Unfullscreen(Element& element) {
   DCHECK(element.IsInTopLayer());
   DCHECK(HasFullscreenFlag(element));
   UnsetFullscreenFlag(element);
-  document.ScheduleForTopLayerRemoval(&element);
+  document.ScheduleForTopLayerRemoval(&element,
+                                      Document::TopLayerReason::kFullscreen);
 
   // WebXR DOM Overlay mode doesn't allow changing the fullscreen element, this
   // is enforced in AllowedToRequestFullscreen. In this mode, unfullscreening

@@ -364,6 +364,7 @@ PseudoId CSSSelector::GetPseudoId(PseudoType type) {
     case kPseudoPlaceholder:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverInTopLayer:
     case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:
@@ -429,6 +430,7 @@ const static NameToPseudoStruct kPseudoTypeWithoutArgumentsMap[] = {
     {"-internal-media-controls-overlay-cast-button",
      CSSSelector::kPseudoWebKitCustomElement},
     {"-internal-multi-select-focus", CSSSelector::kPseudoMultiSelectFocus},
+    {"-internal-popover-in-top-layer", CSSSelector::kPseudoPopoverInTopLayer},
     {"-internal-relative-anchor", CSSSelector::kPseudoRelativeAnchor},
     {"-internal-selector-fragment-anchor",
      CSSSelector::kPseudoSelectorFragmentAnchor},
@@ -623,7 +625,8 @@ CSSSelector::PseudoType CSSSelector::NameToPseudoType(
   if (!popover_attribute_enabled &&
       (match->type == CSSSelector::kPseudoOpen ||
        match->type == CSSSelector::kPseudoClosed ||
-       match->type == CSSSelector::kPseudoPopoverOpen)) {
+       match->type == CSSSelector::kPseudoPopoverOpen ||
+       match->type == CSSSelector::kPseudoPopoverInTopLayer)) {
     return CSSSelector::kPseudoUnknown;
   }
 
@@ -833,6 +836,7 @@ void CSSSelector::UpdatePseudoType(const AtomicString& value,
     case kPseudoPictureInPicture:
     case kPseudoPlaceholderShown:
     case kPseudoPlaying:
+    case kPseudoPopoverInTopLayer:
     case kPseudoPopoverOpen:
     case kPseudoReadOnly:
     case kPseudoReadWrite:

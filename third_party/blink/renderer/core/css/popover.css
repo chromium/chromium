@@ -49,7 +49,7 @@ dialog:popover-open {
   overlay: auto !important;
 }
 
-[popover]:popover-open::backdrop {
+[popover]:-internal-popover-in-top-layer::backdrop {
   /* From the (modified) fullscreen spec: https://fullscreen.spec.whatwg.org/#user-agent-level-style-sheet-defaults: */
   position: fixed;
   inset: 0;

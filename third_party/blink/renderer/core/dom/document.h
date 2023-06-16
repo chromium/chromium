@@ -1560,13 +1560,22 @@ class CORE_EXPORT Document : public ContainerNode,
 
   void AttachCompositorTimeline(cc::AnimationTimeline*) const;
 
+  enum class TopLayerReason {
+    kFullscreen,
+    kDialog,
+    kPopover,
+  };
   void AddToTopLayer(Element*, const Element* before = nullptr);
   void RemoveFromTopLayerImmediately(Element*);
   const HeapVector<Member<Element>>& TopLayerElements() const {
     return top_layer_elements_;
   }
-  void ScheduleForTopLayerRemoval(Element*);
+  void ScheduleForTopLayerRemoval(Element*, TopLayerReason);
   void RemoveFinishedTopLayerElements();
+  // Returns absl::nullopt if the provided element is not scheduled for top
+  // layer removal. If it is scheduled for removal, then this returns the reason
+  // for the element being in the top layer.
+  absl::optional<TopLayerReason> IsScheduledForTopLayerRemoval(Element*) const;
 
   HTMLDialogElement* ActiveModalDialog() const;
 
@@ -2482,8 +2491,20 @@ class CORE_EXPORT Document : public ContainerNode,
   // stack and is thus the one that will be visually on top.
   HeapVector<Member<Element>> top_layer_elements_;
 
-  // top_layer_elements_ to be removed when overlay computes to none.
-  HeapHashSet<Member<Element>> top_layer_elements_pending_removal_;
+  // top_layer_elements_pending_removal_ is a list of elements which will be
+  // removed from top_layer_elements_ when overlay computes to none. Each
+  // element also has a "reason" for being in the top layer which corresponds to
+  // the API which caused the element to enter the top layer in the first place.
+  class TopLayerPendingRemoval
+      : public GarbageCollected<TopLayerPendingRemoval> {
+   public:
+    TopLayerPendingRemoval(Element* new_element, TopLayerReason new_reason)
+        : element(new_element), reason(new_reason) {}
+    Member<Element> element;
+    TopLayerReason reason;
+    void Trace(Visitor* visitor) const { visitor->Trace(element); }
+  };
+  VectorOf<TopLayerPendingRemoval> top_layer_elements_pending_removal_;
 
   // The stack of currently-displayed `popover=auto` elements. Elements in the
   // stack go from earliest (bottom-most) to latest (top-most).
