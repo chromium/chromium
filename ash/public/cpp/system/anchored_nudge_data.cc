@@ -16,7 +16,7 @@
 namespace ash {
 
 AnchoredNudgeData::AnchoredNudgeData(const std::string& id,
-                                     AnchoredNudgeCatalogName catalog_name,
+                                     NudgeCatalogName catalog_name,
                                      const std::u16string& body_text,
                                      views::View* anchor_view)
     : id(std::move(id)),

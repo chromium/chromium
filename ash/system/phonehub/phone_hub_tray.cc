@@ -441,6 +441,7 @@ void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
   if (features::IsPhoneHubNudgeEnabled()) {
     phone_hub_nudge_controller_->HideNudge();
+    phone_hub_nudge_controller_->MaybeRecordNudgeAction();
   }
   // Simply toggle between visible/invisibvle
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {

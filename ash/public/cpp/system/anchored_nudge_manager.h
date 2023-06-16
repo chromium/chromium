@@ -8,6 +8,7 @@
 #include <memory>
 #include <string>
 
+#include "ash/constants/notifier_catalogs.h"
 #include "ash/public/cpp/ash_public_export.h"
 
 namespace ash {
@@ -32,6 +33,11 @@ class ASH_PUBLIC_EXPORT AnchoredNudgeManager {
 
   // Cancels an anchored nudge with the provided `id`.
   virtual void Cancel(const std::string& id) = 0;
+
+  // Records Nudge "TimeToAction" metric, which tracks the time from when a
+  // nudge was shown to when the nudge's suggested action was performed.
+  // No op if the nudge specified by `catalog_name` hasn't been shown before.
+  virtual void MaybeRecordNudgeAction(NudgeCatalogName catalog_name) = 0;
 
  protected:
   AnchoredNudgeManager();

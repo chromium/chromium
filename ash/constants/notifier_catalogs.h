@@ -206,7 +206,13 @@ enum class NudgeCatalogName {
   kClipboardHistoryOnboarding = 8,
   kDisableDiacritics = 9,
   kClipboardHistoryDuplicateCopy = 10,
-  kMaxValue = kClipboardHistoryDuplicateCopy,
+  kVideoConferenceTraySpeakOnMuteDetected = 11,
+  kVideoConferenceTrayMicrophoneUseWhileHWDisabled = 12,
+  kVideoConferenceTrayMicrophoneUseWhileSWDisabled = 13,
+  kVideoConferenceTrayCameraUseWhileHWDisabled = 14,
+  kVideoConferenceTrayCameraUseWhileSWDisabled = 15,
+  kVideoConferenceTraySpeakOnMuteOptIn = 16,
+  kMaxValue = kVideoConferenceTraySpeakOnMuteOptIn
 };
 
 // A living catalog that registers toasts.
@@ -259,19 +265,6 @@ enum class ToastCatalogName {
   kCopyGifToClipboardAction = 42,
   // [Deprecated] kVideoConferenceTrayUseWhileDisabled = 43,
   kMaxValue = kCopyGifToClipboardAction
-};
-
-// A living catalog that registers anchored nudges.
-// Current values should not be renumbered or removed.
-// TODO(b/280309972): Add metrics for AnchoredNudge catalog.
-// To deprecate comment out the entry.
-enum class AnchoredNudgeCatalogName {
-  kTest = 0,
-  kVideoConferenceTraySpeakOnMuteDetected = 1,
-  kVideoConferenceTrayUseWhileDisabled = 2,
-  kVideoConferenceTraySpeakOnMuteOptIn = 3,
-  kPhoneHub = 3,
-  kMaxValue = kPhoneHub
 };
 
 }  // namespace ash

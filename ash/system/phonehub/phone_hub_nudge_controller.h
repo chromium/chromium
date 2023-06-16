@@ -19,6 +19,9 @@ class ASH_EXPORT PhoneHubNudgeController {
 
   void ShowNudge(views::View* anchor_view, const std::u16string& text);
   void HideNudge();
+
+  // Attempts recording nudge action metric when Phone Hub icon is activated.
+  void MaybeRecordNudgeAction();
 };
 
 }  // namespace ash

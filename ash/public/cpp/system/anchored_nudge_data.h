@@ -35,7 +35,7 @@ using AnchoredNudgeDismissCallback = base::RepeatingCallback<void()>;
 // and take over its name.
 struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   AnchoredNudgeData(const std::string& id,
-                    AnchoredNudgeCatalogName catalog_name,
+                    NudgeCatalogName catalog_name,
                     const std::u16string& body_text,
                     views::View* anchor_view);
   AnchoredNudgeData(AnchoredNudgeData&& other);
@@ -44,7 +44,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
 
   // Required system nudge elements.
   std::string id;
-  AnchoredNudgeCatalogName catalog_name;
+  NudgeCatalogName catalog_name;
   std::u16string body_text;
 
   // Optional system nudge view elements. If not empty, a leading image or nudge

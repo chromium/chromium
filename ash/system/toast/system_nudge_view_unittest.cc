@@ -27,7 +27,7 @@ AnchoredNudgeData CreateBaseNudgeData(views::View* contents_view) {
   // Set up nudge data contents.
   const std::string id = "id";
   const std::u16string body_text = u"text";
-  auto catalog_name = AnchoredNudgeCatalogName::kTest;
+  auto catalog_name = NudgeCatalogName::kTestCatalogName;
   auto* anchor_view =
       contents_view->AddChildView(std::make_unique<views::View>());
 

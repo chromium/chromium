@@ -25,8 +25,8 @@ void PhoneHubNudgeController::ShowNudge(views::View* anchor_view,
   if (!ash::features::IsPhoneHubNudgeEnabled()) {
     return;
   }
-  AnchoredNudgeData nudge_data = {
-      kPhoneHubNudgeId, AnchoredNudgeCatalogName::kPhoneHub, text, anchor_view};
+  AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
+                                  text, anchor_view};
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 
@@ -36,4 +36,10 @@ void PhoneHubNudgeController::HideNudge() {
   }
   AnchoredNudgeManager::Get()->Cancel(kPhoneHubNudgeId);
 }
+
+void PhoneHubNudgeController::MaybeRecordNudgeAction() {
+  AnchoredNudgeManager::Get()->MaybeRecordNudgeAction(
+      NudgeCatalogName::kPhoneHub);
+}
+
 }  // namespace ash

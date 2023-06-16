@@ -15,6 +15,7 @@
 #include "ash/system/unified/unified_system_tray.h"
 #include "ash/test/ash_test_base.h"
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "ui/views/controls/label.h"
@@ -23,6 +24,17 @@
 namespace ash {
 
 namespace {
+
+constexpr NudgeCatalogName kTestCatalogName =
+    NudgeCatalogName::kTestCatalogName;
+
+constexpr char kNudgeShownCount[] = "Ash.NotifierFramework.Nudge.ShownCount";
+constexpr char kNudgeTimeToActionWithin1m[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
+constexpr char kNudgeTimeToActionWithin1h[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
+constexpr char kNudgeTimeToActionWithinSession[] =
+    "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
 
 void SetLockedState(bool locked) {
   SessionInfo info;
@@ -49,8 +61,7 @@ class AnchoredNudgeManagerImplTest : public AshTestBase {
       const std::string& id,
       views::View* anchor_view,
       const std::u16string& body_text = std::u16string()) {
-    return AnchoredNudgeData(id, AnchoredNudgeCatalogName::kTest, body_text,
-                             anchor_view);
+    return AnchoredNudgeData(id, kTestCatalogName, body_text, anchor_view);
   }
 
   void CancelNudge(const std::string& id) {
@@ -469,6 +480,83 @@ TEST_F(AnchoredNudgeManagerImplTest, CancelNudgeWhichDoesNotExist) {
   // Attempt to cancel the same nudge again. Should not have any effect.
   CancelNudge(id);
   EXPECT_FALSE(GetShownNudges()[id]);
+}
+
+TEST_F(AnchoredNudgeManagerImplTest, ShownCountMetric) {
+  base::HistogramTester histogram_tester;
+
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 0);
+
+  anchored_nudge_manager()->Show(nudge_data);
+  histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 1);
+
+  anchored_nudge_manager()->Show(nudge_data);
+  anchored_nudge_manager()->Show(nudge_data);
+  histogram_tester.ExpectBucketCount(kNudgeShownCount, kTestCatalogName, 3);
+}
+
+TEST_F(AnchoredNudgeManagerImplTest, TimeToActionMetric) {
+  base::HistogramTester histogram_tester;
+  anchored_nudge_manager()->ResetNudgeRegistryForTesting();
+  std::unique_ptr<views::Widget> widget = CreateFramelessTestWidget();
+
+  // Set up nudge data contents.
+  const std::string id = "id";
+  auto* anchor_view = widget->SetContentsView(std::make_unique<views::View>());
+  auto nudge_data = CreateBaseNudgeData(id, anchor_view);
+
+  // Metric is not recorded if the nudge has not been shown.
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
+                                     kTestCatalogName, 0);
+
+  // Metric is recorded if the action is performed after the nudge was shown.
+  anchored_nudge_manager()->Show(nudge_data);
+  task_environment()->FastForwardBy(base::Seconds(1));
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
+                                     kTestCatalogName, 1);
+
+  // Metric is not recorded if the nudge action is performed again without
+  // another nudge being shown.
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1m,
+                                     kTestCatalogName, 1);
+
+  // Metric is recorded with the appropriate time range after showing nudge
+  // again and waiting enough time to fall into the "Within1h" time bucket.
+  anchored_nudge_manager()->Show(nudge_data);
+  task_environment()->FastForwardBy(base::Minutes(2));
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1h,
+                                     kTestCatalogName, 1);
+
+  // Metric is not recorded if the nudge action is performed again without
+  // another nudge being shown.
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithin1h,
+                                     kTestCatalogName, 1);
+
+  // Metric is recorded with the appropriate time range after showing nudge
+  // again and waiting enough time to fall into the "WithinSession" time bucket.
+  anchored_nudge_manager()->Show(nudge_data);
+  task_environment()->FastForwardBy(base::Hours(2));
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
+                                     kTestCatalogName, 1);
+
+  // Metric is not recorded if the nudge action is performed again without
+  // another nudge being shown.
+  anchored_nudge_manager()->MaybeRecordNudgeAction(kTestCatalogName);
+  histogram_tester.ExpectBucketCount(kNudgeTimeToActionWithinSession,
+                                     kTestCatalogName, 1);
 }
 
 }  // namespace ash

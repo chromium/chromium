@@ -14,6 +14,8 @@
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/strings/strcat.h"
 #include "ui/aura/window.h"
 #include "ui/events/event.h"
 #include "ui/events/event_observer.h"
@@ -27,6 +29,21 @@
 #include "ui/views/window/dialog_client_view.h"
 
 namespace ash {
+
+namespace {
+
+std::string GetNudgeTimeToActionHistogramName(const base::TimeDelta& time) {
+  std::string time_range;
+  if (time <= base::Minutes(1)) {
+    return "Ash.NotifierFramework.Nudge.TimeToAction.Within1m";
+  }
+  if (time <= base::Hours(1)) {
+    return "Ash.NotifierFramework.Nudge.TimeToAction.Within1h";
+  }
+  return "Ash.NotifierFramework.Nudge.TimeToAction.WithinSession";
+}
+
+}  // namespace
 
 ///////////////////////////////////////////////////////////////////////////////
 //  NudgeHoverObserver
@@ -209,8 +226,6 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
     return;
   }
 
-  const bool has_infinite_duration = nudge_data.has_infinite_duration;
-
   // Chain callbacks with `Cancel()` so nudge is dismissed on button pressed.
   // TODO(b/285023559): Add `ChainedCancelCallback` class so we don't have to
   // manually modify the provided callbacks.
@@ -242,6 +257,8 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
   // The widget is not activated so the nudge does not steal focus.
   anchored_nudge_widget->ShowInactive();
 
+  RecordNudgeShown(nudge_data.catalog_name);
+
   nudge_widget_observers_[id] =
       std::make_unique<NudgeWidgetObserver>(anchored_nudge_ptr, this);
 
@@ -254,7 +271,7 @@ void AnchoredNudgeManagerImpl::Show(AnchoredNudgeData& nudge_data) {
 
   // Only nudges that expire should be able to persist on hover (i.e. nudges
   // with infinite duration persist regardless of hover).
-  if (!has_infinite_duration) {
+  if (!nudge_data.has_infinite_duration) {
     StartDismissTimer(id);
   }
 }
@@ -266,6 +283,28 @@ void AnchoredNudgeManagerImpl::Cancel(const std::string& id) {
 
   // Cache cleanup occurs on `HandleNudgeWidgetDestroying()`.
   shown_nudges_[id]->GetWidget()->CloseNow();
+}
+
+void AnchoredNudgeManagerImpl::MaybeRecordNudgeAction(
+    NudgeCatalogName catalog_name) {
+  auto& nudge_registry = GetNudgeRegistry();
+  auto it = std::find_if(
+      std::begin(nudge_registry), std::end(nudge_registry),
+      [catalog_name](
+          const std::pair<NudgeCatalogName, base::TimeTicks> registry_entry) {
+        return catalog_name == registry_entry.first;
+      });
+
+  // Don't record "TimeToAction" metric if the nudge hasn't been shown before.
+  if (it == std::end(nudge_registry)) {
+    return;
+  }
+
+  const base::TimeDelta delta = base::TimeTicks::Now() - it->second;
+  base::UmaHistogramEnumeration(GetNudgeTimeToActionHistogramName(delta),
+                                catalog_name);
+
+  nudge_registry.erase(it);
 }
 
 void AnchoredNudgeManagerImpl::CloseAllNudges() {
@@ -334,6 +373,38 @@ AnchoredNudge* AnchoredNudgeManagerImpl::GetShownNudgeForTest(
     const std::string& id) {
   CHECK(IsNudgeShown(id));
   return shown_nudges_[id];
+}
+
+void AnchoredNudgeManagerImpl::ResetNudgeRegistryForTesting() {
+  GetNudgeRegistry().clear();
+}
+
+// static
+std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>&
+AnchoredNudgeManagerImpl::GetNudgeRegistry() {
+  static auto nudge_registry =
+      std::vector<std::pair<NudgeCatalogName, base::TimeTicks>>();
+  return nudge_registry;
+}
+
+void AnchoredNudgeManagerImpl::RecordNudgeShown(NudgeCatalogName catalog_name) {
+  base::UmaHistogramEnumeration("Ash.NotifierFramework.Nudge.ShownCount",
+                                catalog_name);
+
+  // Record nudge shown time in the nudge registry.
+  auto& nudge_registry = GetNudgeRegistry();
+  auto it = std::find_if(
+      std::begin(nudge_registry), std::end(nudge_registry),
+      [catalog_name](
+          const std::pair<NudgeCatalogName, base::TimeTicks> registry_entry) {
+        return catalog_name == registry_entry.first;
+      });
+
+  if (it == std::end(nudge_registry)) {
+    nudge_registry.emplace_back(catalog_name, base::TimeTicks::Now());
+  } else {
+    it->second = base::TimeTicks::Now();
+  }
 }
 
 base::RepeatingClosure AnchoredNudgeManagerImpl::ChainCancelCallback(
