@@ -126,6 +126,8 @@ public class SingleTabSwitcherOnTabletMediatorUnitTest {
         mediator.setVisibility(false);
 
         assertFalse(mPropertyModel.get(IS_VISIBLE));
+        assertNull(mPropertyModel.get(TITLE));
+        assertNull(mPropertyModel.get(FAVICON));
     }
 
     @Test
