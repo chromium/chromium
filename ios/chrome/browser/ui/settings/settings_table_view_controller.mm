@@ -2364,6 +2364,16 @@ UIImage* GetBrandedGoogleServicesSymbol() {
   return l10n_util::GetNSString(IDS_IOS_GOOGLE_SYNC_SETTINGS_TITLE);
 }
 
+- (void)showSignOutToast {
+  [self.snackbarCommandsHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:nil];
+}
+
 #pragma mark - NotificationsSettingsObserverDelegate
 
 - (void)notificationsSettingsDidChangeForClient:

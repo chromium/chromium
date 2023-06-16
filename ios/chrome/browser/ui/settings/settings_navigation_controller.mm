@@ -16,6 +16,7 @@
 #import "ios/chrome/browser/shared/model/application_context/application_context.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/commands/snackbar_commands.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -100,6 +101,9 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 // Privacy Safe Browsing coordinator.
 @property(nonatomic, strong)
     InactiveTabsSettingsCoordinator* inactiveTabsSettingsCoordinator;
+
+// Handler for Snackbar Commands.
+@property(nonatomic, weak) id<SnackbarCommands> snackbarCommandsHandler;
 
 // Current UIViewController being presented by this Navigation Controller.
 // If nil it means the Navigation Controller is not presenting anything, or the
@@ -793,6 +797,16 @@ NSString* const kSettingsDoneButtonId = @"kSettingsDoneButtonId";
 
 - (NSString*)manageSyncSettingsCoordinatorTitle {
   return l10n_util::GetNSString(IDS_IOS_MANAGE_SYNC_SETTINGS_TITLE);
+}
+
+- (void)showSignOutToast {
+  [self.snackbarCommandsHandler
+      showSnackbarWithMessage:
+          l10n_util::GetNSString(
+              IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_SNACKBAR_MESSAGE)
+                   buttonText:nil
+                messageAction:nil
+             completionAction:nil];
 }
 
 #pragma mark - PasswordsCoordinatorDelegate
