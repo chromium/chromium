@@ -7,6 +7,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/profiles/profile_selections.h"
 #include "chrome/common/chrome_features.h"
@@ -264,6 +265,10 @@ IN_PROC_BROWSER_TEST_F(ProfileKeyedServiceBrowserTest,
     "sct_reporting::Factory"
   };
   // clang-format on
+
+  if (base::FeatureList::IsEnabled(media_router::kMediaRouterOTRInstance)) {
+    guest_otr_active_services.insert("MediaRouter");
+  }
 
   Profile* guest_profile =
       CreateProfileAndWaitForAllTasks(ProfileManager::GetGuestProfilePath());

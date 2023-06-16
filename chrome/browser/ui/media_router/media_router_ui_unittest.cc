@@ -10,10 +10,12 @@
 #include <vector>
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/memory/raw_ptr.h"
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/providers/wired_display/wired_display_media_route_provider.h"
 #include "chrome/browser/sessions/session_tab_helper_factory.h"
 #include "chrome/browser/ui/media_router/cast_dialog_controller.h"
@@ -738,10 +740,14 @@ TEST_F(MediaRouterViewsUITest, OnFreezeInfoChanged) {
 class MediaRouterViewsUIIncognitoTest : public MediaRouterViewsUITest {
  protected:
   void SetMediaRouterFactory() override {
-    // We must set the factory on the non-incognito browser context.
-    MediaRouterFactory::GetInstance()->SetTestingFactory(
-        MediaRouterViewsUITest::GetBrowserContext(),
-        base::BindRepeating(&MockMediaRouter::Create));
+    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+      MediaRouterViewsUITest::SetMediaRouterFactory();
+    } else {
+      // We must set the factory on the original browser context.
+      MediaRouterFactory::GetInstance()->SetTestingFactory(
+          MediaRouterViewsUITest::GetBrowserContext(),
+          base::BindRepeating(&MockMediaRouter::Create));
+    }
   }
 
   content::BrowserContext* GetBrowserContext() override {

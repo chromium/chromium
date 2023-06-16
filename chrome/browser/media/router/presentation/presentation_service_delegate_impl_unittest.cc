@@ -5,10 +5,12 @@
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 
 #include "base/containers/contains.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/mock_callback.h"
 #include "build/build_config.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/presentation/chrome_local_presentation_manager_factory.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
@@ -160,10 +162,17 @@ class PresentationServiceDelegateImplTest
   void SetUp() override {
     ChromeRenderViewHostTestHarness::SetUp();
     content::WebContents* wc = GetWebContents();
-    router_ = static_cast<MockMediaRouter*>(
-        MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
-            web_contents()->GetBrowserContext(),
-            base::BindRepeating(&MockMediaRouter::Create)));
+    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+      router_ = static_cast<MockMediaRouter*>(
+          MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
+              wc->GetBrowserContext(),
+              base::BindRepeating(&MockMediaRouter::Create)));
+    } else {
+      router_ = static_cast<MockMediaRouter*>(
+          MediaRouterFactory::GetInstance()->SetTestingFactoryAndUse(
+              web_contents()->GetBrowserContext(),
+              base::BindRepeating(&MockMediaRouter::Create)));
+    }
     ASSERT_TRUE(wc);
     PresentationServiceDelegateImpl::CreateForWebContents(wc);
     delegate_impl_ = PresentationServiceDelegateImpl::FromWebContents(wc);

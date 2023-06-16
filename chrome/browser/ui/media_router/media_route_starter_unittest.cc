@@ -4,12 +4,15 @@
 
 #include "chrome/browser/ui/media_router/media_route_starter.h"
 
+#include "base/feature_list.h"
 #include "base/json/json_reader.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/strcat.h"
+#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
 #include "chrome/browser/media/router/chrome_media_router_factory.h"
+#include "chrome/browser/media/router/media_router_feature.h"
 #include "chrome/browser/media/router/test/provider_test_helpers.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
@@ -169,10 +172,15 @@ class MediaRouteStarterTest : public ChromeRenderViewHostTestHarness {
         ProfileManager::GetActiveUserProfile();
 #else
         ProfileManager::GetLastUsedProfile();
-#endif
-    ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
-        default_profile->GetOriginalProfile(),
-        base::BindRepeating(&MockMediaRouter::Create));
+#endif  // BUILDFLAG(IS_CHROMEOS)
+    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+      ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+          default_profile, base::BindRepeating(&MockMediaRouter::Create));
+    } else {
+      ChromeMediaRouterFactory::GetInstance()->SetTestingFactory(
+          default_profile->GetOriginalProfile(),
+          base::BindRepeating(&MockMediaRouter::Create));
+    }
   }
 
   void CreateStarterForDefaultModes() {
@@ -886,10 +894,16 @@ TEST_F(MediaRouteStarterTest, GetScreenCapturePermission) {
 class MediaRouteStarterIncognitoTest : public MediaRouteStarterTest {
  protected:
   void SetMediaRouterFactory() override {
-    // We must set the factory on the non-incognito browser context.
-    MediaRouterFactory::GetInstance()->SetTestingFactory(
-        MediaRouteStarterTest::GetBrowserContext(),
-        base::BindRepeating(&MockMediaRouter::Create));
+    if (base::FeatureList::IsEnabled(kMediaRouterOTRInstance)) {
+      // We must set the factory on the incognito browser context.
+      MediaRouterFactory::GetInstance()->SetTestingFactory(
+          GetBrowserContext(), base::BindRepeating(&MockMediaRouter::Create));
+    } else {
+      // We must set the factory on the non-incognito browser context.
+      MediaRouterFactory::GetInstance()->SetTestingFactory(
+          MediaRouteStarterTest::GetBrowserContext(),
+          base::BindRepeating(&MockMediaRouter::Create));
+    }
   }
 
   content::BrowserContext* GetBrowserContext() override {
