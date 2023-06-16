@@ -14,22 +14,7 @@
 
 namespace base {
 
-TestProtoLoader::TestProtoLoader(const base::FilePath& descriptor_path,
-                                 base::StringPiece type_name) {
-  // Load the descriptors and find the one for |type_name|.
-  std::string package, name;
-  std::vector<std::string> type_name_parts = base::SplitString(
-      type_name, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-  DCHECK_GE(type_name_parts.size(), 2U) << "|type_name| should include package";
-
-  prototype_ = GetPrototype(
-      descriptor_path, /*package =*/
-      base::JoinString(
-          base::make_span(type_name_parts.begin(), type_name_parts.size() - 1),
-          "."),
-      /* name = */ type_name_parts.back());
-  DCHECK_NE(nullptr, prototype_);
-}
+TestProtoLoader::TestProtoLoader() = default;
 
 TestProtoLoader::~TestProtoLoader() = default;
 
@@ -72,23 +57,29 @@ const google::protobuf::Message* TestProtoLoader::GetPrototype(
   return nullptr;
 }
 
-void TestProtoLoader::ParseFromText(const std::string& proto_text,
+void TestProtoLoader::ParseFromText(const base::FilePath& descriptor_path,
+                                    base::StringPiece type_name,
+                                    const std::string& proto_text,
                                     std::string& serialized_message) {
-  // Parse the text using the descriptor-generated message and send it to
-  // |destination|.
-  std::unique_ptr<google::protobuf::Message> message(prototype_->New());
-  DCHECK(
-      google::protobuf::TextFormat::ParseFromString(proto_text, message.get()));
-  DCHECK(message->SerializeToString(&serialized_message));
-}
+  // Load the descriptors and find the one for |type_name|.
+  std::string package, name;
+  std::vector<std::string> type_name_parts = base::SplitString(
+      type_name, ".", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
+  DCHECK_GE(type_name_parts.size(), 2U) << "|type_name| should include package";
 
-void TestProtoLoader::PrintToText(const std::string& serialized_message,
-                                  std::string& proto_text) {
+  const google::protobuf::Message* prototype = GetPrototype(
+      descriptor_path, /*package =*/
+      base::JoinString(
+          base::make_span(type_name_parts.begin(), type_name_parts.size() - 1),
+          "."),
+      /* name = */ type_name_parts.back());
+  DCHECK_NE(nullptr, prototype);
+
   // Parse the text using the descriptor-generated message and send it to
   // |destination|.
-  std::unique_ptr<google::protobuf::Message> message(prototype_->New());
-  DCHECK(message->ParseFromString(serialized_message));
-  DCHECK(google::protobuf::TextFormat::PrintToString(*message, &proto_text));
+  std::unique_ptr<google::protobuf::Message> message(prototype->New());
+  google::protobuf::TextFormat::ParseFromString(proto_text, message.get());
+  serialized_message = message->SerializeAsString();
 }
 
 }  // namespace base

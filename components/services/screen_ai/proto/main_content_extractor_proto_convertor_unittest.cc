@@ -243,9 +243,10 @@ bool LoadTextProto(const base::FilePath& proto_file_path,
   descriptor_full_path =
       descriptor_full_path.AppendASCII(proto_descriptor_relative_file_path);
 
-  base::TestProtoLoader loader(descriptor_full_path, proto.GetTypeName());
+  base::TestProtoLoader loader;
   std::string serialized_message;
-  loader.ParseFromText(file_content, serialized_message);
+  loader.ParseFromText(descriptor_full_path, proto.GetTypeName(), file_content,
+                       serialized_message);
   return proto.ParseFromString(serialized_message);
 }
 
