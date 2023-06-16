@@ -98,7 +98,8 @@ void AutofillBottomSheetTabHelper::AttachPasswordListeners(
     return;
   }
 
-  AttachListeners(renderer_ids, registered_password_renderer_ids_, frame);
+  AttachListeners(renderer_ids, registered_password_renderer_ids_, frame,
+                  /*must_be_empty = */ false);
 }
 
 void AutofillBottomSheetTabHelper::AttachPaymentsListeners(
@@ -122,14 +123,16 @@ void AutofillBottomSheetTabHelper::AttachPaymentsListeners(
   }
 
   if (!renderer_ids.empty()) {
-    AttachListeners(renderer_ids, registered_payments_renderer_ids_, frame);
+    AttachListeners(renderer_ids, registered_payments_renderer_ids_, frame,
+                    /*must_be_empty = */ true);
   }
 }
 
 void AutofillBottomSheetTabHelper::AttachListeners(
     const std::vector<autofill::FieldRendererId>& renderer_ids,
     std::set<autofill::FieldRendererId>& registered_renderer_ids,
-    web::WebFrame* frame) {
+    web::WebFrame* frame,
+    bool must_be_empty) {
   // Transfer the renderer IDs to a set so that they are sorted and unique.
   std::set<autofill::FieldRendererId> sorted_renderer_ids(renderer_ids.begin(),
                                                           renderer_ids.end());
@@ -141,7 +144,7 @@ void AutofillBottomSheetTabHelper::AttachListeners(
   if (!new_renderer_ids.empty()) {
     // Enable the bottom sheet on the new renderer IDs.
     AutofillBottomSheetJavaScriptFeature::GetInstance()->AttachListeners(
-        new_renderer_ids, frame);
+        new_renderer_ids, frame, must_be_empty);
 
     // Add new renderer IDs to the list of registered renderer IDs.
     std::copy(
@@ -153,7 +156,15 @@ void AutofillBottomSheetTabHelper::AttachListeners(
 void AutofillBottomSheetTabHelper::DetachPasswordListenersAndRefocus(
     web::WebFrame* frame) {
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
-      registered_password_renderer_ids_, frame, /*refocus=*/true);
+      registered_password_renderer_ids_, frame, /*must_be_empty = */ false,
+      /*refocus = */ true);
+}
+
+void AutofillBottomSheetTabHelper::DetachPaymentsListeners(web::WebFrame* frame,
+                                                           bool refocus) {
+  AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
+      registered_payments_renderer_ids_, frame, /*must_be_empty = */ true,
+      refocus);
 }
 
 // WebStateObserver

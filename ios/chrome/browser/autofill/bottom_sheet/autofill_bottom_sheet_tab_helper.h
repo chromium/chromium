@@ -57,6 +57,10 @@ class AutofillBottomSheetTabHelper
   // Detach the password listeners, which will deactivate the bottom sheet.
   void DetachPasswordListenersAndRefocus(web::WebFrame* frame);
 
+  // Detach the payments listeners, which will deactivate the payments bottom
+  // sheet.
+  void DetachPaymentsListeners(web::WebFrame* frame, bool refocus);
+
   // WebStateObserver:
   void DidFinishNavigation(web::WebState* web_state,
                            web::NavigationContext* navigation_context) override;
@@ -78,7 +82,8 @@ class AutofillBottomSheetTabHelper
   void AttachListeners(
       const std::vector<autofill::FieldRendererId>& renderer_ids,
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
-      web::WebFrame* frame);
+      web::WebFrame* frame,
+      bool must_be_empty);
 
   // Handler used to request showing the password bottom sheet.
   __weak id<AutofillBottomSheetCommands> commands_handler_;
