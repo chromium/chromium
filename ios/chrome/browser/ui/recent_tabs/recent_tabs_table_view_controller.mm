@@ -203,8 +203,7 @@ typedef std::pair<SessionID, TableViewURLItem*> RecentlyClosedTableViewItemPair;
 }
 
 - (void)dealloc {
-  [self.signinPromoViewMediator disconnect];
-  self.signinPromoViewMediator = nil;
+  CHECK(!self.signinPromoViewMediator);
 }
 
 - (void)viewDidLoad {

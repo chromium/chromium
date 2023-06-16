@@ -25,4 +25,8 @@
   [self.baseViewController pushViewController:self.viewController animated:YES];
 }
 
+- (void)stop {
+  [self.viewController dismissModals];
+}
+
 @end
