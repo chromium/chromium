@@ -156,11 +156,18 @@ int GetTextInputExtensionV1Version() {
   if (base::FeatureList::IsEnabled(
           ash::features::kExoExtendedConfirmComposition) &&
       base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
-    return 11;
+    // set_surrounding_text_offset_utf16 + new surrounding_text_support
+    // strategy enabled once at version 10 was reverted (crbug.com/1451324).
+    // Unfortunately, we have to disable confirm-composition in version 11
+    // together, because of wayland's versioning system.
+    //
+    // Now, the new API to fix the issue is introduced in version 12.
+    // We cannot enable confirm-composition only, because it will be hitting
+    // the same issue at version 10. Thus, we'll set version 12 (including
+    // all fixes + confirm-composition), or 9 (before everything).
+    return 12;
   }
-  if (base::FeatureList::IsEnabled(ash::features::kExoSurroundingTextOffset)) {
-    return 10;
-  }
+
   return 9;
 }
 
