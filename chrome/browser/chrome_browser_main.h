@@ -10,7 +10,6 @@
 
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
-#include "base/threading/hang_watcher.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/buildflags.h"
@@ -167,9 +166,6 @@ class ChromeBrowserMainParts : public content::BrowserMainParts {
   // Please keep |shutdown_watcher| as the first object constructed, and hence
   // it is destroyed last.
   std::unique_ptr<ShutdownWatcherHelper> shutdown_watcher_;
-
-  // HangWatcher based equivalent to |shutdown_watcher_|
-  absl::optional<base::WatchHangsInScope> watch_hangs_scope_;
 
   std::unique_ptr<WebUsbDetector> web_usb_detector_;
 #endif  // !BUILDFLAG(IS_ANDROID)

@@ -52,11 +52,6 @@ class ContentMainRunnerImpl : public ContentMainRunner {
 
   bool is_browser_main_loop_started_ = false;
 
-  // Unregisters UI thread from hang watching on destruction.
-  // NOTE: The thread should be unregistered before HangWatcher stops so this
-  // member must be after |hang_watcher|.
-  base::ScopedClosureRunner unregister_thread_closure_;
-
   std::unique_ptr<discardable_memory::DiscardableSharedMemoryManager>
       discardable_shared_memory_manager_;
   std::unique_ptr<MojoIpcSupport> mojo_ipc_support_;
