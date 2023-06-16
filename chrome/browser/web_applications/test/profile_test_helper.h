@@ -16,6 +16,11 @@
 #include "chrome/common/chrome_switches.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_commands.h"
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 // Profile type to test. Provided to subclasses of TestProfileTypeMixin via
 // get_profile().
 enum class TestProfileType {
@@ -81,6 +86,19 @@ class TestProfileTypeMixin
     }
     T::SetUpCommandLine(command_line);
   }
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  void SetUpOnMainThread() override {
+    T::SetUpOnMainThread();
+    if (T::browser() == nullptr) {
+      // Create a new Ash browser window so test code using browser() can work
+      // even when Lacros is the only browser.
+      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+      T::SelectFirstBrowser();
+    }
+  }
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   TestProfileType profile_type() const { return GetParam().profile_type; }
 

@@ -18,10 +18,16 @@ WithCrosapiParam::WithCrosapiParam() {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   if (GetParam() == CrosapiParam::kEnabled) {
     scoped_feature_list_.InitWithFeatures(
-        {ash::features::kLacrosSupport, features::kWebAppsCrosapi}, {});
+        {ash::features::kLacrosSupport, ash::features::kLacrosPrimary,
+         ash::features::kLacrosOnly,
+         // Disable profile migration to avoid potential Ash restart.
+         ash::features::kLacrosProfileMigrationForceOff,
+         features::kWebAppsCrosapi},
+        {});
   } else {
     scoped_feature_list_.InitWithFeatures(
-        {}, {features::kWebAppsCrosapi, ash::features::kLacrosPrimary});
+        {}, {features::kWebAppsCrosapi, ash::features::kLacrosSupport,
+             ash::features::kLacrosPrimary, ash::features::kLacrosOnly});
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }

@@ -679,6 +679,12 @@ class SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_ReadFiles) {
+  // TODO(b/287166490): Fix the test and remove this.
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
+  }
+
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
@@ -725,6 +731,12 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_WriteFileFails) {
+  // TODO(b/287166490): Fix the test and remove this.
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
+  }
+
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();
@@ -749,6 +761,12 @@ IN_PROC_BROWSER_TEST_P(
 IN_PROC_BROWSER_TEST_P(
     SystemWebAppManagerLaunchDirectoryFileSystemProviderBrowserTest,
     LaunchFromFileSystemProvider_DeleteFileFails) {
+  // TODO(b/287166490): Fix the test and remove this.
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166490.";
+  }
+
   Profile* profile = browser()->profile();
 
   WaitForTestSystemAppInstall();

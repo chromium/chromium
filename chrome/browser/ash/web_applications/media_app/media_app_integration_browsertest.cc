@@ -211,8 +211,8 @@ class MediaAppIntegrationTest : public ash::SystemWebAppIntegrationTest {
 
 class MediaAppIntegrationWithFilesAppTest : public MediaAppIntegrationTest {
   void SetUpOnMainThread() override {
-    file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
     MediaAppIntegrationTest::SetUpOnMainThread();
+    file_manager::test::AddDefaultComponentExtensionsOnMainThread(profile());
   }
 };
 

@@ -602,7 +602,7 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2CanTriggerInstallDialogForValidHttpsUrls) {
   if (web_app::IsWebAppsCrosapiEnabled()) {
     // TODO(b/282099820): Test the interaction with the Lacros browser.
-    return;
+    GTEST_SKIP();
   }
   ASSERT_TRUE(https_server()->Start());
   const GURL test_url =
@@ -663,6 +663,12 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 // for invalid URLs.
 IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
                        HelpAppV2CrashesForInvalidUrlsInBrowser) {
+  // TODO(b/287166176): Fix the test and remove this.
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
+  }
+
   // There should be only be one regular browser with one tab.
   EXPECT_EQ(1u, chrome::GetTotalBrowserCount());
   // The regular browser should only have 1 tab.

@@ -76,6 +76,7 @@ class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
 
  protected:
   void SetUpOnMainThread() override {
+    ash::SystemWebAppIntegrationTest::SetUpOnMainThread();
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
     content::WebUIConfigMap::GetInstance().RemoveConfig(

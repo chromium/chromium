@@ -64,13 +64,20 @@ void InitCrosapiFeaturesForParam(
   if (crosapi_state == web_app::test::CrosapiParam::kEnabled) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     enabled_features.push_back(features::kWebAppsCrosapi);
+    enabled_features.push_back(ash::features::kLacrosSupport);
+    enabled_features.push_back(ash::features::kLacrosPrimary);
+    enabled_features.push_back(ash::features::kLacrosOnly);
+    // Disable profile migration to avoid potential Ash restart.
+    enabled_features.push_back(ash::features::kLacrosProfileMigrationForceOff);
 #else
     NOTREACHED();
 #endif
   } else {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     disabled_features.push_back(features::kWebAppsCrosapi);
+    disabled_features.push_back(ash::features::kLacrosSupport);
     disabled_features.push_back(ash::features::kLacrosPrimary);
+    disabled_features.push_back(ash::features::kLacrosOnly);
 #endif
   }
   scoped_feature_list->InitWithFeatures(enabled_features, disabled_features);

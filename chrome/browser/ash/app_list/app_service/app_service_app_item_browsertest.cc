@@ -21,7 +21,9 @@
 #include "chrome/browser/ash/app_list/app_service/app_service_app_item.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/web_app_launch_process.h"
 #include "chrome/browser/web_applications/test/with_crosapi_param.h"
 #include "chrome/browser/web_applications/web_app_id.h"
@@ -244,7 +246,18 @@ IN_PROC_BROWSER_TEST_F(AppServiceAppItemBrowserTest,
 
 class AppServiceSystemWebAppItemBrowserTest
     : public AppServiceAppItemBrowserTest,
-      public WithCrosapiParam {};
+      public WithCrosapiParam {
+  void SetUpOnMainThread() override {
+    AppServiceAppItemBrowserTest::SetUpOnMainThread();
+    if (browser() == nullptr) {
+      // Create a new Ash browser window so test code using browser() can work
+      // even when Lacros is the only browser.
+      // TODO(crbug.com/1450158): Remove uses of browser() from such tests.
+      chrome::NewEmptyWindow(ProfileManager::GetActiveUserProfile());
+      SelectFirstBrowser();
+    }
+  }
+};
 
 IN_PROC_BROWSER_TEST_P(AppServiceSystemWebAppItemBrowserTest, Activate) {
   Profile* const profile = browser()->profile();
