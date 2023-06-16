@@ -22,6 +22,10 @@ constexpr int kManagedScreensaverStartupTimeHistogramBuckets = 144;
 constexpr base::StringPiece kManagedScreensaverHistogramPrefix =
     "Enterprise.ManagedScreensaver.";
 
+// This limit is specified in the policy definition for the policies
+// ScreensaverLockScreenImages and DeviceScreensaverLoginScreenImages.
+constexpr size_t kMaxUrlsToProcessFromPolicy = 25u;
+
 }  // namespace
 
 std::string GetManagedScreensaverHistogram(
@@ -32,6 +36,12 @@ std::string GetManagedScreensaverHistogram(
 void RecordManagedScreensaverEnabled(bool enabled) {
   base::UmaHistogramBoolean(
       GetManagedScreensaverHistogram(kManagedScreensaverEnabledUMA), enabled);
+}
+
+ASH_EXPORT void RecordManagedScreensaverImageCount(int image_count) {
+  base::UmaHistogramExactLinear(
+      GetManagedScreensaverHistogram(kManagedScreensaverImageCountUMA),
+      image_count, kMaxUrlsToProcessFromPolicy + 1);
 }
 
 ManagedScreensaverMetricsRecorder::ManagedScreensaverMetricsRecorder() =
@@ -75,4 +85,5 @@ void ManagedScreensaverMetricsRecorder::RecordSessionStartupTime() {
       /*max=*/base::Seconds(1000),
       /*buckets=*/kManagedScreensaverStartupTimeHistogramBuckets);
 }
+
 }  // namespace ash

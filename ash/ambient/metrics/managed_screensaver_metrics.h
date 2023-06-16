@@ -18,11 +18,14 @@ constexpr char kManagedScreensaverEngagementTimeSlideshowUMA[] =
     "EngagementTime.Slideshow";
 constexpr char kManagedScreensaverStartupTimeSlideshowUMA[] =
     "StartupTime.Slideshow";
+constexpr char kManagedScreensaverImageCountUMA[] = "ImageCount";
 
 ASH_EXPORT std::string GetManagedScreensaverHistogram(
     const base::StringPiece& histogram_suffix);
 
 ASH_EXPORT void RecordManagedScreensaverEnabled(bool enabled);
+
+ASH_EXPORT void RecordManagedScreensaverImageCount(int image_count);
 
 class ManagedScreensaverMetricsRecorder {
  public:

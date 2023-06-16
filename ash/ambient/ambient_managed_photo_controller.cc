@@ -7,6 +7,7 @@
 #include <utility>
 #include <vector>
 
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/model/ambient_backend_model.h"
 #include "ash/public/cpp/image_util.h"
 #include "base/check.h"
@@ -47,6 +48,8 @@ void AmbientManagedPhotoController::StartScreenUpdate() {
 
 void AmbientManagedPhotoController::UpdateImageFilePaths(
     const std::vector<base::FilePath>& images) {
+  RecordManagedScreensaverImageCount(images.size());
+
   // Reset `error_state_` when a sufficient number of new images are received
   if (images.size() < kMinImagesRequired) {
     // TODO(b/269579804): Add Metrics

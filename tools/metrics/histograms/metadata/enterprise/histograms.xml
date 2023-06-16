@@ -2207,6 +2207,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagedScreensaver.ImageCount" units="count"
+    expires_after="2024-06-07">
+  <owner>mpetrisor@chromium.org</owner>
+  <owner>imprivata-eng@google.com</owner>
+  <summary>
+    Records the count of images downloaded in cache to display in the managed
+    screensaver. Recorded every time the policy list changes and images are
+    deleted from the cache or downloaded to the cache.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ManagedScreensaver.StartupTime.Slideshow"
     units="ms" expires_after="2024-06-07">
   <owner>mpetrisor@chromium.org</owner>
