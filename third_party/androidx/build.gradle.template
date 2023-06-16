@@ -88,13 +88,13 @@ dependencies {
     compile 'androidx.print:print:{{androidx_dependency_version}}'
 
     String media3Version = '1.0.2'
-    compile 'androidx.media3:media3-common:${media3Version}'
-    compile 'androidx.media3:media3-database:${media3Version}'
-    compile 'androidx.media3:media3-datasource:${media3Version}'
-    compile 'androidx.media3:media3-decoder:${media3Version}'
-    compile 'androidx.media3:media3-exoplayer:${media3Version}'
-    compile 'androidx.media3:media3-extractor:${media3Version}'
-    compile 'androidx.media3:media3-session:${media3Version}'
+    compile "androidx.media3:media3-common:${media3Version}"
+    compile "androidx.media3:media3-database:${media3Version}"
+    compile "androidx.media3:media3-datasource:${media3Version}"
+    compile "androidx.media3:media3-decoder:${media3Version}"
+    compile "androidx.media3:media3-exoplayer:${media3Version}"
+    compile "androidx.media3:media3-extractor:${media3Version}"
+    compile "androidx.media3:media3-session:${media3Version}"
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
