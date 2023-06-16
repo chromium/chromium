@@ -7,9 +7,19 @@
     grid-template-columns: minmax(min-content, 286px) 50%;
   }
 
-  #container:hover accelerator-view:first-of-type::part(edit-icon),
+  #container:hover accelerator-view::part(edit-icon),
   #container:hover .edit-icon-container {
     opacity: 1;
+  }
+
+  #container:focus-within accelerator-view::part(edit-icon),
+  #container:focus .edit-icon-container {
+    opacity: 1;
+  }
+
+  #container:focus {
+    background-color: var(--cros-sys-highlight_shape);
+    outline: none;
   }
 
   accelerator-view,
@@ -63,14 +73,15 @@
   }
 </style>
 
-<tr id="container">
+<tr id="container" tabindex$="[[getTabIndex()]]">
   <th id="descriptionText" scope="row">[[description]]</th>
   <td>
     <template is="dom-if" if="[[isDefaultLayout(layoutStyle)]]">
-      <template is="dom-repeat" items="[[acceleratorInfos]]">
+      <template is="dom-repeat" items="[[acceleratorInfos]]" as="item"
+          index-as="index">
         <accelerator-view class="accelerator-item" accelerator-info="[[item]]"
             action="[[action]]" source="[[source]]" source-is-locked="[[isLocked]]"
-            show-edit-icon="true">
+            show-edit-icon="true" is-first-accelerator="[[isFirstAccelerator(index)]]">
         </accelerator-view>
       </template>
       <div id="noShortcutAssignedContainer" hidden="[[!isEmptyList(acceleratorInfos)]]">

@@ -13,7 +13,7 @@ import {AcceleratorRowElement} from 'chrome://shortcut-customization/js/accelera
 import {fakeAcceleratorConfig, fakeLayoutInfo} from 'chrome://shortcut-customization/js/fake_data.js';
 import {InputKeyElement} from 'chrome://shortcut-customization/js/input_key.js';
 import {stringToMojoString16} from 'chrome://shortcut-customization/js/mojo_utils.js';
-import {AcceleratorSource, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
+import {AcceleratorSource, AcceleratorState, LayoutStyle, Modifier, TextAcceleratorPartType} from 'chrome://shortcut-customization/js/shortcut_types.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
@@ -246,5 +246,45 @@ suite('acceleratorRowTest', function() {
         acceleratorElements[1]!.shadowRoot!.querySelectorAll('input-key');
     // CONTROL + c
     assertEquals(2, keys2.length);
+  });
+
+  test('ElementFocusableWhenCustomizationEnabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: true});
+    rowElement = initAcceleratorRowElement();
+
+    const acceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    acceleratorInfo.state = AcceleratorState.kEnabled;
+
+    rowElement.acceleratorInfos = [acceleratorInfo];
+    rowElement.description = 'test shortcut';
+    rowElement.layoutStyle = LayoutStyle.kDefault;
+    await flush();
+
+    const containerElement =
+        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
+    assertEquals(0, containerElement.tabIndex);
+  });
+
+  test('ElementFocusableWhenCustomizationDisabled', async () => {
+    loadTimeData.overrideValues({isCustomizationEnabled: false});
+    rowElement = initAcceleratorRowElement();
+
+    const acceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    acceleratorInfo.state = AcceleratorState.kEnabled;
+
+    rowElement.acceleratorInfos = [acceleratorInfo];
+    rowElement.description = 'test shortcut';
+    rowElement.layoutStyle = LayoutStyle.kDefault;
+    await flush();
+
+    const containerElement =
+        strictQuery('#container', rowElement.shadowRoot, HTMLTableRowElement);
+    assertEquals(-1, containerElement.tabIndex);
   });
 });

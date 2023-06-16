@@ -114,6 +114,11 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
         type: Boolean,
         value: false,
       },
+
+      /** Only show the edit button in the first row. */
+      isFirstAccelerator: {
+        type: Boolean,
+      },
     };
   }
 
@@ -126,6 +131,7 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   sourceIsLocked: boolean;
   showEditIcon: boolean;
   categoryIsLocked: boolean;
+  isFirstAccelerator: boolean;
   protected pendingAcceleratorInfo: StandardAcceleratorInfo;
   private modifiers: string[];
   private isCapturing: boolean;
@@ -476,20 +482,12 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     }
     // Show edit icon if accelerator is not locked.
     return !(this.acceleratorInfo && this.acceleratorInfo.locked) &&
-        !this.sourceIsLocked;
+        !this.sourceIsLocked && this.isFirstAccelerator;
   }
 
   private onEditIconClicked(): void {
     this.dispatchEvent(
         new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
-  }
-
-  /**
-   * Determines whether accelerator items should be tab-focusable.
-   */
-  private getTabIndex(): number {
-    // If customization is disabled, this element should not be tab-focusable.
-    return isCustomizationDisabled() ? -1 : 0;
   }
 
   static get template(): HTMLTemplateElement {

@@ -27,7 +27,7 @@
 
 </style>
 
-<div id="container" class="flex-row" tabindex$="[[getTabIndex()]]">
+<div id="container" class="flex-row" tabindex="-1">
   <template is="dom-if" if="[[!showEditView(viewState)]]">
     <div id="accelerator-keys">
       <template is="dom-repeat" items="[[modifiers]]">

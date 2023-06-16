@@ -156,42 +156,6 @@ suite('acceleratorViewTest', function() {
     assertEquals('e', pendingKey.key);
   });
 
-  test('ElementFocusableWhenCustomizationEnabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: true});
-    viewElement = initAcceleratorViewElement();
-    await flushTasks();
-
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
-
-    await flushTasks();
-    const containerElement =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    assertEquals(0, containerElement.tabIndex);
-  });
-
-  test('ElementNotFocusableWhenCustomizationDisabled', async () => {
-    loadTimeData.overrideValues({isCustomizationEnabled: false});
-    viewElement = initAcceleratorViewElement();
-    await flushTasks();
-
-    const acceleratorInfo = createStandardAcceleratorInfo(
-        Modifier.CONTROL | Modifier.SHIFT,
-        /*key=*/ 71,
-        /*keyDisplay=*/ 'g');
-
-    viewElement.acceleratorInfo = acceleratorInfo;
-
-    await flushTasks();
-    const containerElement =
-        viewElement.shadowRoot!.querySelector('#container') as HTMLDivElement;
-    assertEquals(-1, containerElement.tabIndex);
-  });
-
   test('EditWithFunctionKeyAsOnlyKey', async () => {
     viewElement = initAcceleratorViewElement();
     await flushTasks();
@@ -316,30 +280,35 @@ suite('acceleratorViewTest', function() {
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: true,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: true,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
       {
         customizationEnabled: true,
         locked: false,
         sourceIsLocked: true,
         isAcceleratorRow: true,
+        isFirstAccelerator: false,
       },
       {
         customizationEnabled: false,
         locked: false,
         sourceIsLocked: false,
         isAcceleratorRow: false,
+        isFirstAccelerator: true,
       },
     ];
 
@@ -358,7 +327,8 @@ suite('acceleratorViewTest', function() {
         // replicate shouldShowLockIcon() logic.
         const expectEditIconVisible = scenario.customizationEnabled &&
             scenario.isAcceleratorRow && !categoryIsLocked &&
-            !scenario.locked && !scenario.sourceIsLocked;
+            !scenario.locked && !scenario.sourceIsLocked &&
+            scenario.isFirstAccelerator;
         testCases.push({
           ...scenario,
           layoutInfo: layoutInfo,
@@ -375,6 +345,7 @@ suite('acceleratorViewTest', function() {
       viewElement.action = testCase.layoutInfo.action;
       viewElement.categoryIsLocked = testCase.categoryIsLocked;
       viewElement.showEditIcon = testCase.isAcceleratorRow;
+      viewElement.isFirstAccelerator = testCase.isFirstAccelerator;
       const acceleratorInfo = createStandardAcceleratorInfo(
           Modifier.CONTROL | Modifier.SHIFT,
           /*key=*/ 71,

@@ -142,9 +142,19 @@ export class AcceleratorRowElement extends AcceleratorRowElementBase {
     return infos.length === 0;
   }
 
+  // Returns true if it is the first accelerator in the list.
+  protected isFirstAccelerator(index: number): boolean {
+    return index === 0;
+  }
+
   private onEditIconClicked(): void {
     this.dispatchEvent(
         new CustomEvent('edit-icon-clicked', {bubbles: true, composed: true}));
+  }
+
+  protected getTabIndex(): number {
+    // If customization is disabled, this element should not be tab-focusable.
+    return isCustomizationDisabled() ? -1 : 0;
   }
 
   static get template(): HTMLTemplateElement {
