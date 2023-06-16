@@ -1,5 +1,0 @@
-This test verifies that an editable element in one frame retains an inactive selection after you've made a selection in another frame.
-
-PASS: inactive selection retained.
-
-
