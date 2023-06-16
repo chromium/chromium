@@ -5,14 +5,16 @@
 #include "chrome/browser/ui/cocoa/first_run_dialog_controller.h"
 
 #include "base/i18n/rtl.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
-#include "chrome/browser/ui/cocoa/key_equivalent_constants.h"
 #include "chrome/grit/chromium_strings.h"
 #include "chrome/grit/generated_resources.h"
 #import "third_party/google_toolbox_for_mac/src/AppKit/GTMUILocalizerAndLayoutTweaker.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/l10n/l10n_util_mac.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -77,12 +79,8 @@ void CenterVertically(NSView* view) {
 }  // namespace
 
 @implementation FirstRunDialogViewController {
-  // These are owned by the NSView hierarchy:
-  NSButton* _defaultBrowserCheckbox;
-  NSButton* _statsCheckbox;
-
-  // This is owned by NSViewController:
-  NSView* _view;
+  NSButton* __strong _defaultBrowserCheckbox;
+  NSButton* __strong _statsCheckbox;
 
   BOOL _statsCheckboxInitiallyChecked;
 }
@@ -97,8 +95,8 @@ void CenterVertically(NSView* view) {
 - (void)loadView {
   const int kDialogWidth = 480;
 
-  NSBox* topBox = [[[NSBox alloc]
-      initWithFrame:NSMakeRect(0, 137, kDialogWidth, 52)] autorelease];
+  NSBox* topBox =
+      [[NSBox alloc] initWithFrame:NSMakeRect(0, 137, kDialogWidth, 52)];
   topBox.boxType = NSBoxCustom;
   topBox.contentViewMargins = NSZeroSize;
   topBox.fillColor = NSColor.controlColor;
@@ -137,22 +135,21 @@ void CenterVertically(NSView* view) {
                          target:self
                          action:@selector(ok:)];
   [startChromeButton setFrame:NSMakeRect(161, 12, 306, 32)];
-  [startChromeButton setKeyEquivalent:kKeyEquivalentReturn];
+  [startChromeButton setKeyEquivalent:@"\r"];
 
-  NSBox* topSeparator = [[[NSBox alloc]
-      initWithFrame:NSMakeRect(0, 136, kDialogWidth, 1)] autorelease];
+  NSBox* topSeparator =
+      [[NSBox alloc] initWithFrame:NSMakeRect(0, 136, kDialogWidth, 1)];
   [topSeparator setBoxType:NSBoxSeparator];
 
-  NSBox* bottomSeparator = [[[NSBox alloc]
-      initWithFrame:NSMakeRect(0, 55, kDialogWidth, 5)] autorelease];
+  NSBox* bottomSeparator =
+      [[NSBox alloc] initWithFrame:NSMakeRect(0, 55, kDialogWidth, 5)];
   [bottomSeparator setBoxType:NSBoxSeparator];
 
   [topBox addSubview:completionLabel];
   CenterVertically(completionLabel);
 
-  base::scoped_nsobject<NSView> content_view(
-      [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kDialogWidth, 190)]);
-  self.view = content_view.get();
+  self.view =
+      [[NSView alloc] initWithFrame:NSMakeRect(0, 0, kDialogWidth, 190)];
   [self.view addSubview:topBox];
   [self.view addSubview:topSeparator];
   [self.view addSubview:_defaultBrowserCheckbox];
@@ -178,9 +175,9 @@ void CenterVertically(NSView* view) {
           delta);
       NSRect frame = [self.view frame];
       frame.size.height += delta;
-      [self.view setAutoresizesSubviews:NO];
-      [self.view setFrame:frame];
-      [self.view setAutoresizesSubviews:YES];
+      self.view.autoresizesSubviews = NO;
+      self.view.frame = frame;
+      self.view.autoresizesSubviews = YES;
     }
   }
 
@@ -210,7 +207,7 @@ void CenterVertically(NSView* view) {
 }
 
 - (void)ok:(id)sender {
-  [[[self view] window] close];
+  [self.view.window close];
   [NSApp stopModal];
 }
 

@@ -8,7 +8,6 @@
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
 #include "base/functional/bind.h"
-#import "base/mac/scoped_nsobject.h"
 #include "base/memory/ref_counted.h"
 #include "base/run_loop.h"
 #include "base/strings/sys_string_conversions.h"
@@ -27,6 +26,10 @@
 #include "content/public/common/content_switches.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "url/gurl.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @interface FirstRunDialogController (PrivateMethods)
 // Show the dialog.
@@ -63,20 +66,19 @@ void FirstRunShowBridge::ShowDialog(base::OnceClosure quit_closure) {
 FirstRunShowBridge::~FirstRunShowBridge() = default;
 
 void ShowFirstRunModal() {
-  base::scoped_nsobject<FirstRunDialogController> dialog(
-      [[FirstRunDialogController alloc] init]);
+  FirstRunDialogController* dialog = [[FirstRunDialogController alloc] init];
 
-  [dialog.get() showWindow:nil];
+  [dialog showWindow:nil];
 
   // If the dialog asked the user to opt-in for stats and crash reporting,
   // record the decision and enable the crash reporter if appropriate.
-  bool consent_given = [dialog.get() isStatsReportingEnabled];
+  bool consent_given = [dialog isStatsReportingEnabled];
   ChangeMetricsReportingState(consent_given);
 
   // If selected, set as default browser. Skip in automated tests so that an OS
   // dialog confirming the default browser choice isn't left on screen.
   BOOL make_default_browser =
-      [dialog.get() isMakeDefaultBrowserEnabled] &&
+      [dialog isMakeDefaultBrowserEnabled] &&
       !base::CommandLine::ForCurrentProcess()->HasSwitch(switches::kTestType);
   if (make_default_browser) {
     bool success = shell_integration::SetAsDefaultBrowser();
@@ -102,31 +104,27 @@ void ShowFirstRunDialogCocoa() {
 }  // namespace first_run
 
 @implementation FirstRunDialogController {
-  base::scoped_nsobject<FirstRunDialogViewController> _viewController;
+  FirstRunDialogViewController* __strong _viewController;
 }
 
 - (instancetype)init {
-  _viewController.reset([[FirstRunDialogViewController alloc]
-      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()]);
+  _viewController = [[FirstRunDialogViewController alloc]
+      initWithStatsCheckboxInitiallyChecked:StatsCheckboxDefault()];
 
   // Create the content view controller (and the content view) *before* the
   // window, so that we can find out what the content view's frame is supposed
   // to be for use here.
-  base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
-      initWithContentRect:[[_viewController view] frame]
-                styleMask:NSWindowStyleMaskTitled
-                  backing:NSBackingStoreBuffered
-                    defer:YES]);
-  [window setContentView:[_viewController view]];
-  [window setTitle:[_viewController windowTitle]];
+  NSWindow* window =
+      [[NSWindow alloc] initWithContentRect:_viewController.view.frame
+                                  styleMask:NSWindowStyleMaskTitled
+                                    backing:NSBackingStoreBuffered
+                                      defer:YES];
+  window.contentView = _viewController.view;
+  window.title = [_viewController windowTitle];
 
-  self = [super initWithWindow:window.get()];
+  self = [super initWithWindow:window];
 
   return self;
-}
-
-- (void)dealloc {
-  [super dealloc];
 }
 
 - (IBAction)showWindow:(id)sender {
