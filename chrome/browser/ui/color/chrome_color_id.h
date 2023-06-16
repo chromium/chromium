@@ -389,6 +389,11 @@
   E_CPONLY(kColorSidePanelFilterChipIconSelected) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundHover) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
+  E_CPONLY(kColorSidePanelMenuBackground) \
+  E_CPONLY(kColorSidePanelMenuDisabled) \
+  E_CPONLY(kColorSidePanelMenuDivider) \
+  E_CPONLY(kColorSidePanelMenuForeground) \
+  E_CPONLY(kColorSidePanelMenuIcon) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
   /* Status bubble colors. */ \
