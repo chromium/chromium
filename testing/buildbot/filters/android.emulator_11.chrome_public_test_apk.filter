@@ -5,14 +5,6 @@
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testClearPendingOMADownloads
 -org.chromium.chrome.browser.download.OMADownloadHandlerTest.testQueryDownloadResult
 
-# crbug.com/1193814
--org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpGetDownload__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testHttpPostDownload__UseDownloadOfflineContentProviderEnabled
--org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderDisabled
--org.chromium.chrome.browser.download.DownloadTest.testUrlEscaping__UseDownloadOfflineContentProviderEnabled
-
 # crbug.com/1036571
 -org.chromium.chrome.browser.shape_detection.ShapeDetectionTest.testTextDetection
 
@@ -21,12 +13,6 @@
 
 # crbug.com/1040088
 -org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
-
-# crbug.com/1059046
--org.chromium.chrome.browser.customtabs.CustomTabFromChromeExternalNavigationTest.testIntentWithRedirectToApp
-
-# crbug.com/1060724
--org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorWhenTemporarilyPaused
 
 # crbug.com/1061178
 -org.chromium.chrome.browser.tasks.tab_management.TabGridDialogTest.testSwipeToDismiss_Dialog
@@ -48,12 +34,6 @@
 # crbug.com/1225754
 -org.chromium.chrome.browser.offlinepages.OfflinePageBridgeTest.testGetLoadUrlParamsForOpeningMhtmlFileUrl
 
-# crbug.com/1231219
--org.chromium.chrome.browser.bookmarks.BookmarkTest.testMoveDownMenuItem
--org.chromium.chrome.browser.bookmarks.BookmarkTest.testReadingListDeletion
--org.chromium.chrome.browser.bookmarks.BookmarkTest.testSearchReadingList_Deletion
--org.chromium.chrome.browser.bookmarks.BookmarkTest.testShowInFolder_*
-
 # crbug.com/1231227
 -org.chromium.chrome.browser.webapps.WebappDisplayModeTest.*
 
@@ -71,7 +51,6 @@
 -org.chromium.chrome.browser.dom_distiller.ReaderModeTest.testReaderModeInCCT_Downloaded
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testMhtmlLoadResultFromRendererWithNamespace
 -org.chromium.chrome.browser.offlinepages.OfflinePageUtilsTest.testSharePublicOfflinePage
--org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorOnOfflinePageWhenOffline
 
 # crbug.com/1287572
 -org.chromium.chrome.browser.webapps.WebappLaunchCauseMetricsTest.testHomescreenLaunch

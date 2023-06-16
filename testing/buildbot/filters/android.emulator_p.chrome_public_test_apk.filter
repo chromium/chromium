@@ -20,12 +20,6 @@
 # crbug.com/1040088
 -org.chromium.chrome.browser.payments.PaymentRequestRetryTest.testRetryWithShippingAddressErrorsAndPayerErrors
 
-# crbug.com/1059046
--org.chromium.chrome.browser.customtabs.CustomTabFromChromeExternalNavigationTest.testIntentWithRedirectToApp
-
-# crbug.com/1060724
--org.chromium.chrome.browser.offlinepages.indicator.OfflineIndicatorControllerTest.testDoNotShowOfflineIndicatorWhenTemporarilyPaused
-
 # crbug.com/1061158
 -org.chromium.chrome.browser.TabsOpenedFromExternalAppTest.testLaunchWebLiteURLNoPreviews
 
