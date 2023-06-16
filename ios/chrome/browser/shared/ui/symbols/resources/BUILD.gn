@@ -287,3 +287,10 @@ symbolset("tuner") {
     "tuner.symbolset/tuner.cr.svg",
   ]
 }
+
+symbolset("folder_badge_arrow_forward") {
+  sources = [
+    "folder_badge_arrow_forward.symbolset/Contents.json",
+    "folder_badge_arrow_forward.symbolset/folder.badge.arrow.forward.cr.svg",
+  ]
+}

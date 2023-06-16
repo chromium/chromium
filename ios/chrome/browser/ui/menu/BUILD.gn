@@ -15,7 +15,6 @@ source_set("menu") {
   ]
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
-    "resources:move_folder",
     "//base",
     "//components/open_from_clipboard",
     "//components/prefs",
@@ -57,7 +56,6 @@ source_set("unit_tests") {
   ]
   deps = [
     ":menu",
-    "resources:move_folder",
     "//base",
     "//base/test:test_support",
     "//components/policy/core/common:common_constants",

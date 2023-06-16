@@ -47,6 +47,7 @@ NSString* const kCloudAndArrowUpSymbol = @"cloud_and_arrow_up";
 NSString* const kDinoSymbol = @"dino";
 NSString* const kChromeProductSymbol = @"chrome_product";
 NSString* const kTunerSymbol = @"tuner";
+NSString* const kMoveFolderSymbol = @"folder_badge_arrow_forward";
 
 // Custom symbol names which can be configured with a color palette.
 NSString* const kIncognitoCircleFillSymbol = @"incognito_circle_fill";

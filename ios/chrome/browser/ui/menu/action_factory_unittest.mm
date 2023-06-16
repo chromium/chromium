@@ -255,7 +255,8 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   ActionFactory* factory =
       [[ActionFactory alloc] initWithScenario:kTestMenuScenario];
 
-  UIImage* expectedImage = [UIImage imageNamed:@"move_folder"];
+  UIImage* expectedImage = MakeSymbolMulticolor(
+      CustomSymbolWithPointSize(kMoveFolderSymbol, kSymbolActionPointSize));
 
   NSString* expectedTitle =
       l10n_util::GetNSString(IDS_IOS_BOOKMARK_CONTEXT_MENU_MOVE);
@@ -264,7 +265,7 @@ TEST_F(ActionFactoryTest, MoveFolderAction) {
   }];
 
   EXPECT_TRUE([expectedTitle isEqualToString:action.title]);
-  EXPECT_EQ(expectedImage, action.image);
+  EXPECT_NSEQ(expectedImage, action.image);
 }
 
 // Tests that the Mark As Read action has the right title and image.

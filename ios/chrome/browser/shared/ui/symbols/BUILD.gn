@@ -66,6 +66,7 @@ source_set("symbols") {
     "//ios/chrome/browser/shared/ui/symbols/resources:cloud_and_arrow_up",
     "//ios/chrome/browser/shared/ui/symbols/resources:cloud_slash",
     "//ios/chrome/browser/shared/ui/symbols/resources:dino",
+    "//ios/chrome/browser/shared/ui/symbols/resources:folder_badge_arrow_forward",
     "//ios/chrome/browser/shared/ui/symbols/resources:incognito",
     "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill",
     "//ios/chrome/browser/shared/ui/symbols/resources:incognito_circle_fill_ios14",
