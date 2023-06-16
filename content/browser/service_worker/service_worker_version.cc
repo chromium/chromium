@@ -438,12 +438,17 @@ void ServiceWorkerVersion::RegisterStatusChangeCallback(
 
 ServiceWorkerVersionInfo ServiceWorkerVersion::GetInfo() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  absl::optional<std::string> router_rules;
+  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter) &&
+      router_evaluator_) {
+    router_rules = router_evaluator_->ToString();
+  }
   ServiceWorkerVersionInfo info(
       running_status(), status(), fetch_handler_type_, script_url(), scope(),
       key(), registration_id(), version_id(), embedded_worker()->process_id(),
       embedded_worker()->thread_id(),
       embedded_worker()->worker_devtools_agent_route_id(), ukm_source_id(),
-      ancestor_frame_type_);
+      ancestor_frame_type_, router_rules);
   for (const auto& controllee : controllee_map_) {
     ServiceWorkerContainerHost* container_host = controllee.second.get();
     info.clients.emplace(container_host->client_uuid(),

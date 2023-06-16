@@ -4,6 +4,7 @@
 
 #include "content/common/service_worker/service_worker_router_evaluator.h"
 
+#include "base/json/json_writer.h"
 #include "base/metrics/histogram_functions.h"
 #include "third_party/liburlpattern/options.h"
 #include "third_party/liburlpattern/pattern.h"
@@ -164,6 +165,12 @@ base::Value ServiceWorkerRouterEvaluator::ToValue() const {
     out.Append(std::move(rule));
   }
   return base::Value(std::move(out));
+}
+
+std::string ServiceWorkerRouterEvaluator::ToString() const {
+  std::string json;
+  base::JSONWriter::Write(ToValue(), &json);
+  return json;
 }
 
 }  // namespace content

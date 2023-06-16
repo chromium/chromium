@@ -46,7 +46,8 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
       int thread_id,
       int devtools_agent_route_id,
       ukm::SourceId ukm_source_id,
-      blink::mojom::AncestorFrameType ancestor_frame_type);
+      blink::mojom::AncestorFrameType ancestor_frame_type,
+      absl::optional<std::string> router_rules);
   ServiceWorkerVersionInfo(const ServiceWorkerVersionInfo& other);
   ~ServiceWorkerVersionInfo() override;
 
@@ -58,6 +59,7 @@ struct CONTENT_EXPORT ServiceWorkerVersionInfo
   int thread_id;
   int devtools_agent_route_id;
   ukm::SourceId ukm_source_id = ukm::kInvalidSourceId;
+  absl::optional<std::string> router_rules;
   base::Time script_response_time;
   base::Time script_last_modified;
   std::map<std::string, ServiceWorkerClientInfo> clients;
