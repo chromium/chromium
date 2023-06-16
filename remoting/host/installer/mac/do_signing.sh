@@ -226,15 +226,11 @@ notarize() {
   local user="${3}"
 
   echo "Notarizing and stapling .dmg..."
-  if [[ -n "${NOTARIZATION_TOOL}" ]]; then
-    "${NOTARIZATION_TOOL}" --file "${dmg}"
-  else
-    "${input_dir}/notarize_thing.py" \
-        --notary-user "${user}" \
-        --notary-password @env:NOTARIZATION_PASSWORD \
-        --bundle-id "${HOST_BUNDLE_NAME}" \
-        "${dmg}"
-  fi
+  "${input_dir}/notarize_thing.py" \
+      --notary-user "${user}" \
+      --notary-password @env:NOTARIZATION_PASSWORD \
+      --bundle-id "${HOST_BUNDLE_NAME}" \
+      "${dmg}"
 }
 
 cleanup() {
