@@ -8,6 +8,7 @@
 #include "base/feature_list.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 
 namespace trusted_vault {
 
@@ -28,6 +29,11 @@ inline constexpr base::FeatureParam<base::TimeDelta>
 // trusted vault server, in order to verify that the local notion of the device
 // being registered is consistent with the server-side state.
 BASE_DECLARE_FEATURE(kSyncTrustedVaultVerifyDeviceRegistration);
+
+#if !BUILDFLAG(IS_ANDROID)
+// Enables the chrome.setClientEncryptionKeys() JS API.
+BASE_DECLARE_FEATURE(kSetClientEncryptionKeysJsApi);
+#endif
 
 }  // namespace trusted_vault
 

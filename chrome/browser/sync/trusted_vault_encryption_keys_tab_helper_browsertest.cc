@@ -18,8 +18,8 @@
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/signin/public/identity_manager/account_info.h"
-#include "components/sync/base/features.h"
 #include "components/sync/service/sync_service_impl.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_client.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -173,7 +173,8 @@ class TrustedVaultEncryptionKeysTabHelperBrowserTest
                kPartialSiteIsolationMemoryThresholdParamName,
            "0" }});
 #else
-    feature_list_.InitAndEnableFeature(syncer::kSetClientEncryptionKeysJsApi);
+    feature_list_.InitAndEnableFeature(
+        trusted_vault::kSetClientEncryptionKeysJsApi);
 #endif  // BUILDFLAG(IS_ANDROID)
   }
 

@@ -14,7 +14,7 @@
 #include "build/buildflag.h"
 #include "chrome/common/trusted_vault_encryption_keys_extension.mojom.h"
 #include "chrome/renderer/google_accounts_private_api_util.h"
-#include "components/sync/base/features.h"
+#include "components/trusted_vault/features.h"
 #include "components/trusted_vault/trusted_vault_server_constants.h"
 #include "content/public/common/isolated_world_ids.h"
 #include "content/public/renderer/chrome_object_extensions_utils.h"
@@ -219,7 +219,8 @@ void TrustedVaultEncryptionKeysExtension::Install() {
                 .ToLocalChecked())
       .Check();
 
-  if (base::FeatureList::IsEnabled(syncer::kSetClientEncryptionKeysJsApi)) {
+  if (base::FeatureList::IsEnabled(
+          trusted_vault::kSetClientEncryptionKeysJsApi)) {
     chrome
         ->Set(context, gin::StringToSymbol(isolate, "setClientEncryptionKeys"),
               gin::CreateFunctionTemplate(
