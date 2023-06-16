@@ -151,6 +151,9 @@ TEST_F(AutocompleteScoringModelHandlerTest,
           SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_SECS,
       /*transformation=*/optimization_guide::proto::
           SCORING_SIGNAL_TRANSFORMATION_LOG_2);
+  *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
+      optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_DAYS);
   // Invalid signal.
   *model_metadata.add_scoring_signal_specs() = CreateScoringSignalSpec(
       optimization_guide::proto::
@@ -161,12 +164,16 @@ TEST_F(AutocompleteScoringModelHandlerTest,
   // Scoring signals.
   ScoringSignals scoring_signals;
   scoring_signals.set_length_of_url(10);
-  scoring_signals.set_elapsed_time_last_visit_secs(511);
+  scoring_signals.set_elapsed_time_last_visit_secs(32767);
   scoring_signals.set_elapsed_time_last_shortcut_visit_sec(-200);
 
   const auto input_signals = model_handler_->ExtractInputFromScoringSignals(
       scoring_signals, model_metadata);
-  EXPECT_THAT(input_signals, testing::UnorderedElementsAre(10, 9, -2));
+  ASSERT_EQ(input_signals.size(), 4u);
+  EXPECT_THAT(input_signals[0], 10);
+  EXPECT_THAT(input_signals[1], 15);
+  EXPECT_NEAR(input_signals[2], 0.3792, 0.0001);
+  EXPECT_THAT(input_signals[3], -2);
 }
 
 TEST_F(AutocompleteScoringModelHandlerTest, GetBatchModelInputTest) {

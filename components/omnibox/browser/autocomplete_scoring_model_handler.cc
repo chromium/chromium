@@ -26,6 +26,7 @@ using ::optimization_guide::proto::ScoringSignalSpec;
 using ::optimization_guide::proto::ScoringSignalTransformation;
 
 constexpr float kDefaultMissingValue = -1;
+constexpr float kSecondsInDay = 86400;
 
 namespace {
 
@@ -127,6 +128,14 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
         if (scoring_signals.has_elapsed_time_last_visit_secs()) {
           val = static_cast<float>(
               scoring_signals.elapsed_time_last_visit_secs());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_VISIT_DAYS:
+        if (scoring_signals.has_elapsed_time_last_visit_secs()) {
+          val = static_cast<float>(
+                    scoring_signals.elapsed_time_last_visit_secs()) /
+                kSecondsInDay;
         }
         break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_IS_HOST_ONLY:
@@ -244,6 +253,14 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
         if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
           val = static_cast<float>(
               scoring_signals.elapsed_time_last_shortcut_visit_sec());
+        }
+        break;
+      case optimization_guide::proto::
+          SCORING_SIGNAL_TYPE_ELAPSED_TIME_LAST_SHORTCUT_VISIT_DAYS:
+        if (scoring_signals.has_elapsed_time_last_shortcut_visit_sec()) {
+          val = static_cast<float>(
+                    scoring_signals.elapsed_time_last_shortcut_visit_sec()) /
+                kSecondsInDay;
         }
         break;
       case optimization_guide::proto::SCORING_SIGNAL_TYPE_UNKNOWN:
