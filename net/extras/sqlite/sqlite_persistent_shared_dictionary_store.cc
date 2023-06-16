@@ -11,7 +11,7 @@
 #include "base/pickle.h"
 #include "base/task/sequenced_task_runner.h"
 #include "net/base/network_isolation_key.h"
-#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/extras/sqlite/sqlite_persistent_store_backend_base.h"
 #include "sql/database.h"
 #include "sql/statement.h"
@@ -242,12 +242,12 @@ class SQLitePersistentSharedDictionaryStore::Backend
   base::expected<uint64_t, Error> GetTotalDictionarySizeImpl();
 
   RegisterDictionaryResultOrError RegisterDictionaryImpl(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       const SharedDictionaryInfo& dictionary_info,
       uint64_t max_size_per_site,
       uint64_t max_count_per_site);
   DictionaryListOrError GetDictionariesImpl(
-      const SharedDictionaryStorageIsolationKey& isolation_key);
+      const SharedDictionaryIsolationKey& isolation_key);
   DictionaryMapOrError GetAllDictionariesImpl();
   Error ClearAllDictionariesImpl();
   UnguessableTokenSetOrError ClearDictionariesImpl(
@@ -267,7 +267,7 @@ class SQLitePersistentSharedDictionaryStore::Backend
   // 'disk_cache_key_out' with the dictionary's respective values and returns
   // true. Otherwise returns false.
   bool GetExistingDictionarySizeAndDiskCacheKeyToken(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       const url::SchemeHostPort& host,
       const std::string& match,
       int64_t* size_out,
@@ -443,7 +443,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionarySizeImpl() {
 
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResultOrError
 SQLitePersistentSharedDictionaryStore::Backend::RegisterDictionaryImpl(
-    const SharedDictionaryStorageIsolationKey& isolation_key,
+    const SharedDictionaryIsolationKey& isolation_key,
     const SharedDictionaryInfo& dictionary_info,
     uint64_t max_size_per_site,
     uint64_t max_count_per_site) {
@@ -730,7 +730,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetDictionarySizePerSite(
 
 SQLitePersistentSharedDictionaryStore::DictionaryListOrError
 SQLitePersistentSharedDictionaryStore::Backend::GetDictionariesImpl(
-    const SharedDictionaryStorageIsolationKey& isolation_key) {
+    const SharedDictionaryIsolationKey& isolation_key) {
   CHECK(background_task_runner()->RunsTasksInCurrentSequence());
   std::vector<SharedDictionaryInfo> result;
 
@@ -824,8 +824,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     return base::unexpected(Error::kInvalidSql);
   }
 
-  std::map<SharedDictionaryStorageIsolationKey,
-           std::vector<SharedDictionaryInfo>>
+  std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>
       result;
   sql::Statement statement(db()->GetCachedStatement(SQL_FROM_HERE, kQuery));
 
@@ -859,7 +858,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetAllDictionariesImpl() {
     net::SchemefulSite top_frame_site =
         net::SchemefulSite(GURL(top_frame_site_string));
 
-    result[SharedDictionaryStorageIsolationKey(frame_origin, top_frame_site)]
+    result[SharedDictionaryIsolationKey(frame_origin, top_frame_site)]
         .emplace_back(GURL(url_string), response_time,
                       expiration_time - response_time, match, last_used_time,
                       size, *sha256_hash, *disk_cache_key_token,
@@ -1416,7 +1415,7 @@ SQLitePersistentSharedDictionaryStore::Backend::GetTotalDictionaryCount() {
 
 bool SQLitePersistentSharedDictionaryStore::Backend::
     GetExistingDictionarySizeAndDiskCacheKeyToken(
-        const SharedDictionaryStorageIsolationKey& isolation_key,
+        const SharedDictionaryIsolationKey& isolation_key,
         const url::SchemeHostPort& host,
         const std::string& match,
         int64_t* size_out,
@@ -1499,7 +1498,7 @@ void SQLitePersistentSharedDictionaryStore::GetTotalDictionarySize(
 }
 
 void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
-    const SharedDictionaryStorageIsolationKey& isolation_key,
+    const SharedDictionaryIsolationKey& isolation_key,
     SharedDictionaryInfo dictionary_info,
     const uint64_t max_size_per_site,
     const uint64_t max_count_per_site,
@@ -1512,7 +1511,7 @@ void SQLitePersistentSharedDictionaryStore::RegisterDictionary(
 }
 
 void SQLitePersistentSharedDictionaryStore::GetDictionaries(
-    const SharedDictionaryStorageIsolationKey& isolation_key,
+    const SharedDictionaryIsolationKey& isolation_key,
     base::OnceCallback<void(DictionaryListOrError)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   backend_->GetDictionaries(

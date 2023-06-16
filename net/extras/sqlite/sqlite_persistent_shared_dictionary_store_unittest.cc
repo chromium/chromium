@@ -18,7 +18,7 @@
 #include "build/build_config.h"
 #include "net/base/schemeful_site.h"
 #include "net/extras/shared_dictionary/shared_dictionary_info.h"
-#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/test/test_with_task_environment.h"
 #include "sql/database.h"
 #include "sql/meta_table.h"
@@ -43,7 +43,7 @@ const base::FilePath::CharType kSharedDictionaryStoreFilename[] =
 
 SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
 RegisterDictionaryImpl(SQLitePersistentSharedDictionaryStore* store,
-                       const SharedDictionaryStorageIsolationKey& isolation_key,
+                       const SharedDictionaryIsolationKey& isolation_key,
                        SharedDictionaryInfo dictionary_info,
                        uint64_t max_size_per_site = 1000000,
                        uint64_t max_count_per_site = 1000) {
@@ -77,7 +77,7 @@ std::tuple<SharedDictionaryInfo,
            SharedDictionaryInfo>
 RegisterSharedDictionariesForProcessEvictionTest(
     SQLitePersistentSharedDictionaryStore* store,
-    const SharedDictionaryStorageIsolationKey& isolation_key) {
+    const SharedDictionaryIsolationKey& isolation_key) {
   const base::Time now = base::Time::Now();
   auto token1 = base::UnguessableToken::Create();
   SharedDictionaryInfo dict1 =
@@ -141,10 +141,10 @@ RegisterSharedDictionariesForProcessEvictionTest(
 
 }  // namespace
 
-SharedDictionaryStorageIsolationKey CreateIsolationKey(
+SharedDictionaryIsolationKey CreateIsolationKey(
     const std::string& frame_origin_str,
     const absl::optional<std::string>& top_frame_site_str = absl::nullopt) {
-  return SharedDictionaryStorageIsolationKey(
+  return SharedDictionaryIsolationKey(
       url::Origin::Create(GURL(frame_origin_str)),
       top_frame_site_str ? net::SchemefulSite(GURL(*top_frame_site_str))
                          : net::SchemefulSite(GURL(frame_origin_str)));
@@ -209,14 +209,14 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   }
 
   SQLitePersistentSharedDictionaryStore::RegisterDictionaryResult
-  RegisterDictionary(const SharedDictionaryStorageIsolationKey& isolation_key,
+  RegisterDictionary(const SharedDictionaryIsolationKey& isolation_key,
                      SharedDictionaryInfo dictionary_info) {
     return RegisterDictionaryImpl(store_.get(), isolation_key,
                                   std::move(dictionary_info));
   }
 
   std::vector<SharedDictionaryInfo> GetDictionaries(
-      const SharedDictionaryStorageIsolationKey& isolation_key) {
+      const SharedDictionaryIsolationKey& isolation_key) {
     std::vector<SharedDictionaryInfo> result_dictionaries;
     base::RunLoop run_loop;
     store_->GetDictionaries(
@@ -232,11 +232,9 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
     return result_dictionaries;
   }
 
-  std::map<SharedDictionaryStorageIsolationKey,
-           std::vector<SharedDictionaryInfo>>
+  std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>
   GetAllDictionaries() {
-    std::map<SharedDictionaryStorageIsolationKey,
-             std::vector<SharedDictionaryInfo>>
+    std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>
         result_all_dictionaries;
     base::RunLoop run_loop;
     store_->GetAllDictionaries(base::BindLambdaForTesting(
@@ -387,9 +385,9 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   }
 
   void RunMultipleDictionariesTest(
-      const SharedDictionaryStorageIsolationKey isolation_key1,
+      const SharedDictionaryIsolationKey isolation_key1,
       const SharedDictionaryInfo dictionary_info1,
-      const SharedDictionaryStorageIsolationKey isolation_key2,
+      const SharedDictionaryIsolationKey isolation_key2,
       const SharedDictionaryInfo dictionary_info2,
       bool expect_merged);
 
@@ -423,7 +421,7 @@ class SQLitePersistentSharedDictionaryStoreTest : public ::testing::Test,
   // file permission correctly.
   std::unique_ptr<base::FilePermissionRestorer> file_permissions_restorer_;
 
-  const SharedDictionaryStorageIsolationKey isolation_key_;
+  const SharedDictionaryIsolationKey isolation_key_;
   const SharedDictionaryInfo dictionary_info_;
 };
 
@@ -457,9 +455,9 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest, SingleDictionary) {
 }
 
 void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
-    const SharedDictionaryStorageIsolationKey isolation_key1,
+    const SharedDictionaryIsolationKey isolation_key1,
     const SharedDictionaryInfo dictionary_info1,
-    const SharedDictionaryStorageIsolationKey isolation_key2,
+    const SharedDictionaryIsolationKey isolation_key2,
     const SharedDictionaryInfo dictionary_info2,
     bool expect_merged) {
   CreateStore();
@@ -526,9 +524,9 @@ void SQLitePersistentSharedDictionaryStoreTest::RunMultipleDictionariesTest(
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        MultipleDictionariesDifferentOriginSameSite) {
-  SharedDictionaryStorageIsolationKey isolation_key1 =
+  SharedDictionaryIsolationKey isolation_key1 =
       CreateIsolationKey("https://www1.origin.test/");
-  SharedDictionaryStorageIsolationKey isolation_key2 =
+  SharedDictionaryIsolationKey isolation_key2 =
       CreateIsolationKey("https://www2.origin.test/");
   EXPECT_NE(isolation_key1, isolation_key2);
   EXPECT_NE(isolation_key1.frame_origin(), isolation_key2.frame_origin());
@@ -539,9 +537,9 @@ TEST_F(SQLitePersistentSharedDictionaryStoreTest,
 
 TEST_F(SQLitePersistentSharedDictionaryStoreTest,
        MultipleDictionariesDifferentSite) {
-  SharedDictionaryStorageIsolationKey isolation_key1 =
+  SharedDictionaryIsolationKey isolation_key1 =
       CreateIsolationKey("https://origin1.test/");
-  SharedDictionaryStorageIsolationKey isolation_key2 =
+  SharedDictionaryIsolationKey isolation_key2 =
       CreateIsolationKey("https://origin2.test/");
   EXPECT_NE(isolation_key1, isolation_key2);
   EXPECT_NE(isolation_key1.frame_origin(), isolation_key2.frame_origin());

@@ -100,8 +100,8 @@ class CorsURLLoaderSharedDictionaryTest : public CorsURLLoaderTestBase {
       bool expect_exists,
       const GURL& dictionary_url = GURL("https://origin.test/test")) {
     ASSERT_TRUE(isolation_info_.frame_origin());
-    absl::optional<net::SharedDictionaryStorageIsolationKey> isolation_key =
-        net::SharedDictionaryStorageIsolationKey::MaybeCreate(isolation_info_);
+    absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+        net::SharedDictionaryIsolationKey::MaybeCreate(isolation_info_);
     ASSERT_TRUE(isolation_key);
     scoped_refptr<SharedDictionaryStorage> storage =
         network_context()->GetSharedDictionaryManager()->GetStorage(

@@ -14,7 +14,7 @@
 #include "mojo/public/cpp/bindings/message.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/base/load_flags.h"
-#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 #include "net/http/http_request_headers.h"
 #include "net/http/http_util.h"
 #include "services/network/cors/cors_url_loader.h"
@@ -218,9 +218,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
 
   if (context_->GetSharedDictionaryManager() && client_security_state_ &&
       client_security_state_->is_web_secure_context) {
-    absl::optional<net::SharedDictionaryStorageIsolationKey> isolation_key =
-        net::SharedDictionaryStorageIsolationKey::MaybeCreate(
-            params->isolation_info);
+    absl::optional<net::SharedDictionaryIsolationKey> isolation_key =
+        net::SharedDictionaryIsolationKey::MaybeCreate(params->isolation_info);
     if (isolation_key) {
       shared_dictionary_storage_ =
           context_->GetSharedDictionaryManager()->GetStorage(*isolation_key);

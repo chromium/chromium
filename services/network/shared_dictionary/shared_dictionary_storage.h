@@ -28,7 +28,7 @@ class SharedDictionary;
 class SharedDictionaryWriter;
 
 // Shared Dictionary Storage manages dictionaries for a particular
-// net::SharedDictionaryStorageIsolationKey.
+// net::SharedDictionaryIsolationKey.
 class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryStorage
     : public base::RefCounted<SharedDictionaryStorage> {
  public:

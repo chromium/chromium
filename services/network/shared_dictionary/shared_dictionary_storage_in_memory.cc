@@ -18,7 +18,7 @@ namespace network {
 
 SharedDictionaryStorageInMemory::SharedDictionaryStorageInMemory(
     base::WeakPtr<SharedDictionaryManagerInMemory> manager,
-    const net::SharedDictionaryStorageIsolationKey& isolation_key,
+    const net::SharedDictionaryIsolationKey& isolation_key,
     base::ScopedClosureRunner on_deleted_closure_runner)
     : manager_(manager),
       isolation_key_(isolation_key),

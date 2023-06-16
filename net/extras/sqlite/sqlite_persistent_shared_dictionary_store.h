@@ -27,7 +27,7 @@ class SequencedTaskRunner;
 
 namespace net {
 
-class SharedDictionaryStorageIsolationKey;
+class SharedDictionaryIsolationKey;
 
 // This class is used for storing SharedDictionary information to the persistent
 // storage.
@@ -84,10 +84,9 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
       base::expected<RegisterDictionaryResult, Error>;
   using DictionaryListOrError =
       base::expected<std::vector<SharedDictionaryInfo>, Error>;
-  using DictionaryMapOrError =
-      base::expected<std::map<SharedDictionaryStorageIsolationKey,
-                              std::vector<SharedDictionaryInfo>>,
-                     Error>;
+  using DictionaryMapOrError = base::expected<
+      std::map<SharedDictionaryIsolationKey, std::vector<SharedDictionaryInfo>>,
+      Error>;
   using UnguessableTokenSetOrError =
       base::expected<std::set<base::UnguessableToken>, Error>;
 
@@ -106,13 +105,13 @@ class COMPONENT_EXPORT(NET_EXTRAS) SQLitePersistentSharedDictionaryStore {
   void GetTotalDictionarySize(
       base::OnceCallback<void(base::expected<uint64_t, Error>)> callback);
   void RegisterDictionary(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       SharedDictionaryInfo dictionary_info,
       const uint64_t max_size_per_site,
       const uint64_t max_count_per_site,
       base::OnceCallback<void(RegisterDictionaryResultOrError)> callback);
   void GetDictionaries(
-      const SharedDictionaryStorageIsolationKey& isolation_key,
+      const SharedDictionaryIsolationKey& isolation_key,
       base::OnceCallback<void(DictionaryListOrError)> callback);
   void GetAllDictionaries(
       base::OnceCallback<void(DictionaryMapOrError)> callback);

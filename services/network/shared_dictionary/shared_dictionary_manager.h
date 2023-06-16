@@ -12,7 +12,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "net/extras/shared_dictionary/shared_dictionary_storage_isolation_key.h"
+#include "net/extras/shared_dictionary/shared_dictionary_isolation_key.h"
 
 namespace base {
 namespace android {
@@ -59,12 +59,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
 
   // Returns a SharedDictionaryStorage for the `isolation_key`.
   scoped_refptr<SharedDictionaryStorage> GetStorage(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key);
+      const net::SharedDictionaryIsolationKey& isolation_key);
 
   // Called when the SharedDictionaryStorage for the `isolation_key` is
   // deleted.
-  void OnStorageDeleted(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key);
+  void OnStorageDeleted(const net::SharedDictionaryIsolationKey& isolation_key);
 
   // Sets the max size of shared dictionary cache.
   virtual void SetCacheMaxSize(uint64_t cache_max_size) = 0;
@@ -79,19 +78,17 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) SharedDictionaryManager {
   // Called to create a SharedDictionaryStorage for the `isolation_key`. This is
   // called only when there is no matching storage in `storages_`.
   virtual scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key) = 0;
+      const net::SharedDictionaryIsolationKey& isolation_key) = 0;
 
   base::WeakPtr<SharedDictionaryManager> GetWeakPtr();
 
-  std::map<net::SharedDictionaryStorageIsolationKey,
-           raw_ptr<SharedDictionaryStorage>>&
+  std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>&
   storages() {
     return storages_;
   }
 
  private:
-  std::map<net::SharedDictionaryStorageIsolationKey,
-           raw_ptr<SharedDictionaryStorage>>
+  std::map<net::SharedDictionaryIsolationKey, raw_ptr<SharedDictionaryStorage>>
       storages_;
   base::WeakPtrFactory<SharedDictionaryManager> weak_factory_{this};
 };

@@ -223,8 +223,8 @@ class SharedDictionaryManagerOnDiskTest : public ::testing::Test {
 TEST_F(SharedDictionaryManagerOnDiskTest, ReusingRefCountedSharedDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -267,8 +267,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
        MaybeCreateWriterAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -290,8 +290,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 TEST_F(SharedDictionaryManagerOnDiskTest, GetDictionaryAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -308,8 +308,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
        DictionaryWrittenInDiskCacheAfterManagerDeleted) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -325,8 +325,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   scoped_refptr<SharedDictionaryStorage> storage =
       manager->GetStorage(isolation_key);
   ASSERT_TRUE(storage);
@@ -395,8 +395,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, OverridingDictionary) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -482,8 +482,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, MultipleDictionaries) {
 // CorruptDiskCache() doesn't work on Fuchsia. So disabling the following tests
 // on Fuchsia.
 TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndWriteData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -520,8 +520,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndWriteData) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndGetData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -568,8 +568,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDiskCacheAndGetData) {
 #endif  // !BUILDFLAG(IS_FUCHSIA)
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   base::UnguessableToken token1, token2;
   {
@@ -655,8 +655,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CorruptedDatabase) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, LastUsedTime) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::Time last_used_time_after_second_get_dict;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -727,8 +727,8 @@ MATCHER_P(DictionaryUrlIs,
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -829,8 +829,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearData) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataSerializedOperation) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -880,8 +880,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ClearDataSerializedOperation) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, ExpiredDictionaryDeletionOnReload) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::UnguessableToken token1, token2;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -928,8 +928,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, ExpiredDictionaryDeletionOnReload) {
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnNewDictionary) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -973,8 +973,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnSetCacheMaxSize) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1009,8 +1009,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        ExpiredDictionaryDeletionOnClearData) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1047,8 +1047,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnReload) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   base::UnguessableToken token1, token2, token3;
   {
     std::unique_ptr<SharedDictionaryManager> manager =
@@ -1099,8 +1099,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnReload) {
 }
 
 TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnSetCacheMaxSize) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1145,15 +1145,15 @@ TEST_F(SharedDictionaryManagerOnDiskTest, CacheEvictionOnNewDictionary) {
   const net::SchemefulSite site2(GURL("https://site2.test"));
   const net::SchemefulSite site3(GURL("https://site3.test"));
 
-  net::SharedDictionaryStorageIsolationKey isolation_key1(
+  net::SharedDictionaryIsolationKey isolation_key1(
       url::Origin::Create(GURL("https://origin1.test")), site1);
-  net::SharedDictionaryStorageIsolationKey isolation_key2(
+  net::SharedDictionaryIsolationKey isolation_key2(
       url::Origin::Create(GURL("https://origin2.test")), site2);
-  net::SharedDictionaryStorageIsolationKey isolation_key3(
+  net::SharedDictionaryIsolationKey isolation_key3(
       url::Origin::Create(GURL("https://origin3.test")), site3);
 
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
 
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
@@ -1221,13 +1221,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   const net::SchemefulSite site1(GURL("https://site1.test"));
   const net::SchemefulSite site2(GURL("https://site2.test"));
 
-  net::SharedDictionaryStorageIsolationKey isolation_key1(
+  net::SharedDictionaryIsolationKey isolation_key1(
       url::Origin::Create(GURL("https://origin1.test")), site1);
-  net::SharedDictionaryStorageIsolationKey isolation_key2(
+  net::SharedDictionaryIsolationKey isolation_key2(
       url::Origin::Create(GURL("https://origin1.test")), site2);
   // The top frame site of `isolation_key3` is same as the top frame site of
   // `isolation_key2`.
-  net::SharedDictionaryStorageIsolationKey isolation_key3(
+  net::SharedDictionaryIsolationKey isolation_key3(
       url::Origin::Create(GURL("https://origin2.test")), site2);
 
   std::unique_ptr<SharedDictionaryManager> manager =
@@ -1301,13 +1301,13 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
   const net::SchemefulSite site1(GURL("https://site1.test"));
   const net::SchemefulSite site2(GURL("https://site2.test"));
 
-  net::SharedDictionaryStorageIsolationKey isolation_key1(
+  net::SharedDictionaryIsolationKey isolation_key1(
       url::Origin::Create(GURL("https://origin1.test")), site1);
-  net::SharedDictionaryStorageIsolationKey isolation_key2(
+  net::SharedDictionaryIsolationKey isolation_key2(
       url::Origin::Create(GURL("https://origin1.test")), site2);
   // The top frame site of `isolation_key3` is same as the top frame site of
   // `isolation_key2`.
-  net::SharedDictionaryStorageIsolationKey isolation_key3(
+  net::SharedDictionaryIsolationKey isolation_key3(
       url::Origin::Create(GURL("https://origin2.test")), site2);
 
   std::unique_ptr<SharedDictionaryManager> manager =
@@ -1400,8 +1400,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        CacheEvictionAfterUpdatingLastUsedTime) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1531,8 +1531,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionDiskCacheEntryUnavailableDictionary) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   {
     std::unique_ptr<SharedDictionaryManager> manager =
         CreateSharedDictionaryManager();
@@ -1639,8 +1639,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionWritingEntryMustNotBeDeleted) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =
@@ -1701,8 +1701,8 @@ TEST_F(SharedDictionaryManagerOnDiskTest,
 
 TEST_F(SharedDictionaryManagerOnDiskTest,
        MismatchingEntryDeletionWritingDiskCacheEntryMustNotBeDeleted) {
-  net::SharedDictionaryStorageIsolationKey isolation_key(
-      url::Origin::Create(kUrl), kSite);
+  net::SharedDictionaryIsolationKey isolation_key(url::Origin::Create(kUrl),
+                                                  kSite);
   std::unique_ptr<SharedDictionaryManager> manager =
       CreateSharedDictionaryManager();
   scoped_refptr<SharedDictionaryStorage> storage =

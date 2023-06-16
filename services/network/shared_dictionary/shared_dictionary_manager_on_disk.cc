@@ -402,7 +402,7 @@ SharedDictionaryManagerOnDisk::~SharedDictionaryManagerOnDisk() = default;
 
 scoped_refptr<SharedDictionaryStorage>
 SharedDictionaryManagerOnDisk::CreateStorage(
-    const net::SharedDictionaryStorageIsolationKey& isolation_key) {
+    const net::SharedDictionaryIsolationKey& isolation_key) {
   return base::MakeRefCounted<SharedDictionaryStorageOnDisk>(
       weak_factory_.GetWeakPtr(), isolation_key,
       base::ScopedClosureRunner(
@@ -418,7 +418,7 @@ void SharedDictionaryManagerOnDisk::SetCacheMaxSize(uint64_t cache_max_size) {
 
 scoped_refptr<SharedDictionaryWriter>
 SharedDictionaryManagerOnDisk::CreateWriter(
-    const net::SharedDictionaryStorageIsolationKey& isolation_key,
+    const net::SharedDictionaryIsolationKey& isolation_key,
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,
@@ -439,7 +439,7 @@ SharedDictionaryManagerOnDisk::CreateWriter(
 }
 
 void SharedDictionaryManagerOnDisk::OnDictionaryWrittenInDiskCache(
-    const net::SharedDictionaryStorageIsolationKey& isolation_key,
+    const net::SharedDictionaryIsolationKey& isolation_key,
     const GURL& url,
     base::Time response_time,
     base::TimeDelta expiration,

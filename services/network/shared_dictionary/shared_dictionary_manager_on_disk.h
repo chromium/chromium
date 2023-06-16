@@ -57,7 +57,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
 
   // SharedDictionaryManager
   scoped_refptr<SharedDictionaryStorage> CreateStorage(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key) override;
+      const net::SharedDictionaryIsolationKey& isolation_key) override;
   void SetCacheMaxSize(uint64_t cache_max_size) override;
   void ClearData(base::Time start_time,
                  base::Time end_time,
@@ -70,7 +70,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   }
 
   scoped_refptr<SharedDictionaryWriter> CreateWriter(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const net::SharedDictionaryIsolationKey& isolation_key,
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,
@@ -107,7 +107,7 @@ class SharedDictionaryManagerOnDisk : public SharedDictionaryManager {
   class ExpiredDictionaryDeletionTaskInfo;
 
   void OnDictionaryWrittenInDiskCache(
-      const net::SharedDictionaryStorageIsolationKey& isolation_key,
+      const net::SharedDictionaryIsolationKey& isolation_key,
       const GURL& url,
       base::Time response_time,
       base::TimeDelta expiration,

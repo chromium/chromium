@@ -1806,8 +1806,8 @@ component("extras") {
   sources = [
     "extras/shared_dictionary/shared_dictionary_info.cc",
     "extras/shared_dictionary/shared_dictionary_info.h",
-    "extras/shared_dictionary/shared_dictionary_storage_isolation_key.cc",
-    "extras/shared_dictionary/shared_dictionary_storage_isolation_key.h",
+    "extras/shared_dictionary/shared_dictionary_isolation_key.cc",
+    "extras/shared_dictionary/shared_dictionary_isolation_key.h",
     "extras/sqlite/cookie_crypto_delegate.h",
     "extras/sqlite/sqlite_persistent_cookie_store.cc",
     "extras/sqlite/sqlite_persistent_cookie_store.h",
@@ -2844,7 +2844,7 @@ test("net_unittests") {
 
   if (!is_cronet_build) {
     sources += [
-      "extras/shared_dictionary/shared_dictionary_storage_isolation_key_unittest.cc",
+      "extras/shared_dictionary/shared_dictionary_isolation_key_unittest.cc",
       "extras/sqlite/sqlite_persistent_cookie_store_unittest.cc",
       "extras/sqlite/sqlite_persistent_shared_dictionary_store_unittest.cc",
       "log/trace_net_log_observer_unittest.cc",
