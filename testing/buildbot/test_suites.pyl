@@ -2323,7 +2323,7 @@
         ],
         'test': 'android_browsertests',
         'swarming': {
-          'shards': 2,
+          'shards': 3,
         },
       },
       'webview_cts_tests_no_field_trial': {
