@@ -493,15 +493,25 @@ FileManagerPrivateAddProvidedFileSystemFunction::
 
 ExtensionFunction::ResponseAction
 FileManagerPrivateAddProvidedFileSystemFunction::Run() {
+  using ash::file_system_provider::ProviderId;
+  using ash::file_system_provider::Service;
   using extensions::api::file_manager_private::AddProvidedFileSystem::Params;
   const absl::optional<Params> params = Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
   Profile* profile = Profile::FromBrowserContext(browser_context());
+  Service* const service = Service::Get(browser_context());
+  ProviderId provider_id = ProviderId::FromString(params->provider_id);
 
+  auto file_systems = service->GetProvidedFileSystemInfoList(provider_id);
+  bool first_file_system = file_systems.empty();
+  // Show Connect To OneDrive dialog only when mounting ODFS for the first time.
+  // There will already a ODFS mount if the user is requesting a new mount to
+  // replace the unauthenticated one.
   if (ash::cloud_upload::IsEligibleAndEnabledUploadOfficeToCloud(profile) &&
       params->provider_id ==
-          file_manager::file_tasks::GetODFSExtensionId(profile)) {
+          file_manager::file_tasks::GetODFSExtensionId(profile) &&
+      first_file_system) {
     // Get Files App window, if it exists.
     Browser* browser =
         FindSystemWebAppBrowser(profile, ash::SystemWebAppType::FILE_MANAGER);
@@ -515,12 +525,7 @@ FileManagerPrivateAddProvidedFileSystemFunction::Run() {
                               : Error("Failed to request a new mount."));
   }
 
-  using ash::file_system_provider::ProviderId;
-  using ash::file_system_provider::Service;
-  Service* const service = Service::Get(browser_context());
-
-  if (!service->RequestMount(ProviderId::FromString(params->provider_id),
-                             base::DoNothing())) {
+  if (!service->RequestMount(provider_id, base::DoNothing())) {
     return RespondNow(Error("Failed to request a new mount."));
   }
 
