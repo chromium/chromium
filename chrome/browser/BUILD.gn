@@ -6868,6 +6868,8 @@ static_library("browser") {
       "signin/bound_session_credentials/unexportable_key_service_factory.h",
     ]
 
+    public_deps += [ ":bound_session_credentials_proto" ]
+
     deps += [
       "//chrome/common",
       "//components/unexportable_keys",
@@ -7838,6 +7840,12 @@ proto_library("lcp_critical_path_predictor_proto") {
 
 proto_library("permissions_proto") {
   sources = [ "permissions/crowd_deny.proto" ]
+}
+
+if (enable_bound_session_credentials) {
+  proto_library("bound_session_credentials_proto") {
+    sources = [ "signin/bound_session_credentials/bound_session_registration_params.proto" ]
+  }
 }
 
 grit("resources") {

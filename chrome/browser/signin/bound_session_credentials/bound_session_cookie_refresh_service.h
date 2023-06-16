@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_registration_params.pb.h"
 #include "chrome/common/renderer_configuration.mojom.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,6 +32,11 @@ class BoundSessionCookieRefreshService
       const BoundSessionCookieRefreshService&) = delete;
 
   virtual void Initialize() = 0;
+
+  // Registers a new bound session and starts tracking it immediately. The
+  // session persists across browser startups.
+  virtual void RegisterNewBoundSession(
+      const bound_session_credentials::RegistrationParams& params) = 0;
 
   // Returns true if session is bound.
   virtual bool IsBoundSession() const = 0;

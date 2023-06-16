@@ -9,10 +9,12 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_keyed_service_factory.h"
 #include "chrome/browser/signin/account_consistency_mode_manager_factory.h"
+#include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_refresh_service_impl.h"
 #include "chrome/browser/signin/chrome_signin_client_factory.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "components/pref_registry/pref_registry_syncable.h"
 #include "components/signin/public/base/signin_switches.h"
 
 // static
@@ -68,4 +70,9 @@ BoundSessionCookieRefreshServiceFactory::BuildServiceInstanceForBrowserContext(
               IdentityManagerFactory::GetForProfile(profile));
   bound_session_cookie_refresh_service->Initialize();
   return bound_session_cookie_refresh_service;
+}
+
+void BoundSessionCookieRefreshServiceFactory::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(registry);
 }

@@ -7,12 +7,15 @@
 
 #include "base/check.h"
 #include "base/check_op.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/memory/weak_ptr.h"
 #include "base/notreached.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller.h"
 #include "chrome/browser/signin/bound_session_credentials/bound_session_cookie_controller_impl.h"
 #include "chrome/common/renderer_configuration.mojom.h"
+#include "components/pref_registry/pref_registry_syncable.h"
+#include "components/prefs/pref_service.h"
 #include "components/signin/public/base/consent_level.h"
 #include "components/signin/public/base/signin_client.h"
 #include "components/signin/public/identity_manager/accounts_in_cookie_jar_info.h"
@@ -24,6 +27,15 @@
 using signin::ConsentLevel;
 using signin::IdentityManager;
 using signin::PrimaryAccountChangeEvent;
+
+namespace {
+const char kRegistrationParamsPref[] =
+    "bound_session_credentials_registration_params";
+}
+
+BASE_FEATURE(kBoundSessionExplicitRegistration,
+             "BoundSessionExplicitRegistration",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 class BoundSessionCookieRefreshServiceImpl::BoundSessionStateTracker
     : public IdentityManager::Observer {
@@ -172,20 +184,48 @@ BoundSessionCookieRefreshServiceImpl::BoundSessionCookieRefreshServiceImpl(
 BoundSessionCookieRefreshServiceImpl::~BoundSessionCookieRefreshServiceImpl() =
     default;
 
+// static
+void BoundSessionCookieRefreshServiceImpl::RegisterProfilePrefs(
+    user_prefs::PrefRegistrySyncable* registry) {
+  registry->RegisterStringPref(kRegistrationParamsPref, std::string());
+}
+
 void BoundSessionCookieRefreshServiceImpl::Initialize() {
-  // `base::Unretained(this)` is safe because `this` owns
-  // `bound_session_tracker_`.
-  bound_session_tracker_ = std::make_unique<BoundSessionStateTracker>(
-      identity_manager_,
-      base::BindRepeating(
-          &BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated,
-          base::Unretained(this)));
+  if (!base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
+    // `base::Unretained(this)` is safe because `this` owns
+    // `bound_session_tracker_`.
+    bound_session_tracker_ = std::make_unique<BoundSessionStateTracker>(
+        identity_manager_,
+        base::BindRepeating(
+            &BoundSessionCookieRefreshServiceImpl::OnBoundSessionUpdated,
+            base::Unretained(this)));
+  }
+  OnBoundSessionUpdated();
+}
+
+void BoundSessionCookieRefreshServiceImpl::RegisterNewBoundSession(
+    const bound_session_credentials::RegistrationParams& params) {
+  CHECK(base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration));
+  std::string serialized_params = params.SerializeAsString();
+  if (serialized_params.empty()) {
+    DVLOG(1) << "Failed to serialize bound session registration params.";
+    return;
+  }
+  // New session should override the existing one.
+  if (IsBoundSession()) {
+    StopManagingBoundSessionCookie();
+  }
+  client_->GetPrefs()->SetString(kRegistrationParamsPref, serialized_params);
   OnBoundSessionUpdated();
 }
 
 bool BoundSessionCookieRefreshServiceImpl::IsBoundSession() const {
-  DCHECK(bound_session_tracker_);
-  return bound_session_tracker_->is_bound_session();
+  if (base::FeatureList::IsEnabled(kBoundSessionExplicitRegistration)) {
+    return client_->GetPrefs()->HasPrefPath(kRegistrationParamsPref);
+  } else {
+    CHECK(bound_session_tracker_);
+    return bound_session_tracker_->is_bound_session();
+  }
 }
 
 chrome::mojom::BoundSessionParamsPtr
@@ -219,7 +259,7 @@ void BoundSessionCookieRefreshServiceImpl::OnRequestBlockedOnCookie(
     std::move(resume_blocked_request).Run();
     return;
   }
-  DCHECK(cookie_controller_);
+  CHECK(cookie_controller_);
   cookie_controller_->OnRequestBlockedOnCookie(
       std::move(resume_blocked_request));
 }
@@ -244,9 +284,10 @@ BoundSessionCookieRefreshServiceImpl::CreateBoundSessionCookieController(
 }
 
 void BoundSessionCookieRefreshServiceImpl::StartManagingBoundSessionCookie() {
-  DCHECK(!cookie_controller_);
+  CHECK(!cookie_controller_);
   constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 
+  // TODO(http://b/286222327): pass registration params to controller.
   cookie_controller_ = CreateBoundSessionCookieController(
       GaiaUrls::GetInstance()->secure_google_url(), kSIDTSCookieName);
   cookie_controller_->Initialize();

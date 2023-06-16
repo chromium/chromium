@@ -22,6 +22,9 @@ class FakeBoundSessionCookieRefreshService
 
   void Initialize() override {}
 
+  void RegisterNewBoundSession(
+      const bound_session_credentials::RegistrationParams& params) override {}
+
   bool IsBoundSession() const override { return true; }
 
   chrome::mojom::BoundSessionParamsPtr GetBoundSessionParams() const override {
