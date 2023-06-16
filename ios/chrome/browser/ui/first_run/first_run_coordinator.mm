@@ -72,11 +72,11 @@
   void (^completion)(void) = ^{
   };
   if (self.completed) {
+    __weak __typeof(self) weakSelf = self;
     completion = ^{
       base::UmaHistogramEnumeration("FirstRun.Stage", first_run::kComplete);
       WriteFirstRunSentinel();
-
-      [self.delegate didFinishPresentingScreens];
+      [weakSelf.delegate didFinishPresentingScreens];
     };
   }
 
