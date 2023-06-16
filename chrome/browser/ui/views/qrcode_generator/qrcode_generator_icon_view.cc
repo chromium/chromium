@@ -98,7 +98,9 @@ void QRCodeGeneratorIconView::OnExecuting(
 }
 
 const gfx::VectorIcon& QRCodeGeneratorIconView::GetVectorIcon() const {
-  return kQrcodeGeneratorIcon;
+  return OmniboxFieldTrial::IsChromeRefreshIconsEnabled()
+             ? kQrCodeChromeRefreshIcon
+             : kQrcodeGeneratorIcon;
 }
 
 bool QRCodeGeneratorIconView::ShouldShowLabel() const {

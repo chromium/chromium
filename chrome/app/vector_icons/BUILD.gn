@@ -165,6 +165,8 @@ aggregate_vector_icons("chrome_vector_icons") {
     "read_later_add.icon",
     "reader_mode.icon",
     "reader_mode_disabled.icon",
+    "reader_mode_disabled_refresh.icon",
+    "reader_mode_refresh.icon",
     "release_alert.icon",
     "reload_touch.icon",
     "remove.icon",
