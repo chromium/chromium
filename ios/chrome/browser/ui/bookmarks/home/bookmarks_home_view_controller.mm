@@ -269,7 +269,7 @@ std::vector<GURL> GetUrlsToOpen(const std::vector<const BookmarkNode*>& nodes) {
 
 - (void)shutdown {
   [self stopFolderChooserCoordinator];
-  [self.bookmarksCoordinator shutdown];
+  [self.bookmarksCoordinator stop];
   self.bookmarksCoordinator = nil;
   [self.mediator disconnect];
   self.mediator.consumer = nil;

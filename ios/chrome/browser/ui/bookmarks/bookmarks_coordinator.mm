@@ -179,11 +179,12 @@ enum class PresentedState {
 }
 
 - (void)dealloc {
-  [self shutdown];
+  CHECK(!_browserState);
 }
 
-- (void)shutdown {
+- (void)stop {
   [_mediator disconnect];
+  _mediator = nil;
   switch (self.currentPresentedState) {
     case PresentedState::BOOKMARK_BROWSER:
       [self bookmarkBrowserDismissed];
@@ -200,11 +201,17 @@ enum class PresentedState {
     case PresentedState::NONE:
       break;
   }
+  _browserState = nullptr;
+  _currentBrowserState = nullptr;
+  _profileBookmarkModel = nullptr;
+  _accountBookmarkModel = nullptr;
+  _mediator = nil;
   DCHECK_EQ(PresentedState::NONE, self.currentPresentedState);
   DCHECK(!self.bookmarkEditorCoordinator) << [self description];
   DCHECK(!self.folderEditorCoordinator) << [self description];
   DCHECK(!self.folderChooserCoordinator) << [self description];
   DCHECK(!self.bookmarkNavigationController) << [self description];
+  [super stop];
 }
 
 - (id<ApplicationCommands>)applicationCommandsHandler {

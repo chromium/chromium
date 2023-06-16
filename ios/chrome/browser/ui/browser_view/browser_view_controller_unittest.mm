@@ -327,6 +327,7 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     [tab_events_mediator_ disconnect];
     [[bvc_ view] removeFromSuperview];
     [bvc_ shutdown];
+    [bookmarks_coordinator_ stop];
 
     BlockCleanupTest::TearDown();
   }

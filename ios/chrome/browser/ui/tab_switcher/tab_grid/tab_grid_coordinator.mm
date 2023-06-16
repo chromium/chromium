@@ -1034,7 +1034,7 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   [self.historyCoordinator stop];
   self.historyCoordinator = nil;
 
-  [_bookmarksCoordinator shutdown];
+  [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 }
 

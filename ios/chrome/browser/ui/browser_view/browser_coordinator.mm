@@ -954,7 +954,7 @@ enum class ToolbarKind {
   _viewControllerDependencies.pagePlaceholderBrowserAgent = nil;
   _viewControllerDependencies.webStateUpdateBrowserAgent = nil;
 
-  [_bookmarksCoordinator shutdown];
+  [_bookmarksCoordinator stop];
   _bookmarksCoordinator = nil;
 
   _legacyTabStripCoordinator = nil;
