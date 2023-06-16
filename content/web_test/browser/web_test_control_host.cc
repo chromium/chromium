@@ -1548,7 +1548,8 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 
 void WebTestControlHost::SetFilePathForMockFileDialog(
     const base::FilePath& path) {
-  ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory(path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(path));
 }
 
 void WebTestControlHost::FocusDevtoolsSecondaryWindow() {

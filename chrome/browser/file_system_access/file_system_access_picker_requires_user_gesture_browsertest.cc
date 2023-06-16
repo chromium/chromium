@@ -115,7 +115,8 @@ class FileSystemAccessPickerRequiresUserGestureTest
 
     // File/Directory will automatically be selected by picker.
     ui::SelectFileDialog::SetFactory(
-        new content::FakeSelectFileDialogFactory({file_path_}));
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{file_path_}));
   }
 
   base::FilePath CreateTestFile() {

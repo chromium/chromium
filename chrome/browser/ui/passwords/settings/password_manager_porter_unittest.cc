@@ -222,7 +222,7 @@ class PasswordManagerPorterTest : public ChromeRenderViewHostTestHarness {
     // SelectFileDialog::SetFactory is responsible for freeing the memory
     // associated with a new factory.
     ui::SelectFileDialog::SetFactory(
-        new TestSelectFileDialogFactory(temp_file_path()));
+        std::make_unique<TestSelectFileDialogFactory>(temp_file_path()));
 
     profile_ = CreateTestingProfile();
     porter_ = std::make_unique<PasswordManagerPorter>(
@@ -301,7 +301,8 @@ TEST_F(PasswordManagerPorterTest, PasswordExport) {
 }
 
 TEST_F(PasswordManagerPorterTest, CancelExportFileSelection) {
-  ui::SelectFileDialog::SetFactory(new FakeCancellingSelectFileDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeCancellingSelectFileDialogFactory>());
 
   std::unique_ptr<MockPasswordManagerExporter> mock_password_manager_exporter_ =
       std::make_unique<StrictMock<MockPasswordManagerExporter>>();
@@ -327,7 +328,8 @@ TEST_F(PasswordManagerPorterTest, CancelExport) {
 }
 
 TEST_F(PasswordManagerPorterTest, ImportDismissedOnCanceledFileSelection) {
-  ui::SelectFileDialog::SetFactory(new FakeCancellingSelectFileDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeCancellingSelectFileDialogFactory>());
 
   base::MockCallback<PasswordManagerPorter::ImportResultsCallback> callback;
   EXPECT_CALL(

@@ -29,6 +29,8 @@ class FakeFolderSelectionDialogFactory : public ui::SelectFileDialogFactory {
   FakeFolderSelectionDialogFactory& operator=(
       const FakeFolderSelectionDialogFactory&) = delete;
 
+  ~FakeFolderSelectionDialogFactory() override;
+
   // Starts using this factory. This creates an instance of this factory and
   // sets it to ui::SelectFileDialog::SetFactory() which takes ownership of the
   // instance. From that point, calls to ui::SelectFileDialog::Create() will
@@ -64,7 +66,6 @@ class FakeFolderSelectionDialogFactory : public ui::SelectFileDialogFactory {
   friend class FakeFolderSelectionDialog;
 
   FakeFolderSelectionDialogFactory();
-  ~FakeFolderSelectionDialogFactory() override;
 
   // Called by the dialog when it gets deleted so we can clear |dialog_|.
   void OnDialogDeleted(FakeFolderSelectionDialog* dialog);

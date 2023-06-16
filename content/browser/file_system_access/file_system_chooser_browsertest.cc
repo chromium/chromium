@@ -124,7 +124,8 @@ class FileSystemChooserBrowserTest : public ContentBrowserTest {
 };
 
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, CancelDialog) {
-  ui::SelectFileDialog::SetFactory(new CancellingSelectFileDialogFactory);
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<CancellingSelectFileDialogFactory>());
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   auto result = EvalJs(shell(), "self.showOpenFilePicker()");
@@ -137,7 +138,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFile) {
   const base::FilePath test_file = CreateTestFile(file_contents);
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -167,7 +169,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFileNonASCII) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -191,7 +194,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, FullscreenOpenFile) {
   const base::FilePath test_file = CreateTestFile(file_contents);
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EnterFullscreen();
@@ -210,7 +214,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   const base::FilePath test_file = CreateTestFile("Save File");
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -245,7 +250,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenFile_ExternalPath) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({selected_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(virtual_path.BaseName().AsUTF8Unsafe(),
@@ -275,7 +281,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SaveFile_NonExistingFile) {
   }
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -307,7 +314,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),
@@ -328,7 +336,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   const base::FilePath test_file = CreateTestFile("Save File");
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -361,7 +370,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, FullscreenSaveFile) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EnterFullscreen();
@@ -378,8 +388,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenMultipleFiles) {
   const base::FilePath test_file1 = CreateTestFile("file1");
   const base::FilePath test_file2 = CreateTestFile("file2");
   SelectFileDialogParams dialog_params;
-  ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory(
-      {test_file1, test_file2}, &dialog_params));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file1, test_file2}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(ListValueOf(test_file1.BaseName().AsUTF8Unsafe(),
@@ -397,8 +408,9 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   const base::FilePath test_file1 = CreateTestFile("file1");
   const base::FilePath test_file2 = CreateTestFile("file2");
   SelectFileDialogParams dialog_params;
-  ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory(
-      {test_file1, test_file2}, &dialog_params));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file1, test_file2}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EnterFullscreen();
@@ -416,7 +428,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory) {
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
@@ -432,7 +445,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, FullscreenOpenDirectory) {
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EnterFullscreen();
@@ -450,7 +464,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -478,7 +493,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, OpenDirectory_DenyAccess) {
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -559,7 +575,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -644,7 +661,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   base::FilePath test_dir = CreateTestDir();
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -746,7 +764,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -812,7 +831,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -867,7 +887,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   auto result =
@@ -905,7 +925,7 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, AcceptsOptions) {
 IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, UndefinedAccepts) {
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   auto result =
@@ -924,7 +944,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1010,7 +1031,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1103,7 +1125,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1191,7 +1214,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1285,7 +1309,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   testing::StrictMock<MockFileSystemAccessPermissionContext> permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1387,7 +1412,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_FileHandle) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   // Acquire a FileSystemHandle to the test_file.
@@ -1425,7 +1451,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_DirectoryHandle) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   // Acquire a FileSystemHandle to the test_dir.
@@ -1461,7 +1488,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({selected_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   // Acquire a FileSystemHandle to the test_file.
@@ -1503,7 +1531,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Symlink) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({symlink}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{symlink}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   // Acquire a FileSystemHandle to the symlink.
@@ -1619,7 +1648,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, SuggestedName) {
   for (const auto& name_info : name_infos) {
     SCOPED_TRACE(name_info.suggested_name);
     ui::SelectFileDialog::SetFactory(
-        new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}, &dialog_params));
     ASSERT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
     EXPECT_EQ(
@@ -1664,7 +1694,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest,
   for (const auto& name_info : name_infos) {
     SCOPED_TRACE(name_info.suggested_name);
     ui::SelectFileDialog::SetFactory(
-        new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{test_file}, &dialog_params));
     ASSERT_TRUE(
         NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
     EXPECT_EQ(
@@ -1700,7 +1731,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_ID) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
 
   FakeFileSystemAccessPermissionContext permission_context;
   static_cast<FileSystemAccessManagerImpl*>(
@@ -1802,7 +1834,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
   // (A) Acquire a handle to the "handle" directory to be used later. Use the
   // default `id`.
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_handle}, &dialog_params));
   EXPECT_EQ(
       dir_handle.BaseName().AsUTF8Unsafe(),
       EvalJs(shell(), JsReplace("(async () => {"
@@ -1815,7 +1848,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
 
   // (B) Use the default `id`, which should have been set.
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_handle}, &dialog_params));
   EXPECT_EQ(
       dir_handle.BaseName().AsUTF8Unsafe(),
       EvalJs(shell(), JsReplace("(async () => {"
@@ -1829,7 +1863,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
   // (C) Since this new `id` has not yet been set, fall back on using the
   // WellKnownDirectory specified via `startIn`.
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({desktop_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{desktop_dir}, &dialog_params));
   EXPECT_EQ(
       desktop_dir.BaseName().AsUTF8Unsafe(),
       EvalJs(shell(), JsReplace("(async () => {"
@@ -1856,7 +1891,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, StartIn_Priority) {
   // (E) A directory handle is specified via `startIn`, so prioritize this over
   // the stored ID.
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({dir_handle}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{dir_handle}, &dialog_params));
   EXPECT_EQ(
       dir_handle.BaseName().AsUTF8Unsafe(),
       EvalJs(shell(), JsReplace("(async () => {"
@@ -1883,7 +1919,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBrowserTest, PickerTitle) {
 
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_dir}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_dir}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_dir.BaseName().AsUTF8Unsafe(),
@@ -1915,7 +1952,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemChooserBackForwardCacheBrowserTest,
   const base::FilePath test_file = CreateTestFile("file contents");
   SelectFileDialogParams dialog_params;
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({test_file}, &dialog_params));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{test_file}, &dialog_params));
   ASSERT_TRUE(
       NavigateToURL(shell(), embedded_test_server()->GetURL("/title1.html")));
   EXPECT_EQ(test_file.BaseName().AsUTF8Unsafe(),

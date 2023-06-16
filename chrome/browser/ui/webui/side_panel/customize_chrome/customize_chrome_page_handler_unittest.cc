@@ -806,7 +806,8 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundSuccess) {
   base::MockCallback<
       CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
       callback;
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(false));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(false));
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(
@@ -823,7 +824,8 @@ TEST_F(CustomizeChromePageHandlerTest, ChooseLocalCustomBackgroundCancel) {
   base::MockCallback<
       CustomizeChromePageHandler::ChooseLocalCustomBackgroundCallback>
       callback;
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(true));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(true));
   EXPECT_CALL(callback, Run(testing::_))
       .Times(1)
       .WillOnce(testing::Invoke(

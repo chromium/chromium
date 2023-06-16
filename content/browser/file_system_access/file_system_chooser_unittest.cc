@@ -65,7 +65,7 @@ class FileSystemChooserTest : public RenderViewHostImplTestHarness {
 
 TEST_F(FileSystemChooserTest, EmptyAccepts) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.file_types);
@@ -78,7 +78,7 @@ TEST_F(FileSystemChooserTest, EmptyAccepts) {
 
 TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   SyncShowDialog(/*web_contents=*/nullptr, {}, /*include_accepts_all=*/false);
 
   // Should still include_all_files, even though include_accepts_all was false.
@@ -92,7 +92,7 @@ TEST_F(FileSystemChooserTest, EmptyAcceptsIgnoresIncludeAcceptsAll) {
 
 TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({"tExt/Plain"}),
@@ -133,7 +133,7 @@ TEST_F(FileSystemChooserTest, AcceptsMimeTypes) {
 
 TEST_F(FileSystemChooserTest, AcceptsExtensions) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({}),
@@ -159,7 +159,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensions) {
 
 TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({"image/*"}),
@@ -191,7 +191,7 @@ TEST_F(FileSystemChooserTest, AcceptsExtensionsAndMimeTypes) {
 
 TEST_F(FileSystemChooserTest, IgnoreShellIntegratedExtensions) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"", std::vector<std::string>({}),
@@ -219,7 +219,8 @@ TEST_F(FileSystemChooserTest, LocalPath) {
   ui::SelectedFileInfo selected_file(local_path, local_path);
 
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({selected_file}));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}));
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
@@ -235,7 +236,8 @@ TEST_F(FileSystemChooserTest, ExternalPath) {
   selected_file.virtual_path = virtual_path;
 
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({selected_file}));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<ui::SelectedFileInfo>{selected_file}));
   auto results = SyncShowDialog(/*web_contents=*/nullptr, {},
                                 /*include_accepts_all=*/true);
   ASSERT_EQ(results.size(), 1u);
@@ -245,7 +247,7 @@ TEST_F(FileSystemChooserTest, ExternalPath) {
 
 TEST_F(FileSystemChooserTest, DescriptionSanitization) {
   ui::SelectFileDialog::SetFactory(
-      new CancellingSelectFileDialogFactory(&dialog_params_));
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   std::vector<blink::mojom::ChooseFileSystemEntryAcceptsOptionPtr> accepts;
   accepts.emplace_back(blink::mojom::ChooseFileSystemEntryAcceptsOption::New(
       u"Description        with \t      a  \r   lot   of  \n "
@@ -286,8 +288,8 @@ TEST_F(FileSystemChooserTest, DialogCaller) {
   const GURL gurl("https://www.example.com");
   content::WebContentsTester::For(web_contents.get())->NavigateAndCommit(gurl);
 
-  auto* dialog_factory = new CancellingSelectFileDialogFactory(&dialog_params_);
-  ui::SelectFileDialog::SetFactory(dialog_factory);
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<CancellingSelectFileDialogFactory>(&dialog_params_));
   SyncShowDialog(web_contents.get(), {}, /*include_accepts_all=*/true);
 
   ASSERT_TRUE(dialog_params_.caller.has_value());

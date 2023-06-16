@@ -4,6 +4,7 @@
 
 #include "components/headless/select_file_dialog/headless_select_file_dialog.h"
 
+#include "base/memory/ptr_util.h"
 #include "ui/gfx/native_widget_types.h"
 
 namespace headless {
@@ -64,7 +65,9 @@ class HeadlessSelectFileDialog : public ui::SelectFileDialog {
 
 // static
 void HeadlessSelectFileDialogFactory::SetUp() {
-  ui::SelectFileDialog::SetFactory(new HeadlessSelectFileDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      // Private constructor.
+      base::WrapUnique(new HeadlessSelectFileDialogFactory()));
 }
 
 // static

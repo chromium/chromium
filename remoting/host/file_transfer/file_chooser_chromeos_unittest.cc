@@ -53,12 +53,14 @@ class FileChooserChromeOsTest : public testing::Test {
 
   void SetResultFileSelectionFactory(base::FilePath file_path) {
     ui::SelectFileDialog::SetFactory(
-        new content::FakeSelectFileDialogFactory({file_path}, &dialog_params_));
+        std::make_unique<content::FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{file_path}, &dialog_params_));
   }
 
   void SetCancelFileSelectionFactory() {
     ui::SelectFileDialog::SetFactory(
-        new content::CancellingSelectFileDialogFactory(&dialog_params_));
+        std::make_unique<content::CancellingSelectFileDialogFactory>(
+            &dialog_params_));
   }
 
   ui::SelectFileDialog::Type GetRequestedDialogType() {

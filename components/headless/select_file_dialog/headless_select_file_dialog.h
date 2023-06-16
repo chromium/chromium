@@ -27,6 +27,8 @@ class COMPONENT_EXPORT(HEADLESS) HeadlessSelectFileDialogFactory
   HeadlessSelectFileDialogFactory& operator=(
       const HeadlessSelectFileDialogFactory&) = delete;
 
+  ~HeadlessSelectFileDialogFactory() override;
+
   // Creates the factory and sets it into ui::SelectFileDialog.
   static void SetUp();
 
@@ -44,7 +46,6 @@ class COMPONENT_EXPORT(HEADLESS) HeadlessSelectFileDialogFactory
       std::unique_ptr<ui::SelectFilePolicy> policy) override;
 
   HeadlessSelectFileDialogFactory();
-  ~HeadlessSelectFileDialogFactory() override;
 
   static HeadlessSelectFileDialogFactory* instance_;
   SelectFileDialogCallback callback_;

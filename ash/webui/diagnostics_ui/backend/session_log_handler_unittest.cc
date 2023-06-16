@@ -260,7 +260,8 @@ TEST_F(SessionLogHandlerTest, SaveSessionLog) {
 
   // Select file
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
   base::Value::List args;
   args.Append(kHandlerFunctionName);
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
@@ -315,7 +316,8 @@ TEST_F(SessionLogHandlerTest, SaveHeaderOnlySessionLog) {
 
   // Simulate select file
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
   base::Value::List args;
   args.Append(kHandlerFunctionName);
   session_log_handler_->SetLogCreatedClosureForTest(run_loop.QuitClosure());
@@ -350,7 +352,8 @@ TEST_F(SessionLogHandlerTest, SaveHeaderOnlySessionLog) {
 // was successful.
 TEST_F(SessionLogHandlerTest, SelectDirectory) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::Value::List args;
@@ -373,7 +376,7 @@ TEST_F(SessionLogHandlerTest, CancelDialog) {
   // A dialog returning an empty file path simulates the user closing the
   // dialog without selecting a path.
   ui::SelectFileDialog::SetFactory(
-      new TestSelectFileDialogFactory(base::FilePath()));
+      std::make_unique<TestSelectFileDialogFactory>(base::FilePath()));
 
   const size_t call_data_count_before_call = web_ui_.call_data().size();
   base::Value::List args;
@@ -393,7 +396,8 @@ TEST_F(SessionLogHandlerTest, CancelDialog) {
 // added to the holding space.
 TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
   base::Value::List args;
   args.Append(kHandlerFunctionName);
 
@@ -412,7 +416,8 @@ TEST_F(SessionLogHandlerTest, AddToHoldingSpace) {
 // dialog is open when session_log_handler is destroyed.
 TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
   base::Value::List args;
   args.Append(kHandlerFunctionName);
   base::RunLoop run_loop;
@@ -428,7 +433,8 @@ TEST_F(SessionLogHandlerTest, CleanUpDialogOnDeconstruct) {
 // when SessionLogHandler is destroyed before task is run. See crbug/1328708.
 TEST_F(SessionLogHandlerTest, NoUseAfterFree) {
   base::FilePath log_path = temp_dir_.GetPath().AppendASCII("test_path");
-  ui::SelectFileDialog::SetFactory(new TestSelectFileDialogFactory(log_path));
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<TestSelectFileDialogFactory>(log_path));
   base::Value::List args;
   args.Append(kHandlerFunctionName);
   base::RunLoop run_loop;

@@ -45,7 +45,9 @@ class FileSystemAccessFileHandleImplBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(base::CreateTemporaryFileInDir(directory_path, &result));
     EXPECT_TRUE(base::WriteFile(result, contents));
 
-    ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory({result}));
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{result}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     EXPECT_EQ(result.BaseName().AsUTF8Unsafe(),
               EvalJs(shell(),
@@ -61,7 +63,9 @@ class FileSystemAccessFileHandleImplBrowserTest : public ContentBrowserTest {
     EXPECT_TRUE(base::CreateTemporaryDirInDir(
         directory_path, FILE_PATH_LITERAL("test"), &result));
 
-    ui::SelectFileDialog::SetFactory(new FakeSelectFileDialogFactory({result}));
+    ui::SelectFileDialog::SetFactory(
+        std::make_unique<FakeSelectFileDialogFactory>(
+            std::vector<base::FilePath>{result}));
     EXPECT_TRUE(NavigateToURL(shell(), test_url_));
     EXPECT_EQ(result.BaseName().AsUTF8Unsafe(),
               EvalJs(shell(),
@@ -160,7 +164,8 @@ IN_PROC_BROWSER_TEST_F(FileSystemAccessFileHandleGetUniqueIdBrowserTest,
   }
 
   ui::SelectFileDialog::SetFactory(
-      new FakeSelectFileDialogFactory({file_path}));
+      std::make_unique<FakeSelectFileDialogFactory>(
+          std::vector<base::FilePath>{file_path}));
   EXPECT_TRUE(NavigateToURL(shell(), test_url_));
   EXPECT_EQ(file_path.BaseName().AsUTF8Unsafe(),
             EvalJs(shell(),

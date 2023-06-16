@@ -248,7 +248,8 @@ void ChromeBrowserMainExtraPartsAsh::PreProfileInit() {
   chrome_shelf_controller_initializer_ =
       std::make_unique<internal::ChromeShelfControllerInitializer>();
 
-  ui::SelectFileDialog::SetFactory(new SelectFileDialogExtensionFactory);
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<SelectFileDialogExtensionFactory>());
 
 #if BUILDFLAG(ENABLE_WAYLAND_SERVER)
   exo_parts_ = ExoParts::CreateIfNecessary();

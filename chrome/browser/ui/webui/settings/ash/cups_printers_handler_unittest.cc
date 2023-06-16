@@ -321,7 +321,7 @@ TEST_F(CupsPrintersHandlerTest, VerifyOnlyPpdFilesAllowed) {
   expected_file_type_info.extensions.push_back({"ppd"});
   expected_file_type_info.extensions.push_back({"ppd.gz"});
   ui::SelectFileDialog::SetFactory(
-      new TestSelectFileDialogFactory(&expected_file_type_info));
+      std::make_unique<TestSelectFileDialogFactory>(&expected_file_type_info));
 
   base::Value::List args;
   args.Append("handleFunctionName");

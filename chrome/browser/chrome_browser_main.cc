@@ -1408,9 +1408,11 @@ int ChromeBrowserMainParts::PreMainMessageLoopRunImpl() {
         *base::CommandLine::ForCurrentProcess());
   }
 
-  ui::SelectFileDialog::SetFactory(new ChromeSelectFileDialogFactory());
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<ChromeSelectFileDialogFactory>());
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
-  ui::SelectFileDialog::SetFactory(new ui::SelectFileDialogLacros::Factory());
+  ui::SelectFileDialog::SetFactory(
+      std::make_unique<ui::SelectFileDialogLacros::Factory>());
 #endif  // BUILDFLAG(IS_WIN)
 
   // In headless mode provide alternate SelectFileDialog factory overriding

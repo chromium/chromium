@@ -102,7 +102,7 @@ class SHELL_DIALOGS_EXPORT SelectFileDialog
   // elsewhere in the tree due to layering violations. (For example, because of
   // a dependency on chrome's extension system.) Takes ownership of `factory`,
   // destroying it on the next SetFactory() call, and leaking otherwise.
-  static void SetFactory(SelectFileDialogFactory* factory);
+  static void SetFactory(std::unique_ptr<SelectFileDialogFactory> factory);
 
   // Creates a dialog box helper. This is an inexpensive wrapper around the
   // platform-native file selection dialog. |policy| is an optional class that
