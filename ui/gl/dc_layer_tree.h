@@ -134,7 +134,7 @@ class DCLayerTree {
   size_t GetDcompLayerCountForTesting() const {
     return visual_tree_ ? visual_tree_->GetDcompLayerCountForTesting() : 0;
   }
-  IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+  IDCompositionVisual3* GetContentVisualForTesting(size_t index) const {
     return visual_tree_ ? visual_tree_->GetContentVisualForTesting(index)
                         : nullptr;
   }
@@ -183,7 +183,7 @@ class DCLayerTree {
     size_t GetDcompLayerCountForTesting() const {
       return visual_subtrees_.size();
     }
-    IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
+    IDCompositionVisual3* GetContentVisualForTesting(size_t index) const {
       return visual_subtrees_[index]->content_visual();
     }
     // Returns true if the tree is optimized.
@@ -205,20 +205,23 @@ class DCLayerTree {
       VisualSubtree& operator=(VisualSubtree& other) = delete;
 
       // Returns true if something was changed.
-      bool Update(IDCompositionDevice2* dcomp_device,
+      bool Update(IDCompositionDevice3* dcomp_device,
                   Microsoft::WRL::ComPtr<IUnknown> dcomp_visual_content,
                   uint64_t dcomp_surface_serial,
                   const gfx::Size& image_size,
+                  absl::optional<SkColor4f> content_tint_color,
                   const gfx::Rect& content_rect,
                   const gfx::Rect& quad_rect,
                   bool nearest_neighbor_filter,
                   const gfx::Transform& quad_to_root_transform,
+                  const gfx::RRectF& rounded_corner_bounds,
+                  float opacity,
                   const absl::optional<gfx::Rect>& clip_rect_in_root);
 
-      IDCompositionVisual2* container_visual() const {
+      IDCompositionVisual3* container_visual() const {
         return clip_visual_.Get();
       }
-      IDCompositionVisual2* content_visual() const {
+      IDCompositionVisual3* content_visual() const {
         return content_visual_.Get();
       }
       IUnknown* dcomp_visual_content() const {
@@ -232,18 +235,23 @@ class DCLayerTree {
       void set_z_order(int z_order) { z_order_ = z_order; }
 
      private:
-      // The root of this subtree. In root space and contains the clip rect.
-      Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
+      // The root of this subtree. In root space and contains the clip rect and
+      // controls subtree opacity.
+      Microsoft::WRL::ComPtr<IDCompositionVisual3> clip_visual_;
+      // In root space and contains the rounded rectangle clip. This is separate
+      // from |clip_visual_| since an overlay layer can have both a rectangular
+      // and a rounded rectangular clip rects.
+      Microsoft::WRL::ComPtr<IDCompositionVisual3> rounded_corners_visual_;
       // The child of |clip_visual_|, transforms its children from quad to root
       // space. This visual exists because |offset_| is in quad space, so it
       // must be affected by |transform_|. They cannot be on the same visual
       // since |IDCompositionVisual::SetTransform| and
       // |IDCompositionVisual::SetOffset[XY]| are applied in the opposite order
       // than we want.
-      Microsoft::WRL::ComPtr<IDCompositionVisual2> transform_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual3> transform_visual_;
       // The child of |transform_visual_|. In quad space, holds
       // |dcomp_visual_content_|.
-      Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual3> content_visual_;
 
       // The content to be placed at the leaf of the visual subtree. Either an
       // IDCompositionSurface or an IDXGISwapChain.
@@ -252,6 +260,11 @@ class DCLayerTree {
       // IDCompositionSurface type. New value indicates that dcomp surface data
       // is updated.
       uint64_t dcomp_surface_serial_ = 0;
+
+      // True if |content_visual_| has soft borders. This is required for
+      // anti-aliasing when |transform_| makes |quad_rect_| not have
+      // axis-aligned integer bounds in root space.
+      bool content_soft_borders_ = false;
 
       // The portion of |dcomp_visual_content_| to display. This area will be
       // mapped to |quad_rect_|'s bounds.
@@ -271,6 +284,17 @@ class DCLayerTree {
 
       // Clip rect in root space.
       absl::optional<gfx::Rect> clip_rect_;
+
+      // Rounded corner clip in root space
+      gfx::RRectF rounded_corner_bounds_;
+
+      // The opacity of the entire visual subtree
+      float opacity_ = 1.0;
+
+      // A color that will tint this visual's content. Each channel of the color
+      // will be multiplied by the respective channel in this visual's output.
+      // A white tint is a no-op.
+      absl::optional<SkColor4f> content_tint_color_;
 
       // The size of overlay image in |dcomp_visual_content_| which is in
       // pixels.
@@ -305,11 +329,15 @@ class DCLayerTree {
   // delegated ink API is used. After that, it can also be added anytime the
   // visual tree is rebuilt.
   void AddDelegatedInkVisualToTreeIfNeeded(
-      IDCompositionVisual2* root_surface_visual);
+      IDCompositionVisual3* root_surface_visual);
 
   // The ink renderer must be initialized before an OS API is used in order to
   // set up the delegated ink visual and delegated ink trail object.
   bool InitializeInkRenderer();
+
+  // Returns the size of the surface to |resource_size_in_pixels|.
+  raw_ptr<IDCompositionSurface> GetOrCreateSolidWhiteTexture(
+      gfx::Size& resource_size_in_pixels);
 
   const bool disable_nv12_dynamic_textures_;
   const bool disable_vp_scaling_;
@@ -319,8 +347,11 @@ class DCLayerTree {
 
   HWND window_;
   Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device_;
-  Microsoft::WRL::ComPtr<IDCompositionDevice2> dcomp_device_;
+  Microsoft::WRL::ComPtr<IDCompositionDevice3> dcomp_device_;
   Microsoft::WRL::ComPtr<IDCompositionTarget> dcomp_target_;
+
+  // A IDCompositionSurface cleared to white, used for solid color overlays.
+  Microsoft::WRL::ComPtr<IDCompositionSurface> solid_color_texture_;
 
   // Store video processor for SDR/HDR mode separately, which could avoid
   // problem in (http://crbug.com/1121061).
@@ -343,7 +374,7 @@ class DCLayerTree {
   Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
 
   // Root direct composition visual for window dcomp target.
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
+  Microsoft::WRL::ComPtr<IDCompositionVisual3> dcomp_root_visual_;
 
   // List of pending overlay layers from ScheduleDCLayer().
   std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
