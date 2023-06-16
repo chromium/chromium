@@ -67950,6 +67950,17 @@ from previous Chrome versions.
   <int value="4" label="Local Access Request"/>
 </enum>
 
+<!-- Keep this in sync with ScreensaverImageDownloadResult in
+  //ash/ambient/managed/screensaver_image_downloader.h -->
+
+<enum name="ManagedScreensaverImageDownloadResult">
+  <int value="0" label="Image downloaded successfully"/>
+  <int value="1" label="Network error"/>
+  <int value="2" label="File save error"/>
+  <int value="3" label="Write to filesystem error"/>
+  <int value="4" label="Image download cancelled"/>
+</enum>
+
 <enum name="ManagedUserPasswordChange">
   <int value="0" label="OK_MANAGER">Changed in manager session</int>
   <int value="1" label="OK_MANGED">Changed in supervised user session</int>

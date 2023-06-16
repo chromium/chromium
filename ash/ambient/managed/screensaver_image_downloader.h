@@ -25,12 +25,15 @@ class SharedURLLoaderFactory;
 
 namespace ash {
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class ScreensaverImageDownloadResult {
-  kSuccess,
-  kNetworkError,
-  kFileSaveError,
-  kFileSystemWriteError,
-  kCancelled,
+  kSuccess = 0,
+  kNetworkError = 1,
+  kFileSaveError = 2,
+  kFileSystemWriteError = 3,
+  kCancelled = 4,
+  kMaxValue = kCancelled,
 };
 
 // Provides a cache service to download and store external image files that will

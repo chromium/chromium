@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "base/containers/flat_set.h"
 #include "base/files/file_enumerator.h"
 #include "base/files/file_path.h"
@@ -434,7 +435,8 @@ void ScreensaverImageDownloader::FinishDownloadJob(
     std::unique_ptr<Job> download_job,
     ScreensaverImageDownloadResult result,
     absl::optional<base::FilePath> path) {
-  // TODO(b/276208772): Track result with metrics
+  RecordManagedScreensaverImageDownloadResult(result);
+
   if (result == ScreensaverImageDownloadResult::kSuccess) {
     downloaded_images_.insert(*path);
     image_list_updated_callback_.Run(std::vector<base::FilePath>(

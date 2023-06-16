@@ -2218,6 +2218,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagedScreensaver.ImageDownloadResult"
+    enum="ManagedScreensaverImageDownloadResult" expires_after="2024-06-09">
+  <owner>mpetrisor@chromium.org</owner>
+  <owner>imprivata-eng@google.com</owner>
+  <summary>
+    Records the result after attempting to download an image for the managed
+    screensaver. Emitted on every image download operation.
+  </summary>
+</histogram>
+
 <histogram name="Enterprise.ManagedScreensaver.StartupTime.Slideshow"
     units="ms" expires_after="2024-06-07">
   <owner>mpetrisor@chromium.org</owner>

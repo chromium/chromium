@@ -13,12 +13,16 @@
 
 namespace ash {
 
+enum class ScreensaverImageDownloadResult;
+
 constexpr char kManagedScreensaverEnabledUMA[] = "Enabled";
 constexpr char kManagedScreensaverEngagementTimeSlideshowUMA[] =
     "EngagementTime.Slideshow";
 constexpr char kManagedScreensaverStartupTimeSlideshowUMA[] =
     "StartupTime.Slideshow";
 constexpr char kManagedScreensaverImageCountUMA[] = "ImageCount";
+constexpr char kManagedScreensaverImageDownloadResultUMA[] =
+    "ImageDownloadResult";
 
 ASH_EXPORT std::string GetManagedScreensaverHistogram(
     const base::StringPiece& histogram_suffix);
@@ -26,6 +30,9 @@ ASH_EXPORT std::string GetManagedScreensaverHistogram(
 ASH_EXPORT void RecordManagedScreensaverEnabled(bool enabled);
 
 ASH_EXPORT void RecordManagedScreensaverImageCount(int image_count);
+
+ASH_EXPORT void RecordManagedScreensaverImageDownloadResult(
+    ScreensaverImageDownloadResult result);
 
 class ManagedScreensaverMetricsRecorder {
  public:

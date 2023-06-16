@@ -4,6 +4,7 @@
 
 #include "ash/ambient/metrics/managed_screensaver_metrics.h"
 
+#include "ash/ambient/managed/screensaver_image_downloader.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
@@ -42,6 +43,13 @@ ASH_EXPORT void RecordManagedScreensaverImageCount(int image_count) {
   base::UmaHistogramExactLinear(
       GetManagedScreensaverHistogram(kManagedScreensaverImageCountUMA),
       image_count, kMaxUrlsToProcessFromPolicy + 1);
+}
+
+ASH_EXPORT void RecordManagedScreensaverImageDownloadResult(
+    ScreensaverImageDownloadResult result) {
+  base::UmaHistogramEnumeration(
+      GetManagedScreensaverHistogram(kManagedScreensaverImageDownloadResultUMA),
+      result);
 }
 
 ManagedScreensaverMetricsRecorder::ManagedScreensaverMetricsRecorder() =
