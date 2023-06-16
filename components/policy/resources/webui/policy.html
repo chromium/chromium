@@ -14,7 +14,12 @@
   <header>
     <div id="topbar" class="header-row">
       <div id="left-content" class="topbar-item">
-        <h1>$i18n{title}</h1>
+        <div id="topbar-brand">
+          <if expr="not is_android and not is_ios">
+            <div id="topbar-brand-logo"></div>
+          </if>
+          <h1 id="topbar-title">$i18n{title}</h1>
+        </div>
       </div>
       <div id="middle-content" class="topbar-item">
         <div id="search-field-container">
