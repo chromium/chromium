@@ -33,6 +33,12 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   void OnScreenshotTilePressed();
   // Handles when the Screen Size Settings is pressed.
   void OnScreenSizeSettingsButtonPressed();
+  // Opens the feedback form with preset information.
+  void OnFeedbackButtonPressed();
+  // Opens the help center for more info about Game Dashboard.
+  void OnHelpButtonPressed();
+  // Opens up the Game Dashboard Settings.
+  void OnSettingsButtonPressed();
 
   // Adds a row of shortcut tiles to the main menu view for users to quickly
   // access common functionality.
@@ -41,6 +47,10 @@ class GameDashboardMainMenuView : public views::BubbleDialogDelegateView {
   // Adds a row to access a settings page controlling the screen size if the
   // given game window is an ARC app.
   void MaybeAddScreenSizeSettingsRow();
+
+  // Adds the dashboard cluster (containing feedback, settings, and help
+  // buttons) to the Game Controls tile view.
+  void AddUtilityClusterRow();
 
   const raw_ptr<aura::Window, ExperimentalAsh> game_window_;
 };

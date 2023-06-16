@@ -10,6 +10,7 @@
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
+#include "ash/system/unified/feature_pod_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -47,6 +48,19 @@ std::unique_ptr<FeatureTile> CreateTile(base::RepeatingClosure callback,
   return tile;
 }
 
+std::unique_ptr<ash::FeaturePodIconButton> CreateIconButton(
+    base::RepeatingClosure callback,
+    int id,
+    const gfx::VectorIcon& icon,
+    const std::u16string& text) {
+  auto icon_button = std::make_unique<FeaturePodIconButton>(
+      std::move(callback), /*is_togglable=*/false);
+  icon_button->SetID(id);
+  icon_button->SetVectorIcon(icon);
+  icon_button->SetTooltipText(text);
+  return icon_button;
+}
+
 }  // namespace
 
 GameDashboardMainMenuView::GameDashboardMainMenuView(
@@ -74,6 +88,8 @@ GameDashboardMainMenuView::GameDashboardMainMenuView(
 
   MaybeAddScreenSizeSettingsRow();
 
+  AddUtilityClusterRow();
+
   SizeToPreferredSize();
 }
 
@@ -94,6 +110,18 @@ void GameDashboardMainMenuView::OnScreenshotTilePressed() {
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
   // TODO(b/283988495): Add support when screen size setting is pressed.
+}
+
+void GameDashboardMainMenuView::OnFeedbackButtonPressed() {
+  // TODO(b/273641035): Add support when feedback button is pressed.
+}
+
+void GameDashboardMainMenuView::OnHelpButtonPressed() {
+  // TODO(b/273640773): Add support when help button is pressed.
+}
+
+void GameDashboardMainMenuView::OnSettingsButtonPressed() {
+  // TODO(b/281773221): Add support when settings button is pressed.
 }
 
 void GameDashboardMainMenuView::AddShortcutTilesRow() {
@@ -137,6 +165,34 @@ void GameDashboardMainMenuView::MaybeAddScreenSizeSettingsRow() {
         l10n_util::GetStringUTF16(
             IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE)));
   }
+}
+
+void GameDashboardMainMenuView::AddUtilityClusterRow() {
+  views::BoxLayoutView* container =
+      AddChildView(std::make_unique<views::BoxLayoutView>());
+  container->SetOrientation(views::BoxLayout::Orientation::kHorizontal);
+  container->SetBetweenChildSpacing(kCenterPadding);
+
+  auto* feedback_button =
+      container->AddChildView(std::make_unique<views::LabelButton>(
+          base::BindRepeating(
+              &GameDashboardMainMenuView::OnFeedbackButtonPressed,
+              base::Unretained(this)),
+          l10n_util::GetStringUTF16(
+              IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE)));
+  feedback_button->SetID(VIEW_ID_GD_FEEDBACK_BUTTON);
+  feedback_button->SetImageLabelSpacing(kCenterPadding);
+  feedback_button->SetHorizontalAlignment(gfx::HorizontalAlignment::ALIGN_LEFT);
+  container->AddChildView(CreateIconButton(
+      base::BindRepeating(&GameDashboardMainMenuView::OnHelpButtonPressed,
+                          base::Unretained(this)),
+      VIEW_ID_GD_HELP_BUTTON, vector_icons::kHelpIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP)));
+  container->AddChildView(CreateIconButton(
+      base::BindRepeating(&GameDashboardMainMenuView::OnSettingsButtonPressed,
+                          base::Unretained(this)),
+      VIEW_ID_GD_GENERAL_SETTINGS_BUTTON, vector_icons::kSettingsIcon,
+      l10n_util::GetStringUTF16(IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP)));
 }
 
 BEGIN_METADATA(GameDashboardMainMenuView, views::BubbleDialogDelegateView)

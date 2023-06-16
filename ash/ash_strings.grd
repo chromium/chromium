@@ -6759,6 +6759,9 @@ To shut down the device, press and hold the power button on the device again.
       <message name="IDS_ASH_GAME_DASHBOARD_CONTROLS_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard game controls tile.">
         Controls
       </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_HELP_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard help icon button.">
+        Help center
+      </message>
       <message name="IDS_ASH_GAME_DASHBOARD_MAIN_MENU_BUTTON_TITLE" desc="The title of the Game Dashboard main menu button.">
         Game Dashboard
       </message>
@@ -6770,6 +6773,12 @@ To shut down the device, press and hold the power button on the device again.
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_SCREEN_SIZE_SETTINGS_TITLE" translateable="false" desc="The display name for the Game Dashboard screen size settings.">
         Screen size
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SEND_FEEDBACK_TITLE" translateable="false" desc="The display name for the Game Dashboard send feedback button.">
+        Send feedback
+      </message>
+      <message name="IDS_ASH_GAME_DASHBOARD_SETTINGS_TOOLTIP" translateable="false" desc="Tooltip for the Game Dashboard settings icon button.">
+        Dashboard settings
       </message>
       <message name="IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE" translateable="false" desc="The display name for the Game Dashboard toolbar tile.">
         Toolbar
