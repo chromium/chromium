@@ -413,6 +413,29 @@ void WaylandToplevelWindow::UpdateWindowScale(bool update_bounds) {
   SizeConstraintsChanged();
 }
 
+void WaylandToplevelWindow::OnRotateFocus(uint32_t serial,
+                                          uint32_t direction,
+                                          bool restart) {
+  if (!is_active_ || !HasKeyboardFocus()) {
+    VLOG(1) << "requested focus rotation when surface is not active or does "
+               "not have keyboard focus {active, focus}: {"
+            << is_active_ << ", " << HasKeyboardFocus()
+            << "}. This might be caused by delay in exo. Ignoring request.";
+    shell_toplevel()->AckRotateFocus(
+        serial, ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
+    return;
+  }
+
+  auto platform_direction =
+      direction == ZAURA_TOPLEVEL_ROTATE_DIRECTION_FORWARD
+          ? PlatformWindowDelegate::RotateDirection::kForward
+          : PlatformWindowDelegate::RotateDirection::kBackward;
+  bool rotated = delegate()->OnRotateFocus(platform_direction, restart);
+  shell_toplevel()->AckRotateFocus(
+      serial, rotated ? ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_HANDLED
+                      : ZAURA_TOPLEVEL_ROTATE_HANDLED_STATE_NOT_HANDLED);
+}
+
 void WaylandToplevelWindow::LockFrame() {
   OnFrameLockingChanged(true);
 }

@@ -7,6 +7,7 @@
 
 #include <aura-shell-server-protocol.h>
 
+#include "base/functional/callback.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/ozone/platform/wayland/test/server_object.h"
 #include "ui/ozone/platform/wayland/test/test_region.h"
@@ -31,8 +32,18 @@ class TestZAuraToplevel : public ServerObject {
   const absl::optional<TestRegion>& shape() const { return shape_; }
   void set_shape(const absl::optional<TestRegion>& shape) { shape_ = shape; }
 
+  using AckRotateFocusCallback =
+      base::RepeatingCallback<void(uint32_t serial, uint32_t handled)>;
+  void set_ack_rotate_focus_callback(const AckRotateFocusCallback cb) {
+    ack_rotate_focus_callback_ = cb;
+  }
+  AckRotateFocusCallback ack_rotate_focus_callback() {
+    return ack_rotate_focus_callback_;
+  }
+
  private:
   absl::optional<TestRegion> shape_;
+  AckRotateFocusCallback ack_rotate_focus_callback_;
 };
 
 }  // namespace wl

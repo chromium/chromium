@@ -189,6 +189,8 @@ class ShellToplevelWrapper {
   // unset the window shape.
   virtual void SetShape(std::unique_ptr<ShapeRects> shape_rects) = 0;
 
+  virtual void AckRotateFocus(uint32_t serial, uint32_t handled) = 0;
+
   // Casts `this` to XDGToplevelWrapperImpl, if it is of that type.
   virtual XDGToplevelWrapperImpl* AsXDGToplevelWrapper();
 };

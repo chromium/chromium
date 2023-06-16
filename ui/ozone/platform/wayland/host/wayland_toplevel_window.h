@@ -107,6 +107,7 @@ class WaylandToplevelWindow : public WaylandWindow,
                    const base::TimeDelta hide_delay) override;
   void HideTooltip() override;
   void PropagateBufferScale(float new_scale) override;
+  void OnRotateFocus(uint32_t serial, uint32_t direction, bool restart);
 
   // WmDragHandler overrides:
   bool ShouldReleaseCaptureForDrag(ui::OSExchangeData* data) const override;

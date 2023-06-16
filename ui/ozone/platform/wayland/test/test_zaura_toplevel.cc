@@ -147,6 +147,22 @@ void SetShape(wl_client* client,
                       : absl::nullopt);
 }
 
+void SetTopInset(wl_client* client, wl_resource* resource, int32_t height) {
+  NOTIMPLEMENTED_LOG_ONCE();
+}
+
+void AckRotateFocus(wl_client* client,
+                    wl_resource* resource,
+                    uint32_t serial,
+                    uint32_t handled) {
+  auto* toplevel = GetUserDataAs<TestZAuraToplevel>(resource);
+  if (toplevel->ack_rotate_focus_callback()) {
+    toplevel->ack_rotate_focus_callback().Run(serial, handled);
+  } else {
+    NOTIMPLEMENTED_LOG_ONCE();
+  }
+}
+
 }  // namespace
 
 TestZAuraToplevel::TestZAuraToplevel(wl_resource* resource)
@@ -179,6 +195,8 @@ const struct zaura_toplevel_interface kTestZAuraToplevelImpl = {
     &UnsetSnap,
     &SetPersistable,
     &SetShape,
+    &SetTopInset,
+    &AckRotateFocus,
 };
 
 }  // namespace wl
