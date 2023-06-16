@@ -4,6 +4,7 @@
 
 #include "chromeos/components/onc/onc_signature.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "components/onc/onc_constants.h"
 
 using base::Value;
@@ -558,7 +559,9 @@ const OncFieldSignature* GetFieldSignature(const OncValueSignature& signature,
 namespace {
 
 struct CredentialEntry {
-  const OncValueSignature* value_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* value_signature;
   const char* field_name;
 };
 

@@ -12,6 +12,7 @@
 #include "base/json/json_file_value_serializer.h"
 #include "base/json/json_reader.h"
 #include "base/logging.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/notreached.h"
 #include "base/path_service.h"
 #include "base/strings/string_number_conversions.h"
@@ -216,7 +217,9 @@ TEST(ONCUtils, ParseAndValidateOncForImport_WithAdvancedOpenVPNSettings) {
 }
 
 struct MaskCredentialsTestCase {
-  const OncValueSignature* onc_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-var-initializer, #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* onc_signature;
   const char* onc;
   const char* expected_after_masking;
 };

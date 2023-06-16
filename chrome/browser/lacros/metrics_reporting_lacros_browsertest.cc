@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/crosapi/mojom/metrics_reporting.mojom.h"
@@ -35,7 +36,9 @@ class TestObserver : public mojom::MetricsReportingObserver {
   // Public because this is test code.
   absl::optional<bool> metrics_enabled_;
   absl::optional<std::string> metrics_client_id_;
-  base::RunLoop* on_changed_run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION base::RunLoop* on_changed_run_loop_ = nullptr;
   mojo::Receiver<mojom::MetricsReportingObserver> receiver_{this};
 };
 

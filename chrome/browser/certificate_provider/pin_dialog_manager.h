@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
 #include "chrome/browser/certificate_provider/security_token_pin_dialog_host.h"
@@ -148,7 +149,9 @@ class PinDialogManager final {
     // Remember the host that was used to open the active dialog, as new hosts
     // could have been added since the dialog was opened, but we want to
     // continue calling the same host when dealing with the same active dialog.
-    SecurityTokenPinDialogHost* const host;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION SecurityTokenPinDialogHost* const host;
 
     const std::string extension_id;
     const std::string extension_name;

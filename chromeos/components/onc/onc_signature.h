@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/component_export.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/values.h"
 
 namespace chromeos {
@@ -22,7 +23,9 @@ struct OncValueSignature;
 
 struct OncFieldSignature {
   const char* onc_field_name;
-  const OncValueSignature* value_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* value_signature;
   // If this is non-null, it will be called if the field doesn't have a value
   // after shill->onc translation and the returned value will be assigned to the
   // field.
@@ -31,9 +34,15 @@ struct OncFieldSignature {
 
 struct COMPONENT_EXPORT(CHROMEOS_ONC) OncValueSignature {
   base::Value::Type onc_type;
-  const OncFieldSignature* fields;
-  const OncValueSignature* onc_array_entry_signature;
-  const OncValueSignature* base_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncFieldSignature* fields;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* onc_array_entry_signature;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const OncValueSignature* base_signature;
 };
 
 COMPONENT_EXPORT(CHROMEOS_ONC)
