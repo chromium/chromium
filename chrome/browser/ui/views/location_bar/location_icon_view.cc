@@ -296,6 +296,7 @@ void LocationIconView::UpdateIcon() {
 
 void LocationIconView::UpdateBackground() {
   if (OmniboxFieldTrial::IsChromeRefreshIconsEnabled()) {
+    CHECK(GetColorProvider());
     SetBackground(views::CreateRoundedRectBackground(
         GetColorProvider()->GetColor(kColorPageInfoBackground), height() / 2));
   } else {

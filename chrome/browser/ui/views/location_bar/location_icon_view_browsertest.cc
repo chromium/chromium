@@ -30,18 +30,22 @@ class LocationIconViewBrowserTest : public InProcessBrowserTest {
     BrowserView* browser_view =
         BrowserView::GetBrowserViewForBrowser(browser());
     location_bar_ = browser_view->GetLocationBarView();
-    icon_view_ = std::make_unique<LocationIconView>(font_list, location_bar_,
-                                                    location_bar_);
+    icon_view_ = location_bar_->AddChildView(std::make_unique<LocationIconView>(
+        font_list, location_bar_, location_bar_));
+  }
+
+  void TearDownOnMainThread() override {
+    location_bar_ = nullptr;
+    icon_view_ = nullptr;
   }
 
   LocationBarView* location_bar() const { return location_bar_; }
 
-  LocationIconView* icon_view() const { return icon_view_.get(); }
+  LocationIconView* icon_view() const { return icon_view_; }
 
  private:
-  raw_ptr<LocationBarView, DanglingUntriaged> location_bar_;
-
-  std::unique_ptr<LocationIconView> icon_view_;
+  raw_ptr<LocationBarView> location_bar_;
+  raw_ptr<LocationIconView> icon_view_;
 };
 
 // Check to see if the InkDropMode is off when the omnibox is editing.
