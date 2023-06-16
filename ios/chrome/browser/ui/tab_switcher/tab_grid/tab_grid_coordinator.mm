@@ -1038,6 +1038,10 @@ bool FindNavigatorShouldBePresentedInBrowser(Browser* browser) {
   _bookmarksCoordinator = nil;
 }
 
+- (void)dealloc {
+  CHECK(!_recentTabsContextMenuHelper);
+}
+
 #pragma mark - TabPresentationDelegate
 
 - (void)showActiveTabInPage:(TabGridPage)page
