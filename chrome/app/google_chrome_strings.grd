@@ -1144,6 +1144,22 @@ Permissions you've already given to websites and apps may apply to this account.
         </message>
       </if>
 
+      <if expr="not is_android">
+      <!-- Password Manager Tutorial Strings -->
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_APP_MENU" desc="The description of the 'open add menu' step in password manager tutorial">
+          Click the Chrome menu
+        </message>
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_CLICK_PASSWORD_MANAGER" desc="The description of the 'click password manager' step in password manager tutorial">
+          Click “Google Password Manager”
+        </message>
+        <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SUCCESS_BODY" desc="The description of the body text in the 'success' step in password manager tutorial">
+          Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.
+        </message>
+        <message name="IDS_PASSWORD_MANAGER_IPH_CREATE_SHORTCUT_BODY" desc="Body of the in Product Help shown after successfully logging into a website telling user about how to create a shortcut">
+          Add a shortcut to Google Password Manager
+        </message>
+      </if>
+
       <!-- Settings API bubble -->
       <message name="IDS_EXTENSIONS_SETTINGS_API_FIRST_LINE_START_PAGES_SPECIFIC" desc="Text displayed in the Settings API bubble as first line when an extension has changed the start pages, and we are pointing to its icon.">
         This extension has changed what page is shown when you start Chrome.
