@@ -178,7 +178,5 @@ day on [UMA Usage dashboard](https://goto.google.com/uma-usecounter-peruser).
 
 ## Analyze UseCounter UKM Data
 For privacy concerns, UKM data is available for Google employees only.
-
-### UKM Dashboard
-UKM dashboard is accessible to Google employees only. Please see [this internal
-wiki](https://goto.google.com/usecounter-ukm-wiki) for details.
+Please see [this internal
+documentation](https://goto.google.com/ukm-blink-usecounter) for details.
