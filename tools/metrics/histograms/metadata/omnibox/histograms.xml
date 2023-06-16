@@ -2396,9 +2396,9 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Omnibox.ZeroPrefixOnFocusType" enum="OmniboxFocusType"
-    expires_after="2023-04-26">
-  <owner>rongtan@google.com</owner>
+<histogram name="Omnibox.ZeroPrefixFocusType" enum="OmniboxFocusType"
+    expires_after="2024-02-28">
+  <owner>pnoland@google.com</owner>
   <owner>ender@google.com</owner>
   <owner>chrome-omnibox-team@google.com</owner>
   <summary>
