@@ -175,7 +175,11 @@ public class UrlBarUiUnitTest {
 
         updateUrlBarText(
                 getUrlText() + "/foooooo", UrlBar.ScrollType.SCROLL_TO_TLD, domain.length());
-        assertTextEquals(urlText, getVisibleTextPrefixHint());
+        if (UrlBar.sScrollToTLDOptimizationsFlag.isEnabled()) {
+            assertTextEquals(urlText, getVisibleTextPrefixHint());
+        } else {
+            assertTextEquals(urlText + "/", getVisibleTextPrefixHint());
+        }
     }
 
     @Test

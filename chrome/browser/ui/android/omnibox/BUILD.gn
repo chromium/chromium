@@ -372,6 +372,7 @@ android_library("unit_device_javatests") {
     ":java_resources",
     "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
+    "//chrome/browser/flags:java",
     "//chrome/browser/ui/android/toolbar:java",
     "//chrome/test/android:chrome_java_test_support_common",
     "//components/browser_ui/site_settings/android:java",

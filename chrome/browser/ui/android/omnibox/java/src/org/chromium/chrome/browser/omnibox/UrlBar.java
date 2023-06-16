@@ -66,15 +66,15 @@ public abstract class UrlBar extends AutocompleteEditText {
     private static final int MAX_DISPLAYABLE_LENGTH = 4000;
     private static final int MAX_DISPLAYABLE_LENGTH_LOW_END = 1000;
 
-    private static final MutableFlagWithSafeDefault sScrollToTLDOptimizationsFlag =
-            new MutableFlagWithSafeDefault(ChromeFeatureList.SCROLL_TO_TLD_OPTIMIZATION, false);
-
     // Stylus handwriting: Setting this ime option instructs stylus writing service to restrict
     // capturing writing events slightly outside the Url bar area. This is needed to prevent stylus
     // handwriting in inputs in web content area that are very close to url bar area, from being
     // committed to Url bar's Edit text. Ex: google.com search field.
     private static final String IME_OPTION_RESTRICT_STYLUS_WRITING_AREA =
             "restrictDirectWritingArea=true";
+
+    static final MutableFlagWithSafeDefault sScrollToTLDOptimizationsFlag =
+            new MutableFlagWithSafeDefault(ChromeFeatureList.SCROLL_TO_TLD_OPTIMIZATION, false);
 
     /**
      * The text direction of the URL or query: LAYOUT_DIRECTION_LOCALE, LAYOUT_DIRECTION_LTR, or
@@ -696,7 +696,7 @@ public abstract class UrlBar extends AutocompleteEditText {
             return false;
         }
 
-        if (mVisibleTextPrefixHint != null) {
+        if (mVisibleTextPrefixHint != null && sScrollToTLDOptimizationsFlag.isEnabled()) {
             return TextUtils.indexOf(text, mVisibleTextPrefixHint) == 0;
         }
 
