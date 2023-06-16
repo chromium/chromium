@@ -10,7 +10,7 @@ package org.chromium.chrome.browser.xsurface.feed;
  * Interface for logging latency and availability signals for feed network requests. All timestamps
  * are in terms of nanoseconds since system boot.
  *
- * Obtain instances from FeedLaunchReliabilityLogger.getNetworkRequestReliabilityLogger().
+ * Obtain instances from FeedLaunchReliabilityLogger.getNetworkRequestReliabilityLogger2().
  */
 public interface FeedNetworkRequestReliabilityLogger {
     /**

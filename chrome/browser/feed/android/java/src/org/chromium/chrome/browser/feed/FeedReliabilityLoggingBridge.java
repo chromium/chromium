@@ -73,43 +73,43 @@ public class FeedReliabilityLoggingBridge {
 
     @CalledByNative
     public void logFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logFeedQueryRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logFeedQueryRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logWebFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logWebFeedRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logWebFeedRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logSingleWebFeedRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logSingleWebFeedRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logSingleWebFeedRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logActionsUploadRequestStart(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logActionsUploadRequestStart(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logActionsUploadRequestStart(
                 timestamp);
     }
 
     @CalledByNative
     public void logRequestSent(int requestId, long timestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logRequestSent(timestamp);
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logRequestSent(timestamp);
     }
 
     @CalledByNative
     public void logResponseReceived(int requestId, long serverRecvTimestamp,
             long serverSendTimestamp, long clientRecvTimestamp) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logResponseReceived(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logResponseReceived(
                 serverRecvTimestamp, serverSendTimestamp, clientRecvTimestamp);
     }
 
     @CalledByNative
     public void logRequestFinished(int requestId, long timestamp, int canonicalStatus) {
-        mLaunchLogger.getNetworkRequestReliabilityLogger(requestId).logRequestFinished(
+        mLaunchLogger.getNetworkRequestReliabilityLogger2(requestId).logRequestFinished(
                 timestamp, canonicalStatus);
     }
 
