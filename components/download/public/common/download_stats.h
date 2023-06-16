@@ -360,11 +360,7 @@ COMPONENTS_DOWNLOAD_EXPORT void RecordResumptionStrongValidators(
 COMPONENTS_DOWNLOAD_EXPORT void RecordParallelRequestCreationFailure(
     DownloadInterruptReason reason);
 
-// Record download later events.
-COMPONENTS_DOWNLOAD_EXPORT void RecordDownloadLaterEvent(
-    DownloadLaterEvent event);
-
-// Record download later events.
+// Records the input stream read error type.
 COMPONENTS_DOWNLOAD_EXPORT void RecordInputStreamReadError(
     MojoResult mojo_result);
 

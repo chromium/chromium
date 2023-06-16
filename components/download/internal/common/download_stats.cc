@@ -637,10 +637,6 @@ void RecordInProgressDBCount(InProgressDBCountTypes type) {
   UMA_HISTOGRAM_ENUMERATION("Download.InProgressDB.Counts", type);
 }
 
-void RecordDownloadLaterEvent(DownloadLaterEvent event) {
-  base::UmaHistogramEnumeration("Download.Later.Events", event);
-}
-
 void RecordInputStreamReadError(MojoResult mojo_result) {
   InputStreamReadError error = InputStreamReadError::kUnknown;
   switch (mojo_result) {

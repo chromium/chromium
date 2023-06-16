@@ -45,11 +45,4 @@ TEST(DownloadStatsTest, RecordDownloadCompleted) {
       ConnectionType::CONNECTION_WIFI, 1);
 }
 
-TEST(DownloadStatsTest, RecordDownloadLaterEvent) {
-  base::HistogramTester histogram_tester;
-  RecordDownloadLaterEvent(DownloadLaterEvent::kScheduleRemoved);
-  histogram_tester.ExpectBucketCount("Download.Later.Events",
-                                     DownloadLaterEvent::kScheduleRemoved, 1);
-}
-
 }  // namespace download
