@@ -508,6 +508,21 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
   UpdateWallpaperColor(SK_ColorWHITE);
 }
 
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       UpdateWallpaperColor_WithOobeSession_NotifiesObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::OOBE);
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(1);
+
+  UpdateWallpaperColor(SK_ColorWHITE);
+}
+
 // Helper to print better matcher errors.
 void PrintTo(const SampleColorScheme& scheme, std::ostream* os) {
   *os << base::StringPrintf(

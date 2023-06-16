@@ -401,7 +401,10 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     if (session) {
       return GetColorPaletteSeed(AccountFromSession(session));
     }
-    if (!chromeos::features::IsJellyEnabled()) {
+    session_manager::SessionState session_state =
+        Shell::Get()->session_controller()->GetSessionState();
+    if (!chromeos::features::IsJellyEnabled() ||
+        session_state == session_manager::SessionState::OOBE) {
       // Generate a seed where we assume TonalSpot and ignore static colors.
       ColorPaletteSeed seed;
       bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
