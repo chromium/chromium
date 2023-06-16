@@ -118,6 +118,10 @@ ContentSettingImageView::ContentSettingImageView(
       /*role_description*/ absl::nullopt,
       accessible_name.empty() ? ax::mojom::NameFrom::kAttributeExplicitlyEmpty
                               : ax::mojom::NameFrom::kAttribute);
+
+  // The chrome refresh version of this view has a ripple effect which is
+  // configured by the background.
+  UpdateBackground();
 }
 
 ContentSettingImageView::~ContentSettingImageView() = default;
