@@ -446,7 +446,7 @@ class TimeBase {
   // For legacy serialization only. When serializing to `base::Value`, prefer
   // the helpers from //base/json/values_util.h instead. Otherwise, use
   // `Time::ToDeltaSinceWindowsEpoch()` for `Time` and
-  // `TimeDelta::InMiseconds()` for `TimeDelta`. See http://crbug.com/634507.
+  // `TimeDelta::InMicroseconds()` for `TimeDelta`. See http://crbug.com/634507.
   constexpr int64_t ToInternalValue() const { return us_; }
 
   // The amount of time since the origin (or "zero") point. This is a syntactic
@@ -811,7 +811,7 @@ class BASE_EXPORT Time : public time_internal::TimeBase<Time> {
   // DEPRECATED - Do not use in new code. When deserializing from `base::Value`,
   // prefer the helpers from //base/json/values_util.h instead.
   // Otherwise, use `Time::FromDeltaSinceWindowsEpoch()` for `Time` and
-  // `TimeDelta::FromMiseconds()` for `TimeDelta`. http://crbug.com/634507
+  // `TimeDelta::FromMicroseconds()` for `TimeDelta`. http://crbug.com/634507
   static constexpr Time FromInternalValue(int64_t us) { return Time(us); }
 
  private:
