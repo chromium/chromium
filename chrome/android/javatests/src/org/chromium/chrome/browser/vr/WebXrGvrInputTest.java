@@ -127,7 +127,10 @@ public class WebXrGvrInputTest {
     @Restriction(RESTRICTION_TYPE_VIEWER_DAYDREAM)
     @CommandLineFlags.Add({"enable-features=WebXR"})
     @XrActivityRestriction({XrActivityRestriction.SupportedActivity.ALL})
-    public void testControllerClicksRegisteredOnDaydream_WebXr() {
+    @DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
+            message = "Flaky on android-10-arm64-rel, crbug.com/1455242")
+    public void
+    testControllerClicksRegisteredOnDaydream_WebXr() {
         EmulatedGvrController controller = new EmulatedGvrController(mTestRule.getActivity());
         mWebXrVrTestFramework.loadFileAndAwaitInitialization(
                 "test_webxr_input", PAGE_LOAD_TIMEOUT_S);

@@ -8,6 +8,8 @@ import static org.chromium.chrome.browser.vr.XrTestFramework.PAGE_LOAD_TIMEOUT_S
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_LONG_MS;
 import static org.chromium.chrome.browser.vr.XrTestFramework.POLL_TIMEOUT_SHORT_MS;
 
+import android.os.Build.VERSION_CODES;
+
 import androidx.test.filters.MediumTest;
 
 import org.junit.Before;
@@ -40,6 +42,8 @@ import java.util.concurrent.Callable;
 // failures has been fixed.
 @CommandLineFlags.Add({ChromeSwitches.DISABLE_FIRST_RUN_EXPERIENCE,
         "enable-features=WebXR,LogJsConsoleMessages", "allow-pre-commit-input"})
+@DisableIf.Build(sdk_is_greater_than = VERSION_CODES.P, sdk_is_less_than = VERSION_CODES.R,
+        message = "Flaky on android-10-arm64-rel, crbug.com/1455244")
 public class WebXrGvrPermissionTest {
     @ClassParameter
     private static List<ParameterSet> sClassParams =
