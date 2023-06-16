@@ -37490,6 +37490,12 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WhatsNew.Started">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user started What's New.</description>
+</action>
+
 <action name="WhatsNew.UseChromeByDefault">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>

@@ -7,6 +7,11 @@
 #import "ios/chrome/browser/promos_manager/constants.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/promos_manager/promos_manager.h"
+#import "ios/chrome/browser/shared/model/browser/browser.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider.h"
+#import "ios/chrome/browser/shared/model/browser/browser_provider_interface.h"
+#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
+#import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -41,7 +46,16 @@
       break;
     }
     case SceneActivationLevelUnattached:
-    case SceneActivationLevelBackground:
+      break;
+    case SceneActivationLevelBackground: {
+      id<BrowserCoordinatorCommands> handler = HandlerForProtocol(
+          sceneState.browserProviderInterface.mainBrowserProvider.browser
+              ->GetCommandDispatcher(),
+          BrowserCoordinatorCommands);
+      DCHECK(handler);
+      [handler dismissWhatsNew];
+      break;
+    }
     case SceneActivationLevelForegroundInactive: {
       break;
     }

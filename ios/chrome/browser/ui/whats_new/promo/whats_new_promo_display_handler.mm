@@ -37,6 +37,7 @@
 
   DCHECK(self.handler);
   SetWhatsNewUsed(_promosManager);
+  base::RecordAction(base::UserMetricsAction("WhatsNew.Promo.Displayed"));
   [self.handler showWhatsNewPromo];
 }
 
@@ -45,10 +46,6 @@
 - (PromoConfig)config {
   return PromoConfig(promos_manager::Promo::WhatsNew,
                      &feature_engagement::kIPHiOSPromoWhatsNewFeature);
-}
-
-- (void)promoWasDisplayed {
-  base::RecordAction(base::UserMetricsAction("WhatsNew.Promo.Displayed"));
 }
 
 @end

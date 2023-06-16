@@ -32,7 +32,8 @@ NSString* const kTableViewNavigationDismissButtonId =
 
 }  // namespace
 
-@interface WhatsNewCoordinator () <UINavigationControllerDelegate>
+@interface WhatsNewCoordinator () <UINavigationControllerDelegate,
+                                   UIAdaptivePresentationControllerDelegate>
 
 // The mediator to display What's New data.
 @property(nonatomic, strong) WhatsNewMediator* mediator;
@@ -58,6 +59,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  base::RecordAction(base::UserMetricsAction("WhatsNew.Started"));
   self.mediator = [[WhatsNewMediator alloc] init];
   self.mediator.urlLoadingAgent =
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
@@ -77,6 +79,7 @@ NSString* const kTableViewNavigationDismissButtonId =
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
   self.navigationController.delegate = self;
+  self.navigationController.presentationController.delegate = self;
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];
@@ -129,6 +132,13 @@ NSString* const kTableViewNavigationDismissButtonId =
   }
 }
 
+#pragma mark - UIAdaptivePresentationControllerDelegate
+
+- (void)presentationControllerDidDismiss:
+    (UIPresentationController*)presentationController {
+  [self dismiss];
+}
+
 #pragma mark - WhatsNewTableViewDelegate
 
 - (void)detailViewController:
@@ -157,13 +167,9 @@ NSString* const kTableViewNavigationDismissButtonId =
   UIBarButtonItem* button = [[UIBarButtonItem alloc]
       initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                            target:self
-                           action:@selector(dismissButtonTapped)];
+                           action:@selector(dismiss)];
   [button setAccessibilityIdentifier:kTableViewNavigationDismissButtonId];
   return button;
-}
-
-- (void)dismissButtonTapped {
-  [self dismiss];
 }
 
 - (void)dismiss {

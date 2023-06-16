@@ -1596,8 +1596,10 @@ enum class ToolbarKind {
 }
 
 - (void)dismissWhatsNew {
-  [self.whatsNewCoordinator stop];
-  self.whatsNewCoordinator = nil;
+  if (self.whatsNewCoordinator) {
+    [self.whatsNewCoordinator stop];
+    self.whatsNewCoordinator = nil;
+  }
 }
 
 - (void)showWhatsNewIPH {
