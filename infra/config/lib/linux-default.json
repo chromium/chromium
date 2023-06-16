@@ -184,6 +184,7 @@
     "android-archive-dbg": "Ubuntu-22.04",
     "android-archive-rel": "Ubuntu-22.04",
     "android-arm64-archive-rel": "Ubuntu-22.04",
+    "android-arm64-proguard-rel": "Ubuntu-22.04",
     "android-asan": "Ubuntu-22.04",
     "android-bfcache-rel": "Ubuntu-22.04",
     "android-binary-size-generator": "Ubuntu-22.04",
