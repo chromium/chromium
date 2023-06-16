@@ -49,6 +49,7 @@
 #include "chromeos/dbus/power/fake_power_manager_client.h"
 #include "chromeos/dbus/power/power_manager_client.h"
 #include "chromeos/dbus/power_manager/idle.pb.h"
+#include "components/prefs/testing_pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/image/image_skia.h"
@@ -237,8 +238,13 @@ void AmbientAshTestBase::DisableBackupCacheDownloads() {
 }
 
 void AmbientAshTestBase::SetAmbientModeManagedScreensaverEnabled(bool enabled) {
-  Shell::Get()->session_controller()->GetActivePrefService()->SetBoolean(
-      ambient::prefs::kAmbientModeManagedScreensaverEnabled, enabled);
+  PrefService* prefs =
+      Shell::Get()->session_controller()->GetActivePrefService();
+  DCHECK(prefs);
+
+  static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
+      ambient::prefs::kAmbientModeManagedScreensaverEnabled,
+      std::make_unique<base::Value>(enabled));
 }
 
 void AmbientAshTestBase::SetAmbientTheme(AmbientTheme theme) {

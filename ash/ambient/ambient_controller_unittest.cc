@@ -13,6 +13,7 @@
 #include "ash/ambient/ambient_ui_settings.h"
 #include "ash/ambient/managed/screensaver_images_policy_handler.h"
 #include "ash/ambient/metrics/ambient_metrics.h"
+#include "ash/ambient/metrics/managed_screensaver_metrics.h"
 #include "ash/ambient/test/ambient_ash_test_base.h"
 #include "ash/ambient/test/test_ambient_client.h"
 #include "ash/ambient/ui/ambient_container_view.h"
@@ -358,6 +359,26 @@ TEST_F(AmbientControllerTest,
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
   // The view should be destroyed along the widget.
   EXPECT_TRUE(GetContainerViews().empty());
+}
+
+TEST_F(AmbientControllerTest, ConsumerShouldNotRecordManagedMetrics) {
+  base::HistogramTester histogram_tester;
+  SetAmbientModeEnabled(true);
+
+  SetAmbientModeEnabled(false);
+
+  {
+    base::test::ScopedFeatureList scoped_feature_list(
+        ash::features::kAmbientModeManagedScreensaver);
+
+    SetAmbientModeEnabled(true);
+
+    SetAmbientModeEnabled(false);
+  }
+
+  histogram_tester.ExpectTotalCount(
+      GetManagedScreensaverHistogram(kManagedScreensaverEnabledUMA),
+      /*expected_count=*/0);
 }
 
 TEST_F(AmbientControllerTest, NotShowAmbientWhenLockSecondaryUser) {
@@ -1633,6 +1654,20 @@ class AmbientControllerForManagedScreensaverTest : public AmbientAshTestBase {
   std::unique_ptr<base::ScopedPathOverride>
       device_policy_screensaver_folder_override_;
 };
+
+TEST_F(AmbientControllerForManagedScreensaverTest,
+       VerifyEnabledPolicyHistogram) {
+  base::HistogramTester histogram_tester;
+  SetAmbientModeManagedScreensaverEnabled(true);
+
+  SetAmbientModeManagedScreensaverEnabled(false);
+
+  SetAmbientModeManagedScreensaverEnabled(true);
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(GetManagedScreensaverHistogram(
+                  kManagedScreensaverEnabledUMA)),
+              BucketsAre(base::Bucket(false, 1), base::Bucket(true, 2)));
+}
 
 TEST_F(AmbientControllerForManagedScreensaverTest,
        ScreensaverIsShownWithEnoughImages) {

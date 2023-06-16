@@ -2184,6 +2184,18 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagedScreensaver.Enabled" enum="BooleanEnabled"
+    expires_after="2024-06-07">
+  <owner>mpetrisor@chromium.org</owner>
+  <owner>imprivata-eng@google.com</owner>
+  <summary>
+    Records whether the managed screensaver is enabled. Recorded for managed
+    devices when the sign-in screen is displayed, on every user login, and every
+    time the ScreensaverLockScreenEnabled or DeviceScreensaverLoginScreenEnabled
+    policy is updated.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange"
     enum="BooleanChanged" expires_after="2023-07-15">

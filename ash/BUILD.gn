@@ -191,6 +191,8 @@ component("ash") {
     "ambient/metrics/ambient_metrics.h",
     "ambient/metrics/ambient_session_metrics_recorder.cc",
     "ambient/metrics/ambient_session_metrics_recorder.h",
+    "ambient/metrics/managed_screensaver_metrics.cc",
+    "ambient/metrics/managed_screensaver_metrics.h",
     "ambient/model/ambient_animation_attribution_provider.cc",
     "ambient/model/ambient_animation_attribution_provider.h",
     "ambient/model/ambient_animation_photo_config.cc",
