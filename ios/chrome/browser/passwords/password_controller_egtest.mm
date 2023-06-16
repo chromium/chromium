@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "components/sync/base/sync_prefs.h"
 #import "components/sync/base/user_selectable_type.h"
 #import "ios/chrome/browser/passwords/password_manager_app_interface.h"
@@ -109,22 +110,31 @@ BOOL WaitForKeyboardToAppear() {
 - (AppLaunchConfiguration)appConfigurationForTestCase {
   AppLaunchConfiguration config;
   if ([self
-          isRunningTest:@selector(testShowAccountStorageNoticeBeforeSaving)] ||
-      [self
-          isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)] ||
-      [self isRunningTest:@selector
-            (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
+          isRunningTest:@selector(testShowAccountStorageNoticeBeforeSaving)]) {
     config.features_enabled.push_back(
         password_manager::features::kEnablePasswordsAccountStorage);
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
   }
   if ([self
           isRunningTest:@selector(testShowAccountStorageNoticeBeforeFilling)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEnablePasswordsAccountStorage);
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
     config.features_disabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
   if ([self isRunningTest:@selector
-            (testShowAccountStorageNoticeBeforeFillingBottomSheet)] ||
-      [self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
+            (testShowAccountStorageNoticeBeforeFillingBottomSheet)]) {
+    config.features_enabled.push_back(
+        password_manager::features::kEnablePasswordsAccountStorage);
+    config.features_enabled.push_back(
+        password_manager::features::kIOSPasswordBottomSheet);
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector(testUpdatePromptAppearsOnFormSubmission)]) {
     config.features_enabled.push_back(
         password_manager::features::kIOSPasswordBottomSheet);
   }
