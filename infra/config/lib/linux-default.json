@@ -1,6 +1,7 @@
 {
   "ci": {
     "3pp-linux-amd64-packager": "Ubuntu-22.04",
+    "ASAN Debug": "Ubuntu-22.04",
     "ASAN Release": "Ubuntu-22.04",
     "ASAN Release Media": "Ubuntu-22.04",
     "ASan Debug (32-bit x86 with V8-ARM)": "Ubuntu-22.04",
