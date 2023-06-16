@@ -214,6 +214,10 @@ void AmbientBadgeManager::OnWorkerCheckResult(const InstallableData& data) {
 
 void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
     const InstallableData& data) {
+  if (data.NoBlockingErrors()) {
+    passed_worker_check_ = true;
+  }
+
   if (!segmentation_platform_service_) {
     return;
   }
@@ -227,9 +231,14 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
       base::MakeRefCounted<segmentation_platform::InputContext>();
   input_context->metadata_args.emplace("url", validated_url_);
   input_context->metadata_args.emplace(
+      "origin", url::Origin::Create(validated_url_).GetURL());
+  input_context->metadata_args.emplace(
       "maskable_icon",
       segmentation_platform::processing::ProcessedValue::FromFloat(
           a2hs_params_->HasMaskablePrimaryIcon()));
+  input_context->metadata_args.emplace(
+      "app_type", segmentation_platform::processing::ProcessedValue::FromFloat(
+                      (float)a2hs_params_->app_type));
   segmentation_platform_service_->GetClassificationResult(
       segmentation_platform::kWebAppInstallationPromoKey, prediction_options,
       input_context,
@@ -240,6 +249,8 @@ void AmbientBadgeManager::MaybeShowAmbientBadgeSmart(
 void AmbientBadgeManager::OnGotClassificationResult(
     const segmentation_platform::ClassificationResult& result) {
   if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
+    // If the classification is not ready yet, fallback to the legacy logic.
+    MaybeShowAmbientBadgeLegacy();
     return;
   }
 
