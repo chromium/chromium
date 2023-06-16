@@ -115,14 +115,11 @@ const char kChromeUIHistoryURL[] = "chrome://history/";
 const char kChromeUIHumanPresenceInternalsHost[] = "hps-internals";
 const char kChromeUIHumanPresenceInternalsURL[] = "chrome://hps-internals/";
 const char kChromeUIIdentityInternalsHost[] = "identity-internals";
-const char kChromeUIImageEditorHost[] = "image-editor";
-const char kChromeUIImageEditorURL[] = "chrome://image-editor/";
 const char kChromeUIImageHost[] = "image";
 const char kChromeUIImageURL[] = "chrome://image/";
 const char kChromeUIInspectHost[] = "inspect";
 const char kChromeUIInspectURL[] = "chrome://inspect/";
 const char kChromeUIInternalsHost[] = "internals";
-const char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
 const char kChromeUIInterstitialHost[] = "interstitials";
 const char kChromeUIInterstitialURL[] = "chrome://interstitials/";
 const char kChromeUIInvalidationsHost[] = "invalidations";
@@ -146,7 +143,6 @@ const char kChromeUINetExportURL[] = "chrome://net-export";
 const char kChromeUINetInternalsHost[] = "net-internals";
 const char kChromeUINetInternalsURL[] = "chrome://net-internals/";
 const char kChromeUINewTabHost[] = "newtab";
-const char kChromeUINewTabIconHost[] = "ntpicon";
 const char kChromeUINewTabPageHost[] = "new-tab-page";
 const char kChromeUINewTabPageURL[] = "chrome://new-tab-page/";
 const char kChromeUINewTabPageThirdPartyHost[] = "new-tab-page-third-party";
@@ -243,6 +239,7 @@ const char kChromeUIWelcomeWin10Host[] = "welcome-win10";
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_ANDROID)
+const char kChromeUIInternalsQueryTilesPath[] = "query-tiles";
 const char kChromeUIJavaCrashURL[] = "chrome://java-crash/";
 const char kChromeUINativeBookmarksURL[] = "chrome-native://bookmarks/";
 const char kChromeUINativeExploreURL[] = "chrome-native://explore";
@@ -303,7 +300,6 @@ const char kChromeUIAccountManagerErrorURL[] = "chrome://account-manager-error";
 const char kChromeUIAccountMigrationWelcomeHost[] = "account-migration-welcome";
 const char kChromeUIAccountMigrationWelcomeURL[] =
     "chrome://account-migration-welcome";
-const char kChromeUIActivationMessageHost[] = "activationmessage";
 const char kChromeUIAddSupervisionHost[] = "add-supervision";
 const char kChromeUIAddSupervisionURL[] = "chrome://add-supervision/";
 const char kChromeUIArcOverviewTracingHost[] = "arc-overview-tracing";
@@ -382,8 +378,6 @@ const char kChromeUIPowerHost[] = "power";
 const char kChromeUIPowerUrl[] = "chrome://power";
 const char kChromeUIRemoteManagementCurtainHost[] = "security-curtain";
 const char kChromeUIScanningAppURL[] = "chrome://scanning";
-const char kChromeUIScreenlockIconHost[] = "screenlock-icon";
-const char kChromeUIScreenlockIconURL[] = "chrome://screenlock-icon/";
 const char kChromeUISetTimeHost[] = "set-time";
 const char kChromeUISetTimeURL[] = "chrome://set-time/";
 const char kChromeUISlowHost[] = "slow";
@@ -421,7 +415,6 @@ bool IsSystemWebUIHost(base::StringPiece host) {
   static const char* const kHosts[] = {
     kChromeUIAccountManagerErrorHost,
     kChromeUIAccountMigrationWelcomeHost,
-    kChromeUIActivationMessageHost,
     kChromeUIAddSupervisionHost,
     kChromeUIAssistantOptInHost,
     kChromeUIBluetoothPairingHost,
