@@ -244,6 +244,10 @@ interface FontData
 interface IdentityCredential : Credential
 interface IdentityProvider
 
+# Document Picture-in-Picture is not implemented in WebView (or Android).
+interface DocumentPictureInPicture : EventTarget
+interface DocumentPictureInPictureEvent : Event
+
 [GLOBAL OBJECT]
     method openDatabase
     attribute eventSender                    # test only
@@ -253,6 +257,7 @@ interface IdentityProvider
     attribute textInputController            # test only
     attribute gamepadController              # test only
     attribute GCController                   # test only
+    getter documentPictureInPicture          # Document Picture-in-Picture is desktop-only
     getter launchQueue                       # PWA File Handling API, crbug.com/829689
     getter speechSynthesis                   # Speech API, crbug.com/487255
     attribute chrome                         # crbug.com/618471

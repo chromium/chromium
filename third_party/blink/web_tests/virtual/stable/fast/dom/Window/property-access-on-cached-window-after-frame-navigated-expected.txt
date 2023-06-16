@@ -7,6 +7,8 @@ PASS oldChildWindow.cookieStore.onchange is newChildWindow.cookieStore.onchange
 PASS oldChildWindow.credentialless is newChildWindow.credentialless
 PASS oldChildWindow.crossOriginIsolated is newChildWindow.crossOriginIsolated
 PASS oldChildWindow.devicePixelRatio is newChildWindow.devicePixelRatio
+PASS oldChildWindow.documentPictureInPicture.onenter is newChildWindow.documentPictureInPicture.onenter
+PASS oldChildWindow.documentPictureInPicture.window is newChildWindow.documentPictureInPicture.window
 PASS oldChildWindow.innerHeight is newChildWindow.innerHeight
 PASS oldChildWindow.innerWidth is newChildWindow.innerWidth
 PASS oldChildWindow.isSecureContext is newChildWindow.isSecureContext

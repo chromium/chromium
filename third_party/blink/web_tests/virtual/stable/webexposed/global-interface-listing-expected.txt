@@ -1794,6 +1794,17 @@ interface DocumentFragment : Node
     method querySelector
     method querySelectorAll
     method replaceChildren
+interface DocumentPictureInPicture : EventTarget
+    attribute @@toStringTag
+    getter onenter
+    getter window
+    method constructor
+    method requestWindow
+    setter onenter
+interface DocumentPictureInPictureEvent : Event
+    attribute @@toStringTag
+    getter window
+    method constructor
 interface DocumentTimeline : AnimationTimeline
     attribute @@toStringTag
     method constructor
@@ -11113,6 +11124,7 @@ namespace console
     getter customElements
     getter devicePixelRatio
     getter document
+    getter documentPictureInPicture
     getter event
     getter external
     getter frameElement
