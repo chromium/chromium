@@ -4,7 +4,6 @@
 
 #include <memory>
 
-#include "content/browser/webui/test_web_ui_js_bridge_impl.h"
 #include "content/browser/webui/test_webui_js_bridge_ui.h"
 #include "content/browser/webui/web_ui_managed_interface.h"
 #include "content/public/browser/web_ui_browser_interface_broker_registry.h"
@@ -14,6 +13,7 @@
 #include "content/public/test/content_browser_test.h"
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/shell/browser/shell.h"
+#include "content/test/data/web_ui_managed_interface_test.test-mojom-webui-js-bridge-impl.h"
 #include "content/test/data/web_ui_managed_interface_test.test-mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

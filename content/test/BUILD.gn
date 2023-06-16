@@ -135,8 +135,6 @@ static_library("test_support") {
     "../browser/web_package/mock_signed_exchange_handler.cc",
     "../browser/web_package/mock_signed_exchange_handler.h",
     "../browser/web_package/signed_exchange_test_utils.h",
-    "../browser/webui/test_web_ui_js_bridge_impl.cc",
-    "../browser/webui/test_web_ui_js_bridge_impl.h",
     "../browser/webui/test_webui_js_bridge_ui.cc",
     "../browser/webui/test_webui_js_bridge_ui.h",
     "../browser/worker_host/test_shared_worker_service_impl.cc",
@@ -1057,11 +1055,24 @@ mojom("content_test_mojo_bindings") {
 mojom("web_ui_test_mojo_bindings") {
   testonly = true
   sources = [
-    "data/web_ui_managed_interface_test.test-mojom",
     "data/web_ui_test.test-mojom",
     "data/web_ui_test_types.test-mojom",
   ]
-  public_deps = [ "//url/mojom:url_mojom_gurl" ]
+  public_deps = [
+    ":web_ui_js_bridge_test_bindings",
+    "//url/mojom:url_mojom_gurl",
+  ]
+  webui_module_path = "/content/test/data"
+}
+
+mojom_with_webui_js_bridge("web_ui_js_bridge_test_bindings") {
+  testonly = true
+  source = "data/web_ui_managed_interface_test.test-mojom"
+
+  webui_controller = "content::TestWebUIJsBridgeUI"
+  webui_controller_header = "//content/browser/webui/test_webui_js_bridge_ui.h"
+  webui_controller_deps = [ "//content/test:test_support" ]
+
   webui_module_path = "/content/test/data"
 }
 
@@ -1630,6 +1641,7 @@ test("content_browsertests") {
     ":browsertest_support",
     ":content_test_mojo_bindings",
     ":test_support",
+    ":web_ui_js_bridge_test_bindings_webui_js_bridge_impl",
     ":web_ui_test_mojo_bindings",
     ":web_ui_ts_test_mojo_bindings",
     "//base/test:test_support",
@@ -2181,6 +2193,7 @@ grit("web_ui_mojo_test_resources") {
     "web_ui_mojo_test_resources.pak",
   ]
   deps = [
+    ":web_ui_js_bridge_test_bindings_js__generator",
     ":web_ui_mojo_test_build_ts",
     ":web_ui_test_mojo_bindings_js__generator",
   ]
@@ -2825,8 +2838,6 @@ test("content_unittests") {
     ":run_all_unittests",
     ":test_interfaces",
     ":test_support",
-    "web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
-    "web_ui:test_webui_js_bridge_webui_js_bridge_impl",
     "//base",
     "//base/allocator:buildflags",
     "//base/test:proto_test_support",
@@ -2881,6 +2892,9 @@ test("content_unittests") {
     "//content/renderer:for_content_tests",
     "//content/services/auction_worklet:tests",
     "//content/services/auction_worklet/public/mojom:for_content_tests",
+    "//content/test/web_ui:test_secondary_interface",
+    "//content/test/web_ui:test_webui_js_bridge2_webui_js_bridge_impl",
+    "//content/test/web_ui:test_webui_js_bridge_webui_js_bridge_impl",
     "//crypto",
     "//device/bluetooth",
     "//device/bluetooth:mocks",

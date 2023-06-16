@@ -18,6 +18,7 @@ interface Baz {
 
 // A bridge (aka Factory) interface that is used for binding other
 // interfaces.
+[WebUIJsBridge]
 interface TestWebUIJsBridge {
   // The WebUI calls this method to bind a Foo remote.
   BindFoo(pending_receiver<Foo> foo);

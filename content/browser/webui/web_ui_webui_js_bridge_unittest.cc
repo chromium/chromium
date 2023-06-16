@@ -12,6 +12,7 @@
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/test_renderer_host.h"
 #include "content/public/test/test_web_ui.h"
+#include "content/test/web_ui/test_secondary_interface.test-mojom.h"
 #include "content/test/web_ui/webui_js_bridge_unittest.test-mojom-webui-js-bridge-impl.h"
 #include "content/test/web_ui/webui_js_bridge_unittest2.test-mojom-webui-js-bridge-impl.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -31,7 +32,7 @@ namespace {
 class FooPageHandler : public mojom::FooPageHandler,
                        public DocumentUserData<FooPageHandler> {
  public:
-  static void Create(content::WebUIController* controller,
+  static void Create(TestWebUIJsBridgeUI* controller,
                      mojo::PendingReceiver<mojom::FooPageHandler> receiver,
                      mojo::PendingRemote<mojom::FooPage> remote) {
     FooPageHandler::CreateForCurrentDocument(
@@ -93,13 +94,13 @@ class Bar : public mojom::Bar, public base::SupportsUserData::Data {
     return *bar;
   }
 
-  static void BindBar(WebUIController* controller,
+  static void BindBar(TestWebUIJsBridgeUI* controller,
                       mojo::PendingReceiver<mojom::Bar> receiver) {
     Bar::Get(controller->web_ui()->GetWebContents()->GetBrowserContext())
         .BindBarImpl(std::move(receiver));
   }
 
-  static void BindObserver(WebUIController* controller,
+  static void BindObserver(TestWebUIJsBridgeUI* controller,
                            mojo::PendingRemote<mojom::BarObserver> remote) {
     Bar::Get(controller->web_ui()->GetWebContents()->GetBrowserContext())
         .BindObserverImpl(std::move(remote));
@@ -157,19 +158,27 @@ class WebUIJsBridgeTest : public RenderViewHostTestHarness {
   TestWebUI test_web_ui;
 };
 
-// Tests binder methods are overridden and can be called. Calling them does
-// nothing for now.
+// Tests binder methods are overridden and can be called.
 TEST_F(WebUIJsBridgeTest, Bind) {
+  mojom::FooWebUIJsBridgeBinderInitializer binder_initializer;
+  binder_initializer
+      .AddBinder<mojom::FooPageHandler, mojom::FooPage>(FooPageHandler::Create)
+      .AddBinder<mojom::Bar>(Bar::BindBar)
+      .AddBinder<mojom::BarObserver>(Bar::BindObserver);
+
   TestWebUIJsBridgeUI controller(web_ui());
-  mojom::FooWebUIJsBridgeImpl bridge(
-      &controller, base::BindRepeating(&FooPageHandler::Create),
-      base::BindRepeating(&Bar::BindBar),
-      base::BindRepeating(&Bar::BindObserver));
+  mojo::Remote<mojom::FooWebUIJsBridge> js_bridge_remote;
+
+  auto binder = binder_initializer.GetWebUIJsBridgeBinder();
+  binder.Run(&controller, js_bridge_remote.BindNewPipeAndPassReceiver());
 
   mojo::Remote<mojom::FooPageHandler> page_handler_remote;
   FooPage page;
-  bridge.BindFooPageHandler(page_handler_remote.BindNewPipeAndPassReceiver(),
-                            page.receiver().BindNewPipeAndPassRemote());
+  js_bridge_remote->BindFooPageHandler(
+      page_handler_remote.BindNewPipeAndPassReceiver(),
+      page.receiver().BindNewPipeAndPassRemote());
+  js_bridge_remote.FlushForTesting();
+
   auto& page_handler = FooPageHandler::Get(&controller);
   EXPECT_TRUE(page_handler_remote.is_bound());
   EXPECT_TRUE(page.receiver().is_bound());
@@ -177,33 +186,51 @@ TEST_F(WebUIJsBridgeTest, Bind) {
   EXPECT_TRUE(page_handler.remote().is_bound());
 
   mojo::Remote<mojom::Bar> bar_remote;
-  bridge.BindBar(bar_remote.BindNewPipeAndPassReceiver());
+  js_bridge_remote->BindBar(bar_remote.BindNewPipeAndPassReceiver());
+  js_bridge_remote.FlushForTesting();
 
   auto& bar = Bar::Get(browser_context());
   EXPECT_TRUE(bar_remote.is_bound());
   EXPECT_EQ(1u, bar.receivers().size());
 
   BarObserver observer;
-  bridge.BindBarObserver(observer.receiver().BindNewPipeAndPassRemote());
+  js_bridge_remote->BindBarObserver(
+      observer.receiver().BindNewPipeAndPassRemote());
+  js_bridge_remote.FlushForTesting();
+
   EXPECT_TRUE(observer.receiver().is_bound());
   EXPECT_EQ(1u, bar.observers().size());
 }
 
-// Tests we correctly generate a WebUIJsBridgeImpl for an interface that
-// binds interfaces in a separate mojom.
+// Making this a lambda causes a compile error.
+static void EmptyBinder(
+    TestWebUIJsBridgeUI2*,
+    mojo::PendingReceiver<secondary::mojom::SecondaryInterface>) {}
+
+// Tests we correctly generate a WebUIJsBridgeBinderInitializer for an interface
+// that binds interfaces in a separate mojom.
 TEST_F(WebUIJsBridgeTest, CrossModule) {
-  TestWebUIJsBridgeUI2 controller(web_ui());
-  mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing());
-  bridge.BindSecondaryInterface(mojo::NullReceiver());
+  mojom::TestWebUIJsBridge2BinderInitializer initializer;
+  initializer.AddBinder<secondary::mojom::SecondaryInterface>(&EmptyBinder);
 }
 
 // Tests that we crash if the wrong WebUIController is passed to the
 // WebUIJsBridge.
 TEST_F(WebUIJsBridgeTest, IncorrectWebUIControllerCrash) {
-  // TestWebUIJsBridge2Impl below expects TestWebUIJsBridge2.
+  mojom::TestWebUIJsBridge2BinderInitializer initializer;
+  initializer.AddBinder<secondary::mojom::SecondaryInterface>(&EmptyBinder);
+
+  // The `TestWebUIJsBridge2` binder below expects a `TestWebUIJsBridgeUI2`
+  // WebUIController, but we pass it a `TestWebUIJsBridgeUI` controller, which
+  // should cause a crash.
   TestWebUIJsBridgeUI controller(web_ui());
+
+  mojo::Remote<mojom::TestWebUIJsBridge2> js_bridge_remote;
+  auto binder = initializer.GetWebUIJsBridgeBinder();
+
   EXPECT_DEATH_IF_SUPPORTED(
-      mojom::TestWebUIJsBridge2Impl bridge(&controller, base::DoNothing()), "");
+      binder.Run(&controller, js_bridge_remote.BindNewPipeAndPassReceiver()),
+      "");
 }
 
 }  // namespace content::js_bridge_unittest

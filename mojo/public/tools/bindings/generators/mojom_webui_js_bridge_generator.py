@@ -90,6 +90,28 @@ class Generator(generator.Generator):
     if mojom.IsPendingReceiverKind(kind):
       return f'::mojo::PendingReceiver<{self._GetKindName(kind.kind)}>'
 
+  def _GetInterfaceName(self, kind):
+    """Return a string representing the C++ type of an endpoint's interface."""
+    if not (mojom.IsPendingRemoteKind(kind)
+            or mojom.IsPendingReceiverKind(kind)):
+      raise Exception('Kind is neither a PendingRemote or PendingReceiver.')
+
+    return self._GetKindName(kind.kind)
+
+  def _IsReceiverAndRemoteBinder(self, bind_method):
+    if len(bind_method.parameters) == 1:
+      return False
+
+    assert mojom.IsPendingReceiverKind(bind_method.parameters[0].kind)
+    assert mojom.IsPendingRemoteKind(bind_method.parameters[1].kind)
+    return True
+
+  def _IsReceiverOnlyBinder(self, bind_method):
+    if len(bind_method.parameters) == 2:
+      return False
+
+    return mojom.IsPendingReceiverKind(bind_method.parameters[0].kind)
+
   def _GetBinderMemberVariableName(self, bind_method):
     """Return the variable name of the binder corresponding to `bind_method`."""
     return f'binder_for_{generator.ToLowerSnakeCase(bind_method.name)}'
@@ -97,7 +119,10 @@ class Generator(generator.Generator):
   def GetFilters(self):
     return {
         'cpp_type': self._GetCppType,
+        'interface_name': self._GetInterfaceName,
         'binder_variable_name': self._GetBinderMemberVariableName,
+        'is_receiver_only_binder': self._IsReceiverOnlyBinder,
+        'is_receiver_and_remote_binder': self._IsReceiverAndRemoteBinder,
     }
 
   def _GetValidatedWebUIJsBridge(self):
@@ -125,14 +150,23 @@ class Generator(generator.Generator):
                         'response. WebUIJsBridge\'s methods should not '
                         'have responses.')
 
-      for param in method.parameters:
-        if not (mojom.IsPendingReceiverKind(param.kind)
-                or mojom.IsPendingRemoteKind(param.kind)):
-          raise Exception(f'{webui_js_bridge.name}.{method.name}\'s '
-                          f'"{param.name}" is not a pending_receiver or a '
-                          'pending_remote. WebUIJsBridge\'s methods '
-                          'should only have pending_receiver or '
-                          'pending_remote parameters.')
+      if len(method.parameters) == 1:
+        first_param = method.parameters[0]
+        if not (mojom.IsPendingReceiverKind(first_param.kind)
+                or mojom.IsPendingRemoteKind(first_param.kind)):
+          raise Exception(f'{webui_js_bridge.name}.{method.name}\'s first '
+                          'parameter should be a pending_receiver or a '
+                          'pending_remote.')
+      elif len(method.parameters) == 2:
+        if not mojom.IsPendingRemoteKind(method.parameters[1].kind):
+          raise Exception(f'{webui_js_bridge.name}.{method.name}\'s second '
+                          'parameter can only be a pending_remote.')
+      else:
+        raise Exception(f'{webui_js_bridge.name}.{method.name} has '
+                        f'{len(method.parameters)} parameters, but should have '
+                        'one or two parameters: (1) A pending_receiver, (2) a '
+                        'pending_remote, or (3) a pending_receiver and a '
+                        'pending_remote.')
 
     return webui_js_bridge
 
@@ -155,6 +189,7 @@ class Generator(generator.Generator):
         'webui_controller_name': webui_controller_name,
         'webui_controller_namespace': webui_controller_namespace,
         'webui_controller_header': self.webui_controller_header,
+        'webui_controller_with_namespace': self.webui_controller_with_namespace,
     }
 
   @UseJinja('webui_js_bridge_impl.h.tmpl')
