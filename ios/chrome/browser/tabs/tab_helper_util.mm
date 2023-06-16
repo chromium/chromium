@@ -10,7 +10,7 @@
 
 #import "base/feature_list.h"
 #import "components/autofill/ios/form_util/unique_id_data_tab_helper.h"
-#import "components/breadcrumbs/core/features.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/commerce/ios/browser/commerce_tab_helper.h"
 #import "components/favicon/core/favicon_service.h"
 #import "components/favicon/ios/web_favicon_driver.h"
@@ -165,7 +165,7 @@ void AttachTabHelpers(web::WebState* web_state, bool for_prerender) {
     FontSizeTabHelper::CreateForWebState(web_state);
   }
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerTabHelper::CreateForWebState(web_state);
   }
 

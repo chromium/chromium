@@ -562,11 +562,6 @@ extern const char kIOSSharedHighlightingV2Description[];
 extern const char kLockBottomToolbarName[];
 extern const char kLockBottomToolbarDescription[];
 
-// Title and description for the flag that controls whether event breadcrumbs
-// are captured.
-extern const char kLogBreadcrumbsName[];
-extern const char kLogBreadcrumbsDescription[];
-
 // Title and Description for the flag that controls displaying the Magic Stack
 // in the Home Surface,
 extern const char kMagicStackName[];

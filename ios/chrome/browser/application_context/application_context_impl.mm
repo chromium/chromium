@@ -20,8 +20,8 @@
 #import "base/task/thread_pool.h"
 #import "base/time/default_clock.h"
 #import "base/time/default_tick_clock.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/breadcrumbs/core/crash_reporter_breadcrumb_observer.h"
-#import "components/breadcrumbs/core/features.h"
 #import "components/component_updater/component_updater_service.h"
 #import "components/component_updater/timer_update_scheduler.h"
 #import "components/gcm_driver/gcm_client_factory.h"
@@ -166,7 +166,7 @@ void ApplicationContextImpl::PreMainMessageLoopRun() {
                                    GetSharedURLLoaderFactory());
   }
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     // Start crash reporter listening for breadcrumb events. Collected
     // breadcrumbs will be attached to crash reports.
     breadcrumbs::CrashReporterBreadcrumbObserver::GetInstance();

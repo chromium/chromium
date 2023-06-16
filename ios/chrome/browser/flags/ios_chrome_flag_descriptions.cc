@@ -652,10 +652,6 @@ const char kLockBottomToolbarDescription[] =
     "When enabled, the bottom toolbar will not get collapsed when scrolling "
     "into fullscreen mode.";
 
-const char kLogBreadcrumbsName[] = "Log Breadcrumb Events";
-const char kLogBreadcrumbsDescription[] =
-    "When enabled, breadcrumb events will be logged.";
-
 const char kMetrickitNonCrashReportName[] = "Metrickit non-crash reports";
 const char kMetrickitNonCrashReportDescription[] =
     "Enables sending Metrickit reports for non crash type (hang, "

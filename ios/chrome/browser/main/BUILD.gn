@@ -21,7 +21,7 @@ source_set("main") {
 
   deps = [
     "//base",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/keyed_service/ios",
     "//ios/chrome/browser/app_launcher",
     "//ios/chrome/browser/crash_report/breadcrumbs",

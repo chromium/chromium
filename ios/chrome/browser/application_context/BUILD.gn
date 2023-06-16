@@ -11,7 +11,7 @@ source_set("application_context") {
   deps = [
     "//base",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/component_updater",
     "//components/gcm_driver",
     "//components/history/core/browser",

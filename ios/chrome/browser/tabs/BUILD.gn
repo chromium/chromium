@@ -42,7 +42,7 @@ source_set("tabs_internal") {
     ":tabs",
     "//base",
     "//components/autofill/ios/form_util",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/commerce/ios/browser",
     "//components/favicon/core",
     "//components/favicon/ios",

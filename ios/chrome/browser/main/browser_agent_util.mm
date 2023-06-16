@@ -5,7 +5,7 @@
 #import "ios/chrome/browser/main/browser_agent_util.h"
 
 #import "base/feature_list.h"
-#import "components/breadcrumbs/core/features.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_browser_agent.h"
 #import "ios/chrome/browser/crash_report/breadcrumbs/breadcrumb_manager_browser_agent.h"
 #import "ios/chrome/browser/device_sharing/device_sharing_browser_agent.h"
@@ -48,7 +48,7 @@
 #endif
 
 void AttachBrowserAgents(Browser* browser) {
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerBrowserAgent::CreateForBrowser(browser);
   }
   LiveTabContextBrowserAgent::CreateForBrowser(browser);

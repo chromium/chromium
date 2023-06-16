@@ -26,7 +26,6 @@
 #import "components/autofill/core/common/autofill_switches.h"
 #import "components/autofill/ios/browser/autofill_switches.h"
 #import "components/bookmarks/common/bookmark_features.h"
-#import "components/breadcrumbs/core/features.h"
 #import "components/commerce/core/commerce_feature_list.h"
 #import "components/commerce/core/flag_descriptions.h"
 #import "components/content_settings/core/common/features.h"
@@ -817,9 +816,6 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
          autofill::features::kAutofillUseMobileLabelDisambiguation,
          kAutofillUseMobileLabelDisambiguationVariations,
          "AutofillUseMobileLabelDisambiguation")},
-    {"ios-breadcrumbs", flag_descriptions::kLogBreadcrumbsName,
-     flag_descriptions::kLogBreadcrumbsDescription, flags_ui::kOsIos,
-     FEATURE_VALUE_TYPE(breadcrumbs::kLogBreadcrumbs)},
     {"force-startup-signin-promo",
      flag_descriptions::kForceStartupSigninPromoName,
      flag_descriptions::kForceStartupSigninPromoDescription, flags_ui::kOsIos,

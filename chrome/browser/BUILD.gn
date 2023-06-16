@@ -2062,7 +2062,7 @@ static_library("browser") {
     "//components/bookmarks/browser",
     "//components/bookmarks/managed",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/browser_sync",
     "//components/browsing_data/content",
     "//components/browsing_data/core",

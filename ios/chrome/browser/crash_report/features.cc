@@ -4,8 +4,6 @@
 
 #include "ios/chrome/browser/crash_report/features.h"
 
-#include "components/breadcrumbs/core/features.h"
-
 BASE_FEATURE(kMetrickitNonCrashReport,
              "MetrickitNonCrashReport",
              base::FEATURE_DISABLED_BY_DEFAULT);

@@ -434,7 +434,7 @@ source_set("app_internal") {
     "//build:branding_buildflags",
     "//components/bookmarks/browser",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/browser_sync",
     "//components/browsing_data/core",
     "//components/component_updater",

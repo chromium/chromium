@@ -13,8 +13,6 @@
 #import "base/system/sys_info.h"
 #import "base/task/thread_pool.h"
 #import "base/version.h"
-#import "components/breadcrumbs/core/breadcrumb_persistent_storage_manager.h"
-#import "components/breadcrumbs/core/features.h"
 #import "components/metrics/metrics_pref_names.h"
 #import "components/metrics/metrics_service.h"
 #import "components/previous_session_info/previous_session_info.h"

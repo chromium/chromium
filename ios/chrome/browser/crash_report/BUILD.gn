@@ -30,7 +30,7 @@ source_set("crash_report") {
     "//base",
     "//build:branding_buildflags",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/crash/core/app",
     "//components/crash/core/browser",
     "//components/crash/core/common",

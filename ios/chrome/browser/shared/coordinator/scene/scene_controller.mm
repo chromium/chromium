@@ -18,7 +18,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "base/time/time.h"
 #import "components/autofill/core/browser/data_model/credit_card.h"
-#import "components/breadcrumbs/core/features.h"
+#import "components/breadcrumbs/core/breadcrumbs_status.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
 #import "components/infobars/core/infobar_manager.h"
@@ -3430,7 +3430,7 @@ void InjectNTP(Browser* browser) {
   // will be destroyed.
   self.mainCoordinator.incognitoBrowser = nil;
 
-  if (base::FeatureList::IsEnabled(breadcrumbs::kLogBreadcrumbs)) {
+  if (breadcrumbs::IsEnabled()) {
     BreadcrumbManagerBrowserAgent::FromBrowser(self.incognitoInterface.browser)
         ->SetLoggingEnabled(false);
   }

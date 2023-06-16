@@ -65,7 +65,7 @@ source_set("scene") {
     "//base/ios",
     "//components/autofill/core/browser",
     "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
+    "//components/breadcrumbs/core:status",
     "//components/feature_engagement/public",
     "//components/infobars/core",
     "//components/password_manager/core/common:features",

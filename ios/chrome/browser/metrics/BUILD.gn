@@ -75,8 +75,6 @@ source_set("metrics") {
     ":accessor",
     ":chrome_browser_state_client",
     "//base",
-    "//components/breadcrumbs/core",
-    "//components/breadcrumbs/core:feature_flags",
     "//components/browser_sync",
     "//components/crash/core/common",
     "//components/feed/core/shared_prefs:feed_shared_prefs",

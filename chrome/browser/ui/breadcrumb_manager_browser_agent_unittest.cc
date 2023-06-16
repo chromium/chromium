@@ -8,11 +8,10 @@
 #include <string>
 
 #include "base/containers/circular_deque.h"
-#include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/test/base/browser_with_test_window_test.h"
 #include "components/breadcrumbs/core/breadcrumb_manager.h"
-#include "components/breadcrumbs/core/features.h"
+#include "components/breadcrumbs/core/breadcrumbs_status.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -28,10 +27,6 @@ const base::circular_deque<std::string>& GetEvents() {
 // Test fixture for testing BreadcrumbManagerBrowserAgent class.
 class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
  protected:
-  BreadcrumbManagerBrowserAgentTest() {
-    scoped_feature_list_.InitWithFeatures({breadcrumbs::kLogBreadcrumbs}, {});
-  }
-
   void InsertTab(Browser* browser) {
     std::unique_ptr<content::WebContents> contents =
         content::WebContentsTester::CreateTestWebContents(profile(), nullptr);
@@ -40,7 +35,7 @@ class BreadcrumbManagerBrowserAgentTest : public BrowserWithTestWindowTest {
   }
 
  private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  breadcrumbs::ScopedEnableBreadcrumbsForTesting scoped_enable_breadcrumbs_;
 };
 
 // Tests that an event logged by the BrowserAgent is returned with events for

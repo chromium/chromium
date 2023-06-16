@@ -20,16 +20,14 @@ source_set("core") {
     "breadcrumb_persistent_storage_manager.h",
     "breadcrumb_persistent_storage_util.cc",
     "breadcrumb_persistent_storage_util.h",
-    "breadcrumbs_status.cc",
-    "breadcrumbs_status.h",
     "crash_reporter_breadcrumb_constants.h",
     "crash_reporter_breadcrumb_observer.cc",
     "crash_reporter_breadcrumb_observer.h",
   ]
 
   deps = [
-    ":feature_flags",
     ":generate_not_user_triggered_actions",
+    ":status",
     "//base",
     "//components/crash/core/common:crash_key",
     "//components/infobars/core",
@@ -39,10 +37,10 @@ source_set("core") {
   ]
 }
 
-source_set("feature_flags") {
+source_set("status") {
   sources = [
-    "features.cc",
-    "features.h",
+    "breadcrumbs_status.cc",
+    "breadcrumbs_status.h",
   ]
   deps = [ "//base" ]
 }
