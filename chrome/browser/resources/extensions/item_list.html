@@ -40,6 +40,11 @@
         var(--grid-gutter) * var(--max-columns));
   }
 
+  .items-container.review-panel-container :first-child {
+    grid-column: 1 / -1;
+    padding-bottom: 20px;
+  }
+
   #checkup-container {
     grid-column: 1 / -1;
     /* The checkup card should be at least as tall as an extensions item card.*/
@@ -77,12 +82,14 @@
   }
 </style>
 <div id="container">
-  <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]">
-    <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
-    </extensions-review-panel>
-  </template>
   <managed-footnote hidden="[[filter]]"></managed-footnote>
   <div id="content-wrapper" style="--max-columns: [[maxColumns_]];">
+    <div class="items-container review-panel-container">
+      <template is="dom-if" if="[[showSafetyCheckReviewPanel_]]">
+        <extensions-review-panel extensions="[[extensions]]" delegate="[[delegate]]">
+        </extensions-review-panel>
+      </template>
+    </div>
     <div id="no-items" class="empty-list-message"
         hidden$="[[!shouldShowEmptyItemsMessage_(
             apps.length, extensions.length)]]">
