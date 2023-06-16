@@ -666,6 +666,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // accounts dialog yet.
   EXPECT_FALSE(widget_->IsVisible());
 
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration",
+      0);
+
   // Emulate IdP sending the IdP sign-in status header which updates the failure
   // dialog to an accounts dialog.
   const char kAccountId[] = "account_id";
@@ -676,6 +680,10 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
 
   // Accounts dialog should now be visible.
   EXPECT_TRUE(widget_->IsVisible());
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration",
+      1);
 }
 
 // Test transitioning from IdP sign-in status mismatch failure dialog to regular
@@ -706,11 +714,19 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   // closed yet.
   EXPECT_FALSE(widget_->IsVisible());
 
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration",
+      0);
+
   // Emulate IdP closing the pop-up window.
   controller->CloseModalDialog();
 
   // Accounts dialog should now be visible.
   EXPECT_TRUE(widget_->IsVisible());
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration",
+      1);
 }
 
 // Test closing the IdP sign-in pop-up window through IdentityProvider.close()

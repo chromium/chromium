@@ -132,3 +132,57 @@ TEST_F(FedCmModalDialogViewTest, ShowPopupWindowFailedForOtherReasons) {
           FedCmModalDialogView::ShowPopupWindowResult::kFailedForOtherReasons),
       1);
 }
+
+TEST_F(FedCmModalDialogViewTest, IdpInitiatedCloseMetric) {
+  // Override the delegate to test that OpenURLFromTab gets called.
+  TestDelegate delegate(web_contents());
+
+  std::unique_ptr<FedCmModalDialogView> popup_window =
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
+  content::WebContents* web_contents =
+      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, delegate.opened());
+  ASSERT_TRUE(web_contents);
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason", 0);
+
+  // Emulate IDP closing the pop-up window.
+  popup_window->ClosePopupWindow();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
+      static_cast<int>(
+          FedCmModalDialogView::ClosePopupWindowReason::kIdpInitiatedClose),
+      1);
+}
+
+TEST_F(FedCmModalDialogViewTest, PopupWindowDestroyedMetric) {
+  // Override the delegate to test that OpenURLFromTab gets called.
+  TestDelegate delegate(web_contents());
+
+  std::unique_ptr<FedCmModalDialogView> popup_window =
+      std::make_unique<FedCmModalDialogView>(web_contents(),
+                                             /*observer=*/nullptr);
+  content::WebContents* web_contents =
+      popup_window->ShowPopupWindow(GURL(u"https://example.com"));
+
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, delegate.opened());
+  ASSERT_TRUE(web_contents);
+
+  histogram_tester_.ExpectTotalCount(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason", 0);
+
+  // Emulate user closing the pop-up window.
+  popup_window->WebContentsDestroyed();
+
+  histogram_tester_.ExpectUniqueSample(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
+      static_cast<int>(
+          FedCmModalDialogView::ClosePopupWindowReason::kPopupWindowDestroyed),
+      1);
+}

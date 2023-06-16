@@ -42959,6 +42959,11 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Virtual keyboard shown"/>
 </enum>
 
+<enum name="FedCmClosePopupWindowReason">
+  <int value="0" label="IDP initiated close"/>
+  <int value="1" label="Pop-up window destroyed"/>
+</enum>
+
 <enum name="FedCmCspStatus">
   <int value="0" label="Success"/>
   <int value="1" label="FailedPathButPassedOrigin"/>

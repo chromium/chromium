@@ -76,6 +76,10 @@ void FedCmModalDialogView::ClosePopupWindow() {
   }
 
   popup_window_->Close();
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
+      FedCmModalDialogView::ClosePopupWindowReason::kIdpInitiatedClose);
 }
 
 void FedCmModalDialogView::WebContentsDestroyed() {
@@ -83,4 +87,8 @@ void FedCmModalDialogView::WebContentsDestroyed() {
   if (observer_) {
     observer_->OnPopupWindowDestroyed();
   }
+
+  UMA_HISTOGRAM_ENUMERATION(
+      "Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason",
+      FedCmModalDialogView::ClosePopupWindowReason::kPopupWindowDestroyed);
 }

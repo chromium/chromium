@@ -33,6 +33,17 @@ class FedCmModalDialogView : public content::WebContentsObserver {
     kMaxValue = kFailedForOtherReasons
   };
 
+  // This enum describes the reason for closing the pop-up window and is used
+  // for histograms. Do not remove or modify existing values, but you may add
+  // new values at the end. This enum should be kept in sync with
+  // FedCmClosePopupWindowReason in tools/metrics/histograms/enums.xml.
+  enum class ClosePopupWindowReason {
+    kIdpInitiatedClose,
+    kPopupWindowDestroyed,
+
+    kMaxValue = kPopupWindowDestroyed
+  };
+
   explicit FedCmModalDialogView(content::WebContents* web_contents,
                                 FedCmModalDialogView::Observer* observer);
   FedCmModalDialogView(const FedCmModalDialogView&) = delete;

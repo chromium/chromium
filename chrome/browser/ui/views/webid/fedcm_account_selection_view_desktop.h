@@ -222,6 +222,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
   // Blink.FedCm.IdpSigninStatus.MismatchDialogResult metric.
   bool is_mismatch_continue_clicked_{false};
 
+  // Time when IdentityProvider.close() was called for metrics purposes.
+  base::TimeTicks idp_close_popup_time_;
+
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };
 

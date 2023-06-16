@@ -1120,6 +1120,29 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.IdpSigninStatus.ClosePopupWindowReason"
+    enum="FedCmClosePopupWindowReason" expires_after="M125">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the reason why the pop-up window is closed. Recorded once per
+    opening of a pop-up window.
+  </summary>
+</histogram>
+
+<histogram
+    name="Blink.FedCm.IdpSigninStatus.IdpClosePopupToBrowserShowAccountsDuration"
+    units="ms" expires_after="M125">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the duration from when IdentityProvider.close() is called to when an
+    updated accounts dialog is shown. Recorded once per IdentityProvider.close()
+    being called given that an accounts dialog is shown. It is not recorded when
+    the accounts dialog is never shown.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdpSigninStatus.MismatchDialogResult"
     enum="FedCmMismatchDialogResult" expires_after="M125">
   <owner>tanzachary@chromium.org</owner>

@@ -140,6 +140,13 @@ void FedCmAccountSelectionView::Show(
   // Else:
   // Do not force show the bubble. The bubble may be purposefully hidden if the
   // WebContents are hidden.
+
+  if (!idp_close_popup_time_.is_null()) {
+    UMA_HISTOGRAM_MEDIUM_TIMES(
+        "Blink.FedCm.IdpSigninStatus."
+        "IdpClosePopupToBrowserShowAccountsDuration",
+        base::TimeTicks::Now() - idp_close_popup_time_);
+  }
 }
 
 void FedCmAccountSelectionView::ShowFailureDialog(
@@ -397,6 +404,7 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     idp_signin_modal_dialog_->ClosePopupWindow();
     idp_signin_modal_dialog_.reset();
     should_show_bubble_widget_ = true;
+    idp_close_popup_time_ = base::TimeTicks::Now();
   }
 
   if (show_accounts_dialog_callback_) {
