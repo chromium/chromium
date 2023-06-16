@@ -13,6 +13,7 @@
 #include "base/strings/string_piece.h"
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/saml/fake_saml_idp_mixin.h"
 #include "chrome/browser/ash/login/saml/lockscreen_reauth_dialog_test_helper.h"
@@ -885,7 +886,9 @@ IN_PROC_BROWSER_TEST_F(ProxyAuthLockscreenWebUiTest, SwitchToProxyNetwork) {
 }
 
 // TODO(crbug.com/1414002): Flaky on ChromeOS MSAN.
-#if defined(MEMORY_SANITIZER)
+// TODO(crbug.com/1455506): Flaky on linux-chromeos-rel.
+#if defined(MEMORY_SANITIZER) || \
+    (defined(NDEBUG) && !defined(ADDRESS_SANITIZER))
 #define MAYBE_ProxyAuthCanBeCancelled DISABLED_ProxyAuthCanBeCancelled
 #else
 #define MAYBE_ProxyAuthCanBeCancelled ProxyAuthCanBeCancelled
