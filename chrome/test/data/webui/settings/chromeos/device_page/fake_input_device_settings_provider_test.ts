@@ -105,10 +105,10 @@ suite('FakeInputDeviceSettings', () => {
     assertDeepEquals(updatedFirstPointingStick, result[0]);
   });
 
-  test('restoreDefaultKeyboardModifierRemappings', async () => {
+  test('restoreDefaultKeyboardRemappings', async () => {
     provider.setFakeKeyboards(fakeKeyboards);
-    // Restore the default modifier remappings for the first keyboard settings.
-    provider.restoreDefaultKeyboardModifierRemappings(fakeKeyboards[0]!.id!);
+    // Restore the default remappings for the first keyboard settings.
+    provider.restoreDefaultKeyboardRemappings(fakeKeyboards[0]!.id!);
     // Verify if the first keyboard settings are updated.
     const result = await provider.getConnectedKeyboardSettings();
     assertDeepEquals(result[0]!.settings!.modifierRemappings, {

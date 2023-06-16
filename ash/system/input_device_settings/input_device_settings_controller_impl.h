@@ -85,7 +85,7 @@ class ASH_EXPORT InputDeviceSettingsControllerImpl
       std::vector<ui::InputDevice> pointing_sticks_to_add,
       std::vector<DeviceId> pointing_stick_ids_to_remove);
   bool GetGeneralizedTopRowAreFKeys();
-  void RestoreDefaultKeyboardModifierRemappings(DeviceId id) override;
+  void RestoreDefaultKeyboardRemappings(DeviceId id) override;
 
   // SessionObserver:
   void OnActiveUserPrefServiceChanged(PrefService* pref_service) override;

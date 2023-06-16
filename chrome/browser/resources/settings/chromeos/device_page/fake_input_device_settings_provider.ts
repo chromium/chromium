@@ -146,7 +146,7 @@ export class FakeInputDeviceSettingsProvider implements
     return this.methods.resolveMethod('fakeGraphicsTablets');
   }
 
-  restoreDefaultKeyboardModifierRemappings(id: number): void {
+  restoreDefaultKeyboardRemappings(id: number): void {
     const keyboards = this.methods.getResult('fakeKeyboards');
     for (const keyboard of keyboards) {
       if (keyboard.id === id) {

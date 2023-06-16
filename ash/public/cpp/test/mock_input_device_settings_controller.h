@@ -62,7 +62,7 @@ class ASH_PUBLIC_EXPORT MockInputDeviceSettingsController
               (DeviceId id, mojom::KeyboardSettingsPtr settings),
               (override));
   MOCK_METHOD(void,
-              RestoreDefaultKeyboardModifierRemappings,
+              RestoreDefaultKeyboardRemappings,
               (DeviceId id),
               (override));
   MOCK_METHOD(void,

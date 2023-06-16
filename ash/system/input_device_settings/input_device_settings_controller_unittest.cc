@@ -821,8 +821,7 @@ TEST_F(InputDeviceSettingsControllerTest,
       Shell::Get()->session_controller()->GetActivePrefService());
 }
 
-TEST_F(InputDeviceSettingsControllerTest,
-       RestoreDefaultKeyboardModifierRemappings) {
+TEST_F(InputDeviceSettingsControllerTest, RestoreDefaultKeyboardRemappings) {
   base::HistogramTester histogram_tester;
 
   ui::DeviceDataManagerTestApi().SetKeyboardDevices({kSampleKeyboardInternal});
@@ -839,7 +838,7 @@ TEST_F(InputDeviceSettingsControllerTest,
       controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)
           ->modifier_remappings.size(),
       1u);
-  controller_->RestoreDefaultKeyboardModifierRemappings(
+  controller_->RestoreDefaultKeyboardRemappings(
       (DeviceId)kSampleKeyboardInternal.id);
   EXPECT_EQ(
       controller_->GetKeyboardSettings((DeviceId)kSampleKeyboardInternal.id)

@@ -103,7 +103,7 @@ export interface GraphicsTabletObserverInterface {
 
 interface FakeInputDeviceSettingsProviderInterface extends
     InputDeviceSettingsProviderTypes.InputDeviceSettingsProviderInterface {
-  RestoreDefaultKeyboardModifierRemappings(id: number): void;
+  RestoreDefaultKeyboardRemappings(id: number): void;
   setKeyboardSettings(id: number, settings: KeyboardSettings): void;
   setMouseSettings(id: number, settings: MouseSettings): void;
   setTouchpadSettings(id: number, settings: TouchpadSettings): void;

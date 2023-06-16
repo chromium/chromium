@@ -319,7 +319,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   restoreDefaults(): void {
-    this.inputDeviceSettingsProvider.restoreDefaultKeyboardModifierRemappings(
+    this.inputDeviceSettingsProvider.restoreDefaultKeyboardRemappings(
         this.keyboardId);
   }
 

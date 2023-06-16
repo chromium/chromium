@@ -949,8 +949,8 @@ void InputDeviceSettingsControllerImpl::OnPointingStickListUpdated(
   RefreshStoredLoginScreenPointingStickSettings();
 }
 
-void InputDeviceSettingsControllerImpl::
-    RestoreDefaultKeyboardModifierRemappings(DeviceId id) {
+void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
+    DeviceId id) {
   DCHECK(base::Contains(keyboards_, id));
   auto& keyboard = *keyboards_.at(id);
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
