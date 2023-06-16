@@ -2196,6 +2196,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Enterprise.ManagedScreensaver.EngagementTime.Slideshow"
+    units="ms" expires_after="2024-06-07">
+  <owner>mpetrisor@chromium.org</owner>
+  <owner>imprivata-eng@google.com</owner>
+  <summary>
+    Among users with managed screensaver enabled, records the length of each
+    session for Slideshow. The metric is emitted when an ambient mode session
+    ends.
+  </summary>
+</histogram>
+
 <histogram
     name="Enterprise.ManagementAuthorityTrustworthiness.Cache.ValueChange"
     enum="BooleanChanged" expires_after="2023-07-15">

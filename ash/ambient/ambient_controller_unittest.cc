@@ -1834,7 +1834,7 @@ class AmbientControllerForManagedScreensaverLoginScreenTest
     managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   }
 
-  void TriggerLoginScreen() {
+  void TriggerScreensaverOnLoginScreen() {
     GetSessionControllerClient()->RequestSignOut();
     // The login screen can't be shown without a wallpaper.
     Shell::Get()->wallpaper_controller()->ShowDefaultWallpaperForTesting();
@@ -1845,8 +1845,34 @@ class AmbientControllerForManagedScreensaverLoginScreenTest
 };
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
+       UMAEngagementTime) {
+  base::HistogramTester histogram_tester;
+
+  constexpr base::TimeDelta kExpectedTimeBucket1 = base::Seconds(5);
+  constexpr base::TimeDelta kExpectedTimeBucket2 = base::Seconds(10);
+
+  TriggerScreensaverOnLoginScreen();
+  ASSERT_TRUE(GetContainerView());
+  task_environment()->FastForwardBy(kExpectedTimeBucket1);
+  // Dismiss Screensaver
+  GetEventGenerator()->ClickLeftButton();
+  ASSERT_FALSE(GetContainerView());
+  FastForwardByLockScreenInactivityTimeout();
+  ASSERT_TRUE(GetContainerView());
+  task_environment()->FastForwardBy(kExpectedTimeBucket2);
+  // Dismiss Screensaver
+  GetEventGenerator()->ClickLeftButton();
+  auto histogram_name = GetManagedScreensaverHistogram(
+      kManagedScreensaverEngagementTimeSlideshowUMA);
+  histogram_tester.ExpectTimeBucketCount(histogram_name, kExpectedTimeBucket1,
+                                         1);
+  histogram_tester.ExpectTimeBucketCount(histogram_name, kExpectedTimeBucket2,
+                                         1);
+}
+
+TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ShownOnLoginScreen) {
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
 
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
@@ -1863,7 +1889,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/false);
   EXPECT_FALSE(ambient_controller()->ShouldShowAmbientUi());
   // Login screen is shown when the managed mode is disabled
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
   SetAmbientModeManagedScreensaverEnabled(/*enabled=*/true);
   managed_policy_handler()->SetImagesForTesting(image_file_paths_);
   FastForwardByLockScreenInactivityTimeout();
@@ -1880,7 +1906,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeDisabledAndManagedAmbientModeEnabled) {
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
 
@@ -1906,7 +1932,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        UserLogsInAmbientModeEnabled) {
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
 
@@ -1925,7 +1951,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImagesCleared) {
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
   // Clear images
@@ -1954,7 +1980,7 @@ TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
 
 TEST_F(AmbientControllerForManagedScreensaverLoginScreenTest,
        ManagedScreensaverClosedWhenImageLoadingFails) {
-  TriggerLoginScreen();
+  TriggerScreensaverOnLoginScreen();
   EXPECT_TRUE(ambient_controller()->ShouldShowAmbientUi());
   ASSERT_TRUE(GetContainerView());
   // Set invalid images ( i.e. either the paths are invalid or images themselves

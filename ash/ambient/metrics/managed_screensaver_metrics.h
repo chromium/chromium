@@ -9,15 +9,39 @@
 
 #include "ash/ash_export.h"
 #include "base/strings/string_piece.h"
+#include "base/timer/elapsed_timer.h"
 
 namespace ash {
 
 constexpr char kManagedScreensaverEnabledUMA[] = "Enabled";
+constexpr char kManagedScreensaverEngagementTimeSlideshowUMA[] =
+    "EngagementTime.Slideshow";
 
 ASH_EXPORT std::string GetManagedScreensaverHistogram(
     const base::StringPiece& histogram_suffix);
 
 ASH_EXPORT void RecordManagedScreensaverEnabled(bool enabled);
+
+class ManagedScreensaverMetricsRecorder {
+ public:
+  ManagedScreensaverMetricsRecorder();
+  ~ManagedScreensaverMetricsRecorder();
+  ManagedScreensaverMetricsRecorder(const ManagedScreensaverMetricsRecorder&) =
+      delete;
+  ManagedScreensaverMetricsRecorder& operator=(
+      const ManagedScreensaverMetricsRecorder&) = delete;
+
+  // Starts the session elapsed timer. This is used to keep track of the start
+  // of a session
+  void RecordSessionStart();
+
+  // Records the engagement time UMA.
+  void RecordSessionEnd();
+
+ private:
+  // Timer use to keep track of ambient mode managed screensaver sessions.
+  std::unique_ptr<base::ElapsedTimer> session_elapsed_timer_;
+};
 
 }  // namespace ash
 
