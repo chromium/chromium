@@ -10,6 +10,9 @@
 
 namespace drive {
 
+// These values are persisted to UMA histograms (see UMA enum DriveFileError).
+// The histogram values are positive (1=OK, 2=FAILED, 3=IN_USE, etc).
+// Entries should not be renumbered and numeric values should never be reused.
 enum FileError {
   FILE_ERROR_OK = 0,
   FILE_ERROR_FAILED = -1,
@@ -31,6 +34,8 @@ enum FileError {
   FILE_ERROR_NO_LOCAL_SPACE = -17,
   FILE_ERROR_SERVICE_UNAVAILABLE = -18,
   FILE_ERROR_OK_WITH_MORE_RESULTS = -19,
+  // Put new entries here and adjust FILE_ERROR_MAX.
+  FILE_ERROR_MAX = FILE_ERROR_OK_WITH_MORE_RESULTS,
 };
 
 std::ostream& operator<<(std::ostream& out, FileError error);

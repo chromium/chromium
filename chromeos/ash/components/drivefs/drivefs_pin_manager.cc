@@ -31,6 +31,7 @@ namespace {
 using ash::SpacedClient;
 using base::SequencedTaskRunner;
 using base::TimeDelta;
+using base::UmaHistogramBoolean;
 using mojom::FileMetadata;
 using mojom::FileMetadataPtr;
 using mojom::QueryItem;
@@ -1178,13 +1179,25 @@ void PinManager::PinSomeFiles() {
 
 void PinManager::OnFilePinned(const Id id,
                               const Path& path,
-                              const drive::FileError status) {
+                              const drive::FileError error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (status != drive::FILE_ERROR_OK) {
-    LOG(ERROR) << "Cannot pin " << id << " " << Quote(path) << ": " << status;
+  // Records error in a UMA histogram. The `1 - error` expression converts the
+  // negative drive::FileError enum values 0, -1, -2, -3...  (defined in
+  // components/drive/file_errors.h) to the positive UMA DriveFileError enum
+  // values +1, +2, +3, +4... (defined in tools/metrics/histograms/enums.xml).
+  // The `2 - drive::FILE_ERROR_MAX` expression does likewise, but also
+  // converting from an inclusive to exclusive bound.
+  base::UmaHistogramExactLinear(
+      "FileBrowser.GoogleDrive.BulkPinning.Pinning.Error", 1 - error,
+      2 - drive::FILE_ERROR_MAX);
+
+  if (error != drive::FILE_ERROR_OK) {
+    LOG(ERROR) << "Cannot pin " << id << " " << Quote(path) << ": " << error;
     if (Remove(id, path, 0)) {
       progress_.failed_files++;
+      UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                          false);
       PinSomeFiles();
     }
     return;
@@ -1275,6 +1288,8 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
       VLOG(2) << "Synced " << id << " " << Quote(path) << ": " << Quote(event);
       VLOG_IF(1, !VLOG_IS_ON(2)) << "Synced " << id << " " << Quote(path);
       progress_.pinned_files++;
+      UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                          true);
       return true;
 
     case State::kFailed:
@@ -1285,6 +1300,8 @@ bool PinManager::OnSyncingEvent(mojom::ItemEvent& event) {
       LOG(ERROR) << Quote(event.state) << " " << id << " " << Quote(path)
                  << ": " << Quote(event);
       progress_.failed_files++;
+      UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                          false);
       return true;
   }
 
@@ -1323,6 +1340,8 @@ void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
     VLOG_IF(1, !VLOG_IS_ON(2))
         << "Synced " << id << " " << Quote(relative_path);
     progress_.pinned_files++;
+    UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                        true);
   } else if (!Remove(id, relative_path)) {
     LOG(ERROR) << "Invalid event " << Quote(event);
   }
@@ -1340,6 +1359,7 @@ void PinManager::NotifyDelete(const Id id, const Path& path) {
 
   VLOG(1) << "Stopped tracking " << id << " " << Quote(path);
   progress_.failed_files++;
+  UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles", false);
   PinSomeFiles();
 }
 
@@ -1546,6 +1566,8 @@ void PinManager::OnMetadataForModifiedFile(const Id id,
     LOG(ERROR) << "Got unexpectedly unpinned: " << id << " " << Quote(path);
     Remove(it, path, 0);
     progress_.failed_files++;
+    UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                        false);
     return PinSomeFiles();
   }
 
@@ -1554,6 +1576,8 @@ void PinManager::OnMetadataForModifiedFile(const Id id,
     Remove(it, path, GetSize(md));
     VLOG(1) << "Synced " << id << " " << Quote(path);
     progress_.pinned_files++;
+    UmaHistogramBoolean("FileBrowser.GoogleDrive.BulkPinning.PinnedFiles",
+                        true);
     PinSomeFiles();
   }
 }

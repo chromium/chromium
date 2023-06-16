@@ -30112,9 +30112,13 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="DriveFileError">
-  <obsolete>
-    Deprecated February 2021.
-  </obsolete>
+<!--
+  Represents drive::FileError enum values defined in
+  components/drive/file_errors.h. The drive::FileError enum values are
+  negative (0=OK, -1=FAILED, -2=IN_USE, etc) whereas these UMA DriveFileError
+  enum values are positive and shifted by one (1=OK, 2=FAILED, 3=IN_USE, etc).
+-->
+
   <int value="0" label="UNKNOWN"/>
   <int value="1" label="FILE_ERROR_OK"/>
   <int value="2" label="FILE_ERROR_FAILED"/>
@@ -30135,6 +30139,7 @@ Called by update_document_policy_enum.py.-->
   <int value="17" label="FILE_ERROR_NO_CONNECTION"/>
   <int value="18" label="FILE_ERROR_NO_LOCAL_SPACE"/>
   <int value="19" label="FILE_ERROR_SERVICE_UNAVAILABLE"/>
+  <int value="20" label="FILE_ERROR_OK_WITH_MORE_RESULTS"/>
 </enum>
 
 <enum name="DriveFileFormat">

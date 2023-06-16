@@ -505,6 +505,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.PinnedFiles"
+    enum="BooleanPinned" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Counts each file that gets succesfully pinned or not by the Google Drive
+    bulk-pinning feature.
+  </summary>
+</histogram>
+
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.Pinning.Error"
+    enum="DriveFileError" expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Error returned by DriveFS when the bulk-pinning manager tries to pin a file.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.Syncing.Error"
     enum="GoogleDrive.BulkPinning.Stage" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>
