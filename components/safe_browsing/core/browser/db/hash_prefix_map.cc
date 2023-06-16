@@ -576,11 +576,17 @@ HashPrefixStr MmapHashPrefixMap::FileInfo::Matches(
   }
 
   // TODO(crbug.com/1409674): Remove crash logging.
+  base::StringPiece start_prefix = prefixes.substr(0, prefix_size_);
+  base::StringPiece end_prefix =
+      prefixes.substr(prefix_size_ * (end - 1), prefix_size_);
   SCOPED_CRASH_KEY_STRING64(
       "SafeBrowsing", "prefix_match",
       base::StrCat({base::NumberToString(start), ":", base::NumberToString(end),
                     ":", base::NumberToString(prefix_size_), ":",
-                    base::NumberToString(prefixes.size())}));
+                    base::NumberToString(prefixes.size()), ":",
+                    base::NumberToString(start_prefix.compare(hash_prefix)),
+                    ":",
+                    base::NumberToString(end_prefix.compare(hash_prefix))}));
 
   if (HashPrefixMatches(hash_prefix, prefixes, prefix_size_, start, end))
     return hash_prefix;
