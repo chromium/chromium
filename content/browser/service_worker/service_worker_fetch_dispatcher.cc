@@ -669,6 +669,10 @@ void ServiceWorkerFetchDispatcher::DispatchFetchEvent() {
     params->request->service_worker_race_network_request_token =
         race_network_request_token_;
   }
+  if (race_network_request_loader_factory_) {
+    params->race_network_request_loader_factory =
+        std::move(race_network_request_loader_factory_);
+  }
 
   // |endpoint()| is owned by |version_|. So it is safe to pass the
   // unretained raw pointer of |version_| to OnFetchEventFinished callback.

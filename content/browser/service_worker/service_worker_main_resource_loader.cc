@@ -275,13 +275,40 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
     return false;
   }
 
+  // RaceNetworkRequest is triggered only in a main frame.
+  if (resource_request_.destination !=
+      network::mojom::RequestDestination::kDocument) {
+    return false;
+  }
+
   // Create URLLoader related assets to handle the request triggered by
   // RaceNetworkRequset.
+  mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client;
+  forwarded_race_network_request_url_loader_factory_ = std::make_unique<
+      ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>(
+      forwarding_client.InitWithNewPipeAndPassReceiver(),
+      resource_request_.url);
+  auto race_network_request_url_loader_client = std::make_unique<
+      ServiceWorkerRaceNetworkRequestURLLoaderClient>(
+      resource_request_, AsWeakPtr(), std::move(forwarding_client),
+      network::features::GetDataPipeDefaultAllocationSize(
+          network::features::DataPipeAllocationSize::kLargerSizeIfPossible));
+
+  // If the initial state is not kWaitForBody, that means creating data pipes
+  // failed. Do not start RaceNetworkRequest this case.
+  if (race_network_request_url_loader_client->state() !=
+      ServiceWorkerRaceNetworkRequestURLLoaderClient::State::kWaitForBody) {
+    return false;
+  }
+
+  mojo::PendingRemote<network::mojom::URLLoaderFactory> remote_factory;
+  forwarded_race_network_request_url_loader_factory_->Clone(
+      remote_factory.InitWithNewPipeAndPassReceiver());
   fetch_dispatcher_->set_race_network_request_token(
       base::UnguessableToken::Create());
-  auto race_network_request_url_loader_client =
-      std::make_unique<ServiceWorkerRaceNetworkRequestURLLoaderClient>(
-          resource_request_, AsWeakPtr());
+  fetch_dispatcher_->set_race_network_request_loader_factory(
+      std::move(remote_factory));
+
   mojo::PendingRemote<network::mojom::URLLoaderClient> client_to_pass;
   race_network_request_url_loader_client->Bind(&client_to_pass);
   scoped_refptr<network::SharedURLLoaderFactory> factory =

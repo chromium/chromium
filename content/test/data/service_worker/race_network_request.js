@@ -49,4 +49,12 @@ self.addEventListener("fetch", async e => {
       })()
     );
   }
+
+  if (url.search.includes('sw_pass_through')) {
+    e.respondWith(fetch(request));
+  }
+
+  if (url.search.includes('sw_clone_pass_through')) {
+    e.respondWith(fetch(request.clone()));
+  }
 });

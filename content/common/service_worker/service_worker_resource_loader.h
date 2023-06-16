@@ -7,6 +7,7 @@
 
 #include "base/check_op.h"
 #include "base/metrics/histogram_macros.h"
+#include "content/common/content_export.h"
 #include "services/network/public/mojom/url_loader.mojom.h"
 
 namespace content {
@@ -19,7 +20,7 @@ namespace content {
 // To implement feature RaceNetworkRequest (crbug.com/1420517), we store into
 // this common class whether the response came from the ServiceWorker fetch
 // handler or from a direct network request.
-class ServiceWorkerResourceLoader {
+class CONTENT_EXPORT ServiceWorkerResourceLoader {
  public:
   // Indicates where the response comes from.
   // These values are persisted to logs. Entries should not be renumbered and

@@ -16,6 +16,7 @@
 #include "content/browser/service_worker/embedded_worker_status.h"
 #include "content/browser/service_worker/service_worker_fetch_dispatcher.h"
 #include "content/common/content_export.h"
+#include "content/common/service_worker/forwarded_race_network_request_url_loader_factory.h"
 #include "content/common/service_worker/race_network_request_url_loader_client.h"
 #include "content/common/service_worker/service_worker_resource_loader.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
@@ -282,6 +283,8 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       race_network_request_url_loader_;
   std::unique_ptr<ServiceWorkerRaceNetworkRequestURLLoaderClient>
       race_network_request_loader_client_;
+  std::unique_ptr<ServiceWorkerForwardedRaceNetworkRequestURLLoaderFactory>
+      forwarded_race_network_request_url_loader_factory_;
 
   base::WeakPtrFactory<ServiceWorkerMainResourceLoader> weak_factory_{this};
 };
