@@ -79,11 +79,16 @@ java_cpp_enum("generated_enums") {
   ]
 }
 
+generate_jni("base_module_jni") {
+  sources = [ "org/chromium/weblayer_private/ApplicationInfoHelper.java" ]
+}
+
 android_library("base_module_java") {
   sources = [
     "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/ChildProcessServiceImpl.java",
   ]
+  srcjar_deps = [ ":base_module_jni" ]
   deps = [
     ":base_module_interfaces_java",
     "$google_play_services_package:google_play_services_basement_java",
@@ -94,8 +99,6 @@ android_library("base_module_java") {
     "//components/embedder_support/android:application_java",
     "//content/public/android:content_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Needed for android.webkit.WebViewFactory
   alternative_android_sdk_dep =
@@ -308,11 +311,11 @@ android_library("java") {
 
   srcjar_deps = [
     ":generated_enums",
+    ":jni",
     ":resource_id_javagen",
     ":weblayer_product_config",
   ]
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
   # Needed for android.webkit.WebView(Delegate|Factory)
   alternative_android_sdk_dep =
@@ -340,6 +343,10 @@ android_library("test_java") {
     "org/chromium/weblayer_private/test/TestContentCaptureConsumer.java",
     "org/chromium/weblayer_private/test/TestInfoBar.java",
     "org/chromium/weblayer_private/test/TestWebLayerImpl.java",
+  ]
+  srcjar_deps = [
+    ":test_aidl",
+    ":test_jni",
   ]
   resources_package = "org.chromium.weblayer_private.test"
   deps = [
@@ -370,8 +377,6 @@ android_library("test_java") {
     "//ui/android:ui_full_java",
     "//url:origin_java",
   ]
-  srcjar_deps = [ ":test_aidl" ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 robolectric_library("junit_test_support") {
@@ -440,7 +445,6 @@ generate_jni("test_jni") {
 
 generate_jni("jni") {
   sources = [
-    "org/chromium/weblayer_private/ApplicationInfoHelper.java",
     "org/chromium/weblayer_private/AutocompleteSchemeClassifierImpl.java",
     "org/chromium/weblayer_private/BrowserFragmentImpl.java",
     "org/chromium/weblayer_private/BrowserImpl.java",

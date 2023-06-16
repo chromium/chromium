@@ -773,6 +773,7 @@ source_set("weblayer_lib_base") {
       "//services/resource_coordinator/public/cpp/memory_instrumentation:browser",
       "//ui/android",
       "//url:gurl_android",
+      "//weblayer/browser/java:base_module_jni",
       "//weblayer/browser/java:jni",
     ]
 

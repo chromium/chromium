@@ -445,7 +445,6 @@ if (is_android) {
   generate_jni("device_service_jni_headers") {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
-      "public/java/src/org/chromium/device/DeviceFeatureMap.java",
     ]
   }
 
@@ -464,6 +463,7 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/services/device/InterfaceRegistrar.java",
     ]
+    srcjar_deps = [ ":device_service_jni_headers" ]
     deps = [
       "//base:jni_java",
       "//mojo/public/java:bindings_java",

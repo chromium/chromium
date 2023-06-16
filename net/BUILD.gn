@@ -2344,16 +2344,6 @@ if (is_android) {
       "android/java/src/org/chromium/net/X509Util.java",
     ]
   }
-  generate_jni("net_test_jni_headers") {
-    testonly = true
-    sources = [
-      "android/javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
-      "android/javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
-      "test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java",
-      "test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
-      "test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
-    ]
-  }
 }
 
 if (is_android || is_linux || is_chromeos) {
@@ -3210,12 +3200,15 @@ test("net_unittests") {
   if (is_android) {
     data_deps += [ "//net/tools/testserver:testserver_py" ]
     deps += [
-      ":net_test_jni_headers",
+      ":net_jni_headers",
       "//base:base_java_unittest_support",
       "//net/android:net_java",
       "//net/android:net_java_test_support",
-      "//net/android:net_java_test_support_provider",
-      "//net/android:net_javatests",
+      "//net/android:net_test_support_jni",
+      "//net/android:net_test_support_provider_java",
+      "//net/android:net_test_support_provider_jni",
+      "//net/android:net_tests_java",
+      "//net/android:net_tests_jni",
       "//net/android:net_unittests_apk_resources",
 
       # TODO(mmenke):  This depends on test_support_base, which depends on

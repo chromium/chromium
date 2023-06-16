@@ -14,15 +14,6 @@ group("system") {
   ]
 }
 
-generate_jni("jni_headers") {
-  testonly = true
-  sources = [
-    "javatests/src/org/chromium/mojo/MojoTestRule.java",
-    "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java",
-  ]
-  public_deps = [ ":system_impl_java_jni_headers" ]
-}
-
 generate_jni("system_impl_java_jni_headers") {
   sources = [
     "src/org/chromium/mojo/system/impl/BaseRunLoop.java",
@@ -58,6 +49,7 @@ android_library("system_impl_java") {
     "src/org/chromium/mojo/system/impl/UntypedHandleImpl.java",
     "src/org/chromium/mojo/system/impl/WatcherImpl.java",
   ]
+  srcjar_deps = [ ":system_impl_java_jni_headers" ]
 
   deps = [
     "//base:base_java",
@@ -65,14 +57,18 @@ android_library("system_impl_java") {
     "//build/android:build_java",
     "//mojo/public/java:system_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+}
+
+generate_jni("test_support_jni") {
+  testonly = true
+  sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
 }
 
 # Targets should also depend on :test_support for the native side.
 android_library("test_support_java") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [ "javatests/src/org/chromium/mojo/MojoTestRule.java" ]
+  srcjar_deps = [ ":test_support_jni" ]
   deps = [
     "//base:base_java",
     "//base:jni_java",
@@ -85,12 +81,18 @@ source_set("test_support") {
   testonly = true
   sources = [ "javatests/mojo_test_rule.cc" ]
   deps = [
-    ":jni_headers",
+    ":test_support_jni",
     "//base",
     "//base/test:test_support",
     "//mojo/core/embedder",
   ]
   defines = [ "UNIT_TEST" ]
+}
+
+generate_jni("mojo_javatests_jni") {
+  testonly = true
+  sources =
+      [ "javatests/src/org/chromium/mojo/bindings/ValidationTestUtil.java" ]
 }
 
 android_library("mojo_javatests") {
@@ -118,7 +120,7 @@ android_library("mojo_javatests") {
     "javatests/src/org/chromium/mojo/system/impl/CoreImplTest.java",
     "javatests/src/org/chromium/mojo/system/impl/WatcherImplTest.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":mojo_javatests_jni" ]
 
   deps = [
     ":system_impl_java",
@@ -146,9 +148,8 @@ shared_library_with_jni("mojo_java_unittests") {
   ]
 
   deps = [
-    ":jni_headers",
+    ":mojo_javatests_jni",
     ":native_support",
-    ":system_impl_java_jni_headers",
     ":test_support",
     "//base",
     "//base/test:test_support",
