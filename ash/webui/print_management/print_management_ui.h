@@ -23,6 +23,7 @@ namespace ash {
 namespace printing {
 namespace printing_manager {
 
+class PrintManagementDelegate;
 class PrintManagementHandler;
 class PrintManagementUI;
 
@@ -46,7 +47,8 @@ class PrintManagementUI : public ui::MojoWebUIController {
   // |callback_| should bind the pending receiver to an implementation of
   // chromeos::printing::printing_manager::mojom::PrintingMetadataProvider.
   PrintManagementUI(content::WebUI* web_ui,
-                    BindPrintingMetadataProviderCallback callback_);
+                    BindPrintingMetadataProviderCallback callback_,
+                    std::unique_ptr<PrintManagementDelegate> delegate);
   ~PrintManagementUI() override;
 
   PrintManagementUI(const PrintManagementUI&) = delete;

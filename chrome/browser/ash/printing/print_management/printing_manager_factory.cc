@@ -4,9 +4,12 @@
 
 #include "chrome/browser/ash/printing/print_management/printing_manager_factory.h"
 
+#include <memory>
+
 #include "ash/webui/print_management/print_management_ui.h"
 #include "chrome/browser/ash/printing/cups_print_job_manager_factory.h"
 #include "chrome/browser/ash/printing/history/print_job_history_service_factory.h"
+#include "chrome/browser/ash/printing/print_management/print_management_delegate_impl.h"
 #include "chrome/browser/ash/printing/print_management/printing_manager.h"
 #include "chrome/browser/history/history_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -79,8 +82,10 @@ PrintingManagerFactory::CreatePrintManagementUIController(
     content::WebUI* web_ui,
     const GURL& url) {
   return std::make_unique<printing_manager::PrintManagementUI>(
-      web_ui, base::BindRepeating(&MaybeBindPrintManagementForWebUI,
-                                  Profile::FromWebUI(web_ui)));
+      web_ui,
+      base::BindRepeating(&MaybeBindPrintManagementForWebUI,
+                          Profile::FromWebUI(web_ui)),
+      std::make_unique<ash::print_management::PrintManagementDelegateImpl>());
 }
 
 KeyedService* PrintingManagerFactory::BuildServiceInstanceFor(
