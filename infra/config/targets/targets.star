@@ -436,11 +436,6 @@ targets.generated_script(
 )
 
 targets.console_test_launcher(
-    name = "chrome_java_test_pagecontroller_tests",
-    label = "//chrome/test/android:chrome_java_test_pagecontroller_tests",
-)
-
-targets.console_test_launcher(
     name = "chrome_java_test_wpr_tests",
     label = "//chrome/test/android:chrome_java_test_wpr_tests",
 )
@@ -523,11 +518,6 @@ targets.compile_target(
 targets.generated_script(
     name = "chrome_sizes",
     label = "//chrome/test:chrome_sizes",
-)
-
-targets.console_test_launcher(
-    name = "chrome_webapk_integration_tests",
-    label = "//chrome/test/android:chrome_webapk_integration_tests",
 )
 
 targets.compile_target(

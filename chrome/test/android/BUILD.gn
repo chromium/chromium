@@ -37,55 +37,18 @@ android_library("chrome_java_test_pagecontroller") {
   testonly = true
   resources_package = "org.chromium.chrome"
   sources = [
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ElementController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/PageController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/android/PermissionDialog.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/first_run/SyncConfirmationViewPageController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/notifications/DownloadNotificationController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/ChromeMenu.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/IncognitoNewTabPageController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/NewTabPageController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/ntp/SuggestionTileController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/tabswitcher/TabSwitcherController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/tabswitcher/TabSwitcherMenuController.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/urlpage/UrlPage.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/controllers/webapk/first_run/LightWeightTOSController.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/rules/ChromeUiApplicationTestRule.java",
     "javatests/src/org/chromium/chrome/test/pagecontroller/rules/ChromeUiAutomatorTestRule.java",
   ]
   deps = [
-    ":chrome_java_integration_test_support",
     "//base:base_java",
-    "//base:base_java_test_support",
     "//chrome/android:chrome_app_java_resources",
     "//chrome/android:chrome_java",
-    "//chrome/android/feed:chrome_feed_java_resources",
-    "//chrome/browser/ui/android/appmenu/test:test_support_java",
-    "//third_party/android_deps:guava_android_java",
-    "//third_party/androidx:androidx_annotation_annotation_java",
     "//third_party/androidx:androidx_test_core_java",
     "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",
   ]
   public_deps = [ ":pagecontroller_utils_java" ]
-}
-
-chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_tests") {
-  apk_name = "ChromePageControllerTests"
-  sources = [
-    "javatests/src/org/chromium/chrome/test/pagecontroller/tests/ExampleTest.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/tests/NewTabPageControllerTest.java",
-    "javatests/src/org/chromium/chrome/test/pagecontroller/tests/TabSwitcherControllerTest.java",
-  ]
-  deps = [
-    ":chrome_java_test_pagecontroller",
-    "//base:base_java_test_support",
-    "//chrome/browser/flags:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/hamcrest:hamcrest_java",
-    "//third_party/junit",
-  ]
 }
 
 generate_jni_registration("baseline_profile_test_apk_dummy_jni_registration") {
@@ -199,44 +162,6 @@ chrome_public_test_apk_tmpl("chrome_java_test_feed_test") {
     "//third_party/hamcrest:hamcrest_java",
     "//third_party/junit",
     "//ui/android:ui_java_test_support",
-  ]
-}
-
-# WebAPK tests which require additional_apks should be in this test suite.
-chrome_public_test_apk_tmpl("chrome_webapk_integration_tests") {
-  apk_name = "ChromeWebApkIntegrationTests"
-  sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/webapk/MapsGoFirstRunTest.java" ]
-  deps = [
-    ":chrome_java_test_pagecontroller",
-    "//base:base_java",
-    "//base:base_java_test_support",
-    "//chrome/android:chrome_java",
-    "//chrome/android/webapk/libs/client:client_java",
-    "//chrome/android/webapk/libs/runtime_library:runtime_library_javatests",
-    "//chrome/android/webapk/shell_apk:shell_apk_javatests",
-    "//chrome/browser/first_run/android:java",
-    "//components/webapk/android/libs/client:java",
-    "//content/public/test/android:content_java_test_support",
-    "//third_party/androidx:androidx_test_core_java",
-    "//third_party/androidx:androidx_test_monitor_java",
-    "//third_party/junit",
-  ]
-
-  additional_apks = [
-    "//chrome/android/webapk/libs/runtime_library/javatests/apk_with_webapk_service:apk_with_webapk_service",
-    "//chrome/android/webapk/shell_apk/javatests/dex_optimizer:dex_optimizer_apk",
-    "//chrome/android/webapk/shell_apk:javatests_webapk",
-    "//chrome/android/webapk/shell_apk:uiautomator_maps_go_webapk",
-  ]
-}
-
-chrome_public_test_apk_tmpl("chrome_java_test_pagecontroller_codelab") {
-  apk_name = "ChromePageControllerCodelab"
-  sources = [ "javatests/src/org/chromium/chrome/test/pagecontroller/tests/codelab/SettingsForCodelabTest.java" ]
-  deps = [
-    ":chrome_java_test_pagecontroller",
-    "//base:base_java_test_support",
-    "//third_party/junit",
   ]
 }
 

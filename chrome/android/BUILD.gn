@@ -3606,11 +3606,8 @@ chrome_common_shared_library("libchromefortest") {
   java_targets = [
     "//chrome/android:chrome_public_unit_test_apk__test_apk",
     "//chrome/android:chrome_public_test_apk__test_apk",
-    "//chrome/test/android:chrome_java_test_pagecontroller_tests__test_apk",
     "//chrome/test/android:chrome_java_test_wpr_tests__test_apk",
     "//chrome/test/android:chrome_java_test_feed_test__test_apk",
-    "//chrome/test/android:chrome_webapk_integration_tests__test_apk",
-    "//chrome/test/android:chrome_java_test_pagecontroller_codelab__test_apk",
   ]
   if (enable_vr) {
     java_targets += [ "//chrome/android:chrome_public_test_vr_apk__test_apk" ]

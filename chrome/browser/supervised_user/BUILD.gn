@@ -157,7 +157,7 @@ if (is_android) {
       "//chrome/browser/supervised_user:supervised_user_metrics_java",
       "//chrome/browser/supervised_user:website_parent_approval_java",
       "//chrome/test/android:chrome_java_integration_test_support",
-      "//chrome/test/android:chrome_java_test_pagecontroller",
+      "//chrome/test/android:pagecontroller_utils_java",
       "//components/browser_ui/bottomsheet/android:java",
       "//components/browser_ui/bottomsheet/android/test:java",
       "//components/signin/public/android:java",

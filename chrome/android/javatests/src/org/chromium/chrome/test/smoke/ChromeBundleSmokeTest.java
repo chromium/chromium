@@ -50,7 +50,7 @@ public class ChromeBundleSmokeTest {
                 ChromeUiApplicationTestRule.PACKAGE_NAME_ARG);
         Assert.assertNotNull("Must specify bundle under test", mPackageName);
         try {
-            mChromeUiRule.launchIntoNewTabPageOnFirstRun();
+            UiAutomatorUtils.getInstance().launchApplication(mPackageName);
         } catch (Exception e) {
             if (NonInstrumentedCrashDetector.checkDidChromeCrash()) {
                 throw new RuntimeException(mPackageName + " should not have crashed.");

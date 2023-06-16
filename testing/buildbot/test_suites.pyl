@@ -184,10 +184,6 @@
       },
     },
 
-    'android_pagecontroller_self_tests': {
-      'chrome_java_test_pagecontroller_tests': {},
-    },
-
     # TODO(crbug.com/1111436): Deprecate this group in favor of
     # android_pie_rel_gtests if/when android Pie capacity is fully restored.
     'android_pie_rel_reduced_capacity_gtests': {
@@ -513,7 +509,6 @@
           'skia_gold_test',
         ],
       },
-      'chrome_webapk_integration_tests': {},
     },
 
     'chrome_public_wpt': {
@@ -5921,7 +5916,6 @@
       'android_ar_gtests',
       'android_ddready_vr_gtests',
       'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'chromium_tracing_gtests',
       # No standard tests due to capacity, no Vega tests since it's currently
@@ -5934,7 +5928,6 @@
     'android_pie_rel_emulator_gtests': [
       'android_emulator_specific_chrome_public_tests',
       'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
       'chromium_gtests',
@@ -5950,9 +5943,7 @@
       # TODO(crbug.com/1111436): Deprecate this when all the test suites below
       # it are re-enabled.
       'android_pie_rel_reduced_capacity_gtests',
-
       'android_monochrome_smoke_tests',
-      'android_pagecontroller_self_tests',
       'android_smoke_tests',
     #   'android_specific_chromium_gtests',  # Already includes gl_gtests.
     #   'chromium_gtests',
