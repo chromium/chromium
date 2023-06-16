@@ -3,6 +3,7 @@
     "3pp-linux-amd64-packager": "Ubuntu-22.04",
     "ASAN Release": "Ubuntu-22.04",
     "ASAN Release Media": "Ubuntu-22.04",
+    "ASan Debug (32-bit x86 with V8-ARM)": "Ubuntu-22.04",
     "ASan Release Media (32-bit x86 with V8-ARM)": "Ubuntu-22.04",
     "Afl Upload Linux ASan": "Ubuntu-22.04",
     "Android ASAN (dbg)": "Ubuntu-22.04",
