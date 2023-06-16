@@ -91,6 +91,7 @@
     "Libfuzzer Upload Linux ASan Debug": "Ubuntu-22.04",
     "Libfuzzer Upload Linux UBSan": "Ubuntu-22.04",
     "Libfuzzer Upload Linux V8-ARM64 ASan": "Ubuntu-22.04",
+    "Libfuzzer Upload Linux V8-ARM64 ASan Debug": "Ubuntu-22.04",
     "Libfuzzer Upload Linux32 ASan": "Ubuntu-22.04",
     "Libfuzzer Upload Linux32 V8-ARM ASan Debug": "Ubuntu-22.04",
     "Linux ASan LSan Builder": "Ubuntu-22.04",
