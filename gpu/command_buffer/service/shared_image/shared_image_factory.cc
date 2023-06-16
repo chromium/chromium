@@ -378,7 +378,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   auto* factory = GetFactoryByUsage(usage, format, size,
                                     /*pixel_data=*/{}, gfx::EMPTY_BUFFER);
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER);
+    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
     return false;
   }
 
@@ -418,7 +418,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
 
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER);
+    LogGetFactoryFailed(usage, format, gfx::EMPTY_BUFFER, debug_label);
     return false;
   }
 
@@ -484,7 +484,7 @@ bool SharedImageFactory::CreateSharedImage(
   }
 
   if (!factory) {
-    LogGetFactoryFailed(usage, format, gmb_type);
+    LogGetFactoryFailed(usage, format, gmb_type, debug_label);
     return false;
   }
 
@@ -554,7 +554,7 @@ bool SharedImageFactory::CreateSharedImage(const Mailbox& mailbox,
   }
 
   if (!factory) {
-    LogGetFactoryFailed(usage, si_format, gmb_type);
+    LogGetFactoryFailed(usage, si_format, gmb_type, debug_label);
     return false;
   }
 
@@ -733,15 +733,16 @@ SharedImageBackingFactory* SharedImageFactory::GetFactoryByUsage(
   return nullptr;
 }
 
-void SharedImageFactory::LogGetFactoryFailed(
-    uint32_t usage,
-    viz::SharedImageFormat format,
-    gfx::GpuMemoryBufferType gmb_type) {
+void SharedImageFactory::LogGetFactoryFailed(uint32_t usage,
+                                             viz::SharedImageFormat format,
+                                             gfx::GpuMemoryBufferType gmb_type,
+                                             const std::string& debug_label) {
   LOG(ERROR) << "Could not find SharedImageBackingFactory with params: usage: "
              << CreateLabelForSharedImageUsage(usage)
              << ", format: " << format.ToString()
              << ", share_between_threads: " << IsSharedBetweenThreads(usage)
-             << ", gmb_type: " << GmbTypeToString(gmb_type);
+             << ", gmb_type: " << GmbTypeToString(gmb_type)
+             << ", debug_label: " << debug_label;
 }
 
 bool SharedImageFactory::RegisterBacking(
