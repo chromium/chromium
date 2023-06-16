@@ -726,6 +726,10 @@ export class PowerBookmarksListElement extends PolymerElement {
             ActionSource.kBookmark);
       }
     }
+    // Workaround for this issue, causing unexpected list scrolling when
+    // refocusing the list after changing tabs:
+    // https://github.com/PolymerElements/iron-list/issues/270
+    (event.target as HTMLElement).blur();
   }
 
   private onRowSelectedChange_(
