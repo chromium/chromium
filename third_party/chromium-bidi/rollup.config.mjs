@@ -33,6 +33,10 @@ export default {
       // without webcrypto exposes globally.
       ignore: ['crypto'],
     }),
-    terser(),
+    terser({
+      format: {
+        ascii_only: true,
+      },
+    }),
   ],
 };

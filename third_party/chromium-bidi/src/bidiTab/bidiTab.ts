@@ -121,7 +121,7 @@ function createBidiServer(selfTargetId: string) {
 
     constructor() {
       window.onBidiMessage = (messageStr: string) => {
-        log(LogType.bidi, 'received <', messageStr);
+        log(LogType.bidi, 'received ◂', messageStr);
         let messageObject: Message.RawCommandRequest;
         try {
           messageObject = WindowBidiTransport.#parseBidiMessage(messageStr);
@@ -146,7 +146,7 @@ function createBidiServer(selfTargetId: string) {
     sendMessage(message: Message.OutgoingMessage) {
       const messageStr = JSON.stringify(message);
       window.sendBidiResponse(messageStr);
-      log(LogType.bidi, 'sent >', messageStr);
+      log(LogType.bidi, 'sent ▸', messageStr);
     }
 
     close() {

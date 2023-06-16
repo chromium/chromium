@@ -134,7 +134,7 @@ export class MapperServer {
         messages: unknown[];
       };
 
-      // BiDi traffic is logged in `bidiServer:SEND >`
+      // BiDi traffic is logged in `bidiServer:SEND ▸`
       if (debugMessage.logType === LogType.bidi) {
         return;
       }
