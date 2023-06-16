@@ -10,6 +10,18 @@
         aria-describedby="touchpadName"
         deep-link-focus-id$="[[Setting.kTouchpadTapToClick]]">
     </settings-toggle-button>
+    <template is="dom-if" if="[[isAltClickAndSixPackCustomizationEnabled]]">
+      <div id="simulateRightClickContainer" class="settings-box">
+        <div id="simulateRightClickLabel" class="start settings-box-text">
+          $i18n{touchpadSimulateRightClickLabel}
+        </div>
+        <settings-dropdown-menu id="simulateRightClickDropdown"
+            label="[[touchpadSimulateRightClickLabel]]"
+            pref="{{simulateRightClickPref}}"
+            menu-options="[[simulateRightClickOptions]]">
+        </settings-dropdown-menu>
+      </div>
+    </template>
     <settings-toggle-button id="enableTapDragging"
         class="hr"
         pref="{{enableTapDraggingPref}}"

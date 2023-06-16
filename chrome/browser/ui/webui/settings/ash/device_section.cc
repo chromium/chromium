@@ -1195,6 +1195,10 @@ void DeviceSection::AddLoadTimeData(content::WebUIDataSource* html_source) {
       "enablePeripheralCustomization",
       base::FeatureList::IsEnabled(ash::features::kPeripheralCustomization));
 
+  html_source->AddBoolean("enableAltClickAndSixPackCustomization",
+                          base::FeatureList::IsEnabled(
+                              ash::features::kAltClickAndSixPackCustomization));
+
   AddDevicePointersStrings(html_source);
   AddDeviceGraphicsTabletStrings(html_source);
   AddDeviceKeyboardStrings(html_source);
@@ -1711,6 +1715,14 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadScrollAccelerationLabel",
        IDS_SETTINGS_TOUCHPAD_SCROLL_ACCELERATION_LABEL},
       {"touchpadScrollSpeed", IDS_SETTINGS_TOUCHPAD_SCROLL_SPEED_LABEL},
+      {"touchpadSimulateRightClickLabel",
+       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_LABEL},
+      {"touchpadSimulateRightClickOptionAlt",
+       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT},
+      {"touchpadSimulateRightClickOptionOff",
+       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_OFF},
+      {"touchpadSimulateRightClickOptionSearch",
+       IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH},
       {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
   };
   html_source->AddLocalizedStrings(kPointersStrings);

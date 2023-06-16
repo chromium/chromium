@@ -1,10 +1,10 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
-
-import {FakeInputDeviceSettingsProvider, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceTouchpadSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement} from 'chrome://os-settings/os_settings.js';
+import {FakeInputDeviceSettingsProvider, fakeTouchpads, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsDropdownMenuElement, SettingsPerDeviceTouchpadSubsectionElement, SettingsSliderElement, SettingsToggleButtonElement, SimulateRightClickModifier} from 'chrome://os-settings/os_settings.js';
 import {CrToggleElement} from 'chrome://resources/cr_elements/cr_toggle/cr_toggle.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {pressAndReleaseKeyOn} from 'chrome://resources/polymer/v3_0/iron-test-helpers/mock-interactions.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
@@ -17,6 +17,9 @@ suite('<settings-per-device-touchpad-subsection>', () => {
   let provider: FakeInputDeviceSettingsProvider;
 
   setup(async () => {
+    loadTimeData.overrideValues({
+      enableAltClickAndSixPackCustomization: true,
+    });
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeTouchpads(fakeTouchpads);
     setInputDeviceSettingsProviderForTesting(provider);
@@ -32,6 +35,11 @@ suite('<settings-per-device-touchpad-subsection>', () => {
   teardown(() => {
     subsection.remove();
   });
+
+  function simulateDropdownChange(modifier: SimulateRightClickModifier) {
+    subsection.set('simulateRightClickPref.value', modifier);
+    return flushTasks();
+  }
 
   /**
    * Test that API are updated when touchpad settings change.
@@ -321,5 +329,21 @@ suite('<settings-per-device-touchpad-subsection>', () => {
 
     assert(touchpadSensitivitySlider);
     assertEquals(null, subsection.shadowRoot!.activeElement);
+  });
+
+  test('Simulate right click dropdown', async () => {
+    assertTrue(isVisible(
+        subsection.shadowRoot!.querySelector('#simulateRightClickContainer')));
+    const simulateRightClickDropdown =
+        subsection.shadowRoot!.querySelector('#simulateRightClickDropdown') as
+        SettingsDropdownMenuElement;
+    // Dropdown has the correct default value.
+    assertEquals(
+        Number(simulateRightClickDropdown.$.dropdownMenu.value),
+        SimulateRightClickModifier.kNone);
+    await simulateDropdownChange(SimulateRightClickModifier.kAlt);
+    assertEquals(
+        Number(simulateRightClickDropdown.$.dropdownMenu.value),
+        SimulateRightClickModifier.kAlt);
   });
 });

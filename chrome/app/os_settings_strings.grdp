@@ -3006,6 +3006,18 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_LEARN_MORE_LABEL" translateable="false" desc="In Device Settings, the learn more label for the cr toggle button.">
     Learn more
   </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_LABEL" translateable="false" desc="In Device Settings, the text next to the dropdown for setting the behavior of simulating a right click using a keyboard and touchpad.">
+    Use touchpad and keyboard to right-click
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_OFF" translateable="false" desc="In the touchpad settings subpage, the dropdown list item for the Off option.">
+    Off
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH" translateable="false" desc="In the touchpad settings subpage, the dropdown list item for the Search + Click option.">
+    search + click
+  </message>
+  <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT" translateable="false" desc="In the touchpad settings subpage, the dropdown list item for the Alt + Click option.">
+    alt + click
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">
