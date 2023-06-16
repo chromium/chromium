@@ -201,6 +201,11 @@ class MODULES_EXPORT DecoderTemplate
 
   void ScheduleDequeueEvent();
   void DispatchDequeueEvent(Event* event);
+
+  // Returns false if `reset_generation_` match the one in the request. If not,
+  // aborts the promise attached to request and returns true.
+  bool MaybeAbortRequest(Request* request) const;
+
   bool dequeue_event_pending_ = false;
 
   Member<ScriptState> script_state_;

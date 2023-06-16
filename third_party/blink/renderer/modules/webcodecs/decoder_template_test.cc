@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include "media/video/mock_gpu_video_accelerator_factories.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/bindings/core/v8/script_function.h"
@@ -17,7 +18,10 @@
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager.h"
 #include "third_party/blink/renderer/modules/webcodecs/codec_pressure_manager_provider.h"
 #include "third_party/blink/renderer/modules/webcodecs/video_decoder.h"
+#include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
+
+using testing::_;
 
 namespace blink {
 
@@ -92,6 +96,23 @@ VideoDecoder* DecoderTemplateTest<VideoDecoder>::CreateDecoder(
 using DecoderTemplateImplementations =
     testing::Types<AudioDecoder, VideoDecoder>;
 
+class MockGpuFactoriesTestingPlatform : public TestingPlatformSupport {
+ public:
+  MockGpuFactoriesTestingPlatform() = default;
+  ~MockGpuFactoriesTestingPlatform() override = default;
+
+  media::GpuVideoAcceleratorFactories* GetGpuFactories() override {
+    return &mock_gpu_factories_;
+  }
+
+  media::MockGpuVideoAcceleratorFactories& mock_gpu_factories() {
+    return mock_gpu_factories_;
+  }
+
+ private:
+  media::MockGpuVideoAcceleratorFactories mock_gpu_factories_{nullptr};
+};
+
 TYPED_TEST_SUITE(DecoderTemplateTest, DecoderTemplateImplementations);
 
 TYPED_TEST(DecoderTemplateTest, BasicConstruction) {
@@ -144,6 +165,64 @@ TYPED_TEST(DecoderTemplateTest, ResetDuringFlush) {
     ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
     tester.WaitUntilSettled();
     ASSERT_TRUE(tester.IsRejected());
+  }
+}
+
+TYPED_TEST(DecoderTemplateTest, ResetDuringConfigureOnWorker) {
+  V8TestingScope v8_scope;
+
+  ScopedTestingPlatformSupport<MockGpuFactoriesTestingPlatform> platform;
+  EXPECT_CALL(platform->mock_gpu_factories(), GetTaskRunner())
+      .WillRepeatedly(
+          testing::Return(base::SingleThreadTaskRunner::GetCurrentDefault()));
+  EXPECT_CALL(platform->mock_gpu_factories(), IsDecoderSupportKnown())
+      .WillRepeatedly(testing::Return(false));
+  EXPECT_CALL(platform->mock_gpu_factories(), IsDecoderConfigSupported(_))
+      .WillRepeatedly(testing::Return(
+          media::GpuVideoAcceleratorFactories::Supported::kFalse));
+  EXPECT_CALL(platform->mock_gpu_factories(), GetDecoderType())
+      .WillRepeatedly(testing::Return(media::VideoDecoderType::kTesting));
+  base::OnceClosure notify_cb;
+  EXPECT_CALL(platform->mock_gpu_factories(), NotifyDecoderSupportKnown(_))
+      .WillRepeatedly(
+          [&](base::OnceClosure on_done) { notify_cb = std::move(on_done); });
+  // Create a decoder.
+  MockFunctionScope mock_function(v8_scope.GetScriptState());
+  auto* decoder =
+      this->CreateDecoder(v8_scope.GetScriptState(),
+                          this->CreateInit(mock_function.ExpectNoCall(),
+                                           mock_function.ExpectNoCall()),
+                          v8_scope.GetExceptionState());
+  ASSERT_TRUE(decoder);
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  // Configure the decoder.
+  decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  // reset() during configure.
+  {
+    decoder->reset(v8_scope.GetExceptionState());
+    ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+  }
+
+  // Only present for video playbacks.
+  if (notify_cb) {
+    std::move(notify_cb).Run();
+  }
+
+  // Configure the decoder again.
+  decoder->configure(this->CreateConfig(), v8_scope.GetExceptionState());
+  ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+  // flush() to ensure configure completes.
+  {
+    auto promise = decoder->flush(v8_scope.GetExceptionState());
+    ASSERT_FALSE(v8_scope.GetExceptionState().HadException());
+
+    ScriptPromiseTester tester(v8_scope.GetScriptState(), promise);
+    tester.WaitUntilSettled();
+    ASSERT_TRUE(tester.IsFulfilled());
   }
 }
 

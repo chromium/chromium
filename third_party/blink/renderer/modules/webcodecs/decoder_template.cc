@@ -260,15 +260,7 @@ void DecoderTemplate<Traits>::ProcessRequests() {
     Request* request = requests_.front();
 
     // Skip processing for requests that are canceled by a recent reset().
-    if (request->reset_generation != reset_generation_) {
-      if (request->resolver) {
-        request->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
-            DOMExceptionCode::kAbortError,
-            shutting_down_
-                ? (shutting_down_due_to_error_ ? "Aborted due to error"
-                                               : "Aborted due to close()")
-                : "Aborted due to reset()"));
-      }
+    if (MaybeAbortRequest(request)) {
       requests_.pop_front();
       continue;
     }
@@ -342,10 +334,18 @@ void DecoderTemplate<Traits>::ContinueConfigureWithGpuFactories(
   DCHECK(request);
   DCHECK_EQ(request->type, Request::Type::kConfigure);
 
+  if (IsClosed()) {
+    return;
+  }
+
   gpu_factories_ = gpu_factories;
 
-  if (request->reset_generation != reset_generation_)
+  if (MaybeAbortRequest(request)) {
+    DCHECK_EQ(request, pending_request_);
+    pending_request_.Release()->EndTracing();
     return;
+  }
+
   if (!decoder()) {
     decoder_ = Traits::CreateDecoder(*ExecutionContext::From(script_state_),
                                      gpu_factories_.value(), logger_->log());
@@ -615,15 +615,8 @@ void DecoderTemplate<Traits>::OnFlushDone(media::DecoderStatus status) {
   // If reset() has been called during the Flush(), we can skip reinitialization
   // since the client is required to do so manually.
   const bool is_flush = pending_request_->type == Request::Type::kFlush;
-  if (is_flush && pending_request_->reset_generation != reset_generation_) {
-    pending_request_->EndTracing();
-
-    // We must reject the Promise for consistency in the behavior of reset().
-    // It's also possible that we already dropped outputs, so the flush() may be
-    // incomplete despite finishing successfully.
-    pending_request_.Release()->resolver.Release()->Reject(
-        MakeGarbageCollected<DOMException>(DOMExceptionCode::kAbortError,
-                                           "Aborted due to reset()"));
+  if (is_flush && MaybeAbortRequest(pending_request_)) {
+    pending_request_.Release()->EndTracing();
     ProcessRequests();
     return;
   }
@@ -855,6 +848,24 @@ template <typename Traits>
 bool DecoderTemplate<Traits>::HasPendingActivity() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   return pending_request_ || !requests_.empty();
+}
+
+template <typename Traits>
+bool DecoderTemplate<Traits>::MaybeAbortRequest(Request* request) const {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  if (request->reset_generation == reset_generation_) {
+    return false;
+  }
+
+  if (request->resolver) {
+    request->resolver.Release()->Reject(MakeGarbageCollected<DOMException>(
+        DOMExceptionCode::kAbortError,
+        shutting_down_
+            ? (shutting_down_due_to_error_ ? "Aborted due to error"
+                                           : "Aborted due to close()")
+            : "Aborted due to reset()"));
+  }
+  return true;
 }
 
 template <typename Traits>
