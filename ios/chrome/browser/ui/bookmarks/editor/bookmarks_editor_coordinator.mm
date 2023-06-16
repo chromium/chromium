@@ -133,6 +133,10 @@
   _navigationController = nil;
 }
 
+- (void)dealloc {
+  DCHECK(!_navigationController);
+}
+
 - (BOOL)canDismiss {
   if (_viewController.edited) {
     return NO;
