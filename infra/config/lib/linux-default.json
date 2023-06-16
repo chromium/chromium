@@ -307,6 +307,7 @@
     "linux-ubsan-vptr": "Ubuntu-22.04",
     "linux-updater-builder-dbg": "Ubuntu-22.04",
     "linux-updater-builder-rel": "Ubuntu-22.04",
+    "linux-updater-tester-dbg": "Ubuntu-22.04",
     "linux-updater-tester-rel": "Ubuntu-22.04",
     "linux-upload-perfetto": "Ubuntu-22.04",
     "linux-win_cross-rel": "Ubuntu-22.04",
