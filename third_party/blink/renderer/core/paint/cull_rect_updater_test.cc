@@ -958,9 +958,9 @@ TEST_P(CullRectUpdaterTest, ViewScrollNeedsCullRectUpdate) {
   EXPECT_EQ(gfx::Rect(0, 0, 800, 5016), GetContentsCullRect(layer).Rect());
 }
 
-// The test doesn't apply on Android where the LayoutObject of <select> doesn't
-// scroll.
-#if !BUILDFLAG(IS_ANDROID)
+// The test doesn't apply on Android or iOS where the LayoutObject of <select>
+// doesn't scroll.
+#if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 TEST_P(CullRectUpdaterTest, SelectDoesntExpandCullRect) {
   SetBodyInnerHTML(R"HTML(
     <select id="select" style="height: 50px; font-size: 20px" size="3">
