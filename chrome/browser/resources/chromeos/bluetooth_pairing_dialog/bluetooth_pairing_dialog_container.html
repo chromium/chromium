@@ -1,10 +1,11 @@
 <!doctype html>
-<html dir="$i18n{textdirection}" lang="$i18n{language}">
+<html dir="$i18n{textdirection}" lang="$i18n{language}" cros>
   <head>
     <meta charset="utf-8">
     <title>$i18n{title}</title>
     <link rel="stylesheet" href="chrome://resources/css/text_defaults_md.css">
     <link rel="stylesheet" href="chrome://resources/chromeos/colors/cros_styles.css">
+    <link rel="stylesheet" href="chrome://theme/colors.css?sets=legacy,sys">
   </head>
   <style>
      /* The :not(body) selector allows the variable definitions below to 'win'
@@ -19,11 +20,9 @@
       --cr-primary-text-color: var(--cros-text-color-primary);
       --cr-secondary-text-color: var(--cros-text-color-secondary);
       --cr-tooltip-icon-fill-color: var(--cros-icon-color-primary);
-      background-color: var(--cros-bg-color);
       /* Remove 300ms delay for 'click' event, when using touch interface. */
       touch-action: manipulation;
     }
-
   </style>
   <body>
     <bluetooth-pairing-dialog></bluetooth-pairing-dialog>

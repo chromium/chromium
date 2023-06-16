@@ -1,6 +1,13 @@
 <style include="cr-page-host-style cr-shared-style cros-color-overrides">
+  #dialog {
+    --cr-dialog-top-container-min-height: 0;
+  }
 </style>
-<bluetooth-pairing-ui on-finished="closeDialog_"
-    pairing-device-address="[[deviceAddress_]]"
-    should-omit-links="[[shouldOmitLinks_]]">
-</bluetooth-pairing-ui>
+<cr-dialog id="dialog" show-on-attach>
+  <div slot="body">
+    <bluetooth-pairing-ui on-finished="closeDialog_"
+        pairing-device-address="[[deviceAddress_]]"
+        should-omit-links="[[shouldOmitLinks_]]">
+    </bluetooth-pairing-ui>
+  </div>
+</cr-dialog>
