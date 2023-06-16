@@ -43,27 +43,6 @@ try_.builder(
 )
 
 try_.builder(
-    name = "linux-1mbu-compile-fyi-rel",
-    mirrors = [
-        "ci/Linux Builder",
-    ],
-    try_settings = builder_config.try_settings(
-        include_all_triggered_testers = True,
-        is_compile_only = True,
-    ),
-    builderless = False,
-    properties = {
-        "bot_update_experiments": [
-            "no_sync",
-        ],
-    },
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-    tryjob = try_.job(
-        experiment_percentage = 5,
-    ),
-)
-
-try_.builder(
     name = "linux-afl-asan-rel",
     branch_selector = branches.selector.LINUX_BRANCHES,
     executable = "recipe:chromium/fuzz",

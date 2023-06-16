@@ -71,10 +71,6 @@
       ],
       "mirroring_builder_group_and_names": [
         {
-          "builder": "linux-1mbu-compile-fyi-rel",
-          "group": "tryserver.chromium.linux"
-        },
-        {
           "builder": "linux-dcheck-off-rel",
           "group": "tryserver.chromium.linux"
         },

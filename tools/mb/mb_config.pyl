@@ -1191,7 +1191,6 @@
       'gpu-try-linux-nvidia-rel': 'gpu_tests_release_trybot_reclient',
       'layout_test_leak_detection': 'release_trybot_reclient',
       'leak_detection_linux': 'release_trybot_reclient',
-      'linux-1mbu-compile-fyi-rel': 'release_trybot_reclient',
       'linux-afl-asan-rel': 'afl_asan_release_trybot_reclient',
       'linux-annotator-rel': 'release_trybot_reclient',
       'linux-arm64-castos': 'cast_arm64_release_bot_reclient',
