@@ -24,10 +24,12 @@ import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
+import org.chromium.base.BuildInfo;
 import org.chromium.base.Callback;
 import org.chromium.chrome.browser.tab.TabUtils;
 import org.chromium.chrome.browser.tab.state.ShoppingPersistedTabData;
 import org.chromium.chrome.tab_ui.R;
+import org.chromium.ui.display.DisplayUtil;
 import org.chromium.ui.modelutil.PropertyKey;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.widget.ButtonCompat;
@@ -328,8 +330,12 @@ class TabGridViewBinder {
      * @param source Image bitmap to resize.
      * @param destinationSize Desired width and height for source.
      */
-    private static void updateThumbnailMatrix(
+    @VisibleForTesting
+    static void updateThumbnailMatrix(
             TabGridThumbnailView thumbnail, Bitmap source, Size destinationSize) {
+        if (BuildInfo.getInstance().isAutomotive) {
+            source.setDensity((int) (source.getDensity() * DisplayUtil.UI_SCALING_FACTOR_FOR_AUTO));
+        }
         int newWidth = destinationSize == null ? 0 : destinationSize.getWidth();
         int newHeight = destinationSize == null ? 0 : destinationSize.getHeight();
         if (newWidth <= 0 || newHeight <= 0
@@ -339,7 +345,6 @@ class TabGridViewBinder {
         }
 
         final Matrix m = new Matrix();
-
         final float scale = Math.max(
                 (float) newWidth / source.getWidth(), (float) newHeight / source.getHeight());
         m.setScale(scale, scale);

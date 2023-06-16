@@ -28,7 +28,7 @@ public class AutomotiveContextWrapperTestRule implements TestRule {
 
         public AutomotiveTestContext(Context baseContext) {
             super(baseContext);
-            mIsAutomotive = false;
+            mIsAutomotive = BuildInfo.getInstance().isAutomotive;
         }
 
         public void setIsAutomotive(boolean isAutomotive) {
