@@ -1,0 +1,15 @@
+Test that prerender fails if a frame target without tab target is attached.
+{
+    method : Preload.prerenderStatusUpdated
+    params : {
+        key : {
+            action : Prerender
+            loaderId : <string>
+            url : http://127.0.0.1:8000/inspector-protocol/prerender/resources/empty.html
+        }
+        prerenderStatus : PrerenderingDisabledByDevTools
+        status : Failure
+    }
+    sessionId : <string>
+}
+

@@ -1,22 +1,33 @@
 (async function(testRunner) {
-  const {dp, session} = await testRunner.startBlank(
-      `Tests that prerender targets get auto-attached properly.`);
+  testRunner.log(`Tests that prerender targets get auto-attached properly.`);
 
   const pageUrl = 'http://devtools.oopif-a.test:8000/inspector-protocol/prerender/resources/simple-prerender.html';
 
   const bp = testRunner.browserP();
-  await bp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
-  const tabs = (await bp.Target.getTargets({filter: [{type: "tab"}]})).result.targetInfos;
+  const params = {url: 'about:blank', forTab: true};
+  const tabTargetId = (await bp.Target.createTarget(params)).result.targetId;
+  const tabTargetSessionId =
+      (await bp.Target.attachToTarget({targetId: tabTargetId, flatten: true}))
+          .result.sessionId;
+  const tabTargetSession =
+      new TestRunner.Session(testRunner, tabTargetSessionId);
+  const tp = tabTargetSession.protocol;
 
-  const tabUnderTest = tabs.filter(target => target.url.endsWith('/inspector-protocol-page.html'))[0];
-  const tp = (await testRunner.browserSession().attachChild(tabUnderTest.targetId)).protocol;
+  const events = [];
+  tp.Target.onAttachedToTarget(event => {
+    events.push(event);
+  });
+  await tp.Target.setAutoAttach(
+      {autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
 
-  const autoAttachDone = tp.Target.setAutoAttach({autoAttach: true, waitForDebuggerOnStart: true, flatten: true});
-  const targets = [];
-  tp.Target.onAttachedToTarget(event => { targets.push(event.params.targetInfo); });
-  await autoAttachDone;
+  const session = tabTargetSession.createChild(events[0].params.sessionId);
 
+  session.protocol.Page.enable();
+  session.protocol.Preload.enable();
+
+  const prerenderReady = session.protocol.Preload.oncePrerenderStatusUpdated(
+      e => e.params.status == 'Ready');
   const navigateDone = session.navigate(pageUrl);
 
   const attached = (await tp.Target.onceAttachedToTarget()).params;
@@ -31,13 +42,17 @@
   testRunner.log(`${navigated.type}: ${navigated.frame.url}`);
 
   await navigateDone;
+  await prerenderReady;
 
   tp.Target.onTargetInfoChanged(event => testRunner.log(event.params));
 
   // Now activate prerender and make sure old target detaches.
   session.evaluate(`document.getElementById('link').click()`);
   const detached = (await tp.Target.onceDetachedFromTarget()).params;
-  testRunner.log(`Detached from ${targets[0].targetId === detached.targetId ? 'correct' : 'incorrect'} target`);
+  testRunner.log(`Detached from ${
+      events[0].params.targetInfo.targetId === detached.targetId ?
+          'correct' :
+          'incorrect'} target`);
 
   const responseReceived = prerenderSession.protocol.Network.onceResponseReceived();
 
