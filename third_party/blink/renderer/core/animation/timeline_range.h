@@ -40,8 +40,7 @@ class CORE_EXPORT TimelineRange {
   using ScrollOffsets = cc::ScrollTimeline::ScrollOffsets;
   using NamedRange = V8TimelineRange::Enum;
 
-  // For a view timeline, stores the distances of 'entry-crossing' and
-  // 'exit-crossing' ranges.
+  // For a view timeline, stores the distances of 'entry' and 'exit' ranges.
   // Note that 'cover' is in TimelineRange::offsets_, and 'contain' and others
   // can be inferred (see TimelineRange::ConvertNamedRange). Usually, entry and
   // exit distance correspond to the layout size of the subject, but may differ
@@ -49,18 +48,18 @@ class CORE_EXPORT TimelineRange {
   struct ViewOffsets {
     ViewOffsets() = default;
     ViewOffsets(double entry, double exit) {
-      entry_crossing_distance = entry;
-      exit_crossing_distance = exit;
+      entry_distance = entry;
+      exit_distance = exit;
     }
     bool operator==(const ViewOffsets& other) const {
-      return entry_crossing_distance == other.entry_crossing_distance &&
-             exit_crossing_distance == other.exit_crossing_distance;
+      return entry_distance == other.entry_distance &&
+             exit_distance == other.exit_distance;
     }
     bool operator!=(const ViewOffsets& other) const {
       return !(*this == other);
     }
-    double entry_crossing_distance = 0;
-    double exit_crossing_distance = 0;
+    double entry_distance = 0;
+    double exit_distance = 0;
   };
 
   TimelineRange() = default;
