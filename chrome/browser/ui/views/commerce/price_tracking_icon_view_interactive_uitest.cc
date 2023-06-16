@@ -55,8 +55,6 @@ const char kTrackableUrl[] = "about:blank";
 const char kNonBookmarkedUrl[] = "about:blank?bookmarked=false";
 }  // namespace
 
-// TODO(crbug.com/1401515): Do the tests below still make sense after the
-// features::kUnifiedSidePanel flag removal, or should these be removed as well?
 class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
  public:
   PriceTrackingIconViewInteractiveTest() {
@@ -602,13 +600,10 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   EXPECT_TRUE(GetBookmarkStar()->GetActive());
 }
 
-// TODO(crbug.com/1401515): Does the tests below still make sense after the
-// features::kUnifiedSidePanel flag removal, or should it be removed as well?
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
                        NotTriggerSidePanelIPH) {
   PrefService* prefs = browser()->profile()->GetPrefs();
   prefs->SetBoolean(prefs::kShouldShowPriceTrackFUEBubble, false);
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
   auto* promo_controller = BrowserView::GetBrowserViewForBrowser(browser())
                                ->GetFeaturePromoController();
   EXPECT_TRUE(
@@ -638,11 +633,9 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
   bubble->Accept();
   SimulateServerPriceTrackStateUpdated(/*is_price_tracked=*/true);
 
-  // Verify IPH is not showing and pref is not set up to force show bookmark tab
-  // in side panel.
+  // Verify IPH is not showing.
   EXPECT_FALSE(promo_controller->IsPromoActive(
       feature_engagement::kIPHPriceTrackingInSidePanelFeature));
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingBubbleInteractiveTest,
@@ -850,7 +843,6 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
   EXPECT_TRUE(registry->active_entry().has_value());
   EXPECT_EQ(registry->active_entry().value()->key().id(),
             SidePanelEntry::Id::kBookmarks);
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }
 
 IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
@@ -896,7 +888,6 @@ IN_PROC_BROWSER_TEST_F(PriceTrackingIconViewUnifiedSidePanelInteractiveTest,
   SidePanelRegistry* registry =
       SidePanelCoordinator::GetGlobalSidePanelRegistry(browser());
   EXPECT_FALSE(registry->active_entry().has_value());
-  EXPECT_FALSE(prefs->GetBoolean(prefs::kShouldShowSidePanelBookmarkTab));
 }
 
 class PriceTrackingIconViewAlwaysExpandedTest

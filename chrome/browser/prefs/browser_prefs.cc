@@ -889,6 +889,12 @@ const char kWebAppsExtensionIDs[] = "web_apps.extension_ids";
 constexpr char kOsSyncPrefsMigrated[] = "sync.os_sync_prefs_migrated";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
+// Deprecated 06/2023
+#if !BUILDFLAG(IS_ANDROID)
+const char kShouldShowSidePanelBookmarkTab[] =
+    "should_show_side_panel_bookmark_tab";
+#endif  // !BUILDFLAG(IS_ANDROID)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1266,6 +1272,11 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   registry->RegisterBooleanPref(kOsSyncPrefsMigrated, false);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Deprecated 06/2023.
+#if !BUILDFLAG(IS_ANDROID)
+  registry->RegisterBooleanPref(kShouldShowSidePanelBookmarkTab, false);
+#endif  // !BUILDFLAG(IS_ANDROID)
 }
 
 }  // namespace
@@ -2376,6 +2387,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   profile_prefs->ClearPref(kOsSyncPrefsMigrated);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
+  // Added 06/2023.
+#if !BUILDFLAG(IS_ANDROID)
+  profile_prefs->ClearPref(kShouldShowSidePanelBookmarkTab);
+#endif  // !BUILDFLAG(IS_ANDROID)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

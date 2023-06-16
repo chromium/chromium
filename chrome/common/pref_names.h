@@ -1272,7 +1272,6 @@ extern const char kHighEfficiencyChipExpandedCount[];
 extern const char kLastHighEfficiencyChipExpandedTimestamp[];
 
 extern const char kShouldShowPriceTrackFUEBubble[];
-extern const char kShouldShowSidePanelBookmarkTab[];
 #endif
 
 extern const char kStrictMimetypeCheckForWorkerScriptsEnabled[];

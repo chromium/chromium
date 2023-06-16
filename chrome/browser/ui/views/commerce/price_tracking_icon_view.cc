@@ -243,9 +243,6 @@ void PriceTrackingIconView::EnablePriceTracking(bool enable) {
             SidePanelCoordinator::GetGlobalSidePanelRegistry(browser_);
         registry->SetActiveEntry(registry->GetEntryForKey(
             SidePanelEntry::Key(SidePanelEntry::Id::kBookmarks)));
-      } else {
-        profile_->GetPrefs()->SetBoolean(prefs::kShouldShowSidePanelBookmarkTab,
-                                         true);
       }
     }
   }

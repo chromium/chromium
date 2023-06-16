@@ -110,7 +110,6 @@ ShoppingListUiTabHelper::~ShoppingListUiTabHelper() = default;
 void ShoppingListUiTabHelper::RegisterProfilePrefs(
     PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::kShouldShowPriceTrackFUEBubble, true);
-  registry->RegisterBooleanPref(prefs::kShouldShowSidePanelBookmarkTab, false);
 }
 
 void ShoppingListUiTabHelper::DidFinishNavigation(
