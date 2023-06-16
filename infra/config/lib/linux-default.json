@@ -216,6 +216,7 @@
     "android-rust-arm64-dbg": "Ubuntu-22.04",
     "android-rust-arm64-rel": "Ubuntu-22.04",
     "android-sdk-packager": "Ubuntu-22.04",
+    "android-webview-10-x86-rel-tests": "Ubuntu-22.04",
     "android-webview-13-x64-dbg-tests": "Ubuntu-22.04",
     "android-x86-code-coverage": "Ubuntu-22.04",
     "build-perf-android": "Ubuntu-22.04",
