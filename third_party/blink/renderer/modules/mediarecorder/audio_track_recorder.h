@@ -16,6 +16,7 @@
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
+#include "third_party/blink/renderer/platform/heap/persistent.h"
 #include "third_party/blink/renderer/platform/wtf/sequence_bound.h"
 
 namespace media {
@@ -48,6 +49,19 @@ class MODULES_EXPORT AudioTrackRecorder
 
   enum class BitrateMode { kConstant, kVariable };
 
+  // Callback interface for AudioTrackRecorders. The methods here need to all be
+  // called on the main thread.
+  class CallbackInterface : public GarbageCollectedMixin {
+   public:
+    // Called to indicate there is encoded audio data available.
+    virtual void OnEncodedAudio(const media::AudioParameters& params,
+                                std::string encoded_data,
+                                base::TimeTicks capture_time) = 0;
+
+    // Called when a track's ready state changes.
+    virtual void OnSourceReadyStateChanged() = 0;
+  };
+
   using OnEncodedAudioCB =
       base::RepeatingCallback<void(const media::AudioParameters& params,
                                    std::string encoded_data,
@@ -56,10 +70,10 @@ class MODULES_EXPORT AudioTrackRecorder
   static CodecId GetPreferredCodecId();
 
   AudioTrackRecorder(
+      scoped_refptr<base::SingleThreadTaskRunner> main_thread_task_runner,
       CodecId codec,
       MediaStreamComponent* track,
-      OnEncodedAudioCB on_encoded_audio_cb,
-      base::OnceClosure on_track_source_ended_cb,
+      CallbackInterface* callback_interface,
       uint32_t bits_per_second,
       BitrateMode bitrate_mode,
       scoped_refptr<base::SequencedTaskRunner> encoder_task_runner =

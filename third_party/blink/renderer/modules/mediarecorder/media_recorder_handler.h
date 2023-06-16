@@ -47,6 +47,7 @@ struct WebMediaConfiguration;
 class MODULES_EXPORT MediaRecorderHandler final
     : public GarbageCollected<MediaRecorderHandler>,
       public VideoTrackRecorder::CallbackInterface,
+      public AudioTrackRecorder::CallbackInterface,
       public WebMediaStreamObserver {
  public:
   MediaRecorderHandler(
@@ -108,8 +109,13 @@ class MODULES_EXPORT MediaRecorderHandler final
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
                           bool is_key_frame) override;
-  void OnSourceReadyStateChanged() override;
   void OnVideoEncodingError() override;
+  // AudioTrackRecorder::CallbackInterface overrides.
+  void OnEncodedAudio(const media::AudioParameters& params,
+                      std::string encoded_data,
+                      base::TimeTicks timestamp) override;
+  // [Audio/Video]TrackRecorder::CallbackInterface overrides.
+  void OnSourceReadyStateChanged() override;
 
   void OnStreamChanged(const String& message);
 
@@ -118,9 +124,6 @@ class MODULES_EXPORT MediaRecorderHandler final
                           std::string encoded_alpha,
                           base::TimeTicks timestamp,
                           bool is_key_frame);
-  void OnEncodedAudio(const media::AudioParameters& params,
-                      std::string encoded_data,
-                      base::TimeTicks timestamp);
   void WriteData(base::StringPiece data);
 
   // Updates recorded tracks live and enabled.

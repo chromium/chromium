@@ -371,19 +371,9 @@ bool MediaRecorderHandler::Start(int timeslice,
       return false;
     UpdateTrackLiveAndEnabled(*audio_tracks_[0], /*is_video=*/false);
 
-    const AudioTrackRecorder::OnEncodedAudioCB on_encoded_audio_cb =
-        base::BindPostTask(
-            main_thread_task_runner_,
-            WTF::BindRepeating(&MediaRecorderHandler::OnEncodedAudio,
-                               WrapWeakPersistent(this)));
-    base::OnceClosure on_track_source_changed_cb = base::BindPostTask(
-        main_thread_task_runner_,
-        WTF::BindOnce(&MediaRecorderHandler::OnSourceReadyStateChanged,
-                      WrapWeakPersistent(this)));
     audio_recorders_.emplace_back(std::make_unique<AudioTrackRecorder>(
-        audio_codec_id_, audio_tracks_[0], std::move(on_encoded_audio_cb),
-        std::move(on_track_source_changed_cb), audio_bits_per_second_,
-        audio_bitrate_mode_));
+        main_thread_task_runner_, audio_codec_id_, audio_tracks_[0], this,
+        audio_bits_per_second_, audio_bitrate_mode_));
   }
 
   recording_ = true;
