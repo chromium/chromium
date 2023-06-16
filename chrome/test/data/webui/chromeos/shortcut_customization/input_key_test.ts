@@ -122,9 +122,9 @@ suite('inputKeyTest', function() {
     assertEquals('img', iconElement.getAttribute('role'));
   });
 
-  test('MetaKeyIsAlwaysModifier', async () => {
+  test('LwinKeyAsSearchModifier', async () => {
     inputKeyElement = initInputKeyElement();
-    inputKeyElement.key = 'meta';
+    inputKeyElement.key = 'Meta';
     inputKeyElement.keyState = KeyInputState.ALPHANUMERIC_SELECTED;
 
     manager!.setHasLauncherButton(true);
@@ -134,7 +134,7 @@ suite('inputKeyTest', function() {
     const iconElement = inputKeyElement.shadowRoot!.querySelector(
                             '#key-icon') as IronIconElement;
     assertEquals('shortcut-customization-keys:launcher', iconElement.icon);
-    // 'meta' key should always be a modifier.
+    // Lwin key should be treated as a search modifier key.
     assertEquals(KeyInputState.MODIFIER_SELECTED, inputKeyElement.keyState);
   });
 

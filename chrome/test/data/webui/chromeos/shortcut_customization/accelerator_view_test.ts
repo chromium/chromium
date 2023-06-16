@@ -5,6 +5,7 @@
 import 'chrome://shortcut-customization/js/accelerator_view.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
+import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
 import {strictQuery} from 'chrome://resources/ash/common/typescript_utils/strict_query.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -359,5 +360,70 @@ suite('acceleratorViewTest', function() {
           testCase.expectEditIconVisible,
           !getEditIcon().hasAttribute('hidden'));
     }
+  });
+
+  test('KeyDisplayAndIconDuringEdit', async () => {
+    viewElement = initAcceleratorViewElement();
+    await flushTasks();
+    const acceleratorInfo = createStandardAcceleratorInfo(
+        Modifier.ALT,
+        /*key=*/ 221,
+        /*keyDisplay=*/ ']');
+    viewElement.acceleratorInfo = acceleratorInfo;
+    viewElement.source = AcceleratorSource.kAsh;
+    viewElement.action = 1;
+    await flush();
+
+    // Enable the edit view.
+    viewElement.viewState = ViewState.EDIT;
+    await flush();
+
+    const pendingKey = getInputKey('#pendingKey');
+
+    const fakeResult: AcceleratorResultData = {
+      result: AcceleratorConfigResult.kConflict,
+      shortcutName: {data: [1]},
+    };
+    provider.setFakeReplaceAcceleratorResult(fakeResult);
+
+    // Simulate SHIFT + SPACE, expect the key display to be 'space'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: ' ',
+      code: 'Space',
+      shiftKey: true,
+    }));
+
+    await flush();
+    assertEquals('space', pendingKey.key);
+
+    // Simulate SHIFT + OVERVIEW, expect the key display to be
+    // 'LaunchApplication1' and the icon to be 'overview'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'F4',
+      code: 'ShowAllWindows',
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('LaunchApplication1', pendingKey.key);
+    const keyIconElement =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals('shortcut-customization-keys:overview', keyIconElement.icon);
+
+    // Simulate SHIFT + BRIGHTNESS_UP, expect the key display to be
+    // 'BrightnessUp' and the icon to be 'display-brightness-up'.
+    viewElement.dispatchEvent(new KeyboardEvent('keydown', {
+      key: 'BrightnessUp',
+      code: 'BrightnessUp',
+      shiftKey: true,
+    }));
+    await flush();
+
+    assertEquals('BrightnessUp', pendingKey.key);
+    const keyIconElement2 =
+        pendingKey.shadowRoot!.querySelector('#key-icon') as IronIconElement;
+    assertEquals(
+        'shortcut-customization-keys:display-brightness-up',
+        keyIconElement2.icon);
   });
 });

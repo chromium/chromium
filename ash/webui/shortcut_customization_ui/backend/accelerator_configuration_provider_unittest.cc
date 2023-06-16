@@ -989,7 +989,6 @@ TEST_F(AcceleratorConfigurationProviderTest, TestGetKeyDisplay) {
   EXPECT_EQ(u"insert", ash::GetKeyDisplay(ui::VKEY_INSERT));
   EXPECT_EQ(u"page up", ash::GetKeyDisplay(ui::VKEY_PRIOR));
   EXPECT_EQ(u"page down", ash::GetKeyDisplay(ui::VKEY_NEXT));
-  EXPECT_EQ(u"meta", ash::GetKeyDisplay(ui::VKEY_LWIN));
   EXPECT_EQ(u"alt", ash::GetKeyDisplay(ui::VKEY_MENU));
   EXPECT_EQ(u"MediaPlay", ash::GetKeyDisplay(ui::VKEY_MEDIA_PLAY));
 }

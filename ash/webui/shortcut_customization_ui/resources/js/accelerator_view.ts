@@ -15,6 +15,7 @@ import {AcceleratorResultData} from '../mojom-webui/ash/webui/shortcut_customiza
 
 import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './accelerator_view.html.js';
+import {keyToIconNameMap} from './input_key.js';
 import {getShortcutProvider} from './mojo_interface_provider.js';
 import {mojoString16ToString} from './mojo_utils.js';
 import {ModifierKeyCodes} from './shortcut_input.js';
@@ -239,9 +240,10 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
           'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
           '');
     } else {
+      // Set keyDisplay property.
       this.set(
           'pendingAcceleratorInfo.layoutProperties.standardAccelerator.keyDisplay',
-          e.key);
+          this.getKeyDisplay(e));
     }
 
     // Only process valid accelerators.
@@ -361,6 +363,21 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
     return output;
   }
 
+  private getKeyDisplay(e: KeyboardEvent): string {
+    switch (e.code) {
+      case 'Space':  // Space key: e.key: ' ', e.code: 'Space', set keyDisplay
+                     // to be 'space' text.
+        return 'space';
+      case 'ShowAllWindows':  // Overview key: e.key: 'F4', e.code:
+                              // 'ShowAllWindows', set keyDisplay to be
+                              // 'LaunchApplication1' and will display as
+                              // 'overview' icon.
+        return 'LaunchApplication1';
+      default:  // All other keys: Use the original e.key as keyDisplay.
+        return e.key;
+    }
+  }
+
   private isModifierKey(e: KeyboardEvent): boolean {
     return ModifierKeyCodes.includes(e.keyCode);
   }
@@ -420,8 +437,13 @@ export class AcceleratorViewElement extends AcceleratorViewElementBase {
   protected getPendingKey(): string {
     if (this.pendingAcceleratorInfo.layoutProperties.standardAccelerator
             .keyDisplay != '') {
-      return this.pendingAcceleratorInfo.layoutProperties.standardAccelerator
-          .keyDisplay.toLowerCase();
+      const keyDisplay = this.pendingAcceleratorInfo.layoutProperties
+                             .standardAccelerator.keyDisplay;
+      // Display as icon if it exists in the map.
+      if (keyDisplay in keyToIconNameMap) {
+        return keyDisplay;
+      }
+      return keyDisplay.toLowerCase();
     }
     // TODO(jimmyxgong): Reset to a localized default empty state.
     return 'key';

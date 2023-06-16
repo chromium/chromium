@@ -15,6 +15,7 @@ import {AcceleratorLookupManager} from './accelerator_lookup_manager.js';
 import {getTemplate} from './input_key.html.js';
 
 const META_KEY = 'meta';
+const LWIN_KEY = 'Meta';
 
 /**
  * Refers to the state of an 'input-key' item.
@@ -137,10 +138,13 @@ export class InputKeyElement extends InputKeyElementBase {
   }
 
   private getIconIdForKey(): string|null {
-    const hasLauncherButton = this.lookupManager.getHasLauncherButton();
-    if (this.key === META_KEY) {
-      // 'meta' key should always be the modifier key.
+    // If the key is 'LWIN', then set it as a modifier key.
+    if (this.key === LWIN_KEY) {
       this.keyState = KeyInputState.MODIFIER_SELECTED;
+    }
+    // For 'META_KEY' and 'LWIN' key, return launcher/search icon.
+    if (this.key === META_KEY || this.key === LWIN_KEY) {
+      const hasLauncherButton = this.lookupManager.getHasLauncherButton();
       return hasLauncherButton ? 'shortcut-customization-keys:launcher' :
                                  'shortcut-customization-keys:search';
     }
@@ -157,7 +161,7 @@ export class InputKeyElement extends InputKeyElementBase {
    *     search button.
    */
   static getAriaLabelStringId(key: string, hasLauncherButton: boolean): string {
-    if (key === META_KEY) {
+    if (key === META_KEY || key === LWIN_KEY) {
       return hasLauncherButton ? 'iconLabelOpenLauncher' :
                                  'iconLabelOpenSearch';
     }

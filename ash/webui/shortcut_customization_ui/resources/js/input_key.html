@@ -52,12 +52,13 @@
     box-shadow: 0 1px 1px var(--key-modifier-selected-shadow-color);
   }
 
-  :host([key-state='modifier-selected']:not([key='meta'])) .key-container {
+  :host([key-state='modifier-selected']:not([key='meta']):not([key='Meta'])) .key-container {
     min-width: 44px;
     padding-inline: 12px;
   }
 
-  :host([key-state='modifier-selected'][key='meta']) .key-container {
+  :host([key-state='modifier-selected'][key='meta']) .key-container,
+  :host([key-state='modifier-selected'][key='Meta']) .key-container {
     padding-inline: 6px;
   }
 
