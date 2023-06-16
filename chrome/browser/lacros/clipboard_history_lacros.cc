@@ -25,7 +25,10 @@ ClipboardHistoryLacros::ClipboardHistoryLacros() : receiver_(this) {
 
   // Register on the Ash side to receive descriptor updates.
   chromeos::LacrosService* service = chromeos::LacrosService::Get();
-  if (service->IsAvailable<mojom::ClipboardHistory>()) {
+  if (service->IsAvailable<mojom::ClipboardHistory>() &&
+      service->GetInterfaceVersion<mojom::ClipboardHistory>() >=
+          int{crosapi::mojom::ClipboardHistory::MethodMinVersions::
+                  kRegisterClientMinVersion}) {
     service->GetRemote<mojom::ClipboardHistory>()->RegisterClient(
         receiver_.BindNewPipeAndPassRemote());
 

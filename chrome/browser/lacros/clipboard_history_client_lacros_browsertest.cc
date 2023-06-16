@@ -6,15 +6,14 @@
 
 #include <utility>
 
-#include "base/test/task_environment.h"
 #include "base/unguessable_token.h"
+#include "chrome/test/base/in_process_browser_test.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "chromeos/lacros/lacros_service.h"
-#include "chromeos/lacros/lacros_test_helper.h"
 #include "chromeos/startup/browser_init_params.h"
+#include "content/public/test/browser_test.h"
 #include "testing/gmock/include/gmock/gmock.h"
-#include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/ui_base_types.h"
 #include "ui/gfx/geometry/rect.h"
 
@@ -68,14 +67,18 @@ class MockClipboardHistoryAsh : public mojom::ClipboardHistory {
 
 }  // namespace
 
-class ClipboardHistoryLacrosTest : public testing::Test {
+class ClipboardHistoryClientLacrosBrowserTest : public InProcessBrowserTest {
  public:
   // testing::Test:
-  void SetUp() override {
+  void SetUpOnMainThread() override {
+    InProcessBrowserTest::SetUpOnMainThread();
+
     // Enable the clipboard history refresh feature.
     crosapi::mojom::BrowserInitParamsPtr params_ptr =
-        crosapi::mojom::BrowserInitParams::New();
+        chromeos::BrowserInitParams::GetForTests()->Clone();
     params_ptr->enable_clipboard_history_refresh = true;
+    params_ptr->interface_versions
+        .value()[crosapi::mojom::ClipboardHistory::Uuid_] = 2;
     chromeos::BrowserInitParams::SetInitParamsForTests(std::move(params_ptr));
 
     // Inject the mock clipboard history interface.
@@ -84,13 +87,9 @@ class ClipboardHistoryLacrosTest : public testing::Test {
   }
 
   MockClipboardHistoryAsh mock_clipboard_history_ash_;
-
- private:
-  base::test::TaskEnvironment task_environment_;
-  chromeos::ScopedLacrosServiceTestHelper helper_;
 };
 
-TEST_F(ClipboardHistoryLacrosTest, Basics) {
+IN_PROC_BROWSER_TEST_F(ClipboardHistoryClientLacrosBrowserTest, Basics) {
   // Verifies that `ClipboardHistoryLacros` calls the clipboard history
   // interface to register itself as a client.
   EXPECT_CALL(mock_clipboard_history_ash_, RegisterClient).Times(1);
