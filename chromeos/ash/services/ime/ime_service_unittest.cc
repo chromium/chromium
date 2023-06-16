@@ -152,6 +152,9 @@ struct MockInputMethodHost : public mojom::InputMethodHost {
   void FinishComposition() override {}
   void DeleteSurroundingText(uint32_t num_before_cursor,
                              uint32_t num_after_cursor) override {}
+  void ReplaceSurroundingText(uint32_t num_before_cursor,
+                              uint32_t num_after_cursor,
+                              const std::u16string& text) override {}
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}
@@ -210,6 +213,9 @@ class ImeServiceTest : public testing::Test, public mojom::InputMethodHost {
   void FinishComposition() override {}
   void DeleteSurroundingText(uint32_t num_before_cursor,
                              uint32_t num_after_cursor) override {}
+  void ReplaceSurroundingText(uint32_t num_before_cursor,
+                              uint32_t num_after_cursor,
+                              const std::u16string& text) override {}
   void HandleAutocorrect(mojom::AutocorrectSpanPtr autocorrect_span) override {}
   void RequestSuggestions(mojom::SuggestionsRequestPtr request,
                           RequestSuggestionsCallback callback) override {}

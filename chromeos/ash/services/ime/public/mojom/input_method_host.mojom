@@ -6,7 +6,7 @@
 // the Chromium repo. This file should be updated first, before syncing in the
 // other repos.
 
-// Next MinVersion: 11
+// Next MinVersion: 12
 
 module ash.ime.mojom;
 
@@ -126,13 +126,14 @@ union UkmEntry {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 //
-// Next ordinal: 4
+// Next ordinal: 5
 [Stable, Extensible, RenamedFrom="chromeos.ime.mojom.InputMethodApiOperation"]
 enum InputMethodApiOperation {
   [Default] kUnknown = 0,
   kCommitText = 1,
   kSetCompositionText = 2,
   kDeleteSurroundingText = 3,
+  [MinVersion = 11] kReplaceSurroundingText = 4
 };
 
 // Next ordinal: 1
@@ -248,7 +249,7 @@ struct BucketedHistogram {
 // Provides a way for the InputMethod, which lives in a Chrome utility process,
 // to communicate back to the browser process.
 //
-// Next ordinal: 16
+// Next ordinal: 17
 [Stable]
 interface InputMethodHost {
   // ========================================================
@@ -316,6 +317,14 @@ interface InputMethodHost {
   // TODO(b/161490915): Determine the right behaviour when there is a selection.
   DeleteSurroundingText@4(uint32 num_before_cursor,
                           uint32 num_after_cursor);
+
+  // Asks the input field to replace the text around the cursor with `text`.
+  // Specifically, delete `num_before_cursor` and `num_after_cursor` UTF-16 code
+  // units before and after the cursor, respectively and insert `text` at the
+  // cursor position.
+  [MinVersion = 11] ReplaceSurroundingText@16(uint32 num_before_cursor,
+                                              uint32 num_after_cursor,
+                                              mojo_base.mojom.String16 text);
 
   // Asks the input field to mark the region represented by `autocorrect_span`
   // as having been autocorrected. This usually involves showing some UI

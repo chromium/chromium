@@ -1373,6 +1373,17 @@ void NativeInputMethodEngineObserver::DeleteSurroundingText(
       num_before_cursor, num_after_cursor);
 }
 
+void NativeInputMethodEngineObserver::ReplaceSurroundingText(
+    uint32_t num_before_cursor,
+    uint32_t num_after_cursor,
+    const std::u16string& text) {
+  if (!IsTextClientActive()) {
+    return;
+  }
+  IMEBridge::Get()->GetInputContextHandler()->ReplaceSurroundingText(
+      num_before_cursor, num_after_cursor, text);
+}
+
 void NativeInputMethodEngineObserver::HandleAutocorrect(
     mojom::AutocorrectSpanPtr autocorrect_span) {
   if (!IsTextClientActive())
