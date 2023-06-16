@@ -4,14 +4,6 @@
 
 import("//build/config/ios/asset_catalog.gni")
 
-imageset("encryption_error") {
-  sources = [
-    "encryption_error.imageset/Contents.json",
-    "encryption_error.imageset/encryption_error@2x.png",
-    "encryption_error.imageset/encryption_error@3x.png",
-  ]
-}
-
 imageset("enterprise_icon") {
   sources = [
     "enterprise_icon.imageset/Contents.json",

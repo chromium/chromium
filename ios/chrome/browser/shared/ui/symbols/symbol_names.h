@@ -119,6 +119,7 @@ extern NSString* const kWarningFillSymbol;
 extern NSString* const kHelpSymbol;
 extern NSString* const kCheckmarkCircleSymbol;
 extern NSString* const kCheckmarkCircleFillSymbol;
+extern NSString* const kErrorCircleSymbol;
 extern NSString* const kErrorCircleFillSymbol;
 extern NSString* const kTrashSymbol;
 extern NSString* const kInfoCircleSymbol;

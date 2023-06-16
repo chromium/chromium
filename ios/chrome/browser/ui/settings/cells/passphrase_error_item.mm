@@ -4,6 +4,8 @@
 
 #import "ios/chrome/browser/ui/settings/cells/passphrase_error_item.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/common/ui/table_view/table_view_cells_constants.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -55,7 +57,9 @@
 
     _errorImageView = [[UIImageView alloc] init];
     _errorImageView.translatesAutoresizingMaskIntoConstraints = NO;
-    _errorImageView.image = [UIImage imageNamed:@"encryption_error"];
+    _errorImageView.image = DefaultSymbolWithPointSize(
+        kErrorCircleSymbol, kSymbolAccessoryPointSize);
+    _errorImageView.tintColor = [UIColor colorNamed:kRed600Color];
     [contentView addSubview:_errorImageView];
 
     // Set up the constraints.

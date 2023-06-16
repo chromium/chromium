@@ -82,7 +82,6 @@ source_set("settings") {
   deps = [
     ":constants",
     ":settings_root",
-    "resources:encryption_error",
     "resources:enterprise_icon",
     "resources:settings_accounts_add_account",
     "//base",
