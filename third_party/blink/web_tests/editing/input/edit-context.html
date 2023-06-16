@@ -696,18 +696,19 @@ test(function() {
   const child = document.createElement("iframe");
   document.body.appendChild(child);
   const childDocument = child.contentDocument;
-  const textarea = childDocument.createElement('textarea');
-  childDocument.body.appendChild(textarea);
-  textarea.addEventListener("focusin", e => {
+  const editable = childDocument.createElement('div');
+  editable.contentEditable = true;
+  childDocument.body.appendChild(editable);
+  editable.addEventListener("focusin", e => {
     const childEditContext = new EditContext();
-    textarea.editContext = childEditContext;
+    editable.editContext = childEditContext;
     childEditContext.addEventListener("textupdate", e => {
       child.remove();
     });
     childEditContext.addEventListener("textformatupdate", e => {
     });
   });
-  textarea.focus();
+  editable.focus();
   child.contentWindow.focus();
   child.contentWindow.textInputController.setComposition("bar");
 }, 'Testing EditContext Iframe Document Delete');

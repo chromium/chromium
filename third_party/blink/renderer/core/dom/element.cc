@@ -518,6 +518,31 @@ bool IsGuaranteedToEnterNGBlockNodeLayout(const LayoutObject& layout_object) {
   return true;
 }
 
+bool IsValidShadowHostName(const QualifiedName& tag_name) {
+  DEFINE_STATIC_LOCAL(HashSet<QualifiedName>, shadow_root_tags,
+                      ({
+                          html_names::kArticleTag,
+                          html_names::kAsideTag,
+                          html_names::kBlockquoteTag,
+                          html_names::kBodyTag,
+                          html_names::kDivTag,
+                          html_names::kFooterTag,
+                          html_names::kH1Tag,
+                          html_names::kH2Tag,
+                          html_names::kH3Tag,
+                          html_names::kH4Tag,
+                          html_names::kH5Tag,
+                          html_names::kH6Tag,
+                          html_names::kHeaderTag,
+                          html_names::kNavTag,
+                          html_names::kMainTag,
+                          html_names::kPTag,
+                          html_names::kSectionTag,
+                          html_names::kSpanTag,
+                      }));
+  return shadow_root_tags.Contains(tag_name);
+}
+
 }  // namespace
 
 Element::Element(const QualifiedName& tag_name,
@@ -4085,7 +4110,21 @@ EditContext* Element::editContext() const {
   return HasRareData() ? GetElementRareData()->GetEditContext() : nullptr;
 }
 
-void Element::setEditContext(EditContext* edit_context) {
+void Element::setEditContext(EditContext* edit_context,
+                             ExceptionState& exception_state) {
+  // https://w3c.github.io/edit-context/#extensions-to-the-htmlelement-interface
+  // 1. If this's local name is neither a valid shadow host name nor "canvas",
+  // then throw a "NotSupportedError" DOMException.
+  const QualifiedName& tag_name = TagQName();
+  if (!(IsCustomElement() &&
+        CustomElement::IsValidName(tag_name.LocalName())) &&
+      !IsValidShadowHostName(tag_name) && tag_name != html_names::kCanvasTag) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "This element does not support EditContext");
+    return;
+  }
+
   // If an element is in focus when being attached to a new EditContext,
   // its old EditContext, if it has any, will get blurred,
   // and the new EditContext will automatically get focused.
@@ -4352,22 +4391,13 @@ const ElementInternals* Element::GetElementInternals() const {
 }
 
 bool Element::CanAttachShadowRoot() const {
-  const AtomicString& tag_name = localName();
+  const QualifiedName& tag_name = TagQName();
   // Checking IsCustomElement() here is just an optimization
   // because IsValidName is not cheap.
-  return (IsCustomElement() && CustomElement::IsValidName(tag_name)) ||
-         tag_name == html_names::kArticleTag ||
-         tag_name == html_names::kAsideTag ||
-         tag_name == html_names::kBlockquoteTag ||
-         tag_name == html_names::kBodyTag || tag_name == html_names::kDivTag ||
-         tag_name == html_names::kFooterTag || tag_name == html_names::kH1Tag ||
-         tag_name == html_names::kH2Tag || tag_name == html_names::kH3Tag ||
-         tag_name == html_names::kH4Tag || tag_name == html_names::kH5Tag ||
-         tag_name == html_names::kH6Tag || tag_name == html_names::kHeaderTag ||
-         tag_name == html_names::kNavTag || tag_name == html_names::kMainTag ||
-         tag_name == html_names::kPTag || tag_name == html_names::kSectionTag ||
-         tag_name == html_names::kSelectmenuTag ||
-         tag_name == html_names::kSpanTag;
+  return (IsCustomElement() &&
+          CustomElement::IsValidName(tag_name.LocalName())) ||
+         IsValidShadowHostName(tag_name) ||
+         tag_name == html_names::kSelectmenuTag;
 }
 
 const char* Element::ErrorMessageForAttachShadow() const {
