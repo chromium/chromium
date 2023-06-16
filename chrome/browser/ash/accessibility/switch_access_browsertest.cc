@@ -2,67 +2,34 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ash/constants/ash_pref_names.h"
-#include "ash/public/cpp/accessibility_controller.h"
 #include "ash/public/cpp/window_tree_host_lookup.h"
-#include "base/files/file_path.h"
-#include "base/files/file_util.h"
-#include "base/path_service.h"
-#include "base/strings/stringprintf.h"
-#include "chrome/browser/ash/accessibility/accessibility_manager.h"
-#include "chrome/browser/ash/accessibility/accessibility_test_utils.h"
+#include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
 #include "chrome/browser/ui/browser.h"
-#include "chrome/common/extensions/extension_constants.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/interactive_test_utils.h"
 #include "chrome/test/base/ui_test_utils.h"
 #include "content/public/test/browser_test.h"
-#include "content/public/test/browser_test_utils.h"
-#include "extensions/browser/browsertest_util.h"
-#include "extensions/browser/extension_host_test_helper.h"
 #include "ui/aura/client/cursor_client.h"
 #include "ui/aura/window_tree_host.h"
 #include "ui/display/screen.h"
 
 namespace ash {
 
-namespace {
-
-constexpr char kTestSupportPath[] =
-    "chrome/browser/resources/chromeos/accessibility/switch_access/"
-    "test_support.js";
-
-}
-
 class SwitchAccessTest : public InProcessBrowserTest {
- public:
+ protected:
+  SwitchAccessTest() = default;
+  ~SwitchAccessTest() override = default;
+  SwitchAccessTest(const SwitchAccessTest&) = delete;
+  SwitchAccessTest& operator=(const SwitchAccessTest&) = delete;
+
+  void SetUpOnMainThread() override {
+    switch_access_test_utils_ =
+        std::make_unique<SwitchAccessTestUtils>(browser()->profile());
+  }
+
   void SendVirtualKeyPress(ui::KeyboardCode key) {
     ASSERT_NO_FATAL_FAILURE(ASSERT_TRUE(ui_test_utils::SendKeyPressToWindowSync(
         nullptr, key, false, false, false, false)));
-  }
-
-  void EnableSwitchAccess(const std::set<int>& select_key_codes,
-                          const std::set<int>& next_key_codes,
-                          const std::set<int>& previous_key_codes) {
-    AccessibilityManager* manager = AccessibilityManager::Get();
-
-    extensions::ExtensionHostTestHelper host_helper(
-        manager->profile(), extension_misc::kSwitchAccessExtensionId);
-    manager->SetSwitchAccessEnabled(true);
-    host_helper.WaitForHostCompletedFirstLoad();
-
-    manager->SetSwitchAccessKeysForTest(
-        select_key_codes,
-        prefs::kAccessibilitySwitchAccessSelectDeviceKeyCodes);
-    manager->SetSwitchAccessKeysForTest(
-        next_key_codes, prefs::kAccessibilitySwitchAccessNextDeviceKeyCodes);
-    manager->SetSwitchAccessKeysForTest(
-        previous_key_codes,
-        prefs::kAccessibilitySwitchAccessPreviousDeviceKeyCodes);
-
-    EXPECT_TRUE(manager->IsSwitchAccessEnabled());
-
-    InjectFocusRingWatcher();
   }
 
   std::string GetInputString() {
@@ -70,69 +37,6 @@ class SwitchAccessTest : public InProcessBrowserTest {
     return content::EvalJs(browser()->tab_strip_model()->GetWebContentsAt(0),
                            script)
         .ExtractString();
-  }
-
-  void SetUpOnMainThread() override {
-    console_observer_ = std::make_unique<ExtensionConsoleErrorObserver>(
-        browser()->profile(), extension_misc::kSwitchAccessExtensionId);
-  }
-
- protected:
-  SwitchAccessTest() = default;
-  ~SwitchAccessTest() override = default;
-
-  void InjectFocusRingWatcher() {
-    base::ScopedAllowBlockingForTesting allow_blocking;
-    base::FilePath source_dir;
-    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &source_dir));
-    auto test_support_path = source_dir.AppendASCII(kTestSupportPath);
-    std::string script;
-    ASSERT_TRUE(base::ReadFileToString(test_support_path, &script))
-        << test_support_path;
-
-    std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-            browser()->profile(), extension_misc::kSwitchAccessExtensionId,
-            script);
-    ASSERT_EQ("ready", result);
-  }
-
-  // Run js snippet and wait for it to finish.
-  void WaitForJS(const std::string& js_to_eval) {
-    std::string result =
-        extensions::browsertest_util::ExecuteScriptInBackgroundPageDeprecated(
-            browser()->profile(), extension_misc::kSwitchAccessExtensionId,
-            js_to_eval,
-            extensions::browsertest_util::ScriptUserActivation::kDontActivate);
-    ASSERT_EQ(result, "ok");
-  }
-
-  // Waits for a focus ring of type |type| (primary or preview) with a
-  // role of |role| and a name of |name| to appear and then returns.
-  void WaitForFocusRing(const std::string& type,
-                        const std::string& role,
-                        const std::string& name) {
-    ASSERT_TRUE(type == "primary" || type == "preview");
-    std::string script = base::StringPrintf(
-        R"JS(
-          waitForFocusRing("%s", "%s", "%s", () => {
-            window.domAutomationController.send('ok');
-          });
-        )JS",
-        type.c_str(), role.c_str(), name.c_str());
-    WaitForJS(script);
-  }
-
-  // Performs default action on node with |name|.
-  void DoDefault(const std::string& name) {
-    std::string script = base::StringPrintf(
-        R"JS(
-          doDefault("%s", () => {
-            window.domAutomationController.send('ok');
-          });
-        )JS",
-        name.c_str());
-    WaitForJS(script);
   }
 
   // Returns cursor client for root window at location (in DIPs) |x| and |y|.
@@ -166,40 +70,16 @@ class SwitchAccessTest : public InProcessBrowserTest {
     return GetCursorClient(x, y)->IsMouseEventsEnabled();
   }
 
-  // Clicks at location (in DIPs) |x| and |y| using point scanning.
-  void PointScanClick(const int x, const int y) {
-    std::string script = base::StringPrintf(
-        R"JS(
-          pointScanClick("%d", "%d", () => {
-            window.domAutomationController.send('ok');
-          });
-        )JS",
-        x, y);
-    WaitForJS(script);
-  }
-
-  // Waits for an automation event of type |eventType| on an automation node
-  // with a name of |name| to occur and then returns.
-  void WaitForEventOnAutomationNode(const std::string& eventType,
-                                    const std::string& name) {
-    std::string script = base::StringPrintf(
-        R"JS(
-          waitForEventOnAutomationNode("%s", "%s", () => {
-            window.domAutomationController.send('ok');
-          });
-        )JS",
-        eventType.c_str(), name.c_str());
-    WaitForJS(script);
-  }
+  SwitchAccessTestUtils* utils() { return switch_access_test_utils_.get(); }
 
  private:
-  std::unique_ptr<ExtensionConsoleErrorObserver> console_observer_;
+  std::unique_ptr<SwitchAccessTestUtils> switch_access_test_utils_;
 };
 
 // Flaky. See https://crbug.com/1224254.
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
   // Load a webpage with a text box.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
       browser(), GURL("data:text/html;charset=utf-8,<input type=text id=in>")));
@@ -221,8 +101,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, DISABLED_ConsumesKeyEvents) {
 }
 
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
 
   // Load a webpage with two groups of controls.
   ASSERT_TRUE(
@@ -238,43 +118,43 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateGroupings) {
       )HTML")));
 
   // Wait for switch access to focus on the first button.
-  WaitForFocusRing("primary", "button", "Northwest");
+  utils()->WaitForFocusRing("primary", "button", "Northwest");
 
   // Go to the next element by pressing the next switch.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
-  WaitForFocusRing("primary", "button", "Northeast");
+  utils()->WaitForFocusRing("primary", "button", "Northeast");
 
   // Next is the back button.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
-  WaitForFocusRing("primary", "back", "");
+  utils()->WaitForFocusRing("primary", "back", "");
 
   // Press the select key to press the back button, which should focus
   // on the Top container, with Northwest as the preview.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
-  WaitForFocusRing("primary", "group", "Top");
-  WaitForFocusRing("preview", "button", "Northwest");
+  utils()->WaitForFocusRing("primary", "group", "Top");
+  utils()->WaitForFocusRing("preview", "button", "Northwest");
 
   // Navigate to the next group by pressing the next switch.
   // Now we should be focused on the Bottom container, with
   // Southwest as the preview.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
-  WaitForFocusRing("primary", "group", "Bottom");
-  WaitForFocusRing("preview", "button", "Southwest");
+  utils()->WaitForFocusRing("primary", "group", "Bottom");
+  utils()->WaitForFocusRing("preview", "button", "Southwest");
 
   // Press the select key to enter the container, which should focus
   // Southwest.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
-  WaitForFocusRing("primary", "button", "Southwest");
+  utils()->WaitForFocusRing("primary", "button", "Southwest");
 
   // Go to the next element by pressing the next switch. That should
   // focus Southeast.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
-  WaitForFocusRing("primary", "button", "Southeast");
+  utils()->WaitForFocusRing("primary", "button", "Southeast");
 }
 
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -282,7 +162,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
       GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
 
   // Wait for switch access to focus on the text field.
-  WaitForFocusRing("primary", "textField", "MyTextField");
+  utils()->WaitForFocusRing("primary", "textField", "MyTextField");
 
   // Send "select", which opens the switch access menu.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
@@ -294,43 +174,43 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, NavigateButtonsInTextFieldMenu) {
   // here because by the time it returns, we may have already received the focus
   // ring for the menu and so the following WaitForFocusRing would fail / loop
   // forever.
-  WaitForFocusRing("primary", "button", "Keyboard");
+  utils()->WaitForFocusRing("primary", "button", "Keyboard");
 
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
   // The next menu item is the "dictation" button.
-  WaitForFocusRing("primary", "button", "Dictation");
+  utils()->WaitForFocusRing("primary", "button", "Dictation");
 
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
   // The next menu item is the "point scanning" button.
-  WaitForFocusRing("primary", "button", "Point scanning");
+  utils()->WaitForFocusRing("primary", "button", "Point scanning");
 
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
   // The next menu item is the "settings" button.
-  WaitForFocusRing("primary", "button", "Settings");
+  utils()->WaitForFocusRing("primary", "button", "Settings");
 
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
   // Finally is the back button. Note that it has a role of "back" so we
   // can tell it's the special Switch Access back button.
-  WaitForFocusRing("primary", "back", "");
+  utils()->WaitForFocusRing("primary", "back", "");
 
   // Send "next".
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_2);
 
   // Wrap back around to the "keyboard" button.
-  WaitForFocusRing("primary", "button", "Keyboard");
+  utils()->WaitForFocusRing("primary", "button", "Keyboard");
 }
 
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
 
   // Load a webpage with a text box.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -338,7 +218,7 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
       GURL("data:text/html,<input autofocus aria-label=MyTextField>")));
 
   // Wait for switch access to focus on the text field.
-  WaitForFocusRing("primary", "textField", "MyTextField");
+  utils()->WaitForFocusRing("primary", "textField", "MyTextField");
 
   // Send "select", which opens the switch access menu.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
@@ -350,13 +230,13 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
   // here because by the time it returns, we may have already received the focus
   // ring for the menu and so the following WaitForFocusRing would fail / loop
   // forever.
-  WaitForFocusRing("primary", "button", "Keyboard");
+  utils()->WaitForFocusRing("primary", "button", "Keyboard");
 
   // Send "select", which opens the virtual keyboard.
   SendVirtualKeyPress(ui::KeyboardCode::VKEY_1);
 
   // Finally, we should land on a keyboard key.
-  WaitForFocusRing("primary", "keyboard", "");
+  utils()->WaitForFocusRing("primary", "keyboard", "");
 
   // Actually typing and verifying text field value should be covered by
   // js-based tests that have the ability to ask the text field for its value.
@@ -371,8 +251,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest, TypeIntoVirtualKeyboard) {
 #endif
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsEnabled) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -381,22 +261,22 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
            "style='width: 800px; height: 800px;'>")));
 
   // Wait for switch access to focus on the checkbox.
-  WaitForFocusRing("primary", "checkBox", "checkbox");
+  utils()->WaitForFocusRing("primary", "checkBox", "checkbox");
 
   // Enable mouse events (within root window containing checkbox).
   EnableMouseEvents(600, 600);
 
   // Perform default action on the checkbox.
-  DoDefault("checkbox");
+  utils()->DoDefault("checkbox");
 
   // Verify checkbox state changes.
-  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+  utils()->WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
 
   // Use Point Scan to click on the checkbox.
-  PointScanClick(600, 600);
+  utils()->PointScanClick(600, 600);
 
   // Verify checkbox state changes.
-  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+  utils()->WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
 
   // Verify mouse events are still enabled.
   ASSERT_TRUE(IsMouseEventsEnabled(600, 600));
@@ -411,8 +291,8 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
 #endif
 IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
                        MAYBE_PointScanClickWhenMouseEventsDisabled) {
-  EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
-                     {'3', 'C'} /* previous */);
+  utils()->EnableSwitchAccess({'1', 'A'} /* select */, {'2', 'B'} /* next */,
+                              {'3', 'C'} /* previous */);
 
   // Load a webpage with a checkbox.
   ASSERT_TRUE(ui_test_utils::NavigateToURL(
@@ -421,22 +301,22 @@ IN_PROC_BROWSER_TEST_F(SwitchAccessTest,
            "style='width: 800px; height: 800px;'>")));
 
   // Wait for switch access to focus on the checkbox.
-  WaitForFocusRing("primary", "checkBox", "checkbox");
+  utils()->WaitForFocusRing("primary", "checkBox", "checkbox");
 
   // Disable mouse events (within root window containing checkbox).
   DisableMouseEvents(600, 600);
 
   // Perform default action on the checkbox.
-  DoDefault("checkbox");
+  utils()->DoDefault("checkbox");
 
   // Verify checkbox state changes.
-  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+  utils()->WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
 
   // Use Point Scan to click on the checkbox.
-  PointScanClick(600, 600);
+  utils()->PointScanClick(600, 600);
 
   // Verify checkbox state changes.
-  WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
+  utils()->WaitForEventOnAutomationNode("checkedStateChanged", "checkbox");
 
   // Verify mouse events are not enabled.
   ASSERT_FALSE(IsMouseEventsEnabled(600, 600));

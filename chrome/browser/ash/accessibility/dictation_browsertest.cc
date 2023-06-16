@@ -39,6 +39,7 @@
 #include "chrome/browser/ash/accessibility/dictation_bubble_test_helper.h"
 #include "chrome/browser/ash/accessibility/select_to_speak_test_utils.h"
 #include "chrome/browser/ash/accessibility/speech_monitor.h"
+#include "chrome/browser/ash/accessibility/switch_access_test_utils.h"
 #include "chrome/browser/ash/base/locale_util.h"
 #include "chrome/browser/ash/input_method/textinput_test_helper.h"
 #include "chrome/browser/browser_process.h"
@@ -1100,6 +1101,42 @@ IN_PROC_BROWSER_TEST_P(DictationWithAutoclickTest, UseAutoclickToToggle) {
   // Move the mouse away from, then back to the Dictation button.
   generator()->MoveMouseTo(gfx::Point(20, 20));
   generator()->MoveMouseTo(dictation_button.CenterPoint());
+  WaitForRecognitionStopped();
+}
+
+class DictationWithSwitchAccessTest : public DictationTestBase {
+ public:
+  DictationWithSwitchAccessTest() = default;
+  ~DictationWithSwitchAccessTest() override = default;
+  DictationWithSwitchAccessTest(const DictationWithSwitchAccessTest&) = delete;
+  DictationWithSwitchAccessTest& operator=(
+      const DictationWithSwitchAccessTest&) = delete;
+
+ protected:
+  void SetUpOnMainThread() override {
+    switch_access_test_utils_ =
+        std::make_unique<SwitchAccessTestUtils>(browser()->profile());
+    switch_access_test_utils_->EnableSwitchAccess({'1', 'A'} /* select */,
+                                                  {'2', 'B'} /* next */,
+                                                  {'3', 'C'} /* previous */);
+    DictationTestBase::SetUpOnMainThread();
+  }
+
+ private:
+  std::unique_ptr<SwitchAccessTestUtils> switch_access_test_utils_;
+};
+
+INSTANTIATE_TEST_SUITE_P(
+    NetworkTextArea,
+    DictationWithSwitchAccessTest,
+    ::testing::Values(TestConfig(speech::SpeechRecognitionType::kNetwork,
+                                 EditableType::kTextArea)));
+
+IN_PROC_BROWSER_TEST_P(DictationWithSwitchAccessTest, CanDictate) {
+  ToggleDictationWithKeystroke();
+  WaitForRecognitionStarted();
+  SendFinalResultAndWaitForEditableValue("Hello", "Hello");
+  ToggleDictationWithKeystroke();
   WaitForRecognitionStopped();
 }
 

@@ -4277,6 +4277,8 @@ static_library("test_support") {
     "accessibility/service/fake_accessibility_service.h",
     "accessibility/speech_monitor.cc",
     "accessibility/speech_monitor.h",
+    "accessibility/switch_access_test_utils.cc",
+    "accessibility/switch_access_test_utils.h",
     "android_sms/fake_android_sms_app_manager.cc",
     "android_sms/fake_android_sms_app_manager.h",
     "android_sms/fake_android_sms_app_setup_controller.cc",
