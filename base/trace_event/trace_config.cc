@@ -750,8 +750,6 @@ std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
   // Otherwise only matching categories are enabled.
   if (!category_filter_.included_categories().empty())
     te_cfg.add_disabled_categories("*");
-  // Metadata is always enabled.
-  te_cfg.add_enabled_categories("__metadata");
   for (const auto& excluded : category_filter_.excluded_categories()) {
     te_cfg.add_disabled_categories(excluded);
   }
@@ -761,6 +759,8 @@ std::string TraceConfig::ToPerfettoTrackEventConfigRaw(
   for (const auto& disabled : category_filter_.disabled_categories()) {
     te_cfg.add_enabled_categories(disabled);
   }
+  // Metadata is always enabled.
+  te_cfg.add_enabled_categories("__metadata");
   te_cfg.set_enable_thread_time_sampling(true);
   te_cfg.set_timestamp_unit_multiplier(1000);
   if (privacy_filtering_enabled) {

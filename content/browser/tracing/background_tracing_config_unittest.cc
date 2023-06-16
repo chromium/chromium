@@ -42,13 +42,12 @@ base::FilePath GetTestDataRoot() {
 
 void CreateRuleConfig(const std::string& proto_text,
                       perfetto::protos::gen::TriggerRule& destination) {
-  base::TestProtoLoader loader;
+  base::TestProtoLoader loader(GetTestDataRoot().Append(FILE_PATH_LITERAL(
+                                   "third_party/perfetto/protos/perfetto/"
+                                   "config/chrome/scenario_config.descriptor")),
+                               "perfetto.protos.TriggerRule");
   std::string serialized_message;
-  loader.ParseFromText(GetTestDataRoot().Append(FILE_PATH_LITERAL(
-                           "third_party/perfetto/protos/perfetto/"
-                           "config/chrome/scenario_config.descriptor")),
-                       "perfetto.protos.TriggerRule", proto_text,
-                       serialized_message);
+  loader.ParseFromText(proto_text, serialized_message);
   ASSERT_TRUE(destination.ParseFromString(serialized_message));
 }
 

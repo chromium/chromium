@@ -6,6 +6,7 @@
 #define BASE_TEST_TEST_PROTO_LOADER_H_
 
 #include "base/files/file_path.h"
+#include "base/memory/raw_ptr.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.h"
 #include "third_party/protobuf/src/google/protobuf/descriptor.pb.h"
 #include "third_party/protobuf/src/google/protobuf/dynamic_message.h"
@@ -43,15 +44,14 @@ namespace base {
 // then be serialized to binary which can be parsed by the |MessageLite|.
 class PROTO_TEST_EXPORT TestProtoLoader {
  public:
-  TestProtoLoader();
+  TestProtoLoader(const base::FilePath& descriptor_path,
+                  base::StringPiece type_name);
   ~TestProtoLoader();
   TestProtoLoader(const TestProtoLoader&) = delete;
   TestProtoLoader& operator=(const TestProtoLoader&) = delete;
 
-  void ParseFromText(const base::FilePath& descriptor_path,
-                     base::StringPiece type_name,
-                     const std::string& proto_text,
-                     std::string& message);
+  void ParseFromText(const std::string& proto_text, std::string& message);
+  void PrintToText(const std::string& message, std::string& proto_text);
 
  private:
   const google::protobuf::Message* GetPrototype(base::FilePath descriptor_path,
@@ -61,6 +61,7 @@ class PROTO_TEST_EXPORT TestProtoLoader {
   google::protobuf::DescriptorPool descriptor_pool_;
   google::protobuf::FileDescriptorSet descriptor_set_;
   google::protobuf::DynamicMessageFactory dynamic_message_factory_;
+  raw_ptr<const google::protobuf::Message> prototype_;
 };
 
 }  // namespace base
