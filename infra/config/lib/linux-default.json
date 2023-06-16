@@ -372,7 +372,8 @@
   },
   "goma": {
     "android-archive-dbg-goma-rbe-ats-canary": "Ubuntu-22.04",
-    "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04"
+    "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04",
+    "linux-archive-rel-goma-rbe-canary": "Ubuntu-22.04"
   },
   "reclient": {
     "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04",
