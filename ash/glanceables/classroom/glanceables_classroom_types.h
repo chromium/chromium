@@ -115,6 +115,9 @@ struct ASH_EXPORT GlanceablesClassroomStudentAssignment {
       const GlanceablesClassroomStudentAssignment&) = delete;
   ~GlanceablesClassroomStudentAssignment() = default;
 
+  // Intended for debugging.
+  std::string ToString() const;
+
   // Title of the course this assignment belongs to.
   const std::string course_title;
 

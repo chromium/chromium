@@ -51,4 +51,14 @@ GlanceablesClassroomStudentAssignment::GlanceablesClassroomStudentAssignment(
       link(link),
       due(due) {}
 
+std::string GlanceablesClassroomStudentAssignment::ToString() const {
+  std::stringstream ss;
+  ss << "Course Title: " << course_title
+     << ", Course Work Title: " << course_work_title << ", Link: " << link;
+  if (due.has_value()) {
+    ss << ", Due: " << base::TimeFormatHTTP(due.value());
+  }
+  return ss.str();
+}
+
 }  // namespace ash
