@@ -2550,7 +2550,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchingIsCollapsedCrash) {
   Compositor().BeginFrame();
 
   // Ensure we've attached the annotation for the text fragment.
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   auto annotations = container->GetAgentsOfType(
       mojom::blink::AnnotationType::kSharedHighlight);
   ASSERT_EQ(annotations.size(), 1ul);
@@ -2595,7 +2595,7 @@ TEST_F(TextFragmentAnchorTest, InitialMatchPendingBecomesCollapsed) {
   Compositor().BeginFrame();
 
   // Ensure we've queued the "DomMutation" rAF task.
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   auto annotations = container->GetAgentsOfType(
       mojom::blink::AnnotationType::kSharedHighlight);
   ASSERT_EQ(annotations.size(), 1ul);

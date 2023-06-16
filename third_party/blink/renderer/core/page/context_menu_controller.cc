@@ -665,7 +665,8 @@ bool ContextMenuController::ShowContextMenu(LocalFrame* frame,
     if (!result.IsContentEditable()) {
       TextFragmentHandler::OpenedContextMenuOverSelection(selected_frame);
       AnnotationAgentContainerImpl* annotation_container =
-          AnnotationAgentContainerImpl::From(*selected_frame->GetDocument());
+          AnnotationAgentContainerImpl::CreateIfNeeded(
+              *selected_frame->GetDocument());
       annotation_container->OpenedContextMenuOverSelection();
     }
   }

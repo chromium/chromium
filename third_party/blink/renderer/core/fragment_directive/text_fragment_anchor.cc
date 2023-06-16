@@ -206,7 +206,7 @@ TextFragmentAnchor::TextFragmentAnchor(
   metrics_->DidCreateAnchor(text_directives.size());
 
   AnnotationAgentContainerImpl* annotation_container =
-      AnnotationAgentContainerImpl::From(*frame_->GetDocument());
+      AnnotationAgentContainerImpl::CreateIfNeeded(*frame_->GetDocument());
   DCHECK(annotation_container);
 
   directive_annotation_pairs_.reserve(text_directives.size());
@@ -216,62 +216,82 @@ TextFragmentAnchor::TextFragmentAnchor(
     AnnotationAgentImpl* agent = annotation_container->CreateUnboundAgent(
         mojom::blink::AnnotationType::kSharedHighlight, *selector);
 
+    // TODO(bokan): This is a stepping stone in refactoring the
+    // TextFragmentHandler. When we replace it with a browser-side manager it
+    // may make for a better API to have components register a handler for an
+    // annotation type with AnnotationAgentContainer.
+    // https://crbug.com/1303887.
+    TextFragmentHandler::DidCreateTextFragment(*agent, *frame_->GetDocument());
+
     directive_annotation_pairs_.push_back(std::make_pair(directive, agent));
   }
 }
 
 bool TextFragmentAnchor::InvokeSelector() {
-  // InvokeSelector is called repeatedly during the Blink lifecycle, however,
-  // attachment (i.e. text searching DOM) is an expensive operation.  Perform
-  // it once on the first invoke (after parsing completes) and once again for
-  // any unattached directives the first time InvokeSelector is called after
-  // the load event in case more content was loaded.
-  if (!did_perform_initial_attachment_ ||
-      (!did_perform_post_load_attachment_ &&
-       frame_->GetDocument()->IsLoadCompleted())) {
-    // If this successfully attaches the first directive it will move the anchor
-    // into kWaitingForDOMMutations or kApplyEffects state.
-    TryAttachingUnattachedDirectives();
+  AnnotationAgentContainerImpl* container =
+      AnnotationAgentContainerImpl::FromIfExists(*frame_->GetDocument());
+  CHECK(container);
 
-    did_perform_initial_attachment_ = true;
+  // InvokeSelector is called repeatedly as part of the Blink lifecycle, after
+  // AnnotationAgents have attempted attachment in
+  // Document::ApplyScrollRestorationLogic. After the Document is loaded, this
+  // call will attempt a second attachment for any agents that failed their
+  // initial attachment in case more content was loaded.
+  if (!did_perform_post_load_attachment_ &&
+      frame_->GetDocument()->IsLoadCompleted()) {
+    did_perform_post_load_attachment_ = true;
 
-    if (frame_->GetDocument()->IsLoadCompleted())
-      did_perform_post_load_attachment_ = true;
+    for (auto& directive_annotation_pair : directive_annotation_pairs_) {
+      AnnotationAgentImpl* annotation = directive_annotation_pair.second;
+      if (!annotation->IsAttached() && !annotation->IsAttachmentPending()) {
+        annotation->SetNeedsAttachment();
+      }
+    }
+
+    // TODO(bokan): Instead of doing this here, it'd be better for the
+    // post-load attachment to be scheduled x ms after load to maximize the
+    // chance of matching content added in the load event. e.g. Wikipedia adds
+    // `hidden=until-found` during/after load. We could also just schedule a
+    // new BeginMainFrame rather than manually calling
+    // PerformInitialAttachments.
+    if (container->IsLifecycleCleanForAttachment()) {
+      container->PerformInitialAttachments();
+    }
   }
+
+  UpdateCurrentState();
 
   switch (state_) {
     case kSearching:
-      if (frame_->GetDocument()->IsLoadCompleted())
+      if (!ShouldKeepSearching()) {
         DidFinishSearch();
+      }
       break;
     case kWaitingForDOMMutations:
       // A match was found but requires some kind of DOM mutation to make it
       // visible and ready so don't try to finish the search yet.
-      break;
+      CHECK(first_match_);
+      if (first_match_->IsAttachmentPending()) {
+        // Still waiting.
+        break;
+      }
+
+      // Move to ApplyEffects immediately.
+      state_ = kApplyEffects;
+      [[fallthrough]];
     case kApplyEffects:
       // Now that the event - if needed - has been processed, apply the
       // necessary effects to the matching DOM nodes.
       ApplyEffectsToFirstMatch();
-
-      // A second text-search pass will occur after the load event has been
-      // fired so don't perform any finalization until after that.
-      if (frame_->GetDocument()->IsLoadCompleted())
-        DidFinishSearch();
-      else
-        state_ = kEffectsAppliedKeepInView;
-      break;
-    case kEffectsAppliedKeepInView:
+      state_ = kKeepInView;
+      [[fallthrough]];
+    case kKeepInView:
       // Until the load event ensure the matched text is kept in view in the
       // face of layout changes.
       EnsureFirstMatchInViewIfNeeded();
-      if (frame_->GetDocument()->IsLoadCompleted())
+      if (!ShouldKeepSearching()) {
         DidFinishSearch();
-      break;
-    case kScriptableActions:
-      // The search has finished but we're waiting to apply some effects in a
-      // script-safe section. Like above, ensure the match is kept in view.
-      if (first_match_)
-        EnsureFirstMatchInViewIfNeeded();
+      }
       break;
     case kDone:
       break;
@@ -284,19 +304,12 @@ bool TextFragmentAnchor::InvokeSelector() {
 
 void TextFragmentAnchor::Installed() {}
 
-void TextFragmentAnchor::PerformScriptableActions() {
-  // This is called at the start of each BeginMainFrame regardless of the state
-  // is needed only when waiting to invoke actions that need a script-safe
-  // section.
-  if (state_ != kScriptableActions)
-    return;
-
+void TextFragmentAnchor::FinalizeAnchor() {
   DCHECK(frame_->GetDocument()->IsLoadCompleted());
 
   if (element_fragment_anchor_) {
     element_fragment_anchor_->Installed();
     element_fragment_anchor_->Invoke();
-    element_fragment_anchor_->PerformScriptableActions();
     element_fragment_anchor_ = nullptr;
   }
 
@@ -319,42 +332,40 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(metrics_);
   visitor->Trace(directive_annotation_pairs_);
   visitor->Trace(first_match_);
+  visitor->Trace(matched_annotations_);
   SelectorFragmentAnchor::Trace(visitor);
 }
 
-void TextFragmentAnchor::TryAttachingUnattachedDirectives() {
-  // TODO(bokan): This sets the start time that's used to report
-  // TimeToScrollIntoView. Using `!first_match` means the start time will
-  // differ based on whether or not we had a match in the first attachment. The
-  // TimeToScrollIntoView means to report how long from parsing until the user
-  // sees the scroll change so the user-invisible timing shouldn't matter.
-  // DidStartSearch should be called once and preferably from
-  // TextFragmentAnchor creation (which is what the histogram's description
-  // says happens...). https://crbug.com/1327734.
-  if (!first_match_)
-    metrics_->DidStartSearch();
-
+void TextFragmentAnchor::UpdateCurrentState() {
   for (auto& directive_annotation_pair : directive_annotation_pairs_) {
     AnnotationAgentImpl* annotation = directive_annotation_pair.second;
-    if (annotation->IsAttached() || annotation->IsAttachmentPending()) {
-      continue;
-    }
-
-    annotation->Attach(WTF::BindOnce(&TextFragmentAnchor::DidFinishAttachment,
-                                     WrapWeakPersistent(this),
-                                     WrapWeakPersistent(annotation)));
-    CHECK(!annotation->IsAttachmentPending() || !annotation->IsAttached());
 
     // Text fragments apply effects (scroll, focus) only to the first
     // *matching* directive into view so that's the directive that reflects the
     // `state_`. The Attach() call matches synchronously (but may
     // ansynchronously perform DOMMutations) so the first such matching agent
     // will be set to first_match_.
-    if (!first_match_ &&
-        (annotation->IsAttachmentPending() || annotation->IsAttached())) {
+    bool found_match =
+        annotation->IsAttachmentPending() || annotation->IsAttached();
+    if (!found_match) {
+      continue;
+    }
+
+    if (!first_match_) {
+      CHECK_EQ(state_, kSearching);
       state_ = annotation->IsAttachmentPending() ? kWaitingForDOMMutations
                                                  : kApplyEffects;
       first_match_ = annotation;
+    }
+
+    if (matched_annotations_.insert(annotation).is_new_entry) {
+      metrics_->DidFindMatch();
+      const AnnotationSelector* selector = annotation->GetSelector();
+      // Selector must be a TextAnnotationSelector since this is the
+      // *Text*FragmentAnchor.
+      if (selector && !To<TextAnnotationSelector>(selector)->WasMatchUnique()) {
+        metrics_->DidFindAmbiguousMatch();
+      }
     }
   }
 }
@@ -370,6 +381,9 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
   // It's possible the DOM the match was attached to was removed by this time.
   if (!first_match_->IsAttached())
     return;
+
+  // If we're attached, we must have already waited for DOM mutations.
+  CHECK(!first_match_->IsAttachmentPending());
 
   const RangeInFlatTree& range = first_match_->GetAttachedRange();
 
@@ -417,7 +431,11 @@ bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
 
 void TextFragmentAnchor::DidFinishSearch() {
   DCHECK(frame_->GetDocument()->IsLoadCompleted());
-  DCHECK_LE(state_, kEffectsAppliedKeepInView);
+  DCHECK_LE(state_, kKeepInView);
+
+  if (finalize_pending_) {
+    return;
+  }
 
   metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
@@ -426,7 +444,7 @@ void TextFragmentAnchor::DidFinishSearch() {
 
   if (!did_find_any_matches) {
     DCHECK(!element_fragment_anchor_);
-    // ElementFragmentAnchor needs to be invoked from PerformScriptableActions
+    // ElementFragmentAnchor needs to be invoked from FinalizeAnchor
     // since it can cause script to run and we may be in a ScriptForbiddenScope
     // here.
     element_fragment_anchor_ = ElementFragmentAnchor::TryCreate(
@@ -434,15 +452,12 @@ void TextFragmentAnchor::DidFinishSearch() {
   }
 
   DCHECK(!did_find_any_matches || !element_fragment_anchor_);
-  state_ = did_find_any_matches || element_fragment_anchor_ ? kScriptableActions
-                                                            : kDone;
 
-  if (state_ == kScriptableActions) {
-    // There are actions resulting from matching text fragment that can lead to
-    // executing script. These need to happen when script is allowed so schedule
-    // a new frame to perform these final actions.
-    frame_->GetPage()->GetChromeClient().ScheduleAnimation(frame_->View());
-  }
+  // Finalizing the anchor may cause script execution so schedule a new frame
+  // to perform finalization.
+  frame_->GetDocument()->EnqueueAnimationFrameTask(
+      WTF::BindOnce(&TextFragmentAnchor::FinalizeAnchor, WrapPersistent(this)));
+  finalize_pending_ = true;
 }
 
 void TextFragmentAnchor::ApplyTargetToCommonAncestor(
@@ -456,25 +471,6 @@ void TextFragmentAnchor::ApplyTargetToCommonAncestor(
   if (common_node) {
     auto* target = DynamicTo<Element>(common_node);
     frame_->GetDocument()->SetCSSTarget(target);
-  }
-}
-
-void TextFragmentAnchor::DidFinishAttachment(AnnotationAgentImpl* agent) {
-  CHECK(agent);
-  CHECK(!agent->IsAttachmentPending());
-
-  if (!agent->IsAttached()) {
-    return;
-  }
-
-  metrics_->DidFindMatch();
-  if (!static_cast<const TextAnnotationSelector*>(agent->GetSelector())
-           ->WasMatchUnique()) {
-    metrics_->DidFindAmbiguousMatch();
-  }
-
-  if (state_ == kWaitingForDOMMutations && agent == first_match_) {
-    state_ = kApplyEffects;
   }
 }
 
@@ -499,6 +495,26 @@ bool TextFragmentAnchor::HasSearchEngineSource() {
 
   return IsKnownSearchEngine(
       frame_->GetDocument()->Loader()->GetRequestorOrigin()->ToString());
+}
+
+bool TextFragmentAnchor::ShouldKeepSearching() {
+  // At load time, TextFragmentAnchor will try a second time to attach
+  // any unattached annotations.
+  if (!frame_->GetDocument()->IsLoadCompleted()) {
+    return true;
+  }
+
+  // Even after load, we should wait until each annotation has had a chance to
+  // try attachment. This may not happen immediately since we avoid attaching
+  // while the page hasn't yet become visible.
+  for (auto& directive_annotation_pair : directive_annotation_pairs_) {
+    AnnotationAgentImpl* annotation = directive_annotation_pair.second;
+    if (annotation->NeedsAttachment()) {
+      return true;
+    }
+  }
+
+  return false;
 }
 
 }  // namespace blink
