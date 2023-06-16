@@ -14,6 +14,9 @@ import {assertEquals, assertFalse, assertGT, assertNotEquals, assertTrue} from '
 import {flushTasks, waitBeforeNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise, isVisible} from 'chrome://webui-test/test_util.js';
 
+const DEUTERANOMALY_VALUE = 1;
+const GREYSCALE_VALUE = 3;
+
 suite('<settings-display-and-magnification-subpage>', () => {
   let page: SettingsDisplayAndMagnificationSubpageElement;
   let prefElement: SettingsPrefsElement;
@@ -140,5 +143,18 @@ suite('<settings-display-and-magnification-subpage>', () => {
         amount,
         page.prefs.settings.a11y.color_filtering.color_vision_correction_amount
             .value);
+
+    // Try changing the color filtering type.
+    const filterSelectElement =
+        colorDeficiencyDropdown.shadowRoot!.querySelector('select');
+    assert(filterSelectElement);
+    assertEquals(String(DEUTERANOMALY_VALUE), filterSelectElement.value);
+
+    // Change the filtering type.
+    filterSelectElement.value = String(GREYSCALE_VALUE);
+    filterSelectElement.dispatchEvent(new CustomEvent('change'));
+    const new_filter = page.prefs.settings.a11y.color_filtering
+                           .color_vision_deficiency_type.value;
+    assertEquals(new_filter, GREYSCALE_VALUE);
   });
 });
