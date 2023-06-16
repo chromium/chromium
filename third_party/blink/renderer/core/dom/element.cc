@@ -5541,6 +5541,14 @@ void Element::SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
       value);
 }
 
+bool Element::HasBeenExplicitlyScrolled() const {
+  return HasRareData() && GetElementRareData()->HasBeenExplicitlyScrolled();
+}
+
+void Element::SetHasBeenExplicitlyScrolled() {
+  EnsureElementRareData().SetHasBeenExplicitlyScrolled();
+}
+
 bool Element::AffectedBySubjectHas() const {
   if (HasRareData()) {
     return GetElementRareData()->AffectedBySubjectHas();

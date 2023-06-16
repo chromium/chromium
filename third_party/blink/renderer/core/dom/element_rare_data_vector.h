@@ -319,6 +319,10 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   void SetScrollbarPseudoElementStylesDependOnFontMetrics(bool value) {
     scrollbar_pseudo_element_styles_depend_on_font_metrics_ = value;
   }
+  void SetHasBeenExplicitlyScrolled() { has_been_explicitly_scrolled_ = true; }
+  bool HasBeenExplicitlyScrolled() const {
+    return has_been_explicitly_scrolled_;
+  }
 
   FocusgroupFlags GetFocusgroupFlags() const { return focusgroup_flags_; }
   void SetFocusgroupFlags(FocusgroupFlags flags) { focusgroup_flags_ = flags; }
@@ -410,6 +414,7 @@ class CORE_EXPORT ElementRareDataVector final : public NodeRareData {
   unsigned did_attach_internals_ : 1;
   unsigned has_undo_stack_ : 1;
   unsigned scrollbar_pseudo_element_styles_depend_on_font_metrics_ : 1;
+  unsigned has_been_explicitly_scrolled_ : 1;
   HasInvalidationFlags has_invalidation_flags_;
   FocusgroupFlags focusgroup_flags_ = FocusgroupFlags::kNone;
 };

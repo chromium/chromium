@@ -57,6 +57,7 @@ blink_core_sources_style = [
   "reference_offset_path_operation.h",
   "scoped_css_name.cc",
   "scoped_css_name.h",
+  "scroll_start_data.cc",
   "scroll_start_data.h",
   "shadow_data.cc",
   "shadow_data.h",

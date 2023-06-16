@@ -54,6 +54,7 @@
 #include "third_party/blink/renderer/core/scroll/mac_scrollbar_animator.h"
 #include "third_party/blink/renderer/core/scroll/programmatic_scroll_animator.h"
 #include "third_party/blink/renderer/core/scroll/scroll_animator_base.h"
+#include "third_party/blink/renderer/core/scroll/scroll_types.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar_theme.h"
 #include "third_party/blink/renderer/core/scroll/smooth_scroll_sequencer.h"
 #include "third_party/blink/renderer/platform/graphics/color.h"
@@ -339,6 +340,14 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   gfx::Vector2d animation_adjustment = gfx::ToRoundedVector2d(clamped_offset) -
                                        gfx::ToRoundedVector2d(previous_offset);
 
+  if (RuntimeEnabledFeatures::CSSScrollSnap2Enabled()) {
+    // After a scroller has been explicitly scrolled, we should no longer apply
+    // scroll-start.
+    if (IsExplicitScrollType(scroll_type)) {
+      StopApplyingScrollStart();
+    }
+  }
+
   switch (scroll_type) {
     case mojom::blink::ScrollType::kCompositor:
       ScrollOffsetChanged(clamped_offset, scroll_type);
@@ -351,6 +360,10 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
       ScrollOffsetChanged(clamped_offset, scroll_type);
       GetScrollAnimator().AdjustAnimation(animation_adjustment);
       pending_scroll_anchor_adjustment_ += clamped_offset - previous_offset;
+      break;
+    case mojom::blink::ScrollType::kScrollStart:
+      ScrollOffsetChanged(clamped_offset, scroll_type);
+      GetScrollAnimator().AdjustAnimation(animation_adjustment);
       break;
     case mojom::blink::ScrollType::kProgrammatic:
       ProgrammaticScrollHelper(clamped_offset, behavior,
@@ -377,6 +390,74 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
                                      mojom::blink::ScrollType type,
                                      mojom::blink::ScrollBehavior behavior) {
   SetScrollOffset(offset, type, behavior, ScrollCallback());
+}
+
+float ScrollableArea::ScrollStartValueToOffsetAlongAxis(
+    const ScrollStartData& data,
+    cc::SnapAxis axis) const {
+  using Type = blink::ScrollStartValueType;
+  using Axis = cc::SnapAxis;
+  DCHECK(axis == Axis::kX || axis == Axis::kY);
+  const float axis_scroll_extent = axis == Axis::kX
+                                       ? ScrollSize(kHorizontalScrollbar)
+                                       : ScrollSize(kVerticalScrollbar);
+  switch (data.value_type) {
+    case Type::kAuto:
+    case Type::kStart:
+    case Type::kTop:
+    case Type::kLeft:
+      return axis == Axis::kX ? MinimumScrollOffset().x()
+                              : MinimumScrollOffset().y();
+    case Type::kCenter:
+      return axis == Axis::kX
+                 ? MinimumScrollOffset().x() + 0.5 * axis_scroll_extent
+                 : MinimumScrollOffset().y() + 0.5 * axis_scroll_extent;
+    case Type::kEnd:
+      return axis == Axis::kX ? MaximumScrollOffset().x()
+                              : MaximumScrollOffset().y();
+    case Type::kBottom:
+      return axis == Axis::kY ? MaximumScrollOffset().y()
+                              : MinimumScrollOffset().x();
+    case Type::kRight:
+      return axis == Axis::kX ? MaximumScrollOffset().x()
+                              : MinimumScrollOffset().y();
+    case Type::kLengthOrPercentage: {
+      float offset = FloatValueForLength(data.value, axis_scroll_extent);
+      return axis == Axis::kY ? MinimumScrollOffset().y() + offset
+                              : MinimumScrollOffset().x() + offset;
+    }
+    default:
+      return axis == Axis::kX ? MinimumScrollOffset().x()
+                              : MinimumScrollOffset().y();
+  }
+}
+
+ScrollOffset ScrollableArea::ScrollOffsetFromScrollStartData(
+    const ScrollStartData& y_value,
+    const ScrollStartData& x_value) const {
+  ScrollOffset offset;
+
+  offset.set_x(ScrollStartValueToOffsetAlongAxis(x_value, cc::SnapAxis::kX));
+  offset.set_y(ScrollStartValueToOffsetAlongAxis(y_value, cc::SnapAxis::kY));
+
+  return ClampScrollOffset(offset);
+}
+
+bool ScrollableArea::ScrollStartIsDefault() const {
+  if (!GetLayoutBox()) {
+    return true;
+  }
+  return GetLayoutBox()->Style()->ScrollStartX() == ScrollStartData() &&
+         GetLayoutBox()->Style()->ScrollStartY() == ScrollStartData();
+}
+
+void ScrollableArea::ApplyScrollStart() {
+  const auto& y_data = GetLayoutBox()->Style()->ScrollStartY();
+  const auto& x_data = GetLayoutBox()->Style()->ScrollStartX();
+  ScrollOffset scroll_start_offset =
+      ScrollOffsetFromScrollStartData(y_data, x_data);
+  SetScrollOffset(scroll_start_offset, mojom::blink::ScrollType::kScrollStart,
+                  mojom::blink::ScrollBehavior::kInstant);
 }
 
 void ScrollableArea::ScrollBy(const ScrollOffset& delta,

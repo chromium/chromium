@@ -615,6 +615,9 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   CompositorElementId GetScrollCornerElementId() const;
 
+  void StopApplyingScrollStart() final;
+  bool IsApplyingScrollStart() const final;
+
  private:
   // This also updates main thread scrolling reasons and the LayoutBox's
   // background paint location.
@@ -709,6 +712,7 @@ class CORE_EXPORT PaintLayerScrollableArea final
 
   void DelayableClampScrollOffsetAfterOverflowChange();
   void ClampScrollOffsetAfterOverflowChangeInternal();
+  Element* GetElementForScrollStart() const;
 
   // PaintLayer is destructed before PaintLayerScrollable area, during this
   // time before PaintLayerScrollableArea has been collected layer_ will

@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/layout/geometry/physical_rect.h"
 #include "third_party/blink/renderer/core/loader/history_item.h"
 #include "third_party/blink/renderer/core/scroll/scrollbar.h"
+#include "third_party/blink/renderer/core/style/scroll_start_data.h"
 #include "third_party/blink/renderer/platform/graphics/compositor_element_id.h"
 #include "third_party/blink/renderer/platform/graphics/overlay_scrollbar_clip_behavior.h"
 #include "third_party/blink/renderer/platform/heap/disallow_new_wrapper.h"
@@ -566,6 +567,13 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
 
   scoped_refptr<base::SingleThreadTaskRunner> GetCompositorTaskRunner();
 
+  ScrollOffset ScrollOffsetFromScrollStartData(
+      const ScrollStartData& block_value,
+      const ScrollStartData& inline_value) const;
+  void ApplyScrollStart();
+  bool ScrollStartIsDefault() const;
+  virtual bool IsApplyingScrollStart() const { return false; }
+
  protected:
   // Deduces the mojom::blink::ScrollBehavior based on the
   // element style and the parameter set by programmatic scroll into either
@@ -608,6 +616,7 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
                                   const ScrollOffset& delta);
 
   void MainThreadScrollingDidChange();
+  virtual void StopApplyingScrollStart() {}
 
  private:
   FRIEND_TEST_ALL_PREFIXES(ScrollableAreaTest,
@@ -628,6 +637,9 @@ class CORE_EXPORT ScrollableArea : public GarbageCollectedMixin {
   // scroll of the content.
   virtual void UpdateScrollOffset(const ScrollOffset&,
                                   mojom::blink::ScrollType) = 0;
+
+  float ScrollStartValueToOffsetAlongAxis(const ScrollStartData&,
+                                          cc::SnapAxis) const;
 
   virtual int LineStep(ScrollbarOrientation) const;
   virtual int PageStep(ScrollbarOrientation) const;

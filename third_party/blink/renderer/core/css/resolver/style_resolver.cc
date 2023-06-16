@@ -2747,6 +2747,18 @@ void StyleResolver::PropagateStyleToViewport() {
                    SetForcedColorAdjust, EForcedColorAdjust::kAuto);
   }
 
+  // scroll-start
+  {
+    PROPAGATE_FROM(document_element_style, ScrollStartBlock,
+                   SetScrollStartBlock, ScrollStartData());
+    PROPAGATE_FROM(document_element_style, ScrollStartInline,
+                   SetScrollStartInline, ScrollStartData());
+    PROPAGATE_FROM(document_element_style, ScrollStartX, SetScrollStartX,
+                   ScrollStartData());
+    PROPAGATE_FROM(document_element_style, ScrollStartY, SetScrollStartY,
+                   ScrollStartData());
+  }
+
   changed |= PropagateScrollSnapStyleToViewport(
       GetDocument(), document_element_style, new_viewport_style_builder);
 

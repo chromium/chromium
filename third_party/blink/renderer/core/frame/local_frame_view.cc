@@ -2781,6 +2781,13 @@ void LocalFrameView::PerformScrollAnchoringAdjustments() {
   for (const WeakMember<ScrollableArea>& scroller : queue_copy) {
     if (scroller) {
       DCHECK(scroller->GetScrollAnchor());
+      // The CSS scroll-start property should take precedence over scroll
+      // anchoring.
+      if (RuntimeEnabledFeatures::CSSScrollSnap2Enabled() &&
+          scroller->IsApplyingScrollStart()) {
+        scroller->GetScrollAnchor()->CancelAdjustment();
+        continue;
+      }
       scroller->GetScrollAnchor()->Adjust();
     }
   }

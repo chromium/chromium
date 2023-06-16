@@ -49,6 +49,14 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
     return mock;
   }
 
+  static MockScrollableArea* Create(const ScrollOffset& maximum_scroll_offset,
+                                    const ScrollOffset& minimum_scroll_offset) {
+    MockScrollableArea* mock = Create();
+    mock->SetMaximumScrollOffset(maximum_scroll_offset);
+    mock->SetMinimumScrollOffset(minimum_scroll_offset);
+    return mock;
+  }
+
   explicit MockScrollableArea()
       : ScrollableArea(blink::scheduler::GetSingleThreadTaskRunnerForTesting()),
         maximum_scroll_offset_(ScrollOffset(0, 100)),
@@ -88,7 +96,7 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
     return gfx::ToFlooredVector2d(scroll_offset_);
   }
   gfx::Vector2d MinimumScrollOffsetInt() const override {
-    return gfx::Vector2d();
+    return gfx::ToFlooredVector2d(minimum_scroll_offset_);
   }
   gfx::Vector2d MaximumScrollOffsetInt() const override {
     return gfx::ToFlooredVector2d(maximum_scroll_offset_);
@@ -144,10 +152,14 @@ class MockScrollableArea : public GarbageCollected<MockScrollableArea>,
   void SetMaximumScrollOffset(const ScrollOffset& maximum_scroll_offset) {
     maximum_scroll_offset_ = maximum_scroll_offset;
   }
+  void SetMinimumScrollOffset(const ScrollOffset& minimum_scroll_offset) {
+    minimum_scroll_offset_ = minimum_scroll_offset;
+  }
 
  private:
   ScrollOffset scroll_offset_;
   ScrollOffset maximum_scroll_offset_;
+  ScrollOffset minimum_scroll_offset_;
   Member<MockPlatformChromeClient> chrome_client_;
   float scale_from_dip_ = 1.f;
 };
