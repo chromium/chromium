@@ -145,6 +145,7 @@
     "Mac10.13 Tests": "Ubuntu-22.04",
     "Mac10.14 Tests": "Ubuntu-22.04",
     "Mac10.15 Tests": "Ubuntu-22.04",
+    "Mac11 Tests": "Ubuntu-22.04",
     "Mac12 Tests": "Ubuntu-22.04",
     "Mac13 Tests": "Ubuntu-22.04",
     "Mac13 Tests (dbg)": "Ubuntu-22.04",
