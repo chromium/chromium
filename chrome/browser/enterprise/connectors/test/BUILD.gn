@@ -7,33 +7,49 @@ import("//build/config/chromeos/ui_mode.gni")
 source_set("test_support") {
   testonly = true
   public = [
+    "deep_scanning_browsertest_base.h",
+    "deep_scanning_test_utils.h",
+    "fake_content_analysis_delegate.h",
+    "fake_files_request_handler.h",
     "management_context_mixin.h",
     "test_constants.h",
   ]
 
   sources = [
+    "deep_scanning_browsertest_base.cc",
+    "deep_scanning_test_utils.cc",
+    "fake_content_analysis_delegate.cc",
+    "fake_files_request_handler.cc",
     "management_context_mixin.cc",
     "test_constants.cc",
   ]
 
   public_deps = [
+    "//base",
+    "//chrome/browser/safe_browsing",
     "//chrome/browser/ui",
     "//chrome/test:test_support_ui",
+    "//components/enterprise/common/proto:connectors_proto",
     "//components/policy/core/common:common_constants",
     "//components/policy/core/common:test_support",
     "//components/policy/proto",
+    "//components/safe_browsing/core/common",
+    "//components/safe_browsing/core/common:safe_browsing_prefs",
     "//testing/gmock",
+    "//third_party/abseil-cpp:absl",
   ]
 
   deps = [
-    "//base",
     "//chrome/browser",
+    "//chrome/browser:browser_process",
     "//chrome/browser/profiles:profile",
+    "//chrome/test:test_support",
     "//components/policy/core/browser",
     "//components/policy/core/common",
+    "//components/prefs",
   ]
 
-  if (is_win || is_linux || is_mac) {
+  if (is_win || is_linux || is_mac || is_chromeos_lacros) {
     public += [ "browser/management_context_mixin_browser.h" ]
     sources += [ "browser/management_context_mixin_browser.cc" ]
 

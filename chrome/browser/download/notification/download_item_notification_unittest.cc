@@ -24,13 +24,13 @@
 #include "chrome/browser/download/download_commands.h"
 #include "chrome/browser/download/notification/download_notification_manager.h"
 #include "chrome/browser/download/offline_item_utils.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/notifications/notification_test_util.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -426,9 +426,9 @@ TEST_P(DownloadItemNotificationParameterizedTest, DeepScanning) {
   CreateDownloadItemNotification();
 
   // Can't open while scanning.
-  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
-                                      enterprise_connectors::FILE_DOWNLOADED,
-                                      R"(
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      R"(
         {
           "service_provider": "google",
           "enable": [{"url_list": ["*"], "tags": ["malware"]}],
@@ -441,9 +441,9 @@ TEST_P(DownloadItemNotificationParameterizedTest, DeepScanning) {
   download_item_notification_->Click(absl::nullopt, absl::nullopt);
 
   // Can be opened while scanning.
-  safe_browsing::SetAnalysisConnector(profile_->GetPrefs(),
-                                      enterprise_connectors::FILE_DOWNLOADED,
-                                      R"(
+  enterprise_connectors::test::SetAnalysisConnector(
+      profile_->GetPrefs(), enterprise_connectors::FILE_DOWNLOADED,
+      R"(
         {
           "service_provider": "google",
           "enable": [{"url_list": ["*"], "tags": ["malware"]}],

@@ -2,17 +2,17 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
 
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/analysis/content_analysis_dialog.h"
-#include "chrome/browser/enterprise/connectors/analysis/fake_content_analysis_delegate.h"
 #include "chrome/browser/enterprise/connectors/analysis/files_request_handler.h"
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
+#include "chrome/browser/enterprise/connectors/test/fake_content_analysis_delegate.h"
 #include "chrome/browser/policy/dm_token_utils.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/prefs/pref_service.h"
@@ -20,7 +20,7 @@
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/safe_browsing_prefs.h"
 
-namespace safe_browsing {
+namespace enterprise_connectors::test {
 
 namespace {
 
@@ -30,15 +30,14 @@ constexpr base::TimeDelta kMinimumPendingDelay = base::Milliseconds(400);
 constexpr base::TimeDelta kSuccessTimeout = base::Milliseconds(100);
 constexpr base::TimeDelta kShowDialogDelay = base::Milliseconds(0);
 
-class UnresponsiveFilesRequestHandler
-    : public enterprise_connectors::FilesRequestHandler {
+class UnresponsiveFilesRequestHandler : public FilesRequestHandler {
  public:
-  using enterprise_connectors::FilesRequestHandler::FilesRequestHandler;
+  using FilesRequestHandler::FilesRequestHandler;
 
-  static std::unique_ptr<enterprise_connectors::FilesRequestHandler> Create(
+  static std::unique_ptr<FilesRequestHandler> Create(
       safe_browsing::BinaryUploadService* upload_service,
       Profile* profile,
-      const enterprise_connectors::AnalysisSettings& analysis_settings,
+      const AnalysisSettings& analysis_settings,
       GURL url,
       const std::string& source,
       const std::string& destination,
@@ -46,7 +45,7 @@ class UnresponsiveFilesRequestHandler
       const std::string& tab_title,
       safe_browsing::DeepScanAccessPoint access_point,
       const std::vector<base::FilePath>& paths,
-      enterprise_connectors::FilesRequestHandler::CompletionCallback callback) {
+      FilesRequestHandler::CompletionCallback callback) {
     return base::WrapUnique(new UnresponsiveFilesRequestHandler(
         upload_service, profile, analysis_settings, url, source, destination,
         user_action_id, tab_title, access_point, paths, std::move(callback)));
@@ -62,20 +61,18 @@ class UnresponsiveFilesRequestHandler
   }
 };
 
-class UnresponsiveContentAnalysisDelegate
-    : public enterprise_connectors::FakeContentAnalysisDelegate {
+class UnresponsiveContentAnalysisDelegate : public FakeContentAnalysisDelegate {
  public:
-  using enterprise_connectors::FakeContentAnalysisDelegate::
-      FakeContentAnalysisDelegate;
+  using FakeContentAnalysisDelegate::FakeContentAnalysisDelegate;
 
-  static std::unique_ptr<enterprise_connectors::ContentAnalysisDelegate> Create(
+  static std::unique_ptr<ContentAnalysisDelegate> Create(
       base::RepeatingClosure delete_closure,
       StatusCallback status_callback,
       std::string dm_token,
       content::WebContents* web_contents,
       Data data,
       CompletionCallback callback) {
-    enterprise_connectors::FilesRequestHandler::SetFactoryForTesting(
+    FilesRequestHandler::SetFactoryForTesting(
         base::BindRepeating(&UnresponsiveFilesRequestHandler::Create));
     return std::make_unique<UnresponsiveContentAnalysisDelegate>(
         delete_closure, status_callback, std::move(dm_token), web_contents,
@@ -84,7 +81,8 @@ class UnresponsiveContentAnalysisDelegate
 
  private:
   void UploadTextForDeepScanning(
-      std::unique_ptr<BinaryUploadService::Request> request) override {
+      std::unique_ptr<safe_browsing::BinaryUploadService::Request> request)
+      override {
     // Do nothing.
   }
 };
@@ -94,50 +92,41 @@ class UnresponsiveContentAnalysisDelegate
 DeepScanningBrowserTestBase::DeepScanningBrowserTestBase() {
   // Change the time values of the upload UI to smaller ones to make tests
   // showing it run faster.
-  enterprise_connectors::ContentAnalysisDialog::
-      SetMinimumPendingDialogTimeForTesting(kMinimumPendingDelay);
-  enterprise_connectors::ContentAnalysisDialog::
-      SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
-  enterprise_connectors::ContentAnalysisDialog::SetShowDialogDelayForTesting(
-      kShowDialogDelay);
+  ContentAnalysisDialog::SetMinimumPendingDialogTimeForTesting(
+      kMinimumPendingDelay);
+  ContentAnalysisDialog::SetSuccessDialogTimeoutForTesting(kSuccessTimeout);
+  ContentAnalysisDialog::SetShowDialogDelayForTesting(kShowDialogDelay);
 }
 
 DeepScanningBrowserTestBase::~DeepScanningBrowserTestBase() = default;
 
 void DeepScanningBrowserTestBase::TearDownOnMainThread() {
-  enterprise_connectors::ContentAnalysisDelegate::ResetFactoryForTesting();
-  enterprise_connectors::FilesRequestHandler::ResetFactoryForTesting();
+  ContentAnalysisDelegate::ResetFactoryForTesting();
+  FilesRequestHandler::ResetFactoryForTesting();
 
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
-                         enterprise_connectors::FILE_ATTACHED);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
-                         enterprise_connectors::FILE_DOWNLOADED);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
-                         enterprise_connectors::BULK_DATA_ENTRY);
-  ClearAnalysisConnector(browser()->profile()->GetPrefs(),
-                         enterprise_connectors::PRINT);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(), FILE_ATTACHED);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(), FILE_DOWNLOADED);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(), BULK_DATA_ENTRY);
+  ClearAnalysisConnector(browser()->profile()->GetPrefs(), PRINT);
   SetOnSecurityEventReporting(browser()->profile()->GetPrefs(), false);
 }
 
 void DeepScanningBrowserTestBase::SetUpDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(
-          &enterprise_connectors::FakeContentAnalysisDelegate::Create,
-          base::DoNothing(),
-          base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
-                              base::Unretained(this)),
-          kDmToken));
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &FakeContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
+                          base::Unretained(this)),
+      kDmToken));
 }
 
 void DeepScanningBrowserTestBase::SetUpUnresponsiveDelegate() {
   SetDMTokenForTesting(policy::DMToken::CreateValidToken(kDmToken));
-  enterprise_connectors::ContentAnalysisDelegate::SetFactoryForTesting(
-      base::BindRepeating(
-          &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),
-          base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
-                              base::Unretained(this)),
-          kDmToken));
+  ContentAnalysisDelegate::SetFactoryForTesting(base::BindRepeating(
+      &UnresponsiveContentAnalysisDelegate::Create, base::DoNothing(),
+      base::BindRepeating(&DeepScanningBrowserTestBase::StatusCallback,
+                          base::Unretained(this)),
+      kDmToken));
 }
 
 void DeepScanningBrowserTestBase::SetQuitClosure(
@@ -146,25 +135,26 @@ void DeepScanningBrowserTestBase::SetQuitClosure(
 }
 
 void DeepScanningBrowserTestBase::CallQuitClosure() {
-  if (!quit_closure_.is_null())
+  if (!quit_closure_.is_null()) {
     quit_closure_.Run();
+  }
 }
 
 void DeepScanningBrowserTestBase::SetStatusCallbackResponse(
-    enterprise_connectors::ContentAnalysisResponse response) {
+    ContentAnalysisResponse response) {
   connector_status_callback_response_ = response;
 }
 
-enterprise_connectors::ContentAnalysisResponse
-DeepScanningBrowserTestBase::StatusCallback(const std::string& contents,
-                                            const base::FilePath& path) {
+ContentAnalysisResponse DeepScanningBrowserTestBase::StatusCallback(
+    const std::string& contents,
+    const base::FilePath& path) {
   return connector_status_callback_response_;
 }
 
 void DeepScanningBrowserTestBase::CreateFilesForTest(
     const std::vector<std::string>& paths,
     const std::vector<std::string>& contents,
-    enterprise_connectors::ContentAnalysisDelegate::Data* data) {
+    ContentAnalysisDelegate::Data* data) {
   ASSERT_EQ(paths.size(), contents.size());
 
   ASSERT_TRUE(temp_dir_.CreateUniqueTempDir());
@@ -183,4 +173,4 @@ DeepScanningBrowserTestBase::created_file_paths() const {
   return created_file_paths_;
 }
 
-}  // namespace safe_browsing
+}  // namespace enterprise_connectors::test

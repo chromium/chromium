@@ -10,11 +10,11 @@
 #include "build/build_config.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client.h"
 #include "chrome/browser/enterprise/connectors/reporting/realtime_reporting_client_factory.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router.h"
 #include "chrome/browser/extensions/api/safe_browsing_private/safe_browsing_private_event_router_factory.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/printing/print_preview_test.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "components/policy/core/common/cloud/mock_cloud_policy_client.h"
@@ -178,9 +178,9 @@ class PrintContentAnalysisUtilsTest
         ->SetIdentityManagerForTesting(
             identity_test_environment_.identity_manager());
 
-    safe_browsing::SetAnalysisConnector(profile()->GetPrefs(), PRINT,
-                                        GetParam());
-    safe_browsing::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
+    enterprise_connectors::test::SetAnalysisConnector(profile()->GetPrefs(),
+                                                      PRINT, GetParam());
+    test::SetOnSecurityEventReporting(profile()->GetPrefs(), true);
   }
 
   void TearDown() override {
@@ -215,7 +215,7 @@ TEST_P(PrintContentAnalysisUtilsTest, Allowed) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::ACTION_UNSPECIFIED));
 
-  safe_browsing::EventReportValidator validator(client_.get());
+  test::EventReportValidator validator(client_.get());
   validator.ExpectNoReport();
 
   auto data = CreateData();
@@ -235,7 +235,7 @@ TEST_P(PrintContentAnalysisUtilsTest, ReportOnly) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::REPORT_ONLY));
 
-  safe_browsing::EventReportValidator validator(client_.get());
+  test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",
@@ -271,7 +271,7 @@ TEST_P(PrintContentAnalysisUtilsTest, WarnThenCancel) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
-  safe_browsing::EventReportValidator validator(client_.get());
+  test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator]() {
     testing::Mock::VerifyAndClearExpectations(client_.get());
     validator.ExpectNoReport();
@@ -314,7 +314,7 @@ TEST_P(PrintContentAnalysisUtilsTest, WarnedThenBypass) {
       ContentAnalysisResponse::Result::TriggeredRule::WARN));
 
   bool bypassed = false;
-  safe_browsing::EventReportValidator validator(client_.get());
+  test::EventReportValidator validator(client_.get());
   validator.SetDoneClosure(base::BindLambdaForTesting([this, &validator,
                                                        &bypassed]() {
     // Only do this once to avoid infinite recursion since bypassing triggers
@@ -382,7 +382,7 @@ TEST_P(PrintContentAnalysisUtilsTest, Blocked) {
       &PrintTestContentAnalysisDelegate::Create,
       ContentAnalysisResponse::Result::TriggeredRule::BLOCK));
 
-  safe_browsing::EventReportValidator validator(client_.get());
+  test::EventReportValidator validator(client_.get());
   validator.ExpectSensitiveDataEvent(
       /*url*/ "",
       /*source*/ "",

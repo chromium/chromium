@@ -14,11 +14,11 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/enterprise/connectors/common.h"
 #include "chrome/browser/enterprise/connectors/connectors_prefs.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_browsertest_base.h"
+#include "chrome/browser/enterprise/connectors/test/deep_scanning_test_utils.h"
 #include "chrome/browser/policy/chrome_browser_policy_connector.h"
 #include "chrome/browser/policy/dm_token_utils.h"
 #include "chrome/browser/profiles/reporting_util.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_browsertest_base.h"
-#include "chrome/browser/safe_browsing/cloud_content_scanning/deep_scanning_test_utils.h"
 #include "chrome/browser/ui/browser.h"
 #include "components/enterprise/browser/controller/fake_browser_dm_token_storage.h"
 #include "components/enterprise/browser/enterprise_switches.h"
@@ -147,7 +147,7 @@ bool ContainsClientId(const AnalysisSettings& settings) {
 enum class ManagementStatus { AFFILIATED, UNAFFILIATED, UNMANAGED };
 
 class ConnectorsServiceProfileBrowserTest
-    : public safe_browsing::DeepScanningBrowserTestBase {
+    : public test::DeepScanningBrowserTestBase {
  public:
   explicit ConnectorsServiceProfileBrowserTest(
       ManagementStatus management_status)
@@ -170,7 +170,7 @@ class ConnectorsServiceProfileBrowserTest
   }
 
   void SetUpOnMainThread() override {
-    safe_browsing::DeepScanningBrowserTestBase::SetUpOnMainThread();
+    test::DeepScanningBrowserTestBase::SetUpOnMainThread();
 
     SetUpProfileData();
 
@@ -192,7 +192,7 @@ class ConnectorsServiceProfileBrowserTest
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
     EXPECT_TRUE(browser()->profile()->IsMainProfile());
 #elif !BUILDFLAG(IS_CHROMEOS_ASH)
-    safe_browsing::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
+    test::SetProfileDMToken(browser()->profile(), kFakeProfileDMToken);
 #endif
 
     enterprise_management::PolicyData profile_policy_data;
