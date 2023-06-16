@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "ash/webui/common/chrome_os_webui_config.h"
 #include "ash/webui/demo_mode_app_ui/demo_mode_untrusted_page_handler.h"
 #include "ash/webui/demo_mode_app_ui/url_constants.h"
 #include "ash/webui/grit/ash_demo_mode_app_resources.h"
@@ -26,19 +27,12 @@
 namespace ash {
 
 DemoModeAppUntrustedUIConfig::DemoModeAppUntrustedUIConfig(
-    base::RepeatingCallback<base::FilePath()> component_path_producer)
-    : content::WebUIConfig(content::kChromeUIUntrustedScheme,
-                           kChromeUntrustedUIDemoModeAppHost),
-      component_path_producer_(std::move(component_path_producer)) {}
+    CreateWebUIControllerFunc create_controller_func)
+    : ChromeOSWebUIConfig(content::kChromeUIUntrustedScheme,
+                          kChromeUntrustedUIDemoModeAppHost,
+                          create_controller_func) {}
 
 DemoModeAppUntrustedUIConfig::~DemoModeAppUntrustedUIConfig() = default;
-
-std::unique_ptr<content::WebUIController>
-DemoModeAppUntrustedUIConfig::CreateWebUIController(content::WebUI* web_ui,
-                                                    const GURL& url) {
-  return std::make_unique<DemoModeAppUntrustedUI>(
-      web_ui, component_path_producer_.Run());
-}
 
 // This is a paired down version of DemoSession::IsDeviceInDemoMode that doesn't
 // rely on DemoSession::DemoModeConfig, reimplemented to temporarily avoid the

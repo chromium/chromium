@@ -16,8 +16,8 @@
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
 #include "chrome/browser/apps/app_service/app_launch_params.h"
-#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/demo_mode/demo_mode_test_utils.h"
+#include "chrome/browser/ash/login/demo_mode/demo_session.h"
 #include "chrome/browser/ash/login/test/device_state_mixin.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/ash/system_web_apps/test_support/system_web_app_integration_test.h"
@@ -28,6 +28,9 @@
 #include "content/public/test/browser_test_utils.h"
 #include "ui/views/widget/widget.h"
 #include "ui/views/widget/widget_observer.h"
+
+namespace ash {
+namespace {
 
 const char kTestHtml[] =
     "<head>"
@@ -77,10 +80,15 @@ class DemoModeAppIntegrationTestBase : public ash::SystemWebAppIntegrationTest {
     ASSERT_TRUE(component_dir_.CreateUniqueTempDir());
     content::WebUIConfigMap::GetInstance().RemoveConfig(
         url::Origin::Create(GURL(ash::kChromeUntrustedUIDemoModeAppURL)));
+    auto create_controller_func = base::BindLambdaForTesting(
+        [&](content::WebUI* web_ui,
+            const GURL& url) -> std::unique_ptr<content::WebUIController> {
+          return std::make_unique<DemoModeAppUntrustedUI>(
+              web_ui, component_dir_.GetPath());
+        });
     content::WebUIConfigMap::GetInstance().AddUntrustedWebUIConfig(
         std::make_unique<ash::DemoModeAppUntrustedUIConfig>(
-            base::BindLambdaForTesting(
-                [&] { return component_dir_.GetPath(); })));
+            create_controller_func));
   }
 
   base::ScopedTempDir component_dir_;
@@ -96,8 +104,7 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
   // ash::SystemWebAppIntegrationTest:
   void SetUp() override {
     // Need to set demo config before SystemWebAppManager is created.
-    ash::DemoSession::SetDemoConfigForTesting(
-        ash::DemoSession::DemoModeConfig::kOnline);
+    DemoSession::SetDemoConfigForTesting(DemoSession::DemoModeConfig::kOnline);
     DemoModeAppIntegrationTestBase::SetUp();
   }
 
@@ -106,7 +113,7 @@ class DemoModeAppIntegrationTest : public DemoModeAppIntegrationTestBase {
   // enough that IsDeviceInDemoMode() returns true during SystemWebAppManager
   // creation. Device ownership also needs to be established early in startup,
   // and DeviceStateMixin also sets the owner key.
-  ash::DeviceStateMixin device_state_mixin_{
+  DeviceStateMixin device_state_mixin_{
       &mixin_host_, ash::DeviceStateMixin::State::OOBE_COMPLETED_DEMO_MODE};
 };
 
@@ -163,8 +170,8 @@ IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTestBase, WebUIDoesNotLaunch) {
 // Test that the Demo Mode App installs and launches correctly
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest, DemoModeApp) {
   const GURL url(ash::kChromeUntrustedUIDemoModeAppIndexURL);
-  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(
-      ash::SystemWebAppType::DEMO_MODE, url, "Demo Mode App"));
+  EXPECT_NO_FATAL_FAILURE(ExpectSystemWebAppValid(SystemWebAppType::DEMO_MODE,
+                                                  url, "Demo Mode App"));
 }
 
 IN_PROC_BROWSER_TEST_P(DemoModeAppIntegrationTest,
@@ -268,3 +275,6 @@ INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
 
 INSTANTIATE_SYSTEM_WEB_APP_MANAGER_TEST_SUITE_GUEST_SESSION_P(
     DemoModeAppIntegrationTest);
+
+}  // namespace
+}  // namespace ash
