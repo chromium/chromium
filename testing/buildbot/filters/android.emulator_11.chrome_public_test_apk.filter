@@ -26,9 +26,6 @@
 -org.chromium.chrome.browser.omnibox.suggestions.SwitchToTabTest.testSwitchToTabSuggestion
 
 # crbug.com/1225709
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveDataUrl
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveImage
--org.chromium.chrome.browser.contextmenu.ContextMenuTest.testSaveVideo
 -org.chromium.components.browser_ui.share.ShareImageFileUtilsTest.testSaveBitmapAndMediaStore
 
 # crbug.com/1225754

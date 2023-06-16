@@ -1066,7 +1066,7 @@ public class ContextMenuTest implements DownloadTestRule.CustomMainActivityStart
 
         // Wait for the download to complete and see if we got the right file
         Assert.assertTrue(mDownloadTestRule.waitForChromeDownloadToFinish(callCount));
-        mDownloadTestRule.checkLastDownload(expectedFilename);
+        Assert.assertTrue(mDownloadTestRule.hasDownloaded(expectedFilename, null));
     }
 
     private String getClipboardText() throws Throwable {

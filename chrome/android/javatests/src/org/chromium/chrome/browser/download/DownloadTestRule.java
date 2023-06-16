@@ -137,15 +137,6 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     }
 
     /**
-     * Check the last download matches the given name and exists in DownloadManager.
-     */
-    public void checkLastDownload(String fileName) throws IOException {
-        String lastDownload = getLastDownloadFile();
-        Assert.assertTrue(isSameDownloadFile(fileName, lastDownload));
-        Assert.assertTrue(hasDownload(lastDownload, null));
-    }
-
-    /**
      * Delete all download entries in DownloadManager and delete the corresponding files.
      */
     private void cleanUpAllDownloads() {
@@ -183,25 +174,6 @@ public class DownloadTestRule extends ChromeTabbedActivityTestRule {
     private String mLastDownloadFilePath;
     private final CallbackHelper mHttpDownloadFinished = new CallbackHelper();
     private TestDownloadManagerServiceObserver mDownloadManagerServiceObserver;
-
-    public String getLastDownloadFile() {
-        return new File(mLastDownloadFilePath).getName();
-    }
-
-    // The Android DownloadManager sometimes appends a number to a file name when it downloads it
-    // ex: google.png becomes google-23.png
-    // This happens even when there is no other prior download with that name, it could be a bug.
-    // TODO(jcivelli): investigate if we can isolate that behavior and file a bug to Android.
-    public boolean isSameDownloadFile(String originalName, String downloadName) {
-        String fileName = originalName;
-        String extension = "";
-        int dotIndex = originalName.lastIndexOf('.');
-        if (dotIndex != -1 && dotIndex < originalName.length()) {
-            fileName = originalName.substring(0, dotIndex);
-            extension = originalName.substring(dotIndex); // We include the '.'
-        }
-        return downloadName.startsWith(fileName) && downloadName.endsWith(extension);
-    }
 
     public int getChromeDownloadCallCount() {
         return mHttpDownloadFinished.getCallCount();
