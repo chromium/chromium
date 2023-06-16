@@ -10,6 +10,7 @@
 #include "chrome/browser/devtools/devtools_window_testing.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/themes/theme_service.h"
+#include "chrome/browser/themes/theme_service_factory.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/views/chrome_views_delegate.h"
@@ -29,6 +30,7 @@
 #include "ui/color/color_provider.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
+#include "ui/native_theme/test_native_theme.h"
 #include "ui/views/views_delegate.h"
 
 class BrowserFrameBoundsChecker : public ChromeViewsDelegate {
@@ -71,14 +73,16 @@ IN_PROC_BROWSER_TEST_F(BrowserFrameTest, WebAppsHasBoundsOnOpen) {
   app_browser->window()->Close();
 }
 
-// Runs browser color scheme tests with ChromeRefresh2023 enabled and disabled.
-class BrowserFrameColorModeTest : public BrowserFrameTest,
-                                  public testing::WithParamInterface<bool> {
+// Runs browser color provider tests with ChromeRefresh2023 enabled and
+// disabled.
+class BrowserFrameColorProviderTest : public BrowserFrameTest,
+                                      public testing::WithParamInterface<bool> {
  public:
   static constexpr SkColor kLightColor = SK_ColorWHITE;
   static constexpr SkColor kDarkColor = SK_ColorBLACK;
+  static constexpr SkColor kTransparentColor = SK_ColorTRANSPARENT;
 
-  BrowserFrameColorModeTest() {
+  BrowserFrameColorProviderTest() {
     feature_list_.InitWithFeatureState(features::kChromeRefresh2023,
                                        GetParam());
   }
@@ -86,6 +90,9 @@ class BrowserFrameColorModeTest : public BrowserFrameTest,
   // BrowserFrameTest:
   void SetUpOnMainThread() override {
     BrowserFrameTest::SetUpOnMainThread();
+
+    test_native_theme_.SetDarkMode(false);
+    GetBrowserFrame(browser())->SetNativeThemeForTest(&test_native_theme_);
 
     // Force a light / dark color to be returned for `kColorSysPrimary`
     // depending on the ColorMode.
@@ -105,10 +112,16 @@ class BrowserFrameColorModeTest : public BrowserFrameTest,
     // Add a postprocessing mixer to ensure it is appended to the end of the
     // pipeline.
     ui::ColorMixer& mixer = provider->AddPostprocessingMixer();
+
+    // Used to track the light/dark color mode setting.
     mixer[ui::kColorSysPrimary] = {
         key.color_mode == ui::ColorProviderManager::ColorMode::kDark
             ? kDarkColor
             : kLightColor};
+
+    // Used to track the user color.
+    mixer[ui::kColorSysSecondary] = {
+        key.user_color.value_or(kTransparentColor)};
   }
 
   // Sets the `kBrowserColorScheme` pref for the `profile`.
@@ -118,33 +131,37 @@ class BrowserFrameColorModeTest : public BrowserFrameTest,
                                     static_cast<int>(color_scheme));
   }
 
+  BrowserFrame* GetBrowserFrame(Browser* browser) {
+    return static_cast<BrowserFrame*>(
+        BrowserView::GetBrowserViewForBrowser(browser)->GetWidget());
+  }
+
   Profile* profile() { return browser()->profile(); }
+
+  ui::TestNativeTheme test_native_theme_;
 
  private:
   base::test::ScopedFeatureList feature_list_;
 };
 
 // Verifies the BrowserFrame honors the BrowserColorScheme pref.
-IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
-  // Assert the browser follows the system color mode. Simulate the system color
-  // mode by setting the widget level color mode override.
-  views::Widget* browser_frame =
-      BrowserView::GetBrowserViewForBrowser(browser())->GetWidget();
-  browser_frame->SetColorModeOverride(
-      ui::ColorProviderManager::ColorMode::kLight);
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       TracksBrowserColorScheme) {
+  // Assert the browser follows the system color scheme (i.e. the color scheme
+  // set on the associated native theme)
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  test_native_theme_.SetDarkMode(false);
   EXPECT_EQ(kLightColor,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
-  browser_frame->SetColorModeOverride(
-      ui::ColorProviderManager::ColorMode::kDark);
+  test_native_theme_.SetDarkMode(true);
   EXPECT_EQ(kDarkColor,
             browser_frame->GetColorProvider()->GetColor(ui::kColorSysPrimary));
 
   // Set the BrowserColorScheme pref. The BrowserFrame should ignore the system
-  // color mode if running ChromeRefresh2023. Otherwise BrowserFrame should
-  // track the system color mode.
-  browser_frame->SetColorModeOverride(
-      ui::ColorProviderManager::ColorMode::kLight);
+  // color scheme if running ChromeRefresh2023. Otherwise BrowserFrame should
+  // track the system color scheme.
+  test_native_theme_.SetDarkMode(false);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kDark);
   if (features::IsChromeRefresh2023()) {
     EXPECT_EQ(kDarkColor, browser_frame->GetColorProvider()->GetColor(
@@ -154,8 +171,7 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
                                ui::kColorSysPrimary));
   }
 
-  browser_frame->SetColorModeOverride(
-      ui::ColorProviderManager::ColorMode::kDark);
+  test_native_theme_.SetDarkMode(true);
   SetBrowserColorScheme(profile(), ThemeService::BrowserColorScheme::kLight);
   if (features::IsChromeRefresh2023()) {
     EXPECT_EQ(kLightColor, browser_frame->GetColorProvider()->GetColor(
@@ -167,11 +183,11 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, TracksBrowserColorScheme) {
 }
 
 // Verifies incognito browsers will always use the dark ColorMode.
-IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, IncognitoAlwaysDarkMode) {
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest, IncognitoAlwaysDarkMode) {
   // Create an incognito browser.
   Browser* incognito_browser = CreateIncognitoBrowser(profile());
-  views::Widget* incognito_browser_frame =
-      BrowserView::GetBrowserViewForBrowser(incognito_browser)->GetWidget();
+  views::Widget* incognito_browser_frame = GetBrowserFrame(incognito_browser);
+  incognito_browser_frame->SetNativeThemeForTest(&test_native_theme_);
 
   // The incognito browser should reflect the dark color mode irrespective of
   // the current BrowserColorScheme.
@@ -186,4 +202,50 @@ IN_PROC_BROWSER_TEST_P(BrowserFrameColorModeTest, IncognitoAlwaysDarkMode) {
                             ui::kColorSysPrimary));
 }
 
-INSTANTIATE_TEST_SUITE_P(All, BrowserFrameColorModeTest, testing::Bool());
+// Verifies the BrowserFrame's user_color tracks the autogenerated theme color.
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       UserColorTracksAutogeneratedThemeColor) {
+  // The Browser should initially have its user_color unset, tracking the user
+  // color of its NativeTheme.
+  views::Widget* browser_frame = GetBrowserFrame(browser());
+  EXPECT_EQ(kTransparentColor, browser_frame->GetColorProvider()->GetColor(
+                                   ui::kColorSysSecondary));
+
+  // Install an autogenerated them and verify that the browser's user_color has
+  // been updated to reflect.
+  ThemeService* theme_service = ThemeServiceFactory::GetForProfile(profile());
+  constexpr SkColor kAutogeneratedColor1 = SkColorSetRGB(100, 100, 100);
+  theme_service->BuildAutogeneratedThemeFromColor(kAutogeneratedColor1);
+  EXPECT_EQ(kAutogeneratedColor1, theme_service->GetAutogeneratedThemeColor());
+  EXPECT_EQ(kAutogeneratedColor1, browser_frame->GetColorProvider()->GetColor(
+                                      ui::kColorSysSecondary));
+
+  // Install a new autogenerated theme and verify that the user_color has been
+  // updated to reflect.
+  constexpr SkColor kAutogeneratedColor2 = SkColorSetRGB(200, 200, 200);
+  theme_service->BuildAutogeneratedThemeFromColor(kAutogeneratedColor2);
+  EXPECT_EQ(kAutogeneratedColor2, theme_service->GetAutogeneratedThemeColor());
+  EXPECT_EQ(kAutogeneratedColor2, browser_frame->GetColorProvider()->GetColor(
+                                      ui::kColorSysSecondary));
+}
+
+// Verifies incognito browsers will ignore the user_color set on their
+// NativeTheme.
+IN_PROC_BROWSER_TEST_P(BrowserFrameColorProviderTest,
+                       IncognitoAlwaysIgnoresUserColor) {
+  // Create an incognito browser.
+  Browser* incognito_browser = CreateIncognitoBrowser(profile());
+  views::Widget* incognito_browser_frame = GetBrowserFrame(incognito_browser);
+  incognito_browser_frame->SetNativeThemeForTest(&test_native_theme_);
+
+  // Set the user color override.
+  test_native_theme_.set_user_color(SK_ColorBLUE);
+  incognito_browser_frame->ThemeChanged();
+
+  // The ingognito browser should unset the user color.
+  EXPECT_EQ(kTransparentColor,
+            incognito_browser_frame->GetColorProvider()->GetColor(
+                ui::kColorSysSecondary));
+}
+
+INSTANTIATE_TEST_SUITE_P(All, BrowserFrameColorProviderTest, testing::Bool());

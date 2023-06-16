@@ -1982,42 +1982,30 @@ void Widget::SetColorModeOverride(
 // Widget, ui::ColorProviderSource:
 
 ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
+  // Generally all Widgets should inherit the key of their parent, falling back
+  // to the key set by the NativeTheme otherwise.
+  // TODO(crbug.com/1455535): `parent_` does not always resolve to the logical
+  // parent as expected here (e.g. bubbles). This should be addressed and the
+  // use of parent_ below replaced with something like GetLogicalParent().
   ui::ColorProviderManager::Key key =
-      GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
+      parent_ ? parent_->GetColorProviderKey()
+              : GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
+
+  // Widgets may have specific overrides set on the Widget itself that should
+  // apply specifically to themselves and their children, apply these here.
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   key.elevation_mode = background_elevation_;
 #endif
-  key.user_color = GetUserColor();
-  key.color_mode = GetColorMode();
-  return key;
-}
+  if (color_mode_override_.has_value()) {
+    key.color_mode = color_mode_override_.value();
+  }
 
-absl::optional<SkColor> Widget::GetUserColor() const {
-  // Fall back to the user color defined in the NativeTheme if a user color is
-  // not provided by any widgets in this UI hierarchy.
-  return parent_ ? parent_->GetUserColor() : GetNativeTheme()->user_color();
+  return key;
 }
 
 const ui::ColorProvider* Widget::GetColorProvider() const {
   return ui::ColorProviderManager::Get().GetColorProviderFor(
       GetColorProviderKey());
-}
-
-ui::ColorProviderManager::ColorMode Widget::GetColorMode() const {
-  if (color_mode_override_.has_value()) {
-    return color_mode_override_.value();
-  }
-
-  // All children should share the color mode of their parent unless explicitly
-  // overridden.
-  if (parent_) {
-    return parent_->GetColorMode();
-  }
-
-  // In the default case fall back to the system's default color mode.
-  return GetNativeTheme()->ShouldUseDarkColors()
-             ? ui::ColorProviderManager::ColorMode::kDark
-             : ui::ColorProviderManager::ColorMode::kLight;
 }
 
 ////////////////////////////////////////////////////////////////////////////////

@@ -182,8 +182,6 @@ class BrowserFrame : public views::Widget, public views::ContextMenuController {
   // views::Widget:
   void OnNativeThemeUpdated(ui::NativeTheme* observed_theme) override;
   ui::ColorProviderManager::Key GetColorProviderKey() const override;
-  absl::optional<SkColor> GetUserColor() const override;
-  ui::ColorProviderManager::ColorMode GetColorMode() const override;
 
  private:
   void OnTouchUiChanged();
