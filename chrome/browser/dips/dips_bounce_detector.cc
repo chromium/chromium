@@ -578,13 +578,17 @@ void DIPSWebContentsObserver::OnCookiesAccessed(
     return;
   }
 
-  if (!HasCHIPS(details.cookie_list) &&
-      !IsSameSiteForDIPS(GetFirstPartyURL(render_frame_host), details.url)) {
+  const absl::optional<GURL> fpu = GetFirstPartyURL(render_frame_host);
+  if (!fpu.has_value()) {
     return;
   }
 
-  detector_.OnClientCookiesAccessed(GetFirstPartyURL(render_frame_host),
-                                    details.type);
+  if (!HasCHIPS(details.cookie_list) &&
+      !IsSameSiteForDIPS(fpu.value(), details.url)) {
+    return;
+  }
+
+  detector_.OnClientCookiesAccessed(fpu.value(), details.type);
 }
 
 void DIPSBounceDetector::OnClientCookiesAccessed(const GURL& url,

@@ -189,9 +189,10 @@ inline bool IsInPrimaryPage(content::NavigationHandle* navigation_handle) {
              : navigation_handle->IsInPrimaryMainFrame();
 }
 
-// Returns `True` iff the 'rfh' represents a frame in the primary page.
+// Returns `True` iff the 'rfh' exists and represents a frame in the primary
+// page.
 inline bool IsInPrimaryPage(content::RenderFrameHost* rfh) {
-  return rfh->GetPage().IsPrimary();
+  return rfh && rfh->GetPage().IsPrimary();
 }
 
 // Returns the last committed or the to be committed url of the main frame of
@@ -204,10 +205,11 @@ inline GURL GetFirstPartyURL(content::NavigationHandle* navigation_handle) {
              : navigation_handle->GetURL();
 }
 
-// Returns the last committed url of the main frame of the page containing the
-// `rfh`.
-inline GURL GetFirstPartyURL(content::RenderFrameHost* rfh) {
-  return rfh->GetMainFrame()->GetLastCommittedURL();
+// Returns an optional last committed url of the main frame of the page
+// containing the `rfh`.
+inline absl::optional<GURL> GetFirstPartyURL(content::RenderFrameHost* rfh) {
+  return rfh ? absl::optional<GURL>(rfh->GetMainFrame()->GetLastCommittedURL())
+             : absl::nullopt;
 }
 
 enum class DIPSRecordedEvent {
