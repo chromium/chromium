@@ -379,6 +379,9 @@
     "linux-archive-rel-goma-rbe-ats-canary": "Ubuntu-22.04",
     "linux-archive-rel-goma-rbe-canary": "Ubuntu-22.04"
   },
+  "infra": {
+    "autosharder": "Ubuntu-22.04"
+  },
   "reclient": {
     "Comparison Linux (reclient vs reclient remote links)": "Ubuntu-22.04",
     "Linux Builder (canonical wd) (reclient compare)": "Ubuntu-22.04",
