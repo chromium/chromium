@@ -236,7 +236,9 @@
           on-click="onBulkEditClicked_"></cr-icon-button>
     </sp-heading>
 
-    <div class="sp-scroller" hidden="[[shownBookmarks_.length]]">
+    <div class="sp-scroller"
+        hidden="[[!shouldShowFolderEmptyState_(shownBookmarks_.length,
+                    hasLoadedData_)]]">
       <sp-empty-state id="folderEmptyState"
           image-path="./images/bookmarks_empty.svg"
           dark-image-path="./images/bookmarks_empty_dark.svg"
@@ -301,7 +303,8 @@
   </div>
 
   <sp-empty-state id="topLevelEmptyState"
-      hidden="[[!shouldShowTopLevelEmptyState_(shownBookmarks_, guestMode_)]]"
+      hidden="[[!shouldShowTopLevelEmptyState_(
+                  shownBookmarks_, guestMode_, hasLoadedData_)]]"
       guest$="[[guestMode_]]"
       image-path="[[getEmptyImagePath_(labels_.*, searchQuery_)]]"
       dark-image-path="[[getEmptyImagePathDark_(labels_.*, searchQuery_)]]"

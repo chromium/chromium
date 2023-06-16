@@ -191,6 +191,11 @@ export class PowerBookmarksListElement extends PolymerElement {
         value: false,
         reflectToAttribute: true,
       },
+
+      hasLoadedData_: {
+        type: Boolean,
+        value: false,
+      },
     };
   }
 
@@ -230,6 +235,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private shownBookmarksResizeObserver_?: ResizeObserver;
   private hasScrollbars_: boolean;
   private contextMenuBookmark_: chrome.bookmarks.BookmarkTreeNode|undefined;
+  private hasLoadedData_: boolean;
 
   constructor() {
     super();
@@ -297,6 +303,7 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   onBookmarksLoaded() {
     this.updateShownBookmarks_();
+    this.hasLoadedData_ = true;
   }
 
   onBookmarkChanged(id: string, changedInfo: chrome.bookmarks.ChangeInfo) {
@@ -789,8 +796,12 @@ export class PowerBookmarksListElement extends PolymerElement {
 
   private shouldShowTopLevelEmptyState_(): boolean {
     return this.guestMode_ ||
-        (this.shownBookmarks_.length === 0 &&
+        (this.hasLoadedData_ && this.shownBookmarks_.length === 0 &&
          (!!this.searchQuery_ || this.activeFolderPath_.length === 0));
+  }
+
+  private shouldShowFolderEmptyState_(): boolean {
+    return this.hasLoadedData_ && this.shownBookmarks_.length === 0;
   }
 
   private shouldHideCard_(): boolean {
