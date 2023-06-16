@@ -63,8 +63,14 @@ struct MaskFilterInfoExt {
 
   // Returns true if the quads from |merge_render_pass| can be merged into
   // the embedding render pass based on mask filter info.
+  // |parent_target_transform| shall be used to translate mask filter infos of
+  // |merge_render_pass.shared_quad_state_list| in the same coordinate space
+  // as the |mask_filter_info| is.
   bool CanMergeMaskFilterInfo(
-      const CompositorRenderPass& merge_render_pass) const {
+      const CompositorRenderPass& merge_render_pass,
+      const gfx::Transform& parent_target_transform) const {
+    DCHECK(parent_target_transform.Preserves2dAxisAlignment());
+
     // If the embedding quad has no mask filter, then we do not have to block
     // merging.
     if (mask_filter_info.IsEmpty())
@@ -76,10 +82,45 @@ struct MaskFilterInfoExt {
       return false;
 
     // If any of the quads in the render pass to merged has a mask filter of its
-    // own, then we cannot merge.
+    // own, then we have to check if that has fast rounded corners and they fit
+    // |mask_filter_info|'s ones. In that case, we can merge this render pass.
+    // Merge is impossible in all the other cases.
     for (const auto* sqs : merge_render_pass.shared_quad_state_list) {
-      if (!sqs->mask_filter_info.IsEmpty())
+      if (sqs->mask_filter_info.IsEmpty()) {
+        continue;
+      }
+
+      // We cannot handle rotation with mask filter as rotated content is unable
+      // to apply correct clip.
+      if (!sqs->quad_to_target_transform.Preserves2dAxisAlignment()) {
         return false;
+      }
+
+      // Those must be fast rounded corners that enables us to squash mask
+      // filters.
+      if (sqs->mask_filter_info.HasRoundedCorners() &&
+          !sqs->is_fast_rounded_corner) {
+        return false;
+      }
+
+      if (sqs->mask_filter_info.HasGradientMask()) {
+        return false;
+      }
+
+      // Before checking if current mask's rounded corners do not intersect with
+      // the upper level rounded corner mask, its system coordinate must be
+      // transformed to that target's system coordinate.
+      gfx::MaskFilterInfo sqs_filter = sqs->mask_filter_info;
+      sqs_filter.ApplyTransform(parent_target_transform);
+
+      // This is the only case when quads of this render pass with a mask
+      // filter info that has fast rounded corners set can be merged into the
+      // embedding render pass. So, if they don't intersect with the "toplevel"
+      // rounded corners, we can merge.
+      if (!mask_filter_info.rounded_corner_bounds().Contains(
+              sqs_filter.bounds())) {
+        return false;
+      }
     }
     return true;
   }
@@ -869,10 +910,11 @@ void SurfaceAggregator::EmitSurfaceContent(
       surface_quad->is_reflection &&
       !scaled_quad_to_target_transform.IsIdentityOrTranslation();
 
-  bool merge_pass =
-      CanPotentiallyMergePass(*surface_quad) && !reflected_and_scaled &&
-      copy_requests.empty() && combined_transform.Preserves2dAxisAlignment() &&
-      mask_filter_info.CanMergeMaskFilterInfo(*render_pass_list.back());
+  bool merge_pass = CanPotentiallyMergePass(*surface_quad) &&
+                    !reflected_and_scaled && copy_requests.empty() &&
+                    combined_transform.Preserves2dAxisAlignment() &&
+                    mask_filter_info.CanMergeMaskFilterInfo(
+                        *render_pass_list.back(), combined_transform);
 
   absl::optional<gfx::Rect> surface_quad_clip;
   if (merge_pass) {
@@ -1355,8 +1397,6 @@ void SurfaceAggregator::CopyQuadsToPass(
 
   UpdateNeedsRedraw(resolved_pass, dest_pass, new_dest_root_target_clip_rect);
 
-  MaskFilterInfoExt new_mask_filter_info_ext = parent_mask_filter_info_ext;
-
   size_t quad_index = 0;
   auto& resolved_draw_quads = resolved_pass.draw_quads();
 
@@ -1365,10 +1405,17 @@ void SurfaceAggregator::CopyQuadsToPass(
   for (auto* quad : source_quad_list) {
     const ResolvedQuadData& quad_data = resolved_draw_quads[quad_index++];
 
-    // Both cannot be set at once. If this happens then a surface is being
-    // merged when it should not.
-    DCHECK(quad->shared_quad_state->mask_filter_info.IsEmpty() ||
-           parent_mask_filter_info_ext.mask_filter_info.IsEmpty());
+    // Both cannot be set at once (rounded corners are exception to this). If
+    // this happens then a surface is being merged when it should not.
+    DCHECK(!quad->shared_quad_state->mask_filter_info.HasGradientMask() ||
+           !parent_mask_filter_info_ext.mask_filter_info.HasGradientMask());
+
+    MaskFilterInfoExt new_mask_filter_info_ext = parent_mask_filter_info_ext;
+    if (!quad->shared_quad_state->mask_filter_info.IsEmpty()) {
+      new_mask_filter_info_ext = MaskFilterInfoExt(
+          quad->shared_quad_state->mask_filter_info,
+          quad->shared_quad_state->is_fast_rounded_corner, target_transform);
+    }
 
     if (quad->material == DrawQuad::Material::kSharedElement) {
       // SharedElement quads should've been resolved before aggregation.
@@ -1382,12 +1429,6 @@ void SurfaceAggregator::CopyQuadsToPass(
       if (!surface_quad->surface_range.end().is_valid())
         continue;
 
-      if (parent_mask_filter_info_ext.mask_filter_info.IsEmpty()) {
-        new_mask_filter_info_ext = MaskFilterInfoExt(
-            quad->shared_quad_state->mask_filter_info,
-            quad->shared_quad_state->is_fast_rounded_corner, target_transform);
-      }
-
       HandleSurfaceQuad(source_pass, surface_quad, client_namespace_id,
                         parent_device_scale_factor, target_transform, clip_rect,
                         new_dest_root_target_clip_rect, dest_pass,
@@ -1396,12 +1437,6 @@ void SurfaceAggregator::CopyQuadsToPass(
                         new_mask_filter_info_ext);
     } else {
       if (quad->shared_quad_state != last_copied_source_shared_quad_state) {
-        if (parent_mask_filter_info_ext.mask_filter_info.IsEmpty()) {
-          new_mask_filter_info_ext =
-              MaskFilterInfoExt(quad->shared_quad_state->mask_filter_info,
-                                quad->shared_quad_state->is_fast_rounded_corner,
-                                target_transform);
-        }
         SharedQuadState* dest_shared_quad_state = CopySharedQuadState(
             quad->shared_quad_state, client_namespace_id, target_transform,
             clip_rect, new_mask_filter_info_ext, dest_pass);

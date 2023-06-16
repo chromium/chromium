@@ -75,6 +75,10 @@ testing::Matcher<const DrawQuad*> HasLayerId(uint32_t layer_id);
 testing::Matcher<const DrawQuad*> HasLayerNamespaceId(
     uint32_t layer_namespace_id);
 
+// Matches a DrawQuad with expected SharedQuadState::mask_filter_info.
+testing::Matcher<const DrawQuad*> HasMaskFilterInfo(
+    const gfx::MaskFilterInfo& mask_filter_info);
+
 }  // namespace viz
 
 #endif  // COMPONENTS_VIZ_TEST_DRAW_QUAD_MATCHERS_H_

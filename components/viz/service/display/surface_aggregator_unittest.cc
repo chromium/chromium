@@ -71,6 +71,8 @@ constexpr FrameSinkId kArbitraryFrameSinkId2(3, 3);
 constexpr FrameSinkId kArbitraryMiddleFrameSinkId(4, 4);
 constexpr FrameSinkId kArbitraryReservedFrameSinkId(5, 5);
 constexpr FrameSinkId kArbitraryFrameSinkId3(6, 6);
+constexpr FrameSinkId kArbitraryFrameSinkId4(7, 7);
+constexpr FrameSinkId kArbitraryFrameSinkId5(8, 8);
 
 constexpr gfx::Size kSurfaceSize(100, 100);
 constexpr gfx::Rect kEmptyDamage(0, 0);
@@ -2750,9 +2752,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
 }
 
 // This tests that we update shared quad state pointers for rounded corner
-// bounds correctly within aggregated passes. In case of fast rounded corners,
-// the surface aggregator tries to optimize by merging the the surface quads
-// instead of keeping the surface render pass.
+// bounds correctly within aggregated passes. In case of fast rounded corners or
+// rounded corners that fit parent pass' rounded corners, the surface aggregator
+// tries to optimize by merging the the surface quads instead of keeping the
+// surface render pass.
 //
 // This test has 4 surfaces in the following structure:
 // root_surface         -> [child_root_surface] has fast rounded corner [1],
@@ -2761,25 +2764,37 @@ TEST_F(SurfaceAggregatorValidSurfaceTest, AggregateSharedQuadStateProperties) {
 //                         quad (a),
 // child_one_surface    -> quad (b),
 //                         [child three surface],
+//                         [child four surface]
 // child_two_surface    -> quad (c),
-//                      -> quad (d) has rounded corner [2]
+//                      -> quad (d) has fast rounded corner [2]
+//                      -> [child_five_surface]
 // child_three_surface  -> quad (e),
+// child_four_surface   -> quad (f) has fast rounded corner [3]
+// child_five_surface   -> quad (g) has rounded corner [4]
 //
 // Resulting in the following aggregated pass:
 // Root Pass:
-//  quad (b)          - rounded corner [1]
-//  quad (e)          - rounded corner [1]
-//  render pass quad  - rounded corner [1]
-//  quad (a)          - rounded corner [1]
-// Render pass for child two surface:
-//  quad (c)          - no rounded corner on sqs
-//  quad(d)           - rounded corner [2]
+//  quad (b)          - fast rounded corner [1]
+//  quad (e)          - fast rounded corner [1]
+//  render pass quad  - fast rounded corner [1]
+//  render pass quad  - fast rounded corner [1]
+//  quad (c)          - fast rounded corner [1]
+//  quad (d)          - rounded corner [2]
+//  quad (a)          - fast rounded corner [1]
+// Render pass for child_four_surface:
+//  quad (f)          - fast rounded corner [3]
+// Render pass for child_five_surface:
+//  quad (g)          - rounded corner [4]
 TEST_F(SurfaceAggregatorValidSurfaceTest,
        AggregateSharedQuadStateRoundedCornerBounds) {
-  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners(
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners1(
       gfx::RRectF(0, 0, 640, 480, 5));
-  const gfx::MaskFilterInfo kMaskFilterInfoWithRoundedCorners(
-      gfx::RRectF(0, 0, 100, 100, 2));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners2(
+      gfx::RRectF(6, 7, 100, 100, 2));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners3(
+      gfx::RRectF(41, 50, 600, 100, 7));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithRoundedCorners4(
+      gfx::RRectF(0, 1, 10, 10, 3));
 
   auto child_root_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
@@ -2789,10 +2804,42 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       nullptr, &manager_, kArbitraryMiddleFrameSinkId, /*is_root=*/false);
   auto child_three_support = std::make_unique<CompositorFrameSinkSupport>(
       nullptr, &manager_, kArbitraryFrameSinkId3, /*is_root=*/false);
+  auto child_four_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId4, /*is_root=*/false);
+  auto child_five_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId5, /*is_root=*/false);
 
   constexpr float device_scale_factor = 1.0f;
 
-  // Setup childe three surface.
+  // Setup child five surface.
+  TestSurfaceIdAllocator child_five_surface_id(
+      child_five_support->frame_sink_id());
+
+  auto child_five_pass =
+      RenderPassBuilder(kSurfaceSize)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
+          .SetMaskFilter(kMaskFilterInfoWithRoundedCorners4,
+                         /*is_fast_rounded_corner=*/false)
+          .Build();
+  QueuePassAsFrame(std::move(child_five_pass),
+                   child_five_surface_id.local_surface_id(),
+                   device_scale_factor, child_five_support.get());
+
+  // Setup child four surface.
+  TestSurfaceIdAllocator child_four_surface_id(
+      child_four_support->frame_sink_id());
+
+  auto child_four_pass =
+      RenderPassBuilder(kSurfaceSize)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners3,
+                         /*is_fast_rounded_corner=*/true)
+          .Build();
+  QueuePassAsFrame(std::move(child_four_pass),
+                   child_four_surface_id.local_surface_id(),
+                   device_scale_factor, child_four_support.get());
+
+  // Setup child three surface.
   TestSurfaceIdAllocator child_three_surface_id(
       child_three_support->frame_sink_id());
 
@@ -2804,7 +2851,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
                    child_three_surface_id.local_surface_id(),
                    device_scale_factor, child_three_support.get());
 
-  // Setup Child one surface
+  // Setup child one surface
   TestSurfaceIdAllocator child_one_surface_id(
       child_one_support->frame_sink_id());
 
@@ -2813,6 +2860,8 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
           .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
           .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
                           SurfaceRange(absl::nullopt, child_three_surface_id))
+          .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                          SurfaceRange(absl::nullopt, child_four_surface_id))
           .Build();
   QueuePassAsFrame(std::move(child_one_pass),
                    child_one_surface_id.local_surface_id(), device_scale_factor,
@@ -2826,8 +2875,10 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       RenderPassBuilder(kSurfaceSize)
           .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
           .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
-          .SetMaskFilter(kMaskFilterInfoWithRoundedCorners,
-                         /*is_fast_rounded_corner=*/false)
+          .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                          SurfaceRange(absl::nullopt, child_five_surface_id))
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners2,
+                         /*is_fast_rounded_corner=*/true)
           .Build();
   QueuePassAsFrame(std::move(child_two_pass),
                    child_two_surface_id.local_surface_id(), device_scale_factor,
@@ -2853,7 +2904,7 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
       RenderPassBuilder(kSurfaceSize)
           .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
                           SurfaceRange(absl::nullopt, child_root_surface_id))
-          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners,
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners1,
                          /*is_fast_rounded_corner=*/true)
           .Build();
   QueuePassAsFrame(std::move(root_pass), root_surface_id_.local_surface_id(),
@@ -2863,27 +2914,127 @@ TEST_F(SurfaceAggregatorValidSurfaceTest,
 
   const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
 
-  // There should be 2 render passes since one of the surface quads could reject
-  // merging due to it having a quad with a rounded corner of its own.
+  // There should be 3 render passes since one of the surface quads could reject
+  // merging due to it having a quad with a rounded corner of its own that does
+  // not fit rounded corners of a parent pass and another surface quad has mask
+  // filter with not fast rounded corners that cannot merge.
+  ASSERT_EQ(3u, aggregated_pass_list.size());
+
+  // There was a mask filter with fast rounded corners, but they didn't fit
+  // into the destination pass' rounded corners' rect. Thus, it couldn't be
+  // merged.
+  const auto& aggregated_quad_list_of_surface1 =
+      aggregated_pass_list[0]->quad_list;
+  EXPECT_THAT(
+      aggregated_quad_list_of_surface1,
+      ElementsAre(HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners3)));
+
+  // There was a mask filter with non-fast rounded corners, which are not
+  // allowed to be merged.
+  const auto& aggregated_quad_list_of_surface2 =
+      aggregated_pass_list[1]->quad_list;
+  EXPECT_THAT(
+      aggregated_quad_list_of_surface2,
+      ElementsAre(HasMaskFilterInfo(kMaskFilterInfoWithRoundedCorners4)));
+
+  // Non-root pass that contains the aggregated render pass.
+  const auto& aggregated_quad_list_of_surface3 =
+      aggregated_pass_list[2]->quad_list;
+  EXPECT_THAT(
+      aggregated_quad_list_of_surface3,
+      ElementsAre(HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners2),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1)));
+}
+
+// Tests that transforms are properly handled.
+TEST_F(SurfaceAggregatorValidSurfaceTest,
+       AggregateSharedQuadStateRoundedCornerBounds2) {
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners1(
+      gfx::RRectF(0, 0, 110, 180, 5));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners2(
+      gfx::RRectF(2, 3, 100, 100, 2));
+  const gfx::MaskFilterInfo kMaskFilterInfoWithFastRoundedCorners3(
+      gfx::RRectF(4, 5, 50, 50, 20));
+
+  auto child_root_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId1, /*is_root=*/false);
+  auto child_one_support = std::make_unique<CompositorFrameSinkSupport>(
+      nullptr, &manager_, kArbitraryFrameSinkId2, /*is_root=*/false);
+
+  constexpr float device_scale_factor = 1.0f;
+
+  // Setup Child one surface
+  TestSurfaceIdAllocator child_one_surface_id(
+      child_one_support->frame_sink_id());
+
+  auto child_one_pass =
+      RenderPassBuilder(kSurfaceSize)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kCyan)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kBlue)
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners3,
+                         /*is_fast_rounded_corner=*/true)
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kBlue)
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners2,
+                         /*is_fast_rounded_corner=*/true)
+          .Build();
+  QueuePassAsFrame(std::move(child_one_pass),
+                   child_one_surface_id.local_surface_id(), device_scale_factor,
+                   child_one_support.get());
+
+  // Setup child root surface
+  TestSurfaceIdAllocator child_root_surface_id(
+      child_root_support->frame_sink_id());
+
+  auto child_root_pass =
+      RenderPassBuilder({kSurfaceSize})
+          .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                          SurfaceRange(absl::nullopt, child_one_surface_id))
+          .AddSolidColorQuad(gfx::Rect(kSurfaceSize), SkColors::kGreen)
+          .Build();
+  auto* child_root_pass_sqs = child_root_pass->shared_quad_state_list.front();
+  child_root_pass_sqs->quad_to_target_transform.Translate(5, 10);
+  QueuePassAsFrame(std::move(child_root_pass),
+                   child_root_surface_id.local_surface_id(),
+                   device_scale_factor, child_root_support.get());
+
+  auto root_pass =
+      RenderPassBuilder(kSurfaceSize)
+          .AddSurfaceQuad(gfx::Rect(kSurfaceSize),
+                          SurfaceRange(absl::nullopt, child_root_surface_id))
+          .SetMaskFilter(kMaskFilterInfoWithFastRoundedCorners1,
+                         /*is_fast_rounded_corner=*/true)
+          .Build();
+  auto* root_pass_sqs = root_pass->shared_quad_state_list.front();
+  root_pass_sqs->quad_to_target_transform.Translate(0, 80);
+  root_pass->transform_to_root_target.Translate(5, 10);
+  QueuePassAsFrame(std::move(root_pass), root_surface_id_.local_surface_id(),
+                   device_scale_factor, root_sink_.get());
+
+  auto aggregated_frame = AggregateFrame(root_surface_id_);
+
+  const auto& aggregated_pass_list = aggregated_frame.render_pass_list;
+
   ASSERT_EQ(2u, aggregated_pass_list.size());
 
-  // The surface quad which has a render pass of its own, will have 2 quads.
-  // One of them will have the rounded corner set on it.
-  const auto& aggregated_quad_list_of_surface =
+  const auto& non_root_aggregated_quad_list_of_surface =
       aggregated_pass_list[0]->quad_list;
-  EXPECT_EQ(2u, aggregated_quad_list_of_surface.size());
-  EXPECT_EQ(kMaskFilterInfoWithRoundedCorners,
-            aggregated_quad_list_of_surface.back()
-                ->shared_quad_state->mask_filter_info);
+  EXPECT_THAT(
+      non_root_aggregated_quad_list_of_surface,
+      ElementsAre(HasMaskFilterInfo(gfx::MaskFilterInfo()),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners3),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners2)));
 
-  // The root render pass will have all the remaining quads with the rounded
-  // corner set on them.
-  const auto& aggregated_quad_list_of_root = aggregated_pass_list[1]->quad_list;
-  EXPECT_EQ(4u, aggregated_quad_list_of_root.size());
-  for (const auto* q : aggregated_quad_list_of_root) {
-    EXPECT_EQ(q->shared_quad_state->mask_filter_info,
-              kMaskFilterInfoWithFastRoundedCorners);
-  }
+  const auto& root_aggregated_quad_list_of_surface =
+      aggregated_pass_list[1]->quad_list;
+  EXPECT_THAT(
+      root_aggregated_quad_list_of_surface,
+      ElementsAre(HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1),
+                  HasMaskFilterInfo(kMaskFilterInfoWithFastRoundedCorners1)));
 }
 
 // This tests that when aggregating a frame with multiple render passes that we
