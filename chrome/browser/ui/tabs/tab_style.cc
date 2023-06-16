@@ -15,12 +15,16 @@ namespace {
 // the tab.
 constexpr int kGM2SeparatorThickness = 1;
 constexpr int kChromeRefreshSeparatorThickness = 2;
-// TODO (1451400): This constant should be in LayoutConstants.
+// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
 constexpr int kChromeRefreshSeparatorHeight = 16;
+
+// TODO (crbug.com/1451400): This constant should be in LayoutConstants.
+constexpr int kChromeRefreshTabHeight = 34;
 
 class GM2TabStyle : public TabStyle {
  public:
   ~GM2TabStyle() override = default;
+  int GetHeight() const override;
   int GetStandardWidth() const override;
   int GetPinnedWidth() const override;
   int GetMinimumActiveWidth() const override;
@@ -36,6 +40,7 @@ class GM2TabStyle : public TabStyle {
 class ChromeRefresh2023TabStyle : public GM2TabStyle {
  public:
   ~ChromeRefresh2023TabStyle() override = default;
+  int GetHeight() const override;
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
   gfx::Size GetSeparatorSize() const override;
@@ -45,6 +50,10 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
 }  // namespace
 
 TabStyle::~TabStyle() = default;
+
+int GM2TabStyle::GetHeight() const {
+  return GetLayoutConstant(TAB_HEIGHT);
+}
 
 int GM2TabStyle::GetStandardWidth() const {
   // The standard tab width is 240 DIP including both separators.
@@ -127,6 +136,10 @@ int TabStyle::GetContentsHorizontalInsetSize() const {
 
 float GM2TabStyle::GetSelectedTabOpacity() const {
   return kDefaultSelectedTabOpacity;
+}
+
+int ChromeRefresh2023TabStyle::GetHeight() const {
+  return kChromeRefreshTabHeight;
 }
 
 int ChromeRefresh2023TabStyle::GetTopCornerRadius() const {

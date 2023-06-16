@@ -103,6 +103,15 @@ class GM2TabStyleViews : public TabStyleViews {
   // Returns the progress (0 to 1) of the hover animation.
   double GetHoverAnimationValue() const override;
 
+  // Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
+  // during painting.
+  gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
+                                 float scale,
+                                 int stroke_thickness) const;
+
+  // Given a tab of width |width|, returns the radius to use for the corners.
+  float GetTopCornerRadiusForWidth(int width) const;
+
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
   TabStyle::SeparatorBounds GetSeparatorBounds(float scale) const;
@@ -160,15 +169,6 @@ class GM2TabStyleViews : public TabStyleViews {
                              SkColor stroke_color) const;
   void PaintSeparators(gfx::Canvas* canvas) const;
 
-  // Given a tab of width |width|, returns the radius to use for the corners.
-  virtual float GetTopCornerRadiusForWidth(int width) const;
-
-  // Scales |bounds| by scale and aligns so that adjacent tabs meet up exactly
-  // during painting.
-  gfx::RectF ScaleAndAlignBounds(const gfx::Rect& bounds,
-                                 float scale,
-                                 int stroke_thickness) const;
-
   const raw_ptr<const Tab> tab_;
 
   std::unique_ptr<GlowHoverController> hover_controller_;
@@ -199,6 +199,12 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
   gfx::RectF aligned_bounds =
       ScaleAndAlignBounds(tab_->bounds(), scale, stroke_thickness);
 
+  // Calculate the corner radii. Note that corner radius is based on original
+  // tab width (in DIP), not our new, scaled-and-aligned bounds.
+  float content_corner_radius =
+      GetTopCornerRadiusForWidth(tab_->width()) * scale;
+  float extension_corner_radius = tab_style()->GetBottomCornerRadius() * scale;
+
   if (path_type == TabStyle::PathType::kInteriorClip) {
     // When there is a separator, animate the clip to account for it, in sync
     // with the separator's fading.
@@ -211,14 +217,9 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
                            kChildClipPadding + opacities.right));
   }
 
-  // Calculate the corner radii. Note that corner radius is based on original
-  // tab width (in DIP), not our new, scaled-and-aligned bounds.
-  float top_radius = GetTopCornerRadiusForWidth(tab_->width()) * scale;
-  float bottom_radius = tab_style()->GetBottomCornerRadius() * scale;
-
   // Compute |extension| as the width outside the separators.  This is a fixed
   // value equal to the normal corner radius.
-  const float extension = bottom_radius;
+  const float extension = extension_corner_radius;
 
   // Calculate the bounds of the actual path.
   const float left = aligned_bounds.x();
@@ -242,21 +243,21 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
     tab_left += stroke_adjustment;
     tab_right -= stroke_adjustment;
     tab_top += stroke_adjustment;
-    top_radius -= stroke_adjustment;
+    content_corner_radius -= stroke_adjustment;
   } else if (path_type == TabStyle::PathType::kFill ||
              path_type == TabStyle::PathType::kBorder) {
     tab_left += 0.5f * stroke_adjustment;
     tab_right -= 0.5f * stroke_adjustment;
     tab_top += 0.5f * stroke_adjustment;
-    top_radius -= 0.5f * stroke_adjustment;
+    content_corner_radius -= 0.5f * stroke_adjustment;
     tab_bottom -= 0.5f * stroke_adjustment;
-    bottom_radius -= 0.5f * stroke_adjustment;
+    extension_corner_radius -= 0.5f * stroke_adjustment;
   } else if (path_type == TabStyle::PathType::kHitTest) {
     // Outside border needs to draw its bottom line a stroke width above the
     // bottom of the tab, to line up with the stroke that runs across the rest
     // of the bottom of the tab bar (when strokes are enabled).
     tab_bottom -= stroke_adjustment;
-    bottom_radius -= stroke_adjustment;
+    extension_corner_radius -= stroke_adjustment;
     if (ShouldExtendHitTest()) {
       extend_to_top = true;
       if (tab_->controller()->IsTabFirst(tab_)) {
@@ -286,7 +287,7 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
     SkRRect rrect = SkRRect::MakeRectXY(
         SkRect::MakeLTRB(tab_left + inset, tab_top + inset, tab_right - inset,
                          tab_bottom - inset),
-        top_radius - inset, top_radius - inset);
+        content_corner_radius - inset, content_corner_radius - inset);
     path.addRRect(rrect);
   } else {
     // Avoid mallocs at every new path verb by preallocating an
@@ -319,9 +320,10 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
       if (extend_left_to_bottom) {
         path.lineTo(tab_left, tab_bottom);
       } else {
-        path.lineTo(tab_left - bottom_radius, tab_bottom);
-        path.arcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-                   SkPathDirection::kCCW, tab_left, tab_bottom - bottom_radius);
+        path.lineTo(tab_left - extension_corner_radius, tab_bottom);
+        path.arcTo(extension_corner_radius, extension_corner_radius, 0,
+                   SkPath::kSmall_ArcSize, SkPathDirection::kCCW, tab_left,
+                   tab_bottom - extension_corner_radius);
       }
     }
 
@@ -335,9 +337,10 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
       //   ╔─────────╮
       //   ┃ Content │
       // ┌─╯         ╰─┐
-      path.lineTo(tab_left, tab_top + top_radius);
-      path.arcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                 SkPathDirection::kCW, tab_left + top_radius, tab_top);
+      path.lineTo(tab_left, tab_top + content_corner_radius);
+      path.arcTo(content_corner_radius, content_corner_radius, 0,
+                 SkPath::kSmall_ArcSize, SkPathDirection::kCW,
+                 tab_left + content_corner_radius, tab_top);
     }
 
     // Draw the top crossbar and top-right curve, if present.
@@ -350,9 +353,10 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
       //   ╭━━━━━━━━━╗
       //   │ Content │
       // ┌─╯         ╰─┐
-      path.lineTo(tab_right - top_radius, tab_top);
-      path.arcTo(top_radius, top_radius, 0, SkPath::kSmall_ArcSize,
-                 SkPathDirection::kCW, tab_right, tab_top + top_radius);
+      path.lineTo(tab_right - content_corner_radius, tab_top);
+      path.arcTo(content_corner_radius, content_corner_radius, 0,
+                 SkPath::kSmall_ArcSize, SkPathDirection::kCW, tab_right,
+                 tab_top + content_corner_radius);
     }
 
     if (tab_right != right) {
@@ -363,10 +367,10 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
       if (extend_right_to_bottom) {
         path.lineTo(tab_right, tab_bottom);
       } else {
-        path.lineTo(tab_right, tab_bottom - bottom_radius);
-        path.arcTo(bottom_radius, bottom_radius, 0, SkPath::kSmall_ArcSize,
-                   SkPathDirection::kCCW, tab_right + bottom_radius,
-                   tab_bottom);
+        path.lineTo(tab_right, tab_bottom - extension_corner_radius);
+        path.arcTo(extension_corner_radius, extension_corner_radius, 0,
+                   SkPath::kSmall_ArcSize, SkPathDirection::kCCW,
+                   tab_right + extension_corner_radius, tab_bottom);
       }
       if (tab_bottom != extended_bottom)
         path.lineTo(right, tab_bottom);
@@ -847,8 +851,6 @@ void GM2TabStyleViews::PaintTabBackgroundFill(gfx::Canvas* canvas,
   }
 
   if (paint_hover_effect) {
-    SkPoint hover_location(gfx::PointToSkPoint(hover_controller_->location()));
-    hover_location.scale(SkFloatToScalar(scale));
     PaintBackgroundHover(canvas, scale);
   }
 }
@@ -974,6 +976,11 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   ~ChromeRefresh2023TabStyleViews() override = default;
   SkColor GetTabBackgroundColor(TabActive active) const override;
   int GetStrokeThickness(bool should_paint_as_active = false) const override;
+  SkPath GetPath(TabStyle::PathType path_type,
+                 float scale,
+                 bool force_active = false,
+                 TabStyle::RenderUnits render_units =
+                     TabStyle::RenderUnits::kPixels) const override;
   void PaintBackgroundHover(gfx::Canvas* canvas, float scale) const override;
   SkColor GetTabSeparatorColor() const override;
   bool ShouldPaintTabBackgroundColor(TabActive active,
@@ -1010,13 +1017,70 @@ int ChromeRefresh2023TabStyleViews::GetStrokeThickness(
   return 0;
 }
 
+SkPath ChromeRefresh2023TabStyleViews::GetPath(
+    TabStyle::PathType path_type,
+    float scale,
+    bool force_active,
+    TabStyle::RenderUnits render_units) const {
+  CHECK(tab());
+  const int stroke_thickness = GetStrokeThickness(force_active);
+
+  // Active fill for CR23 is the same as GM2. Selected/hover is a detached tab.
+  if ((path_type == TabStyle::PathType::kFill && !tab()->IsActive() &&
+       tab()->IsSelected()) ||
+      (path_type == TabStyle::PathType::kHighlight)) {
+    // TODO (crbug.com/1451400): This constant should be unified with
+    // kCRtabstripRegionViewControlPadding in tab_strip_region_view.
+    constexpr int kChromeRefreshDetachedTabBottomPadding = 6;
+
+    gfx::RectF aligned_bounds =
+        ScaleAndAlignBounds(tab()->bounds(), scale, stroke_thickness);
+
+    // Calculate the corner radii. Note that corner radius is based on original
+    // tab width (in DIP), not our new, scaled-and-aligned bounds.
+    const float content_corner_radius =
+        GetTopCornerRadiusForWidth(tab()->width()) * scale;
+    const float extension_corner_radius =
+        tab_style()->GetBottomCornerRadius() * scale;
+    const float tab_height =
+        (tab_style()->GetHeight() - kChromeRefreshDetachedTabBottomPadding) *
+        scale;
+
+    SkPath path;
+
+    const int left = aligned_bounds.x() + extension_corner_radius;
+    const int top = aligned_bounds.y();
+    const int right = aligned_bounds.right() - extension_corner_radius;
+    const int bottom = top + tab_height;
+
+    SkRRect rrect =
+        SkRRect::MakeRectXY(SkRect::MakeLTRB(left, top, right, bottom),
+                            content_corner_radius, content_corner_radius);
+    path.addRRect(rrect);
+
+    // Convert path to be relative to the tab origin.
+    gfx::PointF origin(tab()->origin());
+    origin.Scale(scale);
+    path.offset(-origin.x(), -origin.y());
+
+    // Possibly convert back to DIPs.
+    if (render_units == TabStyle::RenderUnits::kDips && scale != 1.0f) {
+      path.transform(SkMatrix::Scale(1.0f / scale, 1.0f / scale));
+    }
+
+    return path;
+  }
+
+  return GM2TabStyleViews::GetPath(path_type, scale, force_active,
+                                   render_units);
+}
+
 void ChromeRefresh2023TabStyleViews::PaintBackgroundHover(gfx::Canvas* canvas,
                                                           float scale) const {
   const SkPath fill_path =
       GetPath(TabStyle::PathType::kHighlight, canvas->image_scale(), true);
   canvas->ClipPath(fill_path, true);
 
-  // Override the color for ChromeRefresh2023
   const auto* cp = tab()->GetWidget()->GetColorProvider();
   const SkColor color =
       cp->GetColor(tab()->GetWidget()->ShouldPaintAsActive()

@@ -102,6 +102,8 @@ class TabStyle {
   TabStyle& operator=(const TabStyle&) = delete;
   virtual ~TabStyle();
 
+  virtual int GetHeight() const = 0;
+
   // Returns the preferred width of a single Tab, assuming space is
   // available.
   virtual int GetStandardWidth() const = 0;
