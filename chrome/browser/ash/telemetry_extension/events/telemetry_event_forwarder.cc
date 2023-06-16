@@ -23,7 +23,8 @@ CrosHealthdEventForwarder::CrosHealthdEventForwarder(
     crosapi::mojom::TelemetryEventCategoryEnum category,
     base::OnceCallback<void(CrosHealthdEventForwarder*)> on_disconnect,
     mojo::PendingRemote<crosapi::mojom::TelemetryEventObserver> crosapi_remote)
-    : deleter_callback_(std::move(on_disconnect)),
+    : category_(category),
+      deleter_callback_(std::move(on_disconnect)),
       crosapi_observer_(std::move(crosapi_remote)),
       cros_healthd_receiver_(this) {
   cros_healthd::ServiceConnection::GetInstance()
@@ -44,7 +45,41 @@ CrosHealthdEventForwarder::~CrosHealthdEventForwarder() = default;
 
 void CrosHealthdEventForwarder::OnEvent(
     cros_healthd::mojom::EventInfoPtr info) {
-  crosapi_observer_->OnEvent(converters::ConvertStructPtr(std::move(info)));
+  auto event = converters::ConvertStructPtr(std::move(info));
+  switch (category_) {
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton: {
+      if (event->is_touchpad_button_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch: {
+      if (event->is_touchpad_touch_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected: {
+      if (event->is_touchpad_connected_event_info()) {
+        crosapi_observer_->OnEvent(std::move(event));
+      }
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kAudioJack:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kLid:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kUsb:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kSdCard:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kPower:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kKeyboardDiagnostic:
+    case crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage: {
+      crosapi_observer_->OnEvent(std::move(event));
+      return;
+    }
+    case crosapi::mojom::TelemetryEventCategoryEnum::kUnmappedEnumField: {
+      LOG(ERROR) << "Unrecognized event category";
+      return;
+    }
+  }
 }
 
 void CrosHealthdEventForwarder::OnCrosHealthdDisconnect(

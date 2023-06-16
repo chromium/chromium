@@ -130,6 +130,21 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
             browser_context_);
         break;
       }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kTouchpadButtonEventInfo: {
+        NOTIMPLEMENTED();
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kTouchpadTouchEventInfo: {
+        NOTIMPLEMENTED();
+        break;
+      }
+      case crosapi::internal::TelemetryEventInfo_Data::TelemetryEventInfo_Tag::
+          kTouchpadConnectedEventInfo: {
+        NOTIMPLEMENTED();
+        break;
+      }
     }
 
     extensions::EventRouter::Get(browser_context_)

@@ -6,6 +6,7 @@
 
 #include <algorithm>
 #include <cstdint>
+#include <memory>
 #include <string>
 #include <vector>
 
@@ -191,6 +192,44 @@ TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardTopRightKey) {
             crosapi::mojom::TelemetryKeyboardTopRightKey::kControlPanel);
 }
 
+TEST(TelemetryEventServiceConvertersTest, ConvertNullableUint32Ptr) {
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32::New(10)),
+            crosapi::mojom::UInt32Value::New(10));
+
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::NullableUint32Ptr()),
+            crosapi::mojom::UInt32ValuePtr());
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertInputTouchButton) {
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kUnmappedEnumField),
+            crosapi::mojom::TelemetryInputTouchButton::kUnmappedEnumField);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kLeft),
+            crosapi::mojom::TelemetryInputTouchButton::kLeft);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kMiddle),
+            crosapi::mojom::TelemetryInputTouchButton::kMiddle);
+
+  EXPECT_EQ(Convert(cros_healthd::mojom::InputTouchButton::kRight),
+            crosapi::mojom::TelemetryInputTouchButton::kRight);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchPointInfoPtr) {
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::TouchPointInfo::New(
+                1, 2, 3, nullptr, nullptr, nullptr)),
+            crosapi::mojom::TelemetryTouchPointInfo::New(1, 2, 3, nullptr,
+                                                         nullptr, nullptr));
+
+  EXPECT_EQ(ConvertStructPtr(cros_healthd::mojom::TouchPointInfo::New(
+                4, 5, 6, cros_healthd::mojom::NullableUint32::New(7),
+                cros_healthd::mojom::NullableUint32::New(8),
+                cros_healthd::mojom::NullableUint32::New(9))),
+            crosapi::mojom::TelemetryTouchPointInfo::New(
+                4, 5, 6, crosapi::mojom::UInt32Value::New(7),
+                crosapi::mojom::UInt32Value::New(8),
+                crosapi::mojom::UInt32Value::New(9)));
+}
+
 TEST(TelemetryEventServiceConvertersTest,
      ConvertTelemetryAudioJackEventInfo_State) {
   EXPECT_EQ(
@@ -338,6 +377,17 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventCategoryEnum) {
 
   EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage),
             cros_healthd::mojom::EventCategoryEnum::kStylusGarage);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton),
+      cros_healthd::mojom::EventCategoryEnum::kTouchpad);
+
+  EXPECT_EQ(Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch),
+            cros_healthd::mojom::EventCategoryEnum::kTouchpad);
+
+  EXPECT_EQ(
+      Convert(crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected),
+      cros_healthd::mojom::EventCategoryEnum::kTouchpad);
 }
 
 TEST(TelemetryEventServiceConvertersTest, ConvertKeyboardInfo) {
@@ -646,6 +696,83 @@ TEST(TelemetryEventServiceConvertersTest, ConvertTelemetryEventInfoPtr) {
       std::move(illegal_info));
 
   EXPECT_TRUE(ConvertStructPtr(std::move(illegal_input)).is_null());
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchpadEventInfoButtonEvent) {
+  auto button_event_input = cros_healthd::mojom::TouchpadButtonEvent::New(
+      cros_healthd::mojom::InputTouchButton::kLeft, true);
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewButtonEvent(
+          std::move(button_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  EXPECT_TRUE(result->is_touchpad_button_event_info());
+  const auto& button_event_output = result->get_touchpad_button_event_info();
+  EXPECT_EQ(button_event_output->state,
+            crosapi::mojom::TelemetryTouchpadButtonEventInfo_State::kPressed);
+  EXPECT_EQ(button_event_output->button,
+            crosapi::mojom::TelemetryInputTouchButton::kLeft);
+}
+
+TEST(TelemetryEventServiceConvertersTest, ConvertTouchpadEventInfoTouchEvent) {
+  std::vector<cros_healthd::mojom::TouchPointInfoPtr> touch_points;
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      1, 2, 3, nullptr, nullptr, nullptr));
+  touch_points.push_back(cros_healthd::mojom::TouchPointInfo::New(
+      4, 5, 6, cros_healthd::mojom::NullableUint32::New(7),
+      cros_healthd::mojom::NullableUint32::New(8),
+      cros_healthd::mojom::NullableUint32::New(9)));
+
+  auto touch_event_input =
+      cros_healthd::mojom::TouchpadTouchEvent::New(std::move(touch_points));
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewTouchEvent(
+          std::move(touch_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+
+  EXPECT_TRUE(result->is_touchpad_touch_event_info());
+  const auto& touch_event_output = result->get_touchpad_touch_event_info();
+  EXPECT_EQ(touch_event_output->touch_points.size(), 2UL);
+  EXPECT_EQ(touch_event_output->touch_points[0],
+            crosapi::mojom::TelemetryTouchPointInfo::New(1, 2, 3, nullptr,
+                                                         nullptr, nullptr));
+
+  EXPECT_EQ(touch_event_output->touch_points[1],
+            crosapi::mojom::TelemetryTouchPointInfo::New(
+                4, 5, 6, crosapi::mojom::UInt32Value::New(7),
+                crosapi::mojom::UInt32Value::New(8),
+                crosapi::mojom::UInt32Value::New(9)));
+}
+
+TEST(TelemetryEventServiceConvertersTest,
+     ConvertTouchpadEventInfoConnectedEvent) {
+  std::vector<cros_healthd::mojom::InputTouchButton> buttons{
+      cros_healthd::mojom::InputTouchButton::kLeft,
+      cros_healthd::mojom::InputTouchButton::kMiddle,
+      cros_healthd::mojom::InputTouchButton::kRight};
+
+  auto connected_event_input = cros_healthd::mojom::TouchpadConnectedEvent::New(
+      1, 2, 3, std::move(buttons));
+  auto input = cros_healthd::mojom::EventInfo::NewTouchpadEventInfo(
+      cros_healthd::mojom::TouchpadEventInfo::NewConnectedEvent(
+          std::move(connected_event_input)));
+
+  auto result = ConvertStructPtr(std::move(input));
+  EXPECT_TRUE(result->is_touchpad_connected_event_info());
+  const auto& connected_event_output =
+      result->get_touchpad_connected_event_info();
+
+  EXPECT_EQ(connected_event_output->max_x, 1UL);
+  EXPECT_EQ(connected_event_output->max_y, 2UL);
+  EXPECT_EQ(connected_event_output->max_pressure, 3UL);
+  auto expected_buttons =
+      std::vector<crosapi::mojom::TelemetryInputTouchButton>{
+          crosapi::mojom::TelemetryInputTouchButton::kLeft,
+          crosapi::mojom::TelemetryInputTouchButton::kMiddle,
+          crosapi::mojom::TelemetryInputTouchButton::kRight};
+  EXPECT_EQ(connected_event_output->buttons, expected_buttons);
 }
 
 }  // namespace ash::converters

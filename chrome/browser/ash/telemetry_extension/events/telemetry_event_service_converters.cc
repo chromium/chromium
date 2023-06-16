@@ -82,6 +82,56 @@ crosapi::mojom::TelemetryStylusGarageEventInfoPtr UncheckedConvertPtr(
       Convert(input->state));
 }
 
+crosapi::mojom::TelemetryTouchPointInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchPointInfoPtr input) {
+  auto result = crosapi::mojom::TelemetryTouchPointInfo::New();
+  result->tracking_id = input->tracking_id;
+  result->x = input->x;
+  result->y = input->y;
+  result->pressure = ConvertStructPtr(std::move(input->pressure));
+  result->touch_major = ConvertStructPtr(std::move(input->touch_major));
+  result->touch_minor = ConvertStructPtr(std::move(input->touch_minor));
+  return result;
+}
+
+crosapi::mojom::TelemetryTouchpadButtonEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadButtonEventPtr input) {
+  auto pressed =
+      input->pressed
+          ? crosapi::mojom::TelemetryTouchpadButtonEventInfo_State::kPressed
+          : crosapi::mojom::TelemetryTouchpadButtonEventInfo_State::kReleased;
+  return crosapi::mojom::TelemetryTouchpadButtonEventInfo::New(
+      Convert(input->button), pressed);
+}
+
+crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadTouchEventPtr input) {
+  std::vector<crosapi::mojom::TelemetryTouchPointInfoPtr>
+      converted_touch_points;
+  for (auto& touch_point : input->touch_points) {
+    converted_touch_points.push_back(ConvertStructPtr(std::move(touch_point)));
+  }
+  return crosapi::mojom::TelemetryTouchpadTouchEventInfo::New(
+      std::move(converted_touch_points));
+}
+
+crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadConnectedEventPtr input) {
+  std::vector<crosapi::mojom::TelemetryInputTouchButton>
+      converted_touch_buttons;
+  for (const auto& touch_button : input->buttons) {
+    converted_touch_buttons.push_back(Convert(touch_button));
+  }
+  return crosapi::mojom::TelemetryTouchpadConnectedEventInfo::New(
+      input->max_x, input->max_y, input->max_pressure,
+      std::move(converted_touch_buttons));
+}
+
+crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input) {
+  return crosapi::mojom::UInt32Value::New(input->value);
+}
+
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input) {
   switch (input->which()) {
@@ -114,6 +164,26 @@ crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
         kStylusGarageEventInfo:
       return crosapi::mojom::TelemetryEventInfo::NewStylusGarageEventInfo(
           ConvertStructPtr(std::move(input->get_stylus_garage_event_info())));
+    case cros_healthd::mojom::internal::EventInfo_Data::EventInfo_Tag::
+        kTouchpadEventInfo: {
+      if (input->get_touchpad_event_info()->is_button_event()) {
+        return crosapi::mojom::TelemetryEventInfo::NewTouchpadButtonEventInfo(
+            ConvertStructPtr(std::move(
+                input->get_touchpad_event_info()->get_button_event())));
+      }
+      if (input->get_touchpad_event_info()->is_touch_event()) {
+        return crosapi::mojom::TelemetryEventInfo::NewTouchpadTouchEventInfo(
+            ConvertStructPtr(std::move(
+                input->get_touchpad_event_info()->get_touch_event())));
+      }
+      if (input->get_touchpad_event_info()->is_connected_event()) {
+        return crosapi::mojom::TelemetryEventInfo::
+            NewTouchpadConnectedEventInfo(ConvertStructPtr(std::move(
+                input->get_touchpad_event_info()->get_connected_event())));
+      }
+      LOG(WARNING) << "Got unsupported touchpad event";
+      return nullptr;
+    }
     default:
       LOG(WARNING) << "Got event for unsupported category";
       return nullptr;
@@ -415,6 +485,21 @@ crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
   NOTREACHED();
 }
 
+crosapi::mojom::TelemetryInputTouchButton Convert(
+    cros_healthd::mojom::InputTouchButton input) {
+  switch (input) {
+    case cros_healthd::mojom::InputTouchButton::kUnmappedEnumField:
+      return crosapi::mojom::TelemetryInputTouchButton::kUnmappedEnumField;
+    case cros_healthd::mojom::InputTouchButton::kLeft:
+      return crosapi::mojom::TelemetryInputTouchButton::kLeft;
+    case cros_healthd::mojom::InputTouchButton::kMiddle:
+      return crosapi::mojom::TelemetryInputTouchButton::kMiddle;
+    case cros_healthd::mojom::InputTouchButton::kRight:
+      return crosapi::mojom::TelemetryInputTouchButton::kRight;
+  }
+  NOTREACHED();
+}
+
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input) {
   switch (input) {
@@ -451,6 +536,12 @@ cros_healthd::mojom::EventCategoryEnum Convert(
       return cros_healthd::mojom::EventCategoryEnum::kKeyboardDiagnostic;
     case crosapi::mojom::TelemetryEventCategoryEnum::kStylusGarage:
       return cros_healthd::mojom::EventCategoryEnum::kStylusGarage;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadButton:
+      return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadTouch:
+      return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
+    case crosapi::mojom::TelemetryEventCategoryEnum::kTouchpadConnected:
+      return cros_healthd::mojom::EventCategoryEnum::kTouchpad;
   }
   NOTREACHED();
 }

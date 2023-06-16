@@ -12,10 +12,16 @@
 // between the source (cros_healthd) and the clients
 // (third-party telemetry extensions).
 
+// WARNING: This mojom and its implementation is designed for use only by the
+// telemetry extension. Certain input components such as touchpad event should
+// not be connected by clients outside of the telemetry extension. Please
+// consider alternatives such as wayland and pure JS solutions.
+
 module crosapi.mojom;
 
 import "chromeos/crosapi/mojom/telemetry_extension_exception.mojom";
 import "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom";
+import "chromeos/crosapi/mojom/nullable_primitives.mojom";
 
 // Audio jack event info. This is emitted when the
 // audio jack is plugged in or out.
@@ -158,9 +164,98 @@ struct TelemetryStylusGarageEventInfo {
   State state@0;
 };
 
+// An enumeration of input touch buttons. The enumeration refers to the
+// physical button that is present in some touchpads under the surface. Clicks
+// resulting from gestures such as two finger right-click are not included
+// here. Separate physical buttons external to the touchpad are also not
+// included.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable, Extensible]
+enum TelemetryInputTouchButton {
+  // This is required for backwards compatibility, should not be used.
+  [Default] kUnmappedEnumField = 0,
+  // Left key.
+  kLeft = 1,
+  // Middle key.
+  kMiddle = 2,
+  // Right key.
+  kRight = 3,
+};
+
+// Emitted when some touchpad button is pressed or released.
+//
+// NextMinVersion: 1, NextIndex: 2
+[Stable]
+struct TelemetryTouchpadButtonEventInfo {
+  // The button that corresponds to this event.
+  TelemetryInputTouchButton button@0;
+
+  [Stable, Extensible]
+  // Whether the button is pressed or released.
+  enum State {
+    // This is required for backwards compatibility, should not be used.
+    [Default] kUnmappedEnumField = 0,
+    // Lid closed.
+    kPressed = 1,
+    // Lid opened.
+    kReleased = 2,
+  };
+
+  State state@1;
+};
+
+// Touch point info.
+//
+// NextMinVersion: 1, NextIndex: 6
+[Stable]
+struct TelemetryTouchPointInfo {
+  // An id to track an initiated contact throughout its life cycle.
+  uint32 tracking_id@0;
+  // The x position in the cartesian XY plane. The value ranges from 0 to
+  // |max_x| as defined in TelemetryTouchpadConnectedEventInfo.
+  uint32 x@1;
+  // The y position in the cartesian XY plane. The value ranges from 0 to
+  // |max_y| as defined in TelemetryTouchpadConnectedEventInfo.
+  uint32 y@2;
+  // The pressure applied to the touch contact. The value ranges from 0 to
+  // |max_pressure| as defined in TelemetryTouchpadConnectedEventInfo.
+  UInt32Value? pressure@3;
+  // The length of the longer dimension of the touch contact.
+  UInt32Value? touch_major@4;
+  // The length of the shorter dimension of the touch contact.
+  UInt32Value? touch_minor@5;
+};
+
+// Emitted when new touch points are updated.
+//
+// NextMinVersion: 1, NextIndex: 1
+[Stable]
+struct TelemetryTouchpadTouchEventInfo {
+  // The touch points reported by the touchpad.
+  array<TelemetryTouchPointInfo> touch_points@0;
+};
+
+// Emitted once the observer get connected to the touchpad events. This will be
+// the first event from the touchpad.
+//
+// NextMinVersion: 1, NextIndex: 4
+[Stable]
+struct TelemetryTouchpadConnectedEventInfo {
+  // The maximum possible x position of touch points.
+  uint32 max_x@0;
+  // The maximum possible y position of touch points.
+  uint32 max_y@1;
+  // The maximum possible pressure of touch points, or 0 if pressure is not
+  // supported.
+  uint32 max_pressure@2;
+  // The supported buttons;
+  array<TelemetryInputTouchButton> buttons@3;
+};
+
 // Union of event info.
 //
-// NextMinVersion: 7, NextIndex: 8
+// NextMinVersion: 8, NextIndex: 11
 [Stable, Extensible]
 union TelemetryEventInfo {
   // The default value for forward compatibility. All the unknown type will be
@@ -181,11 +276,18 @@ union TelemetryEventInfo {
       keyboard_diagnostic_event_info@6;
   // Stylus garage event info.
   [MinVersion=6] TelemetryStylusGarageEventInfo stylus_garage_event_info@7;
+  // Touchpad Button event info.
+  [MinVersion=7] TelemetryTouchpadButtonEventInfo touchpad_button_event_info@8;
+  // Touchpad Touch event info.
+  [MinVersion=7] TelemetryTouchpadTouchEventInfo touchpad_touch_event_info@9;
+  // Touchpad Connected event info.
+  [MinVersion=7] TelemetryTouchpadConnectedEventInfo
+      touchpad_connected_event_info@10;
 };
 
 // An enumeration of event categories.
 //
-// NextMinVersion: 7, NextIndex: 8
+// NextMinVersion: 8, NextIndex: 11
 [Stable, Extensible]
 enum TelemetryEventCategoryEnum {
   // This is required for backwards compatibility, should not be used.
@@ -197,6 +299,9 @@ enum TelemetryEventCategoryEnum {
   [MinVersion=4] kPower = 5,
   [MinVersion=5] kKeyboardDiagnostic = 6,
   [MinVersion=6] kStylusGarage = 7,
+  [MinVersion=7] kTouchpadButton = 8,
+  [MinVersion=7] kTouchpadTouch = 9,
+  [MinVersion=7] kTouchpadConnected = 10,
 };
 
 // Implemented by clients who desire events.

@@ -11,6 +11,7 @@
 #include "ash/system/diagnostics/mojom/input.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_events.mojom.h"
 #include "chromeos/ash/services/cros_healthd/public/mojom/cros_healthd_exception.mojom.h"
+#include "chromeos/ash/services/cros_healthd/public/mojom/nullable_primitives.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_event_service.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_extension_exception.mojom.h"
 #include "chromeos/crosapi/mojom/telemetry_keyboard_event.mojom.h"
@@ -45,6 +46,21 @@ crosapi::mojom::TelemetryPowerEventInfoPtr UncheckedConvertPtr(
 
 crosapi::mojom::TelemetryStylusGarageEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::StylusGarageEventInfoPtr input);
+
+crosapi::mojom::TelemetryTouchPointInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchPointInfoPtr input);
+
+crosapi::mojom::TelemetryTouchpadButtonEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadButtonEventPtr input);
+
+crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadTouchEventPtr input);
+
+crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr UncheckedConvertPtr(
+    cros_healthd::mojom::TouchpadConnectedEventPtr input);
+
+crosapi::mojom::UInt32ValuePtr UncheckedConvertPtr(
+    cros_healthd::mojom::NullableUint32Ptr input);
 
 crosapi::mojom::TelemetryEventInfoPtr UncheckedConvertPtr(
     cros_healthd::mojom::EventInfoPtr input);
@@ -104,6 +120,9 @@ crosapi::mojom::TelemetryPowerEventInfo::State Convert(
 
 crosapi::mojom::TelemetryStylusGarageEventInfo::State Convert(
     cros_healthd::mojom::StylusGarageEventInfo::State input);
+
+crosapi::mojom::TelemetryInputTouchButton Convert(
+    cros_healthd::mojom::InputTouchButton input);
 
 crosapi::mojom::TelemetryExtensionException::Reason Convert(
     cros_healthd::mojom::Exception::Reason input);
