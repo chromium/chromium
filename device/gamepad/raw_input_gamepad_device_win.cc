@@ -185,7 +185,7 @@ void RawInputGamepadDeviceWin::UpdateGamepad(RAWINPUT* input) {
 
     uint8_t report_id = input->data.hid.bRawData[0];
     // Clear the button state of buttons contained in this report
-    for (size_t j = 0; j < sizeof(button_report_id_); j++) {
+    for (size_t j = 0; j < button_report_id_.size(); j++) {
       if (button_report_id_[j].has_value() &&
           button_report_id_[j].value() == report_id) {
         buttons_[j] = false;
