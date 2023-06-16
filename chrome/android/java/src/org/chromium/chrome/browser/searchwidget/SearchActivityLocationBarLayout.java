@@ -6,7 +6,6 @@ package org.chromium.chrome.browser.searchwidget;
 
 import android.content.Context;
 import android.graphics.drawable.GradientDrawable;
-import android.text.TextUtils;
 import android.util.AttributeSet;
 import android.view.View;
 
@@ -93,17 +92,15 @@ public class SearchActivityLocationBarLayout extends LocationBarLayout {
     void onDeferredStartup(@SearchType int searchType,
             @NonNull VoiceRecognitionHandler voiceRecognitionHandler,
             @NonNull WindowAndroid windowAndroid) {
-        mAutocompleteCoordinator.prefetchZeroSuggestResults();
-
         SearchActivityPreferencesManager.updateFeatureAvailability(getContext(), windowAndroid);
         assert !LocaleManager.getInstance().needToCheckForSearchEnginePromo();
         mPendingSearchPromoDecision = false;
         mAutocompleteCoordinator.setShouldPreventOmniboxAutocomplete(mPendingSearchPromoDecision);
         String textWithAutocomplete = mUrlCoordinator.getTextWithAutocomplete();
-        if (!TextUtils.isEmpty(textWithAutocomplete)) {
-            mAutocompleteCoordinator.onTextChanged(
-                    mUrlCoordinator.getTextWithoutAutocomplete(), textWithAutocomplete);
-        }
+        // Do not prefetch suggestions here; instead, we're asking the server for ZPS directly.
+        // Issuing multiple requests would result with only the final one being executed.
+        mAutocompleteCoordinator.onTextChanged(
+                mUrlCoordinator.getTextWithoutAutocomplete(), textWithAutocomplete);
 
         if (mPendingBeginQuery) {
             beginQueryInternal(searchType, voiceRecognitionHandler, windowAndroid);

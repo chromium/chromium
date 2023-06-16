@@ -102,7 +102,8 @@ public class AutocompleteController implements Destroyable {
      *                       not focused on the text.
      * @param preventInlineAutocomplete Whether autocomplete suggestions should be prevented.
      */
-    void start(@NonNull String url, int pageClassification, @NonNull String text,
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void start(@NonNull String url, int pageClassification, @NonNull String text,
             int cursorPosition, boolean preventInlineAutocomplete) {
         if (mNativeController == 0) return;
         assert !TextUtils.isEmpty(url);
@@ -171,7 +172,8 @@ public class AutocompleteController implements Destroyable {
      *         {@link #onSuggestionsReceived(AutocompleteResult, String)} will be called with an
      *         empty result set.
      */
-    void stop(boolean clear) {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void stop(boolean clear) {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().stop(mNativeController, clear);
     }
@@ -180,7 +182,8 @@ public class AutocompleteController implements Destroyable {
      * Resets session for autocomplete controller. This happens every time we start typing
      * new input into the omnibox.
      */
-    void resetSession() {
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
+    public void resetSession() {
         if (mNativeController == 0) return;
         AutocompleteControllerJni.get().resetSession(mNativeController);
     }
