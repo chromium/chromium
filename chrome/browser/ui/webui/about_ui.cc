@@ -775,7 +775,7 @@ std::string AboutUIHTMLSource::GetAccessControlAllowOriginForOrigin(
   return content::URLDataSource::GetAccessControlAllowOriginForOrigin(origin);
 }
 
-AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
+AboutUI::AboutUI(content::WebUI* web_ui, const std::string& host)
     : WebUIController(web_ui) {
   Profile* profile = Profile::FromWebUI(web_ui);
 
@@ -785,7 +785,7 @@ AboutUI::AboutUI(content::WebUI* web_ui, const std::string& name)
 #endif
 
   content::URLDataSource::Add(
-      profile, std::make_unique<AboutUIHTMLSource>(name, profile));
+      profile, std::make_unique<AboutUIHTMLSource>(host, profile));
 }
 
 #if BUILDFLAG(IS_CHROMEOS)
