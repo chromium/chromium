@@ -35,6 +35,7 @@ import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
 import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.chrome.test.util.browser.Features;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.RenderTestRule;
 
@@ -88,6 +89,8 @@ public class TabContentManagerTest {
     @Test
     @MediumTest
     @DisabledTest(message = "https://crbug.com/1454653")
+    // Disable "AImageReader" as a workaround for https://crbug.com/1454914
+    @DisableFeatures("AImageReader")
     public void testJpegRefetch() throws Exception {
         final String testHttpsUrl1 =
                 sActivityTestRule.getTestServer().getURL("/chrome/test/data/android/test.html");
