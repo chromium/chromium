@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.tasks.tab_management;
 
+import android.content.res.ColorStateList;
 import android.content.res.Resources;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.InsetDrawable;
@@ -12,9 +13,11 @@ import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.TextView;
 
+import androidx.annotation.ColorInt;
 import androidx.annotation.Nullable;
 import androidx.core.content.res.ResourcesCompat;
 import androidx.core.graphics.drawable.DrawableCompat;
+import androidx.core.view.ViewCompat;
 import androidx.core.widget.ImageViewCompat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
@@ -104,13 +107,48 @@ class TabListViewBinder {
         bindListTab(model, view, propertyKey);
 
         if (TabProperties.IS_INCOGNITO == propertyKey) {
-            boolean isIncognito = model.get(TabProperties.IS_INCOGNITO);
-            ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
-            // The selected row is only outlined not colored so it should use the unselected color.
-            ImageViewCompat.setImageTintList(closeButton,
-                    TabUiThemeProvider.getActionButtonTintList(
-                            view.getContext(), isIncognito, /*isSelected=*/false));
+            updateColors(view, model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         }
+    }
+
+    /**
+     * Bind color updates.
+     * @param view The root view of the item.
+     * @param isIncognito Whether the model is in incognito mode.
+     * @param isSelected Whether the item is selected.
+     */
+    private static void updateColors(ViewGroup view, boolean isIncognito, boolean isSelected) {
+        // TODO(crbug.com/1455397): isSelected is ignored as the selected row is only outlined not
+        // colored so it should use the unselected color. This will be addressed in a fixit.
+        ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
+        ImageViewCompat.setImageTintList(closeButton,
+                TabUiThemeProvider.getActionButtonTintList(
+                        view.getContext(), isIncognito, /*isSelected=*/false));
+
+        View cardView = view.findViewById(R.id.content_view);
+        cardView.getBackground().mutate();
+        final @ColorInt int backgroundColor = TabUiThemeProvider.getCardViewBackgroundColor(
+                view.getContext(), isIncognito, /*isSelected=*/false);
+        ViewCompat.setBackgroundTintList(cardView, ColorStateList.valueOf(backgroundColor));
+
+        final @ColorInt int textColor = TabUiThemeProvider.getTitleTextColor(
+                view.getContext(), isIncognito, /*isSelected=*/false);
+        TextView titleView = (TextView) view.findViewById(R.id.title);
+        TextView descriptionView = (TextView) view.findViewById(R.id.description);
+        titleView.setTextColor(textColor);
+        descriptionView.setTextColor(textColor);
+
+        ImageView faviconView = (ImageView) view.findViewById(R.id.start_icon);
+        if (faviconView.getBackground() == null) {
+            faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
+        }
+        faviconView.getBackground().mutate();
+        final @ColorInt int faviconBackgroundColor =
+                TabUiThemeProvider.getMiniThumbnailPlaceholderColor(
+                        view.getContext(), isIncognito, /*isSelected=*/false);
+        ViewCompat.setBackgroundTintList(
+                faviconView, ColorStateList.valueOf(faviconBackgroundColor));
     }
 
     /**
@@ -168,7 +206,6 @@ class TabListViewBinder {
 
     private static void setFavicon(View view, Drawable favicon) {
         ImageView faviconView = (ImageView) view.findViewById(R.id.start_icon);
-        faviconView.setBackgroundResource(R.drawable.list_item_icon_modern_bg);
         faviconView.setImageDrawable(favicon);
     }
 }
