@@ -6685,6 +6685,17 @@ crbug.com/1422685 [ Mac13-arm64 ] fast/canvas-api/offscreencanvas.transferrable-
 crbug.com/1454689 http/tests/inspector-protocol/tracing/cpu-profiling.js [ Failure Pass ]
 
 crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/abort-multiple-gets-through-first-idp.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/abort-multiple-gets-through-second-idp.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/get-before-and-after-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/get-before-and-during-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/get-before-onload-and-during-dom-content-loaded.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/multiple-gets-after-abort.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/multiple-gets-after-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/multiple-gets-before-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/multiple-gets-during-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/single-get-after-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/single-get-before-onload.https.html [ Failure Pass ]
+crbug.com/1455245 [ Mac ] virtual/fedcm-multi-idp/external/wpt/credential-management/fedcm-multi-idp/single-get-during-onload.https.html [ Failure Pass ]
 
 # Gardener/Sheriff 2023-06-15
 crbug.com/1451954 external/wpt/fetch/local-network-access/fenced-frame.tentative.https.window.html [ Failure Pass Timeout ]
