@@ -171,6 +171,7 @@
     "ToTLinuxTSan": "Ubuntu-22.04",
     "ToTLinuxUBSanVptr": "Ubuntu-22.04",
     "UBSan Release": "Ubuntu-22.04",
+    "UBSan vptr Release": "Ubuntu-22.04",
     "VR Linux": "Ubuntu-22.04",
     "WebKit Linux ASAN": "Ubuntu-22.04",
     "WebKit Linux Leak": "Ubuntu-22.04",
