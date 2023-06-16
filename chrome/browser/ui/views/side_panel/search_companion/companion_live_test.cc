@@ -186,7 +186,7 @@ class CompanionLiveTest : public signin::test::LiveTest {
     const GURL lens_url("https://lens.google.com/companion");
     params["companion-homepage-url"] = lens_url.spec();
     feature_list_.InitAndEnableFeatureWithParameters(
-        companion::features::kSidePanelCompanion, params);
+        companion::features::internal::kSidePanelCompanion, params);
 
     EnableMsbb(true);
   }

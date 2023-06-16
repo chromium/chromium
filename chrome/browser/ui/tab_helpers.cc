@@ -97,6 +97,7 @@
 #include "chrome/browser/ui/privacy_sandbox/privacy_sandbox_prompt_helper.h"
 #include "chrome/browser/ui/recently_audible_helper.h"
 #include "chrome/browser/ui/search_engines/search_engine_tab_helper.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/tab_contents/core_tab_helper.h"
 #include "chrome/browser/ui/tab_dialogs.h"
 #include "chrome/browser/ui/tab_ui_helper.h"
@@ -543,11 +544,12 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   if (base::FeatureList::IsEnabled(ntp_features::kNtpHistoryClustersModule)) {
     side_panel::HistoryClustersTabHelper::CreateForWebContents(web_contents);
   }
-  if (base::FeatureList::IsEnabled(companion::features::kSidePanelCompanion)) {
+  if (companion::IsCompanionFeatureEnabled()) {
     companion::CompanionTabHelper::CreateForWebContents(web_contents);
   }
   if (base::FeatureList::IsEnabled(
-          companion::features::kCompanionEnabledByObservingExpsNavigations)) {
+          companion::features::internal::
+              kCompanionEnabledByObservingExpsNavigations)) {
     companion::ExpsRegistrationSuccessObserver::CreateForWebContents(
         web_contents);
   }

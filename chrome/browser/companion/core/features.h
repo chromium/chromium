@@ -13,9 +13,10 @@
 namespace companion {
 namespace features {
 
+namespace internal {
 BASE_DECLARE_FEATURE(kSidePanelCompanion);
 BASE_DECLARE_FEATURE(kCompanionEnabledByObservingExpsNavigations);
-
+}  // namespace internal
 }  // namespace features
 
 namespace switches {

@@ -18405,6 +18405,13 @@ Called by update_net_error_codes.py.-->
   <int value="23" label="IsClippingToTaskDisable"/>
 </enum>
 
+<enum name="CompanionSidePanelAvailabilityChanged">
+  <int value="0" label="Changed from Unavailable To Unavailable"/>
+  <int value="1" label="Changed from Unavailable To Available"/>
+  <int value="2" label="Changed from Available To Unavailable"/>
+  <int value="3" label="Changed from Available To Available"/>
+</enum>
+
 <enum name="CompileHeuristicsDecision">
   <int value="0" label="NoCacheHandler">
     No CachedMetadataHandler was provided, thus caching functionality is

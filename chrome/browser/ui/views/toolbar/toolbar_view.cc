@@ -39,6 +39,7 @@
 #include "chrome/browser/ui/global_error/global_error_service_factory.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/layout_constants.h"
+#include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/side_search/side_search_utils.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
 #include "chrome/browser/ui/toolbar/chrome_labs_model.h"
@@ -368,8 +369,7 @@ void ToolbarView::Init() {
   std::unique_ptr<SidePanelToolbarButton> side_panel_button;
   std::unique_ptr<SidePanelToolbarContainer> side_panel_toolbar_container;
   if (browser_view_->unified_side_panel()) {
-    if (base::FeatureList::IsEnabled(
-            companion::features::kSidePanelCompanion)) {
+    if (companion::IsCompanionFeatureEnabled()) {
       side_panel_toolbar_container =
           std::make_unique<SidePanelToolbarContainer>(browser_view_);
     } else {

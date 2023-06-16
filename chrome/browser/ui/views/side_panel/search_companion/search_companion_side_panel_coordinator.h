@@ -88,6 +88,9 @@ class SearchCompanionSidePanelCoordinator
   // Called if there is a change in the state of policy pref.
   void OnPolicyPrefChanged();
 
+  // Called if there is a change in the state of the exps pref.
+  void OnExpsPolicyPrefChanged();
+
   raw_ptr<Browser> browser_;
   std::u16string name_;
   const raw_ref<const gfx::VectorIcon, ExperimentalAsh> icon_;
@@ -96,6 +99,7 @@ class SearchCompanionSidePanelCoordinator
   bool is_currently_observing_tab_changes_ = false;
 
   std::unique_ptr<PrefChangeRegistrar> policy_pref_change_registrar_;
+  std::unique_ptr<PrefChangeRegistrar> exps_optin_pref_change_registrar_;
 
   base::ScopedObservation<TemplateURLService, TemplateURLServiceObserver>
       template_url_service_observation_{this};

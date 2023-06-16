@@ -8896,9 +8896,10 @@ const FeatureEntry kFeatureEntries[] = {
 #if BUILDFLAG(ENABLE_LENS_DESKTOP_GOOGLE_BRANDED_FEATURES)
     {"csc", flag_descriptions::kCscName, flag_descriptions::kCscDescription,
      kOsDesktop,
-     FEATURE_WITH_PARAMS_VALUE_TYPE(companion::features::kSidePanelCompanion,
-                                    kCscVariations,
-                                    "CSC")},
+     FEATURE_WITH_PARAMS_VALUE_TYPE(
+         companion::features::internal::kSidePanelCompanion,
+         kCscVariations,
+         "CSC")},
 
     {"csc-pinned-state", flag_descriptions::kCscPinnedName,
      flag_descriptions::kCscPinnedDescription, kOsDesktop,

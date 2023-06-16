@@ -99,7 +99,8 @@ TEST(CompanionUtilsTest, PromoNotShownOnEmptyURL) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndEnableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
 
@@ -112,7 +113,8 @@ TEST(CompanionUtilsTest, PromoNotShownOnNewTabPage) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndEnableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
 
@@ -125,7 +127,8 @@ TEST(CompanionUtilsTest, PromoNotShownOnChromePage) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndEnableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
 
@@ -144,7 +147,8 @@ TEST(CompanionUtilsTest, PromoNotShownIfCscDisabled) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndDisableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndDisableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
 
@@ -157,7 +161,8 @@ TEST(CompanionUtilsTest, PromoNotShownIfCscNotPinned) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndEnableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, false);
 
@@ -170,7 +175,8 @@ TEST(CompanionUtilsTest, PromoShownOnValidUrlWithCscEnabledAndPinned) {
   TestingPrefServiceSimple pref_service;
 
   // Enable CSC and pinned state
-  scoped_feature_list.InitAndEnableFeature(features::kSidePanelCompanion);
+  scoped_feature_list.InitAndEnableFeature(
+      features::internal::kSidePanelCompanion);
   pref_service.registry()->RegisterBooleanPref(
       prefs::kSidePanelCompanionEntryPinnedToToolbar, true);
 
