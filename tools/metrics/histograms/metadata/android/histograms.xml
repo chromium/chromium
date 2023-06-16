@@ -4427,17 +4427,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Android.WebView.Metrics.BadRequest"
-    enum="WebViewMetricBadRequest" expires_after="2023-07-01">
-  <owner>bewise@chromium.org</owner>
-  <owner>src/android_webview/OWNERS</owner>
-  <summary>
-    Records the exact reason for a WebView metric being recorded as a
-    &quot;bad&quot; request. A bad request is any metric attempt that results in
-    an http 400 being reported by the Android platform.
-  </summary>
-</histogram>
-
 <histogram name="Android.WebView.Metrics.PackagesAllowList.ParseStatus"
     enum="AppPackageNameAllowlistParseStatus" expires_after="2023-07-01">
   <owner>hazems@chromium.org</owner>
