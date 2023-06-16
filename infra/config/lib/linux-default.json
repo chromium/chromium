@@ -117,6 +117,7 @@
     "Linux FYI Release (Intel UHD 630)": "Ubuntu-22.04",
     "Linux FYI Release (NVIDIA)": "Ubuntu-22.04",
     "Linux Release (NVIDIA)": "Ubuntu-22.04",
+    "Linux TSan Builder": "Ubuntu-22.04",
     "Linux TSan Tests": "Ubuntu-22.04",
     "Linux Tests": "Ubuntu-22.04",
     "Linux Tests (Wayland)": "Ubuntu-22.04",
