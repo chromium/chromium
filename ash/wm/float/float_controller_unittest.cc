@@ -408,6 +408,26 @@ TEST_F(WindowFloatTest, FloatOnOtherDisplay) {
       gfx::Rect(1200, 0, 1200, 800).Contains(window->GetBoundsInScreen()));
 }
 
+// Tests that floated windows that are moved to an external display are still
+// visible. Regression test for b/286864430.
+TEST_F(WindowFloatTest, MoveFloatedWindowToOtherDisplay) {
+  // On two displays of the same size, this was never an issue. The issue
+  // happened if the destination display was narrower than the source display.
+  UpdateDisplay("1200x800,1201+0-600x800");
+
+  // Create a floated window on the primary display. Upon floating, it will
+  // automatically reposition to the bottom right corner.
+  std::unique_ptr<aura::Window> window = CreateFloatedWindow();
+  ASSERT_EQ(Shell::GetAllRootWindows()[0], window->GetRootWindow());
+
+  // After moving the window to the secondary display, the bounds of `window`
+  // should be partially visible.
+  PressAndReleaseKey(ui::VKEY_M, ui::EF_ALT_DOWN | ui::EF_COMMAND_DOWN);
+  ASSERT_EQ(Shell::GetAllRootWindows()[1], window->GetRootWindow());
+  EXPECT_TRUE(Shell::GetAllRootWindows()[1]->GetBoundsInScreen().Intersects(
+      window->GetBoundsInScreen()));
+}
+
 TEST_F(WindowFloatTest, FloatWindowBoundsWithZoomDisplay) {
   UpdateDisplay("1600x1000");
 

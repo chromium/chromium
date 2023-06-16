@@ -131,6 +131,20 @@ class FloatLayoutManager : public WmDefaultLayoutManager {
   ~FloatLayoutManager() override = default;
 
   // WmDefaultLayoutManager:
+  void OnWindowAddedToLayout(aura::Window* child) override {
+    // We don't support multiple displays in tablet mode, so this function is
+    // called when the window is moved into the float container from a desk
+    // container. This happens during a state change, and we can let the
+    // transition event handle setting the floated window bounds instead.
+    if (Shell::Get()->IsInTabletMode()) {
+      return;
+    }
+
+    WindowState* window_state = WindowState::Get(child);
+    WMEvent event(WM_EVENT_ADDED_TO_WORKSPACE);
+    window_state->OnWMEvent(&event);
+  }
+
   void SetChildBounds(aura::Window* child,
                       const gfx::Rect& requested_bounds) override {
     // This should result in sending a bounds change WMEvent to properly support

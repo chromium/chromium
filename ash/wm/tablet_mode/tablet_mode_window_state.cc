@@ -404,8 +404,8 @@ void TabletModeWindowState::OnWMEvent(WindowState* window_state,
     }
     case WM_EVENT_ADDED_TO_WORKSPACE:
       // Update the window to maximized or centered if it cannot maximize.
-      // If an already snapped window or pinned window gets added to the
-      // workspace, the window should not be forced maximized, rather retain
+      // If an already snapped window or floated or pinned window gets added to
+      // the workspace, the window should not be forced maximized, rather retain
       // its previous state.
       UpdateWindow(window_state,
                    AdjustStateForTabletMode(window_state, current_state_type_),
@@ -538,7 +538,8 @@ WindowStateType TabletModeWindowState::AdjustStateForTabletMode(
     WindowState* window_state,
     WindowStateType current_state_type) {
   if (chromeos::IsSnappedWindowStateType(current_state_type) ||
-      chromeos::IsPinnedWindowStateType(current_state_type)) {
+      chromeos::IsPinnedWindowStateType(current_state_type) ||
+      current_state_type == chromeos::WindowStateType::kFloated) {
     return window_state->GetStateType();
   }
 
