@@ -2,13 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
+
 #import <Cocoa/Cocoa.h>
 #import <QuartzCore/QuartzCore.h>
 
-#import "chrome/browser/ui/cocoa/confirm_quit_panel_controller.h"
-
 #include "base/check_op.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -21,6 +20,10 @@
 #import "ui/base/accelerators/platform_accelerator_cocoa.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Constants ///////////////////////////////////////////////////////////////////
 
 // Leeway between the |targetDate| and the current time that will confirm a
@@ -32,7 +35,7 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 // The content view of the window that draws a custom frame.
 @interface ConfirmQuitFrameView : NSView {
  @private
-  NSTextField* _message;  // Weak, owned by the view hierarchy.
+  NSTextField* __weak _message;
 }
 - (void)setMessageText:(NSString*)text;
 @end
@@ -41,24 +44,23 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 
 - (instancetype)initWithFrame:(NSRect)frameRect {
   if ((self = [super initWithFrame:frameRect])) {
-    base::scoped_nsobject<NSTextField> message(
-        // The frame will be fixed up when |-setMessageText:| is called.
-        [[NSTextField alloc] initWithFrame:NSZeroRect]);
-    _message = message.get();
-    [_message setEditable:NO];
-    [_message setSelectable:NO];
-    [_message setBezeled:NO];
-    [_message setDrawsBackground:NO];
-    [_message setFont:[NSFont boldSystemFontOfSize:24]];
-    [_message setTextColor:[NSColor whiteColor]];
-    [self addSubview:_message];
+    // The frame will be fixed up when |-setMessageText:| is called.
+    NSTextField* message = [[NSTextField alloc] initWithFrame:NSZeroRect];
+    message.editable = NO;
+    message.selectable = NO;
+    message.bezeled = NO;
+    message.drawsBackground = NO;
+    message.font = [NSFont boldSystemFontOfSize:24];
+    message.textColor = NSColor.whiteColor;
+    [self addSubview:message];
+    _message = message;
   }
   return self;
 }
 
 - (void)drawRect:(NSRect)dirtyRect {
   const CGFloat kCornerRadius = 5.0;
-  NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:[self bounds]
+  NSBezierPath* path = [NSBezierPath bezierPathWithRoundedRect:self.bounds
                                                        xRadius:kCornerRadius
                                                        yRadius:kCornerRadius];
 
@@ -71,33 +73,33 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
   const CGFloat kHorizontalPadding = 30;  // In view coordinates.
 
   // Style the string.
-  base::scoped_nsobject<NSMutableAttributedString> attrString(
-      [[NSMutableAttributedString alloc] initWithString:text]);
-  base::scoped_nsobject<NSShadow> textShadow([[NSShadow alloc] init]);
-  [textShadow.get() setShadowColor:[NSColor colorWithCalibratedWhite:0
-                                                               alpha:0.6]];
-  [textShadow.get() setShadowOffset:NSMakeSize(0, -1)];
-  [textShadow setShadowBlurRadius:1.0];
+  NSMutableAttributedString* attrString =
+      [[NSMutableAttributedString alloc] initWithString:text];
+  NSShadow* textShadow = [[NSShadow alloc] init];
+  textShadow.shadowColor = [NSColor colorWithCalibratedWhite:0 alpha:0.6];
+  textShadow.shadowOffset = NSMakeSize(0, -1);
+  textShadow.shadowBlurRadius = 1.0;
   [attrString addAttribute:NSShadowAttributeName
                      value:textShadow
-                     range:NSMakeRange(0, [text length])];
-  [_message setAttributedStringValue:attrString];
+                     range:NSMakeRange(0, text.length)];
+  _message.attributedStringValue = attrString;
 
   // Fixup the frame of the string.
   [_message sizeToFit];
-  NSRect messageFrame = [_message frame];
-  NSRect frameInViewSpace =
-      [_message convertRect:[[self window] frame] fromView:nil];
+  NSRect messageFrame = _message.frame;
+  NSRect frameInViewSpace = [_message convertRect:self.window.frame
+                                         fromView:nil];
 
-  if (NSWidth(messageFrame) > NSWidth(frameInViewSpace))
+  if (NSWidth(messageFrame) > NSWidth(frameInViewSpace)) {
     frameInViewSpace.size.width = NSWidth(messageFrame) + kHorizontalPadding;
+  }
 
   messageFrame.origin.x = NSWidth(frameInViewSpace) / 2 - NSMidX(messageFrame);
   messageFrame.origin.y = NSHeight(frameInViewSpace) / 2 - NSMidY(messageFrame);
 
-  [[self window] setFrame:[_message convertRect:frameInViewSpace toView:nil]
-                  display:YES];
-  [_message setFrame:messageFrame];
+  [self.window setFrame:[_message convertRect:frameInViewSpace toView:nil]
+                display:YES];
+  _message.frame = messageFrame;
 }
 
 @end
@@ -105,39 +107,31 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 // Animation ///////////////////////////////////////////////////////////////////
 
 // This animation will run through all the windows of the passed-in
-// NSApplication and will fade their alpha value to 0.0. When the animation is
-// complete, this will release itself.
-@interface FadeAllWindowsAnimation : NSAnimation<NSAnimationDelegate> {
- @private
-  NSApplication* _application;
-}
+// NSApplication and will fade their alpha value to 0.0.
+@interface FadeAllWindowsAnimation : NSAnimation <NSAnimationDelegate>
 - (instancetype)initWithApplication:(NSApplication*)app
                   animationDuration:(NSTimeInterval)duration;
 @end
 
-
-@implementation FadeAllWindowsAnimation
+@implementation FadeAllWindowsAnimation {
+  NSApplication* __strong _application;
+}
 
 - (instancetype)initWithApplication:(NSApplication*)app
                   animationDuration:(NSTimeInterval)duration {
   if ((self = [super initWithDuration:duration
                        animationCurve:NSAnimationLinear])) {
     _application = app;
-    [self setDelegate:self];
+    self.delegate = self;
   }
   return self;
 }
 
 - (void)setCurrentProgress:(NSAnimationProgress)progress {
-  for (NSWindow* window in [_application windows]) {
+  for (NSWindow* window in _application.windows) {
     if (chrome::FindBrowserWithWindow(window))
-      [window setAlphaValue:1.0 - progress];
+      window.alphaValue = 1.0 - progress;
   }
-}
-
-- (void)animationDidStop:(NSAnimation*)anim {
-  DCHECK_EQ(self, anim);
-  [self autorelease];
 }
 
 @end
@@ -166,45 +160,48 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
     g_confirmQuitPanelController =
         [[ConfirmQuitPanelController alloc] init];
   }
-  return [[g_confirmQuitPanelController retain] autorelease];
+  return g_confirmQuitPanelController;
 }
 
 - (instancetype)init {
   const NSRect kWindowFrame = NSMakeRect(0, 0, 350, 70);
-  base::scoped_nsobject<NSWindow> window([[NSWindow alloc]
-      initWithContentRect:kWindowFrame
-                styleMask:NSWindowStyleMaskBorderless
-                  backing:NSBackingStoreBuffered
-                    defer:NO]);
+  NSWindow* window =
+      [[NSWindow alloc] initWithContentRect:kWindowFrame
+                                  styleMask:NSWindowStyleMaskBorderless
+                                    backing:NSBackingStoreBuffered
+                                      defer:NO];
   if ((self = [super initWithWindow:window])) {
-    [window setDelegate:self];
-    [window setBackgroundColor:[NSColor clearColor]];
-    [window setOpaque:NO];
-    [window setHasShadow:NO];
+    window.delegate = self;
+    window.backgroundColor = NSColor.clearColor;
+    window.opaque = NO;
+    window.hasShadow = NO;
+    window.releasedWhenClosed = NO;
 
     // Create the content view. Take the frame from the existing content view.
-    NSRect frame = [[window contentView] frame];
-    base::scoped_nsobject<ConfirmQuitFrameView> frameView(
-        [[ConfirmQuitFrameView alloc] initWithFrame:frame]);
-    _contentView = frameView.get();
-    [window setContentView:_contentView];
+    NSRect frame = window.contentView.frame;
+    ConfirmQuitFrameView* frameView =
+        [[ConfirmQuitFrameView alloc] initWithFrame:frame];
+    window.contentView = frameView;
 
     // Set the proper string.
-    NSString* message = l10n_util::GetNSStringF(IDS_CONFIRM_TO_QUIT_DESCRIPTION,
-        base::SysNSStringToUTF16([[self class] keyCommandString]));
-    [_contentView setMessageText:message];
+    NSString* message = l10n_util::GetNSStringF(
+        IDS_CONFIRM_TO_QUIT_DESCRIPTION,
+        base::SysNSStringToUTF16(
+            [ConfirmQuitPanelController keyCommandString]));
+    frameView.messageText = message;
   }
   return self;
 }
 
 - (BOOL)runModalLoopForApplication:(NSApplication*)app {
-  base::scoped_nsobject<ConfirmQuitPanelController> keepAlive([self retain]);
+  [[maybe_unused]] ConfirmQuitPanelController* __attribute__((
+      objc_precise_lifetime)) keepAlive = self;
 
   // If this is the second of two such attempts to quit within a certain time
   // interval, then just quit.
   // Time of last quit attempt, if any.
   static NSDate* lastQuitAttempt;  // Initially nil, as it's static.
-  NSDate* timeNow = [NSDate date];
+  NSDate* timeNow = NSDate.date;
   if (lastQuitAttempt &&
       [timeNow timeIntervalSinceDate:lastQuitAttempt] < kTimeDeltaFuzzFactor) {
     // The panel tells users to Hold Cmd+Q. However, we also want to have a
@@ -217,19 +214,19 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
     // for the KeyUp event to commit the quit.
     [self hideAllWindowsForApplication:app withDuration:0];
     NSEvent* nextEvent = [self pumpEventQueueForKeyUp:app
-                                            untilDate:[NSDate distantFuture]];
+                                            untilDate:NSDate.distantFuture];
     [app discardEventsMatchingMask:NSEventMaskAny beforeEvent:nextEvent];
 
     // Based on how long the user held the keys, record the metric.
-    if ([[NSDate date] timeIntervalSinceDate:timeNow] <
-        confirm_quit::kDoubleTapTimeDelta.InSecondsF())
+    if ([NSDate.date timeIntervalSinceDate:timeNow] <
+        confirm_quit::kDoubleTapTimeDelta.InSecondsF()) {
       confirm_quit::RecordHistogram(confirm_quit::kDoubleTap);
-    else
+    } else {
       confirm_quit::RecordHistogram(confirm_quit::kTapHold);
+    }
     return YES;
   } else {
-    [lastQuitAttempt release];  // Harmless if already nil.
-    lastQuitAttempt = [timeNow retain];  // Record this attempt for next time.
+    lastQuitAttempt = timeNow;  // Record this attempt for next time.
   }
 
   // Show the info panel that explains what the user must to do confirm quit.
@@ -238,7 +235,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   // Explicitly announce the hold-to-quit message. For an ordinary modal dialog
   // VoiceOver would announce it and read its message, but VoiceOver does not do
   // this for windows whose styleMask is NSWindowStyleMaskBorderless, so do it
-  // manually here. Without this screenreader users have no way to know why
+  // manually here. Without this screen reader users have no way to know why
   // their quit hotkey seems not to work.
   [self sendAccessibilityAnnouncement];
 
@@ -260,7 +257,7 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
     // Wait for the time expiry to happen. Once past the hold threshold,
     // commit to quitting and hide all the open windows.
     if (!willQuit) {
-      NSDate* now = [NSDate date];
+      NSDate* now = NSDate.date;
       NSTimeInterval difference = [targetDate timeIntervalSinceDate:now];
       if (difference < kTimeDeltaFuzzFactor) {
         willQuit = YES;
@@ -298,18 +295,19 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 - (void)windowWillClose:(NSNotification*)notif {
   // Release all animations because CAAnimation retains its delegate (self),
   // which will cause a retain cycle. Break it!
-  [[self window] setAnimations:@{}];
-  g_confirmQuitPanelController = nil;
-  [self autorelease];
+  self.window.animations = @{};
+  g_confirmQuitPanelController = nil;  // releases self
 }
 
 - (void)showWindow:(id)sender {
   // If a panel that is fading out is going to be reused here, make sure it
   // does not get released when the animation finishes.
-  base::scoped_nsobject<ConfirmQuitPanelController> keepAlive([self retain]);
-  [[self window] setAnimations:@{}];
-  [[self window] center];
-  [[self window] setAlphaValue:1.0];
+  [[maybe_unused]] ConfirmQuitPanelController* __attribute__((
+      objc_precise_lifetime)) keepAlive = self;
+
+  self.window.animations = @{};
+  [self.window center];
+  self.window.alphaValue = 1.0;
   [super showWindow:sender];
 }
 
@@ -320,20 +318,14 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 }
 
 - (void)animateFadeOut {
-  NSWindow* window = [self window];
-  base::scoped_nsobject<CAAnimation> animation(
-      [[window animationForKey:@"alphaValue"] copy]);
-  [animation setDelegate:self];
-  [animation setDuration:0.2];
-  NSMutableDictionary* dictionary =
-      [NSMutableDictionary dictionaryWithDictionary:[window animations]];
+  NSWindow* window = self.window;
+  CAAnimation* animation = [[window animationForKey:@"alphaValue"] copy];
+  animation.delegate = self;
+  animation.duration = 0.2;
+  NSMutableDictionary* dictionary = [[window animations] mutableCopy];
   dictionary[@"alphaValue"] = animation;
-  [window setAnimations:dictionary];
-  [[window animator] setAlphaValue:0.0];
-}
-
-- (void)animationDidStart:(CAAnimation*)theAnimation {
-  // CAAnimationDelegate method added on OSX 10.12.
+  window.animations = dictionary;
+  window.animator.alphaValue = 0.0;
 }
 
 - (void)animationDidStop:(CAAnimation*)theAnimation finished:(BOOL)finished {
@@ -344,7 +336,8 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 // key combination for quit. It then gets the modifiers and builds a string
 // to display them.
 + (NSString*)keyCommandString {
-  return [[self class] keyCombinationForMenuItem:[self quitMenuItem]];
+  return [ConfirmQuitPanelController
+      keyCombinationForMenuItem:[ConfirmQuitPanelController quitMenuItem]];
 }
 
 // Runs a nested loop that pumps the event queue until the next KeyUp event.
@@ -361,26 +354,27 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
   FadeAllWindowsAnimation* animation =
       [[FadeAllWindowsAnimation alloc] initWithApplication:app
                                          animationDuration:duration];
-  // Releases itself when the animation stops.
+
+  // -startAnimation holds a strong reference to the animation until it is
+  // complete.
   [animation startAnimation];
 }
 
 // This returns the NSMenuItem that quits the application.
 + (NSMenuItem*)quitMenuItem {
-  NSMenu* mainMenu = [NSApp mainMenu];
   // Get the application menu (i.e. Chromium).
-  NSMenu* appMenu = [[mainMenu itemAtIndex:0] submenu];
-  for (NSMenuItem* item in [appMenu itemArray]) {
+  NSMenu* appMenu = [[NSApp.mainMenu itemAtIndex:0] submenu];
+  for (NSMenuItem* item in appMenu.itemArray) {
     // Find the Quit item.
-    if ([item action] == @selector(terminate:)) {
+    if (item.action == @selector(terminate:)) {
       return item;
     }
   }
 
   // Default to Cmd+Q.
-  NSMenuItem* item = [[[NSMenuItem alloc] initWithTitle:@""
-                                                 action:@selector(terminate:)
-                                          keyEquivalent:@"q"] autorelease];
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:@""
+                                                action:@selector(terminate:)
+                                         keyEquivalent:@"q"];
   item.keyEquivalentModifierMask = NSEventModifierFlagCommand;
   return item;
 }
@@ -405,10 +399,10 @@ ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
 - (void)sendAccessibilityAnnouncement {
   NSString* message = l10n_util::GetNSStringF(
       IDS_CONFIRM_TO_QUIT_DESCRIPTION,
-      base::SysNSStringToUTF16([[self class] keyCommandString]));
+      base::SysNSStringToUTF16([ConfirmQuitPanelController keyCommandString]));
 
   NSAccessibilityPostNotificationWithUserInfo(
-      [NSApp mainWindow], NSAccessibilityAnnouncementRequestedNotification, @{
+      NSApp.mainWindow, NSAccessibilityAnnouncementRequestedNotification, @{
         NSAccessibilityAnnouncementKey : message,
         NSAccessibilityPriorityKey : @(NSAccessibilityPriorityHigh),
       });
