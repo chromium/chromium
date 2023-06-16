@@ -46,11 +46,6 @@ BASE_FEATURE(kPolicyLogsPageIOS,
              base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_IOS)
 
-#if !BUILDFLAG(IS_IOS) || !BUILDFLAG(IS_ANDROID)
-BASE_FEATURE(kPolicyLogsPageDesktop,
-             "PolicyLogsPageDesktop",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-#endif  // !BUILDFLAG(IS_IOS) || !!BUILDFLAG(IS_ANDROID)
 }  // namespace features
 
 }  // namespace policy

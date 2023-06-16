@@ -21,6 +21,7 @@
 // messages logged with DLOG are still important to be seen on the
 // chrome://policy/logs page in release mode. The DLOG call in StreamLog() will
 // do the check as usual for command line logging.
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_IOS)
 #define LOG_POLICY(log_severity, log_source)                                  \
   LOG_POLICY_##log_severity(::policy::PolicyLogger::LogHelper::LogType::kLog, \
                             log_source)
@@ -49,6 +50,12 @@
   ::policy::PolicyLogger::LogHelper(                           \
       log_type, ::policy::PolicyLogger::Log::Severity::kError, \
       ::policy::PolicyLogger::LogHelper::kNoVerboseLog, log_source, FROM_HERE)
+#else
+#define LOG_POLICY(log_severity, log_source) LOG(log_severity)
+#define DLOG_POLICY(log_severity, log_source) DLOG(log_severity)
+#define VLOG_POLICY(log_verbosity, log_source) VLOG(log_verbosity)
+#define DVLOG_POLICY(log_verbosity, log_source) DVLOG(log_verbosity)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 #define POLICY_AUTH ::policy::PolicyLogger::Log::Source::kAuthentication
 #define POLICY_PROCESSING ::policy::PolicyLogger::Log::Source::kPolicyProcessing
@@ -101,7 +108,7 @@ class POLICY_EXPORT PolicyLogger {
 
   // Helper class to temporarily hold log information before adding it as a Log
   // object to the logs list when it is destroyed.
-  class POLICY_EXPORT LogHelper {
+  class LogHelper {
    public:
     // Value indicating that the log is not from VLOG, DVLOG, and other verbose
     // log macros.
@@ -164,18 +171,10 @@ class POLICY_EXPORT PolicyLogger {
   // test.
   void ResetLoggerAfterTest();
 
-  // Resets the sequenced task runner after the task environment changes between
-  // tests in the same test suite.
-  void ResetLoggerTaskRunnerForTest();
-
  private:
-  // Calls `AddLogImpl` or schedules it if called from the wrong sequence to add
-  // the new log to the logs list.
-  void AddLog(Log&& new_log);
-
   // Adds a new log to the logs_ list and calls `ScheduleOldLogsDeletion` if
   // there is no deletion task scheduled.
-  void AddLogImpl(Log&& new_log);
+  void AddLog(Log&& new_log);
 
   // Deletes logs in the list that have been in the list for `kTimeToLive`
   // minutes to an hour.
@@ -195,8 +194,6 @@ class POLICY_EXPORT PolicyLogger {
   bool is_log_deletion_scheduled_{false};
 
   std::vector<Log> logs_ GUARDED_BY_CONTEXT(logs_list_sequence_checker_);
-
-  scoped_refptr<base::SequencedTaskRunner> logging_sequence_;
 
   SEQUENCE_CHECKER(logs_list_sequence_checker_);
 
