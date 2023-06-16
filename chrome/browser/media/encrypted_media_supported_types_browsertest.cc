@@ -1092,8 +1092,14 @@ IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
       kExternalClearKey, kAudioWebMMimeType, video_mp4_hevc_codecs()));
 }
 
+// TODO(crbug.com/1451037): Flaky on "Mac12 Tests" builder.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_Video_MP4 DISABLED_Video_MP4
+#else
+#define MAYBE_Video_MP4 Video_MP4
+#endif
 IN_PROC_BROWSER_TEST_F(EncryptedMediaSupportedTypesExternalClearKeyTest,
-                       Video_MP4) {
+                       MAYBE_Video_MP4) {
   // Valid video types.
   EXPECT_ECK_PROPRIETARY(IsSupportedByKeySystem(
       kExternalClearKey, kVideoMP4MimeType, video_mp4_codecs()));
