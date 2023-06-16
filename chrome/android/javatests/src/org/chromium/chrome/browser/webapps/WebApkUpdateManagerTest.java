@@ -30,6 +30,7 @@ import org.chromium.base.test.params.ParameterizedRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
 import org.chromium.base.test.util.CommandLineFlags;
+import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.blink.mojom.DisplayMode;
 import org.chromium.chrome.browser.ActivityTabProvider;
@@ -839,6 +840,7 @@ public class WebApkUpdateManagerTest {
     @Test(expected = AssertionError.class)
     @MediumTest
     @Feature({"WebApk"})
+    @DisabledTest(message = "See crbug.com/1455260") // Disabled because it is flaky
     public void testImageDiffDifferentDimensions() throws Exception {
         Bitmap allBlack1x1 = Bitmap.createBitmap(
                 new int[] {0x00000000, 0x00000000}, 1, 1, Bitmap.Config.ARGB_8888);
