@@ -143,8 +143,10 @@
     "win10-angle-chromium-x64-nvidia": "Ubuntu-22.04"
   },
   "try": {
+    "3pp-linux-amd64-packager": "Ubuntu-22.04",
     "android-12-x64-rel": "Ubuntu-22.04",
     "android-angle-chromium-try": "Ubuntu-22.04",
+    "android-pie-arm64-dbg": "Ubuntu-22.04",
     "android_optional_gpu_tests_rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel": "Ubuntu-22.04",
     "chromeos-amd64-generic-rel-compilator": "Ubuntu-22.04",
@@ -173,6 +175,7 @@
     "gpu-try-android-m-nexus-5x-64": "Ubuntu-22.04",
     "gpu-try-linux-nvidia-dbg": "Ubuntu-22.04",
     "gpu-try-linux-nvidia-rel": "Ubuntu-22.04",
+    "linux-1mbu-compile-fyi-rel": "Ubuntu-22.04",
     "linux-angle-chromium-try": "Ubuntu-22.04",
     "linux-chromeos-rel": "Ubuntu-22.04",
     "linux-lacros-rel": "Ubuntu-22.04",
