@@ -4509,6 +4509,14 @@ TEST_F(DisplayTest, CanSkipRenderPass) {
 
 class SkiaDelegatedInkRendererTest : public DisplayTest {
  public:
+  ~SkiaDelegatedInkRendererTest() override {
+    // Reset `client_` in `display_` to avoid accessing DisplayClient after
+    // `client_` is destructed. Without this, `display_` which is declared in
+    // DisplayTest class is destructed after `client_` which is declared in this
+    // class.
+    display_->ResetDisplayClientForTesting(&client_);
+  }
+
   void SetUp() override { EnablePrediction(); }
 
   void SetUpRenderers() {

@@ -46,6 +46,10 @@ DirectLayerTreeFrameSink::DirectLayerTreeFrameSink(
 
 DirectLayerTreeFrameSink::~DirectLayerTreeFrameSink() {
   DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
+  // Reset `client_` in Display to avoid accessing `client_` after this is
+  // destructed. This is to resolve the circular dependency between Display and
+  // DirectLayerTreeFrameSink.
+  display_->ResetDisplayClientForTesting(/*old_client=*/this);
 }
 
 bool DirectLayerTreeFrameSink::BindToClient(

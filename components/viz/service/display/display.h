@@ -212,6 +212,10 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
       mojo::PendingReceiver<gfx::mojom::DelegatedInkPointRenderer>
           pending_receiver);
 
+  // `old_client` is used to guarantee that the callee is a correct owner of
+  // this Display instance.
+  void ResetDisplayClientForTesting(DisplayClient* old_client);
+
  protected:
   friend class DisplayTest;
   // PresentationGroupTiming stores rendering pipeline stage timings associated
@@ -265,7 +269,7 @@ class VIZ_SERVICE_EXPORT Display : public DisplaySchedulerClient,
   // Points to the viz-global singleton.
   const raw_ptr<const DebugRendererSettings> debug_settings_;
 
-  raw_ptr<DisplayClient, DanglingUntriaged> client_ = nullptr;
+  raw_ptr<DisplayClient> client_ = nullptr;
   base::ObserverList<DisplayObserver>::Unchecked observers_;
   raw_ptr<SurfaceManager> surface_manager_ = nullptr;
   const FrameSinkId frame_sink_id_;

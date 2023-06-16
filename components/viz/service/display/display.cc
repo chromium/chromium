@@ -1505,4 +1505,9 @@ void Display::InitDelegatedInkPointRendererReceiver(
   }
 }
 
+void Display::ResetDisplayClientForTesting(DisplayClient* old_client) {
+  CHECK_EQ(client_, old_client);
+  client_ = nullptr;
+}
+
 }  // namespace viz
