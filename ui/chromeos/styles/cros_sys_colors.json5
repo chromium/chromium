@@ -57,7 +57,7 @@
     'cros-textfield-background-color' : '$cros.sys.input-field-on-shaded',
     'cros-textfield-label-color' : '$cros.sys.on-surface',
     'cros-slider-color-active' : '$cros.sys.primary',
-    'cros-slider-track-color-active': '$cros.sys.primary-container',
+    'cros-slider-track-color-active': '$cros.sys.highlight-shape',
     /** cros.sys.primary-container @ 30% */
     'cros-slider-track-color-inactive': 'rgba($cros.sys.disabled.rgb,.3)',
     'cros-slider-label-text-color' : '$cros.sys.on-primary',
