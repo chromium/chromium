@@ -72,6 +72,7 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuPropertiesDelegate;
 import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.R;
+import org.chromium.components.webapps.WebappsUtils;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.modelutil.MVCListAdapter.ModelList;
 import org.chromium.ui.modelutil.PropertyModel;
@@ -153,6 +154,7 @@ public class CustomTabActivityAppMenuTest {
 
         TestThreadUtils.runOnUiThreadBlocking(() -> FirstRunStatus.setFirstRunFlowComplete(true));
         mTestPage = mCustomTabActivityTestRule.getTestServer().getURL(TEST_PAGE);
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(true);
         LibraryLoader.getInstance().ensureInitialized();
     }
 
@@ -170,6 +172,8 @@ public class CustomTabActivityAppMenuTest {
             AppMenuHandler handler = coordinator.getAppMenuHandler();
             if (handler != null) handler.hideAppMenu();
         });
+
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
     }
 
     private Intent createMinimalCustomTabIntent() {
@@ -203,7 +207,6 @@ public class CustomTabActivityAppMenuTest {
         final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS_WITH_DIVIDER;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
@@ -231,6 +234,8 @@ public class CustomTabActivityAppMenuTest {
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
         int expectedPos = numMenuEntries + 1; // Add 1 to account for app menu icon row.
         Assert.assertEquals("Divider line at incorrect index.", expectedPos, dividerLine);
+
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     @Test
@@ -247,13 +252,14 @@ public class CustomTabActivityAppMenuTest {
         final int expectedMenuSize = numMenuEntries + NUM_CHROME_MENU_ITEMS;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
 
         // Assert the divider line is not displayed.
         int dividerLine = AppMenuTestSupport.findIndexOfMenuItemById(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.divider_line_id);
         int expectedPos = -1; // No custom menu entries, not expecting a divider line.
         Assert.assertEquals("Divider present when it shouldn't be.", expectedPos, dividerLine);
+
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     /**
@@ -290,11 +296,13 @@ public class CustomTabActivityAppMenuTest {
         final int expectedMenuSize = 2;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reader_mode_prefs_id));
+
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     /**
@@ -315,7 +323,7 @@ public class CustomTabActivityAppMenuTest {
         final int expectedMenuSize = 3;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.find_in_page_id));
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
@@ -338,6 +346,8 @@ public class CustomTabActivityAppMenuTest {
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.info_menu_id));
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.reload_menu_id));
+
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     @Test
@@ -354,7 +364,7 @@ public class CustomTabActivityAppMenuTest {
         final int expectedMenuSize = 3;
 
         Assert.assertNotNull("App menu is not initialized: ", menuItemsModelList);
-        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
+
         // Checks the first row (icons).
         Assert.assertNotNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.forward_menu_id));
@@ -377,6 +387,8 @@ public class CustomTabActivityAppMenuTest {
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.open_in_browser_id));
         Assert.assertNull(AppMenuTestSupport.getMenuItemPropertyModel(
                 mCustomTabActivityTestRule.getAppMenuCoordinator(), R.id.add_to_homescreen_id));
+
+        CustomTabsTestUtils.assertMenuSize(menuItemsModelList, expectedMenuSize);
     }
 
     /**
@@ -404,6 +416,8 @@ public class CustomTabActivityAppMenuTest {
     @Test
     @SmallTest
     public void testAddToHomeScreenMenuItemNoHomeScreen() throws Exception {
+        // Clear default setting from #setUp.
+        WebappsUtils.setAddToHomeIntentSupportedForTesting(null);
         Context contextToRestore = ContextUtils.getApplicationContext();
         TestContext testContext = new TestContext(contextToRestore);
         ContextUtils.initApplicationContextForTests(testContext);

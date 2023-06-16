@@ -16,6 +16,7 @@ import android.graphics.drawable.Icon;
 import android.os.Build;
 
 import androidx.annotation.RequiresApi;
+import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
@@ -176,6 +177,21 @@ public class WebappsUtils {
         try (StrictModeContext ignored = StrictModeContext.allowDiskReads()) {
             sIsRequestPinShortcutSupported =
                     shortcutManager != null && shortcutManager.isRequestPinShortcutSupported();
+        }
+    }
+
+    /**
+     * Override whether shortcuts are considered supported for testing.
+     * @param supported Whether shortcuts are supported. Pass null to reset.
+     */
+    @VisibleForTesting
+    public static void setAddToHomeIntentSupportedForTesting(Boolean supported) {
+        if (supported == null) {
+            sCheckedIfRequestPinShortcutSupported = false;
+            sIsRequestPinShortcutSupported = false;
+        } else {
+            sCheckedIfRequestPinShortcutSupported = true;
+            sIsRequestPinShortcutSupported = supported.booleanValue();
         }
     }
 }
