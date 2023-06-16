@@ -3,12 +3,12 @@
     margin-top: 0 !important;
   }
 
-  :host([input-valid_]) #pinValue {
+  :host([is-pin-valid]) #pinValue {
     --cr-input-error-display: none;
   }
 
   /* Margin = standard margin (16px) - error field margin (8px) */
-  :host([!input-valid_]) #customInputWrapper {
+  :host([!is-pin-valid]) #customInputWrapper {
     margin-bottom: 8px;
   }
 
@@ -38,8 +38,8 @@
       <cr-input id="pinValue" type="text" pattern="[0-9]{4}" minlength="4"
           maxlength="4" data-timeout-delay="250" aria-labelledby="pin"
           placeholder="$i18n{pinPlaceholder}" spellcheck="false"
-          disabled$="[[inputDisabled_(pinEnabled_, inputValid_, disabled)]]"
-          error-message="[[getPinErrorMessage_(inputValid_)]]" required
+          disabled$="[[inputDisabled_(pinEnabled_, isPinValid, disabled)]]"
+          error-message="[[getPinErrorMessage_(isPinValid)]]" required
           auto-validate>
       </cr-input>
     </div>

@@ -59,6 +59,8 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
         type: String,
         observer: 'errorMessageChanged_',
       },
+
+      isPinValid: Boolean,
       // </if>
     };
   }
@@ -68,6 +70,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
       'updatePrintButtonLabel_(destination.id)',
       'updatePrintButtonEnabled_(state, destination.id, maxSheets, sheetCount)',
       // <if expr="is_chromeos">
+      'updatePrintButtonEnabled_(isPinValid)',
       'updateErrorMessage_(state, destination.id, maxSheets, sheetCount)',
       // </if>
 
@@ -79,6 +82,9 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   maxSheets: number;
   sheetCount: number;
   state: State;
+  // <if expr="is_chromeos">
+  isPinValid: boolean;
+  // </if>
   private printButtonEnabled_: boolean;
   private printButtonLabel_: string;
   // <if expr="is_chromeos">
@@ -137,14 +143,22 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   }
 
   // <if expr="is_chromeos">
+
   /**
-   * @return Whether to disable "Print" button because of sheets limit policy.
+   * This disables the print button if the sheets limit policy is violated or
+   * pin printing is enabled and the pin is invalid.
    */
   private printButtonDisabled_(): boolean {
-    // The "Print" button is disabled if 3 conditions are met:
-    // * This is "real" printing, i.e. not saving to PDF/Drive.
-    // * Sheets policy is present.
-    // * Either number of sheets is not calculated or exceeds policy limit.
+    return this.isSheetsLimitPolicyViolated_() || !this.isPinValid;
+  }
+
+  /**
+   * The sheets policy is violated if 3 conditions are met:
+   * * This is "real" printing, i.e. not saving to PDF/Drive.
+   * * Sheets policy is present.
+   * * Either number of sheets is not calculated or exceeds policy limit.
+   */
+  private isSheetsLimitPolicyViolated_(): boolean {
     return !this.isPdf_() && this.maxSheets > 0 &&
         (this.sheetCount === 0 || this.sheetCount > this.maxSheets);
   }
@@ -155,7 +169,7 @@ export class PrintPreviewButtonStripElement extends PolymerElement {
   private showSheetsError_(): boolean {
     // The error is shown if the number of sheets is already calculated and the
     // print button is disabled.
-    return this.sheetCount > 0 && this.printButtonDisabled_();
+    return this.sheetCount > 0 && this.isSheetsLimitPolicyViolated_();
   }
 
   private updateErrorMessage_() {

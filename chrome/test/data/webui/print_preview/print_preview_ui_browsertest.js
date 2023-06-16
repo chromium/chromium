@@ -1003,6 +1003,12 @@ TEST_F('PrintPreviewButtonStripTest', 'ButtonStripFiresEvents', function() {
   this.runMochaTest(button_strip_test.TestNames.ButtonStripFiresEvents);
 });
 
+GEN('#if BUILDFLAG(IS_CHROMEOS)');
+TEST_F('PrintPreviewButtonStripTest', 'InvalidPinDisablesPrint', function() {
+  this.runMochaTest(button_strip_test.TestNames.InvalidPinDisablesPrint);
+});
+GEN('#endif');
+
 var PrintPreviewDestinationItemTest = class extends PrintPreviewTest {
   /** @override */
   get browsePreload() {

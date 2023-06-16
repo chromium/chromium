@@ -50,7 +50,7 @@
   </print-preview-destination-settings>
 <if expr="is_chromeos">
   <print-preview-pin-settings state="[[state]]" settings="[[settings]]"
-      disabled="[[controlsDisabled_]]"
+      disabled="[[controlsDisabled_]]" is-pin-valid="{{isPinValid_}}"
       hidden$="[[!settings.pin.available]]" class="settings-section">
   </print-preview-pin-settings>
 </if>
@@ -130,7 +130,7 @@
   </iron-collapse>
 </div>
 <print-preview-button-strip destination="[[destination]]"
-    state="[[state]]" first-load="[[firstLoad_]]"
+    state="[[state]]" first-load="[[firstLoad_]]" is-pin-valid="[[isPinValid_]]"
     sheet-count="[[sheetCount_]]" max-sheets="[[maxSheets]]"
     on-print-button-focused="onPrintButtonFocused_">
 </print-preview-button-strip>
