@@ -136,6 +136,7 @@
     "Mac Retina Release (AMD)": "Ubuntu-22.04",
     "Mac10.13 Tests": "Ubuntu-22.04",
     "Mac10.15 Tests": "Ubuntu-22.04",
+    "Mac13 Tests (dbg)": "Ubuntu-22.04",
     "Network Service Linux": "Ubuntu-22.04",
     "Nougat Phone Tester": "Ubuntu-22.04",
     "Oreo Phone Tester": "Ubuntu-22.04",
