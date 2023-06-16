@@ -21,11 +21,14 @@ declare_args() {
   # is false.
   # This only applies to Chromium itself, so the build_with_chromium check
   # should not be removed.
-  # TODO(crbug.com/1386212): Mac
-  # TODO(crbug.com/1271215): Windows
   enable_rust =
-      !is_mac && !is_ios && !is_win &&
-      !(is_official_build && (is_mac || is_win)) && build_with_chromium
+      build_with_chromium &&
+      # TODO(crbug.com/1386212): Mac and iOS. Note that enabling iOS, without
+      # enabling Mac for host tools, is not possible.
+      !is_mac && !is_ios && !(is_official_build && is_mac) &&
+      # TODO(crbug.com/1453618): Windows ARM64 is missing clang_rt libs, and
+      # clang_rt.profile is needed when coverage is enabled.
+      !(is_win && use_clang_coverage && target_cpu == "arm64")
 
   # As we incrementally enable Rust on mainstream builders, we want to enable
   # the toolchain (by switching 'enable_rust' to true) while still disabling
