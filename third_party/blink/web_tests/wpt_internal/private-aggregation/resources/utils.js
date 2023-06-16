@@ -8,7 +8,7 @@ const delay = ms => new Promise(resolve => step_timeout(resolve, ms));
  * received, returns the list of reports. Returns null if the timeout is reached
  * before a report is available.
  */
-const pollReports = async (url, origin = location.origin, timeout = 60 * 1000 /*ms*/) => {
+const pollReports = async (url, origin = location.origin, timeout = 1000 /*ms*/) => {
   let startTime = performance.now();
   while (performance.now() - startTime < timeout) {
     const resp = await fetch(new URL(url, origin));
@@ -32,7 +32,7 @@ const verifySharedInfo = (shared_info_str, is_debug_enabled) => {
   if (is_debug_enabled) {
     assert_equals(shared_info.debug_mode, 'enabled');
   } else {
-    assert_not_own_property(shared_info.debug_mode);
+    assert_not_own_property(shared_info, 'debug_mode');
   }
 
   const uuid_regex = RegExp(
@@ -108,7 +108,7 @@ const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_pa
   verifyAggregationServicePayloads(report.aggregation_service_payloads, expected_cleartext_payload);
 
   // Check there are no extra keys
-  assert_equals(Object.keys(report).length, 2);
+  assert_equals(Object.keys(report).length, debug_key ? 3 : 2);
 };
 
 /**
