@@ -13,6 +13,8 @@
 #include "mojo/public/c/system/trap.h"
 #include "mojo/public/cpp/system/trap.h"
 
+#include "base/record_replay.h"
+
 namespace mojo {
 namespace {
 
@@ -69,6 +71,8 @@ MojoResult Wait(Handle handle,
                 MojoHandleSignals signals,
                 MojoTriggerCondition condition,
                 MojoHandleSignalsState* signals_state) {
+  recordreplay::Assert("[RUN-2154] mojo::Wait");
+
   ScopedTrapHandle trap;
   MojoResult rv = CreateTrap(&TriggerContext::OnNotification, &trap);
   DCHECK_EQ(MOJO_RESULT_OK, rv);
@@ -82,6 +86,8 @@ MojoResult Wait(Handle handle,
   rv = MojoAddTrigger(trap.get().value(), handle.value(), signals, condition,
                       context->context_value(), nullptr);
   if (rv == MOJO_RESULT_INVALID_ARGUMENT) {
+    recordreplay::Assert("[RUN-2154] mojo::Wait #1");
+
     // Balanced above.
     context->Release();
     return rv;
@@ -93,14 +99,20 @@ MojoResult Wait(Handle handle,
   rv = MojoArmTrap(trap.get().value(), nullptr, &num_blocking_events,
                    &blocking_event);
   if (rv == MOJO_RESULT_FAILED_PRECONDITION) {
+    recordreplay::Assert("[RUN-2154] mojo::Wait #2");
+
     DCHECK_EQ(1u, num_blocking_events);
     if (signals_state)
       *signals_state = blocking_event.signals_state;
     return blocking_event.result;
   }
 
+  recordreplay::Assert("[RUN-2154] mojo::Wait #3");
+
   // Wait for the first notification only.
   context->event().Wait();
+
+  recordreplay::Assert("[RUN-2154] mojo::Wait #4");
 
   MojoResult ready_result = context->wait_result();
   DCHECK_NE(MOJO_RESULT_UNKNOWN, ready_result);
