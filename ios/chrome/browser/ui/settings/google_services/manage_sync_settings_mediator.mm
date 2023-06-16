@@ -12,6 +12,7 @@
 #import "components/autofill/core/common/autofill_prefs.h"
 #import "components/prefs/pref_service.h"
 #import "components/signin/public/base/consent_level.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
 #import "components/strings/grit/components_strings.h"
@@ -503,11 +504,18 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 #pragma mark - Loads sign out section
 
-- (void)loadSignOutSection {
-  if (self.syncAccountState ==
-      SyncSettingsAccountState::kAdvancedInitialSyncSetup) {
-    CHECK(!self.signOutAndTurnOffSyncItem);
-    return;
+- (void)loadSignOutAndTurnOffSyncSection {
+  switch (self.syncAccountState) {
+    case SyncSettingsAccountState::kSyncing:
+    case SyncSettingsAccountState::kSignedOut:
+      break;
+    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
+      CHECK(!self.signOutAndTurnOffSyncItem);
+      return;
+    case SyncSettingsAccountState::kSignedIn:
+      // For kSignedIn, loadSignOutAndManageAccountsSection will load the
+      // corresponding section.
+      return;
   }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
@@ -517,7 +525,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   [model insertSectionWithIdentifier:SignOutSectionIdentifier
                              atIndex:syncDataTypeSectionIndex + 1];
   TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:SignOutItemType];
+      [[TableViewTextItem alloc] initWithType:SignOutAndTurnOffSyncItemType];
   item.text = GetNSString(IDS_IOS_OPTIONS_ACCOUNTS_SIGN_OUT_TURN_OFF_SYNC);
   item.textColor = [UIColor colorNamed:kRedColor];
   self.signOutAndTurnOffSyncItem = item;
@@ -548,10 +556,19 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case SyncSettingsAccountState::kSignedOut:
       break;
     case SyncSettingsAccountState::kSignedIn:
+      // There should be a sign-out section. Load it if it's not there yet.
+      if (!hasSignOutSection) {
+        [self loadSignOutAndManageAccountsSection];
+        NSUInteger sectionIndex =
+            [model sectionForSectionIdentifier:SignOutSectionIdentifier];
+        [self.consumer
+            insertSections:[NSIndexSet indexSetWithIndex:sectionIndex]];
+      }
+      break;
     case SyncSettingsAccountState::kSyncing:
       // There should be a sign-out section. Load it if it's not there yet.
       if (!hasSignOutSection) {
-        [self loadSignOutSection];
+        [self loadSignOutAndTurnOffSyncSection];
         DCHECK(self.signOutAndTurnOffSyncItem);
         NSUInteger sectionIndex =
             [model sectionForSectionIdentifier:SignOutSectionIdentifier];
@@ -571,6 +588,27 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       }
       break;
   }
+}
+
+- (void)loadSignOutAndManageAccountsSection {
+  if (self.syncAccountState != SyncSettingsAccountState::kSignedIn) {
+    return;
+  }
+
+  // Creates the manage accounts and sign-out section.
+  TableViewModel* model = self.consumer.tableViewModel;
+  NSInteger advancedSettingsSectionIndex =
+      [model sectionForSectionIdentifier:AdvancedSettingsSectionIdentifier];
+  DCHECK_NE(NSNotFound, advancedSettingsSectionIndex);
+  [model insertSectionWithIdentifier:SignOutSectionIdentifier
+                             atIndex:advancedSettingsSectionIndex + 1];
+
+  // Creates items in the manage accounts and sign-out section.
+  TableViewTextItem* item =
+      [[TableViewTextItem alloc] initWithType:SignOutItemType];
+  item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
 }
 
 #pragma mark - Private
@@ -722,8 +760,9 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
   [self loadSyncDataTypeSection];
-  [self loadSignOutSection];
+  [self loadSignOutAndTurnOffSyncSection];
   [self loadAdvancedSettingsSection];
+  [self loadSignOutAndManageAccountsSection];
 }
 
 #pragma mark - BooleanObserver
@@ -843,6 +882,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
         }
         _autocompleteWalletPreference.value = value;
         break;
+      case SignOutAndTurnOffSyncItemType:
       case SignOutItemType:
       case EncryptionItemType:
       case GoogleActivityControlsItemType:
@@ -897,8 +937,11 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
       [self.syncErrorHandler openTrustedVaultReauthForDegradedRecoverability];
       break;
-    case SignOutItemType:
+    case SignOutAndTurnOffSyncItemType:
       [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];
+      break;
+    case SignOutItemType:
+      [self.commandHandler signOut];
       break;
     case SyncEverythingItemType:
     case AutofillDataTypeItemType:

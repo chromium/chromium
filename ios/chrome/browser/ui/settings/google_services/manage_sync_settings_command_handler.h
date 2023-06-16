@@ -19,6 +19,9 @@
 // popover dialog.
 - (void)showTurnOffSyncOptionsFromTargetRect:(CGRect)targetRect;
 
+// Signs out.
+- (void)signOut;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_

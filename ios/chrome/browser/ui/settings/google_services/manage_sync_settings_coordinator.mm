@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_coordinator.h"
 
 #import "base/check_op.h"
+#import "base/ios/block_types.h"
 #import "base/metrics/user_metrics.h"
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
@@ -251,6 +252,31 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
   };
   [self.signoutActionSheetCoordinator start];
+}
+
+- (void)signOut {
+  if (!self.authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
+    // This could happen in very rare cases, if the account somehow got removed
+    // after the settings UI was created.
+    return;
+  }
+
+  self.signOutFlowInProgress = YES;
+  [self.viewController preventUserInteraction];
+  __weak ManageSyncSettingsCoordinator* weakSelf = self;
+  ProceduralBlock signOutCompletion = ^() {
+    __strong ManageSyncSettingsCoordinator* strongSelf = weakSelf;
+    if (!strongSelf) {
+      return;
+    }
+    [strongSelf.viewController allowUserInteraction];
+    strongSelf.signOutFlowInProgress = NO;
+    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
+    [strongSelf closeManageSyncSettings];
+  };
+  self.authService->SignOut(
+      signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
+      /*force_clear_browsing_data=*/NO, signOutCompletion);
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate
