@@ -2687,5 +2687,23 @@ TEST_F(ArcVmClientAdapterTest, ArcPriorityAppLmkDelayEnabled_SomeApp) {
                      "ro.boot.arc.lmk.priority_app_delay_duration_sec=60"));
 }
 
+TEST_F(ArcVmClientAdapterTest, ArcLmkPerceptibleMinStateUpdateDisabled) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.enable_lmk_perceptible_min_state_update = false;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_FALSE(base::Contains(boot_notification_server()->received_data(),
+                              "ro.boot.arc.lmk.perceptible_min_state_update"));
+}
+
+TEST_F(ArcVmClientAdapterTest, ArcLmkPerceptibleMinStateUpdateEnabled) {
+  StartMiniArc();
+  UpgradeParams upgrade_params = GetPopulatedUpgradeParams();
+  upgrade_params.enable_lmk_perceptible_min_state_update = true;
+  UpgradeArcWithParams(true, std::move(upgrade_params));
+  EXPECT_TRUE(base::Contains(boot_notification_server()->received_data(),
+                             "ro.boot.arc.lmk.perceptible_min_state_update=1"));
+}
+
 }  // namespace
 }  // namespace arc

@@ -169,6 +169,11 @@ std::vector<std::string> GenerateUpgradeProps(
         upgrade_params.priority_app_lmk_delay_second));
   }
 
+  if (upgrade_params.enable_lmk_perceptible_min_state_update) {
+    result.push_back(base::StringPrintf(
+        "%s.arc.lmk.perceptible_min_state_update=1", prefix.c_str()));
+  }
+
   return result;
 }
 

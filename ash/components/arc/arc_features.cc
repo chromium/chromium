@@ -360,4 +360,10 @@ const base::FeatureParam<int> kPriorityAppLmkDelaySecond{
 const base::FeatureParam<std::string> kPriorityAppLmkDelayList{
     &kPriorityAppLmkDelay, "priority_app_lmk_delay_list", ""};
 
+// Controls the feature to update the minimum Android process state to be
+// considered to be killed under perceptible memory pressure. This is to prevent
+// top Android apps from being killed that result in bad user experience.
+BASE_FEATURE(kLmkPerceptibleMinStateUpdate,
+             "ArcLmkPerceptibleMinStateUpdate",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 }  // namespace arc
