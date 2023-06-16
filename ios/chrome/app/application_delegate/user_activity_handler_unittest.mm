@@ -93,10 +93,6 @@ class UserActivityHandlerTest : public PlatformTest {
     handle_startup_parameters_has_been_called_ = NO;
   }
 
-  NSString* GetTabIdForWebState(web::WebState* web_state) {
-    return web_state->GetStableIdentifier();
-  }
-
   // Mock & stub a NSUserActivity object with an arbitrary `interaction`
   // property. The object is mock'ed otherwise the same as the `base` parameter
   id CreateMockNSUserActivity(NSUserActivity* base,
