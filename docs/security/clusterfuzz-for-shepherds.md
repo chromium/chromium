@@ -48,12 +48,29 @@ Therefore, do this instead:
 
 * In the PoC, replace all paths where it's loading MojoJS scripts to be prefixed
   with `file:///gen` instead. For example:
-  ```
+```
   <script src="file:///gen/mojo/public/js/mojo_bindings_lite.js">
-  ```
+```
   This works because most of the ClusterFuzz Chrome binaries are [now built with](https://chromium-review.googlesource.com/c/chromium/src/+/1119727) `enable_ipc_fuzzer=true`.
+
 * If you believe the bug will reproduce on Linux, use the [linux_asan_chrome_mojo](https://clusterfuzz.com/upload-testcase?upload=true&job=linux_asan_chrome_mojo) job type.
 * If you believe the bug will only reproduce on Android, [ClusterFuzz can't help right now](https://crbug.com/1067103).
 * Otherwise, use any job type but specify extra command-line flags `--enable-blink-features=MojoJS`. In this case, ClusterFuzz might declare that a browser process crash is Critical severity, whereas because of the precondition of a compromised renderer [you may wish to adjust it down to High](severity-guidelines.md).
 
 [Example bug where these instructions have worked](https://crbug.com/1072983).
+
+## Gestures
+
+Some testcases require UI gestures to reproduce them. ClusterFuzz has a
+"gestures" field where you _may_ be able to specify such UI interactions. The
+language is platform-specific. On Linux, it's commands for
+[xdotool](https://manpages.ubuntu.com/manpages/trusty/man1/xdotool.1.html) in a
+Python-like list. For instance,
+```
+[ "type,'qx1sqOqB0ZbEFYn'","key,F3","key,F12" ]
+```
+As mouse coordinates are subject to change, it probably only makes sense to try
+gestures if the UI actions can be achieved purely using keystrokes. The relevant
+ClusterFuzz [code is in
+gesture_handler.py](https://github.com/google/clusterfuzz/blob/master/src/clusterfuzz/_internal/fuzzing/gesture_handler.py#L22)
+to figure out the languages for other platforms.
