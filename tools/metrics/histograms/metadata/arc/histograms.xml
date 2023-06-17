@@ -52,8 +52,8 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <variants name="ArcAppInstallTypes">
-  <variant name="Manual" summary="apps manually installed by the user"/>
-  <variant name="Policy" summary="apps installed by a managed user's policy"/>
+  <variant name="Manual" summary="app manually installed by the user"/>
+  <variant name="Policy" summary="app installed by a managed user's policy"/>
 </variants>
 
 <variants name="ArcAppKillDailyBackgroundVms">
@@ -496,10 +496,10 @@ chromium-metrics-reviews@google.com.
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Record the number of {ArcAppInstallTypes} installs that did not complete
-    after the very first login on a device. This metric is recorded when the ARC
-    session is stopped IFF it is the first session after opting in during the
-    sync consent screen.
+    Record the number of {ArcAppInstallTypes} that did not complete after the
+    very first login on a device. This metric is recorded when the ARC session
+    is stopped IFF it is the first session after opting in during the sync
+    consent screen.
   </summary>
   <token key="ArcAppInstallTypes" variants="ArcAppInstallTypes"/>
 </histogram>
@@ -510,10 +510,10 @@ chromium-metrics-reviews@google.com.
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Record the number of {ArcAppInstallTypes} installs that were requested after
-    the very first login on a device. This metric is recorded when the ARC
-    session is stopped IFF it is the first session after opting in during the
-    sync consent screen.
+    Record the number of {ArcAppInstallTypes} that were requested after the very
+    first login on a device. This metric is recorded when the ARC session is
+    stopped IFF it is the first session after opting in during the sync consent
+    screen.
   </summary>
   <token key="ArcAppInstallTypes" variants="ArcAppInstallTypes"/>
 </histogram>
@@ -523,10 +523,10 @@ chromium-metrics-reviews@google.com.
   <owner>batoon@google.com</owner>
   <owner>arc-core@google.com</owner>
   <summary>
-    Record the length of time it took to complete a {ArcAppInstallTypes} install
-    after the very first login on a device. This metric is recorded when the
-    install succeeds IFF it is the first session after opting in during the sync
-    consent screen.
+    Record the length of time it took to complete installation for one
+    {ArcAppInstallTypes} after the very first login on a device. This metric is
+    recorded when the install succeeds IFF it is the first session after opting
+    in during the sync consent screen.
   </summary>
   <token key="ArcAppInstallTypes" variants="ArcAppInstallTypes"/>
 </histogram>
