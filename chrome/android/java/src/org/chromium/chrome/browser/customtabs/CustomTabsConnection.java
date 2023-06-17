@@ -1276,7 +1276,7 @@ public class CustomTabsConnection {
                 mClientManager.getEngagementSignalsCallbackForSession(session);
         if (callback == null) return;
         try {
-            callback.onVerticalScrollEvent(isDirectionUp, null);
+            callback.onVerticalScrollEvent(isDirectionUp, Bundle.EMPTY);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
@@ -1305,7 +1305,7 @@ public class CustomTabsConnection {
                 mClientManager.getEngagementSignalsCallbackForSession(session);
         if (callback == null) return;
         try {
-            callback.onGreatestScrollPercentageIncreased(scrollPercentage, null);
+            callback.onGreatestScrollPercentageIncreased(scrollPercentage, Bundle.EMPTY);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
@@ -1332,7 +1332,7 @@ public class CustomTabsConnection {
                 mClientManager.getEngagementSignalsCallbackForSession(session);
         if (callback == null) return;
         try {
-            callback.onSessionEnded(didGetUserInteraction, null);
+            callback.onSessionEnded(didGetUserInteraction, Bundle.EMPTY);
         } catch (Exception e) {
             // Catching all exceptions is really bad, but we need it here,
             // because Android exposes us to client bugs by throwing a variety
