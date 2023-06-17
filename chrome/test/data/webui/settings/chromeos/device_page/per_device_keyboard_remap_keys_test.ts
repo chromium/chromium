@@ -3,19 +3,24 @@
 // found in the LICENSE file.
 
 import {FakeInputDeviceSettingsProvider, fakeKeyboards, Keyboard, KeyboardRemapModifierKeyRowElement, MetaKey, ModifierKey, Router, routes, setInputDeviceSettingsProviderForTesting, SettingsPerDeviceKeyboardRemapKeysElement} from 'chrome://os-settings/os_settings.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {isVisible} from 'chrome://webui-test/test_util.js';
 
 suite('<settings-per-device-keyboard-remap-keys>', () => {
   let page: SettingsPerDeviceKeyboardRemapKeysElement;
   let provider: FakeInputDeviceSettingsProvider;
 
-  setup(async () => {
+  teardown(() => {
+    page.remove();
+  });
+
+  async function initializePerDeviceKeyboardRemapKeys(): Promise<void> {
     provider = new FakeInputDeviceSettingsProvider();
     provider.setFakeKeyboards(fakeKeyboards);
     setInputDeviceSettingsProviderForTesting(provider);
-
     page = document.createElement('settings-per-device-keyboard-remap-keys');
     page.set('keyboards', fakeKeyboards);
     assertFalse(page.get('isInitialized'));
@@ -29,12 +34,8 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
 
     document.body.appendChild(page);
     provider.observeKeyboardSettings(page);
-    await flushTasks();
-  });
-
-  teardown(() => {
-    page.remove();
-  });
+    return flushTasks();
+  }
 
   function changeKeyboardExternalState(isExternal: boolean): Promise<void> {
     page.keyboard = {...page.keyboard, isExternal};
@@ -73,6 +74,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * Verify that the remap subpage is correctly loaded with keyboard data.
    */
   test('keyboard remap subpage loaded', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     assert(page.get('keyboard'));
 
     // Verify that the dropdown menu for unremapped key is displayed as default.
@@ -127,6 +129,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * keyboardId is passed through the query url.
    */
   test('keyboard remap subpage updated for different keyboard', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     // Update the subpage with a new keyboard.
     const url = new URLSearchParams(
         'keyboardId=' + encodeURIComponent(fakeKeyboards[2]!.id));
@@ -200,6 +203,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * Verify that the restore defaults button will restore the remapping keys.
    */
   test('keyboard remap subpage restore defaults', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     page.restoreDefaults();
     await flushTasks();
 
@@ -265,6 +269,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * the remapping page, it will switch back to per device keyboard page.
    */
   test('re-route to back page when keyboard disconnected', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     // Check it's currently in the modifier remapping page.
     assertEquals(
         routes.PER_DEVICE_KEYBOARD_REMAP_KEYS,
@@ -280,6 +285,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
    * prefs settings change.
    */
   test('Update keyboard settings', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     assertTrue(page.get('isInitialized'));
     // Set the modifier remappings to default stage.
     page.restoreDefaults();
@@ -305,6 +311,7 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
   });
 
   test('Keyboard description populated correctly', async () => {
+    await initializePerDeviceKeyboardRemapKeys();
     assertTrue(page.get('isInitialized'));
     assertEquals(
         'For ERGO K860, choose an action for each key', getPageDescription());
@@ -313,4 +320,17 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         'For Built-in Keyboard, choose an action for each key',
         getPageDescription());
   });
+
+  test(
+      'Keys grouped under Modifier/Other sections when alt flag enabled',
+      async () => {
+        loadTimeData.overrideValues({
+          enableAltClickAndSixPackCustomization: true,
+        });
+        await initializePerDeviceKeyboardRemapKeys();
+        assertTrue(
+            isVisible(page.shadowRoot!.querySelector('#modifierKeysHeader')));
+        assertTrue(
+            isVisible(page.shadowRoot!.querySelector('#otherKeysHeader')));
+      });
 });

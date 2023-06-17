@@ -17,6 +17,7 @@ import './keyboard_remap_modifier_key_row.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {PolymerElementProperties} from 'chrome://resources/polymer/v3_0/polymer/interfaces.js';
 import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -165,6 +166,15 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         type: Number,
         value: -1,
       },
+
+      isAltClickAndSixPackCustomizationEnabled: {
+        type: Boolean,
+        value() {
+          return loadTimeData.getBoolean(
+              'enableAltClickAndSixPackCustomization');
+        },
+        readOnly: true,
+      },
     };
   }
 
@@ -186,6 +196,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   }
 
   keyboard: Keyboard;
+  isAltClickAndSixPackCustomizationEnabled: boolean;
   private keyboards: Keyboard[];
   protected keyboardId: number;
   protected defaultRemappings: {[key: number]: ModifierKey} = {

@@ -14,12 +14,77 @@
     color: var(--cr-secondary-text-color);
     margin-inline-start: 20px;
   }
+
+  .subsection-header {
+    padding-inline-start: 0;
+  }
 </style>
 <div id="header">
   <div id="description">[[computeKeyboardKeysDescription(keyboard.*)]]</div>
 </div>
 <div class="subsection">
-  <keyboard-remap-modifier-key-row
+  <template is="dom-if" if="[[!isAltClickAndSixPackCustomizationEnabled]]">
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kMeta]]" id="metaKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeySearch}"
+        pref="{{fakeMetaPref}}"
+        remove-top-border>
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kControl]]" id="ctrlKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+        pref="{{fakeCtrlPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kAlt]]" id="altKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+        pref="{{fakeAltPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kEscape]]" id="escapeKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyEscape}"
+        pref="{{fakeEscPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kBackspace]]" id="backspaceKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyBackspace}"
+        pref="{{fakeBackspacePref}}">
+    </keyboard-remap-modifier-key-row>
+    <template is="dom-if" if="[[hasAssistantKey]]" restamp>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kAssistant]]" id="assistantKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+          pref="{{fakeAssistantPref}}">
+      </keyboard-remap-modifier-key-row>
+    </template>
+    <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
+      <keyboard-remap-modifier-key-row
+          default-remappings="[[defaultRemappings]]"
+          key="[[modifierKey.kCapsLock]]" id="capsLockKey"
+          meta-key="[[keyboard.metaKey]]"
+          aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+          pref="{{fakeCapsLockPref}}">
+      </keyboard-remap-modifier-key-row>
+    </template>
+  </template>
+  <template is="dom-if" if="[[isAltClickAndSixPackCustomizationEnabled]]">
+    <h2 class="subsection-header" id="modifierKeysHeader">
+      $i18n{modifierKeysLabel}
+    </h2>
+    <div class="subsection">
+      <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.kMeta]]" id="metaKey"
       meta-key="[[keyboard.metaKey]]"
@@ -27,21 +92,26 @@
       pref="{{fakeMetaPref}}"
       remove-top-border>
   </keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row
-      default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.kControl]]" id="ctrlKey"
-      meta-key="[[keyboard.metaKey]]"
-      aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
-      pref="{{fakeCtrlPref}}">
-  </keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row
-      default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.kAlt]]" id="altKey"
-      meta-key="[[keyboard.metaKey]]"
-      aria-label="$i18n{perDeviceKeyboardKeyAlt}"
-      pref="{{fakeAltPref}}">
-  </keyboard-remap-modifier-key-row>
-  <keyboard-remap-modifier-key-row
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kControl]]" id="ctrlKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyCtrl}"
+        pref="{{fakeCtrlPref}}">
+    </keyboard-remap-modifier-key-row>
+    <keyboard-remap-modifier-key-row
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kAlt]]" id="altKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyAlt}"
+        pref="{{fakeAltPref}}">
+    </keyboard-remap-modifier-key-row>
+    </div>
+    <h2 class="subsection-header" id="otherKeysHeader">
+      $i18n{otherKeysLabel}
+    </h2>
+    <div class="subsection">
+      <keyboard-remap-modifier-key-row
       default-remappings="[[defaultRemappings]]"
       key="[[modifierKey.kEscape]]" id="escapeKey"
       meta-key="[[keyboard.metaKey]]"
@@ -57,20 +127,21 @@
   </keyboard-remap-modifier-key-row>
   <template is="dom-if" if="[[hasAssistantKey]]" restamp>
     <keyboard-remap-modifier-key-row
-      default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.kAssistant]]" id="assistantKey"
-      meta-key="[[keyboard.metaKey]]"
-      aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
-      pref="{{fakeAssistantPref}}">
-  </keyboard-remap-modifier-key-row>
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kAssistant]]" id="assistantKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyAssistant}"
+        pref="{{fakeAssistantPref}}">
+    </keyboard-remap-modifier-key-row>
   </template>
   <template is="dom-if" if="[[hasCapsLockKey]]" restamp>
     <keyboard-remap-modifier-key-row
-      default-remappings="[[defaultRemappings]]"
-      key="[[modifierKey.kCapsLock]]" id="capsLockKey"
-      meta-key="[[keyboard.metaKey]]"
-      aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
-      pref="{{fakeCapsLockPref}}">
-  </keyboard-remap-modifier-key-row>
+        default-remappings="[[defaultRemappings]]"
+        key="[[modifierKey.kCapsLock]]" id="capsLockKey"
+        meta-key="[[keyboard.metaKey]]"
+        aria-label="$i18n{perDeviceKeyboardKeyCapsLock}"
+        pref="{{fakeCapsLockPref}}">
+    </keyboard-remap-modifier-key-row>
+    </div>
   </template>
 </div>

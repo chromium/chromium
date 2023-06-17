@@ -1724,6 +1724,8 @@ void DeviceSection::AddDevicePointersStrings(
       {"touchpadSimulateRightClickOptionSearch",
        IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_SEARCH},
       {"learnMoreLabel", IDS_SETTINGS_LEARN_MORE_LABEL},
+      {"modifierKeysLabel", IDS_SETTINGS_MODIFIER_KEYS_LABEL},
+      {"otherKeysLabel", IDS_SETTINGS_OTHER_KEYS_LABEL},
   };
   html_source->AddLocalizedStrings(kPointersStrings);
 

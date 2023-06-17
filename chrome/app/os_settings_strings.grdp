@@ -3018,6 +3018,13 @@ Press an assigned switch or key to remove assignment.
   <message name="IDS_SETTINGS_TOUCHPAD_SIMULATE_RIGHT_CLICK_OPTION_ALT" translateable="false" desc="In the touchpad settings subpage, the dropdown list item for the Alt + Click option.">
     alt + click
   </message>
+  <!-- TODO(b/286937607): Finalize and translate these strings -->
+  <message name="IDS_SETTINGS_MODIFIER_KEYS_LABEL" translateable="false" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the modifier keys (Ctrl, Alt, etc).">
+    Modifier keys
+  </message>
+  <message name="IDS_SETTINGS_OTHER_KEYS_LABEL" translateable="false" desc="In the remap keyboard keys settings subpage, the label for the section that contains all of the non-modifier keys (Backspace, Home, etc).">
+    Other keys
+  </message>
 
   <!-- Printing Page (OS Settings)-->
   <message name="IDS_SETTINGS_PRINT_AND_SCAN" desc="Title of the printing and scanning page and navigation item to get there.">
