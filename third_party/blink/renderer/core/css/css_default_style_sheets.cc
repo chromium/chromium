@@ -37,6 +37,7 @@
 #include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/execution_context/security_context.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/core/html/forms/html_button_element.h"
 #include "third_party/blink/renderer/core/html/forms/html_text_area_element.h"
 #include "third_party/blink/renderer/core/html/html_anchor_element.h"
 #include "third_party/blink/renderer/core/html/html_html_element.h"
@@ -362,7 +363,8 @@ bool CSSDefaultStyleSheets::EnsureDefaultStyleSheetsForElement(
           FormControlsVerticalWritingModeSupportEnabled() &&
       !form_controls_not_vertical_style_sheet_ &&
       (IsA<HTMLProgressElement>(element) || IsA<HTMLMeterElement>(element) ||
-       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element))) {
+       IsA<HTMLInputElement>(element) || IsA<HTMLTextAreaElement>(element) ||
+       IsA<HTMLButtonElement>(element))) {
     form_controls_not_vertical_style_sheet_ =
         ParseUASheet(UncompressResourceAsASCIIString(
             IDR_UASTYLE_FORM_CONTROLS_NOT_VERTICAL_CSS));

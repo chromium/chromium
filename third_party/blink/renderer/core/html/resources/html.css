@@ -408,10 +408,7 @@ button {
 }
 
 /* Form controls don't go vertical. */
-input:not([type="range"]):not([type="color"]), select {
-    writing-mode: horizontal-tb !important;
-}
-button:not(::-internal-selectmenu-button) {
+input:not([type="range"]):not([type="color"]):not([type="button"]):not([type="reset"]):not([type="submit"]):not([type="file"]), select {
     writing-mode: horizontal-tb !important;
 }
 
@@ -684,7 +681,8 @@ button {
     align-items: flex-start;
     text-align: center;
     cursor: default;
-    padding: 1px 6px;
+    padding-block: 1px;
+    padding-inline: 6px;
     border: 2px outset ButtonBorder;
     box-sizing: border-box;
     background-color: ButtonFace;
