@@ -6239,7 +6239,6 @@ static_library("ui") {
     deps += [
       "//components/offline_pages/core",
       "//components/offline_pages/core/background:background_offliner",
-      "//components/offline_pages/core/prefetch",
     ]
   }
 

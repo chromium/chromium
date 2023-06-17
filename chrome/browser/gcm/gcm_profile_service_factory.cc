@@ -31,10 +31,7 @@
 #endif
 
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-#include "chrome/browser/offline_pages/prefetch/prefetch_service_factory.h"
-#include "components/gcm_driver/gcm_driver.h"
-#include "components/offline_pages/core/offline_page_feature.h"
-#include "components/offline_pages/core/prefetch/prefetch_service.h"
+#include "chrome/browser/image_fetcher/image_fetcher_service_factory.h"
 #endif
 
 namespace gcm {
@@ -116,9 +113,6 @@ GCMProfileServiceFactory::GCMProfileServiceFactory()
               .WithGuest(ProfileSelection::kOwnInstance)
               .Build()) {
   DependsOn(IdentityManagerFactory::GetInstance());
-#if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  DependsOn(offline_pages::PrefetchServiceFactory::GetInstance());
-#endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 }
 
 GCMProfileServiceFactory::~GCMProfileServiceFactory() {
@@ -155,9 +149,13 @@ KeyedService* GCMProfileServiceFactory::BuildServiceInstanceFor(
       content::GetIOThreadTaskRunner({}), blocking_task_runner);
 #endif
 #if BUILDFLAG(ENABLE_OFFLINE_PAGES)
-  // TODO(crbug/1424920): PrefetchService is being removed. Leave this for at
-  // least one milestone.
-  offline_pages::PrefetchServiceFactory::GetForKey(profile->GetProfileKey());
+  // TODO(crbug.com/1424920): Removing image fetcher references here breaks
+  // tests: org.chromium.chrome.browser.ImageFetcherIntegrationTest Users of
+  // image fetcher may be depending on this service to initialize the image
+  // fetcher factory. [FATAL:scoped_refptr.h(291)] Check failed: ptr_.
+  // ...
+  // image_fetcher::GetImageFetcherService()
+  ImageFetcherServiceFactory::GetForKey(profile->GetProfileKey());
 #endif  // BUILDFLAG(ENABLE_OFFLINE_PAGES)
 
   return service.release();
