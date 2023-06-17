@@ -536,18 +536,23 @@ TabStyle::SeparatorBounds GM2TabStyleViews::GetSeparatorBounds(
   const int corner_radius = tab_style()->GetBottomCornerRadius() * scale;
   gfx::SizeF separator_size(tab_style()->GetSeparatorSize());
   separator_size.Scale(scale);
+  gfx::InsetsF separator_margin =
+      gfx::InsetsF(tab_style()->GetSeparatorMargins());
+  separator_margin.Scale(scale);
 
   TabStyle::SeparatorBounds separator_bounds;
 
-  separator_bounds.leading =
-      gfx::RectF(aligned_bounds.x() + corner_radius,
-                 aligned_bounds.y() +
-                     (aligned_bounds.height() - separator_size.height()) / 2,
-                 separator_size.width(), separator_size.height());
+  separator_bounds.leading = gfx::RectF(
+      aligned_bounds.x() + corner_radius - separator_margin.right() -
+          separator_size.width(),
+      aligned_bounds.y() + (aligned_bounds.height() - separator_size.height() -
+                            separator_margin.bottom()) /
+                               2,
+      separator_size.width(), separator_size.height());
 
   separator_bounds.trailing = separator_bounds.leading;
-  separator_bounds.trailing.set_x(aligned_bounds.right() -
-                                  (corner_radius + separator_size.width()));
+  separator_bounds.trailing.set_x(aligned_bounds.right() - corner_radius +
+                                  separator_margin.left());
 
   gfx::PointF origin(tab_->bounds().origin());
   origin.Scale(scale);

@@ -15,6 +15,7 @@ namespace {
 // the tab.
 constexpr int kGM2SeparatorThickness = 1;
 constexpr int kChromeRefreshSeparatorThickness = 2;
+constexpr int kChromeRefreshSeparatorHorizontalMargin = 2;
 // TODO (crbug.com/1451400): This constant should be in LayoutConstants.
 constexpr int kChromeRefreshSeparatorHeight = 16;
 
@@ -31,6 +32,7 @@ class GM2TabStyle : public TabStyle {
   int GetMinimumInactiveWidth() const override;
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
+  gfx::Insets GetSeparatorMargins() const override;
   int GetDragHandleExtension(int height) const override;
   gfx::Size GetPreviewImageSize() const override;
   int GetTopCornerRadius() const override;
@@ -43,7 +45,9 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetHeight() const override;
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
+  int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
+  gfx::Insets GetSeparatorMargins() const override;
   int GetContentsHorizontalInsetSize() const override;
 };
 
@@ -114,6 +118,12 @@ gfx::Size GM2TabStyle::GetSeparatorSize() const {
                    GetLayoutConstant(TAB_SEPARATOR_HEIGHT));
 }
 
+gfx::Insets GM2TabStyle::GetSeparatorMargins() const {
+  // the separator is rendered inside of the tab content.
+  return gfx::Insets::TLBR(0, GetSeparatorSize().width() * -1, 0,
+                           GetSeparatorSize().width() * -1);
+}
+
 gfx::Size GM2TabStyle::GetPreviewImageSize() const {
   constexpr float kTabHoverCardPreviewImageAspectRatio = 16.0f / 9.0f;
   const int width = GetStandardWidth();
@@ -150,6 +160,14 @@ int ChromeRefresh2023TabStyle::GetBottomCornerRadius() const {
   return 12;
 }
 
+int ChromeRefresh2023TabStyle::GetTabOverlap() const {
+  // The overlap removes the width and the margins of the separator.
+  const float total_separator_width = GetSeparatorMargins().left() +
+                                      GetSeparatorSize().width() +
+                                      GetSeparatorMargins().right();
+  return 2 * GetBottomCornerRadius() - total_separator_width;
+}
+
 gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
   return gfx::Size(kChromeRefreshSeparatorThickness,
                    kChromeRefreshSeparatorHeight);
@@ -157,6 +175,11 @@ gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
 
 int ChromeRefresh2023TabStyle::GetContentsHorizontalInsetSize() const {
   return GetBottomCornerRadius() + 8;
+}
+
+gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {
+  return gfx::Insets::TLBR(0, kChromeRefreshSeparatorHorizontalMargin, 6,
+                           kChromeRefreshSeparatorHorizontalMargin);
 }
 
 // static
