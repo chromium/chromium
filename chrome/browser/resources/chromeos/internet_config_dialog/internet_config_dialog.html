@@ -6,6 +6,10 @@
     width: 100%;
   }
 
+  :host-context(body.jelly-enabled) cr-dialog::part(dialog) {
+    --cr-dialog-background-color: var(--cros-bg-color);
+  }
+
   cr-dialog [slot=body] {
     /* This should match or exceed SystemWebDialogDelegate::kDialogHeight
         to ensure the content is stretched to fit. */
