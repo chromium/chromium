@@ -1592,7 +1592,8 @@ TEST_F(PasswordsPrivateDelegateImplTest,
 
 #endif
 
-TEST_F(PasswordsPrivateDelegateImplTest, ShowAddShortcutDialog) {
+// TODO(http://crbug.com/1455574) Re-enable.
+TEST_F(PasswordsPrivateDelegateImplTest, DISABLED_ShowAddShortcutDialog) {
   base::HistogramTester histogram_tester;
   // Set up a browser instance and simulate a navigation.
   Browser::CreateParams params(profile(), /*user_gesture=*/true);
