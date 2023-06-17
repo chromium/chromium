@@ -10,13 +10,12 @@
 
 namespace omnibox_feature_configs {
 
-BASE_FEATURE(kShortcutBoost,
+// static
+BASE_FEATURE(ShortcutBoosting::kShortcutBoost,
              "OmniboxShortcutBoost",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-ShortcutBoostingConfig::ShortcutBoostingConfig() {
+ShortcutBoosting::ShortcutBoosting() {
   enabled = base::FeatureList::IsEnabled(kShortcutBoost);
-
   search_score =
       base::FeatureParam<int>(&kShortcutBoost, "ShortcutBoostSearchScore", 0)
           .Get();
@@ -27,10 +26,9 @@ ShortcutBoostingConfig::ShortcutBoostingConfig() {
                        &kShortcutBoost, "ShortcutBoostCounterfactual", false)
                        .Get();
 }
-
 // static
-const ShortcutBoostingConfig& ShortcutBoostingConfig::Get() {
-  static ShortcutBoostingConfig config;
+const ShortcutBoosting& ShortcutBoosting::Get() {
+  static ShortcutBoosting config;
   return config;
 }
 

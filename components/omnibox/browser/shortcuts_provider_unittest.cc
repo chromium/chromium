@@ -904,10 +904,10 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
 
   scoped_feature_list_.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
-      omnibox_feature_configs::kShortcutBoost,
+      omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
       {{"ShortcutBoostUrlScore", "1300"}});
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::ShortcutBoostingConfig>
+      omnibox_feature_configs::ShortcutBoosting>
       scoped_config;
 
   {
@@ -982,7 +982,7 @@ TEST_F(ShortcutsProviderTest, ScoreBoost) {
     // Should not boost when counterfactual is enabled.
     scoped_feature_list_.Reset();
     scoped_feature_list_.InitAndEnableFeatureWithParameters(
-        omnibox_feature_configs::kShortcutBoost,
+        omnibox_feature_configs::ShortcutBoosting::kShortcutBoost,
         {{"ShortcutBoostUrlScore", "1300"},
          {"ShortcutBoostCounterfactual", "true"}});
     scoped_config.Reset();

@@ -290,7 +290,7 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
   }
 
   if (!shortcut_matches.empty() &&
-      omnibox_feature_configs::ShortcutBoostingConfig::Get().enabled) {
+      omnibox_feature_configs::ShortcutBoosting::Get().enabled) {
     // Promote the shortcut with most hits to compete for the default slot.
     // Won't necessarily be the highest scoring shortcut, as scoring also
     // depends on visit times and input length. Therefore, has to be done before
@@ -305,14 +305,12 @@ void ShortcutsProvider::GetMatches(const AutocompleteInput& input,
         });
     int boost_score =
         AutocompleteMatch::IsSearchType(best_match->type)
-            ? omnibox_feature_configs::ShortcutBoostingConfig::Get()
-                  .search_score
-            : omnibox_feature_configs::ShortcutBoostingConfig::Get().url_score;
+            ? omnibox_feature_configs::ShortcutBoosting::Get().search_score
+            : omnibox_feature_configs::ShortcutBoosting::Get().url_score;
     if (boost_score > best_match->relevance) {
       client_->GetOmniboxTriggeredFeatureService()->FeatureTriggered(
           metrics::OmniboxEventProto_Feature_SHORTCUT_BOOST);
-      if (!omnibox_feature_configs::ShortcutBoostingConfig::Get()
-               .counterfactual) {
+      if (!omnibox_feature_configs::ShortcutBoosting::Get().counterfactual) {
         max_relevance = boost_score;
         best_match->relevance = max_relevance;
       }

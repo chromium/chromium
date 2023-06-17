@@ -18,11 +18,11 @@ regressions. 3 steps:
 
   // omnibox_feature_configs.h
 
-  BASE_DECLARE_FEATURE(kMyFeature);
+  struct MyFeature {
+    DECLARE_FEATURE(kMyFeature);
 
-  struct MyFeatureConfig {
-    MyFeatureConfig();
-    static const MyFeatureConfig& Get();
+    MyFeature();
+    static const MyFeature& Get();
 
     bool enabled;
     int my_param;
@@ -30,24 +30,26 @@ regressions. 3 steps:
 
   // omnibox_feature_configs.cc
 
-  BASE_FEATURE(kMyFeature, "OmniboxMyFeature",
+  // static
+  BASE_FEATURE(MyFeature::kMyFeature, "OmniboxMyFeature",
                base::FEATURE_DISABLED_BY_DEFAULT);
 
-  MyFeatureConfig::MyFeatureConfig() {
+  MyFeature::MyFeature() {
     enabled = base::FeatureList::IsEnabled(omnibox::kMyFeature);
     my_param =
         base::FeatureParam<int>(&omnibox::kMyFeature, "my_param", 0).Get();
   }
 
-  static MyFeatureConfig::MyFeatureConfig& Get() {
-    static MyFeatureConfig config;
+  // static
+  const MyFeature& MyFeature::Get() {
+    static MyFeature config;
     return config;
   }
 
 
 (2) Use the config:
 
-  int x = omnibox_feature_configs::MyFeatureConfig::Get().my_param;
+  int x = omnibox_feature_configs::MyFeature::Get().my_param;
 
 
 (3) Override the config in tests:
@@ -56,13 +58,16 @@ regressions. 3 steps:
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       omnibox::kMyFeature, {{"my_param", "1"}});
   omnibox_feature_configs::ScopedConfigForTesting<
-      omnibox_feature_configs::MyFeatureConfig> scoped_config;
+      omnibox_feature_configs::MyFeature> scoped_config;
 
   scoped_feature_list.Reset();
   scoped_feature_list_.InitAndEnableFeatureWithParameters(
       omnibox::kMyFeature, {{"my_param", "2"}});
   scoped_config.Reset();
 */
+
+// A substitute for `BASE_DECLARE_FEATURE` for nesting in structs.
+#define DECLARE_FEATURE(feature) static CONSTINIT const base::Feature feature
 
 // Util for overriding configs in tests. `T` must have a `static const T& Get()`
 // method.
@@ -82,13 +87,10 @@ class ScopedConfigForTesting {
 // Add new configs below, ordered alphabetically.
 
 // If enabled, the shortcut provider is more aggressive in scoring.
-BASE_DECLARE_FEATURE(kShortcutBoost);
-
-struct ShortcutBoostingConfig {
-  ShortcutBoostingConfig();
-
-  static const ShortcutBoostingConfig& Get();
-
+struct ShortcutBoosting {
+  DECLARE_FEATURE(kShortcutBoost);
+  ShortcutBoosting();
+  static const ShortcutBoosting& Get();
   bool enabled;
   // The scores to use for boosting search and URL suggestions respectively.
   // Setting to 0 will prevent boosting.
