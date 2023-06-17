@@ -1643,11 +1643,7 @@ TEST_P(PaintPropertyTreeUpdateTest, ChangeDuringAnimation) {
   builder.SetTransformOrigin(
       TransformOrigin(Length::Fixed(70), Length::Fixed(30), 0));
   target->SetStyle(builder.TakeStyle());
-  if (base::FeatureList::IsEnabled(features::kFastPathPaintPropertyUpdates)) {
-    EXPECT_FALSE(target->NeedsPaintPropertyUpdate());
-  } else {
-    EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
-  }
+  EXPECT_TRUE(target->NeedsPaintPropertyUpdate());
   GetDocument().Lifecycle().AdvanceTo(DocumentLifecycle::kStyleClean);
   {
 #if DCHECK_IS_ON()
