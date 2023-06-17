@@ -192,6 +192,7 @@
     "Win10 FYI x86 Release (NVIDIA)": "Ubuntu-22.04",
     "Win10 x64 Debug (NVIDIA)": "Ubuntu-22.04",
     "Win10 x64 Release (NVIDIA)": "Ubuntu-22.04",
+    "Win11 Tests x64": "Ubuntu-22.04",
     "android-10-arm64-rel": "Ubuntu-22.04",
     "android-11-x86-fyi-rel": "Ubuntu-22.04",
     "android-11-x86-rel": "Ubuntu-22.04",
