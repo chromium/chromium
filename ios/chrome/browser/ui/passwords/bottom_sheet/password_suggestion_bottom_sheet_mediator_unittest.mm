@@ -290,19 +290,19 @@ TEST_F(PasswordSuggestionBottomSheetMediatorTest, IncrementDismissCount) {
 
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 0);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 1);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 2);
-  [mediator_ refocus];
+  [mediator_ dismiss];
   EXPECT_EQ(
       prefs_.get()->GetInteger(prefs::kIosPasswordBottomSheetDismissCount), 3);
 
   // Expect failure after 3 times.
 #if defined(GTEST_HAS_DEATH_TEST)
-  EXPECT_DEATH([mediator_ refocus],
+  EXPECT_DEATH([mediator_ dismiss],
                "Failed when dismiss count is incremented higher than the "
                "expected value.");
 #endif  // defined(GTEST_HAS_DEATH_TEST)

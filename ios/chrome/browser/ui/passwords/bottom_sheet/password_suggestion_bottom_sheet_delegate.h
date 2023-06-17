@@ -16,12 +16,19 @@
 // selected by the user, which is expected to fill the relevant fields.
 - (void)didSelectSuggestion:(NSInteger)row;
 
-// Request to refocus the field which originally triggered the bottom sheet
-// after the bottom sheet has been dismissed.
-- (void)refocus;
+// Notification that the bottom sheet is dismissed, possibly refocusing
+// the field which originally triggered the bottom sheet after the bottom sheet
+// has been dismissed.
+- (void)dismiss;
 
 // Disables future refocus requests.
 - (void)disableRefocus;
+
+// Notifies that a suggestion will be selected.
+- (void)willSelectSuggestion:(NSInteger)row;
+
+// Returns the username at a given row with the appended suffix removed.
+- (NSString*)usernameAtRow:(NSInteger)row;
 
 // Loads the favicon for cell. Defaults to the globe symbol if the URL is empty.
 - (void)loadFaviconWithBlockHandler:

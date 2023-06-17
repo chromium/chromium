@@ -585,7 +585,7 @@ constexpr int kNotifyAutoSigninDuration = 3;  // seconds
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
       AutofillBottomSheetTabHelper::FromWebState(_webState);
   if (bottomSheetTabHelper) {
-    bottomSheetTabHelper->DetachPasswordListenersAndRefocus(frame);
+    bottomSheetTabHelper->DetachPasswordListeners(frame, /*refocus = */ false);
   }
 }
 

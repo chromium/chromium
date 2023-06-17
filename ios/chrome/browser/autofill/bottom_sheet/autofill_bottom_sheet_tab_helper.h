@@ -54,8 +54,9 @@ class AutofillBottomSheetTabHelper
       const std::vector<autofill::FormStructure*>& forms,
       web::WebFrame* frame);
 
-  // Detach the password listeners, which will deactivate the bottom sheet.
-  void DetachPasswordListenersAndRefocus(web::WebFrame* frame);
+  // Detach the password listeners, which will deactivate the password bottom
+  // sheet.
+  void DetachPasswordListeners(web::WebFrame* frame, bool refocus);
 
   // Detach the payments listeners, which will deactivate the payments bottom
   // sheet.

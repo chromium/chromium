@@ -153,11 +153,11 @@ void AutofillBottomSheetTabHelper::AttachListeners(
   }
 }
 
-void AutofillBottomSheetTabHelper::DetachPasswordListenersAndRefocus(
-    web::WebFrame* frame) {
+void AutofillBottomSheetTabHelper::DetachPasswordListeners(web::WebFrame* frame,
+                                                           bool refocus) {
   AutofillBottomSheetJavaScriptFeature::GetInstance()->DetachListeners(
       registered_password_renderer_ids_, frame, /*must_be_empty = */ false,
-      /*refocus = */ true);
+      refocus);
 }
 
 void AutofillBottomSheetTabHelper::DetachPaymentsListeners(web::WebFrame* frame,

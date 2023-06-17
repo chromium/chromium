@@ -101,7 +101,7 @@ using PasswordSuggestionBottomSheetExitReason::kShowPasswordManager;
   // sheet. Instead, re-focus the field which triggered the bottom sheet and
   // disable it.
   if (![self.mediator hasSuggestions]) {
-    [self.mediator refocus];
+    [self.mediator dismiss];
     return;
   }
 

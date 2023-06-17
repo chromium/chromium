@@ -193,7 +193,7 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 }
 
 - (void)viewWillDisappear:(BOOL)animated {
-  [self.delegate refocus];
+  [self.delegate dismiss];
 }
 
 #pragma mark - PasswordSuggestionBottomSheetConsumer
@@ -332,7 +332,7 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 
 - (void)confirmationAlertPrimaryAction {
   // Use password button
-  [self.delegate disableRefocus];
+  [self.delegate willSelectSuggestion:_tableView.indexPathForSelectedRow.row];
   __weak __typeof(self) weakSelf = self;
   [self dismissViewControllerAnimated:NO
                            completion:^{
@@ -387,19 +387,10 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 
 // Returns the string to display at a given row in the table view.
 - (NSString*)suggestionAtRow:(NSInteger)row {
-  FormSuggestion* formSuggestion = [_suggestions objectAtIndex:row];
-
-  // Removing suffix ' ••••••••' appended to the username in the suggestion.
-  NSString* username = formSuggestion.value;
-  if ([username containsString:kPasswordFormSuggestionSuffix]) {
-    username = [username
-        stringByReplacingOccurrencesOfString:kPasswordFormSuggestionSuffix
-                                  withString:@""];
-  }
-  if (!username || [username length] == 0) {
-    return l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME);
-  }
-  return username;
+  NSString* username = [self.delegate usernameAtRow:row];
+  return ([username length] == 0)
+             ? l10n_util::GetNSString(IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME)
+             : username;
 }
 
 // Creates the password bottom sheet's table view, initially at minimized

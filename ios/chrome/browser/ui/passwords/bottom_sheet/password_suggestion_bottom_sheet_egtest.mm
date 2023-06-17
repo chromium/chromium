@@ -575,7 +575,19 @@ id<GREYMatcher> DeleteConfirmationButton() {
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(l10n_util::GetNSString(
                                    IDS_IOS_PASSWORD_BOTTOM_SHEET_NO_USERNAME))]
-      assertWithMatcher:grey_sufficientlyVisible()];
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_PASSWORD_BOTTOM_SHEET_USE_PASSWORD))]
+      performAction:grey_tap()];
+
+  // Verify that selecting credentials with no username disables the bottom
+  // sheet.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::WebViewMatcher()]
+      performAction:chrome_test_util::TapWebElementWithId(kFormPassword)];
+
+  WaitForKeyboardToAppear();
 }
 
 @end
