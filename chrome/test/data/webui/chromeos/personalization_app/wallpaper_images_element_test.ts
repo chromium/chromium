@@ -5,22 +5,25 @@
 import 'chrome://personalization/strings.m.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
-import {ColorScheme, OnlineImageType, PersonalizationRouter, TimeOfDayWallpaperDialog, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
+import {ColorScheme, DEFAULT_COLOR_SCHEME, OnlineImageType, PersonalizationRouter, TimeOfDayWallpaperDialog, WallpaperGridItem, WallpaperImages} from 'chrome://personalization/js/personalization_app.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {baseSetup, initElement, teardownElement} from './personalization_app_test_utils.js';
 import {TestPersonalizationStore} from './test_personalization_store.js';
+import {TestThemeProvider} from './test_theme_interface_provider.js';
 import {TestWallpaperProvider} from './test_wallpaper_interface_provider.js';
 
 suite('WallpaperImagesTest', function() {
   let wallpaperImagesElement: WallpaperImages|null;
   let wallpaperProvider: TestWallpaperProvider;
+  let themeProvider: TestThemeProvider;
   let personalizationStore: TestPersonalizationStore;
 
   setup(() => {
     const mocks = baseSetup();
     wallpaperProvider = mocks.wallpaperProvider;
+    themeProvider = mocks.themeProvider;
     personalizationStore = mocks.personalizationStore;
   });
 
@@ -411,6 +414,18 @@ suite('WallpaperImagesTest', function() {
         wallpaperImagesElement.shadowRoot!.querySelector(
             TimeOfDayWallpaperDialog.is),
         'clicking accept dismisses the dialog');
+
+    const scheme = await themeProvider.whenCalled('setColorScheme');
+    assertEquals(
+        DEFAULT_COLOR_SCHEME, scheme,
+        'time of day wallpaper sets default color scheme');
+
+    const autoScheduleEnabled =
+        await themeProvider.whenCalled('setColorModeAutoScheduleEnabled');
+    assertTrue(
+        autoScheduleEnabled,
+        'time of day wallpaper sets auto schedule enabled');
+
     const [assetId, previewMode] =
         await wallpaperProvider.whenCalled('selectWallpaper');
     assertEquals(3n, assetId, 'correct asset id is passed');

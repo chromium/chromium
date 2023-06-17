@@ -110,6 +110,7 @@ export {GooglePhotosPhotosByAlbumId} from './wallpaper/google_photos_photos_by_a
 export {GooglePhotosPhotos, GooglePhotosPhotosRow, GooglePhotosPhotosSection} from './wallpaper/google_photos_photos_element.js';
 export {GooglePhotosSharedAlbumDialog, AcceptEvent} from './wallpaper/google_photos_shared_album_dialog_element.js';
 export {GooglePhotosZeroState} from './wallpaper/google_photos_zero_state_element.js';
+export {DEFAULT_COLOR_SCHEME} from './theme/utils.js';
 export {LocalImages} from './wallpaper/local_images_element.js';
 export {TimeOfDayAcceptEvent, TimeOfDayWallpaperDialog} from './wallpaper/time_of_day_wallpaper_dialog_element.js';
 export {isDefaultImage, isFilePath, isGooglePhotosPhoto, isWallpaperImage} from './wallpaper/utils.js';

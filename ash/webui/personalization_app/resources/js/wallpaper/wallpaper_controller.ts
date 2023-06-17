@@ -7,9 +7,11 @@ import {assert} from 'chrome://resources/js/assert_ts.js';
 import {FilePath} from 'chrome://resources/mojo/mojo/public/mojom/base/file_path.mojom-webui.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
 
-import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
+import {CurrentWallpaper, GooglePhotosAlbum, GooglePhotosEnablementState, GooglePhotosPhoto, ThemeProviderInterface, WallpaperCollection, WallpaperImage, WallpaperLayout, WallpaperProviderInterface, WallpaperType} from '../../personalization_app.mojom-webui.js';
 import {setErrorAction} from '../personalization_actions.js';
 import {PersonalizationStore} from '../personalization_store.js';
+import {setColorModeAutoSchedule, setColorSchemePref} from '../theme/theme_controller.js';
+import {DEFAULT_COLOR_SCHEME} from '../theme/utils.js';
 import {isNonEmptyArray} from '../utils.js';
 
 import {DisplayableImage} from './constants.js';
@@ -333,6 +335,19 @@ async function getMissingLocalImageThumbnails(
       store.dispatch(action.setLocalImageDataAction({path}, data));
     }));
   }
+}
+
+/**
+ * Special helper function for time of day wallpaper specifically. It also sets
+ * the color scheme pref to default and turns on dark/light auto mode.
+ */
+export async function selectTimeOfDayWallpaper(
+    image: WallpaperImage, wallpaperProvider: WallpaperProviderInterface,
+    themeProvider: ThemeProviderInterface,
+    store: PersonalizationStore): Promise<void> {
+  setColorSchemePref(DEFAULT_COLOR_SCHEME, themeProvider, store);
+  setColorModeAutoSchedule(true, themeProvider, store);
+  await selectWallpaper(image, wallpaperProvider, store);
 }
 
 export async function selectWallpaper(
