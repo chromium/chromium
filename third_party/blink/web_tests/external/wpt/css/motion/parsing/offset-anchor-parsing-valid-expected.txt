@@ -1,0 +1,14 @@
+This is a testharness.js-based test.
+PASS e.style['offset-anchor'] = "auto" should set the property value
+PASS e.style['offset-anchor'] = "left bottom" should set the property value
+FAIL e.style['offset-anchor'] = "center center" should set the property value assert_equals: serialization should be canonical expected "center" but got "center center"
+PASS e.style['offset-anchor'] = "right center" should set the property value
+PASS e.style['offset-anchor'] = "center top" should set the property value
+PASS e.style['offset-anchor'] = "center bottom" should set the property value
+PASS e.style['offset-anchor'] = "calc(20% + 10px) center" should set the property value
+PASS e.style['offset-anchor'] = "right 30em" should set the property value
+PASS e.style['offset-anchor'] = "10px 20%" should set the property value
+PASS e.style['offset-anchor'] = "left -10px top -20%" should set the property value
+PASS e.style['offset-anchor'] = "right 10% bottom 20em" should set the property value
+Harness: the test ran to completion.
+
