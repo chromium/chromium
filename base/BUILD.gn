@@ -3257,6 +3257,7 @@ test("base_unittests") {
     "metrics/sample_vector_unittest.cc",
     "metrics/single_sample_metrics_unittest.cc",
     "metrics/sparse_histogram_unittest.cc",
+    "metrics/statistics_recorder_starvation_unittest.cc",
     "metrics/statistics_recorder_unittest.cc",
     "native_library_unittest.cc",
     "no_destructor_unittest.cc",
