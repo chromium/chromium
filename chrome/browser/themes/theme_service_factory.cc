@@ -133,6 +133,8 @@ void ThemeServiceFactory::RegisterProfilePrefs(
   registry->RegisterIntegerPref(
       prefs::kBrowserColorScheme,
       static_cast<int>(ThemeService::BrowserColorScheme::kSystem));
+  registry->RegisterIntegerPref(prefs::kUserColor, SK_ColorTRANSPARENT);
+  registry->RegisterBooleanPref(prefs::kGrayscaleThemeEnabled, false);
 }
 
 bool ThemeServiceFactory::ServiceIsCreatedWithBrowserContext() const {

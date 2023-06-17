@@ -527,6 +527,28 @@ ThemeService::BrowserColorScheme ThemeService::GetBrowserColorScheme() const {
              : BrowserColorScheme::kSystem;
 }
 
+void ThemeService::SetUserColor(absl::optional<SkColor> user_color) {
+  profile_->GetPrefs()->SetInteger(prefs::kUserColor,
+                                   user_color.value_or(SK_ColorTRANSPARENT));
+  NotifyThemeChanged();
+}
+
+absl::optional<SkColor> ThemeService::GetUserColor() const {
+  auto user_color = profile_->GetPrefs()->GetInteger(prefs::kUserColor);
+  return user_color == SK_ColorTRANSPARENT
+             ? absl::nullopt
+             : absl::optional<SkColor>(user_color);
+}
+
+void ThemeService::SetIsGrayscale(bool is_grayscale) {
+  profile_->GetPrefs()->SetBoolean(prefs::kGrayscaleThemeEnabled, is_grayscale);
+  NotifyThemeChanged();
+}
+
+bool ThemeService::GetIsGrayscale() const {
+  return profile_->GetPrefs()->GetBoolean(prefs::kGrayscaleThemeEnabled);
+}
+
 // static
 void ThemeService::DisableThemePackForTesting() {
   g_dont_write_theme_pack_for_testing = true;
