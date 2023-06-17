@@ -205,8 +205,8 @@ suite('<main-page-container>', function() {
          * - Inactive pages have style "display: none"
          */
         function assertOnlyActivePageIsVisible(section) {
-          const pages = mainPageContainer.shadowRoot.querySelectorAll(
-              'os-settings-section');
+          const pages =
+              mainPageContainer.shadowRoot.querySelectorAll('page-displayer');
           let numActive = 0;
 
           for (const page of pages) {

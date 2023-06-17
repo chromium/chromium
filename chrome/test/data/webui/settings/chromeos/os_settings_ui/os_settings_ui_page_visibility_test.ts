@@ -68,7 +68,7 @@ suite('<os-settings-ui> page visibility', () => {
    */
   function assertOnlyActivePageIsVisible(pageName: PageName): void {
     const pages =
-        mainPageContainer.shadowRoot!.querySelectorAll('os-settings-section');
+        mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     let numActive = 0;
 
     for (const page of pages) {

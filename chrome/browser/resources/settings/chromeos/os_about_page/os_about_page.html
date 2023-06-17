@@ -79,6 +79,8 @@
 <iron-media-query query="(prefers-color-scheme: dark)"
     query-matches="{{isDarkModeActive_}}">
 </iron-media-query>
+
+<page-displayer section="[[section_]]">
 <os-settings-section page-title="$i18n{aboutOsPageTitle}"
     section="[[section_]]">
   <os-settings-animated-pages id="pages"
@@ -293,6 +295,8 @@
         hidden$="[[!shouldShowRegulatoryInfo_(regulatoryInfo_)]]">
   </div>
 </os-settings-section>
+</page-displayer>
+
 <template is="dom-if" if="[[showUpdateWarningDialog_]]" restamp>
   <settings-update-warning-dialog update-info="[[updateInfo_]]"
       on-close="onUpdateWarningDialogClose_">

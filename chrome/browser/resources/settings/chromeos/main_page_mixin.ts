@@ -9,6 +9,7 @@ import {castExists} from './assert_extras.js';
 import {isRevampWayfindingEnabled} from './common/load_time_booleans.js';
 import {Constructor} from './common/types.js';
 import {ensureLazyLoaded} from './ensure_lazy_loaded.js';
+import {PageDisplayerElement} from './main_page_container/page_displayer.js';
 import {Section} from './mojom-webui/routes.mojom-webui.js';
 import {SettingsIdleLoadElement} from './os_settings_page/settings_idle_load.js';
 import {RouteObserverMixin, RouteObserverMixinInterface} from './route_observer_mixin.js';
@@ -128,6 +129,10 @@ export const MainPageMixin = dedupingMixin(
          * Note: If the section resides within "advanced" settings, a
          * 'hide-container' event is fired (necessary to avoid flashing).
          * Callers are responsible for firing a 'show-container' event.
+         *
+         * TODO(b/286429941) Once the section element is updated to a simple
+         * card element, this method should no longer be used and should be
+         * removed. Prefer using ensurePageForRoute() instead.
          */
         private ensureSectionForRoute_(route: Route): Promise<HTMLElement> {
           const section = this.querySection(route.section);
@@ -153,10 +158,43 @@ export const MainPageMixin = dedupingMixin(
           });
         }
 
+        /**
+         * Finds the settings page corresponding to the given route. If the
+         * page is lazily loaded (ie. under the advanced section), then
+         * force-render it.
+         * Note: If the page resides within "advanced" settings, a
+         * 'hide-container' event is fired (necessary to avoid flashing).
+         * Callers are responsible for firing a 'show-container' event.
+         */
+        private ensurePageForRoute(route: Route):
+            Promise<PageDisplayerElement> {
+          const section = this.queryPage(route.section);
+          if (section) {
+            return Promise.resolve(section);
+          }
+
+          // The function to use to wait for <dom-if>s to render.
+          const waitFn = beforeNextRender.bind(null, this);
+
+          return new Promise(resolve => {
+            if (this.isMainPageContainer && isAdvancedRoute(route)) {
+              this.dispatchCustomEvent_('hide-container');
+              waitFn(async () => {
+                await this.loadAdvancedPage();
+                resolve(castExists(this.queryPage(route.section)));
+              });
+            } else {
+              waitFn(() => {
+                resolve(castExists(this.queryPage(route.section)));
+              });
+            }
+          });
+        }
+
         private async enterSubpage_(route: Route) {
           if (isRevampWayfindingEnabled()) {
             // Make the parent page visible to ensure the subpage is visible
-            await this.showPage(route);
+            await this.activatePage(route);
           }
           this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
@@ -167,14 +205,18 @@ export const MainPageMixin = dedupingMixin(
           // the lazy loaded module.
           ensureLazyLoaded();
 
+          // TODO(b/286429941) Once the section element is updated to a simple
+          // card element, remove the need to add the expanded class.
           const section = await this.ensureSectionForRoute_(route);
           section.classList.add('expanded');
+
           this.dispatchCustomEvent_('show-container');
         }
 
         private enterMainPage_(oldRoute: Route): Promise<void> {
           const oldSection = castExists(this.querySection(oldRoute.section));
           oldSection.classList.remove('expanded');
+
           this.classList.remove('showing-subpage');
           return new Promise((resolve) => {
             requestAnimationFrame(() => {
@@ -191,9 +233,9 @@ export const MainPageMixin = dedupingMixin(
          * Simple helper method to display a page/section depending on if the
          * `OsSettingsRevampWayfinding` is enabled.
          */
-        private activatePage(route: Route): void {
+        private showPage(route: Route): void {
           if (isRevampWayfindingEnabled()) {
-            this.showPage(route);
+            this.activatePage(route);
           } else {
             this.scrollToSection(route);
           }
@@ -213,18 +255,19 @@ export const MainPageMixin = dedupingMixin(
          * NOTE: This method should only be used when the
          * `OsSettingsRevampWayfinding` feature flag is enabled.
          */
-        private async showPage(route: Route): Promise<void> {
-          const page = await this.ensureSectionForRoute_(route);
+        private async activatePage(route: Route): Promise<void> {
+          const page = await this.ensurePageForRoute(route);
 
           // Hide any previously active pages
           const previouslyActive =
-              this.shadowRoot!.querySelectorAll('os-settings-section[active]');
-          for (const page of previouslyActive) {
-            page.toggleAttribute('active', false);
+              this.shadowRoot!.querySelectorAll<PageDisplayerElement>(
+                  'page-displayer[active]');
+          for (const prevPage of previouslyActive) {
+            prevPage.active = false;
           }
 
           // Show the respective page for |route|
-          page.toggleAttribute('active', true);
+          page.active = true;
           this.dispatchCustomEvent_('show-container');
         }
 
@@ -238,7 +281,7 @@ export const MainPageMixin = dedupingMixin(
           // TODO(b/282961146) Investigate removing MainPageMixin from
           // the About page so this check can be removed.
           if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
-            this.activatePage(FIRST_PAGE_ROUTE);
+            this.showPage(FIRST_PAGE_ROUTE);
           }
         }
 
@@ -292,7 +335,7 @@ export const MainPageMixin = dedupingMixin(
           if (oldState === RouteState.INITIAL) {
             switch (newState) {
               case RouteState.SECTION:
-                this.activatePage(newRoute);
+                this.showPage(newRoute);
                 return;
 
               case RouteState.SUBPAGE:
@@ -313,7 +356,7 @@ export const MainPageMixin = dedupingMixin(
           if (oldState === RouteState.ROOT) {
             switch (newState) {
               case RouteState.SECTION:
-                this.activatePage(newRoute);
+                this.showPage(newRoute);
                 return;
 
               // Navigating directly to a subpage via search on the main page
@@ -337,7 +380,7 @@ export const MainPageMixin = dedupingMixin(
           if (oldState === RouteState.SECTION) {
             switch (newState) {
               case RouteState.SECTION:
-                this.activatePage(newRoute);
+                this.showPage(newRoute);
                 return;
 
               case RouteState.SUBPAGE:
@@ -364,7 +407,7 @@ export const MainPageMixin = dedupingMixin(
                 // Scroll to the corresponding section, only if the user
                 // explicitly navigated to a section (via the menu).
                 if (!Router.getInstance().lastRouteChangeWasPopstate()) {
-                  this.activatePage(newRoute);
+                  this.showPage(newRoute);
                 }
                 return;
 
@@ -424,14 +467,29 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Helper function to get a section from the local DOM.
+         * Helper function to get a section from the shadow DOM.
+         *
+         * TODO(b/286429941) Once the section element is updated to a simple
+         * card element, this method is no longer needed and can be removed.
          */
-        querySection(section: Section|null): HTMLElement|null {
+        private querySection(section: Section|null): HTMLElement|null {
           if (section === null) {
             return null;
           }
           return this.shadowRoot!.querySelector(
               `os-settings-section[section="${section}"]`);
+        }
+
+        /**
+         * Queries for a page visibility element with the given |section| from
+         * the shadow DOM.
+         */
+        private queryPage(section: Section|null): PageDisplayerElement|null {
+          if (section === null) {
+            return null;
+          }
+          return this.shadowRoot!.querySelector<PageDisplayerElement>(
+              `page-displayer[section="${section}"]`);
         }
 
         private dispatchCustomEvent_(

@@ -1,0 +1,7 @@
+<style>
+  /* When infinite scroll is removed, only active pages should be visible. */
+  :host-context(.revamp-wayfinding-enabled):host(:not([active])) {
+    display: none;
+  }
+</style>
+<slot></slot>

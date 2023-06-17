@@ -364,6 +364,10 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
  ],
  ['LockScreenSubpage', 'lock_screen_subpage_test.js'],
  ['MainPageContainer', 'main_page_container_test.js'],
+ [
+   'MainPageContainerPageDisplayer',
+   'main_page_container/page_displayer_test.js',
+ ],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],

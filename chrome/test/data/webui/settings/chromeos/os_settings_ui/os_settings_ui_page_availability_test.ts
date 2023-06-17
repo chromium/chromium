@@ -8,7 +8,7 @@
  * Separated into a separate file to mitigate test timeouts.
  */
 
-import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsSectionElement, OsSettingsUiElement, routesMojom} from 'chrome://os-settings/os_settings.js';
+import {CrSettingsPrefs, MainPageContainerElement, OsSettingsMainElement, OsSettingsUiElement, PageDisplayerElement, routesMojom} from 'chrome://os-settings/os_settings.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -48,10 +48,10 @@ suite('<os-settings-ui> page availability', () => {
    * Verifies the section has a visible #main element and that any possible
    * sub-pages are hidden.
    */
-  function verifySubpagesHidden(section: OsSettingsSectionElement): void {
+  function verifySubpagesHidden(page: PageDisplayerElement): void {
     // Check if there are any sub-pages to verify, being careful to filter out
     // any dom-if and template noise when we search.
-    const pages = section.firstElementChild!.shadowRoot!.querySelector(
+    const pages = page.firstElementChild!.shadowRoot!.querySelector(
         'settings-animated-pages');
     if (!pages) {
       return;
@@ -70,8 +70,7 @@ suite('<os-settings-ui> page availability', () => {
       return element.getAttribute('route-path') === 'default';
     });
     assertEquals(
-        1, main.length,
-        'default card not found for section ' + section.section);
+        1, main.length, 'default card not found for section ' + page.section);
     assertGT(main[0]!.offsetHeight, 0);
 
     // Any other stamped subpages should not be visible.
@@ -81,7 +80,7 @@ suite('<os-settings-ui> page availability', () => {
     for (const subpage of subpages) {
       assertEquals(
           0, subpage.offsetHeight,
-          'Expected subpage #' + subpage.id + ' in ' + section.section +
+          'Expected subpage #' + subpage.id + ' in ' + page.section +
               ' not to be visible.');
     }
   }
@@ -121,12 +120,11 @@ suite('<os-settings-ui> page availability', () => {
     ];
     for (const pageName of availablePages) {
       test(`${pageName} page should be stamped and subpages hidden`, () => {
-        const section =
-            mainPageContainer.shadowRoot!
-                .querySelector<OsSettingsSectionElement>(
-                    `os-settings-section[section="${Section[pageName]}"]`);
-        assertTrue(!!section, `Expected to find ${pageName} page stamped.`);
-        verifySubpagesHidden(section);
+        const page =
+            mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
+                `page-displayer[section="${Section[pageName]}"]`);
+        assertTrue(!!page, `Expected to find ${pageName} page stamped.`);
+        verifySubpagesHidden(page);
       });
     }
   });
@@ -154,9 +152,8 @@ suite('<os-settings-ui> page availability', () => {
     for (const pageName of unavailablePages) {
       test(`${pageName} page should not be stamped`, () => {
         const section =
-            mainPageContainer.shadowRoot!
-                .querySelector<OsSettingsSectionElement>(
-                    `os-settings-section[section="${Section[pageName]}"]`);
+            mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
+                `page-displayer[section="${Section[pageName]}"]`);
         assertNull(section, `Found unexpected page ${pageName}.`);
       });
     }
@@ -176,12 +173,11 @@ suite('<os-settings-ui> page availability', () => {
     ];
     for (const pageName of availablePages) {
       test(`${pageName} page should be stamped and subpages hidden`, () => {
-        const section =
-            mainPageContainer.shadowRoot!
-                .querySelector<OsSettingsSectionElement>(
-                    `os-settings-section[section="${Section[pageName]}"]`);
-        assertTrue(!!section, `Expected to find ${pageName} page stamped.`);
-        verifySubpagesHidden(section);
+        const page =
+            mainPageContainer.shadowRoot!.querySelector<PageDisplayerElement>(
+                `page-displayer[section="${Section[pageName]}"]`);
+        assertTrue(!!page, `Expected to find ${pageName} page stamped.`);
+        verifySubpagesHidden(page);
       });
     }
   });

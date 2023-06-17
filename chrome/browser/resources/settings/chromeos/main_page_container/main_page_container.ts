@@ -36,6 +36,7 @@ import '../os_about_page/eol_offer_section.js';
 import '../os_settings_icons.html.js';
 import '../os_settings_page/os_settings_section.js';
 import './main_page_container_styles.css.js';
+import './page_displayer.js';
 
 import {WebUiListenerMixin} from 'chrome://resources/cr_elements/web_ui_listener_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';

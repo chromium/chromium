@@ -138,6 +138,7 @@ build_webui("build") {
     "kerberos_page/kerberos_page.ts",
     "keyboard_shortcut_banner/keyboard_shortcut_banner.ts",
     "main_page_container/main_page_container.ts",
+    "main_page_container/page_displayer.ts",
     "multidevice_page/multidevice_combined_setup_item.ts",
     "multidevice_page/multidevice_feature_item.ts",
     "multidevice_page/multidevice_feature_toggle.ts",
