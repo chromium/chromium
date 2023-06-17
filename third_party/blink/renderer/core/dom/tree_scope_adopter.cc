@@ -36,7 +36,6 @@
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
 #include "third_party/blink/renderer/core/html/custom/custom_element.h"
-#include "third_party/blink/renderer/core/html/html_details_element.h"
 
 namespace blink {
 
@@ -86,10 +85,6 @@ void TreeScopeAdopter::MoveTreeToNewScope(Node& root) const {
       shadow->SetParentTreeScope(NewScope());
       if (will_move_to_new_document)
         MoveShadowTreeToNewDocument(*shadow, old_document, new_document);
-    }
-
-    if (auto* details_element = DynamicTo<HTMLDetailsElement>(element)) {
-      details_element->DidMoveToNewTreeScope(OldScope());
     }
   }
 }

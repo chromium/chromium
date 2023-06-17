@@ -180,17 +180,16 @@ void HTMLDetailsElement::ParseAttribute(
       // other ones with the same name.
       CHECK_NE(params.reason,
                AttributeModificationReason::kBySynchronizationOfLazyAttribute);
-      if (!name_.IsNull() && IsInTreeScope() &&
+      if (!GetName().empty() &&
           params.reason == AttributeModificationReason::kDirectly) {
         CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
-        // Copy the set of details elements, because the setAttribute
-        // call can trigger mutation events that change the set.
+        // It's important that we have a copy of the set of details
+        // elements, because the setAttribute call can trigger mutation
+        // events that change the set.
         HeapVector<Member<HTMLDetailsElement>> details_with_name(
-            *GetTreeScope().NamedDetailsElements().at(name_));
+            OtherElementsInNameGroup());
         for (HTMLDetailsElement* other_details : details_with_name) {
-          if (other_details == this) {
-            continue;
-          }
+          CHECK_NE(other_details, this);
           other_details->setAttribute(html_names::kOpenAttr, g_null_atom);
         }
       }
@@ -201,50 +200,32 @@ void HTMLDetailsElement::ParseAttribute(
                                       CSSValueID::kHidden);
       content->EnsureDisplayLockContext().SetIsDetailsSlotElement(true);
     }
-  } else if (params.name == html_names::kNameAttr &&
-             RuntimeEnabledFeatures::AccordionPatternEnabled()) {
-    RemoveNameFromMap(GetTreeScope());
-    name_ = params.new_value;
-    AddNameToMap(GetTreeScope());
   } else {
     HTMLElement::ParseAttribute(params);
   }
 }
 
-void HTMLDetailsElement::DidMoveToNewTreeScope(TreeScope& old_scope) {
-  if (!name_.IsNull()) {
-    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
-
-    RemoveNameFromMap(old_scope);
-    AddNameToMap(GetTreeScope());
-  }
-}
-
-void HTMLDetailsElement::AddNameToMap(TreeScope& tree_scope) {
-  if (!name_.IsNull()) {
-    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
-
-    const auto add_result =
-        tree_scope.NamedDetailsElements().insert(name_, nullptr);
-    Member<Document::DetailsSet>& details_set = add_result.stored_value->value;
-    DCHECK_EQ(add_result.is_new_entry, !details_set);
-    if (!details_set) {
-      details_set = MakeGarbageCollected<Document::DetailsSet>();
-    }
-    details_set->insert(this);
-  }
-}
-
-void HTMLDetailsElement::RemoveNameFromMap(TreeScope& tree_scope) {
-  if (!name_.IsNull()) {
-    CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
-
-    tree_scope.NamedDetailsElements().at(name_)->erase(this);
-  }
-}
-
 void HTMLDetailsElement::ToggleOpen() {
   setAttribute(html_names::kOpenAttr, is_open_ ? g_null_atom : g_empty_atom);
+}
+
+HeapVector<Member<HTMLDetailsElement>>
+HTMLDetailsElement::OtherElementsInNameGroup() {
+  CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
+  HeapVector<Member<HTMLDetailsElement>> result;
+  const AtomicString& name = GetName();
+  if (name.empty() || !IsInTreeScope()) {
+    return result;
+  }
+  HTMLDetailsElement* details =
+      Traversal<HTMLDetailsElement>::Next(GetTreeScope().RootNode());
+  while (details) {
+    if (details != this && details->GetName() == name) {
+      result.push_back(details);
+    }
+    details = Traversal<HTMLDetailsElement>::Next(*details);
+  }
+  return result;
 }
 
 bool HTMLDetailsElement::IsInteractiveContent() const {
