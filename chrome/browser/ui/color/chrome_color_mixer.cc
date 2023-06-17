@@ -217,9 +217,13 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorDownloadItemForegroundSafe] = ui::PickGoogleColor(
       ui::kColorAlertLowSeverity, kColorDownloadShelfBackground,
       color_utils::kMinimumReadableContrastRatio);
+  mixer[kColorDownloadItemIconDangerous] = {ui::kColorAlertHighSeverity};
+  mixer[kColorDownloadItemIconWarning] = {ui::kColorAlertMediumSeverityIcon};
   mixer[kColorDownloadItemProgressRingBackground] = ui::SetAlpha(
       kColorDownloadItemProgressRingForeground, gfx::kGoogleGreyAlpha400);
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorThrobber};
+  mixer[kColorDownloadItemTextDangerous] = {ui::kColorAlertHighSeverity};
+  mixer[kColorDownloadItemTextWarning] = {ui::kColorAlertMediumSeverityText};
   mixer[kColorDownloadShelfBackground] = {kColorToolbar};
   mixer[kColorDownloadShelfButtonBackground] = {kColorDownloadShelfBackground};
   mixer[kColorDownloadShelfButtonIcon] = {kColorToolbarButtonIcon};

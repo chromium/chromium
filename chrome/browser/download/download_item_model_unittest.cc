@@ -26,6 +26,7 @@
 #include "chrome/browser/download/download_core_service_factory.h"
 #include "chrome/browser/download/download_core_service_impl.h"
 #include "chrome/browser/signin/identity_manager_factory.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/test/base/testing_browser_process.h"
 #include "chrome/test/base/testing_profile.h"
 #include "chrome/test/base/testing_profile_manager.h"
@@ -39,6 +40,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/text/bytes_formatting.h"
+#include "ui/base/ui_base_features.h"
 
 #if !BUILDFLAG(IS_ANDROID)
 #include "chrome/browser/enterprise/connectors/connectors_service.h"
@@ -924,7 +926,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_V2On) {
                 bubble_ui_info.icon_model_override);
       EXPECT_EQ(test_case.expected_primary_button_command,
                 bubble_ui_info.primary_button_command);
-      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_EQ(kColorDownloadItemIconDangerous,
+                bubble_ui_info.secondary_color);
       EXPECT_FALSE(bubble_ui_info.has_progress_bar);
     }
   }
@@ -975,7 +978,8 @@ TEST_F(DownloadItemModelTest, InterruptedBubbleUIInfo_V2Off) {
                 bubble_ui_info.icon_model_override);
       EXPECT_EQ(test_case.expected_primary_button_command,
                 bubble_ui_info.primary_button_command);
-      EXPECT_EQ(ui::kColorAlertHighSeverity, bubble_ui_info.secondary_color);
+      EXPECT_EQ(kColorDownloadItemIconDangerous,
+                bubble_ui_info.secondary_color);
       EXPECT_FALSE(bubble_ui_info.has_progress_bar);
     }
   }

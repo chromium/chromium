@@ -61,6 +61,11 @@
   /* Desktop media tab list colors. */ \
   E_CPONLY(kColorDesktopMediaTabListBorder) \
   E_CPONLY(kColorDesktopMediaTabListPreviewBackground) \
+  /* Common Download colors. */ \
+  E_CPONLY(kColorDownloadItemIconDangerous) \
+  E_CPONLY(kColorDownloadItemTextDangerous) \
+  E_CPONLY(kColorDownloadItemIconWarning) \
+  E_CPONLY(kColorDownloadItemTextWarning) \
   /* Download bubble colors. */\
   E_CPONLY(kColorDownloadBubbleInfoBackground) \
   E_CPONLY(kColorDownloadBubbleInfoIcon) \

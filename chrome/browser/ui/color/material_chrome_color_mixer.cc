@@ -108,7 +108,13 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
       ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
                                  kColorDownloadShelfBackground),
       kColorDownloadShelfBackground);
+  mixer[kColorDownloadItemIconDangerous] = {ui::kColorSysError};
+  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead.
+  mixer[kColorDownloadItemIconWarning] = {ui::kColorAlertMediumSeverityIcon};
   mixer[kColorDownloadItemProgressRingForeground] = {ui::kColorSysPrimary};
+  mixer[kColorDownloadItemTextDangerous] = {ui::kColorSysError};
+  // TODO(crbug.com/1399939): use a yellow-ish CR2023 color instead.
+  mixer[kColorDownloadItemTextWarning] = {ui::kColorAlertMediumSeverityText};
   mixer[kColorDownloadShelfBackground] = {ui::kColorSysBase};
   mixer[kColorDownloadShelfButtonIcon] = {kColorDownloadShelfForeground};
   mixer[kColorDownloadShelfButtonIconDisabled] = {ui::kColorSysStateDisabled};
