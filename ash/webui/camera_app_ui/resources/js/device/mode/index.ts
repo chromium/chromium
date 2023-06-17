@@ -350,8 +350,6 @@ export class Modes {
 
   /**
    * Checks whether to save image metadata or not.
-   *
-   * @return Promise for the operation.
    */
   private async updateSaveMetadata(): Promise<void> {
     if (expert.isEnabled(expert.ExpertOption.SAVE_METADATA)) {
@@ -363,8 +361,6 @@ export class Modes {
 
   /**
    * Enables save metadata of subsequent photos in the current mode.
-   *
-   * @return Promise for the operation.
    */
   private async enableSaveMetadata(): Promise<void> {
     if (this.current !== null) {

@@ -282,9 +282,6 @@ export class StreamManager {
    * Enables/Disables virtual device on target camera device. The extra
    * stream will be reported as virtual video device from
    * navigator.mediaDevices.enumerateDevices().
-   *
-   * @param deviceId The id of target camera device.
-   * @param enabled True for enabling virtual device.
    */
   async setVirtualDeviceEnabled(deviceId: string, enabled: boolean):
       Promise<void> {

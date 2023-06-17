@@ -81,7 +81,6 @@ export class Camera3DeviceInfo {
   }
 
   /**
-   * @param videoResolution Video resolution.
    * @return The constant fps supported by this video resolution.
    */
   getConstFpses(videoResolution: Resolution): number[] {

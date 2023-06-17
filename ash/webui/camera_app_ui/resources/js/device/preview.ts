@@ -257,7 +257,6 @@ export class Preview {
    * Sets video element's source.
    *
    * @param stream Stream to be the source.
-   * @return Promise for the operation.
    */
   private async setSource(stream: MediaStream): Promise<void> {
     const tpl = util.instantiateTemplate('#preview-video-template');
@@ -392,8 +391,6 @@ export class Preview {
 
   /**
    * Creates an image blob of the current frame.
-   *
-   * @return Promise for the result.
    */
   toImage(): Promise<Blob> {
     const {canvas, ctx} = util.newDrawingCanvas(
@@ -404,8 +401,6 @@ export class Preview {
 
   /**
    * Displays preview metadata on preview screen.
-   *
-   * @return Promise for the operation.
    */
   private async enableShowMetadata(): Promise<void> {
     if (this.streamInternal === null) {
@@ -628,8 +623,6 @@ export class Preview {
 
   /**
    * Hide display preview metadata on preview screen.
-   *
-   * @return Promise for the operation.
    */
   private async disableShowMetadata(): Promise<void> {
     if (this.streamInternal === null || this.metadataObserver === null) {

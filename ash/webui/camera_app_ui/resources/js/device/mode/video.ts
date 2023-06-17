@@ -124,8 +124,6 @@ function getVideoMimeType(param: h264.EncoderParameters|null): string {
 
 /**
  * Gets VideoEncoder's config from current h264 params and resolutions.
- *
- * @return VideoEncoderConfig.
  */
 function getVideoEncoderConfig(
     param: h264.EncoderParameters, resolution: Resolution): VideoEncoderConfig {
