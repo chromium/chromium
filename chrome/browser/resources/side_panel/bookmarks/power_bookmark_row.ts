@@ -132,10 +132,12 @@ export class PowerBookmarkRowElement extends PolymerElement {
   }
 
   private onFocus_(e: FocusEvent) {
-    if (e.composedPath()[0] === this) {
+    if (e.composedPath()[0] === this && this.matches(':focus-visible')) {
       // If trying to directly focus on this row, move the focus to the
       // <cr-url-list-item>. Otherwise, UI might be trying to directly focus on
       // a specific child (eg. the input).
+      // This should only be done when focusing via keyboard, to avoid blocking
+      // drag interactions.
       this.$.crUrlListItem.focus();
     }
   }
