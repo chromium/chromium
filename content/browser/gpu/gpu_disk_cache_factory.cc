@@ -34,6 +34,12 @@ void CreateFactoryInstance() {
       handle_to_path_map.emplace(gpu::kGrShaderGpuDiskCacheHandle,
                                  gr_cache_dir);
     }
+    base::FilePath graphite_dawn_dir =
+        GetContentClient()->browser()->GetGraphiteDawnDiskCacheDirectory();
+    if (!graphite_dawn_dir.empty()) {
+      handle_to_path_map.emplace(gpu::kGraphiteDawnGpuDiskCacheHandle,
+                                 graphite_dawn_dir);
+    }
   }
 
   factory_instance = new gpu::GpuDiskCacheFactory(handle_to_path_map);

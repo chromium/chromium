@@ -64,7 +64,9 @@ bool IsReservedGpuDiskCacheHandle(const GpuDiskCacheHandle& handle) {
     return gl_shader_handle == kDisplayCompositorGpuDiskCacheHandle ||
            gl_shader_handle == kGrShaderGpuDiskCacheHandle;
   }
-  return false;
+  const auto& dawn_webgpu_handle =
+      absl::get<gpu::GpuDiskCacheDawnWebGPUHandle>(handle);
+  return dawn_webgpu_handle == kGraphiteDawnGpuDiskCacheHandle;
 }
 
 }  // namespace gpu

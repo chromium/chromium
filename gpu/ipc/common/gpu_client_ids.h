@@ -21,6 +21,12 @@ constexpr int32_t kDisplayCompositorClientId = -1;
 // namespace for these shaders.
 constexpr int32_t kGrShaderCacheClientId = -2;
 
+// The ID used for storing dawn shaders created by graphite dawn in the GPU
+// process. Note that this ID doesn't correspond to a real Gpu client/channel,
+// but is required so we can use the same disk caching system for shaders and
+// use a unique namespace for these shaders.
+constexpr int32_t kGraphiteDawnClientId = -3;
+
 inline bool IsReservedClientId(int32_t client_id) {
   return client_id < 0;
 }
