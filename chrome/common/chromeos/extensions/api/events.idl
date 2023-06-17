@@ -12,7 +12,10 @@ namespace os.events {
         sd_card,
         power,
         keyboard_diagnostic,
-        stylus_garage
+        stylus_garage,
+        touchpad_button,
+        touchpad_touch,
+        touchpad_connected
     };
 
     enum EventSupportStatus {
@@ -224,6 +227,65 @@ namespace os.events {
         StylusGarageEvent? event;
     };
 
+    // An enumeration of input touch buttons. The enumeration refers to the
+    // physical button that is present in some touchpads under the surface.
+    // Clicks resulting from gestures such as two finger right-click are not
+    // included here. Separate physical buttons external to the touchpad are
+    // also not included.
+    enum InputTouchButton {
+      // Left key.
+      left,
+      // Middle key.
+      middle,
+      // Right key.
+      right
+    };
+
+    enum InputTouchButtonState {
+        // The button was pressed.
+        pressed,
+        // The button was released.
+        released
+    };
+
+    dictionary TouchpadButtonEventInfo {
+      InputTouchButton? button;
+      InputTouchButtonState? state;
+    };
+
+    dictionary TouchPointInfo {
+      // An id to track an initiated contact throughout its life cycle.
+      long? trackingId;
+      // The x position.
+      long? x;
+      // The y position.
+      long? y;
+      // The pressure applied to the touch contact. The value ranges from 0 to
+      // |max_pressure| as defined in TouchpadConnectedEventInfo.
+      long? pressure;
+      // The length of the longer dimension of the touch contact.
+      long? touchMajor;
+      // The length of the shorter dimension of the touch contact.
+      long? touchMinor;
+    };
+
+    dictionary TouchpadTouchEventInfo {
+      // The touch points reported by the touchpad.
+      TouchPointInfo[] touchPoints;
+    };
+
+    dictionary TouchpadConnectedEventInfo {
+      // The maximum possible x position of touch points.
+      long? maxX;
+      // The maximum possible y position of touch points.
+      long? maxY;
+      // The maximum possible pressure of touch points, or 0 if pressure is not
+      // supported.
+      long? maxPressure;
+      // The supported buttons;
+      InputTouchButton[] buttons;
+    };
+
     callback VoidCallback = void();
 
     interface Functions {
@@ -269,5 +331,15 @@ namespace os.events {
 
         // Informs the extension that a `Stylus Garage` event occured.
         static void onStylusGarageEvent(StylusGarageEventInfo event_info);
+
+        // Informs the extension that a `Touchpad Button` event occured.
+        static void onTouchpadButtonEvent(TouchpadButtonEventInfo event_info);
+
+        // Informs the extension that a `Touchpad Touch` event occured.
+        static void onTouchpadTouchEvent(TouchpadTouchEventInfo event_info);
+
+        // Informs the extension that a `Touchpad Connected` event occured.
+        static void onTouchpadConnectedEvent(
+            TouchpadConnectedEventInfo event_info);
     };
 };

@@ -46,6 +46,18 @@ api::os_events::StylusGarageEventInfo UncheckedConvertPtr(
 absl::optional<uint32_t> UncheckedConvertPtr(
     crosapi::mojom::UInt32ValuePtr ptr);
 
+api::os_events::TouchpadButtonEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchpadButtonEventInfoPtr ptr);
+
+api::os_events::TouchpadTouchEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchpadTouchEventInfoPtr ptr);
+
+api::os_events::TouchpadConnectedEventInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchpadConnectedEventInfoPtr ptr);
+
+api::os_events::TouchPointInfo UncheckedConvertPtr(
+    crosapi::mojom::TelemetryTouchPointInfoPtr ptr);
+
 }  // namespace unchecked
 
 api::os_events::AudioJackEvent Convert(
@@ -87,6 +99,12 @@ api::os_events::PowerEvent Convert(
 api::os_events::StylusGarageEvent Convert(
     crosapi::mojom::TelemetryStylusGarageEventInfo::State state);
 
+api::os_events::InputTouchButton Convert(
+    crosapi::mojom::TelemetryInputTouchButton button);
+
+api::os_events::InputTouchButtonState Convert(
+    crosapi::mojom::TelemetryTouchpadButtonEventInfo::State state);
+
 crosapi::mojom::TelemetryEventCategoryEnum Convert(
     api::os_events::EventCategory input);
 
@@ -108,6 +126,16 @@ template <class OutputT, class InputT>
 OutputT ConvertStructPtr(InputT input) {
   return (!input.is_null()) ? unchecked::UncheckedConvertPtr(std::move(input))
                             : OutputT();
+}
+
+template <class OutputT, class InputT>
+std::vector<OutputT> ConvertStructPtrVector(std::vector<InputT> input) {
+  std::vector<OutputT> output;
+  for (auto&& element : input) {
+    DCHECK(!element.is_null());
+    output.push_back(unchecked::UncheckedConvertPtr(std::move(element)));
+  }
+  return output;
 }
 
 }  // namespace chromeos::converters
