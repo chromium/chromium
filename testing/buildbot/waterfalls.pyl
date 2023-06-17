@@ -5267,7 +5267,7 @@
       },
       'linux-ubsan-vptr': {
         'mixins': [
-          'linux-jammy',
+          'linux-bionic',
         ],
         'test_suites': {
           # no "_and_gl":gl_unittests doesn't pass yet,
