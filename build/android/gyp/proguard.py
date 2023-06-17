@@ -441,7 +441,7 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
         # Found in: com/facebook/fbui/textlayoutbuilder/StaticLayoutHelper
         'android.text.StaticLayout.<init>',
         # TODO(crbug/1426964): Remove once chrome builds with Android U SDK.
-        'android.adservices.measurement',
+        ' android.',
 
         # Explicictly guarded by try (NoClassDefFoundError) in Flogger's
         # PlatformProvider.
@@ -461,10 +461,6 @@ def _CheckForMissingSymbols(r8_path, dex_files, classpath, warnings_as_errors,
         # Explicitly guarded by try (NoClassDefFoundError) in Firebase's
         # KotlinDetector: com.google.firebase.platforminfo.KotlinDetector.
         'kotlin.KotlinVersion',
-
-        # TODO(agrieve): Remove once we move to Android U SDK.
-        'android.window.BackEvent',
-        'android.window.OnBackAnimationCallback',
     ]
 
     had_unfiltered_items = '  ' in stderr
