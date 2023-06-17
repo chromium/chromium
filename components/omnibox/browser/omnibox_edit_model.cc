@@ -1974,13 +1974,15 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 
   size_t line = popup_selection_.line;
   DCHECK_NE(line, OmniboxPopupSelection::kNoMatch)
-      << "GetAccessibilityLabelForCurrentSelection should never be called if "
-         "the current selection is kNoMatch.";
+      << "GetPopupAccessibilityLabelForCurrentSelection should never be called "
+         "if the current selection is kNoMatch.";
 
   const AutocompleteMatch& match = result().match_at(line);
 
   int additional_message_id = 0;
   std::u16string additional_message;
+  // This switch statement should be updated when new selection types are added.
+  static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 5);
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
       bool group_hidden = result().IsSuggestionGroupHidden(
@@ -2011,7 +2013,6 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }
-      static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 5);
       if (available_actions_count > 1)
         additional_message_id = IDS_ACC_MULTIPLE_ACTIONS_SUFFIX;
 

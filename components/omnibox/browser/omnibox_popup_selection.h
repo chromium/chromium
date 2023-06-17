@@ -31,32 +31,33 @@ struct OmniboxPopupSelection {
     kAllLines
   };
 
-  // See `state` below for details. The numeric values are to aid
-  // comparison only. They are not persisted anywhere and can be freely changed.
+  // See `state` below for details. The order matters; earlier items will be
+  // selected first when tabbing through the popup. They are not persisted
+  // anywhere and can be freely changed.
   enum LineState {
     // This means the Header above this row is highlighted, and the
     // header collapse/expand button is focused.
-    FOCUSED_BUTTON_HEADER = 0,
+    FOCUSED_BUTTON_HEADER,
 
     // NORMAL means the row is focused, and Enter key navigates to the match.
-    NORMAL = 1,
+    NORMAL,
 
     // KEYWORD_MODE state is used when in Keyword mode.  If the keyword search
     // button is enabled, keyword mode is entered when the keyword button is
     // focused.
-    KEYWORD_MODE = 2,
+    KEYWORD_MODE,
 
     // FOCUSED_BUTTON_ACTION state means an Action button (such as a Pedal)
     // is in focus.
-    FOCUSED_BUTTON_ACTION = 3,
+    FOCUSED_BUTTON_ACTION,
 
     // FOCUSED_BUTTON_REMOVE_SUGGESTION state means the Remove Suggestion (X)
     // button is focused. Pressing enter will attempt to remove this suggestion.
-    FOCUSED_BUTTON_REMOVE_SUGGESTION = 4,
+    FOCUSED_BUTTON_REMOVE_SUGGESTION,
 
     // Whenever new line state is added, accessibility label for current
     // selection should be revisited
-    // (OmniboxEditModel::GetAccessibilityLabelForCurrentSelection).
+    // (`OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection()`).
     LINE_STATE_MAX_VALUE
   };
 
