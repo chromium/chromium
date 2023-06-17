@@ -37025,6 +37025,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -37046,6 +37047,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -37066,6 +37068,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -37086,6 +37089,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43876,6 +43880,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43899,6 +43904,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43921,6 +43927,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -43943,6 +43950,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46347,6 +46355,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46369,6 +46378,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46390,6 +46400,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },
@@ -46411,6 +46422,7 @@
         "args": [
           "--disable-field-trial-config"
         ],
+        "ci_only": true,
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
         },

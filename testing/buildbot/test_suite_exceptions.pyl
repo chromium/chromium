@@ -1369,6 +1369,14 @@
       },
     },
   },
+  'browser_tests_no_field_trial': {
+    'remove_from': [
+      'win10-rel-no-external-ip',
+      'win-arm64-rel',
+      'win-rel-cft',
+      'Win11 Tests x64',
+    ],
+  },
   'cc_unittests': {
     'modifications': {
       'Linux TSan Tests': {
@@ -1742,6 +1750,14 @@
         },
       },
     },
+  },
+  'components_browsertests_no_field_trial': {
+    'remove_from': [
+      'win10-rel-no-external-ip',
+      'win-arm64-rel',
+      'win-rel-cft',
+      'Win11 Tests x64',
+    ],
   },
   'components_unittests': {
     'modifications': {
@@ -3069,6 +3085,14 @@
       'lacros-amd64-generic-rel-fyi',
     ]
   },
+  'interactive_ui_tests_no_field_trial': {
+    'remove_from': [
+      'win10-rel-no-external-ip',
+      'win-arm64-rel',
+      'win-rel-cft',
+      'Win11 Tests x64',
+    ],
+  },
   'ipc_tests': {
     'modifications': {
       'android-asan': {
@@ -3945,6 +3969,14 @@
         },
       },
     },
+  },
+  'sync_integration_tests_no_field_trial': {
+    'remove_from': [
+      'win10-rel-no-external-ip',
+      'win-arm64-rel',
+      'win-rel-cft',
+      'Win11 Tests x64',
+    ],
   },
   'system_webview_wpt': {
     'modifications': {

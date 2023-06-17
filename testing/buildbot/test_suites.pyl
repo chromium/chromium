@@ -2354,6 +2354,7 @@
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'swarming': {
           'shards': 10,
         },
@@ -2363,18 +2364,21 @@
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'test': 'components_browsertests',
       },
       'interactive_ui_tests_no_field_trial': {
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'test': 'interactive_ui_tests',
       },
       'sync_integration_tests_no_field_trial': {
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'test': 'sync_integration_tests',
       },
     },
@@ -6205,6 +6209,7 @@
       'chromium_gtests_for_devices_with_graphical_output',
       'chromium_gtests_for_win_and_linux_only',
       'cr23_main_win_gtests',
+      'fieldtrial_browser_tests',
       'non_android_and_cast_and_chromeos_chromium_gtests',
       'non_android_chromium_gtests',
       'non_android_chromium_gtests_skia_gold',
