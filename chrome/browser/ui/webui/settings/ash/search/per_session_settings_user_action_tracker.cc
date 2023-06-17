@@ -7,7 +7,9 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
+#include "chrome/browser/browser_process.h"
 #include "chrome/common/pref_names.h"
+#include "components/metrics/metrics_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
 
 namespace ash::settings {
@@ -44,7 +46,9 @@ PerSessionSettingsUserActionTracker::PerSessionSettingsUserActionTracker(
     PrefService* pref_service)
     : metric_start_time_(base::TimeTicks::Now()),
       window_last_active_timestamp_(base::TimeTicks::Now()),
-      pref_service_(pref_service) {}
+      pref_service_(pref_service) {
+  DCHECK(pref_service_);
+}
 
 PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   RecordPageActiveTime();
@@ -54,6 +58,35 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   base::UmaHistogramCounts1000(
       "ChromeOS.Settings.NumUniqueSettingsChanged.PerSession",
       changed_settings_.size());
+}
+
+void PerSessionSettingsUserActionTracker::RecordTotalLifetimeMetric() {
+  metrics::MetricsService* metrics_service_ =
+      g_browser_process->metrics_service();
+  CHECK(metrics_service_->GetCurrentUserMetricsConsent().has_value());
+
+  // We will not keep a record of the user's total number of unique Settings
+  // changed if they have turned off UMA. We will not transmit the old data when
+  // the user revokes their consent for UMA. The pref gets cleared and will
+  // never record the Device Lifetime metric again.
+  if (pref_service_->FindPreference(::prefs::kHasEverRevokedMetricsConsent)
+          ->IsDefaultValue()) {
+    bool current_metric_consent_value =
+        metrics_service_->GetCurrentUserMetricsConsent().value();
+    pref_service_->SetBoolean(::prefs::kHasEverRevokedMetricsConsent,
+                              !current_metric_consent_value);
+  } else if (!metrics_service_->GetCurrentUserMetricsConsent().value()) {
+    pref_service_->SetBoolean(::prefs::kHasEverRevokedMetricsConsent, true);
+  }
+
+  if (pref_service_->GetBoolean(::prefs::kHasEverRevokedMetricsConsent)) {
+    // If the pref has been turned off at least once in the user's lifetime,
+    // clear the pref kTotalUniqueOsSettingsChanged.
+    ClearTotalUniqueSettingsChangedPref();
+
+    // Return early before any recording takes place.
+    return;
+  }
 
   // The pref kHasResetFirst7DaysSettingsUsedCount indicates whether the pref
   // kTotalUniqueOsSettingsChanged has been cleared once after 1 week has passed
@@ -75,29 +108,28 @@ PerSessionSettingsUserActionTracker::~PerSessionSettingsUserActionTracker() {
   }
 
   // Record number of unique settings changed in this session.
-  absl::optional<int> total_unique_settings_changed_count =
+  int total_unique_settings_changed_count =
       UpdateSettingsPrefTotalUniqueChanged();
 
   // If the number of total unique setting used increased, flagged by the
   // optional variable total_unique_settings_changed_count having a value, add
   // the datapoint to the histogram.
   // NOTE: prefs::kOobeOnboardingTime does not exist for users in guest mode.
-  if (pref_service_->HasPrefPath(prefs::kOobeOnboardingTime) &&
-      total_unique_settings_changed_count.has_value()) {
+  if (pref_service_->HasPrefPath(prefs::kOobeOnboardingTime)) {
     if (IsTodayInFirst7Days()) {
       base::UmaHistogramCounts1000(
           "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.FirstWeek",
-          total_unique_settings_changed_count.value());
+          total_unique_settings_changed_count);
     } else {
       base::UmaHistogramCounts1000(
           "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime."
           "SubsequentWeeks",
-          total_unique_settings_changed_count.value());
+          total_unique_settings_changed_count);
     }
     // Store the total unique Settings changed in .DeviceLifetime histogram.
     base::UmaHistogramCounts1000(
         "ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.Total",
-        total_unique_settings_changed_count.value());
+        total_unique_settings_changed_count);
   }
 }
 
@@ -113,7 +145,10 @@ bool PerSessionSettingsUserActionTracker::IsTodayInFirst7Days() {
 
 void PerSessionSettingsUserActionTracker::
     ClearTotalUniqueSettingsChangedPref() {
-  pref_service_->ClearPref(::prefs::kTotalUniqueOsSettingsChanged);
+  if (pref_service_->GetDict(::prefs::kTotalUniqueOsSettingsChanged).size() !=
+      0) {
+    pref_service_->ClearPref(::prefs::kTotalUniqueOsSettingsChanged);
+  }
 }
 
 void PerSessionSettingsUserActionTracker::RecordPageFocus() {
@@ -167,6 +202,10 @@ void PerSessionSettingsUserActionTracker::RecordSettingChange(
   if (setting.has_value()) {
     changed_settings_.insert(
         base::NumberToString(static_cast<int>(setting.value())));
+
+    // Record the total unique Settings changed to the histogram
+    // ChromeOS.Settings.NumUniqueSettingsChanged.DeviceLifetime.{Time}.
+    RecordTotalLifetimeMetric();
   }
   base::TimeTicks now = base::TimeTicks::Now();
 
@@ -213,13 +252,12 @@ void PerSessionSettingsUserActionTracker::ResetMetricsCountersAndTimestamp() {
   num_searches_since_start_time_ = 0u;
 }
 
-absl::optional<int>
-PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
+int PerSessionSettingsUserActionTracker::
+    UpdateSettingsPrefTotalUniqueChanged() {
   // Fetch the dictionary from the pref.
   ScopedDictPrefUpdate total_unique_settings_changed_(
       pref_service_, ::prefs::kTotalUniqueOsSettingsChanged);
   base::Value::Dict& pref_data = total_unique_settings_changed_.Get();
-  int current_count = pref_data.size();
 
   // Set the dictionary.
   // Value is a constant 1 since we only want to know which Setting has been
@@ -231,16 +269,14 @@ PerSessionSettingsUserActionTracker::UpdateSettingsPrefTotalUniqueChanged() {
     }
   }
 
-  int new_count = pref_data.size();
-
-  // If the new size of the pref dictionary is the same as before, we do not
-  // want to record that in UMA so we will return a nullopt to flag not to add
-  // to histogram bucket.
+  // We still want to record the data in UMA even if no new unique Settings has
+  // changed because UMA clears the data after a certain timeframe. We will
+  // record the pref kTotalUniqueOsSettingsChanged's size to UMA every time that
+  // a user changes a Setting, whether it was a unique change or not.
   //
   // The value of pref_data will automatically get stored to pref_service_ upon
   // destruction.
-  return current_count == new_count ? absl::nullopt
-                                    : absl::optional<int>{new_count};
+  return pref_data.size();
 }
 
 }  // namespace ash::settings

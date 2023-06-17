@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {InternetPageBrowserProxyImpl, Router, routes} from 'chrome://os-settings/os_settings.js';
+import {InternetPageBrowserProxyImpl, Router, routes, setUserActionRecorderForTesting, userActionRecorderMojom} from 'chrome://os-settings/os_settings.js';
 import {MojoConnectivityProvider} from 'chrome://resources/ash/common/connectivity/mojo_connectivity_provider.js';
 import {MojoInterfaceProviderImpl} from 'chrome://resources/ash/common/network/mojo_interface_provider.js';
 import {OncMojo} from 'chrome://resources/ash/common/network/onc_mojo.js';
@@ -16,6 +16,8 @@ import {FakeNetworkConfig} from 'chrome://webui-test/chromeos/fake_network_confi
 import {FakePasspointService} from 'chrome://webui-test/chromeos/fake_passpoint_service_mojom.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {eventToPromise} from 'chrome://webui-test/test_util.js';
+
+import {FakeUserActionRecorder} from '../fake_user_action_recorder.js';
 
 import {TestInternetPageBrowserProxy} from './test_internet_page_browser_proxy.js';
 
@@ -31,6 +33,9 @@ suite('InternetDetailPage', function() {
 
   /** @type {?TestInternetPageBrowserProxy} */
   let browserProxy = null;
+
+  /** @type {?userActionRecorderMojom.UserActionRecorderInterface} */
+  let userActionRecorder = null;
 
   /** @type {Object} */
   const prefs_ = {
@@ -168,6 +173,9 @@ suite('InternetDetailPage', function() {
   }
 
   setup(function() {
+    userActionRecorder = new FakeUserActionRecorder();
+    setUserActionRecorderForTesting(userActionRecorder);
+
     loadTimeData.overrideValues({
       internetAddConnection: 'internetAddConnection',
       internetAddConnectionExpandA11yLabel:
@@ -198,6 +206,7 @@ suite('InternetDetailPage', function() {
       internetDetailPage = null;
       Router.getInstance().resetRouteForTesting();
     });
+    setUserActionRecorderForTesting(null);
   });
 
   /**
