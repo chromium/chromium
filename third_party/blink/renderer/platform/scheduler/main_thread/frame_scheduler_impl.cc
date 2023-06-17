@@ -406,7 +406,6 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kWebSocket:
     case TaskType::kMicrotask:
     case TaskType::kUnshippedPortMessage:
-    case TaskType::kFileReading:
     case TaskType::kPresentation:
     case TaskType::kSensor:
     case TaskType::kPerformanceTimeline:
@@ -423,6 +422,12 @@ QueueTraits FrameSchedulerImpl::CreateQueueTraitsForTaskType(TaskType type) {
     case TaskType::kStorage:
       // TODO(altimin): Move appropriate tasks to throttleable task queue.
       return DeferrableTaskQueueTraits();
+    case TaskType::kFileReading:
+      // This is used by Blob operations (BlobURLStore in particular, which is
+      // associated to BlobRegistry) and should run with VT paused to prevent
+      // deadlocks when reading network requests as Blobs. See crbug.com/1455267
+      // for more details.
+      return DeferrableTaskQueueTraits().SetCanRunWhenVirtualTimePaused(true);
     // PostedMessage can be used for navigation, so we shouldn't defer it
     // when expecting a user gesture.
     case TaskType::kPostedMessage:

@@ -1,0 +1,15 @@
+Tests that Virtual Time does not deadlock with Response.blob() and URL.createObjectURL()
+Request to http://test.com/index.html, type: Document
+Request to http://test.com/fetch/blob0, type: XHR
+Request to http://test.com/fetch/blob1, type: XHR
+Request to http://test.com/fetch/blob2, type: XHR
+Request to http://test.com/fetch/blob3, type: XHR
+Request to http://test.com/fetch/blob4, type: XHR
+Request to http://test.com/fetch/blob5, type: XHR
+Request to http://test.com/fetch/blob6, type: XHR
+Request to http://test.com/fetch/blob7, type: XHR
+Request to http://test.com/fetch/blob8, type: XHR
+Request to http://test.com/fetch/blob9, type: XHR
+[
+    [0] : got blobs blob-0,blob-1,blob-2,blob-3,blob-4,blob-5,blob-6,blob-7,blob-8,blob-9
+]
