@@ -11,38 +11,38 @@ function testNavigation(root, elements, next, previous) {
   // Internal copy of the array. They are otherwise passed by reference.
   const list = elements.slice(0);
 
-  assert_equals(root.activeElement, list[0]);
+  assert_equals(root.activeElement, list[0], 'should start with the first element active');
 
-  list.forEach(element => {
+  list.forEach((element, index) => {
     if (element == list[0])
       return;
 
     next();
 
-    assert_equals(root.activeElement, element);
+    assert_equals(root.activeElement, element, 'going to the next element should move focus: ' + index);
     assert_equals(
         window.getComputedStyle(element).getPropertyValue('background-color'),
-        'rgb(224, 224, 224)');
+        'rgb(224, 224, 224)', 'the focused element should be properly styled');
   });
 
   // Next action after reaching the end is a no-op.
   next();
-  assert_equals(root.activeElement, list.pop());
+  assert_equals(root.activeElement, list.pop(), 'next from the end is a no-op');
   // pop() will remove the last element which will allow the next iteration to
   // start from n-1.
 
-  list.reverse().forEach(element => {
+  list.reverse().forEach((element, index) => {
     previous();
 
-    assert_equals(root.activeElement, element);
+    assert_equals(root.activeElement, element, 'going to the previous element should move focus: ' + index);
     assert_equals(
         window.getComputedStyle(element).getPropertyValue('background-color'),
-        'rgb(224, 224, 224)');
+        'rgb(224, 224, 224)', 'the focused element should be properly styled');
   });
 
   // Previous element after reaching the beginning is a no-op.
   previous();
-  assert_equals(root.activeElement, list[list.length - 1]);
+  assert_equals(root.activeElement, list[list.length - 1], 'previous from the beginning is a no-op');
 }
 
 async_test(t => {
@@ -74,24 +74,24 @@ async_test(t => {
       const menu = textTrackMenu(video);
       assert_true(isVisible(menu));
       assert_equals(internals.shadowRoot(video).activeElement,
-                    menu.lastElementChild);
+                    menu.firstElementChild, 'the original active element should be the first element');
 
       const elements = [];
       for (let i = 0; i < menu.children.length; i++)
-        elements.unshift(menu.children[i]);
+        elements.push(menu.children[i]);
 
       testNavigation(internals.shadowRoot(video), elements,
-                     () => { eventSender.keyDown('ArrowUp'); },
-                     () => { eventSender.keyDown('ArrowDown'); });
+                     () => { eventSender.keyDown('ArrowDown'); },
+                     () => { eventSender.keyDown('ArrowUp'); });
 
       testNavigation(internals.shadowRoot(video), elements,
-                     () => { eventSender.keyDown('Tab', [ 'shiftKey' ]); },
-                     () => { eventSender.keyDown('Tab'); });
+                     () => { eventSender.keyDown('Tab'); },
+                     () => { eventSender.keyDown('Tab', [ 'shiftKey' ]); });
 
       // Navigating with Shift + Arrow Keys should also work.
       testNavigation(internals.shadowRoot(video), elements,
-                     () => { eventSender.keyDown('ArrowUp', [ 'shiftKey' ]); },
-                     () => { eventSender.keyDown('ArrowDown', [ 'shiftKey' ]); });
+                     () => { eventSender.keyDown('ArrowDown', [ 'shiftKey' ]); },
+                     () => { eventSender.keyDown('ArrowUp', [ 'shiftKey' ]); });
 
       // Closing.
       eventSender.keyDown('Escape');

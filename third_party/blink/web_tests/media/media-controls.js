@@ -195,6 +195,10 @@ function downloadsOverflowItem(video) {
   return overflowItem(video, '-internal-media-controls-download-button');
 }
 
+function pictureInPictureOverflowItem(video) {
+  return overflowItem(video, '-internal-media-controls-picture-in-picture-button');
+}
+
 function mediaControlsElement(first, id)
 {
     for (var element = first; element; element = element.nextSibling) {
