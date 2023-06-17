@@ -5,7 +5,7 @@
   include: [
     "syslog/client.shard.cml",
     "vulkan/client.shard.cml",
-    "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml",
+    "//build/config/fuchsia/test/elf_test_runner.shard.test-cml",
     "//build/config/fuchsia/test/chromium_test_facet.shard.test-cml",
     "//build/config/fuchsia/test/test_fonts.shard.test-cml",
   ],

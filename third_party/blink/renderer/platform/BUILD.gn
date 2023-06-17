@@ -1994,10 +1994,6 @@ test("blink_platform_unittests") {
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
     ]
-
-    # Oilpan reuses V8's v8::PageAllocator which generally requires JIT
-    # permissions.
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
   }
 
   if (is_android) {
@@ -2494,7 +2490,6 @@ test("blink_fuzzer_unittests") {
   }
 
   if (is_fuchsia) {
-    test_runner_shard = "//build/config/fuchsia/test/elf_test_ambient_exec_runner.shard.test-cml"
     additional_manifest_fragments = [
       "//build/config/fuchsia/test/test_fonts.shard.test-cml",
       "//build/config/fuchsia/test/mark_vmo_executable.shard.test-cml",
