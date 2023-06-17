@@ -20,8 +20,16 @@
 namespace blink {
 namespace features {
 
-// Please keep features alphabetically sorted and grouped with associated
-// `base::Feature`s and `base::FeatureParam`s.
+// -----------------------------------------------------------------------------
+// Feature declarations and associated constants (feature params, et cetera)
+//
+// When adding new features or constants for features, please keep the features
+// sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
+// that feature grouped with the associated feature.
+//
+// When declaring feature params for auto-generated features (e.g. from
+// `RuntimeEnabledFeatures)`, they should still be ordered in this section based
+// on the identifier name of the generated feature.
 
 // Enables passing of mailbox backed Accelerated bitmap images to be passed
 // cross-process as mailbox references instead of serialized bitmaps in
@@ -175,6 +183,7 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
     kBrowsingTopicsDisabledTopicsList;
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kBrowsingTopicsXHR);
+constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
 
 // Suppresses console errors for CORS problems which report an associated
 // inspector issue anyway.
@@ -757,6 +766,16 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kRTCGpuCodecSupportWaiter);
 BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
     kRTCGpuCodecSupportWaiterTimeoutParam;
 
+// A parameter for kReduceUserAgentMinorVersion;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
+    kUserAgentFrozenBuildVersion;
+
+// Parameters for kReduceUserAgentPlatformOsCpu;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kAllExceptLegacyWindowsPlatform;
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kLegacyWindowsPlatform;
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedReferrerGranularity);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
@@ -935,6 +954,23 @@ BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
 // See https://crbug.com/1326622 for more info.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSimulateClickOnAXFocus);
 
+// Parameters for blink::features::kSkipTouchEventFilter.
+// Which event types will be always forwarded is controlled by the "type"
+// FeatureParam, which can be either "discrete" (default) or "all".
+BLINK_COMMON_EXPORT
+extern const char kSkipTouchEventFilterTypeParamName[];
+BLINK_COMMON_EXPORT
+extern const char kSkipTouchEventFilterTypeParamValueDiscrete[];
+BLINK_COMMON_EXPORT
+extern const char kSkipTouchEventFilterTypeParamValueAll[];
+BLINK_COMMON_EXPORT
+extern const char kSkipTouchEventFilterFilteringProcessParamName[];
+BLINK_COMMON_EXPORT
+extern const char kSkipTouchEventFilterFilteringProcessParamValueBrowser[];
+BLINK_COMMON_EXPORT
+extern const char
+    kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
+
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kSmallScriptStreaming);
 
 // Allows certain origin trials to be enabled using third-party tokens
@@ -984,6 +1020,32 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(
     kStartMediaStreamCaptureIndicatorInBrowser);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStopInBackground);
+
+// The number of "automatic" implicit storage access grants per third-party
+// origin that can be granted.
+//
+// Note that if `kStorageAccessAPIAutoGrantInFPS` and
+// `kStorageAccessAPIAutoDenyOutsideFPS` are both true, then this parameter has
+// no effect.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
+    kStorageAccessAPIImplicitGrantLimit;
+// Whether to auto-grant storage access requests when the top level origin and
+// the requesting origin are in the same First-Party Set.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoGrantInFPS;
+// Whether to auto-deny storage access requests when the top level origin and
+// the requesting origin are not in the same First-Party Set.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIAutoDenyOutsideFPS;
+// Whether to renew Storage Access API permission grants after user interaction
+// in the relevant contexts.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
+    kStorageAccessAPIRefreshGrantsOnUserInteraction;
+// How far back to look when requiring top-level user interaction on the
+// requesting site for Storage Access API permission grants. If this value is an
+// empty duration (e.g. "0s"), then no top-level user interaction is required.
+BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
+    kStorageAccessAPITopLevelUserInteractionBound;
 
 // Stylus gestures for editable web content.
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kStylusRichGestures);
@@ -1104,93 +1166,48 @@ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebSQLNonSecureContextAccess);
 
 BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kWebviewAccelerateSmallCanvases);
 
-// Please keep features alphabetically sorted and grouped with associated
-// `base::Feature`s and `base::FeatureParam`s. Do not just add new features at
-// the end :)
-
-// Parameters for blink::features::kSkipTouchEventFilter.
-// Which event types will be always forwarded is controlled by the "type"
-// FeatureParam, which can be either "discrete" (default) or "all".
-BLINK_COMMON_EXPORT
-extern const char kSkipTouchEventFilterTypeParamName[];
-BLINK_COMMON_EXPORT
-extern const char kSkipTouchEventFilterTypeParamValueDiscrete[];
-BLINK_COMMON_EXPORT
-extern const char kSkipTouchEventFilterTypeParamValueAll[];
-BLINK_COMMON_EXPORT
-extern const char kSkipTouchEventFilterFilteringProcessParamName[];
-BLINK_COMMON_EXPORT
-extern const char kSkipTouchEventFilterFilteringProcessParamValueBrowser[];
-BLINK_COMMON_EXPORT
-extern const char
-    kSkipTouchEventFilterFilteringProcessParamValueBrowserAndRenderer[];
-
-// TODO(crbug.com/1455020): Finish sorting this.
-constexpr int kBrowsingTopicsTaxonomyVersionDefault = 1;
-
-BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
-BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
-
-// A parameter for kReduceUserAgentMinorVersion;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<std::string>
-    kUserAgentFrozenBuildVersion;
-
-// Parameters for kReduceUserAgentPlatformOsCpu;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kAllExceptLegacyWindowsPlatform;
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kLegacyWindowsPlatform;
-
-// The number of "automatic" implicit storage access grants per third-party
-// origin that can be granted.
+// When adding new features or constants for features, please keep the features
+// sorted by identifier name (e.g. `kAwesomeFeature`), and the constants for
+// that feature grouped with the associated feature.
 //
-// Note that if `kStorageAccessAPIAutoGrantInFPS` and
-// `kStorageAccessAPIAutoDenyOutsideFPS` are both true, then this parameter has
-// no effect.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<int>
-    kStorageAccessAPIImplicitGrantLimit;
-// Whether to auto-grant storage access requests when the top level origin and
-// the requesting origin are in the same First-Party Set.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kStorageAccessAPIAutoGrantInFPS;
-// Whether to auto-deny storage access requests when the top level origin and
-// the requesting origin are not in the same First-Party Set.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kStorageAccessAPIAutoDenyOutsideFPS;
-// Whether to renew Storage Access API permission grants after user interaction
-// in the relevant contexts.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<bool>
-    kStorageAccessAPIRefreshGrantsOnUserInteraction;
-// How far back to look when requiring top-level user interaction on the
-// requesting site for Storage Access API permission grants. If this value is an
-// empty duration (e.g. "0s"), then no top-level user interaction is required.
-BLINK_COMMON_EXPORT extern const base::FeatureParam<base::TimeDelta>
-    kStorageAccessAPITopLevelUserInteractionBound;
+// When declaring feature params for auto-generated features (e.g. from
+// `RuntimeEnabledFeatures)`, they should still be ordered in this section based
+// on the identifier name of the generated feature.
 
-// This file is being reorganized to keep features sorted. Please do not add new
-// features here; please add them to the already-sorted section in the first
-// half of this file.
+// ----------------------------------------------------------------------------
+// Helper functions for querying feature status. Please declare any features or
+// constants for features in the section above.
 
-// Helpers for querying feature status.
+BLINK_COMMON_EXPORT int GetMaxUnthrottledTimeoutNestingLevel();
 
 // Checks both of kAllowPageWithIDBConnectionInBFCache and
 // kAllowPageWithIDBTransactionInBFCache are turned on when determining if a
 // page with IndexedDB transaction is eligible for BFCache.
 BLINK_COMMON_EXPORT bool
 IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled();
+
 BLINK_COMMON_EXPORT bool IsAllowURNsInIframeEnabled();
+
 BLINK_COMMON_EXPORT bool IsFencedFramesEnabled();
+
+BLINK_COMMON_EXPORT bool IsMaxUnthrottledTimeoutNestingLevelEnabled();
+
 // This function checks both kNewBaseUrlInheritanceBehavior and
 // kIsolateSandboxedIframes and returns true if either is enabled.
 BLINK_COMMON_EXPORT bool IsNewBaseUrlInheritanceBehaviorEnabled();
+
 BLINK_COMMON_EXPORT bool IsParkableStringsToDiskEnabled();
+
 BLINK_COMMON_EXPORT bool IsPlzDedicatedWorkerEnabled();
+
 BLINK_COMMON_EXPORT bool IsSetTimeoutWithoutClampEnabled();
+
 // Use to determine if iframe throttling is enabled via the feature
 // kThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframes and not disabled
 // via enterprise policy.
 BLINK_COMMON_EXPORT bool
 IsThrottleDisplayNoneAndVisibilityHiddenCrossOriginIframesEnabled();
+
 BLINK_COMMON_EXPORT bool ParkableStringsUseSnappy();
 
 }  // namespace features
