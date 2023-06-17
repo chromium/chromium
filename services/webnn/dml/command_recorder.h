@@ -18,7 +18,6 @@ namespace webnn::dml {
 using Microsoft::WRL::ComPtr;
 
 class Adapter;
-class GraphDMLImpl;
 
 // CommandRecorder is mainly responsible for the initialization and execution of
 // a DirectML graph. It wraps a DirectML command recorder, and manages the
@@ -83,9 +82,33 @@ class CommandRecorder final {
       const absl::optional<DML_BINDING_DESC>& input_array_binding,
       const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
-  HRESULT ExecuteGraph(GraphDMLImpl* graph,
-                       const std::vector<DML_BINDING_DESC>& input_bindings,
-                       const std::vector<DML_BINDING_DESC>& output_bindings);
+  // Execute a compiled DirectML operator after it is initialized. The caller is
+  // allowed to call this method multiple times to record operator executions
+  // with different inputs. The caller should wait for the operator execution to
+  // complete on the GPU before reading back the results.
+  //
+  // The input and output resources are supplied by the caller via
+  // `input_bindings` and `output_bindings`. The input and output resources will
+  // be bound to the operator's binding table. The number of bindings should
+  // exactly match the number of input and output tensors of this operator. All
+  // bound resources need to be in the D3D12_RESOURCE_STATE_UNORDERED_ACCESS
+  // state before calling this method. It's the caller's responsibility to keep
+  // these resources alive until the operator execution work completes on the
+  // GPU.
+  //
+  // If the compiled operator also requires any persistent resources, they
+  // should be initialized by `InitializeOperator()` and be supplied via
+  // `persistent_resource_binding`. The lifecycle of the persistent resource
+  // should be the same as other input and output resources.
+  //
+  // This method will create necessary temporary resources for the operator
+  // execution and these temporary resources will be kept alive until the GPU
+  // work is done.
+  HRESULT ExecuteOperator(
+      IDMLCompiledOperator* compiled_operator,
+      base::span<const DML_BINDING_DESC> input_bindings,
+      base::span<const DML_BINDING_DESC> output_bindings,
+      const absl::optional<DML_BINDING_DESC>& persistent_resource_binding);
 
  private:
   CommandRecorder(scoped_refptr<Adapter> adapter,

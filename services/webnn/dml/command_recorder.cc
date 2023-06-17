@@ -207,15 +207,88 @@ HRESULT CommandRecorder::InitializeOperator(
   return S_OK;
 }
 
-HRESULT CommandRecorder::ExecuteGraph(
-    GraphDMLImpl* graph,
-    const std::vector<DML_BINDING_DESC>& input_bindings,
-    const std::vector<DML_BINDING_DESC>& output_bindings) {
+HRESULT CommandRecorder::ExecuteOperator(
+    IDMLCompiledOperator* compiled_operator,
+    base::span<const DML_BINDING_DESC> input_bindings,
+    base::span<const DML_BINDING_DESC> output_bindings,
+    const absl::optional<DML_BINDING_DESC>& persistent_resource_binding) {
   CHECK(is_open_);
-  CHECK(graph);
-  // TODO(crbug.com/1273291): This method will be implemented after the
-  // GraphDMLImpl class has been defined.
-  NOTIMPLEMENTED();
+  CHECK(compiled_operator);
+
+  DML_BINDING_PROPERTIES execution_binding_properties =
+      compiled_operator->GetBindingProperties();
+
+  // TODO(crbug.com/1455278): Consider maintaining a descriptors pool for better
+  // resource reuse.
+  ComPtr<ID3D12DescriptorHeap> descriptor_heap;
+  CHECK_GT(execution_binding_properties.RequiredDescriptorCount, 0u);
+  D3D12_DESCRIPTOR_HEAP_DESC descriptor_heap_desc{
+      .Type = D3D12_DESCRIPTOR_HEAP_TYPE_CBV_SRV_UAV,
+      .NumDescriptors = execution_binding_properties.RequiredDescriptorCount,
+      .Flags = D3D12_DESCRIPTOR_HEAP_FLAG_SHADER_VISIBLE};
+  RETURN_IF_FAILED(adapter_->d3d12_device()->CreateDescriptorHeap(
+      &descriptor_heap_desc, IID_PPV_ARGS(&descriptor_heap)));
+
+  ID3D12DescriptorHeap* descriptor_heaps[] = {descriptor_heap.Get()};
+  command_list_->SetDescriptorHeaps(/* NumDescriptorHeaps */ 1,
+                                    descriptor_heaps);
+
+  DML_BINDING_TABLE_DESC binding_table_desc = {
+      .Dispatchable = compiled_operator,
+      .CPUDescriptorHandle =
+          descriptor_heap->GetCPUDescriptorHandleForHeapStart(),
+      .GPUDescriptorHandle =
+          descriptor_heap->GetGPUDescriptorHandleForHeapStart(),
+      .SizeInDescriptors =
+          execution_binding_properties.RequiredDescriptorCount};
+  // TODO(crbug.com/1455278): Consider reusing the binding table.
+  ComPtr<IDMLBindingTable> binding_table;
+  RETURN_IF_FAILED(adapter_->dml_device()->CreateBindingTable(
+      &binding_table_desc, IID_PPV_ARGS(&binding_table)));
+
+  // Create and bind the temporary resource if the operator execution requires.
+  auto temp_resource_size = execution_binding_properties.TemporaryResourceSize;
+  if (temp_resource_size > 0) {
+    ComPtr<ID3D12Resource> temp_resource;
+    RETURN_IF_FAILED(
+        adapter_->CreateDefaultBuffer(temp_resource_size, temp_resource));
+    DML_BUFFER_BINDING temp_buffer_binding{.Buffer = temp_resource.Get(),
+                                           .Offset = 0,
+                                           .SizeInBytes = temp_resource_size};
+    DML_BINDING_DESC temp_binding_desc{.Type = DML_BINDING_TYPE_BUFFER,
+                                       .Desc = &temp_buffer_binding};
+    binding_table->BindTemporaryResource(&temp_binding_desc);
+    adapter_->command_queue()->ReferenceUntilCompleted(
+        std::move(temp_resource));
+  }
+
+  // The persistent resource should be bound if the operator execution requires.
+  auto persistent_buffer_size =
+      execution_binding_properties.PersistentResourceSize;
+  if (persistent_buffer_size > 0) {
+    CHECK_EQ(persistent_resource_binding.has_value(), true);
+    CHECK_EQ(persistent_resource_binding.value().Type, DML_BINDING_TYPE_BUFFER);
+    binding_table->BindPersistentResource(&persistent_resource_binding.value());
+  }
+
+  // Bind the input and output resources.
+  binding_table->BindInputs(base::checked_cast<uint32_t>(input_bindings.size()),
+                            input_bindings.data());
+  binding_table->BindOutputs(
+      base::checked_cast<uint32_t>(output_bindings.size()),
+      output_bindings.data());
+
+  // Dispatch the execution of the compiled operator.
+  command_recorder_->RecordDispatch(command_list_.Get(), compiled_operator,
+                                    binding_table.Get());
+
+  // It's safe to release the binding table right after the dispatch has been
+  // recorded into the command list. However, the heap which is referred to by
+  // the GPU descriptor handle should be kept alive until all work referencing
+  // it has completed execution on the GPU.
+  adapter_->command_queue()->ReferenceUntilCompleted(
+      std::move(descriptor_heap));
+
   return S_OK;
 }
 
