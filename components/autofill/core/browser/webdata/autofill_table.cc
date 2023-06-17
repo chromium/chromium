@@ -315,6 +315,16 @@ constexpr base::StringPiece kVirtualCardUsageDataTable =
 // kMerchantDomain = "merchant_domain"
 // kLastFour = "last_four"
 
+constexpr base::StringPiece kLocalStoredCvcTable = "local_stored_cvc";
+// kGuid = "guid"
+// kValueEncrypted = "value_encrypted"
+constexpr base::StringPiece kLastUpdatedTimestamp = "last_updated_timestamp";
+
+constexpr base::StringPiece kServerStoredCvcTable = "server_stored_cvc";
+// kInstrumentId = "instrument_id"
+// kValueEncrypted = "value_encrypted"
+// kLastUpdatedTimestamp = "last_updated_timestamp"
+
 // Helper functions to construct SQL statements from string constants.
 // - Functions with names corresponding to SQL keywords execute the statement
 //   directly and return if it was successful.
@@ -1071,7 +1081,7 @@ bool AutofillTable::CreateTablesIfNecessary() {
          InitProfileMetadataTable(AutofillProfile::Source::kLocalOrSyncable) &&
          InitProfileTypeTokensTable(
              AutofillProfile::Source::kLocalOrSyncable) &&
-         InitVirtualCardUsageDataTable();
+         InitVirtualCardUsageDataTable() && InitStoredCvcTable();
 }
 
 bool AutofillTable::MigrateToVersion(int version,
@@ -1176,6 +1186,9 @@ bool AutofillTable::MigrateToVersion(int version,
     case 115:
       *update_compatible_version = true;
       return MigrateToVersion115EncryptIbanValue();
+    case 116:
+      *update_compatible_version = false;
+      return MigrateToVersion116AddStoredCvcTable();
   }
   return true;
 }
@@ -3355,6 +3368,20 @@ bool AutofillTable::MigrateToVersion115EncryptIbanValue() {
          transaction.Commit();
 }
 
+bool AutofillTable::MigrateToVersion116AddStoredCvcTable() {
+  sql::Transaction transaction(db_);
+  return transaction.Begin() &&
+         CreateTable(db_, kLocalStoredCvcTable,
+                     {{kGuid, "VARCHAR PRIMARY KEY NOT NULL"},
+                      {kValueEncrypted, "VARCHAR NOT NULL"},
+                      {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         CreateTable(db_, kServerStoredCvcTable,
+                     {{kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
+                      {kValueEncrypted, "VARCHAR NOT NULL"},
+                      {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         transaction.Commit();
+}
+
 bool AutofillTable::AddFormFieldValuesTime(
     const std::vector<FormFieldData>& elements,
     std::vector<AutofillChange>* changes,
@@ -3825,6 +3852,19 @@ bool AutofillTable::InitServerCreditCardCloudTokenDataTable() {
                                  {kExpYear, "INTEGER DEFAULT 0"},
                                  {kCardArtUrl, "VARCHAR"},
                                  {kInstrumentToken, "VARCHAR"}});
+}
+
+bool AutofillTable::InitStoredCvcTable() {
+  return CreateTableIfNotExists(
+             db_, kLocalStoredCvcTable,
+             {{kGuid, "VARCHAR PRIMARY KEY NOT NULL"},
+              {kValueEncrypted, "VARCHAR NOT NULL"},
+              {kLastUpdatedTimestamp, "INTEGER NOT NULL"}}) &&
+         CreateTableIfNotExists(
+             db_, kServerStoredCvcTable,
+             {{kInstrumentId, "INTEGER PRIMARY KEY NOT NULL"},
+              {kValueEncrypted, "VARCHAR NOT NULL"},
+              {kLastUpdatedTimestamp, "INTEGER NOT NULL"}});
 }
 
 bool AutofillTable::InitOfferDataTable() {

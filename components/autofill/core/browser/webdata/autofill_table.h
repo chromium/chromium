@@ -515,6 +515,28 @@ class VirtualCardUsageData;
 //  last_four           The last four digits of the virtual card number. This is
 //                      tied to the usage data because the virtual card number
 //                      may vary depending on merchants.
+//
+// local_stored_cvc     This table contains credit card CVC data stored locally
+//                      in Chrome.
+//
+//  guid                A guid string to identify the corresponding locally
+//                      stored credit card in the credit_cards table.
+//  value_encrypted     Encrypted CVC value of the card. May be 3 digits or 4
+//                      digits depending on the card issuer.
+//  last_updated_timestamp
+//                      The timestamp of the most recent update to the data
+//                      entry.
+//
+// server_stored_cvc    This table contains credit card CVC data stored synced
+//                      to Chrome Sync's Kansas server.
+//
+//  instrument_id       A server generated id to identify the corresponding
+//                      credit cards stored in the masked_credit_cards table.
+//  value_encrypted     Encrypted CVC value of the card. May be 3 digits or 4
+//                      digits depending on the card issuer.
+//  last_updated_timestamp
+//                      The timestamp of the most recent update to the data
+//                      entry.
 
 class AutofillTable : public WebDatabaseTable,
                       public syncer::SyncMetadataStore {
@@ -843,6 +865,7 @@ class AutofillTable : public WebDatabaseTable,
   bool MigrateToVersion113MigrateLocalAddressProfilesToNewTable();
   bool MigrateToVersion114DropLegacyAddressTables();
   bool MigrateToVersion115EncryptIbanValue();
+  bool MigrateToVersion116AddStoredCvcTable();
 
   // Max data length saved in the table, AKA the maximum length allowed for
   // form data.
@@ -959,6 +982,7 @@ class AutofillTable : public WebDatabaseTable,
   bool InitPaymentsCustomerDataTable();
   bool InitPaymentsUPIVPATable();
   bool InitServerCreditCardCloudTokenDataTable();
+  bool InitStoredCvcTable();
   bool InitOfferDataTable();
   bool InitOfferEligibleInstrumentTable();
   bool InitOfferMerchantDomainTable();

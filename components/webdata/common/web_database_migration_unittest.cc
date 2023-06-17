@@ -140,7 +140,7 @@ class WebDatabaseMigrationTest : public testing::Test {
   base::ScopedTempDir temp_dir_;
 };
 
-const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 115;
+const int WebDatabaseMigrationTest::kCurrentTestedVersionNumber = 116;
 
 void WebDatabaseMigrationTest::LoadDatabase(
     const base::FilePath::StringType& file) {
@@ -1087,5 +1087,40 @@ TEST_F(WebDatabaseMigrationTest, MigrateVersion114ToCurrent) {
     EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
     EXPECT_TRUE(connection.DoesColumnExist("ibans", "value_encrypted"));
     EXPECT_FALSE(connection.DoesColumnExist("ibans", "value"));
+  }
+}
+
+// Tests verifying both stored_cvc tables are created.
+TEST_F(WebDatabaseMigrationTest, MigrateVersion115ToCurrent) {
+  ASSERT_NO_FATAL_FAILURE(LoadDatabase(FILE_PATH_LITERAL("version_115.sql")));
+
+  // Verify pre-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(115, VersionFromConnection(&connection));
+
+    // The stored_cvc tables should not exist.
+    EXPECT_FALSE(connection.DoesTableExist("local_stored_cvc"));
+    EXPECT_FALSE(connection.DoesTableExist("server_stored_cvc"));
+  }
+
+  DoMigration();
+
+  // Verify post-conditions.
+  {
+    sql::Database connection;
+    ASSERT_TRUE(connection.Open(GetDatabasePath()));
+    ASSERT_TRUE(sql::MetaTable::DoesTableExist(&connection));
+
+    // Check version.
+    EXPECT_EQ(kCurrentTestedVersionNumber, VersionFromConnection(&connection));
+
+    // The stored_cvc tables should exist.
+    EXPECT_TRUE(connection.DoesTableExist("local_stored_cvc"));
+    EXPECT_TRUE(connection.DoesTableExist("server_stored_cvc"));
   }
 }
