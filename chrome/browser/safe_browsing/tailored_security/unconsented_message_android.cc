@@ -189,7 +189,7 @@ void TailoredSecurityUnconsentedMessageAndroid::HandleMessageAccepted() {
     LogMessageOutcome(TailoredSecurityOutcome::kSettings, is_in_flow_);
   }
 
-  ShowSafeBrowsingSettings(web_contents_,
+  ShowSafeBrowsingSettings(web_contents_->GetTopLevelNativeWindow(),
                            SettingsAccessPoint::kTailoredSecurity);
 }
 

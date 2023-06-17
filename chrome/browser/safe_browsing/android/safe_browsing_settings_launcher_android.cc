@@ -6,14 +6,14 @@
 
 #include "base/android/jni_android.h"
 #include "chrome/android/chrome_jni_headers/SafeBrowsingSettingsLauncher_jni.h"
-#include "content/public/browser/web_contents.h"
+#include "ui/android/window_android.h"
 
 namespace safe_browsing {
 
-void ShowSafeBrowsingSettings(content::WebContents* web_contents,
+void ShowSafeBrowsingSettings(ui::WindowAndroid* window,
                               SettingsAccessPoint access_point) {
   Java_SafeBrowsingSettingsLauncher_showSafeBrowsingSettings(
-      base::android::AttachCurrentThread(), web_contents->GetJavaWebContents(),
+      base::android::AttachCurrentThread(), window->GetJavaObject(),
       static_cast<int>(access_point));
 }
 

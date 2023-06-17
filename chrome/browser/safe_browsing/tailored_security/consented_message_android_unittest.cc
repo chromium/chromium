@@ -12,6 +12,7 @@
 #include "content/public/test/browser_task_environment.h"
 #include "content/public/test/web_contents_tester.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "ui/android/window_android.h"
 
 namespace safe_browsing {
 class TailoredSecurityConsentedModalAndroidTest : public testing::Test {
@@ -69,6 +70,11 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        DisabledDialogHandleSettingsClickedLogsUserAction) {
+  // Create a scoped window so that WebContents::GetTopLevelNativeWindow does
+  // not return null.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents_.get()->GetNativeView());
   TailoredSecurityConsentedModalAndroid consented_modal(
       web_contents_.get(), /*enabled=*/false, base::DoNothing());
   DoSettingsClicked(&consented_modal);
@@ -113,6 +119,11 @@ TEST_F(TailoredSecurityConsentedModalAndroidTest,
 
 TEST_F(TailoredSecurityConsentedModalAndroidTest,
        EnabledDialogHandleSettingsClickedLogsUserAction) {
+  // Create a scoped window so that WebContents::GetTopLevelNativeWindow does
+  // not return null.
+  std::unique_ptr<ui::WindowAndroid::ScopedWindowAndroidForTesting> window =
+      ui::WindowAndroid::CreateForTesting();
+  window.get()->get()->AddChild(web_contents_.get()->GetNativeView());
   TailoredSecurityConsentedModalAndroid consented_modal(
       web_contents_.get(), /*enabled=*/true, base::DoNothing());
   DoSettingsClicked(&consented_modal);

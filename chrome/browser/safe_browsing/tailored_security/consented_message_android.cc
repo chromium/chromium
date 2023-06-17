@@ -38,7 +38,7 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
     content::WebContents* web_contents,
     bool enable,
     base::OnceClosure dismiss_callback)
-    : web_contents_(web_contents),
+    : window_android_(web_contents->GetTopLevelNativeWindow()),
       dismiss_callback_(std::move(dismiss_callback)),
       is_enable_message_(enable) {
   message_ = std::make_unique<messages::MessageWrapper>(
@@ -100,8 +100,7 @@ TailoredSecurityConsentedModalAndroid::TailoredSecurityConsentedModalAndroid(
       base::Unretained(this)));
 
   messages::MessageDispatcherBridge::Get()->EnqueueWindowScopedMessage(
-      message_.get(), web_contents_->GetTopLevelNativeWindow(),
-      messages::MessagePriority::kNormal);
+      message_.get(), window_android_, messages::MessagePriority::kNormal);
   LogOutcome(TailoredSecurityOutcome::kShown, is_enable_message_);
 }
 
@@ -119,7 +118,7 @@ void TailoredSecurityConsentedModalAndroid::DismissMessageInternal(
 }
 
 void TailoredSecurityConsentedModalAndroid::HandleSettingsClicked() {
-  ShowSafeBrowsingSettings(web_contents_,
+  ShowSafeBrowsingSettings(window_android_,
                            SettingsAccessPoint::kTailoredSecurity);
   LogOutcome(TailoredSecurityOutcome::kSettings, is_enable_message_);
   DismissMessageInternal(messages::DismissReason::SECONDARY_ACTION);
