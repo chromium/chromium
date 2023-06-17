@@ -148,6 +148,8 @@ class ArcBluetoothBridge
       device::BluetoothAdapter* adapter,
       device::BluetoothRemoteGattService* service) override;
 
+  void GattNeedsDiscovery(device::BluetoothDevice* device) override;
+
   void GattServiceChanged(device::BluetoothAdapter* adapter,
                           device::BluetoothRemoteGattService* service) override;
 
