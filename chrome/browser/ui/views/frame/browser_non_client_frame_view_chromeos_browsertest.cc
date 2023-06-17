@@ -208,6 +208,11 @@ class BrowserNonClientFrameViewChromeOSThemeChangeTest
         delegate->SetPreferManifestBackgroundColor(
             PreferManifestBackgroundColor());
         delegate->SetShouldAnimateThemeChanges(ShouldAnimateThemeChanges());
+        // When system colored SWAs were introduced for Jelly,
+        // `UseSystemThemeColor()` overrode other styling information in the
+        // manifest. This test now verifies behavior for SWAs that are opted out
+        // of the system styling (by setting it to false).
+        delegate->SetUseSystemThemeColor(false);
         break;
       }
       case ThemeChangeTestMode::kNonSWA:
