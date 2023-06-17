@@ -347,6 +347,7 @@
     "linux-rel-no-external-ip": "Ubuntu-22.04",
     "linux-remote-ssd-rel-dev": "Ubuntu-22.04",
     "linux-rust-x64-dbg": "Ubuntu-22.04",
+    "linux-rust-x64-rel": "Ubuntu-22.04",
     "linux-swangle-chromium-x64": "Ubuntu-22.04",
     "linux-swangle-chromium-x64-exp": "Ubuntu-22.04",
     "linux-swangle-tot-swiftshader-x64": "Ubuntu-22.04",
