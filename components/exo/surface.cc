@@ -1434,7 +1434,8 @@ static viz::SharedQuadState* AppendOrCreateSharedQuadState(
       quad_to_target_transform == quad_state->quad_to_target_transform &&
       opacity == quad_state->opacity &&
       quad_clip_rect == quad_state->clip_rect &&
-      are_contents_opaque == quad_state->are_contents_opaque && msk == msk) {
+      are_contents_opaque == quad_state->are_contents_opaque &&
+      msk == quad_state->mask_filter_info) {
     // Expland the layer portion of the sqs.
     quad_state->quad_layer_rect = test_union;
     quad_state->visible_quad_layer_rect = test_union;
