@@ -661,7 +661,7 @@ ci.builder(
     ),
     # TODO(crbug.com/1279290) builds with PGO change take long time.
     # Keep in sync with mac-official in try/chromium.star.
-    execution_timeout = 9 * time.hour,
+    execution_timeout = 10 * time.hour,
 )
 
 ci.builder(
