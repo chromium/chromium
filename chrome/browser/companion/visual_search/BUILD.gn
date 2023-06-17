@@ -14,6 +14,7 @@ source_set("visual_search") {
   deps = [
     "//base",
     "//chrome/browser/profiles:profile",
+    "//chrome/common/companion:mojo_bindings",
     "//components/optimization_guide/core",
     "//components/optimization_guide/proto:optimization_guide_proto",
     "//content/public/browser:browser",
@@ -33,6 +34,7 @@ source_set("unit_tests") {
     "//base/test:test_support",
     "//chrome/browser",
     "//chrome/common",
+    "//chrome/common/companion:mojo_bindings",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",

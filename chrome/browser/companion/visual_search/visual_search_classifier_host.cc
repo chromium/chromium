@@ -9,7 +9,9 @@
 #include "base/task/thread_pool.h"
 #include "chrome/browser/companion/visual_search/features.h"
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "mojo/public/cpp/bindings/associated_remote.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkColorSpace.h"
 #include "third_party/skia/include/core/SkStream.h"
@@ -55,30 +57,33 @@ VisualSearchClassifierHost::VisualSearchClassifierHost(
 
 VisualSearchClassifierHost::~VisualSearchClassifierHost() = default;
 
-void VisualSearchClassifierHost::OnClassificationResult(
-    const std::vector<SkBitmap>& images) {
-  std::vector<std::string> data_uris;
-  data_uris.reserve(images.size());
+void VisualSearchClassifierHost::HandleClassification(
+    std::vector<mojom::VisualSearchSuggestionPtr> results) {
   LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.ClassificationResultsSize",
-                             images.size());
+                             results.size());
+  std::vector<std::string> data_uris;
+  data_uris.reserve(results.size());
 
   // converts list of SkBitmaps to data uris used as img.src for browser.
-  for (const auto& image : images) {
-    auto data_uri = Base64EncodeBitmap(image);
+  for (const auto& result : results) {
+    auto data_uri = Base64EncodeBitmap(result->image);
     if (data_uri) {
-      data_uris.push_back(data_uri.value());
+      data_uris.emplace_back(data_uri.value());
     }
   }
 
-  // TODO(b/284648407): Do mojom IPC to side panel using mojom::CompanionPage.
+  if (!result_callback_.is_null()) {
+    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.EndClassificationSuccess",
+                            !result_callback_.is_null());
+    std::move(result_callback_).Run(std::move(data_uris));
+  }
+  result_callback_.Reset();
 }
 
-// TODO(pstjuste): RenderFrameHost is used to setup IPC communication with
-// renderer process via the InterfaceRegistry. Eventually, the url will be
-// used for caching visual search suggestions without having to do IPC.
 void VisualSearchClassifierHost::StartClassification(
     content::RenderFrameHost* render_frame_host,
-    const GURL& validated_url) {
+    const GURL& validated_url,
+    ResultCallback callback) {
   base::File model = visual_search_service_->GetModelFile();
   LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.ModelFileSuccess",
                           model.IsValid());
@@ -95,21 +100,24 @@ void VisualSearchClassifierHost::StartClassification(
     base64_config = std::move(config_switch.value());
   }
 
-  VLOG(1) << "ClassificationSuccess " << classifier_agent_.is_null();
-  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
-                          !classifier_agent_.is_null());
-  if (!classifier_agent_.is_null()) {
-    std::move(classifier_agent_).Run(0, std::move(model), base64_config);
+  // We set the callback so that we know where to send back the results.
+  result_callback_ = std::move(callback);
+
+  mojo::AssociatedRemote<mojom::VisualSuggestionsRequestHandler> visual_search;
+  render_frame_host->GetRemoteAssociatedInterfaces()->GetInterface(
+      &visual_search);
+  if (visual_search.is_bound()) {
+    visual_search->StartVisualClassification(
+        std::move(model), base64_config,
+        result_handler_.BindNewPipeAndPassRemote());
   } else {
     // Closing file in background thread since we did not make IPC.
     base::ThreadPool::PostTask(
         FROM_HERE, {base::MayBlock()},
         base::BindOnce(&CloseModelFile, std::move(model)));
   }
-}
 
-void VisualSearchClassifierHost::SetClassifierAgentForTesting(
-    ClassifierAgent agent) {
-  classifier_agent_ = std::move(agent);
+  LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.StartClassificationSuccess",
+                          visual_search.is_bound());
 }
 }  // namespace companion::visual_search

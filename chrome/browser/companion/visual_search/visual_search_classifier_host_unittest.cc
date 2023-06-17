@@ -103,15 +103,10 @@ class VisualSearchClassifierHostTest : public ChromeRenderViewHostTestHarness {
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification) {
   SetModelPath();
-  VisualSearchClassifierHost::ClassifierAgent agent = base::BindOnce(
-      [](int request_id, base::File model_file, std::string proto_string) {
-        EXPECT_EQ(request_id, 0);
-        ASSERT_TRUE(model_file.IsValid());
-        EXPECT_EQ(proto_string, "");
-      });
-  visual_search_host_->SetClassifierAgentForTesting(std::move(agent));
+  VisualSearchClassifierHost::ResultCallback callback =
+      base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_);
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -123,15 +118,10 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
   const std::string config_string = "config_string";
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       switches::kVisualSearchConfigForCompanion, config_string);
-  VisualSearchClassifierHost::ClassifierAgent agent = base::BindOnce(
-      [](int request_id, base::File model_file, std::string proto_string) {
-        EXPECT_EQ(request_id, 0);
-        ASSERT_TRUE(model_file.IsValid());
-        EXPECT_EQ(proto_string, "config_string");
-      });
-  visual_search_host_->SetClassifierAgentForTesting(std::move(agent));
+  VisualSearchClassifierHost::ResultCallback callback =
+      base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_);
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       true, 1);
   histogram_tester_.ExpectBucketCount(
@@ -139,35 +129,21 @@ TEST_F(VisualSearchClassifierHostTest, StartClassification_WithOverride) {
 }
 
 TEST_F(VisualSearchClassifierHostTest, StartClassification_NoModelSet) {
-  VisualSearchClassifierHost::ClassifierAgent agent = base::BindOnce(
-      [](int request_id, base::File model_file, std::string proto_string) {
-        EXPECT_EQ(request_id, 0);
-        ASSERT_FALSE(model_file.IsValid());
-        EXPECT_EQ(proto_string, "");
-      });
-  visual_search_host_->SetClassifierAgentForTesting(std::move(agent));
+  VisualSearchClassifierHost::ResultCallback callback =
+      base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_);
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       false, 1);
 }
 
 TEST_F(VisualSearchClassifierHostTest,
-       StartClassification_ModelSetWithNoCallbackSet) {
-  SetModelPath();
-  visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_);
-  histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
-                                      true, 1);
-  histogram_tester_.ExpectBucketCount(
-      "Companion.VisualSearch.StartClassificationSuccess", false, 1);
-}
-
-TEST_F(VisualSearchClassifierHostTest,
        StartClassification_NoModelSetAndNoCallbackSet) {
   base::HistogramTester histogram_tester;
+  VisualSearchClassifierHost::ResultCallback callback =
+      base::BindOnce([](std::vector<std::string> results) {});
   visual_search_host_->StartClassification(
-      web_contents()->GetPrimaryMainFrame(), url_);
+      web_contents()->GetPrimaryMainFrame(), url_, std::move(callback));
   histogram_tester_.ExpectBucketCount("Companion.VisualSearch.ModelFileSuccess",
                                       false, 1);
 }

@@ -7,7 +7,9 @@
 
 #include <memory>
 #include "chrome/browser/companion/visual_search/visual_search_suggestions_service.h"
+#include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/browser/render_frame_host.h"
+#include "mojo/public/cpp/bindings/receiver.h"
 #include "url/gurl.h"
 
 namespace companion::visual_search {
@@ -15,10 +17,9 @@ namespace companion::visual_search {
 // This class serves as the main orchestator for visual search suggestions
 // components. It handles mojom IPC with both main renderer and side panel.
 // It also fetches model file descriptors from the keyed service.
-class VisualSearchClassifierHost {
+class VisualSearchClassifierHost : mojom::VisualSuggestionsResultHandler {
  public:
-  using ClassifierAgent =
-      base::OnceCallback<void(int, base::File, std::string)>;
+  using ResultCallback = base::OnceCallback<void(std::vector<std::string>)>;
 
   explicit VisualSearchClassifierHost(
       VisualSearchSuggestionsService* visual_search_service);
@@ -26,29 +27,32 @@ class VisualSearchClassifierHost {
   VisualSearchClassifierHost(const VisualSearchClassifierHost&) = delete;
   VisualSearchClassifierHost& operator=(const VisualSearchClassifierHost&) =
       delete;
-  ~VisualSearchClassifierHost();
+  ~VisualSearchClassifierHost() override;
+
+  // From mojom::VisualSuggestionsResultsHandler.
+  // Processes the list of images returned from the visual search classifier.
+  // Its main job is to take a list of SkBitmap and convert to data uris.
+  // The list of image data uris are sent to side panel companion for
+  // rendering.
+  void HandleClassification(
+      std::vector<mojom::VisualSearchSuggestionPtr> results) override;
 
   // This is the main method used by the companion page handler to start the
   // visual search classification task. The RenderFrameHost is needed to
   // establish IPC channel with the Renderer process.
   void StartClassification(content::RenderFrameHost* render_frame_host,
-                           const GURL& validated_url);
-
-  // Set the classifier agent that will be used to do mojom IPC.
-  // This should only be used for testing, not for production.
-  void SetClassifierAgentForTesting(ClassifierAgent agent);
+                           const GURL& validated_url,
+                           ResultCallback callback);
 
  private:
-  // Processes the list of images returned from the visual search classifier.
-  // Its main job is to take a list of SkBitmap and convert to data uris.
-  // The list of image data uris are sent to side panel companion for rendering.
-  void OnClassificationResult(const std::vector<SkBitmap>& images);
-
   // Pointer to visual search service which we do not own.
   raw_ptr<VisualSearchSuggestionsService> visual_search_service_ = nullptr;
 
-  // This classifier agent is used to send mojom IPC to renderer.
-  ClassifierAgent classifier_agent_;
+  // This callback is used to send list of data uris (i.e. strings) to caller.
+  ResultCallback result_callback_;
+
+  // This reference binds this class to the result handler for the mojom IPC.
+  mojo::Receiver<mojom::VisualSuggestionsResultHandler> result_handler_{this};
 };
 }  // namespace companion::visual_search
 

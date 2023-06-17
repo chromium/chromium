@@ -111,6 +111,10 @@ class CompanionPageHandler
   void DidFinishFindingCqTexts(
       const std::vector<std::pair<std::string, bool>>& text_found_vec);
 
+  // This method is used as the callback that handles visual search results.
+  // Its role is to perform some checks and do a mojom IPC to side panel.
+  void HandleVisualSearchResult(std::vector<std::string> results);
+
   mojo::Receiver<side_panel::mojom::CompanionPageHandler> receiver_;
   mojo::Remote<side_panel::mojom::CompanionPage> page_;
   raw_ptr<CompanionSidePanelUntrustedUI> companion_untrusted_ui_ = nullptr;

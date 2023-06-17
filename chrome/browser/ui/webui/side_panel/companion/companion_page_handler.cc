@@ -157,7 +157,23 @@ void CompanionPageHandler::DidFinishLoad(
   // on/off, use histogram check to determine whether or not classification was
   // called.
   if (visual_search_host_) {
-    visual_search_host_->StartClassification(render_frame_host, validated_url);
+    visual_search::VisualSearchClassifierHost::ResultCallback callback =
+        base::BindOnce(&CompanionPageHandler::HandleVisualSearchResult,
+                       weak_ptr_factory_.GetWeakPtr());
+    visual_search_host_->StartClassification(render_frame_host, validated_url,
+                                             std::move(callback));
+  }
+}
+
+void CompanionPageHandler::HandleVisualSearchResult(
+    std::vector<std::string> results) {
+  std::vector<side_panel::mojom::VisualSearchResultPtr> final_results;
+  for (const auto& result : results) {
+    final_results.emplace_back(
+        side_panel::mojom::VisualSearchResult::New(result));
+  }
+  if (!final_results.empty()) {
+    page_->OnDeviceVisualClassificationResult(std::move(final_results));
   }
 }
 
