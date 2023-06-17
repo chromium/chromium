@@ -112,6 +112,19 @@ class GM2TabStyleViews : public TabStyleViews {
   // Given a tab of width |width|, returns the radius to use for the corners.
   float GetTopCornerRadiusForWidth(int width) const;
 
+ protected:
+  // Returns a single separator's opacity based on whether it is the
+  // logically `leading` separator. `for_layout` has the same meaning as in
+  // GetSeparatorOpacities().
+  virtual float GetSeparatorOpacity(bool for_layout, bool leading) const;
+
+  // Helper that returns an interpolated opacity if the tab or its neighbor
+  // `other_tab` is mid-hover-animation. Used in almost all cases when a
+  // separator is shown, since hovering is independent of tab state.
+  // `for_layout` has the same meaning as in GetSeparatorOpacities().
+  float GetHoverInterpolatedSeparatorOpacity(bool for_layout,
+                                             const Tab* other_tab) const;
+
  private:
   // Gets the bounds for the leading and trailing separators for a tab.
   TabStyle::SeparatorBounds GetSeparatorBounds(float scale) const;
@@ -120,18 +133,6 @@ class GM2TabStyleViews : public TabStyleViews {
   // the "layout" opacities, which ignore the effects of surrounding tabs' hover
   // effects and consider only the current tab's state.
   TabStyle::SeparatorOpacities GetSeparatorOpacities(bool for_layout) const;
-
-  // Returns a single separator's opacity based on whether it is the
-  // logically |leading| separator. |for_layout| has the same meaning as in
-  // GetSeparatorOpacities().
-  float GetSeparatorOpacity(bool for_layout, bool leading) const;
-
-  // Helper that returns an interpolated opacity if the tab or its neighbor
-  // |other_tab| is mid-hover-animation. Used in almost all cases when a
-  // separator is shown, since hovering is independent of tab state.
-  // |for_layout| has the same meaning as in GetSeparatorOpacities().
-  float GetHoverInterpolatedSeparatorOpacity(bool for_layout,
-                                             const Tab* other_tab) const;
 
   // Returns whether we shoould extend the hit test region for Fitts' Law.
   bool ShouldExtendHitTest() const;
@@ -990,6 +991,9 @@ class ChromeRefresh2023TabStyleViews : public GM2TabStyleViews {
   SkColor GetTabSeparatorColor() const override;
   bool ShouldPaintTabBackgroundColor(TabActive active,
                                      bool has_custom_background) const override;
+
+ protected:
+  float GetSeparatorOpacity(bool for_layout, bool leading) const override;
 };
 
 ChromeRefresh2023TabStyleViews::ChromeRefresh2023TabStyleViews(Tab* tab)
@@ -1119,6 +1123,55 @@ bool ChromeRefresh2023TabStyleViews::ShouldPaintTabBackgroundColor(
   return (tab()->IsActive() || tab()->IsSelected()) &&
          GM2TabStyleViews::ShouldPaintTabBackgroundColor(active,
                                                          has_custom_background);
+}
+
+float ChromeRefresh2023TabStyleViews::GetSeparatorOpacity(bool for_layout,
+                                                          bool leading) const {
+  const auto has_visible_background = [](const Tab* const tab) {
+    return tab->IsActive() || tab->IsSelected() || tab->IsMouseHovered();
+  };
+
+  // for CR23 these tab states all have visible backgrounds. Separators must not
+  // be shown between tabs if that is the case;
+  if (has_visible_background(tab())) {
+    return 0.0f;
+  }
+
+  // check the adjacent tab/group header to see if there's a visible shapes.
+  const Tab* const adjacent_tab =
+      tab()->controller()->GetAdjacentTab(tab(), leading ? -1 : 1);
+
+  const Tab* const left_tab = leading ? adjacent_tab : tab();
+  const Tab* const right_tab = leading ? tab() : adjacent_tab;
+  const bool adjacent_to_header =
+      right_tab && right_tab->group().has_value() &&
+      (!left_tab || left_tab->group() != right_tab->group());
+
+  const float shown_separator_opacity =
+      GetHoverInterpolatedSeparatorOpacity(for_layout, adjacent_tab);
+
+  // Show the separator unless this tab is the first in the group and is next
+  // to it's own header.
+  if (adjacent_to_header) {
+    return (tab()->group().has_value() && leading) ? 0.0f
+                                                   : shown_separator_opacity;
+  }
+
+  // if there isnt an adjacent tab, the tab is at the beginning or end of the
+  // tabstrip. for the first tab, we shouldnt not show the leading separator,
+  // for the last tab, we should show the separator between the new tab button
+  // and the tabstrip IF the tab isnt selected, hovered, or active.
+  if (!adjacent_tab) {
+    return leading ? 0.0f : shown_separator_opacity;
+  }
+
+  // Do not show when the adjacent tab is displaying a visible shape.
+  if (has_visible_background(adjacent_tab)) {
+    return 0.0f;
+  }
+
+  // Otherwise, default to showing the separator.
+  return shown_separator_opacity;
 }
 
 }  // namespace
