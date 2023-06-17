@@ -22,7 +22,6 @@ class IPEndPoint;
 
 namespace openscreen {
 
-class TaskRunner;
 struct TlsCredentials;
 struct TlsListenOptions;
 
@@ -32,8 +31,8 @@ namespace openscreen_platform {
 
 class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
  public:
-  TlsConnectionFactory(openscreen::TlsConnectionFactory::Client* client,
-                       openscreen::TaskRunner* task_runner);
+  explicit TlsConnectionFactory(
+      openscreen::TlsConnectionFactory::Client* client);
 
   ~TlsConnectionFactory() final;
 
@@ -102,7 +101,6 @@ class TlsConnectionFactory final : public openscreen::TlsConnectionFactory {
                     const absl::optional<net::SSLInfo>& ssl_info);
 
   raw_ptr<openscreen::TlsConnectionFactory::Client> client_;
-  const raw_ptr<openscreen::TaskRunner> task_runner_;
   base::WeakPtrFactory<TlsConnectionFactory> weak_factory_{this};
 };
 

@@ -82,7 +82,7 @@ class MessagePortTlsConnectionTest : public testing::Test {
 
     EXPECT_CALL(*message_port_, SetReceiver(_));
     connection_ = std::make_unique<MessagePortTlsConnection>(
-        std::move(message_port), &task_runner_);
+        std::move(message_port), task_runner_);
     connection_as_receiver_ = connection_.get();
   }
   ~MessagePortTlsConnectionTest() override = default;

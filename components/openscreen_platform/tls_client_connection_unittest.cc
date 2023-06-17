@@ -14,7 +14,6 @@
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/test/task_environment.h"
-#include "components/openscreen_platform/task_runner.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
@@ -143,12 +142,10 @@ class TlsClientConnectionTest : public ::testing::Test {
   ~TlsClientConnectionTest() override = default;
 
   void SetUp() override {
-    task_runner_ = std::make_unique<openscreen_platform::TaskRunner>(
-        task_environment_.GetMainThreadTaskRunner());
     client_ = std::make_unique<StrictMock<MockTlsConnectionClient>>();
     socket_streams_ = std::make_unique<FakeSocketStreams>();
     connection_ = std::make_unique<TlsClientConnection>(
-        task_runner_.get(), kValidEndpointOne, kValidEndpointTwo,
+        kValidEndpointOne, kValidEndpointTwo,
         socket_streams_->TakeReceiveStream(), socket_streams_->TakeSendStream(),
         mojo::Remote<network::mojom::TCPConnectedSocket>{},
         mojo::Remote<network::mojom::TLSClientSocket>{});
@@ -167,7 +164,6 @@ class TlsClientConnectionTest : public ::testing::Test {
 
  private:
   base::test::TaskEnvironment task_environment_;
-  std::unique_ptr<openscreen_platform::TaskRunner> task_runner_;
   std::unique_ptr<StrictMock<MockTlsConnectionClient>> client_;
   std::unique_ptr<FakeSocketStreams> socket_streams_;
   std::unique_ptr<TlsClientConnection> connection_;

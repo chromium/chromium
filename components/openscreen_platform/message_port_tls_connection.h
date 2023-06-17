@@ -32,7 +32,7 @@ class MessagePortTlsConnection final
  public:
   MessagePortTlsConnection(
       std::unique_ptr<cast_api_bindings::MessagePort> message_port,
-      openscreen::TaskRunner* task_runner);
+      openscreen::TaskRunner& task_runner);
 
   ~MessagePortTlsConnection() final;
 
@@ -49,7 +49,7 @@ class MessagePortTlsConnection final
   void OnPipeError() final;
 
   std::unique_ptr<cast_api_bindings::MessagePort> message_port_;
-  const raw_ptr<openscreen::TaskRunner> task_runner_;
+  openscreen::TaskRunner& task_runner_;
 
   raw_ptr<TlsConnection::Client> client_ = nullptr;
 };

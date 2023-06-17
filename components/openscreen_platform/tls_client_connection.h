@@ -11,7 +11,6 @@
 #include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/network/public/mojom/tcp_socket.mojom.h"
 #include "services/network/public/mojom/tls_socket.mojom.h"
-#include "third_party/openscreen/src/platform/api/task_runner.h"
 #include "third_party/openscreen/src/platform/api/tls_connection.h"
 #include "third_party/openscreen/src/platform/base/error.h"
 #include "third_party/openscreen/src/platform/base/ip_address.h"
@@ -21,7 +20,6 @@ namespace openscreen_platform {
 class TlsClientConnection final : public openscreen::TlsConnection {
  public:
   TlsClientConnection(
-      openscreen::TaskRunner* task_runner,
       openscreen::IPEndpoint local_address,
       openscreen::IPEndpoint remote_address,
       mojo::ScopedDataPipeConsumerHandle receive_stream,
@@ -51,7 +49,6 @@ class TlsClientConnection final : public openscreen::TlsConnection {
       MojoResult result,
       openscreen::Error::Code error_code_if_fatal);
 
-  const raw_ptr<openscreen::TaskRunner> task_runner_ = nullptr;
   const openscreen::IPEndpoint local_address_;
   const openscreen::IPEndpoint remote_address_;
   const mojo::ScopedDataPipeConsumerHandle receive_stream_;
