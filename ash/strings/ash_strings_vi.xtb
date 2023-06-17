@@ -739,6 +739,7 @@ Hãy sạc thiết bị.</translation>
 <translation id="4261870227682513959">Hiển thị các tùy chọn cài đặt thông báo. Thông báo hiện đang tắt</translation>
 <translation id="4269883910223712419">Quản trị viên của thiết bị này có thể:</translation>
 <translation id="4274537685965975248">Phím tắt Ctrl + Alt + Mũi tên xuống đã thay đổi. Để sử dụng phím End, hãy nhấn tổ hợp phím <ph name="LAUNCHER_KEY_NAME" /> + Mũi tên phải.</translation>
+<translation id="4275283744500212192">Mở tuỳ chọn bố cục cửa sổ</translation>
 <translation id="4279490309300973883">Đang phản chiếu</translation>
 <translation id="4280601795273309128">Đã ngừng cập nhật bảo mật. Nâng cấp thiết bị của bạn.</translation>
 <translation id="4283888303416325161">Hãy nhập mật khẩu để tăng cường bảo mật</translation>
@@ -1391,7 +1392,6 @@ Mới cài đặt</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Sẽ hoàn nguyên về độ phân giải cũ sau <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Làm mới</translation>
-<translation id="7185362672357349361">Bật lời nhắc chọn sử dụng tính năng nói khi tắt tiếng? Bạn sẽ nhận được thông báo nếu bạn nói trong khi tắt tiếng. Thiết bị của bạn sẽ không truyền âm thanh đi.</translation>
 <translation id="7187711731540696127">Điểm phát sóng <ph name="DEVICE_NAME" /> của bạn đang bật, chưa có thiết bị nào kết nối</translation>
 <translation id="7188494361780961876">Đã di chuyển trình đơn vào góc trên cùng bên trái màn hình.</translation>
 <translation id="7189412385142492784">Sao Kim cách đây bao xa</translation>

@@ -125,6 +125,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="3037838751736561277">Google Chrome radi u pozadinskom načinu rada.</translation>
 <translation id="3038232873781883849">Čekanje na instalaciju...</translation>
 <translation id="3059710691562604940">Sigurno pregledanje je isključeno. Chrome preporučuje da ga uključite.</translation>
+<translation id="306179102415443347">Koristite prečicu da brzo pristupite Google upravitelju lozinki. Možete premjestiti prečicu na početni ekran računara ili u pokretač aplikacije.</translation>
 <translation id="3065168410429928842">Kartica Chromea</translation>
 <translation id="3080151273017101988">Ostavi aplikacije da rade u pozadini kada se Google Chrome zatvori</translation>
 <translation id="3089968997497233615">Dostupna je nova, sigurnija verzija Google Chromea.</translation>
@@ -226,6 +227,7 @@ uparivanjem. <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" />
 <translation id="4970880042055371251">Verzija ChromeOS-a</translation>
 <translation id="4970947549776831107">Chrome je blokirao ovaj fajl jer je ova vrsta fajla opasna</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Kliknite na "Google upravitelj lozinki"</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Ekstenzija za Google Chrome je pristupala uređajima s korisničkim interfejsom}=1{Ekstenzija za Google Chrome pristupa 1 uređaju s korisničkim interfejsom}one{Ekstenzija za Google Chrome pristupa # uređaju s korisničkim interfejsom}few{Ekstenzija za Google Chrome pristupa # uređajima s korisničkim interfejsom}other{Ekstenzija za Google Chrome pristupa # uređaja s korisničkim interfejsom}}</translation>
 <translation id="5098668839038261629">Kada je uključeno, također ćete biti odjavljeni iz Chroma</translation>
 <translation id="5132929315877954718">Otkrijte odlične aplikacije, igre, ekstenzije i teme za Google Chrome.</translation>
@@ -338,6 +340,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="7339898014177206373">Novi prozor</translation>
 <translation id="7398801000654795464">Prijavljeni ste na Chrome kao <ph name="USER_EMAIL_ADDRESS" />. Ponovo upotrijebite isti račun za prijavu.</translation>
 <translation id="7410958280246779049">Chrome je blokirao ovaj fajl jer je opasan</translation>
+<translation id="7412494426921990001">Kliknite na Chrome meni</translation>
 <translation id="7426611252293106642">Google Chrome možda neće ispravno raditi jer više nije podržan na ovoj Linux distribuciji</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Organizacija automatski zatvara Chrome kada se ne koristi 1 minutu.}one{Organizacija automatski zatvara Chrome kada se ne koristi # minutu.}few{Organizacija automatski zatvara Chrome kada se ne koristi # minute.}other{Organizacija automatski zatvara Chrome kada se ne koristi # minuta.}}</translation>
 <translation id="7481213027396403996">Odaberite maksimalnu sigurnost koju nudi Chrome</translation>
@@ -383,6 +386,7 @@ Odobrenja koja ste već dali web lokacijama i aplikacijama se mogu primjenjivati
 <translation id="8286862437124483331">Google Chrome pokušava prikazati lozinke. Unesite svoju lozinku za Windows da ovo omogućite.</translation>
 <translation id="828798499196665338">Tvoj roditelj je isključio "Odobrenja za web lokacije, aplikacije i ekstenzije" za Chrome. Omogućavanje ove stavke (<ph name="EXTENSION_TYPE_PARAMETER" />) nije dozvoljeno.</translation>
 <translation id="8290100596633877290">Joj! Došlo je do pada aplikacije Google Chrome. Ponovo pokrenuti sada?</translation>
+<translation id="829923460755755423">Dodajte prečicu za Google upravitelja lozinki</translation>
 <translation id="8342675569599923794">Ovaj fajl je opasan, pa ga je Chrome blokirao.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> web lokacije mogu pohranjivati informacije o vašim interesovanjima u Chromeu. Naprimjer, ako posjetite web lokaciju da kupite obuću za maraton, ta web lokacija može definirati vaše interesovanje za trčanje maratona. Kasnije, kada posjetite drugu web lokaciju da se registrirate za utrku, ta web lokacija vam može prikazati oglas koji prikazuje obuću za trčanje, na osnovu vaših interesovanja.</translation>
 <translation id="8370517070665726704">Autorska prava <ph name="YEAR" /> Google LLC. Sva prava su zadržana.</translation>

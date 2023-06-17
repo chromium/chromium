@@ -6098,10 +6098,6 @@ El tiempo de espera de inactividad para iniciar el protector de pantalla y el in
 <translation id="6539246272469751178">Esta política no tiene efecto en las apps de Android. Estas apps siempre usan el directorio de descargas predeterminado y no pueden acceder a ningún archivo que haya descargado <ph name="PRODUCT_OS_NAME" /> en un directorio de descargas no predeterminado.</translation>
 <translation id="654303922206238013">Estrategia de migración para eCryptfs</translation>
 <translation id="6544601600794014309">Habilitar la traducción de Respuestas rápidas</translation>
-<translation id="6544759513632821565">La API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permite a las aplicaciones web capturar varias superficies al mismo tiempo.
-      Esta política desbloquea la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> para las aplicaciones web en orígenes definidos.
-      Si la propiedad <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> se define en una solicitud de <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, se capturan automáticamente todas las superficies de la pantalla sin solicitar el permiso explícito del usuario.
-      Si no estableces la política, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> no estará disponible para ninguna aplicación web.</translation>
 <translation id="654546276700640113">Si estableces la política, se aplicará de forma forzosa la longitud máxima de PIN que se configuró. El valor "0" o inferior significa que el usuario puede establecer un PIN de cualquier extensión. Si el valor es inferior a <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, pero mayor que 0, la longitud máxima será igual a la longitud mínima.
 
       Si no estableces la política, no se aplicará de forma forzosa ninguna longitud máxima.</translation>
@@ -7288,29 +7284,6 @@ Esto reemplaza la política <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLICY_N
 <translation id="759957074386651883">Configuración de Navegación segura</translation>
 <translation id="7602621823177962064">Inhabilitar los informes de la memoria del dispositivo</translation>
 <translation id="7604169113182304895">Las apps de Android pueden respetar esta lista de forma voluntaria, pero no puedes forzarlas a que lo hagan.</translation>
-<translation id="7605203688694672897">Establece el nivel de acceso a la ubicación geográfica a nivel del dispositivo para el
-sistema <ph name="PRODUCT_OS_NAME" />, que tiene
-vigencia antes de que acceda un usuario. Luego de acceder, los usuarios pueden controlar el
-nivel de acceso de la ubicación geográfica mediante la configuración por usuario.
-
-Si no lo estableces o lo estableces como <ph name="ALLOW" />, se permite el acceso a la ubicación geográfica
-de la pantalla de acceso para los dispositivos administrados. Si se establece un valor de la política no válido,
-el acceso vuelve a ser
-<ph name="DISALLOW" />. En los dispositivos no administrados, siempre es
-<ph name="DISALLOW" />.
-
-ADVERTENCIA: Ten cuidado cuando cambies esta configuración, ya que podría desconfigurar otras políticas
-que involucran la ubicación geográfica
-(p. ej., <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />).
-En particular, si esta política se establece como <ph name="DISALLOW" />,
-entonces, las
-opciones <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
-y
-<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
-de la política
-<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
-no funcionarán y solo usarán la ubicación basada en <ph name="IP" />
-en la pantalla de <ph name="LOG_IN" />.</translation>
 <translation id="7608186022704392724">La función de envío automático de PIN cambia la manera en la que se ingresan los PIN en <ph name="PRODUCT_OS_NAME" />.
           En lugar de mostrar el mismo campo de texto que se utiliza para ingresar contraseñas, esta
           función mostrará una IU especial que le indicará al usuario con claridad la cantidad de

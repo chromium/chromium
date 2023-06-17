@@ -2176,6 +2176,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2777525873368474674">Indsæt billedlink</translation>
 <translation id="2778471504622896352">Føj eksterne apps til ChromeOS-applisten</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Udvidelser er tilladt på dette website</translation>
 <translation id="2782104745158847185">Der opstod en fejl ved installation af Linux-appen</translation>
 <translation id="2783024642731649028">Du har 1 vare i din kurv fra <ph name="MERCHANT_NAME" /> med <ph name="DISCOUNT_TEXT" />, som du har set på <ph name="MERCHANT_DOMAIN" /> <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Downloadet</translation>
@@ -2515,7 +2516,6 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="3060952009917586498">Skift enhedens sprog Det nuværende sprog er <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Vi kunne ikke oprette forbindelse til din telefon. Sørg for, at din telefon er i nærheden, at den er låst op, og at Bluetooth og Wi-Fi er aktiveret.</translation>
 <translation id="3061302636956643119">Tekst sendes til behandling hos Google.</translation>
-<translation id="306179102415443347">Brug din genvej til hurtigt at gå til Google Adgangskodeadministrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
 <translation id="3064871050034234884">Websites kan afspille lyd</translation>
 <translation id="3065041951436100775">Feedback i tilfælde, hvor fanen døde.</translation>
 <translation id="3065522099314259755">Forsinkelse ved gentagelse på tastatur</translation>
@@ -4710,7 +4710,6 @@ Brug Ctrl+Alt+Lysstyrke ned for at zoome ud.</translation>
 <translation id="4998430619171209993">Til</translation>
 <translation id="4999804342505941663">Aktivér Forstyr ikke</translation>
 <translation id="5001526427543320409">Tredjepartscookies</translation>
-<translation id="5003967926796347400">Klik på "Google Adgangskodeadministrator"</translation>
 <translation id="5005498671520578047">Kopiér adgangskode</translation>
 <translation id="5006118752738286774">For 2 år siden</translation>
 <translation id="5006218871145547804">Adb til Android-apps i Crostini</translation>
@@ -5761,7 +5760,6 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
     Dette billede vises på loginskærmen og låseskærmen på Chromebook-enheden.</translation>
 <translation id="5925147183566400388">Markør for erklæring om certificeringspraksis</translation>
 <translation id="5927132638760172455">Caster til en ukendt modtager</translation>
-<translation id="5927232971138258197">Denne udvidelse kan læse og ændre <ph name="HOST" /></translation>
 <translation id="592740088639760830">Stop denne container</translation>
 <translation id="592880897588170157">Download PDF-filer, i stedet for at de åbnes automatisk i Chrome</translation>
 <translation id="5928969282301718193">Det var det hele for denne gang</translation>
@@ -6009,7 +6007,6 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
 <translation id="6130692320435119637">Tilføj Wi-Fi</translation>
 <translation id="6130887916931372608">Tastaturtast</translation>
 <translation id="6132714462430777655">Vil du springe skoleindskrivning over?</translation>
-<translation id="6133850653093419052">Har tilladelse til at anmode om adgang</translation>
 <translation id="6135823405800500595">Sørg for, at din telefon er i nærheden og låst op, og at Bluetooth og Wi-Fi er aktiveret</translation>
 <translation id="6135826623269483856">Har ikke tilladelse til at administrere vinduer på alle dine skærme</translation>
 <translation id="6136114942382973861">Luk downloadlinje</translation>
@@ -6977,7 +6974,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="6973611239564315524">Der er en tilgængelig opdatering til Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Hvis Google også er din standardsøgemaskine, får du bedre og mere relevante forslag</translation>
 <translation id="697508444536771064">Luk Linux</translation>
-<translation id="6975361011348772931">Har anmodet om tilladelse til at læse og ændre</translation>
 <translation id="6978121630131642226">Søgemaskiner</translation>
 <translation id="6978717888677691380">Websites, du har blokeret</translation>
 <translation id="6979041727349121225">Energisparefunktion</translation>
@@ -7470,7 +7466,6 @@ Du har # andre kompromitterede adgangskoder. Google Adgangskodeadministrator anb
 <translation id="7410852728357935715">Cast til en enhed</translation>
 <translation id="741204030948306876">Ja tak</translation>
 <translation id="7412226954991670867">GPU-hukommelse</translation>
-<translation id="7412494426921990001">Klik på Chrome-menuen</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Konfigurationen er fuldført</translation>
 <translation id="7416091793702109803">Se <ph name="FILE_NAME" /></translation>
@@ -8105,7 +8100,6 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="793531125873261495">Der opstod en fejl under forsøget på at downloade den virtuelle maskine. Prøv igen.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % gennemført</translation>
 <translation id="7939062555109487992">Avancerede valgmuligheder</translation>
-<translation id="7939073735115504773">Klik på ikonet for denne udvidelse for at give den tilladelse til at læse og ændre <ph name="HOST" /></translation>
 <translation id="793923212791838">Din enhed kan ikke bruges på dette website</translation>
 <translation id="7939328347457537652">Administrer enhedscertifikater</translation>
 <translation id="7939412583708276221">Behold alligevel</translation>
@@ -8412,7 +8406,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Dine enheder<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Tilføj adgangskode</translation>
 <translation id="8195265224453131880">Intensitet</translation>
-<translation id="8195737548602430447">Oversæt automatisk undertekster til et målsprog.</translation>
 <translation id="8197673340773315084">Tilføj et navn eller en etiket, f.eks. Arbejde eller Privat</translation>
 <translation id="8198456017687137612">Caster fane</translation>
 <translation id="8198457270656084773">Leder du efter siden med systemets enhedslog? Gå til<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8531,7 +8524,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8295449579927246485">Liveoversættelse</translation>
 <translation id="8297292446125062288">HID-indstillinger</translation>
 <translation id="8298429963694909221">Nu kan du få notifikationer fra din telefon på din <ph name="DEVICE_TYPE" />. Hvis du afviser notifikationer på din <ph name="DEVICE_TYPE" />, afvises de også på din telefon. Sørg for, at din telefon er i nærheden, og at Bluetooth og Wi-Fi er aktiveret.</translation>
-<translation id="829923460755755423">Tilføj en genvej til Google Adgangskodeadministrator</translation>
 <translation id="8299319456683969623">Du er i øjeblikket offline.</translation>
 <translation id="8300011035382349091">Rediger bogmærke for denne fane</translation>
 <translation id="8300374739238450534">Midnatsblå</translation>
@@ -8559,7 +8551,6 @@ Opbevar din nøglefil på et sikkert sted. Du skal bruge den til at oprette nye 
 <translation id="8323167517179506834">Angiv webadresse</translation>
 <translation id="8323317289166663449">Læse og redigere alle dine data på din computer og alle websites</translation>
 <translation id="8324784016256120271">Websites kan anvende cookies til at se din browseraktivitet på forskellige websites for f.eks. at personligt tilpasse annoncer</translation>
-<translation id="8324819620112450495">Har ikke tilladelse til at anmode om adgang</translation>
 <translation id="8325413836429495820">Har ikke tilladelse til at se din udklipsholder</translation>
 <translation id="8326478304147373412">PKCS #7, certifikatkæde</translation>
 <translation id="8327386430364625757">Matematisk skrifttype</translation>

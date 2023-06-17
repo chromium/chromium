@@ -5968,10 +5968,6 @@ Il salvaschermo dell'utente mostra le immagini a cui fa riferimento il criterio 
 <translation id="6539246272469751178">Questa norma non influisce sulle app Android, che utilizzano sempre la directory per i download predefinita e non possono accedere ai file scaricati da <ph name="PRODUCT_OS_NAME" /> in una directory per i download non predefinita.</translation>
 <translation id="654303922206238013">Strategia di migrazione per ecryptfs</translation>
 <translation id="6544601600794014309">Attiva traduzioni di Risposte rapide</translation>
-<translation id="6544759513632821565">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> consente alle applicazioni web di acquisire più schermate contemporaneamente.
-      Questo criterio sblocca la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> per le applicazioni web di origini definite.
-      Se la proprietà <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> viene definita in una richiesta <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, tutte le schermate vengono acquisite automaticamente senza chiedere esplicitamente l'autorizzazione dell'utente.
-      Se il criterio non viene configurato, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> non è disponibile per alcuna applicazione web.</translation>
 <translation id="654546276700640113">Se il criterio viene impostato, viene applicata la lunghezza massima del PIN configurata. Se viene impostato un valore uguale o inferiore a 0, l'utente può impostare un PIN della lunghezza che preferisce. Se viene impostato un valore inferiore a quello del criterio <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, ma superiore a 0, la lunghezza massima viene impostata sullo stesso valore della lunghezza minima.
 
       Se il criterio non viene configurato non viene applicata una lunghezza massima.</translation>
@@ -7134,11 +7130,6 @@ Questo sostituisce il criterio <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_URLS_POLIC
 <translation id="759957074386651883">Impostazioni di Navigazione sicura</translation>
 <translation id="7602621823177962064">Disattiva i report sulle informazioni relative alla memoria del dispositivo</translation>
 <translation id="7604169113182304895">Le app Android potrebbero decidere volontariamente se rispettare o meno questo elenco. Non è possibile imporre il rispetto dell'elenco.</translation>
-<translation id="7605203688694672897">Imposta il livello di accesso alla geolocalizzazione a livello di dispositivo per il sistema <ph name="PRODUCT_OS_NAME" />, che viene applicato prima dell'accesso dell'utente. Dopo l'accesso, gli utenti possono controllare il livello di accesso alla geolocalizzazione tramite le impostazioni per utente.
-
-Se il criterio non viene configurato o se viene impostato su <ph name="ALLOW" />, l'accesso alla geolocalizzazione nella schermata di accesso sarà consentito per i dispositivi gestiti. Se viene inviato un valore del criterio non valido, l'accesso viene reimpostato su <ph name="DISALLOW" />. Per i dispositivi non gestiti il valore è sempre <ph name="DISALLOW" />.
-
-AVVISO: fai attenzione quando modifichi questa impostazione perché potrebbe violare altri criteri che riguardano la geolocalizzazione (ad esempio <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />). In particolare, se questo criterio viene impostato su <ph name="DISALLOW" />, le opzioni <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> e <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> del criterio <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> non funzioneranno correttamente e nella schermata di <ph name="LOG_IN" /> verrà usata soltanto la risoluzione della posizione basata sull'<ph name="IP" />.</translation>
 <translation id="7608186022704392724">La funzionalità di invio automatico del PIN modifica il modo in cui i PIN vengono inseriti in <ph name="PRODUCT_OS_NAME" />.
           Anziché mostrare lo stesso campo di testo utilizzato per l'inserimento della password, questa funzionalità mostra un'UI speciale che indica chiaramente all'utente da quante cifre deve essere formato il PIN. Di conseguenza, la lunghezza del PIN dell'utente viene memorizzata al di fuori dei dati criptati dell'utente. Sono supportati soltanto i PIN formati da 6-12 cifre.
 

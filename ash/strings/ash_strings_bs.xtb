@@ -739,6 +739,7 @@ Povežite uređaj na napajanje.</translation>
 <translation id="4261870227682513959">Prikaz postavki obavještenja. Obavještenja su isključena</translation>
 <translation id="4269883910223712419">Administrator ovog uređaja može:</translation>
 <translation id="4274537685965975248">Prečica na tastaturi Ctrl + Alt + strelica nadolje je promijenjena. Da koristite tipku End, pritisnite tipku <ph name="LAUNCHER_KEY_NAME" /> + strelicu udesno.</translation>
+<translation id="4275283744500212192">Otvori opcije rasporeda prozora</translation>
 <translation id="4279490309300973883">Preslikavanje</translation>
 <translation id="4280601795273309128">Sigurnosna ažuriranja su se završila. Nadogradite uređaj.</translation>
 <translation id="4283888303416325161">Unesite lozinku radi veće sigurnosti</translation>
@@ -1391,7 +1392,6 @@ Nova instalacija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Vraćanje na staru rezoluciju za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Osvježi</translation>
-<translation id="7185362672357349361">Uključiti podsjećanje s isključenim zvukom? Dobit ćete obavještenje ako govorite dok je zvuk isključen. Zvuk nikada ne napušta vaš uređaj.</translation>
 <translation id="7187711731540696127">Pristupna tačka na uređaju <ph name="DEVICE_NAME" /> je uključena, a nijedan uređaj nije povezan</translation>
 <translation id="7188494361780961876">Meni je pomjeren u gornji lijevi ugao ekrana.</translation>
 <translation id="7189412385142492784">Koliko je udaljena Venera</translation>

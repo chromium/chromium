@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Kopyalanan Resim</translation>
 <translation id="1142846828089312304">Gizli modda üçüncü taraf çerezlerini engelle</translation>
 <translation id="1147769322402934017">Çevrimiçi resim galerileri</translation>
+<translation id="1150565364351027703">Güneş Gözlüğü</translation>
 <translation id="1150979032973867961">Bu sunucu <ph name="DOMAIN" /> olduğunu kanıtlayamadı. Bilgisayarınızın işletim sistemi, sunucunun güvenlik sertifikasına güvenmiyor. Bu durum, bir yanlış yapılandırmadan veya bağlantıya müdahale eden bir saldırgandan kaynaklanıyor olabilir.</translation>
 <translation id="1151972924205500581">Şifre gerekiyor</translation>
 <translation id="1156303062776767266">Yerel veya paylaşılan bir dosyayı görüntülüyorsunuz</translation>
@@ -891,6 +892,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Kullandığınız Kablosuz ağ, giriş sayfasını ziyaret etmenizi gerektiriyor olabilir.</translation>
 <translation id="3169472444629675720">Keşfet</translation>
+<translation id="3175081911749765310">Web Hizmetleri</translation>
 <translation id="3176929007561373547">Proxy sunucunun çalışıyor olduğundan emin olmak için
     proxy ayarlarınızı kontrol edin veya ağ yöneticinize danışın. Proxy sunucu
     kullanmamanız gerektiğini düşünüyorsanız:
@@ -2362,6 +2364,7 @@ Aksi halde bu işlem gizlilik ayarlarınız tarafından engellenecek. Buna izin 
 <translation id="6665553082534466207">Sağda üçlü delik</translation>
 <translation id="6668389483194953109">"custom" adlı kağıt boyutu bulundu, ancak "custom_size" özelliği boş veya geçersiz.</translation>
 <translation id="6671697161687535275">Form önerisi Chromium'dan kaldırılsın mı?</translation>
+<translation id="6683022854667115063">Kulaklık</translation>
 <translation id="6683717648675961851">İş ilanları</translation>
 <translation id="6687335167692595844">Yazı tipi boyutu istendi</translation>
 <translation id="6687696737818665306">Oyunculuk ve tiyatro</translation>
@@ -3147,6 +3150,7 @@ Ek ayrıntılar:
 <translation id="8513580896341796021">İndirme başladı. Görüntülemek için |<ph name="ACCELERATOR" />| tuşuna basın.</translation>
 <translation id="8519753333133776369">Yöneticiniz tarafından HID cihazlara izin verilmiştir</translation>
 <translation id="8522552481199248698">Chrome, Google Hesabınızı korumanıza ve şifrenizi değiştirmenize yardımcı olabilir.</translation>
+<translation id="8527228059738193856">Hoparlörler</translation>
 <translation id="8530813470445476232">Chrome ayarlarında tarama geçmişinizi, çerezleri, önbelleği ve diğer öğeleri temizleyin</translation>
 <translation id="853332391023689529">Pikap kamyonetler</translation>
 <translation id="8533619373899488139">Engellenen URL'lerin ve sistem yöneticinizin zorunlu tuttuğu diğer politikaların listesini görmek için &lt;strong&gt;chrome://policy&lt;/strong&gt; adresini ziyaret edin.</translation>
@@ -3306,6 +3310,7 @@ Ek ayrıntılar:
 <translation id="8943282376843390568">Küf yeşili</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Hukuk ve kamu hizmetleri</translation>
+<translation id="8954252855949068147">Giyim</translation>
 <translation id="8957210676456822347">Giriş Portalı Yetkilendirmesi</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Site ayarlarına gidin</translation>

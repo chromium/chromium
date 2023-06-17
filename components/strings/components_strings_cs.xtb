@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Obrázek, který jste zkopírovali</translation>
 <translation id="1142846828089312304">V anonymním režimu blokovat soubory cookie třetích stran</translation>
 <translation id="1147769322402934017">Online obrázkové galerie</translation>
+<translation id="1150565364351027703">Sluneční brýle</translation>
 <translation id="1150979032973867961">Server nedokázal prokázat, že patří doméně <ph name="DOMAIN" />. Operační systém vašeho počítače nedůvěřuje jeho bezpečnostnímu certifikátu.Může to být způsobeno nesprávnou konfigurací nebo tím, že vaše připojení zachytává útočník.</translation>
 <translation id="1151972924205500581">Je vyžadováno heslo</translation>
 <translation id="1156303062776767266">Prohlížíte si místní nebo sdílený soubor.</translation>
@@ -891,6 +892,7 @@ Jinak to vaše nastavení ochrany soukromí bude blokovat. Povolením umožníte
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Síť Wi-Fi, kterou používáte, může vyžadovat, abyste navštívili její stránku přihlášení.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Webové služby</translation>
 <translation id="3176929007561373547">Zkontrolujte nastavení proxy serveru nebo se obraťte na správce sítě, aby ověřil, zda proxy server funguje. Pokud se domníváte, že by proxy server neměl být používán: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Zjišťovat, kdy aktivně používáte toto zařízení</translation>
 <translation id="3180358318770512945">Rodičovství</translation>
@@ -2357,6 +2359,7 @@ Kontaktujte administrátora systému.</translation>
 <translation id="6665553082534466207">Tři díry vpravo</translation>
 <translation id="6668389483194953109">Byl nalezen název velikosti papíru „custom“, ale vlastnost „custom_size“ je prázdná nebo neplatná.</translation>
 <translation id="6671697161687535275">Odstranit návrh položky formuláře z prohlížeče Chromium?</translation>
+<translation id="6683022854667115063">Sluchátka</translation>
 <translation id="6683717648675961851">Nabídky práce</translation>
 <translation id="6687335167692595844">Požadována velikost písma</translation>
 <translation id="6687696737818665306">Herectví a divadlo</translation>
@@ -3141,6 +3144,7 @@ Další podrobnosti:
 <translation id="8513580896341796021">Stahování bylo zahájeno. Stažený soubor zobrazíte stisknutím klávesy |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Zařízení HID povolené administrátorem</translation>
 <translation id="8522552481199248698">Chrome vám může pomoci ochránit váš účet Google a změnit heslo.</translation>
+<translation id="8527228059738193856">Reproduktory</translation>
 <translation id="8530813470445476232">Vymažte historii prohlížení, soubory cookie, mezipaměť a další data v nastavení Chromu</translation>
 <translation id="853332391023689529">Pickupy</translation>
 <translation id="8533619373899488139">Na stránce &lt;strong&gt;chrome://policy&lt;/strong&gt; naleznete seznam blokovaných adres URL a další zásady vynucené vaším administrátorem systému.</translation>
@@ -3300,6 +3304,7 @@ Další podrobnosti:
 <translation id="8943282376843390568">Limetková</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Právo a státní správa</translation>
+<translation id="8954252855949068147">Oblečení</translation>
 <translation id="8957210676456822347">Autorizace captive portálu</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Přejít do nastavení webu</translation>

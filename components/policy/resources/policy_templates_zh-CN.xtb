@@ -5908,10 +5908,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="6539246272469751178">此政策对 Android 应用没有任何影响。Android 应用始终都会使用默认下载目录，并且无法访问由 <ph name="PRODUCT_OS_NAME" />下载到非默认下载目录中的任何文件。</translation>
 <translation id="654303922206238013">ecryptfs 迁移策略</translation>
 <translation id="6544601600794014309">启用快速解答翻译功能</translation>
-<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API 允许 Web 应用一次截取多个界面。
-      此政策用于针对指定源的 Web 应用解锁 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性。
-      如果 <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 属性是在 <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> 请求中定义的，系统会自动截取所有屏幕界面，而不要求用户明确许可。
-      如果此政策未设置，<ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> 将不适用于任何 Web 应用。</translation>
 <translation id="654546276700640113">如果您设置了此政策，系统会强制实施所配置的 PIN 码长度上限。如果值小于或等于 0，即表示用户可以设置任意长度的 PIN 码。如果值小于 <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> 但大于 0，则表示长度上限与下限相同。
 
       如果您未设置此政策，系统将不会强制实施任何长度上限。</translation>
@@ -7073,12 +7069,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="759957074386651883">安全浏览设置</translation>
 <translation id="7602621823177962064">停用设备内存信息报告功能</translation>
 <translation id="7604169113182304895">Android 应用可能会主动选择采纳该列表。您无法强制此类应用采纳该列表。</translation>
-<translation id="7605203688694672897">为 <ph name="PRODUCT_OS_NAME" /> 系统设置设备级地理定位访问权限级别。此设置在用户登录前有效。登录后，用户可以通过按用户进行的设置来控制地理定位访问权限级别。
-
-如果此政策未设置或设为 <ph name="ALLOW" />，受管设备将可以在登录屏幕上访问地理定位。如果发送的政策值无效，则访问权限会回退到 <ph name="DISALLOW" />。对于非受管设备，政策值始终为 <ph name="DISALLOW" />。
-
-警告：更改此设置时应小心谨慎，因为它可能会破坏其他与地理定位相关的政策（例如 <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />）！
-具体而言，当此政策设置为 <ph name="DISALLOW" /> 时，<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> 政策的 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> 和 <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> 选项将失效，在<ph name="LOG_IN" />屏幕上只能使用基于 <ph name="IP" /> 的位置解析方法。</translation>
 <translation id="7608186022704392724">PIN 码自动提交功能会更改 PIN 码在 <ph name="PRODUCT_OS_NAME" /> 中的输入方式。
           该功能会显示一个特殊界面以清楚地指明用户的 PIN 码需要包含的位数，而不会显示原本用于输入密码的文本字段。因此，用户的 PIN 码长度会存储在用户加密数据之外。仅支持长度介于 6-12 位数字的 PIN 码。
 

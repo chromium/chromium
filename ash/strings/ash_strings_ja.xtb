@@ -739,6 +739,7 @@
 <translation id="4261870227682513959">通知設定を表示します。通知はオフです</translation>
 <translation id="4269883910223712419">このデバイスの管理者は以下を行うことができます。</translation>
 <translation id="4274537685965975248">キーボード ショートカット「Ctrl+Alt+下矢印」が変更されました。End キーを使用するには、<ph name="LAUNCHER_KEY_NAME" />+右矢印キーを押してください。</translation>
+<translation id="4275283744500212192">ウィンドウ レイアウトのオプションを開く</translation>
 <translation id="4279490309300973883">ミラーリング</translation>
 <translation id="4280601795273309128">セキュリティ アップデートが終了しました。デバイスをアップグレードしてください。</translation>
 <translation id="4283888303416325161">セキュリティ強化のためパスワードを入力してください</translation>
@@ -1391,7 +1392,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> 秒後に元の解像度に戻ります</translation>
 <translation id="7180611975245234373">更新</translation>
-<translation id="7185362672357349361">ミュートの通知をオンにしますか？ミュートしているときに話すと、通知されます。音声がデバイスの外部に送信されることはありません。</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> のアクセス ポイントはオンです。デバイスが接続されていません</translation>
 <translation id="7188494361780961876">メニューは画面左上に移動しました。</translation>
 <translation id="7189412385142492784">金星までの距離は</translation>

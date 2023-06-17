@@ -739,6 +739,7 @@ Yhdistä laite virtalähteeseen.</translation>
 <translation id="4261870227682513959">Näytä ilmoitusasetukset. Ilmoitukset ovat pois päältä</translation>
 <translation id="4269883910223712419">Tämän laitteen ylläpitäjä voi</translation>
 <translation id="4274537685965975248">Pikanäppäinyhdistelmä Ctrl + Alt + alanuoli on muuttunut. Jos haluat käyttää End-näppäintä, paina <ph name="LAUNCHER_KEY_NAME" /> + oikea nuoli.</translation>
+<translation id="4275283744500212192">Avaa ikkunoiden asetteluasetukset</translation>
 <translation id="4279490309300973883">Peilaus päällä</translation>
 <translation id="4280601795273309128">Tietoturvapäivitykset ovat päättyneet. Päivitä laitteesi.</translation>
 <translation id="4283888303416325161">Paranna tietoturvaa lisäämällä salasana</translation>
@@ -1391,7 +1392,6 @@ Uusi asennus</translation>
 <translation id="7165278925115064263">Alt+Vaihto+K</translation>
 <translation id="7168224885072002358">Palautetaan vanha tarkkuus, aikaa palautukseen <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Päivitä</translation>
-<translation id="7185362672357349361">Laitetaanko muistutus mykistyksestä päälle? Saat ilmoituksen, jos puhut mykistettynä. Audio ei poistu laitteelta.</translation>
 <translation id="7187711731540696127">Hotspot (<ph name="DEVICE_NAME" />) on päällä, ei yhdistettyjä laitteita</translation>
 <translation id="7188494361780961876">Valikko siirretty näytön vasempaan ylänurkkaan</translation>
 <translation id="7189412385142492784">Kuinka kaukana Venus on</translation>

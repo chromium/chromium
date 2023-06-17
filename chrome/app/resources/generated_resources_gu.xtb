@@ -2158,6 +2158,7 @@
 <translation id="2777525873368474674">છબીની લિંક પેસ્ટ કરો</translation>
 <translation id="2778471504622896352">ChromeOS લૉન્ચરમાં રિમોટ ઍપ ઉમેરો</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">આ સાઇટ પર એક્સ્ટેન્શનને મંજૂરી આપવામાં આવી છે</translation>
 <translation id="2782104745158847185">Linux ઍપ્લિકેશન ઇન્સ્ટૉલ કરવામાં ભૂલ</translation>
 <translation id="2783024642731649028"><ph name="RELATIVE_TIME" /> જોવામાં આવેલી તમારા કાર્ટમાંની 1 આઇટમ પર <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> તરફથી <ph name="DISCOUNT_TEXT" /></translation>
 <translation id="2783298271312924866">ડાઉનલોડ કરેલ</translation>
@@ -2497,7 +2498,6 @@
 <translation id="3060952009917586498">ડિવાઇસની ભાષા બદલો. હાલની ભાષા <ph name="LANGUAGE" /> છે.</translation>
 <translation id="3060987956645097882">તમારા ફોન સાથે અમે કોઈ સંપર્ક સ્થાપિત કરી શક્યા નથી. ખાતરી કરો કે તમારો ફોન નજીકમાં હોય, અનલૉક કરેલો હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
 <translation id="3061302636956643119">પ્રક્રિયા માટે ટેક્સ્ટ Googleને મોકલવામાં આવશે.</translation>
-<translation id="306179102415443347">Google Password Manager પર ઝડપથી જવા માટે તમારા શૉર્ટકટનો ઉપયોગ કરો. તમે તમારા શૉર્ટકટને તમારા કમ્પ્યુટરની હોમ સ્ક્રીન અથવા ઍપ લૉન્ચર પર ખસેડી શકો છો.</translation>
 <translation id="3064871050034234884">સાઇટ સાઉન્ડ વગાડી શકે છે</translation>
 <translation id="3065041951436100775">ટૅબ ફરજિયાત બંધ કરવાનો પ્રતિસાદ.</translation>
 <translation id="3065522099314259755">કીબોર્ડ પુનરાવર્તનની વિલંબતા</translation>
@@ -4691,7 +4691,6 @@
 <translation id="4998430619171209993">ચાલુ</translation>
 <translation id="4999804342505941663">'ખલેલ પાડશો નહીં' સુવિધા ચાલુ કરો</translation>
 <translation id="5001526427543320409">ત્રીજા પક્ષની કુકી</translation>
-<translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
 <translation id="5005498671520578047">પાસવર્ડની કૉપિ કરો</translation>
 <translation id="5006118752738286774">2 વર્ષ પહેલાં</translation>
 <translation id="5006218871145547804">Crostini Android ઍપ ADB</translation>
@@ -5743,7 +5742,6 @@
     આ ચિત્ર Chromebookની સાઇન ઇન સ્ક્રીન અને લૉક સ્ક્રીન પર દેખાશે.</translation>
 <translation id="5925147183566400388">સર્ટિફિકેશન પ્રેક્ટીસ સ્ટેટમેન્ટ પોઇન્ટર</translation>
 <translation id="5927132638760172455">અજાણ્યાં પ્રાપ્તકર્તા પર કાસ્ટ કરી રહ્યાં છે</translation>
-<translation id="5927232971138258197">આ એક્સ્ટેન્શન <ph name="HOST" /> પર વાંચી અને તેમાં ફેરફાર કરી શકે છે</translation>
 <translation id="592740088639760830">આ કન્ટેનર ચલાવવાનું રોકો</translation>
 <translation id="592880897588170157">PDF ફાઇલોને ઑટોમૅટિક રીતે Chromeમાં ખોલવાને બદલે તેને ડાઉનલોડ કરો</translation>
 <translation id="5928969282301718193">હાલ પૂરતો બધી પરવાનગીઓનો રિવ્યૂ થઈ ગયો છે</translation>
@@ -5992,7 +5990,6 @@ USB ડિવાઇસ</translation>
 <translation id="6130692320435119637">વાઇ-ફાઇ ઉમેરો</translation>
 <translation id="6130887916931372608">કીબોર્ડની કી</translation>
 <translation id="6132714462430777655">સ્કૂલમાં પ્રવેશની પ્રક્રિયા છોડી દઈએ?</translation>
-<translation id="6133850653093419052">ઍક્સેસની વિનંતી કરવાની મંજૂરી છે</translation>
 <translation id="6135823405800500595">ખાતરી કરો કે તમારો ફોન નજીકમાં, અનલૉક કરેલો હોય તેમજ તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સેવા ચાલુ કરવામાં આવી હોય</translation>
 <translation id="6135826623269483856">તમારા બધા ડિસ્પ્લે પર વિન્ડો મેનેજ કરવાની મંજૂરી નથી</translation>
 <translation id="6136114942382973861">ડાઉનલોડ બાર બંધ કરો</translation>
@@ -6960,7 +6957,6 @@ USB ડિવાઇસ</translation>
 <translation id="6973611239564315524">Debian 10 માટેનું અપગ્રેડ (Buster) ઉપલબ્ધ છે</translation>
 <translation id="69739764870135975">જો Google તમારું ડિફૉલ્ટ શોધ એન્જિન પણ હોય, તો તમને બહેતર અને સંદર્ભ સાથે સંબંધિત સૂચનો જોવા મળશે</translation>
 <translation id="697508444536771064">Linux શટ ડાઉન કરો</translation>
-<translation id="6975361011348772931">વાંચવા અને ફેરફાર કરવાની મંજૂરીની વિનંતી કરી છે</translation>
 <translation id="6978121630131642226">શોધ એન્જિન</translation>
 <translation id="6978717888677691380">તમે બ્લૉક કરેલી સાઇટ</translation>
 <translation id="6979041727349121225">એનર્જી સેવર</translation>
@@ -7453,7 +7449,6 @@ USB ડિવાઇસ</translation>
 <translation id="7410852728357935715">કોઈ ડિવાઇસ પર કાસ્ટ કરો</translation>
 <translation id="741204030948306876">હા, હું સંમત છું</translation>
 <translation id="7412226954991670867">GPU મેમરી</translation>
-<translation id="7412494426921990001">Chrome મેનૂ પર ક્લિક કરો</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">સેટઅપ પૂર્ણ થયું</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" />નો રિવ્યૂ કરો</translation>
@@ -8088,7 +8083,6 @@ USB ડિવાઇસ</translation>
 <translation id="793531125873261495">વર્ચ્યુઅલ મશીન ડાઉનલોડ કરવામાં ભૂલ આવી. કૃપા કરીને ફરી પ્રયાસ કરો.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% પૂર્ણ થયું</translation>
 <translation id="7939062555109487992">વિગતવાર વિકલ્પો</translation>
-<translation id="7939073735115504773"><ph name="HOST" /> પર વાંચવા અને તેમાં ફેરફાર કરવા માટે આ એક્સ્ટેન્શનના આઇકન પર ક્લિક કરો</translation>
 <translation id="793923212791838">આ સાઇટ સાથે તમારા ડિવાઇસનો ઉપયોગ કરી શકાશે નહીં</translation>
 <translation id="7939328347457537652">ડિવાઇસના પ્રમાણપત્રો મેનેજ કરો</translation>
 <translation id="7939412583708276221">તો પણ રાખો</translation>
@@ -8390,7 +8384,6 @@ USB ડિવાઇસ</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />તમારા ડિવાઇસ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">પાસવર્ડ ઉમેરો</translation>
 <translation id="8195265224453131880">તીવ્રતા</translation>
-<translation id="8195737548602430447">લક્ષિત ભાષામાં કૅપ્શનનો ઑટોમૅટિક રીતે અનુવાદ કરો.</translation>
 <translation id="8197673340773315084">ઑફિસ કે વ્યક્તિગત જેવું નામ કે લેબલ ઉમેરો</translation>
 <translation id="8198456017687137612">ટૅબ કાસ્ટ કરી રહ્યાં છીએ</translation>
 <translation id="8198457270656084773">સિસ્ટમ ડિવાઇસ-લૉગનું પેજ શોધી રહ્યાં છો? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />ની મુલાકાત લો.</translation>
@@ -8509,7 +8502,6 @@ USB ડિવાઇસ</translation>
 <translation id="8295449579927246485">લાઇવ અનુવાદ</translation>
 <translation id="8297292446125062288">HIDના સેટિંગ</translation>
 <translation id="8298429963694909221">હવે તમે તમારા <ph name="DEVICE_TYPE" />માં તમારા ફોનના નોટિફિકેશન મેળવી શકો છો. જો તમારા <ph name="DEVICE_TYPE" /> પર નોટિફિકેશનને છોડી દેવામાં આવે, તો તે તમારા ફોનમાંથી પણ નીકળી જશે. ખાતરી કરો કે તમારો ફોન નજીકમાં હોય અને તેમાં બ્લૂટૂથ અને વાઇ-ફાઇની સુવિધા ચાલુ હોય.</translation>
-<translation id="829923460755755423">Google Password Manager માટે કોઈ શૉર્ટકટ ઉમેરો</translation>
 <translation id="8299319456683969623">તમે હાલમાં ઑફલાઇન છો.</translation>
 <translation id="8300011035382349091">આ ટૅબ માટે બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="8300374739238450534">ઘેરો વાદળી</translation>
@@ -8537,7 +8529,6 @@ USB ડિવાઇસ</translation>
 <translation id="8323167517179506834">URL લખો</translation>
 <translation id="8323317289166663449">તમારા કમ્પ્યુટર અને બધી વેબસાઇટ પર તમારો બધો ડેટા વાંચો અને તેમાં ફેરફાર કરો</translation>
 <translation id="8324784016256120271">સાઇટ વિવિધ સાઇટ પરની તમારી બ્રાઉઝિંગ પ્રવૃત્તિ જોવા માટે કુકીનો ઉપયોગ કરી શકે છે. ઉદાહરણ તરીકે, મનગમતી જાહેરાતો બનાવવા માટે</translation>
-<translation id="8324819620112450495">ઍક્સેસની વિનંતી કરવાની મંજૂરી નથી</translation>
 <translation id="8325413836429495820">તમારું ક્લિપબોર્ડ જોવાની મંજૂરી નથી</translation>
 <translation id="8326478304147373412">PKCS #7, પ્રમાણપત્ર ચેન</translation>
 <translation id="8327386430364625757">ગણિતિક ફૉન્ટ</translation>

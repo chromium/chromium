@@ -2178,6 +2178,7 @@
 <translation id="2777525873368474674">Вставте посилання на зображення</translation>
 <translation id="2778471504622896352">Додайте віддалені додатки на панель запуску ОС Chrome</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">На цьому сайті дозволено розширення</translation>
 <translation id="2782104745158847185">Не вдалося встановити додаток Linux</translation>
 <translation id="2783024642731649028">1 товар у кошику (<ph name="DISCOUNT_TEXT" />); продавець: <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />; переглянуто <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Завантажено</translation>
@@ -2517,7 +2518,6 @@
 <translation id="3060952009917586498">Змінити мову пристрою. Поточна мова: <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Не вдалося підключитися до телефона. Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено.</translation>
 <translation id="3061302636956643119">Текст буде надіслано на сервери Google для обробки.</translation>
-<translation id="306179102415443347">Швидко відкривайте Google Менеджер паролів за допомогою ярлика. Ви можете перемістити ярлик на головний екран або панель запуску додатків комп’ютера.</translation>
 <translation id="3064871050034234884">Сайти можуть відтворювати звук</translation>
 <translation id="3065041951436100775">Відповідь "Вкладка закрилась".</translation>
 <translation id="3065522099314259755">Затримка перед повтором натиснутої клавіші</translation>
@@ -4712,7 +4712,6 @@
 <translation id="4998430619171209993">Увімкнено</translation>
 <translation id="4999804342505941663">Увімкнути режим "Не турбувати"</translation>
 <translation id="5001526427543320409">Сторонні файли cookie</translation>
-<translation id="5003967926796347400">Натисніть "Google Менеджер паролів"</translation>
 <translation id="5005498671520578047">Копіювати пароль</translation>
 <translation id="5006118752738286774">2 роки тому</translation>
 <translation id="5006218871145547804">ADB в додатках для Android у Crostini</translation>
@@ -5761,7 +5760,6 @@
     Це зображення з’являтиметься на екрані входу й заблокованому екрані Chromebook.</translation>
 <translation id="5925147183566400388">Вказівник на заяву про порядок сертифікації</translation>
 <translation id="5927132638760172455">Трансляція на невідомий приймач</translation>
-<translation id="5927232971138258197">Це розширення може переглядати й редагувати сайт <ph name="HOST" /></translation>
 <translation id="592740088639760830">Зупинити цей контейнер</translation>
 <translation id="592880897588170157">Завантажуйте файли PDF замість автоматичного відкривання їх у Chrome</translation>
 <translation id="5928969282301718193">Усе переглянуто</translation>
@@ -6008,7 +6006,6 @@
 <translation id="6130692320435119637">Додати мережу Wi-Fi</translation>
 <translation id="6130887916931372608">Клавіша клавіатури</translation>
 <translation id="6132714462430777655">Пропустити реєстрацію пристрою для використання в закладі освіти?</translation>
-<translation id="6133850653093419052">Дозволено надсилати запити на доступ</translation>
 <translation id="6135823405800500595">Переконайтеся, що ваш телефон поблизу й розблокований, а Bluetooth і Wi-Fi увімкнено</translation>
 <translation id="6135826623269483856">Заборонено керувати вікнами на всіх ваших екранах</translation>
 <translation id="6136114942382973861">Закрити панель завантажень</translation>
@@ -6980,7 +6977,6 @@
 <translation id="6973611239564315524">Доступне оновлення Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Якщо Google є вашою пошуковою системою за умовчанням, ви бачитимете кращі та доречніші за контекстом підказки</translation>
 <translation id="697508444536771064">Завершити роботу Linux</translation>
-<translation id="6975361011348772931">Запитує дозвіл на перегляд і редагування</translation>
 <translation id="6978121630131642226">Пошукові системи</translation>
 <translation id="6978717888677691380">Сайти, які ви заблокували</translation>
 <translation id="6979041727349121225">Режим енергозбереження</translation>
@@ -7473,7 +7469,6 @@
 <translation id="7410852728357935715">Транслювати на пристрій</translation>
 <translation id="741204030948306876">Увімкнути</translation>
 <translation id="7412226954991670867">Пам’ять GPU</translation>
-<translation id="7412494426921990001">Натисніть значок меню Chrome</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Налаштовано</translation>
 <translation id="7416091793702109803">Переглянути файл "<ph name="FILE_NAME" />"</translation>
@@ -8108,7 +8103,6 @@
 <translation id="793531125873261495">Не вдалося завантажити віртуальну машину. Повторіть спробу.</translation>
 <translation id="7935451262452051102">Виконано <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Розширені параметри</translation>
-<translation id="7939073735115504773">Натисніть значок цього розширення, щоб воно могло переглядати й редагувати сайт <ph name="HOST" /></translation>
 <translation id="793923212791838">Ваш пристрій не можна використовувати для цього сайту</translation>
 <translation id="7939328347457537652">Керувати сертифікатами на пристрої</translation>
 <translation id="7939412583708276221">Усе ж зберегти</translation>
@@ -8415,7 +8409,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваші пристрої<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додати пароль</translation>
 <translation id="8195265224453131880">Інтенсивність</translation>
-<translation id="8195737548602430447">Автоматично перекладати субтитри цільовою мовою.</translation>
 <translation id="8197673340773315084">Додайте назву або мітку, як-от "Робочий" або "Особистий"</translation>
 <translation id="8198456017687137612">Трансляція вкладки</translation>
 <translation id="8198457270656084773">Шукаєте сторінку журналу пристрою з інформацією про систему? Перейдіть на сторінку <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8534,7 +8527,6 @@
 <translation id="8295449579927246485">Миттєвий переклад</translation>
 <translation id="8297292446125062288">Налаштування HID</translation>
 <translation id="8298429963694909221">Тепер на <ph name="DEVICE_TYPE" /> надходитимуть сповіщення з вашого телефона. Закриваючи сповіщення, що надійшло на <ph name="DEVICE_TYPE" />, ви також закриєте його на телефоні. Переконайтеся, що ваш телефон поблизу, а Bluetooth і Wi-Fi увімкнено.</translation>
-<translation id="829923460755755423">Додайте ярлик Google Менеджера паролів</translation>
 <translation id="8299319456683969623">Зараз ви не в мережі.</translation>
 <translation id="8300011035382349091">Змінити закладку для цієї вкладки</translation>
 <translation id="8300374739238450534">Темно-синій</translation>
@@ -8562,7 +8554,6 @@
 <translation id="8323167517179506834">Введіть URL-адресу</translation>
 <translation id="8323317289166663449">Читати та змінювати всі ваші дані на комп’ютері та всіх веб-сайтах</translation>
 <translation id="8324784016256120271">Сайти можуть використовувати файли cookie для перегляду ваших дій у веб-переглядачі, зокрема, щоб персоналізувати рекламу</translation>
-<translation id="8324819620112450495">Заборонено надсилати запити на доступ</translation>
 <translation id="8325413836429495820">Заборонено переглядати буфер обміну</translation>
 <translation id="8326478304147373412">PKCS #7, ланцюжок сертифікатів</translation>
 <translation id="8327386430364625757">Математичний шрифт</translation>

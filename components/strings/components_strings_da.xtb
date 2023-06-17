@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Billede, du har kopieret</translation>
 <translation id="1142846828089312304">Bloker tredjepartscookies i inkognitotilstand</translation>
 <translation id="1147769322402934017">Online billedgallerier</translation>
+<translation id="1150565364351027703">Solbriller</translation>
 <translation id="1150979032973867961">Denne server kunne ikke bevise, at den er <ph name="DOMAIN" />, da operativsystemet på din computer ikke har tillid til sikkerhedscertifikatet. Dette kan skyldes en fejlkonfiguration, eller at en hacker har opfanget din forbindelse.</translation>
 <translation id="1151972924205500581">En adgangskode er påkrævet</translation>
 <translation id="1156303062776767266">Du får vist en lokal eller delt fil</translation>
@@ -891,6 +892,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Det Wi-Fi-netværk, du bruger, kan kræve, at du går til netværkets loginside.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Webtjenester</translation>
 <translation id="3176929007561373547">Kontrollér dine proxyindstillinger, eller kontakt din netværksadministrator
       for at sikre, at proxyserveren fungerer. Hvis du ikke mener,
       at du skal bruge en proxyserver, skal du:
@@ -2362,6 +2364,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6665553082534466207">Tre huller i højre side</translation>
 <translation id="6668389483194953109">Der blev fundet et navn, "custom", på papirstørrelsen, men egenskaben "custom_size" er tom eller ugyldig.</translation>
 <translation id="6671697161687535275">Vil du fjerne formularforslag fra Chromium?</translation>
+<translation id="6683022854667115063">Høretelefoner</translation>
 <translation id="6683717648675961851">Jobannoncer</translation>
 <translation id="6687335167692595844">Der blev anmodet om størrelse på skrifttype</translation>
 <translation id="6687696737818665306">Skuespil og teater</translation>
@@ -3147,6 +3150,7 @@ Yderligere oplysninger:
 <translation id="8513580896341796021">Downloaden er påbegyndt. Tryk på |<ph name="ACCELERATOR" />| for at se den.</translation>
 <translation id="8519753333133776369">Din administrator har tilladt HID-enheden</translation>
 <translation id="8522552481199248698">Chrome kan hjælpe dig med at beskytte din Google-konto og ændre din adgangskode.</translation>
+<translation id="8527228059738193856">Højttalere</translation>
 <translation id="8530813470445476232">Ryd browserhistorik, cookies, cache m.m. i Chrome-indstillingerne</translation>
 <translation id="853332391023689529">Pickup-trucks</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for at se listen over blokerede webadresser og andre politikker, der håndhæves af din systemadministrator.</translation>
@@ -3306,6 +3310,7 @@ Yderligere oplysninger:
 <translation id="8943282376843390568">Limegrøn</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Lovgivning og myndigheder</translation>
+<translation id="8954252855949068147">Beklædning</translation>
 <translation id="8957210676456822347">Godkendelse af captive portal</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Gå til indstillingerne for websitet</translation>

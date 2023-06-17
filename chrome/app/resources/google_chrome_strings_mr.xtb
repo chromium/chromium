@@ -124,6 +124,7 @@
 <translation id="3037838751736561277">Google Chrome पार्श्वभूमी मोड मध्ये आहे.</translation>
 <translation id="3038232873781883849">इंस्टॉल करण्यासाठी प्रतीक्षा करत आहे...</translation>
 <translation id="3059710691562604940">सुरक्षित ब्राउझिंग बंद आहे. Chrome ते सुरू करण्याची शिफारस करते.</translation>
+<translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="3065168410429928842">Chrome टॅब</translation>
 <translation id="3080151273017101988">जेव्हा Google Chrome बंद असेल तेव्हा पार्श्वभूमीत ॲप्लिकेशन चालणे सुरू ठेवा</translation>
 <translation id="3089968997497233615">Google Chrome ची नवीन, सुरक्षित आवृत्ती उपलब्ध आहे.</translation>
@@ -225,6 +226,7 @@
 <translation id="4970880042055371251">ChromeOS ची आवृत्ती</translation>
 <translation id="4970947549776831107">या प्रकारची फाइल धोकादायक असल्यामुळे Chrome ने ती ब्लॉक केली आहे</translation>
 <translation id="4990567037958725628">Google Chrome कॅनरी</translation>
+<translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{A Google Chrome extension was accessing HID devices}=1{Google Chrome एक्स्टेंशन १ HID डिव्हाइस अ‍ॅक्सेस करत आहे}other{Google Chrome एक्स्टेंशन # HID डिव्हाइस अ‍ॅक्सेस करत आहे}}</translation>
 <translation id="5098668839038261629">सुरू केलेले असेल, तेव्हा तुम्हाला Chrome मधूनदेखील साइन आउट केले जाईल</translation>
 <translation id="5132929315877954718">Google Chrome साठी उत्कृष्ट ॲप, खेळ, विस्तार आणि थीम शोधा.</translation>
@@ -336,6 +338,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="7339898014177206373">नवीन विंडो</translation>
 <translation id="7398801000654795464">तुम्ही <ph name="USER_EMAIL_ADDRESS" /> या रुपात Chrome मध्ये साइन इन केले होते. कृपया पुन्हा साइन इन करण्यासाठी समान खाते वापरा.</translation>
 <translation id="7410958280246779049">ही फाइल धोकादायक असल्यामुळे, Chrome ने ती ब्लॉक केली आहे</translation>
+<translation id="7412494426921990001">Chrome मेनूवर क्लिक करा</translation>
 <translation id="7426611252293106642">Google Chrome कदाचित योग्यरीत्या काम करणार नाही, कारण त्याला आता या Linux डिस्ट्रिब्यूशनवर सपोर्ट नाही</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome १ मिनिटासाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते.}other{Chrome # मिनिटांसाठी वापरले जात नाही, तेव्हा तुमची संस्था ते आपोआप बंद करते.}}</translation>
 <translation id="7481213027396403996">Chrome ची सर्वात मजबूत सुरक्षा मिळवा</translation>
@@ -381,6 +384,7 @@ Google Chrome तुमची सेटिंग्ज पुन्हा मि
 <translation id="8286862437124483331">Google Chrome पासवर्ड दर्शविण्‍याचा प्रयत्‍न करत आहे. यास अनुमती देण्‍यासाठी तुमचा Windows पासवर्ड टाइप करा.</translation>
 <translation id="828798499196665338">तुमच्या पालकांनी Chrome साठी "साइट, अ‍ॅप्स आणि एक्स्टेंशनकरिता परवानग्या" सुरू केल्या आहेत. हे <ph name="EXTENSION_TYPE_PARAMETER" /> सुरू करण्यास अनुमती नाही.</translation>
 <translation id="8290100596633877290">अरेरे! Google Chrome क्रॅश झाला. त्वरित पुन्हा लाँच करायचा?</translation>
+<translation id="829923460755755423">Google Password Manager मध्ये शॉर्टकट जोडा</translation>
 <translation id="8342675569599923794">ही फाइल धोकादायक आहे, त्यामुळे Chrome ने ती ब्लॉक केली आहे.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />आम्ही हा डेटा कसा वापरतो:<ph name="END_BOLD" /> साइट तुमच्या स्वारस्यांबद्दलची माहिती Chrome वापरून स्टोअर करू शकतात. उदाहरणार्थ, तुम्ही मॅरेथॉनसाठी शूज खरेदी करण्यासाठी एखाद्या साइटला भेट दिल्यास, ती साइट तुमचे स्वारस्य मॅरेथॉनमध्ये धावणे म्हणून परिभाषित करू शकते. त्यानंतर, तुम्ही एखाद्या शर्यतीसाठी नोंदणी करण्याकरिता वेगळ्या साइटला भेट दिल्यास, ती साइट तुम्हाला तुमच्या स्वारस्यांनुसार धावण्यासाठीच्या शूजची जाहिरात दाखवू शकते.</translation>
 <translation id="8370517070665726704">कॉपीराइट <ph name="YEAR" /> Google LLC. सर्व हक्क राखीव.</translation>

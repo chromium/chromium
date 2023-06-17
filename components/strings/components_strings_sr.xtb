@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Копирана слика</translation>
 <translation id="1142846828089312304">Блокирај колачиће трећих страна у режиму без архивирања</translation>
 <translation id="1147769322402934017">Онлајн галерије слика</translation>
+<translation id="1150565364351027703">Наочари за сунце</translation>
 <translation id="1150979032973867961">Овај сервер не може да докаже да је <ph name="DOMAIN" />; оперативни систем рачунара нема поверења у његов безбедносни сертификат. Узрок томе је можда погрешна конфигурација или нападач који је прекинуо везу.</translation>
 <translation id="1151972924205500581">Лозинка је обавезна</translation>
 <translation id="1156303062776767266">Прегледате локалну или дељену датотеку</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">WiFi мрежа коју користите ће можда захтевати да посетите страницу за пријављивање.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Веб-услуге</translation>
 <translation id="3176929007561373547">Проверите подешавања проксија или контактирајте администратора мреже да
           бисте се уверили да прокси сервер функционише. Ако мислите да не
           треба да користите прокси сервер:
@@ -2361,6 +2363,7 @@
 <translation id="6665553082534466207">Троструко бушење на десној страни</translation>
 <translation id="6668389483194953109">Пронађен је назив величине папира „прилагођено“, али је својство „custom_size“ празно или неважеће.</translation>
 <translation id="6671697161687535275">Желите ли да уклоните предлог из Chromium-а?</translation>
+<translation id="6683022854667115063">Слушалице</translation>
 <translation id="6683717648675961851">Огласи за посао</translation>
 <translation id="6687335167692595844">Затражена је величина фонта</translation>
 <translation id="6687696737818665306">Глума и позориште</translation>
@@ -3146,6 +3149,7 @@
 <translation id="8513580896341796021">Преузимање је почело. Да бисте га видели, притисните |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Администратор је дозволио HID уређај</translation>
 <translation id="8522552481199248698">Chrome може да вам помогне да заштитите Google налог и промените лозинку.</translation>
+<translation id="8527228059738193856">Звучници</translation>
 <translation id="8530813470445476232">Обришите историју прегледања, колачиће, кеш и друго у подешавањима Chrome-а</translation>
 <translation id="853332391023689529">Камионети</translation>
 <translation id="8533619373899488139">Посетите &lt;strong&gt;chrome://policy&lt;/strong&gt; да бисте видели листу блокираних URL-ова и друге смернице које је одредио администратор система.</translation>
@@ -3305,6 +3309,7 @@
 <translation id="8943282376843390568">Јаркозелена</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закони и влада</translation>
+<translation id="8954252855949068147">Одећа</translation>
 <translation id="8957210676456822347">Овлашћење на улазном порталу</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Идите на подешавања сајта</translation>

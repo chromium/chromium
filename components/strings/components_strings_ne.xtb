@@ -62,6 +62,7 @@
 <translation id="1131264053432022307">तपाईंले प्रतिलिपि गर्नुभएको छवि</translation>
 <translation id="1142846828089312304">इन्कोग्निटो मोडमा तेस्रो पक्षीय कुकी ब्लक गरियोस्</translation>
 <translation id="1147769322402934017">अनलाइन फोटो ग्यालेरीहरू</translation>
+<translation id="1150565364351027703">शीतल चस्मा</translation>
 <translation id="1150979032973867961">यो सर्भर हो भनेर प्रमाणित गर्न सकेन <ph name="DOMAIN" />; यसको सुरक्षा प्रमाणपत्रलाई तपाईंको कम्प्युटरको अपरेटिङ सिस्टमले विश्वास गरेन। यो एक गलत कन्फिगुरेसन वा तपाईंको जडान अवरोध गर्न खोज्ने आक्रमणकारीको हुनसक्छ।</translation>
 <translation id="1151972924205500581">पासवर्ड आवश्यक छ</translation>
 <translation id="1156303062776767266">तपाईं स्थानीय वा साझा फाइल हेर्दै हुनुहुन्छ</translation>
@@ -879,6 +880,7 @@
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">तपाईँले प्रयोग गरिरहनु भएको Wi-Fi लाई तपाईँले यसको लगइन पृष्ठको भ्रमण गर्न आवश्यकता हुन सक्छ।</translation>
 <translation id="3169472444629675720">पत्ता लगाउनुहोस्</translation>
+<translation id="3175081911749765310">वेब सेवाहरू</translation>
 <translation id="3176929007561373547">प्रोक्सी सर्भरले काम गरिरहेको निश्चित गर्न तपाईंको प्रोक्सी सेटिङहरू जाँच्नुहोस् वा तपाईंको नेटवर्क प्रशासकलाई सम्पर्क गर्नुहोस्। यदि तपाईंलाई तपाईंले प्रोक्सी सर्भर प्रयोग गर्नु पर्दछ भन्ने विश्वास छैन भने: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">तपाईं यो डिभाइस चलाउँदै हुनुहुन्छ कि हुनुहुन्छ भन्ने कुराको जानकारी</translation>
 <translation id="3180358318770512945">लालनपालन</translation>
@@ -2329,6 +2331,7 @@
 <translation id="6665553082534466207">दायाँपट्टि तीन प्वाल</translation>
 <translation id="6668389483194953109">कागजको आकारको नाम "कस्टम" राखिएको पाइयो तर "custom_size" प्रोपर्टी भने खाली वा अवैध छ।</translation>
 <translation id="6671697161687535275">Chromium बाट फारम सुझाव हटाउने हो?</translation>
+<translation id="6683022854667115063">हेडफोन</translation>
 <translation id="6683717648675961851">जागिरका सूची</translation>
 <translation id="6687335167692595844">फन्टको अनुरोध गरिएको आकार</translation>
 <translation id="6687696737818665306">अभिनय तथा रङ्गमञ्च</translation>
@@ -3109,6 +3112,7 @@
 <translation id="8513580896341796021">डाउनलोड सुरु भयो। डाउनलोड भइरहेको सामग्री हेर्न |<ph name="ACCELERATOR" />| थिच्नुहोस्।</translation>
 <translation id="8519753333133776369">तपाईंका एड्मिनले प्रयोग गर्ने अनुमति दिनुभएको HID डिभाइस</translation>
 <translation id="8522552481199248698">Chrome ले तपाईंलाई आफ्नो Google खाता सुरक्षित गर्न र आफ्नो पासवर्ड बदल्न मद्दत गर्न सक्छ।</translation>
+<translation id="8527228059738193856">स्पिकरहरू</translation>
 <translation id="8530813470445476232">Chrome का सेटिङमा गई आफ्नो ब्राउजिङ इतिहास, कुकी, क्यास र अन्य डेटा मेटाउनुहोस्</translation>
 <translation id="853332391023689529">पिकअप ट्रकहरू</translation>
 <translation id="8533619373899488139">ब्लक गरिएका URL र तपाईंको प्रणालीका एड्मिनले लागू गर्नुभएका अन्य नीतिहरूको सूची हेर्न &lt;strong&gt;chrome://policy&lt;/strong&gt; मा जानुहोस्।</translation>
@@ -3265,6 +3269,7 @@
 <translation id="8943282376843390568">हल्का पहेँलो</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कानुन तथा सरकार</translation>
+<translation id="8954252855949068147">लत्ताकपडा</translation>
 <translation id="8957210676456822347">क्याप्टिभ पोर्टल प्राधिकरण</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">साइटका सेटिङमा जानुहोस्</translation>

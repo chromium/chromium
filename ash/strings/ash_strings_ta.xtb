@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">கிடைக்கும் சாதனங்கள்</translation>
 <translation id="1550523713251050646">மேலும் விருப்பங்களுக்குக் கிளிக் செய்யவும்</translation>
 <translation id="1555130319947370107">நீலம்</translation>
+<translation id="1576511610858879060">உங்கள் Chromebook அல்லது புளூடூத் சாதனம் புளூடூத்தின் பழைய பதிப்பைப் பயன்படுத்துகிறது. சிறந்த ஆடியோ தரத்திற்கு வேறொரு இன்புட் சோர்ஸைப் பயன்படுத்தவும்.</translation>
 <translation id="1576623706766186887">மேக்னிஃபயர் இயக்கப்பட்டிருக்கும்போது சிறிதாக்கு</translation>
 <translation id="1586324912145647027">8 டெஸ்க்குகளில் 1வது டெஸ்க்கிற்குச் செல்லும்</translation>
 <translation id="1589090746204042747">இந்த அமர்விலுள்ள உங்கள் அனைத்துச் செயல்பாடுகளையும் அணுகுதல்</translation>
@@ -355,6 +356,7 @@
 <translation id="256712445991462162">டாக் செய்யப்பட்ட பெரிதாக்கி</translation>
 <translation id="2573588302192866788"><ph name="NAME" /> ஐ இணைக்க முடியவில்லை</translation>
 <translation id="2575685495496069081">பல உள்முழைவு முடக்கப்பட்டுள்ளது</translation>
+<translation id="2579264398927991698">நிலைபொருள் புதுப்பிப்புகள்</translation>
 <translation id="2582112259361606227">புதுப்பிக்க, மீண்டும் தொடங்குக</translation>
 <translation id="2586561057878260610"><ph name="DESK_NAME" /> உடன் இணைக்க Ctrl + W அழுத்தவும். டெஸ்க்கையும் சாளரங்களையும் மூட Ctrl + Shift + W அழுத்தவும்.</translation>
 <translation id="2595239820337756193">5 கிமீ எத்தனை மைல்?</translation>
@@ -686,6 +688,7 @@
 <translation id="4028481283645788203">மேலும் பாதுகாப்பிற்குக் கடவுச்சொல் அவசியம்</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">திரையைப் பகிர்ந்துள்ளீர்கள்</translation>
+<translation id="404437169852192935">புதுப்பிப்புகள் முடிந்தன</translation>
 <translation id="4049230407053723315">விரைவு அமைப்புகள்</translation>
 <translation id="4057003836560082631">உலாவி தாவல் <ph name="INDEX" />/<ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{ஒரு ஆப்ஸுக்கு ஆஃப்}other{# ஆப்ஸுக்கு ஆஃப்}}</translation>
@@ -736,6 +739,7 @@
 <translation id="4261870227682513959">அறிவிப்பு அமைப்புகளைக் காண்பிக்கும். அறிவிப்புகள் முடக்கப்பட்டுள்ளன</translation>
 <translation id="4269883910223712419">இந்தச் சாதனத்தின் நிர்வாகி இவற்றைச் செய்ய முடியும்:</translation>
 <translation id="4274537685965975248">இந்தக் கீபோர்டு ஷார்ட்கட் மாற்றப்பட்டுள்ளது: Ctrl + Alt + கீழ்நோக்கிய அம்புக்குறி. End பட்டனைப் பயன்படுத்த, <ph name="LAUNCHER_KEY_NAME" /> பட்டன் + வலது அம்புக்குறி பட்டனை அழுத்தவும்.</translation>
+<translation id="4275283744500212192">சாளரத் தளவமைப்பு விருப்பங்களைத் திறக்கும்</translation>
 <translation id="4279490309300973883">பிரதிபலிக்கிறது</translation>
 <translation id="4280601795273309128">பாதுகாப்புப் புதுப்பிப்புகள் முடிந்துவிட்டன. சாதனத்தை மேம்படுத்தவும்.</translation>
 <translation id="4283888303416325161">கூடுதல் பாதுகாப்பிற்கு, கடவுச்சொல்லை டைப் செய்யுங்கள்</translation>
@@ -1016,11 +1020,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> அல்லது <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /> அழுத்தவும்</translation>
 <translation id="5491186829646618080">நிலைபொருள் புதுப்பிப்புகள் உள்ளன</translation>
 <translation id="5503884284981862082">Google Assistantடைத் திற/மூடுக</translation>
+<translation id="550391772491508736">அலைபரப்பைத் தொடங்கு</translation>
 <translation id="5506975627792768506">மேக்னிஃபயரை இயக்கு அல்லது முடக்கு</translation>
 <translation id="5512042095225963688">முந்தைய வார்த்தையை நீக்கும்</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">eSIM சுயவிவரங்கள் அனைத்தையும் உங்கள் நிர்வாகி அகற்றிவிட்டார். கூடுதல் தகவல்களுக்கு, நிர்வாகியைத் தொடர்புகொள்ளவும்.</translation>
 <translation id="5523434445161341166"><ph name="FEATURE_NAME" /> இணைக்கப்படுகிறது.</translation>
+<translation id="5529587891732734495">அலைபரப்பை இடைநிறுத்து</translation>
 <translation id="5532994612895037630">முழுத்திரையையும் ரெக்கார்டு செய்ய எங்கேனும் தட்டவும்</translation>
 <translation id="5536723544185013515">சமீபத்திய ஆப்ஸ். இடது/வலது அம்புக்குறி விசைகளைப் பயன்படுத்தி சமீபத்திய ஆப்ஸை அணுகலாம்</translation>
 <translation id="553675580533261935">அமர்விலிருந்து வெளியேறுதல்</translation>

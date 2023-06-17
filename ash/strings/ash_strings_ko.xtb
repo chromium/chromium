@@ -739,6 +739,7 @@
 <translation id="4261870227682513959">알림 설정을 표시합니다. 알림이 사용 중지되어 있습니다.</translation>
 <translation id="4269883910223712419">이 기기의 관리자는 다음과 같은 작업을 할 수 있습니다.</translation>
 <translation id="4274537685965975248">Ctrl + Alt + 아래쪽 화살표 단축키가 변경되었습니다. End 키를 사용하려면 <ph name="LAUNCHER_KEY_NAME" /> 키 + 오른쪽 화살표 키를 누르세요.</translation>
+<translation id="4275283744500212192">창 레이아웃 옵션 열기</translation>
 <translation id="4279490309300973883">미러링</translation>
 <translation id="4280601795273309128">보안 업데이트가 종료되었습니다. 기기를 업그레이드하세요.</translation>
 <translation id="4283888303416325161">보안 강화를 위해 비밀번호 입력</translation>
@@ -1391,7 +1392,6 @@
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" />초 후 기존 해상도로 돌아갑니다.</translation>
 <translation id="7180611975245234373">새로고침</translation>
-<translation id="7185362672357349361">알림 음소거를 사용 설정하시겠습니까? 음소거 상태에서 말하면 알림을 받습니다. 오디오는 기기 외부로 유출되지 않습니다.</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> 핫스팟이 켜져 있으며 연결된 기기가 없음</translation>
 <translation id="7188494361780961876">메뉴가 화면 왼쪽 상단으로 이동했습니다.</translation>
 <translation id="7189412385142492784">금성까지의 거리</translation>

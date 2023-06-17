@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Nukopijuotas vaizdas</translation>
 <translation id="1142846828089312304">Blokuoti trečiųjų šalių slapukus inkognito režimu</translation>
 <translation id="1147769322402934017">Internetinės vaizdų galerijos</translation>
+<translation id="1150565364351027703">Akiniai nuo saulės</translation>
 <translation id="1150979032973867961">Šiam serveriui nepavyko patvirtinti, kad tai yra <ph name="DOMAIN" />; jo saugos sertifikatas nėra patikimas kompiuterio operacinei sistemai. Taip gali nutikti dėl netinkamos konfigūracijos ar dėl ryšį pertraukusio užgrobėjo.</translation>
 <translation id="1151972924205500581">Būtinas slaptažodis</translation>
 <translation id="1156303062776767266">Peržiūrite vietinį arba bendrinamą failą</translation>
@@ -891,6 +892,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3158539265159265653">Diskas</translation>
 <translation id="3162559335345991374">Naudojant šį „Wi-Fi“ tinklą gali būti prašoma apsilankyti prisijungimo puslapyje.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Žin. pasl.</translation>
 <translation id="3176929007561373547">Patikrinkite tarpinio serverio nustatymus arba susisiekite su tinklo
           administratoriumi, kad įsitikintumėte, jog tarpinis
           serveris veikia. Jei manote, kad tarpinio serverio
@@ -2363,6 +2365,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6665553082534466207">Trys skylės dešinėje</translation>
 <translation id="6668389483194953109">Rastas popieriaus dydžio pavadinimas „custom“, bet ypatybės „custom_size“ laukas tuščias arba netinkamas.</translation>
 <translation id="6671697161687535275">Pašalinti formos pasiūlymą iš „Chromium“?</translation>
+<translation id="6683022854667115063">Ausinės</translation>
 <translation id="6683717648675961851">Darbų sąrašai</translation>
 <translation id="6687335167692595844">Reikia nurodyti šrifto dydį</translation>
 <translation id="6687696737818665306">Vaidyba ir teatras</translation>
@@ -3148,6 +3151,7 @@ Papildoma išsami informacija:
 <translation id="8513580896341796021">Atsisiuntimas pradėtas. Jei norite jį peržiūrėti, paspauskite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Administratorius leidžia naudoti HID įrenginį</translation>
 <translation id="8522552481199248698">„Chrome“ gali padėti apsaugoti „Google“ paskyrą ir pakeisti slaptažodį.</translation>
+<translation id="8527228059738193856">Garsiakalbiai</translation>
 <translation id="8530813470445476232">Išvalykite naršymo istoriją, slapukus, talpyklą ir kita „Chrome“ nustatymuose</translation>
 <translation id="853332391023689529">Pikapai</translation>
 <translation id="8533619373899488139">Apsilankykite adresu &lt;strong&gt;chrome://policy&lt;/strong&gt;, kad peržiūrėtumėte užblokuotų URL sąrašą ir kitą politiką, kurią taiko sistemos administratoriaus.</translation>
@@ -3307,6 +3311,7 @@ Papildoma išsami informacija:
 <translation id="8943282376843390568">Žaliųjų citrinų spalva</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Teisė ir vyriausybė</translation>
+<translation id="8954252855949068147">Apranga</translation>
 <translation id="8957210676456822347">Fiksuotojo portalo autorizavimas</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" /> iš <ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Eiti į svetainės nustatymus</translation>

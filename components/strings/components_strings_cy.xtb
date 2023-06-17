@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Llun y gwnaethoch ei gopïo</translation>
 <translation id="1142846828089312304">Rhwystro cwcis gan drydydd parti yn y Modd Anhysbys</translation>
 <translation id="1147769322402934017">Orielau lluniau ar-lein</translation>
+<translation id="1150565364351027703">Sbectol haul</translation>
 <translation id="1150979032973867961">Ni allai'r gweinydd hwn brofi ei fod yn <ph name="DOMAIN" />; nid yw system weithredu eich cyfrifiadur yn ymddiried yn ei dystysgrif ddiogelwch. Gall hyn gael ei achosi gan gamffurfweddiad neu ymosodwr yn rhyng-gipio'ch cysylltiad.</translation>
 <translation id="1151972924205500581">Mae angen cyfrinair</translation>
 <translation id="1156303062776767266">Rydych yn edrych ar ffeil leol neu ffeil gyffredin</translation>
@@ -891,6 +892,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Mae'n bosib y bydd y Wi-Fi rydych yn ei ddefnyddio yn gofyn i chi fynd i'w dudalen fewngofnodi.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Gwasanaethau Gwe</translation>
 <translation id="3176929007561373547">Gwiriwch eich gosodiadau dirprwyol neu cysylltwch â'ch gweinyddwr rhwydwaith i
       sicrhau bod y dirprwy weinydd yn gweithio. Os nad ydych yn credu y dylech
       fod yn defnyddio dirprwy weinydd:
@@ -2362,6 +2364,7 @@ Fel arall, bydd eich gosodiadau preifatrwydd yn rhwystro hyn. Bydd hyn yn caniat
 <translation id="6665553082534466207">Tri thwll ar y dde</translation>
 <translation id="6668389483194953109">Wedi dod o hyd i enw maint papur "custom", ond mae'r briodwedd "custom_size" yn wag neu'n annilys.</translation>
 <translation id="6671697161687535275">Tynnu awgrymu ffurflenni o Chromium?</translation>
+<translation id="6683022854667115063">Clustffonau</translation>
 <translation id="6683717648675961851">Rhestrau swyddi</translation>
 <translation id="6687335167692595844">Maint ffont a geisiwyd</translation>
 <translation id="6687696737818665306">Actio a theatr</translation>
@@ -3146,6 +3149,7 @@ Manylion ychwanegol:
 <translation id="8513580896341796021">Wedi dechrau lawrlwytho. I'w weld, pwyswch |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Cafodd dyfais HID ei chaniatáu gan eich gweinyddwr</translation>
 <translation id="8522552481199248698">Gall Chrome eich helpu i amddiffyn eich Cyfrif Google ac i newid eich cyfrinair.</translation>
+<translation id="8527228059738193856">Seinyddion</translation>
 <translation id="8530813470445476232">Clirio'ch hanes pori, eich cwcis, eich storfa, a rhagor yn Gosodiadau Chrome</translation>
 <translation id="853332391023689529">Tryciau agored</translation>
 <translation id="8533619373899488139">Ewch i &lt;strong&gt;chrome://policy&lt;/strong&gt; i weld y rhestr o gyfeiriadau URL sydd wedi'u rhwystro a pholisïau eraill sy'n cael eu gweithredu gan eich gweinyddwr system.</translation>
@@ -3304,6 +3308,7 @@ Manylion ychwanegol:
 <translation id="8943282376843390568">Melynwyrdd</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Cyfraith a llywodraeth</translation>
+<translation id="8954252855949068147">Dillad ac Addurno</translation>
 <translation id="8957210676456822347">Awdurdodiad Porth Caeth</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Ewch i'r gosodiadau gwefan</translation>

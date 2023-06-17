@@ -2149,6 +2149,7 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="2777525873368474674">Bildlink einfügen</translation>
 <translation id="2778471504622896352">Remote-Apps zum Chrome OS-Launcher hinzufügen</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Erweiterungen sind auf dieser Website erlaubt</translation>
 <translation id="2782104745158847185">Fehler beim Installieren der Linux-Anwendung</translation>
 <translation id="2783024642731649028">1 Artikel in deinem Einkaufswagen mit <ph name="DISCOUNT_TEXT" /> von <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, <ph name="RELATIVE_TIME" /> angesehen</translation>
 <translation id="2783298271312924866">Heruntergeladen</translation>
@@ -2485,7 +2486,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3060952009917586498">Ändere die Gerätesprache. Die aktuelle Sprache ist <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Es konnte keine Verbindung zu deinem Smartphone hergestellt werden. Dein Smartphone muss sich in der Nähe befinden, entsperrt sein und Bluetooth und WLAN müssen aktiviert sein.</translation>
 <translation id="3061302636956643119">Der Text wird zur Verarbeitung an Google gesendet.</translation>
-<translation id="306179102415443347">Mit dieser Verknüpfung gelangst du schnell zum Google Passwortmanager. Du kannst die Verknüpfung auf den Startbildschirm oder in den App Launcher deines Computers verschieben.</translation>
 <translation id="3064871050034234884">Websites dürfen Ton wiedergeben</translation>
 <translation id="3065041951436100775">Feedback zur Tab-Beendigung</translation>
 <translation id="3065522099314259755">Wiederholungslatenz für Tastatur</translation>
@@ -4672,7 +4672,6 @@ Zum Herauszoomen drücke Strg + Alt + „Helligkeit verringern“.</translatio
 <translation id="4998430619171209993">An</translation>
 <translation id="4999804342505941663">„Bitte nicht stören“ aktivieren</translation>
 <translation id="5001526427543320409">Drittanbieter-Cookies</translation>
-<translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
 <translation id="5005498671520578047">Passwort kopieren</translation>
 <translation id="5006118752738286774">Vor 2 Jahren</translation>
 <translation id="5006218871145547804">Android-App-ADB für Crostini</translation>
@@ -5713,7 +5712,6 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
     Dieses Bild wird auf dem Anmelde- und dem Sperrbildschirm deines Chromebooks angezeigt.</translation>
 <translation id="5925147183566400388">Verweis auf Certification Practice Statement</translation>
 <translation id="5927132638760172455">Übertragung an unbekannten Empfänger</translation>
-<translation id="5927232971138258197">Diese Erweiterung kann <ph name="HOST" /> lesen und ändern</translation>
 <translation id="592740088639760830">Diesen Container anhalten</translation>
 <translation id="592880897588170157">PDF-Dateien herunterladen, anstatt sie automatisch in Chrome zu öffnen</translation>
 <translation id="5928969282301718193">Das ist im Moment alles</translation>
@@ -5960,7 +5958,6 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="6130692320435119637">WLAN hinzufügen</translation>
 <translation id="6130887916931372608">Taste</translation>
 <translation id="6132714462430777655">Registrierung bei einer Bildungseinrichtung überspringen?</translation>
-<translation id="6133850653093419052">Darf Zugriffsanfragen senden</translation>
 <translation id="6135823405800500595">Dein Smartphone muss sich in der Nähe befinden und entsperrt sein. Außerdem müssen Bluetooth und die WLAN-Funktion aktiviert sein.</translation>
 <translation id="6135826623269483856">Websites dürfen Fenster auf allen deinen Bildschirmen nicht verwalten</translation>
 <translation id="6136114942382973861">Downloadleiste schließen</translation>
@@ -6923,7 +6920,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="6973611239564315524">Ein Upgrade auf Debian 10 (Buster) ist verfügbar</translation>
 <translation id="69739764870135975">Wenn Google als Standardsuchmaschine festgelegt ist, siehst du bessere und relevantere Vorschläge</translation>
 <translation id="697508444536771064">Linux herunterfahren</translation>
-<translation id="6975361011348772931">Lese- und Änderungszugriff angefordert</translation>
 <translation id="6978121630131642226">Suchmaschinen</translation>
 <translation id="6978717888677691380">Von dir blockierte Websites</translation>
 <translation id="6979041727349121225">Energiesparmodus</translation>
@@ -7412,7 +7408,6 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7410852728357935715">Auf ein Gerät streamen</translation>
 <translation id="741204030948306876">Ja, bitte</translation>
 <translation id="7412226954991670867">GPU-Speicher</translation>
-<translation id="7412494426921990001">Klicke auf das Chrome-Menü</translation>
 <translation id="7414464185801331860">18-fach</translation>
 <translation id="7415454883318062233">Einrichtung abgeschlossen</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> prüfen</translation>
@@ -8045,7 +8040,6 @@ Drücke zum Entfernen der Zuweisung einen bereits zugewiesenen Schalter oder ein
 <translation id="793531125873261495">Fehler beim Herunterladen der virtuellen Maschine. Bitte versuche es noch einmal.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> % abgeschlossen</translation>
 <translation id="7939062555109487992">Erweiterte Optionen</translation>
-<translation id="7939073735115504773">Klicke auf das Symbol dieser Erweiterung, um das Lesen und Ändern von <ph name="HOST" /> zu erlauben</translation>
 <translation id="793923212791838">Dein Gerät kann für diese Website nicht verwendet werden</translation>
 <translation id="7939328347457537652">Gerätezertifikate verwalten</translation>
 <translation id="7939412583708276221">Trotzdem beibehalten</translation>
@@ -8352,7 +8346,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Meine Geräte<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Passwort hinzufügen</translation>
 <translation id="8195265224453131880">Intensität</translation>
-<translation id="8195737548602430447">Untertitel werden automatisch in eine Zielsprache übersetzt.</translation>
 <translation id="8197673340773315084">Name oder Label wie „Arbeit“ oder „Privat“ hinzufügen</translation>
 <translation id="8198456017687137612">Tab wird gestreamt</translation>
 <translation id="8198457270656084773">Suchst du die Seite mit dem Geräteprotokoll des Systems? Gehe zu <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8498,7 +8491,6 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8323167517179506834">URL eingeben</translation>
 <translation id="8323317289166663449">Alle deine Daten auf deinem Computer und allen Websites lesen und ändern</translation>
 <translation id="8324784016256120271">Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Websites aufzuzeichnen und damit zum Beispiel Werbung zu personalisieren</translation>
-<translation id="8324819620112450495">Darf keine Zugriffsanfragen senden</translation>
 <translation id="8325413836429495820">Dürfen nicht auf meine Zwischenablage zugreifen</translation>
 <translation id="8326478304147373412">PKCS #7, Zertifikatkette</translation>
 <translation id="8327386430364625757">Mathematische Schriftart</translation>

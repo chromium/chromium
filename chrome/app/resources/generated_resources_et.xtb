@@ -2166,6 +2166,7 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="2777525873368474674">Kleebi pildi link</translation>
 <translation id="2778471504622896352">Kaugrakenduste lisamine ChromeOS-i käivitajasse</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Laiendused on sellel saidil lubatud</translation>
 <translation id="2782104745158847185">Viga Linuxi rakenduse installimisel</translation>
 <translation id="2783024642731649028">1 ostukorvis olev kaup <ph name="DISCOUNT_TEXT" /> soodsamalt kaupmehelt <ph name="MERCHANT_NAME" />, (<ph name="MERCHANT_DOMAIN" />), vaadatud <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Allalaaditud</translation>
@@ -2505,7 +2506,6 @@ Selle konto seadete haldamiseks installige oma seadmesse Family Link.  Saatsime 
 <translation id="3060952009917586498">Seadme keele muutmine. Praegune keel on <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Meil ei õnnestunud teie telefoniga ühendust luua. Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
 <translation id="3061302636956643119">Tekst saadetakse töötlemiseks Google'ile.</translation>
-<translation id="306179102415443347">Kasutage oma otseteed, et kiiresti Google'i paroolihalduri juurde pääseda. Saate teisaldada otsetee arvuti avakuvale või rakenduste käivitajale.</translation>
 <translation id="3064871050034234884">Saidid saavad esitada heli</translation>
 <translation id="3065041951436100775">Tagasiside vahelehe sulgumise kohta.</translation>
 <translation id="3065522099314259755">Klaviatuuri korduse latentsus</translation>
@@ -4699,7 +4699,6 @@ Väljasuumimiseks kasutage klahvikombinatsiooni Ctrl + Alt + Ereduse vähendamin
 <translation id="4998430619171209993">Sees</translation>
 <translation id="4999804342505941663">Lülita režiim Mitte segada sisse</translation>
 <translation id="5001526427543320409">Kolmanda osapoole küpsisefailid</translation>
-<translation id="5003967926796347400">Klõpsake „Google'i paroolihaldur”</translation>
 <translation id="5005498671520578047">Parooli kopeerimine</translation>
 <translation id="5006118752738286774">2 aastat tagasi</translation>
 <translation id="5006218871145547804">Crostini Androidi rakenduse ADB</translation>
@@ -5750,7 +5749,6 @@ Võite selle saata Google’ile, et kontrollida, kas see on ohtlik. Tavaliselt v
     See pilt kuvatakse Chromebooki sisselogimisekraanil ja lukustuskuval.</translation>
 <translation id="5925147183566400388">Sertifitseerimistegevuse väljavõtte viit</translation>
 <translation id="5927132638760172455">Ülekandmine teadmata vastuvõtjasse</translation>
-<translation id="5927232971138258197">See laiendus saab saiti <ph name="HOST" /> lugeda ja muuta</translation>
 <translation id="592740088639760830">Peata see konteiner</translation>
 <translation id="592880897588170157">Laadige PDF-failid alla selle asemel, et need Chrome'is automaatselt avada</translation>
 <translation id="5928969282301718193">Praeguseks on kõik tehtud</translation>
@@ -5998,7 +5996,6 @@ Võite selle saata Google’ile, et kontrollida, kas see on ohtlik. Tavaliselt v
 <translation id="6130692320435119637">Lisa WiFi</translation>
 <translation id="6130887916931372608">Klaviatuuri klahv</translation>
 <translation id="6132714462430777655">Kas jätta koolis kasutamiseks registreerimine vahele?</translation>
-<translation id="6133850653093419052">Juurdepääsu küsimine lubatud</translation>
 <translation id="6135823405800500595">Veenduge, et teie telefon oleks läheduses, avatud ning Bluetooth ja WiFi oleksid sisse lülitatud</translation>
 <translation id="6135826623269483856">Nendel saitidel ei lubata kõikidel teie ekraanidel aknaid hallata</translation>
 <translation id="6136114942382973861">Sule allalaadimiste riba</translation>
@@ -6964,7 +6961,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="6973611239564315524">Uuendamine versioonile Debian 10 (Buster) on saadaval</translation>
 <translation id="69739764870135975">Kui Google on ka teie vaikeotsingumootor, näete paremaid, konteksti suhtes asjakohaseid soovitusi</translation>
 <translation id="697508444536771064">Lülita Linux välja</translation>
-<translation id="6975361011348772931">Taotles luba lugeda ja muuta</translation>
 <translation id="6978121630131642226">Otsingumootorid</translation>
 <translation id="6978717888677691380">Blokeeritud saidid</translation>
 <translation id="6979041727349121225">Energiasäästja</translation>
@@ -7457,7 +7453,6 @@ Teil on veel # ohustatud parooli. Google'i paroolihaldur soovitab kohe neid paro
 <translation id="7410852728357935715">Ülekandmine seadmesse</translation>
 <translation id="741204030948306876">Jah, sobib</translation>
 <translation id="7412226954991670867">GPU-mälu</translation>
-<translation id="7412494426921990001">Klõpsake Chrome'i menüül</translation>
 <translation id="7414464185801331860">18-kordne</translation>
 <translation id="7415454883318062233">Seadistus on lõpetatud</translation>
 <translation id="7416091793702109803">Faili <ph name="FILE_NAME" /> ülevaatamine</translation>
@@ -8093,7 +8088,6 @@ Määrangu eemaldamiseks vajutage määratud lülitit või klahvi.</translation>
 <translation id="793531125873261495">Viga virtuaalseadme allalaadimisel. Proovige uuesti.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% on lõpetatud</translation>
 <translation id="7939062555109487992">Täpsemad valikud</translation>
-<translation id="7939073735115504773">Klõpsake selle laienduse ikoonil, et lubada saiti <ph name="HOST" /> lugeda ja muuta</translation>
 <translation id="793923212791838">Teie seadet ei saa sellel saidil kasutada</translation>
 <translation id="7939328347457537652">Seadmete sertifikaatide haldamine</translation>
 <translation id="7939412583708276221">Säilita ikkagi</translation>
@@ -8400,7 +8394,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Teie seadmed<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Parooli lisamine</translation>
 <translation id="8195265224453131880">Intensiivsus</translation>
-<translation id="8195737548602430447">Subtiitrid tõlgitakse automaatselt sihtkeelde.</translation>
 <translation id="8197673340773315084">Lisage nimi või silt, nt Töö või Isiklik</translation>
 <translation id="8198456017687137612">Vahelehe ülekandmine</translation>
 <translation id="8198457270656084773">Kas otsite süsteemi seadmelogi lehte? Avage <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8519,7 +8512,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8295449579927246485">Kiirtõlge</translation>
 <translation id="8297292446125062288">HID-seadme seaded</translation>
 <translation id="8298429963694909221">Võite nüüd oma telefoni märguandeid saada seadmes <ph name="DEVICE_TYPE" />. Kui loobute märguannetest seadmes <ph name="DEVICE_TYPE" />, loobutakse nendest märguannetest ka teie telefonis. Veenduge, et teie telefon oleks läheduses ning Bluetooth ja WiFi oleksid sisse lülitatud.</translation>
-<translation id="829923460755755423">Lisage otsetee Google'i paroolihaldurisse</translation>
 <translation id="8299319456683969623">Võrguühendus puudub.</translation>
 <translation id="8300011035382349091">Muuda vahelehe järjehoidjat</translation>
 <translation id="8300374739238450534">Öösinine</translation>
@@ -8547,7 +8539,6 @@ Hoidke oma võtmefail kindlas kohas. Teil läheb seda oma laiendi uute versiooni
 <translation id="8323167517179506834">Sisestage URL</translation>
 <translation id="8323317289166663449">Arvutis ja kõigil veebisaitidel kõigi teie andmete lugemine ja muutmine</translation>
 <translation id="8324784016256120271">Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, näiteks reklaamide isikupärastamiseks</translation>
-<translation id="8324819620112450495">Juurdepääsu küsimine keelatud</translation>
 <translation id="8325413836429495820">Pole lubatud näha teie lõikelauda</translation>
 <translation id="8326478304147373412">PKCS 7, sertifikaadiahel</translation>
 <translation id="8327386430364625757">Matemaatika font</translation>

@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Slika, ki ste jo kopirali</translation>
 <translation id="1142846828089312304">Blokiraj piškotke drugih mest v anonimnem načinu</translation>
 <translation id="1147769322402934017">Spletne slikovne galerije</translation>
+<translation id="1150565364351027703">Sončna očala</translation>
 <translation id="1150979032973867961">Strežniku ni uspelo dokazati, da je <ph name="DOMAIN" />; operacijski sistem vašega računalnika ne zaupa njegovemu varnostnemu potrdilu. Razlog za to je lahko napačna konfiguracija ali napadalčevo prestrezanje povezave.</translation>
 <translation id="1151972924205500581">Potrebno je geslo</translation>
 <translation id="1156303062776767266">Ogledujete si lokalno datoteko ali datoteko v skupni rabi</translation>
@@ -891,6 +892,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Omrežje Wi-Fi, ki ga uporabljate, morda zahteva, da obiščete stran za prijavo.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Spletne storitve</translation>
 <translation id="3176929007561373547">Preverite nastavitve strežnika proxy ali se obrnite na skrbnika omrežja in
       poskrbite za delovanje strežnika proxy. Če menite, da vam strežnika proxy
       ni treba uporabljati:
@@ -2362,6 +2364,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="6665553082534466207">Trojno luknjanje na desni</translation>
 <translation id="6668389483194953109">Najdeno je bilo ime velikosti papirja »custom«, vendar je lastnost »custom_size« prazna ali neveljavna.</translation>
 <translation id="6671697161687535275">Želite predlog obrazca odstraniti iz Chromiuma?</translation>
+<translation id="6683022854667115063">Slušalke</translation>
 <translation id="6683717648675961851">Prosta delovna mesta</translation>
 <translation id="6687335167692595844">Zahtevana je velikost besedila</translation>
 <translation id="6687696737818665306">Igralstvo in gledališče</translation>
@@ -3147,6 +3150,7 @@ Dodatne podrobnosti:
 <translation id="8513580896341796021">Prenos se je začel. Za ogled pritisnite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Naprava HID, ki jo je dovolil skrbnik</translation>
 <translation id="8522552481199248698">Chrome vam lahko pomaga zaščititi račun za Google in spremeniti geslo.</translation>
+<translation id="8527228059738193856">Zvočniki</translation>
 <translation id="8530813470445476232">Počistite zgodovino brskanja, piškotke, predpomnilnik in drugo v nastavitvah v Chromu</translation>
 <translation id="853332391023689529">Poltovorna vozila</translation>
 <translation id="8533619373899488139">Na &lt;strong&gt;chrome://policy&lt;/strong&gt; si lahko ogledate seznam blokiranih URL-jev in drugih pravilnikov, ki jih uveljavlja skrbnik sistema.</translation>
@@ -3305,6 +3309,7 @@ Dodatne podrobnosti:
 <translation id="8943282376843390568">Rumenozelena</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zakonodaja in država</translation>
+<translation id="8954252855949068147">Oblačila</translation>
 <translation id="8957210676456822347">Odobritev prestreznega portala</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Na nastavitve spletnega mesta</translation>

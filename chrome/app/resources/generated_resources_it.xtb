@@ -2160,6 +2160,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="2777525873368474674">Incolla link immagine</translation>
 <translation id="2778471504622896352">Aggiunta di app remote ad Avvio app di ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Le estensioni sono consentite su questo sito</translation>
 <translation id="2782104745158847185">Errore durante l'installazione dell'applicazione Linux</translation>
 <translation id="2783024642731649028">1 articolo nel carrello <ph name="DISCOUNT_TEXT" /> da <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visualizzato <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Scaricato</translation>
@@ -2499,7 +2500,6 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3060952009917586498">Cambia la lingua del dispositivo. La lingua corrente è <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Impossibile stabilire una connessione col telefono. Assicurati che il tuo telefono sia nelle vicinanze, sbloccato e che il Bluetooth e il Wi-Fi siano attivi.</translation>
 <translation id="3061302636956643119">Il testo verrà inviato a Google per essere elaborato.</translation>
-<translation id="306179102415443347">Usa la scorciatoia per accedere rapidamente a Gestore delle password di Google. Puoi spostare la scorciatoia nella schermata Home del computer o in Avvio applicazioni.</translation>
 <translation id="3064871050034234884">I siti possono riprodurre audio</translation>
 <translation id="3065041951436100775">Feedback relativo alle schede ignorate</translation>
 <translation id="3065522099314259755">Latenza ripetizione tastiera</translation>
@@ -3054,7 +3054,7 @@ Puoi gestire le impostazioni dell'account installando l'app Family Link su quest
 <translation id="3582057310199111521">Inserita in un sito ingannevole e rilevata in una violazione dei dati</translation>
 <translation id="3582299299336701326">Scurisci gli schermi chiari e schiarisci quelli scuri. Premi il tasto per la ricerca + Ctrl + H per attivare e disattivare l'inversione dei colori.</translation>
 <translation id="3584169441612580296">Lettura e modifica di foto, musica e altri contenuti multimediali del computer</translation>
-<translation id="3584527007414070635">Riprendi il percorso relativo a "<ph name="MODULE_TITLE" />"</translation>
+<translation id="3584527007414070635">Riprendi il percorso relativo a <ph name="MODULE_TITLE" /></translation>
 <translation id="3586806079541226322">Impossibile aprire questo file</translation>
 <translation id="3586931643579894722">Nascondi dettagli</translation>
 <translation id="3587438013689771191">Scopri di più su: <ph name="SUBPAGE_TITLE" /></translation>
@@ -4693,7 +4693,6 @@ Premi Ctrl + Alt + Diminuisci luminosità per diminuire lo zoom.</translation>
 <translation id="4998430619171209993">On</translation>
 <translation id="4999804342505941663">Attiva Non disturbare</translation>
 <translation id="5001526427543320409">Cookie di terze parti</translation>
-<translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
 <translation id="5005498671520578047">Copia password</translation>
 <translation id="5006118752738286774">2 anni fa</translation>
 <translation id="5006218871145547804">ADB app Android su Crostini</translation>
@@ -5742,7 +5741,6 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
     Questa immagine verrà mostrata nelle schermate di accesso e di blocco del Chromebook.</translation>
 <translation id="5925147183566400388">Puntatore Certification Practice Statement</translation>
 <translation id="5927132638760172455">Trasmissione a un ricevitore sconosciuto</translation>
-<translation id="5927232971138258197">Questa estensione può leggere e modificare <ph name="HOST" /></translation>
 <translation id="592740088639760830">Interrompi questo container</translation>
 <translation id="592880897588170157">Scarica i file PDF anziché aprirli automaticamente in Chrome</translation>
 <translation id="5928969282301718193">Hai finito per ora</translation>
@@ -5989,7 +5987,6 @@ Puoi inviarlo a Google per verificare se non è sicuro. In genere l'analisi rich
 <translation id="6130692320435119637">Aggiungi Wi-Fi</translation>
 <translation id="6130887916931372608">Tasto della tastiera</translation>
 <translation id="6132714462430777655">Vuoi saltare la registrazione per uso scolastico?</translation>
-<translation id="6133850653093419052">Estensioni autorizzate a richiedere l'accesso</translation>
 <translation id="6135823405800500595">Assicurati che il telefono sia nelle vicinanze e sbloccato, nonché che il Bluetooth e il Wi-Fi siano attivi</translation>
 <translation id="6135826623269483856">Siti non autorizzati a gestire le finestre su tutti i tuoi schermi</translation>
 <translation id="6136114942382973861">Chiudi la barra dei download</translation>
@@ -6955,7 +6952,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="6973611239564315524">È disponibile un upgrade a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Se Google è anche il tuo motore di ricerca predefinito, riceverai suggerimenti migliori e pertinenti al contesto</translation>
 <translation id="697508444536771064">Arresta Linux</translation>
-<translation id="6975361011348772931">Richiesta di lettura e modifica</translation>
 <translation id="6978121630131642226">Motori di ricerca</translation>
 <translation id="6978717888677691380">Siti che hai bloccato</translation>
 <translation id="6979041727349121225">Risparmio energetico</translation>
@@ -7448,7 +7444,6 @@ Hai altre # password compromesse. Gestore delle password di Google consiglia di 
 <translation id="7410852728357935715">Trasmetti a un dispositivo</translation>
 <translation id="741204030948306876">Sì, accetto</translation>
 <translation id="7412226954991670867">Memoria GPU</translation>
-<translation id="7412494426921990001">Fai clic sul menu Chrome</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configurazione completata</translation>
 <translation id="7416091793702109803">Controlla il file <ph name="FILE_NAME" /></translation>
@@ -8084,7 +8079,6 @@ Premi un sensore o un tasto assegnato per rimuovere l'assegnazione.</translation
 <translation id="793531125873261495">Errore durante il download della macchina virtuale. Riprova.</translation>
 <translation id="7935451262452051102">Completamento: <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Opzioni avanzate</translation>
-<translation id="7939073735115504773">Fai clic sull'icona di questa estensione per consentire di leggere e modificare <ph name="HOST" /></translation>
 <translation id="793923212791838">Il dispositivo non può essere utilizzato con questo sito</translation>
 <translation id="7939328347457537652">Gestisci certificati dispositivo</translation>
 <translation id="7939412583708276221">Mantieni comunque</translation>
@@ -8391,7 +8385,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />I tuoi dispositivi<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Aggiungi password</translation>
 <translation id="8195265224453131880">Intensità</translation>
-<translation id="8195737548602430447">Traduci automaticamente i sottotitoli nella lingua di destinazione.</translation>
 <translation id="8197673340773315084">Aggiungi un nome o un'etichetta, ad es. "Lavoro"</translation>
 <translation id="8198456017687137612">Trasmissione della scheda in corso…</translation>
 <translation id="8198457270656084773">Stai cercando la pagina del log di sistema del dispositivo? Visita<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8510,7 +8503,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8295449579927246485">Traduzione dal vivo</translation>
 <translation id="8297292446125062288">Impostazioni HID</translation>
 <translation id="8298429963694909221">Puoi ora ricevere le notifiche del telefono sul tuo dispositivo <ph name="DEVICE_TYPE" />. Se ignori le notifiche sul tuo dispositivo <ph name="DEVICE_TYPE" />, verranno ignorate anche sul telefono. Assicurati che il tuo telefono sia nelle vicinanze, nonché che il Bluetooth e il Wi-Fi siano attivi.</translation>
-<translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
 <translation id="8299319456683969623">Al momento sei offline.</translation>
 <translation id="8300011035382349091">Modifica il preferito per questa scheda</translation>
 <translation id="8300374739238450534">Blu notte</translation>
@@ -8538,7 +8530,6 @@ Conserva il file di chiave in un luogo sicuro. Ti servirà per creare nuove vers
 <translation id="8323167517179506834">Digita un URL</translation>
 <translation id="8323317289166663449">Leggere e modificare tutti i tuoi dati sul computer e su tutti i siti web</translation>
 <translation id="8324784016256120271">I siti possono utilizzare i cookie per conoscere la tua attività di navigazione su diversi siti, ad esempio per personalizzare gli annunci</translation>
-<translation id="8324819620112450495">Estensioni non autorizzate a richiedere l'accesso</translation>
 <translation id="8325413836429495820">Non possono accedere agli appunti</translation>
 <translation id="8326478304147373412">PKCS #7, catena di certificati</translation>
 <translation id="8327386430364625757">Carattere matematico</translation>

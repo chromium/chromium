@@ -739,6 +739,7 @@ Isaksak ang iyong device.</translation>
 <translation id="4261870227682513959">Ipakita ang mga setting ng notification. Naka-off ang mga notification</translation>
 <translation id="4269883910223712419">May kakayahan ang admin ng device na ito na:</translation>
 <translation id="4274537685965975248">Nagbago ang keyboard shortcut na Ctrl + Alt + Pababang Arrow. Para magamit ang End key, pindutin ang <ph name="LAUNCHER_KEY_NAME" /> key + Pakanang Arrow.</translation>
+<translation id="4275283744500212192">Buksan ang mga opsyon sa layout ng window</translation>
 <translation id="4279490309300973883">Nagmi-mirror</translation>
 <translation id="4280601795273309128">Natapos na ang mga update sa seguridad. I-upgrade ang iyong device.</translation>
 <translation id="4283888303416325161">Ilagay ang password para sa higit pang seguridad</translation>
@@ -1391,7 +1392,6 @@ Kaka-install lang</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Magre-revert sa lumang resolution sa loob ng <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">I-refresh</translation>
-<translation id="7185362672357349361">I-on ang nudge sa pag-mute? Aabisuhan ka kung nagsasalita ka habang naka-mute. Hindi naipapadala ang audio mula sa iyong device.</translation>
 <translation id="7187711731540696127">Naka-on ang hotspot ng iyong <ph name="DEVICE_NAME" />, walang nakakonektang device</translation>
 <translation id="7188494361780961876">Inilipat ang menu sa kaliwang sulok sa itaas ng screen.</translation>
 <translation id="7189412385142492784">Gaano kalayo ang Venus</translation>

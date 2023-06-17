@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">您複製的圖片</translation>
 <translation id="1142846828089312304">在無痕模式中封鎖第三方 Cookie</translation>
 <translation id="1147769322402934017">網上圖片庫</translation>
+<translation id="1150565364351027703">太陽眼鏡</translation>
 <translation id="1150979032973867961">伺服器無法證明其屬於 <ph name="DOMAIN" /> 網域；其安全性憑證未取得您電腦的操作系統的信任。這可能是因為設定錯誤，或有攻擊者攔截您的連線。</translation>
 <translation id="1151972924205500581">請輸入密碼</translation>
 <translation id="1156303062776767266">您正在查看本機或共用檔案</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">目前使用的 Wi-Fi 可能要求您前往其登入頁面。</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3175081911749765310">網絡服務</translation>
 <translation id="3176929007561373547">檢查您的 Proxy 設定，或與網絡管理員聯絡，以
       確認 Proxy 伺服器運作正常。如果您認為不需要使用
       Proxy 伺服器：
@@ -2361,6 +2363,7 @@
 <translation id="6665553082534466207">三孔 (右側)</translation>
 <translation id="6668389483194953109">系統偵測到紙張大小名稱為「自訂」，但「custom_size」屬性空白或無效。</translation>
 <translation id="6671697161687535275">要從 Chromium 移除表格建議嗎？</translation>
+<translation id="6683022854667115063">耳機</translation>
 <translation id="6683717648675961851">招聘資訊</translation>
 <translation id="6687335167692595844">要求的字型大小</translation>
 <translation id="6687696737818665306">表演和舞台劇</translation>
@@ -3146,6 +3149,7 @@
 <translation id="8513580896341796021">已開始下載。如要查看，請按 |<ph name="ACCELERATOR" />|。</translation>
 <translation id="8519753333133776369">管理員允許使用的 HID 裝置</translation>
 <translation id="8522552481199248698">Chrome 可助您保護 Google 帳戶並變更密碼。</translation>
+<translation id="8527228059738193856">喇叭</translation>
 <translation id="8530813470445476232">清除您的瀏覽記錄、Cookie、快取以及其他 Chrome 設定</translation>
 <translation id="853332391023689529">小卡車</translation>
 <translation id="8533619373899488139">請前往 &lt;strong&gt;chrome://policy&lt;/strong&gt; 查看被封鎖的網址清單，以及由系統管理員強制執行的其他政策。</translation>
@@ -3304,6 +3308,7 @@
 <translation id="8943282376843390568">青檸色</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律和政府</translation>
+<translation id="8954252855949068147">服飾</translation>
 <translation id="8957210676456822347">網頁驗證入口授權</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">前往網站設定</translation>

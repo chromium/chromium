@@ -2154,6 +2154,7 @@
 <translation id="2777525873368474674">Вставьте ссылку на изображение</translation>
 <translation id="2778471504622896352">Добавление приложений с удаленным доступом на панель запуска Chrome OS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Расширения разрешены на этом сайте</translation>
 <translation id="2782104745158847185">Не удалось установить приложение для Linux</translation>
 <translation id="2783024642731649028">1 товар в вашей корзине, к которому относится следующее: <ph name="DISCOUNT_TEXT" />, продавец <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, последний просмотр <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Сохранено</translation>
@@ -2490,7 +2491,6 @@
 <translation id="3060952009917586498">Изменить язык устройства. Сейчас используется <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Не удалось подключиться к телефону. Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="3061302636956643119">Текст будет отправлен на обработку в Google.</translation>
-<translation id="306179102415443347">Ярлык позволит быстро открывать Google Менеджер паролей. Вы можете переместить ярлык на главный экран или в панель запуска приложений.</translation>
 <translation id="3064871050034234884">Разрешить сайтам воспроизводить звук</translation>
 <translation id="3065041951436100775">Сообщение о вкладке, закрытой из-за отсутствия ответа.</translation>
 <translation id="3065522099314259755">Задержка при повторе ввода на клавиатуре</translation>
@@ -4677,7 +4677,6 @@
 <translation id="4998430619171209993">Включено</translation>
 <translation id="4999804342505941663">Включить режим "Не беспокоить"</translation>
 <translation id="5001526427543320409">Сторонние файлы cookie</translation>
-<translation id="5003967926796347400">Выберите "Google Менеджер паролей".</translation>
 <translation id="5005498671520578047">Копировать пароль</translation>
 <translation id="5006118752738286774">2 года назад</translation>
 <translation id="5006218871145547804">Инструмент adb для Android-приложений в Crostini</translation>
@@ -5720,7 +5719,6 @@
     Это изображение появится на экране входа и блокировки Chromebook.</translation>
 <translation id="5925147183566400388">Указатель на регламент удостоверяющего центра</translation>
 <translation id="5927132638760172455">Трансляция на неизвестное устройство</translation>
-<translation id="5927232971138258197">Это расширение может читать и изменять данные <ph name="HOST" />.</translation>
 <translation id="592740088639760830">Остановить этот контейнер</translation>
 <translation id="592880897588170157">Скачивать файлы PDF, а не автоматически открывать их в Chrome</translation>
 <translation id="5928969282301718193">Настройка разрешений завершена</translation>
@@ -5968,7 +5966,6 @@
 <translation id="6130692320435119637">Добавить сеть Wi-Fi</translation>
 <translation id="6130887916931372608">Клавиша</translation>
 <translation id="6132714462430777655">Пропустить регистрацию в учебном заведении?</translation>
-<translation id="6133850653093419052">Разрешено запрашивать доступ</translation>
 <translation id="6135823405800500595">Убедитесь, что телефон находится рядом, он разблокирован и на нем включены Bluetooth и Wi-Fi.</translation>
 <translation id="6135826623269483856">Сайты, которым запрещено управление окнами на всех ваших экранах</translation>
 <translation id="6136114942382973861">Закрыть панель загрузок</translation>
@@ -6937,7 +6934,6 @@
 <translation id="6973611239564315524">Доступна версия Debian 10 (Buster).</translation>
 <translation id="69739764870135975">Если установить Google как поисковую систему по умолчанию, подсказки будут более подходящими по контексту.</translation>
 <translation id="697508444536771064">Завершить работу Linux</translation>
-<translation id="6975361011348772931">Запрос на чтение и изменение</translation>
 <translation id="6978121630131642226">Поисковые системы</translation>
 <translation id="6978717888677691380">Заблокированные сайты</translation>
 <translation id="6979041727349121225">Режим энергосбережения</translation>
@@ -7426,7 +7422,6 @@
 <translation id="7410852728357935715">Транслировать на устройство</translation>
 <translation id="741204030948306876">ОК</translation>
 <translation id="7412226954991670867">Память графического процессора</translation>
-<translation id="7412494426921990001">Откройте меню Chrome.</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Настройка завершена</translation>
 <translation id="7416091793702109803">Посмотреть файл "<ph name="FILE_NAME" />"</translation>
@@ -8058,7 +8053,6 @@
 <translation id="793531125873261495">Не удалось скачать виртуальную машину. Повторите попытку.</translation>
 <translation id="7935451262452051102">Выполнено: <ph name="PERCENT" /> %</translation>
 <translation id="7939062555109487992">Расширенные настройки</translation>
-<translation id="7939073735115504773">Нажмите на значок расширения, чтобы разрешить чтение и изменение данных <ph name="HOST" />.</translation>
 <translation id="793923212791838">Ваше устройство нельзя использовать на этом сайте</translation>
 <translation id="7939328347457537652">Управление сертификатами устройства</translation>
 <translation id="7939412583708276221">Все равно продолжить</translation>
@@ -8365,7 +8359,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Ваши устройства<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Добавление пароля</translation>
 <translation id="8195265224453131880">Интенсивность</translation>
-<translation id="8195737548602430447">Автоматический перевод субтитров на целевой язык.</translation>
 <translation id="8197673340773315084">Укажите название, например "Рабочий"</translation>
 <translation id="8198456017687137612">Трансляция вкладки</translation>
 <translation id="8198457270656084773">Ищете журнал устройств системы? Перейдите на страницу <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8511,7 +8504,6 @@
 <translation id="8323167517179506834">Введите URL</translation>
 <translation id="8323317289166663449">Просмотр и изменение ваших данных на компьютере и всех сайтах.</translation>
 <translation id="8324784016256120271">Сайты могут использовать файлы cookie, чтобы отслеживать ваши действия в браузере, например, для показа персонализированной рекламы.</translation>
-<translation id="8324819620112450495">Запрещено запрашивать доступ</translation>
 <translation id="8325413836429495820">Запретить сайтам просматривать буфер обмена</translation>
 <translation id="8326478304147373412">PKCS #7, цепочка сертификатов</translation>
 <translation id="8327386430364625757">Математический шрифт</translation>

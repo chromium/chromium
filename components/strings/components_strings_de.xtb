@@ -62,6 +62,7 @@
 <translation id="1131264053432022307">Von dir kopiertes Bild</translation>
 <translation id="1142846828089312304">Drittanbieter-Cookies im Inkognitomodus blockieren</translation>
 <translation id="1147769322402934017">Online-Bildergalerien</translation>
+<translation id="1150565364351027703">Sonnenbrille</translation>
 <translation id="1150979032973867961">Dieser Server konnte nicht beweisen, dass er <ph name="DOMAIN" /> ist. Sein Sicherheitszertifikat wird vom Betriebssystem deines Computers als nicht vertrauenswürdig eingestuft. Mögliche Gründe sind eine fehlerhafte Konfiguration oder ein Angreifer, der deine Verbindung abfängt.</translation>
 <translation id="1151972924205500581">Passwort erforderlich</translation>
 <translation id="1156303062776767266">Du siehst dir eine lokale oder freigegebene Datei an</translation>
@@ -874,6 +875,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="3158539265159265653">CD</translation>
 <translation id="3162559335345991374">Unter Umständen musst du die Anmeldeseite des verwendeten WLAN-Netzwerken aufrufen.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Webdienste</translation>
 <translation id="3176929007561373547">Vergewissere dich, dass der Proxyserver funktioniert. Überprüfe die
       Proxyeinstellungen oder wende dich an deinen Netzwerkadministrator.
       Falls du keinen Proxyserver verwenden möchtest, deaktiviere ihn wie
@@ -2313,6 +2315,7 @@ Du wirst sonst gemäß deinen Datenschutzeinstellungen blockiert. Wenn Cookies u
 <translation id="6665553082534466207">Dreifache Lochung rechts</translation>
 <translation id="6668389483194953109">Der Name der Papiergröße wurde als „Benutzerdefiniert“ angegeben, aber die Eigenschaft „custom_size“ ist leer oder ungültig.</translation>
 <translation id="6671697161687535275">Vorschlag für das Formular aus Chromium entfernen?</translation>
+<translation id="6683022854667115063">Kopfhörer</translation>
 <translation id="6683717648675961851">Stellenangebote</translation>
 <translation id="6687335167692595844">Gewünschte Schriftgröße</translation>
 <translation id="6687696737818665306">Schauspiel und Theater</translation>
@@ -3087,6 +3090,7 @@ Weitere Details:
 <translation id="8513580896341796021">Download gestartet. Um ihn aufzurufen, drücke |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID-Geräte sind von deinem Administrator zugelassen</translation>
 <translation id="8522552481199248698">Mithilfe von Chrome kannst du dein Google-Konto schützen und dein Passwort ändern.</translation>
+<translation id="8527228059738193856">Lautsprecher</translation>
 <translation id="8530813470445476232">In den Chrome-Einstellungen Browserverlauf, Cookies und mehr löschen sowie Cache leeren</translation>
 <translation id="853332391023689529">Kleintransporter</translation>
 <translation id="8533619373899488139">Unter &lt;strong&gt;chrome://policy&lt;/strong&gt; findest du eine Liste mit blockierten URLs und andere Richtlinien, die von deinem Systemadministrator festgelegt wurden.</translation>
@@ -3242,6 +3246,7 @@ Weitere Details:
 <translation id="8943282376843390568">Limone</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Recht und Behörden</translation>
+<translation id="8954252855949068147">Bekleidung &amp; Accessoires</translation>
 <translation id="8957210676456822347">Erfassungsportal-Autorisierung</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Website-Einstellungen aufrufen</translation>

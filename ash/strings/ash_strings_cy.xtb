@@ -739,6 +739,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="4261870227682513959">Dangos gosodiadau hysbysiadau. Mae hysbysiadau wedi'u diffodd</translation>
 <translation id="4269883910223712419">Gall gweinyddwr y ddyfais hon:</translation>
 <translation id="4274537685965975248">Mae'r llwybr byr bysellfwrdd Ctrl + Alt + Saeth i lawr wedi newid. I ddefnyddio'r fysell End, pwysywch y fysell <ph name="LAUNCHER_KEY_NAME" /> + Saeth dde.</translation>
+<translation id="4275283744500212192">Agor yr opsiynau cynllun ffenestr</translation>
 <translation id="4279490309300973883">Adlewyrchu</translation>
 <translation id="4280601795273309128">Daeth diweddariadau diogelwch i ben. Uwchraddio'ch dyfais.</translation>
 <translation id="4283888303416325161">Rhowch gyfrinair i gael rhagor o ddiogelwch</translation>
@@ -1391,7 +1392,6 @@ Gosodiad newydd</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Wrthi'n dychwelyd i'r hen gyfraniad yn <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Ail-lwytho</translation>
-<translation id="7185362672357349361">Troi ysgogiad distewi ymlaen? Byddwch yn cael gwybod os byddwch yn siarad tra byddwch wedi'ch distewi. Nid yw sain byth yn gadael eich dyfais.</translation>
 <translation id="7187711731540696127">Mae eich poethfan <ph name="DEVICE_NAME" /> ymlaen, dim dyfeisiau wedi'u cysylltu</translation>
 <translation id="7188494361780961876">Cafodd y ddewislen ei symud i gornel chwith uchaf y sgrîn.</translation>
 <translation id="7189412385142492784">Pa mor bell yw'r blaned Gwener</translation>

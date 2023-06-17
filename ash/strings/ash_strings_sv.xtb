@@ -739,6 +739,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="4261870227682513959">Visa aviseringsinställningar. Aviseringar har inaktiverats</translation>
 <translation id="4269883910223712419">Enhetens administratör kan</translation>
 <translation id="4274537685965975248">Kortkommandot Ctrl + Alt + nedåtpil har ändrats. Tryck på <ph name="LAUNCHER_KEY_NAME" />-tangenten + högerpil för att använda End-tangenten.</translation>
+<translation id="4275283744500212192">Öppna alternativ för fönsterlayout</translation>
 <translation id="4279490309300973883">Spegling</translation>
 <translation id="4280601795273309128">Säkerhetsuppdateringar har avslutats. Uppgradera enheten.</translation>
 <translation id="4283888303416325161">Ange lösenordet för ökad säkerhet</translation>
@@ -1391,7 +1392,6 @@ Nyligen installerad</translation>
 <translation id="7165278925115064263">Alt + Skift + K</translation>
 <translation id="7168224885072002358">Återgår till den gamla upplösningen om <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Uppdatera</translation>
-<translation id="7185362672357349361">Vill du aktivera puff för avstängt ljud? Du får en avisering om du pratar när ljudet är av. Ljudet lämnar aldrig enheten.</translation>
 <translation id="7187711731540696127">Surfzonen är aktiverad på <ph name="DEVICE_NAME" /> men inga enheter är anslutna</translation>
 <translation id="7188494361780961876">Menyn har flyttats till skärmens övre vänstra hörn.</translation>
 <translation id="7189412385142492784">Hår långt är det till Venus</translation>

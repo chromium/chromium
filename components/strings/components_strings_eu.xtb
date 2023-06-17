@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Kopiatu duzun irudia</translation>
 <translation id="1142846828089312304">Blokeatu hirugarrenen cookieak ezkutuko moduan</translation>
 <translation id="1147769322402934017">Sareko irudien galeriak</translation>
+<translation id="1150565364351027703">Eguzkitako betaurrekoak</translation>
 <translation id="1150979032973867961">Zerbitzari honek ezin izan du egiaztatu <ph name="DOMAIN" /> domeinua denik. Zure ordenagailuaren sistema eragilea ez da bere segurtasun-ziurtagiriaz fidatzen. Baliteke gaizki konfiguratuta dagoelako izatea edo erasotzaile batek zure konexioa atzeman duelako izatea.</translation>
 <translation id="1151972924205500581">Pasahitza behar da</translation>
 <translation id="1156303062776767266">Fitxategi lokal edo partekatu bat ari zara ikusten</translation>
@@ -891,6 +892,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="3158539265159265653">Diskoa</translation>
 <translation id="3162559335345991374">Baliteke darabilzun Wi-Fi konexioaren saio-hasierako orrira joan behar izatea.</translation>
 <translation id="3169472444629675720">Ezagutu</translation>
+<translation id="3175081911749765310">Web-zerbitzuak</translation>
 <translation id="3176929007561373547">Egiaztatu proxy-ezarpenak edo jarri sarearen administratzailearekin harremanetan proxy-zerbitzaria badabilela ziurtatzeko. Proxy-zerbitzaririk erabili beharko ez zenukeela uste baduzu: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Gailua noiz erabiltzen ari zaren jakin.</translation>
 <translation id="3180358318770512945">Gurasotasuna</translation>
@@ -2357,6 +2359,7 @@ Bestela, pribatutasun-ezarpenek blokeatu egingo dute baimen hori. Baimen honekin
 <translation id="6665553082534466207">Hiru zulo eskuinean</translation>
 <translation id="6668389483194953109">"custom" paperaren tamainaren izena aurkitu da, baina "custom_size" propietatea hutsik dago edo baliogabea da.</translation>
 <translation id="6671697161687535275">Inprimaki-iradokizuna Chromium-etik kendu nahi duzu?</translation>
+<translation id="6683022854667115063">Entzungailuak</translation>
 <translation id="6683717648675961851">Lan-eskaintzak</translation>
 <translation id="6687335167692595844">Eskatutako letra-tamaina</translation>
 <translation id="6687696737818665306">Interpretazioa eta antzerkia</translation>
@@ -3142,6 +3145,7 @@ Xehetasun gehiago:
 <translation id="8513580896341796021">Deskargatzen hasi da. Deskarga ikusteko, sakatu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Administratzaileak onartutako HID gailua</translation>
 <translation id="8522552481199248698">Google-ko kontua babesten eta pasahitza aldatzen lagun diezazuke Chrome-k.</translation>
+<translation id="8527228059738193856">Bozgorailuak</translation>
 <translation id="8530813470445476232">Garbitu arakatze-historia, cookieak, cachea eta beste Chrome-ren ezarpenetan</translation>
 <translation id="853332391023689529">Pickup kamioiak</translation>
 <translation id="8533619373899488139">Joan &lt;strong&gt;chrome://policy&lt;/strong&gt; orrira sistemaren administratzaileak blokeatutako URLen zerrenda eta aplikatutako gidalerroak ikusteko.</translation>
@@ -3300,6 +3304,7 @@ Xehetasun gehiago:
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zuzenbidea eta gobernua</translation>
+<translation id="8954252855949068147">Arropa</translation>
 <translation id="8957210676456822347">Atari gatibuetako baimena</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Joan webgunearen ezarpenetara</translation>

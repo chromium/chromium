@@ -2176,6 +2176,7 @@
 <translation id="2777525873368474674">इमेज का लिंक पेस्ट करें</translation>
 <translation id="2778471504622896352">ChromeOS लॉन्चर में रिमोट ऐप्लिकेशन जोड़ें</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">इस साइट पर एक्सटेंशन को अनुमति दी गई है</translation>
 <translation id="2782104745158847185">Linux ऐप्लिकेशन इंस्टॉल करते समय गड़बड़ी</translation>
 <translation id="2783024642731649028">आपके कार्ट में मौजूद एक आइटम के लिए <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> पर <ph name="DISCOUNT_TEXT" /> मिल रहा है, <ph name="RELATIVE_TIME" /> देखा गया</translation>
 <translation id="2783298271312924866">डाउनलोड किए गए</translation>
@@ -2515,7 +2516,6 @@
 <translation id="3060952009917586498">डिवाइस की भाषा बदलें. मौजूदा भाषा <ph name="LANGUAGE" /> है.</translation>
 <translation id="3060987956645097882">हम आपके फ़ोन से कनेक्ट नहीं कर पाए. पक्का करें कि आपका फ़ोन आस-पास है और अनलॉक है. साथ ही, यह भी कि उस पर ब्लूटूथ और वाई-फ़ाई चालू हैं.</translation>
 <translation id="3061302636956643119">टेक्स्ट को प्रोसेस के लिए Google के पास भेजा जाएगा.</translation>
-<translation id="306179102415443347">Google Password Manager को फटाफट ऐक्सेस करने के लिए, शॉर्टकट का इस्तेमाल करें. आपके पास, अपने शॉर्टकट को कंप्यूटर की होम स्क्रीन पर या ऐप्लिकेशन लॉन्चर पर ले जाने का विकल्प है.</translation>
 <translation id="3064871050034234884">साइटें आवाज़ चालू कर सकती हैं</translation>
 <translation id="3065041951436100775">टैब किल्ड फ़ीडबैक.</translation>
 <translation id="3065522099314259755">कीबोर्ड के अपने-आप दोहराने में लगने वाला समय</translation>
@@ -4707,7 +4707,6 @@
 <translation id="4998430619171209993">चालू है</translation>
 <translation id="4999804342505941663">'परेशान न करें' सुविधा चालू करें</translation>
 <translation id="5001526427543320409">तीसरे पक्ष की कुकी</translation>
-<translation id="5003967926796347400">“Google Password Manager” पर क्लिक करें</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करें</translation>
 <translation id="5006118752738286774">दो साल पहले</translation>
 <translation id="5006218871145547804">Crostini में Android ऐप्लिकेशन ADB की सेटिंग</translation>
@@ -5756,7 +5755,6 @@
     यह तस्वीर Chromebook की साइन इन स्क्रीन और लॉक स्क्रीन पर दिखाई देगी.</translation>
 <translation id="5925147183566400388">प्रमाणन अभ्यास कथन पॉइंटर</translation>
 <translation id="5927132638760172455">किसी अज्ञात प्राप्तकर्ता को कास्ट कर रहा है</translation>
-<translation id="5927232971138258197">यह एक्सटेंशन, <ph name="HOST" /> को पढ़ सकता है और उसमें बदलाव कर सकता है</translation>
 <translation id="592740088639760830">इस कंटेनर को रोकें</translation>
 <translation id="592880897588170157">PDF फ़ाइलों को Chrome में अपने आप खोलने के बजाय उन्हें डाउनलोड करें</translation>
 <translation id="5928969282301718193">अभी के लिए, सभी अनुमतियों की समीक्षा की जा चुकी है</translation>
@@ -6004,7 +6002,6 @@
 <translation id="6130692320435119637">वाई-फ़ाई जोड़ें</translation>
 <translation id="6130887916931372608">कीबोर्ड का बटन</translation>
 <translation id="6132714462430777655">अभी स्कूल में नाम दर्ज नहीं करना है?</translation>
-<translation id="6133850653093419052">ऐक्सेस का अनुरोध करने की अनुमति है</translation>
 <translation id="6135823405800500595">पक्का करें कि आपका फ़ोन आस-पास हो और अनलॉक हो. साथ ही, उसका ब्लूटूथ और वाई-फ़ाई चालू हो</translation>
 <translation id="6135826623269483856">आपके सभी डिसप्ले पर, विंडो मैनेज करने की अनुमति नहीं है</translation>
 <translation id="6136114942382973861">डाउनलोड बार बंद करें</translation>
@@ -6972,7 +6969,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) के लिए एक अपग्रेड उपलब्ध है</translation>
 <translation id="69739764870135975">अगर Google आपका डिफ़ॉल्ट सर्च इंजन भी है, तो आपको बेहतर और कॉन्टेक्स्ट के हिसाब से सुझाव मिलेंगे</translation>
 <translation id="697508444536771064">Linux को शट डाउन करें</translation>
-<translation id="6975361011348772931">पढ़ने और बदलाव करने का अनुरोध किया है</translation>
 <translation id="6978121630131642226">सर्च इंजन</translation>
 <translation id="6978717888677691380">ब्लॉक की गई साइटें</translation>
 <translation id="6979041727349121225">एनर्जी सेवर</translation>
@@ -7465,7 +7461,6 @@
 <translation id="7410852728357935715">किसी डिवाइस पर कास्ट करें</translation>
 <translation id="741204030948306876">हां, मैं सहमत हूं</translation>
 <translation id="7412226954991670867">GPU मेमोरी</translation>
-<translation id="7412494426921990001">'Chrome मेन्यू' पर क्लिक करें</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">सेटअप पूरा हुआ</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> को देखें</translation>
@@ -8099,7 +8094,6 @@
 <translation id="793531125873261495">वर्चुअल मशीन डाउनलोड करने में गड़बड़ी हुई. कृपया फिर से कोशिश करें.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूरा हो गया है</translation>
 <translation id="7939062555109487992">अतिरिक्त सेटिंग</translation>
-<translation id="7939073735115504773">इस एक्सटेंशन के आइकॉन पर क्लिक करें, ताकि एक्सटेंशन, <ph name="HOST" /> को पढ़ सके और उसमें बदलाव कर सके</translation>
 <translation id="793923212791838">इस साइट के साथ आपका डिवाइस इस्तेमाल नहीं किया जा सकता</translation>
 <translation id="7939328347457537652">डिवाइस के सर्टिफ़िकेट मैनेज करें</translation>
 <translation id="7939412583708276221">फिर भी रखें</translation>
@@ -8406,7 +8400,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />आपके डिवाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड जोड़ें</translation>
 <translation id="8195265224453131880">फ़िल्टर के कलर की इंटेंसिटी</translation>
-<translation id="8195737548602430447">टारगेट की भाषा में अपने-आप कैप्शन का अनुवाद होने की सुविधा चालू करें.</translation>
 <translation id="8197673340773315084">नाम या लेबल जोड़ें. जैसे, ऑफ़िस या निजी</translation>
 <translation id="8198456017687137612">कास्टिंग टैब</translation>
 <translation id="8198457270656084773">सिस्टम के डिवाइस लॉग पेज की तलाश है? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> पर जाएं.</translation>
@@ -8525,7 +8518,6 @@
 <translation id="8295449579927246485">लाइव ट्रांसलेट</translation>
 <translation id="8297292446125062288">एचआईडी की सेटिंग</translation>
 <translation id="8298429963694909221">अब आप <ph name="DEVICE_TYPE" /> पर अपने फ़ोन की सूचनाएं पा सकते हैं. <ph name="DEVICE_TYPE" /> पर सूचनाएं खारिज करने पर ये आपके फ़ोन से भी खारिज हो जाएंगी. पक्का करें कि आपका फ़ोन आस-पास हो और उस पर ब्लूटूथ और वाई-फ़ाई चालू हों.</translation>
-<translation id="829923460755755423">Google Password Manager का शॉर्टकट जोड़ें</translation>
 <translation id="8299319456683969623">आप वर्तमान में ऑफलाइन हैं.</translation>
 <translation id="8300011035382349091">इस टैब के लिए बुकमार्क में बदलाव करें</translation>
 <translation id="8300374739238450534">गहरा नीला (मिड नाइट ब्लू)</translation>
@@ -8553,7 +8545,6 @@
 <translation id="8323167517179506834">URL लिखें</translation>
 <translation id="8323317289166663449">यह एक्सटेंशन, आपके कंप्यूटर और सभी वेबसाइटों पर मौजूद आपका डेटा पढ़ और बदल सकता है</translation>
 <translation id="8324784016256120271">अलग-अलग साइटों पर आपकी ब्राउज़िंग गतिविधि देखने के लिए, साइटें कुकी का इस्तेमाल कर सकती हैं. जैसे, दर्शकों की पसंद को ध्यान में रखकर विज्ञापन दिखाने के लिए</translation>
-<translation id="8324819620112450495">ऐक्सेस का अनुरोध करने की अनुमति नहीं है</translation>
 <translation id="8325413836429495820">क्लिपबोर्ड देखने की अनुमति नहीं है</translation>
 <translation id="8326478304147373412">PKCS #7, प्रमाणपत्र चेन</translation>
 <translation id="8327386430364625757">मैथमैटिकल फ़ॉन्ट</translation>

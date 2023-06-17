@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Image that you copied</translation>
 <translation id="1142846828089312304">Block third-party cookies in Incognito</translation>
 <translation id="1147769322402934017">Online image galleries</translation>
+<translation id="1150565364351027703">Sunglasses</translation>
 <translation id="1150979032973867961">This server could not prove that it is <ph name="DOMAIN" />; its security certificate is not trusted by your computer's operating system. This may be caused by a misconfiguration or an attacker intercepting your connection.</translation>
 <translation id="1151972924205500581">Password required</translation>
 <translation id="1156303062776767266">You're viewing a local or shared file</translation>
@@ -891,6 +892,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">The Wi-Fi that you are using may require you to visit its login page.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Web Services</translation>
 <translation id="3176929007561373547">Check your proxy settings or contact your network administrator to
       make sure that the proxy server is working. If you don't believe you should
       be using a proxy server:
@@ -2362,6 +2364,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6665553082534466207">Triple punch right</translation>
 <translation id="6668389483194953109">Found paper size name 'custom', but the 'custom_size' property is empty or invalid.</translation>
 <translation id="6671697161687535275">Remove form suggestion from Chromium?</translation>
+<translation id="6683022854667115063">Headphones</translation>
 <translation id="6683717648675961851">Job listings</translation>
 <translation id="6687335167692595844">Font size requested</translation>
 <translation id="6687696737818665306">Acting and theatre</translation>
@@ -3147,6 +3150,7 @@ Additional details:
 <translation id="8513580896341796021">Download started. To see it, press |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID device allowed by your administrator</translation>
 <translation id="8522552481199248698">Chrome can help you protect your Google account and change your password.</translation>
+<translation id="8527228059738193856">Speakers</translation>
 <translation id="8530813470445476232">Clear your browsing history, cookies, cache and more in Chrome settings</translation>
 <translation id="853332391023689529">Pickup trucks</translation>
 <translation id="8533619373899488139">Visit &lt;strong&gt;chrome://policy&lt;/strong&gt; to see the list of blocked URLs and other policies enforced by your system administrator.</translation>
@@ -3305,6 +3309,7 @@ Additional details:
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Law and government</translation>
+<translation id="8954252855949068147">Apparel</translation>
 <translation id="8957210676456822347">Captive Portal Authorisation</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Go to site settings</translation>

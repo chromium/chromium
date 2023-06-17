@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Imatge que has copiat</translation>
 <translation id="1142846828089312304">Bloqueja les galetes de tercers en mode d'incògnit</translation>
 <translation id="1147769322402934017">Galeries d'imatges en línia</translation>
+<translation id="1150565364351027703">Ulleres de sol</translation>
 <translation id="1150979032973867961">Aquest servidor no ha pogut comprovar que sigui <ph name="DOMAIN" /> perquè el sistema operatiu del vostre ordinador considera que el seu certificat de seguretat no és de confiança. Això pot ser a causa d'una configuració incorrecta o d'un atacant que intercepta la vostra connexió.</translation>
 <translation id="1151972924205500581">Es requereix una contrasenya</translation>
 <translation id="1156303062776767266">Estàs consultant un fitxer local o compartit</translation>
@@ -886,6 +887,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">És possible que la xarxa Wi-Fi que esteu fent servir requereixi que visiteu la seva pàgina d'inici de sessió.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Serveis web</translation>
 <translation id="3176929007561373547">Comproveu la configuració del servidor intermediari o contacteu amb l'administrador de la xarxa per
           assegurar-vos que el servidor intermediari funcioni correctament. Si  creieu que no és necessari
           utilitzar un servidor intermediari:
@@ -2346,6 +2348,7 @@ En cas contrari, la configuració de privadesa el bloquejarà. Això permetrà q
 <translation id="6665553082534466207">Encunyació triple a la dreta</translation>
 <translation id="6668389483194953109">S'ha trobat el nom de la mida del paper "custom", però la propietat "custom_size" està buida o no és vàlida.</translation>
 <translation id="6671697161687535275">Voleu suprimir el suggeriment de formulari de Chromium?</translation>
+<translation id="6683022854667115063">Auriculars</translation>
 <translation id="6683717648675961851">Ofertes de feina</translation>
 <translation id="6687335167692595844">Cos de font sol·licitada</translation>
 <translation id="6687696737818665306">Interpretació i teatre</translation>
@@ -3125,6 +3128,7 @@ Detalls addicionals:
 <translation id="8513580896341796021">S'ha iniciat la baixada. Per veure-la, prem |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Dispositiu d'interfície humana permès pel teu administrador</translation>
 <translation id="8522552481199248698">Chrome et pot ajudar a protegir el Compte de Google i a canviar la contrasenya.</translation>
+<translation id="8527228059738193856">Altaveus</translation>
 <translation id="8530813470445476232">Esborra l'historial de navegació, les galetes, la memòria cau i molt més a la configuració de Chrome</translation>
 <translation id="853332391023689529">Camionetes descobertes</translation>
 <translation id="8533619373899488139">Ves a &lt;strong&gt;chrome://policy&lt;/strong&gt; per veure la llista d'URL bloquejats i altres polítiques aplicades per l'administrador del sistema.</translation>
@@ -3281,6 +3285,7 @@ Detalls addicionals:
 <translation id="8943282376843390568">Verd llima</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legislació i govern</translation>
+<translation id="8954252855949068147">Moda</translation>
 <translation id="8957210676456822347">Autorització de portals captius</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Ves a la configuració del lloc web</translation>

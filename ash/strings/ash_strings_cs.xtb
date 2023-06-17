@@ -739,6 +739,7 @@ Připojte zařízení k napájení.</translation>
 <translation id="4261870227682513959">Zobrazit nastavení oznámení. Oznámení jsou vypnutá</translation>
 <translation id="4269883910223712419">Administrátor zařízení má následující možnosti:</translation>
 <translation id="4274537685965975248">Klávesová zkratka Ctrl + Alt + šipka dolů se změnila. Pokud chcete použít klávesu End, stiskněte <ph name="LAUNCHER_KEY_NAME" /> + šipku vpravo.</translation>
+<translation id="4275283744500212192">Otevřít možnosti rozvržení okna</translation>
 <translation id="4279490309300973883">Zrcadlení</translation>
 <translation id="4280601795273309128">Aktualizace zabezpečení skončily. Upgradujte své zařízení.</translation>
 <translation id="4283888303416325161">Pro lepší zabezpečení zadejte heslo</translation>
@@ -1391,7 +1392,6 @@ Nová instalace</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Původní rozlišení bude obnoveno za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Obnovit</translation>
-<translation id="7185362672357349361">Zapnout připomenutí ztlumení? Pokud budete mluvit s vypnutým zvukem, zobrazí se vám oznámení. Zvuk nikdy neopustí vaše zařízení.</translation>
 <translation id="7187711731540696127">Hotspot v zařízení <ph name="DEVICE_NAME" /> je zapnutý, nejsou připojena žádná zařízení</translation>
 <translation id="7188494361780961876">Nabídka byla přesunuta do levého horního rohu obrazovky.</translation>
 <translation id="7189412385142492784">Jak daleko je Venuše</translation>

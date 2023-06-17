@@ -125,6 +125,7 @@
 <translation id="3037838751736561277">Google Chrome ຢູ່ໃນໂໝດພື້ນຫຼັງ.</translation>
 <translation id="3038232873781883849">ກຳ​ລັງ​ລໍ​ຖ້າ​ຕິດ​ຕັ້ງ...</translation>
 <translation id="3059710691562604940">Safe Browsing ປິດຢູ່. Chrome ແນະນຳໃຫ້ເປີດມັນ.</translation>
+<translation id="306179102415443347">ໃຊ້ທາງລັດຂອງທ່ານເພື່ອເຂົ້າຫາຕົວຈັດການລະຫັດຜ່ານ Google ຢ່າງວ່ອງໄວ. ທ່ານສາມາດຍ້າຍທາງລັດຂອງທ່ານໄປຫາໜ້າຈໍຫຼັກຂອງຄອມພິວເຕີ ຫຼື ຕົວເປີດແອັບຂອງທ່ານໄດ້.</translation>
 <translation id="3065168410429928842">ແຖບ Chrome</translation>
 <translation id="3080151273017101988">ສືບຕໍ່ແລ່ນແອັບພື້ນຫຼັງ ເມື່ອ Google Chrome ປິດ</translation>
 <translation id="3089968997497233615">ມີ Google Chrome ລຸ້ນໃໝ່ປອດໄພກ່ວາຢູ່.</translation>
@@ -226,6 +227,7 @@
 <translation id="4970880042055371251">ເວີຊັນ ChromeOS</translation>
 <translation id="4970947549776831107">Chromium ບລັອກໄຟລ໌ນີ້ໄວ້ເນື່ອງຈາກໄຟລ໌ປະເພດນີ້ນັ້ນເປັນອັນຕະລາຍ</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">ຄລິກ “ຕົວຈັດການລະຫັດຜ່ານ Google”</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{ສ່ວນຂະຫຍາຍ Google Chrome ໄດ້ກຳລັງເຂົ້າເຖິງອຸປະກອນ HID}=1{ສ່ວນຂະຫຍາຍ Google Chrome ກຳລັງເຂົ້າເຖິງ 1 ອຸປະກອນ HID}other{ສ່ວນຂະຫຍາຍ Google Chrome ກຳລັງເຂົ້າເຖິງ # ອຸປະກອນ HID}}</translation>
 <translation id="5098668839038261629">ເມື່ອເປີດໃຊ້, ທ່ານຈະອອກຈາກລະບົບ Chrome ນຳ</translation>
 <translation id="5132929315877954718">ຄົ້ນພົບແອັບຯ, ເກມ, ສ່ວນຂະຫຍາຍ ແລະ ຮູບແບບສີສັນສຳລັບ Google Chrome.</translation>
@@ -338,6 +340,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="7339898014177206373">ໜ້າ​ຕ່າງໃໝ່</translation>
 <translation id="7398801000654795464">ທ່ານ​ໄດ້ລົງຊື່ເຂົ້າ​ໃຊ້ Chrome ເປັນ <ph name="USER_EMAIL_ADDRESS" />. ກະ​ລຸ​ນາ​​ໃຊ້​ບັນ​ຊີ​ດຽວ​ກັນ​ ເພື່ອລົງຊື່ເຂົ້າ​ໃຊ້ອີກ.</translation>
 <translation id="7410958280246779049">Chrome ບລັອກໄຟລ໌ນີ້ເນື່ອງຈາກມັນເປັນອັນຕະລາຍ</translation>
+<translation id="7412494426921990001">ຄລິກເມນູ Chrome</translation>
 <translation id="7426611252293106642">Chromium ອາດເຮັດວຽກໄດ້ບໍ່ຖືກຕ້ອງເນື່ອງຈາກ Linux distribution ນີ້ບໍ່ຮອງຮັບມັນອີກຕໍ່ໄປແລ້ວ</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ 1 ນາທີ.}other{ອົງກອນຂອງທ່ານຈະປິດ Chrome ໂດຍອັດຕະໂນມັດເມື່ອບໍ່ມີການນຳໃຊ້ເປັນເວລາ # ນາທີ.}}</translation>
 <translation id="7481213027396403996">ໃຊ້ຄວາມປອດໄພຂັ້ນສູງສຸດຂອງ Chromium</translation>
@@ -383,6 +386,7 @@ Google Chrome ບໍ່ສາມາດກູ້ຄືນການຕັ້ງຄ
 <translation id="8286862437124483331">Google Chrome ກໍາລັງພະຍາຍາມສະແດງລະຫັດຜ່ານ. ພິມລະຫັດຜ່ານ Windows ຂອງທ່ານ ເພື່ອອະນຸຍາດອັນນີ້.</translation>
 <translation id="828798499196665338">ພໍ່ແມ່ຂອງທ່ານໄດ້ປິດ "ການອະນຸຍາດສຳລັບເວັບໄຊ, ແອັບ ແລະ ສ່ວນຂະຫຍາຍ" ສຳລັບ Chrome ແລ້ວ. ການເປີດການນຳໃຊ້ <ph name="EXTENSION_TYPE_PARAMETER" /> ນີ້ບໍ່ໄດ້ຮັບອະນຸຍາດ.</translation>
 <translation id="8290100596633877290">ໂຮ້! Google Chrome ​ເກີດ​ຂັດຂ້ອງ. ເປີດໃຊ້ໃໝ່ດຽວນີ້ບໍ?</translation>
+<translation id="829923460755755423">ເພີ່ມທາງລັດໃນຕົວຈັດການລະຫັດຜ່ານ Google</translation>
 <translation id="8342675569599923794">ໄຟລ໌ນີ້ເປັນອັນຕະລາຍ, ສະນັ້ນ Chrome ໄດ້ບລັອກມັນໄວ້ແລ້ວ.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />ພວກເຮົາໃຊ້ຂໍ້ມູນນີ້ແນວໃດ:<ph name="END_BOLD" /> ເວັບໄຊສາມາດບັນທຶກຂໍ້ມູນກັບ Chrome ກ່ຽວກັບຄວາມສົນໃຈຂອງທ່ານໄດ້. ຕົວຢ່າງ: ຫາກທ່ານເຂົ້າເວັບໄຊໃດໜຶ່ງເພື່ອຊື້ເກີບສຳລັບແລ່ນມາຣາທອນ, ເວັບໄຊດັ່ງກ່າວອາດນິຍາມຄວາມສົນໃຈຂອງທ່ານວ່າເປັນການແລ່ນມາຣາທອນ. ໃນພາຍຫຼັງ, ຫາກທ່ານເຂົ້າເວັບໄຊອື່ນເພື່ອລົງທະບຽນການແຂ່ງຂັນ, ເວັບໄຊນັ້ນອາດສະແດງໂຄສະນາເກີບແລ່ນໃຫ້ທ່ານໂດຍອ້າງອີງໃສ່ຄວາມສົນໃຈຂອງທ່ານ.</translation>
 <translation id="8370517070665726704">ລິຂະສິດ <ph name="YEAR" /> Google LLC. ສະຫງວນສິດທັງໝົດ.</translation>

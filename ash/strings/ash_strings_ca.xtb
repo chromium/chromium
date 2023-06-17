@@ -739,6 +739,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="4261870227682513959">Mostra la configuració de notificacions. Les notificacions estan desactivades.</translation>
 <translation id="4269883910223712419">L'administrador d'aquest dispositiu pot dur a terme les accions següents:</translation>
 <translation id="4274537685965975248">La tecla de drecera Ctrl+Alt+fletxa avall ha canviat. Per fer servir la tecla de fi, prem la tecla <ph name="LAUNCHER_KEY_NAME" />+fletxa dreta.</translation>
+<translation id="4275283744500212192">Obre les opcions de disseny de la finestra</translation>
 <translation id="4279490309300973883">S'està creant una rèplica</translation>
 <translation id="4280601795273309128">Les actualitzacions de seguretat han finalitzat. Actualitza el dispositiu.</translation>
 <translation id="4283888303416325161">Introdueix la contrasenya per augmentar la seguretat</translation>
@@ -1391,7 +1392,6 @@ Instal·lació nova</translation>
 <translation id="7165278925115064263">Alt+Maj+K</translation>
 <translation id="7168224885072002358">Es revertirà a la resolució anterior d'aquí a <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Actualitza</translation>
-<translation id="7185362672357349361">Vols activar el toc per avisar de micròfon silenciat? Si parles mentre el micròfon està silenciat, rebràs una notificació. No s'emetrà àudio des del dispositiu.</translation>
 <translation id="7187711731540696127">El teu punt d'accés Wi-Fi <ph name="DEVICE_NAME" /> està activat; no hi ha cap dispositiu connectat</translation>
 <translation id="7188494361780961876">El menú s'ha mogut a l'extrem superior esquerre de la pantalla.</translation>
 <translation id="7189412385142492784">A quina distància es troba Venus?</translation>

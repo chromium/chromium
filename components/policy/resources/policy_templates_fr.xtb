@@ -5951,10 +5951,6 @@ Vous pouvez modifier le délai d'inactivité avant l'affichage de l'économiseur
 <translation id="6539246272469751178">Cette règle n'a aucun effet sur les applications Android. Celles-ci se servent toujours du répertoire de téléchargements par défaut. Elles ne peuvent pas accéder aux fichiers téléchargés par <ph name="PRODUCT_OS_NAME" /> dans un autre répertoire de téléchargements.</translation>
 <translation id="654303922206238013">Stratégie de migration pour eCryptfs</translation>
 <translation id="6544601600794014309">Activer la traduction pour Réponses rapides</translation>
-<translation id="6544759513632821565">L'API <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> permet aux applications Web de capturer plusieurs surfaces à la fois.
-      Cette règle déverrouille la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> pour les applications Web à des origines définies.
-      Si la propriété <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> est définie dans une requête <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, toutes les surfaces d'écran sont automatiquement capturées sans nécessiter l'autorisation explicite de l'utilisateur.
-      Si cette règle n'est pas configurée, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> n'est disponible pour aucune application Web.</translation>
 <translation id="654546276700640113">Cette règle permet de définir le nombre maximal de caractères que peut contenir un code. Une valeur égale ou inférieure à 0 signifie que l'utilisateur peut définir un code de n'importe quelle longueur. Si la valeur est inférieure à <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" />, mais supérieure à 0, la longueur maximale est définie sur la longueur minimale.
 
       Si cette règle n'est pas configurée, aucune longueur maximale n'est appliquée.</translation>
@@ -7118,11 +7114,6 @@ Si elle est définie sur "False" ou si elle n'est pas configurée, ces publicit�
 <translation id="759957074386651883">Paramètres de navigation sécurisée</translation>
 <translation id="7602621823177962064">Désactiver les rapports sur la mémoire de l'appareil</translation>
 <translation id="7604169113182304895">Les applications Android peuvent avoir été volontairement conçues pour respecter cette liste, mais vous ne pouvez pas les forcer à effectuer cette opération.</translation>
-<translation id="7605203688694672897">Permet de définir le niveau d'accès à la géolocalisation au niveau de l'appareil pour le système <ph name="PRODUCT_OS_NAME" />, qui s'applique avant qu'un utilisateur ne se connecte. Une fois connecté, l'utilisateur peut contrôler ce niveau d'accès via le paramètre par utilisateur.
-
-Si cette règle n'est pas configurée ou qu'elle est définie sur <ph name="ALLOW" />, l'accès à la géolocalisation sur l'écran de connexion est autorisé pour les appareils gérés. Si une valeur non valide est envoyée pour cette règle, l'accès repasse sur <ph name="DISALLOW" />. Pour les appareils non gérés, la valeur est toujours sur <ph name="DISALLOW" />.
-
-AVERTISSEMENT : Faites attention quand vous modifiez ce paramètre, car cela pourrait affecter d'autres règles liées à la géolocalisation (<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />, par exemple). Plus précisément, si cette règle est définie sur <ph name="DISALLOW" />, les options <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> et <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> de la règle <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> ne fonctionneront pas correctement et n'utiliseront que la résolution de localisation basée sur <ph name="IP" /> sur l'écran de connexion (<ph name="LOG_IN" />).</translation>
 <translation id="7608186022704392724">La fonctionnalité d'envoi automatique du code modifie la façon dont celui-ci est saisi dans <ph name="PRODUCT_OS_NAME" />.
           Au lieu d'afficher le champ de texte utilisé pour la saisie du mot de passe, cette fonctionnalité présente une interface utilisateur spéciale qui indique clairement à l'utilisateur le nombre de chiffres à saisir pour son code. De ce fait, la longueur du code de l'utilisateur est stockée en dehors des données chiffrées de l'utilisateur. Les codes compatibles comptent entre 6 et 12 chiffres.
 

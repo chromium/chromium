@@ -5921,10 +5921,6 @@ De time-out voor inactiviteit waarna de screensaver wordt gestart en het interva
 <translation id="6539246272469751178">Dit beleid is niet van invloed op Android-apps. Android-apps gebruiken altijd de standaardmap voor downloads en hebben geen toegang tot bestanden die door <ph name="PRODUCT_OS_NAME" /> zijn gedownload naar een niet-standaard downloadmap.</translation>
 <translation id="654303922206238013">Migratiestrategie voor eCryptfs</translation>
 <translation id="6544601600794014309">Vertaling van Snelle antwoorden aanzetten</translation>
-<translation id="6544759513632821565">Met de <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API kunnen web-apps meerdere schermen tegelijk vastleggen.
-      Dit beleid ontgrendelt de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> voor web-apps op gedefinieerde oorsprongen.
-      Als de property <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> is gedefinieerd in een <ph name="GET_DISPLAY_MEDIA_SET_NAME" />-verzoek, worden alle schermen automatisch vastgelegd zonder dat hiervoor expliciete gebruikerstoestemming is vereist.
-      Als het beleid niet is ingesteld, is <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> niet beschikbaar voor web-apps.</translation>
 <translation id="654546276700640113">Als je dit beleid instelt, wordt de ingestelde maximumlengte van pincodes afgedwongen. Een waarde van 0 of lager betekent dat de gebruiker een pincode van elke lengte kan instellen. Als de waarde lager is dan <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> maar hoger dan 0, wordt de maximumlengte ingesteld op de minimumlengte.
 
       Als je het beleid niet instelt, wordt er geen maximumlengte afgedwongen.</translation>
@@ -7085,12 +7081,6 @@ https://blog.chromium.org/2021/09/user-agent-reduction-origin-trial-and-dates.ht
 <translation id="759957074386651883">Safe Browsing-instellingen</translation>
 <translation id="7602621823177962064">Rapportage van geheugeninformatie van apparaat uitzetten</translation>
 <translation id="7604169113182304895">Het is mogelijk dat Android-apps deze lijst op vrijwillige basis respecteren. Je kunt ze niet dwingen om de lijst te respecteren.</translation>
-<translation id="7605203688694672897">Stel het toegangsniveau voor geolocatie op apparaatniveau in voor het <ph name="PRODUCT_OS_NAME" />-systeem. Dit is van kracht voordat een gebruiker inlogt. Nadat gebruikers zijn ingelogd, kunnen ze het toegangsniveau voor geolocatie bepalen per gebruiker.
-
-Als je het beleid niet instelt of instelt op <ph name="ALLOW" />, is toegang tot geolocatie op het inlogscherm toegestaan voor de beheerde apparaten. Als er een ongeldige beleidswaarde wordt gestuurd, valt de toegang terug op <ph name="DISALLOW" />. Voor niet-beheerde apparaten is dit altijd <ph name="DISALLOW" />.
-
-WAARSCHUWING: Als je deze instelling wijzigt, kan dit ervoor zorgen dat ander beleid met betrekking tot geolocatie niet meer werkt (bijv. <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />).
-Met name als dit beleid wordt ingesteld op <ph name="DISALLOW" />, werken de opties <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> en <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> van het beleid <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> niet meer en gebruiken ze alleen de op <ph name="IP" /> gebaseerde locatie-omzetting op het scherm <ph name="LOG_IN" />.</translation>
 <translation id="7608186022704392724">Met de functie voor automatisch versturen van pincodes kun je wijzigen hoe pincodes worden ingevoerd in <ph name="PRODUCT_OS_NAME" />.
           Deze functie heeft een speciale UI die gebruikers duidelijk laat zien hoeveel tekens er voor hun pincode zijn vereist in plaats van hetzelfde tekstveld voor de invoer van het wachtwoord te tonen. Hierdoor wordt de lengte van de pincode van de gebruiker niet samen met de versleutelde gegevens van die gebruiker opgeslagen. Alleen pincodes die tussen 6 en 12 cijfers lang zijn, worden ondersteund.
 

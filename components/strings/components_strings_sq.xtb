@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Imazhi që kopjove</translation>
 <translation id="1142846828089312304">Blloko kukit e palëve të treta në modalitetin "I fshehtë"</translation>
 <translation id="1147769322402934017">Galeritë e imazheve në linjë</translation>
+<translation id="1150565364351027703">Syze dielli</translation>
 <translation id="1150979032973867961">Ky server nuk mundi të dëshmonte se ky është <ph name="DOMAIN" />; certifikata e tij e sigurisë nuk është e besueshme nga sistemi operativ i kompjuterit. Kjo mund të shkaktohet nga keqkonfigurimi ose ndonjë sulmues që po ndërhyn në lidhjen tënde.</translation>
 <translation id="1151972924205500581">Kërkohet fjalëkalimi</translation>
 <translation id="1156303062776767266">Po shikon një skedar lokal ose të ndarë</translation>
@@ -891,6 +892,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="3158539265159265653">Disku</translation>
 <translation id="3162559335345991374">Lidhja Wi-Fi që po përdor mund të të kërkojë që të vizitosh faqen e saj të identifikimit.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Shërbimet e uebit</translation>
 <translation id="3176929007561373547">Kontrollo cilësimet e përfaqësuesit ose kontakto me administratorin e rrjetit
           për t'u siguruar që serveri përfaqësues po punon. Nëse nuk beson
           se duhet të përdorësh një server përfaqësues:
@@ -2361,6 +2363,7 @@ Ndryshe kjo do të bllokohet nga cilësimet e tua të privatësisë. Kjo do ta l
 <translation id="6665553082534466207">Tri shpime djathtas</translation>
 <translation id="6668389483194953109">U gjet një madhësi letre me emrin "custom", por karakteristika "custom_size" është bosh ose e pavlefshme.</translation>
 <translation id="6671697161687535275">Të hiqet sugjerimi i formularit nga Chromium?</translation>
+<translation id="6683022854667115063">Kufje</translation>
 <translation id="6683717648675961851">Listimet e punëve</translation>
 <translation id="6687335167692595844">Kërkohet madhësia e fontit</translation>
 <translation id="6687696737818665306">Aktrimi dhe teatri</translation>
@@ -3146,6 +3149,7 @@ Detaje shtesë:
 <translation id="8513580896341796021">Shkarkimi filloi. Për ta parë atë, shtyp |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Pajisja HID e lejuar nga administratori yt</translation>
 <translation id="8522552481199248698">Chrome mund të të ndihmojë ta mbrosh "Llogarinë tënde të Google" dhe të ndryshosh fjalëkalimin tënd.</translation>
+<translation id="8527228059738193856">Altoparlantët</translation>
 <translation id="8530813470445476232">Pastro historikun e shfletimit, kukit, memorien specifike etj. te cilësimet e Chrome</translation>
 <translation id="853332391023689529">Kamionçinat</translation>
 <translation id="8533619373899488139">Vizito &lt;strong&gt;chrome://policy&lt;/strong&gt; për të parë listën e URL-ve të bllokuara dhe politika të tjera të detyruara nga administratori i sistemit tënd.</translation>
@@ -3304,6 +3308,7 @@ Detaje shtesë:
 <translation id="8943282376843390568">Ngjyrë limoni jeshil</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Ligji dhe qeverisja</translation>
+<translation id="8954252855949068147">Veshje</translation>
 <translation id="8957210676456822347">Autorizimi i portalit izolues</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Shko te cilësimet e faqes</translation>

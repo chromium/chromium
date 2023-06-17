@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Таны хуулсан зураг</translation>
 <translation id="1142846828089312304">Нууцлалтай горимд гуравдагч талын күүкиг блоклох</translation>
 <translation id="1147769322402934017">Онлайн зургийн галерей</translation>
+<translation id="1150565364351027703">Нарны шил</translation>
 <translation id="1150979032973867961">Энэ сервер нь <ph name="DOMAIN" />-аа баталж чадсангүй; учир нь энэхүү сертификатыг таны компьютерийн үйлдлийн систем дэмждэггүй. Энэ нь тохиргоо буруу хийгдсэнээс эсвэл халдагч таны холболтонд саад учруулж байгаагаас шалтгаалж болох юм.</translation>
 <translation id="1151972924205500581">Нууц үг шаардлагатай</translation>
 <translation id="1156303062776767266">Та дотоод эсвэл хуваалцсан файлыг харж байна</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Таны ашиглаж буй Wi-Fi сүлжээ таныг нэвтрэх хуудаст орохыг шаардах магадлалтай.</translation>
 <translation id="3169472444629675720">Олох</translation>
+<translation id="3175081911749765310">Веб үйлчилгээнүүд</translation>
 <translation id="3176929007561373547">Прокси тохиргоогоо шалгана уу. Эсвэл сүлжээний админтайгаа холбогдож 
           прокси сервер ажиллаж байгаа эсэхийг шалгана уу. 
           Хэрэв та прокси сервер ашиглаж байгаадаа итгэлгүй байвал:
@@ -2362,6 +2364,7 @@
 <translation id="6665553082534466207">Баруун ирмэг дагуу гурван нүх цоолох</translation>
 <translation id="6668389483194953109">"Custom" нэртэй хуудасны хэмжээ олсон ч "custom_size" шинж чанар хоосон эсвэл буруу байна.</translation>
 <translation id="6671697161687535275">Маягтын зөвлөмжийг Chromium-с устгах уу?</translation>
+<translation id="6683022854667115063">Чихэвч</translation>
 <translation id="6683717648675961851">Ажлын жагсаалт</translation>
 <translation id="6687335167692595844">Фонтын хэмжээг шаардсан</translation>
 <translation id="6687696737818665306">Жүжиглэлт, театр</translation>
@@ -3147,6 +3150,7 @@
 <translation id="8513580896341796021">Татаж эхэллээ. Үүнийг харахын тулд |<ph name="ACCELERATOR" />| дээр дарна уу.</translation>
 <translation id="8519753333133776369">Танай администраторын зөвшөөрсөн HID төхөөрөмж</translation>
 <translation id="8522552481199248698">Chrome танд Google Бүртгэлээ хамгаалах болон нууц үгээ солиход туслах боломжтой.</translation>
+<translation id="8527228059738193856">Чанга яригч</translation>
 <translation id="8530813470445476232">Chrome тохиргооноос хөтчийн түүх, күүки, завсрын санах ой болон бусад зүйлийг устгах</translation>
 <translation id="853332391023689529">Пикап ачааны машин</translation>
 <translation id="8533619373899488139">Системийн администраторынхаа хэрэгжүүлдэг блоклосон URL-үүдийн болон бусад удирдамжийн жагсаалтыг харахын тулд &lt;strong&gt; chrome://policy&lt;/strong&gt;-д зочилно уу.</translation>
@@ -3305,6 +3309,7 @@
 <translation id="8943282376843390568">Нимбэгний ногоон</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Хууль, засгийн газар</translation>
+<translation id="8954252855949068147">Хувцас</translation>
 <translation id="8957210676456822347">Captive Portal Authorization</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Сайтын тохиргоо руу очих</translation>

@@ -62,6 +62,7 @@
 <translation id="1131264053432022307">Скопированное изображение</translation>
 <translation id="1142846828089312304">Блокировать сторонние файлы cookie в режиме инкогнито</translation>
 <translation id="1147769322402934017">Веб-галереи изображений</translation>
+<translation id="1150565364351027703">Солнцезащитные очки</translation>
 <translation id="1150979032973867961">Не удалось подтвердить, что это сервер <ph name="DOMAIN" />. Операционная система компьютера не доверяет его сертификату безопасности. Возможно, сервер настроен неправильно или кто-то пытается перехватить ваши данные.</translation>
 <translation id="1151972924205500581">Необходимо ввести пароль</translation>
 <translation id="1156303062776767266">Вы просматриваете локальный или общий файл</translation>
@@ -874,6 +875,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Возможно, вам нужно перейти на страницу входа сети Wi-Fi.</translation>
 <translation id="3169472444629675720">Рекомендации</translation>
+<translation id="3175081911749765310">Веб-сервисы</translation>
 <translation id="3176929007561373547">Проверьте настройки прокси-сервера или попросите администратора
           задать верные параметры. В противном случае^
           <ph name="PLATFORM_TEXT" /></translation>
@@ -2314,6 +2316,7 @@
 <translation id="6665553082534466207">Три отверстия справа</translation>
 <translation id="6668389483194953109">Найден размер бумаги custom, но свойство custom_size не заполнено или недействительно.</translation>
 <translation id="6671697161687535275">Удалить подсказку из Chromium?</translation>
+<translation id="6683022854667115063">Наушники</translation>
 <translation id="6683717648675961851">Вакансии и поиск работы</translation>
 <translation id="6687335167692595844">Размер шрифта запрошен</translation>
 <translation id="6687696737818665306">Театр и драматургия</translation>
@@ -3088,6 +3091,7 @@
 <translation id="8513580896341796021">Скачивание началось. Чтобы посмотреть файл, нажмите |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Разрешенное администратором HID-устройство</translation>
 <translation id="8522552481199248698">Защитите свой аккаунт Google и смените пароль с помощью Chrome.</translation>
+<translation id="8527228059738193856">Колонки</translation>
 <translation id="8530813470445476232">Удалить историю браузера, файлы cookie, кеш и другие данные в настройках Chrome</translation>
 <translation id="853332391023689529">Пикапы</translation>
 <translation id="8533619373899488139">Чтобы посмотреть список заблокированных URL и узнать, какие ещё правила заданы системным администратором, перейдите на страницу &lt;strong&gt;chrome://policy&lt;/strong&gt;.</translation>
@@ -3242,6 +3246,7 @@
 <translation id="8943282376843390568">Лаймовый</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Закон и право</translation>
+<translation id="8954252855949068147">Одежда и аксессуары</translation>
 <translation id="8957210676456822347">Авторизация через адаптивный портал</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Перейти в настройки сайта</translation>

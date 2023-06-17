@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Imagem que copiou</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceiros na Navegação anónima</translation>
 <translation id="1147769322402934017">Galerias de imagens online</translation>
+<translation id="1150565364351027703">Óculos de sol</translation>
 <translation id="1150979032973867961">Este servidor não conseguiu provar que é o domínio <ph name="DOMAIN" />; o sistema operativo do seu computador não confia no respetivo certificado de segurança. Isto pode ser o resultado de uma configuração incorreta ou de um invasor a intercetar a sua ligação.</translation>
 <translation id="1151972924205500581">É necessária a palavra-passe</translation>
 <translation id="1156303062776767266">Está a visualizar um ficheiro local ou partilhado</translation>
@@ -534,6 +535,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="2202020181578195191">Introduza um ano de expiração válido</translation>
 <translation id="2202627062836089804">no verso do cartão</translation>
 <translation id="2204482073374652408">Atualização concluída!</translation>
+<translation id="2208053750671792556">Não recebeu o seu código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Tabuleiro 3</translation>
 <translation id="2210794033760923560">Carregar relatório</translation>
 <translation id="2212735316055980242">Política não encontrada</translation>
@@ -891,6 +893,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">A rede Wi-Fi que está a utilizar pode exigir que visite a respetiva página de início de sessão.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Serviços Web</translation>
 <translation id="3176929007561373547">Verifique as definições de proxy ou contacte o gestor de rede para
       se certificar de que o servidor proxy está a funcionar. Se achar que não deve
       utilizar um servidor proxy:
@@ -946,6 +949,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="3270847123878663523">&amp;Anular reordenação</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> pretende estabelecer ligação</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Introduza o código de validação de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3281350579597955952">{0,plural, =1{A política do administrador não recomenda abrir este ficheiro em <ph name="DESTINATION_NAME" />}other{A política do administrador não recomenda abrir estes ficheiros em <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A sua entidade, <ph name="ENROLLMENT_DOMAIN" />, enviou algumas informações para os seguintes Websites, como definições ou políticas.</translation>
 <translation id="3286372614333682499">retrato</translation>
@@ -2362,6 +2366,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="6665553082534466207">Perfuração tripla à direita</translation>
 <translation id="6668389483194953109">Foi encontrado o nome do tamanho do papel "personalizado", mas a propriedade "custom_size" está vazia ou é inválida.</translation>
 <translation id="6671697161687535275">Remover a sugestão do formulário do Chromium?</translation>
+<translation id="6683022854667115063">Auscultadores</translation>
 <translation id="6683717648675961851">Ofertas de emprego</translation>
 <translation id="6687335167692595844">Tamanho da letra solicitado</translation>
 <translation id="6687696737818665306">Representação e teatro</translation>
@@ -2591,6 +2596,7 @@ Se não permitir, isto será bloqueado pelas suas definições de privacidade. I
 <translation id="7219179957768738017">A ligação utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">A processar</translation>
 <translation id="7221855153210829124">Mostrar notificações</translation>
+<translation id="7221857374443660083">O banco quer confirmar a sua identidade</translation>
 <translation id="722454870747268814">Novo separador anónimo</translation>
 <translation id="7227293336683593977">Histórico de preços</translation>
 <translation id="7233592378249864828">Imprimir folha de confirmação</translation>
@@ -3146,6 +3152,7 @@ Detalhes adicionais:
 <translation id="8513580896341796021">Transferência iniciada. Para a ver, prima |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Dispositivo HID permitido pelo seu administrador</translation>
 <translation id="8522552481199248698">O Chrome pode ajudá-lo a proteger a sua Conta Google e a alterar a palavra-passe.</translation>
+<translation id="8527228059738193856">Altifalantes</translation>
 <translation id="8530813470445476232">Limpe o seu histórico de navegação, cookies, cache e muito mais nas definições do Chrome.</translation>
 <translation id="853332391023689529">Carrinhas de caixa aberta</translation>
 <translation id="8533619373899488139">Visite &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver a lista dos URLs bloqueados e outras políticas aplicadas pelo administrador do sistema.</translation>
@@ -3305,6 +3312,7 @@ Detalhes adicionais:
 <translation id="8943282376843390568">Lima</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legislação e governo</translation>
+<translation id="8954252855949068147">Vestuário</translation>
 <translation id="8957210676456822347">Autorização de portal cativo</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Aceda às definições do site</translation>

@@ -2165,6 +2165,7 @@
 <translation id="2777525873368474674">لصق رابط الصورة</translation>
 <translation id="2778471504622896352">‏إضافة التطبيقات عن بُعد إلى مشغِّل التطبيقات في ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">الإضافات مفعّلة على هذا الموقع الإلكتروني.</translation>
 <translation id="2782104745158847185">‏حدث خطأ أثناء تثبيت تطبيق Linux</translation>
 <translation id="2783024642731649028">سلعة واحدة في سلة التسوّق متوفّرة بخصم ‫<ph name="DISCOUNT_TEXT" /> من "<ph name="MERCHANT_NAME" />" على <ph name="MERCHANT_DOMAIN" />، وتم الاطّلاع عليها <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">تم التنزيل</translation>
@@ -2504,7 +2505,6 @@
 <translation id="3060952009917586498">تغيير لغة الجهاز اللغة الحالية هي <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">‏تعذَّر علينا إنشاء اتصال بهاتفك. يُرجى التأكد من أن هاتفك قريب وغير مُقفل وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
 <translation id="3061302636956643119">‏سيتم إرسال النص إلى Google لإجراء عمليّة المعالجة.</translation>
-<translation id="306179102415443347">‏استخدِم هذا الاختصار للوصول بسرعة إلى "مدير كلمات المرور في Google". بإمكانك نقل هذا الاختصار إلى الشاشة الرئيسية أو مشغِّل التطبيقات في جهاز الكمبيوتر.</translation>
 <translation id="3064871050034234884">السماح للمواقع الإلكترونية بتشغيل الصوت</translation>
 <translation id="3065041951436100775">التعليقات المرتبطة بعلامة التبويب المعطلة.</translation>
 <translation id="3065522099314259755">وقت استجابة التكرار في لوحة المفاتيح</translation>
@@ -4694,7 +4694,6 @@
 <translation id="4998430619171209993">مفعّل</translation>
 <translation id="4999804342505941663">تفعيل وضع "عدم الإزعاج"</translation>
 <translation id="5001526427543320409">ملفات تعريف الارتباط التابعة لجهات خارجية</translation>
-<translation id="5003967926796347400">‏انقر على "مدير كلمات المرور في Google".</translation>
 <translation id="5005498671520578047">نسخ كلمة المرور</translation>
 <translation id="5006118752738286774">قبل عامين</translation>
 <translation id="5006218871145547804">‏أداة ADB في تطبيق متوافق مع Android لنظام التشغيل Crostini</translation>
@@ -5743,7 +5742,6 @@
     ستظهر هذه الصورة على شاشة القفل وشاشة تسجيل الدخول في جهاز Chromebook.</translation>
 <translation id="5925147183566400388">مؤشر بيان تطبيق الشهادة</translation>
 <translation id="5927132638760172455">إرسال إلى مستلم غير معروف</translation>
-<translation id="5927232971138258197">يمكن لهذه الإضافة قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="592740088639760830">إيقاف هذه الحاوية</translation>
 <translation id="592880897588170157">‏تنزيل ملفات PDF بدلاً من فتحها تلقائيًا في Chrome</translation>
 <translation id="5928969282301718193">ما مِن أذونات أخرى لمراجعتها</translation>
@@ -5991,7 +5989,6 @@
 <translation id="6130692320435119637">‏إضافة شبكة Wi-Fi</translation>
 <translation id="6130887916931372608">مفتاح لوحة المفاتيح</translation>
 <translation id="6132714462430777655">هل تريد تخطي تسجيل الجهاز ضمن المؤسسة التعليمية؟</translation>
-<translation id="6133850653093419052">يُسمح للإضافات بطلب إذن الوصول إلى الموقع الإلكتروني.</translation>
 <translation id="6135823405800500595">‏يجب أن يكون هاتفك قريبًا وغير مُقفَل وأن يكون البلوتوث وشبكة Wi-Fi مفعَّلَين.</translation>
 <translation id="6135826623269483856">المواقع الإلكترونية التي لا يُسمح لها بإدارة النوافذ على جميع شاشات أجهزتك</translation>
 <translation id="6136114942382973861">إغلاق شريط عمليات التنزيل</translation>
@@ -6965,7 +6962,6 @@
 <translation id="6973611239564315524">‏تتوفّر ترقية إلى Debian 10 (Buster).</translation>
 <translation id="69739764870135975">‏إذا كان محرك البحث التلقائي هو Google، ستظهر لك اقتراحات أفضل وأكثر صلة بسياق عمليات البحث التي تجريها.</translation>
 <translation id="697508444536771064">‏إيقاف نظام التشغيل Linux</translation>
-<translation id="6975361011348772931">إضافة تطلب الإذن بقراءة محتوى الموقع الإلكتروني وتغييره</translation>
 <translation id="6978121630131642226">محرّكات البحث</translation>
 <translation id="6978717888677691380">المواقع الإلكترونية التي حظرتها</translation>
 <translation id="6979041727349121225">وضع "توفير الطاقة"</translation>
@@ -7459,7 +7455,6 @@
 <translation id="7410852728357935715">البث على جهاز</translation>
 <translation id="741204030948306876">نعم، أوافق</translation>
 <translation id="7412226954991670867">‏ذاكرة GPU</translation>
-<translation id="7412494426921990001">‏انقر على قائمة Chrome.</translation>
 <translation id="7414464185801331860">18 ضعفًا</translation>
 <translation id="7415454883318062233">اكتمل الإعداد</translation>
 <translation id="7416091793702109803">مراجعة الملف "<ph name="FILE_NAME" />"</translation>
@@ -8094,7 +8089,6 @@
 <translation id="793531125873261495">حدث خطأ أثناء تنزيل الآلة الافتراضية. يُرجى إعادة المحاولة.</translation>
 <translation id="7935451262452051102">مكتملة بنسبة <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">خيارات متقدمة</translation>
-<translation id="7939073735115504773">انقر على رمز هذه الإضافة لمنحها إذن قراءة محتوى الموقع الإلكتروني <ph name="HOST" /> وتغييره.</translation>
 <translation id="793923212791838">جهازك غير متوافق مع هذا الموقع الإلكتروني</translation>
 <translation id="7939328347457537652">إدارة شهادات الجهاز</translation>
 <translation id="7939412583708276221">المتابعة على أيّ حال</translation>
@@ -8401,7 +8395,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />أجهزتك<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">إضافة كلمة مرور</translation>
 <translation id="8195265224453131880">الكثافة</translation>
-<translation id="8195737548602430447">يمكن ترجمة الشرح تلقائيًا إلى إحدى اللغات الهدف.</translation>
 <translation id="8197673340773315084">يُرجى إضافة اسم أو تصنيف، مثل "مخصّص للعمل" أو "شخصي".</translation>
 <translation id="8198456017687137612">جارٍ إرسال محتوى علامة التبويب</translation>
 <translation id="8198457270656084773">هل تبحث عن صفحة سجلّ الجهاز الخاصة بالنظام؟ انتقِل إلى <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8521,7 +8514,6 @@
 <translation id="8295449579927246485">الترجمة المباشرة</translation>
 <translation id="8297292446125062288">‏إعدادات أجهزة HID</translation>
 <translation id="8298429963694909221">‏يمكنك الآن تلقّي الإشعارات من هاتفك على الجهاز <ph name="DEVICE_TYPE" />. وعند إغلاق الإشعارات على الجهاز <ph name="DEVICE_TYPE" />، سيتم إغلاقها على هاتفك أيضًا. يُرجى التأكُّد من أن هاتفك قريب وتم تفعيل بلوتوث وWi-Fi فيه.</translation>
-<translation id="829923460755755423">‏أضِف اختصارًا إلى "مدير كلمات المرور في Google".</translation>
 <translation id="8299319456683969623">أنت غير متصل حاليًا.</translation>
 <translation id="8300011035382349091">تعديل الإشارة المرجعية لعلامة التبويب هذه</translation>
 <translation id="8300374739238450534">أزرق ليلي</translation>
@@ -8549,7 +8541,6 @@
 <translation id="8323167517179506834">‏اكتب عنوان URL</translation>
 <translation id="8323317289166663449">الاطّلاع على جميع بياناتك وتغييرها على جهاز الكمبيوتر وجميع المواقع الإلكترونية</translation>
 <translation id="8324784016256120271">يسمح هذا الإجراء للمواقع الإلكترونية باستخدام ملفات تعريف الارتباط للاطّلاع على نشاط التصفُّح الخاص بك على المواقع الإلكترونية المختلفة، وذلك لتقديم إعلانات مخصَّصة لك مثلاً.</translation>
-<translation id="8324819620112450495">لا يُسمح للإضافات بطلب إذن الوصول إلى الموقع الإلكتروني.</translation>
 <translation id="8325413836429495820">المواقع الإلكترونية التي لا يُسمح لها بالاطّلاع على الحافظة</translation>
 <translation id="8326478304147373412">‏PKCS #7، سلسلة شهادات</translation>
 <translation id="8327386430364625757">الخط الرياضي</translation>

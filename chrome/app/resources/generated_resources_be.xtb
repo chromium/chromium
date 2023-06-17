@@ -2163,6 +2163,7 @@
 <translation id="2777525873368474674">Устаўце спасылку на відарыс</translation>
 <translation id="2778471504622896352">Дадаваць праграмы з аддаленым доступам на панэль запуску ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Пашырэнні на гэтым сайце разблакіраваны</translation>
 <translation id="2782104745158847185">Памылка ўсталявання Linux-праграмы</translation>
 <translation id="2783024642731649028">На 1 тавар у кошыку дзейнічае скідка <ph name="DISCOUNT_TEXT" /> ад <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прагледжана <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Спампавана</translation>
@@ -2502,7 +2503,6 @@
 <translation id="3060952009917586498">Змяніць мову прылады. Бягучая мова – <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Нам не ўдалося ўстанавіць падключэнне да вашага тэлефона. Упэўніцеся, што ён разблакіраваны, знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
 <translation id="3061302636956643119">Тэкставае паведамленне будзе адпраўлена ў Google для апрацоўкі.</translation>
-<translation id="306179102415443347">Каб хутка адкрываць Менеджар пароляў Google, выкарыстоўвайце ярлык. Яго можна перамясціць на панэль запуску праграм або на галоўны экран камп'ютара.</translation>
 <translation id="3064871050034234884">Сайты могуць прайграваць гук</translation>
 <translation id="3065041951436100775">Водгук па спыненай працы ўкладкі.</translation>
 <translation id="3065522099314259755">Затрымка пры паўторы ўводу на клавіятуры</translation>
@@ -4694,7 +4694,6 @@
 <translation id="4998430619171209993">Уключана</translation>
 <translation id="4999804342505941663">Уключыць рэжым "Не турбаваць"</translation>
 <translation id="5001526427543320409">Староннія файлы cookie</translation>
-<translation id="5003967926796347400">Націсніце "Менеджар пароляў Google"</translation>
 <translation id="5005498671520578047">Капіраваць пароль</translation>
 <translation id="5006118752738286774">2 гады таму</translation>
 <translation id="5006218871145547804">ADB у праграмах для Android у Crostini</translation>
@@ -5744,7 +5743,6 @@
     <ph name="LINE_BREAK" />
     Яно будзе паказвацца на экранах уваходу і блакіроўкі Chromebook.</translation>
 <translation id="5925147183566400388">Указальнік на заяву аб правілах сертыфікацыі</translation>
-<translation id="5927232971138258197">Пашырэнне можа счытваць і змяняць даныя з сайта <ph name="HOST" /></translation>
 <translation id="592740088639760830">Спыніць выкананне гэтага кантэйнера</translation>
 <translation id="592880897588170157">Спампоўваць файлы PDF замест аўтаматычнага адкрыцця ў Chrome</translation>
 <translation id="5928969282301718193">Усё перагледжана</translation>
@@ -5992,7 +5990,6 @@
 <translation id="6130692320435119637">Дадаць сетку Wi-Fi</translation>
 <translation id="6130887916931372608">Клавіша клавіятуры</translation>
 <translation id="6132714462430777655">Прапусціць рэгістрацыю ў навучальнай установе?</translation>
-<translation id="6133850653093419052">Дазволена запытваць доступ</translation>
 <translation id="6135823405800500595">Упэўніцеся, што тэлефон разблакіраваны, знаходзіцца паблізу і што на ім уключаны Bluetooth і Wi-Fi</translation>
 <translation id="6135826623269483856">Сайты, якім забаронена кіраваць вокнамі на ўсіх дысплэях</translation>
 <translation id="6136114942382973861">Закрыць панэль спамповак</translation>
@@ -6964,7 +6961,6 @@
 <translation id="6973611239564315524">Даступна абнаўленне да Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Калі Google з'яўляецца вашай стандартнай пошукавай сістэмай, вам будуць паказвацца больш адпаведныя кантэксту прапановы</translation>
 <translation id="697508444536771064">Завяршыць працу Linux</translation>
-<translation id="6975361011348772931">Пашырэнне запытвае дазвол на счытванне і змяненне даных</translation>
 <translation id="6978121630131642226">Пошукавыя сістэмы</translation>
 <translation id="6978717888677691380">Заблакіраваныя вамі сайты</translation>
 <translation id="6979041727349121225">Эканомія энергіі</translation>
@@ -7457,7 +7453,6 @@
 <translation id="7410852728357935715">Трансліраваць на прыладу</translation>
 <translation id="741204030948306876">Так, я згаджаюся</translation>
 <translation id="7412226954991670867">Памяць GPU</translation>
-<translation id="7412494426921990001">Націсніце меню Chrome</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Наладка завершана</translation>
 <translation id="7416091793702109803">Разглядзець файл "<ph name="FILE_NAME" />"</translation>
@@ -8093,7 +8088,6 @@
 <translation id="793531125873261495">Памылка спампоўвання віртуальнай машыны. Паўтарыце спробу.</translation>
 <translation id="7935451262452051102">Завершана <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Дадатковыя параметры</translation>
-<translation id="7939073735115504773">Націсніце на значок гэтага пашырэння, каб яно магло счытваць і змяняць даныя з сайта <ph name="HOST" /></translation>
 <translation id="793923212791838">Вашу прыладу нельга выкарыстоўваць на гэтым сайце</translation>
 <translation id="7939328347457537652">Кіраванне сертыфікатамі прылады</translation>
 <translation id="7939412583708276221">Захаваць усё роўна</translation>
@@ -8399,7 +8393,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашы прылады<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Дадайце пароль</translation>
 <translation id="8195265224453131880">Інтэнсіўнасць</translation>
-<translation id="8195737548602430447">Аўтаматычны пераклад субцітраў на выбраную мову.</translation>
 <translation id="8197673340773315084">Дадайце назву або метку (напрыклад, "Праца" або "Асабістае")</translation>
 <translation id="8198456017687137612">Ідзе трансляцыя ўкладкі</translation>
 <translation id="8198457270656084773">Шукаеце старонку журнала сістэмных прылад? Наведаць <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8518,7 +8511,6 @@
 <translation id="8295449579927246485">Імгненны пераклад</translation>
 <translation id="8297292446125062288">Налады чалавека-машыннага інтэрфейсу</translation>
 <translation id="8298429963694909221">Цяпер вы можаце атрымліваць апавяшчэнні, якія прыходзяць на ваш тэлефон, на прыладзе <ph name="DEVICE_TYPE" />. Калі вы будзеце адхіляць апавяшчэнні на прыладзе <ph name="DEVICE_TYPE" />, гэта дзеянне будзе дубліравацца і на тэлефоне. Упэўніцеся, што ён знаходзіцца паблізу і на ім уключаны Bluetooth і Wi-Fi.</translation>
-<translation id="829923460755755423">Як дадаць ярлык на Менеджар пароляў Google</translation>
 <translation id="8299319456683969623">Вы зараз па-за сеткай.</translation>
 <translation id="8300011035382349091">Змяніць закладку для гэтай укладкі</translation>
 <translation id="8300374739238450534">Цёмна-сіні</translation>
@@ -8546,7 +8538,6 @@
 <translation id="8323167517179506834">Увесці URL-адрас</translation>
 <translation id="8323317289166663449">Праглядаць і змяняць усе вашы даныя на вашым камп'ютары і ўсіх вэб-сайтах</translation>
 <translation id="8324784016256120271">Сайты могуць выкарыстоўваць файлы cookie для адсочвання вашых дзеянняў у браўзеры на розных сайтах, напрыклад, каб персаналізаваць рэкламу</translation>
-<translation id="8324819620112450495">Не дазволена запытваць доступ</translation>
 <translation id="8325413836429495820">Не дазволена праглядаць буфер абмену</translation>
 <translation id="8326478304147373412">PKCS #7, ланцужок сертыфікатаў</translation>
 <translation id="8327386430364625757">Матэматычны шрыфт</translation>

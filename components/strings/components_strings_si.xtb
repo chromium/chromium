@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">ඔබ පිටපත් කළ රූපය</translation>
 <translation id="1142846828089312304">අප්‍රසිද්ධ තුළ තෙවන පාර්ශ්ව කුකි අවහිර කරන්න</translation>
 <translation id="1147769322402934017">සබැඳි රූප ගැලරි</translation>
+<translation id="1150565364351027703">අව් කණ්නාඩි</translation>
 <translation id="1150979032973867961">මෙම සේවාදායකයට එය <ph name="DOMAIN" /> බව සනාථ කිරීමට නොහැකි විය; එහි ආරක්ෂණ සහතිකය ඔබගේ පරිගණකයෙහි මෙහෙයුම් පද්ධතිය මගින් විශ්වාස නොකරයි. මෙය වැරදි වින්‍යාස කිරීමක් හෝ ප්‍රහාරකයකු ඔබගේ සබැඳුමට බාධා කිරීමක් නිසා විය හැකිය.</translation>
 <translation id="1151972924205500581">රහස්වචනය අවශ්‍යයි</translation>
 <translation id="1156303062776767266">ඔබ දේශීය හෝ පොදු ගොනුවක් නරඹමින් සිටී</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">ඔබ භාවිතා කරන Wi-Fi මගින් ඔබ එහි පුරනය වීමේ පිටුවට පිවිසීමට අවශ්‍ය විය හැක.</translation>
 <translation id="3169472444629675720">අනාවරණය</translation>
+<translation id="3175081911749765310">වෙබ් සේවා</translation>
 <translation id="3176929007561373547">ඔබේ ප්‍රොක්සි සැකසීම් පරීක්ෂා කරන්න, නැතහොත් ප්‍රොක්සි සේවාදායකය ක්‍රියා කරන්නේදැයි
       තහවුරු කරගැනීමට ඔබේ ජාල පරිපාලක අමතන්න. ඔබ ප්‍රොක්සි සේවාදායකයක් භාවිත
       කළ යුතු බව ඔබ විශ්වාස නොකරන්නේ නම්:
@@ -2362,6 +2364,7 @@
 <translation id="6665553082534466207">දකුණට තුන් වරක් අනින්න</translation>
 <translation id="6668389483194953109">කඩදාසි ප්‍රමාණයේ නම "අභිරුචි" හමු විය, නමුත් "custom_size" ගුණය හිස් හෝ වලංගු නැත.</translation>
 <translation id="6671697161687535275">Chromium වෙතින් පෝරම යෝජනා ඉවත් කරන්නද?</translation>
+<translation id="6683022854667115063">හෙඩ්ෆෝන්</translation>
 <translation id="6683717648675961851">රැකියා ලැයිස්තුගත කිරීම්</translation>
 <translation id="6687335167692595844">අකුරු ප්‍රමාණය ඉල්ලුවා</translation>
 <translation id="6687696737818665306">රඟපෑම සහ රඟහල</translation>
@@ -3147,6 +3150,7 @@
 <translation id="8513580896341796021">බාගැනීම ආරම්භ විය. එය බැලීමට, |<ph name="ACCELERATOR" />| ඔබන්න.</translation>
 <translation id="8519753333133776369">ඔබගේ පරිපාලක විසින් ඉඩ දෙන HID උපාංගය</translation>
 <translation id="8522552481199248698">Chrome ඔබට ඔබේ Google ගිණුම ආරක්‍ෂා කිරීමටත් ඔබේ මුරපදය වෙනස් කිරීමටත් ඔබට උදවු කළ හැක.</translation>
+<translation id="8527228059738193856">ස්පීකර්</translation>
 <translation id="8530813470445476232">ඔබගේ බ්‍රවුස් කිරීමේ ඉතිහාසය, කුකි, හැඹිලි සහ තවත් දේ Chrome සැකසීම් තුළ හිස් කරන්න</translation>
 <translation id="853332391023689529">පිකප් ට්‍රක් රථ</translation>
 <translation id="8533619373899488139">ඔබේ පද්ධති පරිපාලක විසින් පනවන ලද අවහිර කළ URL සහ වෙනත් ප්‍රතිපත්ති බැලීමට &lt;strong&gt;chrome://policy&lt;/strong&gt; වෙත පිවිසෙන්න.</translation>
@@ -3305,6 +3309,7 @@
 <translation id="8943282376843390568">දෙහි</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">නීතිය සහ රජය</translation>
+<translation id="8954252855949068147">ඇඟලුම්</translation>
 <translation id="8957210676456822347">බැඳි ද්වාර සත්‍යාපනය</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">අඩවි සැකසීම් වෙත යන්න</translation>

@@ -739,6 +739,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="4261870227682513959">Instellingen voor meldingen bekijken. Meldingen staan uit</translation>
 <translation id="4269883910223712419">De beheerder van dit apparaat kan het volgende doen:</translation>
 <translation id="4274537685965975248">De sneltoets Ctrl + Alt + pijl-omlaag is veranderd. Als je de toets End wilt gebruiken, druk je op de <ph name="LAUNCHER_KEY_NAME" />-toets + pijl-rechts.</translation>
+<translation id="4275283744500212192">Indelingsopties voor vensters openen</translation>
 <translation id="4279490309300973883">Mirroring</translation>
 <translation id="4280601795273309128">Beveiligingsupdates gestopt. Upgrade je apparaat.</translation>
 <translation id="4283888303416325161">Geef het wachtwoord op voor extra beveiliging</translation>
@@ -1391,7 +1392,6 @@ Nieuwe installatie</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Terugzetten naar oude resolutie over <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Vernieuwen</translation>
-<translation id="7185362672357349361">Porren voor geluid uitzetten aanzetten? Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="7187711731540696127">Je <ph name="DEVICE_NAME" />-hotspot staat aan, geen apparaten verbonden</translation>
 <translation id="7188494361780961876">Menu verplaatst naar linksboven in het scherm.</translation>
 <translation id="7189412385142492784">Hoe ver weg is Venus</translation>

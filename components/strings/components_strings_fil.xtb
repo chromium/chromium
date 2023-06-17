@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Larawang Kinopya Mo</translation>
 <translation id="1142846828089312304">I-block ang third party na cookies sa Incognito</translation>
 <translation id="1147769322402934017">Mga online na gallery ng larawan</translation>
+<translation id="1150565364351027703">Sunglasses</translation>
 <translation id="1150979032973867961">Hindi mapatunayan ng server na ito na ito ay <ph name="DOMAIN" />; hindi pinagkakatiwalaan ng operating system ng iyong computer ang certificate ng seguridad nito. Maaaring dulot ito ng maling configuration o isang umaatake na hinahadlangan ang iyong koneksyon.</translation>
 <translation id="1151972924205500581">Kinakailangan ang password</translation>
 <translation id="1156303062776767266">Tumitingin ka ng lokal o nakabahaging file</translation>
@@ -891,6 +892,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Maaaring hilingin ng Wi-Fi na ginagamit mo na bisitahin mo ang page nito sa pag-login.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Web Services</translation>
 <translation id="3176929007561373547">Tingnan ang mga setting ng iyong proxy o makipag-ugnayan sa iyong network
       administrator upang matiyak na gumagana ang proxy server. Kung sa palagay mo
       ay hindi ka dapat gumagamit ng proxy server:
@@ -2362,6 +2364,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6665553082534466207">Triple punch right</translation>
 <translation id="6668389483194953109">May nakitang pangalan ng laki ng papel na "custom," pero walang laman o invalid ang property na "custom_size."</translation>
 <translation id="6671697161687535275">Gusto mo bang alisin ang form para sa suhestyon sa Chromium?</translation>
+<translation id="6683022854667115063">Headphones</translation>
 <translation id="6683717648675961851">Mga listing ng trabaho</translation>
 <translation id="6687335167692595844">Hiniling na laki ng font</translation>
 <translation id="6687696737818665306">Pag-arte at teatro</translation>
@@ -3147,6 +3150,7 @@ Mga karagdagang detalye:
 <translation id="8513580896341796021">Nagsimula na ang pag-download. Para makita ito, pindutin ang |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID device na pinapayagan ng iyong administrator</translation>
 <translation id="8522552481199248698">Matutulungan ka ng Chrome na protektahan ang iyong Google Account at palitan ang password mo.</translation>
+<translation id="8527228059738193856">Mga Speaker</translation>
 <translation id="8530813470445476232">I-clear ang iyong history ng pag-browse, cookies, cache, at higit pa sa mga setting ng Chrome</translation>
 <translation id="853332391023689529">Mga pickup truck</translation>
 <translation id="8533619373899488139">Bisitahin ang &lt;strong&gt;chrome://policy&lt;/strong&gt; para makita ang listahan ng mga naka-block na URL at ang iba pang patakarang ipinapatupad ng iyong system administrator.</translation>
@@ -3305,6 +3309,7 @@ Mga karagdagang detalye:
 <translation id="8943282376843390568">Lime</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Batas at pamahalaan</translation>
+<translation id="8954252855949068147">Apparel</translation>
 <translation id="8957210676456822347">Pagpapahintulot sa Captive Portal</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Pumunta sa mga setting ng site</translation>

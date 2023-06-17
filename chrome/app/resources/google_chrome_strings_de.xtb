@@ -119,6 +119,7 @@
 <translation id="3037838751736561277">Google Chrome wird im Hintergrundmodus ausgeführt.</translation>
 <translation id="3038232873781883849">Warten auf Installation…</translation>
 <translation id="3059710691562604940">Safe Browsing ist deaktiviert. Es wird empfohlen, diese Funktion zu aktivieren.</translation>
+<translation id="306179102415443347">Mit dieser Verknüpfung gelangst du schnell zum Google Passwortmanager. Du kannst die Verknüpfung auf den Startbildschirm oder in den App Launcher deines Computers verschieben.</translation>
 <translation id="3065168410429928842">Chrome-Tab</translation>
 <translation id="3080151273017101988">Apps im Hintergrund ausführen, wenn Google Chrome geschlossen ist</translation>
 <translation id="3089968997497233615">Es gibt eine neue, sicherere Version von Google Chrome.</translation>
@@ -220,6 +221,7 @@
 <translation id="4970880042055371251">Chrome OS-Version</translation>
 <translation id="4970947549776831107">Chrome hat diese Datei blockiert, weil der Dateityp gefährlich ist</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Klicke auf „Google Passwortmanager“</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Eine Google Chrome-Erweiterung hat auf HID-Geräte zugegriffen}=1{Eine Google Chrome-Erweiterung greift auf 1 HID-Gerät zu}other{Eine Google Chrome-Erweiterung greift auf # HID-Geräte zu}}</translation>
 <translation id="5098668839038261629">Wenn aktiviert, wirst du auch aus Chrome abgemeldet</translation>
 <translation id="5132929315877954718">Entdecke tolle Apps, Spiele, Erweiterungen und Designs für Google Chrome.</translation>
@@ -327,6 +329,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="7339898014177206373">Neues Fenster</translation>
 <translation id="7398801000654795464">Du warst in Chrome als <ph name="USER_EMAIL_ADDRESS" /> angemeldet. Melde dich bitte wieder mit demselben Konto an.</translation>
 <translation id="7410958280246779049">Chrome hat diese Datei blockiert, weil sie gefährlich ist</translation>
+<translation id="7412494426921990001">Klicke auf das Chrome-Menü</translation>
 <translation id="7426611252293106642">Google Chrome funktioniert unter Umständen nicht ordnungsgemäß, da es unter dieser Linux-Distribution nicht mehr unterstützt wird</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser eine Minute lang nicht verwendet wird.}other{Deine Organisation hat festgelegt, dass Chrome automatisch geschlossen wird, wenn der Browser # Minuten lang nicht verwendet wird.}}</translation>
 <translation id="7481213027396403996">Höchste Sicherheit in Chrome erhalten</translation>

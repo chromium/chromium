@@ -125,6 +125,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="3037838751736561277">„Google Chrome“ veikia fono režimu.</translation>
 <translation id="3038232873781883849">Laukiama, kol bus įdiegta...</translation>
 <translation id="3059710691562604940">Saugaus naršymo funkcija išjungta. „Chrome“ rekomenduoja ją įjungti.</translation>
+<translation id="306179102415443347">Naudodami šaukinį galite greitai pasiekti „Google“ slaptažodžių tvarkyklę. Šaukinį galite perkelti į kompiuterio pagrindinį ekraną ar programų paleidimo priemonę.</translation>
 <translation id="3065168410429928842">„Chrome“ skirtukas</translation>
 <translation id="3080151273017101988">Uždarius „Google Chrome“ toliau leisti fono programas</translation>
 <translation id="3089968997497233615">Galima nauja, saugesnė „Google Chrome“ versija.</translation>
@@ -226,6 +227,7 @@ Kai kurios funkcijos gali būti nepasiekiamos ir nuostatų pakeitimai nebus išs
 <translation id="4970880042055371251">„Chrome“ OS versija</translation>
 <translation id="4970947549776831107">„Chrome“ užblokavo šį failą, nes šio tipo failai pavojingi</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Spustelėkite „Google“ slaptažodžių tvarkyklė“.</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{„Google Chrome“ plėtinys pasiekė ŽSĮ įrenginius}=1{„Google Chrome“ plėtinys pasiekia vieną ŽSĮ įrenginį}one{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginį}few{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginius}many{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginio}other{„Google Chrome“ plėtinys pasiekia # ŽSĮ įrenginių}}</translation>
 <translation id="5098668839038261629">Kai tai bus įjungta, taip pat būsite atjungti nuo „Chrome“</translation>
 <translation id="5132929315877954718">Suraskite puikių „Google Chrome“ programų, žaidimų, plėtinių ir temų.</translation>
@@ -338,6 +340,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="7339898014177206373">Naujas langas</translation>
 <translation id="7398801000654795464">Buvote prisijungę prie „Chrome“ kaip <ph name="USER_EMAIL_ADDRESS" />. Prisijungdami vėl naudokite tą pačią paskyrą.</translation>
 <translation id="7410958280246779049">„Chrome“ užblokavo šį failą, nes jis pavojingas</translation>
+<translation id="7412494426921990001">Spustelėkite „Chrome“ meniu</translation>
 <translation id="7426611252293106642">„Google Chrome“ gali tinkamai neveikti, nes ji nebepalaikoma naudojant šią „Linux“ versiją</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama vieną minutę.}one{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutę.}few{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutes.}many{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minutės.}other{Organizacija automatiškai uždaro „Chrome“, kai nenaudojama # minučių.}}</translation>
 <translation id="7481213027396403996">Patikimiausios „Chrome“ saugos užtikrinimas</translation>
@@ -383,6 +386,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8286862437124483331">„Google Chrome“ bando rodyti slaptažodžius. Įveskite „Windows“ slaptažodį, kad tai leistumėte.</translation>
 <translation id="828798499196665338">Jūsų tėvai išjungė svetainių, programų ir plėtinių leidimus sistemoje „Chrome“. Neleidžiama įgalinti šio <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Oi! „Google Chrome“ užstrigo. Paleisti iš naujo dabar?</translation>
+<translation id="829923460755755423">Pridėkite šaukinį prie „Google“ slaptažodžių tvarkyklės</translation>
 <translation id="8342675569599923794">Šis failas pavojingas, todėl „Chrome“ jį užblokavo.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kaip naudojame šiuos duomenis:<ph name="END_BOLD" /> svetainėse gali būti renkama su „Chrome“ susijusi informacija apie jūsų pomėgius. Pavyzdžiui, jei apsilankote svetainėje norėdami įsigyti batelius maratonui, svetainė gali prie jūsų pomėgių prisikirti maratonų bėgimą. Vėliau, apsilankius kitoje svetainėje norint užsiregistruoti į lenktynes, atsižvelgiant į jūsų pomėgius joje galės būti rodomas bėgimo batelių skelbimas.</translation>
 <translation id="8370517070665726704">Autorių teisės „Google LLC.“, <ph name="YEAR" /> m. Visos teisės saugomos.</translation>

@@ -64,6 +64,7 @@
 <translation id="1131264053432022307">آپ کی کاپی کردہ تصویر</translation>
 <translation id="1142846828089312304">پوشیدگی وضع میں فریق ثالث کی کوکیز کو مسدود کریں</translation>
 <translation id="1147769322402934017">آن لائن تصویری گیلریاں</translation>
+<translation id="1150565364351027703">دھوپ کا چشمہ</translation>
 <translation id="1150979032973867961">یہ سرور یہ ثابت نہیں کر سکا کہ یہ <ph name="DOMAIN" /> ہے؛ اس کا سیکیورٹی سرٹیفیکیٹ آپ کے کمپیوٹر کے آپریٹنگ سسٹم کے ذریعے بھروسہ مند نہیں ہے۔ یہ غلط کنفیگریشن یا آپ کے کنکشن میں مانع بن رہے کسی حملہ آور کی وجہ سے ہو سکتا ہے۔</translation>
 <translation id="1151972924205500581">پاس ورڈ درکار ہے</translation>
 <translation id="1156303062776767266">آپ ایک مقامی یا اشتراک کردہ فائل دیکھ رہے ہیں</translation>
@@ -892,6 +893,7 @@
 <translation id="3158539265159265653">ڈسک</translation>
 <translation id="3162559335345991374">‏آپ جو Wi-Fi استعمال کر رہے ہیں وہ آپ سے اپنا لاگ ان صفحہ ملاحظہ کرنے کا تقاضہ کر سکتا ہے۔</translation>
 <translation id="3169472444629675720">دریافت کریں</translation>
+<translation id="3175081911749765310">ویب سروسز</translation>
 <translation id="3176929007561373547">اپنی پراکسی کی ترتیبات چیک کریں یا اپنے
     نیٹ ورک کے منتظم سے رابطہ کر کے یہ یقینی بنائیں کہ پراکسی
 سرور کام کر رہا ہے۔ اگر آپ کو یقین نہیں ہے تو
@@ -2365,6 +2367,7 @@
 <translation id="6665553082534466207">دائیں طرف تین سوراخ</translation>
 <translation id="6668389483194953109">‏کاغذ کے سائز کا نام "حسب ضرورت" ملا، لیکن "custom_size" پراپرٹی خالی یا غلط ہے۔</translation>
 <translation id="6671697161687535275">‏Chromium سے فارم کی تجویز ہٹائیں؟</translation>
+<translation id="6683022854667115063">ہیڈ فونز</translation>
 <translation id="6683717648675961851">جاب کی فہرستیں</translation>
 <translation id="6687335167692595844">فونٹ سائز کی درخواست کی گئی</translation>
 <translation id="6687696737818665306">اداکاری اور تھیئٹر</translation>
@@ -3150,6 +3153,7 @@
 <translation id="8513580896341796021">ڈاؤن لوڈ شروع ہوگیا۔ اسے دیکھنے کے لیے |<ph name="ACCELERATOR" />| دبائیں۔</translation>
 <translation id="8519753333133776369">‏آپ کے منتظم کی جانب سے HID آلے کی اجازت ہے</translation>
 <translation id="8522552481199248698">‏Chrome آپ کی اپنا Google اکاؤنٹ محفوظ اور پاس ورڈ تبدیل کرنے میں مدد کر سکتا ہے۔</translation>
+<translation id="8527228059738193856">اسپیکرز</translation>
 <translation id="8530813470445476232">‏Chrome ترتیبات میں اپنے براؤزنگ کی سرگزشت، کوکیز، کیش اور بہت کچھ کو صاف کریں</translation>
 <translation id="853332391023689529">پِک اپ ٹرکس</translation>
 <translation id="8533619373899488139">‏مسدود کردہ URLs کی فہرست اور اپنے سسٹم کے منتظم کے ذریعے نافذ کردہ دیگر پالیسیاں دیکھنے کے لیے &lt;strong&gt;chrome://policy&lt;/strong&gt; ملاحظہ کریں۔</translation>
@@ -3308,6 +3312,7 @@
 <translation id="8943282376843390568">لائم</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">قانون اور حکومت</translation>
+<translation id="8954252855949068147">لباس</translation>
 <translation id="8957210676456822347">کیپٹو پورٹل اجازت دہندگی</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">سائٹ ترتیبات پر جائیں</translation>

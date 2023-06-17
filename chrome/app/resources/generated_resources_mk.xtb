@@ -2176,6 +2176,7 @@
 <translation id="2777525873368474674">Залепете линк од сликата</translation>
 <translation id="2778471504622896352">Додајте далечински апликации на стартерот на ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Екстензиите се дозволени на овој сајт</translation>
 <translation id="2782104745158847185">Грешка при инсталирањето на апликацијата за Linux</translation>
 <translation id="2783024642731649028">1 ставка во вашата кошничка со <ph name="DISCOUNT_TEXT" /> од <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, прегледано: <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">Преземено</translation>
@@ -2515,7 +2516,6 @@
 <translation id="3060952009917586498">Променете го јазикот на уредот. Тековниот јазик е <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">Не можевме да воспоставиме врска со вашиот телефон. Проверете дали телефонот е во близина, отклучен и со вклучени Bluetooth и Wi-Fi.</translation>
 <translation id="3061302636956643119">Текстот ќе се испрати во Google за обработка.</translation>
-<translation id="306179102415443347">Користете ја вашата кратенка за да го отворите Google Password Manager брзо. Кратенката може да ја преместите на почетниот екран или „Стартерот на апликации“ на вашиот компјутер.</translation>
 <translation id="3064871050034234884">Сајтовите може да пуштаат звук</translation>
 <translation id="3065041951436100775">Повратни информации за отстранета картичка.</translation>
 <translation id="3065522099314259755">Латентност на повторување на тастатурата</translation>
@@ -4710,7 +4710,6 @@
 <translation id="4998430619171209993">Вклучено</translation>
 <translation id="4999804342505941663">Вклучете „Не вознемирувај“</translation>
 <translation id="5001526427543320409">Колачиња од трети страни</translation>
-<translation id="5003967926796347400">Кликнете „Google Password Manager“</translation>
 <translation id="5005498671520578047">Копирање лозинка</translation>
 <translation id="5006118752738286774">Пред 2 години</translation>
 <translation id="5006218871145547804">ADB за апликации на Android за Crostini</translation>
@@ -5761,7 +5760,6 @@
     Сликава ќе се појавува на екранот за најавување и на заклучениот екран на Chromebook.</translation>
 <translation id="5925147183566400388">Покажувач на Изјава за практикување сертификација</translation>
 <translation id="5927132638760172455">Се емитува на непознат приемник</translation>
-<translation id="5927232971138258197">Екстензијава може да чита и менува <ph name="HOST" /></translation>
 <translation id="592740088639760830">Запрете го контејнеров</translation>
 <translation id="592880897588170157">Преземај ги PDF-датотеките наместо автоматски да ги отвораш во Chrome</translation>
 <translation id="5928969282301718193">Сѐ е завршено засега</translation>
@@ -6009,7 +6007,6 @@
 <translation id="6130692320435119637">Додај Wi-Fi</translation>
 <translation id="6130887916931372608">Копче за тастатура</translation>
 <translation id="6132714462430777655">Да се прескокне регистрирањето училиште?</translation>
-<translation id="6133850653093419052">Барањето пристап е дозволено</translation>
 <translation id="6135823405800500595">Проверете дали телефонот е во близина и отклучен и дали се вклучени Bluetooth и Wi-Fi</translation>
 <translation id="6135826623269483856">Без дозвола за управување со прозорците на сите екрани</translation>
 <translation id="6136114942382973861">Затвори ја лентата за преземања</translation>
@@ -6977,7 +6974,6 @@
 <translation id="6973611239564315524">Достапна е надградба на Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Ако Google го користите и како стандарден пребарувач, тогаш ќе добивате подобри и контекстуално релевантни предлози</translation>
 <translation id="697508444536771064">Исклучи го Linux</translation>
-<translation id="6975361011348772931">Побарана е дозвола за читање и менување</translation>
 <translation id="6978121630131642226">Пребарувачи</translation>
 <translation id="6978717888677691380">Сајтови што сте ги блокирале</translation>
 <translation id="6979041727349121225">Штедач на енергија</translation>
@@ -7470,7 +7466,6 @@
 <translation id="7410852728357935715">Емитувај на уред</translation>
 <translation id="741204030948306876">Да, може</translation>
 <translation id="7412226954991670867">ГПУ-меморија</translation>
-<translation id="7412494426921990001">Кликнете го менито на Chrome</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Поставувањето заврши</translation>
 <translation id="7416091793702109803">Прегледајте ја <ph name="FILE_NAME" /></translation>
@@ -8106,7 +8101,6 @@
 <translation id="793531125873261495">Грешка при преземањето на виртуелната машина. Обидете се повторно.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% завршено</translation>
 <translation id="7939062555109487992">Напредни опции</translation>
-<translation id="7939073735115504773">Кликнете на иконава за екстензија за да чита и менува <ph name="HOST" /></translation>
 <translation id="793923212791838">Вашиот уред не може да се користи со овој сајт</translation>
 <translation id="7939328347457537652">Управувајте со сертификатите на уредот</translation>
 <translation id="7939412583708276221">Сепак задржи</translation>
@@ -8412,7 +8406,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Вашите уреди<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Додајте лозинка</translation>
 <translation id="8195265224453131880">Интензитет</translation>
-<translation id="8195737548602430447">Автоматско преведување титлови на целен јазик.</translation>
 <translation id="8197673340773315084">Додајте име или етикета, на пр., „Работен“ или „Личен“</translation>
 <translation id="8198456017687137612">Картичка за емитување</translation>
 <translation id="8198457270656084773">Дали ја барате страницата за евиденција на уреди на системот? Одете на <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8534,7 +8527,6 @@
 <translation id="8295449579927246485">Превод во живо</translation>
 <translation id="8297292446125062288">Поставки за HID</translation>
 <translation id="8298429963694909221">Сега може да добивате известувања од телефонот на вашиот <ph name="DEVICE_TYPE" />. Отфрлањето на известувањата на <ph name="DEVICE_TYPE" /> ќе ги отфрли и на телефонот. Проверете дали телефонот е во близина и со вклучени Bluetooth и Wi-Fi.</translation>
-<translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
 <translation id="8299319456683969623">Во моментов сте исклучени.</translation>
 <translation id="8300011035382349091">Изменете го обележувачот за картичкава</translation>
 <translation id="8300374739238450534">Тегет</translation>
@@ -8562,7 +8554,6 @@
 <translation id="8323167517179506834">Впиши URL</translation>
 <translation id="8323317289166663449">да ги чита и менува ги сите ваши податоци на вашиот компјутер и сите веб-сајтови</translation>
 <translation id="8324784016256120271">Сајтовите може да користат колачиња за да ја следат вашата активност од прелистувањето на различни сајтови, на пример, за персонализирање реклами</translation>
-<translation id="8324819620112450495">Барањето пристап не е дозволено</translation>
 <translation id="8325413836429495820">Не им е дозволено да ја гледаат привремената меморија</translation>
 <translation id="8326478304147373412">PKCS #7, ланец на сертификат</translation>
 <translation id="8327386430364625757">Математички фонт</translation>

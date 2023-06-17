@@ -739,6 +739,7 @@ Cihazınızı güç kaynağına bağlayın.</translation>
 <translation id="4261870227682513959">Bildirim ayarlarını göster. Bildirimler kapalı</translation>
 <translation id="4269883910223712419">Bu cihazın yöneticisi şunları yapabilir:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ok klavye kısayolu değişti. End tuşunu kullanmak için <ph name="LAUNCHER_KEY_NAME" /> + Sağ Ok tuşlarına basın.</translation>
+<translation id="4275283744500212192">Pencere düzeni seçeneklerini açın</translation>
 <translation id="4279490309300973883">Yansıtılıyor</translation>
 <translation id="4280601795273309128">Artık güvenlik güncellemeleri alınmayacak. Cihazınızı yeni sürüme geçirin.</translation>
 <translation id="4283888303416325161">Daha fazla güvenlik için şifre girin</translation>
@@ -1391,7 +1392,6 @@ Yeni yüklenmiş</translation>
 <translation id="7165278925115064263">Alt+Üst Karakter+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> saniye içinde eski çözünürlüğe dönülüyor</translation>
 <translation id="7180611975245234373">Yenile</translation>
-<translation id="7185362672357349361">Mikrofon kapalıyken uyaran otomatik hatırlatma açılsın mı? Mikrofonunuz kapalıyken konuşursanız bildirim alırsınız. Cihazınızdan hiç ses aktarılmaz.</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspot'unuz açık, hiçbir cihaz bağlı değil</translation>
 <translation id="7188494361780961876">Menü, ekranın sol üst köşesine taşındı.</translation>
 <translation id="7189412385142492784">Venüs ne kadar uzak</translation>

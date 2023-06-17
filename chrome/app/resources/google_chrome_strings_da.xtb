@@ -121,6 +121,7 @@
 <translation id="3037838751736561277">Google Chrome kører i baggrunden.</translation>
 <translation id="3038232873781883849">Venter på at installere…</translation>
 <translation id="3059710691562604940">Beskyttet browsing er deaktiveret. Chrome anbefaler, at du aktiverer funktionen.</translation>
+<translation id="306179102415443347">Brug din genvej til hurtigt at gå til Google Adgangskodeadministrator. Du kan flytte din genvej til din computers startskærm eller appliste.</translation>
 <translation id="3065168410429928842">Fanen Chrome</translation>
 <translation id="3080151273017101988">Fortsæt med at køre baggrundsapps, når Google Chrome er lukket</translation>
 <translation id="3089968997497233615">Der findes en ny, sikker version af Google Chrome.</translation>
@@ -222,6 +223,7 @@
 <translation id="4970880042055371251">ChromeOS-version</translation>
 <translation id="4970947549776831107">Chrome har blokeret denne fil, fordi denne type fil er skadelig</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Klik på "Google Adgangskodeadministrator"</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{En Google Chrome-udvidelse havde adgang til HID-enheder}=1{En Google Chrome-udvidelse har adgang til 1 HID-enhed}one{En Google Chrome-udvidelse har adgang til # HID-enhed}other{En Google Chrome-udvidelse har adgang til # HID-enheder}}</translation>
 <translation id="5098668839038261629">Når den er slået til, bliver du også logget ud af Chrome</translation>
 <translation id="5132929315877954718">Find fantastiske apps, spil, udvidelser og temaer til Google Chrome.</translation>
@@ -330,6 +332,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="7339898014177206373">Nyt vindue</translation>
 <translation id="7398801000654795464">Du loggede ind i Chrome som <ph name="USER_EMAIL_ADDRESS" />. Brug den samme konto til at logge ind igen.</translation>
 <translation id="7410958280246779049">Chrome har blokeret denne fil, fordi den er skadelig</translation>
+<translation id="7412494426921990001">Klik på Chrome-menuen</translation>
 <translation id="7426611252293106642">Google Chrome fungerer muligvis ikke korrekt, da det ikke længere understøttes af denne Linux-distribution</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Din organisation lukker automatisk Chrome, når den ikke bruges i 1 minut.}one{Din organisation lukker automatisk Chrome, når den ikke bruges i # minut.}other{Din organisation lukker automatisk Chrome, når den ikke bruges i # minutter.}}</translation>
 <translation id="7481213027396403996">Få Chromes stærkeste beskyttelse</translation>
@@ -375,6 +378,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="8286862437124483331">Google Chrome forsøger at vise adgangskoder. Angiv din Windows-adgangskode for at tillade dette.</translation>
 <translation id="828798499196665338">Din forælder har deaktiveret "Tilladelser til websites, apps og udvidelser" for Chrome. Det er ikke tilladt at aktivere denne <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Hovsa! Google Chrome er gået ned. Vil du genstarte nu?</translation>
+<translation id="829923460755755423">Tilføj en genvej til Google Adgangskodeadministrator</translation>
 <translation id="8342675569599923794">Denne fil er farlig, så Chrome har blokeret den.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sådan bruger vi disse data:<ph name="END_BOLD" /> Websites kan gemme oplysninger med Chrome om dine interesser. Hvis du f.eks. besøger et website for at købe sko til et maraton, kan websitet muligvis definere, at din interesse er at løbe maraton. Hvis du derefter besøger et andet website for at tilmelde dig et løb, kan det website vise dig en annonce for løbesko baseret på dine interesser.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Alle rettigheder forbeholdes.</translation>

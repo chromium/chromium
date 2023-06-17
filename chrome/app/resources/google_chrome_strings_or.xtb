@@ -123,6 +123,7 @@
 <translation id="3037838751736561277">Google Chrome ପୃଷ୍ଠପଟ ମୋଡ୍‌ରେ ଅଛି।</translation>
 <translation id="3038232873781883849">ଇନଷ୍ଟଲ କରିବା ପାଇଁ ଅପେକ୍ଷା କରାଯାଉଛି...</translation>
 <translation id="3059710691562604940">ସେଫ୍ ବ୍ରାଉଜିଂ ବନ୍ଦ ଅଛି। Chrome ଏହାକୁ ଚାଲୁ କରିବାକୁ ସୁପାରିଶ କରେ।</translation>
+<translation id="306179102415443347">Google Password Managerକୁ ଶୀଘ୍ର ଯିବା ପାଇଁ ଆପଣଙ୍କ ସର୍ଟକଟ ବ୍ୟବହର କରନ୍ତୁ। ଆପଣ ଆପଣଙ୍କ ସର୍ଟକଟକୁ ଆପଣଙ୍କ କମ୍ପ୍ୟୁଟରର ହୋମ ସ୍କ୍ରିନ କିମ୍ବା ଆପ ଲଞ୍ଚରକୁ ମୁଭ କରିପାରିବେ।</translation>
 <translation id="3065168410429928842">Chrome ଟାବ୍</translation>
 <translation id="3080151273017101988">ଯେତେବେଳେ Google Chrome ବନ୍ଦ ଅଛି, ସେତେବେଳେ ପୃଷ୍ଠପଟରେ ଥିବା ଆପ୍ସ ଚାଲିବା ଜାରି ରଖନ୍ତୁ।</translation>
 <translation id="3089968997497233615">Google Chromeର ଏକ ନୂଆ, ସୁରକ୍ଷିତ ସଂସ୍କରଣ ଉପଲବ୍ଧ ଅଛି।</translation>
@@ -224,6 +225,7 @@
 <translation id="4970880042055371251">ChromeOS ସଂସ୍କରଣ</translation>
 <translation id="4970947549776831107">ଏହି ପ୍ରକାରର ଫାଇଲ ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହି ଫାଇଲକୁ ବ୍ଲକ କରିଛି</translation>
 <translation id="4990567037958725628">Google Chrome କ୍ୟାନାରୀ</translation>
+<translation id="5003967926796347400">“Google Password Manager”ରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{ଏକ Google Chrome ଏକ୍ସଟେନସନ HID ଡିଭାଇସଗୁଡ଼ିକୁ ଆକ୍ସେସ କରୁଛି}=1{ଏକ Google Chrome ଏକ୍ସଟେନସନ 1ଟି HID ଡିଭାଇସକୁ ଆକ୍ସେସ କରୁଛି}other{ଏକ Google Chrome ଏକ୍ସଟେନସନ #ଟି HID ଡିଭାଇସକୁ ଆକ୍ସେସ କରୁଛି}}</translation>
 <translation id="5098668839038261629">ଚାଲୁ ଥିବା ସମୟରେ, ଆପଣ Chromeରୁ ମଧ୍ୟ ସାଇନ ଆଉଟ ହୋଇଯିବେ</translation>
 <translation id="5132929315877954718">Google Chrome ପାଇଁ ଆହୁରି ଭଲ ଆପ୍, ଗେମ୍, ଏକ୍ସଟେନ୍‌ସନ୍ ଏବଂ ଥିମ୍‌ଗୁଡ଼ିକ ଖୋଜି ପାଆନ୍ତୁ।</translation>
@@ -335,6 +337,7 @@
 <translation id="7339898014177206373">ନୂଆ ୱିଣ୍ଡୋ</translation>
 <translation id="7398801000654795464"><ph name="USER_EMAIL_ADDRESS" /> ଭାବରେ ଆପଣ Chromeରେ ସାଇନ୍ ଇନ୍ କରିଛନ୍ତି। ପୁଣିଥରେ ସାଇନ୍ ଇନ୍ କରିବା ପାଇଁ ଦୟାକରି ସେହି ଆକାଉଣ୍ଟ ବ୍ୟବହାର କରନ୍ତୁ।</translation>
 <translation id="7410958280246779049">ଏହି ଫାଇଲଟି ବିପଦଜନକ ହୋଇଥିବା ଯୋଗୁଁ Chrome ଏହାକୁ ବ୍ଲକ କରିଛି</translation>
+<translation id="7412494426921990001">Chrome ମେନୁରେ କ୍ଲିକ କରନ୍ତୁ</translation>
 <translation id="7426611252293106642">ଏହି Linux ଡିଷ୍ଟ୍ରିବ୍ୟୁସନରେ Google Chrome ଆଉ ସମର୍ଥିତ ନଥିବା ଯୋଗୁଁ ଏହା ସଠିକ୍ ଭାବରେ କାମ କରିନପାରେ</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{1 ମିନିଟ ପାଇଁ Chromeକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ।}other{# ମିନିଟ ପାଇଁ Chromeକୁ ବ୍ୟବହାର କରାନଗଲେ ଆପଣଙ୍କ ସଂସ୍ଥା ସ୍ୱତଃ ଏହାକୁ ବନ୍ଦ କରିଦିଏ।}}</translation>
 <translation id="7481213027396403996">Chromeର ସବୁଠାରୁ ଶକ୍ତିଶାଳୀ ସୁରକ୍ଷା ପାଆନ୍ତୁ</translation>

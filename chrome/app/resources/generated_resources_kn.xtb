@@ -2168,6 +2168,7 @@
 <translation id="2777525873368474674">ಚಿತ್ರದ ಲಿಂಕ್ ಅನ್ನು ಅಂಟಿಸಿ</translation>
 <translation id="2778471504622896352">ChromeOS ಲಾಂಚರ್‌ಗೆ ರಿಮೋಟ್ ಆ್ಯಪ್‌ಗಳನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">ಈ ಸೈಟ್‌ನಲ್ಲಿ ವಿಸ್ತರಣೆಗಳನ್ನು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="2782104745158847185">Linux ಅಪ್ಲಿಕೇಶನ್‌ ಇನ್‌ಸ್ಟಾಲ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ</translation>
 <translation id="2783024642731649028"><ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> ಅವರಿಂದ ನಿಮ್ಮ ಕಾರ್ಟ್‌ನಲ್ಲಿರುವ 1 ಐಟಂಗೆ <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" /> ವೀಕ್ಷಿಸಲಾಗಿದೆ</translation>
 <translation id="2783298271312924866">ಡೌನ್‌ಲೋಡ್ ಮಾಡಲಾಗಿದೆ</translation>
@@ -2507,7 +2508,6 @@
 <translation id="3060952009917586498">ಸಾಧನದ ಭಾಷೆಯನ್ನು ಬದಲಾಯಿಸಿ. ಪ್ರಸ್ತುತ ಭಾಷೆ <ph name="LANGUAGE" /> ಆಗಿದೆ.</translation>
 <translation id="3060987956645097882">ನಿಮ್ಮ ಫೋನ್‌ನೊಂದಿಗೆ ಕನೆಕ್ಷನ್ ಸ್ಥಾಪಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
 <translation id="3061302636956643119">ಪ್ರಕ್ರಿಯೆಗಾಗಿ ಪಠ್ಯವನ್ನು Google ಗೆ ಕಳುಹಿಸಲಾಗುತ್ತದೆ.</translation>
-<translation id="306179102415443347">Google Password Manager ಗೆ ತ್ವರಿತವಾಗಿ ಹೋಗಲು ನಿಮ್ಮ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ಬಳಸಿ. ನಿಮ್ಮ ಶಾರ್ಟ್‌ಕಟ್ ಅನ್ನು ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನ ಹೋಮ್‌ಸ್ಕ್ರೀನ್ ಅಥವಾ ಆ್ಯಪ್ ಲಾಂಚರ್‌ಗೆ ನೀವು ಸರಿಸಬಹುದು.</translation>
 <translation id="3064871050034234884">ಸೈಟ್‌ಗಳು ಧ್ವನಿಯನ್ನು ಪ್ಲೇ ಮಾಡಬಹುದು</translation>
 <translation id="3065041951436100775">ಟ್ಯಾಬ್ ನಾಶಪಡಿಸಿದ ಪ್ರತಿಕ್ರಿಯೆ.</translation>
 <translation id="3065522099314259755">ಕೀಬೋರ್ಡ್ ಪುನರಾವರ್ತನೆಯ ವಿಳಂಬ</translation>
@@ -4703,7 +4703,6 @@
 <translation id="4998430619171209993">ಆನ್‌</translation>
 <translation id="4999804342505941663">ಅಡಚಣೆ ಮಾಡಬೇಡ ಆನ್ ಮಾಡಿ</translation>
 <translation id="5001526427543320409">ಥರ್ಡ್-ಪಾರ್ಟಿ ಕುಕಿಗಳು</translation>
-<translation id="5003967926796347400">“Google Password Manager” ಎಂಬುದನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="5005498671520578047">ಪಾಸ್‌ವರ್ಡ್ ನಕಲಿಸಿ</translation>
 <translation id="5006118752738286774">2 ವರ್ಷಗಳ ಹಿಂದೆ</translation>
 <translation id="5006218871145547804">Crostini Android ಆ್ಯಪ್ ADB</translation>
@@ -5755,7 +5754,6 @@
     ಈ ಚಿತ್ರವನ್ನು Chromebook ನ ಸೈನ್‌ ಇನ್‌ ಪರದೆ ಮತ್ತು ಲಾಕ್‌ ಪರದೆಯ ಮೇಲೆ ತೋರಿಸಲಾಗುತ್ತದೆ.</translation>
 <translation id="5925147183566400388">ದೃಢೀಕರಣ ಅಭ್ಯಾಸ ಹೇಳಿಕೆಯ ಸೂಚಕ</translation>
 <translation id="5927132638760172455">ಅಪರಿಚಿತ ಸ್ವೀಕರಿಸುವವರಿಗೆ ಬಿತ್ತರಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="5927232971138258197">ಈ ವಿಸ್ತರಣೆಯು <ph name="HOST" /> ಅನ್ನು ಓದಬಹುದು ಮತ್ತು ಬದಲಾಯಿಸಬಹುದು</translation>
 <translation id="592740088639760830">ಈ ಕಂಟೇನರ್ ಸ್ಥಗಿತಗೊಳಿಸಿ</translation>
 <translation id="592880897588170157">Chrome ನಲ್ಲಿ PDF ಫೈಲ್‌ಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ತೆರೆಯುವ ಬದಲು ಅವುಗಳನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡಿ</translation>
 <translation id="5928969282301718193">ಅನುಮತಿಗಳ ಪರಿಶೀಲನೆ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
@@ -6003,7 +6001,6 @@
 <translation id="6130692320435119637">ವೈ-ಫೈ ಸೇರಿಸಿ</translation>
 <translation id="6130887916931372608">ಕೀಬೋರ್ಡ್ ಕೀ</translation>
 <translation id="6132714462430777655">ಶಾಲಾ ದಾಖಲಾತಿಯನ್ನು ಸ್ಕಿಪ್ ಮಾಡಬೇಕೆ?</translation>
-<translation id="6133850653093419052">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ವಿನಂತಿಸಲು ಅನುಮತಿಸಲಾಗಿದೆ</translation>
 <translation id="6135823405800500595">ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ, ಅನ್‌ಲಾಕ್ ಆಗಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ</translation>
 <translation id="6135826623269483856">ನಿಮ್ಮ ಎಲ್ಲಾ ಡಿಸ್‌ಪ್ಲೇಗಳಲ್ಲಿ ವಿಂಡೋಗಳನ್ನು ನಿರ್ವಹಿಸಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="6136114942382973861">ಡೌನ್‌ಲೋಡ್‌ಗಳ ಪಟ್ಟಿಯನ್ನು ಮುಚ್ಚಿ</translation>
@@ -6971,7 +6968,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) ಗೆ ಅಪ್‌ಗ್ರೇಡ್ ಲಭ್ಯವಿದೆ</translation>
 <translation id="69739764870135975">Google ಸಹ ನಿಮ್ಮ ಡೀಫಾಲ್ಟ್ ಸರ್ಚ್ ಎಂಜಿನ್ ಆಗಿದ್ದರೆ, ನಿಮಗೆ ಉತ್ತಮವಾದ, ಸಾಂದರ್ಭಿಕವಾಗಿ ಸೂಕ್ತವಾದ ಸಲಹೆಗಳು ಕಾಣಿಸುತ್ತವೆ</translation>
 <translation id="697508444536771064">Linux ಅನ್ನು ಶಟ್ ಡೌನ್ ಮಾಡಿ</translation>
-<translation id="6975361011348772931">ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ವಿನಂತಿಸಲಾಗಿದೆ</translation>
 <translation id="6978121630131642226">ಹುಡುಕಾಟ ಇಂಜಿನ್‌ಗಳು</translation>
 <translation id="6978717888677691380">ನೀವು ನಿರ್ಬಂಧಿಸಿದ ಸೈಟ್‌ಗಳು</translation>
 <translation id="6979041727349121225">ಎನರ್ಜಿ ಸೇವರ್</translation>
@@ -7465,7 +7461,6 @@
 <translation id="7410852728357935715">ಸಾಧನಕ್ಕೆ ಬಿತ್ತರಿಸಿ</translation>
 <translation id="741204030948306876">ಸಿಂಕ್‌ ಆನ್‌ ಮಾಡಿ</translation>
 <translation id="7412226954991670867">GPU ಸ್ಮರಣೆ</translation>
-<translation id="7412494426921990001">Chrome ಮೆನುವನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">ಸೆಟಪ್ ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> ಅನ್ನು ಪರಿಶೀಲಿಸಿ</translation>
@@ -8099,7 +8094,6 @@
 <translation id="793531125873261495">ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಡೌನ್‌ಲೋಡ್‌ ಮಾಡುವಲ್ಲಿ ದೋಷ ಕಂಡುಬಂದಿದೆ. ದಯವಿಟ್ಟು ಮತ್ತೆ ಪ್ರಯತ್ನಿಸಿ.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% ಪೂರ್ಣಗೊಂಡಿದೆ</translation>
 <translation id="7939062555109487992">ಸುಧಾರಿತ ಆಯ್ಕೆಗಳು</translation>
-<translation id="7939073735115504773"><ph name="HOST" /> ಅನ್ನು ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ಈ ವಿಸ್ತರಣೆಯ ಐಕಾನ್ ಅನ್ನು ಕ್ಲಿಕ್ ಮಾಡಿ</translation>
 <translation id="793923212791838">ನಿಮ್ಮ ಸಾಧನವನ್ನು ಈ ಸೈಟ್ ಜೊತೆಗೆ ಬಳಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="7939328347457537652">ಸಾಧನ ಪ್ರಮಾಣೀಕರಣಗಳನ್ನು ನಿರ್ವಹಿಸಿ</translation>
 <translation id="7939412583708276221">ಹೇಗಾದರೂ ಇರಿಸಿ</translation>
@@ -8403,7 +8397,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />ನಿಮ್ಮ ಸಾಧನಗಳು<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">ಪಾಸ್‌ವರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="8195265224453131880">ತೀವ್ರತೆ</translation>
-<translation id="8195737548602430447">ಟಾರ್ಗೆಟ್ ಭಾಷೆಗೆ ಶೀರ್ಷಿಕೆಗಳನ್ನು ಸ್ವಯಂಚಾಲಿತವಾಗಿ ಅನುವಾದಿಸಿ.</translation>
 <translation id="8197673340773315084">ಕೆಲಸ ಅಥವಾ ವೈಯಕ್ತಿಕ ರೀತಿಯ ಹೆಸರು ಅಥವಾ ಲೇಬಲ್ ಅನ್ನು ಸೇರಿಸಿ</translation>
 <translation id="8198456017687137612">ಬಿತ್ತರಿಸುವ ಟ್ಯಾಬ್‌</translation>
 <translation id="8198457270656084773">ಸಿಸ್ಟಂ ಸಾಧನ-ಲಾಗ್ ಪುಟಕ್ಕಾಗಿ ಹುಡುಕುತ್ತಿದ್ದೀರಾ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ಗೆ ಭೇಟಿ ನೀಡಿ.</translation>
@@ -8522,7 +8515,6 @@
 <translation id="8295449579927246485">ಲೈವ್ ಅನುವಾದ</translation>
 <translation id="8297292446125062288">HID ಸೆಟ್ಟಿಂಗ್‌ಗಳು</translation>
 <translation id="8298429963694909221">ಇದೀಗ ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ, ನಿಮ್ಮ ಫೋನ್‌ನ ಮೂಲಕ ನೀವು ಅಧಿಸೂಚನೆಗಳನ್ನು ಸ್ವೀಕರಿಸಬಹುದು‌. ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ನಲ್ಲಿ ಅಧಿಸೂಚನೆಗಳನ್ನು ವಜಾಗೊಳಿಸಿದರೆ, ನಿಮ್ಮ ಫೋನ್‌ನಲ್ಲೂ ಅವುಗಳನ್ನು ವಜಾಗೊಳಿಸಲಾಗುತ್ತದೆ. ನಿಮ್ಮ ಫೋನ್ ಸಮೀಪದಲ್ಲಿದೆ ಮತ್ತು ಅದರಲ್ಲಿ ಬ್ಲೂಟೂತ್ ಹಾಗೂ ವೈ-ಫೈ ಆನ್ ಆಗಿದೆ ಎಂಬುದನ್ನು ಖಚಿತಪಡಿಸಿಕೊಳ್ಳಿ.</translation>
-<translation id="829923460755755423">Google Password Manager ಗೆ ಶಾರ್ಟ್‌ಕಟ್ ಸೇರಿಸಿ</translation>
 <translation id="8299319456683969623">ನೀವು ಪ್ರಸ್ತುತ ಆಫ್‌ಲೈನ್‌ನಲ್ಲಿರುವಿರಿ.</translation>
 <translation id="8300011035382349091">ಈ ಟ್ಯಾಬ್‌ಗಾಗಿ ಬುಕ್‌ಮಾರ್ಕ್‌ ಅನ್ನು ಎಡಿಟ್ ಮಾಡಿ</translation>
 <translation id="8300374739238450534">ಮಿಡ್‌ನೈಟ್ ಬ್ಲೂ</translation>
@@ -8550,7 +8542,6 @@
 <translation id="8323167517179506834">URL ಟೈಪ್ ಮಾಡಿ</translation>
 <translation id="8323317289166663449">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿನ ಮತ್ತು ಎಲ್ಲಾ ವೆಬ್‌ಸೈಟ್‌ಗಳಲ್ಲಿನ ನಿಮ್ಮ ಎಲ್ಲಾ ಡೇಟಾವನ್ನು ಓದಿ ಮತ್ತು ಬದಲಾಯಿಸಿ</translation>
 <translation id="8324784016256120271">ವಿವಿಧ ಸೈಟ್‌ಗಳಾದ್ಯಂತ ನಿಮ್ಮ ಬ್ರೌಸಿಂಗ್ ಚಟುವಟಿಕೆಯನ್ನು ನೋಡಲು, ಉದಾಹರಣೆಗೆ, ಜಾಹೀರಾತುಗಳನ್ನು ವೈಯಕ್ತೀಕರಿಸಲು ಸೈಟ್‌ಗಳು ಕುಕೀಗಳನ್ನು ಬಳಸಬಹುದು</translation>
-<translation id="8324819620112450495">ಆ್ಯಕ್ಸೆಸ್ ಅನ್ನು ವಿನಂತಿಸಲು ಅನುಮತಿಸಲಾಗಿಲ್ಲ</translation>
 <translation id="8325413836429495820">ನಿಮ್ಮ ಕ್ಲಿಪ್‌ಬೋರ್ಡ್ ನೋಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
 <translation id="8326478304147373412">PKCS #7, ಪ್ರಮಾಣಪತ್ರ ಸರಣಿ</translation>
 <translation id="8327386430364625757">ಗಣಿತದ ಫಾಂಟ್</translation>

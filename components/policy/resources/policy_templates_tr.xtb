@@ -6012,10 +6012,6 @@ Ekran koruyucuyu başlatmak için gereken boşta kalma zaman aşımı ve bir res
 <translation id="6539246272469751178">Bu politikanın Android uygulamaları üzerinde hiçbir etkisi yoktur. Android uygulamaları daima varsayılan indirme dizinini kullanır ve <ph name="PRODUCT_OS_NAME" /> tarafından, varsayılan olmayan indirme dizinine indirilen dosyalara erişemez.</translation>
 <translation id="654303922206238013">ecryptfs için taşıma stratejisi</translation>
 <translation id="6544601600794014309">Bil Bakalım Çevirisini Etkinleştir</translation>
-<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API, web uygulamalarının tek seferde birden çok yüzeyi yakalamasına izin verir.
-      Bu politika, tanımlanan kaynaklardaki web uygulamaları için <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliğinin kilidini açar.
-      <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> özelliği, <ph name="GET_DISPLAY_MEDIA_SET_NAME" /> isteği içinde tanımlanırsa tüm ekran yüzeyleri, kullanıcının açık izni gerekmeden otomatik olarak yakalanır.
-      Politika ayarlanmazsa <ph name="AUTO_SELECT_ALL_SCREENS_NAME" />, hiçbir web uygulaması tarafından kullanılamaz.</translation>
 <translation id="654546276700640113">Politika ayarlanırsa yapılandırılmış maksimum PIN uzunluğu uygulanır. Politika, 0 veya daha küçük bir değere ayarlanırsa kullanıcı herhangi bir uzunlukta PIN belirleyebilir. Bu değer, <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> değerinden küçük ancak 0'dan büyükse maksimum uzunluk ile minimum uzunluk aynı olur.
 
       Politika ayarlanmadan bırakılırsa maksimum uzunluk uygulanmaz.</translation>
@@ -7187,12 +7183,6 @@ Bu politika, kullanımdan kaldırılan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_UR
 <translation id="759957074386651883">Güvenli Tarama ayarları</translation>
 <translation id="7602621823177962064">Cihazın bellek bilgileri raporlamasını devre dışı bırak</translation>
 <translation id="7604169113182304895">Android uygulamaları, kendi tercihleriyle bu listeye uymaya karar verebilir. Bu uygulamaları listeye uymaya zorlayamazsınız.</translation>
-<translation id="7605203688694672897"><ph name="PRODUCT_OS_NAME" /> sistemi için cihaz düzeyinde coğrafi konum erişim düzeyini ayarlayın. Bu ayar, kullanıcı oturum açmadan önce geçerli olur. Kullanıcılar oturum açtıktan sonra kullanıcı başına ayar aracılığıyla coğrafi konum erişim düzeyini kontrol edebilirler.
-
-Bu politika ayarlanmazsa veya <ph name="ALLOW" /> değerine ayarlanırsa yönetilen cihazlarda giriş ekranından coğrafi konum erişimine izin verilir. Geçersiz bir politika değeri gönderilirse erişim <ph name="DISALLOW" /> değerine geri döner. Yönetilmeyen cihazlarda her zaman <ph name="DISALLOW" /> değeri geçerlidir.
-
-UYARI: Bu ayarı değiştirirken dikkatli olun. Bu ayar, coğrafi konumla ilgili diğer politikaların (ör. <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />) işleyişini bozabilir.
-Özellikle, bu politika <ph name="DISALLOW" /> değerine ayarlanırsa <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" /> politikasının <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" /> ile <ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" /> seçenekleri kullanım dışı kalır ve yalnızca <ph name="LOG_IN" /> ekranındaki <ph name="IP" /> bazlı konum çözümü kullanılır.</translation>
 <translation id="7608186022704392724">PIN kodu otomatik gönderme özelliği <ph name="PRODUCT_OS_NAME" /> ürününde PIN kodlarının girilme biçimini değiştirir.
           Şifre girmek için kullanılan aynı metin alanı yerine, bu 
           özellik kullanıcıya PIN kodu için kaç

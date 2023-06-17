@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">복사한 이미지</translation>
 <translation id="1142846828089312304">시크릿 모드에서 서드 파티 쿠키 차단</translation>
 <translation id="1147769322402934017">온라인 이미지 갤러리</translation>
+<translation id="1150565364351027703">선글라스</translation>
 <translation id="1150979032973867961">이 서버가 <ph name="DOMAIN" />임을 입증할 수 없으며 컴퓨터의 운영체제에서 신뢰하는 보안 인증서가 아닙니다. 서버를 잘못 설정했거나 불법 사용자가 연결을 가로채고 있기 때문일 수 있습니다.</translation>
 <translation id="1151972924205500581">비밀번호를 입력해야 합니다.</translation>
 <translation id="1156303062776767266">표시된 파일은 로컬 또는 공유 파일입니다.</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">디스크</translation>
 <translation id="3162559335345991374">사용 중인 Wi-Fi에서 로그인 페이지 방문을 요청할 수 있습니다.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">웹 서비스</translation>
 <translation id="3176929007561373547">프록시 설정을 확인하거나 네트워크 관리자에게 문의하여
       프록시 서버가 작동하는지 확인하세요. 프록시 서버를 사용하지 않으려면
       다음 단계를 따르세요.
@@ -2362,6 +2364,7 @@
 <translation id="6665553082534466207">오른쪽 3공 펀칭</translation>
 <translation id="6668389483194953109">이름이 'custom'인 용지 크기를 찾았으나 'custom_size' 속성이 비어 있거나 유효하지 않습니다.</translation>
 <translation id="6671697161687535275">Chromium에서 자동완성 항목 추천을 삭제하시겠습니까?</translation>
+<translation id="6683022854667115063">헤드폰</translation>
 <translation id="6683717648675961851">채용 공고</translation>
 <translation id="6687335167692595844">글꼴 크기 요청됨</translation>
 <translation id="6687696737818665306">연극 및 공연</translation>
@@ -3146,6 +3149,7 @@
 <translation id="8513580896341796021">다운로드가 시작되었습니다. 확인하려면 |<ph name="ACCELERATOR" />| 키를 누르세요.</translation>
 <translation id="8519753333133776369">관리자가 허용한 HID 기기</translation>
 <translation id="8522552481199248698">Chrome을 통해 Google 계정을 보호하고 비밀번호를 변경할 수 있습니다.</translation>
+<translation id="8527228059738193856">스피커</translation>
 <translation id="8530813470445476232">Chrome 설정에서 방문 기록, 쿠키, 캐시 등을 삭제하세요.</translation>
 <translation id="853332391023689529">픽업트럭</translation>
 <translation id="8533619373899488139">차단된 URL 및 시스템 관리자가 설정한 기타 정책 목록을 확인하려면 &lt;strong&gt;chrome://policy&lt;/strong&gt;를 방문하세요.</translation>
@@ -3304,6 +3308,7 @@
 <translation id="8943282376843390568">라임색</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">사법 및 정부 기관</translation>
+<translation id="8954252855949068147">의류</translation>
 <translation id="8957210676456822347">캡티브 포털 승인</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">사이트 설정으로 이동</translation>

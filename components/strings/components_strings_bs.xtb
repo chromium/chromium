@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Slika koju ste kopirali</translation>
 <translation id="1142846828089312304">Blokiraj kolačiće trećih strana u anonimnom načinu rada</translation>
 <translation id="1147769322402934017">Online galerije slika</translation>
+<translation id="1150565364351027703">Sunčane naočale</translation>
 <translation id="1150979032973867961">Ovaj server nije mogao potvrditi da je ovo domena <ph name="DOMAIN" />. Operativni sistem vašeg računara ne smatra njenu potvrdu sigurnosti pouzdanom. Uzrok tome može biti pogrešna konfiguracija ili napadač koji je prekinuo vašu vezu.</translation>
 <translation id="1151972924205500581">Potrebna je lozinka</translation>
 <translation id="1156303062776767266">Pregledate lokalni ili dijeljeni fajl</translation>
@@ -891,6 +892,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">WiFi koji koristite može tražiti da posjetite njegovu stranicu za prijavu.</translation>
 <translation id="3169472444629675720">Otkrijte</translation>
+<translation id="3175081911749765310">Web usluge</translation>
 <translation id="3176929007561373547">Provjerite postavke proksija ili kontaktirajte administratora mreže
       kako biste bili sigurni da proksi server funkcionira. Ako smatrate da ne trebate
       koristiti proksi server:
@@ -2362,6 +2364,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6665553082534466207">Trostruko bušenje na desnoj strani</translation>
 <translation id="6668389483194953109">Pronađen je naziv veličine papira "prilagođeno", ali svojstvo "prilagođena_veličina" je prazno ili nevažeće.</translation>
 <translation id="6671697161687535275">Ukloniti prijedlog obrasca iz Chromiuma?</translation>
+<translation id="6683022854667115063">Slušalice</translation>
 <translation id="6683717648675961851">Liste poslova</translation>
 <translation id="6687335167692595844">Zatražena je veličina fonta</translation>
 <translation id="6687696737818665306">Gluma i pozorište</translation>
@@ -3147,6 +3150,7 @@ Dodatni detalji:
 <translation id="8513580896341796021">Preuzimanje je započeto Da ga vidite, pritisnite |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID uređaj koji je dozvolio vaš administrator</translation>
 <translation id="8522552481199248698">Chrome vam može pomoći da zaštitite svoj Google račun i promijenite lozinku.</translation>
+<translation id="8527228059738193856">Zvučnici</translation>
 <translation id="8530813470445476232">Izbrišite historiju pregledanja, kolačiće, keš memoriju i drugo u postavkama Chromea</translation>
 <translation id="853332391023689529">Kamioneti</translation>
 <translation id="8533619373899488139">Posjetite &lt;strong&gt;chrome://policy&lt;/strong&gt; da vidite listu blokiranih URL-ova i druga pravila koja je nametnuo vaš administrator sistema.</translation>
@@ -3305,6 +3309,7 @@ Dodatni detalji:
 <translation id="8943282376843390568">Limeta zelena</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Zakon i uprava</translation>
+<translation id="8954252855949068147">Odjeća</translation>
 <translation id="8957210676456822347">Postupak odobrenja na zaštitnom portalu</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Idite u postavke web lokacije</translation>

@@ -2173,6 +2173,7 @@
 <translation id="2777525873368474674">ပုံလင့်ခ်ကူးထည့်ရန်</translation>
 <translation id="2778471504622896352">ChromeOS Launcher တွင် အဝေးထိန်းအက်ပ်များ ထည့်နိုင်သည်</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">ဤဝဘ်ဆိုက်တွင် နောက်ဆက်တွဲများကို ခွင့်ပြုသည်</translation>
 <translation id="2782104745158847185">Linux အပလီကေးရှင်းကို ထည့်ရာတွင် အမှားအယွင်းရှိနေသည်</translation>
 <translation id="2783024642731649028">သင့်ဈေးခြင်းတောင်းအတွင်းရှိ <ph name="MERCHANT_DOMAIN" />၊ <ph name="MERCHANT_NAME" /> ထံမှ <ph name="DISCOUNT_TEXT" /> ပစ္စည်း ၁ ခု၊ ကြည့်ရှုခဲ့ချိန် <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">ဒေါင်းလုပ်ရယူပြီး၏</translation>
@@ -2512,7 +2513,6 @@
 <translation id="3060952009917586498">စက်၏ဘာသာစကား ပြောင်းပါ။ လက်ရှိ ဘာသာစကားမှာ <ph name="LANGUAGE" /> ဖြစ်ပါသည်။</translation>
 <translation id="3060987956645097882">သင့်ဖုန်းနှင့် ချိတ်ဆက်၍မရပါ။ သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ဖွင့်ထားကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
 <translation id="3061302636956643119">စာသားကို လုပ်ဆောင်ရန် Google သို့ ပို့မည်။</translation>
-<translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
 <translation id="3064871050034234884">ဝဘ်ဆိုက်များက အသံ ဖွင့်နိုင်သည်</translation>
 <translation id="3065041951436100775">တဘ် အသတ်ခံရမှု သုံးသပ်ချက်။</translation>
 <translation id="3065522099314259755">လက်ကွက်ထပ်ကျော့မှု တုံ့ပြန်ချိန်</translation>
@@ -4706,7 +4706,6 @@
 <translation id="4998430619171209993">ဖွင့်</translation>
 <translation id="4999804342505941663">'မနှောင့်ယှက်ရ' ကို ဖွင့်ရန်</translation>
 <translation id="5001526427543320409">ပြင်ပကုမ္ပဏီ၏ကွတ်ကီး</translation>
-<translation id="5003967926796347400">“Google Password Manager” ကို နှိပ်ပါ</translation>
 <translation id="5005498671520578047">စကားဝှက်ကို ကူးယူပါ</translation>
 <translation id="5006118752738286774">ပြီးခဲ့သော 2 နှစ်</translation>
 <translation id="5006218871145547804">Crostini Android အက်ပ် ADB</translation>
@@ -5756,7 +5755,6 @@
 <translation id="5924527146239595929">ဓာတ်ပုံအသစ်ရိုက်ပါ သို့မဟုတ် ရှိပြီးသားဓာတ်ပုံ သို့မဟုတ် သင်္ကေတကို ရွေးပါ။<ph name="LINE_BREAK" />၎င်းပုံကို Chromebook လက်မှတ်ထိုးဝင်သည့် မျက်နှာပြင်နှင့် လော့ခ်မျက်နှာပြင်တွင် ပြသပါမည်။</translation>
 <translation id="5925147183566400388">အသိမှတ်ပြုလက်မှတ် လေ့ကျင့်မှု အကြောင်းရာ ညွှန်ပြကိရိယာ</translation>
 <translation id="5927132638760172455">အမည်မသိ လက်ခံသူတစ်ဦးသို့ Casting လုပ်နေ၏</translation>
-<translation id="5927232971138258197">ဤနောက်ဆက်တွဲက <ph name="HOST" /> ကို ဖတ်ပြီးပြောင်းနိုင်သည်</translation>
 <translation id="592740088639760830">ဤကွန်တိန်နာကို ရပ်ရန်</translation>
 <translation id="592880897588170157">PDF ဖိုင်များကို Chrome တွင် အလိုအလျောက် ဖွင့်မည့်အစား ဒေါင်းလုဒ်လုပ်လိုက်ပါ</translation>
 <translation id="5928969282301718193">လောလောဆယ် အားလုံးပြီးပြီ</translation>
@@ -6004,7 +6002,6 @@
 <translation id="6130692320435119637">Wi-Fi ထည့်ရန်</translation>
 <translation id="6130887916931372608">ကီးဘုတ်ခလုတ်</translation>
 <translation id="6132714462430777655">ကျောင်းအပ်နှံမှုကို ကျော်မလား။</translation>
-<translation id="6133850653093419052">သုံးခွင့်တောင်းဆိုမှုကို ခွင့်ပြုထားသည်</translation>
 <translation id="6135823405800500595">သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး လော့ခ်ဖွင့်ထားကာ ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ</translation>
 <translation id="6135826623269483856">သင့်ဖန်သားပြင်အားလုံးတွင် ဝင်းဒိုးများစီမံခြင်းကို ခွင့်ပြုမထားသည်များ</translation>
 <translation id="6136114942382973861">ဒေါင်းလုဒ်ဘား ပိတ်ရန်</translation>
@@ -6969,7 +6966,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) သို့ အဆင့်မြှင့်တင်နိုင်ပါပြီ</translation>
 <translation id="69739764870135975">Google သည် သင်၏မူရင်းရှာဖွေရေး အင်ဂျင်လည်းဖြစ်ပါက အကြောင်းအရာ အပေါ်မူတည်သည့် ပိုကောင်းမွန်သော သက်ဆိုင်ရာအကြံပြုချက်များကို မြင်ရပါမည်</translation>
 <translation id="697508444536771064">Linux ကို အပြီးပိတ်ရန်</translation>
-<translation id="6975361011348772931">ဖတ်ပြီးပြောင်းရန် တောင်းဆိုထားသည်</translation>
 <translation id="6978121630131642226">ရှာဖွေရေး အင်ဂျင်များ</translation>
 <translation id="6978717888677691380">သင်ပိတ်ထားသည့် ဝဘ်ဆိုက်များ</translation>
 <translation id="6979041727349121225">စွမ်းအင်ချွေတာစနစ်</translation>
@@ -7462,7 +7458,6 @@
 <translation id="7410852728357935715">စက်တစ်ခုသို့ ကာစ်လုပ်ရန်</translation>
 <translation id="741204030948306876">ပါဝင်ပါမည်</translation>
 <translation id="7412226954991670867">GPU မှတ်ဉာဏ်</translation>
-<translation id="7412494426921990001">Chrome မီနူးကို နှိပ်ပါ</translation>
 <translation id="7414464185801331860">၁၈ ဆ</translation>
 <translation id="7415454883318062233">စနစ်ထည့်သွင်းခြင်း ပြီးပါပြီ</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> ကို စိစစ်ရန်</translation>
@@ -8098,7 +8093,6 @@
 <translation id="793531125873261495">ပကတိအသွင်စက်စနစ် ဒေါင်းလုဒ်လုပ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% ပြီးပါပြီ</translation>
 <translation id="7939062555109487992">အဆင့်မြင့် ရွေးစရာများ</translation>
-<translation id="7939073735115504773"><ph name="HOST" /> ကို ဖတ်ပြီးပြောင်းရန် ဤနောက်ဆက်တွဲ၏ သင်္ကေတကို နှိပ်နိုင်သည်</translation>
 <translation id="793923212791838">သင့်စက်ကို ဤဝဘ်ဆိုက်နှင့် သုံး၍မရပါ</translation>
 <translation id="7939328347457537652">စက်အသိအမှတ်ပြုခြင်းများကို စီမံရန်</translation>
 <translation id="7939412583708276221">မည်သို့ပင်ဖြစ်စေ သိမ်းရန်</translation>
@@ -8404,7 +8398,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />သင့်စက်ပစ္စည်းများ<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">စကားဝှက် ထည့်ပါ</translation>
 <translation id="8195265224453131880">အရောင်ပြင်းအား</translation>
-<translation id="8195737548602430447">စာတန်းများကို ပစ်မှတ်ဘာသာစကားသို့ အလိုအလျောက် ဘာသာပြန်ပေးသည်။</translation>
 <translation id="8197673340773315084">‘အလုပ်’ သို့မဟုတ် ‘ကိုယ်ရေးကိုယ်တာ’ ကဲ့သို့ အမည် (သို့) အညွှန်း ထည့်ရန်</translation>
 <translation id="8198456017687137612">တဘ်ကို ကာစ်လုပ်နေသည်</translation>
 <translation id="8198457270656084773">စနစ်၏ စက်မှတ်တမ်း စာမျက်နှာကို ရှာနေလား။ <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> သို့ ဝင်ကြည့်ပါ။</translation>
@@ -8523,7 +8516,6 @@
 <translation id="8295449579927246485">တစ်ပြိုင်နက်တည်း ဘာသာပြန်ခြင်း</translation>
 <translation id="8297292446125062288">HID ဆက်တင်များ</translation>
 <translation id="8298429963694909221">သင်၏ဖုန်းမှ အကြောင်းကြားချက်များကို သင့် <ph name="DEVICE_TYPE" /> တွင် ယခုလက်ခံနိုင်ပါပြီ။ သင့် <ph name="DEVICE_TYPE" /> တွင် အကြောင်းကြားချက်များ ပယ်ခြင်းက သင့်ဖုန်းတွင်လည်း ၎င်းတို့ကို ပယ်လိုက်ပါမည်။ သင့်ဖုန်းသည် အနီးတွင်ရှိပြီး ဘလူးတုသ်နှင့် Wi-Fi ဖွင့်ထားကြောင်း သေချာပါစေ။</translation>
-<translation id="829923460755755423">Google Password Manager သို့ ဖြတ်လမ်းလင့်ခ် ထည့်နိုင်သည်</translation>
 <translation id="8299319456683969623">သင်သည် လောလောဆယ်မှာ အော့ဖ်လိုင်း ဖြစ်နေ</translation>
 <translation id="8300011035382349091">ဤတဘ်အတွက် လိပ်စာကို တည်းဖြတ်ရန်</translation>
 <translation id="8300374739238450534">သန်းခေါင်ယံကောင်းကင်ပြာ</translation>
@@ -8551,7 +8543,6 @@
 <translation id="8323167517179506834">URL ရိုက်ထည့်ရန်</translation>
 <translation id="8323317289166663449">သင့်ကွန်ပျူတာနှင့် ဝဘ်ဆိုက်အားလုံးပေါ်ရှိ ဒေတာအားလုံးကို ဖတ်ရှုခြင်းနှင့် ပြောင်းခြင်း</translation>
 <translation id="8324784016256120271">ဝဘ်ဆိုက်များသည် ကြော်ငြာများကို ပုဂ္ဂိုလ်ရေးသီးသန့်ပြုလုပ်ရန် ဥပမာအားဖြင့် မတူညီသည့် ဝဘ်ဆိုက်များတစ်လျှောက်တွင် ကွတ်ကီးများသုံးပြီး သင့်ကြည့်ရှုခြင်းများကို ကြည့်နိုင်သည်</translation>
-<translation id="8324819620112450495">သုံးခွင့်တောင်းဆိုမှုကို ခွင့်ပြုမထားပါ</translation>
 <translation id="8325413836429495820">သင့်ကလစ်ဘုတ်ကို ကြည့်ရန် ခွင့်ပြုမထားပါ</translation>
 <translation id="8326478304147373412">PKCS #7၊ လက်မှတ် ကွင်းဆက်</translation>
 <translation id="8327386430364625757">သင်္ချာဖောင့်</translation>

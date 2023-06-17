@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">รูปภาพที่คุณคัดลอก</translation>
 <translation id="1142846828089312304">บล็อกคุกกี้ของบุคคลที่สามในโหมดไม่ระบุตัวตน</translation>
 <translation id="1147769322402934017">แกลเลอรีภาพออนไลน์</translation>
+<translation id="1150565364351027703">แว่นกันแดด</translation>
 <translation id="1150979032973867961">เซิร์ฟเวอร์นี้ไม่สามารถพิสูจน์ได้ว่าเป็น <ph name="DOMAIN" /> เพราะระบบปฏิบัติการของคอมพิวเตอร์ของคุณไม่เชื่อถือใบรับรองความปลอดภัย โดยอาจเกิดจากการกำหนดค่าผิดหรือผู้บุกรุกที่ขัดขวางการเชื่อมต่อของคุณ</translation>
 <translation id="1151972924205500581">ต้องมีรหัสผ่าน</translation>
 <translation id="1156303062776767266">คุณกำลังดูไฟล์ในเครื่องหรือไฟล์ที่แชร์</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">ดิสก์</translation>
 <translation id="3162559335345991374">Wi-Fi ที่คุณใช้อาจต้องการให้คุณไปที่หน้าการเข้าสู่ระบบ</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">บริการทางเว็บ</translation>
 <translation id="3176929007561373547">ตรวจสอบการตั้งค่าพร็อกซีหรือติดต่อผู้ดูแลระบบเครือข่ายของคุณเพื่อ
       ตรวจสอบว่าพร็อกซีเซิร์ฟเวอร์ทำงานอยู่ หากคุณคิดว่าไม่ควร
       ใช้พร็อกซีเซิร์ฟเวอร์ ให้ดำเนินการดังนี้:
@@ -2361,6 +2363,7 @@
 <translation id="6665553082534466207">เจาะรูด้านขวา 3 รู</translation>
 <translation id="6668389483194953109">พบชื่อขนาดกระดาษ "custom" แต่พร็อพเพอร์ตี้ "custom_size" ว่างเปล่าหรือไม่ถูกต้อง</translation>
 <translation id="6671697161687535275">ต้องการนำคำแนะนำสำหรับแบบฟอร์มออกจาก Chromium ใช่ไหม</translation>
+<translation id="6683022854667115063">หูฟัง</translation>
 <translation id="6683717648675961851">รายการตำแหน่งงาน</translation>
 <translation id="6687335167692595844">ขอขนาดแบบอักษรแล้ว</translation>
 <translation id="6687696737818665306">การแสดงและการละคร</translation>
@@ -3146,6 +3149,7 @@
 <translation id="8513580896341796021">เริ่มดาวน์โหลดแล้ว หากต้องการดู ให้กด |<ph name="ACCELERATOR" />|</translation>
 <translation id="8519753333133776369">อุปกรณ์ HID นี้ได้รับอนุญาตจากผู้ดูแลระบบ</translation>
 <translation id="8522552481199248698">Chrome ช่วยคุณปกป้องบัญชี Google และเปลี่ยนรหัสผ่านได้</translation>
+<translation id="8527228059738193856">ลำโพง</translation>
 <translation id="8530813470445476232">ล้างประวัติการท่องเว็บ คุกกี้ แคช และอื่นๆ ในการตั้งค่า Chrome</translation>
 <translation id="853332391023689529">รถปิคอัพ</translation>
 <translation id="8533619373899488139">ไปที่ &lt;strong&gt;chrome://policy&lt;/strong&gt; เพื่อดูรายการ URL ที่ถูกบล็อกและนโยบายอื่นๆ ที่ผู้ดูแลระบบบังคับใช้</translation>
@@ -3305,6 +3309,7 @@
 <translation id="8943282376843390568">เหลืองมะนาว</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">กฎหมายและการปกครอง</translation>
+<translation id="8954252855949068147">เครื่องแต่งกาย</translation>
 <translation id="8957210676456822347">การให้สิทธิ์แคปทีฟพอร์ทัล</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">ไปที่การตั้งค่าเว็บไซต์</translation>

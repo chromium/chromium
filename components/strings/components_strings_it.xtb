@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Immagine copiata</translation>
 <translation id="1142846828089312304">Blocca cookie di terze parti nella modalità di navigazione in incognito</translation>
 <translation id="1147769322402934017">Gallerie di immagini online</translation>
+<translation id="1150565364351027703">Occhiali da sole</translation>
 <translation id="1150979032973867961">Questo server non è riuscito a dimostrare che si tratta di <ph name="DOMAIN" />; il relativo certificato di sicurezza non è considerato attendibile dal sistema operativo del computer. Il problema potrebbe essere dovuto a un'errata configurazione o a un malintenzionato che intercetta la connessione.</translation>
 <translation id="1151972924205500581">Password obbligatoria</translation>
 <translation id="1156303062776767266">È visualizzato un file locale o condiviso</translation>
@@ -891,6 +892,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">La rete Wi-Fi in uso potrebbe richiedere la visita della relativa pagina di accesso.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Servizi web</translation>
 <translation id="3176929007561373547">Controlla le impostazioni del proxy o contatta il tuo amministratore di rete per verificare che il server proxy funzioni. Se non ritieni di dover utilizzare un server proxy: <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Sapere quando usi attivamente questo dispositivo</translation>
 <translation id="3180358318770512945">Educazione dei figli</translation>
@@ -2358,6 +2360,7 @@ In caso contrario l'uso sarà bloccato dalle impostazioni sulla privacy. I conte
 <translation id="6665553082534466207">Tripla perforatura a destra</translation>
 <translation id="6668389483194953109">Trovato formato carta "custom", ma la proprietà "custom_size" è vuota o non valida.</translation>
 <translation id="6671697161687535275">Rimuovere il suggerimento per i moduli da Chromium?</translation>
+<translation id="6683022854667115063">Cuffie</translation>
 <translation id="6683717648675961851">Annunci di lavoro</translation>
 <translation id="6687335167692595844">Dimensioni carattere richieste</translation>
 <translation id="6687696737818665306">Recitazione e teatro</translation>
@@ -3143,6 +3146,7 @@ Ulteriori dettagli:
 <translation id="8513580896341796021">Download iniziato. Per visualizzarlo, premi |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Dispositivo HID consentito dal tuo amministratore</translation>
 <translation id="8522552481199248698">Chrome può aiutarti a proteggere il tuo Account Google e a modificare la password.</translation>
+<translation id="8527228059738193856">Altoparlanti</translation>
 <translation id="8530813470445476232">Cancella la cronologia di navigazione e i cookie, svuota la cache e altro ancora nelle impostazioni di Chrome</translation>
 <translation id="853332391023689529">Furgoni pick-up</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; per visualizzare l'elenco di URL bloccati e altri criteri applicati dall'amministratore di sistema.
@@ -3302,6 +3306,7 @@ Ulteriori dettagli:
 <translation id="8943282376843390568">Giallo-verde</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Diritto e pubblica amministrazione</translation>
+<translation id="8954252855949068147">Abbigliamento</translation>
 <translation id="8957210676456822347">Autorizzazione Captive Portal</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Vai alle Impostazioni sito</translation>

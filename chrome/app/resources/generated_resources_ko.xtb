@@ -2177,6 +2177,7 @@
 <translation id="2777525873368474674">이미지 링크 붙여넣기</translation>
 <translation id="2778471504622896352">Chrome OS 런처에 원격 앱 추가</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">이 사이트에서 확장 프로그램이 허용되었습니다.</translation>
 <translation id="2782104745158847185">Linux 애플리케이션 설치 중 오류 발생</translation>
 <translation id="2783024642731649028">장바구니에 있는 상품 1개 <ph name="MERCHANT_NAME" />(<ph name="MERCHANT_DOMAIN" />)에서 <ph name="DISCOUNT_TEXT" />, <ph name="RELATIVE_TIME" />에 확인함</translation>
 <translation id="2783298271312924866">다운로드됨</translation>
@@ -2516,7 +2517,6 @@
 <translation id="3060952009917586498">기기 언어를 변경합니다. 현재 언어는 <ph name="LANGUAGE" />입니다.</translation>
 <translation id="3060987956645097882">휴대전화와 연결을 설정할 수 없습니다. 휴대전화가 근처에 있고, 잠금이 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="3061302636956643119">처리를 위해 텍스트가 Google로 전송됩니다.</translation>
-<translation id="306179102415443347">바로가기를 사용하여 Google 비밀번호 관리자로 빠르게 이동하세요. 바로가기는 컴퓨터의 홈 화면이나 앱 런처로 이동할 수 있습니다.</translation>
 <translation id="3064871050034234884">사이트에서 소리를 재생할 수 있음</translation>
 <translation id="3065041951436100775">탭 사용 중지 관련 피드백</translation>
 <translation id="3065522099314259755">키보드 반복 지연 시간</translation>
@@ -4709,7 +4709,6 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4998430619171209993">사용</translation>
 <translation id="4999804342505941663">방해 금지 모드 사용 설정</translation>
 <translation id="5001526427543320409">서드 파티 쿠키</translation>
-<translation id="5003967926796347400">'Google 비밀번호 관리자'를 클릭합니다</translation>
 <translation id="5005498671520578047">비밀번호 복사</translation>
 <translation id="5006118752738286774">2년 전</translation>
 <translation id="5006218871145547804">Crostini Android 앱 ADB</translation>
@@ -5760,7 +5759,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
     이 사진이 Chromebook 로그인 화면과 잠금 화면에 표시됩니다.</translation>
 <translation id="5925147183566400388">인증 업무 준칙 URI</translation>
 <translation id="5927132638760172455">알 수 없는 수신자로 전송 중</translation>
-<translation id="5927232971138258197">이 확장 프로그램은 <ph name="HOST" />을 읽고 변경할 수 있습니다.</translation>
 <translation id="592740088639760830">컨테이너 중단</translation>
 <translation id="592880897588170157">Chrome에서 PDF 파일을 자동으로 여는 대신 다운로드</translation>
 <translation id="5928969282301718193">모두 완료됨</translation>
@@ -6008,7 +6006,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6130692320435119637">Wi-Fi 추가</translation>
 <translation id="6130887916931372608">키보드 키</translation>
 <translation id="6132714462430777655">학교 등록을 건너뛸까요?</translation>
-<translation id="6133850653093419052">액세스 요청 허용됨</translation>
 <translation id="6135823405800500595">휴대전화가 근처에 있고, 잠금 해제되어 있으며, 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
 <translation id="6135826623269483856">모든 디스플레이의 창 관리 허용 안함</translation>
 <translation id="6136114942382973861">다운로드바 닫기</translation>
@@ -6974,7 +6971,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="6973611239564315524">Debian 10(Buster)으로 업그레이드할 수 있습니다.</translation>
 <translation id="69739764870135975">Google이 기본 검색엔진이기도 하면 더 정확하고 관련성 높은 제안을 볼 수 있습니다.</translation>
 <translation id="697508444536771064">Linux 종료</translation>
-<translation id="6975361011348772931">읽기 및 변경 요청됨</translation>
 <translation id="6978121630131642226">검색엔진</translation>
 <translation id="6978717888677691380">차단한 사이트</translation>
 <translation id="6979041727349121225">에너지 절약 모드</translation>
@@ -7467,7 +7463,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="7410852728357935715">기기로 전송</translation>
 <translation id="741204030948306876">사용</translation>
 <translation id="7412226954991670867">GPU 메모리</translation>
-<translation id="7412494426921990001">Chrome 메뉴를 클릭합니다</translation>
 <translation id="7414464185801331860">18배</translation>
 <translation id="7415454883318062233">설정 완료</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> 검토</translation>
@@ -8103,7 +8098,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="793531125873261495">가상 머신을 다운로드하는 중 문제가 발생했습니다. 다시 시도해 주세요.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% 완료됨</translation>
 <translation id="7939062555109487992">고급 옵션</translation>
-<translation id="7939073735115504773"><ph name="HOST" />을 읽고 변경하려면 이 확장 프로그램의 아이콘을 클릭하세요.</translation>
 <translation id="793923212791838">이 사이트에서 기기를 사용할 수 없음</translation>
 <translation id="7939328347457537652">기기 인증서 관리</translation>
 <translation id="7939412583708276221">계속 다운로드</translation>
@@ -8410,7 +8404,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />내 기기<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">비밀번호 추가</translation>
 <translation id="8195265224453131880">강도</translation>
-<translation id="8195737548602430447">자막을 타겟 언어로 자동 번역합니다.</translation>
 <translation id="8197673340773315084">'직장', '개인'과 같은 이름 또는 라벨 추가</translation>
 <translation id="8198456017687137612">탭 전송 중</translation>
 <translation id="8198457270656084773">시스템 기기 로그 페이지를 찾고 계신가요? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />에서 확인하세요.</translation>
@@ -8529,7 +8522,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8295449579927246485">실시간 번역</translation>
 <translation id="8297292446125062288">HID 설정</translation>
 <translation id="8298429963694909221">이제 <ph name="DEVICE_TYPE" />에서 휴대전화 알림을 받아 볼 수 있습니다. <ph name="DEVICE_TYPE" />에서 알림을 닫으면 휴대전화에서도 알림이 닫힙니다. 휴대전화가 근처에 있고 블루투스와 Wi-Fi가 켜져 있는지 확인하세요.</translation>
-<translation id="829923460755755423">Google 비밀번호 관리자에 바로가기 추가</translation>
 <translation id="8299319456683969623">현재 오프라인 상태</translation>
 <translation id="8300011035382349091">이 탭의 북마크 수정</translation>
 <translation id="8300374739238450534">미드나잇 블루</translation>
@@ -8557,7 +8549,6 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="8323167517179506834">URL 입력</translation>
 <translation id="8323317289166663449">컴퓨터 및 모든 웹사이트의 전체 데이터 읽기 및 변경</translation>
 <translation id="8324784016256120271">사이트에서 사용자의 다양한 사이트 탐색 활동 정보를 이용해 광고 맞춤설정 등의 작업을 하기 위해 쿠키를 사용할 수 있습니다.</translation>
-<translation id="8324819620112450495">액세스 요청 허용되지 않음</translation>
 <translation id="8325413836429495820">클립보드 확인이 허용되지 않음</translation>
 <translation id="8326478304147373412">PKCS #7, 인증서 체인</translation>
 <translation id="8327386430364625757">산술 글꼴</translation>

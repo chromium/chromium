@@ -124,6 +124,7 @@
 <translation id="3037838751736561277">Google Chrome está no modo de segundo plano.</translation>
 <translation id="3038232873781883849">Esperando para realizar a instalación…</translation>
 <translation id="3059710691562604940">A opción Navegación segura está desactivada. Chrome recomenda activala.</translation>
+<translation id="306179102415443347">Usa o atallo para acceder rapidamente ao xestor de contrasinais de Google. Podes mover o atallo ao Menú de aplicacións ou á pantalla de inicio do ordenador.</translation>
 <translation id="3065168410429928842">Pestana de Chrome</translation>
 <translation id="3080151273017101988">Continuar executando aplicacións en segundo plano cando se peche Google Chrome</translation>
 <translation id="3089968997497233615">Está dispoñible unha versión nova e máis segura de Google Chrome.</translation>
@@ -225,6 +226,7 @@
 <translation id="4970880042055371251">Versión de Chrome OS</translation>
 <translation id="4970947549776831107">Chrome bloqueou este ficheiro porque os elementos deste tipo son perigosos</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Fai clic en Xestor de contrasinais de Google</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Unha extensión de Google Chrome tiña acceso a dispositivos de interface humana}=1{Unha extensión de Google Chrome ten acceso a 1 dispositivo de interface humana}other{Unha extensión de Google Chrome ten acceso a # dispositivos de interface humana}}</translation>
 <translation id="5098668839038261629">Se activas esta opción, tamén se pechará a túa sesión en Chrome</translation>
 <translation id="5132929315877954718">Descubre aplicacións, xogos, extensións e temas fantásticos para Google Chrome.</translation>
@@ -337,6 +339,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="7339898014177206373">Nova ventá</translation>
 <translation id="7398801000654795464">Iniciaches sesión en Chrome como <ph name="USER_EMAIL_ADDRESS" />. Utiliza a mesma conta para iniciar sesión de novo.</translation>
 <translation id="7410958280246779049">Chrome bloqueou este ficheiro porque é perigoso</translation>
+<translation id="7412494426921990001">Fai clic no Menú de Chrome</translation>
 <translation id="7426611252293106642">Pode que Google Chrome non funcione correctamente porque xa non é compatible con esta distribución de Linux</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{A túa organización pechará Chrome automaticamente cando leve 1 minuto sen usarse.}other{A túa organización pechará Chrome automaticamente cando leve # minutos sen usarse.}}</translation>
 <translation id="7481213027396403996">Goza da máxima seguranza de Chrome</translation>
@@ -382,6 +385,7 @@ Pódense aplicar a esta conta os permisos que xa lles concedeses aos sitios web 
 <translation id="8286862437124483331">Google Chrome está tentando mostrar contrasinais. Escribe o teu contrasinal de Windows para permitir esta acción.</translation>
 <translation id="828798499196665338">O teu pai ou nai desactivou esta opción en Chrome: Permisos para sitios, aplicacións e extensións. Non está permitido activar esta <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome deixou de funcionar. Queres reinicialo agora?</translation>
+<translation id="829923460755755423">Engade un atallo ao xestor de contrasinais de Google</translation>
 <translation id="8342675569599923794">Este ficheiro é perigoso, así que Chrome bloqueouno.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Como usamos estes datos?<ph name="END_BOLD" /> Os sitios poden almacenar con Chrome información sobre os teus intereses. Por exemplo, se visitas un sitio para comprar zapatillas deportivas para un maratón, ese sitio podería determinar que che interesa correr maratóns. Máis tarde, se visitas un sitio distinto que che permite rexistrarte para participar nunha carreira, pode mostrárseche nel un anuncio de zapatillas deportivas baseado nos teus intereses.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Todos os dereitos reservados.</translation>

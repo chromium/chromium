@@ -120,6 +120,7 @@
 <translation id="3037838751736561277">Google Chrome处于后台运行模式。</translation>
 <translation id="3038232873781883849">正在等待安装…</translation>
 <translation id="3059710691562604940">“安全浏览”功能已关闭。Chrome 建议开启此功能。</translation>
+<translation id="306179102415443347">使用快捷方式可快速访问 Google 密码管理工具。您可以将快捷方式移动到计算机的主屏幕上或应用启动器中。</translation>
 <translation id="3065168410429928842">Chrome 标签页</translation>
 <translation id="3080151273017101988">关闭 Google Chrome 后继续运行后台应用</translation>
 <translation id="3089968997497233615">Google Chrome 浏览器现已推出更安全的新版本。</translation>
@@ -221,6 +222,7 @@
 <translation id="4970880042055371251">Chrome 操作系统版本</translation>
 <translation id="4970947549776831107">Chrome 屏蔽了此文件，因为这类文件包含危险内容</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{一个 Google Chrome 扩展程序刚刚访问了 HID 设备}=1{一个 Google Chrome 扩展程序正在访问 1 部 HID 设备}other{一个 Google Chrome 扩展程序正在访问 # 部 HID 设备}}</translation>
 <translation id="5098668839038261629">若开启此选项，关闭所有窗口的同时您也会退出登录 Chrome 的帐号</translation>
 <translation id="5132929315877954718">查找适用于Google Chrome的精彩应用、游戏、扩展程序和主题背景。</translation>
@@ -329,6 +331,7 @@
 <translation id="7339898014177206373">打开新的窗口</translation>
 <translation id="7398801000654795464">您之前登录 Chrome 时使用的帐号为 <ph name="USER_EMAIL_ADDRESS" />，请使用同一帐号再次登录。</translation>
 <translation id="7410958280246779049">此文件存在危险，因此 Chrome 已将其屏蔽</translation>
+<translation id="7412494426921990001">点击 Chrome 菜单</translation>
 <translation id="7426611252293106642">Google Chrome 可能无法正常运行，因为它不再支持此 Linux 发行版</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{贵组织会在 Chrome 闲置 1 分钟后自动关闭它。}other{贵组织会在 Chrome 闲置 # 分钟后自动关闭它。}}</translation>
 <translation id="7481213027396403996">获享 Chrome 的最强安全保护</translation>
@@ -374,6 +377,7 @@
 <translation id="8286862437124483331">Google Chrome正在尝试显示密码，请输入您的Windows密码以允许此操作。</translation>
 <translation id="828798499196665338">您的家长已为 Chrome 停用“网站、应用和扩展程序的权限”。因此，您无法启用该<ph name="EXTENSION_TYPE_PARAMETER" />。</translation>
 <translation id="8290100596633877290">哎呀！Google Chrome 浏览器崩溃了。是否立即重新启动？</translation>
+<translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8342675569599923794">此文件存在危险，因此 Chrome 已将其拦截。</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />我们会如何使用这些数据<ph name="END_BOLD" />：网站可以将您的兴趣信息存储在 Chrome 中。例如，如果您访问某个网站购买马拉松跑鞋，系统可能会根据该网站推测您对跑马拉松感兴趣。之后，如果您访问其他网站报名参加比赛，相应网站就可以根据您的兴趣向您展示跑鞋广告。</translation>
 <translation id="8370517070665726704">版权所有 <ph name="YEAR" /> Google LLC. 保留所有权利。</translation>

@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">您复制的图片</translation>
 <translation id="1142846828089312304">在无痕模式下阻止第三方 Cookie</translation>
 <translation id="1147769322402934017">在线图库</translation>
+<translation id="1150565364351027703">太阳镜</translation>
 <translation id="1150979032973867961">此服务器无法证明它是<ph name="DOMAIN" />；您计算机的操作系统不信任其安全证书。出现此问题的原因可能是配置有误或您的连接被拦截了。</translation>
 <translation id="1151972924205500581">需要密码</translation>
 <translation id="1156303062776767266">您正在查看一个本地文件或共享文件</translation>
@@ -886,6 +887,7 @@
 <translation id="3158539265159265653">光碟</translation>
 <translation id="3162559335345991374">您要使用的 Wi-Fi 网络可能需要您访问其登录页面。</translation>
 <translation id="3169472444629675720">探索</translation>
+<translation id="3175081911749765310">网络服务</translation>
 <translation id="3176929007561373547">请检查您的代理服务器设置或与网络管理员联系，以确保代理服务器正常运行。如果您认为自己不需要使用代理服务器，请执行以下操作：
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">了解您何时在主动使用此设备</translation>
@@ -2341,6 +2343,7 @@
 <translation id="6665553082534466207">三孔（右侧）</translation>
 <translation id="6668389483194953109">发现纸张尺寸名称为“custom”，但“custom_size”属性为空或无效。</translation>
 <translation id="6671697161687535275">要从 Chromium 中移除表单填写建议吗？</translation>
+<translation id="6683022854667115063">头戴式耳机</translation>
 <translation id="6683717648675961851">招聘信息</translation>
 <translation id="6687335167692595844">请求的字号</translation>
 <translation id="6687696737818665306">演出与戏剧</translation>
@@ -3120,6 +3123,7 @@
 <translation id="8513580896341796021">已开始下载。若要查看下载的内容，请按 |<ph name="ACCELERATOR" />|。</translation>
 <translation id="8519753333133776369">您的管理员允许使用的 HID 设备</translation>
 <translation id="8522552481199248698">Chrome 可以帮助您保护您的 Google 帐号和更改密码。</translation>
+<translation id="8527228059738193856">扬声器</translation>
 <translation id="8530813470445476232">请在 Chrome 设置中清除您的浏览记录、Cookie、缓存及其他数据</translation>
 <translation id="853332391023689529">皮卡</translation>
 <translation id="8533619373899488139">请访问 &lt;strong&gt;chrome://policy&lt;/strong&gt;，查看被屏蔽的网址列表以及您的系统管理员强制执行的其他政策。</translation>
@@ -3277,6 +3281,7 @@
 <translation id="8943282376843390568">绿黄色</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律与政府</translation>
+<translation id="8954252855949068147">服饰</translation>
 <translation id="8957210676456822347">强制门户授权</translation>
 <translation id="8959282183248574156">已输入 <ph name="NICKNAME_COUNT" /> 个/共 <ph name="NICKNAME_MAX" /> 个</translation>
 <translation id="8963117664422609631">转到网站设置</translation>

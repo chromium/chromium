@@ -2160,6 +2160,7 @@
 <translation id="2777525873368474674">貼上圖片連結</translation>
 <translation id="2778471504622896352">將遠端應用程式新增至 Chrome OS 啟動器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">已允許執行這個網站的擴充功能</translation>
 <translation id="2782104745158847185">安裝 Linux 應用程式時發生錯誤</translation>
 <translation id="2783024642731649028">購物車中 1 項商品在「<ph name="MERCHANT_NAME" />」享有 <ph name="DISCOUNT_TEXT" />，<ph name="MERCHANT_DOMAIN" />，查看時間為 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下載</translation>
@@ -2499,7 +2500,6 @@
 <translation id="3060952009917586498">變更裝置語言。目前語言為<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">無法與你的手機建立連線。請確認你的手機在附近，且已解鎖及開啟藍牙和 Wi-Fi。</translation>
 <translation id="3061302636956643119">系統會將文字傳送給 Google 進行處理。</translation>
-<translation id="306179102415443347">使用捷徑快速前往 Google 密碼管理工具。你可以將捷徑移至電腦的主畫面或應用程式啟動器。</translation>
 <translation id="3064871050034234884">網站可以播放音效</translation>
 <translation id="3065041951436100775">分頁毀損意見回饋。</translation>
 <translation id="3065522099314259755">鍵盤重複延遲</translation>
@@ -4692,7 +4692,6 @@
 <translation id="4998430619171209993">開啟</translation>
 <translation id="4999804342505941663">開啟「零打擾」模式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
-<translation id="5003967926796347400">按一下「Google 密碼管理工具」</translation>
 <translation id="5005498671520578047">複製密碼</translation>
 <translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android 應用程式 ADB</translation>
@@ -5739,7 +5738,6 @@
     這張圖片會顯示在 Chromebook 的登入畫面和鎖定畫面中。</translation>
 <translation id="5925147183566400388">憑證實務作業基準指標</translation>
 <translation id="5927132638760172455">正在投放至不明接收端</translation>
-<translation id="5927232971138258197">這項擴充功能可讀取及變更 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止執行這個容器</translation>
 <translation id="592880897588170157">下載 PDF 檔案，而不自動在 Chrome 中開啟</translation>
 <translation id="5928969282301718193">全部完成</translation>
@@ -5985,7 +5983,6 @@
 <translation id="6130692320435119637">新增 Wi-Fi</translation>
 <translation id="6130887916931372608">鍵盤按鍵</translation>
 <translation id="6132714462430777655">要略過學校註冊程序嗎？</translation>
-<translation id="6133850653093419052">可以要求存取權</translation>
 <translation id="6135823405800500595">請確認你的手機在附近且處於解鎖狀態，並已開啟藍牙和 Wi-Fi</translation>
 <translation id="6135826623269483856">不允許管理所有螢幕上的視窗</translation>
 <translation id="6136114942382973861">關閉下載內容列</translation>
@@ -6951,7 +6948,6 @@
 <translation id="6973611239564315524">現在可以升級至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 同時也是你的預設搜尋引擎，你將能取得更實用、更符合需求的建議</translation>
 <translation id="697508444536771064">關閉 Linux</translation>
-<translation id="6975361011348772931">已要求讀取及變更</translation>
 <translation id="6978121630131642226">搜尋引擎</translation>
 <translation id="6978717888677691380">你封鎖的網站</translation>
 <translation id="6979041727349121225">節能模式</translation>
@@ -7444,7 +7440,6 @@
 <translation id="7410852728357935715">投放到裝置</translation>
 <translation id="741204030948306876">是，我要啟用</translation>
 <translation id="7412226954991670867">GPU 記憶體</translation>
-<translation id="7412494426921990001">按一下 Chrome 選單</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">設定完成</translation>
 <translation id="7416091793702109803">查看「<ph name="FILE_NAME" />」</translation>
@@ -8080,7 +8075,6 @@
 <translation id="793531125873261495">下載虛擬機器時發生錯誤，請再試一次。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">進階選項</translation>
-<translation id="7939073735115504773">按一下這項擴充功能的圖示即可讀取及變更 <ph name="HOST" /></translation>
 <translation id="793923212791838">無法搭配你的裝置使用這個網站</translation>
 <translation id="7939328347457537652">管理裝置憑證</translation>
 <translation id="7939412583708276221">保留</translation>
@@ -8387,7 +8381,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />你的裝置<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">新增密碼</translation>
 <translation id="8195265224453131880">強度</translation>
-<translation id="8195737548602430447">自動將字幕翻譯成譯文語言。</translation>
 <translation id="8197673340773315084">新增名稱或標籤，例如「工作」或「個人」</translation>
 <translation id="8198456017687137612">正在投放分頁</translation>
 <translation id="8198457270656084773">要查看系統的裝置記錄頁面嗎？請造訪 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
@@ -8506,7 +8499,6 @@
 <translation id="8295449579927246485">即時翻譯</translation>
 <translation id="8297292446125062288">HID 設定</translation>
 <translation id="8298429963694909221">你現在可以透過 <ph name="DEVICE_TYPE" /> 接收手機上的通知。在 <ph name="DEVICE_TYPE" /> 上關閉通知也會關閉手機上的通知。請確認你的手機在附近，且已開啟藍牙功能和 Wi-Fi。</translation>
-<translation id="829923460755755423">新增 Google 密碼管理工具的捷徑</translation>
 <translation id="8299319456683969623">你目前處於離線狀態。</translation>
 <translation id="8300011035382349091">編輯此分頁的書籤</translation>
 <translation id="8300374739238450534">午夜藍</translation>
@@ -8534,7 +8526,6 @@
 <translation id="8323167517179506834">輸入網址</translation>
 <translation id="8323317289166663449">讀取及變更你在個人電腦和所有網站上的所有資料</translation>
 <translation id="8324784016256120271">網站可使用 Cookie 查看你在各網站的瀏覽活動，並提供個人化廣告等服務</translation>
-<translation id="8324819620112450495">不允許要求存取權</translation>
 <translation id="8325413836429495820">不得查看剪貼簿</translation>
 <translation id="8326478304147373412">PKCS #7，憑證鏈結</translation>
 <translation id="8327386430364625757">數學字型</translation>

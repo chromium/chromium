@@ -125,6 +125,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="3037838751736561277">Mae Google Chrome yn y modd cefndir.</translation>
 <translation id="3038232873781883849">Wrthi'n aros i osod...</translation>
 <translation id="3059710691562604940">Mae Pori'n Ddiogel wedi'i ddiffodd. Mae Chrome yn argymell ei droi ymlaen.</translation>
+<translation id="306179102415443347">Defnyddiwch eich llwybr byr i gyrraedd Rheolwr Cyfrineiriau Google yn gyflym. Gallwch symud eich llwybr byr i sgrîn hafan neu lansiwr ap eich cyfrifiadur.</translation>
 <translation id="3065168410429928842">Tab Chrome</translation>
 <translation id="3080151273017101988">Parhau i redeg apiau cefndir pan fydd Google Chrome ar gau</translation>
 <translation id="3089968997497233615">Mae fersiwn newydd, fwy diogel o Google Chrome ar gael.</translation>
@@ -226,6 +227,7 @@ baru <ph name="IDS_BLUETOOTH_DEVICE_CHOOSER_AUTHORIZE_BLUETOOTH_LINK" /></transl
 <translation id="4970880042055371251">Fersiwn ChromeOS</translation>
 <translation id="4970947549776831107">Gwnaeth Chrome rwystro'r ffeil hon oherwydd bod y math hwn o ffeil yn beryglus</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Cliciwch 'Rheolwr Cyfrineiriau Google'</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Roedd estyniad Google Chrome yn cyrchu dyfeisiau HID}=1{Mae estyniad Google Chrome yn cyrchu 1 ddyfais HID}two{Mae estyniad Google Chrome yn cyrchu # ddyfais HID}few{Mae estyniad Google Chrome yn cyrchu # dyfais HID}many{Mae estyniad Google Chrome yn cyrchu # dyfais HID}other{Mae estyniad Google Chrome yn cyrchu # dyfais HID}}</translation>
 <translation id="5098668839038261629">Pan fydd ymlaen, byddwch hefyd yn cael eich allgofnodi o Chrome</translation>
 <translation id="5132929315877954718">Darganfyddwch apiau, gemau, estyniadau a themâu gwych ar gyfer Google Chrome.</translation>
@@ -338,6 +340,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="7339898014177206373">Ffenestr newydd</translation>
 <translation id="7398801000654795464">Roeddech wedi'ch mewngofnodi i Chrome fel <ph name="USER_EMAIL_ADDRESS" />. Defnyddiwch yr un cyfrif i fewngofnodi eto.</translation>
 <translation id="7410958280246779049">Gwnaeth Chrome rwystro'r ffeil hon oherwydd ei bod yn beryglus</translation>
+<translation id="7412494426921990001">Cliciwch y ddewislen Chrome</translation>
 <translation id="7426611252293106642">Mae'n bosib na fydd Google Chrome yn gweithio'n gywir oherwydd nid yw'n cael ei gynnal mwyach ar y dosbarthiad Linux hwn</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am 1 funud.}zero{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud.}two{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # funud.}few{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud.}many{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud.}other{Mae eich sefydliad yn cau Chrome yn awtomatig pan na chaiff ei ddefnyddio am # munud.}}</translation>
 <translation id="7481213027396403996">Cael diogelwch cryfaf Chrome</translation>
@@ -383,6 +386,7 @@ Mae'n bosib y bydd caniatadau rydych eisoes wedi'u rhoi i wefannau ac apiau yn b
 <translation id="8286862437124483331">Mae Google Chrome yn ceisio dangos cyfrineiriau. Teipiwch eich cyfrinair Windows i ganiatáu hyn.</translation>
 <translation id="828798499196665338">Mae dy riant wedi diffodd "Caniatadau ar gyfer gwefannau, apiau ac estyniadau" ar gyfer Chrome. Ni chaniateir galluogi'r <ph name="EXTENSION_TYPE_PARAMETER" /> hwn.</translation>
 <translation id="8290100596633877290">Whoa! Mae Google Chrome wedi torri. Ail-lansio nawr?</translation>
+<translation id="829923460755755423">Ychwanegu llwybr byr at y Rheolwr Cyfrineiriau Google</translation>
 <translation id="8342675569599923794">Mae'r ffeil hon yn beryglus, felly mae Chrome wedi ei rhwystro.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Sut rydym yn defnyddio'r data hyn:<ph name="END_BOLD" /> Gall gwefannau storio gwybodaeth am eich diddordebau gyda Chrome. Er enghraifft, os ydych yn ymweld â gwefan i brynu esgidiau ar gyfer marathon, mae'n bosib y bydd y wefan yn diffinio'ch diddordeb fel rhedeg marathon. Yn ddiweddarach, os byddwch yn ymweld â gwefan wahanol i gofrestru ar gyfer ras, gall y wefan honno ddangos hysbyseb i chi ar gyfer esgidiau rhedeg yn seiliedig ar eich diddordebau.</translation>
 <translation id="8370517070665726704">Hawlfraint <ph name="YEAR" /> Google LLC. Cedwir pob hawl.</translation>

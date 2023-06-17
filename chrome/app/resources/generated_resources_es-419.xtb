@@ -2157,6 +2157,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2777525873368474674">Pegar vínculo de imagen</translation>
 <translation id="2778471504622896352">Agregar apps remotas al selector de ChromeOS</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Se permiten las extensiones en este sitio</translation>
 <translation id="2782104745158847185">Se produjo un error al instalar la app de Linux</translation>
 <translation id="2783024642731649028"><ph name="DISCOUNT_TEXT" /> en 1 artículo de <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />, visto <ph name="RELATIVE_TIME" /> que está en tu carrito</translation>
 <translation id="2783298271312924866">Descargado</translation>
@@ -2496,7 +2497,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3060952009917586498">Cambia el idioma del dispositivo. El idioma actual es <ph name="LANGUAGE" />.</translation>
 <translation id="3060987956645097882">No se pudo establecer conexión con tu teléfono. Asegúrate de que esté cerca, desbloqueado y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
 <translation id="3061302636956643119">Se enviará el texto a Google para su procesamiento.</translation>
-<translation id="306179102415443347">Accede rápidamente al Administrador de contraseñas de Google con el acceso directo. Puedes mover el acceso directo a la pantalla principal de la computadora o al Selector de aplicaciones.</translation>
 <translation id="3064871050034234884">Permitir que los sitios reproduzcan sonido</translation>
 <translation id="3065041951436100775">La pestaña terminó los comentarios.</translation>
 <translation id="3065522099314259755">Latencia de repetición del teclado</translation>
@@ -4688,7 +4688,6 @@ Usa Ctrl + Alt + Disminuir brillo para alejarte.</translation>
 <translation id="4998430619171209993">Sí</translation>
 <translation id="4999804342505941663">Activar No interrumpir</translation>
 <translation id="5001526427543320409">Cookies de terceros</translation>
-<translation id="5003967926796347400">Haz clic en "Administrador de contraseñas de Google"</translation>
 <translation id="5005498671520578047">Copiar contraseña</translation>
 <translation id="5006118752738286774">Hace 2 años</translation>
 <translation id="5006218871145547804">ADB de apps para Android en Crostini</translation>
@@ -5737,7 +5736,6 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
           Se mostrará esta imagen en la pantalla bloqueada y de acceso de Chromebook.</translation>
 <translation id="5925147183566400388">Puntero de declaración de práctica de certificación</translation>
 <translation id="5927132638760172455">Transmitiendo a un receptor desconocido</translation>
-<translation id="5927232971138258197">Esta extensión puede leer y modificar <ph name="HOST" /></translation>
 <translation id="592740088639760830">Detener este contenedor</translation>
 <translation id="592880897588170157">Descargar los archivos PDF en lugar de abrirlos de forma automática en Chrome</translation>
 <translation id="5928969282301718193">Todo listo por ahora</translation>
@@ -5985,7 +5983,6 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
 <translation id="6130692320435119637">Agregar Wi-Fi</translation>
 <translation id="6130887916931372608">Tecla del teclado</translation>
 <translation id="6132714462430777655">¿Deseas omitir la inscripción escolar?</translation>
-<translation id="6133850653093419052">Puede solicitar acceso</translation>
 <translation id="6135823405800500595">Asegúrate de que el teléfono esté cerca y desbloqueado, y que el Bluetooth y el Wi-Fi estén encendidos</translation>
 <translation id="6135826623269483856">No pueden administrar las ventanas de todas tus pantallas</translation>
 <translation id="6136114942382973861">Cerrar la barra de descargas</translation>
@@ -6951,7 +6948,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="6973611239564315524">Hay disponible una actualización a Debian 10 (Buster)</translation>
 <translation id="69739764870135975">Si Google también es tu motor de búsqueda predeterminado, verás sugerencias mejores y relevantes según el contexto</translation>
 <translation id="697508444536771064">Cerrar Linux</translation>
-<translation id="6975361011348772931">Solicitó permiso para leer y modificar</translation>
 <translation id="6978121630131642226">Motores de búsqueda</translation>
 <translation id="6978717888677691380">Sitios que bloqueaste</translation>
 <translation id="6979041727349121225">Ahorro de energía</translation>
@@ -7444,7 +7440,6 @@ Tienes # contraseñas hackeadas más. El Administrador de contraseñas de Go
 <translation id="7410852728357935715">Transmitir a un dispositivo</translation>
 <translation id="741204030948306876">Sí, acepto</translation>
 <translation id="7412226954991670867">Memoria de GPU</translation>
-<translation id="7412494426921990001">Haz clic en el menú de Chrome</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Configuración completa</translation>
 <translation id="7416091793702109803">Revisar <ph name="FILE_NAME" /></translation>
@@ -8080,7 +8075,6 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="793531125873261495">Se produjo un error al descargar la máquina virtual. Vuelve a intentarlo.</translation>
 <translation id="7935451262452051102">Se completó el <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">Opciones avanzadas</translation>
-<translation id="7939073735115504773">Haz clic en el ícono de esta extensión para leer y modificar <ph name="HOST" /></translation>
 <translation id="793923212791838">No se puede usar tu dispositivo con este sitio</translation>
 <translation id="7939328347457537652">Administrar certificados de dispositivos</translation>
 <translation id="7939412583708276221">Continuar de todos modos</translation>
@@ -8387,7 +8381,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Tus dispositivos<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Agregar contraseña</translation>
 <translation id="8195265224453131880">Intensidad</translation>
-<translation id="8195737548602430447">Traduce subtítulos a un idioma de destino de forma automática.</translation>
 <translation id="8197673340773315084">Agrega un nombre o etiqueta, como "Trabajo"</translation>
 <translation id="8198456017687137612">Pestaña de transmisión</translation>
 <translation id="8198457270656084773">¿Buscas la página de registro de dispositivo del sistema? Visita <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
@@ -8506,7 +8499,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8295449579927246485">Traducción instantánea</translation>
 <translation id="8297292446125062288">Configuración de HID</translation>
 <translation id="8298429963694909221">Ahora puedes recibir notificaciones del teléfono en tu <ph name="DEVICE_TYPE" />. Cuando las descartes en tu <ph name="DEVICE_TYPE" />, también se descartarán en el teléfono. Asegúrate de que el teléfono esté cerca y tenga las conexiones Bluetooth y Wi-Fi activadas.</translation>
-<translation id="829923460755755423">Agrega un acceso directo al Administrador de contraseñas de Google</translation>
 <translation id="8299319456683969623">Actualmente, no tienes conexión.</translation>
 <translation id="8300011035382349091">Edita el favorito para esta pestaña</translation>
 <translation id="8300374739238450534">Azul noche</translation>
@@ -8534,7 +8526,6 @@ Mantén el archivo de clave en un lugar seguro. Debes crear las nuevas versiones
 <translation id="8323167517179506834">Ingresar URL</translation>
 <translation id="8323317289166663449">Leer y cambiar todos tus datos de tu computadora y todos los sitios web</translation>
 <translation id="8324784016256120271">Los sitios pueden usar cookies para ver la actividad de navegación en diferentes sitios, por ejemplo, con el fin de personalizar anuncios.</translation>
-<translation id="8324819620112450495">No puede solicitar acceso</translation>
 <translation id="8325413836429495820">No puede ver el contenido del portapapeles</translation>
 <translation id="8326478304147373412">PKCS N. º 7, cadena de certificados</translation>
 <translation id="8327386430364625757">Fuente matemática</translation>

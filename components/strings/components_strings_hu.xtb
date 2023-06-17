@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Vágólapra másolt kép</translation>
 <translation id="1142846828089312304">Harmadik felektől származó cookie-k letiltása inkognitó módban</translation>
 <translation id="1147769322402934017">Internetes képgalériák</translation>
+<translation id="1150565364351027703">Napszemüveg</translation>
 <translation id="1150979032973867961">A szerver nem tudta bizonyítani, hogy valóban a(z) <ph name="DOMAIN" /> domainbe tartozik; biztonsági tanúsítványa az Ön számítógépének operációs rendszere szerint nem megbízható. Ennek oka lehet konfigurációs hiba, vagy hogy egy támadó eltérítette az Ön kapcsolódását.</translation>
 <translation id="1151972924205500581">Jelszó szükséges</translation>
 <translation id="1156303062776767266">Helyi vagy megosztott fájlt tekint meg</translation>
@@ -891,6 +892,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3158539265159265653">Lemez</translation>
 <translation id="3162559335345991374">Az Ön által használt Wi-Fi-hálózat megkövetelheti bejelentkezési oldalának felkeresését.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Webszolgáltató</translation>
 <translation id="3176929007561373547">Ellenőrizze a proxybeállításokat, vagy kérdezze meg a rendszergazdájától, hogy a proxyszerver működik-e. Ha úgy gondolja, hogy nem használ proxyszervert:
       <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">megtudni, hogy Ön mikor használja aktívan ezt az eszközt</translation>
@@ -2360,6 +2362,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6665553082534466207">Három lyuk a jobb oldalon</translation>
 <translation id="6668389483194953109">Az észlelt papírméret neve „custom” (egyéni), de a „custom_size” tulajdonság üres vagy érvénytelen.</translation>
 <translation id="6671697161687535275">Eltávolítja az űrlapjavaslatot a Chromiumból?</translation>
+<translation id="6683022854667115063">Fejhallgató</translation>
 <translation id="6683717648675961851">Álláshirdetések</translation>
 <translation id="6687335167692595844">Kért betűméret</translation>
 <translation id="6687696737818665306">Színészet és színház</translation>
@@ -3145,6 +3148,7 @@ További részletek:
 <translation id="8513580896341796021">A letöltés megkezdődött. A megtekintéséhez nyomja meg a következő gombot: |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Rendszergazda által engedélyezett HID-eszköz</translation>
 <translation id="8522552481199248698">A Chrome segíthet a Google-fiók védelmében és a jelszó módosításában.</translation>
+<translation id="8527228059738193856">Hangfalak</translation>
 <translation id="8530813470445476232">A böngészési előzmények, a cookie-k, a gyorsítótár és egyebek törlése a Chrome-beállítások között</translation>
 <translation id="853332391023689529">Pickupok</translation>
 <translation id="8533619373899488139">A &lt;strong&gt;chrome://policy&lt;/strong&gt; oldalon láthatja a rendszergazda által letiltott URL-ek és a beállított egyéb kötelező irányelvek listáját.</translation>
@@ -3304,6 +3308,7 @@ További részletek:
 <translation id="8943282376843390568">Limezöld</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Jog és közigazgatás</translation>
+<translation id="8954252855949068147">Ruházat</translation>
 <translation id="8957210676456822347">Hitelesítés hitelesítési portállal</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_MAX" />/<ph name="NICKNAME_COUNT" /></translation>
 <translation id="8963117664422609631">A webhely beállításainak megnyitása</translation>

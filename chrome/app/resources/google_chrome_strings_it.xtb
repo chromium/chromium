@@ -120,6 +120,7 @@
 <translation id="3037838751736561277">Google Chrome è in modalità background.</translation>
 <translation id="3038232873781883849">In attesa dell'installazione…</translation>
 <translation id="3059710691562604940">Navigazione sicura è disattivata. Chrome consiglia di attivarla.</translation>
+<translation id="306179102415443347">Usa la scorciatoia per accedere rapidamente a Gestore delle password di Google. Puoi spostare la scorciatoia nella schermata Home del computer o in Avvio applicazioni.</translation>
 <translation id="3065168410429928842">Scheda Chrome</translation>
 <translation id="3080151273017101988">Continua a eseguire applicazioni in background dopo la chiusura di Google Chrome</translation>
 <translation id="3089968997497233615">È disponibile una nuova versione più sicura di Google Chrome.</translation>
@@ -221,6 +222,7 @@
 <translation id="4970880042055371251">Versione di ChromeOS</translation>
 <translation id="4970947549776831107">Chrome ha bloccato questo file perché è un tipo di file pericoloso</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Fai clic su "Gestore delle password di Google"</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Un'estensione di Google Chrome stava accedendo ai dispositivi HID}=1{Un'estensione di Google Chrome accede a 1 dispositivo HID}other{Un'estensione di Google Chrome sta accedendo a # dispositivi HID}}</translation>
 <translation id="5098668839038261629">Se attivi l'opzione, uscirai anche da Chrome</translation>
 <translation id="5132929315877954718">Scopri applicazioni, giochi, estensioni e temi straordinari per Google Chrome.</translation>
@@ -329,6 +331,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="7339898014177206373">Nuova finestra</translation>
 <translation id="7398801000654795464">Hai eseguito l'accesso a Chrome come <ph name="USER_EMAIL_ADDRESS" />. Utilizza lo stesso account per eseguire di nuovo l'accesso.</translation>
 <translation id="7410958280246779049">Chrome ha bloccato questo file perché è pericoloso</translation>
+<translation id="7412494426921990001">Fai clic sul menu Chrome</translation>
 <translation id="7426611252293106642">Google Chrome potrebbe non funzionare correttamente perché non è più supportato su questa distribuzione Linux</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per 1 minuto.}other{La tua organizzazione chiude automaticamente Chrome quando non viene utilizzato per # minuti.}}</translation>
 <translation id="7481213027396403996">Usa la funzionalità di sicurezza più efficace di Chrome</translation>
@@ -374,6 +377,7 @@ A questo account potrebbero essere applicate le autorizzazioni già concesse a s
 <translation id="8286862437124483331">Google Chrome sta cercando di visualizzare le password. Per consentire la visualizzazione, digita la tua password Windows.</translation>
 <translation id="828798499196665338">Uno dei tuoi genitori ha disattivato "Autorizzazioni per siti, app ed estensioni" per Chrome. L'attivazione di <ph name="EXTENSION_TYPE_PARAMETER" /> non è consentita.</translation>
 <translation id="8290100596633877290">Spiacenti, si è verificato un arresto anomalo di Google Chrome. Riavviarlo ora?</translation>
+<translation id="829923460755755423">Aggiungi una scorciatoia a Gestore delle password di Google</translation>
 <translation id="8342675569599923794">Questo file è pericoloso, pertanto è stato bloccato da Chrome.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Come utilizziamo questi dati:<ph name="END_BOLD" /> i siti possono memorizzare su Chrome informazioni relative ai tuoi interessi. Ad esempio, se visiti un sito per acquistare scarpe per una maratona, il sito potrebbe definire come tuo interesse le maratone. Se in un secondo momento visiti un altro sito per registrarti a una gara, il sito può mostrarti un annuncio relativo a scarpe da corsa in base ai tuoi interessi.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC Tutti i diritti riservati.</translation>

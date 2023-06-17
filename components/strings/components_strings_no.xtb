@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Bildet du kopierte</translation>
 <translation id="1142846828089312304">Blokkér informasjonskapsler fra tredjepart i inkognitomodus</translation>
 <translation id="1147769322402934017">Bildegallerier på Internett</translation>
+<translation id="1150565364351027703">Solbriller</translation>
 <translation id="1150979032973867961">Denne tjeneren kunne ikke bevise at den er <ph name="DOMAIN" />. Sikkerhetssertifikatet til tjeneren er ikke klarert av datamaskinens operativsystem. Dette kan være forårsaket av en feilkonfigurering eller en angriper som avskjærer tilkoblingen din.</translation>
 <translation id="1151972924205500581">Passord er påkrevd</translation>
 <translation id="1156303062776767266">Du ser en lokal eller delt fil</translation>
@@ -891,6 +892,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3158539265159265653">Plate</translation>
 <translation id="3162559335345991374">Det kan hende at Wifi-nettverket du bruker, krever at du besøker en påloggingsside.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Nettjenester</translation>
 <translation id="3176929007561373547">Sjekk innstillingene for proxy-tjeneren eller kontakt nettverksadministratoren
       for å forsikre deg om at den fungerer. Følg disse instruksjonene hvis du
       ikke tror du trenger å bruke noen proxy-tjener:
@@ -2362,6 +2364,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="6665553082534466207">Tre hull høyre</translation>
 <translation id="6668389483194953109">Fant en papirstørrelse med navnet «custom», men «custom_size»-egenskapen er tom eller ugyldig.</translation>
 <translation id="6671697161687535275">Vil du fjerne forslaget fra Chromium?</translation>
+<translation id="6683022854667115063">Hodetelefoner</translation>
 <translation id="6683717648675961851">Stillingsannonser</translation>
 <translation id="6687335167692595844">Forespurt skriftstørrelse</translation>
 <translation id="6687696737818665306">Skuespill og teater</translation>
@@ -3146,6 +3149,7 @@ Mer informasjon:
 <translation id="8513580896341796021">Nedlastingen er startet. For å se den, trykk på |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID-enheten tillates av administratoren din</translation>
 <translation id="8522552481199248698">Chrome kan hjelpe deg med å beskytte Google-kontoen din og endre passordet ditt.</translation>
+<translation id="8527228059738193856">Høyttalere</translation>
 <translation id="8530813470445476232">Tøm nettleserloggen, slett informasjonskapsler, tøm bufferen med mer i Chrome-innstillingene</translation>
 <translation id="853332391023689529">Pickuper</translation>
 <translation id="8533619373899488139">Gå til &lt;strong&gt;chrome://policy&lt;/strong&gt; for å se listen over blokkerte nettadresser og andre regler systemadministratoren din har fastsatt.</translation>
@@ -3304,6 +3308,7 @@ Mer informasjon:
 <translation id="8943282376843390568">Limegrønn</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Lover og offentlig administrasjon</translation>
+<translation id="8954252855949068147">Klær</translation>
 <translation id="8957210676456822347">Captive Portal-autorisasjon</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Gå til nettstedsinnstillingene</translation>

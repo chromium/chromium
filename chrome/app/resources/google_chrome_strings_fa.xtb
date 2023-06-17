@@ -121,6 +121,7 @@
 <translation id="3037838751736561277">‏Google Chrome در حالت پس‌زمینه است.</translation>
 <translation id="3038232873781883849">درانتظار نصب…</translation>
 <translation id="3059710691562604940">‏«مرور ایمن» خاموش است. Chrome توصیه می‌کند آن را روشن کنید.</translation>
+<translation id="306179102415443347">‏از میان‌بر برای دسترسی سریع به «مدیر گذرواژه Google» استفاده کنید. می‌توانید میان‌برتان را به صفحه اصلی رایانه یا راه‌انداز برنامه منتقل کنید.</translation>
 <translation id="3065168410429928842">‏برگه Chrome</translation>
 <translation id="3080151273017101988">‏ادامه اجرای برنامه‌ها در پس‌زمینه هنگامیکه Google Chrome بسته می‌شود</translation>
 <translation id="3089968997497233615">‏نسخه جدید و امن تری از Google Chrome موجود است.</translation>
@@ -222,6 +223,7 @@
 <translation id="4970880042055371251">‏نسخه ChromeOS</translation>
 <translation id="4970947549776831107">‏Chrome این فایل را مسدود کرد زیرا این نوع فایل خطرناک است</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">‏روی «مدیر گذرواژه Google» کلیک کنید</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{‏یک افزونه Google Chrome به «دستگاه‌های میانای انسانی» دسترسی داشت}=1{‏یک افزونه Google Chrome به یک «دستگاه میانای انسانی» دسترسی دارد}one{‏یک افزونه Google Chrome به # «دستگاه میانای انسانی» دسترسی دارد}other{‏یک افزونه Google Chrome به # «دستگاه میانای انسانی» دسترسی دارد}}</translation>
 <translation id="5098668839038261629">‏وقتی روشن باشد، از سیستم Chrome نیز خارج خواهید شد</translation>
 <translation id="5132929315877954718">‏برنامه‌های کاربردی، بازی‌ها، افزونه‌ها و طرح‌های زمینه فوق‌العاده را برای Google Chrome کاوش کنید.</translation>
@@ -330,6 +332,7 @@
 <translation id="7339898014177206373">پنجرهٔ جدید</translation>
 <translation id="7398801000654795464">‏شما بعنوان <ph name="USER_EMAIL_ADDRESS" /> وارد سیستم Chrome شدید. لطفاً برای ورود به سیستم مجدد از همان حساب استفاده کنید.</translation>
 <translation id="7410958280246779049">‏Chrome این فایل را مسدود کرد زیرا خطرناک است</translation>
+<translation id="7412494426921990001">‏روی منوی Chrome کلیک کنید</translation>
 <translation id="7426611252293106642">‏Google Chrome ممکن است درست کار نکند زیرا این توزیع Linux دیگر از آن پشتیبانی نمی‌کند.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{‏اگر به‌مدت یک دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}one{‏اگر به‌مدت # دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}other{‏اگر به‌مدت # دقیقه از Chrome استفاده نشود، سازمانتان آن را به‌طور خودکار می‌بندد.}}</translation>
 <translation id="7481213027396403996">‏دریافت قوی‌ترین امنیت Chrome</translation>
@@ -375,6 +378,7 @@
 <translation id="8286862437124483331">‏Google Chrome در حال تلاش برای نشان دادن گذرواژه‌هاست. برای اجازه به این کار، گذرواژه Windows خود را تایپ کنید.</translation>
 <translation id="828798499196665338">‏ولی‌تان «اجازه‌های مربوط به سایت‌ها، برنامه‌ها، و افزونه‌ها» را برای Chrome خاموش کرده است. فعال کردن این <ph name="EXTENSION_TYPE_PARAMETER" /> مجاز نیست.</translation>
 <translation id="8290100596633877290">‏اوه! Google Chrome با اشکال مواجه شده است. دوباره راه‌اندازی شود؟</translation>
+<translation id="829923460755755423">‏میان‌بری به «مدیر گذرواژه Google» اضافه کنید</translation>
 <translation id="8342675569599923794">‏این فایل خطرناک است، بنابراین Chrome آن را مسدود کرده است.</translation>
 <translation id="8349795646647783032">‏<ph name="BEGIN_BOLD" />نحوه استفاده ما از این داده‌ها:<ph name="END_BOLD" /> سایت‌ها می‌توانند بااستفاده از Chrome اطلاعاتی درباره علایقتان ذخیره کنند. برای مثال، اگر برای خرید کفش مخصوص ماراتون از سایتی بازدید کنید، ممکن است آن سایت علاقه شما را به‌صورت دونده ماراتون مشخص کند. بعداً، اگر برای ثبت‌نام در مسابقه‌ای به سایتی دیگر مراجعه کردید، آن سایت می‌تواند براساس علایقتان آگهی‌ای برای کفش مخصوص دویدن به شما نشان دهد.</translation>
 <translation id="8370517070665726704">‏حق نشر <ph name="YEAR" /> Google LLC.‎ کلیه حقوق محفوظ است.</translation>

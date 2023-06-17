@@ -6114,10 +6114,6 @@ Waktu tunggu tidak ada aktivitas untuk memulai screensaver dan interval saat gam
 <translation id="6539246272469751178">Kebijakan ini tidak memengaruhi aplikasi Android. Aplikasi Android selalu menggunakan direktori download default dan tidak dapat mengakses file apa pun yang didownload oleh <ph name="PRODUCT_OS_NAME" /> ke direktori download non-default.</translation>
 <translation id="654303922206238013">Strategi migrasi untuk ecryptfs</translation>
 <translation id="6544601600794014309">Aktifkan Terjemahan Jawaban Instan</translation>
-<translation id="6544759513632821565"><ph name="GET_DISPLAY_MEDIA_SET_NAME" /> API memungkinkan aplikasi web merekam beberapa layar sekaligus.
-      Kebijakan ini membuka properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> untuk aplikasi web di asal yang ditentukan.
-      Jika properti <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> ditentukan dalam permintaan <ph name="GET_DISPLAY_MEDIA_SET_NAME" />, semua layar akan otomatis direkam tanpa izin pengguna secara eksplisit.
-      Jika kebijakan ini tidak disetel, <ph name="AUTO_SELECT_ALL_SCREENS_NAME" /> tidak tersedia untuk semua aplikasi web.</translation>
 <translation id="654546276700640113">Jika kebijakan disetel, panjang PIN maksimum yang dikonfigurasi akan diterapkan. Nilai 0 atau lebih kecil berarti pengguna dapat menyetel panjang PIN sesuai keinginan. Jika nilainya lebih kecil dari <ph name="PIN_UNLOCK_MINIMUM_LENGTH_POLICY_NAME" /> tetapi lebih besar dari 0, panjang maksimum akan disetel ke panjang minimum.
 
       Jika kebijakan tidak disetel, tidak akan ada panjang maksimum yang diterapkan.</translation>
@@ -7306,29 +7302,6 @@ Perilaku ini akan menggantikan kebijakan <ph name="WINDOW_PLACEMENT_BLOCKED_FOR_
 <translation id="759957074386651883">Setelan Safe Browsing</translation>
 <translation id="7602621823177962064">Nonaktifkan pelaporan info memori perangkat</translation>
 <translation id="7604169113182304895">Aplikasi Android dapat memilih untuk menerima daftar ini secara sukarela. Anda tidak dapat memaksa aplikasi untuk menerimanya.</translation>
-<translation id="7605203688694672897">Menyetel tingkat akses geolokasi tingkat perangkat untuk
-sistem <ph name="PRODUCT_OS_NAME" />, yang
-berlaku sebelum pengguna login. Setelah login, pengguna dapat mengontrol
-tingkat akses geolokasi melalui setelan masing-masing pengguna.
-
-Jika tidak disetel atau disetel ke <ph name="ALLOW" />, akses geolokasi layar login
-akan diizinkan untuk perangkat terkelola. Jika nilai kebijakan yang tidak valid dikirim,
-akses akan disetel ke
-<ph name="DISALLOW" />. Untuk perangkat tidak terkelola, akses selalu
-disetel ke <ph name="DISALLOW" />.
-
-PERINGATAN: Hati-hati saat mengubah setelan ini karena dapat melanggar kebijakan lain
-yang melibatkan geolokasi
-(mis. <ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />)!
-Khususnya, jika kebijakan ini disetel ke <ph name="DISALLOW" />,
-opsi
-<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDWIFIACCESSPOINTS" />
-dan
-<ph name="POLICY_ENUM_SYSTEMTIMEZONEAUTOMATICDETECTION_TIMEZONEAUTOMATICDETECTIONSENDALLLOCATIONINFO" />
-kebijakan
-<ph name="SYSTEM_TIMEZONE_AUTOMATIC_DETECTION_POLICY" />
-akan gagal berfungsi dan hanya menggunakan resolusi lokasi berbasis <ph name="IP" />
-di layar <ph name="LOG_IN" />.</translation>
 <translation id="7608186022704392724">Fitur kirim otomatis PIN akan mengubah cara memasukkan PIN di <ph name="PRODUCT_OS_NAME" />.
           Fitur ini akan menampilkan UI khusus yang dengan jelas memperlihatkan kepada pengguna berapa
           digit yang diperlukan untuk PIN mereka,

@@ -125,6 +125,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="3037838751736561277">Google Chrome se izvaja v ozadju.</translation>
 <translation id="3038232873781883849">Čakanje na namestitev …</translation>
 <translation id="3059710691562604940">Varno brskanje je izklopljeno. Chrome priporoča, da ga vklopite.</translation>
+<translation id="306179102415443347">Z bližnjico lahko hitro odprete Googlovega upravitelja gesel. Bližnjico lahko premaknete na začetni zaslon računalnika ali v zaganjalnik aplikacij.</translation>
 <translation id="3065168410429928842">Zavihek v Chromu</translation>
 <translation id="3080151273017101988">Nadaljuj izvajanje programov v ozadju, ko je Google Chrome zaprt</translation>
 <translation id="3089968997497233615">Na voljo je nova, varnejša različica Google Chroma.</translation>
@@ -226,6 +227,7 @@ Nekatere funkcije morda niso na voljo in spremembe nastavitev ne bodo shranjene.
 <translation id="4970880042055371251">Različica sistema Chrome OS</translation>
 <translation id="4970947549776831107">Chrome je blokiral to datoteko, ker gre za nevarno vrsto datoteke.</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Kliknite »Googlov upravitelj gesel«</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Razširitev Google Chrome je dostopala do vnosnih naprav}=1{Razširitev za Google Chrome dostopa do 1 vnosne naprave}one{Razširitev za Google Chrome dostopa do # vnosne naprave}two{Razširitev za Google Chrome dostopa do # vnosnih naprav}few{Razširitev za Google Chrome dostopa do # vnosnih naprav}other{Razširitev za Google Chrome dostopa do # vnosnih naprav}}</translation>
 <translation id="5098668839038261629">Če je to vklopljeno, boste odjavljeni tudi iz Chroma.</translation>
 <translation id="5132929315877954718">Odkrijte zanimive aplikacije, igre, razširitve in teme za Google Chrome.</translation>
@@ -338,6 +340,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="7339898014177206373">Novo okno</translation>
 <translation id="7398801000654795464">V Chrome ste bili prijavljeni kot <ph name="USER_EMAIL_ADDRESS" />. Pri vnovični prijavi uporabite isti račun.</translation>
 <translation id="7410958280246779049">Chrome je blokiral to datoteko, ker je nevarna.</translation>
+<translation id="7412494426921990001">Kliknite Chromov meni</translation>
 <translation id="7426611252293106642">Google Chrome morda ne bo deloval pravilno, ker ni več podprt v tej distribuciji Linuxa.</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Organizacija samodejno zapre Chrome, če ga ne uporabljate 1 minuto.}one{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuto.}two{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minuti.}few{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minute.}other{Organizacija samodejno zapre Chrome, če ga ne uporabljate # minut.}}</translation>
 <translation id="7481213027396403996">Izberite Chromovo najmočnejšo varnost</translation>
@@ -383,6 +386,7 @@ Dovoljenja, ki ste jih že odobrili spletnim mestom in aplikacijam, morda veljaj
 <translation id="8286862437124483331">Google Chrome poskuša prikazati gesla. Če želite omogočiti to, vnesite geslo za Windows.</translation>
 <translation id="828798499196665338">Tvoj starš je izklopil »Dovoljenja za spletna mesta, aplikacije in razširitve« za Chrome. Omogočanje tega ni dovoljeno: <ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Opa! Google Chrome se je zrušil. Ga želite znova zagnati?</translation>
+<translation id="829923460755755423">Dodajanje bližnjice Googlovemu upravitelju gesel</translation>
 <translation id="8342675569599923794">Ta datoteka je nevarna, zato jo je Chrome blokiral.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Kako uporabljamo te podatke:<ph name="END_BOLD" /> Spletna mesta lahko v Chromu shranjujejo podatke o vaših zanimanjih. Če na primer obiščete spletno mesto zaradi nakupa športnih copatov za maraton, bo spletno mesto morda določilo vaše zanimanje kot udeleževanje maratonov. Če pozneje obiščete drugo spletno mesto za registriranje za tek, vam lahko to spletno mesto glede na vaša zanimanja prikaže oglas za tekaško obutev.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. Vse pravice pridržane.</translation>

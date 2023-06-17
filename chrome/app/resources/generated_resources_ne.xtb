@@ -2149,6 +2149,7 @@
 <translation id="2777525873368474674">फोटोको लिंक पेस्ट गर्नुहोस्</translation>
 <translation id="2778471504622896352">ChromeOS लन्चरमा रिमोट एपहरू हाल्नुहोस्</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">यो साइटमा एक्स्टेन्सनहरूलाई अनुमति दिइएको छ</translation>
 <translation id="2782104745158847185">Linux एप स्थापना गर्ने क्रममा त्रुटि भयो</translation>
 <translation id="2783024642731649028">तपाईंको कार्ट <ph name="DISCOUNT_TEXT" /> मा भएको <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> को १ वस्तु <ph name="RELATIVE_TIME" /> हेरिए</translation>
 <translation id="2783298271312924866">डाउनलोड गरिएको</translation>
@@ -2486,7 +2487,6 @@
 <translation id="3060952009917586498">यन्त्रको भाषा परिवर्तन गर्नुहोस्। यन्त्रमा हाल भाषा <ph name="LANGUAGE" /> प्रयोग भइरहेको छ।</translation>
 <translation id="3060987956645097882">हामीले तपाईंको फोनसँग कनेक्ट गर्न सकेनौँ। तपाईंको फोन नजिकै छ, अनलक गरिएको छ र त्यसको ब्लुटुथ र Wi-Fi अन छ भन्ने कुरा सुनिश्चित गर्नुहोस्।</translation>
 <translation id="3061302636956643119">प्रोसेस गर्ने प्रयोजनका लागि यी टेक्स्ट Google मा पठाइने छन्।</translation>
-<translation id="306179102415443347">Google पासवर्ड म्यानेजरमा तुरुन्तै जान आफ्नो सर्टकट प्रयोग गर्नुहोस्। तपाईं आफ्नो सर्टकट सारेर कम्प्युटरको होम स्क्रिन वा एप लन्चरमा लैजान सक्नुहुन्छ।</translation>
 <translation id="3064871050034234884">साइटहरूले ध्वनि प्ले गर्न सक्छन्</translation>
 <translation id="3065041951436100775">ट्याबले प्रतिक्रिया बन्द गर्‍यो</translation>
 <translation id="3065522099314259755">किबोर्ड रिपिट हुने विलम्बता</translation>
@@ -4674,7 +4674,6 @@
 <translation id="4998430619171209993">सक्रिय छ</translation>
 <translation id="4999804342505941663">'बाधा नपुऱ्याउनुहोस्' मोड अन गरियोस्</translation>
 <translation id="5001526427543320409">तेस्रो पक्षीय कुकीहरू</translation>
-<translation id="5003967926796347400">“Google पासवर्ड म्यानेजर” मा क्लिक गर्नुहोस्</translation>
 <translation id="5005498671520578047">पासवर्ड प्रतिलिपि गर्नुहोस्</translation>
 <translation id="5006118752738286774">२ वर्षअघि</translation>
 <translation id="5006218871145547804">Crostini मा Android एपको ADB</translation>
@@ -5718,7 +5717,6 @@
     यो तस्बिर Chromebook को साइन इन स्क्रिन र लक स्क्रिनमा देखिने छ।</translation>
 <translation id="5925147183566400388">प्रमाणीकरण अभ्यास कथन प्वाइन्टर</translation>
 <translation id="5927132638760172455">अज्ञात प्राप्तकर्तामा cast गर्दै</translation>
-<translation id="5927232971138258197">यो एक्स्टेन्सनले <ph name="HOST" /> रिड गर्न तथा बदल्न सक्छ</translation>
 <translation id="592740088639760830">यो कन्टेनर बन्द गर्नुहोस्</translation>
 <translation id="592880897588170157">PDF फाइलहरूलाई Chrome मा स्वतः खोल्नुको सट्टा डाउनलोड गर्नुहोस्</translation>
 <translation id="5928969282301718193">समीक्षा गरिनु पर्ने कुनै पनि अनुमति बाँकी छैन</translation>
@@ -5966,7 +5964,6 @@
 <translation id="6130692320435119637">Wi-Fi नेटवर्क थप्नुहोस्</translation>
 <translation id="6130887916931372608">किबोर्ड की</translation>
 <translation id="6132714462430777655">स्कुलको इमेल ठेगाना हालेर डिभाइस दर्ता गर्ने प्रक्रिया स्किप गर्ने हो?</translation>
-<translation id="6133850653093419052">एक्सेस माग्ने अनुमति दिइएको छ</translation>
 <translation id="6135823405800500595">तपाईंको फोन नजिकै छ, अनलक गरिएको छ र उक्त फोनमा ब्लुटुथ तथा Wi-Fi अन गरिएको छ भन्ने कुरा सुनिश्चित गर्नुहोस्</translation>
 <translation id="6135826623269483856">तपाईंका सबै डिस्प्लेमा विन्डो व्यवस्थापन गर्ने अनुमति नदिइएका साइटहरू</translation>
 <translation id="6136114942382973861">डाउनलोडहरूको पट्टी बन्द गर्नुहोस्</translation>
@@ -6929,7 +6926,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) मा स्तरोन्नति गर्ने सुविधा उपलब्ध छ</translation>
 <translation id="69739764870135975">तपाईंको डिफल्ट सर्च इन्जिन Google नै हो भने तपाईं अझ उपयुक्त र सान्दर्भिक सुझावहरू देख्नु हुने छ</translation>
 <translation id="697508444536771064">Linux बन्द गर्नुहोस्</translation>
-<translation id="6975361011348772931">रिड गर्ने तथा बदल्ने अनुमति मागिएको छ</translation>
 <translation id="6978121630131642226">खोज इन्जिनहरू</translation>
 <translation id="6978717888677691380">तपाईंले ब्लक गरेका साइटहरू</translation>
 <translation id="6979041727349121225">इनर्जी सेभर</translation>
@@ -7418,7 +7414,6 @@
 <translation id="7410852728357935715">कुनै डिभाइसमा कास्ट गर्नुहोस्</translation>
 <translation id="741204030948306876">हुन्छ, म सहमत छु</translation>
 <translation id="7412226954991670867">GPU समृति</translation>
-<translation id="7412494426921990001">Chrome मेनुमा क्लिक गर्नुहोस्</translation>
 <translation id="7414464185801331860">१८ गुणा</translation>
 <translation id="7415454883318062233">सेटअप सम्पन्न भयो</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> को समीक्षा गर्नुहोस्</translation>
@@ -8051,7 +8046,6 @@
 <translation id="793531125873261495">भर्चुअल मेसिन डाउनलोड गर्ने क्रममा त्रुटि भयो। कृपया फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूरा भयो</translation>
 <translation id="7939062555109487992">उन्नत विकल्पहरू</translation>
-<translation id="7939073735115504773"><ph name="HOST" /> रिड गर्न तथा बदल्न यो एक्स्टेन्सनको आइकनमा क्लिक गर्नुहोस्</translation>
 <translation id="793923212791838">तपाईंको डिभाइसमा यो साइटले राम्रोसँग काम गर्दैन</translation>
 <translation id="7939328347457537652">डिभाइसका प्रमाणपत्रहरू व्यवस्थापन गर्नुहोस्</translation>
 <translation id="7939412583708276221">जसो भएता पनि राख्नुहोस्</translation>
@@ -8357,7 +8351,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तपाईंका डिभाइसहरू<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड थप्नुहोस्</translation>
 <translation id="8195265224453131880">तीव्रता</translation>
-<translation id="8195737548602430447">क्याप्सनहरू स्वतः लक्षित भाषामा अनुवाद गरियोस्।</translation>
 <translation id="8197673340773315084">"कार्य" वा "व्यक्तिगत" जस्तो कुनै नाम वा लेबल हाल्नुहोस्</translation>
 <translation id="8198456017687137612">ट्याब कास्ट गरिँदै छ</translation>
 <translation id="8198457270656084773">सिस्टमसम्बन्धी जानकारी भएको डिभाइसको लग पेज खोज्दै हुनुहुन्छ? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> मा जानुहोस्।</translation>
@@ -8503,7 +8496,6 @@
 <translation id="8323167517179506834">युआरएल टाइप गर्नुहोस्</translation>
 <translation id="8323317289166663449">तपाईंको कम्प्युटर र सबै वेबसाइटमा भएका तपाईंका सबै डेटा पढ्न तथा बदल्न</translation>
 <translation id="8324784016256120271">साइटहरूले तपाईंका गतिविधिअनुसार विज्ञापन देखाउने जस्ता प्रयोजनहरूका लागि विभिन्न साइटहरूमा तपाईंको ब्राउजिङसम्बन्धी गतिविधि हेर्न कुकीहरूको प्रयोग गर्न सक्छन्</translation>
-<translation id="8324819620112450495">एक्सेस माग्ने अनुमति दिइएको छैन</translation>
 <translation id="8325413836429495820">तपाईंको क्लिपबोर्ड हेर्न अनुमति नदिइएका साइटहरू</translation>
 <translation id="8326478304147373412">PKCS # 7, प्रमाणपत्र चेन</translation>
 <translation id="8327386430364625757">गणितीय फन्ट</translation>

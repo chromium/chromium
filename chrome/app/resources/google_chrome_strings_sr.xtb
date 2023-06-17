@@ -125,6 +125,7 @@
 <translation id="3037838751736561277">Google Chrome је у позадинском режиму.</translation>
 <translation id="3038232873781883849">Чека се инсталирање...</translation>
 <translation id="3059710691562604940">Безбедно прегледање је искључено. Chrome препоручује да га укључите.</translation>
+<translation id="306179102415443347">Користите пречицу да бисте брзо приступали Google менаџеру лозинки. Пречицу можете да преместите на почетни екран рачунара или у покретач апликација.</translation>
 <translation id="3065168410429928842">Chrome картица</translation>
 <translation id="3080151273017101988">Настави са покретањем апликација у позадини када се Google Chrome затвори</translation>
 <translation id="3089968997497233615">Доступна је нова, безбеднија верзија Google Chrome прегледача.</translation>
@@ -226,6 +227,7 @@
 <translation id="4970880042055371251">Верзија Chrome ОС-а</translation>
 <translation id="4970947549776831107">Chrome је блокирао овај фајл јер је овај тип фајла опасан</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Кликните на Google менаџер лозинки</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Додатак за Google Chrome је приступао уређајима за људски интерфејс}=1{Додатак за Google Chrome приступа 1 уређају за људски интерфејс}one{Додатак за Google Chrome приступа # уређају за људски интерфејс}few{Додатак за Google Chrome приступа уређајима за људски интерфејс (#)}other{Додатак за Google Chrome приступа уређајима за људски интерфејс (#)}}</translation>
 <translation id="5098668839038261629">Када је ово укључено, бићете и одјављени из Chrome-а</translation>
 <translation id="5132929315877954718">Откријте одличне апликације, игре, додатке и теме за Google Chrome.</translation>
@@ -338,6 +340,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="7339898014177206373">Нови прозор</translation>
 <translation id="7398801000654795464">Били сте пријављени у Chrome као <ph name="USER_EMAIL_ADDRESS" />. Користите исти налог да бисте се поново пријавили.</translation>
 <translation id="7410958280246779049">Chrome је блокирао овај фајл јер је опасан</translation>
+<translation id="7412494426921990001">Кликните на Chrome мени</translation>
 <translation id="7426611252293106642">Google Chrome можда неће исправно радити зато што више није подржан на овој верзији Linux-а</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Организација аутоматски затвара Chrome када се не користи 1 минут.}one{Организација аутоматски затвара Chrome када се не користи # минут.}few{Организација аутоматски затвара Chrome када се не користи # минута.}other{Организација аутоматски затвара Chrome када се не користи # минута.}}</translation>
 <translation id="7481213027396403996">Набавите најјачу Chrome заштиту</translation>
@@ -383,6 +386,7 @@ Google Chrome не може да врати подешавања.</translation>
 <translation id="8286862437124483331">Google Chrome покушава да прикаже лозинке. Унесите лозинку за Windows да бисте то омогућили.</translation>
 <translation id="828798499196665338">Родитељ је искључио „Дозволе за сајтове, апликације и додатке“ за Chrome. Омогућавање ове ставке (<ph name="EXTENSION_TYPE_PARAMETER" />) није дозвољено.</translation>
 <translation id="8290100596633877290">Опа! Google Chrome је отказао. Желите ли да га одмах поново покренете?</translation>
+<translation id="829923460755755423">Додајте пречицу у Google менаџер лозинки</translation>
 <translation id="8342675569599923794">Ова датотека је опасна, па ју је Chrome блокирао.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Како користимо ове податке:<ph name="END_BOLD" /> Сајтови могу да чувају информације о вашим интересовањима у Chrome-у. На пример, ако посетите сајт да бисте купили патике за маратон, тај сајт може да дефинише ваше интересовање као трчање маратона. Касније, ако посетите неки други сајт да бисте се пријавили за трку, тај сајт може да вам прикаже оглас за патике за трчање на основу интересовања.</translation>
 <translation id="8370517070665726704">Ауторска права <ph name="YEAR" />. Google LLC. Сва права задржана.</translation>

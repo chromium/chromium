@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Көшірілген сурет</translation>
 <translation id="1142846828089312304">Инкогнито режимінде үшінші тараптың cookie файлдарын бөгеу</translation>
 <translation id="1147769322402934017">Онлайн сурет галереялары</translation>
+<translation id="1150565364351027703">Күнқағар көзілдірік</translation>
 <translation id="1150979032973867961">Бұл сервер оның <ph name="DOMAIN" /> екендігін дәлелдей алмайды; оның қауіпсіздік сертификатын компьютеріңіздің операциялық жүйесі растамаған. Бұған конфигурация ақаулығы немесе қаскүнемнің қосылымыңызды тоқтатуы себеп болуы мүмкін.</translation>
 <translation id="1151972924205500581">Құпия сөз қажет</translation>
 <translation id="1156303062776767266">Жергілікті немесе ортақ файлды көрудесіз</translation>
@@ -891,6 +892,7 @@
 <translation id="3158539265159265653">Диск</translation>
 <translation id="3162559335345991374">Сіз пайдаланып жатқан Wi-Fi өзінің кіру бетіне өтуіңізді қажет етуі мүмкін.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Веб қызметтер</translation>
 <translation id="3176929007561373547">Прокси серверінің жұмыс істеп жатқанын тексеру үшін прокси параметрлерін
      тексеріңіз немесе желі әкімшісіне хабарласыңыз. Прокси сервері қажет емес деп ойласаңыз:
      <ph name="PLATFORM_TEXT" /></translation>
@@ -2361,6 +2363,7 @@
 <translation id="6665553082534466207">Оң жағын үш рет тесу</translation>
 <translation id="6668389483194953109">Қағаз өлшемінің "custom" атауы табылды, бірақ "custom_size" сипаты бос немесе жарамсыз.</translation>
 <translation id="6671697161687535275">Chromium жүйесінен нысан ұсынысын алып тастау керек пе?</translation>
+<translation id="6683022854667115063">Құлақаспап</translation>
 <translation id="6683717648675961851">Жұмыс тізімдері</translation>
 <translation id="6687335167692595844">Қаріп өлшемі сұралды</translation>
 <translation id="6687696737818665306">Актерлік шеберлік және театр</translation>
@@ -3146,6 +3149,7 @@
 <translation id="8513580896341796021">Жүктеп алу басталды. Оны көру үшін |<ph name="ACCELERATOR" />| басыңыз.</translation>
 <translation id="8519753333133776369">Әкімші рұқсат берген HID құрылғысы</translation>
 <translation id="8522552481199248698">Chrome браузері Google аккаунтыңызды қорғауға және құпия сөзіңізді өзгертуге көмектеседі.</translation>
+<translation id="8527228059738193856">Динамиктер</translation>
 <translation id="8530813470445476232">Chrome параметрлерінен браузерді қолдану тарихын, cookie файлдарын, кэшті және т.б. деректерді өшіріңіз.</translation>
 <translation id="853332391023689529">Пикап көліктері</translation>
 <translation id="8533619373899488139">Тыйым салынған URL мекенжайларын және жүйе әкімшісі енгізген басқа саясаттар тізімін қарау үшін &lt;strong&gt;chrome://policy&lt;/strong&gt; бетіне кіріңіз.</translation>
@@ -3304,6 +3308,7 @@
 <translation id="8943282376843390568">Сарғылт жасыл</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Заң және үкімет</translation>
+<translation id="8954252855949068147">Киім-кешек</translation>
 <translation id="8957210676456822347">Байланысқан портал авторизациясы</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Сайт параметрлеріне өту</translation>

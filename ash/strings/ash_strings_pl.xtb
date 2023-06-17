@@ -739,6 +739,7 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="4261870227682513959">Pokaż ustawienia powiadomień. Powiadomienia są wyłączone.</translation>
 <translation id="4269883910223712419">Administrator tego urządzenia może:</translation>
 <translation id="4274537685965975248">Skrót klawiszowy Ctrl + Alt + strzałka w dół został zmieniony. Aby użyć klawisza End, naciśnij klawisz <ph name="LAUNCHER_KEY_NAME" /> + strzałka w prawo.</translation>
+<translation id="4275283744500212192">Otwórz opcje układu okna</translation>
 <translation id="4279490309300973883">Odbicie lustrzane</translation>
 <translation id="4280601795273309128">Dobiegły końca aktualizacje zabezpieczeń. Zmień urządzenie na nowsze.</translation>
 <translation id="4283888303416325161">Dla większego bezpieczeństwa wpisz hasło</translation>
@@ -1390,7 +1391,6 @@ Podłącz urządzenie do zasilania.</translation>
 <translation id="7165278925115064263">Alt + Shift + K</translation>
 <translation id="7168224885072002358">Powrót do wcześniejszej rozdzielczości za <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Odśwież</translation>
-<translation id="7185362672357349361">Włączyć przypomnienie o wyciszeniu? Powiadomimy Cię, gdy będziesz mówić, a mikrofon będzie wyciszony. Dźwięk nigdy nie jest wysyłany poza Twoje urządzenie.</translation>
 <translation id="7187711731540696127">Hotspot <ph name="DEVICE_NAME" /> jest włączony. Brak połączonych urządzeń.</translation>
 <translation id="7188494361780961876">Menu zostało przeniesione w lewy górny róg ekranu.</translation>
 <translation id="7189412385142492784">Jak daleko jest Wenus</translation>

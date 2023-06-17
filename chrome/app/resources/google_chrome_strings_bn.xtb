@@ -123,6 +123,7 @@
 <translation id="3037838751736561277">Google Chrome পটভূমি মোডে রয়েছে।</translation>
 <translation id="3038232873781883849">ইনস্টল করার জন্য অপেক্ষা করা হচ্ছে...</translation>
 <translation id="3059710691562604940">'Safe Browsing'-এর সুবিধা বন্ধ করা আছে। তবে Chrome আপনাকে এটি চালু রাখার জন্য সাজেস্ট করছে।</translation>
+<translation id="306179102415443347">Google Password Manager চটপট অ্যাক্সেস করতে আপনার শর্টকাট ব্যবহার করুন। আপনি কম্পিউটারের হোম স্ক্রিন বা অ্যাপ লঞ্চারে শর্টকাট সরাতে পারেন।</translation>
 <translation id="3065168410429928842">Chrome ট্যাব</translation>
 <translation id="3080151273017101988">Google Chrome বন্ধ হলে পশ্চাদপট অ্যাপ্লিকেশানের চলা অবিরত রাখুন</translation>
 <translation id="3089968997497233615">Google Chrome-এর একটি নতুন, তুলনামূলক নিরাপদ ভার্সন উপলব্ধ৷</translation>
@@ -224,6 +225,7 @@
 <translation id="4970880042055371251">ChromeOS ভার্সন</translation>
 <translation id="4970947549776831107">এই ধরনের ফাইল বিপজ্জনক বলে Chrome এটি ব্লক করেছে</translation>
 <translation id="4990567037958725628">Google Chrome  ক্যানারি</translation>
+<translation id="5003967926796347400">“Google Password Manager”-এ ক্লিক করুন</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{একটি Google Chrome এক্সটেনশন HID ডিভাইস অ্যাক্সেস করছিল}=1{একটি Google Chrome এক্সটেনশন ১টি HID ডিভাইস অ্যাক্সেস করছে}one{একটি Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}other{একটি Google Chrome এক্সটেনশন #টি HID ডিভাইস অ্যাক্সেস করছে}}</translation>
 <translation id="5098668839038261629">চালু হলে, আপনি Chrome থেকেও সাইন-আউট হয়ে যাবেন</translation>
 <translation id="5132929315877954718">Google Chrome-এর দুর্দান্ত অ্যাপ্লিকেশান, গেম, এক্সটেনশান এবং থিম আবিষ্কার করুন৷</translation>
@@ -334,6 +336,7 @@
 <translation id="7339898014177206373">নতুন উইন্ডো</translation>
 <translation id="7398801000654795464">আপনি <ph name="USER_EMAIL_ADDRESS" /> হিসাবে Chrome-এ প্রবেশ করেছেন৷ আবার সাইন-ইন করতে একই অ্যাকাউন্ট ব্যবহার করুন৷</translation>
 <translation id="7410958280246779049">Chrome এই ফাইলটিকে ব্লক করেছে কারণ এটি বিপজ্জনক</translation>
+<translation id="7412494426921990001">Chrome মেনুতে ক্লিক করুন</translation>
 <translation id="7426611252293106642">Google Chrome সঠিকভাবে কাজ নাও করতে পারে কারণ এটি এখন আর এই Linux ডিস্ট্রিবিউশনে আর সমর্থিত নয়</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome ১ মিনিট ধরে ব্যবহার না করলে, আপনার সংস্থা অটোমেটিক এটি বন্ধ করে দেয়।}one{Chrome # মিনিট ধরে ব্যবহার না করলে, আপনার সংস্থা অটোমেটিক এটি বন্ধ করে দেয়।}other{Chrome # মিনিট ধরে ব্যবহার না করলে, আপনার সংস্থা অটোমেটিক এটি বন্ধ করে দেয়।}}</translation>
 <translation id="7481213027396403996">Chrome-এ সবচেয়ে বেশি সুরক্ষা পান</translation>
@@ -379,6 +382,7 @@
 <translation id="8286862437124483331">Google Chrome পাসওয়ার্ডগুলি দেখানোর চেষ্টা করছে। এটির অনুমতি দিতে আপনার Windows পাসওয়ার্ড টাইপ করুন।</translation>
 <translation id="828798499196665338">তোমার অভিভাবক Chrome-এ "সাইট, অ্যাপ ও এক্সটেনশনের অনুমতি" বন্ধ করে দিয়েছেন। এই <ph name="EXTENSION_TYPE_PARAMETER" /> চালু করার অনুমতি নেই।</translation>
 <translation id="8290100596633877290">হোয়া! Google Chrome ক্র্যাশ হয়েছে৷ এখনই পুনঃলঞ্চ করবেন?</translation>
+<translation id="829923460755755423">Google Password Manager-এ শর্টকাট যোগ করুন</translation>
 <translation id="8342675569599923794">এই ফাইলটি বিপজ্জনক, তাই Chrome এটিকে অবরুদ্ধ করেছে।</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />এই ডেটা আমরা কীভাবে ব্যবহার করি:<ph name="END_BOLD" /> Chrome-এর মাধ্যমে আপনার আগ্রহের বিষয়ে তথ্যগুলি সাইট স্টোর করতে পারে। যেমন, আপনি যদি ম্যারাথনের জন্য জুতো কেনার একটি সাইট ভিজিট করেন, তাহলে সাইটটি আপনার আগ্রহকে ম্যারাথন দৌড় হিসেবে বিবেচনা করবে। পরে আপনি যদি রেসের জন্য রেজিস্ট্রেশন করতে অন্য একটি সাইটে যান, তাহলে আপনার আগ্রহের উপর ভিত্তি করে সাইটটি আপনাকে দৌড়ানোর জুতোর বিজ্ঞাপন দেখাবে।</translation>
 <translation id="8370517070665726704">কপিরাইট <ph name="YEAR" /> Google LLC সব স্বত্ব সংরক্ষিত আছে।</translation>

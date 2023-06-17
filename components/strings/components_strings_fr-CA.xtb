@@ -62,6 +62,7 @@
 <translation id="1131264053432022307">L'image que vous avez copiée</translation>
 <translation id="1142846828089312304">Bloquer les témoins tiers en navigation privée</translation>
 <translation id="1147769322402934017">Galeries d'images en ligne</translation>
+<translation id="1150565364351027703">Lunettes de soleil</translation>
 <translation id="1150979032973867961">Impossible de vérifier sur le serveur qu'il s'agit bien du domaine <ph name="DOMAIN" />, car son certificat de sécurité n'est pas considéré comme fiable par le système d'exploitation de votre ordinateur. Cela peut être dû à une mauvaise configuration ou bien à l'interception de votre connexion par un pirate informatique.</translation>
 <translation id="1151972924205500581">Veuillez entrer le mot de passe</translation>
 <translation id="1156303062776767266">Vous consultez un fichier local ou partagé</translation>
@@ -874,6 +875,7 @@
 <translation id="3158539265159265653">Disque</translation>
 <translation id="3162559335345991374">Le réseau Wi-Fi que vous utilisez peut vous demander de visiter sa page de connexion.</translation>
 <translation id="3169472444629675720">Découvrir</translation>
+<translation id="3175081911749765310">Servic Web</translation>
 <translation id="3176929007561373547">Vérifiez vos paramètres de mandataire ou communiquez avec votre administrateur
       réseau pour vous assurer que le serveur mandataire fonctionne. Si vous
       ne pensez pas devoir utiliser de serveur mandataire, procédez comme suit :
@@ -2315,6 +2317,7 @@
 <translation id="6665553082534466207">Triple perforation à droite</translation>
 <translation id="6668389483194953109">Le nom de format de papier « Personnalisé » a été trouvé, mais la propriété « Taille_personnalisée » est vide ou incorrecte.</translation>
 <translation id="6671697161687535275">Supprimer la suggestion de formulaire de Chromium?</translation>
+<translation id="6683022854667115063">Écouteurs</translation>
 <translation id="6683717648675961851">Offres d'emploi</translation>
 <translation id="6687335167692595844">Taille de police demandée</translation>
 <translation id="6687696737818665306">Théâtre et arts dramatiques</translation>
@@ -3089,6 +3092,7 @@ Détails supplémentaires :
 <translation id="8513580896341796021">Le téléchargement a commencé. Pour le voir, appuyez sur |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Appareil HID autorisé par votre administrateur</translation>
 <translation id="8522552481199248698">Chrome peut vous aider à protéger votre compte Google et à changer votre mot de passe.</translation>
+<translation id="8527228059738193856">Haut-parleurs</translation>
 <translation id="8530813470445476232">Effacez votre historique de navigation, vos témoins, votre cache et plus encore dans les paramètres de Chrome</translation>
 <translation id="853332391023689529">Camionnettes</translation>
 <translation id="8533619373899488139">Consultez &lt;strong&gt;chrome://policy&lt;/strong&gt; pour voir les URL bloquées et des politiques mises en œuvre par votre administrateur système.</translation>
@@ -3243,6 +3247,7 @@ Détails supplémentaires :
 <translation id="8943282376843390568">Vert lime</translation>
 <translation id="8949493680961858543">A1 x 4</translation>
 <translation id="8951415078585015151">Justice et gouvernement</translation>
+<translation id="8954252855949068147">Vêtements</translation>
 <translation id="8957210676456822347">Autorisation du portail captif</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Accéder aux paramètres du site</translation>

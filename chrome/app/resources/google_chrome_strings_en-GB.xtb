@@ -124,6 +124,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="3037838751736561277">Google Chrome is in background mode.</translation>
 <translation id="3038232873781883849">Waiting to install…</translation>
 <translation id="3059710691562604940">Safe Browsing is off. Chrome recommends turning it on.</translation>
+<translation id="306179102415443347">Use your shortcut to quickly get to the Google Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="3065168410429928842">Chrome Tab</translation>
 <translation id="3080151273017101988">Continue running background apps when Google Chrome is closed</translation>
 <translation id="3089968997497233615">There's a new, safer version of Google Chrome available.</translation>
@@ -225,6 +226,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="4970880042055371251">Chrome OS version</translation>
 <translation id="4970947549776831107">Chrome blocked this file because this type of file is dangerous</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">Click 'Google Password Manager'</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{A Google Chrome extension was accessing HID devices}=1{A Google Chrome extension is accessing 1 HID device}other{A Google Chrome extension is accessing # HID devices}}</translation>
 <translation id="5098668839038261629">When on, you'll also be signed out of Chrome</translation>
 <translation id="5132929315877954718">Discover great apps, games, extensions and themes for Google Chrome.</translation>
@@ -337,6 +339,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="7339898014177206373">New window</translation>
 <translation id="7398801000654795464">You were signed in to Chrome as <ph name="USER_EMAIL_ADDRESS" />. Please use the same account to sign in again.</translation>
 <translation id="7410958280246779049">Chrome blocked this file because it is dangerous</translation>
+<translation id="7412494426921990001">Click the Chrome menu</translation>
 <translation id="7426611252293106642">Google Chrome may not function correctly because it is no longer supported on this Linux distribution</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Your organisation closes Chrome automatically when it isn't used for one minute.}other{Your organisation closes Chrome automatically when it isn't used for # minutes.}}</translation>
 <translation id="7481213027396403996">Get Chrome's strongest security</translation>
@@ -382,6 +385,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="8286862437124483331">Google Chrome is trying to show passwords. Type your Windows password to allow this.</translation>
 <translation id="828798499196665338">Your parent has turned off 'Permissions for sites, apps and extensions' for Chrome. Enabling this <ph name="EXTENSION_TYPE_PARAMETER" /> is not allowed.</translation>
 <translation id="8290100596633877290">Whoa! Google Chrome has crashed. Relaunch now?</translation>
+<translation id="829923460755755423">Add a shortcut to Google Password Manager</translation>
 <translation id="8342675569599923794">This file is dangerous, so Chrome has blocked it.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Sites can store information with Chrome about your interests. For example, if you visit a site to buy shoes for a marathon, the site might define your interest as running marathons. Later, if you visit a different site to register for a race, that site can show you an ad for running shoes based on your interests.</translation>
 <translation id="8370517070665726704">Copyright <ph name="YEAR" /> Google LLC. All rights reserved.</translation>

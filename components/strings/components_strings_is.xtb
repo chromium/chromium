@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Myndir sem þú afritaðir</translation>
 <translation id="1142846828089312304">Loka á fótspor þriðju aðila í huliðsstillingu</translation>
 <translation id="1147769322402934017">Myndasöfn á netinu</translation>
+<translation id="1150565364351027703">Sólgleraugu</translation>
 <translation id="1150979032973867961">Þessi þjónn gat ekki sannað að hann væri <ph name="DOMAIN" />; stýrikerfi tölvunnar treystir ekki öryggisvottorðinu hans. Þetta kann að orsakast af vanstillingu eða tölvuþrjóti sem komist hefur inn í tenginguna.</translation>
 <translation id="1151972924205500581">Aðgangsorðs krafist</translation>
 <translation id="1156303062776767266">Þú ert að skoða staðbundna eða samnýtta skrá</translation>
@@ -891,6 +892,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="3158539265159265653">Diskur</translation>
 <translation id="3162559335345991374">Wi-Fi netið sem þú notar kann að fara fram á að þú farir á innskráningarsíðu þess.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Vefþjónusta</translation>
 <translation id="3176929007561373547">Athugaðu stillingarnar þínar fyrir staðgengilsþjón eða hafðu samband við netstjórann þinn til að
       ganga úr skugga um að staðgengilsþjónninn starfi rétt. Ef þú heldur að þú ættir
       ekki að nota staðgengilsþjón:
@@ -2362,6 +2364,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="6665553082534466207">Þrjú göt hægra megin</translation>
 <translation id="6668389483194953109">Fann pappírsstærð með heitinu „custom“ en eiginleikinn „custom size" er auður eða ógildur.</translation>
 <translation id="6671697161687535275">Fjarlægja eyðublaðstillögu úr Chromium?</translation>
+<translation id="6683022854667115063">Heyrnartól</translation>
 <translation id="6683717648675961851">Atvinnuauglýsingar</translation>
 <translation id="6687335167692595844">Beðið um leturstærð</translation>
 <translation id="6687696737818665306">Leiklist og leikhús</translation>
@@ -3147,6 +3150,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8513580896341796021">Niðurhal hafið. Ýttu á |<ph name="ACCELERATOR" />| til að skoða það.</translation>
 <translation id="8519753333133776369">HID-tæki heimilað af stjórnanda</translation>
 <translation id="8522552481199248698">Chrome getur hjálpað þér að vernda Google reikninginn þinn og breyta aðgangsorðinu.</translation>
+<translation id="8527228059738193856">Hátalarar</translation>
 <translation id="8530813470445476232">Hreinsaðu vafraferilinn þinn, fótspor, skyndiminni og fleira í stillingum Chrome</translation>
 <translation id="853332391023689529">Pallbílar</translation>
 <translation id="8533619373899488139">Opnaðu &lt;strong&gt;chrome://policy&lt;/strong&gt; til að sjá vefslóðir á bannlista og aðrar reglur sem kerfisstjórinn þinn setur.</translation>
@@ -3305,6 +3309,7 @@ Ef þú gerir það ekki loka persónuverndarstillingar þínar á þennan aðga
 <translation id="8943282376843390568">Límónugrænn</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Lög og yfirvöld</translation>
+<translation id="8954252855949068147">Fatnaður</translation>
 <translation id="8957210676456822347">Auðkenningargátt</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Opna stillingar vefsvæðis</translation>

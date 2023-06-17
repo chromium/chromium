@@ -140,6 +140,7 @@ Voici quelques exemples de choses que vous pouvez essayer pour commencer.</trans
 <translation id="1550406609415860283">Appareils disponibles</translation>
 <translation id="1550523713251050646">Cliquez pour afficher plus d'options</translation>
 <translation id="1555130319947370107">Bleu</translation>
+<translation id="1576511610858879060">Votre Chromebook ou votre appareil Bluetooth utilise une ancienne version de Bluetooth. Utilisez une autre entrée pour une meilleure qualité audio.</translation>
 <translation id="1576623706766186887">Dézoomer lorsque la loupe est activée</translation>
 <translation id="1586324912145647027">Accédez aux bureaux 1 à 8</translation>
 <translation id="1589090746204042747">Accédez à toute l'activité de votre session</translation>
@@ -736,6 +737,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="4261870227682513959">Afficher les paramètres de notification. Les notifications sont désactivées</translation>
 <translation id="4269883910223712419">L'administrateur de cet appareil peut :</translation>
 <translation id="4274537685965975248">Le raccourci-clavier Ctrl+Alt+flèche vers le bas a changé. Pour utiliser la touche Fin, appuyez sur la touche <ph name="LAUNCHER_KEY_NAME" />+flèche vers la droite.</translation>
+<translation id="4275283744500212192">Ouvrir les options de mise en page des fenêtres</translation>
 <translation id="4279490309300973883">Mise en miroir</translation>
 <translation id="4280601795273309128">Les mises à jour de sécurité sont terminées. Améliorer votre appareil.</translation>
 <translation id="4283888303416325161">Entrez le mot de passe pour plus de sécurité</translation>

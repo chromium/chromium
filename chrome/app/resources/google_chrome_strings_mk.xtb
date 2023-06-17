@@ -125,6 +125,7 @@
 <translation id="3037838751736561277">Google Chrome е во заднински режим.</translation>
 <translation id="3038232873781883849">Се чека инсталирање…</translation>
 <translation id="3059710691562604940">„Безбедното прелистување“ е исклучено. Chrome препорачува да го вклучите.</translation>
+<translation id="306179102415443347">Користете ја вашата кратенка за да го отворите Google Password Manager брзо. Кратенката може да ја преместите на почетниот екран или „Стартерот на апликации“ на вашиот компјутер.</translation>
 <translation id="3065168410429928842">Картичка на Chrome</translation>
 <translation id="3080151273017101988">Продолжи со извршување апликации во заднина кога е затворен Google Chrome</translation>
 <translation id="3089968997497233615">Достапна е нова, побезбедна верзија на Google Chrome.</translation>
@@ -226,6 +227,7 @@
 <translation id="4970880042055371251">Верзија на Chrome OS</translation>
 <translation id="4970947549776831107">Chrome ја блокираше датотекава бидејќи типот на датотека е опасен</translation>
 <translation id="4990567037958725628">Google Chrome Канари</translation>
+<translation id="5003967926796347400">Кликнете „Google Password Manager“</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Екстензија за Google Chrome пристапувала до HID-уреди}=1{Екстензија за Google Chrome пристапува до 1 HID-уред}one{Екстензија за Google Chrome пристапува до # HID-уред}other{Екстензија за Google Chrome пристапува до # HID-уреди}}</translation>
 <translation id="5098668839038261629">Кога е вклучено, ќе се одјавите и од Chrome</translation>
 <translation id="5132929315877954718">Открива одлични апликации, игри, наставки и теми за Google Chrome.</translation>
@@ -338,6 +340,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="7339898014177206373">Нов прозорец</translation>
 <translation id="7398801000654795464">Бевте најавени на Chrome како <ph name="USER_EMAIL_ADDRESS" />. Користете ја истата сметка за повторно да се најавите.</translation>
 <translation id="7410958280246779049">Chrome ја блокираше датотекава бидејќи е опасна</translation>
+<translation id="7412494426921990001">Кликнете го менито на Chrome</translation>
 <translation id="7426611252293106642">Google Chrome може да не работи правилно затоа што веќе не е поддржан на овој систем на Linux</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Вашата организација го затвора Chrome автоматски кога не се користи 1 минута.}one{Вашата организација го затвора Chrome автоматски кога не се користи # минута.}other{Вашата организација го затвора Chrome автоматски кога не се користи # минути.}}</translation>
 <translation id="7481213027396403996">Добијте ја најсилната безбедност на Chrome</translation>
@@ -383,6 +386,7 @@ Google Chrome не може да ги обнови вашите поставки
 <translation id="8286862437124483331">Google Chrome се обидува да покаже лозинки. Впишете ја лозинката за Windows за да се дозволи ова.</translation>
 <translation id="828798499196665338">Родителот ги исклучил „Дозволите за сајтови, апликации и екстензии“ за Chrome. Не е дозволено овозможувањето на оваа<ph name="EXTENSION_TYPE_PARAMETER" />.</translation>
 <translation id="8290100596633877290">Google Chrome падна. Веднаш да се стартува повторно?</translation>
+<translation id="829923460755755423">Додајте кратенка за Google Password Manager</translation>
 <translation id="8342675569599923794">Датотекава е опасна, па затоа Chrome ја блокираше.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />Како ги користиме овие податоци:<ph name="END_BOLD" /> сајтовите може да ги зачувуваат податоците со Chrome за вашите интереси. На пример, ако посетите сајт за да купите патики за маратон, сајтот може да дефинира дека вашиот интерес е трчање маратони. Подоцна ако посетите друг сајт за да се регистрирате за трка, тој сајт може да ви прикаже реклама за патики за трчање според вашите интереси.</translation>
 <translation id="8370517070665726704">Авторски права <ph name="YEAR" /> Google LLC. Сите права се задржани.</translation>

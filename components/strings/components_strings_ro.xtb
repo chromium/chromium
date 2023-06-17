@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Imaginea copiată de tine</translation>
 <translation id="1142846828089312304">Blochează cookie-urile terță parte în modul incognito</translation>
 <translation id="1147769322402934017">Galerii de imagini online</translation>
+<translation id="1150565364351027703">Ochelari de soare</translation>
 <translation id="1150979032973867961">Acest server nu a putut dovedi că este <ph name="DOMAIN" />; sistemul de operare al computerului nu consideră că certificatul său de securitate este de încredere. Cauza poate fi o configurare greșită sau interceptarea conexiunii de către un atacator.</translation>
 <translation id="1151972924205500581">Trebuie să introduceți o parolă</translation>
 <translation id="1156303062776767266">Se afișează un fișier local sau comun</translation>
@@ -895,6 +896,7 @@
 <translation id="3158539265159265653">Disc</translation>
 <translation id="3162559335345991374">Rețeaua Wi-Fi pe care o folosești poate solicita accesarea paginii de conectare.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Servicii web</translation>
 <translation id="3176929007561373547">Verifică setările de proxy sau contactează administratorul de rețea
       pentru a te asigura că serverul proxy funcționează. Dacă nu consideri că ar trebui
       să folosești un server proxy:
@@ -2367,6 +2369,7 @@
 <translation id="6665553082534466207">Perforare triplă în dreapta</translation>
 <translation id="6668389483194953109">S-a găsit denumirea dimensiunii de hârtie „personalizată”, dar proprietatea „custom_size” este necompletată sau nevalidă.</translation>
 <translation id="6671697161687535275">Elimini sugestia pentru formular din Chromium?</translation>
+<translation id="6683022854667115063">Căști</translation>
 <translation id="6683717648675961851">Liste de locuri de muncă</translation>
 <translation id="6687335167692595844">Dimensiunea fontului solicitată</translation>
 <translation id="6687696737818665306">Actorie și teatru</translation>
@@ -3152,6 +3155,7 @@ Detalii suplimentare:
 <translation id="8513580896341796021">A început descărcarea. Pentru a o vedea, apasă pe |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Dispozitiv HID permis de administrator</translation>
 <translation id="8522552481199248698">Chrome te poate ajuta să îți protejezi Contul Google și să îți schimbi parola.</translation>
+<translation id="8527228059738193856">Difuzoare</translation>
 <translation id="8530813470445476232">Șterge istoricul de navigare, cookie-urile, memoria cache și altele din setările Chrome</translation>
 <translation id="853332391023689529">Camioane</translation>
 <translation id="8533619373899488139">Accesează &lt;strong&gt;chrome://policy&lt;/strong&gt; ca să vezi lista de adrese URL blocate și alte politici aplicate de administratorul de sistem.</translation>
@@ -3311,6 +3315,7 @@ Detalii suplimentare:
 <translation id="8943282376843390568">Verde-gălbui</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Legi și guvernare</translation>
+<translation id="8954252855949068147">Îmbrăcăminte</translation>
 <translation id="8957210676456822347">Autorizarea prin portalul captiv</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Accesează setările site-ului</translation>

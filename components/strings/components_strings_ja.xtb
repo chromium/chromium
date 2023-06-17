@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">コピーした画像</translation>
 <translation id="1142846828089312304">シークレット モードでサードパーティの Cookie をブロックする</translation>
 <translation id="1147769322402934017">オンライン画像集</translation>
+<translation id="1150565364351027703">サングラス</translation>
 <translation id="1150979032973867961">このサーバーが <ph name="DOMAIN" /> であることを確認できませんでした。このサーバーのセキュリティ証明書は、ご使用のパソコンのオペレーティング システムによって信頼されているものではありません。原因としては、不適切な設定や、悪意のあるユーザーによる接続妨害が考えられます。</translation>
 <translation id="1151972924205500581">パスワードを入力してください</translation>
 <translation id="1156303062776767266">ローカル ファイルまたは共有ファイルを表示しています</translation>
@@ -886,6 +887,7 @@
 <translation id="3158539265159265653">ディスク</translation>
 <translation id="3162559335345991374">ご利用の Wi-Fi ネットワークでは、ログインページへのアクセスが必要な可能性があります。</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">ウェブサービス</translation>
 <translation id="3176929007561373547">プロキシの設定を確認するか、ネットワーク管理者に問い合わせて、プロキシ サーバーが正常に
       動作しているかどうかを確認してください。プロキシ サーバーを使用していない場合は
       次の方法をお試しください。
@@ -2346,6 +2348,7 @@
 <translation id="6665553082534466207">3 穴パンチ（右）</translation>
 <translation id="6668389483194953109">用紙サイズ名「custom」が見つかりましたが、「custom_size」プロパティが空であるか無効です。</translation>
 <translation id="6671697161687535275">Chromium から候補を削除してもよろしいですか？</translation>
+<translation id="6683022854667115063">ヘッドフォン</translation>
 <translation id="6683717648675961851">求人情報</translation>
 <translation id="6687335167692595844">リクエストされたフォントサイズ</translation>
 <translation id="6687696737818665306">劇場、映画館</translation>
@@ -3125,6 +3128,7 @@
 <translation id="8513580896341796021">ダウンロードを開始しました。確認するには、|<ph name="ACCELERATOR" />| を押してください。</translation>
 <translation id="8519753333133776369">管理者が許可した HID デバイス</translation>
 <translation id="8522552481199248698">Chrome には Google アカウントの保護とパスワードの変更をサポートする機能があります。</translation>
+<translation id="8527228059738193856">スピーカー</translation>
 <translation id="8530813470445476232">Chrome の設定で閲覧履歴、Cookie、キャッシュなどを削除します</translation>
 <translation id="853332391023689529">ピックアップ トラック</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; で、ブロックされた URL のリストとシステム管理者が設定した他のポリシーを確認できます。</translation>
@@ -3282,6 +3286,7 @@
 <translation id="8943282376843390568">ライム</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">法律、行政</translation>
+<translation id="8954252855949068147">ファッション</translation>
 <translation id="8957210676456822347">キャプティブ ポータル認証</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" /> / <ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">サイトの設定に移動します</translation>

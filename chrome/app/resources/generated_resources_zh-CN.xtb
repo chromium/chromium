@@ -2152,6 +2152,7 @@
 <translation id="2777525873368474674">粘贴图片链接</translation>
 <translation id="2778471504622896352">将远程应用添加到 ChromeOS 启动器</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">已允许在此网站上使用扩展程序</translation>
 <translation id="2782104745158847185">安装 Linux 应用时出错</translation>
 <translation id="2783024642731649028">您的购物车中有 1 件商品享受了由 <ph name="MERCHANT_DOMAIN" /> 的 <ph name="MERCHANT_NAME" /> 提供的 <ph name="DISCOUNT_TEXT" />，距离上次查看已有 <ph name="RELATIVE_TIME" /></translation>
 <translation id="2783298271312924866">已下载</translation>
@@ -2491,7 +2492,6 @@
 <translation id="3060952009917586498">更改设备语言。当前语言为<ph name="LANGUAGE" />。</translation>
 <translation id="3060987956645097882">我们无法与您的手机建立连接。请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi。</translation>
 <translation id="3061302636956643119">系统会将所选文字发送给 Google 以供处理。</translation>
-<translation id="306179102415443347">使用快捷方式可快速访问 Google 密码管理工具。您可以将快捷方式移动到计算机的主屏幕上或应用启动器中。</translation>
 <translation id="3064871050034234884">网站可以播放声音</translation>
 <translation id="3065041951436100775">标签页意外关闭反馈。</translation>
 <translation id="3065522099314259755">键盘重复延迟时间</translation>
@@ -4680,7 +4680,6 @@
 <translation id="4998430619171209993">已开启</translation>
 <translation id="4999804342505941663">开启“勿扰”模式</translation>
 <translation id="5001526427543320409">第三方 Cookie</translation>
-<translation id="5003967926796347400">点击“Google 密码管理工具”</translation>
 <translation id="5005498671520578047">复制密码</translation>
 <translation id="5006118752738286774">2 年前</translation>
 <translation id="5006218871145547804">Crostini Android 应用 ADB</translation>
@@ -5727,7 +5726,6 @@
     此图片将会显示在 Chromebook 的登录屏幕和锁定屏幕上。</translation>
 <translation id="5925147183566400388">核证作业准则 (Certification Practice Statement) 指针</translation>
 <translation id="5927132638760172455">正在投放至未知接收器</translation>
-<translation id="5927232971138258197">此扩展程序可以读取和更改 <ph name="HOST" /></translation>
 <translation id="592740088639760830">停止运行此容器</translation>
 <translation id="592880897588170157">下载 PDF 文件，而不是在 Chrome 中自动打开它们</translation>
 <translation id="5928969282301718193">设置完毕</translation>
@@ -5974,7 +5972,6 @@
 <translation id="6130692320435119637">添加 Wi-Fi</translation>
 <translation id="6130887916931372608">键盘按键</translation>
 <translation id="6132714462430777655">跳过学校注册？</translation>
-<translation id="6133850653093419052">可以申请访问权限</translation>
 <translation id="6135823405800500595">请确保您的手机就在附近、处于解锁状态，且已开启蓝牙和 Wi-Fi</translation>
 <translation id="6135826623269483856">不得管理您的所有显示屏上的窗口</translation>
 <translation id="6136114942382973861">关闭下载内容栏</translation>
@@ -6940,7 +6937,6 @@
 <translation id="6973611239564315524">可以升级至 Debian 10 (Buster)</translation>
 <translation id="69739764870135975">如果 Google 也是您的默认搜索引擎，您将会看到更实用、与上下文更相关的建议</translation>
 <translation id="697508444536771064">关闭 Linux</translation>
-<translation id="6975361011348772931">已请求读取和更改</translation>
 <translation id="6978121630131642226">搜索引擎</translation>
 <translation id="6978717888677691380">您已屏蔽的网站</translation>
 <translation id="6979041727349121225">节能模式</translation>
@@ -7433,7 +7429,6 @@
 <translation id="7410852728357935715">投放到设备</translation>
 <translation id="741204030948306876">立即开启</translation>
 <translation id="7412226954991670867">GPU 内存</translation>
-<translation id="7412494426921990001">点击 Chrome 菜单</translation>
 <translation id="7414464185801331860">18 倍</translation>
 <translation id="7415454883318062233">设置已完成</translation>
 <translation id="7416091793702109803">检查“<ph name="FILE_NAME" />”文件</translation>
@@ -8069,7 +8064,6 @@
 <translation id="793531125873261495">下载虚拟机时出错。请重试。</translation>
 <translation id="7935451262452051102">已完成 <ph name="PERCENT" />%</translation>
 <translation id="7939062555109487992">高级选项</translation>
-<translation id="7939073735115504773">点击此扩展程序的图标即可读取和更改 <ph name="HOST" /></translation>
 <translation id="793923212791838">您的设备无法用于此网站</translation>
 <translation id="7939328347457537652">管理设备证书</translation>
 <translation id="7939412583708276221">仍然保留</translation>
@@ -8376,7 +8370,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />您的设备<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">添加密码</translation>
 <translation id="8195265224453131880">强度</translation>
-<translation id="8195737548602430447">自动将字幕翻译成目标语言。</translation>
 <translation id="8197673340773315084">添加一个名称或标签，例如“工作”或“个人”</translation>
 <translation id="8198456017687137612">正在投放标签页</translation>
 <translation id="8198457270656084773">想查看系统设备日志页面？请访问 <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />。</translation>
@@ -8495,7 +8488,6 @@
 <translation id="8295449579927246485">实时翻译</translation>
 <translation id="8297292446125062288">HID 设置</translation>
 <translation id="8298429963694909221">您现在可在 <ph name="DEVICE_TYPE" /> 上接收手机中的通知。在 <ph name="DEVICE_TYPE" /> 上关闭通知也会在手机上关闭这些通知。请确保您的手机就在附近，且已开启蓝牙和 Wi-Fi。</translation>
-<translation id="829923460755755423">为 Google 密码管理工具添加快捷方式</translation>
 <translation id="8299319456683969623">您目前处于离线状态。</translation>
 <translation id="8300011035382349091">为此标签页修改书签</translation>
 <translation id="8300374739238450534">深夜蓝</translation>
@@ -8523,7 +8515,6 @@
 <translation id="8323167517179506834">输入网址</translation>
 <translation id="8323317289166663449">读取和更改您在自己的计算机上以及在所有网站上的所有数据</translation>
 <translation id="8324784016256120271">网站可以使用 Cookie 查看您在各个不同网站上的浏览活动，以便实现某些功能或目的（例如为您展示个性化广告）</translation>
-<translation id="8324819620112450495">不得申请访问权限</translation>
 <translation id="8325413836429495820">不允许查看您的剪贴板</translation>
 <translation id="8326478304147373412">PKCS #7，证书链</translation>
 <translation id="8327386430364625757">数学字体</translation>

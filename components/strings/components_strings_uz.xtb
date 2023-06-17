@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Nusxalangan rasm</translation>
 <translation id="1142846828089312304">Inkognito rejimidagi tashqi cookie fayllarni taqiqlash</translation>
 <translation id="1147769322402934017">Onlayn rasm galereyalari</translation>
+<translation id="1150565364351027703">Qora ko‘zoynak</translation>
 <translation id="1150979032973867961">Bu <ph name="DOMAIN" /> serveri ekanligini tasdiqlab bo‘lmadi. Uning havfsizlik sertifikati kompyuteringizdagi operatsion tizimga ishonchli tuyulmayapti. Balki, server noto‘g‘ri sozlangan yoki kimdir ma’lumotlaringizni o‘g‘rilashga urinayotgan bo‘lishi mumkin.</translation>
 <translation id="1151972924205500581">Parol kiritish zarur</translation>
 <translation id="1156303062776767266">Bu – mahalliy yoki ulashilgan fayl</translation>
@@ -890,6 +891,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="3158539265159265653">Disk</translation>
 <translation id="3162559335345991374">Siz ulangan Wi-Fi tarmog‘i tizimga kirishingizni talab qilishi mumkin.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Veb-xizmatlar</translation>
 <translation id="3176929007561373547">Proksi sozlamalarini tekshiring yoki administratordan kerakli parametrlarni so‘rang. Aks holda:
 <ph name="PLATFORM_TEXT" /></translation>
 <translation id="317878711435188021">Qurilmadan foydalanish haqidagi maʼlumotlarga kirish</translation>
@@ -2356,6 +2358,7 @@ Aks holda bu maxfiylik sozlamalaringiz tomonidan bloklanadi. Bunda siz ochgan sa
 <translation id="6665553082534466207">Oʻngdan 3 ta teshik ochish</translation>
 <translation id="6668389483194953109">“custom” qogʻoz oʻlchami topildi, lekin custom_size xususiyati boʻsh yoki yaroqsiz.</translation>
 <translation id="6671697161687535275">Bu taklif Chromium’dan o‘chirib tashlansinmi?</translation>
+<translation id="6683022854667115063">Quloqliklar</translation>
 <translation id="6683717648675961851">Boʻsh ish oʻrinlari</translation>
 <translation id="6687335167692595844">Shrift hajmi zarur</translation>
 <translation id="6687696737818665306">Aktyorlik sanʼati va teatr</translation>
@@ -3141,6 +3144,7 @@ Batafsil axborot:
 <translation id="8513580896341796021">Yuklab olish boshlandi. Uni koʻrish |<ph name="ACCELERATOR" />| ustiga bosing.</translation>
 <translation id="8519753333133776369">HID qurilmaga administrator ruxsat bergan</translation>
 <translation id="8522552481199248698">Chrome Google hisobingizni himoyalash va parolni almashtirish uchun yordam beradi.</translation>
+<translation id="8527228059738193856">Karnaylar</translation>
 <translation id="8530813470445476232">Brauzer tarixi, cookie fayllar, kesh va boshqa Chrome sozlamalarini tozalang</translation>
 <translation id="853332391023689529">Pikaplar</translation>
 <translation id="8533619373899488139">Administrator tomonidan tuzilgan URL manzillar qora roʻyxati va boshqa parametrlarni &lt;strong&gt;chrome://policy&lt;/strong&gt; sahifasi orqali koʻrish mumkin.</translation>
@@ -3299,6 +3303,7 @@ Batafsil axborot:
 <translation id="8943282376843390568">Laym</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Qonun va hukumat</translation>
+<translation id="8954252855949068147">Kiyim-kechak</translation>
 <translation id="8957210676456822347">Tegishli portalga kirish</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Sayt sozlamalarini ochish</translation>

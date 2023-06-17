@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">आपकी कॉपी की हुई इमेज</translation>
 <translation id="1142846828089312304">गुप्त मोड में, तीसरे पक्ष की कुकी ब्लॉक करें</translation>
 <translation id="1147769322402934017">ऑनलाइन इमेज गैलरी</translation>
+<translation id="1150565364351027703">धूप के चश्मे</translation>
 <translation id="1150979032973867961">यह सर्वर यह नहीं प्रमाणित कर सका कि यह <ph name="DOMAIN" /> है; इसका सुरक्षा प्रमाणपत्र आपके कंप्यूटर के ऑपरेटिंग सिस्टम द्वारा विश्वसनीय नहीं है. ऐसा गलत कॉन्फ़िगरेशन या किसी आक्रमणकर्ता द्वारा आपके कनेक्शन में अवरोध डालने के कारण हो सकता है.</translation>
 <translation id="1151972924205500581">पासवर्ड आवश्यक</translation>
 <translation id="1156303062776767266">आप स्थानीय या शेयर की गई फ़ाइल देख रहे हैं</translation>
@@ -887,6 +888,7 @@
 <translation id="3158539265159265653">डिस्क</translation>
 <translation id="3162559335345991374">आप जिस वाई-फ़ाई का उपयोग कर रहे हैं, आपको उसके लॉगिन पेज पर जाने की ज़रूरत पड़ सकती है.</translation>
 <translation id="3169472444629675720">डिस्कवर</translation>
+<translation id="3175081911749765310">वेब सेवाएं</translation>
 <translation id="3176929007561373547">यह पक्का करने के लिए कि प्रॉक्सी सर्वर काम कर रहा है,
       अपनी प्रॉक्सी सेटिंग जांचें या अपने नेटवर्क एडमिन से संपर्क करें. अगर आपको नहीं लगता       कि आपको किसी प्रॉक्सी सर्वर का उपयोग करना चाहिए:
       <ph name="PLATFORM_TEXT" /></translation>
@@ -2346,6 +2348,7 @@
 <translation id="6665553082534466207">दाईं ओर ट्रिपल पंच</translation>
 <translation id="6668389483194953109">पेपर साइज़ का नाम "custom" मिला, लेकिन "custom_size" प्रॉपर्टी खाली या अमान्य है.</translation>
 <translation id="6671697161687535275">क्रोमियम से फ़ॉर्म सुझाव निकालें?</translation>
+<translation id="6683022854667115063">हेडफ़ोन</translation>
 <translation id="6683717648675961851">नौकरी के विज्ञापन</translation>
 <translation id="6687335167692595844">फ़ॉन्ट साइज़ का अनुरोध किया गया</translation>
 <translation id="6687696737818665306">अभिनय और थिएटर</translation>
@@ -3125,6 +3128,7 @@
 <translation id="8513580896341796021">डाउनलोड शुरू हुआ. इसे देखने के लिए, |<ph name="ACCELERATOR" />| दबाएं.</translation>
 <translation id="8519753333133776369">ऐसा एचआईडी डिवाइस जिसे एडमिन ने अनुमति दी है</translation>
 <translation id="8522552481199248698">Chrome से आप अपने Google खाते की सुरक्षा कर सकते हैं और अपना पासवर्ड बदल सकते हैं.</translation>
+<translation id="8527228059738193856">स्पीकर</translation>
 <translation id="8530813470445476232">Chrome की सेटिंग में अपना ब्राउज़िंग इतिहास, कुकी, कैश मेमोरी वगैरह मिटाएं</translation>
 <translation id="853332391023689529">पिक अप ट्रक की सेवा</translation>
 <translation id="8533619373899488139">&lt;strong&gt;chrome://policy&lt;/strong&gt; पर जाकर, ब्लॉक किए गए यूआरएल की सूची और ऐसी नीतियां देखें जिन्हें आपके एडमिन ने लागू किया है.</translation>
@@ -3282,6 +3286,7 @@
 <translation id="8943282376843390568">नींबू पीला</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">कानून और सरकार</translation>
+<translation id="8954252855949068147">कपड़े</translation>
 <translation id="8957210676456822347">कैप्‍टिव पोर्टल की अनुमति देना</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">साइट की सेटिंग पर जाएं</translation>

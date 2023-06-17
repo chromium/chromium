@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Kopētais attēls</translation>
 <translation id="1142846828089312304">Inkognito režīmā bloķēt trešo pušu sīkfailus</translation>
 <translation id="1147769322402934017">Tiešsaistes attēlu galerijas</translation>
+<translation id="1150565364351027703">Saulesbrilles</translation>
 <translation id="1150979032973867961">Šis serveris nevarēja pierādīt, ka šī ir vietne <ph name="DOMAIN" />; tās drošības sertifikāts netiek uzskatīts par uzticamu jūsu datora operētājsistēmā. Iespējams, tas ir nepareizas konfigurācijas dēļ vai arī kāds ir ļaunprātīgi izmantojis jūsu savienojumu.</translation>
 <translation id="1151972924205500581">Nepieciešama parole</translation>
 <translation id="1156303062776767266">Jūs skatāt vietēju vai kopīgotu failu</translation>
@@ -891,6 +892,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="3158539265159265653">Disks</translation>
 <translation id="3162559335345991374">Iespējams, izmantotajā Wi-Fi tīklā tiks pieprasīts apmeklēt pieteikšanās lapu.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Tīm. pak.</translation>
 <translation id="3176929007561373547">Pārbaudiet starpniekservera iestatījumus vai sazinieties ar tīkla administratoru, lai
       pārliecinātos, vai starpniekserveris darbojas. Ja uzskatāt, ka jums nav jāizmanto
       starpniekserveris,
@@ -2361,6 +2363,7 @@ Pretējā gadījumā šī iespēja būtu liegta saskaņā ar jūsu konfidenciali
 <translation id="6665553082534466207">Trīs caurumi labajā pusē</translation>
 <translation id="6668389483194953109">Atrasts papīra izmēru nosaukums “custom”, taču parametrs “custom_size” ir tukšs vai nederīgs.</translation>
 <translation id="6671697161687535275">Vai noņemt veidlapas ieteikumu no pārlūka Chromium?</translation>
+<translation id="6683022854667115063">Austiņas</translation>
 <translation id="6683717648675961851">Darba sludinājumi</translation>
 <translation id="6687335167692595844">Tika pieprasīts fonta lielums</translation>
 <translation id="6687696737818665306">Aktiermāksla un teātris</translation>
@@ -3146,6 +3149,7 @@ Papildu informācija:
 <translation id="8513580896341796021">Lejupielāde ir sākta. Lai to skatītu, nospiediet taustiņu |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">HID ierīce, ko atļāva jūsu administrators</translation>
 <translation id="8522552481199248698">Chrome var palīdzēt jums aizsargāt jūsu Google kontu un nomainīt paroli.</translation>
+<translation id="8527228059738193856">Skaļruņi</translation>
 <translation id="8530813470445476232">Notīriet savu pārlūkošanas vēsturi, sīkfailus, kešatmiņu un citus datus Chrome iestatījumos.</translation>
 <translation id="853332391023689529">Pikapi</translation>
 <translation id="8533619373899488139">Apmeklējiet vietni &lt;strong&gt;chrome://policy&lt;/strong&gt;, lai skatītu bloķēto URL sarakstu, kā arī citas politikas, ko noteicis sistēmas administrators.</translation>
@@ -3305,6 +3309,7 @@ Papildu informācija:
 <translation id="8943282376843390568">Laima zaļa</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Likumdošana un valdība</translation>
+<translation id="8954252855949068147">Apģērbs</translation>
 <translation id="8957210676456822347">Caurlaides lapas autorizācija</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Pāriet uz vietnes iestatījumiem</translation>

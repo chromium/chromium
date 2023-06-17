@@ -125,6 +125,7 @@
 <translation id="3037838751736561277">Google Chrome બૅકગ્રાઉન્ડ મોડમાં છે.</translation>
 <translation id="3038232873781883849">ઇન્સ્ટૉલ થવાની રાહ જોઈ રહ્યાં છીએ...</translation>
 <translation id="3059710691562604940">Safe Browsingની સુવિધા બંધ છે. Chrome તેને ચાલુ રાખવાનો સુઝાવ આપે છે.</translation>
+<translation id="306179102415443347">Google Password Manager પર ઝડપથી જવા માટે તમારા શૉર્ટકટનો ઉપયોગ કરો. તમે તમારા શૉર્ટકટને તમારા કમ્પ્યુટરની હોમ સ્ક્રીન અથવા ઍપ લૉન્ચર પર ખસેડી શકો છો.</translation>
 <translation id="3065168410429928842">Chrome ટૅબ</translation>
 <translation id="3080151273017101988">જ્યારે Google Chrome બંધ થાય ત્યારે બૅકગ્રાઉન્ડમાં ઍપ ચલાવવાનું ચાલુ રાખો</translation>
 <translation id="3089968997497233615">Google Chromeનું નવું, સુરક્ષિત વર્ઝન ઉપલબ્ધ છે.</translation>
@@ -226,6 +227,7 @@
 <translation id="4970880042055371251">ChromeOSનું વર્ઝન</translation>
 <translation id="4970947549776831107">આ પ્રકારની ફાઇલ જોખમી હોવાને કારણે Chrome દ્વારા આ ફાઇલને બ્લૉક કરવામાં આવી છે</translation>
 <translation id="4990567037958725628">Google Chrome કૅનેરી</translation>
+<translation id="5003967926796347400">“Google Password Manager” પર ક્લિક કરો</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome એક્સ્ટેન્શન HID ડિવાઇસ ઍક્સેસ કરી રહ્યું હતું}=1{Google Chrome એક્સ્ટેન્શન 1 HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}one{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}other{Google Chrome એક્સ્ટેન્શન # HID ડિવાઇસ ઍક્સેસ કરી રહ્યું છે}}</translation>
 <translation id="5098668839038261629">જ્યારે ચાલુ હોય, ત્યારે તમે Chromeમાંથી પણ સાઇન આઉટ થશો</translation>
 <translation id="5132929315877954718">Google Chrome માટે શ્રેષ્ઠ ઍપ્લિકેશનો, રમતો, એક્સટેન્શન્સ અને થીમ્સ શોધો</translation>
@@ -338,6 +340,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="7339898014177206373">નવી વિંડો</translation>
 <translation id="7398801000654795464">તમે Chromeમાં <ph name="USER_EMAIL_ADDRESS" /> તરીકે સાઇન ઇન કર્યું હતું. ફરીથી સાઇન ઇન કરવા માટે કૃપા કરીને એ જ એકાઉન્ટનો ઉપયોગ કરો.</translation>
 <translation id="7410958280246779049">આ ફાઇલ જોખમી હોવાથી Chrome દ્વારા તેને બ્લૉક કરવામાં આવી છે</translation>
+<translation id="7412494426921990001">Chrome મેનૂ પર ક્લિક કરો</translation>
 <translation id="7426611252293106642">આ Linux વિતરણ સિસ્ટમ પર Google Chrome હવે સપોર્ટ કરતું ન હોવાથી કદાચ તે યોગ્ય રીતે કાર્ય ન કરે</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{જ્યારે 1 મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે.}one{જ્યારે # મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે.}other{જ્યારે # મિનિટ સુધી Chromeનો ઉપયોગ કરવામાં ન આવે, ત્યારે તમારી સંસ્થા તેને ઑટોમૅટિક રીતે બંધ કરી નાખે છે.}}</translation>
 <translation id="7481213027396403996">Chromeની સૌથી વધુ મજબૂત સુરક્ષા મેળવો</translation>
@@ -383,6 +386,7 @@ Google Chrome તમારા સેટિંગને રિકવર કરી
 <translation id="8286862437124483331">Google Chrome પાસવર્ડ્સ બતાવવાનો પ્રયાસ કરી રહ્યું છે. આની મંજૂરી આપવા માટે તમારો Windows પાસવર્ડ લખો.</translation>
 <translation id="828798499196665338">તમારા માતાપિતાએ Chrome માટે "સાઇટ, ઍપ અને એક્સ્ટેન્શન માટેની પરવાનગીઓ" બંધ કરી છે. આ <ph name="EXTENSION_TYPE_PARAMETER" /> ચાલુ કરવાની મંજૂરી નથી.</translation>
 <translation id="8290100596633877290">ઓહ! Google Chrome ક્રેશ થઈ ગયું. હમણાં ફરીથી લોંચ કરીએ?</translation>
+<translation id="829923460755755423">Google Password Manager માટે કોઈ શૉર્ટકટ ઉમેરો</translation>
 <translation id="8342675569599923794">આ ફાઇલ જોખમી છે, તેથી Chrome એ તેને અવરોધિત કરેલ છે.</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />અમે આ ડેટાનો ઉપયોગ કેવી રીતે કરીએ છીએ:<ph name="END_BOLD" /> સાઇટ, Chrome પર તમારી રુચિના વિષયો વિશેની માહિતી સ્ટોર કરી શકે છે. ઉદાહરણ તરીકે જો તમે મૅરેથનમાં દોડવા માટે શૂઝ ખરીદવા કોઈ સાઇટની મુલાકાત લો, તો એ સાઇટ મૅરેથન દોડને તમારી રુચિના વિષય તરીકે સાચવી શકે છે. પછી, જો તમે દોડ માટે રજિસ્ટ્રેશન કરાવવા કોઈ અન્ય સાઇટની મુલાકાત લેશો, તો તે સાઇટ તમારી રુચિના વિષયના આધારે તમને દોડવા માટેના શૂઝની જાહેરાત બતાવી શકે છે.</translation>
 <translation id="8370517070665726704">કૉપિરાઇટ <ph name="YEAR" /> Google LLC. સર્વાધિકાર સુરક્ષિત.</translation>

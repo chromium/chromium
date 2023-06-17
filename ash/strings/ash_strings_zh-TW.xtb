@@ -736,6 +736,7 @@
 <translation id="4261870227682513959">顯示通知設定。已關閉所有通知</translation>
 <translation id="4269883910223712419">這部裝置的管理員擁有下列權限：</translation>
 <translation id="4274537685965975248">「Ctrl + Alt + 向下鍵」的鍵盤快速鍵已變更。如要使用 End 鍵，請按下<ph name="LAUNCHER_KEY_NAME" />鍵 + 向右鍵。</translation>
+<translation id="4275283744500212192">開啟視窗版面配置選項</translation>
 <translation id="4279490309300973883">鏡像</translation>
 <translation id="4280601795273309128">安全性更新已終止，請升級裝置。</translation>
 <translation id="4283888303416325161">基於安全考量，請輸入密碼</translation>
@@ -1387,7 +1388,6 @@
 <translation id="7165278925115064263">Alt + Shift + K 鍵</translation>
 <translation id="7168224885072002358">系統將在 <ph name="TIMEOUT_SECONDS" /> 秒後還原成原來的解析度</translation>
 <translation id="7180611975245234373">重新整理</translation>
-<translation id="7185362672357349361">要開啟靜音狀態的自動提醒嗎？如果在靜音狀態下說話，系統會傳送通知給你。音訊資料只會儲存在裝置上。</translation>
 <translation id="7187711731540696127">「<ph name="DEVICE_NAME" />」無線基地台已開啟，目前沒有任何裝置連線</translation>
 <translation id="7188494361780961876">已將選單移至畫面左上角。</translation>
 <translation id="7189412385142492784">金星有多遠</translation>

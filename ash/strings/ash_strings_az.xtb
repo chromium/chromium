@@ -739,6 +739,7 @@ Cihazınızı enerji mənbəyinə qoşun.</translation>
 <translation id="4261870227682513959">Bildiriş ayarlarını göstərin. Bildirişlər deaktivdir</translation>
 <translation id="4269883910223712419">Bu cihazın admini edə bilər:</translation>
 <translation id="4274537685965975248">Ctrl + Alt + Aşağı Ox klaviatura qısayolu dəyişib. Son düyməsindən istifadə etmək üçün <ph name="LAUNCHER_KEY_NAME" /> + Sağa Ox düyməsini basın.</translation>
+<translation id="4275283744500212192">Pəncərə düzəni seçimlərini açın</translation>
 <translation id="4279490309300973883">Əks etdirilir</translation>
 <translation id="4280601795273309128">Təhlükəsizlik güncəllənmələri başa çatdı. Cihazı təkmilləşdirin.</translation>
 <translation id="4283888303416325161">Əlavə təhlükəsizlik üçün parol daxil edin</translation>
@@ -1391,7 +1392,6 @@ Yeni quraşdırma</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358"><ph name="TIMEOUT_SECONDS" /> daxilində köhnə həllə qayıtma</translation>
 <translation id="7180611975245234373">Yeniləyin</translation>
-<translation id="7185362672357349361">Xatırlatma bildirişinin susdurulması aktiv edilsin? Susdurulduqda danışsanız, bildiriş alacaqsınız. Audio cihazdan ötürülmür.</translation>
 <translation id="7187711731540696127"><ph name="DEVICE_NAME" /> hotspotu aktivdir, cihaz qoşulmayıb</translation>
 <translation id="7188494361780961876">Menyu ekranın yuxarı sol küncünə köçürülüb.</translation>
 <translation id="7189412385142492784">Venera nə qədər uzaqdadır</translation>

@@ -739,6 +739,7 @@ Tengdu tækið við rafmagn.</translation>
 <translation id="4261870227682513959">Sýna tilkynningastillingar. Slökkt er á tilkynningum</translation>
 <translation id="4269883910223712419">Stjórnandi þessa tækis getur:</translation>
 <translation id="4274537685965975248">Flýtilyklinum „Ctrl + Alt + ör niður“ hefur verið breytt. Ýttu á <ph name="LAUNCHER_KEY_NAME" />-lykilinn + ör til hægri til að nota End-lykilinn.</translation>
+<translation id="4275283744500212192">Opna valkosti fyrir uppsetningu glugga</translation>
 <translation id="4279490309300973883">Speglun</translation>
 <translation id="4280601795273309128">Öryggisuppfærslum er lokið. Uppfærðu tækið þitt.</translation>
 <translation id="4283888303416325161">Sláðu inn aðgangsorð til að auka öryggið</translation>
@@ -1391,7 +1392,6 @@ Ný uppsetning</translation>
 <translation id="7165278925115064263">Alt+shift+K</translation>
 <translation id="7168224885072002358">Skiptir aftur yfir í fyrri upplausn eftir <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Endurnýja</translation>
-<translation id="7185362672357349361">Kveikja á hnippingu þegar slökkt er á hljóði? Þú færð tilkynningu ef þú talar á meðan slökkt er á hljóðinu. Ekkert hljóð er sent úr tækinu.</translation>
 <translation id="7187711731540696127">Kveikt er á heitum reit í <ph name="DEVICE_NAME" />, engin tæki tengd</translation>
 <translation id="7188494361780961876">Valmynd færð efst í vinstra horn skjásins.</translation>
 <translation id="7189412385142492784">Hvað er Venus langt í burtu?</translation>

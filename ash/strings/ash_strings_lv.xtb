@@ -739,6 +739,7 @@ Pievienojiet ierīci barošanas avotam.</translation>
 <translation id="4261870227682513959">Rādīt paziņojumu iestatījumus. Paziņojumi ir izslēgti</translation>
 <translation id="4269883910223712419">Ierīces administrators var veikt šādas darbības:</translation>
 <translation id="4274537685965975248">Šie īsinājumtaustiņi ir mainījušies: Ctrl + Alt + lejupvērstais bulttaustiņš. Lai izmantotu beigvietas taustiņu, nospiediet šos taustiņus: <ph name="LAUNCHER_KEY_NAME" /> + labais bulttaustiņš.</translation>
+<translation id="4275283744500212192">Atvērt logu izkārtojuma opcijas</translation>
 <translation id="4279490309300973883">Spoguļošana</translation>
 <translation id="4280601795273309128">Drošības atjauninājumi ir pabeigti. Jauniniet savu ierīci.</translation>
 <translation id="4283888303416325161">Papildu drošībai ievadiet paroli</translation>
@@ -1391,7 +1392,6 @@ Jauna instalācija</translation>
 <translation id="7165278925115064263">Alt+Shift+K</translation>
 <translation id="7168224885072002358">Iepriekšējā izšķirtspēja tiks atgriezta pēc <ph name="TIMEOUT_SECONDS" /></translation>
 <translation id="7180611975245234373">Atsvaidzināt</translation>
-<translation id="7185362672357349361">Vai ieslēgt paziņojuma rādīšanu, kad mikrofons ir izslēgts? Ja runāsiet, kad ir izslēgts mikrofons, tiks parādīts paziņojums. Jūsu audio vienmēr atrodas tikai jūsu ierīcē.</translation>
 <translation id="7187711731540696127">Tīklājs, ko nodrošina <ph name="DEVICE_NAME" />, ir ieslēgts, un nav pievienota neviena ierīce.</translation>
 <translation id="7188494361780961876">Izvēlne pārvietota uz ekrāna augšējo kreiso malu.</translation>
 <translation id="7189412385142492784">Cik tālu atrodas Venera?</translation>

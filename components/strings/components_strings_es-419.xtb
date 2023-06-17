@@ -63,6 +63,7 @@
 <translation id="1131264053432022307">Imagen que copiaste</translation>
 <translation id="1142846828089312304">Bloquear cookies de terceros en el modo Incógnito</translation>
 <translation id="1147769322402934017">Galerías de imágenes en línea</translation>
+<translation id="1150565364351027703">Gafas de sol</translation>
 <translation id="1150979032973867961">Este servidor no pudo probar que su dominio es <ph name="DOMAIN" />; el sistema operativo de la computadora no confía en el certificado de seguridad. Es posible que esto se deba a una configuración incorrecta o a que un atacante interceptó la conexión.</translation>
 <translation id="1151972924205500581">Contraseña obligatoria</translation>
 <translation id="1156303062776767266">Estás viendo un archivo local o compartido</translation>
@@ -886,6 +887,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="3158539265159265653">Disco</translation>
 <translation id="3162559335345991374">Es posible que la red Wi-Fi que estás usando requiera que visites la página de acceso.</translation>
 <translation id="3169472444629675720">Discover</translation>
+<translation id="3175081911749765310">Servicios web</translation>
 <translation id="3176929007561373547">Comprueba la configuración del proxy o comunícate con tu
           administrador de red para asegurarte de que el 
           servidor proxy esté funcionando. Si consideras
@@ -2347,6 +2349,7 @@ De lo contrario, la configuración de privacidad bloqueará esta acción. Esto p
 <translation id="6665553082534466207">Perforación triple a la derecha</translation>
 <translation id="6668389483194953109">Se encontró el nombre del tamaño de papel "custom", pero la propiedad "custom_size" está vacía o no es válida.</translation>
 <translation id="6671697161687535275">¿Confirmas que quieres quitar la sugerencia de formulario de Chromium?</translation>
+<translation id="6683022854667115063">Auriculares</translation>
 <translation id="6683717648675961851">Publicaciones de empleo</translation>
 <translation id="6687335167692595844">Se necesita el tamaño de la fuente</translation>
 <translation id="6687696737818665306">Actuación y teatro</translation>
@@ -3126,6 +3129,7 @@ Detalles adicionales:
 <translation id="8513580896341796021">Comenzó la descarga. Para verla, presiona |<ph name="ACCELERATOR" />|.</translation>
 <translation id="8519753333133776369">Dispositivo HID que permite tu administrador</translation>
 <translation id="8522552481199248698">Chrome puede ayudarte a proteger tu Cuenta de Google y cambiar tu contraseña.</translation>
+<translation id="8527228059738193856">Bocinas</translation>
 <translation id="8530813470445476232">Borra el historial de navegación, las cookies, la memoria caché y mucho más en la configuración de Chrome</translation>
 <translation id="853332391023689529">Camionetas</translation>
 <translation id="8533619373899488139">Visita &lt;strong&gt;chrome://policy&lt;/strong&gt; para ver la lista de URL bloqueadas y otras políticas que estableció el administrador del sistema.</translation>
@@ -3283,6 +3287,7 @@ Detalles adicionales:
 <translation id="8943282376843390568">Verde lima</translation>
 <translation id="8949493680961858543">A1x4</translation>
 <translation id="8951415078585015151">Derecho y administración gubernamental</translation>
+<translation id="8954252855949068147">Ropa</translation>
 <translation id="8957210676456822347">Autorización de portal cautivo</translation>
 <translation id="8959282183248574156"><ph name="NICKNAME_COUNT" />/<ph name="NICKNAME_MAX" /></translation>
 <translation id="8963117664422609631">Ir a la configuración del sitio</translation>

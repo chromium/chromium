@@ -2174,6 +2174,7 @@
 <translation id="2777525873368474674">इमेजची लिंक पेस्ट करा</translation>
 <translation id="2778471504622896352">ChromeOS लाँचरमध्ये रिमोट अ‍ॅप्स जोडा</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">या साइटवर एक्स्टेंशनना अनुमती आहे</translation>
 <translation id="2782104745158847185">Linux ॲप्लिकेशन इंस्टॉल करताना एरर आली</translation>
 <translation id="2783024642731649028">तुमच्या कार्टमधील <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" /> कडील <ph name="DISCOUNT_TEXT" /> १ आयटम, <ph name="RELATIVE_TIME" /> पाहिला</translation>
 <translation id="2783298271312924866">डाउनलोड केलेले</translation>
@@ -2513,7 +2514,6 @@
 <translation id="3060952009917586498">डिव्हाइसची भाषा बदला. सध्याची भाषा <ph name="LANGUAGE" /> आहे.</translation>
 <translation id="3060987956645097882">आम्हाला तुमच्या फोनसह कनेक्शन साधता आले नाही. तुमचा फोन जवळपास असल्याची, अनलॉक केलेला असल्याची आणि त्याचे ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
 <translation id="3061302636956643119">प्रक्रिया करण्यासाठी मजकूर Google कडे पाठवला जाईल.</translation>
-<translation id="306179102415443347">Google Password Manager वर झटपट जाण्यासाठी तुमचा शॉर्टकट वापरा. तुम्ही तुमचा शॉर्टकट तुमच्या कॉंप्युटरच्या होम स्क्रीनवर किंवा अ‍ॅप लाँचरवर हलवू शकता.</translation>
 <translation id="3064871050034234884">साइट साउंड प्ले करू शकतात</translation>
 <translation id="3065041951436100775">टॅबने नष्ट केलेला अभिप्राय</translation>
 <translation id="3065522099314259755">कीबोर्ड रिपीट लेटन्सी</translation>
@@ -4706,7 +4706,6 @@
 <translation id="4998430619171209993">सुरू</translation>
 <translation id="4999804342505941663">व्यत्यय आणू नका सुरू करा</translation>
 <translation id="5001526427543320409">तृतीय पक्ष कुकी</translation>
-<translation id="5003967926796347400">“Google Password Manager” वर क्लिक करा</translation>
 <translation id="5005498671520578047">पासवर्ड कॉपी करा</translation>
 <translation id="5006118752738286774">दोन वर्षांपूर्वी</translation>
 <translation id="5006218871145547804">Crostini Android अ‍ॅप ADB</translation>
@@ -5758,7 +5757,6 @@
     हे पिक्चर Chromebook च्या साइन इन स्क्रीन आणि लॉक स्क्रीनवर दिसेल.</translation>
 <translation id="5925147183566400388">प्रमाणपत्र सराव विधान पॉइंटर</translation>
 <translation id="5927132638760172455">एका अज्ञात प्राप्तकर्त्यावर कास्ट करीत आहे</translation>
-<translation id="5927232971138258197">हे एक्स्टेंशन <ph name="HOST" /> रीड करू शकते आणि बदलू शकते</translation>
 <translation id="592740088639760830">हा कंटेनर थांबवा</translation>
 <translation id="592880897588170157">पीडीएफ फाइल Chromeमध्ये आपोआप उघडण्यापेक्षा त्या डाउनलोड करा</translation>
 <translation id="5928969282301718193">आता सर्व झाले आहे</translation>
@@ -6006,7 +6004,6 @@
 <translation id="6130692320435119637">वाय-फाय जोडा</translation>
 <translation id="6130887916931372608">कीबोर्ड की</translation>
 <translation id="6132714462430777655">शाळेशी संबंधित नोंदणी वगळायची आहे का?</translation>
-<translation id="6133850653093419052">अ‍ॅक्सेसशी संबंधित विनंतीला अनुमती आहे</translation>
 <translation id="6135823405800500595">तुमचा फोन जवळ आहे, अनलॉक केलेला आहे आणि ब्लूटूथ व वाय-फाय सुरू आहे, याची खात्री करा</translation>
 <translation id="6135826623269483856">तुमच्या सर्व डिस्प्लेवर विंडो व्यवस्थापित करण्याची परवानगी नाही</translation>
 <translation id="6136114942382973861">डाउनलोड बार बंद करा</translation>
@@ -6972,7 +6969,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) साठी अपग्रेड उपलब्ध आहे</translation>
 <translation id="69739764870135975">Google देखील तुमचे डीफॉल्ट शोध इंजीन असल्यास, तुम्हाला आणखी चांगल्या, संदर्भानुसार उपयुक्त सूचना दिसतील</translation>
 <translation id="697508444536771064">Linux बंद करा</translation>
-<translation id="6975361011348772931">रीड करण्याची आणि बदलण्याची विनंती केली आहे</translation>
 <translation id="6978121630131642226">शोध इंजिने</translation>
 <translation id="6978717888677691380">तुम्ही ब्लॉक केलेल्या साइट</translation>
 <translation id="6979041727349121225">एनर्जी सेव्हर</translation>
@@ -7465,7 +7461,6 @@
 <translation id="7410852728357935715">डिव्हाइसवर कास्ट करा</translation>
 <translation id="741204030948306876">होय, मला मान्य आहे</translation>
 <translation id="7412226954991670867">GPU मेमरी</translation>
-<translation id="7412494426921990001">Chrome मेनूवर क्लिक करा</translation>
 <translation id="7414464185801331860">१८x</translation>
 <translation id="7415454883318062233">सेटअप पूर्ण झाले</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" /> चे पुनरावलोकन करा</translation>
@@ -8099,7 +8094,6 @@
 <translation id="793531125873261495">व्हर्च्युअल मशीन डाउनलोड करताना एरर आली. कृपया पुन्हा प्रयत्न करा.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />% पूर्ण झाले आहे</translation>
 <translation id="7939062555109487992">प्रगत पर्याय</translation>
-<translation id="7939073735115504773"><ph name="HOST" /> रीड करण्यासाठी आणि बदलण्यासाठी या एक्स्टेंशनच्या आयकनवर क्लिक करा</translation>
 <translation id="793923212791838">तुमचे डिव्हाइस या साइटसोबत वापरले जाऊ शकत नाही</translation>
 <translation id="7939328347457537652">डिव्हाइस सर्टिफिकेट व्यवस्थापित करा</translation>
 <translation id="7939412583708276221">तरीही राहू द्या</translation>
@@ -8406,7 +8400,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />तुमची डिव्हाइस<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">पासवर्ड जोडा</translation>
 <translation id="8195265224453131880">तीव्रता</translation>
-<translation id="8195737548602430447">कॅप्शन आपोआप लक्ष्यित भाषेमध्ये भाषांतरित करा.</translation>
 <translation id="8197673340773315084">कार्य किंवा वैयक्तिक सारखे नाव किंवा लेबल जोडा</translation>
 <translation id="8198456017687137612">टॅब कास्‍ट करत आहे</translation>
 <translation id="8198457270656084773">सिस्टीमच्या डिव्हाइस लॉग पेजविषयी माहिती शोधत आहात का? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" /> ला भेट द्या.</translation>
@@ -8525,7 +8518,6 @@
 <translation id="8295449579927246485">लाइव्ह भाषांतर</translation>
 <translation id="8297292446125062288">HID सेटिंग्ज</translation>
 <translation id="8298429963694909221">तुम्ही आता तुमच्या फोनमधील सूचना तुमच्या <ph name="DEVICE_TYPE" /> वर मिळवू शकता. तुमच्या <ph name="DEVICE_TYPE" /> वर सूचना डिसमिस केल्याने त्या तुमच्या फोनवरूनदेखील डिसमिस होतील. तुमचा फोन जवळपास असल्याची आणि त्यात ब्लूटूथ व वाय-फाय सुरू असल्याची खात्री करा.</translation>
-<translation id="829923460755755423">Google Password Manager मध्ये शॉर्टकट जोडा</translation>
 <translation id="8299319456683969623">तुम्ही सध्या ऑफलाइन आहात.</translation>
 <translation id="8300011035382349091">या टॅबचे बुकमार्क संपादित करा</translation>
 <translation id="8300374739238450534">भडक निळा</translation>
@@ -8553,7 +8545,6 @@
 <translation id="8323167517179506834">URL टाइप करा</translation>
 <translation id="8323317289166663449">तुमच्या कॉंप्युटरवरील आणि सर्व वेबसाइटवरील तुमचा सर्व डेटा वाचू व बदलू शकते</translation>
 <translation id="8324784016256120271">वेगवेगळ्या साइटवरील तुमची ब्राउझिंग ॲक्टिव्हिटी पाहण्यासाठी साइट कुकी वापरू शकतात, उदाहरणार्थ, जाहिराती पर्सनलाइझ करण्यासाठी</translation>
-<translation id="8324819620112450495">अ‍ॅक्सेसशी संबंधित विनंतीला अनुमती नाही</translation>
 <translation id="8325413836429495820">तुमचा क्लिपबोर्ड पाहण्याची अनुमती नाही</translation>
 <translation id="8326478304147373412">PKCS #7, सर्टिफिकेट श्रृंखला</translation>
 <translation id="8327386430364625757">गणिती फाँट</translation>

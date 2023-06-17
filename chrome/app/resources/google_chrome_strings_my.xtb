@@ -125,6 +125,7 @@
 <translation id="3037838751736561277">Google Chrome သည် နောက်ခံ မုဒ်ထဲမျာ ရှိနေသည်။</translation>
 <translation id="3038232873781883849">ထည့်သွင်းရန်စောင့်နေသည်…</translation>
 <translation id="3059710691562604940">'လုံခြုံစွာ ကြည့်ရှုခြင်း' ပိတ်ထားသည်။ ၎င်းကိုဖွင့်ရန် Chrome က အကြံပြုပါသည်။</translation>
+<translation id="306179102415443347">Google Password Manager ကို အမြန်ဖွင့်ရန် ဖြတ်လမ်းလင့်ခ် သုံးပါ။ ကွန်ပျူတာ ပင်မစာမျက်နှာ (သို့) App Launcher သို့ ဖြတ်လမ်းလင့်ခ်ကို ရွှေ့ထားနိုင်သည်။</translation>
 <translation id="3065168410429928842">Chrome တဘ်</translation>
 <translation id="3080151273017101988">Google Chrome ကို ပိတ်လိုက်ချိန်မှာ နောက်ခံအက်ပ်များကို ဆက်ဖွင့် ထားရန်</translation>
 <translation id="3089968997497233615">ပိုသစ်သော၊ ပိုလုံခြုံသော Google Chrome ရနိုင်ပါသည်။</translation>
@@ -226,6 +227,7 @@
 <translation id="4970880042055371251">ChromeOS ဗားရှင်း</translation>
 <translation id="4970947549776831107">ဤဖိုင်အမျိုးအစားသည် အန္တရာယ်များသဖြင့် Chrome က ပိတ်ထားသည်</translation>
 <translation id="4990567037958725628">Google Chrome Canary</translation>
+<translation id="5003967926796347400">“Google Password Manager” ကို နှိပ်ပါ</translation>
 <translation id="5005958605836556244">{NUM_DEVICES,plural, =0{Google Chrome နောက်ဆက်တွဲတစ်ခုသည် HID စက်များကို အသုံးပြုထားသည်}=1{Google Chrome နောက်ဆက်တွဲတစ်ခုသည် HID စက် ၁ ခုကို အသုံးပြုနေသည်}other{Google Chrome နောက်ဆက်တွဲတစ်ခုသည် HID စက် # ခုကို အသုံးပြုနေသည်}}</translation>
 <translation id="5098668839038261629">ဖွင့်ထားပါက Chrome မှလည်း သင်ထွက်သွားပါမည်</translation>
 <translation id="5132929315877954718">Google Chrome အတွက် ဧရာမ အက်ပ်များ၊ ဂိမ်းများ၊ တိုးချဲ့မှုများ နှင့် အပြင်အဆင်များကို ရှာကြည့်ပါ</translation>
@@ -338,6 +340,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="7339898014177206373">ဝင်ဒိုး အသစ်</translation>
 <translation id="7398801000654795464">Chrome သို့ <ph name="USER_EMAIL_ADDRESS" /> အဖြစ်သင် ဝင်ရောက်ခဲ့သည်။ ကျေးဇူးပြု၍ တူညီသည့်အကောင့်ကို အသုံးပြုကာ ထပ်မံဝင်ရောက်ပါ။</translation>
 <translation id="7410958280246779049">ဤဖိုင်သည်အန္တရာယ်ရှိသဖြင့် Chrome က ပိတ်ထားသည်</translation>
+<translation id="7412494426921990001">Chrome မီနူးကို နှိပ်ပါ</translation>
 <translation id="7426611252293106642">Linux ဖြန့်ချိမှုတွင် Google Chrome ကို မပံ့ပိုးတော့သောကြောင့် မှန်ကန်စွာ အလုပ်လုပ်နိုင်မည်မဟုတ်ပါ</translation>
 <translation id="7449333426561673451">{COUNT,plural, =1{Chrome ကို ၁ မိနစ်ကြာ မသုံးဘဲထားသောအခါ သင့်အဖွဲ့အစည်းသည် ၎င်းကို အလိုအလျောက်ပိတ်သည်။}other{Chrome ကို # မိနစ်ကြာ မသုံးဘဲထားသောအခါ သင့်အဖွဲ့အစည်းသည် ၎င်းကို အလိုအလျောက်ပိတ်သည်။}}</translation>
 <translation id="7481213027396403996">Chrome ၏ အခိုင်မာဆုံးလုံခြုံရေးကို ရယူခြင်း</translation>
@@ -383,6 +386,7 @@ Google Chrome သည် သင်၏ ဆက်တင်များကို ပ
 <translation id="8286862437124483331">Google Chrome သည် စကားဝှက်ကို ပြပေးရန် ကြိုးစာနေသည်။ ၎င်းကို ခွင့်ပြုရန် သင်၏ Windows စကားဝှက်ကို ရိုက်ထည့်ပါ။</translation>
 <translation id="828798499196665338">Chrome အတွက် "ဝဘ်ဆိုက်၊ အက်ပ်နှင့် နောက်ဆက်တွဲ ခွင့်ပြုချက်များ" ကို သင့်မိဘက ပိတ်လိုက်သည်။ ဤ <ph name="EXTENSION_TYPE_PARAMETER" /> ဖွင့်ခြင်းကို ခွင့်မပြုပါ။</translation>
 <translation id="8290100596633877290">ဝါး! Google Chrome ပျက်သွားပြီ။ ယခုပြန်စတင်မလား?</translation>
+<translation id="829923460755755423">Google Password Manager သို့ ဖြတ်လမ်းလင့်ခ် ထည့်နိုင်သည်</translation>
 <translation id="8342675569599923794">ဤဖိုင်သည် အန္တရာယ်ရှိပါသည်။ ထို့ကြောင့် Chrome သည် ၎င်းကို ပိတ်ဆို့ထားပါသည်။</translation>
 <translation id="8349795646647783032"><ph name="BEGIN_BOLD" />ဤဒေတာကို အသုံးပြုပုံ-<ph name="END_BOLD" /> ဝဘ်ဆိုက်များသည် သင်၏စိတ်ဝင်စားမှုများကို Chrome တွင် သိမ်းနိုင်သည်။ ဥပမာ မာရသွန်အတွက် ရှူးဖိနပ်ဝယ်ရန် ဝဘ်ဆိုက်တွင်ဝင်ကြည့်ပါက ဝဘ်ဆိုက်သည် သင်၏စိတ်ဝင်စားမှုကို မာရသွန်ပြေးခြင်းအဖြစ် သတ်မှတ်နိုင်သည်။ နောင်တွင် ပြိုင်ပွဲအတွက်စာရင်းသွင်းရန် အခြားဝဘ်ဆိုက်သို့ ဝင်ကြည့်သောအခါ ထိုဝဘ်ဆိုက်က သင်၏စိတ်ဝင်စားမှုများပေါ် အခြေခံပြီး အပြေးဖိနပ်ကြော်ငြာကို ပြနိုင်သည်။</translation>
 <translation id="8370517070665726704">မူပိုင် <ph name="YEAR" /> Google LLC. မူပိုင်ခွင့်အားလုံး ယူထားသည်။</translation>

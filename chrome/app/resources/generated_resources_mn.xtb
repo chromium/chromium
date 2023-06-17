@@ -2171,6 +2171,7 @@
 <translation id="2777525873368474674">Зургийн холбоосыг буулгах</translation>
 <translation id="2778471504622896352">ChromeOS эхлүүлэгч рүү алсын удирдлагын аппуудыг нэмнэ үү</translation>
 <translation id="2781692009645368755">Google Pay</translation>
+<translation id="2781800772148653810">Энэ сайтад өргөтгөлүүдийг зөвшөөрсөн</translation>
 <translation id="2782104745158847185">Linux аппыг суулгахад алдаа гарлаа</translation>
 <translation id="2783024642731649028">Таны сагсан дахь 1 зүйл <ph name="MERCHANT_NAME" />, <ph name="MERCHANT_DOMAIN" />-д <ph name="DISCOUNT_TEXT" /> байгаа бөгөөд үүнийг <ph name="RELATIVE_TIME" /> үзсэн</translation>
 <translation id="2783298271312924866">Татаж авсан</translation>
@@ -2510,7 +2511,6 @@
 <translation id="3060952009917586498">Төхөөрөмжийн хэлийг өөрчилнө. Одоогийн хэл <ph name="LANGUAGE" /> байна.</translation>
 <translation id="3060987956645097882">Бид таны утастай холболт тогтоож чадсангүй. Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
 <translation id="3061302636956643119">Текстийг боловсруулахаар Google рүү илгээнэ.</translation>
-<translation id="306179102415443347">Google Password Manager-т шуурхай очихын тулд товчлолоо ашиглана уу. Та товчлолоо компьютерын үндсэн нүүр эсвэл апп байршуулагч руугаа зөөх боломжтой.</translation>
 <translation id="3064871050034234884">Сайтууд дуу чимээ тоглуулах боломжтой</translation>
 <translation id="3065041951436100775">Цонх санал хүсэлтийг хаасан.</translation>
 <translation id="3065522099314259755">Гарын давталтын хоцролт</translation>
@@ -4704,7 +4704,6 @@
 <translation id="4998430619171209993">Асаалттай</translation>
 <translation id="4999804342505941663">Бүү саад бол онцлогийг асаах</translation>
 <translation id="5001526427543320409">Гуравдагч талын күүки</translation>
-<translation id="5003967926796347400">“Google Password Manager”-г товшино уу</translation>
 <translation id="5005498671520578047">Нууц үг хуулах</translation>
 <translation id="5006118752738286774">2 жилийн өмнө</translation>
 <translation id="5006218871145547804">Crostini-н Андройд аппын ADB</translation>
@@ -5755,7 +5754,6 @@
     Энэ зураг Chromebook-н нэвтрэх дэлгэц болон түгжигдсэн дэлгэцэд харагдах болно.</translation>
 <translation id="5925147183566400388">Certification Practice Statement Pointer</translation>
 <translation id="5927132638760172455">Үл мэдэгдэх хүлээн авагч руу каст хийж байна</translation>
-<translation id="5927232971138258197">Энэ өргөтгөл нь <ph name="HOST" />-г унших, өөрчлөх боломжтой</translation>
 <translation id="592740088639760830">Энэ контейнерыг зогсоох</translation>
 <translation id="592880897588170157">PDF файлыг автоматаар Chrome-д нээхийн оронд татна уу</translation>
 <translation id="5928969282301718193">Одоогоор дууссан байна</translation>
@@ -6003,7 +6001,6 @@
 <translation id="6130692320435119637">Wi-Fi нэмэх</translation>
 <translation id="6130887916931372608">Гарны товчлуур</translation>
 <translation id="6132714462430777655">Сургуулийн элсэлтийг алгасах уу?</translation>
-<translation id="6133850653093419052">Хандах эрх хүсэхийг зөвшөөрсөн</translation>
 <translation id="6135823405800500595">Таны утас ойрхон, түгжээг нь тайлсан, Bluetooth, Wi-Fi нь асаалттай эсэхийг шалгана уу</translation>
 <translation id="6135826623269483856">Таны бүх дэлгэц дээр цонх удирдахыг зөвшөөрөөгүй</translation>
 <translation id="6136114942382973861">Татаж авсан файл хадгалах эсвэл нээх хэсгийг хаах</translation>
@@ -6969,7 +6966,6 @@
 <translation id="6973611239564315524">Debian 10 (Buster) руу дэвшүүлэх боломжтой байна</translation>
 <translation id="69739764870135975">Хэрэв Google нь таны өгөгдмөл хайлтын систем бол та хам сэдэвтэй холбоотой илүү сайн зөвлөмжүүдийг харах болно</translation>
 <translation id="697508444536771064">Linux-г унтраах</translation>
-<translation id="6975361011348772931">Унших, өөрчлөх хүсэлт тавьсан</translation>
 <translation id="6978121630131642226">Хайлтын систем</translation>
 <translation id="6978717888677691380">Таны блоклосон сайтууд</translation>
 <translation id="6979041727349121225">Эрчим хүч хэмнэгч</translation>
@@ -7462,7 +7458,6 @@
 <translation id="7410852728357935715">Төхөөрөмжид дамжуулах</translation>
 <translation id="741204030948306876">Тийм, би зөвшөөрч байна</translation>
 <translation id="7412226954991670867">GPU санах ой</translation>
-<translation id="7412494426921990001">Chrome цэсийг товшино уу</translation>
 <translation id="7414464185801331860">18x</translation>
 <translation id="7415454883318062233">Тохируулж дууслаа</translation>
 <translation id="7416091793702109803"><ph name="FILE_NAME" />-г шалгах</translation>
@@ -8097,7 +8092,6 @@
 <translation id="793531125873261495">Виртуал машиныг татаж авахад алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" />%-ийг гүйцэтгэсэн</translation>
 <translation id="7939062555109487992">Дэвшилтэт сонголт</translation>
-<translation id="7939073735115504773"><ph name="HOST" />-г-унших, өөрчлөхийн тулд энэ өргөтгөлийн дүрс дээр товшино уу</translation>
 <translation id="793923212791838">Таны төхөөрөмжийг энэ сайттай ашиглах боломжгүй</translation>
 <translation id="7939328347457537652">Төхөөрөмжийн гэрчилгээг удирдах</translation>
 <translation id="7939412583708276221">Ямар ч байсан үргэлжлүүлнэ үү</translation>
@@ -8402,7 +8396,6 @@
 <translation id="8193953846147532858"><ph name="BEGIN_LINK" />Таны төхөөрөмжүүд<ph name="END_LINK" /> · <ph name="EMAIL" /></translation>
 <translation id="8195191503358432289">Нууц үг нэмэх</translation>
 <translation id="8195265224453131880">Өнгө ялгалт</translation>
-<translation id="8195737548602430447">Тайлбарыг зорилтот хэл рүү автоматаар орчуулаарай.</translation>
 <translation id="8197673340773315084">Ажил эсвэл Хувийн зэрэг нэр эсвэл шошго нэмнэ үү</translation>
 <translation id="8198456017687137612">Табыг дамжуулж байна</translation>
 <translation id="8198457270656084773">Системийн төхөөрөмжийн логийн хуудсыг хайж байна уу? <ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />-д зочилно уу.</translation>
@@ -8521,7 +8514,6 @@
 <translation id="8295449579927246485">Шууд орчуулга</translation>
 <translation id="8297292446125062288">HID-н тохиргоо</translation>
 <translation id="8298429963694909221">Та одоо утасныхаа мэдэгдлийг <ph name="DEVICE_TYPE" /> дээрээ хүлээн авах боломжтой. Мэдэгдлийг <ph name="DEVICE_TYPE" /> дээр хаавал таны утсан дээр мөн хаагдах болно. Таны утас ойрхон, Bluetooth, Wi-Fi-г нь асаасан эсэхийг шалгана уу.</translation>
-<translation id="829923460755755423">Google Password Manager-т товчлол нэмэх</translation>
 <translation id="8299319456683969623">Та одоогоор офлайн байна.</translation>
 <translation id="8300011035382349091">Энэ табын хавчуургыг засах</translation>
 <translation id="8300374739238450534">Хар хөх</translation>
@@ -8549,7 +8541,6 @@
 <translation id="8323167517179506834">Холбоосыг бичиж оруулах</translation>
 <translation id="8323317289166663449">Таны компьютер болон бүх вебсайт дээрх бүх өгөгдлийг унших болон өөрчлөх</translation>
 <translation id="8324784016256120271">Сайтууд нь, жишээлбэл зарыг хувийн болгохын тулд өөр өөр сайт дээрх таны хөтчийн үйл ажиллагааг харахын тулд күүки ашиглах боломжтой</translation>
-<translation id="8324819620112450495">Хандах эрх хүсэхийг зөвшөөрөөгүй</translation>
 <translation id="8325413836429495820">Таны түр санах ойг харахыг зөвшөөрөөгүй</translation>
 <translation id="8326478304147373412">PKCS # 7, сертификат хэлхээ</translation>
 <translation id="8327386430364625757">Математикийн фонт</translation>
