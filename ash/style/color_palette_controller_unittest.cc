@@ -509,6 +509,19 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 }
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
+       UpdateWallpaperColor_WithoutSession_DoesNotNotifyObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(0);
+
+  UpdateWallpaperColor(SK_ColorWHITE);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
        UpdateWallpaperColor_WithOobeSession_NotifiesObservers) {
   base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
   GetSessionControllerClient()->SetSessionState(
@@ -520,6 +533,40 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
   observation.Observe(color_palette_controller());
   EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(1);
 
+  UpdateWallpaperColor(SK_ColorWHITE);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       UpdateWallpaperColor_WithOobeLogin_NotifiesObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(1);
+
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::GAIA_SIGNIN);
+  UpdateWallpaperColor(SK_ColorWHITE);
+}
+
+TEST_F(ColorPaletteControllerLocalPrefTest,
+       UpdateWallpaperColor_WithNonOobeLogin_DoesNotNotifyObservers) {
+  base::test::ScopedFeatureList feature_list(chromeos::features::kJelly);
+  GetSessionControllerClient()->SetSessionState(
+      session_manager::SessionState::LOGIN_PRIMARY);
+  MockPaletteObserver observer;
+  base::ScopedObservation<ColorPaletteController,
+                          ColorPaletteController::Observer>
+      observation(&observer);
+  observation.Observe(color_palette_controller());
+  EXPECT_CALL(observer, OnColorPaletteChanging(testing::_)).Times(0);
+
+  LoginScreen::Get()->GetModel()->NotifyOobeDialogState(
+      OobeDialogState::HIDDEN);
   UpdateWallpaperColor(SK_ColorWHITE);
 }
 

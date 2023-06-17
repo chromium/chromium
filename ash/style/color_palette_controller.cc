@@ -8,6 +8,7 @@
 
 #include "ash/constants/ash_pref_names.h"
 #include "ash/login/login_screen_controller.h"
+#include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "ash/public/cpp/style/color_mode_observer.h"
 #include "ash/public/cpp/style/dark_light_mode_controller.h"
@@ -169,6 +170,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         local_state_(local_state) {
     dark_light_observation_.Observe(dark_light_mode_controller);
     wallpaper_observation_.Observe(wallpaper_controller);
+    Shell::Get()->login_screen_controller()->data_dispatcher()->AddObserver(
+        this);
     if (!local_state) {
       // The local state should only be null in tests.
       CHECK_IS_TEST();
@@ -318,6 +321,11 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
         base::BindOnce(std::move(callback)));
   }
 
+  // LoginDataDispatcher::Observer overrides:
+  void OnOobeDialogStateChanged(OobeDialogState state) override {
+    oobe_state_ = state;
+  }
+
   // WallpaperControllerObserver overrides:
   void OnWallpaperColorsChanged() override {
     NotifyObservers(BestEffortSeed(GetActiveUserSession()));
@@ -403,8 +411,11 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
     }
     session_manager::SessionState session_state =
         Shell::Get()->session_controller()->GetSessionState();
-    if (!chromeos::features::IsJellyEnabled() ||
-        session_state == session_manager::SessionState::OOBE) {
+    const bool is_oobe =
+        session_state == session_manager::SessionState::OOBE ||
+        (session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+         oobe_state_ != OobeDialogState::HIDDEN);
+    if (!chromeos::features::IsJellyEnabled() || is_oobe) {
       // Generate a seed where we assume TonalSpot and ignore static colors.
       ColorPaletteSeed seed;
       bool dark = dark_light_mode_controller_->IsDarkModeEnabled();
@@ -473,6 +484,8 @@ class ColorPaletteControllerImpl : public ColorPaletteController,
   base::ObserverList<ColorPaletteController::Observer> observers_;
 
   std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
+
+  OobeDialogState oobe_state_ = OobeDialogState::HIDDEN;
 };
 }  // namespace
 

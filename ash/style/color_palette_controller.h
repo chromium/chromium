@@ -8,6 +8,7 @@
 #include <tuple>
 
 #include "ash/ash_export.h"
+#include "ash/login/ui/login_data_dispatcher.h"
 #include "ash/public/cpp/session/session_observer.h"
 #include "base/containers/span.h"
 #include "base/functional/callback_forward.h"
@@ -79,7 +80,8 @@ struct ASH_EXPORT SampleColorScheme {
 // observe ColorProviderSource or NativeTheme instead. Events from this class
 // will fire before either of those. Also, NativeTheme can change independently
 // of this class.
-class ASH_EXPORT ColorPaletteController : public SessionObserver {
+class ASH_EXPORT ColorPaletteController : public SessionObserver,
+                                          public LoginDataDispatcher::Observer {
  public:
   class Observer : public base::CheckedObserver {
    public:
