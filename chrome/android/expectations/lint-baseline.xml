@@ -4034,61 +4034,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: VideoPreviewsType.NEVER, VideoPreviewsType.WIFI, VideoPreviewsType.WIFI_AND_MOBILE_DATA"
-        errorLine1="        mButtons = new ArrayList&lt;>(Collections.nCopies(VideoPreviewsType.NUM_ENTRIES, null));"
-        errorLine2="                                                                         ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java"
-            line="38"
-            column="74"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: VideoPreviewsType.NEVER, VideoPreviewsType.WIFI, VideoPreviewsType.WIFI_AND_MOBILE_DATA"
-        errorLine1="        assert VideoPreviewsType.NUM_ENTRIES == 3;"
-        errorLine2="                                 ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java"
-            line="49"
-            column="34"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: VideoPreviewsType.NEVER, VideoPreviewsType.WIFI, VideoPreviewsType.WIFI_AND_MOBILE_DATA"
-        errorLine1="        for (int i = 0; i &lt; VideoPreviewsType.NUM_ENTRIES; i++) {"
-        errorLine2="                                              ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java"
-            line="70"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: VideoPreviewsType.NEVER, VideoPreviewsType.WIFI, VideoPreviewsType.WIFI_AND_MOBILE_DATA"
-        errorLine1="                &amp;&amp; mSetting &lt; VideoPreviewsType.NUM_ENTRIES : &quot;No matching setting found.&quot;;"
-        errorLine2="                                                ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java"
-            line="77"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: VideoPreviewsType.NEVER, VideoPreviewsType.WIFI, VideoPreviewsType.WIFI_AND_MOBILE_DATA"
-        errorLine1="                &quot;FeedVideoPreviewsPreferenceUserActions&quot;, mSetting, VideoPreviewsType.NUM_ENTRIES);"
-        errorLine2="                                                                                      ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/feed/android/java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java"
-            line="80"
-            column="87"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: FaviconLocality.LOCAL, FaviconLocality.FOREIGN"
         errorLine1="            new ArrayMap&lt;>(FaviconLocality.NUM_ENTRIES);"
         errorLine2="                                           ~~~~~~~~~~~">

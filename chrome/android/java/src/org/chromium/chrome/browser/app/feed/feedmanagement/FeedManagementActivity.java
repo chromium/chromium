@@ -15,20 +15,15 @@ import org.chromium.base.Log;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.SnackbarActivity;
 import org.chromium.chrome.browser.app.feed.followmanagement.FollowManagementActivity;
-import org.chromium.chrome.browser.feed.FeedUma;
 import org.chromium.chrome.browser.feed.StreamKind;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementCoordinator;
 import org.chromium.chrome.browser.feed.feedmanagement.FeedManagementMediator;
-import org.chromium.chrome.browser.feed.settings.FeedAutoplaySettingsFragment;
-import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
-import org.chromium.components.browser_ui.settings.SettingsLauncher;
 
 /**
  * Activity for managing feed and webfeed settings on the new tab page.
  */
 public class FeedManagementActivity
-        extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher,
-                                            FeedManagementMediator.AutoplayManagementLauncher {
+        extends SnackbarActivity implements FeedManagementMediator.FollowManagementLauncher {
     private static final String TAG = "FeedMActivity";
     public static final String INITIATING_STREAM_TYPE_EXTRA =
             "feed_management_initiating_stream_type_extra";
@@ -41,7 +36,7 @@ public class FeedManagementActivity
         int streamKind = getIntent().getIntExtra(INITIATING_STREAM_TYPE_EXTRA, StreamKind.UNKNOWN);
 
         FeedManagementCoordinator coordinator =
-                new FeedManagementCoordinator(this, this, this, streamKind);
+                new FeedManagementCoordinator(this, this, streamKind);
         setContentView(coordinator.getView());
 
         // Set up the toolbar and back button.
@@ -69,19 +64,6 @@ public class FeedManagementActivity
             Intent intent = new Intent(context, FollowManagementActivity.class);
             Log.d(TAG, "Launching follow management activity.");
             context.startActivity(intent);
-        } catch (Exception e) {
-            Log.d(TAG, "Failed to launch activity " + e);
-        }
-    }
-    // AutoplayManagementLauncher method.
-    @Override
-    public void launchAutoplayManagement(Context context) {
-        try {
-            // Launch a new activity for the autoplay settings management page.
-            SettingsLauncher launcher = new SettingsLauncherImpl();
-            launcher.launchSettingsActivity(
-                    context, FeedAutoplaySettingsFragment.class, new Bundle());
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } catch (Exception e) {
             Log.d(TAG, "Failed to launch activity " + e);
         }

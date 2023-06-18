@@ -891,6 +891,10 @@ const char kShouldShowSidePanelBookmarkTab[] =
     "should_show_side_panel_bookmark_tab";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+#if BUILDFLAG(ENABLE_FEED_V2)
+const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
+
 // Register local state used only for migration (clearing or moving to a new
 // key).
 void RegisterLocalStatePrefsForMigration(PrefRegistrySimple* registry) {
@@ -1273,6 +1277,11 @@ void RegisterProfilePrefsForMigration(
 #if !BUILDFLAG(IS_ANDROID)
   registry->RegisterBooleanPref(kShouldShowSidePanelBookmarkTab, false);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Deprecated 06/2023.
+#if BUILDFLAG(ENABLE_FEED_V2)
+  registry->RegisterIntegerPref(kVideoPreviewsType, 1);
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 }
 
 }  // namespace
@@ -2384,6 +2393,11 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if !BUILDFLAG(IS_ANDROID)
   profile_prefs->ClearPref(kShouldShowSidePanelBookmarkTab);
 #endif  // !BUILDFLAG(IS_ANDROID)
+
+  // Added 06/2023
+#if BUILDFLAG(ENABLE_FEED_V2)
+  profile_prefs->ClearPref(kVideoPreviewsType);
+#endif  // BUILDFLAG(ENABLE_FEED_V2)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

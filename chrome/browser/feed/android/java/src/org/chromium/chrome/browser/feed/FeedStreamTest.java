@@ -196,8 +196,7 @@ public class FeedStreamTest {
                 .thenReturn(LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP);
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ StreamKind.FOR_YOU,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /* isInterestFeed= */ StreamKind.FOR_YOU, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null, mFeedContentFirstLoadWatcher, mStreamsMediator,
                 /*SingleWebFeedHelper=*/null);
         mFeedStream.mMakeGURL = url -> JUnitTestGURLs.getGURL(url);
@@ -1088,8 +1087,7 @@ public class FeedStreamTest {
     public void testUnreadContentObserver_nullInterestFeed() {
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ StreamKind.FOR_YOU,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /* isInterestFeed= */ StreamKind.FOR_YOU, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1104,8 +1102,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                /* isInterestFeed= */ StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                /* isInterestFeed= */ StreamKind.FOLLOWING, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1121,8 +1118,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                StreamKind.FOLLOWING, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1138,8 +1134,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                StreamKind.FOR_YOU,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                StreamKind.FOR_YOU, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1154,8 +1149,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                StreamKind.FOR_YOU,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                StreamKind.FOR_YOU, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1170,8 +1164,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                StreamKind.FOLLOWING, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);
@@ -1186,8 +1179,7 @@ public class FeedStreamTest {
         FeatureList.setTestFeatures(features);
         FeedStream stream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShown= */ false, mWindowAndroid, mShareDelegateSupplier,
-                StreamKind.FOLLOWING,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                StreamKind.FOLLOWING, mActionDelegate,
                 /*helpAndFeedbackLauncher=*/null,
                 /*FeedContentFirstLoadWatcher=*/null, /*Stream.StreamsMediator*/ null,
                 /*SingleWebFeedHelper=*/null);

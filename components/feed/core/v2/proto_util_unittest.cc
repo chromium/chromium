@@ -193,24 +193,6 @@ TEST(ProtoUtilTest, InfoCardTrackingStates) {
                                       .info_card_tracking_state(1)));
 }
 
-TEST(ProtoUtilTest, AutoplayEnabled) {
-  RequestMetadata request_metadata;
-  request_metadata.autoplay_enabled = true;
-
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          request_metadata,
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::INLINE_VIDEO_AUTOPLAY));
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
-}
-
 TEST(ProtoUtilTest, StampEnabled) {
   base::test::ScopedFeatureList scoped_feature_list;
   scoped_feature_list.InitWithFeatures({kFeedStamp}, {});
@@ -336,21 +318,6 @@ TEST(ProtoUtilTest, TabGroupsEnabledForBoth) {
               Contains(feedwire::Capability::OPEN_IN_NEW_TAB_IN_GROUP));
   ASSERT_THAT(request.client_capability(),
               Contains(feedwire::Capability::OPEN_IN_TAB));
-}
-
-TEST(ProtoUtilTest, InlinePlayback) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({kFeedVideoInlinePlayback}, {});
-  feedwire::FeedRequest request =
-      CreateFeedQueryRefreshRequest(
-          StreamType(StreamKind::kForYou), feedwire::FeedQuery::MANUAL_REFRESH,
-          /*request_metadata=*/{},
-          /*consistency_token=*/std::string(), SingleWebFeedEntryPoint::kOther,
-          /*doc_view_counts=*/{})
-          .feed_request();
-
-  ASSERT_THAT(request.client_capability(),
-              Contains(feedwire::Capability::OPEN_VIDEO_COMMAND));
 }
 
 TEST(ProtoUtilTest, SignInStatusSetOnRequest) {

@@ -17,12 +17,10 @@ const char kEnableSnippets[] = "ntp_snippets.enable";
 // FEED_ARTICLES_LIST_VISIBLE in ChromePreferenceKeys.java is a pre-native cache
 // and should be consistent with this pref.
 const char kArticlesListVisible[] = "ntp_snippets.list_visible";
-const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
 
 void RegisterFeedSharedProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(kEnableSnippets, true);
   registry->RegisterBooleanPref(kArticlesListVisible, true);
-  registry->RegisterIntegerPref(kVideoPreviewsType, 1);
 }
 
 }  // namespace prefs

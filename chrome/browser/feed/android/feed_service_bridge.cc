@@ -72,23 +72,8 @@ static void JNI_FeedServiceBridge_ReportOpenVisitComplete(JNIEnv* env,
   api->ReportOpenVisitComplete(base::Milliseconds(visitTimeMs));
 }
 
-static int JNI_FeedServiceBridge_GetVideoPreviewsTypePreference(JNIEnv* env) {
-  PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
-  return pref_service->GetInteger(feed::prefs::kVideoPreviewsType);
-}
-
-static void JNI_FeedServiceBridge_SetVideoPreviewsTypePreference(JNIEnv* env,
-                                                                 jint setting) {
-  PrefService* pref_service = ProfileManager::GetLastUsedProfile()->GetPrefs();
-  pref_service->SetInteger(feed::prefs::kVideoPreviewsType, setting);
-}
-
 static jlong JNI_FeedServiceBridge_GetReliabilityLoggingId(JNIEnv* env) {
   return FeedServiceBridge::GetReliabilityLoggingId();
-}
-
-static jboolean JNI_FeedServiceBridge_IsAutoplayEnabled(JNIEnv* env) {
-  return FeedServiceBridge::IsAutoplayEnabled();
 }
 
 static jlong JNI_FeedServiceBridge_AddUnreadContentObserver(
@@ -166,10 +151,6 @@ DisplayMetrics FeedServiceBridge::GetDisplayMetrics() {
   result.width_pixels = numbers[1];
   result.height_pixels = numbers[2];
   return result;
-}
-
-bool FeedServiceBridge::IsAutoplayEnabled() {
-  return base::FeatureList::IsEnabled(kInterestFeedV2Autoplay);
 }
 
 TabGroupEnabledState FeedServiceBridge::GetTabGroupEnabledState() {

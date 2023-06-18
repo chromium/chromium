@@ -45,7 +45,6 @@ public class FeedManagementMediator {
     private ModelList mModelList;
     private final Activity mActivity;
     private final FollowManagementLauncher mFollowManagementLauncher;
-    private final AutoplayManagementLauncher mAutoplayManagementLauncher;
     private final @StreamKind int mInitiatingStreamKind;
     private CustomTabsClient mClient;
     private CustomTabsSession mCustomTabsSession;
@@ -57,20 +56,11 @@ public class FeedManagementMediator {
         void launchFollowManagement(Context mContext);
     }
 
-    /**
-     * Interface to supply a method which can launch the AutoplayManagementActivity.
-     */
-    public interface AutoplayManagementLauncher {
-        void launchAutoplayManagement(Context mContext);
-    }
-
     FeedManagementMediator(Activity activity, ModelList modelList,
-            FollowManagementLauncher followLauncher, AutoplayManagementLauncher autoplayLauncher,
-            @StreamKind int initiatingStreamKind) {
+            FollowManagementLauncher followLauncher, @StreamKind int initiatingStreamKind) {
         mModelList = modelList;
         mActivity = activity;
         mFollowManagementLauncher = followLauncher;
-        mAutoplayManagementLauncher = autoplayLauncher;
         mInitiatingStreamKind = initiatingStreamKind;
 
         // Add the menu items into the menu.
@@ -89,12 +79,6 @@ public class FeedManagementMediator {
                 R.string.feed_manage_hidden_description, this::handleHiddenClick);
         mModelList.add(new ModelListAdapter.ListItem(
                 FeedManagementItemProperties.DEFAULT_ITEM_TYPE, hiddenModel));
-        if (FeedServiceBridge.isAutoplayEnabled()) {
-            PropertyModel autoplayModel = generateListItem(R.string.feed_manage_autoplay,
-                    R.string.feed_manage_autoplay_description, this::handleAutoplayClick);
-            mModelList.add(new ModelListAdapter.ListItem(
-                    FeedManagementItemProperties.DEFAULT_ITEM_TYPE, autoplayModel));
-        }
         PropertyModel followingModel = generateListItem(R.string.feed_manage_following,
                 R.string.feed_manage_following_description, this::handleFollowingClick);
         mModelList.add(new ModelListAdapter.ListItem(
@@ -213,14 +197,6 @@ public class FeedManagementMediator {
         FeedServiceBridge.reportOtherUserAction(
                 mInitiatingStreamKind, FeedUserActionType.TAPPED_MANAGE_INTERESTS);
         launchUriActivity("https://www.google.com/preferences/interests/hidden?sh=n");
-    }
-
-    @VisibleForTesting
-    void handleAutoplayClick(View view) {
-        Log.d(TAG, "Autoplay click caught.");
-        FeedServiceBridge.reportOtherUserAction(
-                mInitiatingStreamKind, FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
-        mAutoplayManagementLauncher.launchAutoplayManagement(mActivity);
     }
 
     @VisibleForTesting

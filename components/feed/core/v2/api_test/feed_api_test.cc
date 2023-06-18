@@ -970,9 +970,6 @@ DisplayMetrics FeedApiTest::GetDisplayMetrics() {
 std::string FeedApiTest::GetLanguageTag() {
   return "en-US";
 }
-bool FeedApiTest::IsAutoplayEnabled() {
-  return false;
-}
 TabGroupEnabledState FeedApiTest::GetTabGroupEnabledState() {
   return TabGroupEnabledState::kNone;
 }

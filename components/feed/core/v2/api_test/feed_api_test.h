@@ -486,7 +486,6 @@ class FeedApiTest : public testing::Test, public FeedStream::Delegate {
   bool IsOffline() override;
   DisplayMetrics GetDisplayMetrics() override;
   std::string GetLanguageTag() override;
-  bool IsAutoplayEnabled() override;
   TabGroupEnabledState GetTabGroupEnabledState() override;
   void ClearAll() override;
   AccountInfo GetAccountInfo() override;

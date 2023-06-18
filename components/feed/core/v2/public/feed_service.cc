@@ -152,9 +152,6 @@ class FeedService::StreamDelegateImpl : public FeedStream::Delegate {
   std::string GetLanguageTag() override {
     return service_delegate_->GetLanguageTag();
   }
-  bool IsAutoplayEnabled() override {
-    return service_delegate_->IsAutoplayEnabled();
-  }
   TabGroupEnabledState GetTabGroupEnabledState() override {
     return service_delegate_->GetTabGroupEnabledState();
   }

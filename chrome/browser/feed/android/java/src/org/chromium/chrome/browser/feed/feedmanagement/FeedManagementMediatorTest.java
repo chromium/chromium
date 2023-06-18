@@ -57,9 +57,6 @@ public class FeedManagementMediatorTest {
     @Mock
     private FeedManagementMediator.FollowManagementLauncher mFollowManagementLauncher;
 
-    @Mock
-    private FeedManagementMediator.AutoplayManagementLauncher mAutoplayManagementLauncher;
-
     @Before
     public void setUpTest() {
         mActivity = Robolectric.setupActivity(Activity.class);
@@ -68,10 +65,8 @@ public class FeedManagementMediatorTest {
         MockitoAnnotations.initMocks(this);
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
-        mFeedManagementMediator = new FeedManagementMediator(mActivity, mModelList,
-                mFollowManagementLauncher, mAutoplayManagementLauncher, TEST_STREAM_KIND);
-
-        verify(mFeedServiceBridgeJniMock).isAutoplayEnabled();
+        mFeedManagementMediator = new FeedManagementMediator(
+                mActivity, mModelList, mFollowManagementLauncher, TEST_STREAM_KIND);
     }
 
     @Test
@@ -196,17 +191,5 @@ public class FeedManagementMediatorTest {
         verify(mFeedServiceBridgeJniMock)
                 .reportOtherUserAction(
                         TEST_STREAM_KIND, FeedUserActionType.TAPPED_MANAGE_FOLLOWING);
-    }
-
-    @Test
-    public void testHandleAutoplayClick() {
-        // Act
-        mFeedManagementMediator.handleAutoplayClick(null);
-
-        // Assert
-        verify(mAutoplayManagementLauncher).launchAutoplayManagement(mActivity);
-        verify(mFeedServiceBridgeJniMock)
-                .reportOtherUserAction(
-                        TEST_STREAM_KIND, FeedUserActionType.OPENED_AUTOPLAY_SETTINGS);
     }
 }

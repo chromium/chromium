@@ -940,19 +940,11 @@ public class FeedSurfaceMediator
                         R.id.ntp_feed_header_menu_item_activity, iconId));
                 itemList.add(buildMenuListItem(R.string.ntp_manage_interests,
                         R.id.ntp_feed_header_menu_item_interest, iconId));
-                if (FeedServiceBridge.isAutoplayEnabled()) {
-                    itemList.add(buildMenuListItem(R.string.ntp_manage_autoplay,
-                            R.id.ntp_feed_header_menu_item_autoplay, iconId));
-                }
                 if (ChromeFeatureList.isEnabled(ChromeFeatureList.INTEREST_FEED_V2_HEARTS)) {
                     itemList.add(buildMenuListItem(R.string.ntp_manage_reactions,
                             R.id.ntp_feed_header_menu_item_reactions, iconId));
                 }
             }
-        } else if (FeedServiceBridge.isAutoplayEnabled()) {
-            // Show manage autoplay if not signed in.
-            itemList.add(buildMenuListItem(
-                    R.string.ntp_manage_autoplay, R.id.ntp_feed_header_menu_item_autoplay, iconId));
         }
         itemList.add(buildMenuListItem(
                 R.string.learn_more, R.id.ntp_feed_header_menu_item_learn, iconId));
@@ -1122,9 +1114,6 @@ public class FeedSurfaceMediator
             FeedServiceBridge.reportOtherUserAction(
                     feedType, FeedUserActionType.TAPPED_MANAGE_REACTIONS);
             FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_INTERESTS);
-        } else if (itemId == R.id.ntp_feed_header_menu_item_autoplay) {
-            mCoordinator.launchAutoplaySettings();
-            FeedUma.recordFeedControlsAction(FeedUma.CONTROLS_ACTION_CLICKED_MANAGE_AUTOPLAY);
         } else if (itemId == R.id.ntp_feed_header_menu_item_learn) {
             mActionDelegate.openHelpPage();
             FeedServiceBridge.reportOtherUserAction(feedType, FeedUserActionType.TAPPED_LEARN_MORE);

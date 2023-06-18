@@ -96,13 +96,6 @@ class FeedServiceDelegateImpl : public FeedService::Delegate {
     return metrics;
 #endif
   }
-  bool IsAutoplayEnabled() override {
-#if BUILDFLAG(IS_ANDROID)
-    return FeedServiceBridge::IsAutoplayEnabled();
-#else
-    return false;
-#endif
-  }
   TabGroupEnabledState GetTabGroupEnabledState() override {
 #if BUILDFLAG(IS_ANDROID)
     return FeedServiceBridge::GetTabGroupEnabledState();

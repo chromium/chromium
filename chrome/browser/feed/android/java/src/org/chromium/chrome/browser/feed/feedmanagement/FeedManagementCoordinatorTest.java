@@ -5,7 +5,6 @@
 package org.chromium.chrome.browser.feed.feedmanagement;
 
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.verify;
 
 import androidx.test.ext.junit.rules.ActivityScenarioRule;
 
@@ -55,9 +54,7 @@ public class FeedManagementCoordinatorTest {
         mocker.mock(FeedServiceBridgeJni.TEST_HOOKS, mFeedServiceBridgeJniMock);
 
         mFeedManagementCoordinator =
-                new FeedManagementCoordinator(mActivity, null, null, StreamKind.UNKNOWN);
-
-        verify(mFeedServiceBridgeJniMock).isAutoplayEnabled();
+                new FeedManagementCoordinator(mActivity, null, StreamKind.UNKNOWN);
     }
 
     @Test

@@ -14,7 +14,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/BackToTopBubbleScrollListener.java",
     "java/src/org/chromium/chrome/browser/feed/CardMenuBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/feed/FeedActionDelegate.java",
-    "java/src/org/chromium/chrome/browser/feed/FeedAutoplaySettingsDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedBubbleDelegate.java",
     "java/src/org/chromium/chrome/browser/feed/FeedContentFirstLoadWatcher.java",
     "java/src/org/chromium/chrome/browser/feed/FeedFeatures.java",
@@ -50,7 +49,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/SingleWebFeedParameters.java",
     "java/src/org/chromium/chrome/browser/feed/SnapScrollHelper.java",
     "java/src/org/chromium/chrome/browser/feed/Stream.java",
-    "java/src/org/chromium/chrome/browser/feed/VideoPreviewsType.java",
     "java/src/org/chromium/chrome/browser/feed/componentinterfaces/SurfaceCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/feedmanagement/FeedManagementItemProperties.java",
@@ -72,8 +70,6 @@ android_library("java") {
     "java/src/org/chromium/chrome/browser/feed/sections/SectionHeaderViewBinder.java",
     "java/src/org/chromium/chrome/browser/feed/sections/StickySectionHeaderView.java",
     "java/src/org/chromium/chrome/browser/feed/sections/ViewVisibility.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragment.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/RadioButtonGroupVideoPreviewsPreference.java",
     "java/src/org/chromium/chrome/browser/feed/signinbottomsheet/SigninBottomSheetCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsCoordinator.java",
     "java/src/org/chromium/chrome/browser/feed/sort_ui/FeedOptionsProperties.java",
@@ -199,7 +195,6 @@ android_resources("feed_java_resources") {
     "java/res/layout/new_tab_page_section_tab.xml",
     "java/res/layout/no_connection.xml",
     "java/res/layout/no_content_v2.xml",
-    "java/res/layout/radio_button_group_video_previews_preference.xml",
     "java/res/layout/web_feed_dialog.xml",
     "java/res/layout/web_feed_main_menu_item.xml",
     "java/res/values-night/colors.xml",
@@ -208,7 +203,6 @@ android_resources("feed_java_resources") {
     "java/res/values/colors.xml",
     "java/res/values/dimens.xml",
     "java/res/values/styles.xml",
-    "java/res/xml/feed_autoplay_preferences.xml",
   ]
   deps = [
     "//chrome/browser/ui/android/strings:ui_strings_grd",
@@ -234,10 +228,7 @@ android_library("javatests") {
   testonly = true
   resources_package = "org.chromium.chrome.browser.feed.test"
 
-  sources = [
-    "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java",
-    "java/src/org/chromium/chrome/browser/feed/settings/FeedAutoplaySettingsFragmentTest.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/feed/FeedProcessScopeDependencyProviderNativeTest.java" ]
 
   deps = [
     ":feed_java_resources",

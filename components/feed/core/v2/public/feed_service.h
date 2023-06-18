@@ -68,8 +68,6 @@ class FeedService : public KeyedService {
     virtual std::string GetLanguageTag() = 0;
     // Returns display metrics for the device.
     virtual DisplayMetrics GetDisplayMetrics() = 0;
-    // Returns true if autoplay is enabled.
-    virtual bool IsAutoplayEnabled() = 0;
     // Returns how the tab group feature is enabled.
     virtual TabGroupEnabledState GetTabGroupEnabledState() = 0;
     // Clear all stored data.

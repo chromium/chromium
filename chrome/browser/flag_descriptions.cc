@@ -3913,10 +3913,6 @@ const char kFeedCloseRefreshName[] = "Feed-close refresh";
 const char kFeedCloseRefreshDescription[] =
     "Enables scheduling a background refresh of the feed following feed use.";
 
-const char kFeedVideoInlinePlaybackName[] = "Feed video inline playback";
-const char kFeedVideoInlinePlaybackDescription[] =
-    "Enable playing feed video in inline playback mode.";
-
 const char kFeedDiscoFeedEndpointName[] =
     "Feed using the DiscoFeed backend endpoint";
 const char kFeedDiscoFeedEndpointDescription[] =

@@ -143,20 +143,8 @@ public final class FeedServiceBridge {
         FeedServiceBridgeJni.get().reportOpenVisitComplete(visitTimeMs);
     }
 
-    public static @VideoPreviewsType int getVideoPreviewsTypePreference() {
-        return FeedServiceBridgeJni.get().getVideoPreviewsTypePreference();
-    }
-
-    public static void setVideoPreviewsTypePreference(@VideoPreviewsType int videoPreviewsType) {
-        FeedServiceBridgeJni.get().setVideoPreviewsTypePreference(videoPreviewsType);
-    }
-
     public static long getReliabilityLoggingId() {
         return FeedServiceBridgeJni.get().getReliabilityLoggingId();
-    }
-
-    public static boolean isAutoplayEnabled() {
-        return FeedServiceBridgeJni.get().isAutoplayEnabled();
     }
 
     public static @ContentOrder int getContentOrderForWebFeed() {
@@ -218,10 +206,7 @@ public final class FeedServiceBridge {
         int getLoadMoreTriggerLookahead();
         int getLoadMoreTriggerScrollDistanceDp();
         void reportOpenVisitComplete(long visitTimeMs);
-        int getVideoPreviewsTypePreference();
-        void setVideoPreviewsTypePreference(int videoPreviewsType);
         long getReliabilityLoggingId();
-        boolean isAutoplayEnabled();
         void reportOtherUserAction(@StreamKind int streamKind, @FeedUserActionType int userAction);
         @ContentOrder
         int getContentOrderForWebFeed();

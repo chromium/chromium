@@ -148,9 +148,6 @@ const base::FeatureParam<bool> kFeedCloseRefreshRequireInteraction{
 BASE_FEATURE(kFeedNoViewCache,
              "FeedNoViewCache",
              base::FEATURE_ENABLED_BY_DEFAULT);
-BASE_FEATURE(kFeedVideoInlinePlayback,
-             "FeedVideoInlinePlayback",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 
 BASE_FEATURE(kFeedExperimentIDTagging,
              "FeedExperimentIDTagging",

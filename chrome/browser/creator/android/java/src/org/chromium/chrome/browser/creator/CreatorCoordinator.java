@@ -23,7 +23,6 @@ import org.chromium.base.Callback;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.base.supplier.UnownedUserDataSupplier;
 import org.chromium.chrome.browser.feed.FeedActionDelegate;
-import org.chromium.chrome.browser.feed.FeedAutoplaySettingsDelegate;
 import org.chromium.chrome.browser.feed.FeedContentFirstLoadWatcher;
 import org.chromium.chrome.browser.feed.FeedListContentManager;
 import org.chromium.chrome.browser.feed.FeedListContentManager.FeedContent;
@@ -81,9 +80,8 @@ import java.util.List;
  * Sets up the Coordinator for Cormorant Creator surface.  It is based on the doc at
  * https://chromium.googlesource.com/chromium/src/+/HEAD/docs/ui/android/mvc_simple_list_tutorial.md
  */
-public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
-                                           FeedContentFirstLoadWatcher,
-                                           View.OnLayoutChangeListener {
+public class CreatorCoordinator
+        implements FeedContentFirstLoadWatcher, View.OnLayoutChangeListener {
     private final ViewGroup mCreatorViewGroup;
     private CreatorMediator mMediator;
     private CreatorTabMediator mTabMediator;
@@ -250,8 +248,7 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         mStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShownInitially */ false, mWindowAndroid,
                 /* shareSupplier */ shareDelegateSupplier, StreamKind.SINGLE_WEB_FEED,
-                /* FeedAutoplaySettingsDelegate */ this, feedActionDelegate,
-                helpAndFeedbackLauncher,
+                feedActionDelegate, helpAndFeedbackLauncher,
                 /* FeedContentFirstLoadWatcher */ this,
                 /* streamsMediator */ new StreamsMediatorImpl(),
                 new SingleWebFeedParameters(
@@ -401,11 +398,6 @@ public class CreatorCoordinator implements FeedAutoplaySettingsDelegate,
         });
     }
 
-    /**
-     * Launches autoplay settings activity.
-     */
-    @Override
-    public void launchAutoplaySettings() {}
     @Override
     public void nonNativeContentLoaded(@StreamKind int kind) {}
 

@@ -1034,7 +1034,6 @@ RequestMetadata FeedStream::GetCommonRequestMetadata(
   result.language_tag = delegate_->GetLanguageTag();
   result.notice_card_acknowledged =
       privacy_notice_card_tracker_.HasAcknowledgedNoticeCard();
-  result.autoplay_enabled = delegate_->IsAutoplayEnabled();
   result.tab_group_enabled_state = delegate_->GetTabGroupEnabledState();
 
   if (signed_in_request) {

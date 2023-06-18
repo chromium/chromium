@@ -177,7 +177,7 @@ public class SingleWebFeedStreamTest {
         mFeedStream = new FeedStream(mActivity, mSnackbarManager, mBottomSheetController,
                 /* isPlaceholderShownInitially= */ false, mWindowAndroid,
                 /* shareSupplier= */ mShareDelegateSupplier, StreamKind.SINGLE_WEB_FEED,
-                /* FeedAutoplaySettingsDelegate= */ null, mActionDelegate,
+                mActionDelegate,
                 /* helpAndFeedbackLauncher= */ null,
                 /* FeedContentFirstLoadWatcher= */ null,
                 /* streamsMediator= */ null,
