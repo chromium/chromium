@@ -2893,6 +2893,7 @@ if (!is_android) {
         "../browser/lacros/app_mode/kiosk_session_service_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_controller_browsertest.cc",
         "../browser/lacros/lacros_extension_apps_publisher_browsertest.cc",
+        "../browser/lacros/profile_loader_browsertest.cc",
         "../browser/policy/restricted_mgs_policy_provider_lacros_browsertest.cc",
         "../browser/web_applications/app_service/lacros_web_apps_controller_browsertest.cc",
       ]

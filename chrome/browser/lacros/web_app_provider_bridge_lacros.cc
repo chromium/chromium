@@ -9,6 +9,7 @@
 #include "chrome/browser/apps/app_service/webapk/webapk_utils.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chromeos/office_web_app/office_web_app.h"
+#include "chrome/browser/lacros/profile_loader.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/web_applications/commands/install_preloaded_verified_app_command.h"
 #include "chrome/browser/web_applications/locks/all_apps_lock.h"
@@ -29,7 +30,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "url/gurl.h"
 
-    namespace crosapi {
+namespace crosapi {
 
 WebAppProviderBridgeLacros::WebAppProviderBridgeLacros() {
   auto* service = chromeos::LacrosService::Get();
@@ -44,80 +45,71 @@ WebAppProviderBridgeLacros::~WebAppProviderBridgeLacros() = default;
 void WebAppProviderBridgeLacros::WebAppInstalledInArc(
     mojom::ArcWebAppInstallInfoPtr arc_install_info,
     WebAppInstalledInArcCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::WebAppInstalledInArcImpl,
-                     std::move(arc_install_info), std::move(callback)));
+                     std::move(arc_install_info), std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::WebAppUninstalledInArc(
     const std::string& app_id,
     WebAppUninstalledInArcCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::WebAppUninstalledInArcImpl,
-                     app_id, std::move(callback)));
+                     app_id, std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::GetWebApkCreationParams(
     const std::string& app_id,
     GetWebApkCreationParamsCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::GetWebApkCreationParamsImpl,
-                     app_id, std::move(callback)));
+                     app_id, std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::InstallMicrosoft365(
     InstallMicrosoft365Callback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::InstallMicrosoft365Impl,
-                     std::move(callback)));
+                     std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::ScheduleNavigateAndTriggerInstallDialog(
     const GURL& install_url,
     const GURL& origin_url,
     bool is_renderer_initiated) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::
                          ScheduleNavigateAndTriggerInstallDialogImpl,
-                     install_url, origin_url, is_renderer_initiated));
+                     install_url, origin_url, is_renderer_initiated),
+      /*can_trigger_fre=*/true);
 }
 
 void WebAppProviderBridgeLacros::GetSubAppIds(const web_app::AppId& app_id,
                                               GetSubAppIdsCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
-      base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl, app_id,
-                     std::move(callback)));
+  LoadMainProfile(base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppIdsImpl,
+                                 app_id, std::move(callback)),
+                  /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::GetSubAppToParentMap(
     GetSubAppToParentMapCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::GetSubAppToParentMapImpl,
-                     std::move(callback)));
+                     std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 void WebAppProviderBridgeLacros::InstallPreloadWebApp(
     mojom::PreloadWebAppInstallInfoPtr preload_install_info,
     InstallPreloadWebAppCallback callback) {
-  g_browser_process->profile_manager()->LoadProfileByPath(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      /*incognito=*/false,
+  LoadMainProfile(
       base::BindOnce(&WebAppProviderBridgeLacros::InstallPreloadWebAppImpl,
-                     std::move(preload_install_info), std::move(callback)));
+                     std::move(preload_install_info), std::move(callback)),
+      /*can_trigger_fre=*/false);
 }
 
 // static

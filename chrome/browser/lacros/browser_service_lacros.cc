@@ -23,6 +23,7 @@
 #include "chrome/browser/lacros/app_mode/kiosk_session_service_lacros.h"
 #include "chrome/browser/lacros/browser_launcher.h"
 #include "chrome/browser/lacros/feedback_util.h"
+#include "chrome/browser/lacros/profile_loader.h"
 #include "chrome/browser/lacros/system_logs/lacros_system_log_fetcher.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/profiles/profile.h"
@@ -83,49 +84,6 @@ std::string GetCompressedHistograms() {
     LOG(ERROR) << "Failed to compress lacros histograms.";
     return std::string();
   }
-}
-
-void MaybeProceedWithProfile(base::OnceCallback<void(Profile*)> callback,
-                             Profile* profile,
-                             bool proceed) {
-  LOG_IF(ERROR, !proceed) << "Not proceeding after LacrosFirstRun";
-  std::move(callback).Run(proceed ? profile : nullptr);
-}
-
-// Helper function to handle profile initialization.
-void OnMainProfileInitialized(base::OnceCallback<void(Profile*)> callback,
-                              bool can_trigger_fre,
-                              Profile* profile) {
-  DCHECK(callback);
-  if (!profile) {
-    LOG(ERROR) << "Profile creation failed.";
-    // Profile creation failed, show the profile picker instead.
-    ProfilePicker::Show(ProfilePicker::Params::FromEntryPoint(
-        ProfilePicker::EntryPoint::kNewSessionOnExistingProcess));
-    std::move(callback).Run(nullptr);
-    return;
-  }
-
-  auto* fre_service = FirstRunServiceFactory::GetForBrowserContext(profile);
-  if (fre_service && can_trigger_fre && fre_service->ShouldOpenFirstRun()) {
-    // TODO(https://crbug.com/1313848): Consider taking a
-    // `ScopedProfileKeepAlive`.
-    fre_service->OpenFirstRunIfNeeded(
-        FirstRunService::EntryPoint::kOther,
-        base::BindOnce(&MaybeProceedWithProfile, std::move(callback),
-                       base::Unretained(profile)));
-  } else {
-    std::move(callback).Run(profile);
-  }
-}
-
-void LoadMainProfile(base::OnceCallback<void(Profile*)> callback,
-                     bool can_trigger_fre) {
-  ProfileManager* profile_manager = g_browser_process->profile_manager();
-  profile_manager->CreateProfileAsync(
-      ProfileManager::GetPrimaryUserProfilePath(),
-      base::BindOnce(&OnMainProfileInitialized, std::move(callback),
-                     can_trigger_fre));
 }
 
 NavigateParams::PathBehavior ConvertPathBehavior(
