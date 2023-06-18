@@ -4978,33 +4978,6 @@
             ]
         }
     ],
-    "DownweightAutocompleteSearchResultsStudy": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "EnabledWithCutoff_20221221",
-                    "params": {
-                        "enable_cutoff": "true"
-                    },
-                    "enable_features": [
-                        "LauncherFuzzyMatchForOmnibox"
-                    ]
-                },
-                {
-                    "name": "EnabledWithRelevance_20221221",
-                    "params": {
-                        "enable_relevance": "true"
-                    },
-                    "enable_features": [
-                        "LauncherFuzzyMatchForOmnibox"
-                    ]
-                }
-            ]
-        }
-    ],
     "EcheNetworkConnectionState": [
         {
             "platforms": [
