@@ -538,6 +538,26 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="DevTools.Workspaces.NumberOfDirectoriesTraversed"
+    units="count" expires_after="M120">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>hablich@chromium.org</owner>
+  <summary>
+    Number of directories within a workspace folder traversed while loading the
+    files from the folder.
+  </summary>
+</histogram>
+
+<histogram name="DevTools.Workspaces.NumberOfFilesLoaded" units="count"
+    expires_after="M120">
+  <owner>bmeurer@chromium.org</owner>
+  <owner>hablich@chromium.org</owner>
+  <summary>
+    Number of files loaded from a workspace folder (after the exclusion patterns
+    are applied).
+  </summary>
+</histogram>
+
 <histogram name="DevTools.Workspaces.PopulateWallClockTime" units="ms"
     expires_after="M120">
   <owner>bmeurer@chromium.org</owner>
