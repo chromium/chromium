@@ -2846,6 +2846,11 @@ crbug.com/626703 [ Win ] virtual/partitioned-cookies/http/tests/inspector-protoc
 crbug.com/626703 external/wpt/css/css-fonts/parsing/font-variant-invalid.html [ Crash ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 external/wpt/css/motion/offset-path-ray-015.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-ray-016.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-ray-017.html [ Failure ]
+crbug.com/626703 external/wpt/css/motion/offset-path-ray-018.html [ Failure ]
+crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-inset.html [ Timeout ]
 crbug.com/626703 [ Mac12 ] virtual/threaded/external/wpt/scroll-animations/view-timelines/view-timeline-range.html [ Timeout ]
 crbug.com/626703 external/wpt/css/css-counter-styles/cjk-earthly-branch/css3-counter-styles-202.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-counter-styles/cjk-heavenly-stem/css3-counter-styles-205.html [ Failure ]

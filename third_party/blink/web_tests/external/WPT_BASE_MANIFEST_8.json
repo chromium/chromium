@@ -125329,7 +125329,7 @@
       ]
      ],
      "font-size-adjust-012.html": [
-      "a6037ffbaceeb68e0806d951f1c12fb38b646b2c",
+      "4263495427609a854543b85787b906cba1f0e7b4",
       [
        null,
        [
@@ -125348,6 +125348,19 @@
        [
         [
          "/css/css-fonts/font-size-adjust-013-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "font-size-adjust-metrics-override.html": [
+      "b7787b93073ac2b287170ca4262f8c4ebcd527db",
+      [
+       null,
+       [
+        [
+         "/css/css-fonts/font-size-adjust-metrics-override-ref.html",
          "=="
         ]
        ],
@@ -247239,6 +247252,58 @@
        {}
       ]
      ],
+     "offset-path-ray-015.html": [
+      "d8729c199e2d8198bf10eb2eadcb0424d41696c0",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-015-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-ray-016.html": [
+      "539823a5909a6ab5399183f9123663c1885e5de2",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-016-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-ray-017.html": [
+      "93f3ce09cb008b3b9b9ca0115d36f2e1b21e0ce6",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-017-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "offset-path-ray-018.html": [
+      "73b5b6c263b17c5ae7e7cacf0d56828d163d1055",
+      [
+       null,
+       [
+        [
+         "/css/motion/offset-path-ray-018-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "offset-path-ray-contain-001.html": [
       "ba03f1115f6e782f558fbe4fcca0a89aa795e5fb",
       [
@@ -273786,11 +273851,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "a3ba4d230034d5b69ec36cd18159dcc0b2c9f184",
+     "fc9bdb848a88c540ffef23746e61b0ce1abc7fc6",
      []
     ],
     "mtime.json": [
-     "5d5a4ea523fc0ba845d0bb38acf508cce5a23252",
+     "2381c6263ffca7d171a5eea770667f7e4b496163",
      []
     ]
    },
@@ -300334,12 +300399,12 @@
       "2ee9d0a0c8b71353293795c03a57c987e025d857",
       []
      ],
-     "font-size-adjust-012-ref.html": [
-      "9b24c758b6252c6c8df6fe2bad53637ade049c6f",
+     "font-size-adjust-010.html.ini": [
+      "36c56d873d5e96d7e2798d3e050e2dc2f9c649f2",
       []
      ],
-     "font-size-adjust-012.html.ini": [
-      "ed92a71ebeb760a271b46e34b67acff5ef8f75ca",
+     "font-size-adjust-012-ref.html": [
+      "e60769737dadae2e1debd15339a53a1d6860fdd5",
       []
      ],
      "font-size-adjust-013-ref.html": [
@@ -300348,6 +300413,10 @@
      ],
      "font-size-adjust-013.html.ini": [
       "79d3f15005b28ee5c064c5e05c2d975a21fd78d9",
+      []
+     ],
+     "font-size-adjust-metrics-override-ref.html": [
+      "a8d06c9674bb118fe3f1f052ce0d59081374a779",
       []
      ],
      "font-size-adjust-order-001-ref.html": [
@@ -331434,7 +331503,7 @@
        []
       ],
       "kind-of-widget-fallback-button-background-clip-001.html.ini": [
-       "576d32e2b94102fede04c0cafe15cdef8a2b2963",
+       "2d8ddd7da2984db557fb665b9fe22bdf9395b74f",
        []
       ],
       "kind-of-widget-fallback-button-background-size-001.html.ini": [
@@ -331618,7 +331687,7 @@
        []
       ],
       "kind-of-widget-fallback-input-button-border-image-width-001.html.ini": [
-       "9c6b66a66d527700bba9aafca1cae80a9d795bfa",
+       "bdd8aef7248de788980823ad241227225c7845f7",
        []
       ],
       "kind-of-widget-fallback-input-button-border-inline-end-color-001.html.ini": [
@@ -331842,7 +331911,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-style-001.html.ini": [
-       "d6436993d3fdf0174f6493fb8a2e9b1577937397",
+       "09a8d9c0b6abb27e1948e7b1f64141a0269e25d1",
        []
       ],
       "kind-of-widget-fallback-input-search-border-inline-end-width-001.html.ini": [
@@ -331910,7 +331979,7 @@
        []
       ],
       "kind-of-widget-fallback-input-search-text-background-clip-001.html.ini": [
-       "5981cd7fe9796312b82645e87b2da6ad7f00ada1",
+       "88ee18178ca28f95302a4688f389edbe20bee034",
        []
       ],
       "kind-of-widget-fallback-input-search-text-background-image-001.html.ini": [
@@ -339395,7 +339464,7 @@
       []
      ],
      "css-backdrop-filters-animation-saturate.html.ini": [
-      "0564545e96455f6124541104b5abf6242234a6c5",
+      "5196d3d0a33f632dc0216b975535622fb3c69e76",
       []
      ],
      "css-backdrop-filters-animation-sepia-ref.html": [
@@ -340374,6 +340443,38 @@
      ],
      "offset-path-ray-014-ref.html": [
       "cd0fab44c3658956801a3fd75048f8faf521fa2d",
+      []
+     ],
+     "offset-path-ray-015-ref.html": [
+      "13f25aa1a970621d88eb7aeac7da9aa674b2edbd",
+      []
+     ],
+     "offset-path-ray-015.html.ini": [
+      "87c76c75d62a1dcde0581dd9311ff22a8b9c22f1",
+      []
+     ],
+     "offset-path-ray-016-ref.html": [
+      "dea09101505ac5cd80b172184596ab8d5e80517b",
+      []
+     ],
+     "offset-path-ray-016.html.ini": [
+      "221142e1d5ca6fdf93409d7d3f8702848c3801cd",
+      []
+     ],
+     "offset-path-ray-017-ref.html": [
+      "03719c540dc388df45cc2b62a94ba384074b8420",
+      []
+     ],
+     "offset-path-ray-017.html.ini": [
+      "30f65aec565b6686835a73d37be01e25c2584fba",
+      []
+     ],
+     "offset-path-ray-018-ref.html": [
+      "39dd8204de1e4bdc573fa8e8e8d44986cc976427",
+      []
+     ],
+     "offset-path-ray-018.html.ini": [
+      "934c9b20362f67c3cf87371a80488bd64b3d3c26",
       []
      ],
      "offset-path-ray-contain-001-ref.html": [
@@ -360277,7 +360378,7 @@
         []
        ],
        "dir_auto-N-EN-R.html.ini": [
-        "ee5a9b5655496eb51a3620c8aeb0449f1e481249",
+        "15f04116965b9664ed0fcaefa949882211923ac3",
         []
        ],
        "dir_auto-N-EN-ref.html.ini": [
@@ -376265,7 +376366,7 @@
     ]
    },
    "lint.ignore": [
-    "95354d71e0574a2bc3779f4c2aed0c3c4a381dfa",
+    "d7b97d233336457a16cb9e2d807932f795d9336d",
     []
    ],
    "loading": {
@@ -382488,7 +382589,7 @@
      []
     ],
     "modulepreload-as.html.ini": [
-     "aadd8b2c1c3650edc3827f49b50174276619394e",
+     "09d6adca7caebb78bf141b97c86c3be00b639246",
      []
     ],
     "modulepreload-expected.txt": [
@@ -397272,7 +397373,7 @@
      },
      "the-mediaelementaudiosourcenode-interface": {
       "mediaElementAudioSourceToScriptProcessorTest.html.ini": [
-       "c2a51399def927cff1eec490a3b10f213263341a",
+       "26eeaa71c3f0a4f23b9c06d911eeb841f061f2d0",
        []
       ]
      }
@@ -397456,7 +397557,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "99b54399bd0951341661af33da1e3c31a3b230db",
+     "38966eeecf043bce71bd9c4502dabb6b46f6c648",
      []
     ],
     "sfx-aac.mp4": [
@@ -457260,7 +457361,7 @@
       ]
      ],
      "parsing.html": [
-      "c22eaada3c27489fccdea579111d44e32e9839b4",
+      "063221ea0d9d02b93b677a3eaf172bc8f28f06b2",
       [
        null,
        {}
