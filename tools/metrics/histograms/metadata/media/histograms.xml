@@ -665,6 +665,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Media.Audio.MakeAudioInputStreamStatus"
+    enum="MakeAudioInputStreamStatus" expires_after="2024-06-01">
+  <owner>yuhsuan@chromium.org</owner>
+  <owner>media-dev@chromium.org</owner>
+  <owner>webrtc-audio-uma@google.com</owner>
+  <summary>
+    Logged at each call to AudioManagerBase::MakeAudioInputStream to indicate
+    any errors.
+  </summary>
+</histogram>
+
 <histogram name="Media.Audio.Output.Win.{AudioOutputMethod}Error"
     enum="Hresult" expires_after="M117">
   <owner>dalecurtis@chromium.org</owner>

@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/observer_list.h"
 #include "base/ranges/algorithm.h"
@@ -64,6 +65,23 @@ enum StreamFormat {
   STREAM_FORMAT_FAKE = 4,
   STREAM_FORMAT_MAX = 4,
 };
+
+// Used to log errors in `AudioManagerBase::MakeAudioInputStream`.
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class MakeAudioInputStreamResult {
+  kNoError = 0,
+  kErrorSwitchFailAudioStreamCreation = 1,
+  kErrorInvalidParams = 2,
+  kErrorExcessiveInputStreams = 3,
+  kErrorCreateStream = 4,
+  kMaxValue = kErrorCreateStream
+};
+
+void LogMakeAudioInputStreamResult(MakeAudioInputStreamResult result) {
+  base::UmaHistogramEnumeration("Media.Audio.MakeAudioInputStreamStatus",
+                                result);
+}
 
 PRINTF_FORMAT(2, 3)
 void SendLogMessage(const AudioManagerBase::LogCallback& callback,
@@ -247,6 +265,8 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
 
   if (base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kFailAudioStreamCreation)) {
+    LogMakeAudioInputStreamResult(
+        MakeAudioInputStreamResult::kErrorSwitchFailAudioStreamCreation);
     return nullptr;
   }
 
@@ -257,6 +277,8 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
       device_id.empty()) {
     DLOG(ERROR) << "Audio parameters are invalid for device " << device_id
                 << ", params: " << params.AsHumanReadableString();
+    LogMakeAudioInputStreamResult(
+        MakeAudioInputStreamResult::kErrorInvalidParams);
     return nullptr;
   }
 
@@ -264,6 +286,8 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
     LOG(ERROR) << "Number of opened input audio streams "
                << input_stream_count() << " exceed the max allowed number "
                << kMaxInputStreams;
+    LogMakeAudioInputStreamResult(
+        MakeAudioInputStreamResult::kErrorExcessiveInputStreams);
     return nullptr;
   }
 
@@ -308,6 +332,10 @@ AudioInputStream* AudioManagerBase::MakeAudioInputStream(
           stream);
     }
   }
+
+  LogMakeAudioInputStreamResult(
+      stream ? MakeAudioInputStreamResult::kNoError
+             : MakeAudioInputStreamResult::kErrorCreateStream);
 
   return stream;
 }

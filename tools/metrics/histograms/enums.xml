@@ -67926,6 +67926,14 @@ from previous Chrome versions.
   <int value="16" label="Background needs repaint on scroll"/>
 </enum>
 
+<enum name="MakeAudioInputStreamStatus">
+  <int value="0" label="Success"/>
+  <int value="1" label="Error: Had switch fail-audio-stream-creation"/>
+  <int value="2" label="Error: Invalid params"/>
+  <int value="3" label="Error: Excessive input streams"/>
+  <int value="4" label="Error: Failed to create a stream object"/>
+</enum>
+
 <enum name="MakeChromeDefaultResult">
   <int value="0" label="Chrome made default"/>
   <int value="1" label="Dialog closed without explicit choice"/>
