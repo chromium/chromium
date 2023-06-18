@@ -137,11 +137,10 @@ TEST(MarshallingTest, TestInt16Parsing) {
   EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0X234", &value, &err));
   EXPECT_EQ(value, 564);
-  // TODO(rogeeff): fix below validations
-  EXPECT_FALSE(absl::ParseFlag("-0x7FFD", &value, &err));
-  EXPECT_NE(value, -3);
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+  EXPECT_TRUE(absl::ParseFlag("-0x7FFD", &value, &err));
+  EXPECT_EQ(value, -32765);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -194,9 +193,8 @@ TEST(MarshallingTest, TestUint16Parsing) {
   EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0X234", &value, &err));
   EXPECT_EQ(value, 564);
-  // TODO(rogeeff): fix below validations
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -254,11 +252,11 @@ TEST(MarshallingTest, TestInt32Parsing) {
   EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0X234", &value, &err));
   EXPECT_EQ(value, 564);
-  // TODO(rogeeff): fix below validations
-  EXPECT_FALSE(absl::ParseFlag("-0x7FFFFFFD", &value, &err));
-  EXPECT_NE(value, -3);
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+
+  EXPECT_TRUE(absl::ParseFlag("-0x7FFFFFFD", &value, &err));
+  EXPECT_EQ(value, -2147483645);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -311,9 +309,8 @@ TEST(MarshallingTest, TestUint32Parsing) {
   EXPECT_EQ(value, 564);
   EXPECT_TRUE(absl::ParseFlag("0xFFFFFFFD", &value, &err));
   EXPECT_EQ(value, 4294967293);
-  // TODO(rogeeff): fix below validations
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -371,11 +368,12 @@ TEST(MarshallingTest, TestInt64Parsing) {
   EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0XFFFAAABBBCCCDDD", &value, &err));
   EXPECT_EQ(value, 1152827684197027293);
-  // TODO(rogeeff): fix below validation
-  EXPECT_FALSE(absl::ParseFlag("-0x7FFFFFFFFFFFFFFE", &value, &err));
-  EXPECT_NE(value, -2);
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+  EXPECT_TRUE(absl::ParseFlag("-0x7FFFFFFFFFFFFFFE", &value, &err));
+  EXPECT_EQ(value, -9223372036854775806);
+  EXPECT_TRUE(absl::ParseFlag("-0x02", &value, &err));
+  EXPECT_EQ(value, -2);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -428,9 +426,8 @@ TEST(MarshallingTest, TestUInt64Parsing) {
   EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0XFFFF", &value, &err));
   EXPECT_EQ(value, 65535);
-  // TODO(rogeeff): fix below validation
-  EXPECT_FALSE(absl::ParseFlag("+0x31", &value, &err));
-  EXPECT_NE(value, 49);
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("10  ", &value, &err));
@@ -459,60 +456,50 @@ TEST(MarshallingTest, TestInt128Parsing) {
   std::string err;
   absl::int128 value;
 
-  absl::int128 zero = 0;
-  absl::int128 one = 1;
-  absl::int128 neg_one = -1;
-  absl::int128 hundred = 100;
-  absl::int128 hundreds_val = 123;
-  absl::int128 neg_thousands_val = -98765;
-  absl::int128 pos_three = 3;
-
   // Decimal values.
   EXPECT_TRUE(absl::ParseFlag("0", &value, &err));
-  EXPECT_EQ(value, zero);
+  EXPECT_EQ(value, 0);
   EXPECT_TRUE(absl::ParseFlag("1", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("-1", &value, &err));
-  EXPECT_EQ(value, neg_one);
+  EXPECT_EQ(value, -1);
   EXPECT_TRUE(absl::ParseFlag("123", &value, &err));
-  EXPECT_EQ(value, hundreds_val);
+  EXPECT_EQ(value, 123);
   EXPECT_TRUE(absl::ParseFlag("-98765", &value, &err));
-  EXPECT_EQ(value, neg_thousands_val);
+  EXPECT_EQ(value, -98765);
   EXPECT_TRUE(absl::ParseFlag("+3", &value, &err));
-  EXPECT_EQ(value, pos_three);
+  EXPECT_EQ(value, 3);
 
   // Leading zero values.
   EXPECT_TRUE(absl::ParseFlag("01", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("001", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("0000100", &value, &err));
-  EXPECT_EQ(value, hundred);
-
-  absl::int128 sixteen = 16;
-  absl::int128 quintillion_val = 1152827684197027293;
-  absl::int128 quintillion_val2 =
-      absl::MakeInt128(0x000000000000fff, 0xFFFFFFFFFFFFFFF);
+  EXPECT_EQ(value, 100);
 
   // Hex values.
   EXPECT_TRUE(absl::ParseFlag("0x10", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0xFFFAAABBBCCCDDD", &value, &err));
-  EXPECT_EQ(value, quintillion_val);
+  EXPECT_EQ(value, 1152827684197027293);
   EXPECT_TRUE(absl::ParseFlag("0xFFF0FFFFFFFFFFFFFFF", &value, &err));
-  EXPECT_EQ(value, quintillion_val2);
+  EXPECT_EQ(value, absl::MakeInt128(0x000000000000fff, 0xFFFFFFFFFFFFFFF));
 
-  // TODO(b/285183223): Add support for parsing negative hex representation
+  EXPECT_TRUE(absl::ParseFlag("-0x10000000000000000", &value, &err));
+  EXPECT_EQ(value, absl::MakeInt128(-1, 0));
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("16  ", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("  16", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("  0100  ", &value, &err));
-  EXPECT_EQ(value, hundred);
+  EXPECT_EQ(value, 100);
   EXPECT_TRUE(absl::ParseFlag(" 0x7B    ", &value, &err));
-  EXPECT_EQ(value, hundreds_val);  // =123
+  EXPECT_EQ(value, 123);
 
   // Invalid values.
   EXPECT_FALSE(absl::ParseFlag("", &value, &err));
@@ -531,52 +518,43 @@ TEST(MarshallingTest, TestUint128Parsing) {
   std::string err;
   absl::uint128 value;
 
-  absl::uint128 zero = 0;
-  absl::uint128 one = 1;
-  absl::uint128 hundred = 100;
-  absl::uint128 hundreds_val = 123;
-  absl::uint128 pos_three = 3;
-
   // Decimal values.
   EXPECT_TRUE(absl::ParseFlag("0", &value, &err));
-  EXPECT_EQ(value, zero);
+  EXPECT_EQ(value, 0);
   EXPECT_TRUE(absl::ParseFlag("1", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("123", &value, &err));
-  EXPECT_EQ(value, hundreds_val);
+  EXPECT_EQ(value, 123);
   EXPECT_TRUE(absl::ParseFlag("+3", &value, &err));
-  EXPECT_EQ(value, pos_three);
+  EXPECT_EQ(value, 3);
 
   // Leading zero values.
   EXPECT_TRUE(absl::ParseFlag("01", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("001", &value, &err));
-  EXPECT_EQ(value, one);
+  EXPECT_EQ(value, 1);
   EXPECT_TRUE(absl::ParseFlag("0000100", &value, &err));
-  EXPECT_EQ(value, hundred);
-
-  absl::uint128 sixteen = 16;
-  absl::uint128 quintillion_val = 1152827684197027293;
-  absl::uint128 quintillion_val2 =
-      absl::MakeInt128(0x000000000000fff, 0xFFFFFFFFFFFFFFF);
+  EXPECT_EQ(value, 100);
 
   // Hex values.
   EXPECT_TRUE(absl::ParseFlag("0x10", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("0xFFFAAABBBCCCDDD", &value, &err));
-  EXPECT_EQ(value, quintillion_val);
+  EXPECT_EQ(value, 1152827684197027293);
   EXPECT_TRUE(absl::ParseFlag("0xFFF0FFFFFFFFFFFFFFF", &value, &err));
-  EXPECT_EQ(value, quintillion_val2);
+  EXPECT_EQ(value, absl::MakeInt128(0x000000000000fff, 0xFFFFFFFFFFFFFFF));
+  EXPECT_TRUE(absl::ParseFlag("+0x31", &value, &err));
+  EXPECT_EQ(value, 49);
 
   // Whitespace handling
   EXPECT_TRUE(absl::ParseFlag("16  ", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("  16", &value, &err));
-  EXPECT_EQ(value, sixteen);
+  EXPECT_EQ(value, 16);
   EXPECT_TRUE(absl::ParseFlag("  0100  ", &value, &err));
-  EXPECT_EQ(value, hundred);
+  EXPECT_EQ(value, 100);
   EXPECT_TRUE(absl::ParseFlag(" 0x7B    ", &value, &err));
-  EXPECT_EQ(value, hundreds_val);  // =123
+  EXPECT_EQ(value, 123);
 
   // Invalid values.
   EXPECT_FALSE(absl::ParseFlag("", &value, &err));
@@ -588,6 +566,7 @@ TEST(MarshallingTest, TestUint128Parsing) {
   EXPECT_FALSE(absl::ParseFlag("\t", &value, &err));
   EXPECT_FALSE(absl::ParseFlag("2U", &value, &err));
   EXPECT_FALSE(absl::ParseFlag("FFF", &value, &err));
+  EXPECT_FALSE(absl::ParseFlag("-0x10000000000000000", &value, &err));
 }
 
 // --------------------------------------------------------------------

@@ -21,6 +21,10 @@
 #include <cstring>
 #include <string>
 
+#ifdef __EMSCRIPTEN__
+#include <emscripten/console.h>
+#endif
+
 #include "absl/base/attributes.h"
 #include "absl/base/config.h"
 #include "absl/base/internal/atomic_hook.h"
@@ -173,7 +177,7 @@ void RawLogVA(absl::LogSeverity severity, const char* file, int line,
     } else {
       DoRawLog(&buf, &size, "%s", kTruncated);
     }
-    AsyncSignalSafeWriteToStderr(buffer, strlen(buffer));
+    AsyncSignalSafeWriteError(buffer, strlen(buffer));
   }
 #else
   static_cast<void>(format);
@@ -201,9 +205,29 @@ void DefaultInternalLog(absl::LogSeverity severity, const char* file, int line,
 
 }  // namespace
 
-void AsyncSignalSafeWriteToStderr(const char* s, size_t len) {
+void AsyncSignalSafeWriteError(const char* s, size_t len) {
   absl::base_internal::ErrnoSaver errno_saver;
-#if defined(ABSL_HAVE_SYSCALL_WRITE)
+#if defined(__EMSCRIPTEN__)
+  // In WebAssembly, bypass filesystem emulation via fwrite.
+  // TODO(b/282811932): Avoid this copy if these emscripten functions can
+  // be updated to accept size directly.
+  char buf[kLogBufSize];
+  if (len >= kLogBufSize) {
+    len = kLogBufSize - 1;
+    size_t trunc_len = sizeof(kTruncated) - 2;
+    strncpy(buf + len - trunc_len, kTruncated, trunc_len);
+    buf[len] = '\0';
+    len -= trunc_len;
+  } else if (len && s[len - 1] == '\n') {
+    len--;
+  }
+  strncpy(buf, s, len);
+  if (len) {
+    buf[len] = '\0';
+    // Skip a trailing newline character as emscripten_err adds one itself.
+    _emscripten_err(buf);
+  }
+#elif defined(ABSL_HAVE_SYSCALL_WRITE)
   // We prefer calling write via `syscall` to minimize the risk of libc doing
   // something "helpful".
   syscall(SYS_write, STDERR_FILENO, s, len);

@@ -70,8 +70,10 @@ bool AbslParseFlag(absl::string_view text, bool* dst, std::string*) {
 // puts us in base 16.  But leading 0 does not put us in base 8. It
 // caused too many bugs when we had that behavior.
 static int NumericBase(absl::string_view text) {
-  const bool hex = (text.size() >= 2 && text[0] == '0' &&
-                    (text[1] == 'x' || text[1] == 'X'));
+  if (text.empty()) return 0;
+  size_t num_start = (text[0] == '-' || text[0] == '+') ? 1 : 0;
+  const bool hex = (text.size() >= num_start + 2 && text[num_start] == '0' &&
+                    (text[num_start + 1] == 'x' || text[num_start + 1] == 'X'));
   return hex ? 16 : 10;
 }
 

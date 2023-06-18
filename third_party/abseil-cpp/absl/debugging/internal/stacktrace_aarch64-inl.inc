@@ -20,6 +20,10 @@
 #include "absl/debugging/stacktrace.h"
 
 static const size_t kUnknownFrameSize = 0;
+// Stack end to use when we don't know the actual stack end
+// (effectively just the end of address space).
+constexpr uintptr_t kUnknownStackEnd =
+    std::numeric_limits<size_t>::max() - sizeof(void *);
 
 #if defined(__linux__)
 // Returns the address of the VDSO __kernel_rt_sigreturn function, if present.
@@ -79,8 +83,9 @@ static inline size_t ComputeStackFrameSize(const T* low,
 // "STRICT_UNWINDING") to reduce the chance that a bad pointer is returned.
 template<bool STRICT_UNWINDING, bool WITH_CONTEXT>
 ABSL_ATTRIBUTE_NO_SANITIZE_ADDRESS  // May read random elements from stack.
-ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY   // May read random elements from stack.
-static void **NextStackFrame(void **old_frame_pointer, const void *uc) {
+ABSL_ATTRIBUTE_NO_SANITIZE_MEMORY  // May read random elements from stack.
+static void **NextStackFrame(void **old_frame_pointer, const void *uc,
+                             size_t stack_low, size_t stack_high) {
   void **new_frame_pointer = reinterpret_cast<void**>(*old_frame_pointer);
   bool check_frame_size = true;
 
@@ -126,8 +131,26 @@ static void **NextStackFrame(void **old_frame_pointer, const void *uc) {
     const size_t max_size = STRICT_UNWINDING ? 100000 : 1000000;
     const size_t frame_size =
         ComputeStackFrameSize(old_frame_pointer, new_frame_pointer);
-    if (frame_size == kUnknownFrameSize || frame_size > max_size)
-      return nullptr;
+    if (frame_size == kUnknownFrameSize)
+       return nullptr;
+    // A very large frame may mean corrupt memory or an erroneous frame
+    // pointer. But also maybe just a plain-old large frame.  Assume that if the
+    // frame is within the known stack, then it is valid.
+    if (frame_size > max_size) {
+       if (stack_high < kUnknownStackEnd &&
+          static_cast<size_t>(getpagesize()) < stack_low) {
+        const uintptr_t new_fp_u =
+            reinterpret_cast<uintptr_t>(new_frame_pointer);
+        // Stack bounds are known.
+        if (!(stack_low < new_fp_u && new_fp_u <= stack_high)) {
+          // new_frame_pointer is not within the known stack.
+          return nullptr;
+        }
+      } else {
+        // Stack bounds are unknown, prefer truncated stack to possible crash.
+        return nullptr;
+      }
+    }
   }
 
   return new_frame_pointer;
@@ -145,6 +168,10 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
 #endif
   skip_count++;    // Skip the frame for this function.
   int n = 0;
+
+  // Assume that the first page is not stack.
+  size_t stack_low = static_cast<size_t>(getpagesize());
+  size_t stack_high = kUnknownStackEnd;
 
   // The frame pointer points to low address of a frame.  The first 64-bit
   // word of a frame points to the next frame up the call chain, which normally
@@ -178,8 +205,8 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
     // Use the non-strict unwinding rules to produce a stack trace
     // that is as complete as possible (even if it contains a few bogus
     // entries in some rare cases).
-    frame_pointer =
-        NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
+    frame_pointer = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(
+        frame_pointer, ucp, stack_low, stack_high);
   }
 
   if (min_dropped_frames != nullptr) {
@@ -193,8 +220,8 @@ static int UnwindImpl(void** result, int* sizes, int max_depth, int skip_count,
       } else {
         num_dropped_frames++;
       }
-      frame_pointer =
-          NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(frame_pointer, ucp);
+      frame_pointer = NextStackFrame<!IS_STACK_FRAMES, IS_WITH_CONTEXT>(
+          frame_pointer, ucp, stack_low, stack_high);
     }
     *min_dropped_frames = num_dropped_frames;
   }

@@ -391,7 +391,7 @@ EXPORTS
     ?AssignLargeString@Cord@absl@@AEAAAEAV12@$$QEAV?$basic_string@DU?$char_traits@D@__Cr@std@@V?$allocator@D@23@@__Cr@std@@@Z
     ?AssignNext@?$IteratorValueAdapter@V?$allocator@UPayload@status_internal@absl@@@__Cr@std@@V?$move_iterator@PEAUPayload@status_internal@absl@@@23@@inlined_vector_internal@absl@@QEAAXPEAUPayload@status_internal@3@@Z
     ?AssignSlow@InlineRep@Cord@absl@@AEAAXAEBV123@@Z
-    ?AsyncSignalSafeWriteToStderr@raw_log_internal@absl@@YAXPEBD_K@Z
+    ?AsyncSignalSafeWriteError@raw_log_internal@absl@@YAXPEBD_K@Z
     ?At@TimeZone@absl@@QEBA?AUCivilInfo@12@VTime@2@@Z
     ?At@TimeZone@absl@@QEBA?AUTimeInfo@12@V?$civil_time@Usecond_tag@time_internal@absl@@@detail@cctz@time_internal@2@@Z
     ?AtLocation@LogMessage@log_internal@absl@@QEAAAEAV123@V?$basic_string_view@DU?$char_traits@D@__Cr@std@@@__Cr@std@@H@Z

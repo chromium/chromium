@@ -130,7 +130,7 @@ void RawLog(absl::LogSeverity severity, const char* file, int line,
 
 // Writes the provided buffer directly to stderr, in a signal-safe, low-level
 // manner.  Preserves errno.
-void AsyncSignalSafeWriteToStderr(const char* s, size_t len);
+void AsyncSignalSafeWriteError(const char* s, size_t len);
 
 // compile-time function to get the "base" filename, that is, the part of
 // a filename after the last "/" or "\" path separator.  The search starts at

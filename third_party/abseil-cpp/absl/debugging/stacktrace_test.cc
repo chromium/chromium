@@ -20,8 +20,8 @@
 
 namespace {
 
-// This test is currently only known to pass on linux/x86_64.
-#if defined(__linux__) && defined(__x86_64__)
+// This test is currently only known to pass on Linux x86_64/aarch64.
+#if defined(__linux__) && (defined(__x86_64__) || defined(__aarch64__))
 ABSL_ATTRIBUTE_NOINLINE void Unwind(void* p) {
   ABSL_ATTRIBUTE_UNUSED static void* volatile sink = p;
   constexpr int kSize = 16;

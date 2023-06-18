@@ -1838,4 +1838,34 @@ TEST(Mutex, SignalExitedThread) {
   for (auto &th : top) th.join();
 }
 
+TEST(Mutex, WriterPriority) {
+  absl::Mutex mu;
+  bool wrote = false;
+  std::atomic<bool> saw_wrote{false};
+  auto readfunc = [&]() {
+    for (size_t i = 0; i < 10; ++i) {
+      absl::ReaderMutexLock lock(&mu);
+      if (wrote) {
+        saw_wrote = true;
+        break;
+      }
+      absl::SleepFor(absl::Seconds(1));
+    }
+  };
+  std::thread t1(readfunc);
+  absl::SleepFor(absl::Milliseconds(500));
+  std::thread t2(readfunc);
+  // Note: this test guards against a bug that was related to an uninit
+  // PerThreadSynch::priority, so the writer intentionally runs on a new thread.
+  std::thread t3([&]() {
+    // The writer should be able squeeze between the two alternating readers.
+    absl::MutexLock lock(&mu);
+    wrote = true;
+  });
+  t1.join();
+  t2.join();
+  t3.join();
+  EXPECT_TRUE(saw_wrote.load());
+}
+
 }  // namespace

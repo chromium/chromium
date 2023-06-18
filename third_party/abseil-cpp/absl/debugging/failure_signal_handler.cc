@@ -378,8 +378,7 @@ static void AbslFailureSignalHandler(int signo, siginfo_t*, void* ucontext) {
   // First write to stderr.
   WriteFailureInfo(
       signo, ucontext, my_cpu, +[](const char* data) {
-        absl::raw_log_internal::AsyncSignalSafeWriteToStderr(data,
-                                                             strlen(data));
+        absl::raw_log_internal::AsyncSignalSafeWriteError(data, strlen(data));
       });
 
   // Riskier code (because it is less likely to be async-signal-safe)
