@@ -371,36 +371,14 @@ void FontBuilder::UpdateAdjustedSize(FontDescription& font_description,
   Font font(font_description, font_selector);
 
   const SimpleFontData* font_data = font.PrimaryFont();
-
-  if (!font_data || !font_data->GetFontMetrics().HasXHeight()) {
+  if (!font_data) {
     return;
   }
 
-  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
-  // FIXME: The behavior for missing metrics has yet to be defined.
-  // https://github.com/w3c/csswg-drafts/issues/6384
-  float aspect_value = 1.0;
-  switch (size_adjust.GetMetric()) {
-    case FontSizeAdjust::Metric::kCapHeight:
-      aspect_value = font_data->GetFontMetrics().CapHeight() / computed_size;
-      break;
-    case FontSizeAdjust::Metric::kChWidth:
-      aspect_value = font_data->GetFontMetrics().ZeroWidth() / computed_size;
-      break;
-    case FontSizeAdjust::Metric::kIcWidth:
-      if (font_data->GetFontMetrics().IdeographicFullWidth().has_value()) {
-        aspect_value =
-            font_data->GetFontMetrics().IdeographicFullWidth().value() /
-            computed_size;
-      }
-      break;
-    case FontSizeAdjust::Metric::kExHeight:
-    default:
-      aspect_value = font_data->GetFontMetrics().XHeight() / computed_size;
+  if (auto adjusted_size = FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+          font_data, font_description)) {
+    font_description.SetAdjustedSize(adjusted_size.value());
   }
-
-  float adjusted_size = (size_adjust.Value() / aspect_value) * computed_size;
-  font_description.SetAdjustedSize(adjusted_size);
 }
 
 void FontBuilder::UpdateComputedSize(FontDescription& font_description,

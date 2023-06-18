@@ -33,6 +33,8 @@
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/core/dom/document.h"
 #include "third_party/blink/renderer/core/frame/settings.h"
+#include "third_party/blink/renderer/platform/fonts/font_description.h"
+#include "third_party/blink/renderer/platform/fonts/simple_font_data.h"
 
 namespace blink {
 
@@ -195,6 +197,51 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
 
   return FindNearestLegacyFontSize<float>(pixel_font_size, kFontSizeFactors,
                                           medium_size);
+}
+
+absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+    const SimpleFontData* font_data,
+    const FontDescription& font_description) {
+  DCHECK(font_data);
+  const float computed_size = font_description.ComputedSize();
+  if (!computed_size) {
+    return absl::nullopt;
+  }
+
+  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
+  const FontMetrics& font_metrics = font_data->GetFontMetrics();
+
+  // FIXME: The behavior for missing metrics has yet to be defined.
+  // https://github.com/w3c/csswg-drafts/issues/6384
+  float aspect_value = 1.0;
+  switch (size_adjust.GetMetric()) {
+    case FontSizeAdjust::Metric::kCapHeight:
+      if (font_metrics.CapHeight() > 0) {
+        aspect_value = font_metrics.CapHeight() / computed_size;
+      }
+      break;
+    case FontSizeAdjust::Metric::kChWidth:
+      if (font_metrics.HasZeroWidth()) {
+        aspect_value = font_metrics.ZeroWidth() / computed_size;
+      }
+      break;
+    case FontSizeAdjust::Metric::kIcWidth:
+      if (font_metrics.IdeographicFullWidth().has_value()) {
+        aspect_value =
+            font_metrics.IdeographicFullWidth().value() / computed_size;
+      }
+      break;
+    case FontSizeAdjust::Metric::kExHeight:
+    default:
+      if (font_metrics.HasXHeight()) {
+        aspect_value = font_metrics.XHeight() / computed_size;
+      }
+  }
+
+  if (!aspect_value) {
+    return absl::nullopt;
+  }
+  return (size_adjust.Value() / aspect_value) * computed_size;
 }
 
 }  // namespace blink

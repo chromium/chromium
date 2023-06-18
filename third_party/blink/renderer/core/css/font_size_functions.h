@@ -23,6 +23,7 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_SIZE_FUNCTIONS_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_CSS_FONT_SIZE_FUNCTIONS_H_
 
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
@@ -30,6 +31,8 @@
 namespace blink {
 
 class Document;
+class FontDescription;
+class SimpleFontData;
 
 enum ApplyMinimumFontSize {
   kDoNotApplyMinimumForFontSize,
@@ -80,6 +83,10 @@ class CORE_EXPORT FontSizeFunctions {
   static int LegacyFontSize(const Document*,
                             int pixel_font_size,
                             bool is_monospace);
+
+  static absl::optional<float> MetricsMultiplierAdjustedFontSize(
+      const SimpleFontData*,
+      const FontDescription&);
 };
 
 }  // namespace blink
