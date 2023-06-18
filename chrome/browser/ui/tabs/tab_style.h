@@ -125,7 +125,7 @@ class TabStyle {
   // Gets the size of the separator drawn between tabs, if any.
   virtual gfx::Size GetSeparatorSize() const = 0;
 
-  // Gets the distance beteween thethe separator and tab, if any.
+  // Gets the distance between the separator and tab, if any.
   virtual gfx::Insets GetSeparatorMargins() const = 0;
 
   // Returns, for a tab of height |height|, how far the window top drag handle
