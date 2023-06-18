@@ -307,6 +307,10 @@ class BackForwardCacheMetrics
   FRIEND_TEST_ALL_PREFIXES(
       BackForwardCacheBrowserTestWithVaryingNavigationSite,
       RelatedActiveContentsLoggingOnPageWithBlockingFeatureAndRAC);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
+                           WindowOpen_SameSitePopupPendingDeletion);
+  FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
+                           WindowOpen_UnrelatedSameSiteAndProcessTab);
 
   ~BackForwardCacheMetrics();
 
@@ -406,9 +410,11 @@ class BackForwardCacheMetrics
   // renumbered.
   enum class RelatedActiveContentsSyncAccessInfo {
     kNoSyncAccess = 0,
+    // Deprecated: We check using SiteInfo instead of just SiteInstance now,
+    // so this category is no longer used.
     kPotentiallySyncAccessibleDefaultSiteInstance = 1,
-    kPotentiallySyncAccessibleNormalSiteInstance = 2,
-    kMaxValue = kPotentiallySyncAccessibleNormalSiteInstance
+    kPotentiallySyncAccessible = 2,
+    kMaxValue = kPotentiallySyncAccessible
   };
   RelatedActiveContentsSyncAccessInfo
       related_active_contents_sync_access_info_ =

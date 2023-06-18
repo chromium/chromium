@@ -209,10 +209,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
   Shell* popup = OpenPopup(rfh_a.get(), url_a, "");
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
   rfh_a->GetBackForwardCacheMetrics()->SetObserverForTesting(this);
 
   // 2) Navigate to B. The previous document can't enter the BackForwardCache,
@@ -249,7 +251,7 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
       "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
       "IsPotentiallySyncAccessible2",
       BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-          kPotentiallySyncAccessibleNormalSiteInstance,
+          kPotentiallySyncAccessible,
       1);
 
   // 4) Make the popup drop the window.opener connection. It happens when the
@@ -257,10 +259,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpen) {
   //    BrowsingInstance.
   RenderFrameHostImplWrapper rfh_a_new(current_frame_host());
   EXPECT_EQ(2u, rfh_a_new->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(2u, rfh_a_new->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(2u, rfh_a_new->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a_new->last_committed_url_derived_site_info()));
   ASSERT_TRUE(NavigateToURL(popup, url_b));
   EXPECT_EQ(1u, rfh_a_new->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(1u, rfh_a_new->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(1u, rfh_a_new->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a_new->last_committed_url_derived_site_info()));
 
   // 5) Navigate to B again. As the scripting relationship with the popup is
   // now severed, the current page (|rfh_a_new|) can enter back-forward cache.
@@ -314,16 +318,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
   // A and B use different SiteInstances if site isolation is turned on, and
   // shares the same SiteInstance otherwise.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    EXPECT_EQ(1u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(1u, rfh_b->GetSiteInstance()->active_document_count());
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   } else {
-    EXPECT_EQ(2u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(2u, rfh_b->GetSiteInstance()->active_document_count());
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   }
   EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
       rfh_b->GetSiteInstance()));
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
+  EXPECT_EQ(1u, rfh_b->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_b->last_committed_url_derived_site_info()));
 
   // 2) Navigate to C in the popup. The B document can't enter the
   // BackForwardCache, because of the opener.
@@ -348,26 +352,15 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenCrossSite) {
       "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
       2, 1);
 
-  // When site isolation is turned on, A and B use different SiteInstances which
-  // means B doesn't share a SiteInstance with any other page, and thus can't be
-  // synchronously accessible by other pages. Meanwhile when site isolation is
-  // turned off, A and B will share the same SiteInstance and is marked as
-  // potentially synchronously accessible.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kNoSyncAccess,
-        1);
-  } else {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessibleDefaultSiteInstance,
-        1);
-  }
+  // A and B are different sites (even though they might share the same
+  // SiteInstance when site isolation is turned off), which means B can't be
+  // synchronously accessible by other pages.
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+          kNoSyncAccess,
+      1);
 }
 
 // Similar with WindowOpenCrossSite above, but navigate the popup same-site
@@ -398,16 +391,16 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
   // A and B use different SiteInstances if site isolation is turned on, and
   // shares the same SiteInstance otherwise.
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    EXPECT_EQ(1u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(1u, rfh_b1->GetSiteInstance()->active_document_count());
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b1->GetSiteInstance());
   } else {
-    EXPECT_EQ(2u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(2u, rfh_b1->GetSiteInstance()->active_document_count());
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b1->GetSiteInstance());
   }
   EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
       rfh_b1->GetSiteInstance()));
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
+  EXPECT_EQ(1u, rfh_b1->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_b1->last_committed_url_derived_site_info()));
 
   // 2) Navigate to B2 in the popup. The B1 document can't enter the
   // BackForwardCache, because of the opener.
@@ -433,29 +426,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
       2, 1);
 
-  // When site isolation is turned on, A and B1 use different SiteInstances
-  // which means B1 doesn't share a SiteInstance with any other page, and thus
-  // can't be synchronously accessible by other pages. Meanwhile when site
-  // isolation is turned off, A and B1 will share the same SiteInstance and is
-  // marked as potentially synchronously accessible. Note: Even though B1 and B2
+  // A and B1 are different sites (even though they might share the same
+  // SiteInstance when site isolation is turned off), which means B1 can't be
+  // synchronously accessible by other pages. Note: Even though B1 and B2
   // are same site and end up using the same SiteInstance and BrowsingInstance,
   // the documents are not active at the same time (as B2 replaces B1), so those
   // aren't counted as potentially having synchronous access to each other.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kNoSyncAccess,
-        1);
-  } else {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessibleDefaultSiteInstance,
-        1);
-  }
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+          kNoSyncAccess,
+      1);
 }
 
 // Similar with WindowOpen above, but open a cross-site page that has an iframe
@@ -492,18 +474,18 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
       rfh_b->child_at(0)->current_frame_host());
   EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_a_iframe->GetSiteInstance());
   if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    EXPECT_EQ(2u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(2u, rfh_a_iframe->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(1u, rfh_b->GetSiteInstance()->active_document_count());
     EXPECT_NE(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   } else {
-    EXPECT_EQ(3u, rfh_a->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(3u, rfh_a_iframe->GetSiteInstance()->active_document_count());
-    EXPECT_EQ(3u, rfh_b->GetSiteInstance()->active_document_count());
     EXPECT_EQ(rfh_a->GetSiteInstance(), rfh_b->GetSiteInstance());
   }
   EXPECT_TRUE(rfh_a->GetSiteInstance()->IsRelatedSiteInstance(
       rfh_b->GetSiteInstance()));
+  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
+  EXPECT_EQ(2u, rfh_a_iframe->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a_iframe->last_committed_url_derived_site_info()));
+  EXPECT_EQ(1u, rfh_b->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_b->last_committed_url_derived_site_info()));
 
   // 2) Navigate to C in the popup. The B document can't enter the
   // BackForwardCache, because of the opener.
@@ -530,21 +512,12 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
 
   // As there is another document in another page that uses A's SiteInstance,
   // A is marked as potentially synchronously accessible from another page.
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessibleNormalSiteInstance,
-        1);
-  } else {
-    histograms.ExpectUniqueSample(
-        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-        "IsPotentiallySyncAccessible2",
-        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessibleDefaultSiteInstance,
-        1);
-  }
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+          kPotentiallySyncAccessible,
+      1);
 }
 
 // A popup will prevent a page from entering BFCache. Test that after closing a
@@ -562,12 +535,14 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
   ASSERT_TRUE(NavigateToURL(shell(), url_a));
   RenderFrameHostImplWrapper rfh_a(current_frame_host());
   EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
 
   // Open a popup.
   Shell* popup = OpenPopup(rfh_a.get(), url_a, "");
   EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(2u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
 
   // Start navigating to B, the response will be delayed.
   TestNavigationObserver observer(web_contents());
@@ -581,7 +556,8 @@ IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest, WindowOpenThenClose) {
   ASSERT_TRUE(rfh_popup.WaitUntilRenderFrameDeleted());
 
   EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetRelatedActiveContentsCount());
-  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->active_document_count());
+  EXPECT_EQ(1u, rfh_a->GetSiteInstance()->GetActiveDocumentCount(
+                    rfh_a->last_committed_url_derived_site_info()));
 
   // Send the response.
   response.Send(net::HTTP_OK, "text/html", "foo");
@@ -750,30 +726,195 @@ IN_PROC_BROWSER_TEST_P(
       "Count2",
       2, 1);
 
-  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
-    if (NavigateSameSite()) {
-      histograms.ExpectUniqueSample(
-          "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-          "IsPotentiallySyncAccessible2",
-          BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-              kPotentiallySyncAccessibleNormalSiteInstance,
-          1);
-    } else {
-      histograms.ExpectUniqueSample(
-          "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-          "IsPotentiallySyncAccessible2",
-          BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-              kNoSyncAccess,
-          1);
-    }
+  if (NavigateSameSite()) {
+    histograms.ExpectUniqueSample(
+        "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+        "IsPotentiallySyncAccessible2",
+        BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+            kPotentiallySyncAccessible,
+        1);
   } else {
     histograms.ExpectUniqueSample(
         "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
         "IsPotentiallySyncAccessible2",
         BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
-            kPotentiallySyncAccessibleDefaultSiteInstance,
+            kNoSyncAccess,
         1);
   }
+}
+
+// Test that if a page has an openee sharing the same BrowsingInstance but it
+// is no longer active (pending deletion, etc) it won't prevent the opener from
+// getting BFCached.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WindowOpen_SameSitePopupPendingDeletion) {
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  base::HistogramTester histograms;
+
+  // 1) Navigate to A1 and open a popup to A2.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a1));
+  RenderFrameHostImplWrapper rfh_a1(current_frame_host());
+  Shell* popup = OpenPopup(rfh_a1.get(), url_a2, "");
+  RenderFrameHostImplWrapper popup_rfh_a2(
+      popup->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(2u, rfh_a1->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(2u,
+            popup_rfh_a2->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_TRUE(popup_rfh_a2->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_a1->GetSiteInstance()));
+
+  // 2) Navigate to B in the opener.  A1 can't enter the BackForwardCache,
+  // because of the popup.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
+  } else {
+    ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
+  }
+
+  // 3) Go back to A1. The related active contents relationship with the popup
+  // is retained.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  RenderFrameHostImplWrapper rfh_a1_new(current_frame_host());
+  EXPECT_EQ(2u, rfh_a1_new->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(2u,
+            popup_rfh_a2->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_TRUE(popup_rfh_a2->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_a1_new->GetSiteInstance()));
+
+  // Make sure that histograms for related active contents are updated with info
+  // about A1's related active contents.
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
+      2, 1);
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+          kPotentiallySyncAccessible,
+      1);
+
+  // 4) Make the popup drop the window.opener connection. It happens when the
+  //    user does a cross-site omnibox-initiated navigation, which gets a new
+  //    BrowsingInstance. Also, make sure that we keep the popup's A2 RFH around
+  //    after navigation, to test if it is still counted as an opener that
+  //    prevents BFCaching of A1, by preventing it from getting deleted.
+  popup_rfh_a2->DoNotDeleteForTesting();
+  ASSERT_TRUE(NavigateToURL(popup, url_b));
+  EXPECT_TRUE(popup_rfh_a2->IsPendingDeletion());
+
+  // Verify that the related active contents relationship is gone now that A2 is
+  // no longer active.
+  RenderFrameHostImplWrapper popup_rfh_b(
+      popup->web_contents()->GetPrimaryMainFrame());
+  EXPECT_FALSE(popup_rfh_b->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_a1_new->GetSiteInstance()));
+  EXPECT_EQ(1u,
+            popup_rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(1u, rfh_a1_new->GetSiteInstance()->GetRelatedActiveContentsCount());
+
+  // 5) Navigate to B again from A1. As the scripting relationship with the
+  // popup is now severed, A1 can enter back-forward cache.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1_new.get(), url_b));
+  EXPECT_TRUE(rfh_a1_new->IsInBackForwardCache());
+
+  // 6) Go back to A1. Expect the histograms aren't updated, since a
+  // BrowsingInstance swap happened.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  histograms.ExpectTotalCount(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
+      1);
+  histograms.ExpectTotalCount(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      1);
+}
+
+// Tests that a page that has a same-site same-process but unrelated page (no
+// opener relationship) won't be treated as having a potential sync accessor.
+IN_PROC_BROWSER_TEST_F(BackForwardCacheBrowserTest,
+                       WindowOpen_UnrelatedSameSiteAndProcessTab) {
+  // Ensure that A1 and A2 will share the same renderer process when possible.
+  RenderProcessHost::SetMaxRendererProcessCount(1);
+  ASSERT_TRUE(embedded_test_server()->Start());
+  GURL url_a1(embedded_test_server()->GetURL("a.com", "/title1.html"));
+  GURL url_a2(embedded_test_server()->GetURL("a.com", "/title2.html"));
+  GURL url_b(embedded_test_server()->GetURL("b.com", "/title1.html"));
+  base::HistogramTester histograms;
+
+  // 1) Navigate to A1 and open an unrelated new tab to A2.
+  ASSERT_TRUE(NavigateToURL(shell(), url_a1));
+  Shell* shell2 =
+      Shell::CreateNewWindow(shell()->web_contents()->GetBrowserContext(),
+                             url_a2, nullptr, gfx::Size());
+  ASSERT_TRUE(WaitForLoadStop(shell2->web_contents()));
+
+  // A1 and A2 do not share the same BrowsingInstance, and are not related
+  // active contents. However, they might share the same process due to the
+  // process limit.
+  RenderFrameHostImplWrapper rfh_a1(current_frame_host());
+  RenderFrameHostImplWrapper rfh_a2(
+      shell2->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(1u, rfh_a1->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(1u, rfh_a2->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_FALSE(rfh_a2->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_a1->GetSiteInstance()));
+  if (!SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    EXPECT_EQ(rfh_a1->GetProcess(), rfh_a2->GetProcess());
+  }
+
+  // 2) Navigate to B in the opener. A1 can enter BackForwardCache because it
+  // has no related active contents.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
+  EXPECT_TRUE(rfh_a1->IsInBackForwardCache());
+
+  // 3) Go back to A1, restoring the page from BackForwardCache. No related
+  // active contents metrics will be logged.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  ExpectRestored(FROM_HERE);
+  histograms.ExpectTotalCount(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
+      0);
+  histograms.ExpectTotalCount(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      0);
+
+  // 4) Now, open a B popup from A1. A1 and B should be related active contents,
+  // while A2 stays unaffected.
+  Shell* popup = OpenPopup(rfh_a1.get(), url_b, "");
+  RenderFrameHostImplWrapper rfh_b(
+      popup->web_contents()->GetPrimaryMainFrame());
+  EXPECT_EQ(2u, rfh_a1->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(1u, rfh_a2->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_EQ(2u, rfh_b->GetSiteInstance()->GetRelatedActiveContentsCount());
+  EXPECT_TRUE(rfh_b->GetSiteInstance()->IsRelatedSiteInstance(
+      rfh_a1->GetSiteInstance()));
+
+  // 5) Navigate to B again from A1, now A1 can't enter BackForwardCache because
+  // it has related active contents.
+  ASSERT_TRUE(NavigateToURLFromRenderer(rfh_a1.get(), url_b));
+  if (SiteIsolationPolicy::UseDedicatedProcessesForAllSites()) {
+    ASSERT_TRUE(rfh_a1.WaitUntilRenderFrameDeleted());
+  } else {
+    ASSERT_FALSE(rfh_a1->IsInBackForwardCache());
+  }
+
+  // 3) Go back to A1, restoring the page from BackForwardCache. Related active
+  // contents metrics will be logged.
+  ASSERT_TRUE(HistoryGoBack(web_contents()));
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2",
+      2, 1);
+  histograms.ExpectUniqueSample(
+      "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
+      "IsPotentiallySyncAccessible2",
+      BackForwardCacheMetrics::RelatedActiveContentsSyncAccessInfo::
+          kNoSyncAccess,
+      1);
 }
 
 // Navigate from A(B) to C and go back.

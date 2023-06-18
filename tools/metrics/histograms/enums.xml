@@ -90875,8 +90875,9 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
 
 <enum name="RelatedActiveContentsSyncAccessInfo">
   <int value="0" label="kNoSyncAccess"/>
-  <int value="1" label="kPotentiallySyncAccessibleDefaultSiteInstance"/>
-  <int value="2" label="kPotentiallySyncAccessibleNormalSiteInstance"/>
+  <int value="1"
+      label="kPotentiallySyncAccessibleDefaultSiteInstance (deprecated)"/>
+  <int value="2" label="kPotentiallySyncAccessible"/>
 </enum>
 
 <enum name="RelaunchNotificationShowResult">

@@ -14,6 +14,7 @@
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/navigation_entry_impl.h"
 #include "content/browser/renderer_host/navigation_request.h"
+#include "content/browser/renderer_host/render_process_host_impl.h"
 #include "content/browser/renderer_host/should_swap_browsing_instance.h"
 #include "content/browser/site_instance_impl.h"
 #include "content/common/debug_utils.h"
@@ -642,72 +643,54 @@ void BackForwardCacheMetrics::SetRelatedActiveContentsInfo(
   related_active_contents_count_ =
       navigated_away_rfh->GetSiteInstance()->GetRelatedActiveContentsCount();
 
-  // Count how many documents in the navigating page are in each SiteInstance.
-  std::map<SiteInstanceId, int> doc_count_in_page;
-  navigated_away_rfh->ForEachRenderFrameHost(
-      [&doc_count_in_page](RenderFrameHost* rfh) {
-        auto id = rfh->GetSiteInstance()->GetId();
-        if (doc_count_in_page.contains(id)) {
-          doc_count_in_page[id]++;
-        } else {
-          doc_count_in_page[id] = 1;
-        }
-      });
+  // Count how many documents in the navigating page are using each SiteInfo.
+  std::map<SiteInfo, int> doc_count_in_page;
+  navigated_away_rfh->ForEachRenderFrameHost([&doc_count_in_page](
+                                                 RenderFrameHost* rfh) {
+    const SiteInfo& site_info = static_cast<RenderFrameHostImpl*>(rfh)
+                                    ->last_committed_url_derived_site_info();
+    if (doc_count_in_page.contains(site_info)) {
+      doc_count_in_page[site_info]++;
+    } else {
+      doc_count_in_page[site_info] = 1;
+    }
+  });
 
   // Determine if any document in the navigating page is potentially
   // synchronously accessible by documents in other pages, by checking if there
-  // are documents in other pages that use the same SiteInstance as a document
-  // in the navigating page.
-  // Note that when site isolation is turned off, most sites will use the same
-  // SiteInstance (default SiteInstance), even when they come from unrelated
-  // origins & domains and can't synchronously access each other. In that case,
-  // we might overcount the potentially synchronously accessible pages, so
-  // handle those cases separately.
-  // TODO(https://crbug.com/1444759): Handle the default SiteInstance case in a
-  // better way.
+  // are documents in other pages that use the same SiteInfo as a document in
+  // the navigating page. This uses SiteInfos derived from document URLs, which
+  // works even when Site Isolation is disabled and the default SiteInstance may
+  // contain multiple sites.
   related_active_contents_sync_access_info_ =
       RelatedActiveContentsSyncAccessInfo::kNoSyncAccess;
   navigated_away_rfh->ForEachRenderFrameHostWithAction(
       [&doc_count_in_page, this](RenderFrameHost* rfh) {
-        auto* site_instance =
-            static_cast<SiteInstanceImpl*>(rfh->GetSiteInstance());
-        // `active_document_count()` counts the number of active documents in
-        // all pages that are in `site_instance`, including the navigating page.
-        // To get the number of active documents using `site_instance` in pages
-        // other than the navigating page, just subtract by the number of
-        // active document using `site_instance` in the navigating page.
-        int doc_in_other_pages_count =
-            site_instance->active_document_count() -
-            doc_count_in_page[site_instance->GetId()];
-        if (doc_in_other_pages_count > 0) {
-          // The document shares a SiteInstance with another tab. This means the
+        // `active_document_count()` counts the number of committed
+        // documents in all pages that are using the same SiteInfo, including
+        // the navigating page. To get the number of committed documents using
+        // the same SiteInfo in pages other than the navigating page, just
+        // subtract by the number of committed documents using SiteInfo in the
+        // navigating page.
+        auto* rfhi = static_cast<RenderFrameHostImpl*>(rfh);
+        const SiteInfo& site_info =
+            rfhi->last_committed_url_derived_site_info();
+        int matching_doc_count =
+            rfhi->GetSiteInstance()->GetActiveDocumentCount(site_info);
+        int matching_doc_in_other_pages_count =
+            matching_doc_count - doc_count_in_page[site_info];
+        if (matching_doc_in_other_pages_count > 0) {
+          // The document shares a SiteInfo with another tab. This means the
           // contents of this document might be synchronously accessible by
-          // a document in another tab, so note down this information.
-          if (site_instance->IsDefaultSiteInstance()) {
-            // When the SiteInstance is a default SiteInstance, synchronous
-            // access might not be possible if the documents sharing the
-            // SiteInstance aren't same origin and can't be modified to become
-            // same origin through document.domain, e.g. when a document from
-            // A.com and another document from B.com both uses the default
-            // SiteInstance.
-            related_active_contents_sync_access_info_ =
-                RelatedActiveContentsSyncAccessInfo::
-                    kPotentiallySyncAccessibleDefaultSiteInstance;
-          } else {
-            // When the SiteInstance is not a default SiteInstance, the
-            // documents must be from the same site, and it's more probable
-            // that the document is actually synchronously accessible by a
-            // document from another tab (either because the documents are
-            // same-origin, or through modifying document.domain).
-            related_active_contents_sync_access_info_ =
-                RelatedActiveContentsSyncAccessInfo::
-                    kPotentiallySyncAccessibleNormalSiteInstance;
-            // Once we've found a case where sync access is possible and it
-            // uses a normal/non-default SiteInstance, we can stop, as we've
-            // reached the maximum value for the enum
-            // (kPotentiallySyncAccessibleNormalSiteInstance).
-            return RenderFrameHost::FrameIterationAction::kStop;
-          }
+          // a document in another tab (either because the documents are
+          // same-origin, or through modifying document.domain), so note down
+          // this information.
+          related_active_contents_sync_access_info_ =
+              RelatedActiveContentsSyncAccessInfo::kPotentiallySyncAccessible;
+          // Once we've found a case where sync access is possible, we can stop,
+          // as we've reached the maximum value for the enum
+          // (kPotentiallySyncAccessible).
+          return RenderFrameHost::FrameIterationAction::kStop;
         }
         return RenderFrameHost::FrameIterationAction::kContinue;
       });

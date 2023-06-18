@@ -4648,14 +4648,12 @@ std::unique_ptr<RenderFrameHostImpl> RenderFrameHostManager::SetRenderFrameHost(
   // Update the count of active documents using this SiteInstance, both for
   // active document tracking and related active contents tracking.
   if (render_frame_host_) {
-    render_frame_host_->GetSiteInstance()->increment_active_document_count();
     if (frame_tree_node_->IsMainFrame()) {
       render_frame_host_->GetSiteInstance()
           ->IncrementRelatedActiveContentsCount();
     }
   }
   if (old_render_frame_host) {
-    old_render_frame_host->GetSiteInstance()->decrement_active_document_count();
     if (frame_tree_node_->IsMainFrame()) {
       old_render_frame_host->GetSiteInstance()
           ->DecrementRelatedActiveContentsCount();
