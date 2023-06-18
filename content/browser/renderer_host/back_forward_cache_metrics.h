@@ -301,6 +301,12 @@ class BackForwardCacheMetrics
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest, WindowOpenThenClose);
   FRIEND_TEST_ALL_PREFIXES(BackForwardCacheBrowserTest,
                            WindowWithOpenerAndOpenee);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithVaryingNavigationSite,
+      RelatedActiveContentsLoggingOnPageWithBlockingFeature);
+  FRIEND_TEST_ALL_PREFIXES(
+      BackForwardCacheBrowserTestWithVaryingNavigationSite,
+      RelatedActiveContentsLoggingOnPageWithBlockingFeatureAndRAC);
 
   ~BackForwardCacheMetrics();
 

@@ -467,25 +467,6 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
     UMA_HISTOGRAM_ENUMERATION(
         "BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason",
         EvictedAfterDocumentRestoredReason::kRestored);
-  } else {
-    if (back_forward_cache_allowed) {
-      base::UmaHistogramCounts100(
-          "BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents."
-          "Count",
-          related_active_contents_count_);
-      base::UmaHistogramEnumeration(
-          "BackForwardCache.HistoryNavigationOutcome."
-          "RelatedActiveContents.IsPotentiallySyncAccessible",
-          related_active_contents_sync_access_info_);
-    }
-    base::UmaHistogramCounts100(
-        "BackForwardCache.AllSites.HistoryNavigationOutcome."
-        "RelatedActiveContents.Count",
-        related_active_contents_count_);
-    base::UmaHistogramEnumeration(
-        "BackForwardCache.AllSites.HistoryNavigationOutcome."
-        "RelatedActiveContents.IsPotentiallySyncAccessible",
-        related_active_contents_sync_access_info_);
   }
 
   if (back_forward_cache_allowed) {
@@ -579,6 +560,24 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
         "BackForwardCache.AllSites.HistoryNavigationOutcome."
         "BrowsingInstanceNotSwappedReason",
         browsing_instance_swap_result_.value());
+
+    if (browsing_instance_swap_result_ ==
+        ShouldSwapBrowsingInstance::kNo_HasRelatedActiveContents) {
+      CHECK_GT(related_active_contents_count_, 1);
+      // If a page was not restored from the back/forward cache because there
+      // are related active contents, log the details of the related active
+      // contents. Note that this also logs in cases where there are other
+      // reasons causing the page to not get restored from the back/forward
+      // cache (e.g. use of blocking features).
+      base::UmaHistogramCounts100(
+          "BackForwardCache.HistoryNavigationOutcome."
+          "RelatedActiveContents.Count2",
+          related_active_contents_count_);
+      base::UmaHistogramEnumeration(
+          "BackForwardCache.HistoryNavigationOutcome."
+          "RelatedActiveContents.IsPotentiallySyncAccessible2",
+          related_active_contents_sync_access_info_);
+    }
   }
 }
 

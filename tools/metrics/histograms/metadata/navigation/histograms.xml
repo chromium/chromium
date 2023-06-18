@@ -145,39 +145,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram
-    name="BackForwardCache.AllSites.HistoryNavigationOutcome.RelatedActiveContents.Count"
-    units="count" expires_after="2023-10-21">
-  <owner>rakina@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of other active WebContents objects in
-    the BrowsingInstance, this records the number of other active pages/related
-    active contents using the same BrowsingInstance.
-
-    This is recorded for all websites regardless of whether back-forward cache
-    is enabled or not.
-  </summary>
-</histogram>
-
-<histogram
-    name="BackForwardCache.AllSites.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible"
-    enum="RelatedActiveContentsSyncAccessInfo" expires_after="2023-10-21">
-  <owner>rakina@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    When navigating back to a page in the session history and the
-    BackForwardCache wasn't used because of other active WebContents objects in
-    the BrowsingInstance, this Records whether the page was potentially
-    synchronously accessible by other pages/related active contents using the
-    same BrowsingInstance, at the time the page was navigated away from.
-
-    This is recorded for all websites regardless of whether back-forward cache
-    is enabled or not.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.CountEntriesWithoutRendererAck" units="count"
     expires_after="2021-10-01">
   <owner>yuzus@chromium.org</owner>
@@ -385,7 +352,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count"
+    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.Count2"
     units="count" expires_after="2023-10-21">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -394,15 +361,11 @@ chromium-metrics-reviews@google.com.
     BackForwardCache wasn't used because of other active WebContents objects in
     the BrowsingInstance, this records the number of other active pages/related
     active contents using the same BrowsingInstance.
-
-    This is recorded when back-forward cache is enabled for this navigation
-    (back-forward cache feature is enabled and the domain is in the scope of the
-    experiment).
   </summary>
 </histogram>
 
 <histogram
-    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible"
+    name="BackForwardCache.HistoryNavigationOutcome.RelatedActiveContents.IsPotentiallySyncAccessible2"
     enum="RelatedActiveContentsSyncAccessInfo" expires_after="2023-10-21">
   <owner>rakina@chromium.org</owner>
   <owner>bfcache-dev@chromium.org</owner>
@@ -412,10 +375,6 @@ chromium-metrics-reviews@google.com.
     the BrowsingInstance, this Records whether the page was potentially
     synchronously accessible by other pages/related active contents using the
     same BrowsingInstance, at the time the page was navigated away from.
-
-    This is recorded when back-forward cache is enabled for this navigation
-    (back-forward cache feature is enabled and the domain is in the scope of the
-    experiment).
   </summary>
 </histogram>
 
