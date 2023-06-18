@@ -941,8 +941,15 @@ class Port(object):
         path_in_wpt = match.group(2)
         for expectation, ref_path_in_wpt in self.wpt_manifest(
                 wpt_path).extract_reference_list(path_in_wpt):
-            ref_absolute_path = self._filesystem.join(
-                self.web_tests_dir(), wpt_path + ref_path_in_wpt)
+            if 'external/wpt' in wpt_path:
+                ref_path_in_web_tests = wpt_path + ref_path_in_wpt
+            else:
+                # References in this manifest are already generated with
+                # `/wpt_internal` in the URL. Remove the leading '/' for
+                # joining.
+                ref_path_in_web_tests = ref_path_in_wpt[1:]
+            ref_absolute_path = self._filesystem.join(self.web_tests_dir(),
+                                                      ref_path_in_web_tests)
             reftest_list.append((expectation, ref_absolute_path))
         return reftest_list
 

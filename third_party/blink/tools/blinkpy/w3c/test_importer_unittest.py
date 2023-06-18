@@ -3,7 +3,6 @@
 # found in the LICENSE file.
 
 import json
-import six
 import unittest
 
 from blinkpy.common.checkout.git_mock import MockGit
@@ -27,13 +26,17 @@ from blinkpy.web_tests.builder_list import BuilderList
 
 MOCK_WEB_TESTS = '/mock-checkout/' + RELATIVE_WEB_TESTS
 MANIFEST_INSTALL_CMD = [
-    'python3', '/mock-checkout/third_party/wpt_tools/wpt/wpt', 'manifest',
-    '-v', '--no-download', '--tests-root', MOCK_WEB_TESTS + 'external/wpt'
+    'python3',
+    '/mock-checkout/third_party/wpt_tools/wpt/wpt',
+    'manifest',
+    '-v',
+    '--no-download',
+    f'--tests-root={MOCK_WEB_TESTS + "external/wpt"}',
+    '--url-base=/',
 ]
 
 
 class TestImporterTest(LoggingTestCase):
-
     def mock_host(self):
         host = MockHost()
         host.builders = BuilderList({
@@ -67,13 +70,14 @@ class TestImporterTest(LoggingTestCase):
         host.filesystem.write_text_file(ANDROID_DISABLED_TESTS, '')
         return host
 
-    @staticmethod
-    def _get_test_importer(host, wpt_github=None):
+    def _get_test_importer(self, host, wpt_github=None):
         port = host.port_factory.get()
-        return TestImporter(
-            host,
-            wpt_github=wpt_github,
-            wpt_manifests=[port.wpt_manifest('external/wpt')])
+        manifest = port.wpt_manifest('external/wpt')
+        # Clear logs from manifest generation.
+        self.logMessages().clear()
+        return TestImporter(host,
+                            wpt_github=wpt_github,
+                            wpt_manifests=[manifest])
 
     def test_update_expectations_for_cl_no_results(self):
         host = self.mock_host()
@@ -485,7 +489,6 @@ class TestImporterTest(LoggingTestCase):
             'No-Export: true\n'
             'Cq-Include-Trybots: luci.chromium.try:linux-wpt-identity-fyi-rel,'
             'linux-wpt-input-fyi-rel,linux-blink-rel')
-        print(host.executive.calls)
         self.assertEqual(host.executive.calls,
                          [MANIFEST_INSTALL_CMD] +
                          [['git', 'log', '-1', '--format=%B']])
@@ -519,16 +522,10 @@ class TestImporterTest(LoggingTestCase):
         host = self.mock_host()
         importer = self._get_test_importer(host)
         self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
-        if six.PY3:
-            self.assertLog([
-                'ERROR: Exception while fetching current sheriff: '
-                'Expecting value: line 1 column 1 (char 0)\n'
-            ])
-        else:
-            self.assertLog([
-                'ERROR: Exception while fetching current sheriff: '
-                'No JSON object could be decoded\n'
-            ])
+        self.assertLog([
+            'ERROR: Exception while fetching current sheriff: '
+            'Expecting value: line 1 column 1 (char 0)\n'
+        ])
 
     def test_sheriff_email_no_emails_field(self):
         host = self.mock_host()
@@ -563,7 +560,9 @@ class TestImporterTest(LoggingTestCase):
         host.web.get_binary = raise_exception
         importer = self._get_test_importer(host)
         self.assertEqual(SHERIFF_EMAIL_FALLBACK, importer.sheriff_email())
-        self.assertLog(['ERROR: Cannot fetch %s\n' % ROTATIONS_URL])
+        self.assertLog([
+            'ERROR: Cannot fetch %s\n' % ROTATIONS_URL,
+        ])
 
     def test_sheriff_email(self):
         host = self.mock_host()

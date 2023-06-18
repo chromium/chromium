@@ -12,7 +12,6 @@ from blinkpy.common.host_mock import MockHost as BlinkMockHost
 from blinkpy.common.path_finder import PathFinder
 from blinkpy.common.system.log_testing import LoggingTestCase
 from blinkpy.web_tests.port.factory_mock import MockPortFactory
-from blinkpy.w3c.wpt_manifest import BASE_MANIFEST_NAME
 from blinkpy.w3c.wpt_results_processor import (
     EventProcessingError,
     StreamShutdown,
@@ -23,7 +22,6 @@ from blinkpy.w3c.wpt_results_processor import (
 class WPTResultsProcessorTest(LoggingTestCase):
     def setUp(self):
         super().setUp()
-
         self.host = BlinkMockHost()
         self.host.port_factory = MockPortFactory(self.host)
         self.fs = self.host.filesystem
@@ -33,7 +31,7 @@ class WPTResultsProcessorTest(LoggingTestCase):
         # Create a testing manifest containing any test files that we
         # might interact with.
         self.fs.write_text_file(
-            self.fs.join(port.web_tests_dir(), 'external', BASE_MANIFEST_NAME),
+            self.path_finder.path_from_wpt_tests('MANIFEST.json'),
             json.dumps({
                 'items': {
                     'reftest': {

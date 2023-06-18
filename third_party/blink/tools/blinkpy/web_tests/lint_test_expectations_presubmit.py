@@ -47,7 +47,7 @@ def PresubmitCheckTestExpectations(input_api, output_api):
                                       "to produce output; check by hand. ")
         ]
     errs = errs.decode('utf-8')
-    if errs.strip() == 'Lint succeeded.':
+    if errs.rstrip().endswith('Lint succeeded.'):
         return []
     if errs.rstrip().endswith('Lint succeeded with warnings.'):
         return [output_api.PresubmitPromptWarning(errs)]
