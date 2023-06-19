@@ -50,6 +50,7 @@ class MODULES_EXPORT MLOperator : public GarbageCollected<MLOperator> {
     kSlice,
     kSoftmax,
     kSplit,
+    kTanh,
     kTranspose
   };
 

@@ -176,6 +176,9 @@ dictionary MLSplitOptions {
 
   [RaisesException] sequence<MLOperand> split(MLOperand input, [EnforceRange] sequence<unsigned long> splits, optional MLSplitOptions options = {});
 
+  [RaisesException] MLOperand tanh(MLOperand input);
+  [RaisesException] MLActivation tanh();
+
   [
     CallWith=ScriptState,
     RaisesException,

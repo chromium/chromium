@@ -5566,6 +5566,7 @@ interface MLGraphBuilder
     method softmax
     method split
     method sub
+    method tanh
     method transpose
 interface MLModelLoader
     attribute @@toStringTag

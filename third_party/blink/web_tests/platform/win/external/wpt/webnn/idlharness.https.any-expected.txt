@@ -1,5 +1,5 @@
 This is a testharness.js-based test.
-Found 408 tests; 285 PASS, 123 FAIL, 0 TIMEOUT, 0 NOTRUN.
+Found 408 tests; 290 PASS, 118 FAIL, 0 TIMEOUT, 0 NOTRUN.
 FAIL idl_test setup promise_test: Unhandled rejection with value: object "NotSupportedError: The input layout nchw is not supported."
 PASS idl_test validation
 PASS Partial interface MLContext: original interface defined
@@ -254,8 +254,8 @@ FAIL MLGraphBuilder interface: operation softsign(MLOperand) assert_own_property
 FAIL MLGraphBuilder interface: operation softsign() assert_own_property: interface prototype object missing non-static operation expected property "softsign" missing
 PASS MLGraphBuilder interface: operation split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions)
 FAIL MLGraphBuilder interface: operation squeeze(MLOperand, optional MLSqueezeOptions) assert_own_property: interface prototype object missing non-static operation expected property "squeeze" missing
-FAIL MLGraphBuilder interface: operation tanh(MLOperand) assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
-FAIL MLGraphBuilder interface: operation tanh() assert_own_property: interface prototype object missing non-static operation expected property "tanh" missing
+PASS MLGraphBuilder interface: operation tanh(MLOperand)
+PASS MLGraphBuilder interface: operation tanh()
 PASS MLGraphBuilder interface: operation transpose(MLOperand, optional MLTransposeOptions)
 PASS MLGraphBuilder must be primary interface of builder
 PASS Stringification of builder
@@ -401,9 +401,9 @@ PASS MLGraphBuilder interface: builder must inherit property "split(MLOperand, (
 PASS MLGraphBuilder interface: calling split(MLOperand, (unsigned long or sequence<unsigned long>), optional MLSplitOptions) on builder with too few arguments must throw TypeError
 FAIL MLGraphBuilder interface: builder must inherit property "squeeze(MLOperand, optional MLSqueezeOptions)" with the proper type assert_inherits: property "squeeze" not found in prototype chain
 FAIL MLGraphBuilder interface: calling squeeze(MLOperand, optional MLSqueezeOptions) on builder with too few arguments must throw TypeError assert_inherits: property "squeeze" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "tanh(MLOperand)" with the proper type assert_inherits: property "tanh" not found in prototype chain
-FAIL MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few arguments must throw TypeError assert_inherits: property "tanh" not found in prototype chain
-FAIL MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type assert_inherits: property "tanh" not found in prototype chain
+PASS MLGraphBuilder interface: builder must inherit property "tanh(MLOperand)" with the proper type
+PASS MLGraphBuilder interface: calling tanh(MLOperand) on builder with too few arguments must throw TypeError
+PASS MLGraphBuilder interface: builder must inherit property "tanh()" with the proper type
 PASS MLGraphBuilder interface: builder must inherit property "transpose(MLOperand, optional MLTransposeOptions)" with the proper type
 PASS MLGraphBuilder interface: calling transpose(MLOperand, optional MLTransposeOptions) on builder with too few arguments must throw TypeError
 PASS Navigator interface: attribute ml

@@ -4102,6 +4102,50 @@ TEST_F(MLGraphBuilderTest, Split) {
   }
 }
 
+TEST_F(MLGraphBuilderTest, TanhTest) {
+  V8TestingScope scope;
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext());
+  {
+    // Test building tanh with float32 input.
+    Vector<uint32_t> input_shape({3, 4});
+    auto* input =
+        BuildInput(builder, "input", input_shape,
+                   V8MLOperandType::Enum::kFloat32, scope.GetExceptionState());
+    auto* output = builder->tanh(input, scope.GetExceptionState());
+    EXPECT_NE(output, nullptr);
+    EXPECT_EQ(output->Kind(), MLOperand::OperandKind::kOutput);
+    EXPECT_EQ(output->Type(), V8MLOperandType::Enum::kFloat32);
+    EXPECT_EQ(output->Dimensions(), input_shape);
+    const MLOperator* tanh = output->Operator();
+    EXPECT_NE(tanh, nullptr);
+    EXPECT_EQ(tanh->Kind(), MLOperator::OperatorKind::kTanh);
+    EXPECT_EQ(tanh->IsConnected(), true);
+    EXPECT_EQ(tanh->Options(), nullptr);
+  }
+  {
+    // Test throwing exception when building tanh with int32 input.
+    Vector<uint32_t> input_shape({3, 4});
+    auto* input =
+        BuildInput(builder, "input", input_shape, V8MLOperandType::Enum::kInt32,
+                   scope.GetExceptionState());
+    auto* output = builder->tanh(input, scope.GetExceptionState());
+    EXPECT_EQ(output, nullptr);
+    EXPECT_EQ(scope.GetExceptionState().CodeAs<DOMExceptionCode>(),
+              DOMExceptionCode::kDataError);
+    EXPECT_EQ(scope.GetExceptionState().Message(),
+              "The input type must be one of the floating point types.");
+  }
+  {
+    // Test building tanh operator.
+    auto* tanh = builder->tanh(scope.GetExceptionState());
+    EXPECT_NE(tanh, nullptr);
+    EXPECT_NE(tanh->Operator(), nullptr);
+    EXPECT_EQ(tanh->Operator()->Kind(), MLOperator::OperatorKind::kTanh);
+    EXPECT_EQ(tanh->Operator()->IsConnected(), false);
+    EXPECT_EQ(tanh->Operator()->Options(), nullptr);
+  }
+}
+
 class FakeMLGraphBackend final : public MLGraph {
  public:
   // Create and build a FakeMLGraphBackend object. Resolve the promise with

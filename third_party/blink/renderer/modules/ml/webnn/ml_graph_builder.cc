@@ -2012,6 +2012,40 @@ HeapVector<Member<const MLOperand>> MLGraphBuilder::split(
   return outputs;
 }
 
+MLOperand* MLGraphBuilder::tanh(const MLOperand* input,
+                                ExceptionState& exception_state) {
+  // The input type must be one of the floating point types.
+  // The current spec doesn't specify the operand type constraints of tanh, an
+  // issue has been filed to track it-
+  // https://github.com/webmachinelearning/webnn/issues/283.
+  if (!IsFloatingPointType(input->Type())) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kDataError,
+        "The input type must be one of the floating point types.");
+    return nullptr;
+  }
+  auto* tanh =
+      MakeGarbageCollected<MLOperator>(this, MLOperator::OperatorKind::kTanh);
+  // According to WebNN spec
+  // https://www.w3.org/TR/webnn/#api-mlgraphbuilder-tanh, the output tensor of
+  // tanh has the same type and dimensions as its input.
+  auto output = MLOperand::ValidateAndCreateOutput(this, input->Type(),
+                                                   input->Dimensions(), tanh);
+  if (!output.has_value()) {
+    exception_state.ThrowDOMException(DOMExceptionCode::kDataError,
+                                      output.error());
+    return nullptr;
+  }
+  tanh->Connect({input}, {output.value()});
+  return output.value();
+}
+
+MLActivation* MLGraphBuilder::tanh(ExceptionState& exception_state) {
+  // Create the tanh operator that would be used as an activation function.
+  return MakeGarbageCollected<MLActivation>(this,
+                                            MLOperator::OperatorKind::kTanh);
+}
+
 MLOperand* MLGraphBuilder::transpose(const MLOperand* input,
                                      const MLTransposeOptions* options,
                                      ExceptionState& exception_state) {

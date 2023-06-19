@@ -70,6 +70,8 @@ String MLOperator::OperatorKindToString(MLOperator::OperatorKind kind) {
       return "softmax";
     case MLOperator::OperatorKind::kSplit:
       return "split";
+    case MLOperator::OperatorKind::kTanh:
+      return "tanh";
     case MLOperator::OperatorKind::kTranspose:
       return "transpose";
   }

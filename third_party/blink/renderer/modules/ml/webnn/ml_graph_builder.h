@@ -232,6 +232,9 @@ class MODULES_EXPORT MLGraphBuilder final : public ScriptWrappable {
                                             const MLSplitOptions* options,
                                             ExceptionState& exception_state);
 
+  MLOperand* tanh(const MLOperand* input, ExceptionState& exception_state);
+  MLActivation* tanh(ExceptionState& exception_state);
+
   MLOperand* transpose(const MLOperand* input,
                        const MLTransposeOptions* options,
                        ExceptionState& exception_state);
