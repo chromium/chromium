@@ -530,7 +530,20 @@ void ServiceWorkerNewScriptLoader::MaybeStartNetworkConsumerHandleWatcher() {
     return;
   }
 
-  CHECK_EQ(WriterState::kNotStarted, body_writer_state_);
+  if (body_writer_state_ != WriterState::kNotStarted) {
+    static bool has_dumped_without_crashing = false;
+    if (!has_dumped_without_crashing) {
+      has_dumped_without_crashing = true;
+      SCOPED_CRASH_KEY_NUMBER("SWNewScriptLoader", "network_loader_state",
+                              static_cast<int>(network_loader_state_));
+      SCOPED_CRASH_KEY_NUMBER("SWNewScriptLoader", "header_writer_state",
+                              static_cast<int>(header_writer_state_));
+      SCOPED_CRASH_KEY_NUMBER("SWNewScriptLoader", "body_writer_state",
+                              static_cast<int>(body_writer_state_));
+      base::debug::DumpWithoutCrashing();
+    }
+    return;
+  }
   body_writer_state_ = WriterState::kWriting;
 
   network_watcher_.Watch(
