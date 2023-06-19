@@ -59,7 +59,13 @@ class ContentSettingConstraints {
     return created_at_ + lifetime_;
   }
 
-  void set_lifetime(base::TimeDelta lifetime) { lifetime_ = lifetime; }
+  base::TimeDelta lifetime() const { return lifetime_; }
+
+  // Sets the lifetime. The lifetime must be nonnegative.
+  void set_lifetime(base::TimeDelta lifetime) {
+    CHECK_GE(lifetime, base::TimeDelta());
+    lifetime_ = lifetime;
+  }
 
   SessionModel session_model() const { return session_model_; }
   void set_session_model(SessionModel model) { session_model_ = model; }
@@ -69,16 +75,6 @@ class ContentSettingConstraints {
   }
   void set_track_last_visit_for_autoexpiration(bool track) {
     track_last_visit_for_autoexpiration_ = track;
-  }
-
-  // Helper for callers that only know their intended expiration, rather than
-  // the intended lifetime. Setting the lifetime directly (without using this
-  // helper) should be preferred instead.
-  base::TimeDelta DeltaFromCreationTime(base::Time exp) const {
-    if (exp.is_null()) {
-      return base::TimeDelta();
-    }
-    return exp - created_at_;
   }
 
  private:

@@ -119,6 +119,11 @@ struct StructTraits<content_settings::mojom::RuleMetaDataDataView,
     return r.session_model_;
   }
 
+  static const base::TimeDelta& lifetime(
+      const content_settings::RuleMetaData& r) {
+    return r.lifetime_;
+  }
+
   static bool Read(content_settings::mojom::RuleMetaDataDataView data,
                    content_settings::RuleMetaData* out);
 };

@@ -70,7 +70,7 @@ bool OneTimePermissionProvider::SetWebsiteSetting(
   content_settings::RuleMetaData metadata;
   base::Time now = clock_->Now();
   metadata.set_last_modified(now);
-  metadata.set_expiration(now + base::Days(1));
+  metadata.SetExpirationAndLifetime(now + base::Days(1), base::Days(1));
   metadata.set_session_model(content_settings::SessionModel::OneTime);
 
   value_map_.SetValue(primary_pattern, secondary_pattern, content_settings_type,

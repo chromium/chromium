@@ -75,6 +75,7 @@ struct RuleMetaData {
   mojo_base.mojom.Time last_visited;
   mojo_base.mojom.Time expiration;
   SessionModel session_model;
+  mojo_base.mojom.TimeDelta lifetime;
 };
 
 // This mirrors the C++ type in content_settings.h.

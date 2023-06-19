@@ -125,9 +125,19 @@ bool StructTraits<content_settings::mojom::RuleMetaDataDataView,
                   content_settings::RuleMetaData>::
     Read(content_settings::mojom::RuleMetaDataDataView data,
          content_settings::RuleMetaData* out) {
+  base::Time expiration;
+  base::TimeDelta lifetime;
+  if (!data.ReadExpiration(&expiration) || !data.ReadLifetime(&lifetime)) {
+    return false;
+  }
+  if (lifetime.is_zero() != expiration.is_null() ||
+      lifetime < base::TimeDelta()) {
+    return false;
+  }
+  out->SetExpirationAndLifetime(expiration, lifetime);
+
   return data.ReadLastModified(&out->last_modified_) &&
          data.ReadLastVisited(&out->last_visited_) &&
-         data.ReadExpiration(&out->expiration_) &&
          data.ReadSessionModel(&out->session_model_);
 }
 

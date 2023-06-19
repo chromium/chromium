@@ -456,10 +456,10 @@ TEST_F(UnusedSitePermissionsServiceTest, UndoRegrantPermissionsForOrigin) {
       GetRevokedUnusedPermissions(hcsm())[0];
 
   // Permission remains revoked after regrant and undo.
-  content_settings::ContentSettingConstraints expiration_constraint;
-  expiration_constraint.set_lifetime(
-      expiration_constraint.DeltaFromCreationTime(
-          revoked_permission.metadata.expiration()));
+  content_settings::ContentSettingConstraints expiration_constraint(
+      revoked_permission.metadata.expiration() -
+      revoked_permission.metadata.lifetime());
+  expiration_constraint.set_lifetime(revoked_permission.metadata.lifetime());
   service()->RegrantPermissionsForOrigin(url::Origin::Create(url1));
   service()->UndoRegrantPermissionsForOrigin({type}, expiration_constraint,
                                              url::Origin::Create(url1));

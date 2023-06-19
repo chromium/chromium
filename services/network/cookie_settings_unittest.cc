@@ -80,7 +80,9 @@ class CookieSettingsTest : public testing::TestWithParam<TestCase> {
       ContentSetting setting,
       base::Time expiration = base::Time()) {
     content_settings::RuleMetaData metadata;
-    metadata.set_expiration(expiration);
+    metadata.SetExpirationAndLifetime(
+        expiration, expiration.is_null() ? base::TimeDelta()
+                                         : expiration - base::Time::Now());
     return ContentSettingPatternSource(
         ContentSettingsPattern::FromString(primary_pattern),
         ContentSettingsPattern::FromString(secondary_pattern),

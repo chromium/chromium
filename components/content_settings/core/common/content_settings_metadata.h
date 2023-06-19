@@ -34,15 +34,22 @@ class RuleMetaData {
   void set_last_visited(base::Time visited) { last_visited_ = visited; }
 
   base::Time expiration() const { return expiration_; }
-  void set_expiration(base::Time expiration) { expiration_ = expiration; }
 
   SessionModel session_model() const { return session_model_; }
   void set_session_model(SessionModel session_model) {
     session_model_ = session_model;
   }
 
+  base::TimeDelta lifetime() const { return lifetime_; }
+
   // Sets member variables based on `constraints`.
   void SetFromConstraints(const ContentSettingConstraints& constraints);
+
+  // Sets the expiration and lifetime. The expiration may be zero if-and-only-if
+  // the lifetime is zero; otherwise, both must be non-zero. The lifetime must
+  // be nonnegative.
+  void SetExpirationAndLifetime(base::Time expiration,
+                                base::TimeDelta lifetime);
 
   // Computes the setting's lifetime, based on the lifetime and expiration that
   // were read from persistent storage. This is a helper to deal with missing
@@ -67,6 +74,8 @@ class RuleMetaData {
   base::Time expiration_;
   // SessionModel as defined through a ContentSettingsConstraint.
   SessionModel session_model_ = SessionModel::Durable;
+  // The lifetime of the setting. This may be zero iff `expiration_` is zero.
+  base::TimeDelta lifetime_;
 };
 
 }  // namespace content_settings

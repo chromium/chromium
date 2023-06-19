@@ -11,6 +11,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/threading/thread_checker.h"
 #include "base/time/default_clock.h"
+#include "base/time/time.h"
 #include "base/values.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/permissions/notification_permission_review_service_factory.h"
@@ -34,6 +35,8 @@ namespace {
 // the time after which the associated origin and permissions are no longer
 // shown in the UI.
 constexpr char kExpirationKey[] = "expiration";
+// Key of the lifetime in the |UnusedSitePermissions| object.
+constexpr char kLifetimeKey[] = "lifetime";
 
 // Get values from |UnusedSitePermission| object in
 // safety_hub_browser_proxy.ts.
@@ -66,12 +69,22 @@ GetUnusedSitePermissionsFromDict(
   const base::Value* js_expiration =
       unused_site_permissions.Find(kExpirationKey);
   CHECK(js_expiration);
-  auto expiration = base::ValueToTime(js_expiration);
+  base::Time expiration = base::ValueToTime(js_expiration).value();
 
-  content_settings::ContentSettingConstraints constraints;
-  // TODO(https://crbug.com/1450356): we should store the lifetime of the
-  // permission, rather than just its expiration.
-  constraints.set_lifetime(constraints.DeltaFromCreationTime(*expiration));
+  const base::Value* js_lifetime = unused_site_permissions.Find(kLifetimeKey);
+  // TODO(https://crbug.com/1455435): The use of ComputeLifetime here should be
+  // temporary. Once all persisted RuleMetaData instances include lifetimes, we
+  // can remove this, and just use the stored lifetime directly. We can do this
+  // after all lifetime-less settings have expired. Realistically this will take
+  // only one or two milestones, so this can safely be removed in M118 or M119.
+  base::TimeDelta lifetime = content_settings::RuleMetaData::ComputeLifetime(
+      /*lifetime=*/js_lifetime ? base::ValueToTimeDelta(js_lifetime).value()
+                               : base::TimeDelta(),
+      /*expiration=*/expiration);
+
+  content_settings::ContentSettingConstraints constraints =
+      content_settings::ContentSettingConstraints(expiration - lifetime);
+  constraints.set_lifetime(lifetime);
 
   return std::make_tuple(origin, permission_types, constraints);
 }
@@ -199,6 +212,10 @@ base::Value::List SafetyHubHandler::PopulateUnusedSitePermissionsData() {
     revoked_permission_value.Set(
         kExpirationKey,
         base::TimeToValue(revoked_permissions.metadata.expiration()));
+
+    revoked_permission_value.Set(
+        kLifetimeKey,
+        base::TimeDeltaToValue(revoked_permissions.metadata.lifetime()));
 
     result.Append(std::move(revoked_permission_value));
   }

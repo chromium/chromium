@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/time/time.h"
 #include "base/values.h"
 #include "components/content_settings/core/browser/content_settings_rule.h"
 #include "components/content_settings/core/browser/content_settings_utils.h"
@@ -207,7 +208,8 @@ TEST(OriginIdentifierValueMapTest, UpdateLastModified) {
   metadata.set_session_model(content_settings::SessionModel::Durable);
   map.SetValue(pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(1), metadata);
-  metadata.set_expiration(base::Time::Now() + base::Seconds(100));
+  metadata.SetExpirationAndLifetime(base::Time::Now() + base::Seconds(100),
+                                    base::Seconds(100));
   metadata.set_session_model(content_settings::SessionModel::UserSession);
   map.SetValue(sub_pattern, ContentSettingsPattern::Wildcard(),
                ContentSettingsType::COOKIES, base::Value(2), metadata);

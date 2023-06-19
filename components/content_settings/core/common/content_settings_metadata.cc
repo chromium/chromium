@@ -17,14 +17,23 @@ RuleMetaData::RuleMetaData() = default;
 
 void RuleMetaData::SetFromConstraints(
     const ContentSettingConstraints& constraints) {
-  expiration_ = constraints.expiration();
   session_model_ = constraints.session_model();
+  SetExpirationAndLifetime(constraints.expiration(), constraints.lifetime());
+}
+
+void RuleMetaData::SetExpirationAndLifetime(base::Time expiration,
+                                            base::TimeDelta lifetime) {
+  CHECK_EQ(lifetime.is_zero(), expiration.is_null());
+  CHECK_GE(lifetime, base::TimeDelta());
+  expiration_ = expiration;
+  lifetime_ = lifetime;
 }
 
 bool RuleMetaData::operator==(const RuleMetaData& other) const {
-  return std::tie(last_modified_, last_visited_, expiration_, session_model_) ==
-         std::tie(other.last_modified_, other.last_visited_, other.expiration_,
-                  other.session_model_);
+  return std::tie(last_modified_, last_visited_, expiration_, session_model_,
+                  lifetime_) == std::tie(other.last_modified_,
+                                         other.last_visited_, other.expiration_,
+                                         other.session_model_, other.lifetime_);
 }
 
 // static

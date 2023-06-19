@@ -47,18 +47,18 @@ TEST(RuleTest, ConcatenationIterator) {
       ContentSettingsPattern::FromString("a"),
       ContentSettingsPattern::Wildcard(), base::Value(0), RuleMetaData{}));
   RuleMetaData metadata;
-  metadata.set_expiration(expiredTime);
+  metadata.SetExpirationAndLifetime(expiredTime, base::Seconds(60));
   metadata.set_session_model(content_settings::SessionModel::UserSession);
   rules1.push_back(std::make_unique<OwnedRule>(
       ContentSettingsPattern::FromString("b"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
   std::list<std::unique_ptr<Rule>> rules2;
-  metadata.set_expiration(validTime);
+  metadata.SetExpirationAndLifetime(validTime, base::Seconds(60));
   metadata.set_session_model(content_settings::SessionModel::Durable);
   rules2.push_back(std::make_unique<OwnedRule>(
       ContentSettingsPattern::FromString("c"),
       ContentSettingsPattern::Wildcard(), base::Value(0), metadata));
-  metadata.set_expiration(base::Time());
+  metadata.SetExpirationAndLifetime(base::Time(), base::TimeDelta());
   metadata.set_session_model(content_settings::SessionModel::UserSession);
   rules2.push_back(std::make_unique<OwnedRule>(
       ContentSettingsPattern::FromString("d"),
