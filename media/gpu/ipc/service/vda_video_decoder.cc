@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "gpu/config/gpu_driver_bug_workarounds.h"
 #include "gpu/config/gpu_info.h"
 #include "gpu/config/gpu_preferences.h"
@@ -33,7 +34,6 @@
 #include "media/gpu/gpu_video_decode_accelerator_factory.h"
 #include "media/video/picture.h"
 #include "ui/gfx/geometry/rect.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 
@@ -63,7 +63,7 @@ bool BindClientManagedImage(
     scoped_refptr<CommandBufferHelper> command_buffer_helper,
     uint32_t client_texture_id,
     uint32_t texture_target,
-    const scoped_refptr<gl::GLImage>& image) {
+    const scoped_refptr<gpu::GLImageNativePixmap>& image) {
   return command_buffer_helper->BindClientManagedImage(client_texture_id,
                                                        image.get());
 }

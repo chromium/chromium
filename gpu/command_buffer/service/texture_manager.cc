@@ -38,7 +38,7 @@
 #include "ui/gl/trace_util.h"
 
 #if BUILDFLAG(IS_OZONE)
-#include "ui/gl/gl_image.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #endif
 
 using base::trace_event::MemoryAllocatorDump;
@@ -570,7 +570,7 @@ void TexturePassthrough::MarkContextLost() {
 #if BUILDFLAG(IS_OZONE)
 void TexturePassthrough::SetLevelImage(GLenum target,
                                        GLint level,
-                                       gl::GLImage* image) {
+                                       GLImageNativePixmap* image) {
   SetLevelImageInternal(target, level, image, owned_service_id_);
 }
 #endif
@@ -624,11 +624,10 @@ bool TexturePassthrough::LevelInfoExists(GLenum target,
 }
 
 #if BUILDFLAG(IS_OZONE)
-void TexturePassthrough::SetLevelImageInternal(
-    GLenum target,
-    GLint level,
-    gl::GLImage* image,
-    GLuint service_id) {
+void TexturePassthrough::SetLevelImageInternal(GLenum target,
+                                               GLint level,
+                                               GLImageNativePixmap* image,
+                                               GLuint service_id) {
   LevelInfo* level_info = GetLevelInfo(target, level);
   level_info->image = image;
 
@@ -1887,7 +1886,7 @@ bool Texture::ClearLevel(DecoderContext* decoder, GLenum target, GLint level) {
 #if BUILDFLAG(IS_OZONE)
 void Texture::SetLevelImageInternal(GLenum target,
                                     GLint level,
-                                    gl::GLImage* image,
+                                    GLImageNativePixmap* image,
                                     ImageState state) {
   DCHECK(image ? state != ImageState::NOIMAGE : state == ImageState::NOIMAGE);
 
@@ -1908,7 +1907,7 @@ void Texture::SetLevelImageInternal(GLenum target,
 
 void Texture::SetBoundLevelImage(GLenum target,
                                  GLint level,
-                                 gl::GLImage* image) {
+                                 GLImageNativePixmap* image) {
   SetStreamTextureServiceId(0);
   SetLevelImageInternal(target, level, image, ImageState::BOUND);
 }
@@ -2577,7 +2576,7 @@ GLsizei TextureManager::ComputeMipMapCount(GLenum target,
 void TextureManager::SetBoundLevelImage(TextureRef* ref,
                                         GLenum target,
                                         GLint level,
-                                        gl::GLImage* image) {
+                                        GLImageNativePixmap* image) {
   DCHECK(ref);
   ref->texture()->SetBoundLevelImage(target, level, image);
 }

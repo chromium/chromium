@@ -274,7 +274,7 @@ TEST_P(GLES2DecoderTest, TestImageBindingForDecoderManagement) {
                                           1,                    /* depth */
                                           0,                    /* border */
                                           GL_RGBA, GL_UNSIGNED_BYTE);
-  scoped_refptr<gl::GLImage> image(
+  scoped_refptr<GLImageNativePixmap> image(
       GLImageNativePixmap::CreateForTesting(gfx::Size(256, 256)));
 
   abstract_texture->SetBoundImage(image.get());
@@ -316,7 +316,7 @@ TEST_P(GLES2DecoderTest, CreateAbstractTexture) {
   EXPECT_EQ(texture->min_filter(), static_cast<GLenum>(GL_LINEAR));
 
   // Attach an image and see if it works.
-  scoped_refptr<gl::GLImage> image(
+  scoped_refptr<GLImageNativePixmap> image(
       GLImageNativePixmap::CreateForTesting(gfx::Size()));
 
   abstract_texture->SetBoundImage(image.get());

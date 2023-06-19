@@ -52,8 +52,9 @@ class GLImageNativePixmapTestDelegate : public GLImageTestDelegateBase {
     return false;
   }
 
-  scoped_refptr<GLImage> CreateSolidColorImage(const gfx::Size& size,
-                                               const uint8_t color[4]) {
+  scoped_refptr<gpu::GLImageNativePixmap> CreateSolidColorImage(
+      const gfx::Size& size,
+      const uint8_t color[4]) {
     ui::SurfaceFactoryOzone* surface_factory =
         ui::OzonePlatform::GetInstance()->GetSurfaceFactoryOzone();
     scoped_refptr<gfx::NativePixmap> pixmap =

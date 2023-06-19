@@ -147,10 +147,6 @@ component("gl") {
     ]
   }
 
-  if (!is_android) {
-    sources += [ "gl_image.h" ]
-  }
-
   configs += [ "//build/config:precompiled_headers" ]
   defines = [ "GL_IMPLEMENTATION" ]
   if (enable_gpu_service_logging) {

@@ -48,7 +48,7 @@ void PassthroughAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
 }
 
 #if BUILDFLAG(IS_OZONE)
-void PassthroughAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+void PassthroughAbstractTextureImpl::SetBoundImage(GLImageNativePixmap* image) {
   if (!texture_passthrough_) {
     return;
   }

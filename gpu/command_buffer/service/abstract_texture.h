@@ -16,11 +16,10 @@ typedef int GLsizei;
 typedef int GLint;
 typedef unsigned int GLuint;
 
-namespace gl {
-class GLImage;
-}  // namespace gl
-
 namespace gpu {
+
+class GLImageNativePixmap;
+
 namespace gles2 {
 
 // An AbstractTexture enables access to GL textures from the GPU process, for
@@ -64,7 +63,7 @@ class GPU_GLES2_EXPORT AbstractTexture {
   // It is not required to SetCleared() if one binds an image.
   //
   // The context must be current.
-  virtual void SetBoundImage(gl::GLImage* image) = 0;
+  virtual void SetBoundImage(GLImageNativePixmap* image) = 0;
 #endif
 
   // Marks the texture as cleared, to help prevent sending an uninitialized

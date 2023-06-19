@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/stringize_macros.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/shared_image/gl_image_native_pixmap.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/buffer_format_util.h"
@@ -19,7 +20,6 @@
 #include "ui/gl/gl_context.h"
 #include "ui/gl/gl_display.h"
 #include "ui/gl/gl_helper.h"
-#include "ui/gl/gl_image.h"
 #include "ui/gl/gl_surface.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
@@ -107,13 +107,13 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageTest, MAYBE_Create) {
 
   // Create a small solid color green image of preferred format. This must
   // succeed in order for a GLImage to be conformant.
-  scoped_refptr<GLImage> small_image =
+  scoped_refptr<gpu::GLImageNativePixmap> small_image =
       this->delegate_.CreateSolidColorImage(small_image_size, image_color);
   ASSERT_TRUE(small_image);
 
   // Create a large solid color green image of preferred format. This must
   // succeed in order for a GLImage to be conformant.
-  scoped_refptr<GLImage> large_image =
+  scoped_refptr<gpu::GLImageNativePixmap> large_image =
       this->delegate_.CreateSolidColorImage(large_image_size, image_color);
   ASSERT_TRUE(large_image);
 }
@@ -138,7 +138,7 @@ TYPED_TEST_P_WITH_EXPANSION(GLImageOddSizeTest, MAYBE_Create) {
 
   // Create an odd-sized solid color green image of preferred format. This must
   // succeed in order for a GLImage to be conformant.
-  scoped_refptr<GLImage> odd_image =
+  scoped_refptr<gpu::GLImageNativePixmap> odd_image =
       this->delegate_.CreateSolidColorImage(odd_image_size, image_color);
   ASSERT_TRUE(odd_image);
 }

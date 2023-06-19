@@ -29,8 +29,11 @@ class TextureBase;
 
 namespace gl {
 class GLContext;
-class GLImage;
 }  // namespace gl
+
+namespace gpu {
+class GLImageNativePixmap;
+}
 
 namespace media {
 
@@ -134,7 +137,7 @@ class MEDIA_GPU_EXPORT CommandBufferHelper
   //
   // BindTexImage() will *not* be called when the texture is used.
   virtual bool BindClientManagedImage(GLuint service_id,
-                                      gl::GLImage* image) = 0;
+                                      gpu::GLImageNativePixmap* image) = 0;
 #endif
 
   // Add a callback to be called when our stub is destroyed. This callback

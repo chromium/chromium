@@ -21,10 +21,10 @@
 
 namespace gl {
 class GLContext;
-class GLImage;
 }
 
 namespace gpu {
+class GLImageNativePixmap;
 struct GpuPreferences;
 
 namespace gles2 {
@@ -57,10 +57,10 @@ class MEDIA_GPU_EXPORT GpuVideoDecodeAcceleratorFactory {
   // Bind |image| to |client_texture_id| given |texture_target|, marking the
   // texture as not needing binding by the decoder.
   // Return true on success, false otherwise.
-  using BindGLImageCallback =
-      base::RepeatingCallback<bool(uint32_t client_texture_id,
-                                   uint32_t texture_target,
-                                   const scoped_refptr<gl::GLImage>& image)>;
+  using BindGLImageCallback = base::RepeatingCallback<bool(
+      uint32_t client_texture_id,
+      uint32_t texture_target,
+      const scoped_refptr<gpu::GLImageNativePixmap>& image)>;
 #endif
 
   // Return a ContextGroup*, if one is available.

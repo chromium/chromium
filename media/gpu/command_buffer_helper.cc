@@ -198,7 +198,8 @@ class CommandBufferHelperImpl
   }
 
 #if BUILDFLAG(IS_OZONE)
-  bool BindClientManagedImage(GLuint service_id, gl::GLImage* image) override {
+  bool BindClientManagedImage(GLuint service_id,
+                              gpu::GLImageNativePixmap* image) override {
     DVLOG(2) << __func__ << "(" << service_id << ")";
     DCHECK_CALLED_ON_VALID_THREAD(thread_checker_);
 

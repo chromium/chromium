@@ -52,7 +52,7 @@ void ValidatingAbstractTextureImpl::SetParameteri(GLenum pname, GLint param) {
 }
 
 #if BUILDFLAG(IS_OZONE)
-void ValidatingAbstractTextureImpl::SetBoundImage(gl::GLImage* image) {
+void ValidatingAbstractTextureImpl::SetBoundImage(GLImageNativePixmap* image) {
   if (!texture_ref_) {
     return;
   }

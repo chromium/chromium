@@ -154,8 +154,9 @@ void FakeCommandBufferHelper::SetCleared(GLuint service_id) {
 }
 
 #if BUILDFLAG(IS_OZONE)
-bool FakeCommandBufferHelper::BindClientManagedImage(GLuint service_id,
-                                                     gl::GLImage* image) {
+bool FakeCommandBufferHelper::BindClientManagedImage(
+    GLuint service_id,
+    gpu::GLImageNativePixmap* image) {
   DVLOG(2) << __func__ << "(" << service_id << ")";
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(service_ids_.count(service_id));

@@ -31,12 +31,12 @@
 #include "ui/gfx/geometry/rect.h"
 
 namespace gl {
-class GLImage;
 class ProgressReporter;
 }
 
 namespace gpu {
 class DecoderContext;
+class GLImageNativePixmap;
 class ServiceDiscardableManager;
 
 namespace gles2 {
@@ -80,7 +80,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
   void MarkContextLost();
 
 #if BUILDFLAG(IS_OZONE)
-  void SetLevelImage(GLenum target, GLint level, gl::GLImage* image);
+  void SetLevelImage(GLenum target, GLint level, GLImageNativePixmap* image);
 #endif
 
 #if BUILDFLAG(IS_ANDROID)
@@ -107,7 +107,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
 #if BUILDFLAG(IS_OZONE)
   void SetLevelImageInternal(GLenum target,
                              GLint level,
-                             gl::GLImage* image,
+                             GLImageNativePixmap* image,
                              GLuint service_id);
 #endif
 
@@ -137,7 +137,7 @@ class GPU_GLES2_EXPORT TexturePassthrough final
     GLenum type = 0;
 
 #if BUILDFLAG(IS_OZONE)
-    scoped_refptr<gl::GLImage> image;
+    scoped_refptr<GLImageNativePixmap> image;
 #endif
   };
 
@@ -186,7 +186,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
     GLenum format = 0;
     GLenum type = 0;
 #if BUILDFLAG(IS_OZONE)
-    scoped_refptr<gl::GLImage> image;
+    scoped_refptr<GLImageNativePixmap> image;
 #endif
     uint32_t estimated_size = 0;
     bool internal_workaround = false;
@@ -317,7 +317,9 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // GLImage was previously set with BindToServiceId(), this will reset
   // |service_id_| back to |owned_service_id_|, removing the service id override
   // set by the BindToServiceId.
-  void SetBoundLevelImage(GLenum target, GLint level, gl::GLImage* image);
+  void SetBoundLevelImage(GLenum target,
+                          GLint level,
+                          GLImageNativePixmap* image);
 
   // Unset the image for a particular level. After this call, GetLevelImage()
   // will return nullptr.
@@ -513,7 +515,7 @@ class GPU_GLES2_EXPORT Texture final : public TextureBase {
   // Helper for Set*LevelImage.
   void SetLevelImageInternal(GLenum target,
                              GLint level,
-                             gl::GLImage* image,
+                             GLImageNativePixmap* image,
                              ImageState state);
 #endif
 
@@ -1106,7 +1108,7 @@ class GPU_GLES2_EXPORT TextureManager
   void SetBoundLevelImage(TextureRef* ref,
                           GLenum target,
                           GLint level,
-                          gl::GLImage* image);
+                          GLImageNativePixmap* image);
 
   void UnsetLevelImage(TextureRef* ref, GLenum target, GLint level);
 #endif

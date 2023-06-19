@@ -7,10 +7,10 @@
 
 #include <stdint.h>
 
+#include "base/memory/ref_counted.h"
 #include "gpu/gpu_gles2_export.h"
 #include "ui/gfx/native_pixmap.h"
 #include "ui/gl/gl_bindings.h"
-#include "ui/gl/gl_image.h"
 
 namespace media {
 class V4L2SliceVideoDecodeAccelerator;
@@ -24,9 +24,11 @@ namespace gpu {
 
 namespace gles2 {
 class GLES2DecoderImpl;
+class GLES2DecoderPassthroughImpl;
 }
 
-class GPU_GLES2_EXPORT GLImageNativePixmap : public gl::GLImage {
+class GPU_GLES2_EXPORT GLImageNativePixmap
+    : public base::RefCounted<GLImageNativePixmap> {
  private:
   // Create an EGLImage from a given NativePixmap and bind |texture_id| to
   // |target| following by binding the image to |target|.
@@ -61,10 +63,12 @@ class GPU_GLES2_EXPORT GLImageNativePixmap : public gl::GLImage {
 
  private:
   friend class gles2::GLES2DecoderImpl;
+  friend class gles2::GLES2DecoderPassthroughImpl;
   friend class media::V4L2SliceVideoDecodeAccelerator;
+  friend class base::RefCounted<GLImageNativePixmap>;
 
   explicit GLImageNativePixmap(const gfx::Size& size);
-  ~GLImageNativePixmap() override;
+  ~GLImageNativePixmap();
 
   // Create a NativePixmapGLBinding from a given NativePixmap. Returns true iff
   // the binding was successfully created.

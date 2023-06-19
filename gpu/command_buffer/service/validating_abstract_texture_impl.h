@@ -37,7 +37,7 @@ class GPU_GLES2_EXPORT ValidatingAbstractTextureImpl : public AbstractTexture {
   TextureBase* GetTextureBase() const override;
   void SetParameteri(GLenum pname, GLint param) override;
 #if BUILDFLAG(IS_OZONE)
-  void SetBoundImage(gl::GLImage* image) override;
+  void SetBoundImage(GLImageNativePixmap* image) override;
 #endif
 
   void SetCleared() override;
