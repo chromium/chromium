@@ -112420,8 +112420,12 @@ Called by update_scheduler_enums.py.-->
   <int value="-1649429396" label="chrome://chrome-signin/edu-coexistence/"/>
   <int value="-1647734092" label="chrome://net-export/"/>
   <int value="-1638649228" label="chrome://webapks/"/>
+  <int value="-1636191836"
+      label="chrome://history-clusters-side-panel.top-chrome/"/>
   <int value="-1634933990" label="chrome://web-footer-experiment/"/>
   <int value="-1591890659" label="chrome://syncfs-internals/"/>
+  <int value="-1564946100" label="chrome://tab-strip.top-chrome/"/>
+  <int value="-1532727290" label="chrome://whats-new/"/>
   <int value="-1493822642" label="chrome://invalidations/"/>
   <int value="-1493762713" label="chrome://settings/cookies/"/>
   <int value="-1475777739" label="chrome://physical-web-diagnostics/"/>
@@ -112434,11 +112438,13 @@ Called by update_scheduler_enums.py.-->
   <int value="-1378421581" label="chrome://media-router/"/>
   <int value="-1331415629" label="chrome://os-settings/"/>
   <int value="-1313432739" label="chrome://plugins/"/>
+  <int value="-1282128285" label="chrome://suggest-internals/"/>
   <int value="-1259871417" label="chrome://browser-switch/"/>
   <int value="-1239015343" label="chrome://kill/"/>
   <int value="-1224398205" label="chrome://prefs-internals/"/>
   <int value="-1203248739" label="chrome://scanning/"/>
   <int value="-1198437953" label="chrome://download-shelf.top-chrome/"/>
+  <int value="-1177126000" label="chrome://profile-internals/"/>
   <int value="-1169621742" label="chrome://linux-proxy-config/"/>
   <int value="-1137946367" label="chrome://webrt-logs/"/>
   <int value="-1108319739" label="chrome://sync-internals/"/>
@@ -112446,8 +112452,11 @@ Called by update_scheduler_enums.py.-->
   <int value="-1082746738" label="chrome://credits/"/>
   <int value="-1078583150" label="chrome://view-cert-dialog/"/>
   <int value="-1043041749" label="chrome://offline-internals/"/>
+  <int value="-992301003" label="chrome://bookmarks-side-panel.top-chrome/"/>
   <int value="-986409800" label="chrome://identity-internals/"/>
   <int value="-969979971" label="chrome://sandbox/"/>
+  <int value="-949665427"
+      label="chrome://customize-chrome-side-panel.top-chrome/"/>
   <int value="-946383082" label="chrome://translate-internals/"/>
   <int value="-940484840" label="chrome://arc-power-control/"/>
   <int value="-936786926" label="chrome://settings/"/>
@@ -112466,6 +112475,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-661305899" label="chrome://set-time/"/>
   <int value="-652517395" label="chrome://signin-reauth/"/>
   <int value="-644310325" label="chrome://os-credits/"/>
+  <int value="-634350465" label="chrome://ukm/"/>
   <int value="-631384656" label="chrome://assistant-optin/"/>
   <int value="-624584089"
       label="chrome-extension://eemcgdkfndhakfknompkggombfjjjeno/ (Bookmark
@@ -112480,6 +112490,7 @@ Called by update_scheduler_enums.py.-->
   <int value="-512782085" label="chrome://salsa/"/>
   <int value="-511253776" label="chrome://snippets-internals/"/>
   <int value="-485494550" label="chrome://interventions-internals/"/>
+  <int value="-476825727" label="chrome://user-notes-side-panel.top-chrome/"/>
   <int value="-451371558" label="chrome://serviceworker-internals/"/>
   <int value="-443189279" label="chrome://enterprise-profile-welcome/"/>
   <int value="-394586044" label="chrome://confirm-password-change/"/>
@@ -112517,6 +112528,7 @@ Called by update_scheduler_enums.py.-->
   <int value="325375649" label="chrome://settings-frame/"/>
   <int value="361250371" label="chrome://nearby/"/>
   <int value="361621847" label="chrome://make-metro/"/>
+  <int value="372516928" label="chrome://histograms/"/>
   <int value="399773145" label="chrome://commander/"/>
   <int value="436626245" label="chrome://settings/content/cookies/"/>
   <int value="454041716" label="chrome://new-tab-page-third-party/"/>
@@ -112532,6 +112544,9 @@ Called by update_scheduler_enums.py.-->
   <int value="659389881" label="chrome://gpu/"/>
   <int value="662045902" label="chrome://smb-share-dialog/"/>
   <int value="689991895" label="chrome://supervised-user-internals/"/>
+  <int value="701883986" label="chrome://privacy-sandbox-dialog/"/>
+  <int value="703814809" label="chrome://intro/"/>
+  <int value="709341402" label="chrome://omnibox-popup.top-chrome/"/>
   <int value="742272091" label="chrome://extensions/"/>
   <int value="748142712" label="chrome://crostini-upgrader/"/>
   <int value="749881882" label="chrome://webuijserror/"/>
@@ -112546,9 +112561,11 @@ Called by update_scheduler_enums.py.-->
   <int value="943766809" label="chrome://view-cert/"/>
   <int value="977219287" label="chrome://memory/"/>
   <int value="985294599" label="chrome://webrtc-logs/"/>
+  <int value="1015167335" label="chrome://lens/"/>
   <int value="1050328415" label="chrome://diagnostics/"/>
   <int value="1055519744" label="chrome://webrtc-internals/"/>
   <int value="1066907868" label="chrome://physical-web/"/>
+  <int value="1076364348" label="chrome://web-app-internals/"/>
   <int value="1109407387" label="chrome://keyboardoverlay/"/>
   <int value="1131405887" label="chrome://taskscheduler-internals/"/>
   <int value="1134924982" label="chrome://app-icon/"/>
@@ -112558,6 +112575,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1213428635" label="chrome://memory-redirect/"/>
   <int value="1214710734" label="chrome://welcome/"/>
   <int value="1221097359" label="chrome://constrained-test/"/>
+  <int value="1265583806" label="chrome://password-manager/"/>
   <int value="1272316136" label="chrome://image/"/>
   <int value="1281801197" label="chrome://terms/"/>
   <int value="1286620182" label="chrome://reset-password/"/>
@@ -112566,6 +112584,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1340926535" label="chrome://network/"/>
   <int value="1354146226" label="chrome://tab-modal-confirm-dialog/"/>
   <int value="1356087814" label="chrome://add-supervision/"/>
+  <int value="1361577626" label="chrome://connectors-internals/"/>
   <int value="1371905827" label="chrome://flags/"/>
   <int value="1396129399" label="chrome://flash/"/>
   <int value="1397728473" label="chrome://crostini-installer/"/>
@@ -112584,6 +112603,7 @@ Called by update_scheduler_enums.py.-->
       label="chrome://urgent-password-expiry-notification/"/>
   <int value="1540230808" label="chrome://power/"/>
   <int value="1554928128" label="chrome://sync-confirmation/?consent-bump"/>
+  <int value="1563972074" label="chrome://autofill-internals/"/>
   <int value="1568301017" label="chrome://media-internals/"/>
   <int value="1585293659" label="chrome://system/"/>
   <int value="1603463396" label="chrome://help-frame/"/>
@@ -112604,6 +112624,7 @@ Called by update_scheduler_enums.py.-->
   <int value="1928106753" label="chrome://app-disabled/"/>
   <int value="1961263039" label="chrome://profiler/"/>
   <int value="1963964324" label="chrome://read-later.top-chrome/"/>
+  <int value="1965127181" label="chrome://cast-feedback/"/>
   <int value="1975618905" label="chrome://app-list/"/>
   <int value="2040878656" label="chrome://bluetooth-internals/"/>
   <int value="2052019697" label="chrome://userimage/"/>

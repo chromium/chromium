@@ -14468,8 +14468,9 @@ regressions. -->
 </histogram>
 
 <histogram name="WebUI.CreatedForUrl" enum="WebUIUrlHashes"
-    expires_after="2023-11-12">
-  <owner>dbeam@chromium.org</owner>
+    expires_after="2024-12-31">
+  <owner>dpapad@chromium.org</owner>
+  <owner>chrome-webui@google.com</owner>
   <summary>URLs for which Chrome creates WebUIControllers.</summary>
 </histogram>
 
