@@ -30,6 +30,7 @@ source_set("navigation") {
     "//ios/web/public/js_messaging",
     "//ios/web/public/security",
     "//ios/web/public/session",
+    "//ios/web/public/session/proto",
     "//ios/web/security",
     "//ios/web/session",
     "//ios/web/web_state:user_interaction",

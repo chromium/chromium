@@ -21,10 +21,8 @@ source_set("session") {
     "crw_session_user_data.mm",
     "session_certificate.cc",
     "session_certificate.h",
+    "session_certificate_policy_cache_impl.cc",
     "session_certificate_policy_cache_impl.h",
-    "session_certificate_policy_cache_impl.mm",
-    "session_certificate_policy_cache_storage_builder.h",
-    "session_certificate_policy_cache_storage_builder.mm",
   ]
 }
 
@@ -57,6 +55,5 @@ source_set("unittests") {
     "crw_session_certificate_policy_cache_storage_unittest.mm",
     "serializable_user_data_manager_unittest.mm",
     "session_certificate_policy_cache_impl_unittest.mm",
-    "session_certificate_policy_cache_storage_builder_unittest.mm",
   ]
 }

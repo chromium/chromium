@@ -5,12 +5,8 @@
 #ifndef IOS_WEB_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_IMPL_H_
 #define IOS_WEB_SESSION_SESSION_CERTIFICATE_POLICY_CACHE_IMPL_H_
 
-#import <Foundation/Foundation.h>
-
 #include "ios/web/public/session/session_certificate_policy_cache.h"
 #include "ios/web/session/session_certificate.h"
-
-@class CRWSessionCertificateStorage;
 
 namespace net {
 class X509Certificate;
@@ -42,10 +38,6 @@ class SessionCertificatePolicyCacheImpl final
       const scoped_refptr<net::X509Certificate>& certificate,
       const std::string& host,
       net::CertStatus status) final;
-
-  // Allows for batch updating the allowed certificate storages.
-  void SetAllowedCerts(NSSet<CRWSessionCertificateStorage*>* allowed_certs);
-  NSSet<CRWSessionCertificateStorage*>* GetAllowedCerts() const;
 
  private:
   // Represents the allowed certificates.

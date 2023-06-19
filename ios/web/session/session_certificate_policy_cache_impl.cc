@@ -2,19 +2,14 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/web/session/session_certificate_policy_cache_impl.h"
+#include "ios/web/session/session_certificate_policy_cache_impl.h"
 
-#import "base/functional/bind.h"
-#import "ios/web/public/security/certificate_policy_cache.h"
-#import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
-#import "ios/web/public/session/proto/session.pb.h"
-#import "ios/web/public/thread/web_task_traits.h"
-#import "ios/web/public/thread/web_thread.h"
-#import "ios/web/session/session_certificate.h"
-
-#if !defined(__has_feature) || !__has_feature(objc_arc)
-#error "This file requires ARC support."
-#endif
+#include "base/functional/bind.h"
+#include "ios/web/public/security/certificate_policy_cache.h"
+#include "ios/web/public/session/proto/session.pb.h"
+#include "ios/web/public/thread/web_task_traits.h"
+#include "ios/web/public/thread/web_thread.h"
+#include "ios/web/session/session_certificate.h"
 
 namespace web {
 namespace {
@@ -79,30 +74,6 @@ void SessionCertificatePolicyCacheImpl::RegisterAllowedCertificate(
   GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, base::BindOnce(&RegisterCertificate,
                                 GetCertificatePolicyCache(), allowed_cert));
-}
-
-void SessionCertificatePolicyCacheImpl::SetAllowedCerts(
-    NSSet<CRWSessionCertificateStorage*>* allowed_certs) {
-  DCHECK(allowed_certs_.empty());
-  for (CRWSessionCertificateStorage* cert_storage in allowed_certs) {
-    allowed_certs_.insert(SessionCertificate(
-        cert_storage.certificate, cert_storage.host, cert_storage.status));
-  }
-}
-
-NSSet<CRWSessionCertificateStorage*>*
-SessionCertificatePolicyCacheImpl::GetAllowedCerts() const {
-  NSMutableSet<CRWSessionCertificateStorage*>* allowed_certs =
-      [[NSMutableSet alloc] initWithCapacity:allowed_certs_.size()];
-
-  for (const SessionCertificate& cert : allowed_certs_) {
-    [allowed_certs addObject:[[CRWSessionCertificateStorage alloc]
-                                 initWithCertificate:cert.certificate()
-                                                host:cert.host()
-                                              status:cert.status()]];
-  }
-
-  return allowed_certs;
 }
 
 }  // namespace web
