@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/password_manager/core/browser/sync/incoming_password_sharing_invitation_sync_bridge.h"
+#include "components/password_manager/core/browser/sharing/incoming_password_sharing_invitation_sync_bridge.h"
 
 #include "components/sync/model/in_memory_metadata_change_list.h"
 #include "components/sync/model/metadata_batch.h"
