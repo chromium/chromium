@@ -388,6 +388,22 @@ TEST_P(CrdAdminSessionControllerTest,
 }
 
 TEST_P(CrdAdminSessionControllerTest,
+       ShouldPassShowTroubleshootingToolsToRemotingService) {
+  SessionParameters parameters;
+  parameters.show_troubleshooting_tools = GetParam();
+
+  remoting::ChromeOsEnterpriseParams actual_parameters;
+  EXPECT_CALL(remoting_service(), StartSession)
+      .WillOnce(SaveParamAndInvokeCallback(&actual_parameters));
+
+  session_controller().StartCrdHostAndGetCode(parameters, success_callback(),
+                                              error_callback(),
+                                              session_finished_callback());
+
+  EXPECT_EQ(actual_parameters.show_troubleshooting_tools, GetParam());
+}
+
+TEST_P(CrdAdminSessionControllerTest,
        ShouldPassAllowFileTransferToRemotingService) {
   SessionParameters parameters;
   parameters.allow_file_transfer = GetParam();

@@ -67,6 +67,8 @@ decltype(auto) DoValidateEnterpriseOptionsAndRespondOk(
     auto& options = request->chrome_os_enterprise_options();
     ASSERT_EQ(options.allow_troubleshooting_tools(),
               params.allow_troubleshooting_tools);
+    ASSERT_EQ(options.show_troubleshooting_tools(),
+              params.show_troubleshooting_tools);
     ASSERT_EQ(options.allow_reconnections(), params.allow_reconnections);
     ASSERT_EQ(options.allow_file_transfer(), params.allow_file_transfer);
     ValidateRegisterHost(*request);

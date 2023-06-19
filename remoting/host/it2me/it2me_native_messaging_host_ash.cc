@@ -87,6 +87,14 @@ bool ShouldCurtainLocalUserSession(
 #endif
 }
 
+bool ShouldShowTroubleshootingTools(
+    const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
+  if (enterprise_params.has_value()) {
+    return enterprise_params.value().show_troubleshooting_tools;
+  }
+  return false;
+}
+
 bool ShouldAllowTroubleshootingTools(
     const absl::optional<ChromeOsEnterpriseParams>& enterprise_params) {
   if (enterprise_params.has_value()) {
@@ -166,6 +174,8 @@ void It2MeNativeMessageHostAsh::Connect(
               ShouldTerminateUponInput(*params, enterprise_params));
   message.Set(kCurtainLocalUserSession,
               ShouldCurtainLocalUserSession(*params, enterprise_params));
+  message.Set(kShowTroubleshootingTools,
+              ShouldShowTroubleshootingTools(enterprise_params));
   message.Set(kAllowTroubleshootingTools,
               ShouldAllowTroubleshootingTools(enterprise_params));
   message.Set(kAllowReconnections, ShouldAllowReconnections(enterprise_params));

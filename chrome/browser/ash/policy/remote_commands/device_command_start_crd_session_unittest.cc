@@ -652,6 +652,30 @@ TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
       session_controller().session_parameters().allow_troubleshooting_tools);
 }
 
+TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
+       ShouldPassShowTroubleshootingToolsToDelegateForKiosk) {
+  LogInAsKioskUser();
+
+  SetKioskTroubleshootingPolicyValue(GetParam());
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  // Troubleshooting tools are always shown in the client UI for kiosk sessions.
+  EXPECT_TRUE(
+      session_controller().session_parameters().show_troubleshooting_tools);
+}
+
+TEST_P(DeviceCommandStartCrdSessionJobTestBoolParameterized,
+       ShouldNotPassShowTroubleshootingToolsToDelegateForUser) {
+  LogInAsAffiliatedUser();
+
+  SetKioskTroubleshootingPolicyValue(GetParam());
+  EXPECT_SUCCESS(RunJobAndWaitForResult());
+
+  // Troubleshooting tools are never shown in the UI for non-kiosk sessions.
+  EXPECT_FALSE(
+      session_controller().session_parameters().show_troubleshooting_tools);
+}
+
 TEST_F(DeviceCommandStartCrdSessionJobTest,
        ShouldNotSetAdminEmailWhenNotSpecifiedInPayload) {
   LogInAsKioskUser();

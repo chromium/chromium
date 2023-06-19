@@ -193,6 +193,8 @@ void RemotingRegisterSupportHostRequest::RegisterHost() {
         request->mutable_chrome_os_enterprise_options();
     enterprise_options->set_allow_troubleshooting_tools(
         enterprise_params_->allow_troubleshooting_tools);
+    enterprise_options->set_show_troubleshooting_tools(
+        enterprise_params_->show_troubleshooting_tools);
     enterprise_options->set_allow_reconnections(
         enterprise_params_->allow_reconnections);
     enterprise_options->set_allow_file_transfer(

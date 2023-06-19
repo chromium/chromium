@@ -105,6 +105,8 @@ ChromeOsEnterpriseParams BuildEnterpriseParams(
               message.FindBool(kTerminateUponInput).value_or(false),
           .curtain_local_user_session =
               message.FindBool(kCurtainLocalUserSession).value_or(false),
+          .show_troubleshooting_tools =
+              message.FindBool(kShowTroubleshootingTools).value_or(false),
           .allow_troubleshooting_tools =
               message.FindBool(kAllowTroubleshootingTools).value_or(false),
           .allow_reconnections =

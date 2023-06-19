@@ -386,6 +386,7 @@ void DeviceCommandStartCrdSessionJob::StartCrdHostAndGetCode(
   parameters.curtain_local_user_session = curtain_local_user_session_;
   parameters.admin_email = admin_email_;
   parameters.allow_troubleshooting_tools = ShouldAllowTroubleshootingTools();
+  parameters.show_troubleshooting_tools = ShouldShowTroubleshootingTools();
   parameters.allow_reconnections = ShouldAllowReconnections();
   parameters.allow_file_transfer = ShouldAllowFileTransfer();
 
@@ -561,12 +562,14 @@ bool DeviceCommandStartCrdSessionJob::ShouldAllowReconnections() const {
   return curtain_local_user_session_;
 }
 
+bool DeviceCommandStartCrdSessionJob::ShouldShowTroubleshootingTools() const {
+  return IsKioskSession(GetCurrentUserSessionType());
+}
+
 bool DeviceCommandStartCrdSessionJob::ShouldAllowTroubleshootingTools() const {
-  if (!IsKioskSession(GetCurrentUserSessionType())) {
-    return false;
-  }
-  return CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
-      .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
+  return IsKioskSession(GetCurrentUserSessionType()) &&
+         CHECK_DEREF(ProfileManager::GetActiveUserProfile()->GetPrefs())
+             .GetBoolean(prefs::kKioskTroubleshootingToolsEnabled);
 }
 
 bool DeviceCommandStartCrdSessionJob::ShouldAllowFileTransfer() const {

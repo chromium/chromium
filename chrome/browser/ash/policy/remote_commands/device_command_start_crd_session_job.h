@@ -49,6 +49,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
       bool show_confirmation_dialog = false;
       bool curtain_local_user_session = false;
       bool allow_troubleshooting_tools = false;
+      bool show_troubleshooting_tools = false;
       bool allow_reconnections = false;
       bool allow_file_transfer = false;
     };
@@ -123,6 +124,7 @@ class DeviceCommandStartCrdSessionJob : public RemoteCommandJob {
   bool ShouldTerminateUponInput() const;
   bool ShouldAllowReconnections() const;
   bool ShouldAllowTroubleshootingTools() const;
+  bool ShouldShowTroubleshootingTools() const;
   bool ShouldAllowFileTransfer() const;
 
   ErrorCallback GetErrorCallback();

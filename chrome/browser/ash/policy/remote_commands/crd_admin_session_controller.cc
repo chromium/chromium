@@ -62,6 +62,8 @@ std::ostream& operator<<(
             << parameters.show_confirmation_dialog
             << ", curtain_local_user_session "
             << parameters.curtain_local_user_session
+            << ", show_troubleshooting_tools "
+            << parameters.show_troubleshooting_tools
             << ", allow_troubleshooting_tools "
             << parameters.allow_troubleshooting_tools
             << ", allow_reconnections " << parameters.allow_reconnections
@@ -224,6 +226,7 @@ class CrdAdminSessionController::CrdHostSession {
         .suppress_notifications = !parameters_.show_confirmation_dialog,
         .terminate_upon_input = parameters_.terminate_upon_input,
         .curtain_local_user_session = parameters_.curtain_local_user_session,
+        .show_troubleshooting_tools = parameters_.show_troubleshooting_tools,
         .allow_troubleshooting_tools = parameters_.allow_troubleshooting_tools,
         .allow_reconnections = parameters_.allow_reconnections,
         .allow_file_transfer = parameters_.allow_file_transfer,
