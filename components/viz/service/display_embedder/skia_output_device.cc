@@ -35,9 +35,10 @@
 namespace viz {
 namespace {
 
+// TODO(crbug.com/1094361): Clean up the feature in M117.
 BASE_FEATURE(kAsyncGpuLatencyReporting,
              "AsyncGpuLatencyReporting",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 using ::perfetto::protos::pbzero::ChromeLatencyInfo;
 

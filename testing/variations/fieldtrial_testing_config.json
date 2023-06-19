@@ -915,28 +915,6 @@
             ]
         }
     ],
-    "AsyncGpuLatencyReporting": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "ios",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "disable_features": [
-                        "AsyncGpuLatencyReporting"
-                    ]
-                }
-            ]
-        }
-    ],
     "AudioProcessHighPriorityWin": [
         {
             "platforms": [
