@@ -27,6 +27,7 @@
 #import "ios/chrome/browser/ui/settings/password/account_storage_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_consumer.h"
+#import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator+private.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_mediator_delegate.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_metrics_utils.h"
 #import "ios/chrome/browser/ui/settings/password/password_details/password_details_table_view_controller_delegate.h"
@@ -115,17 +116,11 @@ bool ShouldDisplayCredentialAsMuted(
 @interface PasswordDetailsMediator () <
     PasswordCheckObserver,
     PasswordDetailsTableViewControllerDelegate> {
-  // The credentials to be displayed in the page.
-  std::vector<CredentialUIEntry> _credentials;
-
   // Password Check manager.
   scoped_refptr<IOSChromePasswordCheckManager> _manager;
 
   // Listens to compromised passwords changes.
   std::unique_ptr<PasswordCheckObserverBridge> _passwordCheckObserver;
-
-  // The context in which the password details are accessed.
-  DetailsContext _context;
 
   // The BrowserState pref service.
   raw_ptr<PrefService> _prefService;
@@ -184,7 +179,7 @@ bool ShouldDisplayCredentialAsMuted(
       manager->GetSavedPasswordsPresenter()->GetSavedCredentials();
 
   // Store all usernames by domain.
-  for (const auto& credential : _credentials) {
+  for (const auto& credential : self.credentials) {
     [signonRealms
         addObject:[NSString
                       stringWithCString:credential.GetFirstSignonRealm().c_str()
@@ -221,8 +216,8 @@ bool ShouldDisplayCredentialAsMuted(
 
   [self providePasswordsToConsumer];
 
-  if (_credentials[0].blocked_by_user) {
-    DCHECK_EQ(_credentials.size(), 1u);
+  if (self.credentials[0].blocked_by_user) {
+    DCHECK_EQ(self.credentials.size(), 1u);
     [_consumer setIsBlockedSite:YES];
   }
 }
@@ -236,9 +231,9 @@ bool ShouldDisplayCredentialAsMuted(
   // When details was opened from the Password Manager, only log password
   // check actions if the password is compromised.
   if (password_manager::ShouldRecordPasswordCheckUserAction(
-          _context, password.compromised)) {
+          self.context, password.compromised)) {
     password_manager::LogDeletePassword(
-        password_manager::GetWarningTypeForDetailsContext(_context));
+        password_manager::GetWarningTypeForDetailsContext(self.context));
   }
 
   // Map from PasswordDetails to CredentialUIEntry. Should support blocklists.
@@ -435,8 +430,8 @@ bool ShouldDisplayCredentialAsMuted(
   // Restoring a warning is only available in the
   // DetailsContext::kDismissedWarnings context, which is always showing only 1
   // credential.
-  CHECK(_credentials.size() == 1);
-  password_manager::CredentialUIEntry credential = _credentials[0];
+  CHECK(self.credentials.size() == 1);
+  password_manager::CredentialUIEntry credential = self.credentials[0];
   _manager->UnmuteCredential(credential);
   base::Erase(_credentials, credential);
   [self providePasswordsToConsumer];
@@ -461,18 +456,18 @@ bool ShouldDisplayCredentialAsMuted(
   // Fetch the insecure credentials to get their updated version.
   std::vector<password_manager::CredentialUIEntry> insecureCredentials =
       _manager->GetInsecureCredentials();
-  for (const CredentialUIEntry& credential : _credentials) {
+  for (const CredentialUIEntry& credential : self.credentials) {
     PasswordDetails* password =
         [[PasswordDetails alloc] initWithCredential:credential];
-    password.context = _context;
+    password.context = self.context;
     password.compromised = ShouldDisplayCredentialAsCompromised(
-        _context, credential, insecureCredentials);
+        self.context, credential, insecureCredentials);
 
     // `password.isCompromised` is always false for muted credentials, so
     // short-circuit to avoid unnecessary computation in
     // ShouldDisplayCredentialAsMuted.
     password.muted = !password.isCompromised &&
-                     ShouldDisplayCredentialAsMuted(_context, credential,
+                     ShouldDisplayCredentialAsMuted(self.context, credential,
                                                     insecureCredentials);
 
     // Only offer moving to the account if all of these hold.
@@ -481,7 +476,7 @@ bool ShouldDisplayCredentialAsMuted(
     // - The user is interested in saving passwords to the account, i.e. they
     // are opted in to account storage.
     password.shouldOfferToMoveToAccount =
-        _context == DetailsContext::kPasswordSettings &&
+        self.context == DetailsContext::kPasswordSettings &&
         password_manager::features_util::IsOptedInForAccountStorage(
             _prefService, _syncService) &&
         ShouldShowLocalOnlyIcon(credential, _syncService);
