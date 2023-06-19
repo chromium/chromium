@@ -86,6 +86,7 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
   on_file_change_callback_ = base::BindRepeating(
       &ImageAnnotationWorker::OnFileChange, weak_ptr_factory_.GetWeakPtr());
 
+  VLOG(1) << "Initializing DLCs.";
   if (use_ocr_) {
     DVLOG(1) << "Initializing OCR DLC.";
     if (IsOcrServiceReady()) {
@@ -118,8 +119,9 @@ void ImageAnnotationWorker::Initialize(AnnotationStorage* annotation_storage) {
 void ImageAnnotationWorker::OnDlcInstalled() {
   bool ocr_dlc_installed = IsOcrServiceReady();
   if ((use_ocr_ && !ocr_dlc_installed) || (use_ica_ && !ica_dlc_initialized_)) {
-    DVLOG(1) << "DLC is not ready. OCR: " << ocr_dlc_installed
-             << " ICA: " << ica_dlc_initialized_ << " Waiting.";
+    DVLOG(1) << "DLC is not ready. OCR: " << ocr_dlc_installed << "/"
+             << use_ocr_ << " ICA: " << ica_dlc_initialized_ << "/" << use_ica_
+             << " Waiting.";
     // It is expected to be ready on a first try. Also, it is not a time
     // sensitive task, so we do not need to implement a full-fledged observer.
     base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
@@ -131,7 +133,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
   }
 
   if (use_ica_ || use_ocr_) {
-    DVLOG(1) << "DLCs are ready. Watching for file changes.";
+    VLOG(1) << "DLCs are ready. Watching for file changes.";
     file_watcher_ = std::make_unique<base::FilePathWatcher>();
 
     DVLOG(1) << "Start WatchWithOptions " << root_path_;
