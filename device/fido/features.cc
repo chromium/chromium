@@ -48,10 +48,10 @@ BASE_FEATURE(kWebAuthCrosPlatformAuthenticator,
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(IS_ANDROID)
-// Not yet enabled by default.
+// Enabled in M116. Remove in or after M119.
 BASE_FEATURE(kWebAuthnAndroidHybridClientUi,
              "WebAuthenticationAndroidHybridClientUi",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 #endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kWebAuthnGoogleCorpRemoteDesktopClientPrivilege,
