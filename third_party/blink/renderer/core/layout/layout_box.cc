@@ -1174,28 +1174,83 @@ bool LayoutBox::ShouldUseAutoIntrinsicSize() const {
 
 bool LayoutBox::HasOverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
+
+  // We only override a size contained dimension.
   if (!ShouldApplyWidthContainment())
     return false;
 
-  return StyleRef().ContainIntrinsicWidth().has_value();
+  const StyleIntrinsicLength& intrinsic_length =
+      StyleRef().ContainIntrinsicWidth();
+  if (intrinsic_length.IsNoOp()) {
+    return false;
+  }
+
+  // If we have a length specified, we have an override in any case.
+  if (intrinsic_length.GetLength()) {
+    return true;
+  }
+
+  // Now we must be in the "auto none" case, so we only have an override if we
+  // have a last remembered size in the appropriate dimension and we should use
+  // auto size.
+  DCHECK(intrinsic_length.HasAuto());
+  if (!ShouldUseAutoIntrinsicSize()) {
+    return false;
+  }
+
+  const Element* element = DynamicTo<Element>(GetNode());
+  if (!element) {
+    return false;
+  }
+
+  return StyleRef().IsHorizontalWritingMode()
+             ? element->LastRememberedInlineSize().has_value()
+             : element->LastRememberedBlockSize().has_value();
 }
 
 bool LayoutBox::HasOverrideIntrinsicContentHeight() const {
   NOT_DESTROYED();
+
+  // We only override a size contained dimension.
   if (!ShouldApplyHeightContainment())
     return false;
 
-  return StyleRef().ContainIntrinsicHeight().has_value();
+  const StyleIntrinsicLength& intrinsic_length =
+      StyleRef().ContainIntrinsicHeight();
+  if (intrinsic_length.IsNoOp()) {
+    return false;
+  }
+
+  // If we have a length specified, we have an override in any case.
+  if (intrinsic_length.GetLength()) {
+    return true;
+  }
+
+  // Now we must be in the "auto none" case, so we only have an override if we
+  // have a last remembered size in the appropriate dimension and we should use
+  // auto size.
+  DCHECK(intrinsic_length.HasAuto());
+  if (!ShouldUseAutoIntrinsicSize()) {
+    return false;
+  }
+
+  const Element* element = DynamicTo<Element>(GetNode());
+  if (!element) {
+    return false;
+  }
+
+  return StyleRef().IsHorizontalWritingMode()
+             ? element->LastRememberedBlockSize().has_value()
+             : element->LastRememberedInlineSize().has_value();
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentWidth());
   const auto& style = StyleRef();
-  const absl::optional<StyleIntrinsicLength>& intrinsic_length =
-      style.ContainIntrinsicWidth();
-  DCHECK(intrinsic_length);
-  if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
+  const StyleIntrinsicLength& intrinsic_length = style.ContainIntrinsicWidth();
+  DCHECK(!intrinsic_length.IsNoOp());
+  if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
     if (const Element* elem = DynamicTo<Element>(GetNode())) {
       const absl::optional<LayoutUnit> width =
           StyleRef().IsHorizontalWritingMode()
@@ -1208,19 +1263,18 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentWidth() const {
       }
     }
   }
-  DCHECK(intrinsic_length->GetLength().IsFixed());
-  DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
-  return LayoutUnit(intrinsic_length->GetLength().Value());
+  // We must have a length because HasOverrideIntrinsicContentWidth() is true.
+  DCHECK(intrinsic_length.GetLength().has_value());
+  return *intrinsic_length.GetLength();
 }
 
 LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
   NOT_DESTROYED();
   DCHECK(HasOverrideIntrinsicContentHeight());
   const auto& style = StyleRef();
-  const absl::optional<StyleIntrinsicLength>& intrinsic_length =
-      style.ContainIntrinsicHeight();
-  DCHECK(intrinsic_length);
-  if (intrinsic_length->HasAuto() && ShouldUseAutoIntrinsicSize()) {
+  const StyleIntrinsicLength& intrinsic_length = style.ContainIntrinsicHeight();
+  DCHECK(!intrinsic_length.IsNoOp());
+  if (intrinsic_length.HasAuto() && ShouldUseAutoIntrinsicSize()) {
     if (const Element* elem = DynamicTo<Element>(GetNode())) {
       const absl::optional<LayoutUnit> height =
           StyleRef().IsHorizontalWritingMode()
@@ -1233,9 +1287,9 @@ LayoutUnit LayoutBox::OverrideIntrinsicContentHeight() const {
       }
     }
   }
-  DCHECK(intrinsic_length->GetLength().IsFixed());
-  DCHECK_GE(intrinsic_length->GetLength().Value(), 0.f);
-  return LayoutUnit(intrinsic_length->GetLength().Value());
+  // We must have a length because HasOverrideIntrinsicContentHeight() is true.
+  DCHECK(intrinsic_length.GetLength().has_value());
+  return *intrinsic_length.GetLength();
 }
 
 LayoutUnit LayoutBox::DefaultIntrinsicContentInlineSize() const {

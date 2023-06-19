@@ -3836,21 +3836,21 @@ const CSSValue* ComputedStyleUtils::ValueForStyleAutoColor(
 
 CSSValue* ComputedStyleUtils::ValueForIntrinsicLength(
     const ComputedStyle& style,
-    const absl::optional<StyleIntrinsicLength>& intrinsic_length) {
-  CSSValue* length = nullptr;
-  if (intrinsic_length) {
-    length = ComputedStyleUtils::ZoomAdjustedPixelValueForLength(
-        intrinsic_length->GetLength(), style);
-  }
-
-  if (!intrinsic_length) {
+    const StyleIntrinsicLength& intrinsic_length) {
+  if (intrinsic_length.IsNoOp()) {
     return CSSIdentifierValue::Create(CSSValueID::kNone);
   }
+
   CSSValueList* list = CSSValueList::CreateSpaceSeparated();
-  if (intrinsic_length->HasAuto()) {
+  if (intrinsic_length.HasAuto()) {
     list->Append(*CSSIdentifierValue::Create(CSSValueID::kAuto));
   }
-  list->Append(*length);
+
+  if (const absl::optional<LayoutUnit>& length = intrinsic_length.GetLength()) {
+    list->Append(*ZoomAdjustedPixelValue(*length, style));
+  } else {
+    list->Append(*CSSIdentifierValue::Create(CSSValueID::kNone));
+  }
   return list;
 }
 

@@ -37,15 +37,12 @@ class CSSIntrinsicLengthInterpolationType : public CSSInterpolationType {
                  double interpolation_fraction) const final;
 
   static std::unique_ptr<InterpolableValue>
-  CreateInterpolableIntrinsicDimension(
-      const absl::optional<StyleIntrinsicLength>&);
+  CreateInterpolableIntrinsicDimension(const StyleIntrinsicLength&);
 
  private:
-  absl::optional<StyleIntrinsicLength> GetIntrinsicDimension(
-      const ComputedStyle&) const;
-  void SetIntrinsicDimension(
-      ComputedStyleBuilder&,
-      const absl::optional<StyleIntrinsicLength>& dimension) const;
+  StyleIntrinsicLength GetIntrinsicDimension(const ComputedStyle&) const;
+  void SetIntrinsicDimension(ComputedStyleBuilder&,
+                             const StyleIntrinsicLength& dimension) const;
 
   InterpolationValue MaybeConvertNeutral(const InterpolationValue& underlying,
                                          ConversionCheckers&) const final;

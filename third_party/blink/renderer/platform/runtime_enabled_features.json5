@@ -806,6 +806,10 @@
       status: "experimental",
       base_feature: "none",
     },
+    {
+      name: "CSSContainIntrinsicSizeAutoNone",
+      status: "experimental",
+    },
     // Ablation study to try to measure very roughly memory savings from not saving
     // pretokenized strings in CSS custom properties.
     {

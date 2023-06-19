@@ -2541,8 +2541,8 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_intrinsic_length.h"],
       keywords: ["auto", "none"],
-      default_value: "absl::nullopt",
-      type_name: "absl::optional<StyleIntrinsicLength>",
+      default_value: "StyleIntrinsicLength()",
+      type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
     },
     {
@@ -2553,8 +2553,8 @@
       field_template: "external",
       include_paths: ["third_party/blink/renderer/core/style/style_intrinsic_length.h"],
       keywords: ["auto", "none"],
-      default_value: "absl::optional<StyleIntrinsicLength>()",
-      type_name: "absl::optional<StyleIntrinsicLength>",
+      default_value: "StyleIntrinsicLength()",
+      type_name: "StyleIntrinsicLength",
       converter: "ConvertIntrinsicDimension",
     },
     {

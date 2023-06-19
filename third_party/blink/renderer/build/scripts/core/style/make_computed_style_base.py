@@ -56,8 +56,8 @@ ALIGNMENT_ORDER = [
     'IntrinsicLength',
     'TextDecorationThickness',
     'StyleAspectRatio',
+    'StyleIntrinsicLength',
     'absl::optional<StyleScrollbarColor>',
-    'absl::optional<StyleIntrinsicLength>',
     'absl::optional<StyleOverflowClipMargin>',
     # Aligns like float
     'absl::optional<Length>',

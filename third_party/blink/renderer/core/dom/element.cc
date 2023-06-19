@@ -1282,12 +1282,9 @@ bool Element::ShouldUpdateLastRememberedBlockSize() const {
     return false;
   }
 
-  if (style->IsHorizontalWritingMode()) {
-    return style->ContainIntrinsicHeight() &&
-           style->ContainIntrinsicHeight()->HasAuto();
-  }
-  return style->ContainIntrinsicWidth() &&
-         style->ContainIntrinsicWidth()->HasAuto();
+  return style->IsHorizontalWritingMode()
+             ? style->ContainIntrinsicHeight().HasAuto()
+             : style->ContainIntrinsicWidth().HasAuto();
 }
 
 bool Element::ShouldUpdateLastRememberedInlineSize() const {
@@ -1296,12 +1293,9 @@ bool Element::ShouldUpdateLastRememberedInlineSize() const {
     return false;
   }
 
-  if (style->IsHorizontalWritingMode()) {
-    return style->ContainIntrinsicWidth() &&
-           style->ContainIntrinsicWidth()->HasAuto();
-  }
-  return style->ContainIntrinsicHeight() &&
-         style->ContainIntrinsicHeight()->HasAuto();
+  return style->IsHorizontalWritingMode()
+             ? style->ContainIntrinsicWidth().HasAuto()
+             : style->ContainIntrinsicHeight().HasAuto();
 }
 
 void Element::SetLastRememberedInlineSize(absl::optional<LayoutUnit> size) {

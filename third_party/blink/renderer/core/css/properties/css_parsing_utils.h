@@ -212,7 +212,9 @@ CSSValue* ConsumeImageOrNone(CSSParserTokenRange&, const CSSParserContext&);
 
 CSSValue* ConsumeAxis(CSSParserTokenRange&, const CSSParserContext& context);
 
-// Syntax: none | <length> | auto && <length>
+// Syntax: none | <length> | auto && <length> | auto && none
+// If this returns a CSSIdentifierValue then it is "none"
+// Otherwise, this returns a list of 1 or 2 elements for the rest of the syntax
 CSSValue* ConsumeIntrinsicSizeLonghand(CSSParserTokenRange&,
                                        const CSSParserContext&);
 
