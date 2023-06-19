@@ -94,11 +94,26 @@ class StatisticsRecorderTest : public testing::TestWithParam<bool> {
   // NotInitialized to ensure a clean global state.
   void UninitializeStatisticsRecorder() {
     statistics_recorder_.reset();
-    delete StatisticsRecorder::top_;
-    DCHECK(!StatisticsRecorder::top_);
+
+    // Grab the lock, so we can access |top_| to satisfy locking annotations.
+    // Normally, this wouldn't be OK (we're taking a pointer to |top_| and then
+    // freeing it outside the lock), but in this case, it's benign because the
+    // test is single-threaded.
+    //
+    // Note: We can't clear |top_| in the locked block, because the
+    // StatisticsRecorder destructor expects that the lock isn't already held.
+    {
+      const absl::MutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
+      statistics_recorder_.reset(StatisticsRecorder::top_);
+    }
+    statistics_recorder_.reset();
+    DCHECK(!HasGlobalRecorder());
   }
 
-  bool HasGlobalRecorder() { return StatisticsRecorder::top_ != nullptr; }
+  bool HasGlobalRecorder() {
+    const absl::ReaderMutexLock auto_lock(StatisticsRecorder::lock_.Pointer());
+    return StatisticsRecorder::top_ != nullptr;
+  }
 
   Histogram* CreateHistogram(const char* name,
                              HistogramBase::Sample min,
