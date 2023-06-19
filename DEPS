@@ -1483,7 +1483,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/kotlin_stdlib',
-              'version': 'z4_AYYz2Tw5GKikuiDLTuxxf0NJVGLkC3CVcyiIpc-gC',
+              'version': 'bhkmCcKzQ5IXUsDnWkRfouPfdzzyrgw40PUzRvArrGEC',
           },
       ],
       'condition': 'checkout_android',
