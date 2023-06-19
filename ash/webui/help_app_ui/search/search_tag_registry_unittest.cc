@@ -43,7 +43,7 @@ class HelpAppSearchTagRegistryTest : public testing::Test {
 
     local_search_service_proxy_->GetIndex(
         local_search_service::IndexId::kHelpAppLauncher,
-        local_search_service::Backend::kInvertedIndex,
+        local_search_service::Backend::kLinearMap,
         index_remote_.BindNewPipeAndPassReceiver());
   }
 
