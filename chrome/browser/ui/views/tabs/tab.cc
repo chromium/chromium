@@ -316,9 +316,7 @@ void Tab::Layout() {
     }
     // Add space for insets outside the favicon bounds.
     favicon_bounds.Inset(-icon_->GetInsets());
-    favicon_bounds.set_size(
-        gfx::Size(icon_->GetPreferredSize().width(),
-                  contents_rect.height() - favicon_bounds.y()));
+    favicon_bounds.set_size(icon_->GetPreferredSize());
   }
   icon_->SetBoundsRect(favicon_bounds);
   icon_->SetVisible(showing_icon_);

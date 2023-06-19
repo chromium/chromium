@@ -38,6 +38,7 @@ class GM2TabStyle : public TabStyle {
   int GetTopCornerRadius() const override;
   int GetBottomCornerRadius() const override;
   float GetSelectedTabOpacity() const override;
+  gfx::Insets GetContentsInsets() const override;
 };
 class ChromeRefresh2023TabStyle : public GM2TabStyle {
  public:
@@ -48,7 +49,7 @@ class ChromeRefresh2023TabStyle : public GM2TabStyle {
   int GetTabOverlap() const override;
   gfx::Size GetSeparatorSize() const override;
   gfx::Insets GetSeparatorMargins() const override;
-  int GetContentsHorizontalInsetSize() const override;
+  gfx::Insets GetContentsInsets() const override;
 };
 
 }  // namespace
@@ -68,13 +69,15 @@ int GM2TabStyle::GetStandardWidth() const {
 
 int GM2TabStyle::GetPinnedWidth() const {
   constexpr int kTabPinnedContentWidth = 24;
-  return kTabPinnedContentWidth + GetContentsHorizontalInsetSize() * 2;
+  return kTabPinnedContentWidth + GetContentsInsets().left() +
+         GetContentsInsets().right();
 }
 
 int GM2TabStyle::GetMinimumActiveWidth() const {
   const int close_button_size = GetLayoutConstant(TAB_CLOSE_BUTTON_SIZE);
+  const gfx::Insets insets = GetContentsInsets();
   const int min_active_width =
-      close_button_size + GetContentsHorizontalInsetSize() * 2;
+      close_button_size + insets.left() + insets.right();
   if (base::FeatureList::IsEnabled(features::kScrollableTabStrip)) {
     return std::max(
         min_active_width,
@@ -140,8 +143,9 @@ int GM2TabStyle::GetBottomCornerRadius() const {
       views::Emphasis::kHigh);
 }
 
-int TabStyle::GetContentsHorizontalInsetSize() const {
-  return GetBottomCornerRadius() * 2;
+gfx::Insets GM2TabStyle::GetContentsInsets() const {
+  return gfx::Insets::TLBR(0, GetBottomCornerRadius() * 2, 0,
+                           GetBottomCornerRadius() * 2);
 }
 
 float GM2TabStyle::GetSelectedTabOpacity() const {
@@ -173,8 +177,9 @@ gfx::Size ChromeRefresh2023TabStyle::GetSeparatorSize() const {
                    kChromeRefreshSeparatorHeight);
 }
 
-int ChromeRefresh2023TabStyle::GetContentsHorizontalInsetSize() const {
-  return GetBottomCornerRadius() + 8;
+gfx::Insets ChromeRefresh2023TabStyle::GetContentsInsets() const {
+  return gfx::Insets::TLBR(6, GetBottomCornerRadius() + 8, 12,
+                           GetBottomCornerRadius() + 8);
 }
 
 gfx::Insets ChromeRefresh2023TabStyle::GetSeparatorMargins() const {

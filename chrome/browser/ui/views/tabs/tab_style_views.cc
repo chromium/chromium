@@ -405,11 +405,12 @@ SkPath GM2TabStyleViews::GetPath(TabStyle::PathType path_type,
 
 gfx::Insets GM2TabStyleViews::GetContentsInsets() const {
   const int stroke_thickness = GetStrokeThickness();
-  const int horizontal_inset = tab_style()->GetContentsHorizontalInsetSize();
+  gfx::Insets base_style_insets = tab_style()->GetContentsInsets();
   return gfx::Insets::TLBR(
-      stroke_thickness, horizontal_inset,
-      stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
-      horizontal_inset);
+             stroke_thickness, 0,
+             stroke_thickness + GetLayoutConstant(TABSTRIP_TOOLBAR_OVERLAP),
+             0) +
+         base_style_insets;
 }
 
 float GM2TabStyleViews::GetZValue() const {

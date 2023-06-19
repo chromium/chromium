@@ -148,7 +148,7 @@ class TabStyle {
 
   // Returns how far from the leading and trailing edges of a tab the contents
   // should actually be laid out.
-  virtual int GetContentsHorizontalInsetSize() const;
+  virtual gfx::Insets GetContentsInsets() const = 0;
 
   // The largest valid value of TabStyle::GetZValue(). Currently,
   // GM2TabStyle::GetZValue is the only implementation, and it can't return
