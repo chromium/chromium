@@ -23,6 +23,7 @@
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
+#import "ios/chrome/browser/ui/lens/lens_availability.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/toolbar_consumer.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/web/web_navigation_browser_agent.h"
 #import "ios/chrome/common/ui/colors/semantic_color_names.h"
 #import "ios/chrome/grit/ios_strings.h"
+#import "ios/public/provider/chrome/browser/lens/lens_api.h"
 #import "ios/public/provider/chrome/browser/voice_search/voice_search_api.h"
 #import "ios/web/public/favicon/favicon_status.h"
 #import "ios/web/public/navigation/navigation_item.h"
@@ -434,14 +436,23 @@
 
 /// Returns the menu for the new tab button.
 - (UIMenu*)menuForNewTabButton {
-  UIAction* QRCodeSearch = [self.actionFactory actionToShowQRScanner];
   UIAction* voiceSearch = [self.actionFactory actionToStartVoiceSearch];
   UIAction* newSearch = [self.actionFactory actionToStartNewSearch];
   UIAction* newIncognitoSearch =
       [self.actionFactory actionToStartNewIncognitoSearch];
+  UIAction* cameraSearch;
 
-  NSArray* staticActions =
-      @[ newSearch, newIncognitoSearch, voiceSearch, QRCodeSearch ];
+  const bool useLens =
+      lens_availability::CheckAndLogAvailabilityForLensEntryPoint(
+          LensEntrypoint::PlusButton, [self isGoogleDefaultSearchEngine]);
+  NSArray* staticActions;
+  if (useLens) {
+    cameraSearch = [self.actionFactory
+        actionToSearchWithLensWithEntryPoint:LensEntrypoint::PlusButton];
+  } else {
+    cameraSearch = [self.actionFactory actionToShowQRScanner];
+  }
+  staticActions = @[ newSearch, newIncognitoSearch, voiceSearch, cameraSearch ];
 
   UIMenuElement* clipboardAction = [self menuElementForPasteboard];
 
@@ -503,6 +514,17 @@
   int index = self.webState->GetNavigationManager()->GetIndexOfItem(item);
   DCHECK_NE(index, -1);
   self.webState->GetNavigationManager()->GoToIndex(index);
+}
+
+- (BOOL)isGoogleDefaultSearchEngine {
+  DCHECK(self.templateURLService);
+  const TemplateURL* defaultURL =
+      self.templateURLService->GetDefaultSearchProvider();
+  BOOL isGoogleDefaultSearchProvider =
+      defaultURL &&
+      defaultURL->GetEngineType(self.templateURLService->search_terms_data()) ==
+          SEARCH_ENGINE_GOOGLE;
+  return isGoogleDefaultSearchProvider;
 }
 
 @end

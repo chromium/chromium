@@ -10,6 +10,7 @@ include_rules = [
   "+ios/chrome/browser/ui/gestures",
   "+ios/chrome/browser/ui/keyboard/key_command_actions.h",
   "+ios/chrome/browser/ui/keyboard/UIKeyCommand+Chrome.h",
+  "+ios/chrome/browser/ui/lens",
   "+ios/chrome/browser/ui/toolbar_container",
   "+ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h",
   "+ios/chrome/browser/ui/settings/utils/pref_backed_boolean.h",

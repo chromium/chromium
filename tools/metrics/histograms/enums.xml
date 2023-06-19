@@ -54689,6 +54689,9 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="36" label="Search Copied Image"/>
   <int value="37" label="Search Copied URL"/>
   <int value="38" label="Search Copied Text"/>
+  <int value="39" label="Pin Tab"/>
+  <int value="40" label="Unpin Tab"/>
+  <int value="41" label="Lens Camera Search"/>
 </enum>
 
 <enum name="IOSMenuScenario">

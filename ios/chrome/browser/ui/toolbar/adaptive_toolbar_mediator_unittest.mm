@@ -13,6 +13,7 @@
 #import "components/open_from_clipboard/clipboard_recent_content.h"
 #import "components/open_from_clipboard/fake_clipboard_recent_content.h"
 #import "ios/chrome/browser/policy/policy_util.h"
+#import "ios/chrome/browser/search_engines/template_url_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser/test/test_browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/test_chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
@@ -68,6 +69,10 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
 
     TestChromeBrowserState::Builder test_cbs_builder;
 
+    test_cbs_builder.AddTestingFactory(
+        ios::TemplateURLServiceFactory::GetInstance(),
+        ios::TemplateURLServiceFactory::GetDefaultFactory());
+
     chrome_browser_state_ = test_cbs_builder.Build();
     test_browser_ = std::make_unique<TestBrowser>(chrome_browser_state_.get());
     WebNavigationBrowserAgent::CreateForBrowser(test_browser_.get());
@@ -86,6 +91,9 @@ class AdaptiveToolbarMediatorTest : public PlatformTest {
     mediator_.actionFactory =
         [[BrowserActionFactory alloc] initWithBrowser:test_browser_.get()
                                              scenario:kTestMenuScenario];
+    mediator_.templateURLService =
+        ios::TemplateURLServiceFactory::GetForBrowserState(
+            chrome_browser_state_.get());
     consumer_ = OCMProtocolMock(@protocol(ToolbarConsumer));
     strict_consumer_ = OCMStrictProtocolMock(@protocol(ToolbarConsumer));
     SetUpWebStateList();

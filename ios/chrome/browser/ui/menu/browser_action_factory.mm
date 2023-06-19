@@ -16,7 +16,9 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
+#import "ios/chrome/browser/shared/public/commands/lens_commands.h"
 #import "ios/chrome/browser/shared/public/commands/load_query_commands.h"
+#import "ios/chrome/browser/shared/public/commands/open_lens_input_selection_command.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
 #import "ios/chrome/browser/shared/public/commands/qr_scanner_commands.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -247,6 +249,27 @@
                 block:^{
                   [handler showQRScanner];
                 }];
+}
+
+- (UIAction*)actionToSearchWithLensWithEntryPoint:(LensEntrypoint)entryPoint {
+  id<LensCommands> handler =
+      HandlerForProtocol(self.browser->GetCommandDispatcher(), LensCommands);
+  return
+      [self actionWithTitle:l10n_util::GetNSString(
+                                IDS_IOS_TOOLS_MENU_LENS_CAMERA_SEARCH)
+                      image:CustomSymbolWithPointSize(kCameraLensSymbol,
+                                                      kSymbolActionPointSize)
+                       type:MenuActionType::LensCameraSearch
+                      block:^{
+                        OpenLensInputSelectionCommand* command =
+                            [[OpenLensInputSelectionCommand alloc]
+                                    initWithEntryPoint:entryPoint
+                                     presentationStyle:
+                                         LensInputSelectionPresentationStyle::
+                                             SlideFromRight
+                                presentationCompletion:nil];
+                        [handler openLensInputSelection:command];
+                      }];
 }
 
 - (UIAction*)actionToStartVoiceSearch {

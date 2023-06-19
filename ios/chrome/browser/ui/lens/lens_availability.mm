@@ -25,6 +25,8 @@ const char kIOSLensNewTabPageSupportStatusHistogramName[] =
     "Mobile.NewTabPage.LensSupportStatus";
 const char kIOSSpotlightSupportStatusHistogramName[] =
     "Mobile.Spotlight.LensSupportStatus";
+const char kIOSPlusButtonSupportStatusHistogramName[] =
+    "Mobile.PlusButton.LensSupportStatus";
 
 namespace lens_availability {
 bool CheckAndLogAvailabilityForLensEntryPoint(
@@ -70,6 +72,13 @@ bool CheckAndLogAvailabilityForLensEntryPoint(
         flag_enabled = NO;
       }
       availability_metric_name = kIOSSpotlightSupportStatusHistogramName;
+      break;
+    case LensEntrypoint::PlusButton:
+      // Plus Button entrypoint is controlled by the ntp flag.
+      if (!base::FeatureList::IsEnabled(kEnableLensInNTP)) {
+        flag_enabled = NO;
+      }
+      availability_metric_name = kIOSPlusButtonSupportStatusHistogramName;
       break;
     default:
       NOTREACHED() << "Unsupported Lens Entry Point.";

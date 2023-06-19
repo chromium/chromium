@@ -4341,6 +4341,9 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_TOOLS_MENU_QR_SCANNER" desc="The iOS menu item for opening the QR Code Scanner screen, allowing the user to scan QR code.">
         Scan QR Code
       </message>
+      <message name="IDS_IOS_TOOLS_MENU_LENS_CAMERA_SEARCH" desc="The iOS menu item for searching images with the device camera using Google Lens.">
+        Lens Camera Search
+      </message>
       <message name="IDS_IOS_TOOLS_MENU_READING_LIST" desc="The iOS menu item for opening the reading list [iOS only]" meaning="Open the Reading List menu. [Length: Unlimited]">
         Reading List
       </message>

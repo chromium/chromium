@@ -8,6 +8,7 @@
 #import <UIKit/UIKit.h>
 
 #import "base/ios/block_types.h"
+#import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/menu/action_factory.h"
 #import "ios/chrome/browser/ui/menu/menu_action_type.h"
 #import "ios/chrome/browser/window_activities/window_activity_helpers.h"
@@ -65,6 +66,9 @@ class GURL;
 - (UIAction*)actionOpenImageInNewTabWithUrlLoadParams:(UrlLoadParams)params
                                            completion:
                                                (ProceduralBlock)completion;
+
+// Creates a UIAction instance for searching with Lens.
+- (UIAction*)actionToSearchWithLensWithEntryPoint:(LensEntrypoint)entryPoint;
 
 // Creates a UIAction instance for opening a new tab.
 - (UIAction*)actionToOpenNewTab;
