@@ -995,7 +995,8 @@ chrome.fileManagerPrivate.ParsedTrashInfoFile;
  *   requiredSpaceBytes: number,
  *   bytesToPin: number,
  *   pinnedBytes: number,
- *   filesToPin: number
+ *   filesToPin: number,
+ *   remainingSeconds: number
  * }}
  */
 chrome.fileManagerPrivate.BulkPinProgress;

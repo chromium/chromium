@@ -44,6 +44,7 @@ component("drivefs") {
     "//chromeos/ash/components/disks",
     "//chromeos/ash/components/drivefs/mojom",
     "//chromeos/ash/components/drivefs/mojom:pin_manager_types",
+    "//chromeos/ash/components/file_manager",
     "//chromeos/ash/components/network",
     "//chromeos/components/mojo_bootstrap",
     "//chromeos/dbus/power:power",

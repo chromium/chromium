@@ -1267,6 +1267,9 @@ dictionary BulkPinProgress {
 
   // Total number of files to pin.
   long filesToPin;
+
+  // Estimated time remaining to pin all the `bytesToPin`.
+  double remainingSeconds;
 };
 
 // Callback that does not take arguments.

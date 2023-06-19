@@ -356,39 +356,7 @@ export class ProgressCenterPanel {
           '';
     }
 
-    const locale = util.getCurrentLocaleOrDefault();
-    let minutes = Math.ceil(seconds / 60);
-    if (minutes <= 1) {
-      // Less than one minute. Display remaining time in seconds.
-      const formatter = new Intl.NumberFormat(
-          locale, {style: 'unit', unit: 'second', unitDisplay: 'long'});
-      return strf(
-          'TIME_REMAINING_ESTIMATE', formatter.format(Math.ceil(seconds)));
-    }
-
-    const minuteFormatter = new Intl.NumberFormat(
-        locale, {style: 'unit', unit: 'minute', unitDisplay: 'long'});
-
-    const hours = Math.floor(minutes / 60);
-    if (hours == 0) {
-      // Less than one hour. Display remaining time in minutes.
-      return strf('TIME_REMAINING_ESTIMATE', minuteFormatter.format(minutes));
-    }
-
-    minutes -= hours * 60;
-
-    const hourFormatter = new Intl.NumberFormat(
-        locale, {style: 'unit', unit: 'hour', unitDisplay: 'long'});
-
-    if (minutes == 0) {
-      // Hours but no minutes.
-      return strf('TIME_REMAINING_ESTIMATE', hourFormatter.format(hours));
-    }
-
-    // Hours and minutes.
-    return strf(
-        'TIME_REMAINING_ESTIMATE_2', hourFormatter.format(hours),
-        minuteFormatter.format(minutes));
+    return util.secondsToRemainingTimeString(seconds);
   }
 
   /**

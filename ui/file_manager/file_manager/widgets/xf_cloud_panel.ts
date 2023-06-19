@@ -76,19 +76,43 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            if (!value) {
+            try {
+              const seconds = parseInt(value, 10);
+              return util.isNullOrUndefined(seconds) || Number.isNaN(seconds) ||
+                      seconds < 0 ?
+                  null :
+                  seconds;
+            } catch (e) {
               return null;
             }
-            if (value.toUpperCase() in CloudPanelType) {
-              return value as CloudPanelType;
-            }
-            console.warn(`Failed to convert ${value} to CloudPanelType`);
-            return null;
           },
       toAttribute: (key: keyof CloudPanelType) => key,
     },
   })
   type?: CloudPanelType;
+
+  @property({
+    type: Number,
+    reflect: true,
+    converter: {
+      fromAttribute:
+          (value: string) => {
+            let seconds = null;
+            try {
+              seconds = parseInt(value, 10);
+            } catch (e) {
+              return null;
+            }
+            if (util.isNullOrUndefined(seconds) || Number.isNaN(seconds) ||
+                seconds < 0) {
+              return null;
+            }
+            return seconds;
+          },
+      toAttribute: (value: number) => String(value),
+    },
+  })
+  seconds?: number;
 
   /**
    * The cloud panel uses the `CrActionMenu` to provide the dialog behaviour and
@@ -190,7 +214,11 @@ export class XfCloudPanel extends XfBase {
               value="${this.percentage}">
             ${this.percentage}%
           </progress>
-          <div class="progress-description">3 minutes remaining</div>
+          ${
+        this.seconds && this.seconds > 0 ?
+            html`<div class="progress-description">${
+                util.secondsToRemainingTimeString(this.seconds)}</div>` :
+            html``}
         </div>
         <div class="static" id="progress-finished">
           <xf-icon type="${

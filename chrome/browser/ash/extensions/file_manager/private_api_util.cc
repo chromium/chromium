@@ -831,6 +831,7 @@ extensions::api::file_manager_private::BulkPinProgress BulkPinProgressToJs(
   result.bytes_to_pin = progress.bytes_to_pin;
   result.pinned_bytes = progress.pinned_bytes;
   result.files_to_pin = progress.files_to_pin;
+  result.remaining_seconds = progress.remaining_seconds;
   return result;
 }
 
