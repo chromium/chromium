@@ -11,6 +11,7 @@
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
 #import "components/bookmarks/common/bookmark_pref_names.h"
+#import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/tabs/inactive_tabs/features.h"
@@ -343,6 +344,19 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
         setBoolValue:YES
          forUserPref:base::SysUTF8ToNSString(
                          bookmarks::prefs::kEditBookmarksEnabled)];
+  }
+
+  // Shutdown network process after tests run to avoid hanging from
+  // clearing browsing data.
+  // See https://crbug.com/1419875.
+  [ChromeEarlGrey killWebKitNetworkProcess];
+
+  // Wait for the end of sign-out before starting following tests.
+  // See https://crbug.com/1448618.
+  // Should be removed after TODO(crbug.com/1451733).
+  if ([self isRunningTest:@selector
+            (testSyncSpinnerDismissedInRecentlyClosedTabs)]) {
+    [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
   }
 
   [super tearDown];
@@ -2508,8 +2522,11 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
 
 // Tests that once an account is signed in, the syncing spinner is eventually
 // dismissed: https://crbug.com/1422634.
-// TODO(crbug.com/1448618): Disabled due to causing lots of flake.
-- (void)DISABLED_testSyncSpinnerDismissedInRecentlyClosedTabs {
+- (void)testSyncSpinnerDismissedInRecentlyClosedTabs {
+  // Clear browsing history to reduce delay during sign-in and fix this test's
+  // flakiness on iOS 16.
+  [ChromeEarlGrey clearBrowsingHistory];
+
   // Sign-in with fake identity.
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity];
@@ -2523,24 +2540,9 @@ void EchoURLDefaultSearchEngineResponseProvider::GetResponseHeadersAndBody(
       performAction:grey_tap()];
 
   // Wait for the syncing view to disappear.
-  id<GREYMatcher> spinnerMatcher =
-      grey_accessibilityID(kTableViewActivityIndicatorHeaderFooterViewId);
-
-  NSString* conditionDescription =
-      @"Syncing spinner should disappear before timeout";
-  GREYCondition* waitForSpinnerDisappearance = [GREYCondition
-      conditionWithName:conditionDescription
-                  block:^{
-                    NSError* error = nil;
-                    [[EarlGrey selectElementWithMatcher:spinnerMatcher]
-                        assertWithMatcher:grey_nil()
-                                    error:&error];
-                    return error == nil;
-                  }];
-
-  GREYAssertTrue([waitForSpinnerDisappearance
-                     waitWithTimeout:base::Seconds(5).InSecondsF()],
-                 conditionDescription);
+  [ChromeEarlGrey
+      waitForUIElementToDisappearWithMatcher:
+          grey_accessibilityID(kTableViewActivityIndicatorHeaderFooterViewId)];
 }
 
 // Checks that tabs are sorted by their recency when the feature is enabled.

@@ -86,7 +86,7 @@ id<GREYMatcher> SignedInAccountsDialogOkButtonMatcher() {
   [ChromeEarlGrey waitForMatcher:SignedInAccountsDialogMatcher()];
 
   // Verify that signed out dismisses the signed-in accounts view
-  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
   [[EarlGrey selectElementWithMatcher:SignedInAccountsDialogMatcher()]
       assertWithMatcher:grey_nil()];
 }

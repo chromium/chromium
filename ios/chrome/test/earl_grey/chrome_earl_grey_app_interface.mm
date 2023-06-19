@@ -711,8 +711,8 @@ NSString* SerializedValue(const base::Value* value) {
   return nil;
 }
 
-+ (void)signOutAndClearIdentities {
-  chrome_test_util::SignOutAndClearIdentities();
++ (void)signOutAndClearIdentitiesWithCompletion:(ProceduralBlock)completion {
+  chrome_test_util::SignOutAndClearIdentities(completion);
 }
 
 + (BOOL)hasIdentities {

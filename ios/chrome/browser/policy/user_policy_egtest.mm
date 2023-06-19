@@ -236,7 +236,7 @@ void VerifyTheNotificationUI() {
   VerifyThatPoliciesAreSet();
 
   // Verify that the policies are cleared on sign out.
-  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
   VerifyThatPoliciesAreNotSet();
 }
 

@@ -269,7 +269,7 @@ void OpenGoogleServicesSettings() {
   // triggered again when tearing down because the browser is signed out. Making
   // sure that sign-out is done and that the sign-in screen animation is done
   // before tearing down avoids the conflict.
-  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
   [ChromeEarlGrey waitForMatcher:GetForcedSigninScreenMatcher()];
 
   [super tearDown];

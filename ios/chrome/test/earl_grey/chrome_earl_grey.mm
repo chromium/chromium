@@ -15,6 +15,7 @@
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/test/earl_grey/chrome_earl_grey_app_interface.h"
 #import "ios/chrome/test/earl_grey/chrome_matchers.h"
+#import "ios/chrome/test/earl_grey/chrome_test_case_app_interface.h"
 #import "ios/chrome/test/scoped_eg_synchronization_disabler.h"
 #import "ios/testing/earl_grey/app_launch_configuration.h"
 #import "ios/testing/earl_grey/app_launch_manager.h"
@@ -1232,9 +1233,25 @@ id<GREYAction> grey_longPressWithDuration(base::TimeDelta duration) {
 
 #pragma mark - SignIn Utilities (EG2)
 
-- (void)signOutAndClearIdentities {
-  [ChromeEarlGreyAppInterface signOutAndClearIdentities];
+- (void)signOutAndClearIdentitiesAndWaitForCompletion {
+  __block BOOL isSignoutFinished = NO;
+  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:^{
+    isSignoutFinished = YES;
+  }];
 
+  GREYCondition* signOutFinished = [GREYCondition
+      conditionWithName:@"Sign-out done, and identities & browsing data cleared"
+                  block:^{
+                    return isSignoutFinished;
+                  }];
+  bool success =
+      [signOutFinished waitWithTimeout:kWaitForActionTimeout.InSecondsF()];
+  EG_TEST_HELPER_ASSERT_TRUE(
+      success, @"Failed waiting for sign-out & cleaning completion");
+}
+
+- (void)signOutAndClearIdentities {
+  [ChromeEarlGreyAppInterface signOutAndClearIdentitiesWithCompletion:nil];
   GREYCondition* allIdentitiesCleared = [GREYCondition
       conditionWithName:@"All Chrome identities were cleared"
                   block:^{
