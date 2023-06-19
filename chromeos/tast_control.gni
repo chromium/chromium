@@ -336,6 +336,12 @@ tast_disabled_tests_from_chrome_all = [
   "arc.AudioValidity.record",
   "arc.BuildProperties",
 
+  # https://crbug.com/1455848
+  "arc.CheckAndroidVersion",
+  "arc.ContainerMount",
+  "arc.Downloads",
+  "network.ConfigBaseline.login",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
