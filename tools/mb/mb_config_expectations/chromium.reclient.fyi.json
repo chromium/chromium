@@ -12,7 +12,7 @@
     },
     "build2": {
       "gn_args": {
-        "concurrent_links": 50,
+        "concurrent_links": 30,
         "dcheck_always_on": false,
         "ffmpeg_branding": "Chrome",
         "is_component_build": false,
@@ -35,7 +35,7 @@
   },
   "Linux Builder reclient staging": {
     "gn_args": {
-      "concurrent_links": 50,
+      "concurrent_links": 30,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -57,7 +57,7 @@
   },
   "Linux Builder reclient test": {
     "gn_args": {
-      "concurrent_links": 50,
+      "concurrent_links": 30,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,

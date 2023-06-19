@@ -222,6 +222,9 @@ ci.builder(
         short_name = "bld",
     ),
     cq_mirrors_console_view = "mirrors",
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
 )
 
 ci.builder(

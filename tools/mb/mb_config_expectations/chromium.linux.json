@@ -88,13 +88,15 @@
   },
   "Linux Builder": {
     "gn_args": {
+      "concurrent_links": 30,
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
       "is_debug": false,
       "proprietary_codecs": true,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "Linux Builder (Wayland)": {

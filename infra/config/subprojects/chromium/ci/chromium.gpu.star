@@ -90,6 +90,9 @@ ci.gpu.linux_builder(
         category = "Linux",
     ),
     cq_mirrors_console_view = "mirrors",
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
 )
 
 ci.gpu.linux_builder(
