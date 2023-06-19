@@ -847,9 +847,15 @@ public abstract class UrlBar extends AutocompleteEditText {
                         // getOffsetForHorizontal is very slow. getOffsetForAdvance is much faster.
                         finalVisibleCharIndex = textLayout.getPaint().getOffsetForAdvance(
                                 url, 0, urlTextLength, 0, urlTextLength, false, measuredWidth);
-                        assert finalVisibleCharIndex
-                                == textLayout.getOffsetForHorizontal(0, measuredWidth)
-                            : "scrollToTLD incorrect optimized finalVisibleCharIndex";
+
+                        // TODO(crbug.com/1456189) If the indexes differ, then that means we have
+                        // bidirectional text, so we clear the visible hint because it cannot be
+                        // correctly calculated.
+                        int finalVisibleCharIndexSlow =
+                                textLayout.getOffsetForHorizontal(0, measuredWidth);
+                        if (finalVisibleCharIndex != finalVisibleCharIndexSlow) {
+                            mVisibleTextPrefixHint = null;
+                        }
                     } else {
                         finalVisibleCharIndex = textLayout.getOffsetForHorizontal(0, measuredWidth);
                     }
