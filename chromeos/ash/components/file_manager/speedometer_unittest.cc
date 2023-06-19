@@ -125,7 +125,7 @@ TEST(SpeedometerTest, Samples) {
   // The remaining time should increase from the previous value.
   EXPECT_LT(41, round(meter.GetRemainingSeconds()));
 
-  // When all samples have the same value the remaining time goes to inifity,
+  // When all samples have the same value the remaining time goes to infinity,
   // because the Linear Interpolation expects an inclination/slope, but with all
   // values the same, it becomes a horizontal line, meaning that the bytes will
   // never grow towards the total bytes.

@@ -40,7 +40,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
   // Number of samples currently maintained.
   size_t GetSampleCount() const;
 
-  // Projected remaining time, it can be negative or inifity.
+  // Projected remaining time, it can be negative or infinity.
   double GetRemainingSeconds() const;
 
   // Adds a sample with the current timestamp and the given number of |bytes|
