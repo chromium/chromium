@@ -31,6 +31,14 @@ class OrderedAtomic {
     return value_.load(memory_order);
   }
 
+  T load_unordered(std::memory_order memory_order = std::memory_order_seq_cst) const {
+    if (recordreplay::AreEventsDisallowed()) {
+      recordreplay::AutoPassThroughEvents pass_through;
+      return value_.load(memory_order);
+    }
+    return value_.load(memory_order);
+  }
+
   void store(T v, std::memory_order memory_order = std::memory_order_seq_cst) {
     AutoOrderedLock ordered(ordered_lock_id_);
     value_.store(v, memory_order);

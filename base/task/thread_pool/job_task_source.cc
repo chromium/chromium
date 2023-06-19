@@ -64,6 +64,10 @@ JobTaskSource::State::Value JobTaskSource::State::Load() const {
   return {value_.load(std::memory_order_relaxed)};
 }
 
+JobTaskSource::State::Value JobTaskSource::State::RecordReplayLoadUnordered() const {
+  return {value_.load_unordered(std::memory_order_relaxed)};
+}
+
 JobTaskSource::JoinFlag::JoinFlag() = default;
 JobTaskSource::JoinFlag::~JoinFlag() = default;
 
@@ -242,7 +246,7 @@ TaskSource::RunStatus JobTaskSource::WillRunTask() {
 size_t JobTaskSource::GetRemainingConcurrency() const {
   // It is safe to read |state_| without a lock since this variable is atomic,
   // and no other state is synchronized with GetRemainingConcurrency().
-  const auto state = TS_UNCHECKED_READ(state_).Load();
+  const auto state = TS_UNCHECKED_READ(state_).RecordReplayLoadUnordered();
   if (state.is_canceled())
     return 0;
   const size_t max_concurrency = GetMaxConcurrency(state.worker_count());
