@@ -9,7 +9,7 @@ import {maybeShowTooltip} from '../common/js/dom_utils.js';
 import {isEntryInsideComputers, isEntryInsideDrive, isEntryInsideMyDrive, isGrandRootEntryInDrives, isMyFilesEntry, isTrashEntry, isVolumeEntry} from '../common/js/entry_utils.js';
 import {EntryList, FakeEntryImpl, VolumeEntry} from '../common/js/files_app_entry_types.js';
 import {metrics} from '../common/js/metrics.js';
-import {strf} from '../common/js/util.js';
+import {str, strf} from '../common/js/util.js';
 import {VolumeManagerCommon} from '../common/js/volume_manager_types.js';
 import {FileData, FileKey, NavigationKey, NavigationRoot, NavigationType, PropStatus, State} from '../externs/ts/state.js';
 import {VolumeManager} from '../externs/volume_manager.js';
@@ -170,7 +170,7 @@ export class DirectoryTreeContainer {
       const element =
           this.getNavigationDataFromKey(currentDirectory.key)?.element;
       if (element && !element.selected) {
-        element.selected = true;
+        this.selectNavigationItem_(element);
       }
     }
 
@@ -1017,5 +1017,19 @@ export class DirectoryTreeContainer {
     const {currentDirectory} = this.store_.getState();
     return currentDirectory?.key === navigationKey &&
         currentDirectory.status === PropStatus.SUCCESS;
+  }
+
+  /** Select the tree item and update the a11y attribute. */
+  private selectNavigationItem_(item: XfTreeItem) {
+    const oldSelectedItem = this.tree.selectedItem;
+    if (oldSelectedItem === item) {
+      return;
+    }
+
+    if (oldSelectedItem) {
+      oldSelectedItem.removeAttribute('aria-description');
+    }
+    item.selected = true;
+    item.setAttribute('aria-description', str('CURRENT_DIRECTORY_LABEL'));
   }
 }

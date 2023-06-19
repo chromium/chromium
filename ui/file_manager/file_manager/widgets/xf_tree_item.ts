@@ -284,6 +284,7 @@ export class XfTreeItem extends XfBase {
 
   override updated(changedProperties: PropertyValues<this>) {
     super.updated(changedProperties);
+    this.setAttribute('has-children', this.hasChildren().toString());
     if (changedProperties.has('expanded')) {
       this.onExpandChanged_();
     }

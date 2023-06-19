@@ -442,3 +442,23 @@ export async function testIconSetIgnoreIcon(done: () => void) {
 
   done();
 }
+
+/** Tests the has-children attribute. */
+export async function testHasChildrenAttribute(done: () => void) {
+  await setUpSingleTreeItem();
+  const item1 = getTreeItemById('item1');
+
+  // Check has-children attribute is false because we have no children.
+  assertEquals('false', item1.getAttribute('has-children'));
+
+  // Add a child item for item1.
+  const item1a = document.createElement('xf-tree-item');
+  item1a.id = 'item1a';
+  item1.appendChild(item1a);
+  await waitForElementUpdate(item1);
+
+  // Check has-children attribute is true now because we have 1 child now.
+  assertEquals('true', item1.getAttribute('has-children'));
+
+  done();
+}
