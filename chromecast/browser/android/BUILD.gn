@@ -50,17 +50,17 @@ java_cpp_template("cast_shell_build_config_gen") {
 
 common_resources = [
   "apk/res-values/values-v17/styles.xml",
-  "apk/res-values/values/strings.xml",
   "apk/res-values/values/colors.xml",
+  "apk/res-values/values/strings.xml",
 ]
 
 extra_resources = [
   "apk/res/drawable-anydpi-v26/ic_settings_cast.xml",
-  "apk/res/drawable-nodpi/ic_cast_vector.xml",
   "apk/res/drawable-hdpi/ic_notification_cast.png",
   "apk/res/drawable-hdpi/ic_settings_cast.png",
   "apk/res/drawable-mdpi/ic_notification_cast.png",
   "apk/res/drawable-mdpi/ic_settings_cast.png",
+  "apk/res/drawable-nodpi/ic_cast_vector.xml",
   "apk/res/drawable-xhdpi/ic_notification_cast.png",
   "apk/res/drawable-xhdpi/ic_settings_cast.png",
   "apk/res/drawable-xxhdpi/ic_notification_cast.png",
@@ -187,12 +187,22 @@ generate_product_config_srcjar("product_config_for_browser") {
   is_bundle_module = false
 }
 
+generate_jni("jni_headers") {
+  sources = [
+    "apk/src/org/chromium/chromecast/shell/CastAccessibilityHelper.java",
+    "apk/src/org/chromium/chromecast/shell/CastContentWindowAndroid.java",
+    "apk/src/org/chromium/chromecast/shell/CastCrashHandler.java",
+    "apk/src/org/chromium/chromecast/shell/CastMetricsHelper.java",
+  ]
+}
+
 android_library("cast_shell_java") {
   sources = common_java_sources
 
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
+    ":jni_headers",
     ":logs_provider_aidl",
     ":product_config_for_browser",
     "//chromecast/browser:java_enums",
@@ -204,10 +214,8 @@ android_library("cast_shell_java") {
            ":cast_shell_android_resources",
            ":cast_shell_manifest",
          ]
-  annotation_processor_deps = [
-    "//base/android/jni_generator:jni_processor",
-    "//components/module_installer/android:module_interface_processor",
-  ]
+  annotation_processor_deps =
+      [ "//components/module_installer/android:module_interface_processor" ]
 }
 
 android_library("cast_browser_java") {
@@ -216,6 +224,7 @@ android_library("cast_browser_java") {
   resources_package = "org.chromium.chromecast.shell"
   srcjar_deps = [
     ":cast_shell_build_config_gen",
+    ":jni_headers",
     ":logs_provider_aidl",
     "//chromecast/browser:java_enums",
   ]
@@ -223,10 +232,8 @@ android_library("cast_browser_java") {
   jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
   deps = common_android_library_deps + [ ":cast_browser_android_resources" ]
-  annotation_processor_deps = [
-    "//base/android/jni_generator:jni_processor",
-    "//components/module_installer/android:module_interface_processor",
-  ]
+  annotation_processor_deps =
+      [ "//components/module_installer/android:module_interface_processor" ]
 }
 
 robolectric_binary("cast_shell_junit_tests") {

@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 #include "chromecast/base/metrics/cast_metrics_helper.h"
-#include "chromecast/browser/jni_headers/CastMetricsHelper_jni.h"
+#include "chromecast/browser/android/jni_headers/CastMetricsHelper_jni.h"
 
 using base::android::JavaParamRef;
 

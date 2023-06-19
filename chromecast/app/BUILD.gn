@@ -69,7 +69,7 @@ cast_source_set("cast_crash_client") {
     deps += [
       "//chromecast/base:android_create_sys_info",
       "//chromecast/base:cast_version",
-      "//chromecast/browser:jni_headers",
+      "//chromecast/browser/android:jni_headers",
     ]
   }
 }
@@ -89,7 +89,7 @@ cast_source_set("crash_uploader") {
       "//chromecast/base",
       "//chromecast/base:android_create_sys_info",
       "//chromecast/base:cast_version",
-      "//chromecast/browser:jni_headers",
+      "//chromecast/browser/android:jni_headers",
       "//components/crash/core/app",
       "//components/crash/core/common:crash_key",
       "//components/minidump_uploader",
