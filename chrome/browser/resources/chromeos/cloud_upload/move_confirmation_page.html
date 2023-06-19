@@ -61,7 +61,9 @@
   }
 
   cr-lottie {
-    height: 236px;
+    height: 100%;
+    position: absolute;
+    width: 100%;
   }
 
   :host-context([theme='legacy']) cr-button {
@@ -120,11 +122,65 @@
     outline: 2px solid var(--cros-sys-focus_ring);
     outline-offset: 2px;
   }
+
+  .animation-wrapper {
+    height: 236px;
+    position: relative;
+    width: 512px;
+  }
+
+  #playPauseIcon {
+    /* No dynamic color required here. */
+    background-color: rgba(0, 0, 0, 0.6);
+    border-radius: 24px;
+    bottom: 0;
+    height: 48px;
+    left: 0;
+    margin: auto;
+    min-width: 48px;;
+    opacity: 0; /* We use opacity to hide/show the element so it stays in
+                    the tab index */
+    padding: 0;
+    position: absolute;
+    right: 0;
+    top: 0;
+    width: 48px;
+  }
+
+  #playPauseIcon:hover::part(hoverBackground) {
+    background-color: var(--cros-sys-hover_on_subtle);
+    display: block;
+  }
+
+  .animation-wrapper:hover #playPauseIcon, #playPauseIcon:focus {
+    opacity: 1;
+  }
+
+  #playPauseIcon > .icon {
+    -webkit-mask-position: center;
+    -webkit-mask-repeat: no-repeat;
+    /* No dynamic color required here. */
+    background-color: white;
+    height: 48px;
+    width: 48px;
+  }
+
+  #playPauseIcon.play > .icon {
+    -webkit-mask-image: url(icons/play.svg);
+  }
+
+  #playPauseIcon.pause > .icon {
+    -webkit-mask-image: url(icons/pause.svg);
+  }
 </style>
 
 <!-- TODO(b/258071752): Use localized strings -->
-<cr-lottie id="animation" aria-hidden="true" autoplay>
-</cr-lottie>
+<div class="animation-wrapper">
+  <cr-lottie id="animation" aria-hidden="true" autoplay></cr-lottie>
+  <cr-button id="playPauseIcon" class="pause" aria-label="$i18n{animationPlayText}">
+    <div class="icon"></div>
+  </cr-button>
+</div>
 <div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
   <div class="body-wrapper">
     <div id="title"></div>

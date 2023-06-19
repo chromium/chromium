@@ -19,6 +19,8 @@ build_webui("build") {
     "icons/error.svg",
     "icons/list_check.svg",
     "icons/office.svg",
+    "icons/pause.svg",
+    "icons/play.svg",
     "icons/sheets.svg",
     "icons/slides.svg",
     "images/connect_one_drive_app_icon.svg",

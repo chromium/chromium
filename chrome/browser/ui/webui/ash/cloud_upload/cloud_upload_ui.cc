@@ -40,7 +40,9 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"cantConnectOneDrive", IDS_CANT_CONNECT_ONEDRIVE},
       {"connectOneDrive", IDS_CONNECT_ONEDRIVE},
       {"oneDriveConnectedTitle", IDS_ONEDRIVE_CONNECTED_TITLE},
-      {"oneDriveConnectedBodyText", IDS_ONEDRIVE_CONNECTED_BODY_TEXT}};
+      {"oneDriveConnectedBodyText", IDS_ONEDRIVE_CONNECTED_BODY_TEXT},
+      {"animationPlayText", IDS_OOBE_PLAY_ANIMATION_MESSAGE},
+      {"animationPauseText", IDS_OOBE_PAUSE_ANIMATION_MESSAGE}};
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
