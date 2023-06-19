@@ -11,6 +11,7 @@
 #include "base/test/test_future.h"
 #include "base/test/test_mock_time_task_runner.h"
 #include "base/time/time.h"
+#include "chrome/browser/extensions/api/identity/test_scoped_should_animate_web_auth_flow_info_bar.h"
 #include "chrome/browser/extensions/api/identity/web_auth_flow_info_bar_delegate.h"
 #include "chrome/browser/prefs/session_startup_pref.h"
 #include "chrome/browser/profiles/keep_alive/profile_keep_alive_types.h"
@@ -26,6 +27,7 @@
 #include "components/keep_alive_registry/scoped_keep_alive.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/web_contents.h"
+#include "content/public/test/back_forward_cache_util.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/fenced_frame_test_util.h"
@@ -689,21 +691,18 @@ IN_PROC_BROWSER_TEST_F(
       .Times(0);
 
   EXPECT_CALL(mock(), OnAuthFlowURLChange(new_url));
-  content::NavigationController::LoadURLParams load_params(new_url);
-  load_params.is_renderer_initiated = false;
-  web_contents()->GetController().LoadURLWithParams(load_params);
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), new_url));
 
   EXPECT_EQ(web_contents()->GetURL(), new_url);
 
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
-  // Simulating `web_contents()->GetController().GoBack();` which fails when
-  // called directly.
-  // TODO(https://crbug.com/1454772): change the next two lines to
-  // `web_contents()->GetController().GoBack();` when fixed.
-  content::NavigationController::LoadURLParams load_params2(auth_url);
-  web_contents()->GetController().LoadURLWithParams(load_params2);
-  ASSERT_TRUE(content::WaitForLoadStop(web_contents()));
+  // TODO(https://crbug.com/1454772): Need to disable BackForwardCaching as it
+  // causes crashes since the WebContent is initially loaded in an
+  // unattached mode.
+  content::DisableBackForwardCacheForTesting(
+      web_contents(), content::BackForwardCache::DisableForTestingReason::
+                          TEST_REQUIRES_NO_CACHING);
+  ASSERT_TRUE(content::HistoryGoBack(web_contents()));
 
   EXPECT_EQ(web_contents()->GetURL(), auth_url);
   // Popup window is still active.
@@ -907,6 +906,9 @@ IN_PROC_BROWSER_TEST_F(
   navigation_observer.StartWatchingNewWebContents();
 
   EXPECT_CALL(mock(), OnAuthFlowURLChange(auth_url));
+  // Remove the animation mainly for the deleting part as it could create
+  // flakiness when checking for the deletion of the info bar.
+  TestScopedShouldAnimateWebAuthFlowInfoBar should_animate(false);
   StartWebAuthFlow(auth_url, WebAuthFlow::Partition::LAUNCH_WEB_AUTH_FLOW,
                    WebAuthFlow::Mode::INTERACTIVE);
   web_auth_flow()->SetShouldShowInfoBar("extension name");
@@ -928,20 +930,26 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_EQ(browser(), newtab_browser);
   TabStripModel* tabs = newtab_browser->tab_strip_model();
 
-  GURL new_url = embedded_test_server()->GetURL("a.com", "/new.html");
+  // Simulating a non user navigation, it shouldn't break the flow.
+  GURL internal_url = embedded_test_server()->GetURL("/title2.html");
+  EXPECT_CALL(mock(), OnAuthFlowURLChange(internal_url));
+  EXPECT_CALL(mock(), OnAuthFlowFailure(testing::_)).Times(0);
+  ASSERT_TRUE(content::NavigateToURLFromRenderer(web_contents(), internal_url));
+  EXPECT_TRUE(web_auth_flow());
+  EXPECT_TRUE(auth_info_bar);
+  testing::Mock::VerifyAndClearExpectations(&mock());
+
+  // Simulating user manually navigating to another URL.
+  GURL browsing_url = embedded_test_server()->GetURL("/simple.html");
   EXPECT_CALL(mock(),
               OnAuthFlowFailure(WebAuthFlow::Failure::USER_NAVIGATED_AWAY));
+  ASSERT_TRUE(content::NavigateToURL(web_contents(), browsing_url));
 
-  content::TestNavigationObserver web_contents_observer(web_contents());
-  content::NavigationController::LoadURLParams load_params(new_url);
-  load_params.is_renderer_initiated = false;
-  web_contents()->GetController().LoadURLWithParams(load_params);
-  web_contents_observer.Wait();
-
-  // New tab is not expected to be closed, it is now used for navigation and not
-  // part of the flow anymore.
-  EXPECT_EQ(web_contents(), nullptr);
-  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), new_url);
+  // New tab is not expected to be closed, it is now used for navigation and
+  // not part of the flow anymore.
+  EXPECT_FALSE(web_contents());
+  EXPECT_FALSE(web_auth_flow());
+  EXPECT_EQ(tabs->GetActiveWebContents()->GetLastCommittedURL(), browsing_url);
   // Infobar should be closed on navigation.
   EXPECT_FALSE(auth_info_bar);
 }

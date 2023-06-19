@@ -16,6 +16,9 @@
 
 namespace extensions {
 
+absl::optional<bool> WebAuthFlowInfoBarDelegate::should_animate_for_testing_ =
+    absl::nullopt;
+
 base::WeakPtr<WebAuthFlowInfoBarDelegate> WebAuthFlowInfoBarDelegate::Create(
     content::WebContents* web_contents,
     const std::string& extension_name) {
@@ -62,6 +65,14 @@ int WebAuthFlowInfoBarDelegate::GetButtons() const {
 
 void WebAuthFlowInfoBarDelegate::CloseInfoBar() {
   infobar()->RemoveSelf();
+}
+
+bool WebAuthFlowInfoBarDelegate::ShouldAnimate() const {
+  if (should_animate_for_testing_.has_value()) {
+    return should_animate_for_testing_.value();
+  }
+
+  return ConfirmInfoBarDelegate::ShouldAnimate();
 }
 
 }  // namespace extensions
