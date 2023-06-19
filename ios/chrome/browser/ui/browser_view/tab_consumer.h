@@ -7,6 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
+#import "ios/chrome/browser/ui/tabs/switch_to_tab_animation_view.h"
+
+class NewTabPageTabHelper;
+class SnapshotTabHelper;
+
 namespace web {
 class WebState;
 }  // namespace web
@@ -42,7 +47,12 @@ class WebState;
 
 // Tells the consumer to display the tab view associated to the new web state
 // index.
-- (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex;
+- (void)switchToTabAnimationPosition:(SwitchToTabAnimationPosition)position
+                   snapshotTabHelper:(SnapshotTabHelper*)snapshotTabHelper
+                  willAddPlaceholder:(BOOL)willAddPlaceholder
+                 newTabPageTabHelper:(NewTabPageTabHelper*)NTPHelper
+                     topToolbarImage:(UIImage*)topToolbarImage
+                  bottomToolbarImage:(UIImage*)bottomToolbarImage;
 
 // Tells the consumer to remove any bookmark modal controller from view if
 // visible.

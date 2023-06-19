@@ -10,6 +10,7 @@
 class ChromeBrowserState;
 @class NewTabPageCoordinator;
 class SessionRestorationBrowserAgent;
+@protocol SideSwipeToolbarSnapshotProviding;
 @protocol TabConsumer;
 class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
@@ -22,6 +23,13 @@ class WebStateList;
 
 // Consumer for tab UI changes.
 @property(nonatomic, weak) id<TabConsumer> consumer;
+// Handler for the interaction with the primary toolbar, including providing
+// snapshot.
+@property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
+    primaryToolbarSnapshotProvider;
+// Provider for the bottom toolbar's snapshot.
+@property(nonatomic, weak) id<SideSwipeToolbarSnapshotProviding>
+    secondaryToolbarSnapshotProvider;
 
 // Creates an instance of the mediator. Observers will be installed into all
 // existing web states in `webStateList`. While the mediator is alive,

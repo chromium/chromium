@@ -797,7 +797,7 @@ enum class ToolbarKind {
   [_sideSwipeMediator setSnapshotDelegate:self];
   _sideSwipeMediator.toolbarInteractionHandler = _toolbarCoordinator;
   _sideSwipeMediator.primaryToolbarSnapshotProvider =
-      _toolbarCoordinator.primaryToolbarSnapshotProvider;;
+      _toolbarCoordinator.primaryToolbarSnapshotProvider;
   _sideSwipeMediator.secondaryToolbarSnapshotProvider =
       _toolbarCoordinator.secondaryToolbarSnapshotProvider;
 
@@ -1279,6 +1279,10 @@ enum class ToolbarKind {
           restorationAgent:sessionRestorationBrowserAgent
               browserState:browserState
            loadingNotifier:_urlLoadingNotifierBrowserAgent];
+  self.tabEventsMediator.primaryToolbarSnapshotProvider =
+      _toolbarCoordinator.primaryToolbarSnapshotProvider;
+  self.tabEventsMediator.secondaryToolbarSnapshotProvider =
+      _toolbarCoordinator.secondaryToolbarSnapshotProvider;
   self.tabEventsMediator.consumer = browserViewController;
 
   browserViewController.reauthHandler =

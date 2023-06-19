@@ -2125,13 +2125,10 @@ enum HeaderBehaviour {
 
 #pragma mark - Helpers
 
-- (UIEdgeInsets)snapshotEdgeInsetsForWebState:(web::WebState*)webState {
-  DCHECK(webState);
-
+- (UIEdgeInsets)snapshotEdgeInsetsForNTPHelper:(NewTabPageTabHelper*)NTPHelper {
   UIEdgeInsets maxViewportInsets =
       self.fullscreenController->GetMaxViewportInsets();
 
-  NewTabPageTabHelper* NTPHelper = NewTabPageTabHelper::FromWebState(webState);
   if (NTPHelper && NTPHelper->IsActive()) {
     // If the NTP is active, then it's used as the base view for snapshotting.
     // When the tab strip is visible, or for the incognito NTP, the NTP is laid
@@ -2531,14 +2528,15 @@ enum HeaderBehaviour {
   }
 }
 
-- (void)switchtoTabWithNewWebStateIndex:(NSInteger)newWebStateIndex {
+- (void)switchToTabAnimationPosition:(SwitchToTabAnimationPosition)position
+                   snapshotTabHelper:(SnapshotTabHelper*)snapshotTabHelper
+                  willAddPlaceholder:(BOOL)willAddPlaceholder
+                 newTabPageTabHelper:(NewTabPageTabHelper*)NTPHelper
+                     topToolbarImage:(UIImage*)topToolbarImage
+                  bottomToolbarImage:(UIImage*)bottomToolbarImage {
   if (IsRegularXRegularSizeClass(self)) {
     return;
   }
-
-  WebStateList* webStateList = self.webStateList;
-  web::WebState* webStateBeingActivated =
-      webStateList->GetWebStateAt(newWebStateIndex);
 
   // Add animations only if the tab strip isn't shown.
   UIView* snapshotView = [self.view snapshotViewAfterScreenUpdates:NO];
@@ -2546,37 +2544,19 @@ enum HeaderBehaviour {
   // TODO(crbug.com/904992): Do not repurpose SnapshotGeneratorDelegate.
   SwipeView* swipeView = [[SwipeView alloc]
       initWithFrame:self.contentArea.frame
-          topMargin:[self snapshotEdgeInsetsForWebState:webStateBeingActivated]
-                        .top];
+          topMargin:[self snapshotEdgeInsetsForNTPHelper:NTPHelper].top];
 
-  [swipeView
-      setTopToolbarImage:
-          [self.toolbarCoordinator.primaryToolbarSnapshotProvider
-              toolbarSideSwipeSnapshotForWebState:webStateBeingActivated]];
-  [swipeView
-      setBottomToolbarImage:
-          [self.toolbarCoordinator.secondaryToolbarSnapshotProvider
-              toolbarSideSwipeSnapshotForWebState:webStateBeingActivated]];
+  [swipeView setTopToolbarImage:topToolbarImage];
+  [swipeView setBottomToolbarImage:bottomToolbarImage];
 
-  SnapshotTabHelper::FromWebState(webStateBeingActivated)
-      ->RetrieveColorSnapshot(^(UIImage* image) {
-        if (PagePlaceholderTabHelper::FromWebState(webStateBeingActivated)
-                ->will_add_placeholder_for_next_navigation()) {
-          [swipeView setImage:nil];
-        } else {
-          [swipeView setImage:image];
-        }
-      });
+  snapshotTabHelper->RetrieveColorSnapshot(^(UIImage* image) {
+    willAddPlaceholder ? [swipeView setImage:nil] : [swipeView setImage:image];
+  });
 
   SwitchToTabAnimationView* animationView =
       [[SwitchToTabAnimationView alloc] initWithFrame:self.view.bounds];
-
   [self.view addSubview:animationView];
 
-  SwitchToTabAnimationPosition position =
-      newWebStateIndex > webStateList->active_index()
-          ? SwitchToTabAnimationPositionAfter
-          : SwitchToTabAnimationPositionBefore;
   [animationView animateFromCurrentView:snapshotView
                               toNewView:swipeView
                              inPosition:position];
