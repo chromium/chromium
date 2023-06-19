@@ -688,11 +688,13 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
     {"Base only", "enable-features", "ReplaceSyncPromosWithSignInPromos"},
     {"Everything (bookmarks, reading list, etc)", "enable-features",
      "ReplaceSyncPromosWithSignInPromos,"
+     "SyncEnableContactInfoDataType,"
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "EnablePasswordsAccountStorage,"
      "EnableBookmarksAccountStorage,"
      "ReadingListEnableDualReadingListModel,"
-     "ReadingListEnableSyncTransportModeUponSignIn"},
+     "ReadingListEnableSyncTransportModeUponSignIn,"
+     "SyncEnableHistoryDataType"},
 };
 
 // To add a new entry, add to the end of kFeatureEntries. There are four
