@@ -23,6 +23,7 @@ class TabInsertionBrowserAgent;
 class WebStateList;
 @protocol NetExportTabHelperDelegate;
 @protocol NewTabPageTabHelperDelegate;
+@protocol OverscrollActionsControllerDelegate;
 @protocol PriceNotificationsIPHPresenter;
 @protocol SnapshotGeneratorDelegate;
 
@@ -47,6 +48,8 @@ class WebStateList;
 @property(nonatomic, weak) id<RepostFormTabHelperDelegate> repostFormDelegate;
 @property(nonatomic, weak) id<FollowIPHPresenter> followIPHPresenter;
 @property(nonatomic, assign) TabInsertionBrowserAgent* tabInsertionBrowserAgent;
+@property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
+    overscrollActionsDelegate;
 @property(nonatomic, weak) id<CommonTabHelperDelegate> delegate;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate>
     snapshotGeneratorDelegate;

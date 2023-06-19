@@ -262,8 +262,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     tab_usage_recorder_browser_agent_ =
         TabUsageRecorderBrowserAgent::FromBrowser(browser_.get());
-    web_navigation_browser_agent_ =
-        WebNavigationBrowserAgent::FromBrowser(browser_.get());
     page_placeholder_browser_agent_ =
         PagePlaceholderBrowserAgent::FromBrowser(browser_.get());
 
@@ -280,15 +278,12 @@ class BrowserViewControllerTest : public BlockCleanupTest {
         url_loading_notifier_browser_agent_;
     dependencies.tabUsageRecorderBrowserAgent =
         tab_usage_recorder_browser_agent_;
-    dependencies.webNavigationBrowserAgent = web_navigation_browser_agent_;
     dependencies.layoutGuideCenter =
         LayoutGuideCenterForBrowser(browser_.get());
     dependencies.webStateList = browser_->GetWebStateList()->AsWeakPtr();
     dependencies.safeAreaProvider = safe_area_provider_;
     dependencies.pagePlaceholderBrowserAgent = page_placeholder_browser_agent_;
     dependencies.applicationCommandsHandler = mockApplicationCommandHandler_;
-    dependencies.webStateUpdateBrowserAgent =
-        WebStateUpdateBrowserAgent::FromBrowser(browser_.get());
 
     bvc_ = [[BrowserViewController alloc]
         initWithBrowserContainerViewController:container_
@@ -390,7 +385,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
   TabEventsMediator* tab_events_mediator_;
   UrlLoadingNotifierBrowserAgent* url_loading_notifier_browser_agent_;
   TabUsageRecorderBrowserAgent* tab_usage_recorder_browser_agent_;
-  WebNavigationBrowserAgent* web_navigation_browser_agent_;
   SafeAreaProvider* safe_area_provider_;
   PagePlaceholderBrowserAgent* page_placeholder_browser_agent_;
   id mockApplicationCommandHandler_;

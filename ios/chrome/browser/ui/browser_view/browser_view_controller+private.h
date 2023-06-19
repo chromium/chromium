@@ -23,6 +23,9 @@
 // YES from viewDidAppear to viewWillDisappear.
 @property(nonatomic, readonly) BOOL viewVisible;
 
+// Height of the header view.
+@property(nonatomic, readonly) CGFloat headerHeight;
+
 // Dismisses all presented views, excluding the omnibox if `dismissOmnibox` is
 // NO, then calls `completion`.
 - (void)clearPresentedStateWithCompletion:(ProceduralBlock)completion

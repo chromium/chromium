@@ -92,8 +92,9 @@
   bottomSheetTabHelper->SetAutofillBottomSheetHandler(
       HandlerForProtocol(_commandDispatcher, AutofillBottomSheetCommands));
 
-  DCHECK(_delegate);
-  OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(_delegate);
+  DCHECK(_overscrollActionsDelegate);
+  OverscrollActionsTabHelper::FromWebState(webState)->SetDelegate(
+      _overscrollActionsDelegate);
 
   // DownloadManagerTabHelper cannot function without its delegate.
   DCHECK(_downloadManagerCoordinator);

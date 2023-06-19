@@ -19,13 +19,11 @@
 #import "ios/chrome/browser/metrics/tab_usage_recorder_browser_agent.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_util.h"
-#import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
-#import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/find_in_page_commands.h"
 #import "ios/chrome/browser/shared/public/commands/help_commands.h"
 #import "ios/chrome/browser/shared/public/commands/popup_menu_commands.h"
@@ -260,9 +258,6 @@ enum HeaderBehaviour {
   // Used to report usage of a single Browser's tab.
   TabUsageRecorderBrowserAgent* _tabUsageRecorderBrowserAgent;
 
-  // Used for common web navigation tasks.
-  WebNavigationBrowserAgent* _webNavigationBrowserAgent;
-
   // Used for updates in web state.
   WebStateUpdateBrowserAgent* _webStateUpdateBrowserAgent;
 
@@ -349,10 +344,6 @@ enum HeaderBehaviour {
 // Command handler for application commands.
 @property(nonatomic, weak) id<ApplicationCommands> applicationCommandsHandler;
 
-// Command handler for browser coordinator commands.
-@property(nonatomic, weak) id<BrowserCoordinatorCommands>
-    browserCoordinatorCommandsHandler;
-
 // Command handler for find in page commands.
 @property(nonatomic, weak) id<FindInPageCommands> findInPageCommandsHandler;
 
@@ -437,15 +428,12 @@ enum HeaderBehaviour {
     self.helpHandler = dependencies.helpHandler;
     self.popupMenuCommandsHandler = dependencies.popupMenuCommandsHandler;
     self.applicationCommandsHandler = dependencies.applicationCommandsHandler;
-    self.browserCoordinatorCommandsHandler =
-        dependencies.browserCoordinatorCommandsHandler;
     self.findInPageCommandsHandler = dependencies.findInPageCommandsHandler;
     _isOffTheRecord = dependencies.isOffTheRecord;
     _urlLoadingBrowserAgent = dependencies.urlLoadingBrowserAgent;
     _urlLoadingNotifierBrowserAgent =
         dependencies.urlLoadingNotifierBrowserAgent;
     _tabUsageRecorderBrowserAgent = dependencies.tabUsageRecorderBrowserAgent;
-    _webNavigationBrowserAgent = dependencies.webNavigationBrowserAgent;
     _layoutGuideCenter = dependencies.layoutGuideCenter;
     _webStateList = dependencies.webStateList;
     _voiceSearchController = dependencies.voiceSearchController;
@@ -2231,77 +2219,6 @@ enum HeaderBehaviour {
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = NO;
   self.secondaryToolbarContainerView.accessibilityElementsHidden = NO;
-}
-
-#pragma mark - OverscrollActionsControllerDelegate methods.
-
-- (void)overscrollActionNewTab:(OverscrollActionsController*)controller {
-  [self.applicationCommandsHandler
-      openURLInNewTab:[OpenNewTabCommand commandWithIncognito:_isOffTheRecord]];
-}
-
-- (void)overscrollActionCloseTab:(OverscrollActionsController*)controller {
-  [self.browserCoordinatorCommandsHandler closeCurrentTab];
-}
-
-- (void)overscrollActionRefresh:(OverscrollActionsController*)controller {
-  // Instruct the SnapshotTabHelper to ignore the next load event.
-  // Attempting to snapshot while the overscroll "bounce back" animation is
-  // occurring will cut the animation short.
-  DCHECK(self.currentWebState);
-  SnapshotTabHelper::FromWebState(self.currentWebState)->IgnoreNextLoad();
-  _webNavigationBrowserAgent->Reload();
-}
-
-- (BOOL)shouldAllowOverscrollActionsForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  // When screeen size is not regular, overscroll actions should be enabled.
-  return !self.toolbarAccessoryPresenter.presenting &&
-         !IsRegularXRegularSizeClass(self);
-}
-
-- (UIView*)headerViewForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return self.toolbarCoordinator.primaryToolbarViewController.view;
-}
-
-- (UIView*)toolbarSnapshotViewForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return [self.toolbarCoordinator.primaryToolbarViewController.view
-      snapshotViewAfterScreenUpdates:NO];
-}
-
-- (CGFloat)headerInsetForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  // The current WebState can be nil if the Browser's WebStateList is empty
-  // (e.g. after closing the last tab, etc).
-  web::WebState* currentWebState = self.currentWebState;
-  if (!currentWebState)
-    return 0.0;
-
-  OverscrollActionsTabHelper* activeTabHelper =
-      OverscrollActionsTabHelper::FromWebState(currentWebState);
-  if (controller == activeTabHelper->GetOverscrollActionsController()) {
-    return self.headerHeight;
-  } else
-    return 0;
-}
-
-- (CGFloat)headerHeightForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return self.headerHeight;
-}
-
-- (CGFloat)initialContentOffsetForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return ios::provider::IsFullscreenSmoothScrollingSupported()
-             ? -[self headerInsetForOverscrollActionsController:controller]
-             : 0;
-}
-
-- (FullscreenController*)fullscreenControllerForOverscrollActionsController:
-    (OverscrollActionsController*)controller {
-  return self.fullscreenController;
 }
 
 #pragma mark - FullscreenUIElement methods

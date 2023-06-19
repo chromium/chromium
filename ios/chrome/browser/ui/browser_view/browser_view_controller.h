@@ -25,7 +25,6 @@
 @protocol ApplicationCommands;
 @class BookmarksCoordinator;
 @class BrowserContainerViewController;
-@protocol BrowserCoordinatorCommands;
 @class BubblePresenter;
 @protocol CRWResponderInputView;
 @protocol DefaultPromoNonModalPresentationDelegate;
@@ -53,7 +52,6 @@ class TabUsageRecorderBrowserAgent;
 class UrlLoadingBrowserAgent;
 class UrlLoadingNotifierBrowserAgent;
 @protocol VoiceSearchController;
-class WebNavigationBrowserAgent;
 class WebStateUpdateBrowserAgent;
 
 typedef struct {
@@ -72,7 +70,6 @@ typedef struct {
   id<HelpCommands> helpHandler;
   id<PopupMenuCommands> popupMenuCommandsHandler;
   id<ApplicationCommands> applicationCommandsHandler;
-  id<BrowserCoordinatorCommands> browserCoordinatorCommandsHandler;
   id<FindInPageCommands> findInPageCommandsHandler;
   LayoutGuideCenter* layoutGuideCenter;
   BOOL isOffTheRecord;
@@ -81,7 +78,6 @@ typedef struct {
   UrlLoadingNotifierBrowserAgent* urlLoadingNotifierBrowserAgent;
   id<VoiceSearchController> voiceSearchController;
   TabUsageRecorderBrowserAgent* tabUsageRecorderBrowserAgent;
-  WebNavigationBrowserAgent* webNavigationBrowserAgent;
   base::WeakPtr<WebStateList> webStateList;
   SafeAreaProvider* safeAreaProvider;
   WebStateUpdateBrowserAgent* webStateUpdateBrowserAgent;
