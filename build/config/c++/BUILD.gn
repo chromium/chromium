@@ -65,11 +65,14 @@ config("runtime_library") {
   } else {
     cflags_cc += [
       "-nostdinc++",
-      "-isystem" + rebase_path("$libcxx_prefix/include", root_build_dir),
-      "-isystem" + rebase_path("$libcxxabi_prefix/include", root_build_dir),
+      "-isystem",
+      rebase_path("$libcxx_prefix/include", root_build_dir),
+      "-isystem",
+      rebase_path("$libcxxabi_prefix/include", root_build_dir),
     ]
 
     cflags_objcc = cflags_cc
+    swiftflags = cflags_cc
 
     # Make sure we don't link against the system libstdc++ or libc++.
     if (is_clang) {
