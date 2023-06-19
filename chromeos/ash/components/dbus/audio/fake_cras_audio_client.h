@@ -95,6 +95,8 @@ class COMPONENT_EXPORT(DBUS_AUDIO) FakeCrasAudioClient
   void WaitForServiceToBeAvailable(
       chromeos::WaitForServiceToBeAvailableCallback callback) override;
   void SetForceRespectUiGains(bool force_respect_ui_gains_enabled) override;
+  void GetNumStreamIgnoreUiGains(
+      chromeos::DBusMethodCallback<int> callback) override;
 
   // Sets the number of non chrome audio streams in output mode.
   void SetNumberOfNonChromeOutputStreams(int32_t streams);

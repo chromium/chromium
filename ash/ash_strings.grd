@@ -3011,6 +3011,12 @@ Connect your device to power.
         Your Chromebook or Bluetooth device is using an older version of Bluetooth. Use another input source for better audio quality.
       </message>
 
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_INPUT_AGC_INFO" desc="label used for the information of who is controlling mic input gain. [ICU Syntax]">
+        {NUM_APPS, plural,
+         =1 {Mic input controlled by <ph name="app_name">$1<ex>App</ex></ph>}
+         other {Mic input controlled by # apps}}
+      </message>
+
       <!-- Status tray Live Caption strings. -->
       <message name="IDS_ASH_STATUS_TRAY_LIVE_CAPTION" desc="The label used in the accessibility menu of the system tray to toggle on/off Live Caption feature.">
         Live Caption
@@ -3061,6 +3067,9 @@ Connect your device to power.
       </message>
       <message name="IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS" desc="The label used in audio detailed page for the button that launches the OS audio settings page.">
         Audio settings
+      </message>
+      <message name="IDS_ASH_STATUS_TRAY_AUDIO_SETTINGS_SHORT_STRING" desc="The label used in audio detailed page for the button that launches the OS audio settings page.">
+        Settings
       </message>
       <message name="IDS_ASH_STATUS_TRAY_DISPLAY" desc="The label used for the button in the status tray to show the display detailed page.">
         Display

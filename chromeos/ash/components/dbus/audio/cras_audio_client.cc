@@ -162,6 +162,15 @@ class CrasAudioClientImpl : public CrasAudioClient {
             weak_ptr_factory_.GetWeakPtr()),
         base::BindOnce(&CrasAudioClientImpl::SignalConnected,
                        weak_ptr_factory_.GetWeakPtr()));
+
+    // Monitor the D-Bus signal for is any stream ignore ui gains changed.
+    cras_proxy_->ConnectToSignal(
+        cras::kCrasControlInterface, cras::kNumStreamIgnoreUiGainsChanged,
+        base::BindRepeating(
+            &CrasAudioClientImpl::NumStreamIgnoreUiGainsReceived,
+            weak_ptr_factory_.GetWeakPtr()),
+        base::BindOnce(&CrasAudioClientImpl::SignalConnected,
+                       weak_ptr_factory_.GetWeakPtr()));
   }
 
   CrasAudioClientImpl(const CrasAudioClientImpl&) = delete;
@@ -606,6 +615,16 @@ class CrasAudioClientImpl : public CrasAudioClient {
                             base::DoNothing());
   }
 
+  void GetNumStreamIgnoreUiGains(
+      chromeos::DBusMethodCallback<int32_t> callback) override {
+    dbus::MethodCall method_call(cras::kCrasControlInterface,
+                                 cras::kGetNumStreamIgnoreUiGains);
+    cras_proxy_->CallMethod(
+        &method_call, dbus::ObjectProxy::TIMEOUT_USE_DEFAULT,
+        base::BindOnce(&CrasAudioClientImpl::OnGetNumStreamIgnoreUiGains,
+                       weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+  }
+
  private:
   // Called when the cras signal is initially connected.
   void SignalConnected(const std::string& interface_name,
@@ -862,6 +881,17 @@ class CrasAudioClientImpl : public CrasAudioClient {
   void NumberOfNonChromeOutputStreamsChangedReceived(dbus::Signal* signal) {
     for (auto& observer : observers_) {
       observer.NumberOfNonChromeOutputStreamsChanged();
+    }
+  }
+
+  void NumStreamIgnoreUiGainsReceived(dbus::Signal* signal) {
+    dbus::MessageReader reader(signal);
+    int32_t num;
+    if (!reader.PopInt32(&num)) {
+      LOG(ERROR) << "Error reading signal from cras:" << signal->ToString();
+    }
+    for (auto& observer : observers_) {
+      observer.NumStreamIgnoreUiGains(num);
     }
   }
 
@@ -1250,6 +1280,25 @@ class CrasAudioClientImpl : public CrasAudioClient {
     std::move(callback).Run(speak_on_mute_detection_enabled);
   }
 
+  void OnGetNumStreamIgnoreUiGains(
+      chromeos::DBusMethodCallback<int32_t> callback,
+      dbus::Response* response) {
+    if (!response) {
+      LOG(ERROR) << "Error calling " << cras::kGetNumStreamIgnoreUiGains;
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    int32_t num_stream_ignore_ui_gains = 0;
+    dbus::MessageReader reader(response);
+    if (!reader.PopInt32(&num_stream_ignore_ui_gains)) {
+      LOG(ERROR) << "Error reading response from cras: "
+                 << response->ToString();
+      std::move(callback).Run(absl::nullopt);
+      return;
+    }
+    std::move(callback).Run(num_stream_ignore_ui_gains);
+  }
+
   raw_ptr<dbus::ObjectProxy, ExperimentalAsh> cras_proxy_ = nullptr;
   base::ObserverList<Observer>::Unchecked observers_;
 
@@ -1298,6 +1347,8 @@ void CrasAudioClient::Observer::SurveyTriggered(
 void CrasAudioClient::Observer::SpeakOnMuteDetected() {}
 
 void CrasAudioClient::Observer::NumberOfNonChromeOutputStreamsChanged() {}
+
+void CrasAudioClient::Observer::NumStreamIgnoreUiGains(int32_t num) {}
 
 CrasAudioClient::CrasAudioClient() {
   DCHECK(!g_instance);

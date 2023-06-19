@@ -11,15 +11,20 @@
 
 #include "ash/accessibility/accessibility_observer.h"
 #include "ash/ash_export.h"
+#include "ash/public/cpp/session/session_controller.h"
+#include "ash/public/cpp/session/session_observer.h"
 #include "ash/style/switch.h"
 #include "ash/system/tray/hover_highlight_view.h"
 #include "ash/system/tray/tray_detailed_view.h"
 #include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/audio/audio_device.h"
 #include "chromeos/ash/components/audio/cras_audio_handler.h"
+#include "components/services/app_service/public/cpp/app_capability_access_cache.h"
+#include "components/services/app_service/public/cpp/app_registry_cache.h"
 #include "components/soda/soda_installer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/layout/box_layout_view.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -32,10 +37,13 @@ class UnifiedAudioDetailedViewControllerSodaTest;
 class UnifiedAudioDetailedViewControllerTest;
 class UnifiedVolumeSliderController;
 
-class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
-                                     public AccessibilityObserver,
-                                     public speech::SodaInstaller::Observer,
-                                     public CrasAudioHandler::AudioObserver {
+class ASH_EXPORT AudioDetailedView
+    : public AccessibilityObserver,
+      public apps::AppCapabilityAccessCache::Observer,
+      public CrasAudioHandler::AudioObserver,
+      public SessionObserver,
+      public speech::SodaInstaller::Observer,
+      public TrayDetailedView {
  public:
   METADATA_HEADER(AudioDetailedView);
 
@@ -45,6 +53,19 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   AudioDetailedView& operator=(const AudioDetailedView&) = delete;
 
   ~AudioDetailedView() override;
+
+  // IDs used for the views that compose the Audio UI.
+  // Note that these IDs are only guaranteed to be unique inside
+  // `AudioDetailedView`.
+  enum AudioDetailedViewID {
+    // Starts at 1000 to prevent potential overlapping.
+    kAudioDetailedView = 1000,
+    // Agc information row and corresponding text label.
+    kAgcInfoRow,
+    kAgcInfoLabel,
+    // For QsRevamp: AGC information row.
+    kAgcInfoView,
+  };
 
   using NoiseCancellationCallback =
       base::RepeatingCallback<void(uint64_t, views::View*)>;
@@ -59,8 +80,21 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // AccessibilityObserver:
   void OnAccessibilityStatusChanged() override;
 
+  // apps::AppCapabilityAccessCache::Observer:
+  void OnCapabilityAccessUpdate(
+      const apps::CapabilityAccessUpdate& update) override;
+  void OnAppCapabilityAccessCacheWillBeDestroyed(
+      apps::AppCapabilityAccessCache* cache) override;
+
+  // SessionObserver:
+  void OnSessionStateChanged(session_manager::SessionState state) override;
+
+  // CrasAudioHandler::AudioObserver:
+  void OnNumStreamIgnoreUiGainsChanged(int32_t num) override;
+
  private:
   friend class AudioDetailedViewTest;
+  friend class AudioDetailedViewAgcInfoTest;
   friend class UnifiedAudioDetailedViewControllerSodaTest;
   friend class UnifiedAudioDetailedViewControllerTest;
 
@@ -89,6 +123,14 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // For QsRevamp: Creates the noise cancellation toggle row in the input
   // subsection.
   std::unique_ptr<HoverHighlightView> CreateQsNoiseCancellationToggleRow(
+      const AudioDevice& device);
+
+  // Creates the agc info row in the input subsection.
+  views::Builder<views::BoxLayoutView> CreateAgcInfoRow(
+      const AudioDevice& device);
+
+  // For QsRevamp: Creates the agc info row in the input subsection.
+  std::unique_ptr<HoverHighlightView> CreateQsAgcInfoRow(
       const AudioDevice& device);
 
   // Sets the subtext for `live_caption_view_` based on whether live caption has
@@ -124,6 +166,12 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   // called when the input/output node's mute state changes.
   void UpdateActiveDeviceColor(bool is_input, bool is_muted);
 
+  // Updates the label of AGC info when accessibility to microphone changed.
+  // Hide AGC info row if no apps is requesting AGC stream.
+  void UpdateAgcInfoRow();
+  void UpdateQsAgcInfoRow();
+  bool ShowAgcInfoRow();
+
   // TrayDetailedView:
   void HandleViewClicked(views::View* view) override;
   void CreateExtraTitleRowButtons() override;
@@ -151,6 +199,9 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   AudioDeviceList input_devices_;
   AudioDeviceMap device_map_;
   uint64_t focused_device_id_ = -1;
+
+  int num_stream_ignore_ui_gains_ = 0;
+
   // Owned by the views hierarchy.
   raw_ptr<HoverHighlightView, ExperimentalAsh> live_caption_view_ = nullptr;
   raw_ptr<views::ImageView, ExperimentalAsh> live_caption_icon_ = nullptr;
@@ -160,6 +211,14 @@ class ASH_EXPORT AudioDetailedView : public TrayDetailedView,
   raw_ptr<views::ImageView, ExperimentalAsh> noise_cancellation_icon_ = nullptr;
   raw_ptr<Switch, ExperimentalAsh> noise_cancellation_button_ = nullptr;
   raw_ptr<views::Button, ExperimentalAsh> settings_button_ = nullptr;
+
+  base::ScopedObservation<SessionController, SessionObserver>
+      session_observation_{this};
+  base::ScopedObservation<apps::AppCapabilityAccessCache,
+                          apps::AppCapabilityAccessCache::Observer>
+      app_capability_observation_{this};
+  raw_ptr<apps::AppRegistryCache> app_registry_cache_;
+  raw_ptr<apps::AppCapabilityAccessCache> app_capability_access_cache_;
 
   base::WeakPtrFactory<AudioDetailedView> weak_factory_{this};
 };

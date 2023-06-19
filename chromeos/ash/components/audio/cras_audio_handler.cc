@@ -134,6 +134,9 @@ void CrasAudioHandler::AudioObserver::OnSurveyTriggered(
 
 void CrasAudioHandler::AudioObserver::OnSpeakOnMuteDetected() {}
 
+void CrasAudioHandler::AudioObserver::OnNumStreamIgnoreUiGainsChanged(
+    int32_t num) {}
+
 void CrasAudioHandler::NumberOfNonChromeOutputStreamsChanged() {
   GetNumberOfNonChromeOutputStreams();
 }
@@ -1262,6 +1265,13 @@ void CrasAudioHandler::SpeakOnMuteDetected() {
   }
 }
 
+void CrasAudioHandler::NumStreamIgnoreUiGains(int32_t num) {
+  num_stream_ignore_ui_gains_ = num;
+  for (auto& observer : observers_) {
+    observer.OnNumStreamIgnoreUiGainsChanged(num);
+  }
+}
+
 void CrasAudioHandler::ResendBluetoothBattery() {
   CrasAudioClient::Get()->ResendBluetoothBattery();
 }
@@ -1423,6 +1433,7 @@ void CrasAudioHandler::InitializeAudioAfterCrasServiceAvailable(
   GetNumberOfOutputStreams();
   GetNumberOfNonChromeOutputStreams();
   GetNumberOfInputStreamsWithPermissionInternal();
+  GetNumStreamIgnoreUiGains();
   CrasAudioClient::Get()->SetFixA2dpPacketSize(
       base::FeatureList::IsEnabled(features::kBluetoothFixA2dpPacketSize));
 
@@ -2474,6 +2485,10 @@ bool CrasAudioHandler::system_agc_supported() const {
   return system_agc_supported_;
 }
 
+int32_t CrasAudioHandler::num_stream_ignore_ui_gains() const {
+  return num_stream_ignore_ui_gains_;
+}
+
 // GetSystemAgcSupported() is only called in the same thread
 // as the CrasAudioHandler constructor. We are safe here without
 // thread check, because unittest may not have the task runner
@@ -2491,6 +2506,30 @@ void CrasAudioHandler::HandleGetSystemAgcSupported(
     return;
   }
   system_agc_supported_ = system_agc_supported.value();
+}
+
+void CrasAudioHandler::GetNumStreamIgnoreUiGains() {
+  CrasAudioClient::Get()->GetNumStreamIgnoreUiGains(
+      base::BindOnce(&CrasAudioHandler::HandleGetNumStreamIgnoreUiGains,
+                     weak_ptr_factory_.GetWeakPtr()));
+}
+
+void CrasAudioHandler::HandleGetNumStreamIgnoreUiGains(
+    absl::optional<int32_t> new_stream_ignore_ui_gains_count) {
+  if (!new_stream_ignore_ui_gains_count.has_value()) {
+    LOG(ERROR) << "Failed to retrieve number of ignore ui gains streams.";
+    return;
+  }
+  DCHECK_GE(*new_stream_ignore_ui_gains_count, 0);
+
+  if (*new_stream_ignore_ui_gains_count != num_stream_ignore_ui_gains_) {
+    for (auto& observer : observers_) {
+      observer.OnNumStreamIgnoreUiGainsChanged(
+          *new_stream_ignore_ui_gains_count);
+    }
+  }
+
+  num_stream_ignore_ui_gains_ = *new_stream_ignore_ui_gains_count;
 }
 
 ScopedCrasAudioHandlerForTesting::ScopedCrasAudioHandlerForTesting() {

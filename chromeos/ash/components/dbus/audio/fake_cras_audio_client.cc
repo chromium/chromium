@@ -458,4 +458,9 @@ void FakeCrasAudioClient::SetForceRespectUiGains(
   force_respect_ui_gains_enabled_ = force_respect_ui_gains_enabled;
 }
 
+void FakeCrasAudioClient::GetNumStreamIgnoreUiGains(
+    chromeos::DBusMethodCallback<int> callback) {
+  std::move(callback).Run(false);
+}
+
 }  // namespace ash
