@@ -7,6 +7,8 @@ package org.chromium.chrome.browser.password_manager;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningCoordinator;
+import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetControllerProvider;
 import org.chromium.ui.base.WindowAndroid;
@@ -19,8 +21,9 @@ class PasswordMigrationWarningBridge {
                 BottomSheetControllerProvider.from(windowAndroid);
         if (bottomSheetController == null) return;
         PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
-                new PasswordMigrationWarningCoordinator(
-                        windowAndroid.getContext().get(), bottomSheetController);
-        passwordMigrationWarningCoordinator.showWarning(profile);
+                new PasswordMigrationWarningCoordinator(windowAndroid.getContext().get(), profile,
+                        bottomSheetController, new SettingsLauncherImpl(),
+                        ManageSyncSettings.class);
+        passwordMigrationWarningCoordinator.showWarning();
     }
 }

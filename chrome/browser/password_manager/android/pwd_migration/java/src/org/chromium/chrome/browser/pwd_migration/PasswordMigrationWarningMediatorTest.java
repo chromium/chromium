@@ -8,7 +8,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -34,9 +33,11 @@ import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
+import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.MigrationWarningOptionsHandler;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.MigrationOption;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
+import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController.StateChangeReason;
@@ -53,7 +54,9 @@ import org.chromium.components.user_prefs.UserPrefs;
 import org.chromium.components.user_prefs.UserPrefsJni;
 import org.chromium.ui.modelutil.PropertyModel;
 
+import java.util.Collections;
 import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Tests for {@link PasswordMigrationWarningMediator}.
@@ -68,13 +71,10 @@ public class PasswordMigrationWarningMediatorTest {
                     FULL_NAME, "given name", null, new AccountCapabilities(new HashMap<>()));
     private static final AccountInfo NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO = new AccountInfo(
             new CoreAccountId("gaia-id-user"), TEST_EMAIL, "gaia-id-user", FULL_NAME, "given name",
-            null, new AccountCapabilities(new HashMap<String, Boolean>() {
-                {
-                    put(AccountCapabilitiesConstants
-                                    .CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
-                            false);
-                }
-            }));
+            null,
+            new AccountCapabilities(new HashMap<>(Map.of(
+                    AccountCapabilitiesConstants.CAN_HAVE_EMAIL_ADDRESS_DISPLAYED_CAPABILITY_NAME,
+                    false))));
 
     @Rule
     public MockitoRule mMockitoRule = MockitoJUnit.rule().strictness(Strictness.STRICT_STUBS);
@@ -85,13 +85,15 @@ public class PasswordMigrationWarningMediatorTest {
     @Rule
     public JniMocker mJniMocker = new JniMocker();
 
-    private PasswordMigrationWarningMediator mMediator = new PasswordMigrationWarningMediator();
+    private PasswordMigrationWarningMediator mMediator;
     private PropertyModel mModel;
 
     @Mock
     private BottomSheetController mBottomSheetController;
     @Mock
     private Profile mProfile;
+    @Mock
+    private MigrationWarningOptionsHandler mOptionsHandler;
     @Mock
     private UserPrefs.Natives mUserPrefsJni;
     @Mock
@@ -100,7 +102,6 @@ public class PasswordMigrationWarningMediatorTest {
     private IdentityServicesProvider mIdentityServicesProvider;
     @Mock
     private IdentityManager mIdentityManager;
-
     @Mock
     private SyncService mSyncService;
 
@@ -108,24 +109,25 @@ public class PasswordMigrationWarningMediatorTest {
     public void setUp() {
         MockitoAnnotations.initMocks(this);
         mJniMocker.mock(UserPrefsJni.TEST_HOOKS, mUserPrefsJni);
+        mMediator = new PasswordMigrationWarningMediator(mProfile, mOptionsHandler);
         mModel = PasswordMigrationWarningProperties.createDefaultModel(
                 mMediator::onDismissed, mMediator);
         mMediator.initialize(mModel);
-
         IdentityServicesProvider.setInstanceForTests(mIdentityServicesProvider);
-        when(mIdentityServicesProvider.getIdentityManager(any())).thenReturn(mIdentityManager);
+        SyncServiceFactory.overrideForTests(mSyncService);
     }
 
     @Test
     public void testShowWarningChangesVisibility() {
         mModel.set(VISIBLE, false);
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertTrue(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnDismissedHidesTheSheet() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mModel.set(VISIBLE, true);
         mMediator.onDismissed(StateChangeReason.NONE);
         assertFalse(mModel.get(VISIBLE));
     }
@@ -133,15 +135,15 @@ public class PasswordMigrationWarningMediatorTest {
     @Test
     public void testDismissHandlerHidesTheSheet() {
         assertNotNull(mModel.get(DISMISS_HANDLER));
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mModel.set(VISIBLE, true);
         mModel.get(DISMISS_HANDLER).onResult(StateChangeReason.NONE);
         assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnMoreOptionsChangesTheModel() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
-        assertEquals(mModel.get(CURRENT_SCREEN), ScreenType.INTRO_SCREEN);
+        mModel.set(VISIBLE, true);
+        mModel.set(CURRENT_SCREEN, ScreenType.INTRO_SCREEN);
         mMediator.onMoreOptions();
         assertEquals(mModel.get(CURRENT_SCREEN), ScreenType.OPTIONS_SCREEN);
     }
@@ -149,39 +151,46 @@ public class PasswordMigrationWarningMediatorTest {
     @Test
     public void testOnAcknowledgeHidesTheSheet() {
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
-
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
-        assertTrue(mModel.get(VISIBLE));
+        mModel.set(VISIBLE, true);
         mMediator.onAcknowledge(mBottomSheetController);
-
         assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testAcknowledgementIsSavedInPrefs() {
         when(mUserPrefsJni.get(mProfile)).thenReturn(mPrefService);
-
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
         mMediator.onAcknowledge(mBottomSheetController);
-
         verify(mPrefService)
                 .setBoolean(eq(Pref.USER_ACKNOWLEDGED_LOCAL_PASSWORDS_MIGRATION_WARNING), eq(true));
     }
 
     @Test
     public void testOnCancelHidesTheSheet() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
-        assertTrue(mModel.get(VISIBLE));
+        mModel.set(VISIBLE, true);
         mMediator.onCancel(mBottomSheetController);
         assertFalse(mModel.get(VISIBLE));
     }
 
     @Test
     public void testOnNextDismissesTheSheet() {
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
-        assertTrue(mModel.get(VISIBLE));
+        mModel.set(VISIBLE, true);
         mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
         assertFalse(mModel.get(VISIBLE));
+    }
+
+    @Test
+    public void testOnNextSelectedSyncNoConsent() {
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(false);
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
+        verify(mOptionsHandler).startSyncConsentFlow();
+    }
+
+    @Test
+    public void testOnNextSelectedSyncWithConsentButPasswordsDisabled() {
+        when(mSyncService.isSyncFeatureEnabled()).thenReturn(true);
+        when(mSyncService.getSelectedTypes()).thenReturn(Collections.EMPTY_SET);
+        mMediator.onNext(MigrationOption.SYNC_PASSWORDS);
+        verify(mOptionsHandler).openSyncSettings();
     }
 
     @Test
@@ -192,7 +201,7 @@ public class PasswordMigrationWarningMediatorTest {
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(TEST_EMAIL))
                 .thenReturn(ACCOUNT_INFO);
 
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertEquals(TEST_EMAIL, mModel.get(ACCOUNT_DISPLAY_NAME));
     }
 
@@ -204,7 +213,7 @@ public class PasswordMigrationWarningMediatorTest {
         when(mIdentityManager.findExtendedAccountInfoByEmailAddress(TEST_EMAIL))
                 .thenReturn(NON_DISPLAYABLE_EMAIL_ACCOUNT_INFO);
 
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertEquals(FULL_NAME, mModel.get(ACCOUNT_DISPLAY_NAME));
     }
 
@@ -213,7 +222,7 @@ public class PasswordMigrationWarningMediatorTest {
         when(mIdentityManager.getPrimaryAccountInfo(ConsentLevel.SIGNIN)).thenReturn(null);
         when(mIdentityServicesProvider.getIdentityManager(mProfile)).thenReturn(mIdentityManager);
 
-        mMediator.showWarning(ScreenType.INTRO_SCREEN, mProfile);
+        mMediator.showWarning(ScreenType.INTRO_SCREEN);
         assertEquals(null, mModel.get(ACCOUNT_DISPLAY_NAME));
     }
 }

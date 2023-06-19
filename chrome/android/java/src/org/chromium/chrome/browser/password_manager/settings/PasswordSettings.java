@@ -45,6 +45,7 @@ import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.ProfileDependentSetting;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
+import org.chromium.chrome.browser.sync.settings.ManageSyncSettings;
 import org.chromium.chrome.browser.sync.settings.SyncSettingsUtils;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.ChromeBasePreference;
@@ -406,8 +407,10 @@ public class PasswordSettings extends PreferenceFragmentCompat
                 && ChromeFeatureList.isEnabled(
                         ChromeFeatureList.UNIFIED_PASSWORD_MANAGER_LOCAL_PWD_MIGRATION_WARNING)) {
             PasswordMigrationWarningCoordinator passwordMigrationWarningCoordinator =
-                    new PasswordMigrationWarningCoordinator(getContext(), mBottomSheetController);
-            passwordMigrationWarningCoordinator.showWarning(mProfile);
+                    new PasswordMigrationWarningCoordinator(getContext(), mProfile,
+                            mBottomSheetController, new SettingsLauncherImpl(),
+                            ManageSyncSettings.class);
+            passwordMigrationWarningCoordinator.showWarning();
         }
     }
 
