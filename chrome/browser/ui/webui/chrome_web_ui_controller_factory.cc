@@ -1168,6 +1168,7 @@ ChromeWebUIControllerFactory::GetListOfAcceptableURLs() {
     GURL(chrome::kChromeUINetworkUrl),
     GURL(chrome::kChromeUINotificationTesterURL),
     GURL(chrome::kChromeUIOfficeFallbackURL),
+    GURL(chrome::kChromeUIOSCreditsURL),
     GURL(chrome::kChromeUIOSSettingsURL),
     GURL(chrome::kChromeUIPowerUrl),
     GURL(chrome::kChromeUIPrintManagementUrl),
