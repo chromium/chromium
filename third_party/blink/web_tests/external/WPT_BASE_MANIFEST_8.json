@@ -273849,16 +273849,6 @@
    }
   },
   "support": {
-   ".cache": {
-    "gitignore2.json": [
-     "fc9bdb848a88c540ffef23746e61b0ce1abc7fc6",
-     []
-    ],
-    "mtime.json": [
-     "2381c6263ffca7d171a5eea770667f7e4b496163",
-     []
-    ]
-   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -358859,7 +358849,7 @@
       "yaml": {
        "element": {
         "drawing-text-to-the-canvas.yaml": [
-         "55597b31594dedf449feba0761f298f83801eaf8",
+         "676cc8e6ce22d1b4790202fef8baaa9fbb8e24bb",
          []
         ],
         "meta.yaml": [
@@ -358881,7 +358871,7 @@
          []
         ],
         "text.yaml": [
-         "0907076cc8a5eb0da6adaabfb531c027325735c6",
+         "e37535741ef5b101ad4166151acba8177876b31a",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -526296,6 +526286,20 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.absolute.spacing.html": [
+        "1207f84e2bfbe54281ae94792675e837e8bb5390",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.font-relative.spacing.html": [
+        "a232ec16029e5a58b522962791bc8c8473be65e4",
+        [
+         null,
+         {}
+        ]
+       ],
        "2d.text.drawing.style.fontKerning.html": [
         "6de9c6eb504209806ce529bf04522237dacc9694",
         [
@@ -526340,13 +526344,6 @@
        ],
        "2d.text.drawing.style.nonfinite.spacing.html": [
         "5ba20208e5eb36cde14c5b5a34f877a324a37edf",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.spacing.html": [
-        "82a0fe3cf412431ca99ae58958e41f080142d0af",
         [
          null,
          {}
@@ -543118,6 +543115,34 @@
          {}
         ]
        ],
+       "2d.text.drawing.style.absolute.spacing.html": [
+        "965d451020bfb40322355e30e755f350fa3c6343",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.absolute.spacing.worker.js": [
+        "2b42b3e477e67a8b591a9e248c9495eb37eea87f",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.absolute.spacing.worker.html",
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.font-relative.spacing.html": [
+        "a3f0f7133ee27d06726c7550f605c38ac56d0f3e",
+        [
+         null,
+         {}
+        ]
+       ],
+       "2d.text.drawing.style.font-relative.spacing.worker.js": [
+        "cd653208e8a4a2c8b559ba9f851a54f0469de741",
+        [
+         "html/canvas/offscreen/text/2d.text.drawing.style.font-relative.spacing.worker.html",
+         {}
+        ]
+       ],
        "2d.text.drawing.style.fontKerning.html": [
         "23f353513bfa0e7692e6d05e59bb9c2b8c023d32",
         [
@@ -543269,20 +543294,6 @@
         "801b8b5c73bb20c631766efb535ae3651ba296d6",
         [
          "html/canvas/offscreen/text/2d.text.drawing.style.nonfinite.spacing.worker.html",
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.spacing.html": [
-        "aa2e7caa9162be3524c9d5b08adee8c91184ef94",
-        [
-         null,
-         {}
-        ]
-       ],
-       "2d.text.drawing.style.spacing.worker.js": [
-        "938ab966020b751dce5abae01c028e3ca2505221",
-        [
-         "html/canvas/offscreen/text/2d.text.drawing.style.spacing.worker.html",
          {}
         ]
        ],

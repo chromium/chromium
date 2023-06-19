@@ -1136,8 +1136,8 @@
        @assert ctx.measureText('ABCD').getBaselines().hanging === 68;
     }).then(t_pass, t_fail);
 
-- name: 2d.text.drawing.style.spacing
-  desc: Testing letter spacing and word spacing
+- name: 2d.text.drawing.style.absolute.spacing
+  desc: Testing letter spacing and word spacing with absolute length
   code: |
     @assert ctx.letterSpacing === '0px';
     @assert ctx.wordSpacing === '0px';
@@ -1156,9 +1156,26 @@
     @assert ctx.wordSpacing === '-1px';
 
     ctx.letterSpacing = '1PX';
-    ctx.wordSpacing = '1EM';
+    ctx.wordSpacing = '10PX';
     @assert ctx.letterSpacing === '1px';
+    @assert ctx.wordSpacing === '10px';
+    t.done();
+
+- name: 2d.text.drawing.style.font-relative.spacing
+  desc: Testing letter spacing and word spacing with font-relative length
+  code: |
+    @assert ctx.letterSpacing === '0px';
+    @assert ctx.wordSpacing === '0px';
+
+    ctx.letterSpacing = '1EX';
+    ctx.wordSpacing = '1EM';
+    @assert ctx.letterSpacing === '1ex';
     @assert ctx.wordSpacing === '1em';
+
+    ctx.letterSpacing = '1ch';
+    ctx.wordSpacing = '1ic';
+    @assert ctx.letterSpacing === '1ch';
+    @assert ctx.wordSpacing === '1ic';
     t.done();
 
 - name: 2d.text.drawing.style.nonfinite.spacing
