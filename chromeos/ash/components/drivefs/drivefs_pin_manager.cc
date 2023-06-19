@@ -1341,7 +1341,7 @@ void PinManager::OnItemProgress(const mojom::ProgressEvent& event) {
     Update(id, relative_path, event.progress);
   } else if (event.progress == 100) {
     if (!Remove(id, relative_path)) {
-      LOG(ERROR) << "Failed removing finished event " << Quote(event);
+      // Item is not being tracked.
       return;
     }
     VLOG(2) << "Synced " << id << " " << Quote(relative_path);
