@@ -63,8 +63,8 @@ void ShowExtensionInstallBlockedByParentDialog(
   auto dialog_model =
       ui::DialogModel::Builder()
           .SetTitle(GetTitle(action, extension_type))
-          .SetIcon(ui::ImageModel::FromImageSkia(gfx::CreateVectorIcon(
-              chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon)))
+          .SetIcon(ui::ImageModel::FromVectorIcon(
+              chromeos::kNotificationSupervisedUserIcon, ui::kColorIcon))
           .AddParagraph(
               ui::DialogModelLabel(GetBodyText(action, extension_type)))
           .AddOkButton(base::DoNothing(),
