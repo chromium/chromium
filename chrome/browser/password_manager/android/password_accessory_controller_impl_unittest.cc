@@ -150,6 +150,11 @@ class MockPasswordManagerClient
               (password_manager::PasswordManagerDriver*),
               (override));
 
+  MOCK_METHOD(webauthn::WebAuthnCredManDelegate*,
+              GetWebAuthnCredManDelegateForDriver,
+              (password_manager::PasswordManagerDriver*),
+              (override));
+
   password_manager::PasswordStoreInterface* GetProfilePasswordStore()
       const override {
     return password_store_;
@@ -253,6 +258,8 @@ class PasswordAccessoryControllerTest : public ChromeRenderViewHostTestHarness {
         std::make_unique<password_manager::MockWebAuthnCredentialsDelegate>();
     ON_CALL(*password_client(), GetWebAuthnCredentialsDelegateForDriver)
         .WillByDefault(Return(webauthn_credentials_delegate()));
+    ON_CALL(*password_client(), GetWebAuthnCredManDelegateForDriver)
+        .WillByDefault(Return(cred_man_delegate()));
     ON_CALL(*webauthn_credentials_delegate(), IsAndroidHybridAvailable)
         .WillByDefault(Return(false));
   }
@@ -1046,9 +1053,7 @@ TEST_F(PasswordAccessoryControllerTest, CancelsOngoingAuthIfDestroyed) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    return;
-  }
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
@@ -1064,9 +1069,7 @@ TEST_F(PasswordAccessoryControllerTest, ShowCredManReentry) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    return;
-  }
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
@@ -1082,9 +1085,7 @@ TEST_F(PasswordAccessoryControllerTest, HideCredManReentryWithoutResult) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, HideCredManReentryOnNonSignInField) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    return;
-  }
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   cred_man_delegate()->OnCredManConditionalRequestPending(
@@ -1100,6 +1101,7 @@ TEST_F(PasswordAccessoryControllerTest, HideCredManReentryOnNonSignInField) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
   base::test::ScopedFeatureList features;
   features.InitAndDisableFeature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
@@ -1113,9 +1115,7 @@ TEST_F(PasswordAccessoryControllerTest, SuppressCredManReentryWithoutFeature) {
 }
 
 TEST_F(PasswordAccessoryControllerTest, OnCredManConditionalUiRequested) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    return;
-  }
+  webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(true);
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   CreateSheetController();
   base::MockCallback<base::RepeatingCallback<void(bool)>> cred_man_callback;

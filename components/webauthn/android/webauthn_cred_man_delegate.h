@@ -61,12 +61,23 @@ class WebAuthnCredManDelegate {
 
   static bool IsCredManEnabled();
 
+#if defined(UNIT_TEST)
+  static void override_android_version_for_testing(bool should_override) {
+    override_android_version_for_testing_ = should_override;
+  }
+#endif
+
  private:
   bool has_results_ = false;
   base::RepeatingCallback<void(bool)> full_assertion_request_;
   base::RepeatingCallback<void(bool)> request_completion_callback_;
   base::OnceCallback<void(const std::u16string&, const std::u16string&)>
       filling_callback_;
+
+  // This bool is required to override android version check in
+  // `IsCredManEnabled` because UNIT_TEST cannot be evaluated in the cc file for
+  // tests. It should be `false` for non-tests!
+  static bool override_android_version_for_testing_;
 };
 
 }  // namespace webauthn

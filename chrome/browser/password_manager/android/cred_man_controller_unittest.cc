@@ -49,6 +49,8 @@ class CredManControllerTest : public testing::Test {
     driver_ = std::make_unique<StubPasswordManagerDriver>();
     web_authn_cred_man_delegate_ =
         std::make_unique<WebAuthnCredManDelegate>(nullptr);
+    webauthn::WebAuthnCredManDelegate::override_android_version_for_testing(
+        true);
   }
 
   std::unique_ptr<MockPasswordCredentialFiller> PrepareFiller() {
@@ -108,10 +110,6 @@ TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
 }
 
 TEST_F(CredManControllerTest, ShowIfResultsExist) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    // TODO(crbug.com/1455313): remove this check when there is a u runner.
-    return;
-  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
 
@@ -126,10 +124,6 @@ TEST_F(CredManControllerTest, ShowIfResultsExist) {
 }
 
 TEST_F(CredManControllerTest, Fill) {
-  if (!base::android::BuildInfo::GetInstance()->is_at_least_u()) {
-    // TODO(crbug.com/1455313): remove this check when there is a u runner.
-    return;
-  }
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   const std::u16string kUsername = u"test_user";
   const std::u16string kPassword = u"38kAy5Er1Sp0r38";

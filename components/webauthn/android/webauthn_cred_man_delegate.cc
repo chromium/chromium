@@ -21,6 +21,8 @@ class WebContents;
 
 namespace webauthn {
 
+bool WebAuthnCredManDelegate::override_android_version_for_testing_ = false;
+
 WebAuthnCredManDelegate::WebAuthnCredManDelegate(
     content::WebContents* web_contents) {}
 
@@ -77,7 +79,8 @@ void WebAuthnCredManDelegate::FillUsernameAndPassword(
 
 // static
 bool WebAuthnCredManDelegate::IsCredManEnabled() {
-  return base::android::BuildInfo::GetInstance()->is_at_least_u() &&
+  return (override_android_version_for_testing_ ||
+          base::android::BuildInfo::GetInstance()->is_at_least_u()) &&
          base::FeatureList::IsEnabled(device::kWebAuthnAndroidCredMan);
 }
 
