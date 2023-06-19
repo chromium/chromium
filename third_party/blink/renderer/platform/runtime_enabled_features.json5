@@ -855,11 +855,6 @@
       base_feature: "none",
     },
     {
-      name: "CSSFontFaceSrcTechParsing",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "CSSFontFamilyMath",
       status: "stable",
       implied_by: ["MathMLCore"],
@@ -3447,11 +3442,6 @@
     },
     {
       name: "StylusHandwriting",
-      base_feature: "none",
-    },
-    {
-      name: "SupportsFontFormatTech",
-      status: "stable",
       base_feature: "none",
     },
     {

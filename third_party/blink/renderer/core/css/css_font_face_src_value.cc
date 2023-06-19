@@ -114,8 +114,7 @@ String CSSFontFaceSrcValue::CustomCSSText() const {
     result.Append(')');
   }
 
-  if (RuntimeEnabledFeatures::CSSFontFaceSrcTechParsingEnabled() &&
-      !technologies_.empty()) {
+  if (!technologies_.empty()) {
     result.Append(" tech(");
     for (wtf_size_t i = 0; i < technologies_.size(); ++i) {
       result.Append(TechnologyToString(technologies_[i]));

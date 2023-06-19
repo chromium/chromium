@@ -106,9 +106,8 @@ bool CSSSupportsParser::IsSupportsFeature(const CSSParserToken& first_token,
                                           const CSSParserToken& second_token) {
   return IsSupportsSelectorFn(first_token, second_token) ||
          IsSupportsDecl(first_token, second_token) ||
-         (RuntimeEnabledFeatures::SupportsFontFormatTechEnabled() &&
-          (IsFontFormatFn(first_token, second_token) ||
-           IsFontTechFn(first_token, second_token)));
+         IsFontFormatFn(first_token, second_token) ||
+         IsFontTechFn(first_token, second_token);
 }
 
 bool CSSSupportsParser::IsGeneralEnclosed(const CSSParserToken& first_token) {
@@ -157,14 +156,12 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeSupportsFeature(
   }
 
   // <supports-font-tech-fn>
-  if (IsFontTechFn(first_token, stream.Peek()) &&
-      RuntimeEnabledFeatures::SupportsFontFormatTechEnabled()) {
+  if (IsFontTechFn(first_token, stream.Peek())) {
     return ConsumeFontTechFn(first_token, stream);
   }
 
   // <supports-font-format-fn>
-  if (IsFontFormatFn(first_token, stream.Peek()) &&
-      RuntimeEnabledFeatures::SupportsFontFormatTechEnabled()) {
+  if (IsFontFormatFn(first_token, stream.Peek())) {
     return ConsumeFontFormatFn(first_token, stream);
   }
 
@@ -188,7 +185,6 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeFontFormatFn(
     const CSSParserToken& first_token,
     CSSParserTokenStream& stream) {
   DCHECK(IsFontFormatFn(first_token, stream.Peek()));
-  DCHECK(RuntimeEnabledFeatures::SupportsFontFormatTechEnabled());
 
   auto format_block = stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
 
@@ -223,7 +219,6 @@ CSSSupportsParser::Result CSSSupportsParser::ConsumeFontTechFn(
     const CSSParserToken& first_token,
     CSSParserTokenStream& stream) {
   DCHECK(IsFontTechFn(first_token, stream.Peek()));
-  DCHECK(RuntimeEnabledFeatures::SupportsFontFormatTechEnabled());
   auto technology_block =
       stream.ConsumeUntilPeekedTypeIs<kRightParenthesisToken>();
 
