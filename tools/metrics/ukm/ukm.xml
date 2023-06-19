@@ -11255,13 +11255,22 @@ be describing additional metrics about the same event.
       be treated as 0 ms. Each type of interaction has its own budget.
     </summary>
   </metric>
-  <metric name="BackForwardCache.BlocklistedFeatures"
-      enum="WebSchedulerTrackedFeature">
+  <metric name="BackForwardCache.BlocklistedFeatures">
     <summary>
       When navigating back to a page in the session history, this records what
       blocklisted features were used when the page was loaded and prevented this
       page from being stored in the back-forward cache. Multiple blocklisted
-      features can be recorded for the same page as a binary mask.
+      features can be recorded for the same page as a binary mask. This entry
+      records the features numbered from 0 to 63.
+    </summary>
+  </metric>
+  <metric name="BackForwardCache.BlocklistedFeatures2">
+    <summary>
+      When navigating back to a page in the session history, this records what
+      blocklisted features were used when the page was loaded and prevented this
+      page from being stored in the back-forward cache. Multiple blocklisted
+      features can be recorded for the same page as a binary mask. This entry
+      records the features numbered from 64 to 127.
     </summary>
   </metric>
   <metric name="BackForwardCache.BrowsingInstanceNotSwappedReason"
@@ -11300,9 +11309,16 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="CrossOriginSubframesFeatures">
     <summary>
-      Bitmask of features used by the cross origin subframes of the previous
-      page load. See blink::SchedulingPolicy::Feature for the meaning for the
-      individual features.
+      Bitmask of features numbered from 0 to 63 used by the cross origin
+      subframes of the previous page load. See blink::SchedulingPolicy::Feature
+      for the meaning for the individual features.
+    </summary>
+  </metric>
+  <metric name="CrossOriginSubframesFeatures2">
+    <summary>
+      Bitmask of features numbered from 64 to 127 used by the cross origin
+      subframes of the previous page load. See blink::SchedulingPolicy::Feature
+      for the meaning for the individual features.
     </summary>
   </metric>
   <metric name="CumulativeShiftScoreAfterBackForwardCacheRestore">
@@ -11355,9 +11371,16 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="MainFrameFeatures">
     <summary>
-      Bitmask of features used by the main frames of the previous page load. See
-      blink::SchedulingPolicy::Feature for the meaning for the individual
-      features.
+      Bitmask of features numbered from 0 to 63 used by the main frames of the
+      previous page load. See blink::SchedulingPolicy::Feature for the meaning
+      for the individual features.
+    </summary>
+  </metric>
+  <metric name="MainFrameFeatures2">
+    <summary>
+      Bitmask of features numbered from 64 to 127 used by the main frames of the
+      previous page load. See blink::SchedulingPolicy::Feature for the meaning
+      for the individual features.
     </summary>
   </metric>
   <metric
@@ -11461,9 +11484,16 @@ be describing additional metrics about the same event.
   </metric>
   <metric name="SameOriginSubframesFeatures">
     <summary>
-      Bitmask of features used by the same origin subframes of the previous page
-      load. See blink::SchedulingPolicy::Feature for the meaning for the
-      individual features.
+      Bitmask of features numbered from 0 to 63 used by the same origin
+      subframes of the previous page load. See blink::SchedulingPolicy::Feature
+      for the meaning for the individual features.
+    </summary>
+  </metric>
+  <metric name="SameOriginSubframesFeatures2">
+    <summary>
+      Bitmask of features numbered from 64 to 127 used by the same origin
+      subframes of the previous page load. See blink::SchedulingPolicy::Feature
+      for the meaning for the individual features.
     </summary>
   </metric>
   <metric name="SecondRequestAnimationFrameAfterBackForwardCacheRestore">

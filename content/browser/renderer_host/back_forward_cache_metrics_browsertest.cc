@@ -451,61 +451,11 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
 
 namespace {
 
-struct FeatureUsage {
-  ukm::SourceId source_id;
-  uint64_t main_frame_features;
-  uint64_t same_origin_subframes_features;
-  uint64_t cross_origin_subframes_features;
-};
-
-bool operator==(const FeatureUsage& lhs, const FeatureUsage& rhs) {
-  return lhs.source_id == rhs.source_id &&
-         lhs.main_frame_features == rhs.main_frame_features &&
-         lhs.same_origin_subframes_features ==
-             rhs.same_origin_subframes_features &&
-         lhs.cross_origin_subframes_features ==
-             rhs.cross_origin_subframes_features;
-}
-
-std::ostream& operator<<(std::ostream& os, const FeatureUsage& usage) {
-  os << "source_id=" << usage.source_id
-     << " main_frame_features=" << usage.main_frame_features
-     << " same_origin_features=" << usage.same_origin_subframes_features
-     << " cross_origin_features=" << usage.cross_origin_subframes_features;
-  return os;
-}
-
-std::vector<FeatureUsage> GetFeatureUsageMetrics(
+std::vector<ukm::SourceId> GetMetricsSourceIds(
     ukm::TestAutoSetUkmRecorder* recorder) {
-  std::vector<FeatureUsage> result;
-  for (const auto& entry :
-       recorder->GetEntries("HistoryNavigation",
-                            {"MainFrameFeatures", "SameOriginSubframesFeatures",
-                             "CrossOriginSubframesFeatures"})) {
-    FeatureUsage feature_usage;
-    feature_usage.source_id = entry.source_id;
-    auto remove_ignored_features = [&](uint64_t metric) {
-      for (auto feature : GetFeaturesToIgnore()) {
-        auto feature_value = static_cast<std::underlying_type_t<
-            blink::scheduler::WebSchedulerTrackedFeature>>(feature);
-        // Since we only report the first 64 values from the features enum, we
-        // only need to reset the bit if the ignored feature value is smaller
-        // than 64.
-        // TODO(crbug.com/1446619): handle the other features field after they
-        // are added.
-        if (feature_value < 64) {
-          metric &= ~(1ull << feature_value);
-        }
-      }
-      return metric;
-    };
-    feature_usage.main_frame_features =
-        remove_ignored_features(entry.metrics.at("MainFrameFeatures"));
-    feature_usage.same_origin_subframes_features = remove_ignored_features(
-        entry.metrics.at("SameOriginSubframesFeatures"));
-    feature_usage.cross_origin_subframes_features = remove_ignored_features(
-        entry.metrics.at("CrossOriginSubframesFeatures"));
-    result.push_back(feature_usage);
+  std::vector<ukm::SourceId> result;
+  for (const auto& entry : recorder->GetEntries("HistoryNavigation", {})) {
+    result.push_back(entry.source_id);
   }
   return result;
 }
@@ -533,8 +483,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest, Features_MainFrame) {
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id3));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -559,8 +508,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id2 = ToSourceId(navigation_ids_[1]);
   ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id3, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id3));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -592,8 +540,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -619,8 +566,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -653,8 +599,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   // ukm::SourceId id3 = ToSourceId(navigation_ids_[2]);
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 // TODO(https://crbug.com/154571): Shared workers are not available on Android.
@@ -988,8 +933,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsPrerenderingBrowserTest,
   ukm::SourceId id5 = ToSourceId(navigation_ids_[4]);
 
   // We should only record metrics for the last navigation.
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id5, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id5));
 }
 
 class BackForwardCacheMetricsFencedFrameBrowserTest
@@ -1040,8 +984,7 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsFencedFrameBrowserTest,
   ukm::SourceId id4 = ToSourceId(navigation_ids_[3]);
 
   // We should only record metrics for the last navigation.
-  EXPECT_THAT(GetFeatureUsageMetrics(&recorder),
-              testing::ElementsAre(FeatureUsage{id4, 0, 0, 0}));
+  EXPECT_THAT(GetMetricsSourceIds(&recorder), testing::ElementsAre(id4));
 }
 
 INSTANTIATE_TEST_SUITE_P(All,

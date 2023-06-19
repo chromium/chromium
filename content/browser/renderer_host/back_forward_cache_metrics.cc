@@ -184,10 +184,12 @@ void BackForwardCacheMetrics::DidCommitNavigation(
               ? static_cast<int>(
                     page_store_result_->browsing_instance_swap_result().value())
               : -1);
-      // TODO(crbug.com/1446619): handle the remaining elements from the masks.
       std::vector<uint64_t> masks = blink::scheduler::ToEnumBitMasks(
           page_store_result_->blocklisted_features());
       SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted", masks[0]);
+      if (masks.size() > 1) {
+        SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "blocklisted1", masks[1]);
+      }
       SCOPED_CRASH_KEY_NUMBER("BFCacheMismatch", "disabled",
                               page_store_result_->disabled_reasons().size());
       SCOPED_CRASH_KEY_NUMBER(
@@ -269,17 +271,28 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
             last_committed_cross_document_main_frame_navigation_id_,
             ukm::SourceIdType::NAVIGATION_ID));
   }
-  // TODO(crbug.com/1446619): handle the remaining elements from the masks.
+
   std::vector<uint64_t> main_frame_features_masks =
       blink::scheduler::ToEnumBitMasks(main_frame_features_);
   builder.SetMainFrameFeatures(main_frame_features_masks[0]);
+  if (main_frame_features_masks.size() > 1) {
+    builder.SetMainFrameFeatures2(main_frame_features_masks[1]);
+  }
   std::vector<uint64_t> same_origin_frames_features_masks =
       blink::scheduler::ToEnumBitMasks(same_origin_frames_features_);
   builder.SetSameOriginSubframesFeatures(same_origin_frames_features_masks[0]);
+  if (same_origin_frames_features_masks.size() > 1) {
+    builder.SetSameOriginSubframesFeatures2(
+        same_origin_frames_features_masks[1]);
+  }
   std::vector<uint64_t> cross_origin_frames_features_masks =
       blink::scheduler::ToEnumBitMasks(same_origin_frames_features_);
   builder.SetCrossOriginSubframesFeatures(
       cross_origin_frames_features_masks[0]);
+  if (cross_origin_frames_features_masks.size() > 1) {
+    builder.SetCrossOriginSubframesFeatures2(
+        cross_origin_frames_features_masks[1]);
+  }
   // DidStart notification might be missing for some same-document
   // navigations. It's good that we don't care about the time in the cache
   // in that case.
@@ -296,11 +309,14 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUKM(
   builder.SetBackForwardCache_NotRestoredReasons(
       page_store_result_->not_restored_reasons().ToEnumBitmask());
 
-  // TODO(crbug.com/1446619): handle the remaining elements from the masks.
   std::vector<uint64_t> page_store_result_masks =
       blink::scheduler::ToEnumBitMasks(
           page_store_result_->blocklisted_features());
   builder.SetBackForwardCache_BlocklistedFeatures(page_store_result_masks[0]);
+  if (page_store_result_masks.size() > 1) {
+    builder.SetBackForwardCache_BlocklistedFeatures2(
+        page_store_result_masks[1]);
+  }
 
   if (browsing_instance_swap_result_) {
     builder.SetBackForwardCache_BrowsingInstanceNotSwappedReason(
@@ -511,12 +527,6 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
 
   for (blink::scheduler::WebSchedulerTrackedFeature feature :
        page_store_result_->blocklisted_features()) {
-    // Since there could be more than 64 variants in
-    // `WebSchedulerTrackedFeature`, we need to split them into different
-    // chunks and record that in the corresponding field.
-    // TODO(crbug.com/1446619): Only add the first 64 bit into
-    // `BlocklistedFeature` and put the other chunks into another field once UKM
-    // approval is obtained.
     if (back_forward_cache_allowed) {
       UMA_HISTOGRAM_ENUMERATION(
           "BackForwardCache.HistoryNavigationOutcome.BlocklistedFeature",
