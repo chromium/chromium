@@ -767,7 +767,9 @@ void AutocorrectManager::OnActivate(const std::string& engine_id) {
   PrefService* pref_service = profile_->GetPrefs();
   auto autocorrect_pref =
       GetPhysicalKeyboardAutocorrectPref(*pref_service, engine_id);
-  if (base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
+
+  if (!base::FeatureList::IsEnabled(features::kLacrosSupport) &&
+      base::FeatureList::IsEnabled(features::kAutocorrectByDefault) &&
       autocorrect_pref == AutocorrectPreference::kDefault &&
       IsUsEnglishId(engine_id) &&
       // This class is instantiated with NativeInputMethodEngineObserver, which
