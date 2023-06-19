@@ -1739,10 +1739,14 @@ LayoutBlock* LayoutObject::FindNonAnonymousContainingBlock(
   // Allow an NG anonymous wrapper of an inline to be the containing block if it
   // is the direct child of a multicol. This avoids the multicol from
   // incorrectly becoming the containing block in the case of an inline
-  // container.
+  // container. Also explicitly allow the LayoutViewTransitionRoot to be a
+  // containing block since its purpose is to be the root containing block for
+  // the view transition hierarchy.
   while (container && container->IsAnonymousBlock() &&
-         !container->IsAnonymousNGMulticolInlineWrapper())
+         !container->IsAnonymousNGMulticolInlineWrapper() &&
+         !container->IsViewTransitionRoot()) {
     container = container->ContainingBlock(skip_info);
+  }
 
   return DynamicTo<LayoutBlock>(container);
 }
@@ -1751,6 +1755,9 @@ bool LayoutObject::ComputeIsFixedContainer(const ComputedStyle* style) const {
   NOT_DESTROYED();
   if (!style)
     return false;
+  if (IsViewTransitionRoot()) {
+    return true;
+  }
   bool is_document_element = IsDocumentElement();
   // https://www.w3.org/TR/filter-effects-1/#FilterProperty
   if (!is_document_element && style->HasNonInitialFilter())

@@ -199,6 +199,7 @@ void LayoutBlockFlow::WillBeDestroyed() {
 void LayoutBlockFlow::AddChild(LayoutObject* new_child,
                                LayoutObject* before_child) {
   NOT_DESTROYED();
+
   if (LayoutMultiColumnFlowThread* flow_thread = MultiColumnFlowThread()) {
     if (before_child == flow_thread)
       before_child = flow_thread->FirstChild();

@@ -839,8 +839,7 @@ void StyleAdjuster::AdjustComputedStyle(StyleResolverState& state,
     // be left alone because the fullscreen.css doesn't apply any style to
     // them.
     if ((builder.Overlay() == EOverlay::kAuto && !is_document_element) ||
-        builder.StyleType() == kPseudoIdBackdrop ||
-        builder.StyleType() == kPseudoIdViewTransition) {
+        builder.StyleType() == kPseudoIdBackdrop) {
       if (builder.GetPosition() == EPosition::kStatic ||
           builder.GetPosition() == EPosition::kRelative) {
         builder.SetPosition(EPosition::kAbsolute);

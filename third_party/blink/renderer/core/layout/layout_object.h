@@ -761,9 +761,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // the root element box and have specific stacking requirements.
   bool IsInTopOrViewTransitionLayer() const {
     NOT_DESTROYED();
+    if (IsViewTransitionRoot()) {
+      return true;
+    }
     if (Element* element = DynamicTo<Element>(GetNode())) {
-      return StyleRef().StyleType() == kPseudoIdViewTransition ||
-             StyleRef().IsRenderedInTopLayer(*element);
+      return StyleRef().IsRenderedInTopLayer(*element);
     }
     return false;
   }
@@ -1054,6 +1056,11 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   }
 
   virtual bool IsViewTransitionContent() const {
+    NOT_DESTROYED();
+    return false;
+  }
+
+  virtual bool IsViewTransitionRoot() const {
     NOT_DESTROYED();
     return false;
   }

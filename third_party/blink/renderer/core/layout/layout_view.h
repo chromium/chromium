@@ -38,6 +38,7 @@
 namespace blink {
 
 class LayoutQuote;
+class LayoutViewTransitionRoot;
 class LocalFrameView;
 class ViewFragmentationContext;
 
@@ -97,6 +98,9 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
     NOT_DESTROYED();
     return kNormalPaintLayer;
   }
+
+  void AddChild(LayoutObject* new_child,
+                LayoutObject* before_child = nullptr) override;
 
   bool IsChildAllowed(LayoutObject*, const ComputedStyle&) const override;
 
@@ -342,6 +346,8 @@ class CORE_EXPORT LayoutView : public LayoutBlockFlow {
   LogicalSize InitialContainingBlockSize() const;
 
   TrackedDescendantsMap& SvgTextDescendantsMap();
+
+  LayoutViewTransitionRoot* GetViewTransitionRoot() const;
 
  protected:
   void StyleDidChange(StyleDifference, const ComputedStyle* old_style) override;

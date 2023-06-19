@@ -21,6 +21,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/inspector/console_message.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
+#include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/paint/clip_path_clipper.h"
@@ -1249,6 +1250,11 @@ bool ViewTransitionStyleTracker::RunPostPrePaintSteps() {
       element_data->CacheGeometryState();
 
     needs_style_invalidation = true;
+  }
+
+  if (LayoutViewTransitionRoot* snapshot_containing_block =
+          document_->GetLayoutView()->GetViewTransitionRoot()) {
+    snapshot_containing_block->UpdateSnapshotStyle(*this);
   }
 
   if (needs_style_invalidation)

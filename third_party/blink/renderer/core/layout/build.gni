@@ -161,6 +161,8 @@ blink_core_sources_layout = [
   "layout_view.h",
   "layout_view_transition_content.cc",
   "layout_view_transition_content.h",
+  "layout_view_transition_root.cc",
+  "layout_view_transition_root.h",
   "layout_word_break.cc",
   "layout_word_break.h",
   "list_marker.cc",

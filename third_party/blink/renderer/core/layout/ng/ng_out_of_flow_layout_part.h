@@ -117,7 +117,7 @@ class CORE_EXPORT NGOutOfFlowLayoutPart {
   // There are two types of containing blocks:
   // 1) Default containing block (DCB)
   //    Containing block passed in NGOutOfFlowLayoutPart constructor.
-  //    It is the block element inside which this algorighm runs.
+  //    It is the block element inside which this algorithm runs.
   //    All OOF descendants not in inline containing block are placed in DCB.
   // 2) Inline containing block
   //    OOF descendants might be positioned wrt inline containing block.
