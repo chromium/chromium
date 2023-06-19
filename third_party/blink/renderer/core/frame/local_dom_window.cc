@@ -2371,11 +2371,17 @@ void LocalDOMWindow::Trace(Visitor* visitor) const {
   ExecutionContext::Trace(visitor);
   Supplementable<LocalDOMWindow>::Trace(visitor);
 }
-
 bool LocalDOMWindow::CrossOriginIsolatedCapability() const {
   return Agent::IsCrossOriginIsolated() &&
          IsFeatureEnabled(
-             mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated);
+             mojom::blink::PermissionsPolicyFeature::kCrossOriginIsolated) &&
+         GetFrame() &&
+         !(GetFrame()->Loader().IsOnInitialEmptyDocument()
+               ? GetFrame()
+                     ->CoopForbidsInitialEmptyDocumentToBeCrossOriginIsolated()
+               : GetFrame()
+                     ->Loader()
+                     .CoopForbidsDocumentToBeCrossOriginIsolated());
 }
 
 bool LocalDOMWindow::IsIsolatedContext() const {

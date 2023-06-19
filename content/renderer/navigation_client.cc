@@ -47,6 +47,7 @@ void NavigationClient::CommitNavigation(
     mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
     mojom::CookieManagerInfoPtr cookie_manager_info,
     mojom::StorageInfoPtr storage_info,
+    bool coop_forbids_document_to_be_cross_origin_isolated,
     CommitNavigationCallback callback) {
   DCHECK(blink::IsRequestDestinationFrame(common_params->request_destination));
 
@@ -66,7 +67,8 @@ void NavigationClient::CommitNavigation(
       devtools_navigation_token, permissions_policy,
       std::move(policy_container), std::move(code_cache_host),
       std::move(resource_cache), std::move(cookie_manager_info),
-      std::move(storage_info), std::move(callback));
+      std::move(storage_info),
+      coop_forbids_document_to_be_cross_origin_isolated, std::move(callback));
 }
 
 void NavigationClient::CommitFailedNavigation(

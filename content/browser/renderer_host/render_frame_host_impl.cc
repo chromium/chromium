@@ -1130,16 +1130,10 @@ bool CoopSuppressOpener(const RenderFrameHostImpl* opener) {
   switch (opener->GetMainFrame()->cross_origin_opener_policy().value) {
     case network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginAllowPopups:
-      return false;
-
-    // TODO(https://crbug.com/1385827): Ideally, we'd like to have support
-    // for cross-origin iframes in COOP: restrict-properties pages opening
-    // popups. This is somewhat complex, because it would break some COOP
-    // invariants and other changes need to happen first. See the bug for
-    // details. For now, set no-opener.
     case network::mojom::CrossOriginOpenerPolicyValue::kRestrictProperties:
     case network::mojom::CrossOriginOpenerPolicyValue::
         kRestrictPropertiesPlusCoep:
+      return false;
 
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOrigin:
     case network::mojom::CrossOriginOpenerPolicyValue::kSameOriginPlusCoep:
@@ -8008,6 +8002,10 @@ void RenderFrameHostImpl::CreateNewWindow(
 
   bool wait_for_debugger =
       devtools_instrumentation::ShouldWaitForDebuggerInWindowOpen();
+
+  bool coop_forbids_initial_document_to_be_cross_origin_isolated =
+      new_main_rfh->CoopForbidsDocumentToBeCrossOriginIsolated();
+
   mojom::CreateNewWindowReplyPtr reply = mojom::CreateNewWindowReply::New(
       new_main_rfh->GetFrameToken(), new_main_rfh->GetRoutingID(),
       std::move(pending_frame_receiver), std::move(widget_params),
@@ -8018,7 +8016,8 @@ void RenderFrameHostImpl::CreateNewWindow(
       new_main_rfh->policy_container_host()->CreatePolicyContainerForBlink(),
       blink::BrowsingContextGroupInfo(
           new_main_rfh->GetSiteInstance()->browsing_instance_token(),
-          new_main_rfh->GetSiteInstance()->coop_related_group_token()));
+          new_main_rfh->GetSiteInstance()->coop_related_group_token()),
+      coop_forbids_initial_document_to_be_cross_origin_isolated);
 
   std::move(callback).Run(mojom::CreateNewWindowStatus::kSuccess,
                           std::move(reply));
@@ -12770,11 +12769,14 @@ void RenderFrameHostImpl::DidCommitNewDocument(
   TakeNewDocumentPropertiesFromNavigation(navigation_request);
 
   // Set embedded documents' cross-origin-opener-policy from their top level:
-  //  - Use top level's policy if they are same-origin.
-  //  - Use the default policy if they are cross-origin.
+  //  - Use top level's policy if they are same-origin or the policy is
+  //    restrict-properties
+  //  - Use the default policy otherwise.
   // This COOP value is not used to enforce anything on this frame, but will be
   // inherited to every local-scheme document created from them.
   // It will also be inherited by the initial empty document from its opener.
+  // TODO(https://crbug.com/1442535): Always inherit COOP since it's now tied
+  // to an origin that set it.
 
   // TODO(https://crbug.com/888079) Computing and assigning the
   // cross-origin-opener-policy of an embedded frame should be done in
@@ -12785,13 +12787,17 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   // TODO(https://crbug.com/1385827): See if the above is possible after we
   // bundle the COOP origin.
-  // TODO(https://crbug.com/1442535): Make cross-origin iframes inherit
-  // Cross-Origin-Opener-Policy: same-origin-allow-popups.
   if (parent_) {
+    const network::CrossOriginOpenerPolicy& top_level_coop =
+        GetMainFrame()->cross_origin_opener_policy();
     if (GetMainFrame()->GetLastCommittedOrigin().IsSameOriginWith(
-            params.origin)) {
-      policy_container_host_->set_cross_origin_opener_policy(
-          GetMainFrame()->cross_origin_opener_policy());
+            params.origin) ||
+        network::IsRelatedToCoopRestrictProperties(top_level_coop.value) ||
+        (top_level_coop.value ==
+             network::mojom::CrossOriginOpenerPolicyValue::kUnsafeNone &&
+         network::IsRelatedToCoopRestrictProperties(
+             top_level_coop.report_only_value))) {
+      policy_container_host_->set_cross_origin_opener_policy(top_level_coop);
     } else {
       policy_container_host_->set_cross_origin_opener_policy(
           network::CrossOriginOpenerPolicy());
@@ -13162,6 +13168,10 @@ void RenderFrameHostImpl::SendCommitNavigation(
             GetSiteInstance()->coop_related_group_token());
   }
 
+  // For main frames, the check happens before CreateNewWindow.
+  bool coop_forbids_document_to_be_cross_origin_isolated =
+      !is_main_frame() &&
+      GetMainFrame()->CoopForbidsDocumentToBeCrossOriginIsolated();
   commit_params->commit_sent = base::TimeTicks::Now();
   navigation_client->CommitNavigation(
       std::move(common_params), std::move(commit_params),
@@ -13175,6 +13185,7 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(policy_container), std::move(code_cache_host),
       std::move(resource_cache_remote), std::move(cookie_manager_info),
       std::move(storage_info),
+      coop_forbids_document_to_be_cross_origin_isolated,
       BuildCommitNavigationCallback(navigation_request));
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
@@ -15344,6 +15355,20 @@ bool RenderFrameHostImpl::LoadedWithCacheControlNoStoreHeader() {
   return GetBackForwardCacheDisablingFeatures().Has(
       blink::scheduler::WebSchedulerTrackedFeature::
           kMainResourceHasCacheControlNoStore);
+}
+
+bool RenderFrameHostImpl::CoopForbidsDocumentToBeCrossOriginIsolated() const {
+  CHECK(is_main_frame());
+
+  // The document cannot be crossOriginIsolated if the COOP was set by a
+  // different origin. This can happen on initial empty documents opened by a
+  // cross-origin iframe.
+  const absl::optional<url::Origin>& coop_origin =
+      policy_container_host_
+          ? policy_container_host_->cross_origin_opener_policy().origin
+          : absl::nullopt;
+  return coop_origin.has_value() &&
+         !coop_origin->IsSameOriginWith(GetLastCommittedOrigin());
 }
 
 }  // namespace content

@@ -103,6 +103,7 @@ class FakeNavigationClient : public mojom::NavigationClient {
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
+      bool coop_forbids_document_to_be_cross_origin_isolated,
       CommitNavigationCallback callback) override {
     std::move(on_received_callback_).Run(std::move(container_info));
     std::move(callback).Run(MinimalDidCommitNavigationLoadParams(), nullptr);
@@ -273,6 +274,7 @@ void ServiceWorkerRemoteContainerEndpoint::BindForWindow(
       CreateStubPolicyContainer(), /*code_cache_host=*/mojo::NullRemote(),
       /*resource_cache=*/mojo::NullRemote(), /*cookie_manager_info=*/nullptr,
       /*storage_info=*/nullptr,
+      /*coop_forbids_document_to_be_cross_origin_isolated=*/true,
       base::BindOnce(
           [](mojom::DidCommitProvisionalLoadParamsPtr validated_params,
              mojom::DidCommitProvisionalLoadInterfaceParamsPtr

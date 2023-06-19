@@ -347,12 +347,16 @@ LocalFrame* LocalFrame::FromFrameToken(const LocalFrameToken& frame_token) {
   return it == local_frames_map.end() ? nullptr : it->value.Get();
 }
 
-void LocalFrame::Init(Frame* opener,
-                      const DocumentToken& document_token,
-                      std::unique_ptr<PolicyContainer> policy_container,
-                      const StorageKey& storage_key,
-                      ukm::SourceId document_ukm_source_id,
-                      const KURL& creator_base_url) {
+void LocalFrame::Init(
+    Frame* opener,
+    const DocumentToken& document_token,
+    std::unique_ptr<PolicyContainer> policy_container,
+    const StorageKey& storage_key,
+    ukm::SourceId document_ukm_source_id,
+    const KURL& creator_base_url,
+    bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated) {
+  coop_forbids_initial_empty_document_to_be_cross_origin_isolated_ =
+      coop_forbids_initial_empty_document_to_be_cross_origin_isolated;
   if (!policy_container)
     policy_container = PolicyContainer::CreateEmpty();
 

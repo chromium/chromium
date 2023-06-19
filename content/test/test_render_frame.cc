@@ -279,6 +279,7 @@ void TestRenderFrame::Navigate(
       /*code_cache_host=*/mojo::NullRemote(),
       /*resource_cache=*/mojo::NullRemote(), /*cookie_manager_info=*/nullptr,
       /*storage_info=*/nullptr,
+      /*coop_forbids_document_to_be_cross_origin_isolated=*/true,
       base::BindOnce(&MockFrameHost::DidCommitProvisionalLoad,
                      base::Unretained(mock_frame_host_.get())));
 }

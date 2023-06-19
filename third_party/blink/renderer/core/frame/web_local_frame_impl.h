@@ -421,7 +421,9 @@ class CORE_EXPORT WebLocalFrameImpl final
       const StorageKey& storage_key,
       const KURL& creator_base_url,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
-          network::mojom::blink::WebSandboxFlags::kNone);
+          network::mojom::blink::WebSandboxFlags::kNone,
+      bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated =
+          true);
   LocalFrame* GetFrame() const { return frame_.Get(); }
 
   void WillBeDetached();
@@ -438,7 +440,8 @@ class CORE_EXPORT WebLocalFrameImpl final
       network::mojom::blink::WebSandboxFlags,
       const DocumentToken& document_token,
       std::unique_ptr<WebPolicyContainer>,
-      const WebURL& creator_base_url);
+      const WebURL& creator_base_url,
+      bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
   static WebLocalFrameImpl* CreateProvisional(
       WebLocalFrameClient*,
       InterfaceRegistry*,
@@ -637,7 +640,9 @@ class CORE_EXPORT WebLocalFrameImpl final
       ukm::SourceId document_ukm_source_id,
       const KURL& creator_base_url,
       network::mojom::blink::WebSandboxFlags sandbox_flags =
-          network::mojom::blink::WebSandboxFlags::kNone);
+          network::mojom::blink::WebSandboxFlags::kNone,
+      bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated =
+          true);
 
   // This function converts mojom::BackForwardCacheNotRestoredReasonsPtr to
   // mojom::blink::BackForwardCacheNotRestoredReasonsPtr.

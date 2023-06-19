@@ -46,6 +46,7 @@ class NavigationClient : mojom::NavigationClient {
       mojo::PendingRemote<blink::mojom::ResourceCache> resource_cache,
       mojom::CookieManagerInfoPtr cookie_manager_info,
       mojom::StorageInfoPtr storage_info,
+      bool coop_forbids_document_to_be_cross_origin_isolated,
       CommitNavigationCallback callback) override;
   void CommitFailedNavigation(
       blink::mojom::CommonNavigationParamsPtr common_params,

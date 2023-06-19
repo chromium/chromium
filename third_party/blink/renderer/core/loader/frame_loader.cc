@@ -1158,6 +1158,8 @@ void FrameLoader::CommitNavigation(
     policy_container = PolicyContainer::CreateFromWebPolicyContainer(
         std::move(navigation_params->policy_container));
   }
+  coop_forbids_document_to_be_cross_origin_isolated_ =
+      navigation_params->coop_forbids_document_to_be_cross_origin_isolated;
 
   base::flat_map<mojom::blink::RuntimeFeatureState, bool> override_values =
       navigation_params->modified_runtime_features;

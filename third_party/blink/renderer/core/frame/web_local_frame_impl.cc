@@ -2045,11 +2045,13 @@ WebLocalFrame* WebLocalFrame::CreateMainFrame(
     WebFrame* opener,
     const WebString& name,
     network::mojom::blink::WebSandboxFlags sandbox_flags,
-    const WebURL& creator_base_url) {
+    const WebURL& creator_base_url,
+    bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated) {
   return WebLocalFrameImpl::CreateMainFrame(
       web_view, client, interface_registry, frame_token, opener, name,
       sandbox_flags, document_token, std::move(policy_container),
-      creator_base_url);
+      creator_base_url,
+      coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
 }
 
 WebLocalFrame* WebLocalFrame::CreateProvisional(
@@ -2075,7 +2077,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
     network::mojom::blink::WebSandboxFlags sandbox_flags,
     const DocumentToken& document_token,
     std::unique_ptr<WebPolicyContainer> policy_container,
-    const WebURL& creator_base_url) {
+    const WebURL& creator_base_url,
+    bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated) {
   auto* frame = MakeGarbageCollected<WebLocalFrameImpl>(
       base::PassKey<WebLocalFrameImpl>(),
       mojom::blink::TreeScopeType::kDocument, client, interface_registry,
@@ -2093,7 +2096,8 @@ WebLocalFrameImpl* WebLocalFrameImpl::CreateMainFrame(
       page, nullptr, nullptr, nullptr, FrameInsertType::kInsertInConstructor,
       name, opener ? &ToCoreFrame(*opener)->window_agent_factory() : nullptr,
       opener, document_token, std::move(policy_container), storage_key,
-      creator_base_url, sandbox_flags);
+      creator_base_url, sandbox_flags,
+      coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
   return frame;
 }
 
@@ -2268,13 +2272,15 @@ void WebLocalFrameImpl::InitializeCoreFrame(
     std::unique_ptr<blink::WebPolicyContainer> policy_container,
     const StorageKey& storage_key,
     const KURL& creator_base_url,
-    network::mojom::blink::WebSandboxFlags sandbox_flags) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags,
+    bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated) {
   InitializeCoreFrameInternal(
       page, owner, parent, previous_sibling, insert_type, name,
       window_agent_factory, opener, document_token,
       PolicyContainer::CreateFromWebPolicyContainer(
           std::move(policy_container)),
-      storage_key, ukm::kInvalidSourceId, creator_base_url, sandbox_flags);
+      storage_key, ukm::kInvalidSourceId, creator_base_url, sandbox_flags,
+      coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
 }
 
 void WebLocalFrameImpl::InitializeCoreFrameInternal(
@@ -2291,7 +2297,8 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
     const StorageKey& storage_key,
     ukm::SourceId document_ukm_source_id,
     const KURL& creator_base_url,
-    network::mojom::blink::WebSandboxFlags sandbox_flags) {
+    network::mojom::blink::WebSandboxFlags sandbox_flags,
+    bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated) {
   Frame* parent_frame = parent ? ToCoreFrame(*parent) : nullptr;
   Frame* previous_sibling_frame =
       previous_sibling ? ToCoreFrame(*previous_sibling) : nullptr;
@@ -2328,7 +2335,8 @@ void WebLocalFrameImpl::InitializeCoreFrameInternal(
   // We must call init() after frame_ is assigned because it is referenced
   // during init().
   frame_->Init(opener_frame, document_token, std::move(policy_container),
-               storage_key, document_ukm_source_id, creator_base_url);
+               storage_key, document_ukm_source_id, creator_base_url,
+               coop_forbids_initial_empty_document_to_be_cross_origin_isolated);
 
   if (!owner) {
     // This trace event is needed to detect the main frame of the

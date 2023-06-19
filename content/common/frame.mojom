@@ -213,6 +213,14 @@ struct CreateLocalMainFrameParams {
   // replace. Will only be set when RenderDocument is enabled, for main frame
   // LocalFrame <-> LocalFrame swap.
   blink.mojom.FrameToken? previous_frame_token;
+
+  // The initial empty document opened by a cross-origin iframe might inherit
+  // the COOP policies of the top-level document but it shouldn't have
+  // crossOriginIsolated capabilities if COOP was initially set by another
+  // origin. Hence, we pass down this boolean to tell the renderer to restrict
+  // those capabilities. For more detail, see
+  // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
+  bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated = true;
 };
 
 // Parameters used for brower-initiated remote main frame creation.
@@ -667,6 +675,14 @@ struct CreateNewWindowReply {
 
   // Indicates which browsing context group the page in this view belongs to.
   blink.mojom.BrowsingContextGroupInfo browsing_context_group_info;
+
+  // The initial empty document opened by a cross-origin iframe might inherit
+  // the COOP policies of the top-level frame but it shouldn't have
+  // crossOriginIsolated capabilities if COOP was initially set by another
+  // origin. Hence, we pass down this boolean to tell the renderer to restrict
+  // those capabilities. For more detail, see
+  // https://github.com/hemeryar/coi-with-popups/blob/main/docs/cross_origin_iframe_popup.MD
+  bool coop_forbids_initial_empty_document_to_be_cross_origin_isolated = true;
 };
 
 // A per-navigation interface passed along with the BeginNavigation call, used

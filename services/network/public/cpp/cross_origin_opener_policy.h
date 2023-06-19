@@ -52,6 +52,10 @@ COMPONENT_EXPORT(NETWORK_CPP_BASE)
 void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
                          const CrossOriginEmbedderPolicy& coep);
 
+COMPONENT_EXPORT(NETWORK_CPP_BASE)
+bool IsRelatedToCoopRestrictProperties(
+    mojom::CrossOriginOpenerPolicyValue value);
+
 }  // namespace network
 
 #endif  // SERVICES_NETWORK_PUBLIC_CPP_CROSS_ORIGIN_OPENER_POLICY_H_

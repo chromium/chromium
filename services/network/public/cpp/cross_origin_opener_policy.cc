@@ -109,4 +109,11 @@ void AugmentCoopWithCoep(CrossOriginOpenerPolicy* coop,
   }
 }
 
+bool IsRelatedToCoopRestrictProperties(
+    mojom::CrossOriginOpenerPolicyValue value) {
+  return value == mojom::CrossOriginOpenerPolicyValue::kRestrictProperties ||
+         value ==
+             mojom::CrossOriginOpenerPolicyValue::kRestrictPropertiesPlusCoep;
+}
+
 }  // namespace network
