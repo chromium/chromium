@@ -61,6 +61,7 @@
 #include "content/browser/origin_agent_cluster_isolation_state.h"
 #include "content/browser/origin_trials/origin_trials_utils.h"
 #include "content/browser/preloading/prerender/prerender_host_registry.h"
+#include "content/browser/preloading/prerender/prerender_navigation_utils.h"
 #include "content/browser/process_lock.h"
 #include "content/browser/reduce_accept_language/reduce_accept_language_utils.h"
 #include "content/browser/renderer_host/back_forward_cache_impl.h"
@@ -7500,16 +7501,13 @@ NavigationRequest::MakeDidCommitProvisionalLoadParamsForActivation() {
   CHECK(params);
 
   if (IsPrerenderedPageActivation()) {
-    switch (params->http_status_code) {
-      case net::HTTP_OK:
-      case net::HTTP_CREATED:
-      case net::HTTP_ACCEPTED:
-      case net::HTTP_NON_AUTHORITATIVE_INFORMATION:
-        break;
-      default:
-        SCOPED_CRASH_KEY_NUMBER("PrerenderUnexpected", "http_status_code",
-                                params->http_status_code);
-        NOTREACHED_NORETURN();
+    if (prerender_navigation_utils::IsDisallowedHttpResponseCode(
+            params->http_status_code)) {
+      // TODO(https://crbug.com/1441842) Replace with CHECK when the
+      // investigation is done.
+      SCOPED_CRASH_KEY_NUMBER("PrerenderUnexpected", "http_status_code",
+                              params->http_status_code);
+      NOTREACHED_NORETURN();
     }
   } else {
     DCHECK_EQ(params->http_status_code, net::HTTP_OK);
