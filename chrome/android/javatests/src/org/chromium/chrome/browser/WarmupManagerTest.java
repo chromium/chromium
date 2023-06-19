@@ -369,12 +369,10 @@ public class WarmupManagerTest {
     }
 
     // Test to check the functionality of spare tab creation without initializing renderer.
-    // Disable CreateNewTabInitializeRenderer to test spare tab without renderer initialization.
     @Test
     @MediumTest
     @Feature({"SpareTab"})
     @EnableFeatures({ChromeFeatureList.SPARE_TAB})
-    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testCreateAndTakeSpareTabWithoutInitializeRenderer() {
         WarmupManager.SPARE_TAB_INITIALIZE_RENDERER.setForTesting(false);
 
