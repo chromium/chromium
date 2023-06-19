@@ -1407,7 +1407,7 @@ void MarkPopoverInvokersDirty(const HTMLElement& popover) {
 }
 }  // namespace
 
-void HTMLElement::togglePopover(ExceptionState& exception_state) {
+bool HTMLElement::togglePopover(ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   if (popoverOpen()) {
@@ -1415,9 +1415,15 @@ void HTMLElement::togglePopover(ExceptionState& exception_state) {
   } else {
     ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
   }
+
+  if (GetPopoverData()) {
+    return GetPopoverData()->visibilityState() ==
+           PopoverVisibilityState::kShowing;
+  }
+  return false;
 }
 
-void HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
+bool HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
   CHECK(RuntimeEnabledFeatures::HTMLPopoverAttributeEnabled(
       GetDocument().GetExecutionContext()));
   if (!force && popoverOpen()) {
@@ -1425,6 +1431,12 @@ void HTMLElement::togglePopover(bool force, ExceptionState& exception_state) {
   } else if (force && !popoverOpen()) {
     ShowPopoverInternal(/*invoker*/ nullptr, &exception_state);
   }
+
+  if (GetPopoverData()) {
+    return GetPopoverData()->visibilityState() ==
+           PopoverVisibilityState::kShowing;
+  }
+  return false;
 }
 
 void HTMLElement::showPopover(ExceptionState& exception_state) {

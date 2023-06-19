@@ -66,7 +66,7 @@
     [ImplementedAs=offsetHeightForBinding] readonly attribute long offsetHeight;
 
     // The Popover API
-    [MeasureAs=ElementTogglePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void togglePopover(optional boolean force);
+    [MeasureAs=ElementTogglePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] boolean togglePopover(optional boolean force);
     [MeasureAs=ElementShowPopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void showPopover();
     [MeasureAs=ElementHidePopover,RuntimeEnabled=HTMLPopoverAttribute,RaisesException] void hidePopover();
     // See crbug.com/1418144. We need to change ReflectOnly based on a runtime flag, which isn't possible.

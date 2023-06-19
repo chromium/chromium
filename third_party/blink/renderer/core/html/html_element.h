@@ -242,8 +242,8 @@ class CORE_EXPORT HTMLElement : public Element {
                       ExceptionState* exception_state,
                       bool include_event_handler_text,
                       Document* expected_document) const;
-  void togglePopover(ExceptionState& exception_state);
-  void togglePopover(bool force, ExceptionState& exception_state);
+  bool togglePopover(ExceptionState& exception_state);
+  bool togglePopover(bool force, ExceptionState& exception_state);
   void showPopover(ExceptionState& exception_state);
   void hidePopover(ExceptionState& exception_state);
   // |exception_state| can be nullptr when exceptions can't be thrown, such as
