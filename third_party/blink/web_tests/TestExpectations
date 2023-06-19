@@ -6703,3 +6703,5 @@ crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-doubl
 
 # Temporarily disabled to unblock https://crrev.com/c/4610580
 crbug.com/1442863 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
+
+crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failure Pass ]
