@@ -576,9 +576,10 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
 class IOSurfaceImageBackingFactoryScanoutTest
     : public IOSurfaceImageBackingFactoryParameterizedTestBase {
  public:
-  bool can_create_scanout_shared_image(viz::SharedImageFormat format) const {
+  bool can_create_scanout_shared_image(viz::SharedImageFormat format,
+                                       bool has_pixel_data = false) const {
     if (format.is_multi_plane()) {
-      return false;
+      return !has_pixel_data;
     } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
@@ -628,7 +629,9 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
         shared_image_representation_factory_.ProduceGLTexturePassthrough(
             mailbox);
     EXPECT_TRUE(gl_representation);
-    EXPECT_TRUE(gl_representation->GetTexturePassthrough()->service_id());
+    for (auto i = 0; i < format.NumberOfPlanes(); i++) {
+      EXPECT_TRUE(gl_representation->GetTexturePassthrough(i)->service_id());
+    }
     EXPECT_EQ(size, gl_representation->size());
     EXPECT_EQ(format, gl_representation->format());
     EXPECT_EQ(color_space, gl_representation->color_space());
@@ -660,8 +663,9 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 #endif
   }
 
-  if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
-    // Producing SkSurface for BGRA_1010102 fails for some reason.
+  if (format == viz::SinglePlaneFormat::kBGRA_1010102 ||
+      format == viz::MultiPlaneFormat::kP010) {
+    // Producing SkSurface for these formats fails for some reason.
     return;
   }
 
@@ -676,25 +680,31 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
   scoped_write_access = skia_representation->BeginScopedWriteAccess(
       &begin_semaphores, &end_semaphores,
       SharedImageRepresentation::AllowUnclearedAccess::kYes);
-  auto* surface = scoped_write_access->surface();
-  EXPECT_TRUE(surface);
-  EXPECT_EQ(size.width(), surface->width());
-  EXPECT_EQ(size.height(), surface->height());
+  for (auto i = 0; i < format.NumberOfPlanes(); i++) {
+    auto* surface = scoped_write_access->surface(i);
+    EXPECT_TRUE(surface);
+    auto expected_plane_size = format.GetPlaneSize(i, size);
+    EXPECT_EQ(expected_plane_size.width(), surface->width());
+    EXPECT_EQ(expected_plane_size.height(), surface->height());
+  }
   scoped_write_access.reset();
 
   std::unique_ptr<SkiaImageRepresentation::ScopedReadAccess> scoped_read_access;
   scoped_read_access = skia_representation->BeginScopedReadAccess(
       &begin_semaphores, &end_semaphores);
   if (get_gr_context_type() == GrContextType::kGL) {
-    auto* promise_texture = scoped_read_access->promise_image_texture();
-    EXPECT_TRUE(promise_texture);
     EXPECT_TRUE(begin_semaphores.empty());
     EXPECT_TRUE(end_semaphores.empty());
-    if (promise_texture) {
-      GrBackendTexture backend_texture = promise_texture->backendTexture();
-      EXPECT_TRUE(backend_texture.isValid());
-      EXPECT_EQ(size.width(), backend_texture.width());
-      EXPECT_EQ(size.height(), backend_texture.height());
+    for (auto i = 0; i < format.NumberOfPlanes(); i++) {
+      auto* promise_texture = scoped_read_access->promise_image_texture(i);
+      EXPECT_TRUE(promise_texture);
+      if (promise_texture) {
+        GrBackendTexture backend_texture = promise_texture->backendTexture();
+        EXPECT_TRUE(backend_texture.isValid());
+        auto expected_plane_size = format.GetPlaneSize(i, size);
+        EXPECT_EQ(expected_plane_size.width(), backend_texture.width());
+        EXPECT_EQ(expected_plane_size.height(), backend_texture.height());
+      }
     }
   } else {
     CHECK_EQ(get_gr_context_type(), GrContextType::kGraphiteDawn);
@@ -713,7 +723,16 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, Basic) {
 
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
   auto format = get_format();
-  const bool should_succeed = can_create_scanout_shared_image(format);
+
+  if (format.is_multi_plane()) {
+    // The below call to CheckedSizeInBytes() works only on single-plane
+    // formats.
+    GTEST_SKIP();
+  }
+
+  const bool should_succeed =
+      can_create_scanout_shared_image(format,
+                                      /*has_pixel_data=*/true);
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -786,7 +805,8 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialData) {
 }
 
 TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataImage) {
-  const bool should_succeed = can_create_scanout_shared_image(get_format());
+  const bool should_succeed =
+      can_create_scanout_shared_image(get_format(), /*has_pixel_data=*/true);
   if (should_succeed) {
     EXPECT_CALL(progress_reporter_, ReportProgress).Times(AtLeast(1));
   }
@@ -871,7 +891,8 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InitialDataWrongSize) {
   EXPECT_FALSE(backing);
 }
 
-TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
+       InvalidFormatForCreationWithSurfaceHandle) {
   auto mailbox = Mailbox::GenerateForSharedImage();
   auto format = viz::LegacyMultiPlaneFormat::kNV12;
   gfx::Size size(256, 256);
@@ -883,6 +904,24 @@ TEST_P(IOSurfaceImageBackingFactoryScanoutTest, InvalidFormat) {
   auto backing = backing_factory_->CreateSharedImage(
       mailbox, format, surface_handle, size, color_space, surface_origin,
       alpha_type, usage, "TestLabel", /*is_thread_safe=*/false);
+  EXPECT_FALSE(backing);
+}
+
+// Tests creation with a multiplanar format that would succeed if used with
+// empty pixel data but should fail with non-empty pixel data.
+TEST_P(IOSurfaceImageBackingFactoryScanoutTest,
+       InvalidFormatForCreationWithPixelData) {
+  auto mailbox = Mailbox::GenerateForSharedImage();
+  auto format = viz::MultiPlaneFormat::kNV12;
+  gfx::Size size(256, 256);
+  auto color_space = gfx::ColorSpace::CreateSRGB();
+  GrSurfaceOrigin surface_origin = kTopLeft_GrSurfaceOrigin;
+  SkAlphaType alpha_type = kPremul_SkAlphaType;
+  uint32_t usage = SHARED_IMAGE_USAGE_SCANOUT;
+  std::vector<uint8_t> initial_data(256 * 256 * 4);
+  auto backing = backing_factory_->CreateSharedImage(
+      mailbox, format, size, color_space, surface_origin, alpha_type, usage,
+      "TestLabel", initial_data);
   EXPECT_FALSE(backing);
 }
 
@@ -1156,11 +1195,13 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   shared_image.reset();
 }
 
-const auto kSinglePlaneFormats =
+const auto kScanoutFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
                       viz::SinglePlaneFormat::kBGRA_8888,
                       viz::SinglePlaneFormat::kBGRA_1010102,
-                      viz::SinglePlaneFormat::kRGBA_1010102);
+                      viz::SinglePlaneFormat::kRGBA_1010102,
+                      viz::MultiPlaneFormat::kNV12,
+                      viz::MultiPlaneFormat::kP010);
 
 const auto kGMBFormats =
     ::testing::Values(viz::SinglePlaneFormat::kRGBA_8888,
@@ -1182,7 +1223,7 @@ std::string TestParamToString(
 INSTANTIATE_TEST_SUITE_P(
     ,
     IOSurfaceImageBackingFactoryScanoutTest,
-    testing::Combine(kSinglePlaneFormats,
+    testing::Combine(kScanoutFormats,
                      testing::Values(GrContextType::kGL,
                                      GrContextType::kGraphiteDawn)),
     TestParamToString);
