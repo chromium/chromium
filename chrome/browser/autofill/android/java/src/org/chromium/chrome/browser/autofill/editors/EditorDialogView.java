@@ -500,7 +500,6 @@ public class EditorDialogView
             case TEXT_INPUT: {
                 TextFieldView inputLayout = new TextFieldView(mActivity, fieldItem.model,
                         mEditorActionListener, fieldItem.model.get(TEXT_FORMATTER),
-                        /* focusAndShowKeyboard= */ false,
                         mEditorModel.get(EditorProperties.SHOW_REQUIRED_INDICATOR));
                 mFieldViews.add(inputLayout);
 

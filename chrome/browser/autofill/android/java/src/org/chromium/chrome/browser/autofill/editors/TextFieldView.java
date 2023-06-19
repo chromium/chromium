@@ -70,11 +70,10 @@ class TextFieldView extends FrameLayout implements FieldView {
     private AutoCompleteTextView mInput;
     private View mIconsLayer;
     private ImageView mActionIcon;
-    private boolean mHasFocusedAtLeastOnce;
 
     public TextFieldView(Context context, final PropertyModel fieldModel,
             OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
-            boolean focusAndShowKeyboard, boolean hasRequiredIndicator) {
+            boolean hasRequiredIndicator) {
         super(context);
         mEditorFieldModel = fieldModel;
         mEditorActionListener = actionListener;
@@ -121,20 +120,7 @@ class TextFieldView extends FrameLayout implements FieldView {
         mInput.setOnFocusChangeListener(new OnFocusChangeListener() {
             @Override
             public void onFocusChange(View v, boolean hasFocus) {
-                if (hasFocus) {
-                    // Show the keyboard based on focusAndShowKeyboard parameter, after receiving
-                    // focus for the first time.
-                    if (focusAndShowKeyboard && !mHasFocusedAtLeastOnce) {
-                        // Set the cursor position to the end of the text in text input
-                        // when autofocused with focusAndShowKeyboard.
-                        mInput.setSelection(mInput.getText().length());
-                        InputMethodManager imm =
-                                (InputMethodManager) v.getContext().getSystemService(
-                                        Context.INPUT_METHOD_SERVICE);
-                        imm.showSoftInput(v, /* flags= */ 0);
-                    }
-                    mHasFocusedAtLeastOnce = true;
-                } else if (mHasFocusedAtLeastOnce) {
+                if (!hasFocus) {
                     // Validate the field when the user de-focuses it.
                     // Show no errors until the user has already tried to edit the field once.
                     updateDisplayedError(!isFieldValid(mEditorFieldModel));
@@ -227,14 +213,6 @@ class TextFieldView extends FrameLayout implements FieldView {
                 mInput.setInputType(InputType.TYPE_CLASS_TEXT | InputType.TYPE_TEXT_FLAG_CAP_WORDS
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
                 break;
-        }
-
-        // Request focus and show soft input keyboard based on the |focusAndShowKeyboard| parameter.
-        if (focusAndShowKeyboard) {
-            mInput.post(mInput::requestFocus);
-            // The keyboard will be shown in the onFocusChanged listener of mInput as the
-            // InputMethodManager instance requires the view to be focused for the showSoftInput
-            // to work.
         }
     }
 
