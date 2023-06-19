@@ -1555,7 +1555,7 @@
         "args": [],
         "autotest_name": "tast.chrome-from-tls",
         "cros_board": "octopus",
-        "cros_img": "octopus-release/R116-15489.0.0",
+        "cros_img": "octopus-release/R116-15506.0.0",
         "name": "chrome_all_tast_tests OCTOPUS_RELEASE_CHROME_FROM_TLS_LKGM",
         "shards": 10,
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
@@ -1697,7 +1697,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R115-15465.0.0",
+        "cros_img": "dedede-release/R116-15506.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1714,7 +1714,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R115-15470.0.0",
+        "cros_img": "dedede-release/R116-15501.0.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1731,7 +1731,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R114-15437.31.0",
+        "cros_img": "dedede-release/R115-15474.23.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1748,7 +1748,7 @@
       {
         "args": [],
         "cros_board": "dedede",
-        "cros_img": "dedede-release/R113-15393.58.0",
+        "cros_img": "dedede-release/R114-15437.42.0",
         "name": "lacros_all_tast_tests DEDEDE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1765,7 +1765,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R115-15465.0.0",
+        "cros_img": "eve-release/R116-15506.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1782,7 +1782,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R115-15474.9.0",
+        "cros_img": "eve-release/R116-15501.0.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1799,7 +1799,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R114-15437.31.0",
+        "cros_img": "eve-release/R115-15474.21.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1816,7 +1816,7 @@
       {
         "args": [],
         "cros_board": "eve",
-        "cros_img": "eve-release/R113-15393.58.0",
+        "cros_img": "eve-release/R114-15437.42.0",
         "name": "lacros_all_tast_tests EVE_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1868,7 +1868,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R115-15465.0.0",
+        "cros_img": "jacuzzi-release/R116-15506.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
@@ -1885,7 +1885,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R115-15474.9.0",
+        "cros_img": "jacuzzi-release/R116-15501.0.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_DEV",
         "resultdb": {
           "enable": true,
@@ -1902,7 +1902,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R114-15437.31.0",
+        "cros_img": "jacuzzi-release/R115-15474.14.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_BETA",
         "resultdb": {
           "enable": true,
@@ -1919,7 +1919,7 @@
       {
         "args": [],
         "cros_board": "jacuzzi",
-        "cros_img": "jacuzzi-release/R113-15393.58.0",
+        "cros_img": "jacuzzi-release/R114-15437.42.0",
         "name": "lacros_all_tast_tests JACUZZI_RELEASE_STABLE",
         "resultdb": {
           "enable": true,
@@ -1971,7 +1971,7 @@
       {
         "args": [],
         "cros_board": "strongbad",
-        "cros_img": "strongbad-release/R115-15465.0.0",
+        "cros_img": "strongbad-release/R116-15506.0.0",
         "name": "lacros_all_tast_tests STRONGBAD_RELEASE_LKGM",
         "resultdb": {
           "enable": true,
