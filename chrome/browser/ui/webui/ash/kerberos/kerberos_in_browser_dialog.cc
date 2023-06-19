@@ -9,6 +9,9 @@
 
 #include "ash/public/cpp/window_backdrop.h"
 #include "base/check_op.h"
+#include "base/notreached.h"
+#include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/settings_window_manager_chromeos.h"
 #include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/common/webui_url_constants.h"
 #include "ui/aura/window.h"
@@ -61,6 +64,18 @@ void KerberosInBrowserDialog::GetDialogSize(gfx::Size* size) const {
   size->SetSize(
       std::min(kKerberosInBrowserDialogWidth, display.work_area().width()),
       std::min(kKerberosInBrowserDialogHeight, display.work_area().height()));
+}
+
+void KerberosInBrowserDialog::OnDialogClosed(const std::string& json_retval) {
+  if (json_retval == "openSettings") {
+    chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
+        ProfileManager::GetActiveUserProfile(),
+        /*sub_page=*/"kerberos/kerberosAccounts");
+  } else if (!json_retval.empty()) {
+    NOTREACHED();
+  }
+
+  SystemWebDialogDelegate::OnDialogClosed(json_retval);
 }
 
 bool KerberosInBrowserDialog::ShouldShowCloseButton() const {
