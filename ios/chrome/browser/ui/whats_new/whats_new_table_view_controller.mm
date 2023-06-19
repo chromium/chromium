@@ -93,6 +93,8 @@ typedef NS_ENUM(NSInteger, SectionIdentifier) {
 - (void)viewWillAppear:(BOOL)animated {
   [super viewWillAppear:animated];
   self.viewDidScroll = NO;
+  self.navigationItem.backButtonTitle =
+      l10n_util::GetNSString(IDS_IOS_WHATS_NEW_NAVIGATION_BACK_BUTTON_TITLE);
 }
 
 - (void)viewDidLoad {

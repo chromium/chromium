@@ -31,6 +31,7 @@ const CGFloat kIconImageWhatsNew = 16;
 
 // The file name.
 NSString* const kfileName = @"whats_new_entries.plist";
+NSString* const kfileNameM116 = @"whats_new_entries_m116.plist";
 
 // Dictionary keys.
 NSString* const kDictionaryFeaturesKey = @"Features";
@@ -268,7 +269,9 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
 
 NSString* WhatsNewFilePath() {
   NSString* bundle_path = [base::apple::FrameworkBundle() bundlePath];
-  NSString* entries_file_path =
-      [bundle_path stringByAppendingPathComponent:kfileName];
+  NSString* entries_file_path = [bundle_path
+      stringByAppendingPathComponent:IsWhatsNewM116Enabled() ? kfileNameM116
+                                                             : kfileName];
+  //[bundle_path stringByAppendingPathComponent:kfileName];
   return entries_file_path;
 }

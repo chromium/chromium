@@ -4640,6 +4640,15 @@ Your data was encrypted with your passphrase on <ph name="TIME">$2<ex>Sept 1, 20
       <message name="IDS_IOS_WHATS_NEW_TITLE" desc="Title of the What's new Feature">
         What's New
       </message>
+      <message name="IDS_IOS_WHATS_NEW_NAVIGATION_BACK_BUTTON_TITLE" desc="Title of the What's new navigation back button.">
+        Back
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_SHOW_INSTRUCTIONS_TITLE" desc="Title of a secondary button in What's New to show instructions.">
+        Show instructions
+      </message>
+      <message name="IDS_IOS_WHATS_HOW_TO_ENABLE_TITLE" desc="Title of a section in What's New that show users the instructions to enable the feature.">
+        How do I enable this feature?
+      </message>
       <message name="IDS_IOS_WHATS_NEW_LEARN_MORE_ACTION_TITLE" desc="Label of the button for users to learn more about a feature or a chrome tip.">
         Learn More
       </message>

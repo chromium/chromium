@@ -241,11 +241,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
 }
 
 - (void)viewDidDisappear:(BOOL)animated {
-  if (self.navigationBar) {
-    self.navigationBar.translucent = NO;
-    self.navigationBar.prefersLargeTitles = YES;
-    self.navigationBar = nil;
-  }
+  self.navigationBar = nil;
   self.actionHandler = nil;
   [super viewDidDisappear:animated];
 }
@@ -254,7 +250,7 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
   [super viewWillAppear:animated];
 
   if ([self.navigationController
-          isKindOfClass:[TableViewNavigationController class]]) {
+          isKindOfClass:[UINavigationController class]]) {
     UIBarButtonItem* doneButton = [[UIBarButtonItem alloc]
         initWithBarButtonSystemItem:UIBarButtonSystemItemDone
                       primaryAction:[UIAction actionWithHandler:^(
@@ -266,8 +262,6 @@ NSString* const kWhatsNewScrollViewAccessibilityIdentifier =
     self.navigationItem.rightBarButtonItem = doneButton;
 
     self.navigationBar = self.navigationController.navigationBar;
-    self.navigationBar.translucent = YES;
-    self.navigationBar.prefersLargeTitles = NO;
   }
 }
 

@@ -38,8 +38,7 @@ NSString* const kTableViewNavigationDismissButtonId =
 // The mediator to display What's New data.
 @property(nonatomic, strong) WhatsNewMediator* mediator;
 // The navigation controller displaying WhatsNewTableViewController.
-@property(nonatomic, strong)
-    TableViewNavigationController* navigationController;
+@property(nonatomic, strong) UINavigationController* navigationController;
 // The view controller used to display the What's New features and chrome tips.
 @property(nonatomic, strong) WhatsNewTableViewController* tableViewController;
 // The coordinator used for What's New feature.
@@ -74,12 +73,14 @@ NSString* const kTableViewNavigationDismissButtonId =
 
   [self.tableViewController reloadData];
 
-  self.navigationController = [[TableViewNavigationController alloc]
-      initWithTable:self.tableViewController];
+  self.navigationController = [[UINavigationController alloc]
+      initWithRootViewController:self.tableViewController];
   [self.navigationController
       setModalPresentationStyle:UIModalPresentationFormSheet];
   self.navigationController.delegate = self;
   self.navigationController.presentationController.delegate = self;
+  self.navigationController.navigationBar.prefersLargeTitles = YES;
+
   [self.baseViewController presentViewController:self.navigationController
                                         animated:YES
                                       completion:nil];

@@ -115,14 +115,17 @@ const CGFloat kFaviconBadgeSideLength = 24;
     [self.view addSubview:self.navigationBar];
   }
 
-  if (self.imageEnclosedWithShadowAndBadge ||
-      self.imageEnclosedWithShadowWithoutBadge) {
-    // The image view is set within the helper method.
-    self.imageContainerView = [self createImageContainerViewWithShadowAndBadge];
-  } else {
-    // The image container and the image view are the same.
-    self.imageView = [self createImageView];
-    self.imageContainerView = self.imageView;
+  if (self.image) {
+    if (self.imageEnclosedWithShadowAndBadge ||
+        self.imageEnclosedWithShadowWithoutBadge) {
+      // The image view is set within the helper method.
+      self.imageContainerView =
+          [self createImageContainerViewWithShadowAndBadge];
+    } else {
+      // The image container and the image view are the same.
+      self.imageView = [self createImageView];
+      self.imageContainerView = self.imageView;
+    }
   }
 
   NSMutableArray* stackSubviews = [[NSMutableArray alloc] init];
@@ -312,7 +315,7 @@ const CGFloat kFaviconBadgeSideLength = 24;
     centerYConstraint.active = YES;
   }
 
-  if (!self.imageHasFixedSize) {
+  if (!self.imageHasFixedSize || self.image) {
     // Constrain the image to the scroll view size and its aspect ratio.
     [self.imageView
         setContentCompressionResistancePriority:UILayoutPriorityDefaultLow

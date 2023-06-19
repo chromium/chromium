@@ -39,7 +39,7 @@ class GURL;
 // The delegate object that manages interactions with the primary action.
 @property(nonatomic, weak) id<WhatsNewDetailViewActionHandler> actionHandler;
 
-// The delegate object to the main coordinator (`WhatsNewCoordinator`).
+// The delegate object to this coordinator's parent.
 @property(nonatomic, weak) id<WhatsNewDetailViewDelegate> delegate;
 
 @end

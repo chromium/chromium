@@ -10,6 +10,7 @@
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/ui/whats_new/data_source/whats_new_data_source.h"
 #import "ios/chrome/browser/ui/whats_new/whats_new_mediator_consumer.h"
+#import "ios/chrome/browser/ui/whats_new/whats_new_util.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
 #import "ios/public/provider/chrome/browser/password_auto_fill/password_auto_fill_api.h"
@@ -110,6 +111,11 @@
     case WhatsNewType::kAutofill:
       base::RecordAction(base::UserMetricsAction("WhatsNew.Autofill"));
       break;
+    case WhatsNewType::kIncognitoTabsFromOtherApps:
+    case WhatsNewType::kIncognitoLock:
+    case WhatsNewType::kCalendarEvent:
+    case WhatsNewType::kChromeActions:
+      break;
     default:
       NOTREACHED();
       break;
@@ -130,8 +136,9 @@
 // it will be the `WhatsNewType::kUseChromeByDefault` otherwise it will choose a
 // random chrome tip.
 - (WhatsNewItem*)whatsNewChromeTipItem {
-  // Return a random chrome tip if chrome is already the default browser.
-  if (IsChromeLikelyDefaultBrowser()) {
+  // Return a random chrome tip if chrome is already the default browser or if
+  // What's New M116 is enabled.
+  if (IsChromeLikelyDefaultBrowser() || IsWhatsNewM116Enabled()) {
     int entryIndex = arc4random_uniform(self.chromeTipEntries.count);
     return self.chromeTipEntries[entryIndex];
   }
@@ -186,6 +193,11 @@
           base::UserMetricsAction("WhatsNew.Autofill.LearnMoreTapped"));
       break;
     case WhatsNewType::kNewOverflowMenu:
+    case WhatsNewType::kIncognitoTabsFromOtherApps:
+    case WhatsNewType::kIncognitoLock:
+    case WhatsNewType::kCalendarEvent:
+    case WhatsNewType::kChromeActions:
+      break;
     default:
       NOTREACHED();
       break;
