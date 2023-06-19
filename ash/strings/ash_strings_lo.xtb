@@ -930,6 +930,7 @@
 <translation id="504465286040788597">ຫຍໍ້ໜ້າກ່ອນໜ້າ</translation>
 <translation id="5045550434625856497">ລະ​ຫັດ​ຜ່ານ​ບໍ່​ຖືກ​ຕ້ອງ​</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">ທ່ານຈະໄດ້ຮັບການແຈ້ງເຕືອນຫາກທ່ານເວົ້າໃນລະຫວ່າງທີ່ປິດສຽງຢູ່. ໂດຍຈະບໍ່ມີການສົ່ງສຽງຜ່ານອຸປະກອນຂອງທ່ານ.</translation>
 <translation id="5078796286268621944">PIN ບໍ່ຖືກຕ້ອງ</translation>
 <translation id="5083553833479578423">ປົດລັອກຄຸນສົມບັດເພີ່ມເຕີມຂອງຜູ້ຊ່ວຍ.</translation>
 <translation id="5092436659250499817">ເປີດ/ປິດໄຟແປ້ນພິມ</translation>
@@ -960,6 +961,7 @@
 <translation id="5207949376430453814">ໝາຍເຄື່ອງໝາຍກຸບຂໍ້ຄວາມ</translation>
 <translation id="5208059991603368177">ເປີດ</translation>
 <translation id="5216991270656129561">ປິດຈົນຮອດ <ph name="TIME" /></translation>
+<translation id="5221423477036820198">ສົ່ງ ຫຼື ຕອບກັບຂໍ້ຄວາມໃນໂທລະສັບຂອງທ່ານຢ່າງວ່ອງໄວໂດຍໃຊ້ Phone Hub.</translation>
 <translation id="5222676887888702881">ອອກຈາກລະບົບ</translation>
 <translation id="5229343007215035173">ເປີດ/ປິດໜ້າຈໍຄວາມເປັນສ່ວນຕົວ</translation>
 <translation id="5234764350956374838">ປ່ອຍໄປ</translation>
@@ -983,6 +985,7 @@
 <translation id="5308380583665731573">​ເຊື່ອມ​ຕໍ່</translation>
 <translation id="5313326810920013265">ຕັ້ງຄ່າ Bluetooth</translation>
 <translation id="5314219114274263156">ເຮັດການບັນທຶກໜ້າຈໍແລ້ວ</translation>
+<translation id="5314489738835854379">ວົນກັບຜ່ານໜ້າຈໍ</translation>
 <translation id="5316716239522500219">ສ່ອງຈໍ​ຄອມ​ພິວ​ເຕີ</translation>
 <translation id="5317780077021120954">ບັນທຶກ</translation>
 <translation id="5319712128756744240">ຈັບຄູ່ອຸປະກອນໃໝ່</translation>
@@ -1130,6 +1133,7 @@
 <translation id="5958529069007801266">ຜູ້ໃຊ້ທີ່ມີການຄວບຄຸມດູແລ</translation>
 <translation id="5961960957587052807">ໜ້ອຍ</translation>
 <translation id="5965524703725988602">ສະຫຼັບຮູບແບບສີສັນມືດ. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">ວົນໄປໜ້າຜ່ານໜ້າຈໍ</translation>
 <translation id="5976112937189445008">ກົດ enter ເພື່ອບັນທຶກໜ້າຈໍ</translation>
 <translation id="5978382165065462689">​ການແບ່ງປັນ​ການ​ຄວບ​ຄຸມ​ໜ້າ​ຈໍ​ຂອງ​ທ່ານຜ່ານ​ຕົວ​ຊ່ວຍ​ທາງ​ໄກ.</translation>
 <translation id="5980301590375426705">ອອກຈາກແຂກ</translation>
@@ -1341,6 +1345,7 @@
 <translation id="6891721121089053234">ເບິ່ງຮູບພາບ, ມີເດຍ ແລະ ແອັບຫຼ້າສຸດຂອງໂທລະສັບທ່ານຢູ່ <ph name="DEVICE_TYPE" /> ຂອງທ່ານ</translation>
 <translation id="6896758677409633944">ກັອບປີ້</translation>
 <translation id="6901883536534621389">ລອງໃຊ້ທ່າທາງເພື່ອນຳທາງ</translation>
+<translation id="6912841030378044227">ເນັ້ນໃສ່ແຖບທີ່ຢູ່</translation>
 <translation id="6919251195245069855">ບໍ່ສາມາດຮັບຮູ້ບັດອັດສະລິຍະຂອງທ່ານໄດ້. ລອງໃໝ່.</translation>
 <translation id="6920245099716267363">ເປີດ/ປິດຮັອດສະປອດ. ຮັອດສະປອດເປີດຢູ່, ເຊື່ອມຕໍ່ຢູ່ 1 ອຸປະກອນ.</translation>
 <translation id="6931576957638141829">ບັນ​ທຶກ​ໄປ​ໃສ່</translation>

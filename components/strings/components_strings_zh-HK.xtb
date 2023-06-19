@@ -535,6 +535,7 @@
 <translation id="2202020181578195191">請輸入有效的到期年份</translation>
 <translation id="2202627062836089804">信用卡背面</translation>
 <translation id="2204482073374652408">更新完成！</translation>
+<translation id="2208053750671792556">沒有收到驗證碼嗎？<ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">紙匣 3</translation>
 <translation id="2210794033760923560">上載報告</translation>
 <translation id="2212735316055980242">找不到政策</translation>
@@ -948,6 +949,7 @@
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -2593,6 +2595,7 @@
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
+<translation id="7221857374443660083">銀行想要確認你的身分</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7227293336683593977">價格記錄</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>

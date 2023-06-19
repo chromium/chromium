@@ -3104,6 +3104,7 @@ En la versión 114 y en versiones posteriores, <ph name="DOH_SALT_POLICY_NAME" /
       Si no se establece esta política, los usuarios administrados por empresas no podrán usar la configuración predeterminada, pero los usuarios no administrados sí podrán usarla.</translation>
 <translation id="3791179836066841809">Documentación para la política</translation>
 <translation id="3791556154364029875">Habilitar Floating Workspace y abrir ventanas del navegador remotas al acceder</translation>
+<translation id="379318040165550702">Permitir que los usuarios elijan</translation>
 <translation id="3793998702484455655">Chrome intentará actualizar algunos tipos de subrecursos con contenido mixto (HTTP en un sitio HTTPS) en iOS.
 Para obtener más información, consulta https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md.
 
@@ -4751,6 +4752,13 @@ Nota: Esta política no se aplica a las actualizaciones de HSTS.</translation>
 <translation id="5345910753471481870">No mostrar el botón de Google Lens en el cuadro de búsqueda de la página Nueva pestaña</translation>
 <translation id="5346587320074666194">Bloquea el acceso a los sensores en estos sitios</translation>
 <translation id="534836255587440809">Inhabilitar el clic automático en la pantalla de acceso</translation>
+<translation id="5361708558735884308">Si estableces la política, se permitirá el acceso a las URLs de la lista, como excepciones a <ph name="URL_BLOCKLIST_POLICY_NAME" />. Consulta la descripción de esa política para conocer el formato de las entradas de esta lista. Por ejemplo, si estableces la política <ph name="URL_BLOCKLIST_POLICY_NAME" /> como "*", se bloquearán todas las solicitudes. Además, con esta política puedes permitir el acceso a una lista limitada de URLs. Úsala para abrir excepciones para determinados esquemas, subdominios de otros dominios, puertos o rutas específicas, con el formato que se indica en (https://support.google.com/chrome/a?p=url_blocklist_filter_format). El filtro más específico determina si una URL está bloqueada o habilitada. La política <ph name="URL_ALLOWLIST_POLICY_NAME" /> tiene prioridad sobre la política <ph name="URL_BLOCKLIST_POLICY_NAME" />. Esta política se limitará a 1,000 entradas.
+
+Además, esta política puede permitir que el navegador invoque de forma automática aplicaciones externas registradas como controladores de los protocolos que se encuentran en la lista correspondiente, como "tel:" o "ssh:".
+
+Si no estableces la política, no se permitirán excepciones <ph name="URL_BLOCKLIST_POLICY_NAME" />.
+
+A partir de la versión 92 de <ph name="PRODUCT_NAME" />, esta política también es compatible en el modo sin interfaz gráfica.</translation>
 <translation id="5362531528507578966">Anula el modo predeterminado de impresión de los gráficos de fondo.</translation>
 <translation id="5365476955714838841">Parámetros de la línea de comandos para el navegador alternativo</translation>
 <translation id="5365946944967967336">Mostrar el botón "Página principal" en la barra de herramientas</translation>

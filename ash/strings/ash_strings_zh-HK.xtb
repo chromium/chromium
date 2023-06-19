@@ -981,6 +981,7 @@
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄影螢幕畫面</translation>
+<translation id="5314489738835854379">向後循環切換視窗</translation>
 <translation id="5316716239522500219">建立顯示器鏡像</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
@@ -1127,6 +1128,7 @@
 <translation id="5958529069007801266">受管使用者</translation>
 <translation id="5961960957587052807">亮度</translation>
 <translation id="5965524703725988602">切換深色主題背景。<ph name="STATE_TEXT" />。</translation>
+<translation id="5975235751479998104">向前循環切換視窗</translation>
 <translation id="5976112937189445008">㩒 Enter 掣就可以錄視窗畫面</translation>
 <translation id="5978382165065462689">透過「遠端協助」共用螢幕控制權。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -1336,6 +1338,7 @@
 <translation id="6891721121089053234">在 <ph name="DEVICE_TYPE" /> 上查看手機最近的相片、媒體和應用程式</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6901883536534621389">試用手勢瀏覽功能</translation>
+<translation id="6912841030378044227">聚焦在網址列</translation>
 <translation id="6919251195245069855">無法辨識智能卡，請再試一次。</translation>
 <translation id="6920245099716267363">切換熱點。熱點已開啟，並連接 1 部裝置。</translation>
 <translation id="6931576957638141829">儲存至</translation>

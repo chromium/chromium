@@ -979,6 +979,7 @@
 <translation id="5308380583665731573">連線</translation>
 <translation id="5313326810920013265">藍牙設定</translation>
 <translation id="5314219114274263156">已錄製螢幕畫面</translation>
+<translation id="5314489738835854379">向後循環切換視窗</translation>
 <translation id="5316716239522500219">顯示器鏡像</translation>
 <translation id="5317780077021120954">儲存</translation>
 <translation id="5319712128756744240">配對新裝置</translation>
@@ -1125,6 +1126,7 @@
 <translation id="5958529069007801266">受監管的使用者</translation>
 <translation id="5961960957587052807">輕微</translation>
 <translation id="5965524703725988602">切換深色主題。<ph name="STATE_TEXT" />。</translation>
+<translation id="5975235751479998104">向前循環切換視窗</translation>
 <translation id="5976112937189445008">按下 Enter 鍵以錄製視窗畫面</translation>
 <translation id="5978382165065462689">透過遠端協助分享螢幕控制功能。</translation>
 <translation id="5980301590375426705">結束訪客工作階段</translation>
@@ -1334,6 +1336,7 @@
 <translation id="6891721121089053234">透過 <ph name="DEVICE_TYPE" /> 查看手機上最近的相片、媒體和應用程式</translation>
 <translation id="6896758677409633944">複製</translation>
 <translation id="6901883536534621389">試試手勢瀏覽功能</translation>
+<translation id="6912841030378044227">聚焦在網址列</translation>
 <translation id="6919251195245069855">無法辨識你的智慧型卡片，請再試一次。</translation>
 <translation id="6920245099716267363">切換無線基地台。無線基地台已開啟，有 1 部裝置已連線。</translation>
 <translation id="6931576957638141829">儲存至</translation>
