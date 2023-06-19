@@ -10,7 +10,7 @@
 #import <CoreVideo/CoreVideo.h>
 
 #include "base/feature_list.h"
-#include "media/capture/video/mac/video_capture_device_mac.h"
+#include "media/capture/video/apple/video_capture_device_apple.h"
 #include "media/capture/video/video_capture_device_descriptor.h"
 #include "media/capture/video_capture_types.h"
 

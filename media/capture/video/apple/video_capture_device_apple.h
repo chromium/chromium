@@ -5,8 +5,8 @@
 // macOS implementation of generic VideoCaptureDevice, using AVFoundation as
 // native capture API.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_APPLE_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_APPLE_H_
 
 #import <Foundation/Foundation.h>
 #include <stdint.h>
@@ -134,4 +134,4 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_APPLE_H_

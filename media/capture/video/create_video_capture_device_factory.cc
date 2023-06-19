@@ -22,7 +22,7 @@
 #elif BUILDFLAG(IS_WIN)
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #elif BUILDFLAG(IS_APPLE)
-#include "media/capture/video/mac/video_capture_device_factory_mac.h"
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "media/capture/video/android/video_capture_device_factory_android.h"
 #elif BUILDFLAG(IS_FUCHSIA)

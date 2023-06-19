@@ -10,9 +10,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 #include "media/base/media_switches.h"
+#include "media/capture/video/apple/video_capture_device_apple.h"
 #include "media/capture/video/apple/video_capture_device_avfoundation.h"
-#include "media/capture/video/mac/video_capture_device_factory_mac.h"
-#include "media/capture/video/mac/video_capture_device_mac.h"
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #include "media/capture/video_capture_types.h"
 
 #if BUILDFLAG(IS_MAC)

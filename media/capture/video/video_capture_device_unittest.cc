@@ -39,7 +39,7 @@
 #endif
 
 #if BUILDFLAG(IS_APPLE)
-#include "media/capture/video/mac/video_capture_device_factory_mac.h"
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 #endif
 
 #if BUILDFLAG(IS_ANDROID)

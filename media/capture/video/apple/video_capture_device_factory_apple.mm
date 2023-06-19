@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/video_capture_device_factory_mac.h"
+#include "media/capture/video/apple/video_capture_device_factory_apple.h"
 
 #include <stddef.h>
 #include <memory>
@@ -14,9 +14,9 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
+#include "media/capture/video/apple/video_capture_device_apple.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation.h"
 #import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
-#include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video/video_capture_metrics.h"
 
 #if BUILDFLAG(IS_MAC)

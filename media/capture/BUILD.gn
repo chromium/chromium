@@ -173,15 +173,15 @@ component("capture_lib") {
       "video/apple/pixel_buffer_transferer.h",
       "video/apple/sample_buffer_transformer.cc",
       "video/apple/sample_buffer_transformer.h",
+      "video/apple/video_capture_device_apple.h",
+      "video/apple/video_capture_device_apple.mm",
       "video/apple/video_capture_device_avfoundation.h",
       "video/apple/video_capture_device_avfoundation.mm",
       "video/apple/video_capture_device_avfoundation_utils.h",
       "video/apple/video_capture_device_avfoundation_utils.mm",
+      "video/apple/video_capture_device_factory_apple.h",
+      "video/apple/video_capture_device_factory_apple.mm",
       "video/apple/video_capture_device_frame_receiver.h",
-      "video/mac/video_capture_device_factory_mac.h",
-      "video/mac/video_capture_device_factory_mac.mm",
-      "video/mac/video_capture_device_mac.h",
-      "video/mac/video_capture_device_mac.mm",
     ]
     deps += [ "//components/crash/core/common:crash_key" ]
     configs += [ "//build/config/compiler:enable_arc" ]
