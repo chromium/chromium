@@ -71,6 +71,10 @@
 #include <OpenCL/opencl.h>
 #endif
 
+#if BUILDFLAG(IS_MAC)
+#include "base/allocator/partition_allocator/partition_alloc_base/mac/mac_util.h"
+#endif
+
 #if BUILDFLAG(ENABLE_PKEYS)
 #include <sys/syscall.h>
 #endif
@@ -3804,6 +3808,10 @@ TEST_P(PartitionAllocTest, GetUsableSize) {
 
 #if PA_CONFIG(ENABLE_MAC11_MALLOC_SIZE_HACK)
 TEST_P(PartitionAllocTest, GetUsableSizeWithMac11MallocSizeHack) {
+  if (!internal::base::mac::IsOS11()) {
+    GTEST_SKIP() << "Skpping because the test is for Mac11.";
+  }
+
   allocator.root()->EnableMac11MallocSizeHackForTesting(
       GetParam().ref_count_size);
   size_t size = internal::kMac11MallocSizeHackRequestedSize;
