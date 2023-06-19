@@ -2,6 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#include <utility>
+
 #include "net/filter/brotli_source_stream.h"
 
 #include "base/bit_cast.h"
@@ -11,6 +13,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "net/base/io_buffer.h"
 #include "third_party/brotli/include/brotli/decode.h"
+#include "third_party/brotli/include/brotli/shared_dictionary.h"
 
 namespace net {
 
@@ -22,10 +25,20 @@ const char kBrotli[] = "BROTLI";
 // Brotli format specification: http://www.ietf.org/id/draft-alakuijala-brotli.
 class BrotliSourceStream : public FilterSourceStream {
  public:
-  explicit BrotliSourceStream(std::unique_ptr<SourceStream> upstream)
-      : FilterSourceStream(SourceStream::TYPE_BROTLI, std::move(upstream)) {
+  explicit BrotliSourceStream(std::unique_ptr<SourceStream> upstream,
+                              scoped_refptr<IOBuffer> dictionary = nullptr,
+                              size_t dictionary_size = 0u)
+      : FilterSourceStream(SourceStream::TYPE_BROTLI, std::move(upstream)),
+        dictionary_(std::move(dictionary)),
+        dictionary_size_(dictionary_size) {
     brotli_state_ =
         BrotliDecoderCreateInstance(AllocateMemory, FreeMemory, this);
+    if (dictionary_) {
+      BROTLI_BOOL result = BrotliDecoderAttachDictionary(
+          brotli_state_, BROTLI_SHARED_DICTIONARY_RAW, dictionary_size_,
+          reinterpret_cast<const unsigned char*>(dictionary_->data()));
+      CHECK(result);
+    }
     CHECK(brotli_state_);
   }
 
@@ -163,6 +176,9 @@ class BrotliSourceStream : public FilterSourceStream {
     free(&array[-1]);
   }
 
+  const scoped_refptr<IOBuffer> dictionary_;
+  const size_t dictionary_size_;
+
   raw_ptr<BrotliDecoderState, DanglingUntriaged> brotli_state_;
 
   DecodingStatus decoding_status_ = DecodingStatus::DECODING_IN_PROGRESS;
@@ -178,6 +194,14 @@ class BrotliSourceStream : public FilterSourceStream {
 std::unique_ptr<FilterSourceStream> CreateBrotliSourceStream(
     std::unique_ptr<SourceStream> previous) {
   return std::make_unique<BrotliSourceStream>(std::move(previous));
+}
+
+std::unique_ptr<FilterSourceStream> CreateBrotliSourceStreamWithDictionary(
+    std::unique_ptr<SourceStream> previous,
+    scoped_refptr<IOBuffer> dictionary,
+    size_t dictionary_size) {
+  return std::make_unique<BrotliSourceStream>(
+      std::move(previous), std::move(dictionary), dictionary_size);
 }
 
 }  // namespace net
