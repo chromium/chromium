@@ -1981,7 +1981,10 @@ RenderFrameHostImpl::TakeLastCommitParams() {
 void RenderFrameHostImpl::StartBackForwardCacheEvictionTimer() {
   DCHECK(IsInBackForwardCache());
   base::TimeDelta evict_after =
-      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache();
+      BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
+          LoadedWithCacheControlNoStoreHeader()
+              ? BackForwardCacheImpl::kInCCNSContext
+              : BackForwardCacheImpl::kNotInCCNSContext);
 
   back_forward_cache_eviction_timer_.SetTaskRunner(
       GetBackForwardCache().GetTaskRunner());

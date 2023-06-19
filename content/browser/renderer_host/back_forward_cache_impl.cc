@@ -97,6 +97,11 @@ static constexpr size_t kDefaultForegroundBackForwardCacheSize = 0;
 // The default time to live in seconds for documents in BackForwardCache.
 // See also crbug.com/1305878.
 static constexpr int kDefaultTimeToLiveInBackForwardCacheInSeconds = 600;
+// For page with "Cache-Control: no-store", it should have a shorter time to
+// live.
+static constexpr int
+    kDefaultTimeForCacheControlNoStorePageToLiveInBackForwardCacheInSeconds =
+        180;
 
 #if BUILDFLAG(IS_ANDROID)
 bool IsProcessBindingEnabled() {
@@ -573,12 +578,16 @@ absl::optional<int> GetFieldTrialParamByFeatureAsOptionalInt(
   return absl::optional<int>();
 }
 
-base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
+base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache(
+    CacheControlNoStoreContext ccns_context) {
   // We use the following order of priority if multiple values exist:
   // - The TTL set in `kBackForwardCacheTimeToLiveControl` takes precedence over
   //   the default value.
   // - Infinite if kBackForwardCacheNoTimeEviction is enabled.
-  // - Default value otherwise, kDefaultTimeToLiveInBackForwardCacheInSeconds.
+  // - Default value otherwise, kDefaultTimeToLiveInBackForwardCacheInSeconds or
+  // kDefaultTimeForCacheControlNoStorePageToLiveInBackForwardCacheInSeconds
+  // depending on if the page's main frame has "Cache-Control: no-store" header
+  // or not.
 
   if (base::FeatureList::IsEnabled(
           features::kBackForwardCacheTimeToLiveControl)) {
@@ -593,7 +602,12 @@ base::TimeDelta BackForwardCacheImpl::GetTimeToLiveInBackForwardCache() {
     return base::TimeDelta::Max();
   }
 
-  return base::Seconds(kDefaultTimeToLiveInBackForwardCacheInSeconds);
+  if (ccns_context == kInCCNSContext) {
+    return base::Seconds(
+        kDefaultTimeForCacheControlNoStorePageToLiveInBackForwardCacheInSeconds);
+  } else {
+    return base::Seconds(kDefaultTimeToLiveInBackForwardCacheInSeconds);
+  }
 }
 
 // static
