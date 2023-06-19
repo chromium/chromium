@@ -4905,6 +4905,13 @@
        {}
       ]
      ],
+     "remove-editing-host-during-forwarddelete.html": [
+      "9c803dc132763213b089cdb490c6c9b2357ff027",
+      [
+       null,
+       {}
+      ]
+     ],
      "remove-editing-host-on-DOMNodeInserted-at-indent.html": [
       "22e8fd07136873352671d25b2b6a647f171c4bd4",
       [
@@ -273851,11 +273858,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "06a0bb7b9971ad46938793b5437e62a3d66c8923",
+     "21beaddbfcb6f8a92985ca630340ad5c6fdd5312",
      []
     ],
     "mtime.json": [
-     "3859581e9f72665d7e623d80f1cbc31cf6fe19a2",
+     "866c37768b2c8cae22effd00bbd05ec025fff66d",
      []
     ]
    },
@@ -293990,8 +293997,12 @@
        "9f2446cc0e3668b8d01feaf7fe1f4db0c2ce2c0b",
        []
       ],
+      "color-valid-color-mix-function-expected.txt": [
+       "3b94b9f3fb9afed1b8069abbcffb44011178e403",
+       []
+      ],
       "color-valid-color-mix-function.html.ini": [
-       "ed79ae167f43a189efc9c55b3147ade5d7259f78",
+       "d405c75572079d7a3e7f2543e9563a9ba6226ada",
        []
       ],
       "color-valid-lab.html.ini": [
@@ -328830,7 +328841,7 @@
       []
      ],
      "preserve3d-and-flattening-z-order-006.html.ini": [
-      "62638fc6e2f2e7c20e4d353aa1b8e73ed6f80b28",
+      "35ff7069b81f3bd1616dfaa6490eba5d9cf58c7a",
       []
      ],
      "preserve3d-and-flattening-z-order-007.html.ini": [
@@ -360086,7 +360097,7 @@
         []
        ],
        "iframe-popup-about-blank.https.window.js.ini": [
-        "557721d459e560367e458683f59f3efdce59f3f8",
+        "1bb08ded674f3987a7500e55c9b99a9bd04ed90a",
         []
        ],
        "iframe-popup-to-so.https.html.headers": [
@@ -397557,7 +397568,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "38966eeecf043bce71bd9c4502dabb6b46f6c648",
+     "d9d15a96b19351b59fe90c5b545ddd97f8429b88",
      []
     ],
     "sfx-aac.mp4": [
@@ -399473,7 +399484,7 @@
      []
     ],
     "back-forward-cache-with-closed-webrtc-connection-ccns.https.tentative.window.js.ini": [
-     "fc67227927e7bbfa5188f6da798973e8a2582604",
+     "463a532ef14364707ced4220ab92745ae25abf1d",
      []
     ],
     "back-forward-cache-with-closed-webrtc-connection.https.window.js.ini": [
@@ -399485,7 +399496,7 @@
      []
     ],
     "back-forward-cache-with-open-webrtc-connection-ccns.https.tentative.window.js.ini": [
-     "dc00a0cd6276a0626408c95cb30bb11167b59520",
+     "14ff5ca13f161bce4d3e454ebbbb56b4ee9a2e50",
      []
     ],
     "back-forward-cache-with-open-webrtc-connection.https.window.js.ini": [
@@ -400243,7 +400254,7 @@
      []
     ],
     "back-forward-cache-with-closed-websocket-connection-ccns.tentative.window.js.ini": [
-     "d5b3122882e77ede8b3e1905922a3a8fa7d9bf12",
+     "0e18f77c5be2e4eb5f2c54da2de3d6640d82996b",
      []
     ],
     "back-forward-cache-with-closed-websocket-connection.window.js.ini": [
@@ -400255,7 +400266,7 @@
      []
     ],
     "back-forward-cache-with-open-websocket-connection-ccns.tentative.window.js.ini": [
-     "169a75c319fc491eef5e49df0e62b01441fb7193",
+     "b3b849262ef276a55d7befd7aaeb48e588ffe0c8",
      []
     ],
     "back-forward-cache-with-open-websocket-connection.window.js.ini": [
@@ -446342,7 +446353,7 @@
        ]
       ],
       "color-valid-color-mix-function.html": [
-       "1df42804996f3e23daf5bec7752a31e2b7ae1ec8",
+       "d664525effd6c05f0d88d9028eefed13c7f352f3",
        [
         null,
         {}
@@ -545911,7 +545922,7 @@
        ]
       ],
       "service-worker-coep-credentialless-proxy.https.window.js": [
-       "d1a61dbb5794ea688ae4fddf919ad6146f0a6e56",
+       "8ffea043259b3b97ba12394f0257bd907aed4a65",
        [
         "html/cross-origin-embedder-policy/credentialless/service-worker-coep-credentialless-proxy.https.window.html",
         {
@@ -545941,7 +545952,7 @@
        ]
       ],
       "service-worker-coep-none-proxy.https.window.js": [
-       "21969bb7ede0f39a26543bb9acd1d23308941bcb",
+       "c2a6f227e4c30c691b54618abeb7bb58f529bf61",
        [
         "html/cross-origin-embedder-policy/credentialless/service-worker-coep-none-proxy.https.window.html",
         {
