@@ -34,7 +34,6 @@ enum class UserSelectableType {
   kApps,
   kReadingList,
   kTabs,
-  kWifiConfigurations,
   kSavedTabGroups,
   kLastType = kSavedTabGroups
 };

@@ -33,7 +33,6 @@ constexpr char kExtensionsTypeName[] = "extensions";
 constexpr char kAppsTypeName[] = "apps";
 constexpr char kReadingListTypeName[] = "readingList";
 constexpr char kTabsTypeName[] = "tabs";
-constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 constexpr char kSavedTabGroupsTypeName[] = "savedTabGroups";
 
 UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
@@ -95,15 +94,6 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
       return {kReadingListTypeName, READING_LIST, {READING_LIST}};
     case UserSelectableType::kTabs:
       return {kTabsTypeName, PROXY_TABS, {PROXY_TABS, SESSIONS}};
-    case UserSelectableType::kWifiConfigurations:
-#if BUILDFLAG(IS_CHROMEOS_ASH)
-      // In Ash, "Wi-Fi configurations" is part of Chrome OS settings.
-      return {kWifiConfigurationsTypeName, UNSPECIFIED};
-#else
-      return {kWifiConfigurationsTypeName,
-              WIFI_CONFIGURATIONS,
-              {WIFI_CONFIGURATIONS}};
-#endif
     case UserSelectableType::kSavedTabGroups:
       return {kSavedTabGroupsTypeName, SAVED_TAB_GROUP, {SAVED_TAB_GROUP}};
   }
@@ -115,6 +105,7 @@ UserSelectableTypeInfo GetUserSelectableTypeInfo(UserSelectableType type) {
 constexpr char kOsAppsTypeName[] = "osApps";
 constexpr char kOsPreferencesTypeName[] = "osPreferences";
 constexpr char kOsWifiConfigurationsTypeName[] = "osWifiConfigurations";
+constexpr char kWifiConfigurationsTypeName[] = "wifiConfigurations";
 
 UserSelectableTypeInfo GetUserSelectableOsTypeInfo(UserSelectableOsType type) {
   // UserSelectableTypeInfo::type_name is used in js code and shouldn't be
@@ -174,9 +165,6 @@ absl::optional<UserSelectableType> GetUserSelectableTypeFromString(
   }
   if (type == kTabsTypeName) {
     return UserSelectableType::kTabs;
-  }
-  if (type == kWifiConfigurationsTypeName) {
-    return UserSelectableType::kWifiConfigurations;
   }
   if (type == kSavedTabGroupsTypeName) {
     return UserSelectableType::kSavedTabGroups;

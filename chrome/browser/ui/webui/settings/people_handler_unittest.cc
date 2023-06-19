@@ -112,8 +112,6 @@ std::string GetConfiguration(SyncAllDataConfig sync_all,
   result.Set("themesSynced", types.Has(syncer::UserSelectableType::kThemes));
   result.Set("typedUrlsSynced",
              types.Has(syncer::UserSelectableType::kHistory));
-  result.Set("wifiConfigurationsSynced",
-             types.Has(syncer::UserSelectableType::kWifiConfigurations));
   result.Set("paymentsIntegrationEnabled", false);
 
   // Reading list doesn't really have a UI and is supported on ios only.
@@ -166,8 +164,6 @@ void CheckConfigDataTypeArguments(const base::Value::Dict& dictionary,
                    types.Has(syncer::UserSelectableType::kThemes));
   ExpectHasBoolKey(dictionary, "typedUrlsSynced",
                    types.Has(syncer::UserSelectableType::kHistory));
-  ExpectHasBoolKey(dictionary, "wifiConfigurationsSynced",
-                   types.Has(syncer::UserSelectableType::kWifiConfigurations));
 }
 
 std::unique_ptr<KeyedService> BuildMockSyncService(

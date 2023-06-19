@@ -2133,9 +2133,6 @@
           },
           "sync.typed_urls": {
             "default_value": false
-          },
-          "sync.wifi_configurations": {
-            "default_value": false
           }
         }
       },
@@ -2151,8 +2148,7 @@
             "readingList",
             "tabs",
             "themes",
-            "typedUrls",
-            "wifiConfigurations"
+            "typedUrls"
           ]
         },
         "prefs": {
@@ -2185,9 +2181,6 @@
           },
           "sync.typed_urls": {
             "value": false
-          },
-          "sync.wifi_configurations": {
-            "value": false
           }
         }
       }
@@ -2202,7 +2195,8 @@
         "policies": {
           "SyncTypesListDisabled": [
             "apps",
-            "preferences"
+            "preferences",
+            "wifiConfigurations"
           ]
         },
         "prefs": {
@@ -2210,6 +2204,9 @@
             "value": false
           },
           "sync.os_preferences": {
+            "value": false
+          },
+          "sync.wifi_configurations": {
             "value": false
           }
         }

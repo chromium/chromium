@@ -54,6 +54,7 @@ inline constexpr char kSyncAllOsTypes[] = "sync.all_os_types";
 // OS user selectable types.
 inline constexpr char kSyncOsApps[] = "sync.os_apps";
 inline constexpr char kSyncOsPreferences[] = "sync.os_preferences";
+inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -74,7 +75,6 @@ inline constexpr char kSyncReadingList[] = "sync.reading_list";
 inline constexpr char kSyncTabs[] = "sync.tabs";
 inline constexpr char kSyncThemes[] = "sync.themes";
 inline constexpr char kSyncTypedUrls[] = "sync.typed_urls";
-inline constexpr char kSyncWifiConfigurations[] = "sync.wifi_configurations";
 inline constexpr char kSyncSavedTabGroups[] = "sync.saved_tab_groups";
 
 // Boolean used by enterprise configuration management in order to lock down

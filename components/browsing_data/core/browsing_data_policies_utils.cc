@@ -63,7 +63,7 @@ void AppendSyncTypesIfRequired(const base::Value& browsing_data_type,
   // When a new sync type or browsing data type is introduced in the code,
   // kDataToSyncTypesMap should be updated if needed to ensure that browsing
   // data that can be cleared by policy is not already synced across devices.
-  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 11,
+  static_assert(static_cast<int>(syncer::UserSelectableType::kLastType) == 10,
                 "It looks like a sync type was added or removed. Please update "
                 "`kDataToSyncTypesMap` value maps above if it affects any of "
                 "the browsing data types.");

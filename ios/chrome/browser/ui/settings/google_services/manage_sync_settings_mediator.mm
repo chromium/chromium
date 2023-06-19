@@ -659,7 +659,6 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case syncer::UserSelectableType::kThemes:
     case syncer::UserSelectableType::kExtensions:
     case syncer::UserSelectableType::kApps:
-    case syncer::UserSelectableType::kWifiConfigurations:
     case syncer::UserSelectableType::kSavedTabGroups:
       NOTREACHED();
       break;

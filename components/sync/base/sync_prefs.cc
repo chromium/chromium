@@ -79,7 +79,8 @@ void SyncPrefs::RegisterProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterBooleanPref(prefs::internal::kSyncAllOsTypes, true);
   registry->RegisterBooleanPref(prefs::internal::kSyncOsApps, false);
   registry->RegisterBooleanPref(prefs::internal::kSyncOsPreferences, false);
-  // The pref for Wi-Fi configurations is registered in the loop above.
+  registry->RegisterBooleanPref(prefs::internal::kSyncWifiConfigurations,
+                                false);
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -404,8 +405,6 @@ const char* SyncPrefs::GetPrefNameForType(UserSelectableType type) {
       return prefs::internal::kSyncReadingList;
     case UserSelectableType::kTabs:
       return prefs::internal::kSyncTabs;
-    case UserSelectableType::kWifiConfigurations:
-      return prefs::internal::kSyncWifiConfigurations;
     case UserSelectableType::kSavedTabGroups:
       return prefs::internal::kSyncSavedTabGroups;
   }
