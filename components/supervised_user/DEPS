@@ -12,6 +12,7 @@ include_rules = [
   "+components/strings/grit",
   "+components/signin",
   "+components/sync",
+  "+components/sync_preferences",
   "+components/url_matcher",
   "+components/user_manager",
   "+extensions/buildflags",
