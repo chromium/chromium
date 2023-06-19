@@ -190,6 +190,9 @@ class TpmChallengeKeySubtleImpl final : public TpmChallengeKeySubtle {
   // Returns the account id in string if the flow type is `ENTERPRISE_USER`;
   // otherwise, returns empty string for `ENTERPRISE_MACHINE`.
   std::string GetUsernameForAttestationClient() const;
+  // Returns whether or not the challenge response should include the
+  // certificate of the signing key depending on the VA flow type.
+  bool ShouldIncludeSigningKeyCertificate() const;
 
   // Actually prepares a key after all checks are passed and if `can_continue`
   // is true.

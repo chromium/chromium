@@ -591,6 +591,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
   expected_request.set_domain(std::string());
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(true);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_MACHINE);
+  expected_request.set_include_certificate(false);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
@@ -615,6 +617,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
   expected_request.set_domain(std::string());
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(true);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_MACHINE);
+  expected_request.set_include_certificate(false);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
@@ -698,6 +702,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(false);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_USER);
+  expected_request.set_include_certificate(true);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
@@ -721,6 +727,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(false);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_USER);
+  expected_request.set_include_certificate(true);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
@@ -773,6 +781,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(false);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_USER);
+  expected_request.set_include_certificate(true);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
@@ -914,6 +924,8 @@ TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(true);
+  expected_request.set_flow_type(::attestation::ENTERPRISE_USER);
+  expected_request.set_include_certificate(true);
   AttestationClient::Get()
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);

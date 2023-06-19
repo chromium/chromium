@@ -387,6 +387,18 @@ std::string TpmChallengeKeySubtleImpl::GetUsernameForAttestationClient() const {
   }
 }
 
+bool TpmChallengeKeySubtleImpl::ShouldIncludeSigningKeyCertificate() const {
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
+      return false;
+    case VerifiedAccessFlow::ENTERPRISE_USER:
+      return true;
+    default:
+      NOTREACHED() << "Unsupported Verified Access flow type: " << flow_type_;
+      return true;
+  }
+}
+
 void TpmChallengeKeySubtleImpl::PrepareKey(bool can_continue) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
@@ -592,6 +604,8 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   request.set_include_signed_public_key(will_register_key_);
   request.set_challenge(challenge);
   request.set_va_type(AttestationClient::GetVerifiedAccessServerType());
+  request.set_flow_type(flow_type_);
+  request.set_include_certificate(ShouldIncludeSigningKeyCertificate());
   if (signals_.has_value()) {
     request.set_device_trust_signals_json(signals_.value());
   }
