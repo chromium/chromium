@@ -818,7 +818,7 @@
     },
     {
       name: "CSSDisplayAnimation",
-      status: "experimental",
+      status: "stable",
     },
     {
       // crbug.com/995106
