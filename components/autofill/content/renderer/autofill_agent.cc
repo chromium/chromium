@@ -741,6 +741,21 @@ void AutofillAgent::ClearPreviewedForm() {
   previewed_elements_ = {};
 }
 
+void AutofillAgent::TriggerSuggestions(
+    FieldRendererId field_id,
+    AutofillSuggestionTriggerSource trigger_source) {
+  content::RenderFrame* render_frame = unsafe_render_frame();
+  if (!render_frame) {
+    return;
+  }
+  WebDocument document = render_frame->GetWebFrame()->GetDocument();
+  element_ =
+      form_util::FindFormControlElementByUniqueRendererId(document, field_id);
+  if (!element_.IsNull()) {
+    ShowSuggestions(element_, trigger_source);
+  }
+}
+
 void AutofillAgent::FillFieldWithValue(FieldRendererId field_id,
                                        const std::u16string& value) {
   if (element_.IsNull() ||

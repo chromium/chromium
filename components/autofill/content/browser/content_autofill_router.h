@@ -319,6 +319,13 @@ class ContentAutofillRouter {
   void RendererShouldClearPreviewedForm(
       ContentAutofillDriver* source,
       void (*callback)(ContentAutofillDriver* target));
+  void RendererShouldTriggerSuggestions(
+      ContentAutofillDriver* source,
+      const FieldGlobalId& field,
+      AutofillSuggestionTriggerSource trigger_source,
+      void (*callback)(ContentAutofillDriver* target,
+                       const FieldRendererId& field,
+                       AutofillSuggestionTriggerSource trigger_source));
   void RendererShouldFillFieldWithValue(
       ContentAutofillDriver* source,
       const FieldGlobalId& field,

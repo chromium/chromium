@@ -11,6 +11,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/form_data.h"
 #include "net/base/isolation_info.h"
 #include "ui/accessibility/ax_tree_id.h"
@@ -164,6 +165,10 @@ class AutofillDriver {
 
   // Tells the renderer to clear the currently previewed Autofill results.
   virtual void RendererShouldClearPreviewedForm() = 0;
+
+  virtual void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) = 0;
 
   // Tells the renderer to set the node text.
   virtual void RendererShouldFillFieldWithValue(

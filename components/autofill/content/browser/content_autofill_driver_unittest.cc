@@ -31,6 +31,7 @@
 #include "components/autofill/core/browser/autofill_test_utils.h"
 #include "components/autofill/core/browser/browser_autofill_manager.h"
 #include "components/autofill/core/browser/test_autofill_driver.h"
+#include "components/autofill/core/common/aliases.h"
 #include "components/autofill/core/common/autofill_constants.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "components/autofill/core/common/autofill_switches.h"
@@ -134,6 +135,17 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // mojom::AutofillAgent::ClearPreviewedForm() got called.
   bool GetCalledClearPreviewedForm() { return called_clear_previewed_form_; }
 
+  // Returns data received via the mojo interface method
+  // `mojom::AutofillAgent::TriggerSuggestions()`.
+  absl::optional<AutofillSuggestionTriggerSource>
+  GetCalledTriggerSuggestionsSource(const FieldGlobalId& field) {
+    if (!suggestion_trigger_source_ ||
+        value_renderer_id_ != field.renderer_id) {
+      return absl::nullopt;
+    }
+    return *suggestion_trigger_source_;
+  }
+
   // Returns data received via mojo interface method
   // mojom::AutofillAgent::FillFieldWithValue().
   bool GetString16FillFieldWithValue(const FieldGlobalId& field,
@@ -213,6 +225,14 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
+  void TriggerSuggestions(
+      FieldRendererId field,
+      AutofillSuggestionTriggerSource trigger_source) override {
+    value_renderer_id_ = field;
+    suggestion_trigger_source_ = trigger_source;
+    CallDone();
+  }
+
   void FillFieldWithValue(FieldRendererId field,
                           const std::u16string& value) override {
     value_renderer_id_ = field;
@@ -279,6 +299,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   bool called_clear_section_;
   // Records whether ClearPreviewedForm() got called.
   bool called_clear_previewed_form_;
+  // Records the trigger source received from a TriggerSuggestions() call.
+  absl::optional<AutofillSuggestionTriggerSource> suggestion_trigger_source_;
   // Records the ID received from FillFieldWithValue(), PreviewFieldWithValue(),
   // SetSuggestionAvailability(), or AcceptDataListSuggestion().
   absl::optional<FieldRendererId> value_renderer_id_;
@@ -696,6 +718,22 @@ TEST_F(ContentAutofillDriverTest, ClearPreviewedFormSentToRenderer) {
   run_loop.RunUntilIdle();
 
   EXPECT_TRUE(fake_agent_.GetCalledClearPreviewedForm());
+}
+
+// Tests that `AutofillDriver::RendererShouldTriggerSuggestions()` calls make
+// it to AutofillAgent.
+TEST_F(ContentAutofillDriverTest, TriggerSuggestions) {
+  const FieldGlobalId field = SeeAddressFormData().fields.front().global_id();
+  const auto input_source =
+      AutofillSuggestionTriggerSource::kFormControlElementClicked;
+
+  base::RunLoop run_loop;
+  fake_agent_.SetQuitLoopClosure(run_loop.QuitClosure());
+  driver()->browser_events().RendererShouldTriggerSuggestions(field,
+                                                              input_source);
+  run_loop.RunUntilIdle();
+
+  EXPECT_EQ(input_source, fake_agent_.GetCalledTriggerSuggestionsSource(field));
 }
 
 TEST_F(ContentAutofillDriverTest, FillFieldWithValue) {

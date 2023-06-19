@@ -167,6 +167,14 @@ void AutofillDriverIOS::RendererShouldClearFilledSection() {}
 void AutofillDriverIOS::RendererShouldClearPreviewedForm() {
 }
 
+void AutofillDriverIOS::RendererShouldTriggerSuggestions(
+    const FieldGlobalId& field_id,
+    AutofillSuggestionTriggerSource trigger_source) {
+  // Triggering suggestions from the browser process is currently only used for
+  // manual fallbacks on Desktop. It is not implemented on iOS.
+  NOTIMPLEMENTED();
+}
+
 void AutofillDriverIOS::RendererShouldFillFieldWithValue(
     const FieldGlobalId& field,
     const std::u16string& value) {}

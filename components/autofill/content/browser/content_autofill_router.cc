@@ -715,6 +715,20 @@ void ContentAutofillRouter::RendererShouldClearPreviewedForm(
   ForEachFrame(form_forest_, callback);
 }
 
+void ContentAutofillRouter::RendererShouldTriggerSuggestions(
+    ContentAutofillDriver* source,
+    const FieldGlobalId& field,
+    AutofillSuggestionTriggerSource trigger_source,
+    void (*callback)(ContentAutofillDriver* target,
+                     const FieldRendererId& field,
+                     AutofillSuggestionTriggerSource trigger_source)) {
+  some_rfh_for_debugging_ = source->render_frame_host()->GetGlobalId();
+
+  if (ContentAutofillDriver* target = DriverOfFrame(field.frame_token)) {
+    callback(target, field.renderer_id, trigger_source);
+  }
+}
+
 void ContentAutofillRouter::RendererShouldFillFieldWithValue(
     ContentAutofillDriver* source,
     const FieldGlobalId& field,

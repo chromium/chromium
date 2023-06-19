@@ -297,6 +297,20 @@ void ContentAutofillDriver::RendererShouldClearPreviewedForm() {
       });
 }
 
+void ContentAutofillDriver::RendererShouldTriggerSuggestions(
+    const FieldGlobalId& field,
+    AutofillSuggestionTriggerSource trigger_source) {
+  autofill_router().RendererShouldTriggerSuggestions(
+      this, field, trigger_source,
+      [](ContentAutofillDriver* target, const FieldRendererId& field,
+         AutofillSuggestionTriggerSource trigger_source) {
+        if (!target->RendererIsAvailable()) {
+          return;
+        }
+        target->GetAutofillAgent()->TriggerSuggestions(field, trigger_source);
+      });
+}
+
 void ContentAutofillDriver::RendererShouldFillFieldWithValue(
     const FieldGlobalId& field,
     const std::u16string& value) {

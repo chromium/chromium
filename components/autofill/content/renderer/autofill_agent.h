@@ -107,6 +107,9 @@ class AutofillAgent : public content::RenderFrameObserver,
       const std::vector<FormDataPredictions>& forms) override;
   void ClearSection() override;
   void ClearPreviewedForm() override;
+  void TriggerSuggestions(
+      FieldRendererId field_id,
+      AutofillSuggestionTriggerSource trigger_source) override;
   void FillFieldWithValue(FieldRendererId field_id,
                           const std::u16string& value) override;
   void PreviewFieldWithValue(FieldRendererId field_id,

@@ -65,6 +65,9 @@ class TestAutofillDriverTemplate : public T {
       const std::u16string& value) override {}
   void RendererShouldClearFilledSection() override {}
   void RendererShouldClearPreviewedForm() override {}
+  void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) override {}
   void RendererShouldFillFieldWithValue(const FieldGlobalId& field,
                                         const std::u16string& value) override {}
   void RendererShouldPreviewFieldWithValue(

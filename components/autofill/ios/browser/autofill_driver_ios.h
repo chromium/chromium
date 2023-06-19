@@ -64,6 +64,9 @@ class AutofillDriverIOS : public AutofillDriver,
       const std::vector<FormStructure*>& forms) override;
   void RendererShouldClearFilledSection() override;
   void RendererShouldClearPreviewedForm() override;
+  void RendererShouldTriggerSuggestions(
+      const FieldGlobalId& field_id,
+      AutofillSuggestionTriggerSource trigger_source) override;
   void RendererShouldAcceptDataListSuggestion(
       const FieldGlobalId& field,
       const std::u16string& value) override;

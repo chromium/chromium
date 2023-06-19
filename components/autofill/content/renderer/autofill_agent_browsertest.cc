@@ -315,4 +315,17 @@ TEST_F(AutofillAgentTestWithFeatures,
   autofill_agent_->TriggerFormExtractionWithResponse(mock_callback.Get());
 }
 
+// Tests that `AutofillDriver::TriggerSuggestions()` triggers
+// `AutofillAgent::AskForValuesToFill()` (which will ultimately trigger
+// suggestions).
+TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
+  EXPECT_CALL(autofill_driver_, FormsSeen);
+  LoadHTML("<body><input></body>");
+  WaitForFormsSeen();
+  EXPECT_CALL(autofill_driver_, AskForValuesToFill);
+  autofill_agent_->TriggerSuggestions(
+      FieldRendererId(1),
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
 }  // namespace autofill

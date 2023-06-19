@@ -84,6 +84,11 @@ class MockAutofillAgent : public mojom::AutofillAgent {
   MOCK_METHOD(void, ClearSection, (), (override));
   MOCK_METHOD(void, ClearPreviewedForm, (), (override));
   MOCK_METHOD(void,
+              TriggerSuggestions,
+              (FieldRendererId field_id,
+               AutofillSuggestionTriggerSource trigger_source),
+              (override));
+  MOCK_METHOD(void,
               FillFieldWithValue,
               (FieldRendererId field, const std::u16string& value),
               (override));

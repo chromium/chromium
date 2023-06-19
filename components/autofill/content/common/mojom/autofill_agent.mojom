@@ -36,6 +36,20 @@ interface AutofillAgent {
   // Tells the renderer that the Autofill previewed form should be cleared.
   ClearPreviewedForm();
 
+  // Tells the renderer to trigger Autofill suggestions on the `field`, as if
+  // triggered through the provided `trigger_source`.
+  // For the most part, suggestions are triggered through Blink events on the
+  // renderer-side. However, manual fallbacks from the context menu are
+  // triggered from the browser processes. They need to make another round-trip
+  // to the renderer, since rendering suggestions relies on the `field`'s
+  // position. Since the browser process doesn't have up-to-date coordinates,
+  // suggestions are triggered through the renderer, which causes the field and
+  // its coordinates to be re-extracted.
+  // Assuming the `field` is found, the driver's `AskForValuesToFill()` will be
+  // called.
+  TriggerSuggestions(FieldRendererId field,
+                     AutofillSuggestionTriggerSource trigger_source);
+
   // Sets the value of |field| (if it is still the currently selected node).
   FillFieldWithValue(FieldRendererId field, mojo_base.mojom.String16 value);
 
