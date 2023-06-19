@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/public_key.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 
 #include <vector>
 
@@ -12,9 +12,11 @@
 namespace syncer {
 namespace {
 
-TEST(PublicKeyTest, GetRawPublicKeyShouldAlwaysSucceed) {
+TEST(CrossUserSharingPublicKeyTest,
+     GetRawCrossUserSharingPublicKeyShouldAlwaysSucceed) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN, 0xDE);
-  const absl::optional<PublicKey> public_key = PublicKey::CreateByImport(key);
+  const absl::optional<CrossUserSharingPublicKey> public_key =
+      CrossUserSharingPublicKey::CreateByImport(key);
 
   ASSERT_TRUE(public_key.has_value());
 
@@ -23,25 +25,28 @@ TEST(PublicKeyTest, GetRawPublicKeyShouldAlwaysSucceed) {
   EXPECT_THAT(key, testing::ElementsAreArray(raw_key));
 }
 
-TEST(PublicKeyTest, CreateByImportShouldFailOnLongerKeys) {
+TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnLongerKeys) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN * 2);
-  const absl::optional<PublicKey> public_key = PublicKey::CreateByImport(key);
+  const absl::optional<CrossUserSharingPublicKey> public_key =
+      CrossUserSharingPublicKey::CreateByImport(key);
 
   EXPECT_FALSE(public_key.has_value());
 }
 
-TEST(PublicKeyTest, CreateByImportShouldFailOnShorterKeys) {
+TEST(CrossUserSharingPublicKeyTest, CreateByImportShouldFailOnShorterKeys) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN - 1);
-  const absl::optional<PublicKey> public_key = PublicKey::CreateByImport(key);
+  const absl::optional<CrossUserSharingPublicKey> public_key =
+      CrossUserSharingPublicKey::CreateByImport(key);
 
   EXPECT_FALSE(public_key.has_value());
 }
 
-TEST(PublicKeyTest, CloneShouldAlwaysSucceed) {
+TEST(CrossUserSharingPublicKeyTest, CloneShouldAlwaysSucceed) {
   const std::vector<uint8_t> key(X25519_PUBLIC_VALUE_LEN, 0xDE);
-  const absl::optional<PublicKey> public_key = PublicKey::CreateByImport(key);
+  const absl::optional<CrossUserSharingPublicKey> public_key =
+      CrossUserSharingPublicKey::CreateByImport(key);
 
-  absl::optional<PublicKey> clone = public_key->Clone();
+  absl::optional<CrossUserSharingPublicKey> clone = public_key->Clone();
 
   ASSERT_TRUE(clone.has_value());
 

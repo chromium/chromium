@@ -39,9 +39,9 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/time.h"
 #include "components/sync/engine/loopback_server/loopback_server_entity.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/test/fake_server_nigori_helper.h"
 #include "components/sync/test/nigori_test_utils.h"
@@ -321,19 +321,23 @@ class SingleClientNigoriSyncTestWithNotAwaitQuiescence
   }
 };
 
-class SingleClientNigoriKeyPairSyncTest : public SingleClientNigoriSyncTest {
+class SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest
+    : public SingleClientNigoriSyncTest {
  public:
-  SingleClientNigoriKeyPairSyncTest() {
+  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() {
     override_features_.InitAndEnableFeature(
         syncer::kSharingOfferKeyPairBootstrap);
   }
 
-  SingleClientNigoriKeyPairSyncTest(const SingleClientNigoriKeyPairSyncTest&) =
+  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest(
+      const SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest&) =
       delete;
-  SingleClientNigoriKeyPairSyncTest& operator=(
-      const SingleClientNigoriKeyPairSyncTest&) = delete;
+  SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest& operator=(
+      const SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest&) =
+      delete;
 
-  ~SingleClientNigoriKeyPairSyncTest() override = default;
+  ~SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest() override =
+      default;
 
  private:
   base::test::ScopedFeatureList override_features_;
@@ -705,8 +709,9 @@ IN_PROC_BROWSER_TEST_F(
                   .Wait());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
-                       ShouldBootstrapKeyPairWhenReceivedDefault) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    ShouldBootstrapCrossUserSharingPublicPrivateKeyPairWhenReceivedDefault) {
   ASSERT_TRUE(SetupSync());
   sync_pb::NigoriSpecifics specifics;
 
@@ -744,15 +749,17 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
   EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  absl::optional<syncer::PublicPrivateKeyPair> private_key =
-      syncer::PublicPrivateKeyPair::CreateByImport(raw_private_key);
+  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
+      syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
+          raw_private_key);
   EXPECT_TRUE(private_key.has_value());
   EXPECT_THAT(specifics.public_key().x25519_public_key(),
               testing::ElementsAreArray(private_key->GetRawPublicKey()));
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
-                       PRE_ShouldSyncPublicPrivateKeyPair) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    PRE_ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   const std::vector<std::vector<uint8_t>>& keystore_keys =
       GetFakeServer()->GetKeystoreKeys();
   ASSERT_THAT(keystore_keys, SizeIs(1));
@@ -770,8 +777,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
   ASSERT_TRUE(SetupSync());
 }
 
-IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
-                       ShouldSyncPublicPrivateKeyPair) {
+IN_PROC_BROWSER_TEST_F(
+    SingleClientNigoriCrossUserSharingPublicPrivateKeyPairSyncTest,
+    ShouldSyncCrossUserSharingPublicPrivateKeyPair) {
   ASSERT_TRUE(SetupSync());
   sync_pb::NigoriSpecifics specifics;
 
@@ -809,8 +817,9 @@ IN_PROC_BROWSER_TEST_F(SingleClientNigoriKeyPairSyncTest,
   EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
-  absl::optional<syncer::PublicPrivateKeyPair> private_key =
-      syncer::PublicPrivateKeyPair::CreateByImport(raw_private_key);
+  absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
+      syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
+          raw_private_key);
   EXPECT_TRUE(private_key.has_value());
   EXPECT_THAT(specifics.public_key().x25519_public_key(),
               testing::ElementsAreArray(private_key->GetRawPublicKey()));

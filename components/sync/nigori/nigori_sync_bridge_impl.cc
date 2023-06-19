@@ -19,8 +19,8 @@
 #include "components/sync/base/features.h"
 #include "components/sync/base/passphrase_enums.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_key.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_storage.h"
 #include "components/sync/nigori/pending_local_nigori_commit.h"
@@ -229,11 +229,11 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
   return specifics.encrypt_everything() || !old_encrypt_everything;
 }
 
-absl::optional<PublicKey> PublicKeyFromProto(
+absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::PublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
-  return PublicKey::CreateByImport(key);
+  return CrossUserSharingPublicKey::CreateByImport(key);
 }
 
 }  // namespace

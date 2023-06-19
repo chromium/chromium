@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "components/sync/engine/nigori/public_private_key_pair.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 
 #include <algorithm>
 #include <vector>
@@ -14,30 +14,38 @@
 namespace syncer {
 namespace {
 
-TEST(PublicPrivateKeyPairTest, GenerateNewKeyPairShouldAlwaysSucceed) {
-  PublicPrivateKeyPair key = PublicPrivateKeyPair::GenerateNewKeyPair();
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     GenerateNewKeyPairShouldAlwaysSucceed) {
+  CrossUserSharingPublicPrivateKeyPair key =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
   EXPECT_THAT(key.GetRawPrivateKey(), testing::SizeIs(X25519_PRIVATE_KEY_LEN));
   EXPECT_THAT(key.GetRawPublicKey(), testing::SizeIs(X25519_PUBLIC_VALUE_LEN));
 }
 
-TEST(PublicPrivateKeyPairTest, GenerateNewKeyPairShouldGenerateDifferentKeys) {
-  PublicPrivateKeyPair key_1 = PublicPrivateKeyPair::GenerateNewKeyPair();
-  PublicPrivateKeyPair key_2 = PublicPrivateKeyPair::GenerateNewKeyPair();
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     GenerateNewKeyPairShouldGenerateDifferentKeys) {
+  CrossUserSharingPublicPrivateKeyPair key_1 =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair key_2 =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
   EXPECT_NE(key_1.GetRawPrivateKey(), key_2.GetRawPrivateKey());
   EXPECT_NE(key_1.GetRawPublicKey(), key_2.GetRawPublicKey());
 }
 
-TEST(PublicPrivateKeyPairTest,
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
      GenerateNewKeyPairShouldGenerateDifferentPublicPrivateParts) {
-  PublicPrivateKeyPair key = PublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair key =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
   EXPECT_NE(key.GetRawPrivateKey(), key.GetRawPublicKey());
 }
 
-TEST(PublicPrivateKeyPairTest, GeneratedPublicKeyShouldMatchX25519Derivation) {
-  PublicPrivateKeyPair key = PublicPrivateKeyPair::GenerateNewKeyPair();
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     GeneratedPublicKeyShouldMatchX25519Derivation) {
+  CrossUserSharingPublicPrivateKeyPair key =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
 
   const std::array<uint8_t, X25519_PRIVATE_KEY_LEN> raw_private_key =
       key.GetRawPrivateKey();
@@ -53,11 +61,11 @@ TEST(PublicPrivateKeyPairTest, GeneratedPublicKeyShouldMatchX25519Derivation) {
   EXPECT_THAT(raw_public_key, testing::ElementsAreArray(expected_public_key));
 }
 
-TEST(PublicPrivateKeyPairTest, CreateByImportShouldSucceed) {
+TEST(CrossUserSharingPublicPrivateKeyPairTest, CreateByImportShouldSucceed) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN, 0xDE);
 
-  absl::optional<PublicPrivateKeyPair> key =
-      PublicPrivateKeyPair::CreateByImport(private_key);
+  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   ASSERT_TRUE(key.has_value());
 
@@ -67,20 +75,22 @@ TEST(PublicPrivateKeyPairTest, CreateByImportShouldSucceed) {
   EXPECT_THAT(private_key, testing::ElementsAreArray(raw_private_key));
 }
 
-TEST(PublicPrivateKeyPairTest, CreateByImportShouldFailOnShorterKey) {
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     CreateByImportShouldFailOnShorterKey) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN - 1, 0xDE);
 
-  absl::optional<PublicPrivateKeyPair> key =
-      PublicPrivateKeyPair::CreateByImport(private_key);
+  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   EXPECT_FALSE(key.has_value());
 }
 
-TEST(PublicPrivateKeyPairTest, CreateByImportShouldFailOnLongerKey) {
+TEST(CrossUserSharingPublicPrivateKeyPairTest,
+     CreateByImportShouldFailOnLongerKey) {
   std::vector<uint8_t> private_key(X25519_PRIVATE_KEY_LEN + 1, 0xDE);
 
-  absl::optional<PublicPrivateKeyPair> key =
-      PublicPrivateKeyPair::CreateByImport(private_key);
+  absl::optional<CrossUserSharingPublicPrivateKeyPair> key =
+      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   EXPECT_FALSE(key.has_value());
 }

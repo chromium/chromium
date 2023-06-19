@@ -65,8 +65,9 @@ std::string CryptographerImpl::EmplaceKey(
       Nigori::CreateByDerivation(derivation_params, passphrase));
 }
 
-void CryptographerImpl::EmplaceKeyPair(PublicPrivateKeyPair private_key,
-                                       uint32_t version) {
+void CryptographerImpl::EmplaceKeyPair(
+    CrossUserSharingPublicPrivateKeyPair private_key,
+    uint32_t version) {
   key_bag_.AddKeyPair(std::move(private_key), version);
 }
 

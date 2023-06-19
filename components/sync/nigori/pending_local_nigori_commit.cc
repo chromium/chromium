@@ -12,10 +12,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/time/time.h"
 #include "components/sync/base/features.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_key.h"
-#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
 #include "components/sync/nigori/nigori_state.h"
@@ -31,9 +31,10 @@ void InitKeyPair(NigoriState* state) {
   if (state->cross_user_sharing_public_key.has_value()) {
     return;
   }
-  PublicPrivateKeyPair key_pair = PublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   state->cross_user_sharing_public_key =
-      PublicKey::CreateByImport(key_pair.GetRawPublicKey());
+      CrossUserSharingPublicKey::CreateByImport(key_pair.GetRawPublicKey());
   state->cross_user_sharing_key_pair_version = 0;
   state->cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
 }

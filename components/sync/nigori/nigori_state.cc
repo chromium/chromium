@@ -10,8 +10,8 @@
 #include "base/notreached.h"
 #include "components/sync/base/model_type.h"
 #include "components/sync/base/time.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/engine/nigori/public_key.h"
 #include "components/sync/engine/sync_encryption_handler.h"
 #include "components/sync/nigori/cryptographer_impl.h"
 #include "components/sync/nigori/keystore_keys_cryptographer.h"
@@ -104,14 +104,14 @@ void UpdateSpecificsFromKeyDerivationParams(
   }
 }
 
-absl::optional<PublicKey> PublicKeyFromProto(
+absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
     const sync_pb::PublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
-  return PublicKey::CreateByImport(key);
+  return CrossUserSharingPublicKey::CreateByImport(key);
 }
 
-sync_pb::PublicKey PublicKeyToProto(const PublicKey& public_key,
+sync_pb::PublicKey PublicKeyToProto(const CrossUserSharingPublicKey& public_key,
                                     uint32_t key_pair_version) {
   sync_pb::PublicKey output;
   const auto key = public_key.GetRawPublicKey();

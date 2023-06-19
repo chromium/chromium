@@ -10,9 +10,9 @@
 
 #include "base/time/time.h"
 #include "components/sync/base/model_type.h"
+#include "components/sync/engine/nigori/cross_user_sharing_public_key.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_key.h"
 #include "components/sync/protocol/encryption.pb.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -96,7 +96,7 @@ struct NigoriState {
   sync_pb::NigoriSpecifics::TrustedVaultDebugInfo trusted_vault_debug_info;
 
   // Current Public-key.
-  absl::optional<PublicKey> cross_user_sharing_public_key;
+  absl::optional<CrossUserSharingPublicKey> cross_user_sharing_public_key;
   // Current Public-key version.
   absl::optional<uint32_t> cross_user_sharing_key_pair_version;
 };

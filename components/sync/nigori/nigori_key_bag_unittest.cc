@@ -6,9 +6,9 @@
 
 #include <vector>
 
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/protocol/nigori_specifics.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -145,8 +145,10 @@ TEST(NigoriKeyBagTest, ShouldCloneWithKeyPairs) {
       original_key_bag.AddKey(CreateTestNigori("password1"));
   const std::string key_name2 =
       original_key_bag.AddKey(CreateTestNigori("password2"));
-  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+  original_key_bag.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_key_bag.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   const NigoriKeyBag cloned_key_bag = original_key_bag.Clone();
 
@@ -180,7 +182,8 @@ TEST(NigoriKeyBagTest, ShouldIgnoreDeprecatedKeyNameProtoField) {
 TEST(NigoriKeyBagTest, ShouldAddKeyPair) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
 
-  key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  key_bag.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                     0);
 
   EXPECT_TRUE(key_bag.HasKeyPair(0));
 }
@@ -188,9 +191,12 @@ TEST(NigoriKeyBagTest, ShouldAddKeyPair) {
 TEST(NigoriKeyBagTest, ShouldAddMultipleKeyPairs) {
   NigoriKeyBag key_bag = NigoriKeyBag::CreateEmpty();
 
-  key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 1);
-  key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 3);
+  key_bag.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                     0);
+  key_bag.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                     1);
+  key_bag.AddKeyPair(CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(),
+                     3);
 
   EXPECT_TRUE(key_bag.HasKeyPair(0));
   EXPECT_TRUE(key_bag.HasKeyPair(1));
@@ -200,8 +206,10 @@ TEST(NigoriKeyBagTest, ShouldAddMultipleKeyPairs) {
 TEST(NigoriKeyBagTest, ShouldCreateNonEmptyKeyPairsFromProto) {
   NigoriKeyBag original_key_bag = NigoriKeyBag::CreateEmpty();
 
-  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
-  original_key_bag.AddKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 1);
+  original_key_bag.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  original_key_bag.AddKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 1);
 
   const NigoriKeyBag restored_key_bag =
       NigoriKeyBag::CreateFromProto(original_key_bag.ToProto());

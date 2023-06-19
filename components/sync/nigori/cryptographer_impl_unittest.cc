@@ -6,8 +6,8 @@
 
 #include <utility>
 
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
-#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -161,7 +161,8 @@ TEST(CryptographerImplTest, ShouldEmplaceKeyPair) {
   std::unique_ptr<CryptographerImpl> cryptographer =
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
-  PublicPrivateKeyPair key_pair = PublicPrivateKeyPair::GenerateNewKeyPair();
+  CrossUserSharingPublicPrivateKeyPair key_pair =
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair();
   ASSERT_FALSE(cryptographer->HasKeyPair(0));
 
   cryptographer->EmplaceKeyPair(std::move(key_pair), 0);
@@ -174,10 +175,12 @@ TEST(CryptographerImplTest, ShouldEmplaceExistingKeyPair) {
       CryptographerImpl::CreateEmpty();
   ASSERT_THAT(cryptographer, NotNull());
   ASSERT_FALSE(cryptographer->HasKeyPair(0));
-  cryptographer->EmplaceKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
   ASSERT_TRUE(cryptographer->HasKeyPair(0));
 
-  cryptographer->EmplaceKeyPair(PublicPrivateKeyPair::GenerateNewKeyPair(), 0);
+  cryptographer->EmplaceKeyPair(
+      CrossUserSharingPublicPrivateKeyPair::GenerateNewKeyPair(), 0);
 
   EXPECT_TRUE(cryptographer->HasKeyPair(0));
 }

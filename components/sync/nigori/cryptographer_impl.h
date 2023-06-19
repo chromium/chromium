@@ -8,10 +8,10 @@
 #include <memory>
 #include <string>
 
+#include "components/sync/engine/nigori/cross_user_sharing_public_private_key_pair.h"
 #include "components/sync/engine/nigori/cryptographer.h"
 #include "components/sync/engine/nigori/key_derivation_params.h"
 #include "components/sync/engine/nigori/nigori.h"
-#include "components/sync/engine/nigori/public_private_key_pair.h"
 #include "components/sync/nigori/nigori_key_bag.h"
 #include "components/sync/protocol/nigori_local_data.pb.h"
 
@@ -61,7 +61,8 @@ class CryptographerImpl : public Cryptographer {
   void EmplaceKeysFrom(const NigoriKeyBag& key_bag);
 
   // Adds the given Public-private key-pair associated with |version|.
-  void EmplaceKeyPair(PublicPrivateKeyPair key_pair, uint32_t version);
+  void EmplaceKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
+                      uint32_t version);
 
   // Sets or changes the default encryption key, which causes CanEncrypt() to
   // return true. |key_name| must not be empty and must represent a known key.

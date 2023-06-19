@@ -30,7 +30,7 @@ sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
 
 sync_pb::PrivateKey KeyPairToPrivateKeyProto(
     const uint32_t version,
-    const PublicPrivateKeyPair& key_pair) {
+    const CrossUserSharingPublicPrivateKeyPair& key_pair) {
   auto raw_private_key = key_pair.GetRawPrivateKey();
   sync_pb::PrivateKey output;
   output.set_version(version);
@@ -51,12 +51,13 @@ std::unique_ptr<Nigori> CloneNigori(const Nigori& nigori) {
   return nigori_copy;
 }
 
-PublicPrivateKeyPair CloneKeyPair(const PublicPrivateKeyPair& key_pair) {
+CrossUserSharingPublicPrivateKeyPair CloneKeyPair(
+    const CrossUserSharingPublicPrivateKeyPair& key_pair) {
   const auto raw_private_key = key_pair.GetRawPrivateKey();
   std::vector<uint8_t> key_for_import(raw_private_key.begin(),
                                       raw_private_key.end());
-  absl::optional<PublicPrivateKeyPair> clone =
-      PublicPrivateKeyPair::CreateByImport(key_for_import);
+  absl::optional<CrossUserSharingPublicPrivateKeyPair> clone =
+      CrossUserSharingPublicPrivateKeyPair::CreateByImport(key_for_import);
   CHECK(clone.has_value());
   return std::move(clone.value());
 }
@@ -176,8 +177,8 @@ void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
 bool NigoriKeyBag::AddKeyPairFromProto(const sync_pb::PrivateKey& key) {
   std::vector<uint8_t> private_key(key.x25519_private_key().begin(),
                                    key.x25519_private_key().end());
-  absl::optional<PublicPrivateKeyPair> key_pair =
-      PublicPrivateKeyPair::CreateByImport(private_key);
+  absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =
+      CrossUserSharingPublicPrivateKeyPair::CreateByImport(private_key);
 
   if (!key_pair.has_value()) {
     return false;
@@ -187,7 +188,8 @@ bool NigoriKeyBag::AddKeyPairFromProto(const sync_pb::PrivateKey& key) {
   return true;
 }
 
-void NigoriKeyBag::AddKeyPair(PublicPrivateKeyPair key_pair, uint32_t version) {
+void NigoriKeyBag::AddKeyPair(CrossUserSharingPublicPrivateKeyPair key_pair,
+                              uint32_t version) {
   key_pairs_map_.emplace(version, std::move(key_pair));
 }
 
