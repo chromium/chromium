@@ -1770,7 +1770,6 @@ crbug.com/787615 [ Win ] virtual/threaded/synthetic_gestures/synthetic-pinch-zoo
 
 crbug.com/520188 [ Win ] http/tests/local/fileapi/file-last-modified-after-delete.html [ Failure Pass ]
 crbug.com/520611 [ Debug Linux ] fast/filesystem/workers/file-writer-events-shared-worker.html [ Failure Pass ]
-crbug.com/520194 http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-overridesexpires.html [ Failure Pass ]
 
 crbug.com/1051136 fast/forms/select/listbox-overlay-scrollbar.html [ Failure ]
 
