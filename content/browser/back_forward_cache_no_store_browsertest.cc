@@ -899,7 +899,9 @@ IN_PROC_BROWSER_TEST_P(
       /*id=*/"", /*name=*/"", /*src=*/url_a_no_store.spec(),
       MatchesSameOriginDetails(
           /*url=*/url_a_no_store.spec(),
-          /*reasons=*/{"JsNetworkRequestReceivedCacheControlNoStoreResource"},
+          /*reasons=*/
+          {"JsNetworkRequestReceivedCacheControlNoStoreResource",
+           "MainResourceHasCacheControlNoStore"},
           /*children=*/{}));
   EXPECT_THAT(
       current_frame_host()->NotRestoredReasonsForTesting(),
@@ -1056,10 +1058,11 @@ IN_PROC_BROWSER_TEST_F(
 
   // Go back and check that it was not restored.
   ASSERT_TRUE(HistoryGoBack(shell()->web_contents()));
-  ExpectNotRestored({NotRestoredReason::kBlocklistedFeatures},
-                    {BlocklistedFeature::
-                         kJsNetworkRequestReceivedCacheControlNoStoreResource},
-                    {}, {}, {}, FROM_HERE);
+  ExpectNotRestored(
+      {NotRestoredReason::kBlocklistedFeatures},
+      {BlocklistedFeature::kJsNetworkRequestReceivedCacheControlNoStoreResource,
+       BlocklistedFeature::kMainResourceHasCacheControlNoStore},
+      {}, {}, {}, FROM_HERE);
 }
 
 IN_PROC_BROWSER_TEST_F(

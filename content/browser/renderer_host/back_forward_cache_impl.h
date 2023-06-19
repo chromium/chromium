@@ -478,10 +478,21 @@ class CONTENT_EXPORT BackForwardCacheImpl
   void AddProcessesForEntry(Entry& entry);
   void RemoveProcessesForEntry(Entry& entry);
 
+  // This enum indicates if the method is called from a "Cache-Control:
+  // no-store" context, i.e. the page's same-origin main document has
+  // "Cache-Control: no-store" header.
+  enum CacheControlNoStoreContext {
+    kInCCNSContext,
+    kNotInCCNSContext,
+  };
+
   static BlockListedFeatures GetAllowedFeatures(
-      RequestedFeatures requested_features);
+      RequestedFeatures requested_features,
+      CacheControlNoStoreContext ccns_context);
+
   static BlockListedFeatures GetDisallowedFeatures(
-      RequestedFeatures requested_features);
+      RequestedFeatures requested_features,
+      CacheControlNoStoreContext ccns_context);
 
   // Contains the set of stored Entries.
   // Invariant:

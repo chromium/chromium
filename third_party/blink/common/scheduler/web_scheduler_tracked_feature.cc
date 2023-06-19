@@ -21,11 +21,17 @@ struct FeatureNames {
 FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
-      return {"WebSocket", "WebSocket"};
+      return {"WebSocket", "WebSocket live connection"};
+    case WebSchedulerTrackedFeature::kWebSocketSticky:
+      return {"WebSocketSticky", "WebSocket used"};
     case WebSchedulerTrackedFeature::kWebTransport:
-      return {"WebTransport", "WebTransport"};
+      return {"WebTransport", "WebTransport live connection"};
+    case WebSchedulerTrackedFeature::kWebTransportSticky:
+      return {"WebTransportSticky", "WebTransport used"};
     case WebSchedulerTrackedFeature::kWebRTC:
-      return {"WebRTC", "WebRTC"};
+      return {"WebRTC", "WebRTC live connection"};
+    case WebSchedulerTrackedFeature::kWebRTCSticky:
+      return {"WebRTCSticky", "WebRTC used"};
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return {"MainResourceHasCacheControlNoCache",
               "main resource has Cache-Control: No-Cache"};
@@ -217,7 +223,10 @@ WebSchedulerTrackedFeatures StickyFeatures() {
           WebSchedulerTrackedFeature::kKeepaliveRequest,
           WebSchedulerTrackedFeature::kDummy,
           WebSchedulerTrackedFeature::
-              kJsNetworkRequestReceivedCacheControlNoStoreResource};
+              kJsNetworkRequestReceivedCacheControlNoStoreResource,
+          WebSchedulerTrackedFeature::kWebRTCSticky,
+          WebSchedulerTrackedFeature::kWebSocketSticky,
+          WebSchedulerTrackedFeature::kWebTransportSticky};
 }
 
 // static

@@ -111816,7 +111816,7 @@ Called by update_scheduler_enums.py.-->
   <int value="22" label="RequestedAudioCapturePermission"/>
   <int value="23" label="RequestedVideoCapturePermission"/>
   <int value="24" label="RequestedBackForwardCacheBlockedSensors"/>
-  <int value="25" label="Unused"/>
+  <int value="25" label="WebTransportSticky"/>
   <int value="26" label="RequestedBackgroundWorkPermission"/>
   <int value="27" label="BroadcastChannel"/>
   <int value="28" label="IndexedDBConnection"/>
@@ -111854,6 +111854,8 @@ Called by update_scheduler_enums.py.-->
   <int value="60" label="JsNetworkRequestReceivedCacheControlNoStoreResource"/>
   <int value="61" label="IndexedDBEvent"/>
   <int value="62" label="WebSerial"/>
+  <int value="63" label="WebSocketSticky"/>
+  <int value="64" label="WebRTCSticky"/>
 </enum>
 
 <enum name="WebShareMethod">

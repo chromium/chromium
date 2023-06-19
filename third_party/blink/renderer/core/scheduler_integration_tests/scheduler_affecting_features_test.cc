@@ -68,15 +68,17 @@ TEST_F(SchedulingAffectingFeaturesTest, WebSocketIsTracked) {
       "</script>");
 
   EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
-  EXPECT_THAT(
-      GetNonTrivialMainFrameFeatures(),
-      testing::UnorderedElementsAre(SchedulingPolicy::Feature::kWebSocket));
+  EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
+              testing::UnorderedElementsAre(
+                  SchedulingPolicy::Feature::kWebSocket,
+                  SchedulingPolicy::Feature::kWebSocketSticky));
 
   MainFrame().ExecuteScript(WebScriptSource(WebString("socket.close();")));
 
   EXPECT_FALSE(GetPageScheduler()->OptedOutFromAggressiveThrottlingForTest());
   EXPECT_THAT(GetNonTrivialMainFrameFeatures(),
-              testing::UnorderedElementsAre());
+              testing::UnorderedElementsAre(
+                  SchedulingPolicy::Feature::kWebSocketSticky));
 }
 
 TEST_F(SchedulingAffectingFeaturesTest, CacheControl_NoStore) {

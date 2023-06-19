@@ -1249,10 +1249,19 @@ void WebTransport::Init(const String& url_for_diagnostics,
   }
 
   if (auto* scheduler = execution_context->GetScheduler()) {
+    // Two features are registered with `DisableBackForwardCache` policy here:
+    // - `kWebTransport`: a non-sticky feature that will disable BFCache for any
+    // page. It will be reset after the `WebTransport` is disposed.
+    // - `kWebTransportSticky`: a sticky feature that will only disable BFCache
+    // for the page containing "Cache-Control: no-store" header. It won't be
+    // reset even if the `WebTransport` is disposed.
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
         SchedulingPolicy::Feature::kWebTransport,
         SchedulingPolicy{SchedulingPolicy::DisableAggressiveThrottling(),
                          SchedulingPolicy::DisableBackForwardCache()});
+    scheduler->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kWebTransportSticky,
+        SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
   }
 
   if (DoesSubresourceFilterBlockConnection(url_)) {

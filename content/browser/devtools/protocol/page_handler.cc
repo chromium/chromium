@@ -1490,10 +1490,16 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebSocket:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebSocket;
+    case WebSchedulerTrackedFeature::kWebSocketSticky:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebSocketSticky;
     case WebSchedulerTrackedFeature::kWebTransport:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebTransport;
+    case WebSchedulerTrackedFeature::kWebTransportSticky:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebTransportSticky;
     case WebSchedulerTrackedFeature::kWebRTC:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebRTC;
+    case WebSchedulerTrackedFeature::kWebRTCSticky:
+      return Page::BackForwardCacheNotRestoredReasonEnum::WebRTCSticky;
     case WebSchedulerTrackedFeature::kMainResourceHasCacheControlNoCache:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           MainResourceHasCacheControlNoCache;
@@ -1815,6 +1821,9 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
     case WebSchedulerTrackedFeature::kDummy:
     case WebSchedulerTrackedFeature::
         kJsNetworkRequestReceivedCacheControlNoStoreResource:
+    case WebSchedulerTrackedFeature::kWebRTCSticky:
+    case WebSchedulerTrackedFeature::kWebTransportSticky:
+    case WebSchedulerTrackedFeature::kWebSocketSticky:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case WebSchedulerTrackedFeature::kWebSerial:
       NOTREACHED_NORETURN();

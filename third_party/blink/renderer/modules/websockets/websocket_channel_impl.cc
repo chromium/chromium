@@ -276,8 +276,17 @@ bool WebSocketChannelImpl::Connect(const KURL& url, const String& protocol) {
   }
 
   if (auto* scheduler = execution_context_->GetScheduler()) {
+    // Two features are registered here:
+    // - `kWebSocket`: a non-sticky feature that will disable BFCache for any
+    // page. It will be reset after the `WebSocketChannel` is closed.
+    // - `kWebSocketSticky`: a sticky feature that will only disable BFCache for
+    // the page containing "Cache-Control: no-store" header. It won't be reset
+    // even if the `WebSocketChannel` is closed.
     feature_handle_for_scheduler_ = scheduler->RegisterFeature(
         SchedulingPolicy::Feature::kWebSocket,
+        SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
+    scheduler->RegisterStickyFeature(
+        SchedulingPolicy::Feature::kWebSocketSticky,
         SchedulingPolicy{SchedulingPolicy::DisableBackForwardCache()});
   }
 

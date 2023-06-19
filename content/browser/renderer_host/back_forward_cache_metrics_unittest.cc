@@ -244,7 +244,6 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kHasScriptableFramesInMultipleTabs =*/18,
       /* WebSchedulerTrackedFeature::kRequestedGeolocationPermission =*/19,
       /* WebSchedulerTrackedFeature::kRequestedNotificationsPermission =*/20,
-      /* Never existed =*/25,
       /* WebSchedulerTrackedFeature::kWebGL =*/29,
       /* WebSchedulerTrackedFeature::kWebVR =*/30,
       /* WebSchedulerTrackedFeature::kWakeLock =*/35,
@@ -252,27 +251,33 @@ TEST_F(BackForwardCacheMetricsTest, AllFeaturesCovered) {
       /* WebSchedulerTrackedFeature::kAppBanner =*/42,
       /* WebSchedulerTrackedFeature::kMediaSessionImplOnServiceCreated =*/56};
 
-  // Combine the result of |GetDisallowedFeatures()| and |GetAllowedFeatures()|.
-  std::vector<uint64_t> combined_features;
-  auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
-      BackForwardCacheImpl::RequestedFeatures::kAll);
-  auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
-      BackForwardCacheImpl::RequestedFeatures::kAll);
-  EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
+  for (BackForwardCacheImpl::CacheControlNoStoreContext ccns_context :
+       {BackForwardCacheImpl::kInCCNSContext,
+        BackForwardCacheImpl::kNotInCCNSContext}) {
+    // Combine the result of |GetDisallowedFeatures()| and
+    // |GetAllowedFeatures()|.
+    std::vector<uint64_t> combined_features;
+    auto disallowed_features = BackForwardCacheImpl::GetDisallowedFeatures(
+        BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
+    auto allowed_features = BackForwardCacheImpl::GetAllowedFeatures(
+        BackForwardCacheImpl::RequestedFeatures::kAll, ccns_context);
+    EXPECT_TRUE(Intersection(disallowed_features, allowed_features).Empty());
 
-  for (auto feature : Union(disallowed_features, allowed_features)) {
-    combined_features.push_back(static_cast<uint64_t>(feature));
+    for (auto feature : Union(disallowed_features, allowed_features)) {
+      combined_features.push_back(static_cast<uint64_t>(feature));
+    }
+    // Add the removed features to the list.
+    combined_features.insert(combined_features.begin(),
+                             removed_features.begin(), removed_features.end());
+    // Make a list of all the WebSchedulerTrackedFeatures indices.
+    std::vector<uint64_t> all_features;
+    for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
+      all_features.push_back(static_cast<uint64_t>(feature));
+    }
+    EXPECT_THAT(combined_features,
+                testing::UnorderedElementsAreArray(all_features.begin(),
+                                                   all_features.end()));
   }
-  // Add the removed features to the list.
-  combined_features.insert(combined_features.begin(), removed_features.begin(),
-                           removed_features.end());
-  // Make a list of all the WebSchedulerTrackedFeatures indices.
-  std::vector<uint64_t> all_features;
-  for (auto feature : blink::scheduler::WebSchedulerTrackedFeatures::All()) {
-    all_features.push_back(static_cast<uint64_t>(feature));
-  }
-  EXPECT_THAT(combined_features, testing::UnorderedElementsAreArray(
-                                     all_features.begin(), all_features.end()));
 }
 
 TEST_F(BackForwardCacheMetricsTest, PageWithFormsMetricsStoredRecorded) {

@@ -71,6 +71,14 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   kRequestedAudioCapturePermission = 22,
   kRequestedVideoCapturePermission = 23,
   kRequestedBackForwardCacheBlockedSensors = 24,
+
+  // This features is added together with the `kWebTransport` but
+  // as a sticky feature (i.e. the feature won't be removed even after the
+  // connection is closed). Pages with this feature registered will only be
+  // eligible for BFCache if the page doesn't contain "Cache-control: no-store"
+  // header.
+  kWebTransportSticky = 25,
+
   // This covers all background-related permissions, including background sync,
   // background fetch and others.
   kRequestedBackgroundWorkPermission = 26,
@@ -131,10 +139,17 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // Aggressive throttling is disabled when a serial port is opened and
   // re-enabled when the opened port is closed.
   kWebSerial = 62,
+
+  // These features are added together with the `kWebSocket` and `kWebRTC` but
+  // as sticky features.
+  // See comments for `kWebTransportSticky`.
+  kWebSocketSticky = 63,
+  kWebRTCSticky = 64,
+
   // Please keep in sync with WebSchedulerTrackedFeature in
   // tools/metrics/histograms/enums.xml. These values should not be renumbered.
 
-  kMaxValue = kWebSerial,
+  kMaxValue = kWebRTCSticky,
 };
 
 using WebSchedulerTrackedFeatures =

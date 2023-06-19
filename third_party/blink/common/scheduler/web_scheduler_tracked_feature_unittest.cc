@@ -20,7 +20,7 @@ TEST(WebSchedulerTrackedFeatureTest, StringToFeature) {
 TEST(WebSchedulerTrackedFeatureTest, ToEnumBitMasks) {
   WebSchedulerTrackedFeatures features = {WebSchedulerTrackedFeature::kDummy};
   std::vector<uint64_t> bit_masks = ToEnumBitMasks(features);
-  ASSERT_EQ(1u, bit_masks.size());
+  ASSERT_EQ(2u, bit_masks.size());
   ASSERT_EQ(1ull << static_cast<uint32_t>(WebSchedulerTrackedFeature::kDummy),
             bit_masks[0]);
 }
