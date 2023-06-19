@@ -7,6 +7,7 @@
 
 #import <Foundation/Foundation.h>
 
+#include "base/apple/bundle_locations.h"
 #include "base/base_paths.h"
 #include "base/base_paths_apple.h"
 #include "base/files/file_path.h"
