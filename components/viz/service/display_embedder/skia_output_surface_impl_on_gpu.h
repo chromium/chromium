@@ -417,7 +417,8 @@ class SkiaOutputSurfaceImplOnGpu
       const SkYUVAInfo& yuva_info,
       const gfx::ColorSpace& color_space,
       std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
-          mailbox_access_datas);
+          mailbox_access_datas,
+      bool is_multiplane);
 
   // Imports surfaces needed to store the data in NV12 format from a blit
   // request. |mailbox_access_datas| will be populated with information needed

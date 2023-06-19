@@ -1058,9 +1058,9 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // importing mailboxes (rather than one mailbox per plane). This is true if
   // the SharedImage associated with the video frame is itself in multiplane
   // format.
-  // TODO(crbug.com/1429004): Also use multiplane format for NV12 when creating
+  // TODO(crbug.com/1455074): Also use multiplane format for NV12 when creating
   // mailboxes and usage of MultiplanarSharedImage for hardware video is
-  // enabled. Dependent on support in CopyOutputNV12() having been added.
+  // enabled.
   bool use_multiplane_for_nv12 =
       (use_nv12_with_textures &&
        request_properties.frame->shared_image_format_type() ==

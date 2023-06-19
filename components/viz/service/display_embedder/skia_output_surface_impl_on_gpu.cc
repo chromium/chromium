@@ -1049,7 +1049,8 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
     const SkYUVAInfo& yuva_info,
     const gfx::ColorSpace& color_space,
     std::array<MailboxAccessData, CopyOutputResult::kNV12MaxPlanes>&
-        mailbox_access_datas) {
+        mailbox_access_datas,
+    bool is_multiplane) {
   std::array<SkISize, SkYUVAInfo::kMaxPlanes> plane_dimensions;
   int plane_number = yuva_info.planeDimensions(plane_dimensions.data());
 
@@ -1057,14 +1058,17 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
       << "We expect SkYUVAInfo to describe an NV12 data, which contains 2 "
          "planes!";
 
-  for (int i = 0; i < plane_number; ++i) {
+  int num_mailboxes = is_multiplane ? 1 : plane_number;
+
+  for (int i = 0; i < num_mailboxes; ++i) {
     MailboxAccessData& mailbox_access_data = mailbox_access_datas[i];
     const SkISize& plane_size = plane_dimensions[i];
 
-    const auto resource_format =
-        (i == 0) ? SinglePlaneFormat::kR_8 : SinglePlaneFormat::kRG_88;
+    const auto format = is_multiplane ? MultiPlaneFormat::kNV12
+                        : (i == 0)    ? SinglePlaneFormat::kR_8
+                                      : SinglePlaneFormat::kRG_88;
     auto representation = CreateSharedImageRepresentationSkia(
-        resource_format, gfx::SkISizeToSize(plane_size), color_space,
+        format, gfx::SkISizeToSize(plane_size), color_space,
         "SurfacesForNV12Planes");
     if (!representation) {
       return false;
@@ -1078,9 +1082,20 @@ bool SkiaOutputSurfaceImplOnGpu::CreateSurfacesForNV12Planes(
             &mailbox_access_data.begin_semaphores,
             &mailbox_access_data.end_semaphores,
             gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
-    SkSurface* dest_surface = scoped_write->surface();
-    dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
-                       mailbox_access_data.begin_semaphores.data());
+
+    if (is_multiplane) {
+      // NOTE: For multiplanar SharedImage there is only one set of semaphores
+      // for all of the planes. Rather than waiting on one of the planes we wait
+      // on the context, which facilitates flushing later: we first flush the
+      // individual surfaces without signaling followed by flushing+signaling
+      // the context.
+      gr_context()->wait(mailbox_access_data.begin_semaphores.size(),
+                         mailbox_access_data.begin_semaphores.data());
+    } else {
+      SkSurface* dest_surface = scoped_write->surface();
+      dest_surface->wait(mailbox_access_data.begin_semaphores.size(),
+                         mailbox_access_data.begin_semaphores.data());
+    }
 
     // Semaphores have already been populated in `mailbox_access_data`.
     // Set the remaining fields.
@@ -1253,17 +1268,13 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
       return;
     }
   } else {
-    // NV12_MULTIPLANE is currently used only when there is a blit request.
-    // TODO(crbug.com/1429004): Add handling for this case and then enable it in
-    // FrameSinkVideoCapturerImpl.
-    CHECK(!is_multiplane);
     yuva_info = SkYUVAInfo(gfx::SizeToSkISize(intermediate_dst_size),
                            SkYUVAInfo::PlaneConfig::kY_UV,
                            SkYUVAInfo::Subsampling::k420,
                            kRec709_Limited_SkYUVColorSpace);
 
     destination_surfaces_ready = CreateSurfacesForNV12Planes(
-        yuva_info, color_space, mailbox_access_datas);
+        yuva_info, color_space, mailbox_access_datas, is_multiplane);
   }
 
   if (!destination_surfaces_ready) {
@@ -1450,13 +1461,6 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
     return;
   }
 
-  // NV12_MULTIPLANE is currently used only when there is a blit request that
-  // populates the GMB and sends the result to native textures, in which case
-  // `should_wait_for_gpu_work` will be true.
-  // TODO(crbug.com/1429004): Remove this CHECK when extending support to
-  // other cases.
-  CHECK(!is_multiplane);
-
   // We conditionally move from request (if `should_wait_for_gpu_work` is true),
   // DCHECK that we don't accidentally enter this codepath after the request was
   // moved from.
@@ -1470,18 +1474,20 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
         // In blit requests, we are not responsible for releasing the textures
         // (the issuer of the request owns them), create the callbacks only if
         // we don't have blit request:
-        for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+        auto num_planes = is_multiplane ? 1 : CopyOutputResult::kNV12MaxPlanes;
+        for (size_t i = 0; i < num_planes; ++i) {
           release_callbacks.push_back(
               CreateDestroyCopyOutputResourcesOnGpuThreadCallback(
                   std::move(mailbox_access_datas[i].representation)));
         }
       }
 
+      auto format = is_multiplane ? CopyOutputResult::Format::NV12_MULTIPLANE
+                                  : CopyOutputResult::Format::NV12_PLANES;
       request->SendResult(std::make_unique<CopyOutputTextureResult>(
-          CopyOutputResult::Format::NV12_PLANES, geometry.result_selection,
+          format, geometry.result_selection,
           CopyOutputResult::TextureResult(mailbox_holders, color_space),
           std::move(release_callbacks)));
-
       break;
     }
     case CopyOutputRequest::ResultDestination::kSystemMemory: {
@@ -1490,9 +1496,9 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
       // Issue readbacks from the surfaces:
       for (size_t i = 0; i < CopyOutputResult::kNV12MaxPlanes; ++i) {
+        SkISize size(plane_surfaces[i]->width(), plane_surfaces[i]->height());
         SkImageInfo dst_info = SkImageInfo::Make(
-            mailbox_access_datas[i].size,
-            (i == 0) ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType,
+            size, (i == 0) ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType,
             kUnpremul_SkAlphaType);
 
         auto context =
@@ -1500,8 +1506,7 @@ void SkiaOutputSurfaceImplOnGpu::CopyOutputNV12(
 
         num_readbacks_pending_++;
         plane_surfaces[i]->asyncRescaleAndReadPixels(
-            dst_info, SkIRect::MakeSize(mailbox_access_datas[i].size),
-            SkSurface::RescaleGamma::kSrc,
+            dst_info, SkIRect::MakeSize(size), SkSurface::RescaleGamma::kSrc,
             SkSurface::RescaleMode::kRepeatedLinear,
             &CopyOutputResultSkiaNV12::OnNV12PlaneReadbackDone,
             context.release());
