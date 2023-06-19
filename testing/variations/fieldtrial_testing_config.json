@@ -12717,6 +12717,33 @@
             ]
         }
     ],
+    "SpeculativeServiceWorkerWarmUp": [
+        {
+            "platforms": [
+                "android",
+                "chromeos",
+                "chromeos_lacros",
+                "linux",
+                "mac",
+                "windows"
+            ],
+            "experiments": [
+                {
+                    "name": "EnableWarmUp_20230613",
+                    "params": {
+                        "sw_warm_up_intersection_observer": "false",
+                        "sw_warm_up_on_visible": "false"
+                    },
+                    "enable_features": [
+                        "SpeculativeServiceWorkerWarmUp"
+                    ],
+                    "disable_features": [
+                        "SpeculativeServiceWorkerStartup"
+                    ]
+                }
+            ]
+        }
+    ],
     "SplitCacheByNetworkIsolationKey": [
         {
             "platforms": [
