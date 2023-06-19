@@ -2,13 +2,13 @@ owners:
 - chrome-bfcache@google.com
 - leimy@chromium.org
 caption: |-
-  Allow pages with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header to enter <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph>
+  Allow pages with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header to enter back/forward cache
 desc: |-
-  This policy controls if a page with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> (CCNS) header can be stored in <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph>. The website setting this header may not expect the page to be restored from <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph> since some sensitive information could still be displayed after the restoration even if it is no longer accessible.
+  This policy controls if a page with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header can be stored in back/forward cache. The website setting this header may not expect the page to be restored from back/forward cache since some sensitive information could still be displayed after the restoration even if it is no longer accessible.
 
-  If the policy is enabled or unset, the page with CCNS header might be restored from <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph> unless the cache eviction is triggered (e.g. when there is HTTP-only cookie change to the site).
+  If the policy is enabled or unset, the page with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header might be restored from back/forward cache unless the cache eviction is triggered (e.g. when there is HTTP-only cookie change to the site).
 
-  If the policy is disabled, the page with CCNS header will not be stored in <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph>.
+  If the policy is disabled, the page with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header will not be stored in back/forward cache.
 future_on:
 - fuchsia
 supported_on:
@@ -30,9 +30,9 @@ type: main
 schema:
   type: boolean
 items:
-- caption: Allow pages with CCNS header to be stored in <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph>.
+- caption: 'Allow pages with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header to be stored in back/forward cache.'
   value: true
-- caption: Disallow pages with CCNS header to be stored in <ph name="BACK_FORWARD_CACHE_NAME">back/forward cache</ph>.
+- caption: 'Disallow pages with <ph name="CACHE_CONTROL_NO_STORE_NAME">Cache-Control: no-store</ph> header to be stored in back/forward cache.'
   value: false
 default: true
 example_value: true
