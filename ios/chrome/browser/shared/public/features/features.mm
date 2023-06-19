@@ -262,3 +262,10 @@ BASE_FEATURE(kOnlyAccessClipboardAsync,
 BASE_FEATURE(kHideSettingsSyncPromo,
              "HideSettingsSyncPromo",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
+             "DefaultBrowserTriggerCriteriaExperiment",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+const char kDefaultBrowserTriggerOnOmniboxCopyPaste[] =
+    "trigger_on_omnibox_copy_paste";

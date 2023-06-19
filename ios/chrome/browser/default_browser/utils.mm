@@ -465,6 +465,16 @@ DefaultPromoType ForceDefaultPromoType() {
   return DefaultPromoType::DefaultPromoTypeGeneral;
 }
 
+bool IsDefaultBrowserTriggerCriteraExperimentEnabled() {
+  return base::FeatureList::IsEnabled(kDefaultBrowserTriggerCriteriaExperiment);
+}
+
+bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste() {
+  return base::GetFieldTrialParamByFeatureAsBool(
+      kDefaultBrowserTriggerCriteriaExperiment,
+      kDefaultBrowserTriggerOnOmniboxCopyPaste, false);
+}
+
 bool IsDefaultBrowserVideoPromoHalfscreenEnabled() {
   return base::GetFieldTrialParamByFeatureAsBool(
       kDefaultBrowserVideoPromo, "default_browser_video_promo_halfscreen",

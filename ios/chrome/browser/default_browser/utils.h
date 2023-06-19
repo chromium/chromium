@@ -125,6 +125,14 @@ bool ShouldForceDefaultPromoType();
 // skipping the triggering criteria.
 DefaultPromoType ForceDefaultPromoType();
 
+// Returns true if client is in Default Browser promo trigger criteria
+// experiment.
+bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
+
+// Returns true if Default Browser promo should be triggered on omnibox
+// copy-paste.
+bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste();
+
 // Returns true if the user is in the CTA experiment in the open links group.
 bool IsInCTAOpenLinksGroup();
 

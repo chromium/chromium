@@ -293,6 +293,18 @@ const char kDefaultBrowserPromoForceShowPromoDescription[] =
     "IPH_iOSPromoDefaultBrowser, or disable kPromosManagerUsesFET and enable "
     "Force Promo (Default Browser) in the system settings experimental flags.";
 
+const char kDefaultBrowserTriggerCriteriaExperimentName[] =
+    "Show default browser promo trigger criteria experiment";
+const char kDefaultBrowserTriggerCriteriaExperimentDescription[] =
+    "When enabled, default browser promo will be displayed to user without "
+    "matching all the trigger criteria.";
+
+const char kDefaultBrowserTriggerOnOmniboxCopyPasteName[] =
+    "Trigger promo on omnibox copy-paste";
+const char kDefaultBrowserTriggerOnOmniboxCopyPasteDescription[] =
+    "When enabled promo will be displayed on omnibox copy-paste event instead "
+    "of on chrome launch";
+
 const char kDefaultBrowserVideoPromoName[] =
     "Enable default browser video promo";
 const char kDefaultBrowserVideoPromoDescription[] =

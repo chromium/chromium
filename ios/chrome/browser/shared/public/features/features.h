@@ -198,4 +198,14 @@ BASE_DECLARE_FEATURE(kOnlyAccessClipboardAsync);
 // "Turn On Sync" row will still be shown when this is enabled.
 BASE_DECLARE_FEATURE(kHideSettingsSyncPromo);
 
+// Feature flag that enables default browser promo to be displayed without
+// matching all the criteria and in depth metrics collection for the displayed
+// promo.
+BASE_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
+
+// Param for default browser promo trigger criteria experiment representing
+// whether promos should be displayed on omnbibox copy-paste event or on chrome
+// launch by default.
+extern const char kDefaultBrowserTriggerOnOmniboxCopyPaste[];
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

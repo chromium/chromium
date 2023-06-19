@@ -243,6 +243,15 @@ extern const char kDefaultBrowserRefactoringPromoManagerDescription[];
 extern const char kDefaultBrowserPromoForceShowPromoName[];
 extern const char kDefaultBrowserPromoForceShowPromoDescription[];
 
+// Title and description for default browser promo trigger criteria experiment.
+extern const char kDefaultBrowserTriggerCriteriaExperimentName[];
+extern const char kDefaultBrowserTriggerCriteriaExperimentDescription[];
+
+// Title and description for default browser promo trigger criteria experiment
+// param.
+extern const char kDefaultBrowserTriggerOnOmniboxCopyPasteName[];
+extern const char kDefaultBrowserTriggerOnOmniboxCopyPasteDescription[];
+
 // Title and description for the flag to enable the flag that skips the
 // triggering criteria default browser promo skip.
 extern const char kDefaultBrowserVideoPromoName[];
