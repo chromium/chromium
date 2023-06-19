@@ -1178,6 +1178,7 @@ static_library("extensions") {
       "//chromeos/ash/components/attestation",
       "//chromeos/ash/components/cryptohome",
       "//chromeos/ash/components/dbus",
+      "//chromeos/ash/components/dbus/attestation:attestation_proto",
       "//chromeos/ash/components/dbus/cicerone:cicerone",
       "//chromeos/ash/components/dbus/cicerone:cicerone_proto",
       "//chromeos/ash/components/dbus/constants",

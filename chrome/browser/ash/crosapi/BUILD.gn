@@ -297,6 +297,7 @@ source_set("crosapi") {
     "//chromeos/ash/components/browser_context_helper:browser_context_helper",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus",
+    "//chromeos/ash/components/dbus/attestation:attestation_proto",
     "//chromeos/ash/components/dbus/cros_disks",
     "//chromeos/ash/components/dbus/lorgnette_manager:lorgnette_proto",
     "//chromeos/ash/components/dbus/resourced",

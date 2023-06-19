@@ -53,13 +53,16 @@ constexpr char kTestUserGaiaId[] = "test_gaia_id";
 constexpr char kEmptyKeyName[] = "";
 constexpr char kNonDefaultKeyName[] = "key_name_123";
 constexpr char kFakeCertificate[] = "fake_cert";
+constexpr char kUnsupportedVAFlowTypeKey[] = "unsupported VA flow type";
 
-const char* GetDefaultKeyName(AttestationKeyType type) {
+const char* GetDefaultKeyName(::attestation::VerifiedAccessFlow type) {
   switch (type) {
-    case KEY_DEVICE:
+    case ::attestation::ENTERPRISE_MACHINE:
       return kEnterpriseMachineKey;
-    case KEY_USER:
+    case ::attestation::ENTERPRISE_USER:
       return kEnterpriseUserKey;
+    default:
+      return kUnsupportedVAFlowTypeKey;
   }
 }
 
@@ -192,21 +195,21 @@ class TpmChallengeKeySubtleTestBase : public ::testing::Test {
 
   // Runs StartPrepareKeyStep and checks that the result is equal to
   // |public_key|.
-  void RunOneStepAndExpect(AttestationKeyType key_type,
+  void RunOneStepAndExpect(::attestation::VerifiedAccessFlow flow_type,
                            bool will_register_key,
                            const std::string& key_name,
                            const TpmChallengeKeyResult& public_key);
   // Runs StartPrepareKeyStep and checks that the result is success. Then runs
   // StartSignChallengeStep and checks that the result is equal to
   // |challenge_response|.
-  void RunTwoStepsAndExpect(AttestationKeyType key_type,
+  void RunTwoStepsAndExpect(::attestation::VerifiedAccessFlow flow_type,
                             bool will_register_key,
                             const std::string& key_name,
                             const TpmChallengeKeyResult& challenge_response);
   // Runs first two steps and checks that results are success. Then runs
   // StartRegisterKeyStep and checks that the result is equal to
   // |register_result|.
-  void RunThreeStepsAndExpect(AttestationKeyType key_type,
+  void RunThreeStepsAndExpect(::attestation::VerifiedAccessFlow flow_type,
                               bool will_register_key,
                               const std::string& key_name,
                               const TpmChallengeKeyResult& register_result);
@@ -329,13 +332,13 @@ StubInstallAttributes* TpmChallengeKeySubtleTestBase::GetInstallAttributes() {
 }
 
 void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
-    AttestationKeyType key_type,
+    ::attestation::VerifiedAccessFlow flow_type,
     bool will_register_key,
     const std::string& key_name,
     const TpmChallengeKeyResult& public_key) {
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
-      key_type, will_register_key, KeyCryptoType(), key_name, GetProfile(),
+      flow_type, will_register_key, KeyCryptoType(), key_name, GetProfile(),
       callback_observer.GetCallback(), /*signals=*/absl::nullopt);
   callback_observer.WaitForCallback();
 
@@ -343,11 +346,11 @@ void TpmChallengeKeySubtleTestBase::RunOneStepAndExpect(
 }
 
 void TpmChallengeKeySubtleTestBase::RunTwoStepsAndExpect(
-    AttestationKeyType key_type,
+    ::attestation::VerifiedAccessFlow flow_type,
     bool will_register_key,
     const std::string& key_name,
     const TpmChallengeKeyResult& challenge_response) {
-  RunOneStepAndExpect(key_type, will_register_key, key_name,
+  RunOneStepAndExpect(flow_type, will_register_key, key_name,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 
   CallbackObserver callback_observer;
@@ -359,11 +362,11 @@ void TpmChallengeKeySubtleTestBase::RunTwoStepsAndExpect(
 }
 
 void TpmChallengeKeySubtleTestBase::RunThreeStepsAndExpect(
-    AttestationKeyType key_type,
+    ::attestation::VerifiedAccessFlow flow_type,
     bool will_register_key,
     const std::string& key_name,
     const TpmChallengeKeyResult& register_result) {
-  RunTwoStepsAndExpect(key_type, will_register_key, key_name,
+  RunTwoStepsAndExpect(flow_type, will_register_key, key_name,
                        TpmChallengeKeyResult::MakeChallengeResponse(
                            GetChallengeResponse(will_register_key)));
 
@@ -443,17 +446,26 @@ class KioskTpmChallengeKeySubtleTest : public TpmChallengeKeySubtleTestBase {
 };
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
+       UnsupportedVerifiedAccessFlow) {
+  RunOneStepAndExpect(
+      ::attestation::CBCM, /*will_register_key=*/false, kEmptyKeyName,
+      TpmChallengeKeyResult::MakeError(
+          TpmChallengeKeyResultCode::kVerifiedAccessFlowUnsupportedError));
+}
+
+TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
        DeviceKeyNonEnterpriseDevice) {
   GetInstallAttributes()->SetConsumerOwned();
 
   RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kNonEnterpriseDeviceError));
 }
 
 TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
-  RunOneStepAndExpect(KEY_DEVICE,
+  RunOneStepAndExpect(::attestation::ENTERPRISE_MACHINE,
                       /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
@@ -461,14 +473,15 @@ TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, DeviceKeyUserNotManaged) {
 
 TEST_F(SigninProfileTpmChallengeKeySubtleTest, UserKeyUserKeyNotAvailable) {
   RunOneStepAndExpect(
-      KEY_USER, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_USER, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kUserKeyNotAvailableError));
 }
 
 // Checks that a user should be affiliated with a device
 TEST_F(UnaffiliatedUserTpmChallengeKeySubtleTest, UserKeyUserNotAffiliated) {
-  RunOneStepAndExpect(KEY_USER,
+  RunOneStepAndExpect(::attestation::ENTERPRISE_USER,
                       /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kUserNotManagedError));
@@ -481,31 +494,34 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DoesKeyExistDbusFailed) {
       ->set_status(::attestation::STATUS_DBUS_ERROR);
 
   RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(TpmChallengeKeyResultCode::kDbusError));
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, GetCertificateFailed) {
-  const AttestationKeyType key_type = KEY_DEVICE;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
 
   mock_attestation_flow_.set_status(ATTESTATION_UNSPECIFIED_FAILURE);
   EXPECT_CALL(mock_attestation_flow_, GetCertificate(_, _, _, _, _, _, _, _));
 
   RunOneStepAndExpect(
-      key_type, /*will_register_key=*/false, kEmptyKeyName,
+      flow_type, /*will_register_key=*/false, kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kGetCertificateFailedError));
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, KeyExists) {
-  const AttestationKeyType key_type = KEY_DEVICE;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
 
   AttestationClient::Get()
       ->GetTestInterface()
       ->GetMutableKeyInfoReply(/*username=*/"", kEnterpriseMachineKey)
       ->set_public_key(GetPublicKey());
 
-  RunOneStepAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+  RunOneStepAndExpect(flow_type, /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
@@ -513,7 +529,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationNotPrepared) {
   AttestationClient::Get()->GetTestInterface()->ConfigureEnrollmentPreparations(
       false);
 
-  RunOneStepAndExpect(KEY_DEVICE,
+  RunOneStepAndExpect(::attestation::ENTERPRISE_MACHINE,
                       /*will_register_key=*/false, kEmptyKeyName,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kResetRequiredError));
@@ -529,7 +545,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, AttestationUnsupported) {
       ->set_is_enabled(false);
 
   RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kAttestationUnsupportedError));
 }
@@ -541,7 +558,8 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
       ->ConfigureEnrollmentPreparationsStatus(::attestation::STATUS_DBUS_ERROR);
 
   RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(TpmChallengeKeyResultCode::kDbusError));
 }
 
@@ -553,15 +571,17 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
           ::attestation::STATUS_NOT_AVAILABLE);
 
   RunOneStepAndExpect(
-      KEY_DEVICE, /*will_register_key=*/false, kEmptyKeyName,
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/false,
+      kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kAttestationServiceInternalError));
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
        DeviceKeyNotRegisteredSuccess) {
-  const AttestationKeyType key_type = KEY_DEVICE;
-  const char* const key_name = GetDefaultKeyName(key_type);
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
+  const char* const key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
@@ -575,13 +595,14 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest,
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
-  RunTwoStepsAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+  RunTwoStepsAndExpect(flow_type, /*will_register_key=*/false, kEmptyKeyName,
                        TpmChallengeKeyResult::MakeChallengeResponse(
                            GetChallengeResponse(/*include_spkac=*/false)));
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
-  const AttestationKeyType key_type = KEY_DEVICE;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(
@@ -589,7 +610,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
       GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
-  expected_request.set_key_label(GetDefaultKeyName(key_type));
+  expected_request.set_key_label(GetDefaultKeyName(flow_type));
   expected_request.set_key_name_for_spkac(key_name);
   expected_request.set_domain(std::string());
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
@@ -607,7 +628,7 @@ TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, DeviceKeyRegisteredSuccess) {
                        GetPublicKeyBin()))
       .WillOnce(RunOnceCallback<0>(chromeos::platform_keys::Status::kSuccess));
 
-  RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
+  RunThreeStepsAndExpect(flow_type, /*will_register_key=*/true, key_name,
                          TpmChallengeKeyResult::MakeSuccess());
 }
 
@@ -624,52 +645,56 @@ class TpmChallengeKeySubtleTestECC : public TpmChallengeKeySubtleTestBase {
 };
 
 TEST_F(TpmChallengeKeySubtleTestECC, DeviceKeyRegisteredSuccessECC) {
-  const AttestationKeyType key_type = KEY_DEVICE;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(
       mock_attestation_flow_,
       GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _, _));
 
-  RunOneStepAndExpect(key_type, /*will_register_key=*/true, key_name,
+  RunOneStepAndExpect(flow_type, /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest,
        UserKeyRegisteredSuccessDefaultNameRsa) {
-  const AttestationKeyType key_type = KEY_USER;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
   const std::string key_name = std::string(kEnterpriseUserKey);
 
   EXPECT_CALL(
       mock_attestation_flow_,
       GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_RSA, key_name, _, _));
 
-  RunOneStepAndExpect(key_type, /*will_register_key=*/true, "",
+  RunOneStepAndExpect(flow_type, /*will_register_key=*/true, "",
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 TEST_F(TpmChallengeKeySubtleTestECC, UserKeyRegisteredSuccessDefaultNameECC) {
-  const AttestationKeyType key_type = KEY_USER;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
   const std::string key_name = std::string(kEnterpriseUserKey) + "-ecdsa";
 
   EXPECT_CALL(
       mock_attestation_flow_,
       GetCertificate(_, _, _, _, ::attestation::KEY_TYPE_ECC, key_name, _, _));
 
-  RunOneStepAndExpect(key_type, /*will_register_key=*/true, "",
+  RunOneStepAndExpect(flow_type, /*will_register_key=*/true, "",
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
-  const AttestationKeyType key_type = KEY_USER;
-  const char* const key_name = GetDefaultKeyName(key_type);
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
+  const char* const key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);
-  expected_request.set_key_label(GetDefaultKeyName(key_type));
+  expected_request.set_key_label(GetDefaultKeyName(flow_type));
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(false);
@@ -677,13 +702,14 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyNotRegisteredSuccess) {
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
-  RunTwoStepsAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+  RunTwoStepsAndExpect(flow_type, /*will_register_key=*/false, kEmptyKeyName,
                        TpmChallengeKeyResult::MakeChallengeResponse(
                            GetChallengeResponse(/*include_spkac=*/false)));
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
-  const AttestationKeyType key_type = KEY_USER;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
   const char* const key_name = kNonDefaultKeyName;
 
   EXPECT_CALL(mock_attestation_flow_,
@@ -708,25 +734,28 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, UserKeyRegisteredSuccess) {
                        GetPublicKeyBin()))
       .WillOnce(RunOnceCallback<0>(chromeos::platform_keys::Status::kSuccess));
 
-  RunThreeStepsAndExpect(key_type, /*will_register_key=*/true, key_name,
+  RunThreeStepsAndExpect(flow_type, /*will_register_key=*/true, key_name,
                          TpmChallengeKeyResult::MakeSuccess());
 }
 
 TEST_P(DeviceKeysAccessTpmChallengeKeySubtleTest, SignChallengeFailed) {
-  const AttestationKeyType key_type = KEY_DEVICE;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_MACHINE;
 
-  EXPECT_CALL(mock_attestation_flow_,
-              GetCertificate(_, _, _, _, _, GetDefaultKeyName(key_type), _, _));
+  EXPECT_CALL(
+      mock_attestation_flow_,
+      GetCertificate(_, _, _, _, _, GetDefaultKeyName(flow_type), _, _));
 
   // The signing operations fails because we don't allowlist any key.
   RunTwoStepsAndExpect(
-      key_type, /*will_register_key=*/false, kEmptyKeyName,
+      flow_type, /*will_register_key=*/false, kEmptyKeyName,
       TpmChallengeKeyResult::MakeError(
           TpmChallengeKeyResultCode::kSignChallengeFailedError));
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
-  const AttestationKeyType key_type = KEY_USER;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
   const char* const key_name = kNonDefaultKeyName;
 
   // Inject mocks into the next result of CreateForPreparedKey.
@@ -735,7 +764,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
                                                   &mock_cert_uploader_));
 
   challenge_key_subtle_ = TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-      key_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      flow_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
       key_name, GetPublicKey(), GetProfile());
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
@@ -780,7 +809,8 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, RestorePreparedKeyState) {
 }
 
 TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, KeyRegistrationFailed) {
-  const AttestationKeyType key_type = KEY_USER;
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
   const char* const key_name = kNonDefaultKeyName;
 
   // Inject mocks into the next result of CreateForPreparedKey.
@@ -789,7 +819,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, KeyRegistrationFailed) {
                                                   &mock_cert_uploader_));
 
   challenge_key_subtle_ = TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-      key_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
+      flow_type, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
       key_name, GetPublicKey(), GetProfile());
 
   CallbackObserver callback_observer;
@@ -814,7 +844,7 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, GetPublicKeyFailed) {
       ->GetMutableKeyInfoReply(/*username=*/"", key_name)
       ->set_status(::attestation::STATUS_INVALID_PARAMETER);
 
-  RunOneStepAndExpect(KEY_DEVICE,
+  RunOneStepAndExpect(::attestation::ENTERPRISE_MACHINE,
                       /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakeError(
                           TpmChallengeKeyResultCode::kGetPublicKeyFailedError));
@@ -835,8 +865,9 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, WaitForCertificateUploaded) {
 
   CallbackObserver callback_observer;
   challenge_key_subtle_->StartPrepareKeyStep(
-      KEY_DEVICE, /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
-      key_name, GetProfile(), callback_observer.GetCallback(),
+      ::attestation::ENTERPRISE_MACHINE, /*will_register_key=*/true,
+      ::attestation::KEY_TYPE_RSA, key_name, GetProfile(),
+      callback_observer.GetCallback(),
       /*signals=*/absl::nullopt);
 
   // |challenge_key_subtle_| should wait until the certificate is uploaded.
@@ -863,22 +894,23 @@ TEST_F(AffiliatedUserTpmChallengeKeySubtleTest, NoCertificateUploaderSuccess) {
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
 
-  RunOneStepAndExpect(KEY_USER,
+  RunOneStepAndExpect(::attestation::ENTERPRISE_USER,
                       /*will_register_key=*/true, key_name,
                       TpmChallengeKeyResult::MakePublicKey(GetPublicKey()));
 }
 
 // Checks that the include_customer_id field is true in kiosk sessions.
 TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
-  const AttestationKeyType key_type = KEY_USER;
-  const char* const key_name = GetDefaultKeyName(key_type);
+  const ::attestation::VerifiedAccessFlow flow_type =
+      ::attestation::ENTERPRISE_USER;
+  const char* const key_name = GetDefaultKeyName(flow_type);
 
   EXPECT_CALL(mock_attestation_flow_,
               GetCertificate(_, _, _, _, _, key_name, _, _));
 
   ::attestation::SignEnterpriseChallengeRequest expected_request;
   expected_request.set_username(kTestUserEmail);
-  expected_request.set_key_label(GetDefaultKeyName(key_type));
+  expected_request.set_key_label(GetDefaultKeyName(flow_type));
   expected_request.set_domain(kTestUserEmail);
   expected_request.set_device_id(GetInstallAttributes()->GetDeviceId());
   expected_request.set_include_customer_id(true);
@@ -886,7 +918,7 @@ TEST_F(KioskTpmChallengeKeySubtleTest, IncludesCustomerId) {
       ->GetTestInterface()
       ->AllowlistSignEnterpriseChallengeKey(expected_request);
 
-  RunTwoStepsAndExpect(key_type, /*will_register_key=*/false, kEmptyKeyName,
+  RunTwoStepsAndExpect(flow_type, /*will_register_key=*/false, kEmptyKeyName,
                        TpmChallengeKeyResult::MakeChallengeResponse(
                            GetChallengeResponse(/*include_spkac=*/false)));
 }

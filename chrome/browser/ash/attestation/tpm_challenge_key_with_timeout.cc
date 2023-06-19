@@ -17,7 +17,7 @@ TpmChallengeKeyWithTimeout::~TpmChallengeKeyWithTimeout() {
 
 void TpmChallengeKeyWithTimeout::BuildResponse(
     base::TimeDelta timeout,
-    AttestationKeyType key_type,
+    ::attestation::VerifiedAccessFlow flow_type,
     Profile* profile,
     TpmChallengeKeyCallback callback,
     const std::string& challenge,
@@ -38,7 +38,7 @@ void TpmChallengeKeyWithTimeout::BuildResponse(
 
   challenger_ = TpmChallengeKeyFactory::Create();
   challenger_->BuildResponse(
-      key_type, profile,
+      flow_type, profile,
       base::BindOnce(&TpmChallengeKeyWithTimeout::ResolveCallback,
                      weak_factory_.GetWeakPtr()),
       challenge, register_key, key_crypto_type, key_name_for_spkac, signals);

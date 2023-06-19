@@ -13,6 +13,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/common/extensions/api/enterprise_platform_keys_private.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_task_traits.h"
@@ -39,7 +40,7 @@ bool EPKPChallengeKey::IsExtensionAllowed(
   return platform_keys::IsExtensionAllowed(profile, extension.get());
 }
 
-void EPKPChallengeKey::Run(ash::attestation::AttestationKeyType type,
+void EPKPChallengeKey::Run(::attestation::VerifiedAccessFlow type,
                            scoped_refptr<ExtensionFunction> caller,
                            ash::attestation::TpmChallengeKeyCallback callback,
                            const std::string& challenge,
@@ -54,7 +55,7 @@ void EPKPChallengeKey::Run(ash::attestation::AttestationKeyType type,
   }
 
   std::string key_name_for_spkac;
-  if (register_key && (type == ash::attestation::KEY_DEVICE)) {
+  if (register_key && (type == ::attestation::ENTERPRISE_MACHINE)) {
     key_name_for_spkac = ash::attestation::kEnterpriseMachineKeyForSpkacPrefix +
                          caller->extension()->id();
   }
@@ -92,7 +93,7 @@ EnterprisePlatformKeysPrivateChallengeMachineKeyFunction::Run() {
   // |callback| holds a reference to |this|.
   base::OnceClosure task = base::BindOnce(
       &EPKPChallengeKey::Run, base::Unretained(&impl_),
-      ash::attestation::KEY_DEVICE, scoped_refptr<ExtensionFunction>(this),
+      ::attestation::ENTERPRISE_MACHINE, scoped_refptr<ExtensionFunction>(this),
       std::move(callback), challenge,
       /*register_key=*/false);
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
@@ -137,7 +138,7 @@ EnterprisePlatformKeysPrivateChallengeUserKeyFunction::Run() {
   // |callback| holds a reference to |this|.
   base::OnceClosure task = base::BindOnce(
       &EPKPChallengeKey::Run, base::Unretained(&impl_),
-      ash::attestation::KEY_USER, scoped_refptr<ExtensionFunction>(this),
+      ::attestation::ENTERPRISE_USER, scoped_refptr<ExtensionFunction>(this),
       std::move(callback), challenge, params->register_key);
   content::GetUIThreadTaskRunner({})->PostTask(FROM_HERE, std::move(task));
   return RespondLater();

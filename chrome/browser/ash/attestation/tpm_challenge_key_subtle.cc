@@ -44,6 +44,7 @@
 namespace ash {
 namespace attestation {
 
+using ::attestation::VerifiedAccessFlow;
 using Result = TpmChallengeKeyResult;
 using ResultCode = TpmChallengeKeyResultCode;
 
@@ -66,14 +67,14 @@ std::unique_ptr<TpmChallengeKeySubtle> TpmChallengeKeySubtleFactory::Create() {
 // static
 std::unique_ptr<TpmChallengeKeySubtle>
 TpmChallengeKeySubtleFactory::CreateForPreparedKey(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
     const std::string& public_key,
     Profile* profile) {
   auto result = TpmChallengeKeySubtleFactory::Create();
-  result->RestorePreparedKeyState(key_type, will_register_key, key_crypto_type,
+  result->RestorePreparedKeyState(flow_type, will_register_key, key_crypto_type,
                                   key_name, public_key, profile);
   return result;
 }
@@ -114,7 +115,7 @@ bool IsUserConsentRequired() {
 // If no key name was given, use default well-known key names so they can be
 // reused across attestation operations (multiple challenge responses can be
 // generated using the same key).
-std::string GetDefaultKeyName(AttestationKeyType key_type,
+std::string GetDefaultKeyName(VerifiedAccessFlow flow_type,
                               ::attestation::KeyType key_crypto_type) {
   // When the caller wants to "register" a key through attestation (resulting in
   // a general-purpose key in the chaps PKCS#11 store), the behavior is
@@ -133,28 +134,30 @@ std::string GetDefaultKeyName(AttestationKeyType key_type,
   //
   //  See http://go/chromeos-va-registering-device-wide-keys-support for details
   //  on the concept of the stable EMK.
-  switch (key_type) {
-    case KEY_DEVICE:
+  switch (flow_type) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return kEnterpriseMachineKey;
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       switch (key_crypto_type) {
         case ::attestation::KEY_TYPE_RSA:
           return kEnterpriseUserKey;
         case ::attestation::KEY_TYPE_ECC:
           return std::string(kEnterpriseUserKey) + "-ecdsa";
       }
+    default:
+      NOTREACHED();
+      return std::string();
   }
-  NOTREACHED();
 }
 
 // Returns the key name that should be used for the attestation platform APIs.
-std::string GetKeyNameWithDefault(AttestationKeyType key_type,
+std::string GetKeyNameWithDefault(VerifiedAccessFlow flow_type,
                                   ::attestation::KeyType key_crypto_type,
                                   const std::string& key_name) {
   if (!key_name.empty())
     return key_name;
 
-  return GetDefaultKeyName(key_type, key_crypto_type);
+  return GetDefaultKeyName(flow_type, key_crypto_type);
 }
 
 }  // namespace
@@ -183,7 +186,7 @@ TpmChallengeKeySubtleImpl::~TpmChallengeKeySubtleImpl() {
 }
 
 void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
@@ -192,19 +195,23 @@ void TpmChallengeKeySubtleImpl::RestorePreparedKeyState(
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(!will_register_key || !public_key.empty());
 
-  // For user keys, a |profile| is strictly necessary.
-  DCHECK(key_type != KEY_USER || profile);
+  // Ensure that the selected flow type is supported
+  CHECK(flow_type == VerifiedAccessFlow::ENTERPRISE_MACHINE ||
+        flow_type == VerifiedAccessFlow::ENTERPRISE_USER);
 
-  key_type_ = key_type;
+  // For the ENTERPRISE_USER flow, a |profile| is strictly necessary.
+  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
+
+  flow_type_ = flow_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
+  key_name_ = GetKeyNameWithDefault(flow_type, key_crypto_type, key_name);
   public_key_ = public_key;
   profile_ = profile;
 }
 
 void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
-    AttestationKeyType key_type,
+    VerifiedAccessFlow flow_type,
     bool will_register_key,
     ::attestation::KeyType key_crypto_type,
     const std::string& key_name,
@@ -213,31 +220,43 @@ void TpmChallengeKeySubtleImpl::StartPrepareKeyStep(
     const absl::optional<std::string>& signals) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(callback_.is_null());
-  // For device key: if |will_register_key| is true, |key_name| should not be
-  // empty, if |register_key| is false, |key_name| will not be used.
-  DCHECK((key_type != KEY_DEVICE) || (will_register_key == !key_name.empty()))
+
+  // For ENTERPRISE_MACHINE: if |will_register_key| is true, |key_name| should
+  // not be empty, if |register_key| is false, |key_name| will not be used.
+  DCHECK((flow_type != VerifiedAccessFlow::ENTERPRISE_MACHINE) ||
+         (will_register_key == !key_name.empty()))
       << "Invalid arguments: " << will_register_key << " " << !key_name.empty();
 
-  // For user keys, a |profile| is strictly necessary.
-  DCHECK(key_type != KEY_USER || profile);
+  // For ENTERPRISE_USER, a |profile| is strictly necessary.
+  DCHECK(flow_type != VerifiedAccessFlow::ENTERPRISE_USER || profile);
 
-  key_type_ = key_type;
+  // Ensure that the selected flow type is supported
+  if (flow_type != VerifiedAccessFlow::ENTERPRISE_MACHINE &&
+      flow_type != VerifiedAccessFlow::ENTERPRISE_USER) {
+    std::move(callback).Run(
+        Result::MakeError(ResultCode::kVerifiedAccessFlowUnsupportedError));
+    return;
+  }
+
+  flow_type_ = flow_type;
   will_register_key_ = will_register_key;
   key_crypto_type_ = key_crypto_type;
-  key_name_ = GetKeyNameWithDefault(key_type, key_crypto_type, key_name);
+  key_name_ = GetKeyNameWithDefault(flow_type, key_crypto_type, key_name);
   profile_ = profile;
   callback_ = std::move(callback);
   signals_ = signals;
 
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       PrepareMachineKey();
       return;
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       PrepareUserKey();
       return;
+    default:
+      NOTREACHED();
+      return;
   }
-  NOTREACHED();
 }
 
 void TpmChallengeKeySubtleImpl::PrepareMachineKey() {
@@ -300,26 +319,30 @@ bool TpmChallengeKeySubtleImpl::IsUserAffiliated() const {
 std::string TpmChallengeKeySubtleImpl::GetEmail() const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return std::string();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return GetAccountId().GetUserEmail();
+    default:
+      NOTREACHED();
+      return std::string();
   }
-  NOTREACHED();
 }
 
 AttestationCertificateProfile TpmChallengeKeySubtleImpl::GetCertificateProfile()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return PROFILE_ENTERPRISE_MACHINE_CERTIFICATE;
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return PROFILE_ENTERPRISE_USER_CERTIFICATE;
+    default:
+      NOTREACHED();
+      return {};
   }
-  NOTREACHED();
 }
 
 const user_manager::User* TpmChallengeKeySubtleImpl::GetUser() const {
@@ -341,25 +364,27 @@ AccountId TpmChallengeKeySubtleImpl::GetAccountId() const {
 }
 
 AccountId TpmChallengeKeySubtleImpl::GetAccountIdForAttestationFlow() const {
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return EmptyAccountId();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return GetAccountId();
+    default:
+      LOG(DFATAL) << "Unsupported Verified Access flow type: " << flow_type_;
+      return EmptyAccountId();
   }
-  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
-  return EmptyAccountId();
 }
 
 std::string TpmChallengeKeySubtleImpl::GetUsernameForAttestationClient() const {
-  switch (key_type_) {
-    case KEY_DEVICE:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       return std::string();
-    case KEY_USER:
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       return cryptohome::Identification(GetAccountId()).id();
+    default:
+      LOG(DFATAL) << "Unsupported Verified Access flow type: " << flow_type_;
+      return std::string();
   }
-  LOG(DFATAL) << "Unrecognized key type value: " << key_type_;
-  return std::string();
 }
 
 void TpmChallengeKeySubtleImpl::PrepareKey(bool can_continue) {
@@ -543,15 +568,18 @@ void TpmChallengeKeySubtleImpl::StartSignChallengeStep(
   // about both key names.
 
   // Name of the key that will be used to sign challenge.
-  // Device key challenges are signed using a stable key.
+  // ENTERPRISE_MACHINE challenges are signed using a stable key.
   std::string key_name_for_challenge =
-      (key_type_ == KEY_DEVICE) ? GetDefaultKeyName(key_type_, key_crypto_type_)
-                                : key_name_;
+      (flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE)
+          ? GetDefaultKeyName(flow_type_, key_crypto_type_)
+          : key_name_;
   // Name of the key that will be included in SPKAC, it is used only when SPKAC
-  // should be included for device key.
+  // should be included for the flow type ENTERPRISE_MACHINE.
   std::string key_name_for_spkac =
-      (will_register_key_ && key_type_ == KEY_DEVICE) ? key_name_
-                                                      : std::string();
+      (will_register_key_ &&
+       flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE)
+          ? key_name_
+          : std::string();
 
   const std::string username = GetUsernameForAttestationClient();
   const bool is_machine_challenge = username.empty();
@@ -621,18 +649,20 @@ void TpmChallengeKeySubtleImpl::RegisterKeyCallback(
     return;
   }
 
-  DCHECK(key_type_ == KEY_DEVICE || profile_);
+  DCHECK(flow_type_ == VerifiedAccessFlow::ENTERPRISE_MACHINE || profile_);
 
   platform_keys::KeyPermissionsManager* key_permissions_manager = nullptr;
-  switch (key_type_) {
-    case AttestationKeyType::KEY_USER:
+  switch (flow_type_) {
+    case VerifiedAccessFlow::ENTERPRISE_USER:
       key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
           GetUserPrivateTokenKeyPermissionsManager(profile_);
       break;
-    case AttestationKeyType::KEY_DEVICE:
+    case VerifiedAccessFlow::ENTERPRISE_MACHINE:
       key_permissions_manager = platform_keys::KeyPermissionsManagerImpl::
           GetSystemTokenKeyPermissionsManager();
       break;
+    default:
+      NOTREACHED();
   }
 
   DCHECK(!public_key_.empty());

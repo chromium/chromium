@@ -71,6 +71,8 @@ const char TpmChallengeKeyResult::kUploadCertificateFailedErrorMsg[] =
 const char TpmChallengeKeyResult::kDeviceTrustURLConflictError[] =
     "Both policies DeviceContextAwareAccessSignalsAllowlist and "
     "DeviceWebBasedAttestationAllowedUrls are enabled for this URL.";
+const char TpmChallengeKeyResult::kVerifiedAccessFlowUnsupportedErrorMsg[] =
+    "Verified Access flow type is not supported on ChromeOS.";
 
 // static
 TpmChallengeKeyResult TpmChallengeKeyResult::MakeChallengeResponse(
@@ -153,6 +155,8 @@ const char* TpmChallengeKeyResult::GetErrorMessage() const {
       return kUploadCertificateFailedErrorMsg;
     case TpmChallengeKeyResultCode::kDeviceTrustURLConflictError:
       return kDeviceTrustURLConflictError;
+    case TpmChallengeKeyResultCode::kVerifiedAccessFlowUnsupportedError:
+      return kVerifiedAccessFlowUnsupportedErrorMsg;
     case TpmChallengeKeyResultCode::kSuccess:
       // Not an error message.
       NOTREACHED();

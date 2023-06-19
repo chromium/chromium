@@ -517,14 +517,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllSteps) {
     testing::InSequence seq;
 
     // kInitState
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -688,14 +687,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SuccessWithAllStepsNoWaiting) {
     testing::InSequence seq;
 
     // kInitState
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     // kReadyForNextOperation
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback())
@@ -810,14 +808,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaChallengeRequired) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -855,14 +852,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, NoProofOfPossession) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -983,14 +979,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, VaTooManyTwoProofsOfPossession) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1128,7 +1123,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterManualRetry) {
 
     EXPECT_PREPARE_KEY_OK(
         *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
+        StartPrepareKeyStep(::attestation::ENTERPRISE_MACHINE,
                             /*will_register_key=*/true,
                             ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),
@@ -1253,14 +1248,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, TryLaterWait) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1383,14 +1377,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, StatusErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_INVALID_REQUEST(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
@@ -1430,14 +1423,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, ResponseErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_CA_ERROR(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
@@ -1482,14 +1474,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, InconsistentDataErrorHandling) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_INCONSISTENT_DATA(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
@@ -1531,14 +1522,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, BackoffStrategy) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_));
@@ -1594,14 +1584,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, RetryAuthorize) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1739,14 +1728,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, ProcessBackendServerErrorResponse) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
     EXPECT_CALL(state_change_callback_observer_, StateChangeCallback());
 
     EXPECT_START_OR_CONTINUE_TEMPORARY_UNAVAILABLE(
@@ -1799,14 +1787,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, RemoveRegisteredKey) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     EXPECT_START_OR_CONTINUE_OK(
         StartOrContinue(Eq(std::ref(provisioning_process)), /*callback=*/_),
@@ -1912,14 +1899,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
@@ -1959,7 +1945,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationSuccess) {
 
     EXPECT_CALL(*mock_tpm_challenge_key,
                 RestorePreparedKeyState(
-                    attestation::AttestationKeyType::KEY_USER,
+                    ::attestation::ENTERPRISE_USER,
                     /*will_register_key=*/true, ::attestation::KEY_TYPE_RSA,
                     GetKeyName(kCertProfileId), GetPublicKey(), /*profile=*/_))
         .Times(1);
@@ -2204,14 +2190,13 @@ TEST_F(CertProvisioningWorkerDynamicTest, SerializationOnFailure) {
   {
     testing::InSequence seq;
 
-    EXPECT_PREPARE_KEY_OK(
-        *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_USER,
-                            /*will_register_key=*/true,
-                            ::attestation::KEY_TYPE_RSA,
-                            GetKeyName(kCertProfileId),
-                            /*profile=*/_,
-                            /*callback=*/_, /*signals=*/_));
+    EXPECT_PREPARE_KEY_OK(*mock_tpm_challenge_key,
+                          StartPrepareKeyStep(::attestation::ENTERPRISE_USER,
+                                              /*will_register_key=*/true,
+                                              ::attestation::KEY_TYPE_RSA,
+                                              GetKeyName(kCertProfileId),
+                                              /*profile=*/_,
+                                              /*callback=*/_, /*signals=*/_));
 
     pref_val = ParseJsonDict(base::StringPrintf(
         R"({
@@ -2341,7 +2326,7 @@ TEST_F(CertProvisioningWorkerDynamicTest, CancelDeviceWorker) {
 
     EXPECT_PREPARE_KEY_OK(
         *mock_tpm_challenge_key,
-        StartPrepareKeyStep(attestation::AttestationKeyType::KEY_DEVICE,
+        StartPrepareKeyStep(::attestation::ENTERPRISE_MACHINE,
                             /*will_register_key=*/true,
                             ::attestation::KEY_TYPE_RSA,
                             /*key_name=*/GetKeyName(kCertProfileId),

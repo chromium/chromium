@@ -263,12 +263,12 @@ std::string GetKeyName(CertProfileId profile_id) {
   return kKeyNamePrefix + profile_id;
 }
 
-attestation::AttestationKeyType GetVaKeyType(CertScope scope) {
+::attestation::VerifiedAccessFlow GetVaFlowType(CertScope scope) {
   switch (scope) {
     case CertScope::kUser:
-      return attestation::AttestationKeyType::KEY_USER;
+      return ::attestation::ENTERPRISE_USER;
     case CertScope::kDevice:
-      return attestation::AttestationKeyType::KEY_DEVICE;
+      return ::attestation::ENTERPRISE_MACHINE;
   }
 }
 

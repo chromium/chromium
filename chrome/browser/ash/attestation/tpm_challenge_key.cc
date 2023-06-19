@@ -14,6 +14,7 @@
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
 #include "chrome/common/pref_names.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 
@@ -69,7 +70,7 @@ TpmChallengeKeyImpl::~TpmChallengeKeyImpl() {
 }
 
 void TpmChallengeKeyImpl::BuildResponse(
-    AttestationKeyType key_type,
+    ::attestation::VerifiedAccessFlow flow_type,
     Profile* profile,
     TpmChallengeKeyCallback callback,
     const std::string& challenge,
@@ -82,7 +83,8 @@ void TpmChallengeKeyImpl::BuildResponse(
   DCHECK(!callback.is_null());
 
   // For device key: if |register_key| is true, |key_name| should not be empty.
-  DCHECK((key_type != KEY_DEVICE) || (register_key == !key_name.empty()))
+  DCHECK((flow_type != ::attestation::ENTERPRISE_MACHINE) ||
+         (register_key == !key_name.empty()))
       << "Invalid arguments: " << register_key << " " << !key_name.empty();
 
   register_key_ = register_key;
@@ -91,7 +93,7 @@ void TpmChallengeKeyImpl::BuildResponse(
 
   // Empty |key_name| means that some default name will be used.
   tpm_challenge_key_subtle_->StartPrepareKeyStep(
-      key_type, /*will_register_key=*/register_key_, key_crypto_type, key_name,
+      flow_type, /*will_register_key=*/register_key_, key_crypto_type, key_name,
       profile,
       base::BindOnce(&TpmChallengeKeyImpl::OnPrepareKeyDone,
                      weak_factory_.GetWeakPtr()),

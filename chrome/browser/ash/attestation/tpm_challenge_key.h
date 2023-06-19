@@ -12,6 +12,7 @@
 #include "base/sequence_checker.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_result.h"
 #include "chrome/browser/ash/attestation/tpm_challenge_key_subtle.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/ash/components/dbus/attestation/keystore.pb.h"
 #include "chromeos/ash/components/dbus/constants/attestation_constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -63,10 +64,14 @@ class TpmChallengeKey {
   // silently discards callback.
   // The response consists of up to two parts: 1) a response to the challenge
   // and optionally 2) an SPKAC. They can be generated using different keys:
-  // A) KEY_DEVICE && !register_key => 1) Stable device key + 2) Empty
-  // B) KEY_DEVICE &&  register_key => 1) Stable device key + 2) Key(key_name)
-  // C) KEY_USER   && !register_key => 1) Key(key_name)     + 2) Empty
-  // D) KEY_USER   &&  register_key => 1) Key(key_name)     + 2) Key(key_name)
+  // A) ENTERPRISE_MACHINE && !register_key
+  // => 1) Stable device key + 2) Empty
+  // B) ENTERPRISE_MACHINE && register_key
+  // => 1) Stable device key + 2) Key(key_name)
+  // C) ENTERPRISE_USER && !register_key
+  // => 1) Key(key_name) + 2) Empty
+  // D) ENTERPRISE_USER && register_key
+  // => 1) Key(key_name) + 2) Key(key_name)
   // In case B) |key_name| cannot be empty. In case C), D) some default name
   // will be used if |key_name| is empty.
   // The response can also contain |signals| which consist of a set of
@@ -78,7 +83,7 @@ class TpmChallengeKey {
   // dictionary), or non empty. More information on signals collection can be
   // found in the |SignalsService|.
 
-  virtual void BuildResponse(AttestationKeyType key_type,
+  virtual void BuildResponse(::attestation::VerifiedAccessFlow flow_type,
                              Profile* profile,
                              TpmChallengeKeyCallback callback,
                              const std::string& challenge,
@@ -107,7 +112,7 @@ class TpmChallengeKeyImpl final : public TpmChallengeKey {
   ~TpmChallengeKeyImpl() override;
 
   // TpmChallengeKey
-  void BuildResponse(AttestationKeyType key_type,
+  void BuildResponse(::attestation::VerifiedAccessFlow flow_type,
                      Profile* profile,
                      TpmChallengeKeyCallback callback,
                      const std::string& challenge,

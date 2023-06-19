@@ -141,7 +141,7 @@ TEST_F(AshAttestationServiceTest, BuildChallengeResponse_Success) {
 
   auto protoChallenge = GetSerializedSignedChallenge();
   EXPECT_CALL(*mock_challenge_key_,
-              BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+              BuildResponse(::attestation::ENTERPRISE_MACHINE,
                             /*profile=*/&test_profile_, /*callback=*/_,
                             /*challenge=*/protoChallenge,
                             /*register_key=*/false,

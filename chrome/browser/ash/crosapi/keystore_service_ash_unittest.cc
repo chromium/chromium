@@ -802,7 +802,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(::attestation::ENTERPRISE_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_crypto_type=*/KEY_TYPE_RSA,
@@ -832,7 +832,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(::attestation::ENTERPRISE_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_crypto_type=*/KEY_TYPE_RSA,
@@ -862,7 +862,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyNoMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+      BuildResponse(::attestation::ENTERPRISE_MACHINE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_crypto_type=*/KEY_TYPE_RSA,
@@ -892,7 +892,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeDeviceKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_DEVICE,
+      BuildResponse(::attestation::ENTERPRISE_MACHINE,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_crypto_type=*/KEY_TYPE_RSA,
@@ -922,7 +922,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeUserEcdsaKeyMigrateSuccess) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(::attestation::ENTERPRISE_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/true,
                     /*key_crypto_type=*/KEY_TYPE_ECC,
@@ -951,7 +951,7 @@ TEST_F(KeystoreServiceAshTest, ChallengeKeyFail) {
 
   EXPECT_CALL(
       *challenge_key_ptr,
-      BuildResponse(ash::attestation::AttestationKeyType::KEY_USER,
+      BuildResponse(::attestation::ENTERPRISE_USER,
                     /*profile=*/_, /*callback=*/_, /*challenge=*/GetDataStr(),
                     /*register_key=*/false,
                     /*key_crypto_type=*/KEY_TYPE_RSA,

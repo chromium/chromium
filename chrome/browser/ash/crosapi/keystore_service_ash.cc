@@ -24,6 +24,7 @@
 #include "chrome/browser/chromeos/platform_keys/extension_platform_keys_service_factory.h"
 #include "chrome/browser/chromeos/platform_keys/platform_keys.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 #include "chromeos/crosapi/cpp/keystore_service_util.h"
 #include "chromeos/crosapi/mojom/keystore_error.mojom.h"
 #include "chromeos/crosapi/mojom/keystore_service.mojom-shared.h"
@@ -214,19 +215,19 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
       break;
   }
 
-  ash::attestation::AttestationKeyType key_type;
+  attestation::VerifiedAccessFlow flow_type;
   switch (type) {
     case mojom::KeystoreType::kUser:
-      key_type = ash::attestation::KEY_USER;
+      flow_type = attestation::ENTERPRISE_USER;
       break;
     case mojom::KeystoreType::kDevice:
-      key_type = ash::attestation::KEY_DEVICE;
+      flow_type = attestation::ENTERPRISE_MACHINE;
       break;
   }
   Profile* profile = ProfileManager::GetActiveUserProfile();
 
   std::string key_name_for_spkac;
-  if (migrate && (key_type == ash::attestation::KEY_DEVICE)) {
+  if (migrate && (flow_type == attestation::ENTERPRISE_MACHINE)) {
     key_name_for_spkac = base::StrCat(
         {ash::attestation::kEnterpriseMachineKeyForSpkacPrefix, "keystore-",
          base::UnguessableToken::Create().ToString()});
@@ -238,7 +239,7 @@ void KeystoreServiceAsh::ChallengeAttestationOnlyKeystore(
   ash::attestation::TpmChallengeKey* challenge_key_ptr = challenge_key.get();
   outstanding_challenges_.push_back(std::move(challenge_key));
   challenge_key_ptr->BuildResponse(
-      key_type, profile,
+      flow_type, profile,
       base::BindOnce(&KeystoreServiceAsh::DidChallengeAttestationOnlyKeystore,
                      weak_factory_.GetWeakPtr(), std::move(callback),
                      challenge_key_ptr),

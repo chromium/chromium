@@ -19,6 +19,7 @@
 #include "chrome/browser/enterprise/connectors/device_trust/attestation/common/attestation_utils.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/common_types.h"
 #include "chrome/browser/enterprise/connectors/device_trust/common/metrics_utils.h"
+#include "chromeos/ash/components/dbus/attestation/attestation_ca.pb.h"
 
 namespace enterprise_connectors {
 
@@ -63,7 +64,7 @@ void AshAttestationService::BuildChallengeResponseForVAChallenge(
       std::make_unique<ash::attestation::TpmChallengeKeyWithTimeout>();
   auto* tpm_key_challenger_ptr = tpm_key_challenger.get();
   tpm_key_challenger_ptr->BuildResponse(
-      base::Seconds(15), ash::attestation::KEY_DEVICE, profile_,
+      base::Seconds(15), ::attestation::ENTERPRISE_MACHINE, profile_,
       base::BindOnce(&AshAttestationService::ReturnResult,
                      weak_factory_.GetWeakPtr(), std::move(tpm_key_challenger),
                      std::move(callback)),
