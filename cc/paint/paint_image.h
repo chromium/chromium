@@ -23,6 +23,8 @@
 #include "ui/gfx/geometry/rect.h"
 #include "ui/gfx/geometry/size.h"
 
+#include "base/record_replay.h"
+
 class SkBitmap;
 class SkColorSpace;
 struct SkISize;
@@ -273,6 +275,8 @@ class CC_PAINT_EXPORT PaintImage {
   DecodingMode decoding_mode() const { return decoding_mode_; }
 
   explicit operator bool() const {
+    recordreplay::Assert("[RUN-1975-2166] PaintImage::operator bool %d %d %d",
+                         !!paint_worklet_input_, !!cached_sk_image_, !!texture_backing_);
     return paint_worklet_input_ || cached_sk_image_ || texture_backing_;
   }
   bool IsLazyGenerated() const {
