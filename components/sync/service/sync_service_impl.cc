@@ -1603,11 +1603,6 @@ void SyncServiceImpl::UpdateDataTypesForInvalidations() {
   // traffic.
   types.Remove(HISTORY);
 #endif
-  if (!(base::FeatureList::IsEnabled(kUseSyncInvalidations) &&
-        base::FeatureList::IsEnabled(kUseSyncInvalidationsForWalletAndOffer))) {
-    types.RemoveAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
-  }
-
   types.RemoveAll(data_type_manager_->GetActiveProxyDataTypes());
 
   sync_client_->GetSyncInvalidationsService()->SetInterestedDataTypes(types);

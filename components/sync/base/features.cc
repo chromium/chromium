@@ -77,10 +77,6 @@ BASE_FEATURE(kSyncPersistInvalidations,
              "SyncPersistInvalidations",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kUseSyncInvalidationsForWalletAndOffer,
-             "UseSyncInvalidationsForWalletAndOffer",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 BASE_FEATURE(kSkipInvalidationOptimizationsWhenDeviceInfoUpdated,
              "SkipInvalidationOptimizationsWhenDeviceInfoUpdated",
              base::FEATURE_DISABLED_BY_DEFAULT);

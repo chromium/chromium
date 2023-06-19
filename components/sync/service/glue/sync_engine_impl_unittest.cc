@@ -342,20 +342,6 @@ class SyncEngineImplWithSyncInvalidationsTest : public SyncEngineImplTest {
   SyncEngineImplWithSyncInvalidationsTest() {
     override_features_.InitWithFeatures(
         /*enabled_features=*/{kUseSyncInvalidations},
-        /*disabled_features=*/{kUseSyncInvalidationsForWalletAndOffer});
-  }
-
- protected:
-  base::test::ScopedFeatureList override_features_;
-};
-
-class SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest
-    : public SyncEngineImplTest {
- public:
-  SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest() {
-    override_features_.InitWithFeatures(
-        /*enabled_features=*/{kUseSyncInvalidations,
-                              kUseSyncInvalidationsForWalletAndOffer},
         /*disabled_features=*/{});
   }
 
@@ -693,7 +679,7 @@ TEST_F(SyncEngineImplTest,
   ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateDataTypesOnIncomingInvalidation) {
   enabled_types_.PutAll({syncer::BOOKMARKS, syncer::PREFERENCES});
 
@@ -719,7 +705,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldInvalidateOnlyEnabledDataTypes) {
   enabled_types_.Remove(syncer::BOOKMARKS);
   enabled_types_.Put(syncer::PREFERENCES);
@@ -746,7 +732,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   EXPECT_EQ(1, fake_manager_->GetInvalidationCount(ModelType::PREFERENCES));
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldStartHandlingInvalidations) {
   ON_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
       .WillByDefault(Return(enabled_types_));
@@ -754,28 +740,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   backend_->StartHandlingInvalidations();
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsTest,
-       UseOldInvalidationsOnlyForWalletAndOffer) {
-  enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
-
-  EXPECT_CALL(mock_sync_invalidations_service_, GetInterestedDataTypes())
-      .WillRepeatedly(Return(enabled_types_));
-  InitializeBackend(/*expect_success=*/true);
-  EXPECT_CALL(
-      invalidator_,
-      UpdateInterestedTopics(
-          backend_.get(), ModelTypeSetToTopicSet(
-                              {AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER})));
-  ConfigureDataTypes();
-
-  // When Sync is stopped, we clear the registered invalidation ids.
-  EXPECT_CALL(invalidator_,
-              UpdateInterestedTopics(backend_.get(), invalidation::TopicSet()));
-  ShutdownBackend(ShutdownReason::STOP_SYNC_AND_KEEP_DATA);
-}
-
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
-       DoNotUseOldInvalidationsAtAll) {
+TEST_F(SyncEngineImplWithSyncInvalidationsTest, DoNotUseOldInvalidationsAtAll) {
   enabled_types_.PutAll({AUTOFILL_WALLET_DATA, AUTOFILL_WALLET_OFFER});
 
   // Since the old invalidations system is not being used anymore (based on the
@@ -792,7 +757,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   ConfigureDataTypes();
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldEnableInvalidationsWhenInitialized) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
       .WillRepeatedly(Return("fcm_token"));
@@ -801,7 +766,7 @@ TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
   EXPECT_TRUE(fake_manager_->IsInvalidatorEnabled());
 }
 
-TEST_F(SyncEngineImplWithSyncInvalidationsForWalletAndOfferTest,
+TEST_F(SyncEngineImplWithSyncInvalidationsTest,
        ShouldEnableInvalidationsOnTokenUpdate) {
   EXPECT_CALL(mock_sync_invalidations_service_, GetFCMRegistrationToken)
       .WillRepeatedly(Return(absl::nullopt));

@@ -276,9 +276,7 @@ class SingleClientWithSyncSendInterestedDataTypesTest
   SingleClientWithSyncSendInterestedDataTypesTest()
       : SingleClientSyncInvalidationsTestBase(
             /*enabled_features=*/{},
-            /*disabled_features=*/{
-                syncer::kUseSyncInvalidations,
-                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
+            /*disabled_features=*/{syncer::kUseSyncInvalidations}) {}
 };
 
 IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
@@ -295,10 +293,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithSyncSendInterestedDataTypesTest,
   // Check that some "standard" data types are included.
   EXPECT_TRUE(
       interested_data_types.HasAll({syncer::NIGORI, syncer::BOOKMARKS}));
-  // Wallet and Offer data types are excluded unless
-  // kUseSyncInvalidationsForWalletAndOffer is also enabled.
-  EXPECT_FALSE(interested_data_types.Has(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_FALSE(interested_data_types.Has(syncer::AUTOFILL_WALLET_OFFER));
 
   // The local device should eventually be committed to the server.
   // The InstanceID token should only be uploaded if kUseSyncInvalidations is
@@ -317,8 +311,7 @@ class SingleClientWithUseSyncInvalidationsTest
       : SingleClientSyncInvalidationsTestBase(
             /*enabled_features=*/{syncer::kUseSyncInvalidations,
                                   syncer::kSyncPersistInvalidations},
-            /*disabled_features=*/{
-                syncer::kUseSyncInvalidationsForWalletAndOffer}) {}
+            /*disabled_features=*/{}) {}
 
   // Injects a test DeviceInfo entity to the fake server.
   void InjectDeviceInfoEntityToServer(
@@ -362,10 +355,6 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
   // Check that some "standard" data types are included.
   EXPECT_TRUE(
       interested_data_types.HasAll({syncer::NIGORI, syncer::BOOKMARKS}));
-  // Wallet and Offer data types are excluded unless
-  // kUseSyncInvalidationsForWalletAndOffer is also enabled.
-  EXPECT_FALSE(interested_data_types.Has(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_FALSE(interested_data_types.Has(syncer::AUTOFILL_WALLET_OFFER));
   EXPECT_FALSE(fcm_token.empty());
 
   // The local device should eventually be committed to the server.
@@ -663,84 +652,8 @@ IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
 }
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-class SingleClientWithUseSyncInvalidationsForWalletAndOfferTest
-    : public SingleClientSyncInvalidationsTestBase {
- public:
-  SingleClientWithUseSyncInvalidationsForWalletAndOfferTest()
-      : SingleClientSyncInvalidationsTestBase(
-            /*enabled_features=*/{syncer::kUseSyncInvalidations,
-                                  syncer::
-                                      kUseSyncInvalidationsForWalletAndOffer},
-            /*disabled_features=*/{}) {}
-};
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
-    SendInterestedDataTypesAndFCMTokenAsPartOfDeviceInfo) {
-  ASSERT_TRUE(SetupSync());
-
-  syncer::SyncInvalidationsService* sync_invalidations_service =
-      SyncInvalidationsServiceFactory::GetForProfile(GetProfile(0));
-  ASSERT_THAT(sync_invalidations_service, NotNull());
-  ASSERT_TRUE(sync_invalidations_service->GetInterestedDataTypes());
-  ASSERT_TRUE(sync_invalidations_service->GetFCMRegistrationToken());
-  const syncer::ModelTypeSet interested_data_types =
-      *sync_invalidations_service->GetInterestedDataTypes();
-  const std::string fcm_token =
-      *sync_invalidations_service->GetFCMRegistrationToken();
-
-  // Check that some "standard" data types are included.
-  EXPECT_TRUE(
-      interested_data_types.HasAll({syncer::NIGORI, syncer::BOOKMARKS}));
-  // Wallet data type should be included by default if
-  // kUseSyncInvalidationsForWalletAndOffer is enabled.
-  EXPECT_TRUE(interested_data_types.Has(syncer::AUTOFILL_WALLET_DATA));
-  EXPECT_FALSE(fcm_token.empty());
-
-  // The local device should eventually be committed to the server.
-  EXPECT_TRUE(
-      ServerDeviceInfoMatchChecker(
-          ElementsAre(AllOf(InterestedDataTypesAre(interested_data_types),
-                            HasInstanceIdToken(fcm_token))))
-          .Wait());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
-    ShouldProvideNotificationsEnabledInGetUpdates) {
-  ASSERT_TRUE(SetupSync());
-
-  // Trigger a new sync cycle by a server-side change to initiate GU_TRIGGER
-  // GetUpdates.
-  base::Uuid bookmark_uuid = InjectSyncedBookmark(GetFakeServer());
-  ASSERT_TRUE(
-      bookmarks_helper::BookmarksUuidChecker(/*profile=*/0, bookmark_uuid)
-          .Wait());
-
-  sync_pb::ClientToServerMessage message;
-  ASSERT_TRUE(GetFakeServer()->GetLastGetUpdatesMessage(&message));
-
-  // Verify that the latest GetUpdates happened due to an invalidation.
-  ASSERT_EQ(message.get_updates().get_updates_origin(),
-            sync_pb::SyncEnums::GU_TRIGGER);
-  EXPECT_TRUE(message.get_updates().caller_info().notifications_enabled());
-
-  ASSERT_GT(message.get_updates().from_progress_marker_size(), 0);
-  ASSERT_TRUE(
-      message.get_updates().from_progress_marker(0).has_get_update_triggers());
-  ASSERT_TRUE(message.get_updates()
-                  .from_progress_marker(0)
-                  .get_update_triggers()
-                  .has_invalidations_out_of_sync());
-  EXPECT_FALSE(message.get_updates()
-                   .from_progress_marker(0)
-                   .get_update_triggers()
-                   .invalidations_out_of_sync());
-}
-
-IN_PROC_BROWSER_TEST_F(
-    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
-    EnableAndDisableADataType) {
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       EnableAndDisableADataType) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server. BOOKMARKS
@@ -783,9 +696,8 @@ IN_PROC_BROWSER_TEST_F(
 #else
 #define MAYBE_SignoutAndSignin SignoutAndSignin
 #endif
-IN_PROC_BROWSER_TEST_F(
-    SingleClientWithUseSyncInvalidationsForWalletAndOfferTest,
-    MAYBE_SignoutAndSignin) {
+IN_PROC_BROWSER_TEST_F(SingleClientWithUseSyncInvalidationsTest,
+                       MAYBE_SignoutAndSignin) {
   ASSERT_TRUE(SetupSync());
 
   // The local device should eventually be committed to the server. The FCM
