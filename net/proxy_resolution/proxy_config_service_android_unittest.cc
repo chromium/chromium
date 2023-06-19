@@ -13,7 +13,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/run_loop.h"
 #include "base/task/single_thread_task_runner.h"
-#include "net/net_test_jni_headers/AndroidProxyConfigServiceTestUtil_jni.h"
+#include "net/android/net_tests_jni/AndroidProxyConfigServiceTestUtil_jni.h"
 #include "net/proxy_resolution/proxy_config_with_annotation.h"
 #include "net/proxy_resolution/proxy_info.h"
 #include "net/test/test_with_task_environment.h"

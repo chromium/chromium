@@ -63,7 +63,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "net/net_test_jni_headers/AndroidNetworkLibraryTestUtil_jni.h"
+#include "net/android/net_test_support_jni/AndroidNetworkLibraryTestUtil_jni.h"
 #endif
 
 using net::test::IsError;

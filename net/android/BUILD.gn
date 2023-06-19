@@ -38,10 +38,10 @@ android_library("net_java") {
     "//third_party/android_deps:com_google_code_findbugs_jsr305_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   srcjar_deps = [
     ":net_android_java_enums_srcjar",
     ":net_errors_java",
+    "//net:net_jni_headers",
   ]
   resources_package = "org.chromium.native_test"
 }
@@ -62,6 +62,11 @@ android_library("embedded_test_server_aidl_java") {
   testonly = true
   deps = []
   srcjar_deps = [ ":embedded_test_server_aidl" ]
+}
+
+generate_jni("net_test_support_jni") {
+  testonly = true
+  sources = [ "../test/android/javatests/src/org/chromium/net/AndroidNetworkLibraryTestUtil.java" ]
 }
 
 android_library("net_java_test_support") {
@@ -87,20 +92,31 @@ android_library("net_java_test_support") {
     "//third_party/androidx:androidx_test_uiautomator_uiautomator_java",
     "//third_party/junit",
   ]
-  srcjar_deps = [ ":net_java_test_support_enums_srcjar" ]
+  srcjar_deps = [
+    ":net_java_test_support_enums_srcjar",
+    ":net_test_support_jni",
+  ]
   mergeable_android_manifests =
       [ "../test/android/javatests/AndroidManifest_client.xml" ]
 }
 
-android_library("net_java_test_support_provider") {
+generate_jni("net_test_support_provider_jni") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  sources = [
+    "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
+    "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
+  ]
+}
+
+android_library("net_test_support_provider_java") {
+  testonly = true
   sources = [
     "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticator.java",
     "../test/android/javatests/src/org/chromium/net/test/DummySpnegoAuthenticatorService.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerImpl.java",
     "../test/android/javatests/src/org/chromium/net/test/EmbeddedTestServerService.java",
   ]
+  srcjar_deps = [ ":net_test_support_provider_jni" ]
 
   deps = [
     ":embedded_test_server_aidl_java",
@@ -124,7 +140,7 @@ source_set("java_test_native_support") {
   ]
 
   deps = [ "//net:test_support" ]
-  public_deps = [ "//net:net_test_jni_headers" ]
+  public_deps = [ ":net_test_support_provider_jni" ]
 }
 
 shared_library_with_jni("net_java_test_native_support") {
@@ -152,7 +168,7 @@ android_apk("net_test_support_apk") {
 
   deps = [
     ":net_java_test_support",
-    ":net_java_test_support_provider",
+    ":net_test_support_provider_java",
   ]
   android_manifest = "../test/android/javatests/AndroidManifest.xml"
   apk_name = "ChromiumNetTestSupport"
@@ -172,7 +188,15 @@ android_resources("net_unittests_apk_resources") {
   ]
 }
 
-android_library("net_javatests") {
+generate_jni("net_tests_jni") {
+  testonly = true
+  sources = [
+    "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
+    "javatests/src/org/chromium/net/AndroidProxyConfigServiceTestUtil.java",
+  ]
+}
+
+android_library("net_tests_java") {
   testonly = true
   sources = [
     "javatests/src/org/chromium/net/AndroidKeyStoreTestUtil.java",
@@ -188,6 +212,7 @@ android_library("net_javatests") {
     "javatests/src/org/chromium/net/ProxyChangeListenerTest.java",
     "javatests/src/org/chromium/net/X509UtilTest.java",
   ]
+  srcjar_deps = [ ":net_tests_jni" ]
   deps = [
     ":net_java",
     ":net_java_test_support",

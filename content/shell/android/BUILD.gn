@@ -229,7 +229,7 @@ content_shell_apk_tmpl("content_shell_test_apk") {
     "//base:base_java_test_support",
     "//base:base_javatests",
     "//content/public/android:content_javatests",
-    "//net/android:net_javatests",
+    "//net/android:net_tests_java",
   ]
   data_deps = [ "//testing/buildbot/filters:content_shell_test_apk_filters" ]
   if (enable_chrome_android_internal) {

@@ -30,7 +30,7 @@
 #include "base/threading/thread_restrictions.h"
 #include "gtest/gtest.h"
 #include "testing/android/native_test/main_runner.h"
-#include "testing/android/native_test/native_test_jni_headers/NativeTest_jni.h"
+#include "testing/android/native_test/native_test_jni/NativeTest_jni.h"
 #include "testing/android/native_test/native_test_util.h"
 
 #if BUILDFLAG(CLANG_PROFILING)
