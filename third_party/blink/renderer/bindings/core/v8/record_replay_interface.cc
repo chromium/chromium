@@ -583,12 +583,13 @@ function Pause_evaluateInFrame({ frameId, expression }) {
     return buildRrpObjectResult({ result: argsCdp });
   }
 
-  const rv = doEvaluation();
+  let rv;
   try {
-    return buildRrpObjectResult(rv);
+    rv = doEvaluation();
   } catch (err) {
     return handleEvalError(err);
   }
+  return buildRrpObjectResult(rv);
 
   function doEvaluation() {
     // In order to do the evaluation in the right frame, the same number of
