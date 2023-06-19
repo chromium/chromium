@@ -226,7 +226,7 @@ crbug.com/1426664 [ monterey ] Pixel_WebGPU* [ Skip ]
 [ highsierra ] Pixel_Video_HEVC [ Skip ]
 [ mojave ] Pixel_Video_HEVC [ Skip ]
 [ catalina ] Pixel_Video_HEVC [ Skip ]
-[ chromeos chromeos-board-amd64-generic ] Pixel_Video_HEVC [ Skip ]
+[ chromeos ] Pixel_Video_HEVC [ Skip ]
 
 ###############################
 # Temporary Skip Expectations #
