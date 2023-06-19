@@ -5,7 +5,7 @@
 #include "content/common/android/surface_wrapper.h"
 
 #include "base/check.h"
-#include "content/public/android/content_jni_headers/SurfaceWrapper_jni.h"
+#include "content/public/android/content_main_dex_jni/SurfaceWrapper_jni.h"
 
 namespace content {
 

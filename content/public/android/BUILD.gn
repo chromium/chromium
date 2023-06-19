@@ -70,6 +70,17 @@ java_group("content_java") {
   ]
 }
 
+generate_jni("content_main_dex_jni") {
+  sources = [
+    "java/src/org/chromium/content/app/ContentChildProcessServiceDelegate.java",
+    "java/src/org/chromium/content/app/ContentMain.java",
+    "java/src/org/chromium/content/browser/BrowserStartupControllerImpl.java",
+    "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
+    "java/src/org/chromium/content/common/SurfaceWrapper.java",
+    "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
+  ]
+}
+
 # The minimal //content code needed for the base module. This includes all code
 # needed in child processes.
 android_library("content_main_dex_java") {
@@ -119,11 +130,11 @@ android_library("content_main_dex_java") {
   resources_package = "org.chromium.content"
   srcjar_deps = [
     ":common_aidl",
+    ":content_main_dex_jni",
     ":content_public_android_java_enums_srcjar",
     ":content_public_android_java_switches_srcjar",
     ":generate_sandboxed_service_srcjar",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("content_full_java") {
@@ -188,6 +199,7 @@ android_library("content_full_java") {
     "//url:origin_java",
   ]
   srcjar_deps = [
+    ":content_jni_headers",
     ":is_ready_to_pay_service_aidl",
     "//content/browser:client_data_json_generated_enum",
     "//content/browser/accessibility:content_browser_accessibility_java_enums_srcjar",
@@ -387,7 +399,7 @@ android_library("content_full_java") {
     "java/src/org/chromium/content_public/browser/WebContentsObserver.java",
     "java/src/org/chromium/content_public/browser/WebContentsStatics.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   proguard_configs = [ "proguard.flags" ]
 }
 
@@ -431,14 +443,11 @@ generate_jar_jni("jar_jni") {
 
 generate_jni("content_jni_headers") {
   sources = [
-    "java/src/org/chromium/content/app/ContentChildProcessServiceDelegate.java",
-    "java/src/org/chromium/content/app/ContentMain.java",
     "java/src/org/chromium/content/browser/AppWebMessagePort.java",
     "java/src/org/chromium/content/browser/AttributionOsLevelManager.java",
     "java/src/org/chromium/content/browser/AudioFocusDelegate.java",
     "java/src/org/chromium/content/browser/BackgroundSyncNetworkObserver.java",
     "java/src/org/chromium/content/browser/BrowserContextHandleImpl.java",
-    "java/src/org/chromium/content/browser/BrowserStartupControllerImpl.java",
     "java/src/org/chromium/content/browser/ChildProcessLauncherHelperImpl.java",
     "java/src/org/chromium/content/browser/ClientDataJsonImpl.java",
     "java/src/org/chromium/content/browser/ContactsDialogHost.java",
@@ -459,7 +468,6 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/ScreenOrientationProviderImpl.java",
     "java/src/org/chromium/content/browser/SpeechRecognitionImpl.java",
     "java/src/org/chromium/content/browser/SyntheticGestureTarget.java",
-    "java/src/org/chromium/content/browser/TracingControllerAndroidImpl.java",
     "java/src/org/chromium/content/browser/TtsPlatformImpl.java",
     "java/src/org/chromium/content/browser/accessibility/AccessibilityNodeInfoBuilder.java",
     "java/src/org/chromium/content/browser/accessibility/ViewStructureBuilder.java",
@@ -481,19 +489,18 @@ generate_jni("content_jni_headers") {
     "java/src/org/chromium/content/browser/webcontents/WebContentsImpl.java",
     "java/src/org/chromium/content/browser/webcontents/WebContentsObserverProxy.java",
     "java/src/org/chromium/content/browser/webid/MDocProviderAndroid.java",
-    "java/src/org/chromium/content/common/SurfaceWrapper.java",
     "java/src/org/chromium/content_public/browser/ContentFeatureMap.java",
     "java/src/org/chromium/content_public/browser/LoadCommittedDetails.java",
     "java/src/org/chromium/content_public/browser/LoadUrlParams.java",
     "java/src/org/chromium/content_public/browser/NavigationHandle.java",
     "java/src/org/chromium/content_public/browser/WebAuthenticationDelegate.java",
-    "java/src/org/chromium/content_public/common/ResourceRequestBody.java",
   ]
 }
 
 group("jni") {
   public_deps = [
     ":content_jni_headers",
+    ":content_main_dex_jni",
     ":jar_jni",
   ]
 }

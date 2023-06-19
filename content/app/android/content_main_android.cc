@@ -8,7 +8,7 @@
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
 #include "content/app/android/content_main_android.h"
-#include "content/public/android/content_jni_headers/ContentMain_jni.h"
+#include "content/public/android/content_main_dex_jni/ContentMain_jni.h"
 #include "content/public/app/content_main.h"
 #include "content/public/app/content_main_delegate.h"
 #include "content/public/app/content_main_runner.h"
