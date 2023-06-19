@@ -85,6 +85,9 @@ public final class JavaCronetEngine extends CronetEngineBase {
             // Handle any issue gracefully, we should never crash due failures while logging.
             Log.e(TAG, "Error while trying to log JavaCronetEngine creation: ", e);
         }
+        Log.w(TAG,
+                "using the fallback Cronet Engine implementation. Performance will suffer "
+                        + "and many HTTP client features, including caching, will not work.");
     }
 
     /**
