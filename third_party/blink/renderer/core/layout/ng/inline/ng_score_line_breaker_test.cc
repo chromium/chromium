@@ -398,6 +398,34 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   }
 }
 
+// Test when `NGInlineLayoutAlgorithm::Layout` runs `NGLineBreaker` twice for
+// the same line, to retry line breaking due to float placements.
+TEST_F(NGScoreLineBreakerTest, FloatRetry) {
+  ScopedCSSTextWrapPrettyForTest enable(true);
+  SetBodyInnerHTML(R"HTML(
+    <!DOCTYPE html>
+    <style>
+    .container {
+      font-size: 16px;
+      text-wrap: pretty;
+      width: 110px;
+    }
+    .float {
+      float: right;
+      width: 50px;
+      height: 50px;
+    }
+    </style>
+    <div class="container">
+      <div class="float"></div>
+      Blah.
+      <div class="float"></div>
+      Blah blah blah.
+    </div>
+  )HTML");
+  // Test pass if it doesn't crash.
+}
+
 TEST_F(NGScoreLineBreakerTest, Zoom) {
   LoadAhem();
   SetBodyInnerHTML(R"HTML(

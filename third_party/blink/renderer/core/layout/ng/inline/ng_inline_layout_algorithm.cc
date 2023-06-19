@@ -187,6 +187,9 @@ class NGLineBreakStrategy {
                 NGExclusionSpace* exclusion_space) {
     DCHECK(score_line_break_context_->LineBreakPoints().empty());
     DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
+    if (UNLIKELY(!score_line_break_context_->IsActive())) {
+      return;
+    }
     NGLineWidths line_widths;
     if (UNLIKELY(!line_widths.Set(node, opportunities, break_token))) {
       // The next line may have less opportunities that keep running, without
