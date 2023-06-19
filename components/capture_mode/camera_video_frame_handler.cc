@@ -96,12 +96,21 @@ void AdjustParamsForCurrentConfig(media::VideoCaptureParams* params) {
 }
 #endif
 
+// Whether to create a single multiplanar SharedImage rather than the legacy
+// behavior of one SharedImage per plane when not using external sampling.
+bool CreateNonLegacyMultiPlaneSharedImage() {
+  return base::FeatureList::IsEnabled(
+             media::kMultiPlaneVideoCaptureSharedImages) &&
+         media::IsMultiPlaneFormatForHardwareVideoEnabled();
+}
+
 // Creates and returns a list of the buffer planes for each we'll need to create
 // a shared image and store it in `GpuMemoryBufferHandleHolder::mailboxes_`.
 std::vector<gfx::BufferPlane> CreateGpuBufferPlanes() {
   std::vector<gfx::BufferPlane> planes;
   if (base::FeatureList::IsEnabled(
-          media::kMultiPlaneVideoCaptureSharedImages)) {
+          media::kMultiPlaneVideoCaptureSharedImages) &&
+      !CreateNonLegacyMultiPlaneSharedImage()) {
     planes.push_back(gfx::BufferPlane::Y);
     planes.push_back(gfx::BufferPlane::UV);
   } else {
@@ -335,13 +344,21 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
         context_provider_->SharedImageInterface();
     DCHECK(shared_image_interface);
 
-    gpu::GpuMemoryBufferManager* gmb_manager =
-        context_factory_->GetGpuMemoryBufferManager();
-    for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
-      mailboxes_[plane] = shared_image_interface->CreateSharedImage(
-          gmb.get(), gmb_manager, buffer_planes_[plane],
-          frame_info->color_space, kTopLeft_GrSurfaceOrigin,
-          kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame");
+    if (CreateNonLegacyMultiPlaneSharedImage()) {
+      CHECK_EQ(buffer_planes_.size(), 1u);
+      mailboxes_[0] = shared_image_interface->CreateSharedImage(
+          viz::MultiPlaneFormat::kNV12, gmb->GetSize(), frame_info->color_space,
+          kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType, kSharedImageUsage,
+          "CameraVideoFrame", gmb->CloneHandle());
+    } else {
+      gpu::GpuMemoryBufferManager* gmb_manager =
+          context_factory_->GetGpuMemoryBufferManager();
+      for (size_t plane = 0; plane < buffer_planes_.size(); ++plane) {
+        mailboxes_[plane] = shared_image_interface->CreateSharedImage(
+            gmb.get(), gmb_manager, buffer_planes_[plane],
+            frame_info->color_space, kTopLeft_GrSurfaceOrigin,
+            kPremul_SkAlphaType, kSharedImageUsage, "CameraVideoFrame");
+      }
     }
 
     // Since this is the first time we create the shared images in `mailboxes_`,
@@ -390,6 +407,11 @@ class GpuMemoryBufferHandleHolder : public BufferHandleHolder,
     if (!frame) {
       LOG(ERROR) << "Failed to create a video frame.";
       return frame;
+    }
+
+    if (CreateNonLegacyMultiPlaneSharedImage()) {
+      frame->set_shared_image_format_type(
+          media::SharedImageFormatType::kSharedImageFormat);
     }
 
     if (frame_info->color_space.IsValid()) {
