@@ -6,14 +6,17 @@
 
 #include "base/logging.h"
 #include "base/notreached.h"
+#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/auth_panel/factor_auth_view.h"
 #include "chromeos/ash/components/auth_panel/factor_auth_view_factory.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
 namespace ash {
 
-AuthPanel::AuthPanel(std::unique_ptr<FactorAuthViewFactory> view_factory)
-    : view_factory_(std::move(view_factory)) {}
+AuthPanel::AuthPanel(std::unique_ptr<FactorAuthViewFactory> view_factory,
+                     std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher)
+    : view_factory_(std::move(view_factory)),
+      event_dispatcher_(std::move(event_dispatcher)) {}
 
 AuthPanel::~AuthPanel() = default;
 

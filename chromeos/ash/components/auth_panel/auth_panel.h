@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/containers/flat_map.h"
+#include "chromeos/ash/components/auth_panel/auth_panel_event_dispatcher.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_status_consumer.h"
 #include "chromeos/ash/components/osauth/public/common_types.h"
 
@@ -26,7 +27,8 @@ class FactorAuthViewFactory;
 // for instance, with password/pin.
 class AuthPanel : public AuthFactorStatusConsumer {
  public:
-  explicit AuthPanel(std::unique_ptr<FactorAuthViewFactory> view_factory);
+  AuthPanel(std::unique_ptr<FactorAuthViewFactory> view_factory,
+            std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher);
   AuthPanel(const AuthPanel&) = delete;
   AuthPanel(AuthPanel&&) = delete;
   AuthPanel& operator=(const AuthPanel&) = delete;
@@ -45,6 +47,7 @@ class AuthPanel : public AuthFactorStatusConsumer {
  private:
   base::flat_map<AshAuthFactor, std::unique_ptr<FactorAuthView>> views_;
   std::unique_ptr<FactorAuthViewFactory> view_factory_;
+  std::unique_ptr<AuthPanelEventDispatcher> event_dispatcher_;
 };
 
 }  // namespace ash
