@@ -30,6 +30,14 @@ chromium-metrics-reviews@google.com.
   <summary>Specified DevTools action has been taken.</summary>
 </histogram>
 
+<histogram name="DevTools.BadgeActivated" enum="DevToolsBadgeActivated"
+    expires_after="2023-12-31">
+  <owner>ergunsh@chromium.org</owner>
+  <owner>changhaohan@chromium.org</owner>
+  <owner>bmeurer@chromium.org</owner>
+  <summary>Records the badge usages in the Elements panel.</summary>
+</histogram>
+
 <histogram name="DevTools.BreakpointEditDialogRevealedFrom"
     enum="DevToolsBreakpointEditDialogRevealedFrom" expires_after="2023-12-01">
   <owner>yangguo@chromium.org</owner>
