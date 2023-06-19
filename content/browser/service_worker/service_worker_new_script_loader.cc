@@ -331,6 +331,13 @@ void ServiceWorkerNewScriptLoader::OnReceiveResponse(
 
   WriteHeaders(response_head.Clone());
 
+  // WriteHeaders() can commit completed.
+  if (network_loader_state_ == LoaderState::kCompleted &&
+      header_writer_state_ == WriterState::kCompleted &&
+      body_writer_state_ == WriterState::kCompleted) {
+    return;
+  }
+
   // Don't pass SSLInfo to the client when the original request doesn't ask
   // to send it.
   if (response_head->ssl_info.has_value() &&
