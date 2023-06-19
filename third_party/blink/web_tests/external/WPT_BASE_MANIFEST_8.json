@@ -273849,6 +273849,16 @@
    }
   },
   "support": {
+   ".cache": {
+    "gitignore2.json": [
+     "06a0bb7b9971ad46938793b5437e62a3d66c8923",
+     []
+    ],
+    "mtime.json": [
+     "3859581e9f72665d7e623d80f1cbc31cf6fe19a2",
+     []
+    ]
+   },
    ".gitignore": [
     "d93e645d547894b50149d3726de2654957b6e06f",
     []
@@ -314175,7 +314185,7 @@
        []
       ],
       "mask-with-rotation.svg.ini": [
-       "3ed7d130c6f001ef21942deada9111860f0ed157",
+       "f34a41c1d1fd8639285f7122b638a872a0800b80",
        []
       ],
       "reference": {
@@ -316625,7 +316635,7 @@
        []
       ],
       "overlay-transition-backdrop.html.ini": [
-       "3356a7fbe7f1235bfe1e472a4ca4a89d351b4105",
+       "f3f57c8c5a35e59b9ad1356b4d65bee5fabdc988",
        []
       ]
      },
@@ -347612,7 +347622,7 @@
       []
      ],
      "featurepolicy.js": [
-      "864c434c6633ca7a91de229a7511dd0bd3109add",
+      "e9b8804f9641170f068fc644f1464eac4d0d713f",
       []
      ],
      "nested-sandbox.html": [
@@ -360068,7 +360078,7 @@
         []
        ],
        "iframe-popup-about-blank.https.window-expected.txt": [
-        "4d7977ccb09ac52c9798d779f680d39ea2584a70",
+        "77a90899109273fee237f222511b0a3dfe4cbd64",
         []
        ],
        "iframe-popup-about-blank.https.window.js.headers": [
@@ -360076,7 +360086,7 @@
         []
        ],
        "iframe-popup-about-blank.https.window.js.ini": [
-        "c4933cfe35557073d0c405357a57ea9607124979",
+        "557721d459e560367e458683f59f3efdce59f3f8",
         []
        ],
        "iframe-popup-to-so.https.html.headers": [
@@ -381898,7 +381908,7 @@
       []
      ],
      "permissions-policy.js": [
-      "62f8dcdf9155aebbf1d75ab999f9241d22281093",
+      "32fb4cfd4a9535c9cf7d25a381d0159e09136837",
       []
      ],
      "picture-in-picture.js": [
@@ -399072,16 +399082,8 @@
      "7a7c6a108cce78d9dfe446f16eb1b2e4d15a010c",
      []
     ],
-    "tanh.https.any-expected.txt": [
-     "0d577f0fc2404006526a543f3d3efa71a2144089",
-     []
-    ],
     "tanh.https.any.js.ini": [
      "8653a8c40b84c3330add3be1405493e87f71f6a1",
-     []
-    ],
-    "tanh.https.any.worker-expected.txt": [
-     "2575ea907da7ac1f3e783b9f8b2d5a2576702550",
      []
     ],
     "transpose.https.any.js.ini": [
@@ -399466,8 +399468,24 @@
      "29d4940a8ae80ea4acc9929bccd71de3b5b83b80",
      []
     ],
+    "back-forward-cache-with-closed-webrtc-connection-ccns.https.tentative.window-expected.txt": [
+     "e48f3ae11f7a597b608b6493cbcdbe286bdd9dee",
+     []
+    ],
+    "back-forward-cache-with-closed-webrtc-connection-ccns.https.tentative.window.js.ini": [
+     "fc67227927e7bbfa5188f6da798973e8a2582604",
+     []
+    ],
     "back-forward-cache-with-closed-webrtc-connection.https.window.js.ini": [
      "8ed492b448a3d034a6118b8a599560e019422b51",
+     []
+    ],
+    "back-forward-cache-with-open-webrtc-connection-ccns.https.tentative.window-expected.txt": [
+     "09c184935255c872413df20087eb8e07050b85d7",
+     []
+    ],
+    "back-forward-cache-with-open-webrtc-connection-ccns.https.tentative.window.js.ini": [
+     "dc00a0cd6276a0626408c95cb30bb11167b59520",
      []
     ],
     "back-forward-cache-with-open-webrtc-connection.https.window.js.ini": [
@@ -400220,8 +400238,24 @@
      "69f784da7be837dd93f4c3dae5236fd6a1960ad9",
      []
     ],
+    "back-forward-cache-with-closed-websocket-connection-ccns.tentative.window-expected.txt": [
+     "444dc8aecae2bd54de7432ad5233547746ff15a4",
+     []
+    ],
+    "back-forward-cache-with-closed-websocket-connection-ccns.tentative.window.js.ini": [
+     "d5b3122882e77ede8b3e1905922a3a8fa7d9bf12",
+     []
+    ],
     "back-forward-cache-with-closed-websocket-connection.window.js.ini": [
      "ac8d0ba759e397d802dcda1a826d8bd31ab44a67",
+     []
+    ],
+    "back-forward-cache-with-open-websocket-connection-ccns.tentative.window-expected.txt": [
+     "d8c0770c15d3082a6181732a011b203d531f7a9f",
+     []
+    ],
+    "back-forward-cache-with-open-websocket-connection-ccns.tentative.window.js.ini": [
+     "169a75c319fc491eef5e49df0e62b01441fb7193",
      []
     ],
     "back-forward-cache-with-open-websocket-connection.window.js.ini": [
@@ -400960,6 +400994,14 @@
     ],
     "__dir__.ini": [
      "3291dcef88d077daf5e6b8a226e8081b9e43b627",
+     []
+    ],
+    "back-forward-cache-with-closed-webtransport-connection-ccns.https.tentative.window-expected.txt": [
+     "257bbc9c7cc4e226d78fa61c8b780d094c3b4819",
+     []
+    ],
+    "back-forward-cache-with-open-webtransport-connection-ccns.https.tentative.window-expected.txt": [
+     "c2793e4d962296e28f1617385c21e113dc1bd513",
      []
     ],
     "back-forward-cache-with-open-webtransport-connection.https.window-expected.txt": [
@@ -548320,7 +548362,7 @@
         ]
        ],
        "iframe-popup-about-blank.https.window.js": [
-        "d63b69e83f33fe10d88c5e9aad59da0f596606e1",
+        "cafb4c4f8c517367a71fbb362c51e810dbf0a18d",
         [
          "html/cross-origin-opener-policy/tentative/restrict-properties/iframe-popup-about-blank.https.window.html",
          {
@@ -588195,7 +588237,7 @@
      ]
     ],
     "payment-allowed-by-permissions-policy-attribute-redirect-on-load.https.sub.html": [
-     "e43f4c80ced1f551046ae3ea8b950dfc88d3c0d5",
+     "b95deed7cef5ae9a82286543e6c1911c7bdaea4f",
      [
       null,
       {}
@@ -588216,14 +588258,14 @@
      ]
     ],
     "payment-default-permissions-policy.https.sub.html": [
-     "71ab15ae89c2766bfb6ffea40713de415690174a",
+     "da5fe80f66f0c27b8bac966ca72a27a96fb15a96",
      [
       null,
       {}
      ]
     ],
     "payment-disabled-by-permissions-policy.https.sub.html": [
-     "90f3a0ee031c78e9916b5c9d86d4589430031b09",
+     "cc358a1c0f6623a1ddcfa5d6e2d86b8290e2d7b2",
      [
       null,
       {}
@@ -616850,7 +616892,7 @@
       ]
      ],
      "response-code-successful.html": [
-      "adf8a8932f71b5e34008c4ce47674b886fc40ed9",
+      "710f4c17c7a3cd0246c92f8c7e6b96a04cf85d4d",
       [
        "speculation-rules/prerender/response-code-successful.html?code=200",
        {
@@ -616871,6 +616913,12 @@
       ],
       [
        "speculation-rules/prerender/response-code-successful.html?code=203",
+       {
+        "timeout": "long"
+       }
+      ],
+      [
+       "speculation-rules/prerender/response-code-successful.html?code=232",
        {
         "timeout": "long"
        }
@@ -647533,6 +647581,40 @@
       {}
      ]
     ],
+    "back-forward-cache-with-closed-webrtc-connection-ccns.https.tentative.window.js": [
+     "bc55a257a8e79fefbee8618df18db1a2366a98fe",
+     [
+      "webrtc/back-forward-cache-with-closed-webrtc-connection-ccns.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with closed WebRTC connection and \"Cache-Control: no-store\" header."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "resources/webrtc-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "back-forward-cache-with-closed-webrtc-connection.https.window.js": [
      "320803adec29361de02f2537c72c231aa290458b",
      [
@@ -647542,6 +647624,40 @@
         [
          "title",
          "Testing BFCache support for page with closed WebRTC connection."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "resources/webrtc-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "back-forward-cache-with-open-webrtc-connection-ccns.https.tentative.window.js": [
+     "01c6efe5b4ae3423fe217d6c640606f0a7cad2b4",
+     [
+      "webrtc/back-forward-cache-with-open-webrtc-connection-ccns.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with open WebRTC connection and \"Cache-Control: no-store\" header."
         ],
         [
          "script",
@@ -656014,6 +656130,44 @@
       }
      ]
     ],
+    "back-forward-cache-with-closed-websocket-connection-ccns.tentative.window.js": [
+     "ccc45f2877da96e62110745c57fb06646ae59a45",
+     [
+      "websockets/back-forward-cache-with-closed-websocket-connection-ccns.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with closed WebSocket connection and \"Cache-Control: no-store\" header."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "/websockets/constants.sub.js"
+        ],
+        [
+         "script",
+         "resources/websockets-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "back-forward-cache-with-closed-websocket-connection.window.js": [
      "30b8e63a2cd595d1186c1d4737d150dec157b755",
      [
@@ -656023,6 +656177,44 @@
         [
          "title",
          "Testing BFCache support for page with closed WebSocket connection."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "/websockets/constants.sub.js"
+        ],
+        [
+         "script",
+         "resources/websockets-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "back-forward-cache-with-open-websocket-connection-ccns.tentative.window.js": [
+     "563fd4792ef524bae0561a77fa9282549554b8bc",
+     [
+      "websockets/back-forward-cache-with-open-websocket-connection-ccns.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with open WebSocket connection and \"Cache-Control: no-store\" header."
         ],
         [
          "script",
@@ -660881,6 +661073,44 @@
     ]
    },
    "webtransport": {
+    "back-forward-cache-with-closed-webtransport-connection-ccns.https.tentative.window.js": [
+     "7dce255173723f1d5d37a2130de86e9bedb15e74",
+     [
+      "webtransport/back-forward-cache-with-closed-webtransport-connection-ccns.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with closed WebTransport connection and \"Cache-Control: no-store\" header."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
     "back-forward-cache-with-closed-webtransport-connection.https.window.js": [
      "5cc7e93a2e14d5453e5f44630dac8745380d4c47",
      [
@@ -660890,6 +661120,44 @@
         [
          "title",
          "Testing BFCache support for page with closed WebTransport connection."
+        ],
+        [
+         "script",
+         "/common/dispatcher/dispatcher.js"
+        ],
+        [
+         "script",
+         "/common/get-host-info.sub.js"
+        ],
+        [
+         "script",
+         "/common/utils.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/back-forward-cache/resources/rc-helper.js"
+        ],
+        [
+         "script",
+         "/html/browsers/browsing-the-web/remote-context-helper/resources/remote-context-helper.js"
+        ],
+        [
+         "script",
+         "resources/webtransport-test-helpers.sub.js"
+        ]
+       ]
+      }
+     ]
+    ],
+    "back-forward-cache-with-open-webtransport-connection-ccns.https.tentative.window.js": [
+     "077957a39d9a135fd3ddc1f30b43d0a9c30ae794",
+     [
+      "webtransport/back-forward-cache-with-open-webtransport-connection-ccns.https.tentative.window.html",
+      {
+       "script_metadata": [
+        [
+         "title",
+         "Testing BFCache support for page with open WebTransport connection and \"Cache-Control: no-store\" header."
         ],
         [
          "script",
