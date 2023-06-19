@@ -15,6 +15,12 @@
 #include "content/public/browser/navigation_handle.h"
 #include "google_apis/gaia/gaia_auth_util.h"
 
+DiceTabHelper::ResetableState::ResetableState() = default;
+DiceTabHelper::ResetableState::ResetableState(const ResetableState& other) =
+    default;
+DiceTabHelper::ResetableState& DiceTabHelper::ResetableState::operator=(
+    const ResetableState& other) = default;
+
 DiceTabHelper::DiceTabHelper(content::WebContents* web_contents)
     : content::WebContentsUserData<DiceTabHelper>(*web_contents),
       content::WebContentsObserver(web_contents) {}
@@ -28,30 +34,31 @@ void DiceTabHelper::InitializeSigninFlow(
     signin_metrics::PromoAction promo_action,
     const GURL& redirect_url) {
   DCHECK(signin_url.is_valid());
-  DCHECK(signin_url_.is_empty() || signin_url_ == signin_url);
+  DCHECK(state_.signin_url.is_empty() || state_.signin_url == signin_url);
 
-  signin_url_ = signin_url;
-  signin_access_point_ = access_point;
-  signin_reason_ = reason;
-  signin_promo_action_ = promo_action;
+  Reset();
+  state_.redirect_url = redirect_url;
+  state_.signin_url = signin_url;
+  state_.signin_access_point = access_point;
+  state_.signin_promo_action = promo_action;
+  state_.signin_reason = reason;
+
   is_chrome_signin_page_ = true;
   signin_page_load_recorded_ = false;
-  redirect_url_ = redirect_url;
-  sync_signin_flow_status_ = SyncSigninFlowStatus::kNotStarted;
 
   // Note: if a Dice signin tab is reused, `InitializeSigninFlow()` is not
   // called again, and the tab reuse does not generate new metrics.
 
-  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount ||
-      signin_reason_ == signin_metrics::Reason::kAddSecondaryAccount) {
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount ||
+      reason == signin_metrics::Reason::kAddSecondaryAccount) {
     // See details at go/chrome-signin-metrics-revamp.
     base::UmaHistogramEnumeration(
         "Signin.SignIn.Started", access_point,
         signin_metrics::AccessPoint::ACCESS_POINT_MAX);
   }
 
-  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount) {
-    sync_signin_flow_status_ = SyncSigninFlowStatus::kStarted;
+  if (reason == signin_metrics::Reason::kSigninPrimaryAccount) {
+    state_.sync_signin_flow_status = SyncSigninFlowStatus::kStarted;
     signin_metrics::LogSigninAccessPointStarted(access_point, promo_action);
     signin_metrics::RecordSigninUserActionForAccessPoint(access_point);
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Loading"));
@@ -63,12 +70,12 @@ bool DiceTabHelper::IsChromeSigninPage() const {
 }
 
 bool DiceTabHelper::IsSyncSigninInProgress() const {
-  return sync_signin_flow_status_ == SyncSigninFlowStatus::kStarted;
+  return state_.sync_signin_flow_status == SyncSigninFlowStatus::kStarted;
 }
 
 void DiceTabHelper::OnSyncSigninFlowComplete() {
   // The flow is complete, reset to initial state.
-  sync_signin_flow_status_ = SyncSigninFlowStatus::kNotStarted;
+  Reset();
 }
 
 void DiceTabHelper::DidStartNavigation(
@@ -111,7 +118,7 @@ void DiceTabHelper::DidFinishNavigation(
     return;
   }
 
-  if (signin_reason_ == signin_metrics::Reason::kSigninPrimaryAccount &&
+  if (state_.signin_reason == signin_metrics::Reason::kSigninPrimaryAccount &&
       !signin_page_load_recorded_) {
     signin_page_load_recorded_ = true;
     base::RecordAction(base::UserMetricsAction("Signin_SigninPage_Shown"));
@@ -121,8 +128,12 @@ void DiceTabHelper::DidFinishNavigation(
 bool DiceTabHelper::IsSigninPageNavigation(
     content::NavigationHandle* navigation_handle) const {
   return !navigation_handle->IsErrorPage() &&
-         navigation_handle->GetRedirectChain()[0] == signin_url_ &&
+         navigation_handle->GetRedirectChain()[0] == state_.signin_url &&
          gaia::HasGaiaSchemeHostPort(navigation_handle->GetURL());
+}
+
+void DiceTabHelper::Reset() {
+  state_ = {};
 }
 
 WEB_CONTENTS_USER_DATA_KEY_IMPL(DiceTabHelper);

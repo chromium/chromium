@@ -23,18 +23,18 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   ~DiceTabHelper() override;
 
   signin_metrics::AccessPoint signin_access_point() const {
-    return signin_access_point_;
+    return state_.signin_access_point;
   }
 
   signin_metrics::PromoAction signin_promo_action() const {
-    return signin_promo_action_;
+    return state_.signin_promo_action;
   }
 
-  signin_metrics::Reason signin_reason() const { return signin_reason_; }
+  signin_metrics::Reason signin_reason() const { return state_.signin_reason; }
 
-  const GURL& redirect_url() const { return redirect_url_; }
+  const GURL& redirect_url() const { return state_.redirect_url; }
 
-  const GURL& signin_url() const { return signin_url_; }
+  const GURL& signin_url() const { return state_.signin_url; }
 
   // Initializes the DiceTabHelper for a new signin flow. Must be called once
   // per signin flow happening in the tab, when the signin URL is being loaded.
@@ -68,6 +68,27 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   // kNotStarted: there is no sync signin flow in progress.
   enum class SyncSigninFlowStatus { kNotStarted, kStarted };
 
+  struct ResetableState {
+    ResetableState();
+    ResetableState(const ResetableState& other);
+    ResetableState& operator=(const ResetableState& other);
+
+    GURL redirect_url;
+    GURL signin_url;
+
+    // By default the access point refers to web signin, as after a reset the
+    // user may sign in again in the same tab.
+    signin_metrics::AccessPoint signin_access_point =
+        signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN;
+
+    signin_metrics::PromoAction signin_promo_action =
+        signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
+    signin_metrics::Reason signin_reason =
+        signin_metrics::Reason::kUnknownReason;
+    SyncSigninFlowStatus sync_signin_flow_status =
+        SyncSigninFlowStatus::kNotStarted;
+  };
+
   // content::WebContentsObserver:
   void DidStartNavigation(
       content::NavigationHandle* navigation_handle) override;
@@ -78,18 +99,13 @@ class DiceTabHelper : public content::WebContentsUserData<DiceTabHelper>,
   bool IsSigninPageNavigation(
       content::NavigationHandle* navigation_handle) const;
 
-  GURL redirect_url_;
-  GURL signin_url_;
-  signin_metrics::AccessPoint signin_access_point_ =
-      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN;
-  signin_metrics::PromoAction signin_promo_action_ =
-      signin_metrics::PromoAction::PROMO_ACTION_NO_SIGNIN_PROMO;
-  signin_metrics::Reason signin_reason_ =
-      signin_metrics::Reason::kUnknownReason;
+  // Resets the internal state to the initial values.
+  void Reset();
+
+  ResetableState state_;
+
   bool is_chrome_signin_page_ = false;
   bool signin_page_load_recorded_ = false;
-  SyncSigninFlowStatus sync_signin_flow_status_ =
-      SyncSigninFlowStatus::kNotStarted;
 
   WEB_CONTENTS_USER_DATA_KEY_DECL();
 };

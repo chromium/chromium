@@ -57,7 +57,7 @@ TEST_F(DiceTabHelperTest, Initialization) {
       DiceTabHelper::FromWebContents(web_contents());
 
   // Check default state.
-  EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
+  EXPECT_EQ(signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN,
             dice_tab_helper->signin_access_point());
   EXPECT_EQ(signin_metrics::Reason::kUnknownReason,
             dice_tab_helper->signin_reason());
@@ -277,7 +277,6 @@ TEST_F(DiceTabHelperPrerenderTest, SigninStatusAfterPrerendering) {
   InitializeDiceTabHelper(dice_tab_helper,
                           signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
                           signin_metrics::Reason::kSigninPrimaryAccount);
-  dice_tab_helper->OnSyncSigninFlowComplete();
   EXPECT_TRUE(dice_tab_helper->IsChromeSigninPage());
   EXPECT_EQ(1, ua_tester.GetActionCount("Signin_SigninPage_Shown"));
 
