@@ -4869,7 +4869,7 @@
     Upgrade Linux
   </message>
   <message name="IDS_CROSTINI_UPGRADER_BODY" desc="Description for the Crostini upgrader, a dialog for upgrading Linux.">
-    For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START">&lt;a href="$1" target="_top"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
+    For the best performance, upgrade to the latest version. Backing up your files is recommended in case the upgrade can’t be completed. Once the upgrade begins, Linux will shut down. Save open files before continuing. <ph name="LINK_START">&lt;a href="$1" target="_blank"&gt;</ph>Learn more<ph name="LINK_END">&lt;/a&gt;</ph>
   </message>
   <message name="IDS_CROSTINI_UPGRADER_UPGRADE_BUTTON" desc="Label for the button in the Crostini upgrader dialog to begin upgrading Linux.">
     Upgrade

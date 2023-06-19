@@ -409,6 +409,8 @@ static constexpr const char* const kChromeUrls[] = {
     // "chrome://confirm-password-change",
     "chrome://cloud-upload",
     "chrome://connectivity-diagnostics",
+    "chrome://crostini-installer",
+    "chrome://crostini-upgrader",
     "chrome://cryptohome",
     "chrome://drive-internals",
     "chrome://emoji-picker",

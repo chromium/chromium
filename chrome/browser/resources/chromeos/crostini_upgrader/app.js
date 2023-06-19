@@ -10,6 +10,7 @@ import './strings.m.js';
 
 import {assert, assertNotReached} from 'chrome://resources/ash/common/assert.js';
 import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
+import {sanitizeInnerHtml} from 'chrome://resources/js/parse_html_subset.js';
 import {Polymer} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './app.html.js';
@@ -477,7 +478,7 @@ Polymer({
 
   /**
    * @param {State} state
-   * @return {string}
+   * @return {TrustedHTML}
    * @private
    */
   getProgressMessage_(state, precheckStatus, file_name) {
@@ -514,14 +515,17 @@ Polymer({
         messageId = 'restoreErrorMessage';
         break;
       case State.SUCCEEDED:
-        return loadTimeData.getStringF('logFileMessageSuccess', file_name);
+        return sanitizeInnerHtml(
+            loadTimeData.getStringF('logFileMessageSuccess', file_name));
         break;
       case State.UPGRADE_ERROR:
       case State.OFFER_RESTORE:
-        return loadTimeData.getStringF('logFileMessageError', file_name);
+        return sanitizeInnerHtml(
+            loadTimeData.getStringF('logFileMessageError', file_name));
         break;
     }
-    return messageId ? loadTimeData.getString(messageId) : '';
+    return messageId ? sanitizeInnerHtml(loadTimeData.getString(messageId)) :
+                       trustedTypes.emptyHTML;
   },
 
   /**
