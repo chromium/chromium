@@ -123,6 +123,7 @@ class CORE_EXPORT NGSimpleInlineChildLayoutContext
 
 // A subclass of `NGInlineChildLayoutContext` for when the algorithm requires
 // `NGScoreLineBreakContext`.
+template <wtf_size_t max_lines>
 class CORE_EXPORT NGOptimalInlineChildLayoutContext
     : public NGInlineChildLayoutContext {
  public:
@@ -133,7 +134,7 @@ class CORE_EXPORT NGOptimalInlineChildLayoutContext
                                    &score_line_break_context_instance_) {}
 
  private:
-  NGScoreLineBreakContext score_line_break_context_instance_;
+  NGScoreLineBreakContextOf<max_lines> score_line_break_context_instance_;
 };
 
 inline NGLineInfo& NGInlineChildLayoutContext::GetLineInfo(

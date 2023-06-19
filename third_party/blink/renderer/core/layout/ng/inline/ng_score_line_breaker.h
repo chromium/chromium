@@ -56,6 +56,10 @@ class CORE_EXPORT NGScoreLineBreaker {
     DCHECK(!node.IsScoreLineBreakDisabled());
   }
 
+  wtf_size_t MaxLines() const {
+    return is_balanced_ ? kMaxLinesForBalance : kMaxLinesForOptimal;
+  }
+
   const NGConstraintSpace& ConstraintSpace() const { return space_; }
   const NGInlineBreakToken* BreakToken() const { return break_token_; }
 

@@ -13,11 +13,17 @@
 
 namespace blink {
 
-using NGLineBreakPoints = Vector<NGLineBreakPoint, NGLineInfoList::kCapacity>;
+// The maximum number of lines for the balancing and the optimal line breaking.
+constexpr wtf_size_t kMaxLinesForBalance = 10;
+constexpr wtf_size_t kMaxLinesForOptimal = 4;
+
+using NGLineBreakPoints = Vector<NGLineBreakPoint, kMaxLinesForBalance>;
 
 //
 // Represents states and fields for `NGScoreLineBreaker` that should be kept
 // across lines in an inline formatting context.
+//
+// Use `NGScoreLineBreakContextOf` to instantiate.
 //
 class CORE_EXPORT NGScoreLineBreakContext {
   STACK_ALLOCATED();
@@ -40,11 +46,28 @@ class CORE_EXPORT NGScoreLineBreakContext {
   // Update states after a line was created.
   void DidCreateLine(bool is_end_paragraph);
 
+ protected:
+  explicit NGScoreLineBreakContext(NGLineInfoList& line_info_list)
+      : line_info_list_(line_info_list) {}
+
  private:
-  NGLineInfoList line_info_list_;
+  NGLineInfoList& line_info_list_;
   NGLineBreakPoints line_break_points_;
   wtf_size_t line_break_points_index_ = 0;
   bool is_suspended_ = false;
+};
+
+//
+// Instantiate `NGScoreLineBreakContext` with the given `max_lines`.
+//
+template <wtf_size_t max_lines>
+class CORE_EXPORT NGScoreLineBreakContextOf : public NGScoreLineBreakContext {
+ public:
+  NGScoreLineBreakContextOf()
+      : NGScoreLineBreakContext(line_info_list_instance_) {}
+
+ private:
+  NGLineInfoListOf<max_lines> line_info_list_instance_;
 };
 
 inline const NGLineBreakPoint* NGScoreLineBreakContext::CurrentLineBreakPoint()

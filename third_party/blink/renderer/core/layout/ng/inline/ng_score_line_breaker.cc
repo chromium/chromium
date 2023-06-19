@@ -26,7 +26,9 @@ void NGScoreLineBreaker::OptimalBreakPoints(
   DCHECK(!node_.IsScoreLineBreakDisabled());
   DCHECK(context.IsActive());
   NGLineInfoList& line_info_list = context.LineInfoList();
-  DCHECK_LT(line_info_list.Size(), NGLineInfoList::kCapacity);
+  const wtf_size_t max_lines = MaxLines();
+  DCHECK_GE(line_info_list.MaxLines(), max_lines);
+  DCHECK_LT(line_info_list.Size(), max_lines);
   wtf_size_t line_index = 0;
   if (!line_info_list.IsEmpty()) {
     line_index = line_info_list.Size();
@@ -64,7 +66,7 @@ void NGScoreLineBreaker::OptimalBreakPoints(
     }
     DCHECK(!line_info.Results().empty());
     DCHECK(!line_breaker.IsFinished());
-    if (line_info_list.Size() >= NGLineInfoList::kCapacity) {
+    if (line_info_list.Size() >= max_lines) {
       return;
     }
 
@@ -323,7 +325,7 @@ void NGScoreLineBreaker::ComputeBreakPoints(
   DCHECK_GE(candidates.size(), 3u);
   DCHECK_EQ(candidates.size(), scores.size());
   DCHECK(break_points.empty());
-  DCHECK_LE(scores.back().line_index, NGLineInfoList::kCapacity);
+  DCHECK_LE(scores.back().line_index, MaxLines());
 
   for (wtf_size_t i = scores.size() - 1, prev_index; i > 0; i = prev_index) {
     prev_index = scores[i].prev_index;

@@ -69,7 +69,7 @@ class NGScoreLineBreakerTest : public RenderingTest {
     Vector<float> scores;
     optimizer.SetScoresOutForTesting(&scores);
     NGLeadingFloats empty_leading_floats;
-    NGScoreLineBreakContext context;
+    NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
     return scores;
   }
@@ -99,7 +99,7 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineWidths line_widths(width);
-  NGScoreLineBreakContext context;
+  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   const NGInlineBreakToken* break_token = nullptr;
   NGExclusionSpace exclusion_space;
@@ -107,10 +107,10 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
                                &exclusion_space);
 
   // Run the optimizer from the beginning of the `target`. This should cache
-  // `NGLineInfoList::kCapacity` lines.
+  // `optimizer.MaxLines()` lines.
   NGLeadingFloats empty_leading_floats;
   optimizer.OptimalBreakPoints(empty_leading_floats, context);
-  EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity);
+  EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
   TestLinesAreContiguous(line_info_list);
 
   // Then continue until `NGScoreLineBreaker` consumes all lines in the block.
@@ -120,17 +120,17 @@ TEST_F(NGScoreLineBreakerTest, LastLines) {
     bool is_cached = false;
     const NGLineInfo& line_info0 = line_info_list.Get(break_token, is_cached);
     EXPECT_TRUE(is_cached);
-    EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity - 1);
+    EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines() - 1);
     break_token = line_info0.BreakToken();
     // Running again should cache one more line.
     optimizer.OptimalBreakPoints(empty_leading_floats, context);
-    EXPECT_EQ(line_info_list.Size(), NGLineInfoList::kCapacity);
+    EXPECT_EQ(line_info_list.Size(), optimizer.MaxLines());
     TestLinesAreContiguous(line_info_list);
   }
   // All is done. The `BreakToken` should be null, and there should be 6 lines.
   EXPECT_FALSE(line_info_list.Back().BreakToken());
   constexpr wtf_size_t target_num_lines = 6;
-  EXPECT_EQ(count, target_num_lines - NGLineInfoList::kCapacity);
+  EXPECT_EQ(count, target_num_lines - optimizer.MaxLines());
 }
 
 TEST_F(NGScoreLineBreakerTest, BalanceMaxLinesExceeded) {
@@ -197,7 +197,7 @@ TEST_P(BlockInInlineTest, BeforeAfter) {
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineWidths line_widths(width);
-  NGScoreLineBreakContext context;
+  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
   NGExclusionSpace exclusion_space;
@@ -255,7 +255,7 @@ TEST_F(NGScoreLineBreakerTest, ForcedBreak) {
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineWidths line_widths(width);
-  NGScoreLineBreakContext context;
+  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   NGLineInfoList& line_info_list = context.LineInfoList();
   NGLineBreakPoints& break_points = context.LineBreakPoints();
   const NGInlineBreakToken* break_token = nullptr;
@@ -383,7 +383,7 @@ TEST_P(DisabledByLineBreakerTest, Data) {
   const LayoutUnit width = FragmentWidth(node);
   NGConstraintSpace space = ConstraintSpaceForAvailableSize(width);
   NGLineWidths line_widths(width);
-  NGScoreLineBreakContext context;
+  NGScoreLineBreakContextOf<kMaxLinesForOptimal> context;
   const NGInlineBreakToken* break_token = nullptr;
   NGExclusionSpace exclusion_space;
   NGScoreLineBreaker optimizer(node, space, line_widths, break_token,

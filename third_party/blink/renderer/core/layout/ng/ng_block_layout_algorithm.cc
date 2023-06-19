@@ -208,20 +208,6 @@ LogicalOffset LogicalFromBfcOffsets(const NGBfcOffset& child_bfc_offset,
           child_bfc_offset.block_offset - parent_bfc_offset.block_offset};
 }
 
-// Whether the `node` reuqires `NGLineInfoList` or not.
-inline bool NeedsOptimalInlineChildLayoutContext(const NGInlineNode& node) {
-  const TextWrap wrap = node.Style().GetTextWrap();
-  if (UNLIKELY(wrap == TextWrap::kPretty)) {
-    DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
-    return !node.IsScoreLineBreakDisabled();
-  }
-  if (UNLIKELY(wrap == TextWrap::kBalance)) {
-    return RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled() &&
-           !node.IsScoreLineBreakDisabled();
-  }
-  return false;
-}
-
 }  // namespace
 
 NGBlockLayoutAlgorithm::NGBlockLayoutAlgorithm(
@@ -460,11 +446,7 @@ const NGLayoutResult* NGBlockLayoutAlgorithm::Layout() {
   // only on demand, as it's quite big.
   NGInlineNode inline_child(nullptr);
   if (Node().IsInlineFormattingContextRoot(&inline_child)) {
-    if (UNLIKELY(NeedsOptimalInlineChildLayoutContext(inline_child))) {
-      result = LayoutWithOptimalInlineChildLayoutContext(inline_child);
-    } else {
-      result = LayoutWithSimpleInlineChildLayoutContext(inline_child);
-    }
+    result = LayoutInlineChild(inline_child);
   } else {
     result = Layout(nullptr);
   }
@@ -506,6 +488,25 @@ NGBlockLayoutAlgorithm::HandleNonsuccessfulLayoutResult(
   }
 }
 
+const NGLayoutResult* NGBlockLayoutAlgorithm::LayoutInlineChild(
+    const NGInlineNode& node) {
+  const TextWrap wrap = node.Style().GetTextWrap();
+  if (UNLIKELY(wrap == TextWrap::kPretty)) {
+    DCHECK(RuntimeEnabledFeatures::CSSTextWrapPrettyEnabled());
+    if (!node.IsScoreLineBreakDisabled()) {
+      return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForOptimal>(
+          node);
+    }
+  } else if (UNLIKELY(wrap == TextWrap::kBalance)) {
+    if (RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled() &&
+        !node.IsScoreLineBreakDisabled()) {
+      return LayoutWithOptimalInlineChildLayoutContext<kMaxLinesForBalance>(
+          node);
+    }
+  }
+  return LayoutWithSimpleInlineChildLayoutContext(node);
+}
+
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
     const NGInlineNode& child) {
@@ -514,10 +515,12 @@ NGBlockLayoutAlgorithm::LayoutWithSimpleInlineChildLayoutContext(
   return result;
 }
 
+template <wtf_size_t capacity>
 NOINLINE const NGLayoutResult*
 NGBlockLayoutAlgorithm::LayoutWithOptimalInlineChildLayoutContext(
     const NGInlineNode& child) {
-  NGOptimalInlineChildLayoutContext context(child, &container_builder_);
+  NGOptimalInlineChildLayoutContext<capacity> context(child,
+                                                      &container_builder_);
   const NGLayoutResult* result = Layout(&context);
   return result;
 }
