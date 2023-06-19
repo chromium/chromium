@@ -21,6 +21,7 @@ found in the LICENSE file.
         app:allowDividerBelow="false" />
 
     <org.chromium.components.browser_ui.settings.TextMessagePreference
+        android:key="topics_learn_more_bullet_3"
         android:summary="@string/settings_topics_page_learn_more_bullet_3"
         app:allowDividerBelow="false" />
 

@@ -2098,8 +2098,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_1},
       {"topicsPageLearnMoreBullet2",
        IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_2},
-      {"topicsPageLearnMoreBullet3",
-       IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3},
       {"topicsPageCurrentTopicsDescriptionDisabled",
        IDS_SETTINGS_TOPICS_PAGE_CURRENT_TOPICS_DESCRIPTION_DISABLED},
       {"topicsPageCurrentTopicsDescriptionEmpty",
@@ -2157,8 +2155,6 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
        IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_1},
       {"fledgePageLearnMoreBullet2",
        IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_2},
-      {"fledgePageLearnMoreBullet3",
-       IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3},
       {"fledgePageCurrentSitesDescriptionLearnMoreA11yLabel",
        IDS_SETTINGS_FLEDGE_PAGE_CURRENT_SITES_DESCRIPTION_LEARN_MORE_A11Y_LABEL},
       {"adMeasurementPageTitle", IDS_SETTINGS_AD_MEASUREMENT_PAGE_TITLE},
@@ -2196,6 +2192,25 @@ void AddPrivacySandboxStrings(content::WebUIDataSource* html_source,
       l10n_util::GetStringFUTF16(
           IDS_SETTINGS_PRIVACY_SANDBOX_AD_MEASUREMENT_DIALOG_CONTROL_MEASUREMENT,
           base::ASCIIToUTF16(chrome::kChromeUIHistoryURL)));
+
+  // Topics and fledge link to help center articles in their learn more dialog.
+  html_source->AddString(
+      "topicsPageLearnMoreBullet3",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_TOPICS_PAGE_LEARN_MORE_BULLET_3,
+          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                                 GURL(chrome::kAdPrivacyLearnMoreURL),
+                                 g_browser_process->GetApplicationLocale())
+                                 .spec())));
+  html_source->AddString(
+      "fledgePageLearnMoreBullet3",
+      l10n_util::GetStringFUTF16(
+          IDS_SETTINGS_FLEDGE_PAGE_LEARN_MORE_BULLET_3,
+          base::ASCIIToUTF16(google_util::AppendGoogleLocaleParam(
+                                 GURL(chrome::kAdPrivacyLearnMoreURL),
+                                 g_browser_process->GetApplicationLocale())
+                                 .spec())));
+
   // Topics and fledge both link to the cookies setting page and cross-link
   // each other in the footers.
   html_source->AddString(
