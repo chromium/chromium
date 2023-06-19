@@ -5,6 +5,7 @@
 #include "components/autofill/core/browser/metrics/quality_metrics.h"
 
 #include "base/containers/contains.h"
+#include "base/metrics/histogram_functions.h"
 #include "components/autofill/core/browser/autofill_data_util.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics_utils.h"
@@ -264,15 +265,19 @@ void LogQualityMetrics(
       }
     }
 
-    // If the form was submitted, record if field types have been filled and
-    // subsequently edited by the user.
     if (observed_submission) {
+      // If the form was submitted, record if field types have been filled and
+      // subsequently edited by the user.
       if (field->is_autofilled || field->previously_autofilled()) {
         // TODO(crbug.com/1368096): This metric is defective because it is
         // conditioned on having a possible field type. Remove after M112.
         AutofillMetrics::LogEditedAutofilledFieldAtSubmissionDeprecated(
             form_interactions_ukm_logger, form_structure, *field);
       }
+
+      base::UmaHistogramEnumeration(
+          "Autofill.LabelInference.InferredLabelSource.AtSubmission",
+          field->label_source);
     }
   }
 

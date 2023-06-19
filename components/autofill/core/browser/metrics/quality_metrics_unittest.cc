@@ -857,6 +857,42 @@ TEST_F(QualityMetricsTest, BasedOnAutocomplete) {
   }
 }
 
+// Tests that the Autofill.LabelInference.InferredLabelSource.AtSubmission
+// metric is emitted correctly.
+TEST_F(QualityMetricsTest, InferredLabelSourceAtSubmissionMetric) {
+  const AutofillProfile& profile =
+      *personal_data().GetProfileByGUID(kTestProfileId);
+
+  // Create a form and fill the `name_field` and `country_field` with values
+  // from the `profile`, ensuring that they have a possible type. The
+  // `street_field` is filled with an unknown value, which makes sure that it
+  // doesn't have a possible type.
+  // The `FormFieldData::label_source` of the fields is set manually, since
+  // this test doesn't run label inference.
+  FormFieldData name_field;
+  name_field.value = profile.GetInfo(NAME_FULL, personal_data().app_locale());
+  name_field.label_source = FormFieldData::LabelSource::kUnknown;
+  FormFieldData street_field;
+  street_field.value = u"unknown";
+  street_field.label_source = FormFieldData::LabelSource::kFor;
+  FormFieldData country_field;
+  country_field.value =
+      profile.GetInfo(ADDRESS_HOME_COUNTRY, personal_data().app_locale());
+  country_field.label_source = FormFieldData::LabelSource::kLabelTag;
+  const FormData form = CreateForm({name_field, street_field, country_field});
+  autofill_manager().AddSeenForm(
+      form, {NAME_FIRST, ADDRESS_HOME_LINE1, ADDRESS_HOME_COUNTRY});
+
+  // Expect that the label source of all fields with a possible type is logged
+  // on form submission.
+  base::HistogramTester histogram_tester;
+  SubmitForm(form);
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "Autofill.LabelInference.InferredLabelSource.AtSubmission"),
+              BucketsAre(Bucket(name_field.label_source, 1),
+                         Bucket(country_field.label_source, 1)));
+}
+
 }  // namespace autofill_metrics
 
 }  // namespace autofill
