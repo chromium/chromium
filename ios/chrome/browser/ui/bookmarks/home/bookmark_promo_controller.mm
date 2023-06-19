@@ -12,14 +12,17 @@
 #import "components/signin/public/identity_manager/account_info.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/service/sync_service.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
 #import "ios/chrome/browser/signin/identity_manager_factory.h"
+#import "ios/chrome/browser/sync/sync_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_configurator.h"
 #import "ios/chrome/browser/ui/authentication/cells/signin_promo_view_consumer.h"
 #import "ios/chrome/browser/ui/authentication/signin_promo_view_mediator.h"
+#import "ios/chrome/browser/ui/bookmarks/bookmark_utils_ios.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -63,8 +66,6 @@
                                   ACCESS_POINT_BOOKMARK_MANAGER
                     presenter:presenter
            baseViewController:baseViewController];
-    _signinPromoViewMediator.signInOnly =
-        base::FeatureList::IsEnabled(bookmarks::kEnableBookmarksAccountStorage);
     _signinPromoViewMediator.consumer = self;
     [self updateShouldShowSigninPromo];
   }
@@ -119,10 +120,16 @@
           prefs->GetString(prefs::kGoogleServicesLastGaiaId);
       // If the last signed-in user did not remove data during sign-out, don't
       // show the signin promo.
-      self.shouldShowSigninPromo = lastSignedInGaiaId.empty();
+      if (lastSignedInGaiaId.empty()) {
+        self.shouldShowSigninPromo = YES;
+        _signinPromoViewMediator.signInOnly = YES;
+      } else {
+        self.shouldShowSigninPromo = NO;
+      }
     } else {
       // If the user is not signed in, the promo should be visible.
       self.shouldShowSigninPromo = YES;
+      _signinPromoViewMediator.signInOnly = NO;
     }
     return;
   }
@@ -131,17 +138,25 @@
     self.shouldShowSigninPromo = NO;
     return;
   }
-  if (!base::FeatureList::IsEnabled(
-          bookmarks::kEnableBookmarksAccountStorage)) {
-    // If the account storage feature is not available, the promo should be
-    // visible to show "Turn on Sync promo".
+  syncer::SyncService* syncService =
+      SyncServiceFactory::GetForBrowserState(browserState);
+  if (!bookmark_utils_ios::IsAccountBookmarkStorageOptedIn(syncService)) {
+    // The user signed in, but not opted into syncing bookmarks - show sync
+    // promo.
     self.shouldShowSigninPromo = YES;
+    _signinPromoViewMediator.signInOnly = NO;
     return;
   }
-  // if the account storage feature is available and the user is signed in only,
-  // the promo should be visible only if the first sync is not finished yet.
-  // This is show the activity indicator.
-  self.shouldShowSigninPromo = [self.delegate isPerformingInitialSync];
+  if ([self.delegate isPerformingInitialSync]) {
+    // The user is opted into syncing bookmarks, but the first sync is not
+    // finished yet - keep the promo visible to show the spinner.
+    self.shouldShowSigninPromo = YES;
+    _signinPromoViewMediator.signInOnly = YES;
+    return;
+  }
+  // The user is opted into syncing bookmarks and the first sync is done - hide
+  // the promo.
+  self.shouldShowSigninPromo = NO;
 }
 
 #pragma mark - IdentityManagerObserverBridgeDelegate

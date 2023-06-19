@@ -178,8 +178,11 @@ void ResetSyncSelectedDataTypes() {
       chrome_test_util::GetOriginalBrowserState();
   syncer::SyncService* syncService =
       SyncServiceFactory::GetForBrowserState(browserState);
-  syncService->GetUserSettings()->SetSelectedTypes(/*sync_everything=*/true,
-                                                   {});
+  syncer::SyncUserSettings* settings = syncService->GetUserSettings();
+  // Explicitly enable all selectable types, this ensures that
+  // BookmarksAndReadingListAccountStorageOptIn works as expected.
+  settings->SetSelectedTypes(
+      /*sync_everything=*/true, settings->GetRegisteredSelectableTypes());
 }
 
 }  // namespace chrome_test_util

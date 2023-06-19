@@ -817,6 +817,16 @@ const char* AlreadySeenSigninViewPreferenceKey(
                                       identityChanged:NO];
 }
 
+- (void)setSignInInOnly:(BOOL)signInOnly {
+  if (_signInOnly == signInOnly) {
+    return;
+  }
+  _signInOnly = signInOnly;
+  SigninPromoViewConfigurator* configurator = [self createConfigurator];
+  [self.consumer configureSigninPromoWithConfigurator:configurator
+                                      identityChanged:NO];
+}
+
 // Records in histogram, the number of time the sign-in promo is displayed
 // before the sign-in button is pressed, if the current access point supports
 // it.

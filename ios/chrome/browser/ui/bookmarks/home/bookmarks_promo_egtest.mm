@@ -63,7 +63,6 @@ using chrome_test_util::SecondarySignInButton;
     config.features_enabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
   } else if ([self isRunningTest:@selector(testPromoViewBodyLegacy)] ||
-             [self isRunningTest:@selector(testTurnOnSyncPromo)] ||
              [self isRunningTest:@selector
                    (testSignInPromoWithIdentitiesUsingPrimaryButton)] ||
              [self isRunningTest:@selector
