@@ -83,6 +83,26 @@ class SystemWebAppLinkCaptureBrowserTest
   }
   ~SystemWebAppLinkCaptureBrowserTest() override = default;
 
+  bool IsLacrosOnly() {
+    return GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled;
+  }
+
+  content::WebContents* CreateInitiatingWebContents() {
+    if (IsLacrosOnly()) {
+      // Ash can only have app windows, launch the helper app.
+      return LaunchApp(kInitiatingAppType);
+    } else {
+      // Ash can have ordinary tabbed browser windows.
+      GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
+      NavigateToURLAndWait(browser(), kInitiatingChromeUrl);
+      EXPECT_EQ(kInitiatingChromeUrl, browser()
+                                          ->tab_strip_model()
+                                          ->GetActiveWebContents()
+                                          ->GetLastCommittedURL());
+      return browser()->tab_strip_model()->GetActiveWebContents();
+    }
+  }
+
  protected:
   Browser* CreateIncognitoBrowser() {
     Browser* incognito = Browser::Create(Browser::CreateParams(
@@ -106,6 +126,12 @@ class SystemWebAppLinkCaptureBrowserTest
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        OmniboxTypeURLAndNavigate) {
+  if (IsLacrosOnly()) {
+    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
+                    "Omnibox. Because users can't interact with Omnibox, "
+                    "there's no need to test this.";
+  }
+
   WaitForTestSystemAppInstall();
 
   content::TestNavigationObserver observer(GetStartUrl());
@@ -123,6 +149,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
+  if (IsLacrosOnly()) {
+    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
+                    "with Omnibox. Because users can't interact with "
+                    "Omnibox, there's no need to test this.";
+  }
+
   WaitForTestSystemAppInstall();
   OmniboxEditModel* model =
       browser()->window()->GetLocationBar()->GetOmniboxView()->model();
@@ -142,20 +174,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, OmniboxPasteAndGo) {
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
-  // TODO(b/287167145): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287167145.";
-  }
-
   WaitForTestSystemAppInstall();
 
-  GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
-  NavigateToURLAndWait(browser(), kInitiatingChromeUrl);
-  EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetLastCommittedURL());
+  content::WebContents* initiating_web_contents = CreateInitiatingWebContents();
+  const GURL& initiating_url = initiating_web_contents->GetLastCommittedURL();
+  size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   const std::string kAnchorTargets[] = {"", "_blank", "_self"};
   const std::string kAnchorRelValues[] = {"", "noreferrer", "noopener",
@@ -168,7 +191,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
       content::TestNavigationObserver observer(GetStartUrl());
       observer.StartWatchingNewWebContents();
       EXPECT_TRUE(content::ExecJs(
-          browser()->tab_strip_model()->GetActiveWebContents(),
+          initiating_web_contents,
           content::JsReplace("{"
                              "  let el = document.createElement('a');"
                              "  el.href = $1;"
@@ -185,27 +208,25 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, AnchorLinkClick) {
           FindSystemWebAppBrowser(browser()->profile(), GetAppType());
       EXPECT_TRUE(app_browser);
       ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
-      EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+      EXPECT_EQ(1 + starting_browser_count, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
       app_browser->window()->Close();
       ui_test_utils::WaitForBrowserToClose(app_browser);
 
-      // Check the initiating browser window is intact.
-      EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetLastCommittedURL());
+      // Check the initiating page is intact.
+      EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
     }
   }
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewTab) {
-  // TODO(b/287167145): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287167145.";
+  if (IsLacrosOnly()) {
+    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
+                    "with Omnibox, and we don't show new tab option for links "
+                    "to a different SWA in SWA browser windows. So it makes no "
+                    "sense to test this.";
   }
 
   WaitForTestSystemAppInstall();
@@ -253,10 +274,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        AnchorLinkContextMenuNewWindow) {
-  // TODO(b/287167145): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287167145.";
+  if (IsLacrosOnly()) {
+    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows "
+                    "with Omnibox, and we don't show new window option for "
+                    "links to SWA in SWA browser windows. So it makes no sense "
+                    "to test this.";
   }
 
   WaitForTestSystemAppInstall();
@@ -303,25 +325,16 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
-  // TODO(b/287167145): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287167145.";
-  }
-
   WaitForTestSystemAppInstall();
 
-  GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
-  NavigateToURLAndWait(browser(), kInitiatingChromeUrl);
-  EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetLastCommittedURL());
+  content::WebContents* initiating_web_contents = CreateInitiatingWebContents();
+  const GURL& initiating_url = initiating_web_contents->GetLastCommittedURL();
+  size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   content::TestNavigationObserver observer(GetStartUrl());
   observer.StartWatchingNewWebContents();
   EXPECT_TRUE(
-      content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+      content::ExecJs(initiating_web_contents,
                       content::JsReplace("location.href=$1;", GetStartUrl())));
   observer.Wait();
 
@@ -329,32 +342,20 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, ChangeLocationHref) {
       FindSystemWebAppBrowser(browser()->profile(), GetAppType());
   EXPECT_TRUE(app_browser);
   ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
-  EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+  EXPECT_EQ(1 + starting_browser_count, chrome::GetTotalBrowserCount());
   EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
   EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
 
   // Check the initiating browser window is intact.
-  EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetLastCommittedURL());
+  EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
 }
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
-  // TODO(b/287167145): Fix the test and remove this.
-  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
-    GTEST_SKIP()
-        << "Skipping test body for CrosapiParam::kEnabled, see b/287167145.";
-  }
-
   WaitForTestSystemAppInstall();
 
-  GURL kInitiatingChromeUrl = GURL(chrome::kChromeUIAboutURL);
-  NavigateToURLAndWait(browser(), kInitiatingChromeUrl);
-  EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                      ->tab_strip_model()
-                                      ->GetActiveWebContents()
-                                      ->GetLastCommittedURL());
+  content::WebContents* initiating_web_contents = CreateInitiatingWebContents();
+  const GURL& initiating_url = initiating_web_contents->GetLastCommittedURL();
+  size_t starting_browser_count = chrome::GetTotalBrowserCount();
 
   const std::string kWindowOpenTargets[] = {"", "_blank"};
   const std::string kWindowOpenFeatures[] = {"", "noreferrer", "noopener",
@@ -367,7 +368,7 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
       content::TestNavigationObserver observer(GetStartUrl());
       observer.StartWatchingNewWebContents();
       EXPECT_TRUE(
-          content::ExecJs(browser()->tab_strip_model()->GetActiveWebContents(),
+          content::ExecJs(initiating_web_contents,
                           content::JsReplace("window.open($1, $2, $3);",
                                              GetStartUrl(), target, features)));
       observer.Wait();
@@ -376,17 +377,14 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest, WindowOpen) {
           FindSystemWebAppBrowser(browser()->profile(), GetAppType());
       EXPECT_TRUE(app_browser);
       ui_test_utils::BrowserActivationWaiter(app_browser).WaitForActivation();
-      EXPECT_EQ(2U, chrome::GetTotalBrowserCount());
+      EXPECT_EQ(1 + starting_browser_count, chrome::GetTotalBrowserCount());
       EXPECT_EQ(Browser::TYPE_APP, app_browser->type());
       EXPECT_FALSE(app_browser->app_controller()->ShouldShowCustomTabBar());
       app_browser->window()->Close();
       ui_test_utils::WaitForBrowserToClose(app_browser);
 
       // Check the initiating browser window is intact.
-      EXPECT_EQ(kInitiatingChromeUrl, browser()
-                                          ->tab_strip_model()
-                                          ->GetActiveWebContents()
-                                          ->GetLastCommittedURL());
+      EXPECT_EQ(initiating_url, initiating_web_contents->GetLastCommittedURL());
     }
   }
 }
@@ -466,6 +464,12 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
 
 IN_PROC_BROWSER_TEST_P(SystemWebAppLinkCaptureBrowserTest,
                        IncognitoBrowserOmniboxLinkCapture) {
+  if (IsLacrosOnly()) {
+    GTEST_SKIP() << "In LacrosOnly mode, Ash can't create browser windows with "
+                    "Omnibox. Because users can't interact with Omnibox, "
+                    "there's no need to test this.";
+  }
+
   WaitForTestSystemAppInstall();
   GURL start_url = GetStartUrl();
 

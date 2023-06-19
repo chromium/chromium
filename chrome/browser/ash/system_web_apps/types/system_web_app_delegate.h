@@ -131,9 +131,13 @@ class SystemWebAppDelegate {
   // If false, this app will be hidden from the Chrome OS search.
   virtual bool ShouldShowInSearch() const;
 
-  // If true, navigations (e.g. Omnibox URL, anchor link) to this app
-  // will open in the app's window instead of the navigation's context (e.g.
-  // browser tab).
+  // If true, in Ash browser, navigations (e.g. Omnibox URL, anchor link) to
+  // this app will open in the app's window instead of the navigation's context
+  // (e.g. browser tab).
+  //
+  // This feature isn't applicable to Lacros browser. If you need navigations in
+  // Lacros to launch the app, use crosapi URL handler by adding the app's URL
+  // to `ChromeWebUIControllerFactory::GetListOfAcceptableURLs()`.
   virtual bool ShouldCaptureNavigations() const;
 
   // If false, the app will non-resizeable.
