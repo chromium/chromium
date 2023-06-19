@@ -123,6 +123,14 @@ export class BrowsingContextImpl {
     return context;
   }
 
+  static getTimestamp(): number {
+    // `timestamp` from the event is MonotonicTime, not real time, so
+    // the best Mapper can do is to set the timestamp to the epoch time
+    // of the event arrived.
+    // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
+    return new Date().getTime();
+  }
+
   /**
    * @see https://html.spec.whatwg.org/multipage/document-sequences.html#navigable
    */
@@ -300,12 +308,26 @@ export class BrowsingContextImpl {
         if (this.id !== params.frame.id) {
           return;
         }
+        const timestamp = BrowsingContextImpl.getTimestamp();
         this.#url = params.frame.url + (params.frame.urlFragment ?? '');
 
         // At the point the page is initialized, all the nested iframes from the
         // previous page are detached and realms are destroyed.
         // Remove children from context.
         this.#deleteAllChildren();
+
+        this.#eventManager.registerEvent(
+          {
+            method: BrowsingContext.EventNames.FragmentNavigated,
+            params: {
+              context: this.id,
+              navigation: this.#loaderId ?? null,
+              timestamp,
+              url: this.#url,
+            },
+          },
+          this.id
+        );
       }
     );
 
@@ -315,9 +337,22 @@ export class BrowsingContextImpl {
         if (this.id !== params.frameId) {
           return;
         }
-
+        const timestamp = BrowsingContextImpl.getTimestamp();
         this.#url = params.url;
         this.#deferreds.Page.navigatedWithinDocument.resolve(params);
+
+        this.#eventManager.registerEvent(
+          {
+            method: BrowsingContext.EventNames.FragmentNavigated,
+            params: {
+              context: this.id,
+              navigation: this.#loaderId ?? null,
+              timestamp,
+              url: this.#url,
+            },
+          },
+          this.id
+        );
       }
     );
 
@@ -327,12 +362,7 @@ export class BrowsingContextImpl {
         if (this.id !== params.frameId) {
           return;
         }
-
-        // `timestamp` from the event is MonotonicTime, not real time, so
-        // the best Mapper can do is to set the timestamp to the epoch time
-        // of the event arrived.
-        // https://chromedevtools.github.io/devtools-protocol/tot/Network/#type-MonotonicTime
-        const timestamp = new Date().getTime();
+        const timestamp = BrowsingContextImpl.getTimestamp();
 
         switch (params.name) {
           case 'init':

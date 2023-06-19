@@ -24,7 +24,7 @@ import type Protocol from 'devtools-protocol';
 
 import {Deferred} from '../../../utils/deferred.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {Network} from '../../../protocol/protocol.js';
+import {Network, type BrowsingContext} from '../../../protocol/protocol.js';
 
 export class NetworkRequest {
   static #unknown = 'UNKNOWN';
@@ -159,7 +159,7 @@ export class NetworkRequest {
   #getBaseEventParams(): Network.BaseParameters {
     return {
       context: this.#requestWillBeSentEvent?.frameId ?? null,
-      navigation: this.#requestWillBeSentEvent?.loaderId ?? null,
+      navigation: this.#getNavigationId(),
       // TODO: implement.
       redirectCount: this.#redirectCount,
       request: this.#getRequestData(),
@@ -168,6 +168,20 @@ export class NetworkRequest {
         (this.#requestWillBeSentEvent?.wallTime ?? 0) * 1000
       ),
     };
+  }
+
+  #getNavigationId(): BrowsingContext.Navigation | null {
+    if (
+      !this.#requestWillBeSentEvent?.loaderId ||
+      // When we navigate all CDP network events have `loaderId`
+      // CDP's `loaderId` and `requestId` match when
+      // that request triggered the loading
+      this.#requestWillBeSentEvent?.loaderId !==
+        this.#requestWillBeSentEvent?.requestId
+    ) {
+      return null;
+    }
+    return this.#requestWillBeSentEvent.loaderId;
   }
 
   #getRequestData(): Network.RequestData {

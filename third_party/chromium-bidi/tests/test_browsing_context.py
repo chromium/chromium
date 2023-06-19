@@ -922,3 +922,37 @@ async def test_browsingContext_ignoreCache(websocket, context_id, ignoreCache):
         "id": id,
         "result": {},
     }
+
+
+@pytest.mark.asyncio
+async def test_browsingContext_fragmentNavigated_event(websocket, context_id,
+                                                       html):
+    url = html()
+
+    await subscribe(websocket, ["browsingContext.fragmentNavigated"])
+
+    await send_JSON_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "context": context_id,
+                "url": url,
+                "wait": "complete",
+            }
+        })
+
+    response = await read_JSON_message(websocket)
+    assert response == {
+        "method": "browsingContext.fragmentNavigated",
+        "params": {
+            "context": context_id,
+            "navigation": ANY_STR,
+            "timestamp": ANY_TIMESTAMP,
+            "url": url,
+        }
+    }
+
+    navigation = await read_JSON_message(websocket)
+
+    assert navigation['result']['navigation'] == response['params'][
+        'navigation']

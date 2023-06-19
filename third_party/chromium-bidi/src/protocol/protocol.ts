@@ -799,10 +799,10 @@ export namespace Script {
   };
 
   export enum EventNames {
-    // keep-sorted start;
+    // keep-sorted start
     MessageEvent = 'script.message',
     RealmCreated = 'script.realmCreated',
-    // keep-sorted end;
+    // keep-sorted end
   }
 
   export const AllEvents = 'script';
@@ -828,6 +828,7 @@ export namespace BrowsingContext {
     | ContextCreatedEvent
     | ContextDestroyedEvent
     | DomContentLoadedEvent
+    | FragmentNavigatedEvent
     | LoadEvent;
 
   export type Navigation = string;
@@ -1001,11 +1002,19 @@ export namespace BrowsingContext {
     BrowsingContext.Info
   >;
 
+  export type FragmentNavigatedEvent = EventResponse<
+    EventNames.FragmentNavigated,
+    BrowsingContext.NavigationInfo
+  >;
+
   export enum EventNames {
-    LoadEvent = 'browsingContext.load',
-    DomContentLoadedEvent = 'browsingContext.domContentLoaded',
+    // keep-sorted start
     ContextCreatedEvent = 'browsingContext.contextCreated',
     ContextDestroyedEvent = 'browsingContext.contextDestroyed',
+    DomContentLoadedEvent = 'browsingContext.domContentLoaded',
+    FragmentNavigated = 'browsingContext.fragmentNavigated',
+    LoadEvent = 'browsingContext.load',
+    // keep-sorted end
   }
 
   export const AllEvents = 'browsingContext';

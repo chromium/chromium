@@ -428,10 +428,11 @@ describe('SubscriptionManager', () => {
   describe('unroll events', () => {
     it('all Browsing Context events', () => {
       expect(unrollEvents([BrowsingContext.AllEvents])).to.deep.equal([
-        BrowsingContext.EventNames.LoadEvent,
-        BrowsingContext.EventNames.DomContentLoadedEvent,
         BrowsingContext.EventNames.ContextCreatedEvent,
         BrowsingContext.EventNames.ContextDestroyedEvent,
+        BrowsingContext.EventNames.DomContentLoadedEvent,
+        BrowsingContext.EventNames.FragmentNavigated,
+        BrowsingContext.EventNames.LoadEvent,
       ]);
     });
 
