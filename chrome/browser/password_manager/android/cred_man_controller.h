@@ -6,19 +6,23 @@
 #define CHROME_BROWSER_PASSWORD_MANAGER_ANDROID_CRED_MAN_CONTROLLER_H_
 
 #include "base/memory/raw_ptr.h"
+#include "base/memory/weak_ptr.h"
+
+namespace webauthn {
+class WebAuthnCredManDelegate;
+}  // namespace webauthn
 
 namespace password_manager {
 
-class PasswordManagerClient;
-class PasswordManagerDriver;
+class PasswordCredentialFiller;
 
 // This class is responsible for the logic to show Credential Manager UI. The
 // interaction with Credential Manager UI is delegated to WebAuthnCredMan class.
 // Its lifecycle is tied to ChromePasswordManagerClient. CredManController is
 // used in Android U+ only.
-class CredManController {
+class CredManController : public base::SupportsWeakPtr<CredManController> {
  public:
-  explicit CredManController(PasswordManagerClient* client);
+  CredManController();
 
   CredManController(const CredManController&) = delete;
   CredManController& operator=(const CredManController&) = delete;
@@ -28,10 +32,12 @@ class CredManController {
   // Determines if the Android Credential Manager UI should be shown and shows
   // if required. Returns true if the Android Credential Manager UI is shown,
   // false otherwise.
-  bool Show(PasswordManagerDriver* driver, bool is_webauthn_form);
+  bool Show(raw_ptr<webauthn::WebAuthnCredManDelegate> cred_man_delegate,
+            std::unique_ptr<PasswordCredentialFiller> filler,
+            bool is_webauthn_form);
 
  private:
-  raw_ptr<PasswordManagerClient> client_;
+  std::unique_ptr<PasswordCredentialFiller> filler_;
 };
 
 }  // namespace password_manager

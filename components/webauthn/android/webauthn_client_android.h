@@ -56,6 +56,13 @@ class WebAuthnClientAndroid {
   // only.
   void OnCredManUiClosed(content::RenderFrameHost* render_frame_host,
                          bool success);
+
+  // Called when a user selects a password from the CredMan UI. The provided
+  // `username` and `password` can be filled in the password form in the
+  // `render_frame_host`.
+  void OnPasswordCredentialReceived(content::RenderFrameHost* render_frame_host,
+                                    std::u16string username,
+                                    std::u16string password);
 };
 
 }  // namespace webauthn

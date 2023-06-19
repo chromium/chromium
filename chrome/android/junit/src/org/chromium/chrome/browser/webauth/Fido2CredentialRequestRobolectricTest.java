@@ -44,7 +44,9 @@ import org.chromium.net.GURLUtilsJni;
 import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class Fido2CredentialRequestRobolectricTest {
@@ -52,13 +54,15 @@ public class Fido2CredentialRequestRobolectricTest {
         private int mOnCredManConditionalRequestPendingCallCount;
         private int mCleanupRequestCallCount;
         private int mOnCredManClosedCallCount;
+        private HashMap<String, String> mOnPasswordCredentialReceivedCall;
         private Callback<Boolean> mCredManGetAssertionCallback;
 
-        void reset() {
+        MockBrowserBridge() {
             mOnCredManConditionalRequestPendingCallCount = 0;
             mCleanupRequestCallCount = 0;
             mOnCredManClosedCallCount = 0;
             mCredManGetAssertionCallback = null;
+            mOnPasswordCredentialReceivedCall = new HashMap<>();
         }
 
         @Override
@@ -78,6 +82,13 @@ public class Fido2CredentialRequestRobolectricTest {
             mOnCredManClosedCallCount += 1;
         }
 
+        @Override
+        public void onPasswordCredentialReceived(
+                RenderFrameHost frameHost, String username, String password) {
+            mOnPasswordCredentialReceivedCall.put("username", username);
+            mOnPasswordCredentialReceivedCall.put("password", password);
+        }
+
         int getOnCredManConditionalRequestPendingCallCount() {
             return mOnCredManConditionalRequestPendingCallCount;
         }
@@ -92,6 +103,10 @@ public class Fido2CredentialRequestRobolectricTest {
 
         int getOnCredManClosedCallCount() {
             return mOnCredManClosedCallCount;
+        }
+
+        Map<String, String> getOnPasswordCredentialReceivedCall() {
+            return mOnPasswordCredentialReceivedCall;
         }
     }
 
@@ -172,7 +187,6 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mMockBrowserBridge = new MockBrowserBridge();
         mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
-        mMockBrowserBridge.reset();
     }
 
     @Test
@@ -395,7 +409,10 @@ public class Fido2CredentialRequestRobolectricTest {
         Assert.assertNotNull(credManRequest);
         Assert.assertEquals(credManRequest.getCredentialOptions().size(), 1);
 
-        mCredentialManager.setCredManGetResponseCredential(new FakeAndroidPasswordCredential());
+        String username = "coolUserName";
+        String password = "38kay5er1sp0r38";
+        mCredentialManager.setCredManGetResponseCredential(
+                new FakeAndroidPasswordCredential(username, password));
         mMockBrowserBridge.getCredManGetAssertionCallback().onResult(true);
 
         credManRequest = mCredentialManager.getGetRequest();
@@ -407,8 +424,13 @@ public class Fido2CredentialRequestRobolectricTest {
         Assert.assertEquals(
                 credentialOptions.get(1).getType(), "android.credentials.TYPE_PASSWORD_CREDENTIAL");
 
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 1);
+        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
         // A password is selected, the callback will not be signed.
         Assert.assertEquals(mCallback.getStatus(), null);
+
+        Assert.assertEquals(
+                mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("username"), username);
+        Assert.assertEquals(
+                mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("password"), password);
     }
 }

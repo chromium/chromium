@@ -14,7 +14,8 @@ namespace password_manager {
 
 // PasswordCredentialFiller class is responsible for filling (username,
 // passwords) using a PasswordManagerDriver. It can also submit the form.
-class PasswordCredentialFiller {
+class PasswordCredentialFiller
+    : public base::SupportsWeakPtr<PasswordCredentialFiller> {
  public:
   using SubmissionReadinessState = autofill::mojom::SubmissionReadinessState;
   using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
@@ -24,7 +25,7 @@ class PasswordCredentialFiller {
   virtual ~PasswordCredentialFiller() = default;
 
   // Returns whether this filler can fill and submit a username and password.
-  virtual bool IsReadyToFill();
+  virtual bool IsReadyToFill() = 0;
 
   // Fills the given username and password to the form. It can also submit the
   // form if signaled.

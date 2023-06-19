@@ -56,4 +56,16 @@ void WebAuthnClientAndroid::OnCredManUiClosed(
   }
 }
 
+void WebAuthnClientAndroid::OnPasswordCredentialReceived(
+    content::RenderFrameHost* render_frame_host,
+    std::u16string username,
+    std::u16string password) {
+  if (webauthn::WebAuthnCredManDelegate* cred_man_delegate =
+          webauthn::WebAuthnCredManDelegateFactory::GetFactory(
+              content::WebContents::FromRenderFrameHost(render_frame_host))
+              ->GetRequestDelegate(render_frame_host)) {
+    cred_man_delegate->FillUsernameAndPassword(username, password);
+  }
+}
+
 }  // namespace webauthn

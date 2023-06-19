@@ -89,6 +89,7 @@ const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
 }
 
 void PasswordCredentialFillerImpl::CleanUp(ToShowVirtualKeyboard should_show) {
+  // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
   std::exchange(driver_, nullptr)->KeyboardReplacingSurfaceClosed(should_show);
 }
 

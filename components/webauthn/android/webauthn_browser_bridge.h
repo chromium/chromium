@@ -43,6 +43,12 @@ class WebAuthnBrowserBridge {
       const base::android::JavaParamRef<jobject>& jframe_host,
       jboolean jsuccess);
 
+  void OnPasswordCredentialReceived(
+      JNIEnv* env,
+      const base::android::JavaParamRef<jobject>& jframe_host,
+      const base::android::JavaParamRef<jstring>& jusername,
+      const base::android::JavaParamRef<jstring>& jpassword);
+
  private:
   // Java object that owns this WebAuthnBrowserBridge.
   base::android::ScopedJavaGlobalRef<jobject> owner_;

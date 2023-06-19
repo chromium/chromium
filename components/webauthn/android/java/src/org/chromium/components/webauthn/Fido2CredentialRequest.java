@@ -1002,8 +1002,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                 }
 
                 if (!TYPE_PASSKEY.equals(type)) {
-                    // TODO(crbug/1434278): Implement password handling logic.
-                    notifyBrowserOnCredManClosed(true);
+                    mBrowserBridge.onPasswordCredentialReceived(mFrameHost,
+                            data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
+                            data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
                     return;
                 }
 

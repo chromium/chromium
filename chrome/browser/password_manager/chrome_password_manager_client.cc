@@ -418,7 +418,11 @@ void ChromePasswordManagerClient::ShowKeyboardReplacingSurface(
     password_manager::PasswordManagerDriver* driver,
     autofill::mojom::SubmissionReadinessState submission_readiness,
     bool is_webauthn_form) {
-  if (GetOrCreateCredManController()->Show(driver, is_webauthn_form)) {
+  if (GetOrCreateCredManController()->Show(
+          GetWebAuthnCredManDelegateForDriver(driver),
+          std::make_unique<password_manager::PasswordCredentialFillerImpl>(
+              driver->AsWeakPtr(), submission_readiness),
+          is_webauthn_form)) {
     return;
   }
   auto* webauthn_delegate = GetWebAuthnCredentialsDelegateForDriver(driver);
@@ -1268,7 +1272,7 @@ password_manager::CredManController*
 ChromePasswordManagerClient::GetOrCreateCredManController() {
   if (!cred_man_controller_) {
     cred_man_controller_ =
-        std::make_unique<password_manager::CredManController>(this);
+        std::make_unique<password_manager::CredManController>();
   }
   return cred_man_controller_.get();
 }

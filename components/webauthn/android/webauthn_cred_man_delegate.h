@@ -42,11 +42,22 @@ class WebAuthnCredManDelegate {
 
   void CleanUpConditionalRequest();
 
-  // The setter for |request_completion_callback_|. Classes can set
-  // |request_completion_callback_| to be notified about when CredMan UI is
+  // The setter for `request_completion_callback_`. Classes can set
+  // `request_completion_callback_` to be notified about when CredMan UI is
   // closed (i.e. to show / hide keyboard).
   void SetRequestCompletionCallback(
       base::RepeatingCallback<void(bool)> callback);
+
+  // The setter for `filling_callback_`.  Classes should use this method before
+  // `FillUsernameAndPassword`.
+  void SetFillingCallback(
+      base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+          filling_callback);
+
+  // If a password credential is received from CredMan UI, this method will be
+  // called. A password credential can be filled only once.
+  void FillUsernameAndPassword(const std::u16string& username,
+                               const std::u16string& password);
 
   static bool IsCredManEnabled();
 
@@ -54,6 +65,8 @@ class WebAuthnCredManDelegate {
   bool has_results_ = false;
   base::RepeatingCallback<void(bool)> full_assertion_request_;
   base::RepeatingCallback<void(bool)> request_completion_callback_;
+  base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+      filling_callback_;
 };
 
 }  // namespace webauthn

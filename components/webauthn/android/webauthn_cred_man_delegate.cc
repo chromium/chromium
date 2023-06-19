@@ -63,6 +63,18 @@ void WebAuthnCredManDelegate::SetRequestCompletionCallback(
   request_completion_callback_ = std::move(callback);
 }
 
+void WebAuthnCredManDelegate::SetFillingCallback(
+    base::OnceCallback<void(const std::u16string&, const std::u16string&)>
+        filling_callback) {
+  filling_callback_ = std::move(filling_callback);
+}
+
+void WebAuthnCredManDelegate::FillUsernameAndPassword(
+    const std::u16string& username,
+    const std::u16string& password) {
+  std::move(filling_callback_).Run(username, password);
+}
+
 // static
 bool WebAuthnCredManDelegate::IsCredManEnabled() {
   return base::android::BuildInfo::GetInstance()->is_at_least_u() &&

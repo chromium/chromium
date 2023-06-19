@@ -173,6 +173,24 @@ void WebAuthnBrowserBridge::OnCredManUiClosed(
   client->OnCredManUiClosed(render_frame_host, jsuccess);
 }
 
+void WebAuthnBrowserBridge::OnPasswordCredentialReceived(
+    JNIEnv* env,
+    const base::android::JavaParamRef<jobject>& jframe_host,
+    const base::android::JavaParamRef<jstring>& jusername,
+    const base::android::JavaParamRef<jstring>& jpassword) {
+  auto* client = WebAuthnClientAndroid::GetClient();
+  auto* render_frame_host =
+      content::RenderFrameHost::FromJavaRenderFrameHost(jframe_host);
+  if (!client || !render_frame_host ||
+      !content::WebContents::FromRenderFrameHost(render_frame_host)) {
+    return;
+  }
+  client->OnPasswordCredentialReceived(
+      render_frame_host,
+      base::android::ConvertJavaStringToUTF16(env, jusername),
+      base::android::ConvertJavaStringToUTF16(env, jpassword));
+}
+
 void WebAuthnBrowserBridge::CleanupRequest(
     JNIEnv* env,
     const base::android::JavaParamRef<jobject>& jframe_host) const {
