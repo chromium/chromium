@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#import "media/capture/video/apple/video_capture_device_avfoundation.h"
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
@@ -25,12 +25,15 @@
 #include "media/base/mac/color_space_util_mac.h"
 #include "media/base/timestamp_constants.h"
 #include "media/base/video_types.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
+#import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
-#import "media/capture/video/mac/video_capture_metrics_mac.h"
 #include "media/capture/video_capture_types.h"
 #include "ui/gfx/geometry/size.h"
+
+#if BUILDFLAG(IS_MAC)
+#import "media/capture/video/mac/video_capture_metrics_mac.h"
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -108,30 +111,36 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     }
 
     // If the pixel format is unsupported by our code, then it is not useful.
-    if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN)
+    if (pixelFormat == VideoPixelFormat::PIXEL_FORMAT_UNKNOWN) {
       continue;
+    }
 
     // If our CMSampleBuffers will have a different size than the native
     // capture, then we will not be the fast path.
-    if (dimensions.width != width || dimensions.height != height)
+    if (dimensions.width != width || dimensions.height != height) {
       continue;
+    }
 
     // Prefer a capture format that handles the requested framerate to one
     // that doesn't.
     if (bestCaptureFormat) {
-      if (bestMatchesFrameRate && !matchesFrameRate)
+      if (bestMatchesFrameRate && !matchesFrameRate) {
         continue;
-      if (matchesFrameRate && !bestMatchesFrameRate)
+      }
+      if (matchesFrameRate && !bestMatchesFrameRate) {
         bestCaptureFormat = nil;
+      }
     }
 
     // Prefer a capture format with a lower maximum framerate, under the
     // assumption that that may have lower power consumption.
     if (bestCaptureFormat) {
-      if (bestMaxFrameRate < maxFrameRate)
+      if (bestMaxFrameRate < maxFrameRate) {
         continue;
-      if (maxFrameRate < bestMaxFrameRate)
+      }
+      if (maxFrameRate < bestMaxFrameRate) {
         bestCaptureFormat = nil;
+      }
     }
 
     // Finally, compare according to Chromium preference.
@@ -409,6 +418,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   };
   _captureVideoDataOutput.videoSettings = videoSettingsDictionary;
 
+#if (!defined(__IPHONE_7_0) || __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_7_0)
   AVCaptureConnection* captureConnection =
       [_captureVideoDataOutput connectionWithMediaType:AVMediaTypeVideo];
   // CMTimeMake accepts integer arguments but |frameRate| is float, so round it.
@@ -422,6 +432,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
         CMTimeMake(media::kFrameRatePrecision,
                    (int)(frameRate * media::kFrameRatePrecision));
   }
+#endif
   return YES;
 }
 
@@ -517,9 +528,13 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   {
     // `_lock` is needed since `_photoOutput` may be read from non-main thread.
     base::AutoLock lock(_lock);
+#if (!defined(__IPHONE_10_0) || \
+     __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)
     if ([self useLegacyStillImageApi]) {
       _photoOutput = [[AVCaptureStillImageOutput alloc] init];
-    } else if (@available(macOS 10.15, *)) {
+    } else
+#endif
+        if (@available(macOS 10.15, iOS 10.0, *)) {
       _photoOutput = [[AVCapturePhotoOutput alloc] init];
     } else {
       NOTREACHED();
@@ -566,6 +581,8 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
   // takePhotoInternal() can only happen when we have a `_photoOutput` because
   // stopPhotoOutput() cancels in-flight operations by invalidating weak ptrs.
   DCHECK(_photoOutput);
+#if (!defined(__IPHONE_10_0) || \
+     __IPHONE_OS_VERSION_MIN_REQUIRED < __IPHONE_10_0)
   if ([self useLegacyStillImageApi]) {
     // `_photoOutput` is of type AVCaptureStillImageOutput. Note that this block
     // retains `self` but that's fine because it's called one time and then
@@ -621,7 +638,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     DCHECK(connection);
     [image_output captureStillImageAsynchronouslyFromConnection:connection
                                               completionHandler:handler];
-  } else if (@available(macOS 10.15, *)) {
+  } else
+#endif
+      if (@available(macOS 10.15, iOS 10.0, *)) {
     // `_photoOutput` is of type AVCapturePhotoOutput.
     @try {
       // Asynchronous success or failure is handled inside
@@ -651,7 +670,7 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (void)captureOutput:(id)output        // AVCapturePhotoOutput*
     didFinishProcessingPhoto:(id)photo  // AVCapturePhoto*
                        error:(NSError*)error {
-  if (@available(macOS 10.15, *)) {
+  if (@available(macOS 10.15, iOS 10.0, *)) {
     base::AutoLock lock(_lock);
     // If `output` is no longer current, ignore the result of this operation.
     // `_frameReceiver->OnPhotoError()` will already have been called inside
@@ -953,8 +972,9 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     base::AutoLock lock(_lock);
     // This is to detect a capture was working, but stopped submitting new
     // frames. If we haven't received any frames yet, don't do anything.
-    if (!_capturedFirstFrame)
+    if (!_capturedFirstFrame) {
       nextFailedCheckCount = 0;
+    }
 
     // If we captured a frame since last check, then we aren't stalled.
     // We're also not considered stalled if takePhoto() is pending, avoiding
@@ -1016,12 +1036,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
     _startTimestamp = pres_timestamp;
   }
   const base::TimeDelta timestamp = pres_timestamp - _startTimestamp;
-
+#if BUILDFLAG(IS_MAC)
   bool logUma = !std::exchange(_capturedFirstFrame, true);
   if (logUma) {
     media::LogFirstCapturedVideoFrame(_bestCaptureFormat, sampleBuffer);
   }
-
+#endif
   // The SampleBufferTransformer CHECK-crashes if the sample buffer is not MJPEG
   // and does not have a pixel buffer (https://crbug.com/1160647) so we fall
   // back on the M87 code path if this is the case.
@@ -1194,11 +1214,12 @@ AVCaptureDeviceFormat* FindBestCaptureFormat(
 - (void)sendErrorString:(NSString*)error {
   DLOG(ERROR) << base::SysNSStringToUTF8(error);
   base::AutoLock lock(_lock);
-  if (_frameReceiver)
+  if (_frameReceiver) {
     _frameReceiver->ReceiveError(
         media::VideoCaptureError::
             kMacAvFoundationReceivedAVCaptureSessionRuntimeErrorNotification,
         FROM_HERE, base::SysNSStringToUTF8(error));
+  }
 }
 
 - (void)callLocked:(base::OnceClosure)lambda {

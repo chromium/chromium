@@ -14,11 +14,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
-#import "media/capture/video/mac/video_capture_device_decklink_mac.h"
+#import "media/capture/video/apple/video_capture_device_avfoundation.h"
+#import "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video/video_capture_metrics.h"
+
+#if BUILDFLAG(IS_MAC)
+#import "media/capture/video/mac/video_capture_device_decklink_mac.h"
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -50,8 +53,9 @@ media::VideoCaptureFormats GetDeviceSupportedFormats(
       break;
     }
   }
-  if (device == nil)
+  if (device == nil) {
     return media::VideoCaptureFormats();
+  }
   for (AVCaptureDeviceFormat* device_format in device.formats) {
     // MediaSubType is a CMPixelFormatType but can be used as CVPixelFormatType
     // as well according to CMFormatDescription.h
@@ -101,8 +105,6 @@ VideoCaptureDeviceFactoryMac::VideoCaptureDeviceFactoryMac() {
   thread_checker_.DetachFromThread();
 }
 
-VideoCaptureDeviceFactoryMac::~VideoCaptureDeviceFactoryMac() = default;
-
 VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
@@ -110,10 +112,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
   EnsureRunsOnCFRunLoopEnabledThread();
 
   std::unique_ptr<VideoCaptureDevice> capture_device;
-  if (descriptor.capture_api == VideoCaptureApi::MACOSX_DECKLINK) {
-    capture_device =
-        std::make_unique<VideoCaptureDeviceDeckLinkMac>(descriptor);
-  } else {
+  if (descriptor.capture_api != VideoCaptureApi::MACOSX_DECKLINK) {
     VideoCaptureDeviceMac* device = new VideoCaptureDeviceMac(descriptor);
     capture_device.reset(device);
     if (!device->Init(descriptor.capture_api)) {
@@ -121,6 +120,12 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
       capture_device.reset();
     }
   }
+#if BUILDFLAG(IS_MAC)
+  else {
+    capture_device =
+        std::make_unique<VideoCaptureDeviceDeckLinkMac>(descriptor);
+  }
+#endif
 
   if (capture_device) {
     LogCaptureDeviceHashedModelId(descriptor);
@@ -155,8 +160,9 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
     VideoCaptureDeviceDescriptor descriptor(
         base::SysNSStringToUTF8([capture_devices[key] deviceName]), device_id,
         model_id, capture_api, control_support, device_transport_type);
-    if (IsDeviceBlocked(descriptor))
+    if (IsDeviceBlocked(descriptor)) {
       continue;
+    }
     devices_info.emplace_back(descriptor);
 
     // Get supported formats
@@ -164,9 +170,10 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
         GetDeviceSupportedFormats(descriptor);
   }
 
+#if BUILDFLAG(IS_MAC)
   // Also retrieve Blackmagic devices, if present, via DeckLink SDK API.
   VideoCaptureDeviceDeckLinkMac::EnumerateDevices(&devices_info);
-
+#endif
   std::move(callback).Run(std::move(devices_info));
 }
 

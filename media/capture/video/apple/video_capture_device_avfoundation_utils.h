@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_H_
 
 #import <AVFoundation/AVFoundation.h>
 #import <CoreMedia/CoreMedia.h>
@@ -25,9 +25,10 @@ namespace media {
 std::string CAPTURE_EXPORT MacFourCCToString(OSType fourcc);
 
 // Returns a dictionary of capture devices with friendly name and unique id.
-// VideoCaptureDeviceMac should call this function to fetch the list of devices
-// available in the system; this method returns the list of device names that
-// have to be used with -[VideoCaptureDeviceAVFoundation setCaptureDevice:].
+// VideoCaptureDeviceMac should call this function to fetch the list of
+// devices available in the system; this method returns the list of device names
+// that have to be used with -[VideoCaptureDeviceAVFoundation
+// setCaptureDevice:].
 NSDictionary<NSString*, DeviceNameAndTransportType*>*
 GetVideoCaptureDeviceNames();
 
@@ -47,4 +48,4 @@ CAPTURE_EXPORT BASE_DECLARE_FEATURE(kUseAVCaptureDeviceDiscoverySession);
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_UTILS_H_

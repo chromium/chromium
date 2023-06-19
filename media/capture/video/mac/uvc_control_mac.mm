@@ -7,11 +7,13 @@
 #include <IOKit/IOCFPlugIn.h>
 
 #include "base/apple/bridging.h"
+#include "base/feature_list.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
 #include "base/strings/string_number_conversions.h"
+#include "media/capture/video/video_capture_device.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -20,10 +22,76 @@
 namespace media {
 
 namespace {
-
 const unsigned int kRequestTimeoutInMilliseconds = 1000;
 
+BASE_FEATURE(kExposeAllUvcControls,
+             "ExposeAllUvcControls",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+struct PanTilt {
+  int32_t pan;
+  int32_t tilt;
+};
+
+// Print the pan-tilt values. Used for friendly log messages.
+::std::ostream& operator<<(::std::ostream& os, const PanTilt& pan_tilt) {
+  return os << " pan: " << pan_tilt.pan << ", tilt " << pan_tilt.tilt;
 }
+
+// Update the control range and current value of pan-tilt control if
+// possible.
+static void MaybeUpdatePanTiltControlRange(UvcControl& uvc,
+                                           mojom::Range* pan_range,
+                                           mojom::Range* tilt_range) {
+  PanTilt pan_tilt_max, pan_tilt_min, pan_tilt_step, pan_tilt_current;
+  if (!uvc.GetControlMax<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_max,
+                                  "pan-tilt") ||
+      !uvc.GetControlMin<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_min,
+                                  "pan-tilt") ||
+      !uvc.GetControlStep<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                   &pan_tilt_step, "pan-tilt") ||
+      !uvc.GetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                      &pan_tilt_current, "pan-tilt")) {
+    return;
+  }
+  pan_range->max = pan_tilt_max.pan;
+  pan_range->min = pan_tilt_min.pan;
+  pan_range->step = pan_tilt_step.pan;
+  pan_range->current = pan_tilt_current.pan;
+  tilt_range->max = pan_tilt_max.tilt;
+  tilt_range->min = pan_tilt_min.tilt;
+  tilt_range->step = pan_tilt_step.tilt;
+  tilt_range->current = pan_tilt_current.tilt;
+}
+
+// Set pan and tilt values for a USB camera device.
+static void SetPanTiltCurrent(UvcControl& uvc,
+                              absl::optional<int> pan,
+                              absl::optional<int> tilt) {
+  DCHECK(pan.has_value() || tilt.has_value());
+
+  PanTilt pan_tilt_current;
+  if ((!pan.has_value() || !tilt.has_value()) &&
+      !uvc.GetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl,
+                                      &pan_tilt_current, "pan-tilt")) {
+    return;
+  }
+
+  PanTilt pan_tilt_data;
+  pan_tilt_data.pan =
+      CFSwapInt32HostToLittle((int32_t)pan.value_or(pan_tilt_current.pan));
+  pan_tilt_data.tilt =
+      CFSwapInt32HostToLittle((int32_t)tilt.value_or(pan_tilt_current.tilt));
+
+  uvc.SetControlCurrent<PanTilt>(uvc::kCtPanTiltAbsoluteControl, pan_tilt_data,
+                                 "pan-tilt");
+}
+
+static bool IsNonEmptyRange(const mojom::RangePtr& range) {
+  return range->min < range->max;
+}
+
+}  // namespace
 
 // Addition to the IOUSB family of structures, with subtype and unit ID.
 // Sec. 3.7.2 "Class-Specific VC Interface Descriptor"
@@ -317,6 +385,270 @@ UvcControl::~UvcControl() {
   if (interface_) {
     (*interface_)->USBInterfaceClose(interface_);
   }
+}
+// static
+void UvcControl::SetPowerLineFrequency(
+    const VideoCaptureDeviceDescriptor& device_descriptor,
+    const VideoCaptureParams& params) {
+  PowerLineFrequency frequency =
+      VideoCaptureDevice::GetPowerLineFrequency(params);
+  if (frequency != PowerLineFrequency::kDefault) {
+    // Try setting the power line frequency removal (anti-flicker). The built-in
+    // cameras are normally suspended so the configuration must happen right
+    // before starting capture and during configuration.
+    const std::string device_model = GetDeviceModelId(
+        device_descriptor.device_id, device_descriptor.capture_api,
+        device_descriptor.transport_type);
+    if (device_model.length() > 2 * kVidPidSize) {
+      if (UvcControl uvc(device_model, uvc::kVcProcessingUnit); uvc.Good()) {
+        int power_line_flag_value =
+            (frequency == PowerLineFrequency::k50Hz) ? uvc::k50Hz : uvc::k60Hz;
+        uvc.SetControlCurrent<uint8_t>(uvc::kPuPowerLineFrequencyControl,
+                                       power_line_flag_value,
+                                       "power line frequency");
+      }
+    }
+  }
+}
+
+// static
+void UvcControl::GetPhotoState(
+    media::mojom::PhotoStatePtr& photo_state,
+    const VideoCaptureDeviceDescriptor& device_descriptor) {
+  const std::string device_model = GetDeviceModelId(
+      device_descriptor.device_id, device_descriptor.capture_api,
+      device_descriptor.transport_type);
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal);
+      uvc.Good() && base::FeatureList::IsEnabled(kExposeAllUvcControls)) {
+    photo_state->current_focus_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtFocusAbsoluteControl,
+                                          photo_state->focus_distance.get(),
+                                          "focus");
+    if (IsNonEmptyRange(photo_state->focus_distance)) {
+      photo_state->supported_focus_modes.push_back(mojom::MeteringMode::MANUAL);
+    }
+    bool current_auto_focus;
+    if (uvc.GetControlCurrent<bool>(uvc::kCtFocusAutoControl,
+
+                                    &current_auto_focus, "focus auto")) {
+      photo_state->current_focus_mode = current_auto_focus
+                                            ? mojom::MeteringMode::CONTINUOUS
+                                            : mojom::MeteringMode::MANUAL;
+      photo_state->supported_focus_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
+
+    photo_state->current_exposure_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtExposureTimeAbsoluteControl,
+                                          photo_state->exposure_time.get(),
+                                          "exposure time");
+    if (IsNonEmptyRange(photo_state->exposure_time)) {
+      photo_state->supported_exposure_modes.push_back(
+          mojom::MeteringMode::MANUAL);
+    }
+    uint8_t current_auto_exposure;
+    if (uvc.GetControlCurrent<uint8_t>(uvc::kCtAutoExposureModeControl,
+                                       &current_auto_exposure,
+                                       "auto-exposure mode")) {
+      if (current_auto_exposure & uvc::kExposureManual ||
+          current_auto_exposure & uvc::kExposureShutterPriority) {
+        photo_state->current_exposure_mode = mojom::MeteringMode::MANUAL;
+      } else {
+        photo_state->current_exposure_mode = mojom::MeteringMode::CONTINUOUS;
+      }
+      photo_state->supported_exposure_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
+  }
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal); uvc.Good()) {
+    MaybeUpdatePanTiltControlRange(uvc, photo_state->pan.get(),
+                                   photo_state->tilt.get());
+
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kCtZoomAbsoluteControl,
+                                          photo_state->zoom.get(), "zoom");
+  }
+  if (UvcControl uvc(device_model, uvc::kVcProcessingUnit);
+      uvc.Good() && base::FeatureList::IsEnabled(kExposeAllUvcControls)) {
+    uvc.MaybeUpdateControlRange<int16_t>(uvc::kPuBrightnessAbsoluteControl,
+                                         photo_state->brightness.get(),
+                                         "brightness");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuContrastAbsoluteControl,
+                                          photo_state->contrast.get(),
+                                          "contrast");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuSaturationAbsoluteControl,
+                                          photo_state->saturation.get(),
+                                          "saturation");
+    uvc.MaybeUpdateControlRange<uint16_t>(uvc::kPuSharpnessAbsoluteControl,
+                                          photo_state->sharpness.get(),
+                                          "sharpness");
+
+    photo_state->current_white_balance_mode = mojom::MeteringMode::NONE;
+    uvc.MaybeUpdateControlRange<uint16_t>(
+        uvc::kPuWhiteBalanceTemperatureControl,
+        photo_state->color_temperature.get(), "white balance temperature");
+    if (IsNonEmptyRange(photo_state->color_temperature)) {
+      photo_state->supported_white_balance_modes.push_back(
+          mojom::MeteringMode::MANUAL);
+    }
+    bool current_auto_white_balance;
+    if (uvc.GetControlCurrent<bool>(uvc::kPuWhiteBalanceTemperatureAutoControl,
+                                    &current_auto_white_balance,
+                                    "white balance temperature auto")) {
+      photo_state->current_white_balance_mode =
+          current_auto_white_balance ? mojom::MeteringMode::CONTINUOUS
+                                     : mojom::MeteringMode::MANUAL;
+      photo_state->supported_white_balance_modes.push_back(
+          mojom::MeteringMode::CONTINUOUS);
+    }
+  }
+}
+
+// static
+void UvcControl::SetPhotoState(
+    mojom::PhotoSettingsPtr& settings,
+    const VideoCaptureDeviceDescriptor& device_descriptor) {
+  const std::string device_model = GetDeviceModelId(
+      device_descriptor.device_id, device_descriptor.capture_api,
+      device_descriptor.transport_type);
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal);
+      uvc.Good() && base::FeatureList::IsEnabled(kExposeAllUvcControls)) {
+    if (settings->has_focus_mode &&
+        (settings->focus_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->focus_mode == mojom::MeteringMode::MANUAL)) {
+      int focus_auto =
+          (settings->focus_mode == mojom::MeteringMode::CONTINUOUS);
+      uvc.SetControlCurrent<bool>(uvc::kCtFocusAutoControl, focus_auto,
+                                  "focus auto");
+    }
+    if (settings->has_focus_distance) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtFocusAbsoluteControl,
+                                      settings->focus_distance, "focus");
+    }
+    if (settings->has_exposure_mode &&
+        (settings->exposure_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->exposure_mode == mojom::MeteringMode::MANUAL)) {
+      int auto_exposure_mode =
+          settings->exposure_mode == mojom::MeteringMode::CONTINUOUS
+              ? uvc::kExposureAperturePriority
+              : uvc::kExposureManual;
+      uvc.SetControlCurrent<uint8_t>(uvc::kCtAutoExposureModeControl,
+                                     auto_exposure_mode, "auto-exposure mode");
+    }
+    if (settings->has_exposure_time) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtExposureTimeAbsoluteControl,
+                                      settings->exposure_time, "exposure time");
+    }
+  }
+  if (UvcControl uvc(device_model, uvc::kVcInputTerminal); uvc.Good()) {
+    if (settings->has_pan || settings->has_tilt) {
+      SetPanTiltCurrent(uvc,
+                        settings->has_pan ? absl::make_optional(settings->pan)
+                                          : absl::nullopt,
+                        settings->has_tilt ? absl::make_optional(settings->tilt)
+                                           : absl::nullopt);
+    }
+    if (settings->has_zoom) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kCtZoomAbsoluteControl,
+                                      settings->zoom, "zoom");
+    }
+  }
+  if (UvcControl uvc(device_model, uvc::kVcProcessingUnit);
+      uvc.Good() && base::FeatureList::IsEnabled(kExposeAllUvcControls)) {
+    if (settings->has_brightness) {
+      uvc.SetControlCurrent<int16_t>(uvc::kPuBrightnessAbsoluteControl,
+                                     settings->brightness, "brightness");
+    }
+    if (settings->has_contrast) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuContrastAbsoluteControl,
+                                      settings->contrast, "contrast");
+    }
+    if (settings->has_saturation) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuSaturationAbsoluteControl,
+                                      settings->saturation, "saturation");
+    }
+    if (settings->has_sharpness) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuSharpnessAbsoluteControl,
+                                      settings->sharpness, "sharpness");
+    }
+    if (settings->has_white_balance_mode &&
+        (settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS ||
+         settings->white_balance_mode == mojom::MeteringMode::MANUAL)) {
+      int white_balance_temperature_auto =
+          (settings->white_balance_mode == mojom::MeteringMode::CONTINUOUS);
+      uvc.SetControlCurrent<uint8_t>(uvc::kPuWhiteBalanceTemperatureAutoControl,
+                                     white_balance_temperature_auto,
+                                     "white balance temperature auto");
+    }
+    if (settings->has_color_temperature) {
+      uvc.SetControlCurrent<uint16_t>(uvc::kPuWhiteBalanceTemperatureControl,
+                                      settings->color_temperature,
+                                      "white balance temperature");
+    }
+  }
+}
+
+// static
+std::string UvcControl::GetDeviceModelId(
+    const std::string& device_id,
+    VideoCaptureApi capture_api,
+    VideoCaptureTransportType transport_type) {
+  // Skip the AVFoundation's not USB nor built-in devices.
+  if (capture_api == VideoCaptureApi::MACOSX_AVFOUNDATION &&
+      transport_type != VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN) {
+    return "";
+  }
+  if (capture_api == VideoCaptureApi::MACOSX_DECKLINK) {
+    return "";
+  }
+  // Both PID and VID are 4 characters.
+  if (device_id.size() < 2 * kVidPidSize) {
+    return "";
+  }
+
+  // The last characters of device id is a concatenation of VID and then PID.
+  const size_t vid_location = device_id.size() - 2 * kVidPidSize;
+  std::string id_vendor = device_id.substr(vid_location, kVidPidSize);
+  const size_t pid_location = device_id.size() - kVidPidSize;
+  std::string id_product = device_id.substr(pid_location, kVidPidSize);
+
+  return id_vendor + ":" + id_product;
+}
+
+// Check if the video capture device supports pan, tilt and zoom controls.
+// static
+VideoCaptureControlSupport UvcControl::GetControlSupport(
+    const std::string& device_model) {
+  TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
+               "VideoCaptureDeviceMac::GetControlSupport");
+  VideoCaptureControlSupport control_support;
+
+  UvcControl uvc(device_model, uvc::kVcInputTerminal);
+  if (!uvc.Good()) {
+    return control_support;
+  }
+
+  uint16_t zoom_max, zoom_min = 0;
+  if (uvc.GetControlMax<uint16_t>(uvc::kCtZoomAbsoluteControl, &zoom_max,
+                                  "zoom") &&
+      uvc.GetControlMin<uint16_t>(uvc::kCtZoomAbsoluteControl, &zoom_min,
+                                  "zoom") &&
+      zoom_min < zoom_max) {
+    control_support.zoom = true;
+  }
+  PanTilt pan_tilt_max, pan_tilt_min;
+  if (uvc.GetControlMax<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_max,
+                                 "pan-tilt") &&
+      uvc.GetControlMin<PanTilt>(uvc::kCtPanTiltAbsoluteControl, &pan_tilt_min,
+                                 "pan-tilt")) {
+    if (pan_tilt_min.pan < pan_tilt_max.pan) {
+      control_support.pan = true;
+    }
+    if (pan_tilt_min.tilt < pan_tilt_max.tilt) {
+      control_support.tilt = true;
+    }
+  }
+
+  return control_support;
 }
 
 bool UvcControl::IsControlAvailable(int control_selector) const {

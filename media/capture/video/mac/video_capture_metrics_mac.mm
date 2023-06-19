@@ -5,7 +5,7 @@
 #import "media/capture/video/mac/video_capture_metrics_mac.h"
 
 #include "base/metrics/histogram_functions.h"
-#import "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#import "media/capture/video/apple/video_capture_device_avfoundation.h"
 #include "media/capture/video/video_capture_device_info.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)

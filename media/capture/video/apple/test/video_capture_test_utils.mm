@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
+#import "media/capture/video/apple/test/video_capture_test_utils.h"
 
 #import <Foundation/Foundation.h>
 
@@ -55,8 +55,9 @@ NSString* GetFirstDeviceId() {
   VideoCaptureDeviceFactoryMac video_capture_device_factory;
   std::vector<VideoCaptureDeviceInfo> devices_info =
       GetDevicesInfo(&video_capture_device_factory);
-  if (devices_info.empty())
+  if (devices_info.empty()) {
     return nil;
+  }
   return base::SysUTF8ToNSString(devices_info.front().descriptor.device_id);
 }
 

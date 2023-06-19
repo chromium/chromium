@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_
 
 #include "base/time/time.h"
 #include "media/capture/video/video_capture_device.h"
@@ -56,4 +56,4 @@ class CAPTURE_EXPORT VideoCaptureDeviceAVFoundationFrameReceiver {
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_VIDEO_CAPTURE_DEVICE_FRAME_RECEIVER_H_

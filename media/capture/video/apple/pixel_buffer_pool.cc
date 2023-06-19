@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
 
 #include "base/check_op.h"
 #include "base/logging.h"

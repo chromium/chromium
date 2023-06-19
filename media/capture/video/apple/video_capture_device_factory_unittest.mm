@@ -9,7 +9,7 @@
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "media/base/media_switches.h"
-#import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
+#import "media/capture/video/apple/test/video_capture_test_utils.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

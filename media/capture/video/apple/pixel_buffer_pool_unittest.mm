@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
 
 #include "base/functional/bind.h"
-#import "media/capture/video/mac/test/video_capture_test_utils_mac.h"
+#import "media/capture/video/apple/test/video_capture_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

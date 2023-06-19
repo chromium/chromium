@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_H_
 
-#include "media/capture/video/mac/video_capture_device_frame_receiver.h"
+#include "media/capture/video/apple/video_capture_device_frame_receiver.h"
 #include "testing/gmock/include/gmock/gmock.h"
 
 namespace media {
@@ -53,4 +53,4 @@ class MockVideoCaptureDeviceAVFoundationFrameReceiver
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_TEST_MOCK_VIDEO_CAPTURE_DEVICE_AVFOUNDATION_FRAME_RECEIVER_H_

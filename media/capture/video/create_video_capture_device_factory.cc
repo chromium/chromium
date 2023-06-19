@@ -21,7 +21,7 @@
 #include "media/capture/video/linux/video_capture_device_factory_linux.h"
 #elif BUILDFLAG(IS_WIN)
 #include "media/capture/video/win/video_capture_device_factory_win.h"
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "media/capture/video/android/video_capture_device_factory_android.h"
@@ -64,7 +64,7 @@ CreatePlatformSpecificVideoCaptureDeviceFactory(
   return std::make_unique<VideoCaptureDeviceFactoryLinux>(ui_task_runner);
 #elif BUILDFLAG(IS_WIN)
   return std::make_unique<VideoCaptureDeviceFactoryWin>();
-#elif BUILDFLAG(IS_MAC)
+#elif BUILDFLAG(IS_APPLE)
   return std::make_unique<VideoCaptureDeviceFactoryMac>();
 #elif BUILDFLAG(IS_ANDROID)
   return std::make_unique<VideoCaptureDeviceFactoryAndroid>();

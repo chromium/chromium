@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "media/capture/video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h"
+#import "media/capture/video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

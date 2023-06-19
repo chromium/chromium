@@ -165,36 +165,25 @@ component("capture_lib") {
     deps += [ "video/android:capture_jni_headers" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
-      "video/mac/gpu_memory_buffer_tracker_mac.cc",
-      "video/mac/gpu_memory_buffer_tracker_mac.h",
-      "video/mac/pixel_buffer_pool_mac.cc",
-      "video/mac/pixel_buffer_pool_mac.h",
-      "video/mac/pixel_buffer_transferer_mac.cc",
-      "video/mac/pixel_buffer_transferer_mac.h",
-      "video/mac/sample_buffer_transformer_mac.cc",
-      "video/mac/sample_buffer_transformer_mac.h",
-      "video/mac/uvc_control_mac.h",
-      "video/mac/uvc_control_mac.mm",
-      "video/mac/video_capture_device_avfoundation_mac.h",
-      "video/mac/video_capture_device_avfoundation_mac.mm",
-      "video/mac/video_capture_device_avfoundation_utils_mac.h",
-      "video/mac/video_capture_device_avfoundation_utils_mac.mm",
-      "video/mac/video_capture_device_decklink_mac.h",
-      "video/mac/video_capture_device_decklink_mac.mm",
+      "video/apple/pixel_buffer_pool.cc",
+      "video/apple/pixel_buffer_pool.h",
+      "video/apple/pixel_buffer_transferer.cc",
+      "video/apple/pixel_buffer_transferer.h",
+      "video/apple/sample_buffer_transformer.cc",
+      "video/apple/sample_buffer_transformer.h",
+      "video/apple/video_capture_device_avfoundation.h",
+      "video/apple/video_capture_device_avfoundation.mm",
+      "video/apple/video_capture_device_avfoundation_utils.h",
+      "video/apple/video_capture_device_avfoundation_utils.mm",
+      "video/apple/video_capture_device_frame_receiver.h",
       "video/mac/video_capture_device_factory_mac.h",
       "video/mac/video_capture_device_factory_mac.mm",
-      "video/mac/video_capture_device_frame_receiver.h",
       "video/mac/video_capture_device_mac.h",
       "video/mac/video_capture_device_mac.mm",
-      "video/mac/video_capture_metrics_mac.h",
-      "video/mac/video_capture_metrics_mac.mm",
     ]
-    deps += [
-      "//components/crash/core/common:crash_key",
-      "//third_party/decklink",
-    ]
+    deps += [ "//components/crash/core/common:crash_key" ]
     configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
       "AVFoundation.framework",
@@ -206,6 +195,20 @@ component("capture_lib") {
       "IOSurface.framework",
       "VideoToolbox.framework",
     ]
+  }
+
+  if (is_mac) {
+    sources += [
+      "video/mac/gpu_memory_buffer_tracker_mac.cc",
+      "video/mac/gpu_memory_buffer_tracker_mac.h",
+      "video/mac/uvc_control_mac.h",
+      "video/mac/uvc_control_mac.mm",
+      "video/mac/video_capture_device_decklink_mac.h",
+      "video/mac/video_capture_device_decklink_mac.mm",
+      "video/mac/video_capture_metrics_mac.h",
+      "video/mac/video_capture_metrics_mac.mm",
+    ]
+    deps += [ "//third_party/decklink" ]
   }
 
   if (is_win) {
@@ -493,31 +496,34 @@ test("capture_unittests") {
         [ "//build/config/fuchsia/test/sysmem.shard.test-cml" ]
   }
 
-  if (is_mac) {
+  if (is_apple) {
     sources += [
-      "video/mac/pixel_buffer_pool_mac_unittest.mm",
-      "video/mac/pixel_buffer_transferer_mac_unittest.mm",
-      "video/mac/sample_buffer_transformer_mac_unittest.mm",
-      "video/mac/test/fake_av_capture_device_format.h",
-      "video/mac/test/fake_av_capture_device_format.mm",
-      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h",
-      "video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.mm",
-      "video/mac/test/pixel_buffer_test_utils_mac.cc",
-      "video/mac/test/pixel_buffer_test_utils_mac.h",
-      "video/mac/test/video_capture_test_utils_mac.h",
-      "video/mac/test/video_capture_test_utils_mac.mm",
-      "video/mac/video_capture_device_avfoundation_mac_unittest.mm",
-      "video/mac/video_capture_device_factory_mac_unittest.mm",
-      "video/mac/video_capture_device_mac_unittest.mm",
-      "video/mac/video_capture_metrics_mac_unittest.mm",
+      "video/apple/pixel_buffer_pool_unittest.mm",
+      "video/apple/pixel_buffer_transferer_unittest.mm",
+      "video/apple/sample_buffer_transformer_unittest.mm",
+      "video/apple/test/fake_av_capture_device_format.h",
+      "video/apple/test/fake_av_capture_device_format.mm",
+      "video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.h",
+      "video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.mm",
+      "video/apple/test/pixel_buffer_test_utils.cc",
+      "video/apple/test/pixel_buffer_test_utils.h",
+      "video/apple/test/video_capture_test_utils.h",
+      "video/apple/test/video_capture_test_utils.mm",
+      "video/apple/video_capture_device_apple_unittest.mm",
+      "video/apple/video_capture_device_avfoundation_unittest.mm",
+      "video/apple/video_capture_device_factory_unittest.mm",
     ]
-    configs += [ "//build/config/compiler:enable_arc" ]
     frameworks = [
+      "IOSurface.framework",
       "AVFoundation.framework",
       "CoreMedia.framework",
       "CoreVideo.framework",
-      "IOSurface.framework",
     ]
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
+  if (is_mac) {
+    sources += [ "video/mac/video_capture_metrics_mac_unittest.mm" ]
     deps += [ "//third_party/ocmock" ]
   }
 

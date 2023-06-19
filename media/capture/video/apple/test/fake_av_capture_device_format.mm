@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/test/fake_av_capture_device_format.h"
+#include "media/capture/video/apple/test/fake_av_capture_device_format.h"
 
 #include "base/mac/scoped_cftyperef.h"
 

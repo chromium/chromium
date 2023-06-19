@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
-#include "media/capture/video/mac/test/fake_av_capture_device_format.h"
+#include "media/capture/video/apple/video_capture_device_avfoundation.h"
+#include "media/capture/video/apple/test/fake_av_capture_device_format.h"
 
 #include <memory>
 
@@ -15,10 +15,10 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
 #include "media/base/video_types.h"
-#include "media/capture/video/mac/sample_buffer_transformer_mac.h"
-#include "media/capture/video/mac/test/mock_video_capture_device_avfoundation_frame_receiver_mac.h"
-#include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
-#include "media/capture/video/mac/test/video_capture_test_utils_mac.h"
+#include "media/capture/video/apple/sample_buffer_transformer.h"
+#include "media/capture/video/apple/test/mock_video_capture_device_avfoundation_frame_receiver.h"
+#include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
+#include "media/capture/video/apple/test/video_capture_test_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/color_space.h"

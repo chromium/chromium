@@ -2,10 +2,10 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
+#include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
 
-#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
-#include "media/capture/video/mac/pixel_buffer_transferer_mac.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
+#include "media/capture/video/apple/pixel_buffer_transferer.h"
 #include "third_party/libyuv/include/libyuv/convert_argb.h"
 #include "third_party/libyuv/include/libyuv/convert_from_argb.h"
 

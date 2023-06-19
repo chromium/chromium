@@ -2,16 +2,16 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/pixel_buffer_transferer_mac.h"
+#include "media/capture/video/apple/pixel_buffer_transferer.h"
 
 #include <cmath>
 #include <vector>
 
 #include "base/logging.h"
 #include "build/build_config.h"
-#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
-#include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
+#include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
+#include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 

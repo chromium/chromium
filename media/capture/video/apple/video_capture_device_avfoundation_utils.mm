@@ -2,9 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
-
-#import <IOKit/audio/IOAudioTypes.h>
+#include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 
 #include "base/mac/mac_util.h"
 #include "base/metrics/histogram_macros.h"
@@ -12,10 +10,14 @@
 #include "base/strings/sys_string_conversions.h"
 #include "media/base/mac/video_capture_device_avfoundation_helpers.h"
 #include "media/base/media_switches.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_mac.h"
+#include "media/capture/video/apple/video_capture_device_avfoundation.h"
 #include "media/capture/video/mac/video_capture_device_factory_mac.h"
 #include "media/capture/video/mac/video_capture_device_mac.h"
 #include "media/capture/video_capture_types.h"
+
+#if BUILDFLAG(IS_MAC)
+#import <IOKit/audio/IOAudioTypes.h>
+#endif
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -62,6 +64,7 @@ GetVideoCaptureDeviceNames() {
         continue;
       }
 
+#if BUILDFLAG(IS_MAC)
       // Transport types are defined for Audio devices and reused for video.
       int transport_type = device.transportType;
       VideoCaptureTransportType device_transport_type =
@@ -69,6 +72,10 @@ GetVideoCaptureDeviceNames() {
            transport_type == kIOAudioDeviceTransportTypeUSB)
               ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
               : VideoCaptureTransportType::OTHER_TRANSPORT;
+#else
+      VideoCaptureTransportType device_transport_type =
+          VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN;
+#endif
       DeviceNameAndTransportType* name_and_transport_type =
           [[DeviceNameAndTransportType alloc]
                initWithName:device.localizedName

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_SAMPLE_BUFFER_TRANSFORMER_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_SAMPLE_BUFFER_TRANSFORMER_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_SAMPLE_BUFFER_TRANSFORMER_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_SAMPLE_BUFFER_TRANSFORMER_H_
 
 #import <CoreMedia/CoreMedia.h>
 #import <CoreVideo/CoreVideo.h>
@@ -12,8 +12,8 @@
 #include "base/feature_list.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "media/capture/capture_export.h"
-#include "media/capture/video/mac/pixel_buffer_pool_mac.h"
-#include "media/capture/video/mac/pixel_buffer_transferer_mac.h"
+#include "media/capture/video/apple/pixel_buffer_pool.h"
+#include "media/capture/video/apple/pixel_buffer_transferer.h"
 #include "ui/gfx/geometry/size.h"
 
 namespace media {
@@ -118,4 +118,4 @@ class CAPTURE_EXPORT SampleBufferTransformer {
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_SAMPLE_BUFFER_TRANSFORMER_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_SAMPLE_BUFFER_TRANSFORMER_H_

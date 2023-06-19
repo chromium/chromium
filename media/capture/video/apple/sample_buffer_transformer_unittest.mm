@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/sample_buffer_transformer_mac.h"
+#include "media/capture/video/apple/sample_buffer_transformer.h"
 
 #include <tuple>
 
 #include "base/logging.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "build/build_config.h"
-#include "media/capture/video/mac/test/pixel_buffer_test_utils_mac.h"
-#include "media/capture/video/mac/video_capture_device_avfoundation_utils_mac.h"
+#include "media/capture/video/apple/test/pixel_buffer_test_utils.h"
+#include "media/capture/video/apple/video_capture_device_avfoundation_utils.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/libyuv/include/libyuv/convert.h"
@@ -165,8 +165,9 @@ void PlanarCvPixelBufferReleaseCallback(void* releaseRef,
                                         size_t num_planes,
                                         const void* planes[]) {
   free(const_cast<void*>(data));
-  for (size_t plane = 0; plane < num_planes; ++plane)
+  for (size_t plane = 0; plane < num_planes; ++plane) {
     free(const_cast<void*>(planes[plane]));
+  }
 }
 
 std::pair<uint8_t*, size_t> GetDataAndStride(CVPixelBufferRef pixel_buffer,

@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/mac/sample_buffer_transformer_mac.h"
+#include "media/capture/video/apple/sample_buffer_transformer.h"
 
 #include <utility>
 
@@ -94,8 +94,9 @@ I420Planes EnsureI420BufferSizeAndGetPlanes(size_t width,
                                             size_t height,
                                             std::vector<uint8_t>* i420_buffer) {
   size_t required_size = GetContiguousI420BufferSize(width, height);
-  if (i420_buffer->size() < required_size)
+  if (i420_buffer->size() < required_size) {
     i420_buffer->resize(required_size);
+  }
   return GetI420PlanesFromContiguousBuffer(&(*i420_buffer)[0], width, height);
 }
 
@@ -178,8 +179,9 @@ NV12Planes EnsureNV12BufferSizeAndGetPlanes(size_t width,
                                             size_t height,
                                             std::vector<uint8_t>* nv12_buffer) {
   size_t required_size = GetContiguousNV12BufferSize(width, height);
-  if (nv12_buffer->size() < required_size)
+  if (nv12_buffer->size() < required_size) {
     nv12_buffer->resize(required_size);
+  }
   return GetNV12PlanesFromContiguousBuffer(&(*nv12_buffer)[0], width, height);
 }
 

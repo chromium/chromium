@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_TEST_VIDEO_CAPTURE_TEST_UTILS_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_TEST_VIDEO_CAPTURE_TEST_UTILS_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_TEST_VIDEO_CAPTURE_TEST_UTILS_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_TEST_VIDEO_CAPTURE_TEST_UTILS_H_
 
 #import <Foundation/Foundation.h>
 
@@ -29,4 +29,4 @@ NSString* GetFirstDeviceId();
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_TEST_VIDEO_CAPTURE_TEST_UTILS_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_TEST_VIDEO_CAPTURE_TEST_UTILS_H_

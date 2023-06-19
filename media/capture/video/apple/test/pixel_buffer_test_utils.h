@@ -2,15 +2,15 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_MAC_TEST_PIXEL_BUFFER_TEST_UTILS_MAC_H_
-#define MEDIA_CAPTURE_VIDEO_MAC_TEST_PIXEL_BUFFER_TEST_UTILS_MAC_H_
+#ifndef MEDIA_CAPTURE_VIDEO_APPLE_TEST_PIXEL_BUFFER_TEST_UTILS_H_
+#define MEDIA_CAPTURE_VIDEO_APPLE_TEST_PIXEL_BUFFER_TEST_UTILS_H_
 
 #include <memory>
 #include <tuple>
 #include <vector>
 
 #import <CoreVideo/CoreVideo.h>
-#import <IOSurface/IOSurface.h>
+#import <IOSurface/IOSurfaceRef.h>
 
 #include "base/mac/scoped_cftyperef.h"
 
@@ -85,4 +85,4 @@ bool PixelBufferIsSingleColor(CVPixelBufferRef pixel_buffer,
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_MAC_TEST_PIXEL_BUFFER_TEST_UTILS_MAC_H_
+#endif  // MEDIA_CAPTURE_VIDEO_APPLE_TEST_PIXEL_BUFFER_TEST_UTILS_H_
