@@ -14,6 +14,9 @@ import android.view.View;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.supplier.ObservableSupplierImpl;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREBackPressType;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFRERestoredTabsResult;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREResultAction;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetContent;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetObserver;
@@ -141,9 +144,20 @@ public class RestoreTabsPromoSheetContent implements BottomSheetContent {
                 break;
             case HOME_SCREEN:
                 mModel.set(RestoreTabsProperties.VISIBLE, false);
+                RestoreTabsMetricsHelper.recordResultActionHistogram(
+                        RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS);
+                RestoreTabsMetricsHelper.recordResultActionMetrics(
+                        RestoreTabsOnFREResultAction.DISMISSED_BACKPRESS);
+                RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                        RestoreTabsOnFRERestoredTabsResult.NONE);
                 break;
             default:
                 assert currentScreen == UNINITIALIZED : "Backpressing on an unidentified screen.";
+        }
+
+        if (currentScreen != UNINITIALIZED) {
+            RestoreTabsMetricsHelper.recordBackPressTypeMetrics(
+                    RestoreTabsOnFREBackPressType.SYSTEM_BACKPRESS);
         }
     }
 }

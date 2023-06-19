@@ -3208,6 +3208,110 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Android.RestoreTabsOnFRE.DeviceRestoredFrom"
+    enum="RestoreTabsOnFREDeviceRestoredFrom" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    Whether the user restored tabs from the non default selected device.
+    Recorded only if the user has multiple synced devices, and once per user
+    interaction with the entire workflow on restore.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.EligibleTabsForRestoreCount"
+    units="count" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The total count of tabs eligible to be restored from the selected device.
+    Recorded once per user attempt to restore tabs from the selected device.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.PromoShowResult"
+    enum="RestoreTabsOnFREPromoShowResult" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The outcome of the promo show attempt from the RestoreTabsFeatureHelper.
+    Recorded once per user attempt to show the promo after first run experience.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.RestoredTabsResult"
+    enum="RestoreTabsOnFRERestoredTabsResult" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The portion of tabs the user ended up restoring out of the maximum possible
+    amount. Recorded once per user attempt to restore tabs from the selected
+    device.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.ResultActionFirstShow"
+    enum="RestoreTabsOnFREResultAction" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The result of the workflow action taken on the RestoreTabs promo. Recorded
+    once per user interaction with the promo when shown the first time.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.ResultActionSecondShow"
+    enum="RestoreTabsOnFREResultAction" expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The result of the workflow action taken on the RestoreTabs promo. Recorded
+    once per user interaction with the promo when shown the second time.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.SyncedDevicesCount" units="count"
+    expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The total count of synced devices on the user logged in account. Recorded
+    once per user interaction with the entire workflow.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.TabsRestoredCount" units="count"
+    expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The total count of tabs that were actually restored from the selected
+    device. Recorded once per user attempt to restore tabs from the selected
+    device.
+  </summary>
+</histogram>
+
+<histogram name="Android.RestoreTabsOnFRE.TabsRestoredPercentage" units="%"
+    expires_after="2023-12-15">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <owner>fredmello@chromium.org</owner>
+  <summary>
+    The ratio between the number of tabs that the user is eligible to restore
+    and the number of tabs that were actually restored, from the currently
+    selected device calculated as a percentage. Recorded once per user attempt
+    to restore tabs from the selected device.
+  </summary>
+</histogram>
+
 <histogram name="Android.Rotation.BeginToRendererFrameActivation" units="ms"
     expires_after="2023-11-12">
   <owner>jonross@chromium.org</owner>

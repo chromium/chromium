@@ -124,7 +124,7 @@ public class RestoreTabsMediatorUnitTest {
         mMediator.showHomeScreen(mForeignSessionHelper, testSessions, mDelegate);
         Assert.assertEquals(mModel.get(VISIBLE), true);
         mMediator.dismiss();
-        verify(mDelegate).onDismissed(true);
+        verify(mDelegate).onDismissed();
         Assert.assertEquals(mModel.get(VISIBLE), false);
     }
 
@@ -177,6 +177,7 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_createHomeScreenDelegateOnAllTabsChosen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         RestoreTabsPromoScreenCoordinator.Delegate delegate = mModel.get(HOME_SCREEN_DELEGATE);
         mModel.set(VISIBLE, true);
 
@@ -214,6 +215,7 @@ public class RestoreTabsMediatorUnitTest {
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test
@@ -395,6 +397,7 @@ public class RestoreTabsMediatorUnitTest {
 
     @Test
     public void testRestoreTabsMediator_createReviewTabsScreenDelegateOnSelectedTabsChosen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         mModel.set(VISIBLE, true);
         mMediator.setCurrentScreen(REVIEW_TABS_SCREEN);
         RestoreTabsDetailScreenCoordinator.Delegate delegate =
@@ -432,6 +435,7 @@ public class RestoreTabsMediatorUnitTest {
                         tabs, mModel.get(SELECTED_DEVICE), mTabCreatorManager);
         verify(mTracker).notifyEvent(eq(RESTORE_TABS_USED));
         Assert.assertEquals(mModel.get(VISIBLE), false);
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test

@@ -98,9 +98,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_handleBackPressHomeScreen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         Assert.assertTrue(mSheetContent.handleBackPress());
         Assert.assertFalse(mModel.get(VISIBLE));
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test
@@ -124,9 +126,11 @@ public class RestoreTabsPromoSheetContentUnitTest {
 
     @Test
     public void testSheetContent_onBackPressedHomeScreen() {
+        RestoreTabsMetricsHelper.setPromoShownCount(1);
         mModel.set(CURRENT_SCREEN, HOME_SCREEN);
         mSheetContent.onBackPressed();
         Assert.assertFalse(mModel.get(VISIBLE));
+        RestoreTabsMetricsHelper.setPromoShownCount(0);
     }
 
     @Test

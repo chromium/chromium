@@ -11,6 +11,10 @@ import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionTab;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREBackPressType;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREDeviceRestoredFrom;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFRERestoredTabsResult;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREResultAction;
 import org.chromium.chrome.browser.recent_tabs.RestoreTabsProperties.DetailItemType;
 import org.chromium.chrome.browser.recent_tabs.ui.ForeignSessionItemProperties;
 import org.chromium.chrome.browser.recent_tabs.ui.RestoreTabsDetailScreenCoordinator;
@@ -41,6 +45,7 @@ public class RestoreTabsMediator {
     private BottomSheetController mBottomSheetController;
     private BottomSheetObserver mBottomSheetDismissedObserver;
     private Profile mProfile;
+    private ForeignSession mDefaultSelectedSession;
 
     public void initialize(PropertyModel model, Profile profile,
             TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
@@ -49,8 +54,11 @@ public class RestoreTabsMediator {
         mProfile = profile;
         mModel = model;
         mModel.set(RestoreTabsProperties.HOME_SCREEN_DELEGATE, createHomeScreenDelegate());
-        mModel.set(RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER,
-                () -> { setCurrentScreen(RestoreTabsProperties.ScreenType.HOME_SCREEN); });
+        mModel.set(RestoreTabsProperties.DETAIL_SCREEN_BACK_CLICK_HANDLER, () -> {
+            setCurrentScreen(RestoreTabsProperties.ScreenType.HOME_SCREEN);
+            RestoreTabsMetricsHelper.recordBackPressTypeMetrics(
+                    RestoreTabsOnFREBackPressType.BACK_BUTTON);
+        });
 
         mBottomSheetDismissedObserver = new EmptyBottomSheetObserver() {
             @Override
@@ -58,15 +66,30 @@ public class RestoreTabsMediator {
                 super.onSheetClosed(reason);
                 dismiss();
                 mBottomSheetController.removeObserver(mBottomSheetDismissedObserver);
+
+                switch (reason) {
+                    case BottomSheetController.StateChangeReason.SWIPE:
+                        RestoreTabsMetricsHelper.recordResultActionHistogram(
+                                RestoreTabsOnFREResultAction.DISMISSED_SWIPE);
+                        RestoreTabsMetricsHelper.recordResultActionMetrics(
+                                RestoreTabsOnFREResultAction.DISMISSED_SWIPE);
+                        RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                                RestoreTabsOnFRERestoredTabsResult.NONE);
+                        break;
+                    case BottomSheetController.StateChangeReason.TAP_SCRIM:
+                        RestoreTabsMetricsHelper.recordResultActionHistogram(
+                                RestoreTabsOnFREResultAction.DISMISSED_SCRIM);
+                        RestoreTabsMetricsHelper.recordResultActionMetrics(
+                                RestoreTabsOnFREResultAction.DISMISSED_SCRIM);
+                        RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                                RestoreTabsOnFRERestoredTabsResult.NONE);
+                        break;
+                }
             }
         };
     }
 
     public void destroy() {
-        if (mForeignSessionHelper != null) {
-            mForeignSessionHelper.destroy();
-            mForeignSessionHelper = null;
-        }
         mModel.set(RestoreTabsProperties.VISIBLE, false);
     }
 
@@ -76,16 +99,19 @@ public class RestoreTabsMediator {
             @Override
             public void onShowDeviceList() {
                 setCurrentScreen(RestoreTabsProperties.ScreenType.DEVICE_SCREEN);
+                RestoreTabsMetricsHelper.recordDeviceSelectionScreenMetrics();
             }
 
             @Override
             public void onAllTabsChosen() {
                 restoreChosenTabs();
+                RestoreTabsMetricsHelper.recordRestoredViaPromoScreenMetrics();
             };
 
             @Override
             public void onReviewTabsChosen() {
                 setCurrentScreen(RestoreTabsProperties.ScreenType.REVIEW_TABS_SCREEN);
+                RestoreTabsMetricsHelper.recordReviewTabsScreenMetrics();
             }
         };
     }
@@ -134,14 +160,14 @@ public class RestoreTabsMediator {
     public void dismiss() {
         if (!mModel.get(RestoreTabsProperties.VISIBLE)) {
             if (mDelegate != null) {
-                mDelegate.onDismissed(/*wasPromoShown=*/true);
+                mDelegate.onDismissed();
             }
             return;
         } // If already dismissed, then skip setting visible to false.
 
         mModel.set(RestoreTabsProperties.VISIBLE, false);
         if (mDelegate != null) {
-            mDelegate.onDismissed(/*wasPromoShown=*/true);
+            mDelegate.onDismissed();
         }
     }
 
@@ -164,6 +190,8 @@ public class RestoreTabsMediator {
                 (ForeignSession s1,
                         ForeignSession s2) -> Long.compare(s2.modifiedTime, s1.modifiedTime));
         ForeignSession newSelection = sessions.get(0);
+        // Set the default selected session for metrics collection to the last used session.
+        mDefaultSelectedSession = sessions.get(0);
 
         // Populate all model entries.
         ModelList sessionItems = mModel.get(RestoreTabsProperties.DEVICE_MODEL_LIST);
@@ -176,6 +204,10 @@ public class RestoreTabsMediator {
                     /*session=*/session, /*isSelected=*/false, /*onClickListener=*/() -> {
                         setSelectedDeviceItem(session);
                         setCurrentScreen(RestoreTabsProperties.ScreenType.HOME_SCREEN);
+
+                        if (session != mDefaultSelectedSession) {
+                            RestoreTabsMetricsHelper.recordNonDefaultDeviceSelectionMetrics();
+                        }
                     });
             sessionItems.add(new ListItem(DetailItemType.DEVICE, model));
         }
@@ -311,6 +343,7 @@ public class RestoreTabsMediator {
             @Override
             public void onSelectedTabsChosen() {
                 restoreChosenTabs();
+                RestoreTabsMetricsHelper.recordRestoredViaReviewTabsScreenMetrics();
             };
         };
     }
@@ -338,6 +371,41 @@ public class RestoreTabsMediator {
             TrackerFactory.getTrackerForProfile(mProfile).notifyEvent(
                     EventConstants.RESTORE_TABS_PROMO_USED);
         }
+
+        recordTabRestorationMetrics(tabs, selectedTabs);
         mModel.set(RestoreTabsProperties.VISIBLE, false);
+    }
+
+    private void recordTabRestorationMetrics(List<ForeignSessionTab> tabs, ModelList selectedTabs) {
+        assert selectedTabs.size() != 0;
+        float tabsRestoredPercentage = (float) tabs.size() / (float) selectedTabs.size() * 100;
+        RestoreTabsMetricsHelper.recordEligibleTabsForRestoreCountHistogram(selectedTabs.size());
+        RestoreTabsMetricsHelper.recordTabsRestoredCountHistogram(tabs.size());
+        RestoreTabsMetricsHelper.recordTabsRestoredPercentageHistogram(
+                Math.round(tabsRestoredPercentage));
+
+        if (mModel.get(RestoreTabsProperties.SELECTED_DEVICE) == mDefaultSelectedSession) {
+            if (mModel.get(RestoreTabsProperties.DEVICE_MODEL_LIST).size() == 1) {
+                RestoreTabsMetricsHelper.recordDeviceRestoredFromHistogram(
+                        RestoreTabsOnFREDeviceRestoredFrom.SINGLE_DEVICE);
+            } else {
+                RestoreTabsMetricsHelper.recordDeviceRestoredFromHistogram(
+                        RestoreTabsOnFREDeviceRestoredFrom.DEFAULT);
+            }
+        } else {
+            RestoreTabsMetricsHelper.recordDeviceRestoredFromHistogram(
+                    RestoreTabsOnFREDeviceRestoredFrom.NON_DEFAULT);
+        }
+
+        if (tabs.size() == selectedTabs.size()) {
+            RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                    RestoreTabsOnFRERestoredTabsResult.ALL);
+        } else {
+            RestoreTabsMetricsHelper.recordRestoredTabsResultHistogram(
+                    RestoreTabsOnFRERestoredTabsResult.SUBSET);
+        }
+
+        RestoreTabsMetricsHelper.recordResultActionHistogram(RestoreTabsOnFREResultAction.ACCEPTED);
+        RestoreTabsMetricsHelper.recordResultActionMetrics(RestoreTabsOnFREResultAction.ACCEPTED);
     }
 }

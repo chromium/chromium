@@ -16,17 +16,14 @@ public interface RestoreTabsControllerDelegate {
     /**
      * Action to perform when the restore tabs promo should be shown.
      *
-     * @param foreignSessionHelper The active ForeignSessionHelper instance.
      * @param sessions The list of synced foreign sessions for the current profile.
      */
-    public void showPromo(ForeignSessionHelper foreignSessionHelper, List<ForeignSession> sessions);
+    public void showPromo(List<ForeignSession> sessions);
 
     /**
      * Action to perform when the restore tabs promo is done showing.
-     *
-     * @param wasPromoShown The boolean to notify the callback if the promo was shown.
      */
-    public void onDismissed(boolean wasPromoShown);
+    public void onDismissed();
 
     /**
      * Helper method to retrieve the param value stored for skipping the feature engagement check.

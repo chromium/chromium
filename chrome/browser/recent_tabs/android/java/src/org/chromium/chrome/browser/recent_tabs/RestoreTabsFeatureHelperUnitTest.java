@@ -96,7 +96,6 @@ public class RestoreTabsFeatureHelperUnitTest {
         verify(mForeignSessionHelperJniMock, times(1))
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
         verify(mForeignSessionHelperJniMock, times(1)).destroy(1L);
-        verify(mDelegate, times(1)).onDismissed(false);
     }
 
     @Test
@@ -122,6 +121,6 @@ public class RestoreTabsFeatureHelperUnitTest {
                 .when(mForeignSessionHelperJniMock)
                 .getMobileAndTabletForeignSessions(1L, new ArrayList<ForeignSession>());
         mHelper.maybeShowPromo();
-        verify(mDelegate, times(1)).showPromo(any(ForeignSessionHelper.class), anyList());
+        verify(mDelegate, times(1)).showPromo(anyList());
     }
 }

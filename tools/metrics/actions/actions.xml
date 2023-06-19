@@ -28335,6 +28335,14 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="RestoreTabsOnFRE">
+  <owner>ckitagawa@chromium.org</owner>
+  <owner>bjfong@google.com</owner>
+  <description>
+    User took an action on the RestoreTabsOnFRE feature.
+  </description>
+</action>
+
 <action name="SafeBrowsing.AccountIntegration.DisabledDialog.Dismissed">
   <owner>jacastro@chromium.org</owner>
   <owner>chrome-safebrowsing-alerts@google.com</owner>
@@ -38478,6 +38486,32 @@ should be able to be added at any place in this file.
   <suffix name="UngroupTabs"
       label="Users tapped on the ungroup tabs button in TabSelectionEditorV2."/>
   <affected-action name="TabMultiSelectV2"/>
+</action-suffix>
+
+<action-suffix separator="." ordering="suffix">
+  <suffix name="BackPressTypeBackButton"
+      label="Users backpressed the promo by using the back button."/>
+  <suffix name="BackPressTypeSystemBackPress"
+      label="Users backpressed the promo using the system backpress handler."/>
+  <suffix name="DeviceSelectionScreen"
+      label="Users entered the device selection screen."/>
+  <suffix name="PromoResultAccepted"
+      label="Users accepted the promo by touching a restore tabs button."/>
+  <suffix name="PromoResultDismissedByBackpress"
+      label="Users dismissed the promo by backpressing."/>
+  <suffix name="PromoResultDismissedByScrim"
+      label="Users dismissed the promo by touching the scrim."/>
+  <suffix name="PromoResultDismissedBySwipe"
+      label="Users dismissed the promo by swiping down."/>
+  <suffix name="RestoredViaPromoScreen"
+      label="Users restored tabs via the promo home screen button."/>
+  <suffix name="RestoredViaReviewTabsScreen"
+      label="Users restored tabs via the review tabs screen button."/>
+  <suffix name="ReviewTabsScreen"
+      label="Users entered the review tabs screen."/>
+  <suffix name="SelectedNonDefaultDevice"
+      label="Users selected the non default device to restore tabs from."/>
+  <affected-action name="RestoreTabsOnFRE"/>
 </action-suffix>
 
 <action-suffix separator="." ordering="suffix">

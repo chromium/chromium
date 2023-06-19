@@ -15,9 +15,11 @@ import org.chromium.chrome.browser.flags.PostNativeFlag;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSession;
 import org.chromium.chrome.browser.recent_tabs.ForeignSessionHelper.ForeignSessionWindow;
+import org.chromium.chrome.browser.recent_tabs.RestoreTabsMetricsHelper.RestoreTabsOnFREPromoShowResult;
 import org.chromium.chrome.browser.tabmodel.TabCreatorManager;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.feature_engagement.FeatureConstants;
+import org.chromium.components.feature_engagement.Tracker;
 
 import java.util.List;
 
@@ -37,6 +39,7 @@ public class RestoreTabsFeatureHelper {
     private Profile mProfile;
     private TabCreatorManager mTabCreatorManager;
     private BottomSheetController mBottomSheetController;
+    private ForeignSessionHelper mForeignSessionHelper;
 
     public RestoreTabsFeatureHelper(Activity activity, Profile profile,
             TabCreatorManager tabCreatorManager, BottomSheetController bottomSheetController) {
@@ -47,6 +50,11 @@ public class RestoreTabsFeatureHelper {
     }
 
     public void destroy() {
+        if (mForeignSessionHelper != null) {
+            mForeignSessionHelper.destroy();
+            mForeignSessionHelper = null;
+        }
+
         if (mController != null) {
             mController.destroy();
             mController = null;
@@ -61,24 +69,54 @@ public class RestoreTabsFeatureHelper {
      * Check the criteria for displaying the restore tabs promo.
      */
     public void maybeShowPromo() {
-        if (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                || TrackerFactory.getTrackerForProfile(mProfile).wouldTriggerHelpUI(
-                        FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
-            setDelegate();
-            ForeignSessionHelper foreignSessionHelper = new ForeignSessionHelper(mProfile);
-            List<ForeignSession> sessions =
-                    foreignSessionHelper.getMobileAndTabletForeignSessions();
+        Tracker tracker = TrackerFactory.getTrackerForProfile(mProfile);
 
-            if (hasValidSyncedDevices(sessions)
-                    && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                            || TrackerFactory.getTrackerForProfile(mProfile).shouldTriggerHelpUI(
-                                    FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
-                mDelegate.showPromo(foreignSessionHelper, sessions);
-            } else {
-                foreignSessionHelper.destroy();
-                foreignSessionHelper = null;
-                mDelegate.onDismissed(/*wasPromoShown=*/false);
-            }
+        if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
+                && !tracker.wouldTriggerHelpUI(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE)) {
+            RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
+                    RestoreTabsOnFREPromoShowResult.NOT_ELIGIBLE);
+            return;
+        }
+
+        mForeignSessionHelper = new ForeignSessionHelper(mProfile);
+        List<ForeignSession> sessions = mForeignSessionHelper.getMobileAndTabletForeignSessions();
+
+        // Determines whether the promo is to be shown for the first or second time.
+        // To determine if it is the first time that the promo is being triggered, the logic checks
+        // if the promo has ever triggered. Since wouldTriggerHelpUI indicates that the promo
+        // will be shown if the shouldTriggerHelpUI is called, it is assumed that it will show,
+        // hence setting the showCount to 1. If it has already triggered and the same criteria is
+        // fulfilled, it can be assumed this will be the second time the promo shows. Note that this
+        // logic only works for the 2 count max for promo showing. The hasEverTriggered call must be
+        // before the shouldTriggerHelpUI call, otherwise it will always return true.
+        int showCount = tracker.hasEverTriggered(FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE, true)
+                ? 2
+                : 1;
+        RestoreTabsMetricsHelper.setPromoShownCount(showCount);
+
+        // The difference between wouldTriggerHelpUI and shouldTriggerHelpUI is that the latter
+        // increments an internal trigger count if it returns true, which means that if it is called
+        // successfully, IPH must show. Alternatively, the former lets the logic know if the promo
+        // is expected to show, which can help determine if it is being shown for the first or
+        // second time.
+        if (hasValidSyncedDevices(sessions)
+                && (RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
+                        || tracker.shouldTriggerHelpUI(
+                                FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE))) {
+            setDelegate();
+            mDelegate.showPromo(sessions);
+            RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
+                    RestoreTabsOnFREPromoShowResult.SHOWN);
+            RestoreTabsMetricsHelper.recordSyncedDevicesCountHistogram(sessions.size());
+        } else {
+            destroy();
+
+            // This metric covers the situations where:
+            // * sync is not enabled.
+            // * no tabs are synced.
+            // * synced tabs haven't finished syncing.
+            RestoreTabsMetricsHelper.recordPromoShowResultHistogram(
+                    RestoreTabsOnFREPromoShowResult.NO_SYNCED_TABS);
         }
     }
 
@@ -89,20 +127,18 @@ public class RestoreTabsFeatureHelper {
                       private boolean mWasDismissed;
 
                       @Override
-                      public void showPromo(ForeignSessionHelper foreignSessionHelper,
-                              List<ForeignSession> sessions) {
+                      public void showPromo(List<ForeignSession> sessions) {
                           mController = RestoreTabsControllerFactory.createInstance(
                                   mActivity, mProfile, mTabCreatorManager, mBottomSheetController);
-                          mController.showHomeScreen(foreignSessionHelper, sessions, mDelegate);
+                          mController.showHomeScreen(mForeignSessionHelper, sessions, mDelegate);
                       }
 
                       @Override
-                      public void onDismissed(boolean wasPromoShown) {
+                      public void onDismissed() {
                           assert !mWasDismissed : "Promo should only be dismissed once.";
                           mWasDismissed = true;
 
-                          if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()
-                                  && wasPromoShown) {
+                          if (!RESTORE_TABS_PROMO_SKIP_FEATURE_ENGAGEMENT.getValue()) {
                               TrackerFactory.getTrackerForProfile(mProfile).dismissed(
                                       FeatureConstants.RESTORE_TABS_ON_FRE_FEATURE);
                           }
