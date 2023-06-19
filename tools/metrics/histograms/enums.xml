@@ -10246,6 +10246,12 @@ others/histograms.xml -->
   <int value="5" label="Overlay Insecure Non-player-element Fullscreen"/>
 </enum>
 
+<enum name="AVIFCleanApertureType">
+  <int value="0" label="kInvalid"/>
+  <int value="1" label="kNonzeroOrigin"/>
+  <int value="2" label="kZeroOrigin"/>
+</enum>
+
 <enum name="AwDebugCall">
   <int value="0" label="setCpuAffinityToLittleCores"/>
   <int value="1" label="enableIdleThrottling"/>

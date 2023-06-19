@@ -15,6 +15,7 @@
 #include "base/feature_list.h"
 #include "base/logging.h"
 #include "base/memory/scoped_refptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/numerics/safe_conversions.h"
 #include "base/ranges/algorithm.h"
 #include "base/timer/elapsed_timer.h"
@@ -991,6 +992,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
   // If the image is cropped, pass the size of the cropped image (the clean
   // aperture) to SetSize().
   if (container->transformFlags & AVIF_TRANSFORM_CLAP) {
+    AVIFCleanApertureType clap_type;
     avifCropRect crop_rect;
     avifDiagnostics diag;
     avifBool valid_clap = avifCropRectConvertCleanApertureBox(
@@ -999,6 +1001,7 @@ bool AVIFImageDecoder::UpdateDemuxer() {
     if (!valid_clap) {
       DVLOG(1) << "Invalid 'clap' property: " << diag.error
                << "; showing the full image.";
+      clap_type = AVIFCleanApertureType::kInvalid;
       ignore_clap_ = true;
     } else if (crop_rect.x != 0 || crop_rect.y != 0) {
       // To help discourage the creation of files with privacy risks, also
@@ -1007,12 +1010,15 @@ bool AVIFImageDecoder::UpdateDemuxer() {
       // https://github.com/AOMediaCodec/av1-avif/issues/189.
       DVLOG(1) << "Origin of 'clap' property anchored to (" << crop_rect.x
                << ", " << crop_rect.y << "); showing the full image.";
+      clap_type = AVIFCleanApertureType::kNonzeroOrigin;
       ignore_clap_ = true;
     } else {
+      clap_type = AVIFCleanApertureType::kZeroOrigin;
       clap_origin_.SetPoint(crop_rect.x, crop_rect.y);
       width = crop_rect.width;
       height = crop_rect.height;
     }
+    clap_type_ = clap_type;
   }
   return SetSize(width, height);
 }
@@ -1051,6 +1057,12 @@ avifResult AVIFImageDecoder::DecodeImage(wtf_size_t index) {
   decoded_image_ = image;
   if ((image->transformFlags & AVIF_TRANSFORM_CLAP) && !ignore_clap_) {
     CropDecodedImage();
+  }
+
+  if (ret == AVIF_RESULT_OK && clap_type_.has_value()) {
+    base::UmaHistogramEnumeration("Blink.ImageDecoders.Avif.CleanAperture",
+                                  clap_type_.value());
+    clap_type_.reset();
   }
   return ret;
 }
