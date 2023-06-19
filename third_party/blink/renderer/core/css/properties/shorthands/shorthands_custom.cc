@@ -1500,12 +1500,10 @@ bool ConsumeFont(bool important,
       CSSPropertyID::kFontVariantEastAsian, CSSPropertyID::kFont,
       *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
       css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFont,
-        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFont,
+      *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   if (RuntimeEnabledFeatures::CSSFontSizeAdjustEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kFontSizeAdjust, CSSPropertyID::kFont,
@@ -1634,12 +1632,10 @@ bool FontVariant::ParseShorthand(
         CSSPropertyID::kFontVariantEastAsian, CSSPropertyID::kFontVariant,
         *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
         css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      css_parsing_utils::AddProperty(
-          CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
-          *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
-          css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-    }
+    css_parsing_utils::AddProperty(
+        CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
+        *CSSIdentifierValue::Create(CSSValueID::kNormal), important,
+        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
     if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
       css_parsing_utils::AddProperty(
           CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFontVariant,
@@ -1663,9 +1659,7 @@ bool FontVariant::ParseShorthand(
     FontVariantEastAsianParser::ParseResult east_asian_parse_result =
         east_asian_parser.ConsumeEastAsian(range);
     FontVariantAlternatesParser::ParseResult alternates_parse_result =
-        RuntimeEnabledFeatures::FontVariantAlternatesEnabled()
-            ? alternates_parser.ConsumeAlternates(range, context)
-            : FontVariantAlternatesParser::ParseResult::kUnknownValue;
+        alternates_parser.ConsumeAlternates(range, context);
     if (ligatures_parse_result ==
             FontVariantLigaturesParser::ParseResult::kConsumedValue ||
         numeric_parse_result ==
@@ -1733,12 +1727,10 @@ bool FontVariant::ParseShorthand(
                  : *CSSIdentifierValue::Create(CSSValueID::kNormal),
       important, css_parsing_utils::IsImplicitProperty::kNotImplicit,
       properties);
-  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-    css_parsing_utils::AddProperty(
-        CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
-        *alternates_parser.FinalizeValue(), important,
-        css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
-  }
+  css_parsing_utils::AddProperty(
+      CSSPropertyID::kFontVariantAlternates, CSSPropertyID::kFontVariant,
+      *alternates_parser.FinalizeValue(), important,
+      css_parsing_utils::IsImplicitProperty::kNotImplicit, properties);
   if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
     css_parsing_utils::AddProperty(
         CSSPropertyID::kFontVariantPosition, CSSPropertyID::kFontVariant,

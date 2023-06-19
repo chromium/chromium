@@ -1175,17 +1175,15 @@ String StylePropertySerializer::FontValue() const {
     return g_empty_string;
   }
 
-  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-    int font_variant_alternates_property_index =
-        property_set_.FindPropertyIndex(GetCSSPropertyFontVariantAlternates());
-    DCHECK_NE(font_variant_alternates_property_index, -1);
-    PropertyValueForSerializer font_variant_alternates_property =
-        property_set_.PropertyAt(font_variant_alternates_property_index);
-    const CSSValue* alternates_value = font_variant_alternates_property.Value();
-    if (IsPropertyNonInitial(*alternates_value, CSSValueID::kNormal) ||
-        alternates_value->IsValueList()) {
-      return g_empty_string;
-    }
+  int font_variant_alternates_property_index =
+      property_set_.FindPropertyIndex(GetCSSPropertyFontVariantAlternates());
+  DCHECK_NE(font_variant_alternates_property_index, -1);
+  PropertyValueForSerializer font_variant_alternates_property =
+      property_set_.PropertyAt(font_variant_alternates_property_index);
+  const CSSValue* alternates_value = font_variant_alternates_property.Value();
+  if (IsPropertyNonInitial(*alternates_value, CSSValueID::kNormal) ||
+      alternates_value->IsValueList()) {
+    return g_empty_string;
   }
 
   if (RuntimeEnabledFeatures::FontVariantPositionEnabled()) {
@@ -1274,10 +1272,8 @@ String StylePropertySerializer::FontVariantValue() const {
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantLigatures(),
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantCaps(), result);
-  if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-    AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantAlternates(),
-                                       result);
-  }
+  AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantAlternates(),
+                                     result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantNumeric(),
                                      result);
   AppendFontLonghandValueIfNotNormal(GetCSSPropertyFontVariantEastAsian(),

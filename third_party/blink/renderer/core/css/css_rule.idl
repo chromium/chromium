@@ -48,7 +48,7 @@
 
     // CSS Fonts Level 4
     // https://drafts.csswg.org/css-fonts-4/#font-feature-values
-    [RuntimeEnabled=FontVariantAlternates] const unsigned short FONT_FEATURE_VALUES_RULE = 14;
+    const unsigned short FONT_FEATURE_VALUES_RULE = 14;
 
     // CSS Conditional Rules
     // https://drafts.csswg.org/css-conditional/#extentions-to-cssrule-interface

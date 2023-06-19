@@ -3557,8 +3557,6 @@ const CSSValue* FontVariantAlternates::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
-
   if (range.Peek().Id() == CSSValueID::kNormal) {
     return css_parsing_utils::ConsumeIdent(range);
   }

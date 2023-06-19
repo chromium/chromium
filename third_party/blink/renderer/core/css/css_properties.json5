@@ -1296,7 +1296,6 @@
       property_methods: ["ParseSingleValue", "CSSValueFromComputedStyleInternal"],
       inherited: true,
       font: true,
-      runtime_flag: "FontVariantAlternates",
       type_name: "FontVariantAlternates",
       name_for_methods: "FontVariantAlternates",
       converter: "ConvertFontVariantAlternates",

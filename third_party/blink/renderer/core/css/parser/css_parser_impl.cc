@@ -1261,8 +1261,6 @@ StyleRuleKeyframes* CSSParserImpl::ConsumeKeyframesRule(
 StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
     CSSAtRuleID rule_id,
     CSSParserTokenStream& stream) {
-  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
-
   absl::optional<StyleRuleFontFeature::FeatureType> feature_type =
       ToStyleRuleFontFeatureType(rule_id);
   if (!feature_type) {
@@ -1355,8 +1353,6 @@ StyleRuleFontFeature* CSSParserImpl::ConsumeFontFeatureRule(
 
 StyleRuleFontFeatureValues* CSSParserImpl::ConsumeFontFeatureValuesRule(
     CSSParserTokenStream& stream) {
-  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
-
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();

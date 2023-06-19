@@ -1132,8 +1132,6 @@ CSSValue* ComputedStyleUtils::ValueForFontVariantAlternates(
     return CSSIdentifierValue::Create(CSSValueID::kNormal);
   }
 
-  DCHECK(RuntimeEnabledFeatures::FontVariantAlternatesEnabled());
-
   auto make_single_ident_list = [](const AtomicString& alias) {
     CSSValueList* aliases_list = CSSValueList::CreateCommaSeparated();
     aliases_list->Append(*MakeGarbageCollected<CSSCustomIdentValue>(alias));
@@ -1412,11 +1410,9 @@ CSSValue* ComputedStyleUtils::ValueForFont(const ComputedStyle& style) {
       !base::ValuesEquivalent(variation_settings,
                               static_cast<CSSValue*>(CSSIdentifierValue::Create(
                                   CSSValueID::kNormal))) ||
-      (RuntimeEnabledFeatures::FontVariantAlternatesEnabled() &&
-       !base::ValuesEquivalent(
-           variant_alternative,
-           static_cast<CSSValue*>(
-               CSSIdentifierValue::Create(CSSValueID::kNormal))))) {
+      !base::ValuesEquivalent(variant_alternative,
+                              static_cast<CSSValue*>(CSSIdentifierValue::Create(
+                                  CSSValueID::kNormal)))) {
     return nullptr;
   }
 

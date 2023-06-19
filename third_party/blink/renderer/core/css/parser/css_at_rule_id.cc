@@ -23,46 +23,25 @@ CSSAtRuleID CssAtRuleID(StringView name) {
     return CSSAtRuleID::kCSSAtRuleFontPaletteValues;
   }
   if (EqualIgnoringASCIICase(name, "font-feature-values")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleFontFeatureValues;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleFontFeatureValues;
   }
   if (EqualIgnoringASCIICase(name, "stylistic")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleStylistic;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleStylistic;
   }
   if (EqualIgnoringASCIICase(name, "styleset")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleStyleset;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleStyleset;
   }
   if (EqualIgnoringASCIICase(name, "character-variant")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleCharacterVariant;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleCharacterVariant;
   }
   if (EqualIgnoringASCIICase(name, "swash")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleSwash;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleSwash;
   }
   if (EqualIgnoringASCIICase(name, "ornaments")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleOrnaments;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleOrnaments;
   }
   if (EqualIgnoringASCIICase(name, "annotation")) {
-    if (RuntimeEnabledFeatures::FontVariantAlternatesEnabled()) {
-      return CSSAtRuleID::kCSSAtRuleAnnotation;
-    }
-    return CSSAtRuleID::kCSSAtRuleInvalid;
+    return CSSAtRuleID::kCSSAtRuleAnnotation;
   }
   if (EqualIgnoringASCIICase(name, "import")) {
     return CSSAtRuleID::kCSSAtRuleImport;

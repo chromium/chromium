@@ -1806,11 +1806,6 @@
       // a Chromium level feature.
     },
     {
-      name: "FontVariantAlternates",
-      status: "stable",
-      base_feature: "none",
-    },
-    {
       name: "FontVariantPosition",
       status: "experimental",
       base_feature: "none",
