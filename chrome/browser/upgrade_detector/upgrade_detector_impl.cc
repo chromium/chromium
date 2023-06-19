@@ -342,9 +342,6 @@ void UpgradeDetectorImpl::NotifyOnUpgradeWithTimePassed(
     // the RelaunchNotificationPeriod) that brought the instance up to or above
     // the "high" annoyance level.
     upgrade_notification_timer_.Stop();
-    // Reset the threshold deltas as we are no longer announcing changes to the
-    // annoyance level.
-    stages_.fill(base::TimeDelta());
   }
 
   // Issue a notification if the stage is above "none" or if it's dropped down

@@ -30,6 +30,9 @@ class RelaunchRequiredTimer {
   // title accordingly.
   void SetDeadline(base::Time deadline);
 
+  // Returns the deadline used to derive the time-to-relaunch shown to the user.
+  base::Time deadline() const { return deadline_; }
+
   // Returns how much time is left until the deadline rounded to the nearest
   // day/hour/minute/second.
   base::TimeDelta GetRoundedDeadlineDelta() const;

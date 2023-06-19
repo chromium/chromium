@@ -9964,6 +9964,7 @@ if (!is_android) {
       "//chrome/browser/devtools:test_support",
       "//chrome/browser/media/router/discovery/access_code:access_code_cast_feature",
       "//chrome/browser/media/router/discovery/access_code:access_code_sink_service",
+      "//chrome/browser/policy:test_support",
       "//chrome/browser/ui",
       "//chrome/browser/web_applications:interactive_ui_tests",
       "//chrome/browser/web_applications:web_applications_test_support",
@@ -10267,6 +10268,9 @@ if (!is_android) {
           "../browser/ui/views/global_media_controls/media_dialog_view_interactive_browsertest.cc",
           "../browser/ui/views/relaunch_notification/relaunch_notification_controller_platform_impl_desktop_browsertest.cc",
         ]
+        if (enable_update_notifications) {
+          sources += [ "../browser/ui/views/relaunch_notification/relaunch_notification_controller_interactive_uitest.cc" ]
+        }
         deps += [
           "../browser/media/router:test_support",
           "../browser/ui/views:test_support",

@@ -327,7 +327,10 @@ class UpgradeDetector {
 
  private:
   FRIEND_TEST_ALL_PREFIXES(AppMenuModelTest, Basics);
+  FRIEND_TEST_ALL_PREFIXES(RelaunchNotificationControllerUiTest,
+                           ReactivateAfterDeadline);
   FRIEND_TEST_ALL_PREFIXES(SystemTrayClientTest, UpdateTrayIcon);
+  friend class RelaunchNotificationControllerUiTest;
   friend class UpgradeMetricsProviderTest;
 
   // Called on the UI thread after one or more monitored prefs have changed. If

@@ -1159,7 +1159,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
   // Expect the platform_impl to show the notification synchronously.
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time deadline = base::Time::Now() + base::Hours(1);
 
   // There should be no query at the time of showing.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());
@@ -1186,7 +1186,7 @@ TEST_F(RelaunchNotificationControllerPlatformImplTest,
 TEST_F(RelaunchNotificationControllerPlatformImplTest, MAYBE_DeferredDeadline) {
   ::testing::StrictMock<base::MockOnceCallback<base::Time()>> callback;
 
-  base::Time deadline = base::Time::FromDeltaSinceWindowsEpoch(base::Hours(1));
+  base::Time deadline = base::Time::Now() + base::Hours(1);
 
   // There should be no query because the browser isn't visible.
   platform_impl().NotifyRelaunchRequired(deadline, callback.Get());

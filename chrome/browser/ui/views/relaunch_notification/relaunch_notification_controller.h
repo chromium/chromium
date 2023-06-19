@@ -87,9 +87,6 @@ class RelaunchNotificationController : public UpgradeObserver {
     kRequired,     // Relaunches are required.
   };
 
-  // The platform-specific implementation.
-  RelaunchNotificationControllerPlatformImpl platform_impl_;
-
   // Adjusts to the current notification style as indicated by the
   // browser.relaunch_notification Local State preference. If the notification
   // style has been overridden, then that value is given priority over the
@@ -171,6 +168,9 @@ class RelaunchNotificationController : public UpgradeObserver {
   // A provider of Time to the controller and its timer for the sake of
   // testability.
   const raw_ptr<const base::Clock> clock_;
+
+  // The platform-specific implementation.
+  RelaunchNotificationControllerPlatformImpl platform_impl_;
 
   // Observes changes to the browser.relaunch_notification Local State pref.
   PrefChangeRegistrar pref_change_registrar_;
