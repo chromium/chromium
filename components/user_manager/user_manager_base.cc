@@ -774,13 +774,10 @@ bool UserManagerBase::IsUserNonCryptohomeDataEphemeral(
     return false;
   }
 
-  // Even though kiosk accounts might be ephemeral, non-cryptohome data
-  // of kiosk accounts should be non-ephemeral.
+  // Even though device-local accounts might be ephemeral (e.g. kiosk accounts),
+  // non-cryptohome data of device-local accounts should be non-ephemeral.
   if (const User* user = FindUser(account_id);
-      user && (user->GetType() == USER_TYPE_PUBLIC_ACCOUNT ||
-               user->GetType() == USER_TYPE_KIOSK_APP ||
-               user->GetType() == USER_TYPE_ARC_KIOSK_APP ||
-               user->GetType() == USER_TYPE_WEB_KIOSK_APP)) {
+      user && user->IsDeviceLocalAccount()) {
     return false;
   }
 
