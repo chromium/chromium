@@ -266,9 +266,6 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
 
   void EnableHeavyFormDataScraping() override {}
 
-  void FillPasswordSuggestion(const std::u16string& username,
-                              const std::u16string& password) override {}
-
   void PreviewPasswordSuggestion(const std::u16string& username,
                                  const std::u16string& password) override {}
 

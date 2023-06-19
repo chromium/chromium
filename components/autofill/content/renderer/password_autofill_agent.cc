@@ -782,14 +782,13 @@ void PasswordAutofillAgent::TrackAutofilledElement(
   autofill_agent_->TrackAutofilledElement(element);
 }
 
-bool PasswordAutofillAgent::FillSuggestion(
-    const WebFormControlElement& control_element,
+void PasswordAutofillAgent::FillPasswordSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
-  // The element in context of the suggestion popup.
-  WebInputElement element = control_element.DynamicTo<WebInputElement>();
+  auto element =
+      autofill_agent_->focused_element().DynamicTo<WebInputElement>();
   if (element.IsNull())
-    return false;
+    return;
 
   WebInputElement username_element;
   WebInputElement password_element;
@@ -799,7 +798,7 @@ bool PasswordAutofillAgent::FillSuggestion(
                                   &username_element, &password_element,
                                   &password_info) ||
       (!password_element.IsNull() && !IsElementEditable(password_element))) {
-    return false;
+    return;
   }
 
   password_info->password_was_edited_last = false;
@@ -840,8 +839,6 @@ bool PasswordAutofillAgent::FillSuggestion(
   }
 
   element.SetSelectionRange(element.Value().length(), element.Value().length());
-
-  return true;
 }
 
 void PasswordAutofillAgent::FillIntoFocusedField(

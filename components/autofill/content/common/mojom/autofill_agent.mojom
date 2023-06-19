@@ -66,11 +66,6 @@ interface AutofillAgent {
   AcceptDataListSuggestion(FieldRendererId field,
                            mojo_base.mojom.String16 value);
 
-  // Tells the renderer to fill the username and password with with given
-  // values.
-  FillPasswordSuggestion(mojo_base.mojom.String16 username,
-                         mojo_base.mojom.String16 password);
-
   // Tells the renderer to preview the username and password with the given
   // values.
   PreviewPasswordSuggestion(mojo_base.mojom.String16 username,
@@ -121,6 +116,11 @@ interface PasswordAutofillAgent {
   // know if it should disable the popup because the browser process will own
   // the popup UI.
   SetPasswordFillData(PasswordFormFillData form_data);
+
+  // Tells the renderer to fill the username and password with with given
+  // values.
+  FillPasswordSuggestion(mojo_base.mojom.String16 username,
+                         mojo_base.mojom.String16 password);
 
   // Lets the renderer know that there are no saved credentials for filling.
   // This is the "no results" equivalent of SetPasswordFillData.

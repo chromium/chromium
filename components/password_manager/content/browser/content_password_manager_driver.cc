@@ -180,7 +180,7 @@ void ContentPasswordManagerDriver::GeneratedPasswordAccepted(
 void ContentPasswordManagerDriver::FillSuggestion(
     const std::u16string& username,
     const std::u16string& password) {
-  GetAutofillAgent()->FillPasswordSuggestion(username, password);
+  GetPasswordAutofillAgent()->FillPasswordSuggestion(username, password);
 }
 
 void ContentPasswordManagerDriver::FillIntoFocusedField(

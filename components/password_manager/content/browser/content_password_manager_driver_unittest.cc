@@ -90,6 +90,10 @@ class FakePasswordAutofillAgent
               SetPasswordFillData,
               (const PasswordFormFillData&),
               (override));
+  MOCK_METHOD(void,
+              FillPasswordSuggestion,
+              (const std::u16string&, const std::u16string&),
+              (override));
   MOCK_METHOD(void, InformNoSavedCredentials, (bool), (override));
   MOCK_METHOD(void,
               FillIntoFocusedField,

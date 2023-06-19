@@ -131,6 +131,8 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // mojom::PasswordAutofillAgent:
   void SetPasswordFillData(const PasswordFormFillData& form_data) override;
+  void FillPasswordSuggestion(const std::u16string& username,
+                              const std::u16string& password) override;
   void InformNoSavedCredentials(
       bool should_show_popup_without_passwords) override;
   void FillIntoFocusedField(bool is_password,
@@ -164,12 +166,6 @@ class PasswordAutofillAgent : public content::RenderFrameObserver,
 
   // Instructs `autofill_agent_` to track the autofilled `element`.
   void TrackAutofilledElement(const blink::WebFormControlElement& element);
-
-  // Fills the username and password fields of this form with the given values.
-  // Returns true if the fields were filled, false otherwise.
-  bool FillSuggestion(const blink::WebFormControlElement& control_element,
-                      const std::u16string& username,
-                      const std::u16string& password);
 
   // Previews the username and password fields of this form with the given
   // values. Returns true if the fields were previewed, false otherwise.

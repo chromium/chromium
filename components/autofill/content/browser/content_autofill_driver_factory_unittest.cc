@@ -105,11 +105,6 @@ class MockAutofillAgent : public mojom::AutofillAgent {
               (FieldRendererId field, const ::std::u16string& value),
               (override));
   MOCK_METHOD(void,
-              FillPasswordSuggestion,
-              (const ::std::u16string& username,
-               const ::std::u16string& password),
-              (override));
-  MOCK_METHOD(void,
               PreviewPasswordSuggestion,
               (const ::std::u16string& username,
                const ::std::u16string& password),

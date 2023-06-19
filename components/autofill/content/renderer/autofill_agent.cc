@@ -849,16 +849,6 @@ void AutofillAgent::AcceptDataListSuggestion(
   DoFillFieldWithValue(new_value, element_, WebAutofillState::kNotFilled);
 }
 
-void AutofillAgent::FillPasswordSuggestion(const std::u16string& username,
-                                           const std::u16string& password) {
-  if (element_.IsNull())
-    return;
-
-  bool handled =
-      password_autofill_agent_->FillSuggestion(element_, username, password);
-  DCHECK(handled);
-}
-
 void AutofillAgent::PreviewPasswordSuggestion(const std::u16string& username,
                                               const std::u16string& password) {
   if (element_.IsNull())
