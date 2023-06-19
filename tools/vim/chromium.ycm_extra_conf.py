@@ -197,6 +197,7 @@ def GetClangCommandLineForNinjaOutput(out_dir, build_target):
   """
   p = subprocess.Popen(
       ['ninja', '-v', '-C', out_dir, '-t', 'commands', build_target],
+      encoding='unicode_escape',
       stdout=subprocess.PIPE,
       universal_newlines=True)
   stdout, stderr = p.communicate()
