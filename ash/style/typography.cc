@@ -141,8 +141,8 @@ base::fixed_flat_map<TypographyToken, FontInfo, 41> MapFonts() {
       /* cros.typography tokens */
       /* Google Sans */
       {TypographyToken::kCrosDisplay0,
-       {FontFamily::kGoogleSans, gfx::Font::NORMAL, 57,
-        gfx::Font::Weight::MEDIUM, 64}},
+       {FontFamily::kGoogleSans, gfx::Font::NORMAL, 52,
+        gfx::Font::Weight::MEDIUM, 60}},
       {TypographyToken::kCrosDisplay1,
        {FontFamily::kGoogleSans, gfx::Font::NORMAL, 44,
         gfx::Font::Weight::MEDIUM, 52}},

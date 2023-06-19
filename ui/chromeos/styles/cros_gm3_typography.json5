@@ -16,9 +16,9 @@
     "typefaces": {
       "display_0": {
         "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
-        "font_size": 57,
+        "font_size": 52,
         "font_weight": 500,
-        "line_height": 64
+        "line_height": 60
       },
       "display_1": {
         "font_family": "'Google Sans Medium', 'Google Sans', 'Roboto', sans-serif",
