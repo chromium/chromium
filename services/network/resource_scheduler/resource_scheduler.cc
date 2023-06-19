@@ -24,7 +24,6 @@
 #include "base/time/default_tick_clock.h"
 #include "base/time/tick_clock.h"
 #include "base/trace_event/trace_event.h"
-#include "net/base/host_port_pair.h"
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
@@ -237,7 +236,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
         scheduler_(scheduler),
         priority_(priority),
         fifo_ordering_(0),
-        host_port_pair_(net::HostPortPair::FromURL(request->url())) {
+        scheme_host_port_(request->url()) {
     DCHECK(!request_->GetUserData(kUserDataKey));
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
   }
@@ -304,7 +303,9 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   void set_attributes(RequestAttributes attributes) {
     attributes_ = attributes;
   }
-  const net::HostPortPair& host_port_pair() const { return host_port_pair_; }
+  const url::SchemeHostPort& scheme_host_port() const {
+    return scheme_host_port_;
+  }
 
  private:
   class UnownedPointer : public base::SupportsUserData::Data {
@@ -337,7 +338,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   uint32_t fifo_ordering_;
 
   // Cached to excessive recomputation in ReachedMaxRequestsPerHostPerClient().
-  const net::HostPortPair host_port_pair_;
+  const url::SchemeHostPort scheme_host_port_;
 
   base::WeakPtrFactory<ResourceScheduler::ScheduledResourceRequestImpl>
       weak_ptr_factory_{this};
@@ -673,13 +674,13 @@ class ResourceScheduler::Client
         // Resources below the delayable priority threshold that are being
         // requested from a server that does not support native prioritization
         // are considered delayable.
-        url::SchemeHostPort scheme_host_port(request->url_request()->url());
         net::HttpServerProperties& http_server_properties =
             *request->url_request()->context()->http_server_properties();
         if (!http_server_properties.SupportsRequestPriority(
-                scheme_host_port, request->url_request()
-                                      ->isolation_info()
-                                      .network_anonymization_key())) {
+                request->scheme_host_port(),
+                request->url_request()
+                    ->isolation_info()
+                    .network_anonymization_key())) {
           attributes |= kAttributeDelayable;
         }
       }
@@ -689,7 +690,7 @@ class ResourceScheduler::Client
   }
 
   bool ReachedMaxRequestsPerHostPerClient(
-      const net::HostPortPair& active_request_host,
+      const url::SchemeHostPort& active_request_host,
       bool supports_priority) const {
     // This method should not be called for requests to origins that support
     // prioritization (aka multiplexing) unless one of the experiments to
@@ -710,9 +711,8 @@ class ResourceScheduler::Client
     }
 
     size_t same_host_count = 0;
-    for (RequestSet::const_iterator it = in_flight_requests_.begin();
-         it != in_flight_requests_.end(); ++it) {
-      if (active_request_host.Equals((*it)->host_port_pair())) {
+    for (const auto* in_flight_request : in_flight_requests_) {
+      if (active_request_host == in_flight_request->scheme_host_port()) {
         same_host_count++;
         if (same_host_count >= kMaxNumDelayableRequestsPerHostPerClient)
           return true;
@@ -921,17 +921,14 @@ class ResourceScheduler::Client
       return START_REQUEST;
     }
 
-    const net::HostPortPair& host_port_pair = request->host_port_pair();
-
     bool priority_delayable =
         params_for_network_quality_.delay_requests_on_multiplexed_connections;
 
-    url::SchemeHostPort scheme_host_port(url_request.url());
     bool supports_priority =
         url_request.context()
             ->http_server_properties()
             ->SupportsRequestPriority(
-                scheme_host_port,
+                request->scheme_host_port(),
                 url_request.isolation_info().network_anonymization_key());
 
     // Requests on a connection that supports prioritization and multiplexing.
@@ -953,7 +950,8 @@ class ResourceScheduler::Client
     }
 
     // Delayable requests per host limit (6).
-    if (ReachedMaxRequestsPerHostPerClient(host_port_pair, supports_priority)) {
+    if (ReachedMaxRequestsPerHostPerClient(request->scheme_host_port(),
+                                           supports_priority)) {
       // There may be other requests for other hosts that may be allowed,
       // so keep checking.
       return DO_NOT_START_REQUEST_AND_KEEP_SEARCHING;
