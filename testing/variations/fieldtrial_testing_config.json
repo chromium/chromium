@@ -14075,38 +14075,6 @@
             ]
         }
     ],
-    "V8CodeFlushing": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "FlushBasedOnTime30",
-                    "params": {
-                        "V8FlushCodeOldTime": "30"
-                    },
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTime"
-                    ]
-                },
-                {
-                    "name": "FlushBasedOnTabVisibility",
-                    "enable_features": [
-                        "V8FlushCodeBasedOnTabVisibility"
-                    ]
-                }
-            ]
-        }
-    ],
     "V8CompileHints3": [
         {
             "platforms": [
@@ -14285,29 +14253,6 @@
                     "name": "Enabled",
                     "enable_features": [
                         "V8Maglev"
-                    ]
-                }
-            ]
-        }
-    ],
-    "V8MemoryReducerSingleGC": [
-        {
-            "platforms": [
-                "android",
-                "android_weblayer",
-                "android_webview",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "V8MemoryReducerSingleGC"
                     ]
                 }
             ]
