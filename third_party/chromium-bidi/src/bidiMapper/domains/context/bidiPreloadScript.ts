@@ -18,7 +18,7 @@
 
 import type {CommonDataTypes, Script} from '../../../protocol/protocol.js';
 import {uuidv4} from '../../../utils/uuid.js';
-
+import {ChannelProxy} from '../script/channelProxy.js';
 import type {CdpTarget} from './cdpTarget.js';
 
 type CdpPreloadScript = {
@@ -49,6 +49,8 @@ export class BidiPreloadScript {
   readonly #contextId: CommonDataTypes.BrowsingContext | null;
   /** Targets, in which the preload script is initialized. */
   readonly #targetIds = new Set<string>();
+  /** Channels to be added as arguments to functionDeclaration. */
+  readonly #channels: ChannelProxy[];
 
   get id(): string {
     return this.#id;
@@ -67,13 +69,16 @@ export class BidiPreloadScript {
       // TODO: Handle sandbox.
       throw new Error('Sandbox is not supported yet');
     }
-    if (params.arguments !== undefined && params.arguments.length > 0) {
-      // TODO: Handle arguments.
-      throw new Error('add preload script arguments are not supported');
-    }
 
+    this.#channels =
+      params.arguments?.map((a) => new ChannelProxy(a.value)) ?? [];
     this.#functionDeclaration = params.functionDeclaration;
     this.#contextId = params.context ?? null;
+  }
+
+  /** Channels of the preload script. */
+  get channels(): ChannelProxy[] {
+    return this.#channels;
   }
 
   /**
@@ -87,6 +92,21 @@ export class BidiPreloadScript {
   }
 
   /**
+   * String to be evaluated. Wraps user-provided function so that the following
+   * steps are run:
+   * 1. Create channels.
+   * 2. Store the created channels in window.
+   * 3. Call the user-provided function with channels as arguments.
+   */
+  #getEvaluateString() {
+    const channelsArgStr = `[${this.channels
+      .map((c) => c.getEvalInWindowStr())
+      .join(', ')}]`;
+
+    return `(()=>{(${this.#functionDeclaration})(...${channelsArgStr})})()`;
+  }
+
+  /**
    * Adds the script to the given CDP target by calling the
    * `Page.addScriptToEvaluateOnNewDocument` command.
    */
@@ -94,7 +114,7 @@ export class BidiPreloadScript {
     const addCdpPreloadScriptResult = await cdpTarget.cdpClient.sendCommand(
       'Page.addScriptToEvaluateOnNewDocument',
       {
-        source: `(${this.#functionDeclaration})();`,
+        source: this.#getEvaluateString(),
       }
     );
 
@@ -111,7 +131,7 @@ export class BidiPreloadScript {
    */
   scheduleEvaluateInTarget(cdpTarget: CdpTarget) {
     void cdpTarget.cdpClient.sendCommand('Runtime.evaluate', {
-      expression: `(${this.#functionDeclaration})();`,
+      expression: this.#getEvaluateString(),
     });
   }
 
@@ -134,7 +154,7 @@ export class BidiPreloadScript {
   /**
    * Removes the provided cdp target from the list of cdp preload scripts.
    */
-  async cdpTargetIsGone(cdpTargetId: string) {
+  cdpTargetIsGone(cdpTargetId: string) {
     this.#cdpPreloadScripts = this.#cdpPreloadScripts.filter(
       (cdpPreloadScript) => cdpPreloadScript.target?.targetId !== cdpTargetId
     );

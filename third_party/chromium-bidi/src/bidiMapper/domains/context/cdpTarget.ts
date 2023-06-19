@@ -21,10 +21,10 @@ import type {ICdpClient} from '../../../cdp/cdpClient.js';
 import {LogManager} from '../log/logManager.js';
 import type {RealmStorage} from '../script/realmStorage.js';
 import type {IEventManager} from '../events/EventManager.js';
-import {CDP} from '../../../protocol/protocol.js';
+import {CDP, CommonDataTypes} from '../../../protocol/protocol.js';
 import {Deferred} from '../../../utils/deferred.js';
 import {NetworkProcessor} from '../network/networkProcessor.js';
-
+import type {ChannelProxy} from '../script/channelProxy.js';
 import type {PreloadScriptStorage} from './PreloadScriptStorage.js';
 
 export class CdpTarget {
@@ -166,6 +166,18 @@ export class CdpTarget {
         null
       );
     });
+  }
+
+  /**
+   * All the ProxyChannels from all the preload scripts of the given
+   * BrowsingContext.
+   */
+  getChannels(contextId: CommonDataTypes.BrowsingContext): ChannelProxy[] {
+    return this.#preloadScriptStorage
+      .findPreloadScripts({
+        contextIds: [null, contextId],
+      })
+      .flatMap((script) => script.channels);
   }
 
   /** Loads all top-level and parent preload scripts. */

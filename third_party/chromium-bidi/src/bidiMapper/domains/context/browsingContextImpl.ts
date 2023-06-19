@@ -416,6 +416,17 @@ export class BrowsingContextImpl {
 
         if (params.context.auxData.isDefault) {
           this.#maybeDefaultRealm = realm;
+
+          // Initialize ChannelProxy listeners for all the channels of all the
+          // preload scripts related to this BrowsingContext.
+          // TODO: extend for not default realms by the sandbox name.
+          void Promise.all(
+            this.#cdpTarget
+              .getChannels(this.id)
+              .map((channel) =>
+                channel.startListenerFromWindow(realm, this.#eventManager)
+              )
+          );
         }
 
         this.#eventManager.registerEvent(

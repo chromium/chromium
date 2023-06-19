@@ -39,11 +39,10 @@ export class Realm {
   readonly #cdpClient: ICdpClient;
   readonly #eventManager: IEventManager;
   readonly #scriptEvaluator: ScriptEvaluator;
-
   readonly sandbox?: string;
   readonly cdpSessionId: string;
 
-  #logger?: LoggerFn;
+  readonly #logger?: LoggerFn;
 
   constructor(
     realmStorage: RealmStorage,
