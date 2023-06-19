@@ -85,7 +85,7 @@ bool VulkanImage::InitializeFromGpuMemoryBufferHandle(
       native_pixmap_handle.planes.size());
   for (size_t i = 0; i < native_pixmap_handle.planes.size(); ++i) {
     planeLayouts[i].offset = native_pixmap_handle.planes[i].offset;
-    planeLayouts[i].size = native_pixmap_handle.planes[i].size;
+    planeLayouts[i].size = 0;
     planeLayouts[i].rowPitch = native_pixmap_handle.planes[i].stride;
     planeLayouts[i].arrayPitch = 0;
     planeLayouts[i].depthPitch = 0;
