@@ -19,14 +19,23 @@ import "components/sync/protocol/entity_metadata.proto";
 import "components/sync/protocol/model_type_state.proto";
 import "components/sync/protocol/nigori_specifics.proto";
 
+message CrossUserSharingKeys {
+  // Asymmetric private-keys used for cross user sharing.
+  repeated CrossUserSharingPrivateKey private_key = 1;
+}
+
 message CryptographerData {
   // Contains all known Nigori keys.
+  // TODO(crbug/1445056): fork the NigoriKeyBag into a local proto.
   optional NigoriKeyBag key_bag = 1;
 
   // Default key is the key, that should be used for encryption. Can be empty
   // in case we have pending keys (waiting for explicit passphrase, or client
   // didn't received keystore keys).
   optional string default_key_name = 2;
+
+  // Contains cross user sharing related keys.
+  optional CrossUserSharingKeys cross_user_sharing_keys = 3;
 }
 
 message CustomPassphraseKeyDerivationParams {

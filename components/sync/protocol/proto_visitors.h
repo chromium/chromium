@@ -734,6 +734,11 @@ VISIT_PROTO_FIELDS(const sync_pb::ReplacedNavigation& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::CryptographerData& proto) {
   VISIT(key_bag);
   VISIT(default_key_name);
+  VISIT(cross_user_sharing_keys);
+}
+
+VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingKeys& proto) {
+  VISIT_REP(private_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::CustomPassphraseKeyDerivationParams& proto) {
