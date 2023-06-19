@@ -2,6 +2,7 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+import("//build/config/chromeos/ui_mode.gni")
 import("//build/toolchain/toolchain.gni")
 
 default_clang_base_path = "//third_party/llvm-build/Release+Asserts"
@@ -17,7 +18,7 @@ declare_args() {
   enable_check_raw_ptr_fields =
       build_with_chromium && !is_official_build &&
       ((is_linux && !is_castos) || (is_android && !is_cast_android) || is_mac ||
-       is_win)
+       is_win || is_chromeos_lacros)
 
   clang_base_path = default_clang_base_path
 
