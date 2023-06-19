@@ -1543,27 +1543,32 @@ void RenderViewContextMenu::AppendLinkItems() {
   if (!params_.link_url.is_empty()) {
     const bool in_app = IsInProgressiveWebApp();
 
+    bool show_open_in_new_tab = true;
     bool show_open_in_new_window = true;
     bool show_open_link_off_the_record = true;
+
+    if (in_app) {
+      show_open_in_new_window = false;
+    }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
     Profile* profile = GetProfile();
     absl::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
+
     // Links to system web app can't be opened in incognito / off-the-record.
     show_open_link_off_the_record = !link_system_app_type;
 
     if (system_app_ && link_system_app_type) {
-      // Show "Open in new tab" if this link points to the current app, and the
-      // app has a tab strip.
+      // We don't show "Open in new tab" if the current app doesn't have a tab
+      // strip.
       //
-      // We don't show "open in tab" for links to a different SWA, because two
-      // SWAs can't share the same browser window.
-      if (system_app_->GetType() == link_system_app_type &&
-          system_app_->ShouldHaveTabStrip()) {
-        menu_model_.AddItemWithStringId(
-            IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
-            IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP);
+      // Even if the app has a tab strip, we don't show the item for
+      // links to a different SWA, because two SWAs can't share the same browser
+      // window.
+      if (!system_app_->ShouldHaveTabStrip() ||
+          system_app_->GetType() != link_system_app_type) {
+        show_open_in_new_tab = false;
       }
 
       // Don't show "open in new window", this is instead handled below in
@@ -1572,15 +1577,16 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
-    if (show_open_in_new_window) {
+    if (show_open_in_new_tab) {
       menu_model_.AddItemWithStringId(
           IDC_CONTENT_CONTEXT_OPENLINKNEWTAB,
           in_app ? IDS_CONTENT_CONTEXT_OPENLINKNEWTAB_INAPP
                  : IDS_CONTENT_CONTEXT_OPENLINKNEWTAB);
-      if (!in_app) {
-        menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
-                                        IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
-      }
+    }
+
+    if (show_open_in_new_window) {
+      menu_model_.AddItemWithStringId(IDC_CONTENT_CONTEXT_OPENLINKNEWWINDOW,
+                                      IDS_CONTENT_CONTEXT_OPENLINKNEWWINDOW);
     }
 
     if (params_.link_url.is_valid()) {
