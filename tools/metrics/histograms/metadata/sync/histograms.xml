@@ -1086,6 +1086,7 @@ chromium-metrics-reviews@google.com.
     once per browser session. Recorded only if the data type (and the whole
     sync) is enabled and there are no errors.
   </summary>
+  <token key="SyncModelType" variants="SyncModelType"/>
 </histogram>
 
 <histogram
