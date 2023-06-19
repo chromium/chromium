@@ -29,7 +29,7 @@ class MockSingleFieldFormFillRouter : public SingleFieldFormFillRouter {
               (override));
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (AutoselectFirstSuggestion autoselect_first_suggestion,
+              (AutofillSuggestionTriggerSource trigger_source,
                const FormFieldData& field,
                const AutofillClient& client,
                base::WeakPtr<SingleFieldFormFiller::SuggestionsHandler> handler,

@@ -19,7 +19,7 @@ class MockMerchantPromoCodeManager : public MerchantPromoCodeManager {
   MOCK_METHOD(
       bool,
       OnGetSingleFieldSuggestions,
-      (AutoselectFirstSuggestion autoselect_first_suggestion,
+      (AutofillSuggestionTriggerSource trigger_source,
        const FormFieldData& field,
        const AutofillClient& client,
        base::WeakPtr<MerchantPromoCodeManager::SuggestionsHandler> handler,

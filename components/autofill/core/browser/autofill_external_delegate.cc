@@ -80,7 +80,7 @@ void AutofillExternalDelegate::OnQuery(const FormData& form,
 void AutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& input_suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
   if (field_id != query_field_.global_id())
     return;
@@ -139,7 +139,9 @@ void AutofillExternalDelegate::OnSuggestionsReturned(
   if (query_field_.is_focusable && driver_->CanShowAutofillUi()) {
     AutofillClient::PopupOpenArgs open_args(
         element_bounds_, query_field_.text_direction, suggestions,
-        AutoselectFirstSuggestion(autoselect_first_suggestion));
+        AutoselectFirstSuggestion(
+            trigger_source ==
+            AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown));
     manager_->client()->ShowAutofillPopup(open_args, GetWeakPtr());
   }
 }

@@ -480,6 +480,10 @@ enum RendererFormDataAction {
 // how the suggestions behave, as described below.
 // Some further properties of suggestions are implied by the source. See
 // components/autofill/content/renderer/suggestion_properties.h.
+// Suggestions are primarily triggered through Blink events in the renderer.
+// This then invokes `AutofillManager::OnAskForValuesToFill()` in the browser
+// process. In some cases, suggestions get updated. This happens solely in the
+// browser process.
 enum AutofillSuggestionTriggerSource {
   // Used as a default value and cannot be used to trigger suggestions.
   kUnspecified,
@@ -500,4 +504,8 @@ enum AutofillSuggestionTriggerSource {
   // skipped, to make them behave more like a <select>.
   // TODO(crbug.com/1007974): It's unclear if this is still necessary.
   kOpenTextDataListChooser,
+  // Credit card suggestions offer users with Sync transport eligiblity an
+  // option to display cards from their account. This causes the suggestions to
+  // update. The updated suggested are considered to have this trigger source.
+  kShowCardsFromAccount,
 };

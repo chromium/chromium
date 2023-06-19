@@ -19,7 +19,7 @@ MerchantPromoCodeManager::MerchantPromoCodeManager() = default;
 MerchantPromoCodeManager::~MerchantPromoCodeManager() = default;
 
 bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     const FormFieldData& field,
     const AutofillClient& client,
     base::WeakPtr<SuggestionsHandler> handler,
@@ -38,10 +38,9 @@ bool MerchantPromoCodeManager::OnGetSingleFieldSuggestions(
         personal_data_manager_->GetActiveAutofillPromoCodeOffersForOrigin(
             context.form_structure->main_frame_origin().GetURL());
     if (!promo_code_offers.empty()) {
-      SendPromoCodeSuggestions(
-          promo_code_offers, field.global_id(),
-          QueryHandler(field.global_id(), autoselect_first_suggestion,
-                       field.value, handler));
+      SendPromoCodeSuggestions(promo_code_offers, field.global_id(),
+                               QueryHandler(field.global_id(), trigger_source,
+                                            field.value, handler));
       return true;
     }
   }
@@ -165,15 +164,14 @@ void MerchantPromoCodeManager::SendPromoCodeSuggestions(
       // Return empty suggestions to query handler. This will result in no
       // suggestions being displayed.
       query_handler.handler_->OnSuggestionsReturned(
-          query_handler.field_id_, query_handler.autoselect_first_suggestion_,
-          {});
+          query_handler.field_id_, query_handler.trigger_source_, {});
       return;
     }
   }
 
   // Return suggestions to query handler.
   query_handler.handler_->OnSuggestionsReturned(
-      query_handler.field_id_, query_handler.autoselect_first_suggestion_,
+      query_handler.field_id_, query_handler.trigger_source_,
       AutofillSuggestionGenerator::GetPromoCodeSuggestionsFromPromoCodeOffers(
           promo_code_offers));
 

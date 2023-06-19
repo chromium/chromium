@@ -21,7 +21,7 @@ class MockIBANManager : public IBANManager {
 
   MOCK_METHOD(bool,
               OnGetSingleFieldSuggestions,
-              (AutoselectFirstSuggestion autoselect_first_suggestion,
+              (AutofillSuggestionTriggerSource trigger_source,
                const FormFieldData& field,
                const AutofillClient& client,
                base::WeakPtr<IBANManager::SuggestionsHandler> handler,

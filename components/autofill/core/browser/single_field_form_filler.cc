@@ -12,11 +12,11 @@ SingleFieldFormFiller::~SingleFieldFormFiller() = default;
 
 SingleFieldFormFiller::QueryHandler::QueryHandler(
     FieldGlobalId field_id,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     std::u16string prefix,
     base::WeakPtr<SuggestionsHandler> handler)
     : field_id_(field_id),
-      autoselect_first_suggestion_(autoselect_first_suggestion),
+      trigger_source_(trigger_source),
       prefix_(prefix),
       handler_(std::move(handler)) {}
 

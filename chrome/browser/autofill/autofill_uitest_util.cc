@@ -154,7 +154,7 @@ void GenerateTestAutofillPopup(
   std::vector<Suggestion> suggestions = {Suggestion(u"Test suggestion")};
   autofill_external_delegate->OnSuggestionsReturned(
       form.fields.front().global_id(), suggestions,
-      AutoselectFirstSuggestion(false));
+      AutofillSuggestionTriggerSource::kFormControlElementClicked);
 }
 
 }  // namespace autofill

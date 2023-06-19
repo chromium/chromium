@@ -47,20 +47,19 @@ void TestAutofillExternalDelegate::OnQuery(const FormData& form,
 void TestAutofillExternalDelegate::OnSuggestionsReturned(
     FieldGlobalId field_id,
     const std::vector<Suggestion>& suggestions,
-    AutoselectFirstSuggestion autoselect_first_suggestion,
+    AutofillSuggestionTriggerSource trigger_source,
     bool is_all_server_suggestions) {
   on_suggestions_returned_seen_ = true;
   field_id_ = field_id;
   suggestions_ = suggestions;
-  autoselect_first_suggestion_ = autoselect_first_suggestion;
+  trigger_source_ = trigger_source;
   is_all_server_suggestions_ = is_all_server_suggestions;
 
   // If necessary, call the superclass's OnSuggestionsReturned in order to
   // execute logic relating to showing the popup or not.
   if (call_parent_methods_)
-    AutofillExternalDelegate::OnSuggestionsReturned(field_id, suggestions,
-                                                    autoselect_first_suggestion,
-                                                    is_all_server_suggestions);
+    AutofillExternalDelegate::OnSuggestionsReturned(
+        field_id, suggestions, trigger_source, is_all_server_suggestions);
 }
 
 bool TestAutofillExternalDelegate::HasActiveScreenReader() const {
@@ -127,9 +126,9 @@ bool TestAutofillExternalDelegate::on_suggestions_returned_seen() const {
   return on_suggestions_returned_seen_;
 }
 
-AutoselectFirstSuggestion
-TestAutofillExternalDelegate::autoselect_first_suggestion() const {
-  return autoselect_first_suggestion_;
+AutofillSuggestionTriggerSource TestAutofillExternalDelegate::trigger_source()
+    const {
+  return trigger_source_;
 }
 
 bool TestAutofillExternalDelegate::is_all_server_suggestions() const {

@@ -38,7 +38,7 @@ class MerchantPromoCodeManager : public SingleFieldFormFiller,
 
   // SingleFieldFormFiller overrides:
   [[nodiscard]] bool OnGetSingleFieldSuggestions(
-      AutoselectFirstSuggestion autoselect_first_suggestion,
+      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       base::WeakPtr<SuggestionsHandler> handler,

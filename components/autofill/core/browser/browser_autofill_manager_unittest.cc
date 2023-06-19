@@ -759,7 +759,8 @@ class BrowserAutofillManagerTest : public testing::Test {
         [](const auto& result) { return Suggestion(result); });
 
     browser_autofill_manager_->OnSuggestionsReturned(
-        field_id, AutoselectFirstSuggestion(false), suggestions);
+        field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked,
+        suggestions);
   }
 
   void FormsSeen(const std::vector<FormData>& forms) {
@@ -1921,20 +1922,13 @@ TEST_F(BrowserAutofillManagerTest,
       Suggestion("Elvis", "3734 Elvis Presley Blvd.", "",
                  PopupItemId::kAddressEntry)};
 
-  {
-    browser_autofill_manager_->OnSuggestionsReturned(
-        field_id, AutoselectFirstSuggestion(false), suggestions);
+  browser_autofill_manager_->OnSuggestionsReturned(
+      field_id, AutofillSuggestionTriggerSource::kFormControlElementClicked,
+      suggestions);
 
-    EXPECT_FALSE(external_delegate_->autoselect_first_suggestion());
-    CheckSuggestions(field_id, suggestions[0], suggestions[1]);
-  }
-  {
-    browser_autofill_manager_->OnSuggestionsReturned(
-        field_id, AutoselectFirstSuggestion(true), suggestions);
-
-    EXPECT_TRUE(external_delegate_->autoselect_first_suggestion());
-    CheckSuggestions(field_id, suggestions[0], suggestions[1]);
-  }
+  EXPECT_EQ(external_delegate_->trigger_source(),
+            AutofillSuggestionTriggerSource::kFormControlElementClicked);
+  CheckSuggestions(field_id, suggestions[0], suggestions[1]);
 }
 
 // Test that we return all credit card profile suggestions when all form fields

@@ -12,6 +12,9 @@ namespace autofill {
 
 // The following functions define properties of Autofill suggestions based on
 // the trigger source and the triggering WebFormControlElement.
+// They are only applicable for trigger sources that trigger through the
+// renderer. When suggestions are updated, the suggestion properties are
+// irrelevant, since the decision to show suggestions was already made.
 
 // Specifies if suggestions should be shown when the triggering element contains
 // no text.

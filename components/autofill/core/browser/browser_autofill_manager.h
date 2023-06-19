@@ -268,7 +268,7 @@ class BrowserAutofillManager : public AutofillManager,
   // SingleFieldFormFiller::SuggestionsHandler:
   void OnSuggestionsReturned(
       FieldGlobalId field_id,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
+      AutofillSuggestionTriggerSource trigger_source,
       const std::vector<Suggestion>& suggestions) override;
 
   // Returns true if either Profile or CreditCard Autofill is enabled.

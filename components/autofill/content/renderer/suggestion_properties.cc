@@ -19,9 +19,12 @@ bool ShouldAutofillOnEmptyValues(
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
       return true;
-    case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
       return false;
+    // `kShowCardsFromAccount` is not triggered through the renderer.
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      break;
   }
   NOTREACHED_NORETURN();
 }
@@ -31,10 +34,14 @@ bool RequiresCaretAtEnd(AutofillSuggestionTriggerSource trigger_source) {
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
       return true;
-    case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kFormControlElementClicked:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
       return false;
+    // `kShowCardsFromAccount` is not triggered through the renderer.
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      //
+      break;
   }
   NOTREACHED_NORETURN();
 }
@@ -48,11 +55,14 @@ bool ShouldShowFullSuggestionListForPasswordManager(
       // a default value filled by the website. In that case, don't elide
       // suggestions that don't have a common prefix with the default value.
       return element.IsAutofilled() || !element.UserHasEditedTheField();
-    case AutofillSuggestionTriggerSource::kUnspecified:
     case AutofillSuggestionTriggerSource::kTextFieldDidChange:
     case AutofillSuggestionTriggerSource::kTextFieldDidReceiveKeyDown:
     case AutofillSuggestionTriggerSource::kOpenTextDataListChooser:
       return false;
+    // `kShowCardsFromAccount` is not triggered through the renderer.
+    case AutofillSuggestionTriggerSource::kShowCardsFromAccount:
+    case AutofillSuggestionTriggerSource::kUnspecified:
+      break;
   }
   NOTREACHED_NORETURN();
 }

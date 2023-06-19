@@ -90,7 +90,7 @@ class AutofillExternalDelegate : public AutofillPopupDelegate {
   virtual void OnSuggestionsReturned(
       FieldGlobalId field_id,
       const std::vector<Suggestion>& suggestions,
-      AutoselectFirstSuggestion autoselect_first_suggestion,
+      AutofillSuggestionTriggerSource trigger_source,
       bool is_all_server_suggestions = false);
 
   // Returns true if there is a screen reader installed on the machine.

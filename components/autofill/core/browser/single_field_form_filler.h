@@ -29,7 +29,7 @@ class SingleFieldFormFiller {
     // to. `suggestions` is the list of fetched suggestions.
     virtual void OnSuggestionsReturned(
         FieldGlobalId field_id,
-        AutoselectFirstSuggestion autoselect_first_suggestion,
+        AutofillSuggestionTriggerSource trigger_source,
         const std::vector<Suggestion>& suggestions) = 0;
   };
 
@@ -55,7 +55,7 @@ class SingleFieldFormFiller {
   // SingleFieldFormFillers to offer filling the field. The callback can happen
   // synchronously even before OnGetSingleFieldSuggestions returns true.
   [[nodiscard]] virtual bool OnGetSingleFieldSuggestions(
-      AutoselectFirstSuggestion autoselect_first_suggestion,
+      AutofillSuggestionTriggerSource trigger_source,
       const FormFieldData& field,
       const AutofillClient& client,
       base::WeakPtr<SuggestionsHandler> handler,
@@ -93,7 +93,7 @@ class SingleFieldFormFiller {
   // with the appropriate response.
   struct QueryHandler {
     QueryHandler(FieldGlobalId field_id,
-                 AutoselectFirstSuggestion autoselect_first_suggestion,
+                 AutofillSuggestionTriggerSource trigger_source,
                  std::u16string prefix,
                  base::WeakPtr<SuggestionsHandler> handler);
     QueryHandler(const QueryHandler& original);
@@ -102,10 +102,11 @@ class SingleFieldFormFiller {
     // The queried field ID.
     FieldGlobalId field_id_;
 
-    // Determines whether we should auto-select the first suggestion when
-    // returning. This value was given by the handler when requesting
-    // suggestions.
-    AutoselectFirstSuggestion autoselect_first_suggestion_;
+    // Describes what caused the suggestions to trigger. This value was provided
+    // by the handler when requesting suggestions. It is temporarily stored
+    // while suggestions are queried, so it can be passed on to
+    // `OnSuggestionsReturned()`.
+    AutofillSuggestionTriggerSource trigger_source_;
 
     // Prefix used to search suggestions, submitted by the handler.
     std::u16string prefix_;
