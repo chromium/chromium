@@ -24,6 +24,7 @@ export class PageDisplayerElement extends PolymerElement {
         type: Boolean,
         value: false,
         reflectToAttribute: true,
+        observer: 'onActiveChanged',
       },
 
       section: {
@@ -40,6 +41,16 @@ export class PageDisplayerElement extends PolymerElement {
     super.ready();
 
     assert(this.section in Section, `Invalid section: ${this.section}.`);
+  }
+
+  override focus() {
+    this.shadowRoot!.getElementById('focusHost')!.focus();
+  }
+
+  private onActiveChanged(): void {
+    if (this.active) {
+      this.focus();
+    }
   }
 }
 

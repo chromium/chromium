@@ -64,6 +64,7 @@ suite('<os-settings-ui> page visibility', () => {
    * Asserts the following:
    * - Only one page is marked active
    * - Active page does not have style "display: none"
+   * - Active page is focused
    * - Inactive pages have style "display: none"
    */
   function assertOnlyActivePageIsVisible(pageName: PageName): void {
@@ -77,6 +78,7 @@ suite('<os-settings-ui> page visibility', () => {
         numActive++;
         assertNotEquals('none', displayStyle);
         assertEquals(Section[pageName], page.section);
+        assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
       } else {
         assertEquals('none', displayStyle);
       }

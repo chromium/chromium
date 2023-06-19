@@ -268,6 +268,7 @@ export const MainPageMixin = dedupingMixin(
 
           // Show the respective page for |route|
           page.active = true;
+
           this.dispatchCustomEvent_('show-container');
         }
 

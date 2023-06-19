@@ -202,6 +202,7 @@ suite('<main-page-container>', function() {
          * Asserts the following:
          * - Only one page is marked active
          * - Active page does not have style "display: none"
+         * - Active page is focused
          * - Inactive pages have style "display: none"
          */
         function assertOnlyActivePageIsVisible(section) {
@@ -215,6 +216,7 @@ suite('<main-page-container>', function() {
               numActive++;
               assertNotEquals('none', displayStyle);
               assertEquals(section, page.section);
+              assertEquals(page, mainPageContainer.shadowRoot.activeElement);
             } else {
               assertEquals('none', displayStyle);
             }
