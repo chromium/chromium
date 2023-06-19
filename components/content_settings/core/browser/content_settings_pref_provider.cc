@@ -38,37 +38,13 @@ namespace content_settings {
 namespace {
 
 // These settings are no longer used, and should be deleted on profile startup.
-const char kObsoleteDomainToOriginMigrationStatus[] =
-    "profile.content_settings.domain_to_origin_migration_status";
-const char kObsoleteWebIdActiveSessionPref[] =
-    "profile.content_settings.exceptions.webid_active_session";
-const char kObsoleteWebIdRequestPref[] =
-    "profile.content_settings.exceptions.webid_request";
-const char kObsoleteWebIdSharePref[] =
-    "profile.content_settings.exceptions.webid_share";
 
-#if !BUILDFLAG(IS_IOS)
-// The "nfc" preference was superseded by "nfc-devices" once Web NFC gained the
-// ability to make NFC tags permanently read-only. See crbug.com/1275576
-const char kObsoleteNfcExceptionsPref[] =
-    "profile.content_settings.exceptions.nfc";
-#if !BUILDFLAG(IS_ANDROID)
-const char kObsoleteMouseLockExceptionsPref[] =
-    "profile.content_settings.exceptions.mouselock";
-const char kObsoletePluginsExceptionsPref[] =
-    "profile.content_settings.exceptions.plugins";
-const char kObsoletePluginsDataExceptionsPref[] =
-    "profile.content_settings.exceptions.flash_data";
-const char kObsoleteFileHandlingExceptionsPref[] =
-    "profile.content_settings.exceptions.file_handling";
-const char kObsoleteFontAccessExceptionsPref[] =
-    "profile.content_settings.exceptions.font_access";
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 const char kObsoleteInstalledWebAppMetadataExceptionsPref[] =
     "profile.content_settings.exceptions.installed_web_app_metadata";
 const char kObsoletePpapiBrokerExceptionsPref[] =
     "profile.content_settings.exceptions.ppapi_broker";
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
 const char
     kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref
         [] = "profile.content_settings.exceptions.get_display_media_set_select_"
@@ -99,25 +75,11 @@ void PrefProvider::RegisterProfilePrefs(
 
   // These prefs have been removed, but need to be registered so they can
   // be deleted on startup.
-  registry->RegisterIntegerPref(kObsoleteDomainToOriginMigrationStatus, 0);
-  registry->RegisterDictionaryPref(kObsoleteWebIdActiveSessionPref);
-  registry->RegisterDictionaryPref(kObsoleteWebIdRequestPref);
-  registry->RegisterDictionaryPref(kObsoleteWebIdSharePref);
-#if !BUILDFLAG(IS_IOS)
-  registry->RegisterDictionaryPref(kObsoleteNfcExceptionsPref);
-#if !BUILDFLAG(IS_ANDROID)
-  registry->RegisterDictionaryPref(
-      kObsoleteMouseLockExceptionsPref,
-      user_prefs::PrefRegistrySyncable::SYNCABLE_PREF);
-  registry->RegisterDictionaryPref(kObsoletePluginsDataExceptionsPref);
-  registry->RegisterDictionaryPref(kObsoletePluginsExceptionsPref);
-  registry->RegisterDictionaryPref(kObsoleteFileHandlingExceptionsPref);
-  registry->RegisterDictionaryPref(kObsoleteFontAccessExceptionsPref);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterDictionaryPref(
       kObsoleteInstalledWebAppMetadataExceptionsPref);
   registry->RegisterDictionaryPref(kObsoletePpapiBrokerExceptionsPref);
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   registry->RegisterListPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
 }
@@ -160,8 +122,9 @@ PrefProvider::PrefProvider(PrefService* prefs,
 
   size_t num_exceptions = 0;
   if (!off_the_record_) {
-    for (const auto& pref : content_settings_prefs_)
+    for (const auto& pref : content_settings_prefs_) {
       num_exceptions += pref.second->GetNumExceptions();
+    }
 
     UMA_HISTOGRAM_COUNTS_1M("ContentSettings.NumberOfExceptions",
                             num_exceptions);
@@ -182,8 +145,9 @@ PrefProvider::~PrefProvider() {
 std::unique_ptr<RuleIterator> PrefProvider::GetRuleIterator(
     ContentSettingsType content_type,
     bool off_the_record) const {
-  if (!supports_type(content_type))
+  if (!supports_type(content_type)) {
     return nullptr;
+  }
 
   return GetPref(content_type)->GetRuleIterator(off_the_record);
 }
@@ -197,8 +161,9 @@ bool PrefProvider::SetWebsiteSetting(
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
-  if (!supports_type(content_type))
+  if (!supports_type(content_type)) {
     return false;
+  }
 
   // Default settings are set using a wildcard pattern for both
   // |primary_pattern| and |secondary_pattern|. Don't store default settings in
@@ -306,8 +271,9 @@ void PrefProvider::ClearAllContentSettingsRules(
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
-  if (supports_type(content_type))
+  if (supports_type(content_type)) {
     GetPref(content_type)->ClearAllContentSettingsRules();
+  }
 }
 
 void PrefProvider::ShutdownOnUIThread() {
@@ -322,8 +288,9 @@ void PrefProvider::ClearPrefs() {
   DCHECK(CalledOnValidThread());
   DCHECK(prefs_);
 
-  for (const auto& pref : content_settings_prefs_)
+  for (const auto& pref : content_settings_prefs_) {
     pref.second->ClearPref();
+  }
 }
 
 ContentSettingsPref* PrefProvider::GetPref(ContentSettingsType type) const {
@@ -339,27 +306,16 @@ void PrefProvider::Notify(const ContentSettingsPattern& primary_pattern,
 }
 
 void PrefProvider::DiscardOrMigrateObsoletePreferences() {
-  if (off_the_record_)
+  if (off_the_record_) {
     return;
-
-  prefs_->ClearPref(kObsoleteDomainToOriginMigrationStatus);
-  prefs_->ClearPref(kObsoleteWebIdActiveSessionPref);
-  prefs_->ClearPref(kObsoleteWebIdRequestPref);
-  prefs_->ClearPref(kObsoleteWebIdSharePref);
+  }
 
   // These prefs were never stored on iOS/Android so they don't need to be
   // deleted.
-#if !BUILDFLAG(IS_IOS)
-  prefs_->ClearPref(kObsoleteNfcExceptionsPref);
-#if !BUILDFLAG(IS_ANDROID)
-  prefs_->ClearPref(kObsoleteMouseLockExceptionsPref);
-  prefs_->ClearPref(kObsoletePluginsExceptionsPref);
-  prefs_->ClearPref(kObsoletePluginsDataExceptionsPref);
-  prefs_->ClearPref(kObsoleteFileHandlingExceptionsPref);
+#if !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(kObsoleteInstalledWebAppMetadataExceptionsPref);
   prefs_->ClearPref(kObsoletePpapiBrokerExceptionsPref);
-#endif  // !BUILDFLAG(IS_ANDROID)
-#endif  // !BUILDFLAG(IS_IOS)
+#endif  // !BUILDFLAG(IS_IOS) && !BUILDFLAG(IS_ANDROID)
   prefs_->ClearPref(
       kObsoleteGetDisplayMediaSetAutoSelectAllScreensAllowedForUrlsExceptionsPref);
 }
