@@ -68,10 +68,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
   void GetUniqueId(GetUniqueIdCallback callback) override;
 
   void set_max_swap_files_for_testing(int max) { max_swap_files_ = max; }
-  storage::FileSystemURL get_swap_url_for_testing(
-      const base::FilePath& swap_path) {
-    return GetSwapURL(swap_path);
-  }
 #if BUILDFLAG(IS_MAC)
   void set_swap_file_cloning_will_fail_for_testing() {
     swap_file_cloning_will_fail_for_testing_ = true;
@@ -101,7 +97,6 @@ class CONTENT_EXPORT FileSystemAccessFileHandleImpl
                                     bool auto_close,
                                     CreateFileWriterCallback callback,
                                     bool can_write);
-  storage::FileSystemURL GetSwapURL(const base::FilePath& swap_path);
   // Find an unused swap file. We cannot use a swap file which is locked or
   // which already exists on disk.
   void StartCreateSwapFile(

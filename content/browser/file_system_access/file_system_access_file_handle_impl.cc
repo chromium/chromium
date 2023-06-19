@@ -516,14 +516,6 @@ void FileSystemAccessFileHandleImpl::DidVerifyHasWritePermissions(
       std::move(callback));
 }
 
-// TODO(nigeltao): inline this function at its call sites.
-storage::FileSystemURL FileSystemAccessFileHandleImpl::GetSwapURL(
-    const base::FilePath& swap_path) {
-  absl::optional<base::SafeBaseName> opt =
-      base::SafeBaseName::Create(swap_path);
-  return opt ? url().CreateSibling(*opt) : storage::FileSystemURL();
-}
-
 void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     int count,
     bool keep_existing_data,
@@ -541,13 +533,12 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
     return;
   }
 
-  auto swap_path =
-      base::FilePath(url().virtual_path()).AddExtensionASCII(".crswap");
+  auto swap_name = url().virtual_path().BaseName().AddExtensionASCII(".crswap");
 
   if (count >= max_swap_files_) {
     DLOG(ERROR) << "Error Creating Swap File, count: " << count
                 << " exceeds max unique files of: " << max_swap_files_
-                << " base path: " << swap_path;
+                << " base path: " << swap_name;
     std::move(callback).Run(file_system_access_error::FromStatus(
                                 FileSystemAccessStatus::kOperationFailed,
                                 "Failed to create swap file."),
@@ -556,14 +547,17 @@ void FileSystemAccessFileHandleImpl::StartCreateSwapFile(
   }
 
   if (count > 0) {
-    swap_path =
-        swap_path.InsertBeforeExtensionASCII(base::StringPrintf(".%d", count));
+    swap_name =
+        swap_name.InsertBeforeExtensionASCII(base::StringPrintf(".%d", count));
   }
 
-  // First attempt to just create the swap file in the same file system as
-  // this file.
-  storage::FileSystemURL swap_url = GetSwapURL(swap_path);
-  DCHECK(swap_url.is_valid());
+  // First attempt to just create the swap file in the same directory (and file
+  // system) as this file.
+  absl::optional<base::SafeBaseName> opt_swap_name =
+      base::SafeBaseName::Create(swap_name);
+  CHECK(opt_swap_name.has_value());
+  storage::FileSystemURL swap_url = url().CreateSibling(*opt_swap_name);
+  CHECK(swap_url.is_valid());
 
   auto swap_lock =
       manager()->TakeWriteLock(swap_url, WriteLockType::kExclusive);
