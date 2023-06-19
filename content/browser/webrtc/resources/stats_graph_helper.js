@@ -282,8 +282,6 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
     container.appendChild($('summary-span-template').content.cloneNode(true));
     container.firstChild.firstChild.className =
         STATS_GRAPH_CONTAINER_HEADING_CLASS;
-    container.firstChild.firstChild.textContent =
-        'Stats graphs for ' + generateStatsLabel(report);
     const statsType = getLegacySsrcReportType(report);
     if (statsType !== '') {
       container.firstChild.firstChild.textContent += ' (' + statsType + ')';
@@ -295,8 +293,11 @@ function ensureStatsGraphContainer(peerConnectionElement, report) {
       ssrcInfoManager.populateSsrcInfo(
           ssrcInfoElement, GetSsrcFromReport(report));
     }
+    topContainer.appendChild(container);
   }
-  topContainer.appendChild(container);
+  // Update the label all the time to account for new information.
+  container.firstChild.firstChild.textContent ='Stats graphs for ' +
+    generateStatsLabel(report);
   return container;
 }
 
