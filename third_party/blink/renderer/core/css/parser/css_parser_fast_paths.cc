@@ -284,8 +284,10 @@ static unsigned FindLengthOfValidDouble(const LChar* string, const LChar* end) {
     auto is_decimal_mask = (b >= '0' && b <= '9');
     auto is_mark_mask = (b == '.');
 #ifdef __SSE2__
-    uint16_t is_decimal_bits = _mm_movemask_epi8(is_decimal_mask);
-    uint16_t is_mark_bits = _mm_movemask_epi8(is_mark_mask);
+    uint16_t is_decimal_bits =
+        _mm_movemask_epi8(reinterpret_cast<__m128i>(is_decimal_mask));
+    uint16_t is_mark_bits =
+        _mm_movemask_epi8(reinterpret_cast<__m128i>(is_mark_mask));
 
     // Only count the first decimal mark.
     is_mark_bits &= -is_mark_bits;
