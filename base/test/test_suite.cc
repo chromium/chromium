@@ -176,18 +176,12 @@ class FeatureListScopedToEachTest : public testing::EmptyTestEventListener {
 
     *CommandLine::ForCurrentProcess() = new_command_line;
 
-    // TODO(https://crbug.com/1400059): Enable dangling pointer detector.
     // TODO(https://crbug.com/1413674): Enable PartitionAlloc in unittests with
     // ASAN.
 #if BUILDFLAG(USE_PARTITION_ALLOC) && !defined(ADDRESS_SANITIZER)
     allocator::PartitionAllocSupport::Get()->ReconfigureAfterFeatureListInit(
         "",
-#if BUILDFLAG(IS_LINUX)
-        /*configure_dangling_pointer_detector=*/true
-#else
-        /*configure_dangling_pointer_detector=*/false
-#endif
-    );
+        /*configure_dangling_pointer_detector=*/true);
 #endif
   }
 
