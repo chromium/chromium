@@ -123,6 +123,10 @@ export class PeerConnectionUpdateTable {
       if (indexLine.startsWith('getTransceivers()[')) {
         type += ' ' + indexLine.substring(17, indexLine.length - 2);
       }
+      const kindLine = update.value.split('\n', 5)[4].trim();
+      if (kindLine.startsWith('kind:')) {
+        type += ', ' + kindLine.substring(6, kindLine.length - 2);
+      }
     } else if (['iceconnectionstatechange', 'connectionstatechange',
         'signalingstatechange'].includes(update.type)) {
       const fieldName = {
