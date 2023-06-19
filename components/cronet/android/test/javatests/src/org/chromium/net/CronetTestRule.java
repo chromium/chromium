@@ -9,6 +9,7 @@ import static com.google.common.truth.Truth.assertThat;
 import static org.junit.Assume.assumeTrue;
 
 import android.content.Context;
+import android.content.MutableContextWrapper;
 import android.os.Build;
 import android.os.StrictMode;
 
@@ -178,7 +179,7 @@ public class CronetTestRule implements TestRule {
     }
 
     private CronetTestFramework createCronetTestFramework() {
-        mCronetTestFramework = CronetTestFramework.create(mImplementation);
+        mCronetTestFramework = new CronetTestFramework(mImplementation);
         if (mEngineStartupMode.equals(EngineStartupMode.AUTOMATIC)) {
             mCronetTestFramework.startEngine();
         }
@@ -297,17 +298,19 @@ public class CronetTestRule implements TestRule {
     public static class CronetTestFramework implements AutoCloseable {
         private final CronetImplementation mImplementation;
         private final ExperimentalCronetEngine.Builder mBuilder;
-        private final Context mContext;
+        private final MutableContextWrapper mContextWrapper;
         private final StrictMode.VmPolicy mOldVmPolicy;
 
         private ExperimentalCronetEngine mCronetEngine;
         private boolean mClosed;
 
-        private CronetTestFramework(ExperimentalCronetEngine.Builder builder,
-                CronetImplementation implementation, Context context) {
-            this.mBuilder = builder;
+        private CronetTestFramework(CronetImplementation implementation) {
+            this.mContextWrapper =
+                    new MutableContextWrapper(ApplicationProvider.getApplicationContext());
+            this.mBuilder = implementation.createBuilder(mContextWrapper)
+                                    .setUserAgent(UserAgent.from(mContextWrapper))
+                                    .enableQuic(true);
             this.mImplementation = implementation;
-            this.mContext = context;
 
             System.loadLibrary("cronet_tests");
             ContextUtils.initApplicationContext(getContext().getApplicationContext());
@@ -324,16 +327,34 @@ public class CronetTestRule implements TestRule {
             }
         }
 
-        private static CronetTestFramework create(CronetImplementation implementation) {
-            final Context context = ApplicationProvider.getApplicationContext();
-            return new CronetTestFramework(implementation.createBuilder(context)
-                                                   .setUserAgent(UserAgent.from(context))
-                                                   .enableQuic(true),
-                    implementation, context);
+        /**
+         * Replaces the {@link Context} implementation that the Cronet engine calls into. Useful for
+         * faking/mocking Android context calls.
+         *
+         * @throws IllegalStateException if called after the Cronet engine has already been built.
+         * Intercepting context calls while the code under test is running is racy and runs the risk
+         * that the code under test will not pick up the change.
+         */
+        public void interceptContext(ContextInterceptor contextInterceptor) {
+            checkNotClosed();
+
+            if (mCronetEngine != null) {
+                throw new IllegalStateException(
+                        "Refusing to intercept context after the Cronet engine has been built");
+            }
+
+            mContextWrapper.setBaseContext(
+                    contextInterceptor.interceptContext(mContextWrapper.getBaseContext()));
         }
 
+        /**
+         * @return the context to be used by the Cronet engine
+         *
+         * @see #interceptContext
+         */
         public Context getContext() {
-            return mContext;
+            checkNotClosed();
+            return mContextWrapper;
         }
 
         public CronetEngine.Builder enableDiskCache(CronetEngine.Builder cronetEngineBuilder) {

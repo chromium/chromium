@@ -995,6 +995,8 @@ cronet_tests_androidx_common_srcs = [
 android_library("cronet_common_javatests") {
   testonly = true
   sources = [
+    "test/javatests/src/org/chromium/net/ApplicationMetaDataInterceptor.java",
+    "test/javatests/src/org/chromium/net/ContextInterceptor.java",
     "test/javatests/src/org/chromium/net/CronetLoggerTestRule.java",
     "test/javatests/src/org/chromium/net/CronetTestRule.java",
     "test/javatests/src/org/chromium/net/TestRequestFinishedListener.java",
@@ -1006,6 +1008,7 @@ android_library("cronet_common_javatests") {
            ":cronet_api_java",
            ":cronet_impl_all_java",
            "//base:base_java",
+           "//base:base_java_test_support",
            "//base:jni_java",
            "//build/android:build_java",
            "//third_party/android_sdk:android_test_base_java",
