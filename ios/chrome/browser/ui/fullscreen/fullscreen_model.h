@@ -9,6 +9,7 @@
 #include <cmath>
 
 #include "base/observer_list.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/ui/broadcaster/chrome_broadcast_observer_bridge.h"
 #import "ios/chrome/browser/ui/fullscreen/scoped_fullscreen_disabler.h"
 
@@ -48,7 +49,16 @@ class FullscreenModel : public ChromeBroadcastObserverInterface {
 
   // Returns the difference between the max and min toolbar heights.
   CGFloat toolbar_height_delta() const {
-    return GetExpandedTopToolbarHeight() - GetCollapsedTopToolbarHeight();
+    CGFloat top_delta =
+        GetExpandedTopToolbarHeight() - GetCollapsedTopToolbarHeight();
+    if (top_delta < FLT_EPSILON &&
+        GetCollapsedBottomToolbarHeight() >= FLT_EPSILON) {
+      CHECK(IsBottomOmniboxSteadyStateEnabled());
+      CGFloat bottom_delta =
+          GetExpandedBottomToolbarHeight() - GetCollapsedBottomToolbarHeight();
+      return bottom_delta;
+    }
+    return top_delta;
   }
 
   // Returns whether the page content is tall enough for the toolbar to be

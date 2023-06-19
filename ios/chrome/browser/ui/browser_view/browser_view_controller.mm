@@ -118,29 +118,6 @@ enum HeaderBehaviour {
 };
 }  // namespace
 
-#pragma mark - ToolbarContainerView
-
-// TODO(crbug.com/880672): This is a temporary solution.  This logic should be
-// handled by ToolbarContainerViewController.
-@interface LegacyToolbarContainerView : UIView
-@end
-
-@implementation LegacyToolbarContainerView
-
-- (UIView*)hitTest:(CGPoint)point withEvent:(UIEvent*)event {
-  // Don't receive events that don't occur within a subview.  This is necessary
-  // because the container view overlaps with web content and the default
-  // behavior will intercept touches meant for the web page when the toolbars
-  // are collapsed.
-  for (UIView* subview in self.subviews) {
-    if (CGRectContainsPoint(subview.frame, point))
-      return [super hitTest:point withEvent:event];
-  }
-  return nil;
-}
-
-@end
-
 #pragma mark - HeaderDefinition helper
 
 // Class used to define a header, an object displayed at the top of the browser.
@@ -353,11 +330,6 @@ enum HeaderBehaviour {
 // Coordinator of primary and secondary toolbars.
 @property(nonatomic, strong) ToolbarCoordinator* toolbarCoordinator;
 
-// The container view for the secondary toolbar.
-// TODO(crbug.com/880656): Convert to a container coordinator.
-@property(nonatomic, strong) UIView* secondaryToolbarContainerView;
-// Coordinator used to manage the secondary toolbar view.
-
 // Vertical offset for the primary toolbar, used for fullscreen.
 @property(nonatomic, strong) NSLayoutConstraint* primaryToolbarOffsetConstraint;
 // Height constraint for the primary toolbar.
@@ -365,10 +337,6 @@ enum HeaderBehaviour {
 // Height constraint for the secondary toolbar.
 @property(nonatomic, strong)
     NSLayoutConstraint* secondaryToolbarHeightConstraint;
-// Height constraint for the frame the secondary toolbar would have if
-// fullscreen was disabled.
-@property(nonatomic, strong)
-    NSLayoutConstraint* secondaryToolbarNoFullscreenHeightConstraint;
 // Current Fullscreen progress for the footers.
 @property(nonatomic, assign) CGFloat footerFullscreenProgress;
 // Y-dimension offset for placement of the header.
@@ -998,8 +966,6 @@ enum HeaderBehaviour {
       [self primaryToolbarHeightWithInset];
   self.secondaryToolbarHeightConstraint.constant =
       [self secondaryToolbarHeightWithInset];
-  self.secondaryToolbarNoFullscreenHeightConstraint.constant =
-      [self secondaryToolbarHeightWithInset];
 
   // Update the tab strip placement.
   if (self.tabStripView) {
@@ -1107,8 +1073,6 @@ enum HeaderBehaviour {
       traitCollectionDidChange:previousTraitCollection];
   // Change the height of the secondary toolbar to show/hide it.
   self.secondaryToolbarHeightConstraint.constant =
-      [self secondaryToolbarHeightWithInset];
-  self.secondaryToolbarNoFullscreenHeightConstraint.constant =
       [self secondaryToolbarHeightWithInset];
   [self updateFootersForFullscreenProgress:self.footerFullscreenProgress];
   if (self.currentWebState) {
@@ -1531,19 +1495,7 @@ enum HeaderBehaviour {
       constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
   self.secondaryToolbarHeightConstraint.active = YES;
   AddSameConstraintsToSides(
-      self.secondaryToolbarContainerView, toolbarView,
-      LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
-
-  // Constrain the container view to the bottom of self.view, and add a
-  // constant height constraint such that the container's frame is equal to
-  // that of the secondary toolbar at a fullscreen progress of 1.0.
-  UIView* containerView = self.secondaryToolbarContainerView;
-  self.secondaryToolbarNoFullscreenHeightConstraint =
-      [containerView.heightAnchor
-          constraintEqualToConstant:[self secondaryToolbarHeightWithInset]];
-  self.secondaryToolbarNoFullscreenHeightConstraint.active = YES;
-  AddSameConstraintsToSides(
-      self.view, containerView,
+      self.view, toolbarView,
       LayoutSides::kBottom | LayoutSides::kLeading | LayoutSides::kTrailing);
 }
 
@@ -1596,16 +1548,9 @@ enum HeaderBehaviour {
     } else {
       [self.view addSubview:primaryToolbarView];
     }
-
-    // Add the secondary toolbar.
-    // Create the container view for the secondary toolbar and add it to
-    // the hierarchy
-    UIView* container = [[LegacyToolbarContainerView alloc] init];
-    container.translatesAutoresizingMaskIntoConstraints = NO;
-    [container
-        addSubview:self.toolbarCoordinator.secondaryToolbarViewController.view];
-    [self.view insertSubview:container aboveSubview:primaryToolbarView];
-    self.secondaryToolbarContainerView = container;
+    [self.view insertSubview:self.toolbarCoordinator
+                                 .secondaryToolbarViewController.view
+                aboveSubview:primaryToolbarView];
 
     // Create the NamedGuides and add them to the browser view.
     NSArray<GuideName*>* guideNames = @[
@@ -2210,12 +2155,14 @@ enum HeaderBehaviour {
 
 - (void)popupDidOpenForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = YES;
-  self.secondaryToolbarContainerView.accessibilityElementsHidden = YES;
+  self.toolbarCoordinator.secondaryToolbarViewController.view
+      .accessibilityElementsHidden = YES;
 }
 
 - (void)popupDidCloseForPresenter:(OmniboxPopupPresenter*)presenter {
   self.contentArea.accessibilityElementsHidden = NO;
-  self.secondaryToolbarContainerView.accessibilityElementsHidden = NO;
+  self.toolbarCoordinator.secondaryToolbarViewController.view
+      .accessibilityElementsHidden = NO;
 }
 
 #pragma mark - FullscreenUIElement methods
@@ -2325,6 +2272,16 @@ enum HeaderBehaviour {
   return std::max(0.0, fullyExpandedHeight - fullyCollapsedHeight);
 }
 
+// Returns the height difference between the fully expanded and fully collapsed
+// secondary toolbar.
+- (CGFloat)secondaryToolbarHeightDelta {
+  CGFloat fullyExpandedHeight =
+      self.fullscreenController->GetMaxViewportInsets().bottom;
+  CGFloat fullyCollapsedHeight =
+      self.fullscreenController->GetMinViewportInsets().bottom;
+  return std::max(0.0, fullyExpandedHeight - fullyCollapsedHeight);
+}
+
 // Translates the header views up and down according to `progress`, where a
 // progress of 1.0 fully shows the headers and a progress of 0.0 fully hides
 // them.
@@ -2340,13 +2297,21 @@ enum HeaderBehaviour {
 
   self.footerFullscreenProgress = progress;
 
-  CGFloat height = 0.0;
+  const CGFloat offset =
+      AlignValueToPixel((1.0 - progress) * [self secondaryToolbarHeightDelta]);
+  const CGFloat expandedToolbarHeight = [self secondaryToolbarHeightWithInset];
   // Update the height constraint and force a layout on the container view
   // so that the update is animatable.
-  height = [self secondaryToolbarHeightWithInset] * progress;
+  const CGFloat height = expandedToolbarHeight - offset;
+  // Check that the computed height has a realistic value (crbug.com/1446068).
+  DUMP_WILL_BE_CHECK(height >= (0.0 - FLT_EPSILON) &&
+                     height <= (expandedToolbarHeight + FLT_EPSILON));
+
   self.secondaryToolbarHeightConstraint.constant = height;
-  [self.secondaryToolbarContainerView setNeedsLayout];
-  [self.secondaryToolbarContainerView layoutIfNeeded];
+  UIView* secondaryToolbarView =
+      self.toolbarCoordinator.secondaryToolbarViewController.view;
+  [secondaryToolbarView setNeedsLayout];
+  [secondaryToolbarView layoutIfNeeded];
 }
 
 // Updates the browser container view such that its viewport is the space
@@ -2361,7 +2326,8 @@ enum HeaderBehaviour {
   CGFloat top = AlignValueToPixel(
       self.headerHeight + (progress - 1.0) * [self primaryToolbarHeightDelta]);
   CGFloat bottom =
-      AlignValueToPixel(progress * [self secondaryToolbarHeightWithInset]);
+      AlignValueToPixel([self secondaryToolbarHeightWithInset] +
+                        (progress - 1.0) * [self secondaryToolbarHeightDelta]);
 
   [self updateContentPaddingForTopToolbarHeight:top bottomToolbarHeight:bottom];
 }
@@ -2895,7 +2861,8 @@ enum HeaderBehaviour {
   self.contentArea.accessibilityElementsHidden = YES;
   self.toolbarCoordinator.primaryToolbarViewController.view
       .accessibilityElementsHidden = YES;
-  self.secondaryToolbarContainerView.accessibilityElementsHidden = YES;
+  self.toolbarCoordinator.secondaryToolbarViewController.view
+      .accessibilityElementsHidden = YES;
 }
 
 - (void)findBarDidDisappearForFindBarCoordinator:
@@ -2904,7 +2871,8 @@ enum HeaderBehaviour {
   self.contentArea.accessibilityElementsHidden = NO;
   self.toolbarCoordinator.primaryToolbarViewController.view
       .accessibilityElementsHidden = NO;
-  self.secondaryToolbarContainerView.accessibilityElementsHidden = NO;
+  self.toolbarCoordinator.secondaryToolbarViewController.view
+      .accessibilityElementsHidden = NO;
 }
 
 #pragma mark - LensPresentationDelegate
