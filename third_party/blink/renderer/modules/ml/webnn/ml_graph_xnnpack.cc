@@ -1523,6 +1523,19 @@ xnn_status DefineXnnNodeForSplit(xnn_subgraph_t subgraph,
   return xnn_status_success;
 }
 
+xnn_status DefineXnnNodeForTanh(xnn_subgraph_t subgraph,
+                                const MLOperator* tanh,
+                                const OperandValueIdMap& operand_value_id_map,
+                                String& error_message) {
+  const uint32_t input_id = GetOperatorInputValueId(tanh, operand_value_id_map);
+  const uint32_t output_id =
+      GetOperatorOutputValueId(tanh, operand_value_id_map);
+  const uint32_t flags = 0;
+  XNN_CHECK_STATUS_AND_SET_ERROR_MESSAGE(
+      xnn_define_tanh(subgraph, input_id, output_id, flags));
+  return xnn_status_success;
+}
+
 xnn_status DefineXnnNodeForTranspose(
     xnn_subgraph_t subgraph,
     const MLOperator* transpose,
@@ -1739,6 +1752,11 @@ xnn_status DefineXnnNode(xnn_subgraph_t subgraph,
     }
     case MLOperator::OperatorKind::kTranspose: {
       XNN_CHECK_STATUS(DefineXnnNodeForTranspose(
+          subgraph, ml_operator, operand_value_id_map, error_message));
+      break;
+    }
+    case MLOperator::OperatorKind::kTanh: {
+      XNN_CHECK_STATUS(DefineXnnNodeForTanh(
           subgraph, ml_operator, operand_value_id_map, error_message));
       break;
     }
