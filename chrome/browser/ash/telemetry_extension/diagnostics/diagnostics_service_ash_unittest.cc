@@ -281,6 +281,20 @@ TEST_F(DiagnosticsServiceAshTest, RunBatteryHealthRoutineSuccess) {
                    cros_healthd::mojom::DiagnosticRoutineEnum::kBatteryHealth);
 }
 
+TEST_F(DiagnosticsServiceAshTest, RunBluetoothPowerRoutine) {
+  // Configure FakeCrosHealthd.
+  SetSuccessfulRoutineResponse();
+
+  base::test::TestFuture<crosapi::mojom::DiagnosticsRunRoutineResponsePtr>
+      future;
+  diagnostics_service()->RunBluetoothPowerRoutine(future.GetCallback());
+
+  ASSERT_TRUE(future.Wait());
+  const auto& result = future.Get();
+  ValidateResponse(result,
+                   cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower);
+}
+
 TEST_F(DiagnosticsServiceAshTest, RunCpuCacheRoutineSuccess) {
   // Configure FakeCrosHealthd.
   SetSuccessfulRoutineResponse();

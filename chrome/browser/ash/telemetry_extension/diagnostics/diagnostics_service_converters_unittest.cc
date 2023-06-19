@@ -79,6 +79,8 @@ TEST(DiagnosticsServiceConvertersTest, ConvertDiagnosticRoutineEnum) {
             crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed);
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kEmmcLifetime),
             crosapi::DiagnosticsRoutineEnum::kEmmcLifetime);
+  EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kBluetoothPower),
+            crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
 
   EXPECT_EQ(Convert(cros_healthd::DiagnosticRoutineEnum::kArcHttp),
             absl::nullopt);

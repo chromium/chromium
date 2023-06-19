@@ -138,6 +138,17 @@ class OsDiagnosticsRunBatteryHealthRoutineFunction
   void RunIfAllowed() override;
 };
 
+class OsDiagnosticsRunBluetoothPowerRoutineFunction
+    : public DiagnosticsApiRunRoutineFunctionBase {
+  DECLARE_EXTENSION_FUNCTION("os.diagnostics.runBluetoothPowerRoutine",
+                             OS_DIAGNOSTICS_RUNBLUETOOTHPOWERROUTINE)
+ private:
+  ~OsDiagnosticsRunBluetoothPowerRoutineFunction() override = default;
+
+  // BaseTelemetryExtensionApiGuardFunction:
+  void RunIfAllowed() override;
+};
+
 class OsDiagnosticsRunCpuCacheRoutineFunction
     : public DiagnosticsApiRunRoutineFunctionBase {
   DECLARE_EXTENSION_FUNCTION("os.diagnostics.runCpuCacheRoutine",

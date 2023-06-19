@@ -126,6 +126,8 @@ absl::optional<crosapi::mojom::DiagnosticsRoutineEnum> Convert(
           kSmartctlCheckWithPercentageUsed;
     case cros_healthd::mojom::DiagnosticRoutineEnum::kEmmcLifetime:
       return crosapi::mojom::DiagnosticsRoutineEnum::kEmmcLifetime;
+    case cros_healthd::mojom::DiagnosticRoutineEnum::kBluetoothPower:
+      return crosapi::mojom::DiagnosticsRoutineEnum::kBluetoothPower;
     default:
       return absl::nullopt;
   }
