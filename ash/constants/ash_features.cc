@@ -1648,7 +1648,7 @@ BASE_FEATURE(kOnDeviceSpeechRecognition,
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // If enabled, CHOBOE Screen will be shown during the new user onboarding flow.
-BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_DISABLED_BY_DEFAULT);
+BASE_FEATURE(kOobeChoobe, "OobeChoobe", base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, Drive Pinning Screen will be shown during
 // the new user onboarding flow.
@@ -1670,11 +1670,11 @@ BASE_FEATURE(kOobeGaiaInfoScreen,
 // enabling this without enabling OobeChoobe flag will have no effect
 BASE_FEATURE(kOobeTouchpadScroll,
              "OobeTouchpadScrollDirection",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 BASE_FEATURE(kOobeDisplaySize,
              "OobeDisplaySize",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables or disables the ChromeOS OOBE HID Detection Revamp, which updates
 // the OOBE HID detection screen UI and related infrastructure. See
@@ -1686,7 +1686,7 @@ BASE_FEATURE(kOobeHidDetectionRevamp,
 // Enables OOBE Jelly features.
 BASE_FEATURE(kOobeJelly, "OobeJelly", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables lazy loading in OOBE's WebUI by prioritizing the first screen.n.
+// Enables lazy loading in OOBE's WebUI by prioritizing the first screen.
 BASE_FEATURE(kOobeLazyLoading,
              "OobeLazyLoading",
              base::FEATURE_ENABLED_BY_DEFAULT);
