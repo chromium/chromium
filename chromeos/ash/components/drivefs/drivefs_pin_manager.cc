@@ -1073,7 +1073,15 @@ void PinManager::StartPinning() {
 
   if (!should_pin_) {
     VLOG(1) << "Should not pin files";
+    is_first_sync_ = true;
     return Complete(Stage::kSuccess);
+  }
+
+  if (is_first_sync_) {
+    base::UmaHistogramSparse(
+        "FileBrowser.GoogleDrive.BulkPinning.ToDownloadMiB",
+        progress_.bytes_to_pin >> 20);
+    is_first_sync_ = false;
   }
 
   timer_ = base::ElapsedTimer();

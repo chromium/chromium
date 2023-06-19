@@ -434,6 +434,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   // space requirements?
   bool should_pin_ GUARDED_BY_CONTEXT(sequence_checker_) = true;
 
+  // Is this the first full sync after the size estimation?
+  bool is_first_sync_ GUARDED_BY_CONTEXT(sequence_checker_) = false;
+
   // Should the feature use `OnItemProgress`, if false it will fall back to
   // `OnSyncingStatusUpdate`.
   bool should_use_on_item_progress_ GUARDED_BY_CONTEXT(sequence_checker_) =

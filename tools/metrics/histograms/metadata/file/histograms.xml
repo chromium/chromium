@@ -585,6 +585,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.ToDownloadMiB" units="MiB"
+    expires_after="2024-06-01">
+  <owner>simmonsjosh@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Total amount of data that the Google Drive bulk-pinning feature is about to
+    download. This is the sum of the sizes of the files that the bulk-pinning
+    manager is about to pin and that are not locally cached yet. This metric is
+    collected when the bulk-pinning manager is starting to pin files, after it
+    ensured there is enough local storage space.
+  </summary>
+</histogram>
+
 <histogram
     name="FileBrowser.HoldingSpace.TimeFromFirstWelcomeBannerShowToFirstPin"
     units="ms" expires_after="2023-11-12">
