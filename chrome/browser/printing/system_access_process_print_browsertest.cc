@@ -78,6 +78,9 @@ constexpr gfx::Size kLegalExpectedContentSize = gfx::Size(556, 952);
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 constexpr char kFakeDmToken[] = "fake-dm-token";
+
+using OnDidCompositeForContentAnalysis =
+    base::RepeatingCallback<void(bool allowed)>;
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
 }  // namespace
@@ -444,6 +447,13 @@ class SystemAccessProcessPrintBrowserTestBase
     print_job->AddObserver(*this);
   }
 
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  void OnCompositedForContentAnalysis(bool allowed) {
+    ++composited_for_content_analysis_count_;
+    CheckForQuit();
+  }
+#endif
+
   TestPrintViewManager* SetUpAndReturnPrintViewManager(
       content::WebContents* web_contents) {
     // Safe to use `base::Unretained(this)` since this testing class
@@ -661,6 +671,11 @@ class SystemAccessProcessPrintBrowserTestBase
     return print_job_destruction_count_;
   }
   int did_print_document_count() const { return did_print_document_count_; }
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  int composited_for_content_analysis_count() const {
+    return composited_for_content_analysis_count_;
+  }
+#endif
 
  private:
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -808,6 +823,9 @@ class SystemAccessProcessPrintBrowserTestBase
   int cancel_count_ = 0;
   int print_job_construction_count_ = 0;
   int print_job_destruction_count_ = 0;
+#if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
+  int composited_for_content_analysis_count_ = 0;
+#endif
 };
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
@@ -2013,13 +2031,19 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
 
   explicit TestPrintViewManagerForContentAnalysis(
       content::WebContents* web_contents)
-      : TestPrintViewManagerForContentAnalysis(web_contents,
-                                               /*callback=*/base::DoNothing()) {
-  }
+      : TestPrintViewManagerForContentAnalysis(
+            web_contents,
+            /*create_print_job_callback=*/base::DoNothing(),
+            /*composite_for_content_analysis_callback=*/base::DoNothing()) {}
 
-  TestPrintViewManagerForContentAnalysis(content::WebContents* web_contents,
-                                         OnDidCreatePrintJobCallback callback)
-      : TestPrintViewManager(web_contents, std::move(callback)) {
+  TestPrintViewManagerForContentAnalysis(
+      content::WebContents* web_contents,
+      OnDidCreatePrintJobCallback create_print_job_callback,
+      OnDidCompositeForContentAnalysis composite_for_content_analysis_callback)
+      : TestPrintViewManager(web_contents,
+                             std::move(create_print_job_callback)),
+        did_composite_for_content_analysis_callback_(
+            std::move(composite_for_content_analysis_callback)) {
     AddTestObserver(observer_);
     PrintViewManager::SetReceiverImplForTesting(this);
   }
@@ -2027,8 +2051,6 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   ~TestPrintViewManagerForContentAnalysis() override {
     PrintViewManager::SetReceiverImplForTesting(nullptr);
   }
-
-  void WaitOnScanning() { scanning_run_loop_.Run(); }
 
   void WaitOnPreview() { preview_run_loop_.Run(); }
 
@@ -2092,11 +2114,13 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
     PrintViewManager::OnCompositedForContentAnalysis(
         base::BindOnce(
             [](base::OnceCallback<void(bool should_proceed)> callback,
-               base::RunLoop* scanning_run_loop, bool allowed) {
+               OnDidCompositeForContentAnalysis*
+                   did_composite_for_content_analysis_callback,
+               bool allowed) {
               std::move(callback).Run(allowed);
-              scanning_run_loop->Quit();
+              did_composite_for_content_analysis_callback->Run(allowed);
             },
-            std::move(callback), &scanning_run_loop_),
+            std::move(callback), &did_composite_for_content_analysis_callback_),
         std::move(data), rfh_id, status, std::move(page_region));
   }
 
@@ -2141,7 +2165,7 @@ class TestPrintViewManagerForContentAnalysis : public TestPrintViewManager {
   absl::optional<bool> preview_allowed_;
 
   base::RunLoop preview_run_loop_;
-  base::RunLoop scanning_run_loop_;
+  OnDidCompositeForContentAnalysis did_composite_for_content_analysis_callback_;
   Observer observer_;
 
   // Tracks how many times a snapshot is obtained for doing analysis.
@@ -2202,7 +2226,10 @@ class ContentAnalysisPrintBrowserTest
         web_contents,
         base::BindRepeating(
             &SystemAccessProcessPrintBrowserTestBase::OnCreatedPrintJob,
-            base::Unretained(this)));
+            base::Unretained(this)),
+        base::BindRepeating(&SystemAccessProcessPrintBrowserTestBase::
+                                OnCompositedForContentAnalysis,
+                            base::Unretained(this)));
     manager->AddTestObserver(*this);
     TestPrintViewManagerForContentAnalysis* manager_ptr = manager.get();
     web_contents->SetUserData(PrintViewManager::UserDataKey(),
@@ -2265,62 +2292,67 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
       if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
         // The expected events are:
-        // 1.  The print job used for scanning is destroyed.
-        // 2.  Get the default settings.
-        // 3.  Ask the user for settings.
-        // 4.  A print job is started.
-        // 5.  The one page of the document is rendered.
-        // 6.  Receive document done notification.
-        // 7.  Wait until all processing for DidPrintDocument is known to have
+        // 1.  The document is composited for content analysis.
+        // 2.  The print job used for scanning is destroyed.
+        // 3.  Get the default settings.
+        // 4.  Ask the user for settings.
+        // 5.  A print job is started.
+        // 6.  The one page of the document is rendered.
+        // 7.  Receive document done notification.
+        // 8.  Wait until all processing for DidPrintDocument is known to have
         //     completed, to ensure printing finished cleanly before completing
         //     the test.
-        // 8.  Wait for the one print job to be destroyed, to ensure printing
+        // 9.  Wait for the one print job to be destroyed, to ensure printing
         //     finished cleanly before completing the test.
-        SetNumExpectedMessages(/*num=*/8);
+        SetNumExpectedMessages(/*num=*/9);
 #else
         // The expected events are:
-        // 1.  The print job used for scanning is destroyed.
-        // 2.  Getting the default settings and asking user for settings are
-        // done
-        //     in-browser, where there is no override to notice the events.  A
-        //     print job is then started.
-        // 3.  The one page of the document is rendered.
-        // 4.  Receive document done notification.
-        // 5.  Wait until all processing for DidPrintDocument is known to have
+        // 1.  The document is composited for content analysis.
+        // 2.  The print job used for scanning is destroyed.
+        // 3.  Getting the default settings and asking user for settings are
+        //     done in-browser, where there is no override to notice the events.
+        //     A print job is then started.
+        // 4.  The one page of the document is rendered.
+        // 5.  Receive document done notification.
+        // 6.  Wait until all processing for DidPrintDocument is known to have
         //     completed, to ensure printing finished cleanly before completing
         //     the test.
-        // 6.  Wait for the one print job to be destroyed, to ensure printing
+        // 7.  Wait for the one print job to be destroyed, to ensure printing
         //     finished cleanly before completing the test.
-        SetNumExpectedMessages(/*num=*/6);
+        SetNumExpectedMessages(/*num=*/7);
 #endif
       } else {
         // The expected events for this are:
-        // 1.  The print job used for scanning is destroyed.
-        // 2.  Use default settings.
-        // 3.  Ask the user for settings.
-        // 4.  Wait until all processing for DidPrintDocument is known to have
+        // 1.  The document is composited for content analysis.
+        // 2.  The print job used for scanning is destroyed.
+        // 3.  Use default settings.
+        // 4.  Ask the user for settings.
+        // 5.  Wait until all processing for DidPrintDocument is known to have
         //     completed, to ensure printing finished cleanly before completing
         //     the test.
-        // 5.  Wait for the actual printing job to be destroyed, to ensure
+        // 6.  Wait for the actual printing job to be destroyed, to ensure
         //     printing finished cleanly before completing the test.
-        SetNumExpectedMessages(/*num=*/5);
+        SetNumExpectedMessages(/*num=*/6);
       }
     } else {
 #if BUILDFLAG(IS_WIN)
       // The expected events for this are:
       // 1.  Use default settings.
-      // 2.  The print job used for scanning is destroyed.
-      SetNumExpectedMessages(/*num=*/2);
+      // 2.  The document is composited for content analysis.
+      // 3.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/3);
 #else
       if (UseService()) {
         // The expected events for this are:
-        // 1.  The print job used for scanning is destroyed.
-        SetNumExpectedMessages(/*num=*/1);
+        // 1.  The document is composited for content analysis.
+        // 2.  The print job used for scanning is destroyed.
+        SetNumExpectedMessages(/*num=*/2);
       } else {
         // The expected events for this are:
         // 1.  Use default settings.
-        // 2.  The print job used for scanning is destroyed.
-        SetNumExpectedMessages(/*num=*/2);
+        // 2.  The document is composited for content analysis.
+        // 3.  The print job used for scanning is destroyed.
+        SetNumExpectedMessages(/*num=*/3);
       }
 #endif
 
@@ -2335,11 +2367,11 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 
     content::ExecuteScriptAsync(web_contents->GetPrimaryMainFrame(), script);
 
-    print_view_manager->WaitOnScanning();
     WaitUntilCallbackReceived();
 
     ASSERT_EQ(print_view_manager->scripted_print_called(),
               content_analysis_allows_print());
+    EXPECT_EQ(composited_for_content_analysis_count(), 1);
 
     // Validate that `NewDocument` is only called for actual printing, not as
     // part of content analysis, since that can needlessly prompt the user.
@@ -2383,55 +2415,61 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
     if (UseService()) {
 #if BUILDFLAG(ENABLE_OOP_BASIC_PRINT_DIALOG)
       // The expected events after having successfully passed the scan are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  Get the default settings.
-      // 3.  Ask the user for settings.
-      // 4.  A print job is started.
-      // 5.  The print compositor will complete generating the document.
-      // 6.  The one page of the document is rendered.
-      // 7.  Receive document done notification.
-      // 8.  Wait for the one print job to be destroyed, to ensure printing
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Get the default settings.
+      // 4.  Ask the user for settings.
+      // 5.  A print job is started.
+      // 6.  The print compositor will complete generating the document.
+      // 7.  The one page of the document is rendered.
+      // 8.  Receive document done notification.
+      // 9.  Wait for the one print job to be destroyed, to ensure printing
       //     finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/8);
+      SetNumExpectedMessages(/*num=*/9);
 #else
       // The expected events after having successfully passed the scan are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  Getting the default settings and asking user for settings are done
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Getting the default settings and asking user for settings are done
       //     in-browser, where there is no override to notice the events.  A
       //     print job is then started.
-      // 3.  The print compositor will complete generating the document.
-      // 4.  The one page of the document is rendered.
-      // 5.  Receive document done notification.
-      // 6.  Wait for the one print job to be destroyed, to ensure printing
+      // 4.  The print compositor will complete generating the document.
+      // 5.  The one page of the document is rendered.
+      // 6.  Receive document done notification.
+      // 7.  Wait for the one print job to be destroyed, to ensure printing
       //     finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/6);
+      SetNumExpectedMessages(/*num=*/7);
 #endif
     } else {
       // The expected events for this are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  Get the default settings.
-      // 3.  Ask the user for settings.
-      // 4.  The print compositor will complete generating the document.
-      // 5.  Wait for the actual printing job to be destroyed, to ensure
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Get the default settings.
+      // 4.  Ask the user for settings.
+      // 5.  The print compositor will complete generating the document.
+      // 6.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/5);
+      SetNumExpectedMessages(/*num=*/6);
     }
   } else {
 #if BUILDFLAG(IS_WIN)
     // The expected events for this are:
     // 1.  Get the default settings.
-    // 2.  The print job used for scanning is destroyed.
-    SetNumExpectedMessages(/*num=*/2);
+    // 2.  The document is composited for content analysis.
+    // 3.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/3);
 #else
     if (UseService()) {
       // The expected events for this are:
-      // 1.  The print job used for scanning is destroyed.
-      SetNumExpectedMessages(/*num=*/1);
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/2);
     } else {
       // The expected events for this are:
       // 1.  Get the default settings.
-      // 2.  The print job used for scanning is destroyed.
-      SetNumExpectedMessages(/*num=*/2);
+      // 2.  The document is composited for content analysis.
+      // 3.  The print job used for scanning is destroyed.
+      SetNumExpectedMessages(/*num=*/3);
     }
 #endif
   }
@@ -2443,7 +2481,6 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
              /*print_preview_disabled=*/true,
              /*has_selection=*/false);
 
-  print_view_manager->WaitOnScanning();
   WaitUntilCallbackReceived();
 
   // PrintNow uses the same code path as scripted prints to scan printed pages,
@@ -2452,6 +2489,7 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
   EXPECT_TRUE(print_view_manager->print_now_called());
   EXPECT_EQ(print_view_manager->scripted_print_called(),
             content_analysis_allows_print());
+  EXPECT_EQ(composited_for_content_analysis_count(), 1);
 
   // Validate that `NewDocument` is only called for actual printing, not as
   // part of content analysis, since that can needlessly prompt the user.
@@ -2477,30 +2515,27 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintWithPreview) {
       browser()->tab_strip_model()->GetActiveWebContents();
   ASSERT_TRUE(web_contents);
   auto* print_view_manager =
-      TestPrintViewManagerForContentAnalysis::CreateForWebContents(
-          web_contents);
+      SetUpAndReturnPrintViewManagerForContentAnalysis(web_contents);
 
-  test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
+  // The expected events for this are:
+  // 1.  The document is composited for content analysis.
+  // 2.  The print job used for scanning is destroyed.
+  SetNumExpectedMessages(/*num=*/2);
 
-  print_view_manager->WaitOnScanning();
+  test::StartPrint(web_contents);
+  WaitUntilCallbackReceived();
+
   ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
+  EXPECT_EQ(composited_for_content_analysis_count(), 1);
 
   // Validate that `NewDocument` was never call as that can needlessly
   // prompt the user.
   ASSERT_EQ(new_document_called_count(), 0);
 }
 
-// Test is flaky on linux-ubsan-vptr for the parameters where
-// `!content_analysis_allows_print()`.
-// TODO(crbug.com/1454426): Re-enabled when fixed.
-#if defined(UNDEFINED_SANITIZER)
-#define MAYBE_SystemPrintFromPrintPreview DISABLED_SystemPrintFromPrintPreview
-#else
-#define MAYBE_SystemPrintFromPrintPreview SystemPrintFromPrintPreview
-#endif
 IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
-                       MAYBE_SystemPrintFromPrintPreview) {
+                       SystemPrintFromPrintPreview) {
   AddPrinter("printer_name");
 
   ASSERT_TRUE(embedded_test_server()->Started());
@@ -2522,59 +2557,65 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
     if (UseService()) {
 #if BUILDFLAG(IS_WIN)
       // The expected events for this are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  Update print settings.
-      // 3.  A second print job is started, for actual printing.
-      // 4.  Rendering for 1 page of document of content.
-      // 5.  Completes with document done.
-      // 6.  Wait for the actual printing job to be destroyed, to ensure
-      //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/6);
-#else
-      // TODO(http://b/285243428):  Update expectation once a second analysis
-      // scan isn't done for system print from Print Preview.
-      // The expected events for this are:
-      // 1.  The print job used for scanning before Print Preview is destroyed.
-      // 2.  The print job used for scanning before system print is destroyed.
-      // 3.  A print job is started for actual printing.
-      // 4.  The print compositor will complete generating the document.
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Update print settings.
+      // 4.  A second print job is started, for actual printing.
       // 5.  Rendering for 1 page of document of content.
       // 6.  Completes with document done.
       // 7.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
       SetNumExpectedMessages(/*num=*/7);
-#endif
-    } else {
-#if BUILDFLAG(IS_WIN)
-      // The expected events for this are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  Wait for the actual printing job to be destroyed, to ensure
-      //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/2);
 #else
       // TODO(http://b/285243428):  Update expectation once a second analysis
       // scan isn't done for system print from Print Preview.
       // The expected events for this are:
-      // 1.  The print job used for scanning is destroyed.
-      // 2.  The print job used for a second scan is destroyed.
-      // 3.  Use default settings.
-      // 4.  Ask the user for settings.
-      // 5.  Wait until all processing for DidPrintDocument is known to have
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning before Print Preview is destroyed.
+      // 3.  The document is composited again for content analysis.
+      // 4.  The print job used for scanning before system print is destroyed.
+      // 5.  A print job is started for actual printing.
+      // 6.  The print compositor will complete generating the document.
+      // 7.  Rendering for 1 page of document of content.
+      // 8.  Completes with document done.
+      // 9.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/9);
+#endif
+    } else {
+#if BUILDFLAG(IS_WIN)
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  Wait for the actual printing job to be destroyed, to ensure
+      //     printing finished cleanly before completing the test.
+      SetNumExpectedMessages(/*num=*/3);
+#else
+      // TODO(http://b/285243428):  Update expectation once a second analysis
+      // scan isn't done for system print from Print Preview.
+      // The expected events for this are:
+      // 1.  The document is composited for content analysis.
+      // 2.  The print job used for scanning is destroyed.
+      // 3.  The document is composited again for content analysis.
+      // 4.  The print job used for a second scan is destroyed.
+      // 5.  Use default settings.
+      // 6.  Ask the user for settings.
+      // 7.  Wait until all processing for DidPrintDocument is known to have
       //     completed, to ensure printing finished cleanly before completing
       //     the test.
-      // 6.  Wait for the actual printing job to be destroyed, to ensure
+      // 8.  Wait for the actual printing job to be destroyed, to ensure
       //     printing finished cleanly before completing the test.
-      SetNumExpectedMessages(/*num=*/6);
+      SetNumExpectedMessages(/*num=*/8);
 #endif
     }
     SystemPrintFromPreviewOnceReadyAndLoaded(/*wait_for_callback=*/true);
   } else {
     // The expected events for this are:
-    // 1.  The print job used for scanning is destroyed.
-    SetNumExpectedMessages(/*num=*/1);
+    // 1.  The document is composited for content analysis.
+    // 2.  The print job used for scanning is destroyed.
+    SetNumExpectedMessages(/*num=*/2);
 
     test::StartPrint(browser()->tab_strip_model()->GetActiveWebContents());
-    print_view_manager->WaitOnScanning();
     WaitUntilCallbackReceived();
   }
 
@@ -2582,6 +2623,16 @@ IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest,
   // clicking Print from Print Preview instead of before displaying the dialog.
   ASSERT_EQ(print_view_manager->preview_allowed(),
             content_analysis_allows_print());
+#if BUILDFLAG(IS_WIN)
+  const int kCompositedForContentAnalysisCount = 1;
+#else
+  // TODO(http://b/285243428):  Update expectation once a second analysis scan
+  // isn't done for system print from Print Preview.
+  const int kCompositedForContentAnalysisCount =
+      content_analysis_allows_print() ? 2 : 1;
+#endif
+  EXPECT_EQ(composited_for_content_analysis_count(),
+            kCompositedForContentAnalysisCount);
 
 #if BUILDFLAG(IS_WIN)
   // One print job is always used to do scanning, and if printing is allowed
