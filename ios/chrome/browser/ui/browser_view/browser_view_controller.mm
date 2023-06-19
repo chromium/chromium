@@ -2804,8 +2804,20 @@ enum HeaderBehaviour {
 #pragma mark - ToolbarHeightDelegate
 
 - (void)toolbarsHeightChanged {
-  // TODO(crbug.com/1454590): React to toolbar size change.
   CHECK(IsBottomOmniboxSteadyStateEnabled());
+
+  // TODO(crbug.com/1455093): Check if other components are impacted here.
+  // Fullscreen, TextZoom, FindInPage.
+
+  // Toolbar state must be updated before `updateForFullscreenProgress` as the
+  // later uses the insets from fullscreen model.
+  [self updateToolbarState];
+
+  self.primaryToolbarHeightConstraint.constant =
+      [self primaryToolbarHeightWithInset];
+  self.secondaryToolbarHeightConstraint.constant =
+      [self secondaryToolbarHeightWithInset];
+  [self updateForFullscreenProgress:self.footerFullscreenProgress];
 }
 
 #pragma mark - LogoAnimationControllerOwnerOwner (Public)
