@@ -88,6 +88,7 @@ aggregate_vector_icons("components_vector_icons") {
     "folder.icon",
     "folder_chrome_refresh.icon",
     "folder_managed.icon",
+    "folder_managed_refresh.icon",
     "folder_managed_touch.icon",
     "folder_open.icon",
     "folder_touch.icon",

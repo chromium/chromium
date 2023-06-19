@@ -35,6 +35,7 @@
 #include "ui/base/dragdrop/mojom/drag_drop_types.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 
 #if defined(TOOLKIT_VIEWS)
 #include "chrome/grit/theme_resources.h"
@@ -306,13 +307,17 @@ ui::ImageModel GetBookmarkFolderIcon(
 #else
     const gfx::VectorIcon* id;
     if (icon_type == BookmarkFolderIconType::kNormal) {
-      id = ui::TouchUiController::Get()->touch_ui()
-               ? &vector_icons::kFolderTouchIcon
-               : &vector_icons::kFolderIcon;
+      id = features::IsChromeRefresh2023()
+               ? &vector_icons::kFolderChromeRefreshIcon
+               : (ui::TouchUiController::Get()->touch_ui()
+                      ? &vector_icons::kFolderTouchIcon
+                      : &vector_icons::kFolderIcon);
     } else {
-      id = ui::TouchUiController::Get()->touch_ui()
-               ? &vector_icons::kFolderManagedTouchIcon
-               : &vector_icons::kFolderManagedIcon;
+      id = features::IsChromeRefresh2023()
+               ? &vector_icons::kFolderManagedRefreshIcon
+               : (ui::TouchUiController::Get()->touch_ui()
+                      ? &vector_icons::kFolderManagedTouchIcon
+                      : &vector_icons::kFolderManagedIcon);
     }
     const ui::ThemedVectorIcon icon =
         absl::holds_alternative<SkColor>(color)
