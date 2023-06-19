@@ -10,6 +10,14 @@ declare_args() {
   sync_user_agent_product = "Chrome"
 }
 
+source_set("features") {
+  sources = [
+    "features.cc",
+    "features.h",
+  ]
+  deps = [ "//base" ]
+}
+
 static_library("base") {
   sources = [
     "client_tag_hash.cc",
@@ -20,8 +28,6 @@ static_library("base") {
     "data_type_histogram.h",
     "extensions_activity.cc",
     "extensions_activity.h",
-    "features.cc",
-    "features.h",
     "hash_util.cc",
     "hash_util.h",
     "invalidation_adapter.cc",
@@ -66,6 +72,7 @@ static_library("base") {
   ]
 
   public_deps = [
+    ":features",
     "//base",
     "//components/invalidation/public",
     "//components/sync/protocol",
