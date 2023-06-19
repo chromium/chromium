@@ -1558,5 +1558,118 @@ TEST_F(SyncServiceImplTest, ShouldReturnErrorOnSyncPaused) {
             SyncService::ModelTypeDownloadStatus::kError);
 }
 
+TEST_F(
+    SyncServiceImplTest,
+    GetTypesWithPendingDownloadForInitialSyncDuringFirstSyncInTransportMode) {
+  component_factory()->AllowFakeEngineInitCompletion(false);
+  CreateService();
+  InitializeForFirstSync();
+
+#if BUILDFLAG(IS_IOS)
+  // Outside iOS, transport mode considers all types as enabled by default. On
+  // iOS, for BOOKMARKS to be listed as preferred, an explicit API call is
+  // needed.
+  service()->GetUserSettings()->SetBookmarksAndReadingListAccountStorageOptIn(
+      true);
+#endif  // BUILDFLAG(IS_IOS)
+
+  identity_test_env()->MakePrimaryAccountAvailable(
+      kTestUser, signin::ConsentLevel::kSignin);
+
+  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
+            service()->GetTransportState());
+
+  // START_DEFERRED is very short-lived upon sign-in, so it doesn't matter
+  // much what the API returns (added here for documentation purposes).
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(SyncService::TransportState::INITIALIZING,
+            service()->GetTransportState());
+
+  // During first-sync INITIALIZING, all preferred datatypes are listed, which
+  // in this test fixture means NIGORI, BOOKMARKS and DEVICE_INFO.
+  EXPECT_EQ(ModelTypeSet({NIGORI, BOOKMARKS, DEVICE_INFO}),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  // Once fully initialized, it is delegated to DataTypeManager.
+  engine()->TriggerInitializationCompletion(/*success=*/true);
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+}
+
+TEST_F(SyncServiceImplTest,
+       GetTypesWithPendingDownloadForInitialSyncDuringFirstSync) {
+  component_factory()->AllowFakeEngineInitCompletion(false);
+  CreateService();
+  InitializeForFirstSync();
+  SignIn();
+
+  service()->GetUserSettings()->SetInitialSyncFeatureSetupComplete(
+      syncer::SyncFirstSetupCompleteSource::BASIC_FLOW);
+
+  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
+            service()->GetTransportState());
+
+  // START_DEFERRED is very short-lived upon sign-in, so it doesn't matter
+  // much what the API returns (added here for documentation purposes).
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(SyncService::TransportState::INITIALIZING,
+            service()->GetTransportState());
+
+  // During first-sync INITIALIZING, all preferred datatypes are listed, which
+  // in this test fixture means NIGORI, BOOKMARKS and DEVICE_INFO.
+  EXPECT_EQ(ModelTypeSet({NIGORI, BOOKMARKS, DEVICE_INFO}),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  // Once fully initialized, it is delegated to DataTypeManager.
+  engine()->TriggerInitializationCompletion(/*success=*/true);
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+}
+
+TEST_F(SyncServiceImplTest,
+       GetTypesWithPendingDownloadForInitialSyncDuringNthSync) {
+  component_factory()->AllowFakeEngineInitCompletion(false);
+  SignIn();
+  CreateService();
+  InitializeForNthSync(/*run_until_idle=*/false);
+
+  ASSERT_EQ(SyncService::TransportState::START_DEFERRED,
+            service()->GetTransportState());
+
+  // During non-first-sync initialization, usually during profile startup,
+  // SyncService doesn't actually know which datatypes are pending download, so
+  // it defaults to returning an empty set.
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  base::RunLoop().RunUntilIdle();
+
+  ASSERT_EQ(SyncService::TransportState::INITIALIZING,
+            service()->GetTransportState());
+
+  // Same as above.
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+
+  // Once fully initialized, it is delegated to DataTypeManager.
+  engine()->TriggerInitializationCompletion(/*success=*/true);
+  ASSERT_EQ(SyncService::TransportState::ACTIVE,
+            service()->GetTransportState());
+  EXPECT_EQ(ModelTypeSet(),
+            service()->GetTypesWithPendingDownloadForInitialSync());
+}
+
 }  // namespace
 }  // namespace syncer

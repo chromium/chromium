@@ -69,7 +69,9 @@ std::string FakeSyncEngine::GetCacheGuid() const {
 }
 
 std::string FakeSyncEngine::GetBirthday() const {
-  return kTestBirthday;
+  // The birthday becomes known the very first time sync completes.
+  return (initialized_ || !is_first_time_sync_configure_) ? kTestBirthday
+                                                          : std::string();
 }
 
 base::Time FakeSyncEngine::GetLastSyncedTimeForDebugging() const {

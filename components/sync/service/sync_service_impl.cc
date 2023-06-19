@@ -66,6 +66,10 @@ constexpr base::TimeDelta kRecordDownloadStatusTimeout = base::Seconds(30);
 constexpr char kModelTypeReachedUpToDateHistogramPrefix[] =
     "Sync.ModelTypeUpToDateTime";
 
+BASE_FEATURE(kReportPendingDownloadDuringFirstSync,
+             "ReportPendingDownloadDuringFirstSync",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 // The initial state of sync, for the Sync.InitialState2 histogram. Even if
 // this value is CAN_START, sync startup might fail for reasons that we may
 // want to consider logging in the future, such as a passphrase needed for
@@ -1417,6 +1421,16 @@ ModelTypeSet SyncServiceImpl::GetActiveDataTypes() const {
 ModelTypeSet SyncServiceImpl::GetTypesWithPendingDownloadForInitialSync()
     const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  if (base::FeatureList::IsEnabled(kReportPendingDownloadDuringFirstSync) &&
+      GetTransportState() == TransportState::INITIALIZING &&
+      engine_->GetBirthday().empty()) {
+    CHECK(!data_type_manager_);
+    // The engine is initializing for the very first sync (usually after
+    // sign-in). In this case all types are reported as pending download,
+    // optimistically assuming datatype preconditions will be met.
+    return GetPreferredDataTypes();
+  }
 
   if (!data_type_manager_) {
     return ModelTypeSet();

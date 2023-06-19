@@ -403,7 +403,9 @@ class SyncService : public KeyedService {
 
   // Returns the datatypes that are about to become active, but are currently
   // in the process of downloading the initial data from the server (either
-  // actively ongoing or queued).
+  // actively ongoing or queued). Note that it is not always feasible to
+  // determine this reliably (e.g. during initialization) and hence the
+  // implementation may return a sensible likely value.
   virtual ModelTypeSet GetTypesWithPendingDownloadForInitialSync() const = 0;
 
   //////////////////////////////////////////////////////////////////////////////

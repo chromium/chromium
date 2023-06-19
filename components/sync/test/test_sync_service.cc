@@ -246,6 +246,8 @@ ModelTypeSet TestSyncService::GetActiveDataTypes() const {
 
 ModelTypeSet TestSyncService::GetTypesWithPendingDownloadForInitialSync()
     const {
+  DCHECK_NE(transport_state_, TransportState::INITIALIZING)
+      << "Realistic behavior not implemented for INITIALIZING";
   if (transport_state_ != TransportState::CONFIGURING) {
     return ModelTypeSet();
   }
