@@ -47,6 +47,8 @@ enum class OfficeFilesUploadResult {
   kMaxValue = kCloudError,
 };
 
+const char kGenericErrorMessage[] = "Something went wrong. Try again.";
+
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
     Profile* profile,

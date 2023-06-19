@@ -149,14 +149,10 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
   std::string operation =
       operation_type_ == file_manager::io_task::OperationType::kCopy ? "copy"
                                                                      : "move";
-  std::string title = "Can't " + operation + " file";
+  std::string file_string = num_files_ == 1 ? "file" : "files";
+  std::string title =
+      "Can't " + operation + " " + file_string + " to " + cloud_provider_name_;
   std::vector<message_center::ButtonInfo> notification_buttons;
-  //  Add "Sign in" button if this is a reauthentication error.
-  if (message == kReauthenticationRequiredMessage) {
-    title = "Can't " + operation + " file to Microsoft OneDrive";
-    std::string button_title = "Sign in";
-    notification_buttons.emplace_back(base::UTF8ToUTF16(button_title));
-  }
 
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
@@ -173,6 +169,12 @@ CloudUploadNotificationManager::CreateUploadErrorNotification(
       /*small_image=*/ash::kFolderIcon,
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
+
+  //  Add "Sign in" button if this is a reauthentication error.
+  if (message == kReauthenticationRequiredMessage) {
+    std::string button_title = "Sign in";
+    notification_buttons.emplace_back(base::UTF8ToUTF16(button_title));
+  }
 
   notification->set_buttons(notification_buttons);
   return notification;
