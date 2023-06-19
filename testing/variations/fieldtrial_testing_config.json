@@ -5041,13 +5041,7 @@
             ],
             "experiments": [
                 {
-                    "name": "Only_Enable_Model_20230522",
-                    "enable_features": [
-                        "ImeUsEnglishModelUpdate"
-                    ]
-                },
-                {
-                    "name": "Enable_Model_And_Params_20230522",
+                    "name": "Enable_Model_And_Params_20230602",
                     "enable_features": [
                         "ImeFstDecoderParamsUpdate",
                         "ImeUsEnglishModelUpdate"
