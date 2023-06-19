@@ -25,8 +25,6 @@ source_set("fakes") {
     "fake_ui_view_controller.mm",
     "fake_web_content_handler.h",
     "fake_web_content_handler.mm",
-    "fake_web_state_list_observing_delegate.h",
-    "fake_web_state_list_observing_delegate.mm",
   ]
 
   deps = [
