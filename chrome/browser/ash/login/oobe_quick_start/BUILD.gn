@@ -67,6 +67,8 @@ source_set("unit_tests") {
     "//ui/chromeos:chromeos",
   ]
   sources = [
+    "mock_second_device_auth_broker.cc",
+    "mock_second_device_auth_broker.h",
     "second_device_auth_broker_unittest.cc",
     "target_device_bootstrap_controller_unittest.cc",
   ]

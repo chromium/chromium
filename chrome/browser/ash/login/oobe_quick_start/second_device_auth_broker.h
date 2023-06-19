@@ -142,14 +142,16 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // service.
   // The callback is completed with either the challenge bytes - for successful
   // execution, or with a `GoogleServiceAuthError` - for a failed execution.
-  void GetChallengeBytes(ChallengeBytesCallback challenge_callback);
+  // Virtual for testing.
+  virtual void GetChallengeBytes(ChallengeBytesCallback challenge_callback);
 
   // Fetches a new Remote Attestation certificate - for proving device
   // integrity.
   // The callback is completed with either a PEM encoded certificate chain
   // string, or with the type of error (`AttestationErrorType`) which occurred
   // during attestation.
-  void FetchAttestationCertificate(
+  // Virtual for testing.
+  virtual void FetchAttestationCertificate(
       const std::string& fido_credential_id,
       AttestationCertificateCallback certificate_callback);
 
@@ -158,9 +160,10 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
   // `FetchAttestationCertificate()`.
   // `refresh_token_callback` is completed with one of a possible set of result
   // types. See the type definition of `RefreshTokenResponse` for reference.
-  void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
-                         const std::string& certificate,
-                         RefreshTokenCallback refresh_token_callback);
+  // Virtual for testing.
+  virtual void FetchRefreshToken(const FidoAssertionInfo& fido_assertion_info,
+                                 const std::string& certificate,
+                                 RefreshTokenCallback refresh_token_callback);
 
  private:
   // Callback for handling challenge bytes response from Gaia.
