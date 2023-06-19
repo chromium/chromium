@@ -3021,7 +3021,7 @@
 <translation id="3582057310199111521">Введен на поддельном сайте и раскрыт при утечке данных</translation>
 <translation id="3582299299336701326">Сделать светлые цвета темными, а темные светлыми. Чтобы включить или отключить инверсию цветов, нажмите Поиск + Ctrl + H.</translation>
 <translation id="3584169441612580296">Доступ к фотографиям, музыке и другим медиафайлам на вашем компьютере, а также их изменение</translation>
-<translation id="3584527007414070635">Продолжите поиск по теме "<ph name="MODULE_TITLE" />".</translation>
+<translation id="3584527007414070635">Продолжите поиск по теме <ph name="MODULE_TITLE" /></translation>
 <translation id="3586787825263265024">Для работы приложения <ph name="APPLICATION_NAME" /> требуется хранилище OneDrive.</translation>
 <translation id="3586806079541226322">Не удалось открыть файл</translation>
 <translation id="3586931643579894722">Скрыть подробности</translation>
@@ -6046,7 +6046,7 @@
 <translation id="6268252012308737255">Открыть в приложении <ph name="APP" /></translation>
 <translation id="6270391203985052864">Сайты могут запрашивать разрешения на отправку уведомлений</translation>
 <translation id="6270770586500173387">Отправлять <ph name="BEGIN_LINK1" />информацию о системе и приложениях<ph name="END_LINK1" /> и различные <ph name="BEGIN_LINK2" />показатели<ph name="END_LINK2" /></translation>
-<translation id="6270896861225278704">Карточка поиска по теме</translation>
+<translation id="6270896861225278704">карточку поиска по теме</translation>
 <translation id="6271348838875430303">Исправление отменено</translation>
 <translation id="6273677812470008672">Качество</translation>
 <translation id="6274202259872570803">Скринкаст</translation>
