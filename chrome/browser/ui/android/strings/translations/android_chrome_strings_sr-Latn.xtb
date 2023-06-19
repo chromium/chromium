@@ -128,7 +128,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="164269334534774161">Prikazuje se oflajn kopija ove stranice od <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1657932388559784161">Donja tabela uvida u stranicu je zatvorena</translation>
-<translation id="1668122540633280551">Odaberite kako će se pregledi video snimaka puštati automatski na Chrome početnoj stranici.</translation>
 <translation id="1670399744444387456">Osnovna</translation>
 <translation id="1671236975893690980">Preuzimanje je na čekanju…</translation>
 <translation id="1672586136351118594">Ne prikazuj ponovo</translation>
@@ -271,7 +270,6 @@ Kada izbrišete istoriju pregledanja – svu ili za određeni sajt – brišete 
 <translation id="2536728043171574184">Pregledate oflajn kopiju ove stranice</translation>
 <translation id="2546283357679194313">Kolačići i podaci o sajtovima</translation>
 <translation id="2558569818338050235">Istorija pregledanja utiče na oglase koji vam se prikazuju</translation>
-<translation id="2561519700418191927">Pregledi video snimaka</translation>
 <translation id="2567385386134582609">SLIKA</translation>
 <translation id="2567545343356994513">Brža proaktivna zaštita od opasnih veb-sajtova, preuzimanja i dodataka</translation>
 <translation id="2569733278091928697">Moći ćete lako da upravljate kontrolama medija, sesijama bez arhiviranja, preuzimanjima i drugim sadržajem</translation>
@@ -510,7 +508,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="3775705724665058594">Pošaljite na svoje uređaje</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 kartica}one{# kartica}few{# kartice}other{# kartica}}</translation>
 <translation id="3795154175078851242">Kopiraj sliku sa linkom</translation>
-<translation id="3803784507854318295">Upravljajte autoplejem</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3819178904835489326">Izbrisana preuzimanja: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -563,7 +560,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="4095146165863963773">Želite li da izbrišete podatke aplikacije?</translation>
 <translation id="4096227151372679484">Tok čuvanja obeleživača je otvoren do polovine ekrana</translation>
 <translation id="4101475238162928417">Sinhronizujte podatke da biste preuzeli lozinke, obeleživače i drugo na ostalim uređajima</translation>
-<translation id="410351446219883937">Autoplej</translation>
 <translation id="4106587138345390261">Chrome istražuje nove funkcije koje omogućavaju sajtovima da pružaju isti doživljaj pregledanja, a da koriste manje podataka</translation>
 <translation id="4108314971463891922">Prati</translation>
 <translation id="4108998448622696017">Otkriva opasne događaje kada se dogode i upozorava vas na njih.</translation>
@@ -634,7 +630,6 @@ Privatni tokeni za stanje poboljšavaju privatnost na vebu i ne mogu da se koris
 <translation id="4484496141267039529">Nema internet veze. Probajte ponovo kasnije.</translation>
 <translation id="4487967297491345095">Svi podaci Chrome aplikacija će biti trajno izbrisani. To obuhvata sve datoteke, podešavanja, naloge, baze podataka itd.</translation>
 <translation id="449126573531210296">Šifruj sinhronizovane lozinke pomoću Google naloga</translation>
-<translation id="4504667196171871375">Na WiFi i mobilnoj mreži</translation>
 <translation id="4508528996305412043">Meni kartice fida je otvoren</translation>
 <translation id="4509501256689523862">Da li ćete videti personalizovani oglas tokom pregledanja zavisi od ovog podešavanja, <ph name="BEGIN_LINK_1" />tema oglasa<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />podešavanja kolačića<ph name="END_LINK_2" /> i toga da li sajt koji pregledate personalizuje oglase</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Pre # dana}one{Pre # dana}few{Pre # dana}other{Pre # dana}}</translation>
@@ -1313,7 +1308,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="7944772052836377867">Sinhronizacija mora da potvrdi da ste to vi</translation>
 <translation id="7947953824732555851">Prihvati i prijavi me</translation>
 <translation id="7957413488482743710">Virtuelna kartica krije vašu stvarnu karticu da bi vas zaštitila od potencijalne prevare. <ph name="BEGIN_LINK1" />Saznajte više o virtuelnim karticama<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nikad</translation>
 <translation id="7961926449547174351">Onemogućili ste pristup memorijskom prostoru. Idite u Podešavanja da biste ga omogućili.</translation>
 <translation id="7963646190083259054">Prodavac:</translation>
 <translation id="7965838025086216108">Možete da koristite sačuvane lozinke na bilo kom uređaju. Čuvaju se u Google menadžeru lozinki za <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Na primer, neki veb-sajtovi mogu da odgovore na ovaj zahtev prikazivanjem oglasa
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_ONE" /> kartica će biti zatvorene}one{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}few{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartice će biti zatvorene}other{Kartice bez arhiviranja (<ph name="INCOGNITO_TAB_COUNT" />) i još <ph name="TAB_COUNT_MANY" /> kartica će biti zatvorene}}</translation>
 <translation id="8970887620466824814">Došlo je do greške.</translation>
 <translation id="8972098258593396643">Preuzimate u podrazumevani folder?</translation>
-<translation id="8987641763863173640">Upravljajte podešavanjima pregleda videa</translation>
 <translation id="8987736167266086032">Nastavite tamo gde ste stali</translation>
 <translation id="8989968390305463310">Istorija pregledanja utiče na oglase koji vam se prikazuju i interesovanja procenjena u nastavku. Radi zaštite privatnosti Chrome automatski briše interesovanja svakog meseca čim postanu dostupna. Interesovanja mogu da se osvežavaju ako ih ne uklonite.</translation>
 <translation id="8993760627012879038">Otvaranje nove kartice u režimu bez arhiviranja</translation>

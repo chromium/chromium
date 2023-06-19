@@ -399,6 +399,7 @@
 <translation id="1864927262126810325">Mənbə: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proksi .pac skript URL deyil sabit proksi serverlər istifadə etmək üçün ayarlanıb.</translation>
 <translation id="1871284979644508959">Tələb olunan sahə</translation>
+<translation id="1871739799120352748">Qiymət yüksəkdir</translation>
 <translation id="1873899211667975540">Rok musiqisi</translation>
 <translation id="1874224422119691492"><ph name="SETTINGS" /> bölməsində parolları daxil etmək üçün ekran kilidindən istifadə edib-etməməyi dəyişə bilərsiniz</translation>
 <translation id="1875025161375567525">Foto Qabı</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> böyük həcmli datanı həmişəlik lokal kompüterinizdə yadda saxlamaq istəyir</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{və daha 1}other{və daha #}}</translation>
+<translation id="2001469757375372617">Xəta oldu. Dəyişiklik yadda saxlanmadı.</translation>
 <translation id="2003709556000175978">Parolu indi sıfırlayın</translation>
 <translation id="2003775180883135320">Yuxarıdan dördlü deşik açın</translation>
 <translation id="2009942480257059311">"Tədbir yaradın" düyməsi, aktivləşdirərək Google Calendar-da cəld yeni tədbir yaradın</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">Zərf C5</translation>
 <translation id="2119505898009119320">Verildi: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Aşağı sağdan deşik açmaq</translation>
+<translation id="2122214041802369259">Qiymət yüksəkdir</translation>
 <translation id="2122719317867821810">Bu siyasət nəzərdə tutulduğu kimi işləyir, lakin ziddiyyətli bir dəyər başqa bir yerdə təyin olunub və bu siyasət tərəfindən əvəzlənib.</translation>
 <translation id="2126374524350484896">PDF yaradıcısı:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode siyasətinin ayarlanmamasına görə qeyd etdiyiniz şablonlar tətbiq edilməyə bilər.</translation>
@@ -857,6 +860,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> üçün <ph name="PRICE_DROP" /> endirim</translation>
 <translation id="3061707000357573562">Təmir Xidməti</translation>
 <translation id="306573536155379004">Oyun başladı.</translation>
+<translation id="3067505415088964188">Qiymət aşağıdır</translation>
 <translation id="3068991664510324412">Kompüter və video oyunları</translation>
 <translation id="3080254622891793721">Qrafik</translation>
 <translation id="3081538120861307764">Reklamın performansını ölçmək üçün reklamın sizə göstərildiyi vaxt kimi məhdud data növləri saytlar arasında paylaşılır.</translation>
@@ -2067,6 +2071,7 @@
 <translation id="5967592137238574583">Kontakt Məlumatını Redaktə Edin</translation>
 <translation id="5967867314010545767">Tarixçədən silin</translation>
 <translation id="5968022600320704045">Axtarış nəticəsi yoxdur</translation>
+<translation id="5969199813874624822">Qiyməti yadda saxlayıb, izləyin</translation>
 <translation id="5974052231147553524">Altıncı Rulon</translation>
 <translation id="5975083100439434680">Kiçildin</translation>
 <translation id="5979084224081478209">Parolları yoxlayın</translation>
@@ -3392,6 +3397,7 @@
 <translation id="9141013498910525015">Ünvanları idarə edin</translation>
 <translation id="9144951720726881238">Bitmə tarixi:</translation>
 <translation id="9148507642005240123">Düzəlişi geri qaytarın</translation>
+<translation id="9148599396704355100">Qiymət aşağıdır</translation>
 <translation id="9150045010208374699">Kameranızı istifadə edin</translation>
 <translation id="9150685862434908345">Administratorunuz brauzer quraşdırmanızı uzaqdan dəyişə bilər. Bu cihazdakı fəaliyyət Chrome'dan kənarda da idarə edilə bilər. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Güncəlləşib</translation>

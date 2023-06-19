@@ -128,7 +128,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="164269334534774161">Du siehst dir momentan eine Offlinekopie dieser Seite vom <ph name="CREATION_TIME" /> an</translation>
 <translation id="1644574205037202324">Verlauf</translation>
 <translation id="1657932388559784161">Die Ansicht am unteren Rand mit den Seitenstatistiken ist geschlossen</translation>
-<translation id="1668122540633280551">Hier kannst du festlegen, wie Videovorschauen auf der Chrome-Startseite automatisch abgespielt werden.</translation>
 <translation id="1670399744444387456">Grundlegend</translation>
 <translation id="1671236975893690980">Download ausstehend...</translation>
 <translation id="1672586136351118594">Nicht mehr anzeigen</translation>
@@ -271,7 +270,6 @@ Wenn du deinen Browserverlauf löschst – entweder komplett oder für eine bes
 <translation id="2536728043171574184">Eine Offline-Kopie dieser Seite wird angezeigt.</translation>
 <translation id="2546283357679194313">Cookies und Websitedaten</translation>
 <translation id="2558569818338050235">Dein Browserverlauf hat Einfluss darauf, welche Werbung dir gezeigt wird</translation>
-<translation id="2561519700418191927">Videovorschauen</translation>
 <translation id="2567385386134582609">BILD</translation>
 <translation id="2567545343356994513">Schnellerer und dynamischerer Schutz gegen schädliche Websites, Downloads und Erweiterungen</translation>
 <translation id="2569733278091928697">Du kannst ganz einfach Dinge wie Mediensteuerelemente, Inkognitositzungen und Downloads verwalten</translation>
@@ -509,7 +507,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="3775705724665058594">An meine Geräte senden</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 Tab}other{# Tabs}}</translation>
 <translation id="3795154175078851242">Bild mit Link kopieren</translation>
-<translation id="3803784507854318295">Autoplay verwalten</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Verwalten</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> Downloads gelöscht</translation>
@@ -562,7 +559,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4095146165863963773">App-Daten löschen?</translation>
 <translation id="4096227151372679484">Ablauf zum Speichern von Lesezeichen ist halb geöffnet</translation>
 <translation id="4101475238162928417">Mit der Synchronisierung kannst du beispielsweise Passwörter und Lesezeichen von deinen anderen Geräten abrufen</translation>
-<translation id="410351446219883937">Autoplay</translation>
 <translation id="4106587138345390261">Wir testen neue Funktionen für Chrome, mit denen Websites weniger Nutzerdaten verwenden, ohne dabei die Nutzererfahrung einzuschränken</translation>
 <translation id="4108314971463891922">Folgen</translation>
 <translation id="4108998448622696017">Erkennt schädliche Ereignisse, sobald diese passieren, und warnt dich entsprechend.</translation>
@@ -632,7 +628,6 @@ Private State Tokens verbessern den Datenschutz im Web und können nicht dazu ve
 <translation id="4484496141267039529">Keine Verbindung. Versuche es später noch einmal.</translation>
 <translation id="4487967297491345095">Alle App-Daten in Chrome werden dauerhaft gelöscht. Hierzu gehören alle Dateien, Einstellungen, Konten, Datenbanken.</translation>
 <translation id="449126573531210296">Synchronisierte Passwörter mit meinem Google-Konto verschlüsseln</translation>
-<translation id="4504667196171871375">Über WLAN oder mobile Daten</translation>
 <translation id="4508528996305412043">Feedkartenmenü ist geöffnet</translation>
 <translation id="4509501256689523862">Ob du beim Surfen personalisierte Werbung siehst, hängt von dieser Einstellung, <ph name="BEGIN_LINK_1" />den Werbethemen<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />deinen Cookie-Einstellungen<ph name="END_LINK_2" /> und davon ab, ob die besuchte Website Werbung personalisiert</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Vor # Tag}other{Vor # Tagen}}</translation>
@@ -1310,7 +1305,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="7944772052836377867">Zur Synchronisierung muss deine Identität bestätigt werden</translation>
 <translation id="7947953824732555851">Akzeptieren und anmelden</translation>
 <translation id="7957413488482743710">Wenn du eine virtuelle Karte verwendest, werden deine tatsächlichen Kartendetails nicht preisgegeben – dadurch bist du besser vor Betrugsversuchen geschützt. <ph name="BEGIN_LINK1" />Weitere Informationen zu virtuellen Karten<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nie</translation>
 <translation id="7961926449547174351">Du hast den Speicherzugriff deaktiviert. Gehe zu den Einstellungen, um ihn zu aktivieren.</translation>
 <translation id="7963646190083259054">Anbieter:</translation>
 <translation id="7965838025086216108">Du kannst gespeicherte Passwörter auf jedem Gerät nutzen. Sie werden im Google Passwortmanager für <ph name="ACCOUNT" /> gespeichert.</translation>
@@ -1516,7 +1510,6 @@ Einige Websites schalten möglicherweise Werbeanzeigen, deren Auswahl nicht dara
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> Inkognito- und <ph name="TAB_COUNT_ONE" /> weiterer Tab werden geschlossen}other{<ph name="INCOGNITO_TAB_COUNT" /> Inkognito- und <ph name="TAB_COUNT_MANY" /> weitere Tabs werden geschlossen}}</translation>
 <translation id="8970887620466824814">Es gab ein Problem.</translation>
 <translation id="8972098258593396643">In Standardordner herunterladen?</translation>
-<translation id="8987641763863173640">Einstellungen für die Videovorschau verwalten</translation>
 <translation id="8987736167266086032">Da weitermachen, wo du aufgehört hast</translation>
 <translation id="8989968390305463310">Dein Browserverlauf hat Einfluss auf die unten stehenden, geschätzten Interessen und darauf, welche Werbung dir gezeigt wird. Zum Schutz deiner Daten löscht Chrome automatisch jeden Monat deine Interessen. Solange du deine Interessen nicht entfernst, können sie aktualisiert werden.</translation>
 <translation id="8993760627012879038">Neuen Tab im Inkognitomodus öffnen</translation>

@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> ਤੋਂ</translation>
 <translation id="1871208020102129563">ਪ੍ਰੌਕਸੀ ਸਥਿਰ ਪ੍ਰੌਕਸੀ ਸਰਵਰ ਵਰਤਣ ਲਈ ਸੈੱਟ ਹੈ, ਇੱਕ .pac ਸਕ੍ਰਿਪਟ URL ਨਹੀਂ।</translation>
 <translation id="1871284979644508959">ਲੋੜੀਂਦਾ ਖੇਤਰ</translation>
+<translation id="1871739799120352748">ਕੀਮਤ ਵੱਧ ਹੈ</translation>
 <translation id="1873899211667975540">ਰੌਕ ਸੰਗੀਤ</translation>
 <translation id="1874224422119691492">ਤੁਸੀਂ ਇਸ ਚੀਜ਼ ਨੂੰ ਬਦਲ ਸਕਦੇ ਹੋ ਕਿ ਕੀ ਤੁਸੀਂ <ph name="SETTINGS" /> ਵਿੱਚ ਪਾਸਵਰਡ ਭਰਨ ਲਈ ਆਪਣੇ ਸਕ੍ਰੀਨ ਲਾਕ ਦੀ ਵਰਤੋਂ ਕਰਨੀ ਹੈ ਜਾਂ ਨਹੀਂ</translation>
 <translation id="1875025161375567525">ਫ਼ੋਟੋ ਟ੍ਰੇਅ</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ਦੀ ਤੁਹਾਡੇ ਸਥਾਨਕ ਕੰਪਿਊਟਰ 'ਤੇ ਸਥਾਈ ਤੌਰ 'ਤੇ ਬਹੁਤ ਜ਼ਿਆਦਾ ਡਾਟਾ ਸਟੋਰ ਕਰਨ ਦੀ ਇੱਛਾ ਹੈ</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ਅਤੇ 1 ਹੋਰ}one{ਅਤੇ # ਹੋਰ}other{ਅਤੇ # ਹੋਰ}}</translation>
+<translation id="2001469757375372617">ਕੋਈ ਗੜਬੜ ਹੋ ਗਈ। ਤੁਹਾਡੀ ਤਬਦੀਲੀ ਨੂੰ ਰੱਖਿਅਤ ਨਹੀਂ ਕੀਤਾ ਗਿਆ।</translation>
 <translation id="2003709556000175978">ਹੁਣੇ ਆਪਣਾ ਪਾਸਵਰਡ ਰੀਸੈੱਟ ਕਰੋ</translation>
 <translation id="2003775180883135320">ਉੱਪਰ ਚਾਰ ਮੋਰੀਆਂ</translation>
 <translation id="2009942480257059311">'ਇਵੈਂਟ ਬਣਾਓ' ਬਟਨ, Google Calendar ਵਿੱਚ ਤੇਜ਼ੀ ਨਾਲ ਨਵਾਂ ਇਵੈਂਟ ਬਣਾਉਣ ਲਈ ਇਸਨੂੰ ਕਿਰਿਆਸ਼ੀਲ ਕਰੋ</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">C5 ਆਕਾਰ ਦਾ ਲਿਫ਼ਾਫ਼ਾ</translation>
 <translation id="2119505898009119320">ਇਹਨਾਂ ਨੂੰ ਜਾਰੀ ਕੀਤਾ ਗਿਆ: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ਹੇਠਾਂ ਸੱਜੇ ਪਾਸੇ ਮੋਰੀ</translation>
+<translation id="2122214041802369259">ਕੀਮਤ ਵੱਧ ਹੈ</translation>
 <translation id="2122719317867821810">ਇਹ ਨੀਤੀ ਉਮੀਦ ਮੁਤਾਬਕ ਕੰਮ ਕਰ ਰਹੀ ਹੈ ਪਰ ਕੋਈ ਵਿਵਾਦਗ੍ਰਸਤ ਮੁੱਲ ਕਿਸੇ ਹੋਰ ਥਾਂ 'ਤੇ ਸੈੱਟ ਹੈ ਅਤੇ ਇਸ ਨੀਤੀ ਵੱਲੋਂ ਓਵਰਰਾਈਡ ਕੀਤਾ ਗਿਆ ਹੈ।</translation>
 <translation id="2126374524350484896">PDF ਨਿਰਮਾਤਾ:</translation>
 <translation id="2130448033692577677">ਤੁਹਾਡੇ ਵੱਲੋਂ ਨਿਰਧਾਰਤ ਕੀਤੇ ਟੈਮਪਲੇਟ DnsOverHttpsMode ਨੀਤੀ ਸੈੱਟ ਨਾ ਕੀਤੇ ਜਾਣ ਕਾਰਨ ਸ਼ਾਇਦ ਲਾਗੂ ਨਹੀਂ ਕੀਤੇ ਜਾ ਸਕਦੇ।</translation>
@@ -857,6 +860,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ਨੂੰ <ph name="PRICE_DROP" /> ਕੀਮਤ ਘਟੀ</translation>
 <translation id="3061707000357573562">ਪੈਚ ਸੇਵਾ</translation>
 <translation id="306573536155379004">ਗੇਮ ਸ਼ੁਰੂ ਕੀਤੀ ਗਈ।</translation>
+<translation id="3067505415088964188">ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="3068991664510324412">ਕੰਪਿਊਟਰ ਅਤੇ ਵੀਡੀਓ ਗੇਮਾਂ</translation>
 <translation id="3080254622891793721">ਗ੍ਰਾਫ਼ਿਕ</translation>
 <translation id="3081538120861307764">ਕਿਸੇ ਵਿਗਿਆਪਨ ਦੀ ਕਾਰਗੁਜ਼ਾਰੀ ਦਾ ਮੁਲਾਂਕਣ ਕਰਨ ਲਈ, ਸਾਈਟਾਂ ਵਿਚਕਾਰ ਸੀਮਤ ਕਿਸਮ ਦਾ ਡਾਟਾ ਸਾਂਝਾ ਕੀਤਾ ਜਾਂਦਾ ਹੈ, ਜਿਵੇਂ ਕਿ ਦਿਨ ਦਾ ਉਹ ਸਮਾਂ ਜਦੋਂ ਤੁਹਾਨੂੰ ਵਿਗਿਆਪਨ ਦਿਖਾਇਆ ਗਿਆ ਸੀ।</translation>
@@ -2068,6 +2072,7 @@
 <translation id="5967592137238574583">ਸੰਪਰਕ ਜਾਣਕਾਰੀ ਦਾ ਸੰਪਾਦਨ ਕਰੋ</translation>
 <translation id="5967867314010545767">ਇਤਿਹਾਸ ਵਿੱਚੋਂ ਹਟਾਓ</translation>
 <translation id="5968022600320704045">ਕੋਈ ਖੋਜ ਨਤੀਜਾ ਨਹੀਂ</translation>
+<translation id="5969199813874624822">ਰੱਖਿਅਤ ਕਰ ਕੇ ਕੀਮਤ ਟਰੈਕ ਕਰੋ</translation>
 <translation id="5974052231147553524">ਛੇਵਾਂ ਰੋਲ</translation>
 <translation id="5975083100439434680">ਜ਼ੂਮ ਘਟਾਓ</translation>
 <translation id="5979084224081478209">ਪਾਸਵਰਡਾਂ ਦੀ ਜਾਂਚ ਕਰੋ</translation>
@@ -3392,6 +3397,7 @@
 <translation id="9141013498910525015">ਪਤਿਆਂ ਦਾ ਪ੍ਰਬੰਧਨ ਕਰੋ</translation>
 <translation id="9144951720726881238">ਮਿਆਦ ਸਮਾਪਤੀ ਦੀ ਤਾਰੀਖ:</translation>
 <translation id="9148507642005240123">&amp;ਸੰਪਾਦਨ ਅਣਕੀਤਾ ਕਰੋ</translation>
+<translation id="9148599396704355100">ਕੀਮਤ ਘੱਟ ਹੈ</translation>
 <translation id="9150045010208374699">ਆਪਣਾ ਕੈਮਰਾ ਵਰਤੋ</translation>
 <translation id="9150685862434908345">ਤੁਹਾਡਾ ਪ੍ਰਸ਼ਾਸਕ ਦੂਰ-ਦੁਰਾਡੇ ਤੋਂ ਤੁਹਾਡੇ ਬ੍ਰਾਊਜ਼ਰ ਸੈੱਟਅੱਪ ਨੂੰ ਬਦਲ ਸਕਦਾ ਹੈ। ਇਸ ਡੀਵਾਈਸ ਦੀ ਸਰਗਰਮੀ ਦਾ ਪ੍ਰਬੰਧਨ Chrome ਤੋਂ ਬਾਹਰ ਵੀ ਕੀਤਾ ਜਾ ਸਕਦਾ ਹੈ। <ph name="BEGIN_LINK" />ਹੋਰ ਜਾਣੋ<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">ਅੱਪਡੇਟ ਕੀਤਾ</translation>

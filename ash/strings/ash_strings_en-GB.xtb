@@ -929,6 +929,7 @@ Connect your device to power.</translation>
 <translation id="504465286040788597">Previous paragraph</translation>
 <translation id="5045550434625856497">Incorrect password</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">You'll get notified if you talk while muted. Audio never leaves your device.</translation>
 <translation id="5078796286268621944">Incorrect PIN</translation>
 <translation id="5083553833479578423">Unlock more Assistant features.</translation>
 <translation id="5092436659250499817">Turn on/off keyboard backlight</translation>
@@ -959,6 +960,7 @@ Connect your device to power.</translation>
 <translation id="5207949376430453814">Highlight text caret</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Off until <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Quickly send or reply to your phone's messages using Phone Hub.</translation>
 <translation id="5222676887888702881">Sign out</translation>
 <translation id="5229343007215035173">Turn on/off Privacy Screen</translation>
 <translation id="5234764350956374838">Dismiss</translation>
@@ -982,6 +984,7 @@ Connect your device to power.</translation>
 <translation id="5308380583665731573">Connect</translation>
 <translation id="5313326810920013265">Bluetooth settings</translation>
 <translation id="5314219114274263156">Screen recording taken</translation>
+<translation id="5314489738835854379">Cycle backward through windows</translation>
 <translation id="5316716239522500219">Mirror monitors</translation>
 <translation id="5317780077021120954">Save</translation>
 <translation id="5319712128756744240">Pair new device</translation>
@@ -1128,6 +1131,7 @@ Connect your device to power.</translation>
 <translation id="5958529069007801266">Supervised user</translation>
 <translation id="5961960957587052807">Light</translation>
 <translation id="5965524703725988602">Toggle Dark theme. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Cycle forward through windows</translation>
 <translation id="5976112937189445008">Press enter to record window</translation>
 <translation id="5978382165065462689">Sharing control of your screen via Remote Assistance.</translation>
 <translation id="5980301590375426705">Exit guest</translation>
@@ -1338,6 +1342,7 @@ New install</translation>
 <translation id="6891721121089053234">View your phone's recent photos, media and apps on your <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copy</translation>
 <translation id="6901883536534621389">Try gestures to navigate</translation>
+<translation id="6912841030378044227">Focus on address bar</translation>
 <translation id="6919251195245069855">Couldn’t recognise your smart card. Try again.</translation>
 <translation id="6920245099716267363">Toggle hotspot. Hotspot is on, 1 device connected.</translation>
 <translation id="6931576957638141829">Save to</translation>

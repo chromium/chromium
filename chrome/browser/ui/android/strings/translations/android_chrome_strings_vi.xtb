@@ -128,7 +128,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="164269334534774161">Bạn đang xem bản sao ngoại tuyến của trang này từ <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Nhật ký</translation>
 <translation id="1657932388559784161">Đã đóng bảng thông tin chi tiết về trang ở dưới cùng</translation>
-<translation id="1668122540633280551">Chọn cách tự động phát bản xem trước video trên trang chủ Chrome.</translation>
 <translation id="1670399744444387456">Cơ bản</translation>
 <translation id="1671236975893690980">Đang chờ tải xuống...</translation>
 <translation id="1672586136351118594">Không hiện lại</translation>
@@ -271,7 +270,6 @@ Khi xoá nhật ký duyệt web (tất cả hoặc một trang cụ thể), bạ
 <translation id="2536728043171574184">Xem bản sao ngoại tuyến của trang này</translation>
 <translation id="2546283357679194313">Cookie và dữ liệu trang web</translation>
 <translation id="2558569818338050235">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy</translation>
-<translation id="2561519700418191927">Bản xem trước video</translation>
 <translation id="2567385386134582609">HÌNH ẢNH</translation>
 <translation id="2567545343356994513">Chủ động và nhanh chóng bảo vệ bạn khỏi các trang web, tệp đã tải xuống và tiện ích nguy hiểm</translation>
 <translation id="2569733278091928697">Bạn có thể dễ dàng quản lý chế độ điều khiển nội dung nghe nhìn, Phiên truy cập ẩn danh, tệp đã tải xuống, v.v.</translation>
@@ -510,7 +508,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="3775705724665058594">Gửi đến thiết bị của bạn</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 thẻ}other{# thẻ}}</translation>
 <translation id="3795154175078851242">Sao chép hình ảnh bằng đường liên kết</translation>
-<translation id="3803784507854318295">Quản lý chế độ tự động phát</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Quản lý</translation>
 <translation id="3819178904835489326">Đã xóa <ph name="NUMBER_OF_DOWNLOADS" /> bản tải xuống</translation>
@@ -563,7 +560,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4095146165863963773">Xóa dữ liệu ứng dụng?</translation>
 <translation id="4096227151372679484">Luồng lưu dấu trang đã mở ở nửa dưới của màn hình</translation>
 <translation id="4101475238162928417">Đồng bộ hoá để sử dụng mật khẩu, dấu trang và nhiều nội dung khác trên các thiết bị khác của bạn.</translation>
-<translation id="410351446219883937">Tự động phát</translation>
 <translation id="4106587138345390261">Chrome đang nghiên cứu các tính năng mới cho phép các trang web giữ nguyên trải nghiệm duyệt web nhưng dùng ít thông tin của bạn hơn</translation>
 <translation id="4108314971463891922">Theo dõi</translation>
 <translation id="4108998448622696017">Phát hiện và cảnh báo bạn các sự kiện nguy hiểm khi các sự kiện đó diễn ra.</translation>
@@ -634,7 +630,6 @@ Mã thông báo trạng thái riêng tư giúp cải thiện quyền riêng tư
 <translation id="4484496141267039529">Không có kết nối. Hãy thử lại sau.</translation>
 <translation id="4487967297491345095">Tất cả dữ liệu của ứng dụng Chrome sẽ bị xóa vĩnh viễn, bao gồm tất cả các tệp, các tùy chọn cài đặt, tài khoản, cơ sở dữ liệu, v.v.</translation>
 <translation id="449126573531210296">Mã hóa các mật khẩu đã đồng bộ hóa bằng Tài khoản Google của bạn</translation>
-<translation id="4504667196171871375">Qua Wi-Fi và dữ liệu di động</translation>
 <translation id="4508528996305412043">Đã mở trình đơn thẻ nguồn cấp dữ liệu</translation>
 <translation id="4509501256689523862">Khi bạn duyệt web, chế độ cài đặt này, <ph name="BEGIN_LINK_1" />Chủ đề quảng cáo<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />chế độ cài đặt cookie<ph name="END_LINK_2" /> và khả năng cá nhân hoá quảng cáo của trang web bạn đang xem sẽ quyết định liệu quảng cáo bạn thấy có được cá nhân hoá không</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# ngày trước}other{# ngày trước}}</translation>
@@ -1313,7 +1308,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7944772052836377867">Tính năng đồng bộ hóa cần xác minh danh tính của bạn</translation>
 <translation id="7947953824732555851">Chấp nhận &amp; đăng nhập</translation>
 <translation id="7957413488482743710">Thẻ ảo giúp bạn ẩn thẻ thực, bảo vệ bạn trước nguy cơ bị lừa đảo. <ph name="BEGIN_LINK1" />Tìm hiểu thêm về thẻ ảo<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Không bao giờ</translation>
 <translation id="7961926449547174351">Bạn đã tắt Quyền truy cập bộ nhớ. Vui lòng chuyển đến phần Cài đặt để bật quyền này.</translation>
 <translation id="7963646190083259054">Nhà cung cấp:</translation>
 <translation id="7965838025086216108">Bạn có thể dùng mật khẩu đã lưu trên mọi thiết bị. Những mật khẩu này được lưu vào Trình quản lý mật khẩu cho tài khoản <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_ONE" /> thẻ nữa sẽ đóng}other{<ph name="INCOGNITO_TAB_COUNT" /> thẻ ẩn danh và <ph name="TAB_COUNT_MANY" /> thẻ nữa sẽ đóng}}</translation>
 <translation id="8970887620466824814">Đã xảy ra lỗi.</translation>
 <translation id="8972098258593396643">Tải xuống thư mục mặc định?</translation>
-<translation id="8987641763863173640">Quản lý chế độ cài đặt Xem trước video</translation>
 <translation id="8987736167266086032">Bắt đầu từ nơi bạn đã dừng lại</translation>
 <translation id="8989968390305463310">Nhật ký duyệt web của bạn ảnh hưởng tới quảng cáo mà bạn thấy cũng như mối quan tâm được ước đoán như dưới đây. Để bảo vệ quyền riêng tư của bạn, Chrome tự động xoá thông tin về các mối quan tâm của bạn theo chu kỳ luân phiên mỗi tháng. Các mối quan tâm sẽ được làm mới trừ phi bạn xoá chúng.</translation>
 <translation id="8993760627012879038">Mở thẻ mới trong chế độ Ẩn danh</translation>

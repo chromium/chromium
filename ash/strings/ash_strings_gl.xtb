@@ -350,7 +350,7 @@ Para comezar, podes probar o seguinte.</translation>
 <translation id="2531025035050312891">dispositivo lento</translation>
 <translation id="2531107890083353124">Mentres arrastras a pestana, preme <ph name="KEY_ONE" /></translation>
 <translation id="254900897760075745">Copia o contido seleccionado no portapapeis</translation>
-<translation id="2549711466868162843">Mellorar iluminación</translation>
+<translation id="2549711466868162843">Iluminación mellorada</translation>
 <translation id="2549985041256363841">Iniciar gravación</translation>
 <translation id="255671100581129685">O Asistente de Google non está dispoñible cando se utiliza unha sesión pública.</translation>
 <translation id="256712445991462162">a lupa ancorada</translation>
@@ -1477,7 +1477,7 @@ Para apagar o dispositivo, mantén premido de novo o botón de acendido.</transl
 <translation id="7579778809502851308">Captura de pantalla</translation>
 <translation id="7593891976182323525">Busca ou Maiús</translation>
 <translation id="7600875258240007829">Ver todas as notificacións</translation>
-<translation id="7601417191446344542">Queres activar o aviso de audio desactivado?</translation>
+<translation id="7601417191446344542">Queres activar o aviso de micrófono silenciado?</translation>
 <translation id="7607002721634913082">En pausa</translation>
 <translation id="7609951632080598826">Vista de calendario, <ph name="DATE" />, <ph name="TIME" /></translation>
 <translation id="7611213136657090146">Reconectouse a cámara.</translation>

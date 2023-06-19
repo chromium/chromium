@@ -399,6 +399,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1864927262126810325">Fra <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Mellomtjeneren er angitt til å bruke statiske proxytjenere, ikke en nettadresse med .pac-skript.</translation>
 <translation id="1871284979644508959">Obligatorisk felt</translation>
+<translation id="1871739799120352748">Prisen er høy</translation>
 <translation id="1873899211667975540">Rockemusikk</translation>
 <translation id="1874224422119691492">Du kan endre om du vil bruke skjermlåsen til å fylle ut passord, i <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Fotoskuff</translation>
@@ -442,6 +443,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ber om å lagre store mengder data permanent på datamaskinen din</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{og 1 til}other{og # til}}</translation>
+<translation id="2001469757375372617">Noe gikk galt. Endringen ble ikke lagret.</translation>
 <translation id="2003709556000175978">Tilbakestill passordet ditt nå</translation>
 <translation id="2003775180883135320">Fire hull topp</translation>
 <translation id="2009942480257059311">Knappen «Opprett hendelse» – aktiver for å opprette en ny hendelse i Google Kalender raskt</translation>
@@ -499,6 +501,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2118132148597630479">C5-konvolutt</translation>
 <translation id="2119505898009119320">Utstedt til: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Hull nede til høyre</translation>
+<translation id="2122214041802369259">Prisen er høy</translation>
 <translation id="2122719317867821810">Denne regelen fungerer som den skal, men en motstridende verdi er angitt et annet sted og overstyres av denne regelen.</translation>
 <translation id="2126374524350484896">PDF-produsent:</translation>
 <translation id="2130448033692577677">Malene du har angitt, kan ikke tas i bruk fordi DnsOverHttpsMode-regelen ikke er angitt.</translation>
@@ -535,6 +538,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="2202020181578195191">Angi et gyldig utløpsår</translation>
 <translation id="2202627062836089804">baksiden av kortet</translation>
 <translation id="2204482073374652408">Fullført oppdatering!</translation>
+<translation id="2208053750671792556">Har du ikke mottatt noen kode? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Skuff 3</translation>
 <translation id="2210794033760923560">Last opp rapport</translation>
 <translation id="2212735316055980242">Innstillingene ble ikke funnet</translation>
@@ -857,6 +861,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> avslag på <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Feilrettingstjeneste</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
+<translation id="3067505415088964188">Prisen er lav</translation>
 <translation id="3068991664510324412">Data- og videospill</translation>
 <translation id="3080254622891793721">Grafikk</translation>
 <translation id="3081538120861307764">For å måle innfrielsen for en annonse deles begrensede typer data mellom nettstedene, for eksempel når på dagen du ble vist en annonse.</translation>
@@ -948,6 +953,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="3270847123878663523">&amp;Angre omorganiseringen</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil koble til</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Skriv inn den <ph name="NUMBER_OF_DIGITS" />-sifrede bekreftelseskoden</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorreglene anbefaler ikke at du åpner denne filen i <ph name="DESTINATION_NAME" />}other{Administratorreglene anbefaler ikke at du åpner disse filene i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasjonen din, <ph name="ENROLLMENT_DOMAIN" />, har sendt noe informasjon til de følgende nettstedene, for eksempel innstillinger eller retningslinjer.</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -2071,6 +2077,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="5967592137238574583">Endre kontaktinformasjonen</translation>
 <translation id="5967867314010545767">Fjern fra loggen</translation>
 <translation id="5968022600320704045">Ingen søkeresultater</translation>
+<translation id="5969199813874624822">Lagre og spor prisen</translation>
 <translation id="5974052231147553524">Sjette rull</translation>
 <translation id="5975083100439434680">Zoom ut</translation>
 <translation id="5979084224081478209">Kontroller passordene</translation>
@@ -2594,6 +2601,7 @@ I motsatt fall blir dette blokkert av personverninnstillingene. Dette gjør at i
 <translation id="7219179957768738017">Tilkoblingen bruker <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vis varsler</translation>
+<translation id="7221857374443660083">Banken vil bekrefte identiteten din</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7227293336683593977">Prishistorikk</translation>
 <translation id="7233592378249864828">Skriv ut bekreftelsesark</translation>
@@ -3395,6 +3403,7 @@ Mer informasjon:
 <translation id="9141013498910525015">Administrer adresser</translation>
 <translation id="9144951720726881238">Utløpsdato:</translation>
 <translation id="9148507642005240123">&amp;Angre endringen</translation>
+<translation id="9148599396704355100">Prisen er lav</translation>
 <translation id="9150045010208374699">bruke kameraet ditt</translation>
 <translation id="9150685862434908345">Administratoren kan endre nettleseroppsettet eksternt. Aktiviteten på denne enheten kan også bli administrert utenfor Chrome. <ph name="BEGIN_LINK" />Finn ut mer<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Oppdatert</translation>

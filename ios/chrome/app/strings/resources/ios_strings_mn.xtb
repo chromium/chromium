@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">Таныг аюултай вебсайт, таталт болон өргөтгөлөөс хамгаалахгүй. Гэхдээ та Аюулгүй үзэх хамгаалалтыг Gmail, Хайлт зэрэг Google-н боломжтой бусад үйлчилгээнд авсан хэвээр байна.</translation>
 <translation id="1145536944570833626">Одоо байгаа өгөгдлийг устгана уу.</translation>
 <translation id="1147031633655575115"><ph name="USER" />-р нэвтэрсэн</translation>
+<translation id="1150989369772528668">Календарь</translation>
 <translation id="1154984953698510061">Бусад табыг харах</translation>
 <translation id="1161340988127985692">Нууцлалтай горимд бусад аппаас холбоос нээх хүсэлт тавих</translation>
 <translation id="1164064664035028907">Сайн нууц үг ашиглана уу:</translation>
@@ -1091,6 +1092,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="7993619969781047893">Зарим сайтын онцлогууд ажиллахгүй байж болзошгүй</translation>
 <translation id="800361585186029508">Оруулсан URL-г Google Chrome дээр нээдэг.</translation>
 <translation id="8005666035647241369">Энэ төхөөрөмж дээрх Google-н Нууц үгний менежерт</translation>
+<translation id="8009225694047762179">Нууц үгийг удирдах</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Үргэлж аюулгүй холболт ашигла</translation>
 <translation id="802154636333426148">Татаж чадсангүй</translation>
@@ -1107,6 +1109,7 @@ Handoff-ыг Тохиргооны ерөнхий хэсэгт идэвхижүү
 <translation id="8073872304774253879">Хайлт болон хөтлөх явцыг сайжруулах</translation>
 <translation id="8076492880354921740">Таб</translation>
 <translation id="8077675488769462025">Идэвхгүй табууд</translation>
+<translation id="8079530767338315840">Давтах</translation>
 <translation id="8079602123447022758">Энэ тохиргоог удирддаг. Дэлгэрэнгүй мэдээлэл авахын тулд хоёр товшино уу</translation>
 <translation id="8080028325999236607">Бүх цонхнуудыг хаах</translation>
 <translation id="8084285576995584326">Google Бүртгэлийн өгөгдлөө хянана уу</translation>

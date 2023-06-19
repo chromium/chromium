@@ -128,7 +128,6 @@
 <translation id="164269334534774161">זהו עותק אופליין של הדף הזה מ-<ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">היסטוריה</translation>
 <translation id="1657932388559784161">הגיליון התחתון של התובנות לגבי הדף סגור</translation>
-<translation id="1668122540633280551">‏אפשר לבחור איך תצוגות מקדימות של סרטונים יופעלו אוטומטית בדף הבית של Chrome.</translation>
 <translation id="1670399744444387456">בסיסי</translation>
 <translation id="1671236975893690980">ההורדה תיכף תתחיל…</translation>
 <translation id="1672586136351118594">אין להציג שוב</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">מוצג העתק לא מקוון של עמוד זה</translation>
 <translation id="2546283357679194313">‏נתוני אתר וקובצי Cookie</translation>
 <translation id="2558569818338050235">היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך</translation>
-<translation id="2561519700418191927">תצוגות מקדימות של סרטונים</translation>
 <translation id="2567385386134582609">תמונה</translation>
 <translation id="2567545343356994513">הגנה מהירה יותר ואקטיבית מפני אתרים, הורדות ותוספים מסוכנים</translation>
 <translation id="2569733278091928697">באמצעות ההתראות, קל יותר לנהל את בקרי המדיה, הסשנים הפרטיים, ההורדות ועוד</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">שליחה אל המכשירים שלך</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{כרטיסייה אחת}one{# כרטיסיות}two{# כרטיסיות}other{# כרטיסיות}}</translation>
 <translation id="3795154175078851242">העתקת התמונה עם הקישור</translation>
-<translation id="3803784507854318295">ניהול ההפעלה האוטומטית</translation>
 <translation id="3810838688059735925">סרטון</translation>
 <translation id="3810973564298564668">ניהול</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> הורדות נמחקו</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">למחוק נתוני יישומים?</translation>
 <translation id="4096227151372679484">תהליך שמירת הסימניות שפתוחות בחצי הגובה</translation>
 <translation id="4101475238162928417">אפשר לבצע סנכרון כדי לעדכן את הסיסמאות, הסימניות ונתונים נוספים במכשירים אחרים שלך</translation>
-<translation id="410351446219883937">הפעלה אוטומטית</translation>
 <translation id="4106587138345390261">‏אנחנו בודקים תכונות חדשות ב-Chrome שמאפשרות לאתרים לספק את אותה חוויית הגלישה תוך שימוש בפחות פרטים אישיים</translation>
 <translation id="4108314971463891922">מעקב</translation>
 <translation id="4108998448622696017">המערכת מזהה אירועים מסוכנים כשהם מתרחשים ומזהירה אותך על כך.</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">אין חיבור. כדאי לנסות שוב מאוחר יותר.</translation>
 <translation id="4487967297491345095">‏כל נתוני היישומים של Chrome יימחקו לצמיתות, כולל כל הקבצים, ההגדרות, החשבונות, מסדי הנתונים וכו'</translation>
 <translation id="449126573531210296">‏הצפנת סיסמאות מסונכרנות באמצעות חשבון Google</translation>
-<translation id="4504667196171871375">‏ב-Wi-Fi ובחבילת גלישה</translation>
 <translation id="4508528996305412043">תפריט כרטיס הפיד נפתח</translation>
 <translation id="4509501256689523862">‏במהלך הגלישה, יוצגו מודעות עם או בלי התאמה אישית בהתאם להגדרה הזו, ל<ph name="BEGIN_LINK_1" />נושאי המודעות<ph name="END_LINK_1" />, ל<ph name="BEGIN_LINK_2" />הגדרות קובצי ה-cookie<ph name="END_LINK_2" /> ולמצב ההתאמה האישית של מודעות באתר (פעילה או מושבתת).</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{לפני יום}one{לפני # ימים}two{לפני יומיים}other{לפני # ימים}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">כדי לסנכרן צריך לאמת את הזהות שלך</translation>
 <translation id="7947953824732555851">קבלה וכניסה</translation>
 <translation id="7957413488482743710">כרטיס וירטואלי מסתיר את הכרטיס שלך בפועל כדי להגן עליך מפני תרמיות פוטנציאליות. <ph name="BEGIN_LINK1" />כאן מפורט מידע נוסף על כרטיסים וירטואליים<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">אף פעם</translation>
 <translation id="7961926449547174351">השבתת את הגישה לאחסון. כדי להפעיל אותה, יש לעבור להגדרות.</translation>
 <translation id="7963646190083259054">ספק:</translation>
 <translation id="7965838025086216108">‏יש לך אפשרות להשתמש בסיסמאות השמורות בכל מכשיר. הן נשמרות במנהל הסיסמאות של Google לחשבון <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) וכרטיסייה אחת (<ph name="TAB_COUNT_ONE" />) נוספת ייסגרו}one{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}two{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}other{כרטיסיית מצב אנונימי אחת (<ph name="INCOGNITO_TAB_COUNT" />) ו-<ph name="TAB_COUNT_MANY" /> כרטיסיות נוספות ייסגרו}}</translation>
 <translation id="8970887620466824814">משהו השתבש.</translation>
 <translation id="8972098258593396643">האם להוריד לתיקיית ברירת המחדל?</translation>
-<translation id="8987641763863173640">ניהול הגדרות התצוגה המקדימה של סרטונים</translation>
 <translation id="8987736167266086032">המשך מהנקודה שבה הפסקת</translation>
 <translation id="8989968390305463310">‏היסטוריית הגלישה שלך משפיעה על המודעות שמוצגות לך ועל תחומי העניין המשוערים שמופיעים בהמשך. כדי להגן על הפרטיות שלך, מתבצעת ב-Chrome מחיקה אוטומטית של תחומי העניין שלך על בסיס מתחלף מדי חודש. תחומי עניין שלא הוסרו עוברים רענון.</translation>
 <translation id="8993760627012879038">פתיחת חלון חדש במצב אנונימי</translation>

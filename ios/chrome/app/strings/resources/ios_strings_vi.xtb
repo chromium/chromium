@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">Không bảo vệ bạn trước các trang web, tệp đã tải xuống và tiện ích nguy hiểm. Bạn sẽ vẫn được bảo vệ bằng tính năng Duyệt web an toàn (nếu có) ở các dịch vụ khác của Google, chẳng hạn như Gmail và Tìm kiếm.</translation>
 <translation id="1145536944570833626">Xóa dữ liệu hiện có.</translation>
 <translation id="1147031633655575115">Đã đăng nhập bằng tên <ph name="USER" /></translation>
+<translation id="1150989369772528668">Lịch</translation>
 <translation id="1154984953698510061">Xem các thẻ khác</translation>
 <translation id="1161340988127985692">Yêu cầu Mở đường liên kết từ các Ứng dụng khác ở Chế độ ẩn danh</translation>
 <translation id="1164064664035028907">Dùng mật khẩu mạnh:</translation>
@@ -1091,6 +1092,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="7993619969781047893">Các tính năng trên một số trang web có thể hoạt động không đúng cách</translation>
 <translation id="800361585186029508">Mở URL đã nhập trong Google Chrome.</translation>
 <translation id="8005666035647241369">Lưu mật khẩu vào Trình quản lý mật khẩu của Google trên thiết bị này</translation>
+<translation id="8009225694047762179">Quản lý mật khẩu</translation>
 <translation id="8011489434346330032">Trình kiểm tra web</translation>
 <translation id="8016714545083187120">Luôn sử dụng kết nối an toàn</translation>
 <translation id="802154636333426148">Tải xuống không thành công</translation>
@@ -1107,6 +1109,7 @@ Các trang web có thể dùng cookie để giám sát hoạt động duyệt we
 <translation id="8073872304774253879">Cải thiện tính năng tìm kiếm và duyệt web</translation>
 <translation id="8076492880354921740">Thẻ</translation>
 <translation id="8077675488769462025">Thẻ không hoạt động</translation>
+<translation id="8079530767338315840">Lặp lại</translation>
 <translation id="8079602123447022758">Tùy chọn cài đặt này là do quản trị viên của bạn quản lý, hãy nhấn đúp để biết thêm thông tin</translation>
 <translation id="8080028325999236607">Đóng tất cả các thẻ</translation>
 <translation id="8084285576995584326">Kiểm soát dữ liệu Tài khoản Google của bạn</translation>

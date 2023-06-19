@@ -128,7 +128,6 @@
 <translation id="164269334534774161">તમે <ph name="CREATION_TIME" />માંથી આ પેજની ઑફલાઇન કૉપિ જોઈ રહ્યા છો</translation>
 <translation id="1644574205037202324">ઇતિહાસ</translation>
 <translation id="1657932388559784161">પેજ જાણકારીઓની બોટમ શીટ બંધ કરવામાં આવી છે</translation>
-<translation id="1668122540633280551">Chromeના હોમપેજ પર વીડિયોના પ્રીવ્યૂ ઑટોમૅટિક રીતે ચલાવવાની રીત પસંદ કરો.</translation>
 <translation id="1670399744444387456">મૂળભૂત</translation>
 <translation id="1671236975893690980">ડાઉનલોડ બાકી…</translation>
 <translation id="1672586136351118594">ફરીથી બતાવશો નહીં</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">આ પેજની ઓફલાઇન કૉપિ જોઈ રહ્યા છે</translation>
 <translation id="2546283357679194313">કૂકીઝ અને સાઇટ ડેટા</translation>
 <translation id="2558569818338050235">તમારો બ્રાઉઝિંગ ઇતિહાસ તમે જુઓ છો તે જાહેરાતોને અસર કરે છે</translation>
-<translation id="2561519700418191927">વીડિયોના પ્રીવ્યૂ</translation>
 <translation id="2567385386134582609">છબી</translation>
 <translation id="2567545343356994513">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે વધુ ઝડપી તેમજ સક્રિય સંરક્ષણ</translation>
 <translation id="2569733278091928697">તમે મીડિયા સંબંધિત નિયંત્રણો, છૂપા મોડના સત્રો, ડાઉનલોડ અને બીજા ઘણા કાર્યો સરળતાથી મેનેજ કરી શકશો</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">તમારા ડિવાઇસ પર મોકલો</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ટૅબ}one{# ટૅબ}other{# ટૅબ}}</translation>
 <translation id="3795154175078851242">લિંક સાથે છબી કૉપિ કરો</translation>
-<translation id="3803784507854318295">ઑટોપ્લે મેનેજ કરો</translation>
 <translation id="3810838688059735925">વીડિયો</translation>
 <translation id="3810973564298564668">મેનેજ કરો</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> ડાઉનલોડ કાઢી નાખ્યાં</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">ઍપનો ડેટા ડિલીટ કરીએ?</translation>
 <translation id="4096227151372679484">બુકમાર્ક સાચવવાનો ફ્લો અડધી ઊંચાઈએ ખુલ્લો છે</translation>
 <translation id="4101475238162928417">તમારા અન્ય ડિવાઇસ પર તમારા પાસવર્ડ અને બુકમાર્ક જેવું બીજું ઘણું મેળવવા માટે સિંક કરો</translation>
-<translation id="410351446219883937">ઑટોપ્લે</translation>
 <translation id="4106587138345390261">Chrome એવી નવી સુવિધાઓની શોધખોળ કરી રહ્યું છે કે જેના વડે સાઇટ તમારી ઓછી માહિતીનો ઉપયોગ કરીને બ્રાઉઝિંગનો એવો જ અનુભવ પ્રદાન કરી શકે</translation>
 <translation id="4108314971463891922">ફૉલો કરો</translation>
 <translation id="4108998448622696017">જોખમકારક ઇવેન્ટ થતી હોય ત્યારે તે શોધીને તેના વિશે તમને ચેતવણી આપે છે.</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">કોઈ કનેક્શન નથી. થોડા સમય પછી ફરી પ્રયાસ કરો.</translation>
 <translation id="4487967297491345095">Chromeનો તમામ ઍપ ડેટા કાયમ માટે ડિલીટ કરવામાં આવશે. આમાં તમામ ફાઇલો, સેટિંગ, એકાઉન્ટ, ડેટાબેઝ, વગેરેનો સમાવેશ થાય છે.</translation>
 <translation id="449126573531210296">તમારા Google એકાઉન્ટ સાથે સિંક કરેલા પાસવર્ડ એન્ક્રિપ્ટ કરો</translation>
-<translation id="4504667196171871375">વાઇ-ફાઇ અને મોબાઇલ ડેટા પર</translation>
 <translation id="4508528996305412043">ફીડ કાર્ડ મેનૂ ખુલ્લું છે</translation>
 <translation id="4509501256689523862">જેમ-જેમ તમે બ્રાઉઝ કરો છો, તેમ-તેમ તમે જુઓ છો તે જાહેરાત મનગમતી બનાવેલી છે કે નહીં તેનો આધાર આ સેટિંગ પર રહેલો છે, <ph name="BEGIN_LINK_1" />જાહેરાતના વિષયો<ph name="END_LINK_1" />, તમારા <ph name="BEGIN_LINK_2" />કુકીનાં સેટિંગ<ph name="END_LINK_2" /> અને તમે જોઈ રહ્યાં છો તે સાઇટ જાહેરાતોને મનગમતી બનાવે છે કે નહીં</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# દિવસ પહેલાં}one{# દિવસ પહેલાં}other{# દિવસ પહેલાં}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">સિંકને તમારી ઓળખની ચકાસણી કરવાની જરૂર પડે છે</translation>
 <translation id="7947953824732555851">સ્વીકારો અને સાઇન ઇન કરો</translation>
 <translation id="7957413488482743710">વર્ચ્યુઅલ કાર્ડ સંભવિત કપટથી તમારું સંરક્ષણ કરવા માટે, તમારા વાસ્તવિક કાર્ડની ઓળખ છુપાવે છે. <ph name="BEGIN_LINK1" />વર્ચ્યુઅલ કાર્ડ વિશે વધુ જાણો<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">ક્યારેય નહીં</translation>
 <translation id="7961926449547174351">તમે સ્ટોરેજ ઍક્સેસની સુવિધા બંધ કરી છે, તેને ચાલુ કરવા માટે કૃપા કરીને સેટિંગમાં જાઓ.</translation>
 <translation id="7963646190083259054">વિક્રેતા:</translation>
 <translation id="7965838025086216108">તમે કોઈપણ ડિવાઇસ પર સાચવેલા પાસવર્ડનો ઉપયોગ કરી શકો છો. તેમને <ph name="ACCOUNT" /> માટેના Google Password Managerમાં સાચવવામાં આવે છે.</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_ONE" /> ટૅબ બંધ કરવામાં આવશે}one{<ph name="INCOGNITO_TAB_COUNT" /> છૂપું અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}other{<ph name="INCOGNITO_TAB_COUNT" /> છૂપા અને વધુ <ph name="TAB_COUNT_MANY" /> ટૅબ બંધ કરવામાં આવશે}}</translation>
 <translation id="8970887620466824814">કંઈક ખોટું થયું.</translation>
 <translation id="8972098258593396643">ડિફૉલ્ટ ફોલ્ડરમાં ડાઉનલોડ કરીએ?</translation>
-<translation id="8987641763863173640">વીડિયોના પ્રીવ્યૂના સેટિંગ મેનેજ કરો</translation>
 <translation id="8987736167266086032">તમે જ્યાંથી છોડેલું ત્યાંથી ચૂંટો</translation>
 <translation id="8989968390305463310">તમારો બ્રાઉઝિંગ ઇતિહાસ તમે જુઓ છો તે જાહેરાતોને અને નીચે જણાવેલી અનુમાનિત રુચિઓને અસર કરે છે. તમારી પ્રાઇવસીની સુરક્ષા કરવા માટે Chrome નવા વિષયો આવતા જાય, તેના આધારે દર મહિને તમારી રુચિના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જો તમે રુચિઓને કાઢી ન નાખો, તો તે રિફ્રેશ થઈ શકે છે.</translation>
 <translation id="8993760627012879038">છુપા મોડમાં એક નવું ટૅબ ખોલો</translation>

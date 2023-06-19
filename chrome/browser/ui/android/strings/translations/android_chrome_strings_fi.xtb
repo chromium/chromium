@@ -128,7 +128,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="164269334534774161">Katselet sivun offline-kopiota, joka luotiin <ph name="CREATION_TIME" />.</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1657932388559784161">Sivun tietojen alapaneeli on suljettu</translation>
-<translation id="1668122540633280551">Valitse, miten videon esikatselut toistetaan automaattisesti Chromen etusivulla.</translation>
 <translation id="1670399744444387456">Perusasetukset</translation>
 <translation id="1671236975893690980">Lataus odottaa…</translation>
 <translation id="1672586136351118594">Älä näytä uudelleen</translation>
@@ -271,7 +270,6 @@ Kun poistat selaushistorian (kokonaan tai vain tietyn sivuston osalta), poistat 
 <translation id="2536728043171574184">Näkyvissä on sivun offline-versio.</translation>
 <translation id="2546283357679194313">Evästeet ja sivustotiedot</translation>
 <translation id="2558569818338050235">Selaushistoria vaikuttaa näkemiisi mainoksiin</translation>
-<translation id="2561519700418191927">Videon esikatselut</translation>
 <translation id="2567385386134582609">KUVA</translation>
 <translation id="2567545343356994513">Nopeampi, proaktiivinen suojaus vaarallisia sivustoja, latauksia ja laajennuksia vastaan</translation>
 <translation id="2569733278091928697">Voit helposti ylläpitää esimerkiksi mediaohjaimia, incognito-käyttökertoja ja latauksia</translation>
@@ -510,7 +508,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="3775705724665058594">Lähetä laitteillesi</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 välilehti}other{# välilehteä}}</translation>
 <translation id="3795154175078851242">Kopioi kuva linkillä</translation>
-<translation id="3803784507854318295">Muuta automaattisen toiston asetuksia</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Hallinnoi</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> latausta poistettiin.</translation>
@@ -563,7 +560,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4095146165863963773">Poistetaanko sovellustiedot?</translation>
 <translation id="4096227151372679484">Kirjanmerkin tallennusvaiheet avattu puolen näytön kokoisena</translation>
 <translation id="4101475238162928417">Synkronoi salasanat, kirjanmerkit ja muuta muilta laitteiltasi</translation>
-<translation id="410351446219883937">Automaattinen toisto</translation>
 <translation id="4106587138345390261">Chrome kokeilee uusia ominaisuuksia, joiden avulla sivustot voivat tarjota saman selauskokemuksen vähemmillä tiedoilla.</translation>
 <translation id="4108314971463891922">Seuraa</translation>
 <translation id="4108998448622696017">Havaitsee vaaralliset tapahtumat ja varoittaa niistä etukäteen.</translation>
@@ -634,7 +630,6 @@ Yksityiset tilamerkit parantavat yksityisyyttä verkossa, eikä sinua voi tunnis
 <translation id="4484496141267039529">Ei yhteyttä. Yritä myöhemmin uudelleen.</translation>
 <translation id="4487967297491345095">Kaikki Chromen sovellustiedot, mukaan lukien tiedostot, asetukset, tilit ja tietokannat, poistetaan pysyvästi.</translation>
 <translation id="449126573531210296">Salaa synkronoidut salasanat Google-tilisi avulla</translation>
-<translation id="4504667196171871375">Wi-Fillä ja mobiilidatalla</translation>
 <translation id="4508528996305412043">Fiidikorttien valikko on avattu</translation>
 <translation id="4509501256689523862">Selaamisen aikana näkemiesi mainosten personointi riippuu tästä asetuksesta, <ph name="BEGIN_LINK_1" />Mainosten aiheet<ph name="END_LINK_1" /> ‑asetuksesta, <ph name="BEGIN_LINK_2" />evästeasetuksista<ph name="END_LINK_2" /> ja siitä, personoiko katsomasi sivusto mainoksia</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# päivä sitten}other{# päivää sitten}}</translation>
@@ -1313,7 +1308,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="7944772052836377867">Synkronoinnin on vahvistettava henkilöllisyytesi</translation>
 <translation id="7947953824732555851">Hyväksy ja kirjaudu sisään</translation>
 <translation id="7957413488482743710">Virtuaalinen kortti piilottaa käyttämäsi kortin ja saat paremman suojauksen mahdollisia petoksia vastaan. <ph name="BEGIN_LINK1" />Lue lisää virtuaalisista korteista<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Ei koskaan</translation>
 <translation id="7961926449547174351">Olet estänyt pääsyn tallennustilaan. Salli se asetuksista.</translation>
 <translation id="7963646190083259054">Toimittaja:</translation>
 <translation id="7965838025086216108">Voit käyttää tallennettuja salasanoja kaikilla laitteilla. Ne on tallennettu Google Salasanoihin tilillä <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Jotkin verkkosivustot voivat vastata tähän pyyntöön esimerkiksi näyttämäl
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehti ja <ph name="TAB_COUNT_ONE" /> muu välilehti suljetaan}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito-välilehteä ja <ph name="TAB_COUNT_MANY" /> muuta välilehteä suljetaan}}</translation>
 <translation id="8970887620466824814">Tapahtui virhe.</translation>
 <translation id="8972098258593396643">Ladataanko tiedosto oletuskansioon?</translation>
-<translation id="8987641763863173640">Muuta videoesikatselun asetuksia</translation>
 <translation id="8987736167266086032">Jatka siitä, mihin jäit</translation>
 <translation id="8989968390305463310">Selaushistoria vaikuttaa näkemiisi mainoksiin ja alla kuvatulla tavalla arvioituihin kiinnostuksen kohteisiisi. Yksityisyyden suojaamiseksi Chrome poistaa kiinnostuksen kohteesi automaattisesti kuukausittain. Kiinnostuksen kohteet voivat päivittyä, ellet poista niitä.</translation>
 <translation id="8993760627012879038">Avaa uusi välilehti incognito-tilassa</translation>

@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">ડિવાઇસ ઉપલબ્ધ છે</translation>
 <translation id="1550523713251050646">વધુ વિકલ્પો માટે ક્લિક કરો</translation>
 <translation id="1555130319947370107">વાદળી</translation>
+<translation id="1557622599341396706">ડેસ્કનું નામ બતાવો</translation>
 <translation id="1576511610858879060">તમારી Chromebook દ્વારા કે બ્લૂટૂથ ડિવાઇસ દ્વારા બ્લૂટૂથના કોઈ જૂના વર્ઝનનો ઉપયોગ કરવામાં આવી રહ્યો છે. બહેતર ઓડિયો ક્વૉલિટી માટે કોઈ અન્ય ઇનપુટ સૉર્સનો ઉપયોગ કરો.</translation>
 <translation id="1576623706766186887">મેગ્નિફાયર ચાલુ હોય, ત્યારે નાનું કરો</translation>
 <translation id="1586324912145647027">ડેસ્ક 1 થી 8 પર જાઓ</translation>
@@ -982,10 +983,12 @@
 <translation id="5308380583665731573">કનેક્ટ કરો</translation>
 <translation id="5313326810920013265">Bluetooth સેટિંગ</translation>
 <translation id="5314219114274263156">સ્ક્રીન રેકોર્ડિંગ કર્યું</translation>
+<translation id="5314489738835854379">windows મારફતે પાછળની ઍપ પર જવા સાઇકલ બૅકવર્ડ કરો</translation>
 <translation id="5316716239522500219">મિરર મૉનિટર્સ</translation>
 <translation id="5317780077021120954">સાચવો</translation>
 <translation id="5319712128756744240">નવા ડિવાઇસ સાથે જોડાણ કરો</translation>
 <translation id="5322611492012084517">તમારો ફોન શોધી શકાતો નથી</translation>
+<translation id="5323994101633366939">ડેસ્કનું નામ છુપાવો</translation>
 <translation id="5327248766486351172">નામ</translation>
 <translation id="5329548388331921293">કનેક્ટ થઈ રહ્યું છે…</translation>
 <translation id="5331975486040154427">USB-C ડિવાઇસ (ડાબી બાજુનું પાછળનું પોર્ટ)</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">નિરીક્ષણ કરેલ વપરાશકર્તા</translation>
 <translation id="5961960957587052807">મામૂલી</translation>
 <translation id="5965524703725988602">ઘેરી થીમ ટૉગલ કરો. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">windows મારફતે આગળની ઍપ પર જવા સાઇકલ ફૉરવર્ડ કરો</translation>
 <translation id="5976112937189445008">વિન્ડો રેકોર્ડ કરવા માટે Enter કી દબાવો</translation>
 <translation id="5978382165065462689">દૂરસ્થ સહાય વડે તમારી સ્ક્રીનનું નિયંત્રણ શેર કરવું.</translation>
 <translation id="5980301590375426705">અતિથિથી બહાર નીકળો</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6103838137565245112">સિસ્ટમ</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> સ્પીચ ફાઇલ ડાઉનલોડ કરી</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">રંગ સુધારણા</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> માટે ડાઉનલોડ કરવું કન્ફર્મ કરો</translation>
 <translation id="612734058257491180">અતિથિ સત્રમાં Google Assistant ઉપલબ્ધ હોતું નથી.</translation>
 <translation id="6129953537138746214">જગ્યા</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6891721121089053234">તમારા <ph name="DEVICE_TYPE" /> પર તમારા ફોનના તાજેતરના ફોટા, મીડિયા અને ઍપ જુઓ</translation>
 <translation id="6896758677409633944">કૉપિ કરો</translation>
 <translation id="6901883536534621389">નૅવિગેટ કરવા માટે સંકેતો અજમાવી જુઓ</translation>
+<translation id="6912841030378044227">ઍડ્રેસ બાર પર ફોકસ કરો</translation>
 <translation id="6919251195245069855">તમારું સ્માર્ટ કાર્ડ ઓળખી શક્યાં નથી. ફરી પ્રયાસ કરો.</translation>
 <translation id="6920245099716267363">હૉટસ્પૉટ ટૉગલ કરો. હૉટસ્પૉટ ચાલુ છે, 1 ડિવાઇસ કનેક્ટેડ છે.</translation>
 <translation id="6931576957638141829">આમાં સાચવો</translation>
@@ -1634,6 +1640,7 @@
 <translation id="8247998213073982446">ઍપ: <ph name="APP_NAME" /></translation>
 <translation id="8255234195843591763">અપડેટ કરવા માટે રીસેટ કરો</translation>
 <translation id="8261506727792406068">ડિલીટ કરો</translation>
+<translation id="8262312463845990408">પ્લેબૅક ટૉગલ કરો</translation>
 <translation id="8270450402312105425">{0,plural, =1{એક કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}one{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}other{# કલાકની અંદર ડિવાઇસનું વર્ઝન બદલીને અગાઉનું વર્ઝન કરો}}</translation>
 <translation id="8277261673056602147">તમારી સ્ક્રીન પરના ટેક્સ્ટને હાઇલાઇટ કરો</translation>
 <translation id="8284362522226889623">પાછલી ડેસ્ક પર સ્વિચ કરવા માટે ચાર આંગળી વડે ડાબી તરફ સ્વાઇપ કરો</translation>

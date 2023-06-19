@@ -6133,7 +6133,7 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="6266532094411434237">S'està connectant a <ph name="DEVICE" /></translation>
 <translation id="6267166720438879315">Seleccioneu un certificat per autenticar-vos a <ph name="HOST_NAME" /></translation>
 <translation id="6268252012308737255">Obre amb <ph name="APP" /></translation>
-<translation id="6270309713620950855">Toc per avisar de micròfon silenciat</translation>
+<translation id="6270309713620950855">Toc de micròfon silenciat</translation>
 <translation id="6270391203985052864">Els llocs web poden demanar-te permís per enviar-te notificacions</translation>
 <translation id="6270486800167535228">L'extensió s'ha fixat. Selecciona per veure més opcions.</translation>
 <translation id="6270770586500173387">Envia <ph name="BEGIN_LINK1" />informació del sistema i de l'aplicació<ph name="END_LINK1" />, així com <ph name="BEGIN_LINK2" />mètriques<ph name="END_LINK2" /></translation>

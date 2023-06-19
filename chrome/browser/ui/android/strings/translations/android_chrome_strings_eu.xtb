@@ -128,7 +128,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="164269334534774161">Orri honen konexiorik gabeko kopia ikusten ari zara (kopiaren data: <ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Historia</translation>
 <translation id="1657932388559784161">Pantailaren behealdean ainguratutako orria, orriaren estatistikak dituena, itxita dago</translation>
-<translation id="1668122540633280551">Aukeratu nola erreproduzituko diren automatikoki bideoen aurrebistak Chrome-ren hasierako pantailan.</translation>
 <translation id="1670399744444387456">Oinarrizkoa</translation>
 <translation id="1671236975893690980">Deskargatzeko zain…</translation>
 <translation id="1672586136351118594">Ez erakutsi berriro</translation>
@@ -271,7 +270,6 @@ Arakatze-historia ezabatzen duzunean (osorik nahiz webgune zehatz bat), neurketa
 <translation id="2536728043171574184">Orriaren konexiorik gabeko kopia ikusten ari zara</translation>
 <translation id="2546283357679194313">Cookieak eta webguneetako datuak</translation>
 <translation id="2558569818338050235">Arakatze-historiak agertzen zaizkizun iragarkietan eragina du</translation>
-<translation id="2561519700418191927">Bideoen aurrebistak</translation>
 <translation id="2567385386134582609">IRUDIA</translation>
 <translation id="2567545343356994513">Babes bizkorrago eta proaktiboa webgune, deskarga eta luzapen kaltegarrien aurka</translation>
 <translation id="2569733278091928697">Erraz kudeatu ahalko dituzu multimedia-edukia kontrolatzeko aukerak, ezkutuko moduko saioak, deskargak eta abar</translation>
@@ -510,7 +508,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="3775705724665058594">Bidali zure gailuetara</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fitxa}other{# fitxa}}</translation>
 <translation id="3795154175078851242">Kopiatu irudia estekarekin</translation>
-<translation id="3803784507854318295">Kudeatu erreprodukzio automatikoa</translation>
 <translation id="3810838688059735925">Bideoa</translation>
 <translation id="3810973564298564668">Kudeatu</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> deskarga ezabatu dira</translation>
@@ -563,7 +560,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4095146165863963773">Aplikazioko datuak ezabatu nahi dituzu?</translation>
 <translation id="4096227151372679484">Laster-marka gordetzeko fluxua altuera erdian irekita dago</translation>
 <translation id="4101475238162928417">Sinkronizatu datuak darabiltzazun beste gailuetako pasahitzak, laster-markak eta abar eskuratzeko</translation>
-<translation id="410351446219883937">Erreprodukzio automatikoa</translation>
 <translation id="4106587138345390261">Chrome eginbide berriak probatzen ari da; haiei esker, informazio gutxiago erabilita sarea modu berean arakatzeko aukera eskainiko dute webguneek</translation>
 <translation id="4108314971463891922">Jarraitu</translation>
 <translation id="4108998448622696017">Gertaera arriskutsuak hautematen ditu eta haien berri ematen dizu gertatu ahala.</translation>
@@ -634,7 +630,6 @@ Egoeraren token pribatuek sareko pribatutasuna hobetzen dute eta ezin dira erabi
 <translation id="4484496141267039529">Ez dago konexiorik. Saiatu berriro geroago.</translation>
 <translation id="4487967297491345095">Betiko ezabatuko dira Chrome aplikazioko datu guztiak, besteak beste, fitxategiak, ezarpenak, kontuak eta datu-baseak.</translation>
 <translation id="449126573531210296">Enkriptatu sinkronizatutako pasahitzak Google-ko kontuarekin</translation>
-<translation id="4504667196171871375">Wifi- eta datu-konexioa erabiltzean</translation>
 <translation id="4508528996305412043">Jarioko txartelaren menua irekita dago</translation>
 <translation id="4509501256689523862">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, <ph name="BEGIN_LINK_1" />Iragarkien gaiak<ph name="END_LINK_1" /> ezarpena, <ph name="BEGIN_LINK_2" />cookieen ezarpenak<ph name="END_LINK_2" /> eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Duela # egun}other{Duela # egun}}</translation>
@@ -1026,7 +1021,7 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="6527303717912515753">Partekatu</translation>
 <translation id="6532866250404780454">Ez dira agertuko Chrome-n ireki dituzun webguneak. Ezabatu egingo dira webguneen tenporizadoreak.</translation>
 <translation id="6534565668554028783">Google-k ez du erantzun garaiz</translation>
-<translation id="6539092367496845964">Arazo bat izan da. Saiatu berriro geroago.</translation>
+<translation id="6539092367496845964">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="6541983376925655882">{NUM_HOURS,plural, =1{Duela ordubete egiaztatu du}other{Duela # ordu egiaztatu du}}</translation>
 <translation id="6545017243486555795">Garbitu datu guztiak</translation>
 <translation id="6546511553472444032">Baliteke fitxategia kaltegarria izatea</translation>
@@ -1313,7 +1308,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="7944772052836377867">Sinkronizazioak zure identitatea egiaztatu behar du</translation>
 <translation id="7947953824732555851">Onartu eta hasi saioa</translation>
 <translation id="7957413488482743710">Txartel birtualek benetako txartelak ezkutatzen dituzte, iruzurren aurka babestuago egon daitezen. <ph name="BEGIN_LINK1" />Lortu txartel birtualei buruzko informazio gehiago<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Inoiz ez</translation>
 <translation id="7961926449547174351">Memoriarako sarbidea desgaitu duzu. Joan ezarpenetara hura berriro gaitzeko.</translation>
 <translation id="7963646190083259054">Saltzailea:</translation>
 <translation id="7965838025086216108">Gordetako pasahitzak edozein gailutan erabil ditzakezu. <ph name="ACCOUNT" /> kontuan saioa hasita zeneukala gorde dituzunak Google-ren Pasahitz-kudeatzailea zerbitzuan gordetzen dira.</translation>
@@ -1520,7 +1514,6 @@ Esaterako, bisitatu dituzun webguneetan oinarritzen ez diren iragarkiak bidalita
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Ezkutuko moduko <ph name="INCOGNITO_TAB_COUNT" /> fitxa eta beste <ph name="TAB_COUNT_ONE" /> fitxa itxiko dira}other{Ezkutuko moduko <ph name="INCOGNITO_TAB_COUNT" /> fitxa eta beste <ph name="TAB_COUNT_MANY" /> fitxa itxiko dira}}</translation>
 <translation id="8970887620466824814">Arazo bat izan da.</translation>
 <translation id="8972098258593396643">Karpeta lehenetsira deskargatu nahi duzu?</translation>
-<translation id="8987641763863173640">Kudeatu bideoak aurreikusteko ezarpenak</translation>
 <translation id="8987736167266086032">Jarraitu utzi zenuen tokitik</translation>
 <translation id="8989968390305463310">Agertzen zaizkizun iragarkietan eta behean estimatutako interesetan eragina du arakatze-historiak. Zure pribatutasuna babesteko, Chrome-k automatikoki ezabatzen ditu zure interesak hilero. Interesak eguneratu egin daitezke, haiek kendu ezean.</translation>
 <translation id="8993760627012879038">Ireki beste fitxa bat ezkutuko moduan</translation>

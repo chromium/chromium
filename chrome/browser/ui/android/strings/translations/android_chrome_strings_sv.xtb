@@ -128,7 +128,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="164269334534774161">Det som visas är en offlinekopia av den här sidan från <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1657932388559784161">Arket för sidinsikter på nedre delen av skärmen har stängts</translation>
-<translation id="1668122540633280551">Välj hur förhandsgranskningar av video ska spelas upp automatiskt på startsidan i Chrome.</translation>
 <translation id="1670399744444387456">Grunder</translation>
 <translation id="1671236975893690980">Nedladdning väntar …</translation>
 <translation id="1672586136351118594">Visa inte igen</translation>
@@ -271,7 +270,6 @@ När du raderar webbhistoriken, oavsett om det är all historik eller bara för 
 <translation id="2536728043171574184">En offlinekopia av sidan visas</translation>
 <translation id="2546283357679194313">Cookies och webbplatsdata</translation>
 <translation id="2558569818338050235">Webbhistoriken påverkar vilka annonser som visas</translation>
-<translation id="2561519700418191927">Förhandsgranskningar av video</translation>
 <translation id="2567385386134582609">BILD</translation>
 <translation id="2567545343356994513">Snabbare och förebyggande skydd mot farliga webbplatser, nedladdningar och tillägg</translation>
 <translation id="2569733278091928697">Det blir enkelt att hantera mediastyrning, inkognitosessioner, nedladdningar och mycket annat</translation>
@@ -510,7 +508,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="3775705724665058594">Skicka till dina enheter</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flik}other{# flikar}}</translation>
 <translation id="3795154175078851242">Kopiera bild med länk</translation>
-<translation id="3803784507854318295">Hantera automatisk uppspelning</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Hantera</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> nedladdningar har raderats</translation>
@@ -564,7 +561,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4095146165863963773">Vill du ta bort appdata?</translation>
 <translation id="4096227151372679484">Flöde för att spara bokmärken har öppnats över halva skärmen</translation>
 <translation id="4101475238162928417">Synkronisera om du vill få tillgång till lösenord, bokmärken med mera på dina andra enheter</translation>
-<translation id="410351446219883937">Automatisk uppspelning</translation>
 <translation id="4106587138345390261">Chrome utforskar nya funktioner som gör att webbplatser kan ge samma surfupplevelse med mindre information om dig</translation>
 <translation id="4108314971463891922">Följ</translation>
 <translation id="4108998448622696017">Identifierar och varnar dig om farliga händelser som inträffar.</translation>
@@ -635,7 +631,6 @@ Med förtroendetoken förbättras integriteten på webben. De kan inte användas
 <translation id="4484496141267039529">Ingen anslutning. Försök igen senare.</translation>
 <translation id="4487967297491345095">All appdata i Chrome raderas permanent. Detta omfattar alla filer, inställningar, konton, databaser osv.</translation>
 <translation id="449126573531210296">Kryptera synkroniserade lösenord med ditt Google-konto</translation>
-<translation id="4504667196171871375">Via wifi och mobildata</translation>
 <translation id="4508528996305412043">Menyn med flödeskort är öppen</translation>
 <translation id="4509501256689523862">Huruvida annonser som visas när du surfar anpassas eller inte beror på den här inställningen, <ph name="BEGIN_LINK_1" />annonsämnen<ph name="END_LINK_1" />, dina <ph name="BEGIN_LINK_2" />cookieinställningar<ph name="END_LINK_2" /> och om webbplatsen du besöker anpassar annonser.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{för # dag sedan}other{för # dagar sedan}}</translation>
@@ -1314,7 +1309,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="7944772052836377867">Verifiera din identitet för synkronisering</translation>
 <translation id="7947953824732555851">Godkänn och logga in</translation>
 <translation id="7957413488482743710">Ett virtuellt kort döljer det riktiga kortet och skyddar dig från eventuella bedrägerier. <ph name="BEGIN_LINK1" />Läs mer om virtuella kort<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har inaktiverat åtkomst till lagringsutrymmet. Återaktivera i inställningarna.</translation>
 <translation id="7963646190083259054">Leverantör:</translation>
 <translation id="7965838025086216108">Du kan använda sparade lösenord på vilken enhet som helst. De sparas i Google Lösenordshantering för <ph name="ACCOUNT" />.</translation>
@@ -1521,7 +1515,6 @@ Vissa webbplatser kan till exempel svara på begäran genom att visa annonser so
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_ONE" /> flik till stängs}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitoflik och <ph name="TAB_COUNT_MANY" /> flikar till stängs}}</translation>
 <translation id="8970887620466824814">Något gick fel.</translation>
 <translation id="8972098258593396643">Vill du ladda ned till standardmappen?</translation>
-<translation id="8987641763863173640">Hantera inställningar för förhandsgranskning av video</translation>
 <translation id="8987736167266086032">Fortsätt där du slutade</translation>
 <translation id="8989968390305463310">Webbhistoriken påverkar vilka annonser som visas och vilka intressen som du uppskattas ha. Av integritetsskäl raderas dina intressen automatiskt och löpande varje månad. Intressen kan förnyas om du inte tar bort dem.</translation>
 <translation id="8993760627012879038">Öppna en ny flik i inkognitoläge</translation>

@@ -28,6 +28,7 @@ Da biste promijenili tu postavku, <ph name="BEGIN_LINK" />izbrišite podatke Chr
 <translation id="1126809382673880764">Ne štiti vas od opasnih web-lokacija, preuzimanja i proširenja. Na drugim Googleovim uslugama, kao što su Gmail i Pretraživanje, i dalje ste zaštićeni Sigurnim pregledavanjem, ako je dostupno.</translation>
 <translation id="1145536944570833626">Brisanje postojećih podataka.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kao <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalendar</translation>
 <translation id="1154984953698510061">Pogledaj ostale kartice</translation>
 <translation id="1161340988127985692">Postavi upit za otvaranje veza iz drugih aplikacija u anonimnom načinu</translation>
 <translation id="1164064664035028907">Koristite snažnu zaporku:</translation>
@@ -1091,6 +1092,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="7993619969781047893">Značajke na nekim web-lokacijama mogu prestati funkcionirati</translation>
 <translation id="800361585186029508">Otvara URL-ove unesene u Google Chrome.</translation>
 <translation id="8005666035647241369">Na Google upravitelj zaporki na ovom uređaju</translation>
+<translation id="8009225694047762179">Upravljanje zaporkama</translation>
 <translation id="8011489434346330032">Web inspektor</translation>
 <translation id="8016714545083187120">Uvijek upotrebljavaj sigurne veze</translation>
 <translation id="802154636333426148">Preuzimanje nije uspjelo</translation>
@@ -1107,6 +1109,7 @@ Web-lokacije mogu upotrebljavati kolačiće za uvid u vašu aktivnost pregledava
 <translation id="8073872304774253879">Poboljšajte pretraživanje i pregledavanje</translation>
 <translation id="8076492880354921740">Kartice</translation>
 <translation id="8077675488769462025">Neaktivne kartice</translation>
+<translation id="8079530767338315840">Ponovi</translation>
 <translation id="8079602123447022758">To je upravljana postavka, dodirnite dvaput za više informacija</translation>
 <translation id="8080028325999236607">Zatvori sve kartice</translation>
 <translation id="8084285576995584326">Upravljajte podacima svojeg Google računa</translation>

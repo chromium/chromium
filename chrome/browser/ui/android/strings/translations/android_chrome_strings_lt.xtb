@@ -128,7 +128,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="164269334534774161">Peržiūrite neprisijungus pasiekiamą šio puslapio kopiją (<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">Istorija</translation>
 <translation id="1657932388559784161">Puslapio įžvalgų apatinis lapas uždarytas</translation>
-<translation id="1668122540633280551">Pasirinkite, kaip vaizdo įrašų peržiūros bus automatiškai leidžiamos „Chrome“ pagrindiniame puslapyje.</translation>
 <translation id="1670399744444387456">Bendrieji</translation>
 <translation id="1671236975893690980">Laukiama atsisiuntimo...</translation>
 <translation id="1672586136351118594">Daugiau neberodyti</translation>
@@ -271,7 +270,6 @@ Ištrindami naršymo istoriją (visą ar konkrečios svetainės) taip pat galite
 <translation id="2536728043171574184">Žiūrima neprisijungus naudojama šio puslapio kopija</translation>
 <translation id="2546283357679194313">Slapukai ir svetainės duomenys</translation>
 <translation id="2558569818338050235">Jūsų naršymo istorija paveikia, kokius skelbimus matote</translation>
-<translation id="2561519700418191927">Vaizdo įrašų peržiūros</translation>
 <translation id="2567385386134582609">VAIZDAS</translation>
 <translation id="2567545343356994513">Spartesnė, veiksni apsauga nuo pavojingų svetainių, atsisiuntimų ir plėtinių</translation>
 <translation id="2569733278091928697">Galėsite lengvai valdyti medijos valdiklius, inkognito režimo seansus, atsisiuntimus ir kt.</translation>
@@ -510,7 +508,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="3775705724665058594">Išsiųsti į jūsų įrenginius</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{Vienas skirtukas}one{# skirtukas}few{# skirtukai}many{# skirtuko}other{# skirtukų}}</translation>
 <translation id="3795154175078851242">Kopijuoti vaizdą su nuoroda</translation>
-<translation id="3803784507854318295">Tvarkyti automatinį paleidimą</translation>
 <translation id="3810838688059735925">Vaizdo</translation>
 <translation id="3810973564298564668">Tvarkyti</translation>
 <translation id="3819178904835489326">Ištrinta atsisiuntimų: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -563,7 +560,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4095146165863963773">Ištrinti programos duomenis?</translation>
 <translation id="4096227151372679484">Žymių išsaugojimo srautas atidarytas iki pusės ekrano aukščio</translation>
 <translation id="4101475238162928417">Sinchronizuokite, kad gautumėte slaptažodžius, žymes ir kitą turinį visuose kituose įrenginiuose</translation>
-<translation id="410351446219883937">Automatinis paleidimas</translation>
 <translation id="4106587138345390261">„Chrome“ tyrinėja naujas funkcijas, leidžiančias svetainėms teikti tas pačias naršymo funkcijas, naudojant mažiau jūsų informacijos</translation>
 <translation id="4108314971463891922">Stebėti</translation>
 <translation id="4108998448622696017">Aptinka ir įspėja jus apie pavojingus įvykius, kai jų nutinka.</translation>
@@ -634,7 +630,6 @@ Privatūs prieigos raktai pagerina privatumą žiniatinklyje ir negali būti nau
 <translation id="4484496141267039529">Nėra ryšio. Vėliau bandykite dar kartą.</translation>
 <translation id="4487967297491345095">Visi „Chrome“ duomenys bus ištrinti visam laikui. Tai apima visus failus, nustatymus, paskyras, duomenų bazes ir kt.</translation>
 <translation id="449126573531210296">Šifruoti sinchronizuotus slaptažodžius naudojant „Google“ paskyrą</translation>
-<translation id="4504667196171871375">Naudojant „Wi-Fi“ ir mobiliojo ryšio duomenis</translation>
 <translation id="4508528996305412043">Sklaidos kanalo kortelės meniu atidarytas</translation>
 <translation id="4509501256689523862">Tai, ar naršant rodomi suasmeninti skelbimai, priklauso nuo šio nustatymo, <ph name="BEGIN_LINK_1" />skelbimų temų<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />slapukų nustatymų<ph name="END_LINK_2" /> ir nuo to, ar svetainė, kurioje lankotės, teikia suasmenintus skelbimus</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Prieš # dieną}one{Prieš # dieną}few{Prieš # dienas}many{Prieš # dienos}other{Prieš # dienų}}</translation>
@@ -1313,7 +1308,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="7944772052836377867">Sinchronizuojant reikia patvirtinti jūsų tapatybę</translation>
 <translation id="7947953824732555851">Sutikti ir prisij.</translation>
 <translation id="7957413488482743710">Virtualioji kortelė slepia tikrąją kortelę, kad padėtų apsaugoti jus nuo galimų apgaulių. <ph name="BEGIN_LINK1" />Sužinokite daugiau apie virtualiąsias korteles<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Niekada</translation>
 <translation id="7961926449547174351">Išjungėte prieigą prie saugyklos. Eikite į „Nustatymų“ skiltį ir ją įgalinkite.</translation>
 <translation id="7963646190083259054">Paslaugos teikėjas:</translation>
 <translation id="7965838025086216108">Išsaugotus slaptažodžius galite naudoti bet kuriame įrenginyje. Jie išsaugomi „Google“ slaptažodžių tvarkyklėje kaip priskirti el. pašto adresui <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Pavyzdžiui, kai kurios svetainės gali atsakyti į šią užklausą rodydamos j
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_ONE" /> skirtukas bus uždaryti}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukas bus uždaryti}few{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukai bus uždaryti}many{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtuko bus uždaryti}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ir dar <ph name="TAB_COUNT_MANY" /> skirtukų bus uždaryti}}</translation>
 <translation id="8970887620466824814">Kažkas ne taip.</translation>
 <translation id="8972098258593396643">Atsisiųsti į numatytąjį aplanką?</translation>
-<translation id="8987641763863173640">Tvarkykite vaizdo įrašų peržiūros nustatymus</translation>
 <translation id="8987736167266086032">Pradėkite ten, kur baigėte</translation>
 <translation id="8989968390305463310">Naršymo istorija lemia, kokius skelbimus matysite ir kokie jūsų pomėgiai bus numatomi toliau. Siekiant apsaugoti privatumą, „Chrome“ reguliariai kiekvieną mėnesį automatiškai ištrina jūsų pomėgius. Pomėgiai gali būti atnaujinami, kol jų nepašalinate.</translation>
 <translation id="8993760627012879038">Atidaryti naują skirtuką inkognito režimu</translation>

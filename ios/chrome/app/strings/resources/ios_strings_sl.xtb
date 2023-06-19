@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">Ne ščiti pred nevarnimi spletnimi mesti, prenosi in razširitvami. Še vedno boste deležni zaščite Varnega brskanja, kjer je na voljo, v drugih Googlovih storitvah, kot sta Gmail in Iskanje Google.</translation>
 <translation id="1145536944570833626">Izbris obstoječih podatkov.</translation>
 <translation id="1147031633655575115">Prijavljeni ste kot <ph name="USER" /></translation>
+<translation id="1150989369772528668">Koledar</translation>
 <translation id="1154984953698510061">Ogled drugih zavihkov</translation>
 <translation id="1161340988127985692">Poziv za odpiranje povezav iz drugih aplikacij v anonimnem načinu</translation>
 <translation id="1164064664035028907">Uproabi zapleteno geslo:</translation>
@@ -1090,6 +1091,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="7993619969781047893">Funkcije na nekaterih spletnih mestih morda ne bodo delovale</translation>
 <translation id="800361585186029508">Odpre vnesene URL-je v Google Chromu.</translation>
 <translation id="8005666035647241369">V Googlov upravitelj gesel v tej napravi</translation>
+<translation id="8009225694047762179">Upravljanje gesel</translation>
 <translation id="8011489434346330032">Spletni pregledovalnik</translation>
 <translation id="8016714545083187120">Vedno dovoli varne povezave</translation>
 <translation id="802154636333426148">Prenos ni uspel</translation>
@@ -1106,6 +1108,7 @@ Spletna mesta lahko uporabljajo piškotke za ogled dejavnosti brskanja na razli�
 <translation id="8073872304774253879">Izboljšanje iskanja in brskanja</translation>
 <translation id="8076492880354921740">Zavihki</translation>
 <translation id="8077675488769462025">Neaktivni zavihki</translation>
+<translation id="8079530767338315840">Ponavljanje</translation>
 <translation id="8079602123447022758">Ta nastavitev je upravljana; dvakrat se dotaknite, če želite več informacij.</translation>
 <translation id="8080028325999236607">Zapri vse zavihke</translation>
 <translation id="8084285576995584326">Nadziranje podatkov v računu Google.</translation>

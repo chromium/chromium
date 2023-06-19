@@ -128,7 +128,6 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="164269334534774161">Anda sedang melihat salinan luar talian halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Sejarah</translation>
 <translation id="1657932388559784161">Helaian bawah cerapan halaman ditutup</translation>
-<translation id="1668122540633280551">Pilih cara pratonton video akan dimainkan secara automatik pada halaman utama Chrome.</translation>
 <translation id="1670399744444387456">Asas</translation>
 <translation id="1671236975893690980">Muat turun belum selesai...</translation>
 <translation id="1672586136351118594">Jangan tunjukkan lagi</translation>
@@ -271,7 +270,6 @@ Apabila anda memadamkan sejarah penyemakan imbas anda — semua atau untuk laman
 <translation id="2536728043171574184">Melihat salinan luar talian halaman ini</translation>
 <translation id="2546283357679194313">Kuki dan data tapak</translation>
 <translation id="2558569818338050235">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat</translation>
-<translation id="2561519700418191927">Pratonton video</translation>
 <translation id="2567385386134582609">IMEJ</translation>
 <translation id="2567545343356994513">Perlindungan proaktif yang lebih pantas terhadap laman web, muat turun dan sambungan yang berbahaya</translation>
 <translation id="2569733278091928697">Anda akan dapat mengurus kawalan media, sesi Inkognito, muat turun dan pelbagai lagi dengan mudah</translation>
@@ -510,7 +508,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="3775705724665058594">Hantar ke peranti anda</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="3795154175078851242">Salin imej dengan pautan</translation>
-<translation id="3803784507854318295">Urus automain</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Urus</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> muat turun dipadamkan</translation>
@@ -563,7 +560,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="4095146165863963773">Padam data apl?</translation>
 <translation id="4096227151372679484">Aliran penyimpanan penanda halaman dibuka pada ketinggian separuh</translation>
 <translation id="4101475238162928417">Segerakkan untuk mendapatkan kata laluan, penanda halaman dan pelbagai lagi pada peranti anda yang lain</translation>
-<translation id="410351446219883937">Automain</translation>
 <translation id="4106587138345390261">Chrome sedang meneroka ciri baharu yang membolehkan laman menyampaikan pengalaman penyemakan imbas yang sama menggunakan kurang maklumat anda</translation>
 <translation id="4108314971463891922">Ikut</translation>
 <translation id="4108998448622696017">Mengesan dan memberikan amaran kepada anda tentang acara berbahaya apabila berlaku.</translation>
@@ -634,7 +630,6 @@ Token keadaan sulit meningkatkan privasi pada web dan tidak boleh digunakan untu
 <translation id="4484496141267039529">Tiada sambungan. Cuba lagi nanti.</translation>
 <translation id="4487967297491345095">Semua data apl Chrome akan dipadamkan selama-lamanya. Ini termasuk semua fail, tetapan, akaun, pangkalan data dan sebagainya.</translation>
 <translation id="449126573531210296">Sulitkan kata laluan yang disegerakkan menggunakan Akaun Google anda</translation>
-<translation id="4504667196171871375">Pada Wi-Fi &amp; data mudah alih</translation>
 <translation id="4508528996305412043">Menu kad suapan dibuka</translation>
 <translation id="4509501256689523862">Semasa anda menyemak imbas, sama ada iklan yang anda lihat diperibadikan bergantung pada tetapan ini, <ph name="BEGIN_LINK_1" />topik Iklan<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />tetapan kuki<ph name="END_LINK_2" />anda, dan jika laman yang anda lihat ialah iklan diperibadikan</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# hari yang lalu}other{# hari yang lalu}}</translation>
@@ -1313,7 +1308,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="7944772052836377867">Penyegerakan perlu mengesahkan itu anda</translation>
 <translation id="7947953824732555851">Terima dan log masuk</translation>
 <translation id="7957413488482743710">Kad maya menyembunyikan kad sebenar anda untuk melindungi anda daripada kemungkinan penipuan. <ph name="BEGIN_LINK1" />Ketahui lebih lanjut tentang kad maya<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Tidak sama sekali</translation>
 <translation id="7961926449547174351">Anda telah melumpuhkan akses Storan, sila pergi ke Tetapan untuk mendayakan akses itu.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">Anda boleh menggunakan kata laluan yang disimpan pada mana-mana peranti. Kata laluan tersebut disimpan pada Google Password Manager untuk <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Sebagai contoh, sesetengah laman web mungkin memberi respons kepada permintaan i
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito dan <ph name="TAB_COUNT_ONE" /> lagi tab akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito and <ph name="TAB_COUNT_MANY" /> lagi tab akan ditutup}}</translation>
 <translation id="8970887620466824814">Kesilapan telah berlaku.</translation>
 <translation id="8972098258593396643">Muat turun ke folder lalai?</translation>
-<translation id="8987641763863173640">Urus Tetapan Pratonton Video</translation>
 <translation id="8987736167266086032">Sambung semula dari tempat anda berhenti</translation>
 <translation id="8989968390305463310">Sejarah penyemakan imbas anda mempengaruhi iklan yang anda lihat dan minat seperti yang dianggarkan di bawah. Untuk melindungi privasi anda, Chrome memadamkan minat anda secara automatik secara bergilir setiap bulan. Minat akan dimuat semula melainkan anda mengalih keluar minat anda.</translation>
 <translation id="8993760627012879038">Buka tetingkap baharu dalam mod Inkognito</translation>

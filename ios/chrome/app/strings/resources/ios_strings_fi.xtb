@@ -28,6 +28,7 @@ Jos haluat muuttaa tätä asetusta, <ph name="BEGIN_LINK" />tyhjennä tilin Chro
 <translation id="1126809382673880764">Ei suojaa sinua vaarallisilta sivustoilta, latauksilta ja laajennuksilta. Voit silti käyttää Selaussuojaa muissa Googlen palveluissa, joissa se on saatavilla, kuten Gmailissa ja Haussa.</translation>
 <translation id="1145536944570833626">Poistaa olemassa olevat tiedot.</translation>
 <translation id="1147031633655575115">Kirjautunut käyttäjänä <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalenteri</translation>
 <translation id="1154984953698510061">Katso muut välilehdet</translation>
 <translation id="1161340988127985692">Pyydä lupaa avata muiden sovellusten linkkejä incognito-tilassa</translation>
 <translation id="1164064664035028907">Käytä vahvaa salasanaa:</translation>
@@ -1090,6 +1091,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="7993619969781047893">Joidenkin sivustojen ominaisuudet saattavat lakata toimimasta</translation>
 <translation id="800361585186029508">Avaa syötetyt URL-osoitteet Google Chromessa.</translation>
 <translation id="8005666035647241369">Googlen Salasanojen ylläpitoon tällä laitteella</translation>
+<translation id="8009225694047762179">Salasanojen hallinta</translation>
 <translation id="8011489434346330032">Web Inspector ‑tarkastustyökalu</translation>
 <translation id="8016714545083187120">Käytä aina suojattuja yhteyksiä</translation>
 <translation id="802154636333426148">Lataus epäonnistui.</translation>
@@ -1106,6 +1108,7 @@ Sivustot voivat nähdä selaustoimintaasi eri sivustoilta evästeiden kautta esi
 <translation id="8073872304774253879">Paranna hakuja ja selausta</translation>
 <translation id="8076492880354921740">Välilehdet</translation>
 <translation id="8077675488769462025">Ei-aktiiviset välilehdet</translation>
+<translation id="8079530767338315840">Toista</translation>
 <translation id="8079602123447022758">Tätä asetusta ylläpidetään, katso lisätietoja kaksoisnapauttamalla</translation>
 <translation id="8080028325999236607">Sulje kaikki välilehdet</translation>
 <translation id="8084285576995584326">Hallinnoi Google-tilin dataa</translation>

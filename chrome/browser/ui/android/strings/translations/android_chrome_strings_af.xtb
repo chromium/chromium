@@ -128,7 +128,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="164269334534774161">Jy bekyk tans 'n vanlyn kopie van hierdie program vanaf <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geskiedenis</translation>
 <translation id="1657932388559784161">Bladinsigte se onderste blad is toegemaak</translation>
-<translation id="1668122540633280551">Kies hoe videovoorskoue outomaties op die Chrome-tuisblad sal speel.</translation>
 <translation id="1670399744444387456">Basies</translation>
 <translation id="1671236975893690980">Aflaai hangende …</translation>
 <translation id="1672586136351118594">Moenie weer wys nie</translation>
@@ -271,7 +270,6 @@ Wanneer jy jou blaaigeskiedenis uitvee — alles of vir ’n spesifieke werf —
 <translation id="2536728043171574184">Bekyk tans 'n vanlyn kopie van hierdie bladsy</translation>
 <translation id="2546283357679194313">Webkoekies en werfdata</translation>
 <translation id="2558569818338050235">Jou blaaigeskiedenis raak die advertensies wat jy sien</translation>
-<translation id="2561519700418191927">Videovoorskoue</translation>
 <translation id="2567385386134582609">PRENT</translation>
 <translation id="2567545343356994513">Vinniger, proaktiewe beskerming teen gevaarlike webwerwe, aflaaie en uitbreidings</translation>
 <translation id="2569733278091928697">Jy sal mediakontroles, Incognito-sessies, aflaaie, en meer maklik kan bestuur</translation>
@@ -510,7 +508,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="3775705724665058594">Stuur na jou toestelle toe</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 oortjie}other{# oortjies}}</translation>
 <translation id="3795154175078851242">Kopieer prent met skakel</translation>
-<translation id="3803784507854318295">Bestuur outospeel</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Bestuur</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> aflaaie is uitgevee</translation>
@@ -563,7 +560,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4095146165863963773">Vee programdata uit?</translation>
 <translation id="4096227151372679484">Boekmerkstoorvloei is teen halwe hoogte oopgemaak</translation>
 <translation id="4101475238162928417">Sinkroniseer om jou wagwoorde, boekmerke en meer op al jou ander toestelle te kry</translation>
-<translation id="410351446219883937">Speel outomaties</translation>
 <translation id="4106587138345390261">Chrome verken tans nuwe kenmerke wat werwe in staat stel om minder van jou inligting te gebruik om dieselfde blaai-ervaring te lewer</translation>
 <translation id="4108314971463891922">Volg</translation>
 <translation id="4108998448622696017">Bespeur en waarsku jou oor gevaarlike gevalle wanneer hulle plaasvind.</translation>
@@ -634,7 +630,6 @@ Privaatstatustoken verbeter privaatheid op die web en kan nie gebruik word om ui
 <translation id="4484496141267039529">Geen verbinding nie. Probeer later weer.</translation>
 <translation id="4487967297491345095">Al Chrome se programdata sal permanent uitgevee word. Dit sluit in alle lêers, instellings, rekeninge, databasisse, ens.</translation>
 <translation id="449126573531210296">Enkripteer gesinkroniseerde wagwoorde met jou Google-rekening</translation>
-<translation id="4504667196171871375">Op Wi-Fi en mobiele data</translation>
 <translation id="4508528996305412043">Stroomkaartkieslys is oop</translation>
 <translation id="4509501256689523862">Terwyl jy blaai, sal hierdie instelling, <ph name="BEGIN_LINK_1" />Advertensie-onderwerpe<ph name="END_LINK_1" />, jou <ph name="BEGIN_LINK_2" />webkoekie-instellings<ph name="END_LINK_2" />, en óf die werf wat jy tans bekyk advertensies personaliseer, bepaal of ’n advertensie wat jy sien, gepersonaliseer word</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dag gelede}other{# dae gelede}}</translation>
@@ -1313,7 +1308,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="7944772052836377867">Sinkronisering moet verifieer dat dit jy is</translation>
 <translation id="7947953824732555851">Aanvaar en meld aan</translation>
 <translation id="7957413488482743710">’n Virtuele kaart versteek jou werklike kaart om te help om jou teen potensiële bedrog te beskerm. <ph name="BEGIN_LINK1" />Kom meer te wete oor virtuele kaarte<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nooit</translation>
 <translation id="7961926449547174351">Jy het bergingtoegang gedeaktiveer. Gaan na Instellings om dit te aktiveer.</translation>
 <translation id="7963646190083259054">Verskaffer:</translation>
 <translation id="7965838025086216108">Jy kan gestoorde wagwoorde op enige toestel gebruik. Hulle word in Google Wagwoordbestuurder gestoor vir <ph name="ACCOUNT" /></translation>
@@ -1520,7 +1514,6 @@ Byvoorbeeld, sommige webwerwe kan op hierdie versoek reageer deur vir jou advert
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_ONE" /> oortjie sal toegemaak word}other{<ph name="INCOGNITO_TAB_COUNT" /> Incognito- en nog <ph name="TAB_COUNT_MANY" /> oortjies sal toegemaak word}}</translation>
 <translation id="8970887620466824814">Iets is fout.</translation>
 <translation id="8972098258593396643">Laai af na verstekvouer?</translation>
-<translation id="8987641763863173640">Bestuur videovoorskou-instellings</translation>
 <translation id="8987736167266086032">Gaan aan waar jy opgehou het</translation>
 <translation id="8989968390305463310">Jou blaaigeskiedenis beïnvloed die advertensies wat jy sien en die belangstellings soos hieronder geskat. Chrome vee outomaties elke maand jou belangstellings op ’n rollende basis uit om jou privaatheid te beskerm. Belangstellings kan herlaai, tensy jy hulle verwyder.</translation>
 <translation id="8993760627012879038">Maak 'n nuwe oortjie in incognitomodus oop</translation>

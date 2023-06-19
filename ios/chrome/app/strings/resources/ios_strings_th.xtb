@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">ไม่ปกป้องคุณจากเว็บไซต์ การดาวน์โหลด และส่วนขยายที่เป็นอันตราย คุณจะยังคงได้รับการปกป้องจาก Google Safe Browsing ในบริการอื่นๆ ของ Google ที่มีฟีเจอร์นี้ เช่น Gmail และ Search</translation>
 <translation id="1145536944570833626">ลบข้อมูลที่มีอยู่</translation>
 <translation id="1147031633655575115">ลงชื่อเข้าใช้ด้วย <ph name="USER" /></translation>
+<translation id="1150989369772528668">ปฏิทิน</translation>
 <translation id="1154984953698510061">ดูแท็บอื่นๆ</translation>
 <translation id="1161340988127985692">ขอเปิดลิงก์จากแอปอื่นๆ ในโหมดไม่ระบุตัวตน</translation>
 <translation id="1164064664035028907">ใช้รหัสผ่านที่รัดกุม:</translation>
@@ -1091,6 +1092,7 @@
 <translation id="7993619969781047893">ฟีเจอร์ในบางเว็บไซต์อาจใช้งานไม่ได้</translation>
 <translation id="800361585186029508">เปิด URL ที่ป้อนใน Google Chrome</translation>
 <translation id="8005666035647241369">ที่เครื่องมือจัดการรหัสผ่านบน Google ในอุปกรณ์นี้</translation>
+<translation id="8009225694047762179">จัดการรหัสผ่าน</translation>
 <translation id="8011489434346330032">เครื่องมือตรวจสอบเว็บ</translation>
 <translation id="8016714545083187120">ใช้การเชื่อมต่อที่ปลอดภัยทุกครั้ง</translation>
 <translation id="802154636333426148">การดาวน์โหลดล้มเหลว</translation>
@@ -1107,6 +1109,7 @@
 <translation id="8073872304774253879">ปรับปรุงการค้นหาและการท่องเว็บให้ดียิ่งขึ้น</translation>
 <translation id="8076492880354921740">แท็บ</translation>
 <translation id="8077675488769462025">แท็บที่ไม่ได้ใช้งาน</translation>
+<translation id="8079530767338315840">เล่นซ้ำ</translation>
 <translation id="8079602123447022758">การตั้งค่านี้ได้รับการจัดการ แตะสองครั้งเพื่อดูข้อมูลเพิ่มเติม</translation>
 <translation id="8080028325999236607">ปิดแท็บทั้งหมด</translation>
 <translation id="8084285576995584326">ควบคุมข้อมูลในบัญชี Google ของคุณ</translation>

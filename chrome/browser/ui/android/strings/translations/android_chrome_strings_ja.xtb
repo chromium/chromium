@@ -128,7 +128,6 @@
 <translation id="164269334534774161">このページの <ph name="CREATION_TIME" /> のオフライン コピーを表示しています</translation>
 <translation id="1644574205037202324">履歴</translation>
 <translation id="1657932388559784161">ページ分析情報のボトムシートは閉じています</translation>
-<translation id="1668122540633280551">動画プレビューを Chrome ホームページで自動的に再生する方法を選択します。</translation>
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1671236975893690980">ダウンロードを待機しています...</translation>
 <translation id="1672586136351118594">次回から表示しない</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">このページのオフライン コピーを表示しています</translation>
 <translation id="2546283357679194313">Cookie とサイトデータ</translation>
 <translation id="2558569818338050235">閲覧履歴は表示される広告に影響します</translation>
-<translation id="2561519700418191927">動画プレビュー</translation>
 <translation id="2567385386134582609">画像</translation>
 <translation id="2567545343356994513">危険なウェブサイト、ダウンロード、拡張機能から予防的な方法で迅速に保護します</translation>
 <translation id="2569733278091928697">メディア コントロール、シークレット モード セッション、ダウンロードなどを簡単に管理できるようになります</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">お使いのデバイスに送信</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個のタブ}other{# 個のタブ}}</translation>
 <translation id="3795154175078851242">リンク付きで画像をコピー</translation>
-<translation id="3803784507854318295">自動再生を管理します</translation>
 <translation id="3810838688059735925">動画</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> 件のダウンロードを削除しました</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">アプリデータを削除しますか？</translation>
 <translation id="4096227151372679484">ブックマーク保存フローが画面の下半分に表示されています</translation>
 <translation id="4101475238162928417">同期すると、他のデバイスのパスワードやブックマークなどを使用できます。</translation>
-<translation id="410351446219883937">自動再生</translation>
 <translation id="4106587138345390261">Chrome では、使用するユーザー情報量を減らしながら、これまでと同様にブラウジングできる新機能をテストしています</translation>
 <translation id="4108314971463891922">フォロー</translation>
 <translation id="4108998448622696017">危険なイベントの発生を検出して警告します。</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">ネットワークに接続されていないため、しばらくしてからもう一度お試しください。</translation>
 <translation id="4487967297491345095">Chrome のすべてのアプリデータを完全に削除します。削除されるデータには、すべてのファイル、設定、アカウント、データベースなどが含まれます。</translation>
 <translation id="449126573531210296">Google アカウントで同期パスワードを暗号化する</translation>
-<translation id="4504667196171871375">Wi-Fi、モバイルデータ接続時</translation>
 <translation id="4508528996305412043">フィードカード メニューが開いています</translation>
 <translation id="4509501256689523862">ウェブサイト閲覧中に表示される広告がパーソナライズされるかどうかは、こちらの設定、<ph name="BEGIN_LINK_1" />広告のトピック<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie の設定状況<ph name="END_LINK_2" />、閲覧しているウェブサイトが広告をパーソナライズしているかどうかによって決まります。</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 日前}other{# 日前}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">同期するには本人確認が必要です</translation>
 <translation id="7947953824732555851">同意してログイン</translation>
 <translation id="7957413488482743710">仮想カードを使用すると、実際のカードを非表示にして、不正行為から保護できます。<ph name="BEGIN_LINK1" />仮想カードの詳細<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">使用しない</translation>
 <translation id="7961926449547174351">ストレージへのアクセスは無効になっています。[設定] で有効にしてください。</translation>
 <translation id="7963646190083259054">ベンダー:</translation>
 <translation id="7965838025086216108">保存したパスワードは他のデバイスで使用できます。パスワードは、<ph name="ACCOUNT" /> の Google パスワード マネージャーに保存されます。</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_ONE" /> 個以上のタブが閉じられます}other{<ph name="INCOGNITO_TAB_COUNT" /> 個のシークレット タブと <ph name="TAB_COUNT_MANY" /> 個以上のタブが閉じられます}}</translation>
 <translation id="8970887620466824814">エラーが発生しました。</translation>
 <translation id="8972098258593396643">デフォルトのフォルダにダウンロードしますか？</translation>
-<translation id="8987641763863173640">動画プレビューの設定を管理します</translation>
 <translation id="8987736167266086032">同じところから再開</translation>
 <translation id="8989968390305463310">閲覧履歴は、表示される広告と以下の推定された興味 / 関心に影響します。プライバシーを保護するために、Chrome ではユーザーの興味 / 関心が毎月順番に自動削除されます。ユーザーが削除しない限り、興味 / 関心は更新される可能性があります。</translation>
 <translation id="8993760627012879038">新しいタブをシークレット モードで開く</translation>

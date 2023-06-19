@@ -28,6 +28,7 @@ Til að breyta þessari stillingu skaltu <ph name="BEGIN_LINK" />hreinsa Chrome-
 <translation id="1126809382673880764">Ver þig ekki gegn hættulegum vefsvæðum, niðurhali eða viðbótum. Þú munt áfram geta notað örugga vefskoðun, þar sem hún er í boði, í annarri þjónustu Google á borð við Gmail og leit.</translation>
 <translation id="1145536944570833626">Eyða fyrirliggjandi gögnum.</translation>
 <translation id="1147031633655575115">Skráð(ur) inn sem <ph name="USER" /></translation>
+<translation id="1150989369772528668">Dagatal</translation>
 <translation id="1154984953698510061">Birta aðra flipa</translation>
 <translation id="1161340988127985692">Biðja um að opna tengla úr öðrum forritum í huliðsstillingu.</translation>
 <translation id="1164064664035028907">Notaðu traust aðgangsorð:</translation>
@@ -467,6 +468,7 @@ Skoðaðu leiðbeiningar leitarvélarinnar um að eyða leitarferlinum ef það 
 <translation id="4045648459118332842">Fáðu aðgang að vistuðum aðgangsorðum í hvaða forriti sem er með einum smelli</translation>
 <translation id="4049507953662678203">Gakktu úr skugga um að þú sért tengd(ur) netinu og reyndu svo aftur.</translation>
 <translation id="4063300985191096908">Opna straum</translation>
+<translation id="4066639687323968621">Skráðu þig inn á Google-reikninginn þinn til að samstilla bókamerki, feril og fleira.</translation>
 <translation id="408404951701638773">Nú er auðveldara að nálgast leitarstikuna</translation>
 <translation id="4092655288299341041">Sýna hjálp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Eyða heimilisfangi}one{Eyða heimilisföngum}other{Eyða heimilisföngum}}</translation>
@@ -1090,6 +1092,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="7993619969781047893">Ekki er víst að allir eiginleikar á öllum vefsvæðum virki</translation>
 <translation id="800361585186029508">Opnar innslegnar vefslóðir í Google Chrome.</translation>
 <translation id="8005666035647241369">Í Aðgangsorðastjórnun Google í þessu tæki</translation>
+<translation id="8009225694047762179">Stjórna aðgangsorðum</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Nota ávallt öruggar tengingar</translation>
 <translation id="802154636333426148">Niðurhal mistókst</translation>
@@ -1106,6 +1109,7 @@ Vefsvæði geta notað fótspor til að sjá vafranotkun þína á mismunandi ve
 <translation id="8073872304774253879">Bæta leit og vefskoðun</translation>
 <translation id="8076492880354921740">Flipar</translation>
 <translation id="8077675488769462025">Óvirkir flipar</translation>
+<translation id="8079530767338315840">Endurtaka</translation>
 <translation id="8079602123447022758">Þessari stillingu er stjórnað, ýttu tvisvar til að fá frekari upplýsingar</translation>
 <translation id="8080028325999236607">Loka öllum flipum</translation>
 <translation id="8084285576995584326">Stjórnaðu gögnum Google reikningsins</translation>
@@ -1275,6 +1279,7 @@ Gögnin þín voru dulkóðuð með aðgangsorði <ph name="TIME" />. Sláðu þ
 <translation id="9157836665414082580">Hindra nýja glugga</translation>
 <translation id="9162432979321511934">Kveiktu á sjálfvirkri útfyllingu aðgangsorða</translation>
 <translation id="9165320910061267720">Til að fá tilkynningar um verðlækkanir þarftu að kveikja á tilkynningum í stillingum iOS.</translation>
+<translation id="9172603439892261948">Samstilltu bókamerki, feril og fleira.</translation>
 <translation id="9177438225260810839">Leita í opnum flipum</translation>
 <translation id="9187853111759024059">Loka 99+ óvirkum flipum?</translation>
 <translation id="9188680907066685419">Skrá út af stýrðum reikningi</translation>

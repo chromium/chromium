@@ -28,6 +28,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />effacez les données Chrome
 <translation id="1126809382673880764">Ce mode ne vous protège pas contre les téléchargements, les extensions et les sites Web dangereux. Le cas échéant, vous bénéficierez toujours de la protection offerte par la navigation sécurisée dans d'autres services Google, tels que Gmail et la recherche.</translation>
 <translation id="1145536944570833626">Supprimer les données existantes</translation>
 <translation id="1147031633655575115">Connecté en tant que <ph name="USER" /></translation>
+<translation id="1150989369772528668">Agenda</translation>
 <translation id="1154984953698510061">Voir les autres onglets</translation>
 <translation id="1161340988127985692">Demander à ouvrir les liens d'autres applis en mode navigation privée</translation>
 <translation id="1164064664035028907">Utilisez un mot de passe sécurisé :</translation>
@@ -467,6 +468,7 @@ Lisez les instructions du moteur de recherche pour supprimer l'historique de vos
 <translation id="4045648459118332842">Récupérez d'un seul geste vos mots de passe enregistrés dans n'importe quelle appli</translation>
 <translation id="4049507953662678203">Vérifiez si vous disposez bien d'une connexion réseau, puis réessayez.</translation>
 <translation id="4063300985191096908">Accéder au flux</translation>
+<translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et plus encore.</translation>
 <translation id="408404951701638773">La barre de recherche est désormais accessible plus facilement</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer l'adresse}other{Supprimer les adresses}}</translation>
@@ -1091,6 +1093,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="7993619969781047893">Des fonctionnalités sur certains sites risquent de ne pas fonctionner</translation>
 <translation id="800361585186029508">Ouvre les URL saisies dans Google Chrome.</translation>
 <translation id="8005666035647241369">Dans le Gestionnaire de mots de passe Google sur cet appareil</translation>
+<translation id="8009225694047762179">Gérer les mots de passe</translation>
 <translation id="8011489434346330032">Inspecteur Web</translation>
 <translation id="8016714545083187120">Toujours utiliser une connexion sécurisée</translation>
 <translation id="802154636333426148">Échec du téléchargement</translation>
@@ -1107,6 +1110,7 @@ Ils peuvent également s'en servir pour voir votre activité de navigation sur l
 <translation id="8073872304774253879">Améliorer les recherches et la navigation</translation>
 <translation id="8076492880354921740">Onglets</translation>
 <translation id="8077675488769462025">Onglets inactifs</translation>
+<translation id="8079530767338315840">Répéter</translation>
 <translation id="8079602123447022758">Il s'agit d'un paramètre géré, appuyez deux fois pour plus d'informations</translation>
 <translation id="8080028325999236607">Fermer tous les onglets</translation>
 <translation id="8084285576995584326">Gérer les données de votre compte Google</translation>
@@ -1276,6 +1280,7 @@ Vos données ont été chiffrées avec votre phrase secrète le <ph name="TIME" 
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9162432979321511934">Activez "Préremplir les mots de passe"</translation>
 <translation id="9165320910061267720">Pour recevoir des alertes en cas de baisse de prix, vous devez activer les notifications dans les paramètres iOS.</translation>
+<translation id="9172603439892261948">Synchronisez vos favoris, votre historique et plus encore.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9187853111759024059">Fermer plus de 99 onglets inactifs ?</translation>
 <translation id="9188680907066685419">Se déconnecter d'un compte géré</translation>

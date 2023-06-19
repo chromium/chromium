@@ -128,7 +128,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="164269334534774161">Rydych yn edrych ar gopi all-lein o'r dudalen hon o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Hanes</translation>
 <translation id="1657932388559784161">Mae'r ddalen waelod mewnwelediadau tudalen ar gau</translation>
-<translation id="1668122540633280551">Dewiswch sut bydd rhagolwg o fideo yn chwarae'n awtomatig ar hafan Chrome.</translation>
 <translation id="1670399744444387456">Sylfaenol</translation>
 <translation id="1671236975893690980">Wrthi'n aros i lawrlwytho…</translation>
 <translation id="1672586136351118594">Peidio â dangos eto</translation>
@@ -271,7 +270,6 @@ Pan fyddwch yn dileu eich hanes pori — y cyfan neu ar gyfer gwefan benodol —
 <translation id="2536728043171574184">Wrthi'n edrych ar gopi all-lein o'r dudalen hon</translation>
 <translation id="2546283357679194313">Cwcis a data gwefan</translation>
 <translation id="2558569818338050235">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld</translation>
-<translation id="2561519700418191927">Rhagolwg fideo</translation>
 <translation id="2567385386134582609">LLUN</translation>
 <translation id="2567545343356994513">Amddiffyniad cyflymach a rhagweithiol yn erbyn gwefannau, lawrlwythiadau ac estyniadau peryglus</translation>
 <translation id="2569733278091928697">Byddwch yn gallu rheoli rheolyddion cyfryngau, sesiynau Anhysbys, lawrlwythiadau a rhagor yn hawdd</translation>
@@ -510,7 +508,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="3775705724665058594">Anfon at eich dyfeisiau</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}zero{# tab}two{# dab}few{# thab}many{# thab}other{# tab}}</translation>
 <translation id="3795154175078851242">Copïo llun gyda dolen</translation>
-<translation id="3803784507854318295">Rheoli awto chwarae</translation>
 <translation id="3810838688059735925">Fideo</translation>
 <translation id="3810973564298564668">Rheoli</translation>
 <translation id="3819178904835489326">Mae <ph name="NUMBER_OF_DOWNLOADS" /> lawrlwythiad wedi'u dileu</translation>
@@ -563,7 +560,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4095146165863963773">Dileu data yr ap?</translation>
 <translation id="4096227151372679484">Llif cadw nodau tudalen wedi'i hagor ar hanner uchder</translation>
 <translation id="4101475238162928417">Cysonwch i gael eich cyfrineiriau, nodau tudalen a rhagor ar eich dyfeisiau eraill</translation>
-<translation id="410351446219883937">Awto chwarae</translation>
 <translation id="4106587138345390261">Mae Chrome yn archwilio nodweddion newydd sy'n caniatáu i wefannau roi'r un profiad pori gan ddefnyddio llai o'ch gwybodaeth</translation>
 <translation id="4108314971463891922">Dilyn</translation>
 <translation id="4108998448622696017">Yn canfod ac yn eich rhybuddio am ddigwyddiadau peryglus pan fyddant yn digwydd.</translation>
@@ -634,7 +630,6 @@ Mae tocynnau ymddiriedaeth yn gwella eich preifatrwydd ar y we ac ni ellir eu de
 <translation id="4484496141267039529">Dim cysylltiad. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="4487967297491345095">Bydd holl ddata'r ap Chrome yn cael eu dileu yn barhaol. Mae hyn yn cynnwys yr holl ffeiliau, gosodiadau, cyfrifon, cronfeydd data, ac ati.</translation>
 <translation id="449126573531210296">Amgryptio cyfrineiriau sydd wedi'u cysoni gyda'ch Cyfrif Google</translation>
-<translation id="4504667196171871375">Ar Wi-Fi a data symudol</translation>
 <translation id="4508528996305412043">Mae dewislen cerdyn ffrwd ar agor</translation>
 <translation id="4509501256689523862">Wrth i chi bori, mae p'un a yw hysbyseb a welwch wedi'i phersonoleiddio yn dibynnu ar y gosodiad hwn, <ph name="BEGIN_LINK_1" />Pynciau hysbysebion<ph name="END_LINK_1" />, eich <ph name="BEGIN_LINK_2" />gosodiadau cwcis<ph name="END_LINK_2" />, ac os yw'r wefan rydych yn edrych arni yn personoleiddio hysbysebion</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# diwrnod yn ôl}zero{# diwrnod yn ôl}two{# ddiwrnod yn ôl}few{# diwrnod yn ôl}many{# diwrnod yn ôl}other{# diwrnod yn ôl}}</translation>
@@ -1313,7 +1308,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7944772052836377867">Mae angen i gysoni gadarnhau mai chi sydd yno</translation>
 <translation id="7947953824732555851">Derbyn a mewngofnodi</translation>
 <translation id="7957413488482743710">Mae cerdyn rhithwir yn cuddio eich cerdyn go iawn i helpu i'ch amddiffyn rhag twyll posib. <ph name="BEGIN_LINK1" />Dysgu rhagor am gardiau rhithwir<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Byth</translation>
 <translation id="7961926449547174351">Rydych wedi analluogi mynediad Storio, ewch i'r Gosodiadau i'w alluogi.</translation>
 <translation id="7963646190083259054">Gwerthwr:</translation>
 <translation id="7965838025086216108">Gallwch ddefnyddio cyfrineiriau sydd wedi'u cadw ar unrhyw ddyfais. Maent yn cael eu cadw i Rheolwr Cyfrineiriau Google ar gyfer <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_ONE" /> tab arall yn cael eu cau}zero{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}two{Bydd <ph name="INCOGNITO_TAB_COUNT" /> dab anhysbys a <ph name="TAB_COUNT_MANY" /> dab arall yn cael eu cau}few{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}many{Bydd <ph name="INCOGNITO_TAB_COUNT" /> thab anhysbys a <ph name="TAB_COUNT_MANY" /> thab arall yn cael eu cau}other{Bydd <ph name="INCOGNITO_TAB_COUNT" /> tab anhysbys a <ph name="TAB_COUNT_MANY" /> tab arall yn cael eu cau}}</translation>
 <translation id="8970887620466824814">Aeth rywbeth o'i le.</translation>
 <translation id="8972098258593396643">Lawrlwytho i'r ffolder ddiofyn?</translation>
-<translation id="8987641763863173640">Rheoli Gosodiadau Rhagolwg Fideos</translation>
 <translation id="8987736167266086032">Parhau lle y gwnaethoch adael</translation>
 <translation id="8989968390305463310">Mae eich hanes pori yn effeithio ar yr hysbysebion rydych yn eu gweld a'r diddordebau fel yr amcangyfrifir isod. Er mwyn amddiffyn eich preifatrwydd, mae Chrome yn dileu'ch diddordebau yn awtomatig bob mis. Gall diddordebau ail-lwytho oni bai eich bod yn eu tynnu.</translation>
 <translation id="8993760627012879038">Agor tab newydd yn y Modd Anhysbys</translation>

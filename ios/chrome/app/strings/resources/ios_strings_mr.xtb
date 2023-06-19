@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">धोकादायक वेबसाइट, डाउनलोड आणि एक्स्टेंशनपासून तुमचे संरक्षण करत नाही. तुम्हाला तरीही Gmail आणि Search यांसारख्या इतर Google सेवांमध्ये, उपलब्ध असेल तेथे, सुरक्षित ब्राउझिंग संरक्षण मिळेल.</translation>
 <translation id="1145536944570833626">विद्यमान डेटा हटवा.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> म्हणून साइन इन केले</translation>
+<translation id="1150989369772528668">कॅलेंडर</translation>
 <translation id="1154984953698510061">इतर टॅब पहा</translation>
 <translation id="1161340988127985692">इतर अ‍ॅप्स मधील लिंक गुप्त मोड मध्ये उघडण्याची विनंती करा</translation>
 <translation id="1164064664035028907">क्लिष्ट पासवर्ड वापरा:</translation>
@@ -37,6 +38,7 @@
 <translation id="1176932207622159128">इमेज सेव्ह करू शकत नाही</translation>
 <translation id="1177414119866731261">Chrome मेनू उघडा</translation>
 <translation id="1181037720776840403">काढून टाका</translation>
+<translation id="1200396280085622191">तुम्ही मेसेज आणि इतर ॲप्समध्ये लिंकवर टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
 <translation id="1207113853726624428">नवीन शोध</translation>
 <translation id="1209206284964581585">आतासाठी लपवा</translation>
 <translation id="1219674500290482172">इंटरनेटशी कनेक्ट करण्यात अक्षम.</translation>
@@ -156,6 +158,7 @@
 <translation id="1974060860693918893">प्रगत</translation>
 <translation id="1980417445547898121">{count,plural, =1{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेला {count} टॅब मिळवा}other{तुमच्या इतर डिव्हाइसवरून या iPhone वर तुमचा अलीकडे अ‍ॅक्टिव्ह असलेले {count} टॅब मिळवा}}</translation>
 <translation id="1981118202195772574">मोबाइल</translation>
+<translation id="1987779152850321833">Chrome चा पुरेपूर वापर करण्यासाठी या सुचवलेल्या कृती पूर्ण करा.</translation>
 <translation id="1989112275319619282">ब्राउझ करा</translation>
 <translation id="1990820278544963435">शोधा</translation>
 <translation id="199425419756152024">पासवर्ड पहा</translation>
@@ -306,6 +309,7 @@
 <translation id="2932085390869194046">पासवर्ड सुचवा...</translation>
 <translation id="2932765531295814441">पासवर्ड मॅन्युअली जोडा</translation>
 <translation id="2952581218264071393">१. Chrome सेटिंग्ज उघडा</translation>
+<translation id="2956733177489514605">तुमचे पासवर्ड आणि आणखी बरेच काही सिंक करण्यासाठी तुमचे Google खाते वापरून साइन इन करा.</translation>
 <translation id="2958718410589002129">पासवर्ड</translation>
 <translation id="2961210776189273067">शीर्षक</translation>
 <translation id="2964349545761222050">तृतीय पक्ष कुकी ब्लॉक करा</translation>
@@ -327,6 +331,7 @@
 लागू असल्यास, तुमचा शोध इतिहास हटवण्यासाठी, तुमच्या शोध इंजीनच्या सूचना पहा.</translation>
 <translation id="3080525922482950719">तुम्‍ही नंतर किंवा ऑफलाइन वाचण्यासाठी पेज सेव्‍ह करू शकता</translation>
 <translation id="3081338492074632642">तुम्ही सेव्ह करत असलेला पासवर्ड तुमच्या <ph name="WEBSITE" /> च्या पासवर्डशी जुळत असल्याची खात्री करा</translation>
+<translation id="309672519329227863">इतर सर्व अ‍ॅप्सवर तुमचे Chrome पासवर्ड आणि आणखी बरेच काही ॲक्सेस करा.</translation>
 <translation id="3112556859945124369">चिन्हांकित करा…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />तुम्ही काय सिंक करू शकता ते पहा<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">इतिहास आणि आणखी बरेच काही</translation>
@@ -499,6 +504,7 @@
 <translation id="4277990410970811858">सुरक्षित ब्राउझिंग</translation>
 <translation id="4281844954008187215">सेवा अटी</translation>
 <translation id="4293080268407233932">शोधा</translation>
+<translation id="4302248187517737842">वापरकर्ता नाव नाही ••••••••</translation>
 <translation id="4304713468139749426">पासवर्ड व्यवस्थापक</translation>
 <translation id="430793432425771671">प्रत्येकगोष्ट संंकालित करा</translation>
 <translation id="4309403553630140242">अधिक माहितीसाठी दोनदा टॅप करा</translation>
@@ -675,6 +681,7 @@
 <translation id="5457226814769348910">ऑफलाइन आवृत्ती उघडा</translation>
 <translation id="5489208564673669003">सर्व साइटसाठी कुकी व्यवस्थापित करण्यासाठी <ph name="BEGIN_LINK" />कुकी सेटिंग्ज<ph name="END_LINK" /> पहा.</translation>
 <translation id="5490005495580364134">सर्व कुकी ब्लॉक करा (शिफारस केली जात नाही)</translation>
+<translation id="5511959326926949696">तुमच्या ब्राउझरसाठी सर्वात पर्यायी संरक्षण. अत्यंत अत्याधुनिक सायबर हल्ल्याद्वारे तुम्हाला लक्ष्य केले जाऊ शकते असे तुम्हाला वाटत असेल, तरच ते वापरले जावे.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> तासांपूर्वी</translation>
 <translation id="5520466080178053306">Password Manager वर टॅप करा त्यानंतर जोडा वर टॅप करा</translation>
 <translation id="5525095647255982834">हा टॅब दुसर्‍या डिव्हाइसवर पाठवण्यासाठी, तेथे Chrome मध्ये साइन इन करा.</translation>
@@ -789,6 +796,7 @@
 <translation id="6149061208933997199">पासवर्ड वापरा</translation>
 <translation id="6152406514676263192">तुमच्या स्वारस्यांनुसार सर्वात उपयुक्त असलेल्या आशयासाठी सिंक करा.</translation>
 <translation id="6159839020698489198">पर्यायी</translation>
+<translation id="6166946945007577435">तुम्हाला जेथे जायचे आहे तेथे जाण्यासाठी तुम्हाला मदत करण्याकरिता नवीन मेनू.</translation>
 <translation id="6170450281939467187">भाषांतर करता आले नाही</translation>
 <translation id="6173499589275053515">तुमच्या Google खाते, <ph name="EMAIL" /> मध्ये पासवर्ड सेव्ह केला आहे</translation>
 <translation id="6177442314419606057">Chrome मध्ये शोधा</translation>
@@ -1023,6 +1031,7 @@
 <translation id="7554645225856321710">सर्व बंद करा</translation>
 <translation id="7554791636758816595">नवीन टॅब</translation>
 <translation id="7561196759112975576">नेहमी</translation>
+<translation id="7582857256643797524">तुमच्या डिव्हाइसवर हे सेटिंग सुरू केलेले आहे</translation>
 <translation id="7583004045319035904">तुमचे गुप्त टॅब अनलॉक करण्यासाठी <ph name="BIOMETRIC_AUTHENITCATION_TYPE" /> वापरा.</translation>
 <translation id="7600965453749440009">कधीही <ph name="LANGUAGE" /> चा भाषांतर करु नका</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) पॉप-अप ब्लॉक केले</translation>
@@ -1092,6 +1101,7 @@
 <translation id="7993619969781047893">काही साइटवरील वैशिष्ट्यांमध्ये खंड पडू शकतो</translation>
 <translation id="800361585186029508">Google Chrome मध्ये इनपुट केलेल्या URL उघडते.</translation>
 <translation id="8005666035647241369">या डिव्हाइसवरील Google पासवर्ड व्यवस्थापक मध्ये</translation>
+<translation id="8009225694047762179">पासवर्ड व्यवस्थापित करा</translation>
 <translation id="8011489434346330032">वेब इन्स्पेक्टर</translation>
 <translation id="8016714545083187120">नेहमी सुरक्षित कनेक्शन वापरा</translation>
 <translation id="802154636333426148">डाउनलोड अयशस्वी झाले</translation>
@@ -1108,6 +1118,7 @@
 <translation id="8073872304774253879">शोध आणि ब्राउझ करणे उत्तम बनवा</translation>
 <translation id="8076492880354921740">टॅब</translation>
 <translation id="8077675488769462025">निष्क्रिय टॅब</translation>
+<translation id="8079530767338315840">पुनरावृत्ती करा</translation>
 <translation id="8079602123447022758">हे सेटिंग व्यवस्थापित केले, अधिक माहितीसाठी दोनदा टॅप करा</translation>
 <translation id="8080028325999236607">सर्व टॅब बंद करा</translation>
 <translation id="8084285576995584326">तुमच्या Google खाते चा डेटा नियंत्रित करा</translation>
@@ -1146,6 +1157,7 @@
 <translation id="8319076807703933069">नवीन शोध</translation>
 <translation id="8323906514956095947">आणखी टॅब पर्यायांसाठी स्पर्श करा आणि धरून ठेवा</translation>
 <translation id="8328777765163860529">सर्व बंद करा</translation>
+<translation id="8331621926962374866">Chrome लॉकडाउन मोडमध्ये असते, तेव्हा काही वेब तंत्रज्ञाने ब्लॉक केली जातात, ज्यामुळे काही वेबसाइट आणखी हळू लोड होऊ शकतात किंवा योग्यरीत्या ऑपरेट करू शकत नाहीत.</translation>
 <translation id="8343993175958086504">तुमच्या आशयाचा बॅकअप घ्या आणि तो कोणत्याही डिव्हाइसवर वापरा.</translation>
 <translation id="834783239627985533">सर्वाधिक भेट दिलेल्या साइट</translation>
 <translation id="8378714024927312812">तुमच्या संस्थेकडून व्यवस्थापित केलेले</translation>
@@ -1290,9 +1302,11 @@
 <translation id="952704832371081537">रद्द करा</translation>
 <translation id="953008885340860025">Chrome साइन आउट केले आहे</translation>
 <translation id="959066944189734975">तुम्ही <ph name="CHANNEL_NAME" /> ला फॉलो करत आहात</translation>
+<translation id="97300214378190234">तुम्ही इतर अ‍ॅप्समधील लिंक टॅप करता, तेव्हा कधीही Chrome वापरा.</translation>
 <translation id="973493300226275298">सर्व ऑनलाइन स्टोअरवर उत्पादनाची किंमत ट्रॅक करा. किमती कमी होतील, तेव्हा तुम्हाला सूचना मिळेल.</translation>
 <translation id="981498610235328462">तुमची संस्था तुम्हाला फक्त ठरावीक खाती वापरून साइन इन करण्याची अनुमती देते. अनुमती नसलेली खाती लपवली जातात.</translation>
 <translation id="984509647832111802">सिंक काम करत नाही.</translation>
+<translation id="984879470761322682">Chrome मध्ये लॉकडाउन मोड बंद करण्यासाठी तो तुमच्या डिव्हाइसवर बंद करा.</translation>
 <translation id="988141524645182168">इतर डिव्हायसेस</translation>
 <translation id="989988560359834682">पत्ता संपादित करा</translation>
 <translation id="994757059139821576">लेख सूचना</translation>

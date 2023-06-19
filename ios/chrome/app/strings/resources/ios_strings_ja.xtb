@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">危険なウェブサイト、ダウンロード、拡張機能から保護されていません。セーフ ブラウジングによる保護は、Gmail や Google 検索など他の Google サービスで利用可能な場合は、引き続き有効です。</translation>
 <translation id="1145536944570833626">既存のデータを削除します。</translation>
 <translation id="1147031633655575115"><ph name="USER" /> としてログイン</translation>
+<translation id="1150989369772528668">カレンダー</translation>
 <translation id="1154984953698510061">他のタブを表示</translation>
 <translation id="1161340988127985692">他のアプリからのリンクをシークレット モードで開くか確認する</translation>
 <translation id="1164064664035028907">安全なパスワードを使用:</translation>
@@ -467,6 +468,7 @@
 <translation id="4045648459118332842">ワンタップで、保存したパスワードを他のアプリでも利用できます</translation>
 <translation id="4049507953662678203">ネットワークに接続していることを確認してから、もう一度お試しください。</translation>
 <translation id="4063300985191096908">フィードに移動</translation>
+<translation id="4066639687323968621">Google アカウントでログインすると、ブックマークや履歴などを同期できます。</translation>
 <translation id="408404951701638773">検索バーをより手軽に使用できるようになりました</translation>
 <translation id="4092655288299341041">ヘルプを表示</translation>
 <translation id="4105841739161771091">{count,plural, =1{住所を削除}other{住所を削除}}</translation>
@@ -1090,6 +1092,7 @@
 <translation id="7993619969781047893">一部のサイトで機能を使用できなくなる可能性があります</translation>
 <translation id="800361585186029508">入力された URL を Google Chrome で開きます。</translation>
 <translation id="8005666035647241369">このデバイスの Google パスワード マネージャーに移動</translation>
+<translation id="8009225694047762179">パスワードを管理</translation>
 <translation id="8011489434346330032">ウェブ インスペクタ</translation>
 <translation id="8016714545083187120">常に安全な接続を使用する</translation>
 <translation id="802154636333426148">ダウンロード エラー</translation>
@@ -1106,6 +1109,7 @@
 <translation id="8073872304774253879">検索とブラウジングを改善する</translation>
 <translation id="8076492880354921740">タブ</translation>
 <translation id="8077675488769462025">アクティブでないタブ</translation>
+<translation id="8079530767338315840">繰り返し</translation>
 <translation id="8079602123447022758">この設定は管理されています。詳細を確認するにはダブルタップします</translation>
 <translation id="8080028325999236607">すべてのタブを閉じる</translation>
 <translation id="8084285576995584326">Google アカウントのデータを管理します</translation>
@@ -1275,6 +1279,7 @@
 <translation id="9157836665414082580">ダイアログを表示しない</translation>
 <translation id="9162432979321511934">[パスワードを自動入力] をオンにする</translation>
 <translation id="9165320910061267720">値下げアラートの通知を受け取るには、iOS の設定で通知をオンにする必要があります。</translation>
+<translation id="9172603439892261948">ブックマークや履歴などを同期できます。</translation>
 <translation id="9177438225260810839">開いているタブを検索</translation>
 <translation id="9187853111759024059">アクティブでない 99 個以上のタブを閉じますか？</translation>
 <translation id="9188680907066685419">管理対象アカウントからログアウトする</translation>

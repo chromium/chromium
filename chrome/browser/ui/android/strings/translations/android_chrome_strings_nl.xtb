@@ -128,7 +128,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="164269334534774161">Je bekijkt een offline exemplaar van deze pagina van <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Geschiedenis</translation>
 <translation id="1657932388559784161">Blad onderaan met pagina-inzichten is gesloten</translation>
-<translation id="1668122540633280551">Bepaal hoe videovoorbeelden automatisch worden afgespeeld op de Chrome-homepage.</translation>
 <translation id="1670399744444387456">Basis</translation>
 <translation id="1671236975893690980">Download in behandeling…</translation>
 <translation id="1672586136351118594">Niet opnieuw bekijken</translation>
@@ -271,7 +270,6 @@ Als je je browsegeschiedenis verwijdert (alles of alleen de geschiedenis voor ee
 <translation id="2536728043171574184">Een offline exemplaar van deze pagina bekijken</translation>
 <translation id="2546283357679194313">Cookies en sitegegevens</translation>
 <translation id="2558569818338050235">Je browsegeschiedenis heeft invloed op de advertenties die je ziet</translation>
-<translation id="2561519700418191927">Videovoorbeelden</translation>
 <translation id="2567385386134582609">AFBEELDING</translation>
 <translation id="2567545343356994513">Snellere, proactieve beveiliging tegen gevaarlijke websites, downloads en extensies</translation>
 <translation id="2569733278091928697">Je kunt makkelijk onder andere je mediabediening, incognitosessies en downloads beheren</translation>
@@ -510,7 +508,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="3775705724665058594">Naar je apparaten sturen</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tabblad}other{# tabbladen}}</translation>
 <translation id="3795154175078851242">Afbeelding kopiëren met link</translation>
-<translation id="3803784507854318295">Autoplay beheren</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Beheren</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads verwijderd</translation>
@@ -563,7 +560,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4095146165863963773">App-gegevens verwijderen?</translation>
 <translation id="4096227151372679484">Proces voor bookmark opslaan is op halve hoogte geopend</translation>
 <translation id="4101475238162928417">Voer een synchronisatie uit om onder meer de wachtwoorden en bookmarks van je andere apparaten op te halen</translation>
-<translation id="410351446219883937">Automatisch afspelen</translation>
 <translation id="4106587138345390261">Chrome bevat nieuwe experimentele functies waarmee sites dezelfde browsefunctionaliteit kunnen leveren terwijl er minder van je gegevens worden gebruikt</translation>
 <translation id="4108314971463891922">Volgen</translation>
 <translation id="4108998448622696017">Detecteert en waarschuwt je over gevaarlijke gebeurtenissen als deze plaatsvinden.</translation>
@@ -634,7 +630,6 @@ Privéstatustokens verbeteren de privacy op het web en kunnen niet worden gebrui
 <translation id="4484496141267039529">Geen verbinding. Probeer het later opnieuw.</translation>
 <translation id="4487967297491345095">Alle app-gegevens voor Chrome worden definitief verwijderd. Dit omvat alle bestanden, instellingen, accounts, databases, enzovoort.</translation>
 <translation id="449126573531210296">Gesynchroniseerde wachtwoorden versleutelen met je Google-account</translation>
-<translation id="4504667196171871375">Via wifi en mobiele data</translation>
 <translation id="4508528996305412043">Feedkaartmenu is geopend</translation>
 <translation id="4509501256689523862">Of een advertentie wordt gepersonaliseerd terwijl je browst, is afhankelijk van deze instelling, <ph name="BEGIN_LINK_1" />advertentieonderwerpen<ph name="END_LINK_1" />, je <ph name="BEGIN_LINK_2" />cookie-instellingen<ph name="END_LINK_2" /> en of de site die je bekijkt advertenties personaliseert</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# dag geleden}other{# dagen geleden}}</translation>
@@ -1313,7 +1308,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="7944772052836377867">Synchronisatie moet bevestigen dat jij het bent</translation>
 <translation id="7947953824732555851">Accepteren en inloggen</translation>
 <translation id="7957413488482743710">Een virtuele kaart verbergt je werkelijke kaart om je te beschermen tegen potentiële fraude. <ph name="BEGIN_LINK1" />Meer informatie over virtuele kaarten<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nooit</translation>
 <translation id="7961926449547174351">Je hebt Opslagtoegang uitgezet. Ga naar Instellingen om deze aan te zetten.</translation>
 <translation id="7963646190083259054">Leverancier:</translation>
 <translation id="7965838025086216108">Je kunt opgeslagen wachtwoorden op elk apparaat gebruiken. Ze worden opgeslagen in Google Wachtwoordmanager voor <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Zo kunnen sommige websites op dit verzoek reageren door advertenties te bekijken
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_ONE" /> tabblad worden gesloten}other{<ph name="INCOGNITO_TAB_COUNT" /> incognitotabbladen en nog <ph name="TAB_COUNT_MANY" /> tabbladen worden gesloten}}</translation>
 <translation id="8970887620466824814">Er is iets misgegaan.</translation>
 <translation id="8972098258593396643">Downloaden naar standaardmap?</translation>
-<translation id="8987641763863173640">Instellingen voor videovoorbeeld beheren</translation>
 <translation id="8987736167266086032">Ga verder waar je gebleven was</translation>
 <translation id="8989968390305463310">Je browsegeschiedenis heeft invloed op de advertenties die je ziet en je interesses. Hieronder staat een schatting. Ter bescherming van je privacy verwijdert Chrome je interesses automatisch elke maand op voortschrijdende basis. Interesses kunnen worden vernieuwd, tenzij je ze verwijdert.</translation>
 <translation id="8993760627012879038">Een nieuw venster openen in de incognitomodus</translation>

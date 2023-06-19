@@ -128,7 +128,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="164269334534774161">Þú ert að skoða ónettengt afrit af þessari síðu frá <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ferill</translation>
 <translation id="1657932388559784161">Blaði neðst með síðuinnsýn lokað</translation>
-<translation id="1668122540633280551">Veldu hvernig forskoðun myndskeiða spilast sjálfkrafa á heimasíðu Chrome.</translation>
 <translation id="1670399744444387456">Grunnatriði</translation>
 <translation id="1671236975893690980">Niðurhal í bið…</translation>
 <translation id="1672586136351118594">Ekki sýna þetta aftur</translation>
@@ -271,7 +270,6 @@ Aðeins einstaklingar sem eru með aðgangsorðið þitt geta lesið dulkóðuð
 <translation id="2536728043171574184">Skoðar ótengt afrit af þessari síðu</translation>
 <translation id="2546283357679194313">Fótspor og gögn vefsvæða</translation>
 <translation id="2558569818338050235">Vafraferillinn þinn hefur áhrif á hvaða auglýsingar þú sérð</translation>
-<translation id="2561519700418191927">Forskoðun myndskeiða</translation>
 <translation id="2567385386134582609">MYND</translation>
 <translation id="2567545343356994513">Hraðari forvirk vörn gegn hættulegum vefsvæðum, niðurhali og viðbótum</translation>
 <translation id="2569733278091928697">Þú getur auðveldlega stjórnað efnisstýringum, huliðslotum, niðurhali og fleira</translation>
@@ -510,7 +508,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="3775705724665058594">Senda í tækin þín</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 flipi}one{# flipi}other{# flipar}}</translation>
 <translation id="3795154175078851242">Afrita mynd með tengli</translation>
-<translation id="3803784507854318295">Stjórna sjálfvirkri spilun</translation>
 <translation id="3810838688059735925">Myndskeið</translation>
 <translation id="3810973564298564668">Stjórna</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> niðurhölum eytt</translation>
@@ -563,7 +560,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4095146165863963773">Eyða forritsgögnum?</translation>
 <translation id="4096227151372679484">Vistun bókamerkja opnuð á hálfum skjánum</translation>
 <translation id="4101475238162928417">Samstilltu til að fá aðgangsorðin þín, bókamerkin og fleira í hinum tækjunum þínum</translation>
-<translation id="410351446219883937">Sjálfvirk spilun</translation>
 <translation id="4106587138345390261">Chrome er að kanna nýja eiginleika sem gera vefsvæðum kleift að skila sömu vafraupplifun án þess að nota jafn mikið af upplýsingum frá þér</translation>
 <translation id="4108314971463891922">Fylgja</translation>
 <translation id="4108998448622696017">Greinir hættuleg atvik og varar þig við þeim þegar þau eiga sér stað.</translation>
@@ -634,7 +630,6 @@ Traustslyklar bæta persónuvernd á netinu og ekki er hægt að nota þá til a
 <translation id="4484496141267039529">Engin tenging. Reyndu aftur síðar.</translation>
 <translation id="4487967297491345095">Öllum forritsgögnum Chrome verður eytt fyrir fullt og allt. Þar með taldar eru allar skrár, stillingar, reikningar, gagnagrunnar o.s.frv.</translation>
 <translation id="449126573531210296">Dulkóða samstillt aðgangsorð með Google reikningnum þínum</translation>
-<translation id="4504667196171871375">Á Wi-Fi og með farsímagögnum</translation>
 <translation id="4508528996305412043">Kortavalmynd straums er opin</translation>
 <translation id="4509501256689523862">Hvort auglýsing sem birtist þér þegar þú skoðar vefsvæði er sérsniðin eða ekki veltur á þessari stillingu, <ph name="BEGIN_LINK_1" />viðfangsefni auglýsinga<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />fótsporastillingum<ph name="END_LINK_2" /> og hvort að vefsvæðið sem þú ert að skoða sérsníði auglýsingar</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Fyrir # degi}one{Fyrir # degi}other{Fyrir # dögum}}</translation>
@@ -1313,7 +1308,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="7944772052836377867">Samstilling verður að staðfesta að þetta sért þú</translation>
 <translation id="7947953824732555851">Samþykkja og skrá inn</translation>
 <translation id="7957413488482743710">Sýndarkort felur raunverulega kortið þitt og hjálpar þannig til við að koma í veg fyrir svik. <ph name="BEGIN_LINK1" />Nánar um sýndarkort<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Aldrei</translation>
 <translation id="7961926449547174351">Þú lokaðir fyrir aðgang að geymslurými. Farðu í stillingar og leyfðu aðgang.</translation>
 <translation id="7963646190083259054">Framleiðandi:</translation>
 <translation id="7965838025086216108">Þú getur notað vistuð aðgangsorð í hvaða tæki sem er. Þau eru vistuð í Google aðgangsorðastjórnun fyrir <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Sum vefsvæði kunna til dæmis að bregðast við beiðninni með því að bir
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_ONE" /> flipa til viðbótar verður lokað}one{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_MANY" /> flipa til viðbótar verður lokað}other{<ph name="INCOGNITO_TAB_COUNT" /> huliðsflipa og <ph name="TAB_COUNT_MANY" /> flipum til viðbótar verður lokað}}</translation>
 <translation id="8970887620466824814">Eitthvað fór úrskeiðis.</translation>
 <translation id="8972098258593396643">Hlaða niður í sjálfgefna möppu?</translation>
-<translation id="8987641763863173640">Stjórna stillingum forskoðunar myndskeiða</translation>
 <translation id="8987736167266086032">Haltu áfram þaðan sem frá var horfið</translation>
 <translation id="8989968390305463310">Vafraferillinn þinn hefur áhrif á auglýsingarnar sem þú sérð og áhugasviðin sem eru áætluð hér fyrir neðan. Til að gæta persónuverndar þinnar eyðir Chrome áhugamálunum þínum sjálfkrafa mánaðarlega. Áhugasvið verða hugsanlega endurnýjuð nema þú fjarlægir þau.</translation>
 <translation id="8993760627012879038">Opna nýjan flipa í huliðsstillingu</translation>

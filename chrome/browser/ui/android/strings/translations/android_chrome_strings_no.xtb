@@ -128,7 +128,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="164269334534774161">Du ser en lokal kopi av denne siden fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Logg</translation>
 <translation id="1657932388559784161">Sidestatistikkfeltet nederst er lukket</translation>
-<translation id="1668122540633280551">Velg hvordan videoforhåndsvisninger skal spilles av automatisk på startsiden for Chrome.</translation>
 <translation id="1670399744444387456">Enkle</translation>
 <translation id="1671236975893690980">Nedlasting venter</translation>
 <translation id="1672586136351118594">Ikke vis igjen</translation>
@@ -271,7 +270,6 @@ Når du sletter nettleserloggen, enten det er hele loggen eller bare loggen for 
 <translation id="2536728043171574184">Ser på en lokalt lagret versjon av denne siden</translation>
 <translation id="2546283357679194313">Informasjonskapsler og data fra nettsteder</translation>
 <translation id="2558569818338050235">Nettleserloggen din påvirker hvilke annonser du ser</translation>
-<translation id="2561519700418191927">Videoforhåndsvisninger</translation>
 <translation id="2567385386134582609">BILDE</translation>
 <translation id="2567545343356994513">Raskere, proaktiv beskyttelse mot farlige nettsteder, nedlastinger og utvidelser</translation>
 <translation id="2569733278091928697">Med Chrome-varsler kan du enkelt administrere mediekontroller, inkognitoøkter, nedlastinger med mer</translation>
@@ -510,7 +508,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="3775705724665058594">Send til enhetene dine</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fane}other{# faner}}</translation>
 <translation id="3795154175078851242">Kopier bilde med link</translation>
-<translation id="3803784507854318295">Administrer automatisk avspilling</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> nedlastinger er slettet</translation>
@@ -563,7 +560,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4095146165863963773">Slette appdataene?</translation>
 <translation id="4096227151372679484">Flyt for lagring av bokmerke er åpnet i halv høyde</translation>
 <translation id="4101475238162928417">Synkroniser for å få passordene dine, bokmerkene dine med mer på andre enheter du bruker.</translation>
-<translation id="410351446219883937">Autoavspilling</translation>
 <translation id="4106587138345390261">Chrome utforsker nye funksjoner som gjør det mulig for nettsteder å bruke mindre av informasjonen din og likevel gi deg den samme nettlesingsopplevelsen</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4108998448622696017">Oppdager og advarer deg om farlige hendelser idet de inntreffer.</translation>
@@ -634,7 +630,6 @@ Med private tilstandstokener får du bedre personvern på nettet, og de kan ikke
 <translation id="4484496141267039529">Ingen tilkobling. Prøv på nytt senere.</translation>
 <translation id="4487967297491345095">Alle appdataene for Chrome slettes permanent. Dette omfatter alle filer, innstillinger, kontoer, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserte passord med Google-kontoen din</translation>
-<translation id="4504667196171871375">Via Wifi og mobildata</translation>
 <translation id="4508528996305412043">Feedkortmenyen er åpnet</translation>
 <translation id="4509501256689523862">Om en annonse du ser har et personlig preg avhenger av denne innstillingen, <ph name="BEGIN_LINK_1" />Annonseemner<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />innstillingene for informasjonskapsler<ph name="END_LINK_2" /> og om nettstedet du ser på viser personlig tilpassede annonser</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{for # dag siden}other{for # dager siden}}</translation>
@@ -1313,7 +1308,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="7944772052836377867">Synkronisering må bekrefte at det er deg</translation>
 <translation id="7947953824732555851">Godta og logg på</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler det faktiske kortet ditt for å beskytte deg mot potensiell svindel. <ph name="BEGIN_LINK1" />Finn ut mer om virtuelle kort<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Aldri</translation>
 <translation id="7961926449547174351">Du har slått av tilgang til Lagring. Gå til Innstillinger for å slå på tilgangen.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
 <translation id="7965838025086216108">Du kan bruke lagrede passord på alle enheter. De lagres i Google Passordlagring for <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Noen nettsteder kan for eksempel svare på denne forespørselen ved å vise deg 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_ONE" /> annen fane blir lukket}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofaner og <ph name="TAB_COUNT_MANY" /> andre faner blir lukket}}</translation>
 <translation id="8970887620466824814">Noe gikk galt.</translation>
 <translation id="8972098258593396643">Vil du laste ned til standardmappen?</translation>
-<translation id="8987641763863173640">Administrer innstillinger for videoforhåndsvisning</translation>
 <translation id="8987736167266086032">Fortsett der du slapp</translation>
 <translation id="8989968390305463310">Nettleserloggen din påvirker hvilke annonser du ser, og interessene som er anslått nedenfor. For å beskytte personvernet ditt sletter Chrome interessene dine automatisk på rullerende basis hver måned. Interessene kan fornyes med mindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åpne en ny fane i inkognitomodus</translation>

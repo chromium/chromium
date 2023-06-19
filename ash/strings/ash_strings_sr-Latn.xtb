@@ -140,7 +140,8 @@ Evo nekoliko stvari koje možete da probate za početak.</translation>
 <translation id="1550406609415860283">Dostupni uređaji</translation>
 <translation id="1550523713251050646">Kliknite za više opcija</translation>
 <translation id="1555130319947370107">Plava</translation>
-<translation id="1576511610858879060">Chromebook ili Bluetooth uređaj koristi stariju verziju Bluetooth-a. Koristite drugi izvor ulaza za bolji kvalitet zvuka.</translation>
+<translation id="1557622599341396706">Prikaži naziv radne površine</translation>
+<translation id="1576511610858879060">Chromebook ili Bluetooth uređaj koristi stariju verziju Bluetooth-a. Koristite drugi izvor za bolji kvalitet zvuka.</translation>
 <translation id="1576623706766186887">Umanjite prikaz kada je lupa uključena</translation>
 <translation id="1586324912145647027">Idite na radne površine od 1 do 8</translation>
 <translation id="1589090746204042747">Pristupite svim aktivnostima u ovoj sesiji</translation>
@@ -987,6 +988,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5317780077021120954">Sačuvaj</translation>
 <translation id="5319712128756744240">Uparite novi uređaj</translation>
 <translation id="5322611492012084517">Pronalaženje telefona nije uspelo</translation>
+<translation id="5323994101633366939">Sakrij naziv radne površine</translation>
 <translation id="5327248766486351172">Naziv</translation>
 <translation id="5329548388331921293">Povezuje se...</translation>
 <translation id="5331975486040154427">Uređaj sa USB priključkom tipa C (levi zadnji port)</translation>
@@ -1168,6 +1170,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Preuzeti su fajlovi sa govorom na jeziku <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Korekcija boja</translation>
 <translation id="6121838516699723042">Potvrdite preuzimanje fajla <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google pomoćnik nije dostupan u sesiji gosta.</translation>
 <translation id="6129953537138746214">Razmak</translation>
@@ -1635,6 +1638,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
 <translation id="8255234195843591763">Resetujte radi ažuriranja</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8262312463845990408">Uključite/isključite reprodukciju</translation>
 <translation id="8270450402312105425">{0,plural, =1{Promenite verziju uređaja u prethodnu verziju u roku od jednog sata}one{Promenite verziju uređaja u prethodnu verziju u roku od # sata}few{Promenite verziju uređaja u prethodnu verziju u roku od # sata}other{Promenite verziju uređaja u prethodnu verziju u roku od # sati}}</translation>
 <translation id="8277261673056602147">Istaknite tekst na ekranu</translation>
 <translation id="8284362522226889623">Prevucite ulevo pomoću četiri prsta da biste prešli na prethodnu radnu površinu</translation>

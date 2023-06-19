@@ -140,6 +140,7 @@ Her er noen ting du kan prøve til å begynne med.</translation>
 <translation id="1550406609415860283">Enheter er tilgjengelige</translation>
 <translation id="1550523713251050646">Klikk for å se flere alternativer</translation>
 <translation id="1555130319947370107">Blå</translation>
+<translation id="1557622599341396706">Vis skrivebordets navn</translation>
 <translation id="1576511610858879060">Chromebooken eller Bluetooth-enheten bruker en eldre versjon av Bluetooth. Bruk en annen inndatakilde for bedre lydkvalitet.</translation>
 <translation id="1576623706766186887">Zoom ut når forstørreren er på</translation>
 <translation id="1586324912145647027">Gå til skrivebord 1 til 8</translation>
@@ -982,10 +983,12 @@ Koble enheten til strøm.</translation>
 <translation id="5308380583665731573">Koble til</translation>
 <translation id="5313326810920013265">Bluetooth-innstillinger</translation>
 <translation id="5314219114274263156">Skjermopptaket er utført</translation>
+<translation id="5314489738835854379">Gå bakover gjennom vinduer</translation>
 <translation id="5316716239522500219">Speil skjermer</translation>
 <translation id="5317780077021120954">Lagre</translation>
 <translation id="5319712128756744240">Koble til en ny enhet</translation>
 <translation id="5322611492012084517">Finner ikke telefonen</translation>
+<translation id="5323994101633366939">Skjul skrivebordets navn</translation>
 <translation id="5327248766486351172">Navn</translation>
 <translation id="5329548388331921293">Kobler til …</translation>
 <translation id="5331975486040154427">USB-C-enhet (porten bak på venstre side)</translation>
@@ -1128,6 +1131,7 @@ Koble enheten til strøm.</translation>
 <translation id="5958529069007801266">Administrert bruker</translation>
 <translation id="5961960957587052807">Lett</translation>
 <translation id="5965524703725988602">Slå av/på mørkt tema. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Gå fremover gjennom vinduer</translation>
 <translation id="5976112937189445008">Trykk på Enter for å ta opp vinduet</translation>
 <translation id="5978382165065462689">Deler kontroll av skjermen via fjernhjelp.</translation>
 <translation id="5980301590375426705">Avslutt gjesteøkten</translation>
@@ -1167,6 +1171,7 @@ Koble enheten til strøm.</translation>
 <translation id="6103838137565245112">system</translation>
 <translation id="6114505516289286752">Talefiler for <ph name="LANGUAGE" /> er lastet ned</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Fargekorrigering</translation>
 <translation id="6121838516699723042">Bekreft nedlastingen <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google-assistenten er ikke tilgjengelig i gjesteøkter.</translation>
 <translation id="6129953537138746214">Mellomrom</translation>
@@ -1338,6 +1343,7 @@ Nylig installert</translation>
 <translation id="6891721121089053234">Se nylige bilder, medier og apper fra telefonen din på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901883536534621389">Prøv å navigere med bevegelser</translation>
+<translation id="6912841030378044227">Fokuser på adressefeltet</translation>
 <translation id="6919251195245069855">Smartkortet ditt ble ikke gjenkjent. Prøv på nytt.</translation>
 <translation id="6920245099716267363">Slå av/på wifi-sonen. Wifi-sonen er på. 1 enhet er tilkoblet.</translation>
 <translation id="6931576957638141829">Lagre i</translation>
@@ -1634,6 +1640,7 @@ For å slå av enheten, trykk og hold på av/på-knappen på enheten igjen.</tra
 <translation id="8247998213073982446"><ph name="APP_NAME" /> – app</translation>
 <translation id="8255234195843591763">Tilbakestill for å oppdatere</translation>
 <translation id="8261506727792406068">Slett</translation>
+<translation id="8262312463845990408">Slå av/på avspilling</translation>
 <translation id="8270450402312105425">{0,plural, =1{Nedgrader enheten til en tidligere versjon innen en time}other{Nedgrader enheten til en tidligere versjon innen # timer}}</translation>
 <translation id="8277261673056602147">Marker tekst på skjermen</translation>
 <translation id="8284362522226889623">Sveip til venstre med fire fingre for å bytte til forrige skrivebord</translation>

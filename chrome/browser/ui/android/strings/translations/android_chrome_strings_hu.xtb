@@ -128,7 +128,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="164269334534774161">Jelenleg az oldal <ph name="CREATION_TIME" />-i dátummal mentett offline példányát tekinti meg</translation>
 <translation id="1644574205037202324">Előzmények</translation>
 <translation id="1657932388559784161">Az oldalstatisztikák alsó lapja be van zárva</translation>
-<translation id="1668122540633280551">Határozza meg, hogy milyen esetekben játssza le automatikusan a böngésző a videók előnézetét a Chrome-kezdőlapon.</translation>
 <translation id="1670399744444387456">Alapok</translation>
 <translation id="1671236975893690980">Letöltés függőben…</translation>
 <translation id="1672586136351118594">Ne jelenjen meg többé</translation>
@@ -271,7 +270,6 @@ Az összes böngészési előzmény vagy csak adott webhely böngészési előzm
 <translation id="2536728043171574184">Az oldal offline példányának megtekintése</translation>
 <translation id="2546283357679194313">Cookie-k és webhelyadatok</translation>
 <translation id="2558569818338050235">Böngészési előzményei határozzák meg, hogy milyen hirdetések jelennek meg Önnek</translation>
-<translation id="2561519700418191927">Videó-előnézetek</translation>
 <translation id="2567385386134582609">KÉP</translation>
 <translation id="2567545343356994513">Gyorsabb, proaktív védelem a veszélyes webhelyek, letöltések és bővítmények ellen</translation>
 <translation id="2569733278091928697">Könnyedén tudja majd kezelni a médiavezérlőket, az inkognitó munkameneteket, a letöltéseket és egyebeket</translation>
@@ -510,7 +508,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="3775705724665058594">Küldés a saját eszközökre</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 lap}other{# lap}}</translation>
 <translation id="3795154175078851242">Kép másolása linkkel együtt</translation>
-<translation id="3803784507854318295">Automatikus lejátszás kezelése</translation>
 <translation id="3810838688059735925">Videó</translation>
 <translation id="3810973564298564668">Kezelés</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> letöltés törölve</translation>
@@ -563,7 +560,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4095146165863963773">Törli az alkalmazásadatokat?</translation>
 <translation id="4096227151372679484">A könyvjelzőmentési folyamat félmagasságban van megnyitva</translation>
 <translation id="4101475238162928417">Szinkronizáljon, hogy a többi eszközén is hozzáférjen jelszavaihoz, könyvjelzőihez stb.</translation>
-<translation id="410351446219883937">Automatikus lejátszás</translation>
 <translation id="4106587138345390261">A Chrome olyan funkciók fejlesztésén dolgozik, amelyek ugyanazt a böngészési élményt nyújtják a személyes adatok kisebb mértékű felhasználása mellett.</translation>
 <translation id="4108314971463891922">Követés</translation>
 <translation id="4108998448622696017">Már a bekövetkezésük idején észleli a veszélyes eseményeket, és figyelmezteti Önt rájuk.</translation>
@@ -634,7 +630,6 @@ A privát állapottokenek nagyobb fokú adatvédelmet biztosítanak az internete
 <translation id="4484496141267039529">Nincs kapcsolat. Próbálja újra később.</translation>
 <translation id="4487967297491345095">A Chrome összes alkalmazásadata véglegesen törlődik, beleértve a fájlokat, beállításokat, fiókokat, adatbázisokat stb.</translation>
 <translation id="449126573531210296">Szinkronizált jelszavak titkosítása a Google-fiókkal</translation>
-<translation id="4504667196171871375">Wi-Fi- és mobilhálózaton</translation>
 <translation id="4508528996305412043">A hírcsatornakártya menüje meg van nyitva</translation>
 <translation id="4509501256689523862">Az, hogy böngészés közben a megjelenő hirdetések személyre vannak-e szabva, ettől a beállítástól, a <ph name="BEGIN_LINK_1" />hirdetési témaköröktől<ph name="END_LINK_1" />, a <ph name="BEGIN_LINK_2" />cookie-beállításaitól<ph name="END_LINK_2" /> és attól függ, hogy a felkeresett webhely személyre szabja-e a hirdetéseket.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# napja}other{# napja}}</translation>
@@ -1313,7 +1308,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="7944772052836377867">A szinkronizálás ellenőrizni szeretné az Ön személyazonosságát</translation>
 <translation id="7947953824732555851">Elfogadás és bejelentkezés</translation>
 <translation id="7957413488482743710">A virtuális kártya elrejti tényleges kártyáját, így segíthet az esetleges csalások elleni védekezésben. <ph name="BEGIN_LINK1" />További információ a virtuális kártyákról<ph name="END_LINK1" />.</translation>
-<translation id="7961015016161918242">Soha</translation>
 <translation id="7961926449547174351">Letiltotta a tárhelyhez való hozzáférést. A Beállítások menüpontban ismét engedélyezheti.</translation>
 <translation id="7963646190083259054">Szolgáltató:</translation>
 <translation id="7965838025086216108">A mentett jelszavakat bármelyik eszközön használhatja. A jelszavakat a Google Jelszókezelő szolgáltatásba menti a rendszer a(z) <ph name="ACCOUNT" /> fiókhoz.</translation>
@@ -1520,7 +1514,6 @@ Egyes webhelyek például válaszolhatnak rá úgy, hogy olyan hirdetéseket jel
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_ONE" /> további lap lesz bezárva}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitó és <ph name="TAB_COUNT_MANY" /> további lap lesz bezárva}}</translation>
 <translation id="8970887620466824814">Hiba történt.</translation>
 <translation id="8972098258593396643">Letölti az alapértelmezett mappába?</translation>
-<translation id="8987641763863173640">Videó-előnézeti beállítások kezelése</translation>
 <translation id="8987736167266086032">Ott folytathatja, ahol abbahagyta</translation>
 <translation id="8989968390305463310">Böngészési előzményei határozzák meg az Ön számára megjelenő hirdetéseket és az alább látható módon felmért érdeklődési köröket. Adatai védelme érdekében a Chrome havi rendszerességgel automatikusan törli az Ön érdeklődési köreit. Az érdeklődési körök frissülhetnek, kivéve, ha eltávolítja őket.</translation>
 <translation id="8993760627012879038">Új lap megnyitása inkognitó módban</translation>

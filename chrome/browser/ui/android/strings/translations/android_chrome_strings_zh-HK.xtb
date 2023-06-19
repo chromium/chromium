@@ -128,7 +128,6 @@
 <translation id="164269334534774161">您正在查看此網頁的離線版本 (建立時間：<ph name="CREATION_TIME" />)</translation>
 <translation id="1644574205037202324">記錄</translation>
 <translation id="1657932388559784161">閂咗頁面分析資料頁底面板</translation>
-<translation id="1668122540633280551">選擇 Chrome 首頁自動播放預覽影片的方式。</translation>
 <translation id="1670399744444387456">基本設定</translation>
 <translation id="1671236975893690980">正在等待下載…</translation>
 <translation id="1672586136351118594">不要再顯示</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">正在瀏覽此網頁的離線版本</translation>
 <translation id="2546283357679194313">Cookie 和網站數據</translation>
 <translation id="2558569818338050235">您的瀏覽記錄會影響系統顯示的廣告</translation>
-<translation id="2561519700418191927">影片預覽</translation>
 <translation id="2567385386134582609">圖片</translation>
 <translation id="2567545343356994513">對危險網站、下載檔案及擴充程式提供更快速的主動式保護功能</translation>
 <translation id="2569733278091928697">您將能輕鬆管理媒體控制項、無痕工作階段、下載項目等等</translation>
@@ -510,7 +508,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="3775705724665058594">傳送至您的裝置</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 個分頁}other{# 個分頁}}</translation>
 <translation id="3795154175078851242">複製圖片和連結</translation>
-<translation id="3803784507854318295">管理自動播放方式</translation>
 <translation id="3810838688059735925">影片</translation>
 <translation id="3810973564298564668">管理</translation>
 <translation id="3819178904835489326">已刪除 <ph name="NUMBER_OF_DOWNLOADS" /> 個下載項目</translation>
@@ -563,7 +560,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4095146165863963773">要刪除應用程式資料嗎？</translation>
 <translation id="4096227151372679484">書籤儲存流程宜家顯示喺畫面下半部</translation>
 <translation id="4101475238162928417">進行同步處理，取得您在其他裝置上的密碼、書籤和其他資料</translation>
-<translation id="410351446219883937">自動播放</translation>
 <translation id="4106587138345390261">Chrome 正在探索新功能，讓網站能在使用較少資料的情況下提供相同的瀏覽體驗</translation>
 <translation id="4108314971463891922">追蹤</translation>
 <translation id="4108998448622696017">偵測並在危險事件發生時發出警告。</translation>
@@ -634,7 +630,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="4484496141267039529">沒有連線，請稍後再試。</translation>
 <translation id="4487967297491345095">所有 Chrome 的應用程式資料將會永久刪除，包括所有檔案、設定、帳戶、資料庫等。</translation>
 <translation id="449126573531210296">使用您的 Google 帳戶為已同步處理的密碼加密</translation>
-<translation id="4504667196171871375">使用 Wi-Fi 和流動數據時</translation>
 <translation id="4508528996305412043">資訊提供卡選單開咗</translation>
 <translation id="4509501256689523862">瀏覽時是否看到個人化廣告，取決於此設定、<ph name="BEGIN_LINK_1" />廣告主題<ph name="END_LINK_1" />、<ph name="BEGIN_LINK_2" />Cookie 設定<ph name="END_LINK_2" />、網站是否顯示個人化廣告</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# 天前}other{# 天前}}</translation>
@@ -1313,7 +1308,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="7944772052836377867">同步功能需要驗證您的身分</translation>
 <translation id="7947953824732555851">接受並登入</translation>
 <translation id="7957413488482743710">虛擬卡會隱藏您的實體卡，保護您免受潛在欺詐行為的威脅。<ph name="BEGIN_LINK1" />進一步瞭解虛擬卡<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">從來沒有</translation>
 <translation id="7961926449547174351">您已停用儲存空間存取權，請前往「設定」頁面啟用該權限。</translation>
 <translation id="7963646190083259054">供應商：</translation>
 <translation id="7965838025086216108">您可在任何裝置上使用已儲存的密碼。密碼已儲存至 <ph name="ACCOUNT" /> 的「Google 密碼管理工具」。</translation>
@@ -1520,7 +1514,6 @@ Private State Token 能夠改善網絡上的私隱，而且系統無法透過信
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_ONE" /> 個分頁}other{即將關閉 <ph name="INCOGNITO_TAB_COUNT" /> 個無痕式分頁和另外 <ph name="TAB_COUNT_MANY" /> 個分頁}}</translation>
 <translation id="8970887620466824814">發生錯誤。</translation>
 <translation id="8972098258593396643">要下載至預設資料夾嗎？</translation>
-<translation id="8987641763863173640">管理影片預覽設定</translation>
 <translation id="8987736167266086032">從上次離開的地方繼續瀏覽</translation>
 <translation id="8989968390305463310">您的瀏覽記錄會影響系統顯示的廣告，以及下列由系統推測的興趣。為保障您的私隱，Chrome 每個月都會自動刪除您的興趣。除非您移除興趣，否則系統會重新整理興趣。</translation>
 <translation id="8993760627012879038">在無痕模式中開啟新分頁</translation>

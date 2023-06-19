@@ -28,6 +28,7 @@ A beállítás módosításához <ph name="BEGIN_LINK" />törölje a fiókjában
 <translation id="1126809382673880764">Nem védi meg Önt a veszélyes webhelyek, letöltések vagy bővítmények ellen. Ahol lehetséges (más Google-szolgáltatásokban, például a Gmailben és a Keresőben) továbbra is megkapja a Biztonságos Böngészés által nyújtott védelmet.</translation>
 <translation id="1145536944570833626">Meglévő adatok törlése.</translation>
 <translation id="1147031633655575115">Bejelentkezve mint <ph name="USER" /></translation>
+<translation id="1150989369772528668">Naptár</translation>
 <translation id="1154984953698510061">További lapok megtekintése</translation>
 <translation id="1161340988127985692">Kérdezzen rá más alkalmazások linkjeinek inkognitó módban való megnyitásakor</translation>
 <translation id="1164064664035028907">Használjon erős jelszót:</translation>
@@ -1091,6 +1092,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="7993619969781047893">Előfordulhat, hogy bizonyos webhelyek funkciói nem működnek megfelelően</translation>
 <translation id="800361585186029508">A megadott URL-eket a Google Chrome-ban nyitja meg.</translation>
 <translation id="8005666035647241369">A Google Jelszókezelőbe ezen az eszközön</translation>
+<translation id="8009225694047762179">Jelszó kezelése</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Mindig biztonságos kapcsolatok használata</translation>
 <translation id="802154636333426148">Nem sikerült a letöltés</translation>
@@ -1107,6 +1109,7 @@ A webhelyek használhatnak cookie-kat arra, hogy megfigyeljék más webhelyekre 
 <translation id="8073872304774253879">A keresések és a böngészés javítása</translation>
 <translation id="8076492880354921740">Lapok</translation>
 <translation id="8077675488769462025">Inaktív lapok</translation>
+<translation id="8079530767338315840">Ismétlés</translation>
 <translation id="8079602123447022758">Felügyelt beállítás. További információért koppintson duplán.</translation>
 <translation id="8080028325999236607">Összes lap bezárása</translation>
 <translation id="8084285576995584326">Google-fiókadatok vezérlése</translation>

@@ -535,6 +535,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="2202020181578195191">Masukkan tahun tamat tempoh yang sah</translation>
 <translation id="2202627062836089804">bahagian belakang kad anda</translation>
 <translation id="2204482073374652408">Kemaskinian selesai!</translation>
+<translation id="2208053750671792556">Tidak menerima kod anda? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Dulang 3</translation>
 <translation id="2210794033760923560">Muat Naik Laporan</translation>
 <translation id="2212735316055980242">Dasar tidak dijumpai</translation>
@@ -948,6 +949,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="3270847123878663523">&amp;Buat asal Susun semula</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin menyambung</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Masukkan kod pengesahan <ph name="NUMBER_OF_DIGITS" /> angka</translation>
 <translation id="3281350579597955952">{0,plural, =1{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}other{Dasar pentadbir tidak mengesyorkan anda membuka fail ini dalam <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi anda, <ph name="ENROLLMENT_DOMAIN" />, telah menghantar beberapa maklumat, seperti tetapan atau dasar ke laman web berikut.</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -2595,6 +2597,7 @@ Jika tidak, ini akan disekat oleh tetapan privasi anda. Kebenaran ini akan membo
 <translation id="7219179957768738017">Sambungan menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Memproses</translation>
 <translation id="7221855153210829124">Tunjukkan pemberitahuan</translation>
+<translation id="7221857374443660083">Bank anda mahu memastikan identiti anda</translation>
 <translation id="722454870747268814">Tab Inkognito Baharu</translation>
 <translation id="7227293336683593977">Sejarah Harga</translation>
 <translation id="7233592378249864828">Cetak helaian pengesahan</translation>

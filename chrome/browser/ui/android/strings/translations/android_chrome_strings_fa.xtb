@@ -128,7 +128,6 @@
 <translation id="164269334534774161">شما در حال تماشای کپی آفلاین این صفحه از <ph name="CREATION_TIME" /> هستید</translation>
 <translation id="1644574205037202324">سابقه</translation>
 <translation id="1657932388559784161">برگ زیرین اطلاعات آماری صفحه بسته شده است</translation>
-<translation id="1668122540633280551">‏انتخاب نحوه پخش خودکار پیش‌نمایش ویدیوها در صفحه اصلی Chrome.</translation>
 <translation id="1670399744444387456">پایه</translation>
 <translation id="1671236975893690980">بارگیری معلق است…</translation>
 <translation id="1672586136351118594">دیگر نشان داده نشود</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">مشاهده یک کپی آفلاین از این صفحه</translation>
 <translation id="2546283357679194313">کوکی‌ها و داده‌های سایت</translation>
 <translation id="2558569818338050235">سابقه مرورتان بر آگهی‌هایی که می‌بینید تأثیر می‌گذارد</translation>
-<translation id="2561519700418191927">پیش‌نمایش ویدیو</translation>
 <translation id="2567385386134582609">تصویر</translation>
 <translation id="2567545343356994513">محافظت سریع‌تر و پیشگیرانه دربرابر وب‌سایت‌ها، بارگیری‌ها، و افزونه‌های خطرناک</translation>
 <translation id="2569733278091928697">به‌راحتی می‌توانید کنترل‌های رسانه، جلسه‌های «ناشناس»، بارگیری‌ها، و موارد دیگر را مدیریت کنید</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">ارسال به دستگاه‌هایتان</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{یک برگه}one{# برگه}other{# برگه}}</translation>
 <translation id="3795154175078851242">کپی کردن تصویر با پیوند</translation>
-<translation id="3803784507854318295">مدیریت پخش خودکار</translation>
 <translation id="3810838688059735925">فیلم</translation>
 <translation id="3810973564298564668">مدیریت</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> بارگیری حذف شد</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">داده‌های برنامه پاک شود؟</translation>
 <translation id="4096227151372679484">جریان ذخیره نشانک به‌صورت نیمه باز شده است</translation>
 <translation id="4101475238162928417">برای دریافت گذرواژه‌ها، نشانک‌ها، و سایر داده‌هایتان در دستگاه‌های دیگرتان، همگام‌سازی کنید</translation>
-<translation id="410351446219883937">پخش خودکار</translation>
 <translation id="4106587138345390261">‏Chrome درحال کاوش ویژگی‌های جدیدی است که به سایت‌های امکان می‌دهد تجربه مرور یکسانی را با مصرف اطلاعات شخصی کمتر ارائه دهند</translation>
 <translation id="4108314971463891922">دنبال کردن</translation>
 <translation id="4108998448622696017">رویدادهای خطرناکی را که اتفاق می‌افتد شناسایی می‌کند و درباره آن‌ها به شما هشدار می‌دهد.</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">اتصال برقرار نیست. بعداً دوباره امتحان کنید.</translation>
 <translation id="4487967297491345095">‏همه داده‌های برنامه Chrome به‌طور دائم حذف خواهند شد. این داده‌ها شامل همه فایل‌ها، تنظیمات، حساب‌ها، پایگاه‌های داده و غیره می‌شود.</translation>
 <translation id="449126573531210296">‏رمزگذاری گذرواژه‌های همگام‌سازی‌شده با «حساب Google» شما</translation>
-<translation id="4504667196171871375">‏ازطریق Wi-Fi و داده تلفن همراه</translation>
 <translation id="4508528996305412043">منوی کارت فید باز شد</translation>
 <translation id="4509501256689523862">درحین مرور، شخصی شدن یا نشدن آگهی‌هایی که می‌بینید به این تنظیم بستگی دارد»: <ph name="BEGIN_LINK_1" />موضوع‌های آگهی<ph name="END_LINK_1" />، <ph name="BEGIN_LINK_2" />تنظیمات کوکی<ph name="END_LINK_2" /> شما، و اینکه آیا سایتی که مشاهده می‌کنید آگهی‌ها را شخصی‌سازی می‌کند یا نه</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{۱ روز قبل}one{#  روز قبل}other{#  روز قبل}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">همگام‌سازی باید هویتتان را تأیید کند</translation>
 <translation id="7947953824732555851">پذیرش و ورود به سیستم</translation>
 <translation id="7957413488482743710">کارت مجازی با پنهان کردن کارت واقعی‌تان از شما دربرابر کلاهبرداری‌های احتمالی محافظت می‌کند. <ph name="BEGIN_LINK1" />درباره کارت‌های مجازی بیشتر بدانید<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">هرگز</translation>
 <translation id="7961926449547174351">دسترسی به «فضای ذخیره‌سازی» را غیرفعال کرده‌اید، لطفاً برای فعال کردن آن به «تنظیمات» بروید.</translation>
 <translation id="7963646190083259054">ارائه‌دهنده:</translation>
 <translation id="7965838025086216108">‏گذرواژه‌های ذخیره‌شده را در هر دستگاهی می‌توانید استفاده کنید. این گذرواژه‌ها در «مدیر گذرواژه Google» برای <ph name="ACCOUNT" /> ذخیره می‌شود.</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>
 <translation id="8970887620466824814">مشکلی پیش آمد.</translation>
 <translation id="8972098258593396643">در پوشه پیش‌فرض بارگیری شود؟</translation>
-<translation id="8987641763863173640">مدیریت تنظیمات پیش‌دید ویدیو</translation>
 <translation id="8987736167266086032">ادامه دادن از جایی که ترک کرده‌اید</translation>
 <translation id="8989968390305463310">‏سابقه مرور شما بر آگهی‌هایی که می‌بینید و علایقتان که در زیر برآورد شده است تأثیر می‌گذارد. برای محافظت از حریم خصوصی شما، Chrome علایقتان را هر ماه به‌طور خودکار و چرخشی حذف می‌کند. ممکن است علایق بازآوری شود، مگر اینکه آن‌ها را بردارید.</translation>
 <translation id="8993760627012879038">باز کردن برگه جدیدی در حالت ناشناس</translation>

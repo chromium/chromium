@@ -10,6 +10,7 @@ Some features may be unavailable and changes to preferences won't be saved.</tra
 <translation id="1104942323762546749">Chromium wants to export your passwords. Type your Windows password to allow this.</translation>
 <translation id="113122355610423240">Chromium is your default browser</translation>
 <translation id="1131805035311359397">To check if your passwords are safe from data breaches and other security issues, <ph name="BEGIN_LINK" />sign in to Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Click the Chromium menu</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium extensions were accessing HID devices}=1{Chromium extensions are accessing 1 HID device}other{Chromium extensions are accessing # HID devices}}</translation>
 <translation id="1185134272377778587">About Chromium</translation>
 <translation id="1203500561924088507">Thanks for installing. You must restart your browser before using <ph name="BUNDLE_NAME" />.</translation>
@@ -59,6 +60,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="2384373936468275798">Chromium OS could not sync your data because your account sign-in details are out of date.</translation>
 <translation id="2396765026452590966">The extension "<ph name="EXTENSION_NAME" />" has changed the page that is shown when you start Chromium.</translation>
 <translation id="2401032172288869980">Chromium needs camera and microphone permissions for this site</translation>
+<translation id="2451727308784734061">Use your shortcut to quickly get to the Password Manager. You can move your shortcut to your computer's home screen or app launcher.</translation>
 <translation id="2478295928299953161">Chromium will soon close</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Uninstall</translation>
@@ -250,6 +252,7 @@ Permissions that you've already given to websites and apps may apply to this acc
 <translation id="6333502561965082103">Another operation on Chromium is in progress. Please try again later.</translation>
 <translation id="6334986366598267305">Now it's easier to use Chromium with your Google Account and on shared computers.</translation>
 <translation id="6373523479360886564">Are you sure you want to uninstall Chromium?</translation>
+<translation id="6375219077595103062">Add a shortcut to Password Manager</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />How we use this data:<ph name="END_BOLD" /> Chromium can estimate your interests. Later, a site that you visit can ask Chromium to see your interests in order to personalise the ads that you see.</translation>
 <translation id="6403826409255603130">Chromium is a web browser that runs webpages and applications with lightning speed. It's fast, stable, and easy to use. Browse the web more safely with malware and phishing protection built into Chromium.</translation>
 <translation id="6442900851116057561">Restart Chromium OS</translation>
@@ -373,6 +376,7 @@ Google Chrome is unable to recover your settings.</translation>
 <translation id="8697124171261953979">It also controls what page is shown when you start Chromium or search from the Omnibox.</translation>
 <translation id="8704119203788522458">This is your Chromium</translation>
 <translation id="8796602469536043152">Chromium needs permission to access your camera and microphone for this site</translation>
+<translation id="8826492472752484139">Click 'Password Manager'</translation>
 <translation id="8833697763442816810">Chromium OS system</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />What data is used:<ph name="END_BOLD" /> Your browsing history, a record of sites that you’ve visited using Chromium on this device.</translation>
 <translation id="8862326446509486874">You do not have appropriate rights for system-level installation. Try running the installer again as Administrator.</translation>

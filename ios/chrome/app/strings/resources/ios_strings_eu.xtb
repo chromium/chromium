@@ -28,6 +28,7 @@ Ezarpen hori aldatzeko, <ph name="BEGIN_LINK" />garbitu kontuko Chrome-ko datuak
 <translation id="1126809382673880764">Ez zaitu babesten webgune, deskarga eta luzapen kaltegarrien aurka. Erabilgarri dagoenean, arakatze seguruaren babesa jasotzen jarraituko duzu Google-ren beste zerbitzu batzuetan (Gmail-en eta Bilaketa zerbitzuan, esaterako).</translation>
 <translation id="1145536944570833626">Ezabatu lehendik dauden datuak.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> gisa hasi duzu saioa</translation>
+<translation id="1150989369772528668">Egutegia</translation>
 <translation id="1154984953698510061">Ikusi beste fitxa batzuk</translation>
 <translation id="1161340988127985692">Eskatu beste aplikazioetako estekak ezkutuko moduan irekitzea</translation>
 <translation id="1164064664035028907">Erabili pasahitz sendo bat:</translation>
@@ -467,6 +468,7 @@ Behar izanez gero, joan bilatzailearen argibideetara bilaketa-historia ezabatzea
 <translation id="4045648459118332842">Lortu gordetako pasahitzak edozein aplikaziotan sakatze hutsarekin</translation>
 <translation id="4049507953662678203">Ziurtatu sarera konektatuta zaudela eta saiatu berriro.</translation>
 <translation id="4063300985191096908">Joan jariora</translation>
+<translation id="4066639687323968621">Hasi saioa Google-ko kontuan eta sinkronizatu laster-markak, historia eta beste.</translation>
 <translation id="408404951701638773">Orain, errazagoa da bilaketa-barra erabiltzea</translation>
 <translation id="4092655288299341041">Erakutsi laguntza</translation>
 <translation id="4105841739161771091">{count,plural, =1{Ezabatu helbidea}other{Ezabatu helbideak}}</translation>
@@ -1090,6 +1092,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="7993619969781047893">Baliteke webgune batzuetako eginbideek ez funtzionatzea</translation>
 <translation id="800361585186029508">Idatzitako URLak Google Chrome-n irekitzen ditu.</translation>
 <translation id="8005666035647241369">Google-ren Pasahitz-kudeatzailea zerbitzuan (gailu honetan)</translation>
+<translation id="8009225694047762179">Kudeatu pasahitzak</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Erabili beti konexio seguruak</translation>
 <translation id="802154636333426148">Ezin izan da deskargatu</translation>
@@ -1106,6 +1109,7 @@ Webguneek cookieak erabil ditzakete beste webguneetan egiten dituzun arakatze-ja
 <translation id="8073872304774253879">Hobetu bilaketak eta arakatze-jarduerak</translation>
 <translation id="8076492880354921740">Fitxak</translation>
 <translation id="8077675488769462025">Fitxa inaktiboak</translation>
+<translation id="8079530767338315840">Errepikatu</translation>
 <translation id="8079602123447022758">Administratzaileak kudeatzen du ezarpen hau; informazio gehiago lortzeko, sakatu birritan</translation>
 <translation id="8080028325999236607">Itxi fitxa guztiak</translation>
 <translation id="8084285576995584326">Kontrolatu Google-ko kontuan dituzun datuak</translation>
@@ -1275,6 +1279,7 @@ Datuak pasaesaldiarekin enkriptatu ziren data honetan: <ph name="TIME" />. Chrom
 <translation id="9157836665414082580">Ezkutatu leihoak</translation>
 <translation id="9162432979321511934">Aktibatu pasahitzen betetze automatikoa</translation>
 <translation id="9165320910061267720">Prezio-jaitsierei buruzko alerten jakinarazpenak jasotzeko, iOS-eko ezarpenetan jakinarazpenak aktibatu beharko dituzu.</translation>
+<translation id="9172603439892261948">Sinkronizatu laster-markak, historia eta beste.</translation>
 <translation id="9177438225260810839">Bilatu fitxa irekietan</translation>
 <translation id="9187853111759024059">99 fitxa inaktibo baino gehiago itxi nahi dituzu?</translation>
 <translation id="9188680907066685419">Amaitu saioa kontu kudeatuan</translation>

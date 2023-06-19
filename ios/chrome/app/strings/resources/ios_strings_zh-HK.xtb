@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">無法防範危險網站、下載檔案和擴充程式。您仍可在其他 Google 服務 (例如 Gmail 和搜尋) 中使用「安全瀏覽」功能 (如有)。</translation>
 <translation id="1145536944570833626">刪除現有資料。</translation>
 <translation id="1147031633655575115">已使用「<ph name="USER" />」的身分登入</translation>
+<translation id="1150989369772528668">日曆</translation>
 <translation id="1154984953698510061">查看其他分頁</translation>
 <translation id="1161340988127985692">要求在「無痕模式」中開啟其他應用程式的連結</translation>
 <translation id="1164064664035028907">請使用安全性強的密碼：</translation>
@@ -467,7 +468,7 @@
 <translation id="4045648459118332842">輕按一下即可在任何應用程式中取得已儲存的密碼</translation>
 <translation id="4049507953662678203">請確定您已連接網絡，然後再試一次。</translation>
 <translation id="4063300985191096908">前往「動態消息」</translation>
-<translation id="4066639687323968621">登入 Google 帳戶就能同步處理書籤、歷史記錄等資料。</translation>
+<translation id="4066639687323968621">登入 Google 帳戶便可同步處理書籤、記錄等等。</translation>
 <translation id="408404951701638773">簡易存取搜尋列</translation>
 <translation id="4092655288299341041">顯示說明</translation>
 <translation id="4105841739161771091">{count,plural, =1{刪除地址}other{刪除地址}}</translation>
@@ -1089,6 +1090,7 @@
 <translation id="7993619969781047893">部分網站的功能可能會無法正常運作</translation>
 <translation id="800361585186029508">在 Google Chrome 中開啟已輸入的網址。</translation>
 <translation id="8005666035647241369">儲存至此裝置的「Google 密碼管理工具」</translation>
+<translation id="8009225694047762179">管理密碼</translation>
 <translation id="8011489434346330032">網絡檢查工具</translation>
 <translation id="8016714545083187120">一律使用安全連線</translation>
 <translation id="802154636333426148">下載失敗</translation>
@@ -1105,6 +1107,7 @@
 <translation id="8073872304774253879">改善搜尋和瀏覽體驗</translation>
 <translation id="8076492880354921740">分頁</translation>
 <translation id="8077675488769462025">閒置分頁</translation>
+<translation id="8079530767338315840">重複播放</translation>
 <translation id="8079602123447022758">呢個設定已經受管理，㩒兩下就可以了解詳情</translation>
 <translation id="8080028325999236607">關閉所有分頁</translation>
 <translation id="8084285576995584326">控制 Google 帳戶資料</translation>
@@ -1274,7 +1277,7 @@
 <translation id="9157836665414082580">隱藏對話框</translation>
 <translation id="9162432979321511934">開啟「自動填入密碼」功能</translation>
 <translation id="9165320910061267720">如要接收減價通知，請在 iOS 設定中開啟通知功能。</translation>
-<translation id="9172603439892261948">同步處理書籤、歷史記錄等資料。</translation>
+<translation id="9172603439892261948">同步書籤、記錄等等。</translation>
 <translation id="9177438225260810839">在開啟的分頁中搜尋</translation>
 <translation id="9187853111759024059">要關閉超過 99 個閒置分頁嗎？</translation>
 <translation id="9188680907066685419">登出受管理的帳戶</translation>

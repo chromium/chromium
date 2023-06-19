@@ -128,7 +128,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="164269334534774161">Está a visualizar uma cópia offline desta página de <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histórico</translation>
 <translation id="1657932388559784161">A secção inferior das estatísticas da página está fechada</translation>
-<translation id="1668122540633280551">Escolha como as pré-visualizações de vídeos são automaticamente reproduzidas na página inicial do Chrome.</translation>
 <translation id="1670399744444387456">Básico</translation>
 <translation id="1671236975893690980">Transferência pendente…</translation>
 <translation id="1672586136351118594">Não mostrar de novo</translation>
@@ -271,7 +270,6 @@ Quando elimina o seu histórico de navegação, todo ou de um site específico, 
 <translation id="2536728043171574184">Visualização de uma cópia offline desta página</translation>
 <translation id="2546283357679194313">Cookies e dados de Web sites</translation>
 <translation id="2558569818338050235">O seu histórico de navegação afeta os anúncios que vê</translation>
-<translation id="2561519700418191927">Pré-visualizações de vídeo</translation>
 <translation id="2567385386134582609">IMAGEM</translation>
 <translation id="2567545343356994513">Proteção proativa mais rápida contra transferências, extensões e Websites perigosos</translation>
 <translation id="2569733278091928697">Vai poder gerir facilmente controlos de multimédia, sessões de Navegação anónima, transferências e muito mais</translation>
@@ -510,7 +508,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="3775705724665058594">Envie para os seus dispositivos</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 separador}other{# separadores}}</translation>
 <translation id="3795154175078851242">Copiar imagem com link</translation>
-<translation id="3803784507854318295">Faça a gestão da reprodução automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Administrar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> transferências eliminadas</translation>
@@ -563,7 +560,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4095146165863963773">Eliminar os dados da aplicação?</translation>
 <translation id="4096227151372679484">Fluxo de armazenamento de marcadores aberto a meia altura</translation>
 <translation id="4101475238162928417">Sincronize para obter os seus marcadores, palavras-passe e muito mais em todos os seus outros dispositivos</translation>
-<translation id="410351446219883937">Reprodução automática</translation>
 <translation id="4106587138345390261">O Chrome está a explorar novas funcionalidades que permitem que os sites forneçam a mesma experiência de navegação com uma menor utilização das suas informações</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Deteta e envia-lhe avisos sobre a ocorrência de eventos perigosos.</translation>
@@ -634,7 +630,6 @@ Os símbolos de estado privado melhoram a privacidade na Web e não podem ser us
 <translation id="4484496141267039529">Sem ligação. Tente mais tarde.</translation>
 <translation id="4487967297491345095">Todos os dados de apps do Chrome são eliminados permanentemente, incluindo todos os ficheiros, definições, contas, bases de dados, etc.</translation>
 <translation id="449126573531210296">Encriptar palavras-passe sincronizadas com a sua Conta Google</translation>
-<translation id="4504667196171871375">Com Wi-Fi e dados móveis</translation>
 <translation id="4508528996305412043">O menu do cartão do feed está aberto.</translation>
 <translation id="4509501256689523862">À medida que navega, a personalização de um anúncio que lhe é mostrado depende da definição <ph name="BEGIN_LINK_1" />Tópicos do anúncio<ph name="END_LINK_1" />, das <ph name="BEGIN_LINK_2" />definições de cookies<ph name="END_LINK_2" /> e se o site que está a ver personaliza anúncios</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Há # dia}other{Há # dias}}</translation>
@@ -1313,7 +1308,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="7944772052836377867">A sincronização precisa de validar a sua identidade</translation>
 <translation id="7947953824732555851">Aceitar e in. sessão</translation>
 <translation id="7957413488482743710">Um cartão virtual oculta o seu cartão real como medida de proteção contra potenciais fraudes. <ph name="BEGIN_LINK1" />Saiba mais sobre cartões virtuais<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Desativou o acesso ao armazenamento. Aceda às Definições para o ativar.</translation>
 <translation id="7963646190083259054">Fornecedor:</translation>
 <translation id="7965838025086216108">Pode usar palavras-passe guardadas em qualquer dispositivo. São guardadas no Gestor de Palavras-passe da Google de <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Por exemplo, alguns Sites podem responder a este pedido ao mostrar-lhe anúncios
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_ONE" /> separador serão fechados}other{<ph name="INCOGNITO_TAB_COUNT" /> separador de navegação anónima e mais <ph name="TAB_COUNT_MANY" /> separadores serão fechados}}</translation>
 <translation id="8970887620466824814">Ocorreu um erro.</translation>
 <translation id="8972098258593396643">Pretende transferir para a pasta predefinida?</translation>
-<translation id="8987641763863173640">Faça a gestão das definições de pré-visualização de vídeo</translation>
 <translation id="8987736167266086032">Continue onde ficou</translation>
 <translation id="8989968390305463310">O seu histórico de navegação afeta os anúncios que vê e os interesses, conforme estimados abaixo. Para proteger a sua privacidade, o Chrome elimina automaticamente os seus interesses todos os meses. Os interesses podem ser atualizados, a menos que os remova.</translation>
 <translation id="8993760627012879038">Abrir novo separador no modo de navegação anónima</translation>

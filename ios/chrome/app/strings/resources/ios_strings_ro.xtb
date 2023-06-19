@@ -28,6 +28,7 @@ Pentru a modifica această setare, <ph name="BEGIN_LINK" />șterge datele Chrome
 <translation id="1126809382673880764">Nu te protejează împotriva site-urilor, descărcărilor și extensiilor periculoase. Te vei bucura în continuare de protecția oferită de Navigarea sigură, dacă este disponibilă, în alte servicii Google, cum ar fi Gmail și Căutarea.</translation>
 <translation id="1145536944570833626">Șterge datele existente.</translation>
 <translation id="1147031633655575115">Te-ai conectat ca <ph name="USER" /></translation>
+<translation id="1150989369772528668">Calendar</translation>
 <translation id="1154984953698510061">Vezi alte file</translation>
 <translation id="1161340988127985692">Solicită deschiderea linkurilor din alte aplicații în modul incognito</translation>
 <translation id="1164064664035028907">Folosește o parolă puternică:</translation>
@@ -471,6 +472,7 @@ Vezi instrucțiunile motorului de căutare pentru ștergerea istoricului căută
 <translation id="4045648459118332842">Accesează parolele salvate în orice aplicație cu o singură atingere</translation>
 <translation id="4049507953662678203">Asigură-te că ai o conexiune la rețea și încearcă din nou.</translation>
 <translation id="4063300985191096908">Accesează feedul</translation>
+<translation id="4066639687323968621">Conectează-te cu Contul Google pentru a sincroniza marcajele, istoricul și alte date.</translation>
 <translation id="408404951701638773">Bara de căutare este acum mai ușor de accesat</translation>
 <translation id="4092655288299341041">Afișează secțiunea Ajutor</translation>
 <translation id="4105841739161771091">{count,plural, =1{Șterge adresa}few{Șterge adresele}other{Șterge adresele}}</translation>
@@ -1098,6 +1100,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="7993619969781047893">Este posibil ca funcțiile de pe anumite site-uri să fie întrerupte</translation>
 <translation id="800361585186029508">Deschide adresele URL introduse în Google Chrome.</translation>
 <translation id="8005666035647241369">În Manager de parole Google pe acest dispozitiv</translation>
+<translation id="8009225694047762179">Gestionează parolele</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Folosește întotdeauna conexiuni securizate</translation>
 <translation id="802154636333426148">Descărcarea nu a reușit</translation>
@@ -1114,6 +1117,7 @@ Site-urile pot folosi cookie-uri pentru a vedea activitatea ta de navigare de pe
 <translation id="8073872304774253879">Îmbunătățește căutările și navigarea</translation>
 <translation id="8076492880354921740">File</translation>
 <translation id="8077675488769462025">File inactive</translation>
+<translation id="8079530767338315840">Repetă</translation>
 <translation id="8079602123447022758">Această setare este gestionată. Atinge de două ori pentru mai multe informații.</translation>
 <translation id="8080028325999236607">Închide filele</translation>
 <translation id="8084285576995584326">Gestionează datele din Contul Google</translation>
@@ -1284,6 +1288,7 @@ Datele au fost criptate cu expresia de acces pentru <ph name="TIME" />. Introdu-
 <translation id="9157836665414082580">Închide casetele de dialog</translation>
 <translation id="9162432979321511934">Activează opțiunea Completează automat parolele</translation>
 <translation id="9165320910061267720">Pentru a primi notificări privind alertele de scădere de preț, trebuie să activezi notificările din setările iOS.</translation>
+<translation id="9172603439892261948">Sincronizează marcajele, istoricul și alte date.</translation>
 <translation id="9177438225260810839">Caută în filele deschise</translation>
 <translation id="9187853111759024059">Închizi peste 99 de file inactive?</translation>
 <translation id="9188680907066685419">Deconectează-te de la contul gestionat</translation>

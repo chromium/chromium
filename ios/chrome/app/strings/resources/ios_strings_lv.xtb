@@ -28,6 +28,7 @@ Lai mainītu šo iestatījumu, <ph name="BEGIN_LINK" />notīriet Chrome datus sa
 <translation id="1126809382673880764">Netiek nodrošināta aizsardzība pret bīstamām vietnēm, lejupielādēm un paplašinājumiem. Jūs joprojām saņemsiet drošas pārlūkošanas aizsardzību, ja tā ir pieejama, citos Google pakalpojumos, piemēram, Gmail un Meklēšana.</translation>
 <translation id="1145536944570833626">Dzēst esošos datus.</translation>
 <translation id="1147031633655575115">Pierakstījies kā <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalendārs</translation>
 <translation id="1154984953698510061">Skatīt citas cilnes</translation>
 <translation id="1161340988127985692">Pieprasījums atvērt saites no citām lietotnēm inkognito režīmā</translation>
 <translation id="1164064664035028907">Izmantojiet drošu paroli:</translation>
@@ -1090,6 +1091,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="7993619969781047893">Noteiktās vietnēs funkcijas var nedarboties</translation>
 <translation id="800361585186029508">Ievadītie vietrāži URL tiek atvērti pārlūkā Google Chrome.</translation>
 <translation id="8005666035647241369">Google paroļu pārvaldniekā šajā ierīcē</translation>
+<translation id="8009225694047762179">Pārvaldīt paroles</translation>
 <translation id="8011489434346330032">Tīmekļa inspektors</translation>
 <translation id="8016714545083187120">Vienmēr izmantot drošus savienojumus</translation>
 <translation id="802154636333426148">Lejupielāde neizdevās</translation>
@@ -1106,6 +1108,7 @@ Vietnes drīkst izmantot sīkfailus, lai skatītu jūsu pārlūkošanas darbība
 <translation id="8073872304774253879">Uzlabot meklēšanu un pārlūkošanu</translation>
 <translation id="8076492880354921740">Cilnes</translation>
 <translation id="8077675488769462025">Neaktīvās cilnes</translation>
+<translation id="8079530767338315840">Atkārtot</translation>
 <translation id="8079602123447022758">Šis iestatījums tiek pārvaldīts. Veiciet dubultskārienu, lai skatītu plašāku informāciju.</translation>
 <translation id="8080028325999236607">Aizvērt visas cilnes</translation>
 <translation id="8084285576995584326">Kontrolējiet savus Google konta datus</translation>

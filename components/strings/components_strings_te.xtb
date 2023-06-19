@@ -401,6 +401,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> నుండి</translation>
 <translation id="1871208020102129563">.pac స్క్రిప్ట్ URLను కాకుండా, స్థిరమైన ప్రాక్సీ సర్వర్‌లను ఉపయోగించేలా ప్రాక్సీ సెట్ చేయబడింది.</translation>
 <translation id="1871284979644508959">అవసరమైన ఫీల్డ్</translation>
+<translation id="1871739799120352748">ధర ఎక్కువగా ఉంటుంది</translation>
 <translation id="1873899211667975540">రాక్ మ్యూజిక్</translation>
 <translation id="1874224422119691492">పాస్‌వర్డ్‌లను పూరించడానికి మీ స్క్రీన్ లాక్‌ను ఉపయోగించాలా, లేదా అనే దానిని మీరు <ph name="SETTINGS" />‌లో మార్చవచ్చు</translation>
 <translation id="1875025161375567525">ఫోటో ట్రే</translation>
@@ -444,6 +445,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> శాశ్వతంగా అధిక డేటాను మీ స్థానిక కంప్యూటర్‌లో స్టోరేజ్‌ చేయాలనుకుంటోంది</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{మరియు మరొకటి}other{మరియు మరో #}}</translation>
+<translation id="2001469757375372617">ఏదో పొరపాటు జరిగింది. మీ మార్పు సేవ్ చేయబడలేదు.</translation>
 <translation id="2003709556000175978">ఇప్పుడే మీ పాస్‌వర్డ్‌ని రీసెట్ చేయండి</translation>
 <translation id="2003775180883135320">ఎగువ భాగంలో నాలుగు రంధ్రాలు</translation>
 <translation id="2009942480257059311">'ఈవెంట్‌ను క్రియేట్ చేయండి' బటన్, Google Calendarలో క్విక్‌గా కొత్త ఈవెంట్‌ను క్రియేట్ చేయడానికి దీన్ని యాక్టివేట్ చేయండి</translation>
@@ -501,6 +503,7 @@
 <translation id="2118132148597630479">ఎన్వలప్ C5</translation>
 <translation id="2119505898009119320">వీరికి జారీ చేయబడింది: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">కుడివైపు దిగువ భాగంలో రంధ్రాలు</translation>
+<translation id="2122214041802369259">ధర ఎక్కువగా ఉంటుంది</translation>
 <translation id="2122719317867821810">ఈ పాలసీ అనుకున్నట్టుగా పని చేస్తోంది, కానీ వైరుధ్య విలువ మరో చోట సెట్ చేయబడింది, అలాగే ఈ పాలసీ ద్వారా ఓవర్‌రైడ్ అయ్యింది.</translation>
 <translation id="2126374524350484896">PDF ప్రొడ్యూసర్:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode విధానాన్ని సెట్ చేయని కారణంగా, మీరు పేర్కొన్న టెంప్లేట్‌లను వర్తింపజేయడం వీలుకాకపోవచ్చు.</translation>
@@ -859,6 +862,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> పైన <ph name="PRICE_DROP" /> తగ్గింపు</translation>
 <translation id="3061707000357573562">ప్యాచ్ సేవ</translation>
 <translation id="306573536155379004">గేమ్ ప్రారంభమైంది.</translation>
+<translation id="3067505415088964188">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="3068991664510324412">కంప్యూటర్ &amp; వీడియో గేమ్‌లు</translation>
 <translation id="3080254622891793721">గ్రాఫిక్</translation>
 <translation id="3081538120861307764">యాడ్ పనితీరును అంచనా వేయడానికి, పరిమిత రకాల డేటా సైట్‌ల మధ్య షేర్ చేయబడుతుంది. ఉదాహరణకు, రోజులో యాడ్ మీకు కనిపించిన సమయం మొదలైనవి.</translation>
@@ -2073,6 +2077,7 @@
 <translation id="5967592137238574583">సంప్రదింపు సమాచారాన్ని ఎడిట్ చేయండి</translation>
 <translation id="5967867314010545767">హిస్టరీ నుండి తీసివేయండి</translation>
 <translation id="5968022600320704045">సెర్చ్ ఫలితాలు ఏవీ లేవు</translation>
+<translation id="5969199813874624822">ధరను సేవ్ చేసి, ట్రాక్ చేయండి</translation>
 <translation id="5974052231147553524">సిక్స్త్ రోల్</translation>
 <translation id="5975083100439434680">దూరంగా జూమ్ చేయి</translation>
 <translation id="5979084224081478209">పాస్‌వర్డ్‌లను చెక్ చేయండి</translation>
@@ -3398,6 +3403,7 @@
 <translation id="9141013498910525015">అడ్రస్‌లను నిర్వహించండి</translation>
 <translation id="9144951720726881238">గడువు తేదీ:</translation>
 <translation id="9148507642005240123">&amp;సవరించడాన్ని రద్దు చేయండి</translation>
+<translation id="9148599396704355100">ధర తక్కువగా ఉంటుంది</translation>
 <translation id="9150045010208374699">మీ కెమెరాను ఉపయోగించండి</translation>
 <translation id="9150685862434908345">మీ అడ్మినిస్ట్రేట‌ర్ మీ బ్రౌజర్ సెటప్‌ను రిమోట్ విధానంలో మార్చవచ్చు. ఈ పరికరంలోని యాక్టివిటీని Chrome వెలుపల కూడా మేనేజ్ చేస్తుండవచ్చు. <ph name="BEGIN_LINK" />మరింత తెలుసుకోండి<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">అప్‌డేట్ చేయబడింది</translation>

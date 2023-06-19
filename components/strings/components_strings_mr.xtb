@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> मधून</translation>
 <translation id="1871208020102129563">प्रॉक्सी निश्चित प्रॉक्सी सर्व्हर वापरण्‍यास सेट करण्‍यात आले आहे, .pac स्क्रिप्ट URL नव्हे.</translation>
 <translation id="1871284979644508959">या जागा भरणे आवश्यक</translation>
+<translation id="1871739799120352748">किंमत जास्त आहे</translation>
 <translation id="1873899211667975540">रॉक संगीत</translation>
 <translation id="1874224422119691492">पासवर्ड भरण्यासाठी तुम्ही स्क्रीन लॉक वापरायचे की नाही हे तुम्ही <ph name="SETTINGS" /> मध्ये बदलू शकता</translation>
 <translation id="1875025161375567525">फोटो ट्रे</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> ला तुमच्या स्थानिक काँप्युटरवर मोठ्या प्रमाणावर डेटा कायमचा स्टोअर करायचा आहे</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{आणि 1 अधिक}other{आणि # अधिक}}</translation>
+<translation id="2001469757375372617">काहीतरी चुकले. तुम्ही केलेला बदल सेव्ह केला गेला नाही.</translation>
 <translation id="2003709556000175978">आता तुमचा पासवर्ड रीसेट करा</translation>
 <translation id="2003775180883135320">क्वाड पंच टॉप</translation>
 <translation id="2009942480257059311">इव्‍हेंट तयार करा बटण, Google Calendar मध्ये नवीन इव्‍हेंट झटपट तयार करण्यासाठी अ‍ॅक्टिव्हेट करा</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">एन्व्हलप सी५</translation>
 <translation id="2119505898009119320"><ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />] यांना जारी केलेले</translation>
 <translation id="2119867082804433120">पंच बॉटम राइट</translation>
+<translation id="2122214041802369259">किंमत जास्त आहे</translation>
 <translation id="2122719317867821810">हे धोरण अपेक्षेनुसार काम करत आहे पण, कुठेतरी एक परस्परविरोधी मूल्य सेट केले आहे आणि हे धोरण ते मूल्य ओव्हरराइड करत आहे.</translation>
 <translation id="2126374524350484896">पीडीएफ निर्माता:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode धोरण सेट केले नसल्यामुळे तुम्ही नमूद केलेली टेम्पलेट कदाचित लागू केली जाऊ शकत नाहीत.</translation>
@@ -857,6 +860,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
 <translation id="3061707000357573562">पॅच सेवा</translation>
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
+<translation id="3067505415088964188">किंमत कमी आहे</translation>
 <translation id="3068991664510324412">कॉंप्युटर आणि व्‍हिडिओ गेम</translation>
 <translation id="3080254622891793721">ग्राफिक</translation>
 <translation id="3081538120861307764">जाहिरातीचा परफॉर्मन्स मोजण्यासाठी, तुम्हाला दिवसाच्या कोणत्या वेळी जाहिरात दाखवली गेली यासारखा मर्यादित प्रकारचा डेटा साइटदरम्यान शेअर केला जातो.</translation>
@@ -2070,6 +2074,7 @@
 <translation id="5967592137238574583">संपर्क माहिती संपादित करा</translation>
 <translation id="5967867314010545767">इतिहासातून काढून टाका</translation>
 <translation id="5968022600320704045">कोणतेही शोध परिणाम नाहीत</translation>
+<translation id="5969199813874624822">किंमत सेव्ह करून तिचा माग ठेवा</translation>
 <translation id="5974052231147553524">सहावा रोल</translation>
 <translation id="5975083100439434680">झूम कमी करा</translation>
 <translation id="5979084224081478209">पासवर्ड तपासा</translation>
@@ -3396,6 +3401,7 @@
 <translation id="9141013498910525015">पत्ते व्यवस्थापित करा</translation>
 <translation id="9144951720726881238">कालावधी समाप्ती तारीख:</translation>
 <translation id="9148507642005240123">&amp;संपादित करा पूर्ववत करा</translation>
+<translation id="9148599396704355100">किंमत कमी आहे</translation>
 <translation id="9150045010208374699">तुमचा कॅमेरा वापरा</translation>
 <translation id="9150685862434908345">तुमचा अ‍ॅडमिनिस्ट्रेटर तुमच्या ब्राउझरचा सेटअप रिमोट पद्धतीने बदलू शकतो. या डिव्हाइसवरील अ‍ॅक्टिव्हिटी Chrome च्या बाहेरदेखील व्यवस्थापित केलेली असू शकते. <ph name="BEGIN_LINK" />अधिक जाणून घ्या<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">अपडेट केलेले</translation>

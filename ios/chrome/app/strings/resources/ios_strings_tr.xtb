@@ -28,6 +28,7 @@ Bu ayarı değiştirmek için <ph name="BEGIN_LINK" />hesabınızdaki Chrome ver
 <translation id="1126809382673880764">Sizi tehlikeli web siteleri, indirmeler ve uzantılara karşı korumaz. Gmail ve Arama gibi diğer Google hizmetlerinde, mümkün olduğunda Güvenli Tarama korumasından yararlanmaya devam edersiniz.</translation>
 <translation id="1145536944570833626">Mevcut veriler silinir.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> olarak oturum açıldı</translation>
+<translation id="1150989369772528668">Takvim</translation>
 <translation id="1154984953698510061">Diğer Sekmeleri Göster</translation>
 <translation id="1161340988127985692">Diğer Uygulamalardaki Bağlantıları Gizli Modda Açma İsteğinde Bulunma</translation>
 <translation id="1164064664035028907">Güçlü şifre kullanın:</translation>
@@ -1090,6 +1091,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="7993619969781047893">Bazı sitelerdeki özellikler çalışmayabilir</translation>
 <translation id="800361585186029508">Girilen URL'leri Google Chrome'da açar.</translation>
 <translation id="8005666035647241369">Bu cihazdaki Google Şifre Yöneticisi'ne</translation>
+<translation id="8009225694047762179">Şifreleri Yönet</translation>
 <translation id="8011489434346330032">Web Denetleyicisi</translation>
 <translation id="8016714545083187120">Her Zaman Güvenli Bağlantılar Kullan</translation>
 <translation id="802154636333426148">İndirilemedi</translation>
@@ -1106,6 +1108,7 @@ Siteler, örneğin reklamları kişiselleştirmek amacıyla farklı sitelerde ta
 <translation id="8073872304774253879">Aramaları ve Göz Atmayı Daha İyi Yap</translation>
 <translation id="8076492880354921740">Sekmeler</translation>
 <translation id="8077675488769462025">Etkin Olmayan Sekmeler</translation>
+<translation id="8079530767338315840">Tekrarla</translation>
 <translation id="8079602123447022758">Bu ayar yönetilir. Daha fazla bilgi için iki kez dokunun.</translation>
 <translation id="8080028325999236607">Tüm Sekmeleri Kapat</translation>
 <translation id="8084285576995584326">Google Hesabı verilerinizi yönetin</translation>

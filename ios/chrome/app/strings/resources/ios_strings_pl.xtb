@@ -28,6 +28,7 @@ Aby zmienić to ustawienie, <ph name="BEGIN_LINK" />wyczyść dane Chrome na swo
 <translation id="1126809382673880764">Nie chroni przed niebezpiecznymi stronami, pobieranymi plikami ani rozszerzeniami. Funkcja Bezpieczne przeglądanie nadal będzie chronić Cię w innych usługach Google, w których jest dostępna (takich jak Gmail i wyszukiwarka).</translation>
 <translation id="1145536944570833626">Usuń istniejące dane.</translation>
 <translation id="1147031633655575115">Używasz konta <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalendarz</translation>
 <translation id="1154984953698510061">Zobacz inne karty</translation>
 <translation id="1161340988127985692">Poproś o otwieranie linków z innych aplikacji w trybie incognito</translation>
 <translation id="1164064664035028907">Użyj silnego hasła:</translation>
@@ -467,6 +468,7 @@ Jeśli chcesz usunąć historię wyszukiwania, zapoznaj się z instrukcjami wys
 <translation id="4045648459118332842">Uzyskaj dostęp do zapisanych haseł w dowolnej aplikacji jednym kliknięciem</translation>
 <translation id="4049507953662678203">Upewnij się, że masz połączenie z siecią, i spróbuj ponownie.</translation>
 <translation id="4063300985191096908">Przejdź do kanału</translation>
+<translation id="4066639687323968621">Zaloguj się na konto Google, aby synchronizować swoje hasła, historię i inne dane.</translation>
 <translation id="408404951701638773">Pasek wyszukiwania jest teraz łatwiej dostępny</translation>
 <translation id="4092655288299341041">Pokaż pomoc</translation>
 <translation id="4105841739161771091">{count,plural, =1{Usuń adres}few{Usuń adresy}many{Usuń adresy}other{Usuń adresy}}</translation>
@@ -1090,6 +1092,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="7993619969781047893">Funkcje niektórych stron mogą nie działać prawidłowo</translation>
 <translation id="800361585186029508">Otwiera wpisane adresy URL w Google Chrome.</translation>
 <translation id="8005666035647241369">W menedżerze haseł Google w przypadku tego urządzenia</translation>
+<translation id="8009225694047762179">Zarządzaj hasłami</translation>
 <translation id="8011489434346330032">Inspektor sieci</translation>
 <translation id="8016714545083187120">Zawsze używaj bezpiecznych połączeń</translation>
 <translation id="802154636333426148">Nie udało się pobrać</translation>
@@ -1106,6 +1109,7 @@ Witryny mogą używać plików cookie do śledzenia Twojej aktywności związane
 <translation id="8073872304774253879">Ulepsz wyszukiwanie i przeglądanie</translation>
 <translation id="8076492880354921740">Karty</translation>
 <translation id="8077675488769462025">Nieaktywne karty</translation>
+<translation id="8079530767338315840">Powtórz</translation>
 <translation id="8079602123447022758">To ustawienie jest zarządzenie. Kliknij dwukrotnie, by dowiedzieć się więcej.</translation>
 <translation id="8080028325999236607">Zamknij wszystkie karty</translation>
 <translation id="8084285576995584326">Zarządzaj danymi z konta Google</translation>
@@ -1275,6 +1279,7 @@ Dane zostały zaszyfrowane hasłem <ph name="TIME" />. Podaj hasło, aby korzyst
 <translation id="9157836665414082580">Ukryj okna dialogowe</translation>
 <translation id="9162432979321511934">Włącz autouzupełnianie haseł</translation>
 <translation id="9165320910061267720">Aby otrzymywać alerty o obniżkach cen, musisz włączyć powiadomienia w ustawieniach iOS.</translation>
+<translation id="9172603439892261948">Synchronizuj zakładki, historię i inne dane.</translation>
 <translation id="9177438225260810839">Szukaj w otwartych kartach</translation>
 <translation id="9187853111759024059">Zamknąć 99 lub więcej nieaktywnych kart?</translation>
 <translation id="9188680907066685419">Wyloguj się z konta zarządzanego</translation>

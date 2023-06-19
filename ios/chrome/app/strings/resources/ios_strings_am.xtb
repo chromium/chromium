@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">እርስዎን አደገኛ ከሆኑ የድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አይጠብቀዎትም። አሁንም የሚገኝ በሆነበት ጊዜ እንደ Gmail እና ፍለጋ ባሉ ሌሎች የGoogle አገልግሎቶች ላይ የጥንቃቄ አሰሳ ጥበቃን ያገኛሉ።</translation>
 <translation id="1145536944570833626">ነባሩን ውሂብ ይሰርዙ።</translation>
 <translation id="1147031633655575115">እንደ <ph name="USER" /> ሆነው ገብተዋል</translation>
+<translation id="1150989369772528668">ቀን መቁጠሪያ</translation>
 <translation id="1154984953698510061">ሌሎች ትሮችን ይመልከቱ</translation>
 <translation id="1161340988127985692">በማንነት የማያሳውቅ ውስጥ ከሌሎች መተግበሪያዎች አገናኞችን ለመክፈት ይጠይቁ</translation>
 <translation id="1164064664035028907">ጠንካራ የይለፍ ቃል ይጠቀሙ፦</translation>
@@ -467,6 +468,7 @@
 <translation id="4045648459118332842">በማንኛውም መተግበሪያ ውስጥ በአንድ መታ ማድረግ የተቀመጡ የይለፍ ቃላትዎን ያግኙ</translation>
 <translation id="4049507953662678203">የአውታረ መረብ ግንኙነት እንዳለዎት ያረጋግጡና እንደገና ይሞክሩ።</translation>
 <translation id="4063300985191096908">ወደ ምግብ ይሂዱ</translation>
+<translation id="4066639687323968621">የእርስዎን ዕልባቶች፣ ታሪክ እና ሌሎችንም ለማመሳሰል በእርስዎ Google መለያ ይግቡ።</translation>
 <translation id="408404951701638773">የፍለጋ አሞሌ አሁን ለማግኘት ይበልጥ ይቀልላል</translation>
 <translation id="4092655288299341041">እገዛ አሳይ</translation>
 <translation id="4105841739161771091">{count,plural, =1{አድራሻን ሰርዝ}one{አድራሻን ሰርዝ}other{አድራሻዎችን ሰርዝ}}</translation>
@@ -1090,6 +1092,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="7993619969781047893">በአንዳንድ ጣቢያዎች ላይ ያሉ ባህሪያት ሊሰበሩ ይችላሉ</translation>
 <translation id="800361585186029508">እንዲገቡ የተደረጉትን ዩአርኤሎች በGoogle Chrome ውስጥ ይከፍታል።</translation>
 <translation id="8005666035647241369">በዚህ መሣሪያ ላይ ወደ Google የይለፍ ቃል አስተዳዳሪ</translation>
+<translation id="8009225694047762179">የይለፍ ቃላትን ያቀናብሩ</translation>
 <translation id="8011489434346330032">የድር አጣሪ</translation>
 <translation id="8016714545083187120">ሁልጊዜ ደህንነታቸው የተጠበቁ ግንኙነቶችን ይጠቀሙ</translation>
 <translation id="802154636333426148">ማውረድ አልተሳካም</translation>
@@ -1106,6 +1109,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="8073872304774253879">ፍለጋዎችን እና አሰሳን የተሻለ ያድርጉ</translation>
 <translation id="8076492880354921740">ትሮች</translation>
 <translation id="8077675488769462025">ገቢር ያልሆኑ ትሮች</translation>
+<translation id="8079530767338315840">ድገም</translation>
 <translation id="8079602123447022758">ይህ ቅንብር የሚተዳደር ነው፣ ለተጨማሪ መረጃ ሁለቴ መታ ያድርጉ</translation>
 <translation id="8080028325999236607">ሁሉንም ትሮች ይዝጉ</translation>
 <translation id="8084285576995584326">የእርስዎን የGoogle መለያ ውሂብ ይቆጣጠሩ</translation>
@@ -1275,6 +1279,7 @@ Handoff እንዲሁም በSettings ውስጥ ባለው የGeneral ክፍል ላ
 <translation id="9157836665414082580">መገናኛዎችን አፍን</translation>
 <translation id="9162432979321511934">የይለፍ ቃላት በራስ ሰር ሙላን ያብሩ</translation>
 <translation id="9165320910061267720">የዋጋ ቅነሳ ማንቂያዎችን ማሳወቂያዎች ለማግኘት በእርስዎ iOS ቅንብሮች ውስጥ ማሳወቂያዎችን ማብራት ይኖርብዎታል።</translation>
+<translation id="9172603439892261948">ዕልባቶችዎን፣ ታሪክዎን እና ሌሎችንም ያስምሩ።</translation>
 <translation id="9177438225260810839">ክፍት ትሮችን ይፈልጉ</translation>
 <translation id="9187853111759024059">99+ ገቢር ያልሆኑ ትሮች ይዘጉ?</translation>
 <translation id="9188680907066685419">ከሚተዳደር መለያ ዘግግተህ ውጣ</translation>

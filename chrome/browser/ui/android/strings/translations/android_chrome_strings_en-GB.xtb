@@ -128,7 +128,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="164269334534774161">You are viewing an offline copy of this page from <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1657932388559784161">Page insights bottom sheet is closed</translation>
-<translation id="1668122540633280551">Choose how video previews will automatically play on the Chrome homepage.</translation>
 <translation id="1670399744444387456">Basic</translation>
 <translation id="1671236975893690980">Download pending...</translation>
 <translation id="1672586136351118594">Don‘t show again</translation>
@@ -271,7 +270,6 @@ When you delete your browsing history – all or for a specific site – you als
 <translation id="2536728043171574184">Viewing an offline copy of this page</translation>
 <translation id="2546283357679194313">Cookies and site data</translation>
 <translation id="2558569818338050235">Your browsing history affects the ads that you see</translation>
-<translation id="2561519700418191927">Video previews</translation>
 <translation id="2567385386134582609">IMAGE</translation>
 <translation id="2567545343356994513">Faster, proactive protection against dangerous websites, downloads and extensions</translation>
 <translation id="2569733278091928697">You’ll be able to easily manage media controls, Incognito sessions, downloads and more</translation>
@@ -510,7 +508,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="3775705724665058594">Send to your devices</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tabs}}</translation>
 <translation id="3795154175078851242">Copy image with link</translation>
-<translation id="3803784507854318295">Manage auto-play</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Manage</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads deleted</translation>
@@ -563,7 +560,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4095146165863963773">Delete app data?</translation>
 <translation id="4096227151372679484">Bookmark save flow opened at half height</translation>
 <translation id="4101475238162928417">Sync to get your passwords, bookmarks and more on your other devices</translation>
-<translation id="410351446219883937">Auto-play</translation>
 <translation id="4106587138345390261">Chrome is exploring new features that allow sites to deliver the same browsing experience using less of your info</translation>
 <translation id="4108314971463891922">Follow</translation>
 <translation id="4108998448622696017">Detects and warns you about dangerous events when they happen.</translation>
@@ -634,7 +630,6 @@ Private state tokens improve privacy on the web and can’t be used to find out 
 <translation id="4484496141267039529">No connection. Try again later.</translation>
 <translation id="4487967297491345095">All Chrome’s app data will be deleted permanently. This includes all files, settings, accounts, databases, etc.</translation>
 <translation id="449126573531210296">Encrypt synced passwords with your Google Account</translation>
-<translation id="4504667196171871375">On Wi-Fi and mobile data</translation>
 <translation id="4508528996305412043">Feed card menu is opened</translation>
 <translation id="4509501256689523862">As you browse, whether an ad that you see is personalised depends on this setting, <ph name="BEGIN_LINK_1" />ad topics<ph name="END_LINK_1" />, your <ph name="BEGIN_LINK_2" />cookie settings<ph name="END_LINK_2" /> and if the site that you’re viewing personalises ads</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# day ago}other{# days ago}}</translation>
@@ -1313,7 +1308,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7944772052836377867">Sync needs to verify that it's you</translation>
 <translation id="7947953824732555851">Accept and sign in</translation>
 <translation id="7957413488482743710">A virtual card hides your actual card to help protect you from potential fraud. <ph name="BEGIN_LINK1" />Learn more about virtual cards<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Never</translation>
 <translation id="7961926449547174351">You have disabled storage access. Please go to settings to enable it.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">You can use saved passwords on any device. They're saved to Google Password Manager for <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_ONE" /> more tab will be closed}other{<ph name="INCOGNITO_TAB_COUNT" /> incognito and <ph name="TAB_COUNT_MANY" /> more tabs will be closed}}</translation>
 <translation id="8970887620466824814">Something went wrong.</translation>
 <translation id="8972098258593396643">Download to default folder?</translation>
-<translation id="8987641763863173640">Manage video preview settings</translation>
 <translation id="8987736167266086032">Pick up from where you left off</translation>
 <translation id="8989968390305463310">Your browsing history affects the ads that you see and the interests as estimated below. To protect your privacy, Chrome auto-deletes your interests on a rolling basis each month. Interests can refresh unless you remove them.</translation>
 <translation id="8993760627012879038">Open a new tab in Incognito mode</translation>

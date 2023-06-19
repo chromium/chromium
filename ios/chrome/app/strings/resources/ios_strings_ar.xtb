@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">‏لا يوفّر لك هذا الوضع حماية من الإضافات أو عمليات التنزيل أو المواقع الإلكترونية الضارة. وستظل تستفيد من ميزة "التصفّح الآمن" عند توفّرها في خدمات Google الأخرى، مثل Gmail و"بحث Google".</translation>
 <translation id="1145536944570833626">سيتم حذف البيانات الحالية.</translation>
 <translation id="1147031633655575115">تم تسجيل الدخول بحساب <ph name="USER" />.</translation>
+<translation id="1150989369772528668">تقويم</translation>
 <translation id="1154984953698510061">الانتقال إلى علامات التبويب الأخرى</translation>
 <translation id="1161340988127985692">طلب فتح روابط من تطبيقات أخرى في وضع التصفح المتخفي</translation>
 <translation id="1164064664035028907">استخدام كلمة مرور قوية:</translation>
@@ -469,6 +470,7 @@
 <translation id="4045648459118332842">الوصول بنقرة واحدة إلى كلمات المرور المحفوظة في أي تطبيق</translation>
 <translation id="4049507953662678203">تأكد من اتصالك بالشبكة، وأعد المحاولة.</translation>
 <translation id="4063300985191096908">الانتقال إلى الخلاصة</translation>
+<translation id="4066639687323968621">‏سجِّل الدخول باستخدام حسابك على Google لمزامنة الإشارات المرجعية والسجلّ وغير ذلك.</translation>
 <translation id="408404951701638773">أصبح الوصول إلى شريط البحث أسهل الآن</translation>
 <translation id="4092655288299341041">عرض معلومات المساعدة</translation>
 <translation id="4105841739161771091">{count,plural, =1{حذف العنوان}zero{حذف العناوين}two{حذف العنوانَين}few{حذف العناوين}many{حذف العناوين}other{حذف العناوين}}</translation>
@@ -1092,6 +1094,7 @@
 <translation id="7993619969781047893">قد تتوقف الميزات عن العمل في بعض المواقع الإلكترونية.</translation>
 <translation id="800361585186029508">‏فتح عناوين URL التي تم إدخالها في Google Chrome</translation>
 <translation id="8005666035647241369">‏حفظ كلمة المرور في "مدير كلمات المرور" من Google على هذا الجهاز</translation>
+<translation id="8009225694047762179">إدارة كلمات المرور</translation>
 <translation id="8011489434346330032">‏Web Inspector (أداة فحص الويب)</translation>
 <translation id="8016714545083187120">استخدام الاتصالات الآمنة دائمًا</translation>
 <translation id="802154636333426148">تعذّر التنزيل</translation>
@@ -1108,6 +1111,7 @@
 <translation id="8073872304774253879">تحسين عمليات البحث والتصفُّح</translation>
 <translation id="8076492880354921740">علامات التبويب</translation>
 <translation id="8077675488769462025">علامات التبويب غير النشطة</translation>
+<translation id="8079530767338315840">تكرار</translation>
 <translation id="8079602123447022758">تتم إدارة هذا الإعداد. يُرجى النقر مرّتَين للحصول على المزيد من المعلومات.</translation>
 <translation id="8080028325999236607">إغلاق جميع علامات التبويب</translation>
 <translation id="8084285576995584326">‏التحكُّم في بيانات حسابك على Google</translation>
@@ -1277,6 +1281,7 @@
 <translation id="9157836665414082580">إيقاف مربعات الحوار</translation>
 <translation id="9162432979321511934">‏فعِّل AutoFill Passwords (الملء التلقائي لكلمات المرور).</translation>
 <translation id="9165320910061267720">‏لتلقِّي تنبيهات بشأن انخفاض الأسعار، عليك تفعيل الإشعارات من إعدادات iOS.</translation>
+<translation id="9172603439892261948">يمكنك مزامنة الإشارات المرجعية والسجلّ وغير ذلك.</translation>
 <translation id="9177438225260810839">البحث في علامات التبويب المفتوحة</translation>
 <translation id="9187853111759024059">هل تريد إغلاق أكثر من 99 علامة تبويب غير نشطة؟</translation>
 <translation id="9188680907066685419">تسجيل الخروج من الحساب المُدار</translation>

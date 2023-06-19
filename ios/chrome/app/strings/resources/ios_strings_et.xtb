@@ -28,6 +28,7 @@ Selle seade muutmiseks <ph name="BEGIN_LINK" />kustutage oma kontol Chrome'i and
 <translation id="1126809382673880764">Ei kaitse teid ohtlike veebisaitide, allalaadimiste ega laienduste eest. Google'i ohutu sirvimine kaitseb teid siiski muudes Google'i teenustes, kus see saadaval on (nt Gmail ja Otsing).</translation>
 <translation id="1145536944570833626">Kustutage olemasolevad andmed.</translation>
 <translation id="1147031633655575115">Sisse logitud kasutajana <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalender</translation>
 <translation id="1154984953698510061">Kuva muud vahelehed</translation>
 <translation id="1161340988127985692">Küsi, kas avada teiste rakenduste lingid inkognito režiimis</translation>
 <translation id="1164064664035028907">Kasutage tugevat parooli:</translation>
@@ -467,6 +468,7 @@ Vaadake oma otsingumootori juhiseid otsinguajaloo kustutamise kohta, kui see on 
 <translation id="4045648459118332842">Pääsege mis tahes rakenduses oma salvestatud paroolidele juurde vaid ühe puudutusega</translation>
 <translation id="4049507953662678203">Veenduge, et oleksite võrguga ühendatud, ja proovige uuesti.</translation>
 <translation id="4063300985191096908">Ava voog</translation>
+<translation id="4066639687323968621">Järjehoidjate, ajaloo ja muu sisu sünkroonimiseks logige sisse oma Google'i kontoga.</translation>
 <translation id="408404951701638773">Otsinguriba aktiveerimine on nüüd lihtsam</translation>
 <translation id="4092655288299341041">Abi kuvamine</translation>
 <translation id="4105841739161771091">{count,plural, =1{Kustuta aadress}other{Kustuta aadressid}}</translation>
@@ -1090,6 +1092,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="7993619969781047893">Mõne saidi funktsioonid ei pruugi töötada.</translation>
 <translation id="800361585186029508">Sisestatud URL-id avatakse Google Chrome'is.</translation>
 <translation id="8005666035647241369">Selle seadme Google'i paroolihaldurile</translation>
+<translation id="8009225694047762179">Halda paroole</translation>
 <translation id="8011489434346330032">Veebiinspektor</translation>
 <translation id="8016714545083187120">Kasuta alati turvalisi ühendusi</translation>
 <translation id="802154636333426148">Allalaadimine ebaõnnestus</translation>
@@ -1106,6 +1109,7 @@ Saidid saavad küpsisefailide abil eri saitidel teie sirvimistegevust jälgida, 
 <translation id="8073872304774253879">Otsingute ja sirvimise paremaks muutmine</translation>
 <translation id="8076492880354921740">Vahelehed</translation>
 <translation id="8077675488769462025">Inaktiivsed vahelehed</translation>
+<translation id="8079530767338315840">Korda</translation>
 <translation id="8079602123447022758">See seade on hallatud, lisateabe jaoks topeltpuudutage</translation>
 <translation id="8080028325999236607">Sule kõik vahelehed</translation>
 <translation id="8084285576995584326">Oma Google'i konto andmete haldamine</translation>
@@ -1275,6 +1279,7 @@ Teie andmed krüpteeriti teie parooliga kuupäeval <ph name="TIME" />. Chrome’
 <translation id="9157836665414082580">Blokeeri dialoogid</translation>
 <translation id="9162432979321511934">Lülitage sisse valik Paroolide automaatne täitmine</translation>
 <translation id="9165320910061267720">Hinnaalanduse märguannete saamiseks peate märguanded iOS-i seadetes sisse lülitama.</translation>
+<translation id="9172603439892261948">Sünkroonige oma järjehoidjad, ajalugu ja muu sisu.</translation>
 <translation id="9177438225260810839">Otsige avatud vahelehtede hulgast</translation>
 <translation id="9187853111759024059">Kas sulgeda 99+ inaktiivset vahelehte?</translation>
 <translation id="9188680907066685419">Hallatud kontolt väljalogimine</translation>

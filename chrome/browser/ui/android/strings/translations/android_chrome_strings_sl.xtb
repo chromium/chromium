@@ -128,7 +128,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="164269334534774161">Ogledujete si kopijo te strani brez povezave z dne <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Zgodovina</translation>
 <translation id="1657932388559784161">Razdelek na dnu zaslona s podrobnimi podatki o strani je zaprt</translation>
-<translation id="1668122540633280551">Izberite, kako se predogledi videoposnetkov samodejno predvajajo na začetni strani v Chromu.</translation>
 <translation id="1670399744444387456">Osnovno</translation>
 <translation id="1671236975893690980">Čakanje na prenos …</translation>
 <translation id="1672586136351118594">Tega ne prikaži več</translation>
@@ -271,7 +270,6 @@ Ko za vsa spletna mesta ali za določeno spletno mesto izbrišete zgodovino brsk
 <translation id="2536728043171574184">Ogled kopije te strani za način brez povezave.</translation>
 <translation id="2546283357679194313">Piškotki in podatki o spletnih mestih</translation>
 <translation id="2558569818338050235">Zgodovina brskanja vpliva na prikazane oglase.</translation>
-<translation id="2561519700418191927">Predogledi videoposnetkov</translation>
 <translation id="2567385386134582609">SLIKA</translation>
 <translation id="2567545343356994513">Hitrejša, še boljša zaščita proti nevarnim spletnim mestom, prenosom in razširitvam.</translation>
 <translation id="2569733278091928697">Preprosto boste lahko upravljali kontrolnike predstavnosti, anonimne seje, prenose in drugo.</translation>
@@ -510,7 +508,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="3775705724665058594">Pošiljanje v naprave</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 zavihek}one{# zavihek}two{# zavihka}few{# zavihki}other{# zavihkov}}</translation>
 <translation id="3795154175078851242">Kopiranje slike s povezavo</translation>
-<translation id="3803784507854318295">Upravljanje samodejnega predvajanja</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Upravljaj</translation>
 <translation id="3819178904835489326">Št. izbrisanih prenosov: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -563,7 +560,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="4095146165863963773">Izbris podatkov aplikacije?</translation>
 <translation id="4096227151372679484">Postopek shranjevanja zaznamka, odprt pri polovični višini</translation>
 <translation id="4101475238162928417">S sinhronizacijo si zagotovite gesla, zaznamke in drugo v drugih napravah.</translation>
-<translation id="410351446219883937">Samodejno predvajanje</translation>
 <translation id="4106587138345390261">Chrome raziskuje nove funkcije, ki spletnim mestom omogočajo, da zagotavljajo isto izkušnjo pri brskanju, pri tem pa uporabljajo manj vaših podatkov.</translation>
 <translation id="4108314971463891922">Spremljaj</translation>
 <translation id="4108998448622696017">Zaznava nevarne dogodke, ko se zgodijo, in vas opozarja nanje.</translation>
@@ -634,7 +630,6 @@ Zasebni žetoni stanja izboljšujejo zaupanje v spletu in jih ni mogoče uporabi
 <translation id="4484496141267039529">Ni povezave. Poskusite pozneje.</translation>
 <translation id="4487967297491345095">Vsi podatki aplikacije Chrome bodo trajno izbrisani, vključno z vsemi datotekami, nastavitvami, računi, zbirkami podatkov ipd.</translation>
 <translation id="449126573531210296">Šifriranje sinhroniziranih gesel z računom Google</translation>
-<translation id="4504667196171871375">»V omrežju Wi-Fi ali mobilnem omrežju«</translation>
 <translation id="4508528996305412043">Meni kartice vira je odprt</translation>
 <translation id="4509501256689523862">Ali je med brskanjem oglas, ki je prikazan, osebno prilagojen, je odvisno od te nastavitve, nastavitve <ph name="BEGIN_LINK_1" />tem oglasov<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavitve piškotkov<ph name="END_LINK_2" /> in od tega, ali spletno mesto, ki si ga ogledujete, osebno prilagaja oglase.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Pred # dnevom}one{Pred # dnevom}two{Pred # dnevoma}few{Pred # dnevi}other{Pred # dnevi}}</translation>
@@ -1313,7 +1308,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="7944772052836377867">Sinhroniziranje mora potrditi, da ste to vi</translation>
 <translation id="7947953824732555851">Sprejem in prijava</translation>
 <translation id="7957413488482743710">Navidezna kartica skrije dejansko kartico in ste tako zaščiteni pred morebitno prevaro. <ph name="BEGIN_LINK1" />Preberite več o navideznih karticah<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nikoli</translation>
 <translation id="7961926449547174351">Onemogočili ste dostop do shrambe. Omogočite ga v nastavitvah.</translation>
 <translation id="7963646190083259054">Ponudnik:</translation>
 <translation id="7965838025086216108">Shranjena gesla lahko uporabljate v poljubni napravi. V Google Upravitelju gesel so shranjena za račun <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Nekatera spletna mesta se lahko na primer na zahtevo odzovejo tako, da prikažej
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_ONE" />.}one{Zaprt bo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihek in še <ph name="TAB_COUNT_MANY" />.}two{Zaprta bosta <ph name="INCOGNITO_TAB_COUNT" /> anonimna zavihka in še <ph name="TAB_COUNT_MANY" />.}few{Zaprti bodo <ph name="INCOGNITO_TAB_COUNT" /> anonimni zavihki in še <ph name="TAB_COUNT_MANY" />.}other{Zaprtih bo <ph name="INCOGNITO_TAB_COUNT" /> anonimnih zavihkov in še <ph name="TAB_COUNT_MANY" />.}}</translation>
 <translation id="8970887620466824814">Prišlo je do napake.</translation>
 <translation id="8972098258593396643">Želite prenesti v privzeto mapo?</translation>
-<translation id="8987641763863173640">Upravljanje nastavitev predogleda videoposnetkov</translation>
 <translation id="8987736167266086032">Nadaljujte, kjer ste ostali</translation>
 <translation id="8989968390305463310">Zgodovina brskanja vpliva na prikazane oglase in zanimanja, kot je ocenjeno spodaj. Chrome zaradi varovanja vaše zasebnosti vsak mesec sproti samodejno izbriše vaša zanimanja. Zanimanja se lahko osvežujejo, razen če jih odstranite.</translation>
 <translation id="8993760627012879038">Odpiranje novega anonimnega zavihka</translation>

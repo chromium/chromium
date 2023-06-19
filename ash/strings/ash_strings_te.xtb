@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">పరికరాలు అందుబాటులో ఉన్నాయి</translation>
 <translation id="1550523713251050646">మరిన్ని ఎంపికల కోసం క్లిక్ చేయండి</translation>
 <translation id="1555130319947370107">నీలం</translation>
+<translation id="1557622599341396706">డెస్క్ పేరును చూపండి</translation>
 <translation id="1576511610858879060">మీ Chromebook లేదా బ్లూటూత్ పరికరం, బ్లూటూత్ పాత వెర్షన్‌ను ఉపయోగిస్తున్నాయి. మెరుగైన ఆడియో క్వాలిటీ కోసం మరో ఇన్‌పుట్ సోర్స్‌ను ఉపయోగించండి.</translation>
 <translation id="1576623706766186887">మ్యాగ్నిఫైయర్ ఆన్‌లో ఉన్నప్పుడు జూమ్ - అవుట్ చేయండి</translation>
 <translation id="1586324912145647027">1 నుండి 8 డెస్క్‌లకు వెళ్లండి</translation>
@@ -987,6 +988,7 @@
 <translation id="5317780077021120954">సేవ్ చేయండి</translation>
 <translation id="5319712128756744240">కొత్త పరికరాన్ని పెయిర్ చేయండి</translation>
 <translation id="5322611492012084517">మీ ఫోన్‌ను కనుగొనడం సాధ్యపడలేదు</translation>
+<translation id="5323994101633366939">డెస్క్ పేరును దాచండి</translation>
 <translation id="5327248766486351172">పేరు</translation>
 <translation id="5329548388331921293">కనెక్ట్ అవుతోంది...</translation>
 <translation id="5331975486040154427">USB-C పరికరం (ఎడమవైపు వెనుక పోర్ట్)</translation>
@@ -1168,6 +1170,7 @@
 <translation id="6103838137565245112">సిస్టమ్</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> స్పీచ్ ఫైల్‌లు డౌన్‌లోడ్ చేయబడ్డాయి</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">కలర్ కరెక్షన్</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> డౌన్‌లోడ్‌ను నిర్ధారించండి</translation>
 <translation id="612734058257491180">అతిథి సెషన్‌లో Google Assistant పని చేయదు.</translation>
 <translation id="6129953537138746214">ఖాళీ</translation>
@@ -1635,6 +1638,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, యాప్</translation>
 <translation id="8255234195843591763">అప్‌డేట్ చేయడానికి రీసెట్ చేయండి</translation>
 <translation id="8261506727792406068">తొలగించండి</translation>
+<translation id="8262312463845990408">ప్లేబ్యాక్‌ను టోగుల్ చేయండి</translation>
 <translation id="8270450402312105425">{0,plural, =1{ఒక గంటలోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}other{# గంటల్లోపు పరికరాన్ని మునుపటి వెర్షన్‌కు మార్చండి}}</translation>
 <translation id="8277261673056602147">మీ స్క్రీన్‌పై ఉన్న టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
 <translation id="8284362522226889623">మునుపటి డెస్క్‌కు మారడానికి నాలుగు వేళ్లతో ఎడమ వైపు స్వైప్ చేయండి</translation>

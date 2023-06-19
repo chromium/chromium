@@ -128,7 +128,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="164269334534774161">Du ser en offlinekopi af denne side fra <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historik</translation>
 <translation id="1657932388559784161">Det nederste ark med sideindsigt er lukket</translation>
-<translation id="1668122540633280551">Vælg, hvordan forhåndsvisninger af videoer automatisk skal afspilles på Chrome-startsiden.</translation>
 <translation id="1670399744444387456">Grundlæggende</translation>
 <translation id="1671236975893690980">Download afventer…</translation>
 <translation id="1672586136351118594">Vis ikke igen</translation>
@@ -271,7 +270,6 @@ Når du sletter din browserhistorik – det hele eller for et specifikt website 
 <translation id="2536728043171574184">Du ser en offlinekopi af denne side</translation>
 <translation id="2546283357679194313">Cookies og websitedata</translation>
 <translation id="2558569818338050235">Din browserhistorik påvirker, hvilke annoncer du ser</translation>
-<translation id="2561519700418191927">Forhåndsvisning af videoer</translation>
 <translation id="2567385386134582609">BILLEDE</translation>
 <translation id="2567545343356994513">Hurtigere proaktiv beskyttelse mod skadelige websites, downloads og udvidelser</translation>
 <translation id="2569733278091928697">Du får mulighed for nemt at administrere mediestyring, inkognitosessioner, downloads og meget mere</translation>
@@ -510,7 +508,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="3775705724665058594">Send til dine enheder</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 fane}one{# fane}other{# faner}}</translation>
 <translation id="3795154175078851242">Kopiér billede med link</translation>
-<translation id="3803784507854318295">Administrer autoplay</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Administrer</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> downloads blev slettet</translation>
@@ -563,7 +560,6 @@ Private state tokens forbedrer beskyttelsen af personlige oplysninger på nettet
 <translation id="4095146165863963773">Vil du slette appdata?</translation>
 <translation id="4096227151372679484">Flow til lagring af bogmærker er åbnet i halv højde</translation>
 <translation id="4101475238162928417">Synkroniser for at få dine adgangskoder, bogmærker og meget mere på dine andre enheder</translation>
-<translation id="410351446219883937">Autoplay</translation>
 <translation id="4106587138345390261">Chrome afprøver nye funktioner, der giver websites mulighed for at levere den samme browseroplevelse uden at bruge så mange af dine oplysninger</translation>
 <translation id="4108314971463891922">Følg</translation>
 <translation id="4108998448622696017">Registrerer og advarer dig om skadelige hændelser, når de opstår.</translation>
@@ -634,7 +630,6 @@ Private state tokens forbedrer privatlivsbeskyttelsen på nettet og kan ikke bru
 <translation id="4484496141267039529">Der er ingen forbindelse. Prøv igen senere.</translation>
 <translation id="4487967297491345095">Alle Chromes appdata slettes permanent. Dette omfatter alle filer, indstillinger, konti, databaser osv.</translation>
 <translation id="449126573531210296">Kryptér synkroniserede adgangskoder med din Google-konto</translation>
-<translation id="4504667196171871375">Via Wi-Fi og mobildata</translation>
 <translation id="4508528996305412043">Feedkortmenuen er åbnet</translation>
 <translation id="4509501256689523862">Om de annoncer, du ser på nettet, er personligt tilpasset, afhænger af denne indstilling for <ph name="BEGIN_LINK_1" />annonceemner<ph name="END_LINK_1" />, dine <ph name="BEGIN_LINK_2" />cookieindstillinger<ph name="END_LINK_2" />, og om det website, du besøger, tilpasser annoncer.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{1 dag siden}one{1 dag siden}other{# dag siden}}</translation>
@@ -1313,7 +1308,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="7944772052836377867">Synkronisering skal verificere din identitet</translation>
 <translation id="7947953824732555851">Acceptér og log ind</translation>
 <translation id="7957413488482743710">Et virtuelt kort skjuler dit faktiske kort og beskytter dig på den måde mod potentiel svindel. <ph name="BEGIN_LINK1" />Få flere oplysninger om virtuelle kort<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Aldrig</translation>
 <translation id="7961926449547174351">Du har deaktiveret adgangen til lagerplads. Gå til Indstillinger for at aktivere den.</translation>
 <translation id="7963646190083259054">Leverandør:</translation>
 <translation id="7965838025086216108">Du kan bruge gemte adgangskoder på alle enheder. De er gemt i Google Adgangskodeadministrator for <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Nogle websites kan f.eks. reagere på denne anmodning ved at vise dig annoncer, 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_ONE" /> anden fane lukkes}one{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> anden fane lukkes}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognitofane og <ph name="TAB_COUNT_MANY" /> andre faner lukkes}}</translation>
 <translation id="8970887620466824814">Noget gik galt.</translation>
 <translation id="8972098258593396643">Vil du downloade til standardmappen?</translation>
-<translation id="8987641763863173640">Administrer indstillinger for forhåndsvisning af video</translation>
 <translation id="8987736167266086032">Fortsæt, hvor du slap</translation>
 <translation id="8989968390305463310">Din browserhistorik påvirker de annoncer, som du ser, og de interesser, som er estimeret nedenfor. Af hensyn til privatlivsbeskyttelsen sletter Chrome automatisk dine interesser en gang om måneden. Interesserne kan blive opdateret, medmindre du fjerner dem.</translation>
 <translation id="8993760627012879038">Åbn en ny fane i inkognitotilstand</translation>

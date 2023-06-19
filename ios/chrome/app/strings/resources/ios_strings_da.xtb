@@ -28,6 +28,7 @@ Du kan ændre denne indstilling ved at <ph name="BEGIN_LINK" />rydde Chrome-data
 <translation id="1126809382673880764">Beskytter dig ikke mod skadelige websites, downloads og udvidelser. Du er stadig beskyttet med Beskyttet browsing i andre Google-tjenester som f.eks. Gmail og Søgning, hvor dette er tilgængeligt.</translation>
 <translation id="1145536944570833626">Slet eksisterende data.</translation>
 <translation id="1147031633655575115">Logget ind som <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalender</translation>
 <translation id="1154984953698510061">Se andre faner</translation>
 <translation id="1161340988127985692">Anmod om at åbne links fra andre apps i inkognito</translation>
 <translation id="1164064664035028907">Brug en stærk adgangskode:</translation>
@@ -467,6 +468,7 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="4045648459118332842">Få adgang til dine gemte adgangskoder i enhver app med et enkelt tryk</translation>
 <translation id="4049507953662678203">Sørg for, at du har forbindelse til et netværk, og prøv igen.</translation>
 <translation id="4063300985191096908">Gå til feed</translation>
+<translation id="4066639687323968621">Log ind med din Google-konto for at synkronisere dine bogmærker, din historik m.m.</translation>
 <translation id="408404951701638773">Nu er det nemmere at bruge søgefeltet</translation>
 <translation id="4092655288299341041">Vis Hjælp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slet adresse}one{Slet adresse}other{Slet adresser}}</translation>
@@ -1090,6 +1092,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="7993619969781047893">Funktioner på visse websites fungerer muligvis ikke</translation>
 <translation id="800361585186029508">Åbner de angivne webadresser i Google Chrome.</translation>
 <translation id="8005666035647241369">I Google Adgangskodeadministrator på denne enhed</translation>
+<translation id="8009225694047762179">Administrer adgangskoder</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Brug altid sikre forbindelser</translation>
 <translation id="802154636333426148">Download mislykkedes</translation>
@@ -1106,6 +1109,7 @@ Websites kan bruge cookies til at se din browseraktivitet på forskellige websit
 <translation id="8073872304774253879">Gør søgninger og browsing endnu bedre</translation>
 <translation id="8076492880354921740">Faner</translation>
 <translation id="8077675488769462025">Inaktive faner</translation>
+<translation id="8079530767338315840">Gentag</translation>
 <translation id="8079602123447022758">Denne indstilling er administreret. Tryk to gange for at få flere oplysninger.</translation>
 <translation id="8080028325999236607">Luk alle faner</translation>
 <translation id="8084285576995584326">Administrer dine Google-kontodata</translation>
@@ -1275,6 +1279,7 @@ Dine data blev krypteret med din adgangssætning <ph name="TIME" />. Angiv adgan
 <translation id="9157836665414082580">Skjul dialogbokse</translation>
 <translation id="9162432979321511934">Aktivér Adgangskoder via Autofyld</translation>
 <translation id="9165320910061267720">Hvis du vil have notifikationer om prisfald, skal du aktivere notifikationer i iOS-indstillingerne.</translation>
+<translation id="9172603439892261948">Synkroniser dine bogmærker, din historik m.m.</translation>
 <translation id="9177438225260810839">Søg i åbne faner</translation>
 <translation id="9187853111759024059">Vil du lukke 99 eller flere inaktive faner?</translation>
 <translation id="9188680907066685419">Log ud af den administrerede konto</translation>

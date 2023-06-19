@@ -28,6 +28,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1126809382673880764">Non ti protegge da estensioni, download e siti web pericolosi. La protezione di Navigazione sicura, se disponibile, sarà ancora attiva in altri servizi Google, come Gmail e Ricerca.</translation>
 <translation id="1145536944570833626">Elimina i dati esistenti.</translation>
 <translation id="1147031633655575115">Accesso eseguito come <ph name="USER" /></translation>
+<translation id="1150989369772528668">Calendario</translation>
 <translation id="1154984953698510061">Vedi altre schede</translation>
 <translation id="1161340988127985692">Chiedi di aprire link da altre app in incognito</translation>
 <translation id="1164064664035028907">Usa una password efficace:</translation>
@@ -1091,6 +1092,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="7993619969781047893">Le funzionalità su alcuni siti potrebbero non essere disponibili</translation>
 <translation id="800361585186029508">Consente di aprire gli URL inseriti in Google Chrome.</translation>
 <translation id="8005666035647241369">Su Gestore delle password di Google su questo dispositivo</translation>
+<translation id="8009225694047762179">Gestisci password</translation>
 <translation id="8011489434346330032">Inspector web</translation>
 <translation id="8016714545083187120">Utilizza sempre connessioni sicure</translation>
 <translation id="802154636333426148">Download non riuscito</translation>
@@ -1107,6 +1109,7 @@ I siti possono utilizzare i cookie per conoscere la tua attività di navigazione
 <translation id="8073872304774253879">Migliora le ricerche e le attività di navigazione</translation>
 <translation id="8076492880354921740">Schede</translation>
 <translation id="8077675488769462025">Schede non attive</translation>
+<translation id="8079530767338315840">Ripeti</translation>
 <translation id="8079602123447022758">Questa impostazione è gestita, tocca due volte per ulteriori informazioni</translation>
 <translation id="8080028325999236607">Chiudi tutte le schede</translation>
 <translation id="8084285576995584326">Controlla i dati del tuo Account Google</translation>

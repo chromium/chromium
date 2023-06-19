@@ -128,7 +128,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="164269334534774161">Estás vendo unha copia sen conexión desta páxina creada o <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">O panel inferior de estatísticas da páxina está pechado</translation>
-<translation id="1668122540633280551">Escolle como se reproducirán automaticamente as vistas previas dos vídeos na páxina de inicio de Chrome.</translation>
 <translation id="1670399744444387456">Opcións básicas</translation>
 <translation id="1671236975893690980">Descarga pendente…</translation>
 <translation id="1672586136351118594">Non mostrar outra vez</translation>
@@ -271,7 +270,6 @@ Cando eliminas o teu historial de navegación (completo ou dun sitio en concreto
 <translation id="2536728043171574184">Visualización dunha copia sen conexión desta páxina</translation>
 <translation id="2546283357679194313">Cookies e datos dos sitios</translation>
 <translation id="2558569818338050235">O teu historial de navegación aféctalles aos anuncios que se che mostran</translation>
-<translation id="2561519700418191927">Vistas previas de vídeos</translation>
 <translation id="2567385386134582609">IMAXE</translation>
 <translation id="2567545343356994513">Unha protección máis rápida e proactiva contra sitios web, descargas e extensións perigosos</translation>
 <translation id="2569733278091928697">Poderás xestionar con facilidade os controis multimedia, as sesións do modo de incógnito, as descargas e moito máis</translation>
@@ -510,7 +508,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="3775705724665058594">Enviar contido aos teus dispositivos</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestana}other{# pestanas}}</translation>
 <translation id="3795154175078851242">Copiar imaxe con ligazón</translation>
-<translation id="3803784507854318295">Xestionar reprodución automática</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Xestionar</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> descargas eliminadas</translation>
@@ -563,7 +560,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4095146165863963773">Queres eliminar os datos da aplicación?</translation>
 <translation id="4096227151372679484">Fluxo para gardar marcadores aberto a media pantalla</translation>
 <translation id="4101475238162928417">Sincroniza os datos para ter todos os teus contrasinais, marcadores e máis nos teus outros dispositivos</translation>
-<translation id="410351446219883937">Reprodución automática</translation>
 <translation id="4106587138345390261">Chrome está probando novas funcións que lles permitan aos sitios ofrecer a mesma experiencia de navegación usando menos información túa</translation>
 <translation id="4108314971463891922">Seguir</translation>
 <translation id="4108998448622696017">Móstrache unha advertencia cando detecta eventos perigosos.</translation>
@@ -634,7 +630,6 @@ Os tokens de estado privado melloran a privacidade na Web e non se poden usar pa
 <translation id="4484496141267039529">Sen conexión. Téntao de novo máis tarde.</translation>
 <translation id="4487967297491345095">Eliminaranse permanentemente todos os datos da aplicación Chrome, mesmo os ficheiros, a configuración, as contas, as bases de datos  etc.</translation>
 <translation id="449126573531210296">Cifrar contrasinais sincronizados coa túa Conta de Google</translation>
-<translation id="4504667196171871375">Con wifi e con datos móbiles</translation>
 <translation id="4508528996305412043">Menú da tarxeta do feed aberto</translation>
 <translation id="4509501256689523862">A medida que navegues pola Web, os anuncios que vexas personalizaranse en función desta opción de configuración, da opción <ph name="BEGIN_LINK_1" />Temas de anuncios<ph name="END_LINK_1" />, da <ph name="BEGIN_LINK_2" />configuración de cookies<ph name="END_LINK_2" /> e de se o sitio que esteas visitando personaliza os anuncios</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{Hai # día}other{Hai # días}}</translation>
@@ -1313,7 +1308,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="7944772052836377867">A sincronización necesita verificar a túa identidade</translation>
 <translation id="7947953824732555851">Acep. e iniciar ses.</translation>
 <translation id="7957413488482743710">As tarxetas virtuais ocultan as tarxetas reais para protexerte de posibles fraudes. <ph name="BEGIN_LINK1" />Máis información sobre as tarxetas virtuais<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nunca</translation>
 <translation id="7961926449547174351">Desactivaches o acceso ao almacenamento. Actívao en Configuración.</translation>
 <translation id="7963646190083259054">Vendedor:</translation>
 <translation id="7965838025086216108">Podes usar os contrasinais gardados en calquera dispositivo. Estes gárdanse no xestor de contrasinais de Google asociado a <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Por exemplo, algúns sitios web poden responder a esta solicitude mostrándoche 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_ONE" /> pestana máis}other{Pecharanse <ph name="INCOGNITO_TAB_COUNT" /> pestanas de incógnito e <ph name="TAB_COUNT_MANY" /> pestanas máis}}</translation>
 <translation id="8970887620466824814">Produciuse un erro.</translation>
 <translation id="8972098258593396643">Queres gardar a descarga no cartafol predeterminado?</translation>
-<translation id="8987641763863173640">Xestionar configuración da vista previa dos vídeos</translation>
 <translation id="8987736167266086032">Continúa onde o deixaches</translation>
 <translation id="8989968390305463310">O teu historial de navegación aféctalles aos anuncios que se che mostran e aos intereses estimados que se indican abaixo. Para protexer a túa privacidade, Chrome elimina automaticamente os teus intereses cada mes. A menos que os quites, os intereses poden actualizarse.</translation>
 <translation id="8993760627012879038">Abrir unha nova pestana no modo de incógnito</translation>

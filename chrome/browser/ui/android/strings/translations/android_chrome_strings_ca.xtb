@@ -128,7 +128,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="164269334534774161">Es mostra una còpia sense connexió d'aquesta pàgina creada el dia <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historial</translation>
 <translation id="1657932388559784161">El full inferior d'estadístiques de la pàgina està tancat</translation>
-<translation id="1668122540633280551">Tria com es reproduiran automàticament les previsualitzacions de vídeo a la pàgina d'inici de Chrome.</translation>
 <translation id="1670399744444387456">Configuració bàsica</translation>
 <translation id="1671236975893690980">Baixada pendent…</translation>
 <translation id="1672586136351118594">No m'ho tornis a mostrar</translation>
@@ -271,7 +270,6 @@ Quan suprimeixes l'historial de navegació (sigui per complet o un lloc web espe
 <translation id="2536728043171574184">S'està mostrant una còpia sense connexió d'aquesta pàgina</translation>
 <translation id="2546283357679194313">Dades de llocs web i galetes</translation>
 <translation id="2558569818338050235">El teu historial de navegació afecta els anuncis que veus</translation>
-<translation id="2561519700418191927">Previsualitzacions de vídeo</translation>
 <translation id="2567385386134582609">IMATGE</translation>
 <translation id="2567545343356994513">Protecció més ràpida i proactiva contra llocs web, baixades i extensions perillosos</translation>
 <translation id="2569733278091928697">Podràs gestionar fàcilment, entre d'altres, els controls multimèdia, les sessions d'incògnit i les baixades</translation>
@@ -510,7 +508,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="3775705724665058594">Envia als teus dispositius</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 pestanya}other{# pestanyes}}</translation>
 <translation id="3795154175078851242">Copia la imatge amb l'enllaç</translation>
-<translation id="3803784507854318295">Gestiona la reproducció automàtica</translation>
 <translation id="3810838688059735925">Vídeo</translation>
 <translation id="3810973564298564668">Gestiona</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> baixades suprimides</translation>
@@ -563,7 +560,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4095146165863963773">Vols suprimir les dades de l'aplicació?</translation>
 <translation id="4096227151372679484">Flux per desar l'adreça d'interès obert a mitja alçada</translation>
 <translation id="4101475238162928417">Sincronitza per obtenir les contrasenyes, les adreces d'interès i altres elements als teus altres dispositius</translation>
-<translation id="410351446219883937">Reproducció automàtica</translation>
 <translation id="4106587138345390261">Chrome està explorant noves funcions que permetin als llocs web oferir la mateixa experiència de navegació utilitzant menys informació teva</translation>
 <translation id="4108314971463891922">Segueix</translation>
 <translation id="4108998448622696017">Detecta esdeveniments perillosos quan es produeixen i t'hi avisa.</translation>
@@ -634,7 +630,6 @@ Els testimonis d'estat privat milloren la privadesa al web i no poden utilitzar-
 <translation id="4484496141267039529">No hi ha connexió. Torna-ho a provar més tard.</translation>
 <translation id="4487967297491345095">Totes les dades de les aplicacions de Chrome, com ara els fitxers, la configuració, els comptes o les bases de dades, entre d'altres, se suprimiran permanentment.</translation>
 <translation id="449126573531210296">Encripta contrasenyes sincronitzades amb el teu Compte de Google</translation>
-<translation id="4504667196171871375">Amb Wi‑Fi i dades mòbils</translation>
 <translation id="4508528996305412043">El menú de la targeta del tauler està obert</translation>
 <translation id="4509501256689523862">El fet que els anuncis que veus mentre navegues es personalitzin o no dependrà d'aquesta opció de configuració, dels <ph name="BEGIN_LINK_1" />temes dels anuncis<ph name="END_LINK_1" />, de la <ph name="BEGIN_LINK_2" />configuració de les galetes<ph name="END_LINK_2" /> i de si el lloc web que estàs visitant personalitza els anuncis</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{fa # dia}other{fa # dies}}</translation>
@@ -1313,7 +1308,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="7944772052836377867">La sincronització ha de verificar la teva identitat</translation>
 <translation id="7947953824732555851">Acc. i inicia sessió</translation>
 <translation id="7957413488482743710">Una targeta virtual amaga la teva targeta real per contribuir a protegir-te de possibles fraus. <ph name="BEGIN_LINK1" />Més informació sobre les targetes virtuals<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Has desactivat l'accés a l'emmagatzematge. Ves a Configuració per activar-lo.</translation>
 <translation id="7963646190083259054">Proveïdor:</translation>
 <translation id="7965838025086216108">Pots utilitzar les contrasenyes desades en qualsevol dispositiu. Es desen al gestor de contrasenyes de Google de <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Per exemple, és possible que alguns llocs web responguin a aquesta sol·licitud
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanya d'incògnit i <ph name="TAB_COUNT_ONE" /> de normal.}other{Es tancaran <ph name="INCOGNITO_TAB_COUNT" /> pestanyes d'incògnit i <ph name="TAB_COUNT_MANY" /> de normals.}}</translation>
 <translation id="8970887620466824814">S'ha produït un error.</translation>
 <translation id="8972098258593396643">Vols baixar el fitxer a la carpeta predeterminada?</translation>
-<translation id="8987641763863173640">Gestiona la configuració de la previsualització de vídeos</translation>
 <translation id="8987736167266086032">Continua des d'on ho vas deixar</translation>
 <translation id="8989968390305463310">El teu historial de navegació afecta els anuncis que veus i les estimacions d'interessos que es mostren més avall. Amb la finalitat de protegir la teva privadesa, Chrome suprimeix automàticament els interessos de manera contínua cada mes, i es poden actualitzar tret que els suprimeixis.</translation>
 <translation id="8993760627012879038">Obre una pestanya nova en mode d'incògnit</translation>

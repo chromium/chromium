@@ -128,7 +128,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="164269334534774161">Jūs skatāt šīs lapas bezsaistes kopiju, kas tika izveidota šādā datumā: <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Vēsture</translation>
 <translation id="1657932388559784161">Lapas ieskatu ekrāna apakšdaļas lapa ir aizvērta</translation>
-<translation id="1668122540633280551">Izvēlieties, kā videoklipu priekšskatījumi automātiski tiks atskaņoti Chrome sākumlapā.</translation>
 <translation id="1670399744444387456">Pamata</translation>
 <translation id="1671236975893690980">Lejupielāde tiek gaidīta...</translation>
 <translation id="1672586136351118594">Vairs nerādīt</translation>
@@ -271,7 +270,6 @@ Dzēšot pārlūkošanas vēsturi (visu vai konkrētas vietnes vēsturi), tiek d
 <translation id="2536728043171574184">Skata šīs lapas kopiju bezsaistē</translation>
 <translation id="2546283357679194313">Sīkfaili un vietņu dati</translation>
 <translation id="2558569818338050235">Pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas</translation>
-<translation id="2561519700418191927">Videoklipu priekšskatījumi</translation>
 <translation id="2567385386134582609">ATTĒLS</translation>
 <translation id="2567545343356994513">Ātrāka, aktīva aizsardzība pret bīstamām tīmekļa vietnēm, lejupielādēm un paplašinājumiem.</translation>
 <translation id="2569733278091928697">Varēsiet viegli pārvaldīt multivides vadīklas, inkognito sesijas, lejupielādes un daudz ko citu</translation>
@@ -510,7 +508,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="3775705724665058594">Sūtīšana uz jūsu ierīcēm</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 cilne}zero{# ciļņu}one{# cilne}other{# cilnes}}</translation>
 <translation id="3795154175078851242">Kopēt attēlu un saiti</translation>
-<translation id="3803784507854318295">Pārvaldīt automātisko atskaņošanu</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Pārvaldīt</translation>
 <translation id="3819178904835489326">Izdzēsti <ph name="NUMBER_OF_DOWNLOADS" /> lejupielādētie vienumi</translation>
@@ -563,7 +560,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4095146165863963773">Vai dzēst lietotnes datus?</translation>
 <translation id="4096227151372679484">Grāmatzīmes saglabāšanas plūsma ir atvērta pusekrāna augstumā</translation>
 <translation id="4101475238162928417">Veiciet sinhronizāciju, lai varētu skatīt paroles, grāmatzīmes un citu saturu savās pārējās ierīcēs.</translation>
-<translation id="410351446219883937">Automātiskā atskaņošana</translation>
 <translation id="4106587138345390261">Chrome pēta jaunas funkcijas, kas ļauj vietnēs nodrošināt tādas pašas pārlūkošanas iespējas, izmantojot mazāk personas informācijas.</translation>
 <translation id="4108314971463891922">Sekot</translation>
 <translation id="4108998448622696017">Kad atgadās bīstami notikumi, tie tiek noteikti un jūs saņemat brīdinājumus.</translation>
@@ -634,7 +630,6 @@ Privātā stāvokļa pilnvaras uzlabo konfidencialitāti tīmeklī. Tās nevar i
 <translation id="4484496141267039529">Nav savienojuma. Vēlāk mēģiniet vēlreiz.</translation>
 <translation id="4487967297491345095">Visi lietotnes Chrome dati tiks neatgriezeniski izdzēsti. Tas attiecas uz visiem failiem, iestatījumiem, kontiem, datu bāzēm un citiem datiem.</translation>
 <translation id="449126573531210296">Šifrēt sinhronizētās paroles, izmantojot jūsu Google konta datus</translation>
-<translation id="4504667196171871375">Wi-Fi tīklā un mobilo datu savienojumā</translation>
 <translation id="4508528996305412043">Plūsmas kartītes izvēlne ir atvērta</translation>
 <translation id="4509501256689523862">To, vai pārlūkošanas laikā jums rādītā reklāma tiek personalizēta, nosaka šis iestatījums, <ph name="BEGIN_LINK_1" />reklāmu tēmas<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />sīkfailu iestatījumi<ph name="END_LINK_2" />, kā arī tas, vai atvērtajā vietnē tiek veikta reklāmu personalizēšana.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{pirms # dienas}zero{pirms # dienām}one{pirms # dienas}other{pirms # dienām}}</translation>
@@ -1313,7 +1308,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="7944772052836377867">Sinhronizēšanai nepieciešams apstiprināt jūsu identitāti</translation>
 <translation id="7947953824732555851">Pieņemt un pierakst.</translation>
 <translation id="7957413488482743710">Virtuāla karte paslēpj jūsu faktisko karti, lai efektīvāk aizsargātu jūs pret iespējamu krāpšanu. <ph name="BEGIN_LINK1" />Uzziniet vairāk par virtuālajām kartēm<ph name="END_LINK1" />.</translation>
-<translation id="7961015016161918242">Nekad</translation>
 <translation id="7961926449547174351">Jūs esat atspējojis piekļuvi krātuvei. Lai to iespējotu, pārejiet uz iestatījumiem.</translation>
 <translation id="7963646190083259054">Nodrošina:</translation>
 <translation id="7965838025086216108">Varat izmantot saglabātās paroles jebkurā ierīcē. Tās ir saglabātas Google paroļu pārvaldniekā kontā <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Piemēram, dažas vietnes, reaģējot uz šo pieprasījumu, var rādīt jums rek
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_ONE" /> cilne.}zero{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}one{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilne.}other{Tiks aizvērta <ph name="INCOGNITO_TAB_COUNT" /> inkognito cilne un vēl <ph name="TAB_COUNT_MANY" /> cilnes.}}</translation>
 <translation id="8970887620466824814">Radās kļūda.</translation>
 <translation id="8972098258593396643">Vai lejupielādēt noklusējuma mapē?</translation>
-<translation id="8987641763863173640">Pārvaldiet video priekšskatīšanas iestatījumus</translation>
 <translation id="8987736167266086032">Turpiniet darbu no vietas, kur to pārtraucāt</translation>
 <translation id="8989968390305463310">Pārlūkošanas vēsture ietekmē to, kādas reklāmas jums tiek rādītas, un tālāk redzamās aptuveni noteiktās intereses. Lai aizsargātu jūsu konfidencialitāti, Chrome automātiski katru mēnesi pakāpeniski dzēš jūsu intereses. Intereses var tikt atjaunotas, ja vien nenoņemat tās.</translation>
 <translation id="8993760627012879038">Atvērt jaunu cilni inkognito režīmā</translation>

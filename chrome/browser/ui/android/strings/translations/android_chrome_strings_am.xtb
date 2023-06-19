@@ -128,7 +128,6 @@
 <translation id="164269334534774161"><ph name="CREATION_TIME" /> ላይ የነበረ የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ ነዎት</translation>
 <translation id="1644574205037202324">ታሪክ</translation>
 <translation id="1657932388559784161">የገጽ ግንዛቤዎች የግርጌ ሉህ ተዘግቷል</translation>
-<translation id="1668122540633280551">የቪዲዮ ቅድመ-እይታዎች በራስ-ሰር በChrome መነሻ ገፅ ላይ እንዴት እንደሚጫወቱ ይምረጡ።</translation>
 <translation id="1670399744444387456">መሠረታዊ</translation>
 <translation id="1671236975893690980">ውርድ በመጠባበቅ ላይ...</translation>
 <translation id="1672586136351118594">ዳግም አታሳይ</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">የዚህን ገፅ የመስመር ውጭ ቅጂ በመመልከት ላይ</translation>
 <translation id="2546283357679194313">ኩኪዎች እና የጣቢያ ውሂብ</translation>
 <translation id="2558569818338050235">የአሰሳ ታሪክዎ በሚያዩዋቸው ማስታወቂያዎች ላይ ተጽዕኖ ያሳድራል</translation>
-<translation id="2561519700418191927">የቪዲዮ ቅድመ-እይታዎች</translation>
 <translation id="2567385386134582609">ምስል</translation>
 <translation id="2567545343356994513">ይበልጥ ፈጣን፣ ከአደገኛ ድር ጣቢያዎች፣ ማውረዶች እና ቅጥያዎች አስቀድሞ የሚደረግ ጥበቃ</translation>
 <translation id="2569733278091928697">የሚዲያ መቆጣጠሪያዎችን፣ ማንነትን የማያሳውቁ ክፍለ-ጊዜዎችን፣ ውርዶችን እና ሌሎችንም በቀላሉ ማቀናበር ይችላሉ</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">ወደ መሣሪያዎችዎ ይላኩ</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 ትር}one{# ትሮች}other{# ትሮች}}</translation>
 <translation id="3795154175078851242">ምስል ከአገናኝ ጋር ቅዳ</translation>
-<translation id="3803784507854318295">በራስ-አጫውትን ያቀናብሩ</translation>
 <translation id="3810838688059735925">ቪዲዮ</translation>
 <translation id="3810973564298564668">አደራጅ</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> የሚወርዱ ተሰርዘዋል</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">የመተግበሪያ ውሂብ ይሰረዝ?</translation>
 <translation id="4096227151372679484">የዕልባት ማስቀመጥ ፍሰት በግማሽ ቁመት ተከፍቷል</translation>
 <translation id="4101475238162928417">በእርስዎ ሌሎች መሣሪያዎች ላይ የእርስዎን የይለፍ ቃካት፣ እልባቶች እና ተጨማሪ ነገሮችን ለማግኘት ያስምሩ</translation>
-<translation id="410351446219883937">ራስ-አጫውት</translation>
 <translation id="4106587138345390261">Chrome ጣቢያዎች ያነሰ መረጃዎን ተጠቅመው ተመሳሳይ የአሰሳ ተሞክሮ እንዲያቀርቡ የሚያስችሏቸውን አዲስ ባህሪያት እያሰሰ ነው።</translation>
 <translation id="4108314971463891922">ተከተል</translation>
 <translation id="4108998448622696017">አደገኛ ክስተቶች ልክ ሲያጋጥሙ ፈልጎ ያገኛቸውና ስለእነሱ ያስጠነቅቅዎታል።</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">ምንም ግንኙነት የለም። ቆይተው እንደገና ይሞክሩ።</translation>
 <translation id="4487967297491345095">ሁሉንም የChrome መተግበሪያ ውሂብ እስከመጨረሻው ይሰረዛል። ይሄ ሁሉንም ፋይሎች፣ ቅንብሮች፣ መለያዎች፣ የውሂብ ጎታዎች፣ ወዘተ. ያካትታል።</translation>
 <translation id="449126573531210296">የሰመረውን የይለፍ ቃላት ከGoogle መለያዎች ጋር ይመስጥሩ</translation>
-<translation id="4504667196171871375">በWi-Fi እና የተንቀሳቃሽ ስልክ ውሂብ ላይ</translation>
 <translation id="4508528996305412043">የምግብ ካርድ ምናሌ ተከፍቷል</translation>
 <translation id="4509501256689523862">በሚያስሱበት ጊዜ የሚያዩት ማስታወቂያ ግላዊነት የተላበሰ መሆን አለመሆኑ በዚህ ቅንብር <ph name="BEGIN_LINK_1" />የማስታወቂያ ርዕሶች<ph name="END_LINK_1" />፣ በእርስዎ <ph name="BEGIN_LINK_2" />የኩኪ ቅንብሮች<ph name="END_LINK_2" /> ላይ እና እየተመለከቱት ያለው ጣቢያ ማስታወቂያዎችን ግላዊነት የሚያላብስ ከሆነ ይወሰናል</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{ከ# ቀን በፊት}one{ከ# ቀኖች በፊት}other{ከ# ቀኖች በፊት}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">ስምረት እርስዎ መሆንዎን ማረጋገጥ ይፈልጋል</translation>
 <translation id="7947953824732555851">ተቀበል እና ግባ</translation>
 <translation id="7957413488482743710">ምናባዊ ካርድ እርስዎን ሊሆን ከሚችል መጭበርበር ለመጠበቅ እንዲረዳዎ ትክክለኛውን የእርስዎ ካርድ ይደብቀዋል። <ph name="BEGIN_LINK1" />ስለምናባዊ ካርዶች የበለጠ ይወቁ<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">በፍጹም</translation>
 <translation id="7961926449547174351">የማከማቻ መዳረሻን አሰናክለዋል፣ እሱን ለማንቃት እባክዎ ወደ ቅንብሮች ይሂዱ።</translation>
 <translation id="7963646190083259054">አቅራቢ፦</translation>
 <translation id="7965838025086216108">በማንኛውም መሣሪያ ላይ የተቀመጡ የይለፍ ቃላትን መጠቀም ይችላሉ። ለ<ph name="ACCOUNT" /> ወደ የGoogle የይለፍ ቃል አስተዳዳሪ ይቀመጣሉ።</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_ONE" /> ተጨማሪ ትር ይዘጋል}one{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}other{<ph name="INCOGNITO_TAB_COUNT" /> ማንነትን የማያሳውቅ እና <ph name="TAB_COUNT_MANY" /> ተጨማሪ ትሮች ይዘጋሉ}}</translation>
 <translation id="8970887620466824814">የሆነ ችግር ተፈጥሯል።</translation>
 <translation id="8972098258593396643">ወደ ነባሪው አቃፊ ይውረድ?</translation>
-<translation id="8987641763863173640">የቪዲዮ ቅድመ-እይታ ቅንብሮችን ያቀናብሩ</translation>
 <translation id="8987736167266086032">ካቆሙበት ቦታ ይቀጥሉ</translation>
 <translation id="8989968390305463310">የአሰሳ ታሪክዎ ከታች እንደተገመተው እርስዎ በሚያዩዋቸው ማስታወቂያዎች እና ዝንባሌዎች ላይ ተጽዕኖ ያሳድራል። የእርስዎን ግላዊነት ለመጠበቅ Chrome በየወሩ ዝንባሌዎችዎን በራስ-ሰር ይሰርዛል። እርስዎ ካላስወገዷቸው በስተቀር ዝንባሌዎችን ማደስ ይችላሉ።</translation>
 <translation id="8993760627012879038">አዲስ ትር በማንነት የማያሳውቅ ሁነታ ውስጥ ክፈት</translation>

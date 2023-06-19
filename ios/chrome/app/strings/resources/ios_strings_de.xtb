@@ -28,6 +28,7 @@ Wenn du diese Einstellung ändern möchtest, <ph name="BEGIN_LINK" />lösche die
 <translation id="1126809382673880764">Du wirst nicht vor schädlichen Websites, Downloads und Erweiterungen geschützt. Sofern verfügbar, bist du in anderen Google-Diensten, wie Gmail und der Google Suche, durch Safe Browsing geschützt.</translation>
 <translation id="1145536944570833626">Vorhandene Daten werden gelöscht.</translation>
 <translation id="1147031633655575115">Angemeldet als <ph name="USER" /></translation>
+<translation id="1150989369772528668">Kalender</translation>
 <translation id="1154984953698510061">Andere Tabs anzeigen</translation>
 <translation id="1161340988127985692">Nachfragen, ob Links aus anderen Apps im Inkognitomodus geöffnet werden sollen</translation>
 <translation id="1164064664035028907">Starkes Passwort verwenden:</translation>
@@ -467,6 +468,7 @@ Informationen zum Löschen deines Suchverlaufs findest du in der Anleitung deine
 <translation id="4045648459118332842">Deine gespeicherten Passwörter in allen Apps mit einmal tippen abrufen</translation>
 <translation id="4049507953662678203">Überprüfe deiner Netzwerkverbindung und versuche es noch einmal.</translation>
 <translation id="4063300985191096908">Zum Feed</translation>
+<translation id="4066639687323968621">Melde dich mit deinem Google-Konto an, um deine Lesezeichen, deinen Verlauf und mehr zu synchronisieren.</translation>
 <translation id="408404951701638773">Auf die Suchleiste kann jetzt noch einfacher zugegriffen werden</translation>
 <translation id="4092655288299341041">Hilfe anzeigen</translation>
 <translation id="4105841739161771091">{count,plural, =1{Adresse löschen}other{Adressen löschen}}</translation>
@@ -1090,6 +1092,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="7993619969781047893">Funktionen auf manchen Websites funktionieren möglicherweise nicht mehr</translation>
 <translation id="800361585186029508">Öffnet die eingegebenen URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">Im Google Passwortmanager auf diesem Gerät</translation>
+<translation id="8009225694047762179">Passwort verwalten</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Immer sichere Verbindungen verwenden</translation>
 <translation id="802154636333426148">Downloadfehler</translation>
@@ -1106,6 +1109,7 @@ Websites können Cookies verwenden, um deine Browseraktivitäten auf anderen Web
 <translation id="8073872304774253879">Suchanfragen und das Surfen verbessern</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8077675488769462025">Inaktive Tabs</translation>
+<translation id="8079530767338315840">Wiederholen</translation>
 <translation id="8079602123447022758">Diese Einstellung wird verwaltet – für weitere Informationen doppeltippen</translation>
 <translation id="8080028325999236607">Alle Tabs schließen</translation>
 <translation id="8084285576995584326">Google-Kontodaten verwalten</translation>
@@ -1275,6 +1279,7 @@ Deine Daten wurden am <ph name="TIME" /> mit deiner Passphrase verschlüsselt. G
 <translation id="9157836665414082580">Dialogfelder unterdrücken</translation>
 <translation id="9162432979321511934">Aktiviere die Option zum automatischen Ausfüllen von Passwörtern</translation>
 <translation id="9165320910061267720">Wenn du Benachrichtigungen zu Preisnachlässen erhalten möchtest, musst du Benachrichtigungen in den iOS-Einstellungen aktivieren.</translation>
+<translation id="9172603439892261948">Lesezeichen, Verlauf und mehr auf allen Geräten synchronisieren.</translation>
 <translation id="9177438225260810839">Auf offenen Tabs suchen</translation>
 <translation id="9187853111759024059">Über 99 inaktive Tabs schließen?</translation>
 <translation id="9188680907066685419">Von verwaltetem Konto abmelden</translation>

@@ -28,6 +28,7 @@ Para cambiar esta configuración, <ph name="BEGIN_LINK" />borra los datos de Chr
 <translation id="1126809382673880764">No te protege contra descargas, extensiones ni sitios web peligrosos. Seguirás teniendo la protección (donde esté disponible) de la Navegación segura en otros servicios de Google, como Gmail y la Búsqueda.</translation>
 <translation id="1145536944570833626">Borra los datos existentes.</translation>
 <translation id="1147031633655575115">Accediste como <ph name="USER" /></translation>
+<translation id="1150989369772528668">Calendario</translation>
 <translation id="1154984953698510061">Ver otras pestañas</translation>
 <translation id="1161340988127985692">Solicita abrir vínculos en otras apps con el modo Incógnito</translation>
 <translation id="1164064664035028907">Utiliza una contraseña segura:</translation>
@@ -1090,6 +1091,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="7993619969781047893">Es posible que las características de algunos sitios no funcionen de forma correcta</translation>
 <translation id="800361585186029508">Abre las URL ingresadas en Google Chrome.</translation>
 <translation id="8005666035647241369">En el Administrador de contraseñas de Google en este dispositivo</translation>
+<translation id="8009225694047762179">Administrar contraseñas</translation>
 <translation id="8011489434346330032">Inspector web</translation>
 <translation id="8016714545083187120">Usar siempre conexiones seguras</translation>
 <translation id="802154636333426148">Error en la descarga</translation>
@@ -1106,6 +1108,7 @@ También pueden usar cookies para ver la actividad de navegación en diferentes 
 <translation id="8073872304774253879">Mejorar las búsquedas y la navegación</translation>
 <translation id="8076492880354921740">Pestañas</translation>
 <translation id="8077675488769462025">Pestañas inactivas</translation>
+<translation id="8079530767338315840">Repetir</translation>
 <translation id="8079602123447022758">Esta configuración está administrada; presiona dos veces para obtener más información</translation>
 <translation id="8080028325999236607">Cerrar todas las pestañas</translation>
 <translation id="8084285576995584326">Controla los datos de tu Cuenta de Google.</translation>

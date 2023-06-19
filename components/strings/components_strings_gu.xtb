@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> પરથી</translation>
 <translation id="1871208020102129563">પ્રૉક્સી નક્કી કરેલા પ્રૉક્સી સર્વરનો ઉપયોગ કરવા માટે સેટ કરેલી છે, .pac સ્ક્રિપ્ટ URL નથી.</translation>
 <translation id="1871284979644508959">જરૂરી ફીલ્ડ</translation>
+<translation id="1871739799120352748">કિંમત વધુ છે</translation>
 <translation id="1873899211667975540">રૉક મ્યુઝિક</translation>
 <translation id="1874224422119691492">તમે પાસવર્ડ ભરવા માટે તમારા સ્ક્રીન લૉકનો ઉપયોગ કરશો કે નહીં, તે તમે <ph name="SETTINGS" />માં બદલી શકો છો</translation>
 <translation id="1875025161375567525">ફોટો ટ્રે</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> તમારા સ્થાનિક કમ્પ્યુટર પર કાયમી ધોરણે વિશાળ ડેટા સ્ટોર કરવા માગે છે</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{અને 1 વધુ}one{અને # વધુ}other{અને # વધુ}}</translation>
+<translation id="2001469757375372617">કંઈક ખોટું થયું. તમારો ફેરફાર સાચવવામાં આવ્યો ન હતો.</translation>
 <translation id="2003709556000175978">તમારો પાસવર્ડ હમણાં જ રીસેટ કરો</translation>
 <translation id="2003775180883135320">ઉપરની બાજુએ ચતુષ્કોણ કાણું પાડો</translation>
 <translation id="2009942480257059311">'ઇવેન્ટ બનાવો' બટન, Google Calendarમાં ઝડપથી કોઈ નવી ઇવેન્ટ બનાવવા માટે સક્રિય કરો</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">એન્વલપ C5</translation>
 <translation id="2119505898009119320">આપવામાં આવ્યું છે: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]ને</translation>
 <translation id="2119867082804433120">નીચે જમણી બાજુએ કાણું પાડો</translation>
+<translation id="2122214041802369259">કિંમત વધુ છે</translation>
 <translation id="2122719317867821810">આ પૉલિસી હેતુ મુજબ કાર્ય કરી રહી છે, પરંતુ વિરોધાભાસ ધરાવતું મૂલ્ય બીજે ક્યાંક સેટ કરવામાં આવ્યું છે અને આ પૉલિસી તેને ઓવરરાઇડ કરે છે.</translation>
 <translation id="2126374524350484896">PDF નિર્માતા:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode પૉલિસી સેટ ન કરી હોવાને કારણે તમે ઉલ્લેખ કરેલા નમૂનાને કદાચ લાગુ કરવામાં આવશે નહીં.</translation>
@@ -535,6 +538,7 @@
 <translation id="2202020181578195191">એક માન્ય સમાપ્તિ વર્ષ દાખલ કરો</translation>
 <translation id="2202627062836089804">તમારા કાર્ડની પાછળનો ભાગ</translation>
 <translation id="2204482073374652408">અપડેટ થવાનું સમાપ્ત થયું!</translation>
+<translation id="2208053750671792556">તમારો કોડ મળ્યો નથી? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ટ્રે 3</translation>
 <translation id="2210794033760923560">રિપોર્ટ અપલોડ કરો</translation>
 <translation id="2212735316055980242">પૉલિસી મળી નથી</translation>
@@ -857,6 +861,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
+<translation id="3067505415088964188">કિંમત ઓછી છે</translation>
 <translation id="3068991664510324412">કમ્પ્યુટર અને વીડિયો ગેમ</translation>
 <translation id="3080254622891793721">ગ્રાફિક</translation>
 <translation id="3081538120861307764">કોઈ જાહેરાતનું પર્ફોર્મન્સ માપવા માટે, વિવિધ સાઇટની વચ્ચે મર્યાદિત પ્રકારનો ડેટા શેર કરવામાં આવે છે, જેમ કે દિવસના કયા સમયે તમને બતાવવામાં આવેલી જાહેરાત.</translation>
@@ -948,6 +953,7 @@
 <translation id="3270847123878663523">&amp;પુનઃક્રમાંકિત કરવું પૂર્વવત્ કરો</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />, કનેક્ટ કરવા માગે છે</translation>
 <translation id="3272091146646336650">સુપર B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-અંકનો ચકાસણી કોડ દાખલ કરો</translation>
 <translation id="3281350579597955952">{0,plural, =1{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}one{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}other{ઍડમિનિસ્ટ્રેટરની પૉલિસી આ ફાઇલોને <ph name="DESTINATION_NAME" />માં ખોલવાનો સુઝાવ આપતી નથી}}</translation>
 <translation id="3282085321714087552">તમારી સંસ્થા, <ph name="ENROLLMENT_DOMAIN" />એ સેટિંગ અથવા પૉલિસી જેવી અમુક માહિતી નીચેની વેબસાઇટને મોકલી છે.</translation>
 <translation id="3286372614333682499">પોર્ટ્રેટ</translation>
@@ -2071,6 +2077,7 @@
 <translation id="5967592137238574583">સંપર્ક માહિતીમાં ફેરફાર કરો</translation>
 <translation id="5967867314010545767">ઇતિહાસમાંથી દૂર કરો</translation>
 <translation id="5968022600320704045">કોઈ શોધ પરિણામ નથી</translation>
+<translation id="5969199813874624822">સાચવો અને કિંમત ટ્રૅક કરો</translation>
 <translation id="5974052231147553524">છઠ્ઠો રોલ</translation>
 <translation id="5975083100439434680">ઝૂમ ઘટાડો</translation>
 <translation id="5979084224081478209">પાસવર્ડ ચેક કરો</translation>
@@ -2594,6 +2601,7 @@
 <translation id="7219179957768738017">કનેક્શન <ph name="SSL_VERSION" /> નો ઉપયોગ કરે છે.</translation>
 <translation id="7220786058474068424">પ્રક્રિયા કરી રહ્યું છે</translation>
 <translation id="7221855153210829124">સૂચનાઓ દર્શાવો</translation>
+<translation id="7221857374443660083">તમારી બેંક ખાતરી કરવા માંગે છે કે તે તમે જ છો</translation>
 <translation id="722454870747268814">નવું છૂપું ટૅબ</translation>
 <translation id="7227293336683593977">કિંમતનો ઇતિહાસ</translation>
 <translation id="7233592378249864828">કન્ફર્મેશન શીટ પ્રિન્ટ કરો</translation>
@@ -3396,6 +3404,7 @@
 <translation id="9141013498910525015">ઍડ્રેસ મેનેજ કરો</translation>
 <translation id="9144951720726881238">સમાપ્તિ તારીખ:</translation>
 <translation id="9148507642005240123">&amp;છેલ્લો ફેરફાર રદ કરો</translation>
+<translation id="9148599396704355100">કિંમત ઓછી છે</translation>
 <translation id="9150045010208374699">તમારા કૅમેરાનો ઉપયોગ કરો</translation>
 <translation id="9150685862434908345">તમારા વ્યવસ્થાપક તમારા બ્રાઉઝર સેટઅપને દૂરથી બદલી શકે છે. આ ડિવાઇસ પરની પ્રવૃત્તિ Chromeની બહારથી પણ મેનેજ કરી શકાય છે. <ph name="BEGIN_LINK" />વધુ જાણો<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">અપડેટેડ</translation>

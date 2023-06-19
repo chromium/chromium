@@ -399,6 +399,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1864927262126810325">Izvor: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proksi je podešen da koristi fiksne proksi servere, a ne URL adresu .pac skripte.</translation>
 <translation id="1871284979644508959">Obavezno polje</translation>
+<translation id="1871739799120352748">Cena je visoka</translation>
 <translation id="1873899211667975540">Rok muzika</translation>
 <translation id="1874224422119691492">Možete da promenite da li ćete koristiti zaključavanje ekrana za popunjavanje lozinki u: <ph name="SETTINGS" /></translation>
 <translation id="1875025161375567525">Fioka za slike</translation>
@@ -442,6 +443,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi da trajno skladišti veliku količinu podataka na vašem lokalnom računaru</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{ i još 1}one{i još #}few{i još #}other{i još #}}</translation>
+<translation id="2001469757375372617">Došlo je do greške. Promena nije sačuvana.</translation>
 <translation id="2003709556000175978">Resetujte lozinku</translation>
 <translation id="2003775180883135320">Četvorostruko bušenje na vrhu</translation>
 <translation id="2009942480257059311">Dugme Napravi događaj, aktivirajte ga da biste brzo napravili nov događaj u Google kalendaru</translation>
@@ -499,6 +501,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="2118132148597630479">Koverta C5</translation>
 <translation id="2119505898009119320">Izdato za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Bušenje u donjem desnom uglu</translation>
+<translation id="2122214041802369259">Cena je visoka</translation>
 <translation id="2122719317867821810">Ove smernice rade kao što je predviđeno, ali neusaglašena vrednost je podešena na drugom mestu i zamenjuju je ove smernice.</translation>
 <translation id="2126374524350484896">Aplikacija za pravljenje PDF dokumenata:</translation>
 <translation id="2130448033692577677">Nije moguće primeniti šablone koje ste naveli jer DnsOverHttpsMode smernice nisu podešene.</translation>
@@ -857,6 +860,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="3052964831964880138">Sniženje od <ph name="PRICE_DROP" /> za:<ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Usluga krpljenja</translation>
 <translation id="306573536155379004">Igra je pokrenuta.</translation>
+<translation id="3067505415088964188">Cena je niska</translation>
 <translation id="3068991664510324412">Računarske i video igre</translation>
 <translation id="3080254622891793721">Slika</translation>
 <translation id="3081538120861307764">Da bi se izmerio učinak oglasa, određeni tipovi podataka se dele između sajtova, poput doba dana kada vam je neki oglas prikazan.</translation>
@@ -2071,6 +2075,7 @@ To inače blokiraju podešavanja privatnosti. To omogućava da sadržaj sa koji
 <translation id="5967592137238574583">Izmenite kontakt informacije</translation>
 <translation id="5967867314010545767">Ukloni iz istorije</translation>
 <translation id="5968022600320704045">Nema rezultata pretrage</translation>
+<translation id="5969199813874624822">Sačuvaj i prati cenu</translation>
 <translation id="5974052231147553524">Šesti kotur</translation>
 <translation id="5975083100439434680">Umanjivanje</translation>
 <translation id="5979084224081478209">Proveri lozinke</translation>
@@ -3396,6 +3401,7 @@ Dodatni detalji:
 <translation id="9141013498910525015">Upravljajte adresama</translation>
 <translation id="9144951720726881238">Datum isteka:</translation>
 <translation id="9148507642005240123">&amp;Opozovi izmenu</translation>
+<translation id="9148599396704355100">Cena je niska</translation>
 <translation id="9150045010208374699">Korišćenje kamere</translation>
 <translation id="9150685862434908345">Administrator može daljinski da promeni podešavanje pregledača. Aktivnostima na ovom uređaju se možda upravlja i van Chrome-a. <ph name="BEGIN_LINK" />Saznajte više<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Ažurirano</translation>

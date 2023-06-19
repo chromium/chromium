@@ -128,7 +128,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="164269334534774161">Prohlížíte si offline kopii této stránky z <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Historie</translation>
 <translation id="1657932388559784161">Spodní tabulka se statistikami stránky je zavřená</translation>
-<translation id="1668122540633280551">Zvolte, jak se na domovské stránce Chromu mají automaticky přehrávat náhledy videí.</translation>
 <translation id="1670399744444387456">Základní</translation>
 <translation id="1671236975893690980">Nevyřízené stahování…</translation>
 <translation id="1672586136351118594">Tuto zprávu již nezobrazovat</translation>
@@ -271,7 +270,6 @@ Když smažete historii prohlížení (celou nebo na určitém webu), smažou se
 <translation id="2536728043171574184">Prohlížíte offline kopii stránky</translation>
 <translation id="2546283357679194313">Soubory cookie a data webových stránek</translation>
 <translation id="2558569818338050235">Vaše historie prohlížení ovlivňuje zobrazované reklamy</translation>
-<translation id="2561519700418191927">Náhledy videí</translation>
 <translation id="2567385386134582609">OBRÁZEK</translation>
 <translation id="2567545343356994513">Rychlejší, proaktivní ochrana před nebezpečnými weby, soubory ke stažení a rozšířeními</translation>
 <translation id="2569733278091928697">Budete moci snadno spravovat ovládání médií, anonymní relace, stahování a další funkce</translation>
@@ -510,7 +508,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="3775705724665058594">Odeslat na vaše zařízení</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 karta}few{# karty}many{# karty}other{# karet}}</translation>
 <translation id="3795154175078851242">Kopírovat obrázek s odkazem</translation>
-<translation id="3803784507854318295">Spravovat automatické přehrávání</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Spravovat</translation>
 <translation id="3819178904835489326">Počet smazaných stažených souborů: <ph name="NUMBER_OF_DOWNLOADS" /></translation>
@@ -563,7 +560,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4095146165863963773">Smazat data aplikace?</translation>
 <translation id="4096227151372679484">Postup uložení záložky otevřený na poloviční výšku</translation>
 <translation id="4101475238162928417">Pokud svá hesla, záložky a další položky chcete mít na ostatních zařízeních, zapněte synchronizaci.</translation>
-<translation id="410351446219883937">Automatické přehrávání</translation>
 <translation id="4106587138345390261">Chrome zkoumá nové funkce, které webům umožňují poskytovat stejné prostředí a využívat při tom méně vašich dat a údajů</translation>
 <translation id="4108314971463891922">Sledovat</translation>
 <translation id="4108998448622696017">Rozpoznává nebezpečné události a upozorňuje vás na ně, když k nim dojde.</translation>
@@ -634,7 +630,6 @@ Tokeny soukromého stavu zvyšují ochranu soukromí na webu a nelze pomocí ni
 <translation id="4484496141267039529">Nejste připojeni. Zkuste to později.</translation>
 <translation id="4487967297491345095">Všechna data aplikace Chrome budou trvale smazána. Zahrnuje to soubory, nastavení, účty, databáze apod.</translation>
 <translation id="449126573531210296">Šifrovat synchronizovaná hesla pomocí účtu Google</translation>
-<translation id="4504667196171871375">Přes Wi-Fi a mobilní data</translation>
 <translation id="4508528996305412043">Je otevřená nabídka karty informačního kanálu</translation>
 <translation id="4509501256689523862">Když procházíte internet, závisí personalizace reklam na tomto nastavení, <ph name="BEGIN_LINK_1" />tématech reklam<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />nastavení souborů cookie<ph name="END_LINK_2" /> a na tom, zda zobrazená stránka personalizuje reklamy.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{před # dnem}few{před # dny}many{před # dne}other{před # dny}}</translation>
@@ -1313,7 +1308,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="7944772052836377867">Synchronizace potřebuje ověřit vaši totožnost</translation>
 <translation id="7947953824732555851">Přijmout a přihlásit</translation>
 <translation id="7957413488482743710">Virtuální karta skryje vaši skutečnou kartu a chrání vás před případným podvodem. <ph name="BEGIN_LINK1" />Další informace o virtuálních kartách<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Nikdy</translation>
 <translation id="7961926449547174351">Zakázali jste přístup k úložišti. Přejděte do Nastavení a povolte ho.</translation>
 <translation id="7963646190083259054">Dodavatel:</translation>
 <translation id="7965838025086216108">Uložená hesla můžete používat v libovolném zařízení. Ukládají se do Správce hesel Google pro účet <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Některé weby mohou například na tento požadavek reagovat tak, že vám zobr
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_ONE" /> další karta}few{Zavřou se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}many{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymní a <ph name="TAB_COUNT_MANY" /> další karty}other{Zavře se <ph name="INCOGNITO_TAB_COUNT" /> anonymních a <ph name="TAB_COUNT_MANY" /> dalších karet}}</translation>
 <translation id="8970887620466824814">Došlo k chybě.</translation>
 <translation id="8972098258593396643">Stáhnout do výchozí složky?</translation>
-<translation id="8987641763863173640">Spravovat nastavení náhledu videa</translation>
 <translation id="8987736167266086032">Pokračujte, kde jste skončili</translation>
 <translation id="8989968390305463310">Vaše historie prohlížení ovlivňuje zobrazované reklamy a odhadované zájmy uvedené níže. Aby Chrome chránil vaše soukromí, vaše zájmy každý měsíc pravidelně maže. Zájmy se mohou obnovovat, dokud je neodstraníte.</translation>
 <translation id="8993760627012879038">Otevřít novou kartu v anonymním režimu</translation>

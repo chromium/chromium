@@ -128,7 +128,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="164269334534774161">Anda melihat salinan offline halaman ini dari <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Histori</translation>
 <translation id="1657932388559784161">Sheet bawah analisis halaman ditutup</translation>
-<translation id="1668122540633280551">Memilih cara pratinjau video akan otomatis diputar di halaman beranda Chrome.</translation>
 <translation id="1670399744444387456">Dasar</translation>
 <translation id="1671236975893690980">Proses download tertunda...</translation>
 <translation id="1672586136351118594">Jangan tampilkan lagi</translation>
@@ -271,7 +270,6 @@ Jika Anda menghapus histori penjelajahan, baik semua histori maupun histori untu
 <translation id="2536728043171574184">Melihat salinan offline halaman ini</translation>
 <translation id="2546283357679194313">Cookie dan data situs</translation>
 <translation id="2558569818338050235">Histori penjelajahan Anda memengaruhi iklan yang Anda lihat</translation>
-<translation id="2561519700418191927">Pratinjau video</translation>
 <translation id="2567385386134582609">GAMBAR</translation>
 <translation id="2567545343356994513">Perlindungan lebih cepat dan lebih proaktif terhadap situs, download, dan ekstensi berbahaya</translation>
 <translation id="2569733278091928697">Anda dapat dengan mudah mengelola kontrol media, sesi Samaran, download, dan lainnya</translation>
@@ -510,7 +508,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="3775705724665058594">Kirim ke perangkat Anda</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}other{# tab}}</translation>
 <translation id="3795154175078851242">Salin gambar dengan link</translation>
-<translation id="3803784507854318295">Kelola putar otomatis</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Kelola</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download dihapus</translation>
@@ -563,7 +560,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4095146165863963773">Hapus data aplikasi?</translation>
 <translation id="4096227151372679484">Alur penyimpanan bookmark terbuka setengah</translation>
 <translation id="4101475238162928417">Sinkronkan untuk mendapatkan sandi dan bookmark kamu serta data lain di perangkat lainnya</translation>
-<translation id="410351446219883937">Putar otomatis</translation>
 <translation id="4106587138345390261">Chrome sedang mengembangkan fitur baru yang memungkinkan situs memberikan pengalaman penjelajahan yang sama, tetapi menggunakan lebih sedikit info pribadi Anda</translation>
 <translation id="4108314971463891922">Ikuti</translation>
 <translation id="4108998448622696017">Mendeteksi dan memberikan peringatan terkait peristiwa berbahaya ketika terjadi.</translation>
@@ -634,7 +630,6 @@ Private state token meningkatkan privasi di web dan tidak dapat digunakan untuk 
 <translation id="4484496141267039529">Tidak ada koneksi. Coba lagi nanti.</translation>
 <translation id="4487967297491345095">Semua data aplikasi Chrome akan dihapus secara permanen. Hal ini meliputi semua file, setelan, akun, database, dll.</translation>
 <translation id="449126573531210296">Enkripsikan sandi yang disinkronkan dengan Akun Google Anda</translation>
-<translation id="4504667196171871375">Melalui Wi-Fi &amp; data seluler</translation>
 <translation id="4508528996305412043">Menu kartu feed terbuka</translation>
 <translation id="4509501256689523862">Saat Anda menjelajah, iklan yang Anda lihat akan dipersonalisasi atau tidak bergantung pada setelan ini, <ph name="BEGIN_LINK_1" />Topik iklan<ph name="END_LINK_1" />, <ph name="BEGIN_LINK_2" />setelan cookie<ph name="END_LINK_2" />, dan apakah situs yang Anda lihat mempersonalisasi iklan</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# hari yang lalu}other{# hari yang lalu}}</translation>
@@ -1313,7 +1308,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="7944772052836377867">Sinkronisasi perlu memverifikasi diri Anda</translation>
 <translation id="7947953824732555851">Terima dan masuk</translation>
 <translation id="7957413488482743710">Kartu virtual menyembunyikan kartu Anda yang sebenarnya untuk membantu melindungi Anda dari kemungkinan penipuan. <ph name="BEGIN_LINK1" />Pelajari kartu virtual lebih lanjut<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Jangan pernah</translation>
 <translation id="7961926449547174351">Anda telah menonaktifkan Akses penyimpanan, buka Setelan untuk mengaktifkannya.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">Anda dapat menggunakan sandi tersimpan di semua perangkat. Sandi disimpan ke Pengelola Sandi Google untuk <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Misalnya, beberapa situs web mungkin menanggapi permintaan ini dengan menayangka
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_ONE" /> tab lainnya akan ditutup}other{<ph name="INCOGNITO_TAB_COUNT" /> tab samaran dan <ph name="TAB_COUNT_MANY" /> tab lainnya akan ditutup}}</translation>
 <translation id="8970887620466824814">Terjadi error.</translation>
 <translation id="8972098258593396643">Download ke folder default?</translation>
-<translation id="8987641763863173640">Mengelola Setelan Pratinjau Video</translation>
 <translation id="8987736167266086032">Lanjutkan dari saat terakhir Anda menggunakannya</translation>
 <translation id="8989968390305463310">Histori penjelajahan Anda memengaruhi iklan yang Anda lihat dan minat yang diperkirakan di bawah. Untuk melindungi privasi Anda, Chrome otomatis menghapus minat Anda secara berkala setiap bulan. Minat dapat diperbarui kecuali jika Anda menghapusnya.</translation>
 <translation id="8993760627012879038">Membuka tab baru dalam mode Samaran</translation>

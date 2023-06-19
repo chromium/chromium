@@ -128,7 +128,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="164269334534774161">È visualizzata una copia offline di questa pagina del giorno <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Cronologia</translation>
 <translation id="1657932388559784161">Il riquadro inferiore Statistiche pagine è chiuso</translation>
-<translation id="1668122540633280551">Scegli come riprodurre automaticamente le anteprime video nella home page di Chrome.</translation>
 <translation id="1670399744444387456">Base</translation>
 <translation id="1671236975893690980">Download in attesa...</translation>
 <translation id="1672586136351118594">Non visualizzare più</translation>
@@ -271,7 +270,6 @@ Quando elimini la cronologia di navigazione (l'intera cronologia o soltanto quel
 <translation id="2536728043171574184">È visualizzata una copia offline della pagina</translation>
 <translation id="2546283357679194313">Cookie e dati dei siti</translation>
 <translation id="2558569818338050235">La cronologia di navigazione incide sugli annunci che ti vengono mostrati</translation>
-<translation id="2561519700418191927">Anteprime video</translation>
 <translation id="2567385386134582609">IMMAGINE</translation>
 <translation id="2567545343356994513">Sistemi di protezione proattivi e più rapidi da siti web, download ed estensioni pericolosi</translation>
 <translation id="2569733278091928697">Potrai gestire facilmente i controlli multimediali, le sessioni in incognito, i download e altro ancora</translation>
@@ -510,7 +508,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="3775705724665058594">Invia ai tuoi dispositivi</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 scheda}other{# schede}}</translation>
 <translation id="3795154175078851242">Copia immagine con link</translation>
-<translation id="3803784507854318295">Gestisci riproduzione automatica</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Gestisci</translation>
 <translation id="3819178904835489326"><ph name="NUMBER_OF_DOWNLOADS" /> download eliminati</translation>
@@ -563,7 +560,6 @@ I token di stato privati migliorano la privacy sul web e non possono essere usat
 <translation id="4095146165863963773">Eliminare i dati delle app?</translation>
 <translation id="4096227151372679484">Flusso di salvataggio dei preferiti aperto nella parte inferiore dello schermo</translation>
 <translation id="4101475238162928417">Attiva la sincronizzazione per recuperare password, preferiti e altri contenuti salvati sugli altri tuoi dispositivi</translation>
-<translation id="410351446219883937">Riproduzione automatica</translation>
 <translation id="4106587138345390261">Chrome sta esaminando nuove funzionalità che consentono ai siti di offrire la stessa esperienza di navigazione utilizzando meno informazioni personali</translation>
 <translation id="4108314971463891922">Segui</translation>
 <translation id="4108998448622696017">Rileva e ti avvisa quando si verificano eventi pericolosi.</translation>
@@ -634,7 +630,6 @@ I token di stato privati migliorano la privacy sul Web e non possono essere usat
 <translation id="4484496141267039529">Nessuna connessione. Riprova più tardi.</translation>
 <translation id="4487967297491345095">Tutti i dati delle app di Chrome saranno eliminati definitivamente. Sono inclusi tutti i file, le impostazioni, gli account, i database e così via.</translation>
 <translation id="449126573531210296">Cripta le password sincronizzate con il tuo Account Google</translation>
-<translation id="4504667196171871375">Su Wi-Fi e dati mobili</translation>
 <translation id="4508528996305412043">Menu scheda feed aperto</translation>
 <translation id="4509501256689523862">Mentre navighi, l'eventuale visualizzazione di un annuncio personalizzato dipende da questa impostazione, dagli <ph name="BEGIN_LINK_1" />argomenti degli annunci<ph name="END_LINK_1" />, dalle <ph name="BEGIN_LINK_2" />impostazioni dei cookie<ph name="END_LINK_2" /> e dal fatto che il sito che stai visualizzando possa personalizzare gli annunci</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# giorno fa}other{# giorni fa}}</translation>
@@ -1313,7 +1308,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="7944772052836377867">La sincronizzazione deve verificare la tua identità</translation>
 <translation id="7947953824732555851">Accetta e accedi</translation>
 <translation id="7957413488482743710">Una carta virtuale nasconde la tua carta effettiva per proteggerti meglio da potenziali attività fraudolente. <ph name="BEGIN_LINK1" />Scopri di più sulle carte virtuali<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Mai</translation>
 <translation id="7961926449547174351">Hai disattivato l'accesso allo spazio di archiviazione. Vai alle Impostazioni per attivarlo.</translation>
 <translation id="7963646190083259054">Fornitore:</translation>
 <translation id="7965838025086216108">Puoi usare le password salvate su qualsiasi dispositivo. Sono salvate in Gestore delle password di Google per <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Ad esempio, alcuni siti web potrebbero rispondere alla richiesta mostrando annun
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> scheda in incognito e <ph name="TAB_COUNT_ONE" /> altra scheda verranno chiuse}other{<ph name="INCOGNITO_TAB_COUNT" /> schede in incognito e altre <ph name="TAB_COUNT_MANY" /> schede verranno chiuse}}</translation>
 <translation id="8970887620466824814">C'è stato un problema.</translation>
 <translation id="8972098258593396643">Scaricare nella cartella predefinita?</translation>
-<translation id="8987641763863173640">Gestisci le impostazioni di anteprima video</translation>
 <translation id="8987736167266086032">Riprendi da dove eri rimasto</translation>
 <translation id="8989968390305463310">La cronologia di navigazione incide sugli annunci che ti vengono mostrati e sugli interessi stimati riportati qui sotto. Per tutelare la tua privacy, Chrome elimina automaticamente i tuoi interessi ogni mese. A meno che non li rimuovi, gli interessi possono essere aggiornati.</translation>
 <translation id="8993760627012879038">Apri nuova scheda in mod. di navigaz. in incognito</translation>

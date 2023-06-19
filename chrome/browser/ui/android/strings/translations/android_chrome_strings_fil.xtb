@@ -128,7 +128,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="164269334534774161">Tinitingnan mo ang offline na kopya ng page na ito mula sa <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">History</translation>
 <translation id="1657932388559784161">Nakasara ang bottom sheet ng mga insight ng page</translation>
-<translation id="1668122540633280551">Piliin kung paano awtomatikong magpe-play ang mga preview ng video sa homepage ng Chrome.</translation>
 <translation id="1670399744444387456">Pangunahin</translation>
 <translation id="1671236975893690980">Nakabinbin ang pag-download...</translation>
 <translation id="1672586136351118594">Huwag ipakitang muli</translation>
@@ -271,7 +270,6 @@ Kapag na-delete mo ang iyong history ng pag-browse — lahat o para sa isang par
 <translation id="2536728043171574184">Tinitingnan ang isang offline na kopya ng page na ito</translation>
 <translation id="2546283357679194313">Cookies at data ng site</translation>
 <translation id="2558569818338050235">Naaapektuhan ng iyong history ng pag-browse ang mga ad na nakikita mo</translation>
-<translation id="2561519700418191927">Mga preview ng video</translation>
 <translation id="2567385386134582609">LARAWAN</translation>
 <translation id="2567545343356994513">Mas mabilis at proactive na proteksyon laban sa mga mapanganib na website, download, at extension</translation>
 <translation id="2569733278091928697">Madali mong mapapamahalaan ang mga kontrol ng media, Incognito session, download, at higit pa</translation>
@@ -510,7 +508,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="3775705724665058594">Ipadala sa iyong mga device</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 tab}one{# tab}other{# na tab}}</translation>
 <translation id="3795154175078851242">Kopyahin ang larawan nang may link</translation>
-<translation id="3803784507854318295">Pamahalaan ang autoplay</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Pamahalaan</translation>
 <translation id="3819178904835489326">Na-delete ang <ph name="NUMBER_OF_DOWNLOADS" /> (na) pag-download</translation>
@@ -563,7 +560,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4095146165863963773">I-delete ang data ng app?</translation>
 <translation id="4096227151372679484">Nakabukas nang kalahati ang proseso ng pag-save ng bookmark</translation>
 <translation id="4101475238162928417">Mag-sync para makuha ang iyong mga password, bookmark, at higit pa sa iba mo pang device</translation>
-<translation id="410351446219883937">I-autoplay</translation>
 <translation id="4106587138345390261">Nag-e-explore ang Chrome ng mga bagong feature na nagbibigay-daan sa mga site na ihatid ang parehong karanasan sa pag-browse nang hindi gaanong gumagamit ng iyong impormasyon</translation>
 <translation id="4108314971463891922">Subaybayan</translation>
 <translation id="4108998448622696017">Nagde-detect ng mga mapanganib na event at nagbibigay sa iyo ng babala tungkol sa mga ito kapag nangyari ang mga ito.</translation>
@@ -634,7 +630,6 @@ Pinapahusay ng mga private state token ang privacy sa web at hindi magagamit ang
 <translation id="4484496141267039529">Walang koneksyon. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="4487967297491345095">Permanenteng ide-delete ang lahat ng data ng app ng Chrome. Kabilang dito ang lahat ng file, setting, account, database, atbp.</translation>
 <translation id="449126573531210296">I-encrypt ang mga naka-sync na password gamit ang iyong Google Account</translation>
-<translation id="4504667196171871375">Sa Wi-Fi at mobile data</translation>
 <translation id="4508528996305412043">Nakabukas ang menu ng feed card</translation>
 <translation id="4509501256689523862">Habang nagba-browse ka, posibleng naka-personalize ang isang ad na nakikita mo depende sa setting na ito, <ph name="BEGIN_LINK_1" />mga paksa ng Ad<ph name="END_LINK_1" />, iyong <ph name="BEGIN_LINK_2" />mga setting ng cookie<ph name="END_LINK_2" />, at kung nagpe-personalize ng mga ad ang site na tinitingnan mo</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# araw ang nakalipas}one{# araw ang nakalipas}other{# na araw ang nakalipas}}</translation>
@@ -1313,7 +1308,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="7944772052836377867">Kailangang ma-verify ng pag-sync na ikaw ito</translation>
 <translation id="7947953824732555851">I-accept, mag-sign in</translation>
 <translation id="7957413488482743710">Itinatago ng virtual card ang iyong aktwal na card para makatulong na protektahan ka laban sa potensyal na panloloko. <ph name="BEGIN_LINK1" />Matuto pa tungkol sa mga virtual na card<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Hindi Kailanman</translation>
 <translation id="7961926449547174351">Na-disable mo ang access sa Storage, pumunta sa Mga Setting para i-enable ito.</translation>
 <translation id="7963646190083259054">Vendor:</translation>
 <translation id="7965838025086216108">Puwede mong gamitin ang mga naka-save na password sa anumang device. Sine-save ang mga ito sa Google Password Manager para sa <ph name="ACCOUNT" />.</translation>
@@ -1520,7 +1514,6 @@ Halimbawa, puwedeng tumugon ang ilang website sa kahilingang ito sa pamamagitan 
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_ONE" /> pang tab}one{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}other{Isasara ang <ph name="INCOGNITO_TAB_COUNT" /> na tab na incognito at <ph name="TAB_COUNT_MANY" /> pang tab}}</translation>
 <translation id="8970887620466824814">Nagkaproblema.</translation>
 <translation id="8972098258593396643">I-download sa default na folder?</translation>
-<translation id="8987641763863173640">Pamahalaan ang Mga Setting ng Preview ng Video</translation>
 <translation id="8987736167266086032">Bumalik kung saan ka tumigil</translation>
 <translation id="8989968390305463310">Naaapektuhan ng iyong history ng pag-browse ang mga ad na nakikita mo at mga interes tulad ng tinatantya sa ibaba. Para protektahan ang iyong privacy, awtomatikong ide-delete ng Chrome ang mga interes mo sa rolling na paraan bawat buwan. Puwedeng ma-refresh ang mga interes maliban na lang kung alisin mo ang mga ito.</translation>
 <translation id="8993760627012879038">Magbukas ng bagong tab sa Incognito mode</translation>

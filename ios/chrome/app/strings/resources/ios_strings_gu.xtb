@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">જોખમકારક વેબસાઇટ, ડાઉનલોડ અને એક્સ્ટેન્શન સામે તમારું રક્ષણ કરતું નથી. Gmail અને Search જેવી Googleની અન્ય સેવાઓમાં, જ્યાં ઉપલબ્ધ હોય, ત્યાં તમને હજી પણ Safe Browsing સંરક્ષણ મળશે.</translation>
 <translation id="1145536944570833626">અસ્તિત્વમાંના ડેટાને ડિલીટ કરો.</translation>
 <translation id="1147031633655575115"><ph name="USER" /> તરીકે સાઇન ઇન થયા</translation>
+<translation id="1150989369772528668">કૅલેન્ડર</translation>
 <translation id="1154984953698510061">અન્ય ટૅબ જુઓ</translation>
 <translation id="1161340988127985692">અન્ય ઍપમાંની લિંકને છૂપા મોડમાં ખોલવાનું જણાવો</translation>
 <translation id="1164064664035028907">સશક્ત પાસવર્ડનો ઉપયોગ કરો:</translation>
@@ -37,6 +38,7 @@
 <translation id="1176932207622159128">ફોટા સાચવી શકતું નથી</translation>
 <translation id="1177414119866731261">Chrome મેનૂ ખોલો</translation>
 <translation id="1181037720776840403">કાઢી નાખો</translation>
+<translation id="1200396280085622191">જ્યારે પણ તમે મેસેજ અને અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="1207113853726624428">નવી શોધ</translation>
 <translation id="1209206284964581585">હમણાં માટે છુપાવો</translation>
 <translation id="1219674500290482172">ઇન્ટરનેટથી કનેક્ટ કરવામાં અક્ષમ.</translation>
@@ -156,6 +158,7 @@
 <translation id="1974060860693918893">વિગતવાર</translation>
 <translation id="1980417445547898121">{count,plural, =1{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}one{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}other{તમારા અન્ય ડિવાઇસ પરથી તમારા {count} તાજેતરના સક્રિય ટૅબને આ iPhone પર મેળવો}}</translation>
 <translation id="1981118202195772574">મોબાઇલ</translation>
+<translation id="1987779152850321833">Chromeનો સૌથી વધુ લાભ મેળવવા માટે નીચે સૂચવેલી આ ક્રિયાઓ પૂર્ણ કરો.</translation>
 <translation id="1989112275319619282">બ્રાઉઝ કરો</translation>
 <translation id="1990820278544963435">શોધો</translation>
 <translation id="199425419756152024">પાસવર્ડ જુઓ</translation>
@@ -306,6 +309,7 @@
 <translation id="2932085390869194046">પાસવર્ડ સૂચવો...</translation>
 <translation id="2932765531295814441">પાસવર્ડ મેન્યુઅલી દાખલ કરો</translation>
 <translation id="2952581218264071393">1. Chrome સેટિંગ ખોલો</translation>
+<translation id="2956733177489514605">તમારા પાસવર્ડ અને બીજું ઘણું સિંક કરવા માટે, તમારા Google એકાઉન્ટ વડે સાઇન ઇન કરો.</translation>
 <translation id="2958718410589002129">પાસવર્ડ</translation>
 <translation id="2961210776189273067">શીર્ષક</translation>
 <translation id="2964349545761222050">ત્રીજા પક્ષની કુકીને બ્લૉક કરો</translation>
@@ -327,6 +331,7 @@
 જો લાગુ થતી હોય, તો તમારા શોધ ઇતિહાસને ડિલીટ કરવા માટે, તમારા શોધ એન્જિનની સૂચનાઓ જુઓ.</translation>
 <translation id="3080525922482950719">તમે પછીથી અથવા ઑફલાઇન વાંચવા માટે પેજ સાચવી શકો છો</translation>
 <translation id="3081338492074632642"><ph name="WEBSITE" /> માટેના તમારા પાસવર્ડ સાથે, તમે સાચવી રહ્યાં છો તે પાસવર્ડ મેળ ખાતો હોવાની ખાતરી કરો</translation>
+<translation id="309672519329227863">તમારા Chrome પાસવર્ડ અને બીજું ઘણું અન્ય ઍપ પર ઍક્સેસ કરો.</translation>
 <translation id="3112556859945124369">ચિહ્નિત કરો…</translation>
 <translation id="3122484138405575719"><ph name="BEGIN_LINK" />તમે શું સિંક કરી શકો, તે જાણો<ph name="END_LINK" /></translation>
 <translation id="3130863904455712965">ઇતિહાસ અને વધુ</translation>
@@ -499,6 +504,7 @@
 <translation id="4277990410970811858">Safe Browsing</translation>
 <translation id="4281844954008187215">સેવાની શરતો</translation>
 <translation id="4293080268407233932">શોધો</translation>
+<translation id="4302248187517737842">કોઈ વપરાશકર્તાનું નામ નથી ••••••••</translation>
 <translation id="4304713468139749426">પાસવર્ડ મેનેજર</translation>
 <translation id="430793432425771671">બધાને સમન્વયિત કરો</translation>
 <translation id="4309403553630140242">વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
@@ -675,6 +681,7 @@
 <translation id="5457226814769348910">ઑફલાઇન વર્ઝન ખોલો</translation>
 <translation id="5489208564673669003">બધી સાઇટ માટે કુકી મેનેજ કરવા, <ph name="BEGIN_LINK" />કુકી સેટિંગ જુઓ<ph name="END_LINK" />.</translation>
 <translation id="5490005495580364134">બધી કુકીને બ્લૉક કરો (સુઝાવ આપતા નથી)</translation>
+<translation id="5511959326926949696">તમારા બ્રાઉઝર માટે સઘન વૈકલ્પિક સુરક્ષા. જો તમને લાગતું હોય કે કોઈ અત્યાધુનિક સાઇબર હુમલા માટે તમને લક્ષ્ય બનાવવામાં આવ્યા છે, તો જ તેનો ઉપયોગ કરવો જોઈએ.</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> કલાક પહેલાં</translation>
 <translation id="5520466080178053306">Passwords મેનેજર પર ટૅપ કરો પછી ઉમેરો પર ટૅપ કરો</translation>
 <translation id="5525095647255982834">આ ટૅબને અન્ય ડિવાઇસ પર મોકલવા માટે, એ ડિવાઇસના Chromeમાં સાઇન ઇન કરો.</translation>
@@ -789,6 +796,7 @@
 <translation id="6149061208933997199">પાસવર્ડનો ઉપયોગ કરો</translation>
 <translation id="6152406514676263192">તમારી રુચિઓના આધારે સૌથી વધુ સંબંધિત કન્ટેન્ટ જોવા માટે સિંક કરો.</translation>
 <translation id="6159839020698489198">વૈકલ્પિક</translation>
+<translation id="6166946945007577435">તમે જ્યાં જવા માગતા હો, ત્યાં તમને પહોંચવામાં સહાય કરવા માટે નવું મેનૂ.</translation>
 <translation id="6170450281939467187">અનુવાદ નિષ્ફળ થયો</translation>
 <translation id="6173499589275053515">પાસવર્ડને તમારા Google એકાઉન્ટમાં સાચવ્યો, <ph name="EMAIL" /></translation>
 <translation id="6177442314419606057">Chromeમાં શોધો</translation>
@@ -1022,6 +1030,7 @@
 <translation id="7554645225856321710">બધું બંધ કરો</translation>
 <translation id="7554791636758816595">નવું ટૅબ</translation>
 <translation id="7561196759112975576">હંમેશાં</translation>
+<translation id="7582857256643797524">આ સેટિંગ તમારા ડિવાઇસ પર ચાલુ કરેલું છે</translation>
 <translation id="7583004045319035904">તમારી છૂપી ટૅબને અનલૉક કરવા માટે <ph name="BIOMETRIC_AUTHENITCATION_TYPE" />નો ઉપયોગ કરો.</translation>
 <translation id="7600965453749440009"><ph name="LANGUAGE" />નો ક્યારેય અનુવાદ કરશો નહીં</translation>
 <translation id="7603852183842204213">(<ph name="NUMBER_OF_BLOCKED_POPUPS" />) અવરોધિત પૉપ-અપ્સ</translation>
@@ -1091,6 +1100,7 @@
 <translation id="7993619969781047893">અમુક સાઇટ પરની સુવિધાઓને કદાચ બંધ કરવામાં આવી શકે</translation>
 <translation id="800361585186029508">ઇનપુટ કરેલા URLsને Google Chromeમાં ખોલે છે.</translation>
 <translation id="8005666035647241369">આ ડિવાઇસ પર Google પાસવર્ડ મેનેજરમાં સાચવો</translation>
+<translation id="8009225694047762179">બધા પાસવર્ડ મેનેજ કરો</translation>
 <translation id="8011489434346330032">વેબ ઇન્સ્પેકટર</translation>
 <translation id="8016714545083187120">હંમેશાં સુરક્ષિત કનેક્શનનો ઉપયોગ કરો</translation>
 <translation id="802154636333426148">ડાઉનલોડ નિષ્ફળ થયું</translation>
@@ -1107,6 +1117,7 @@
 <translation id="8073872304774253879">શોધ અને બ્રાઉઝિંગ વધુ સારું બનાવો</translation>
 <translation id="8076492880354921740">ટૅબ્સ</translation>
 <translation id="8077675488769462025">નિષ્ક્રિય ટૅબ</translation>
+<translation id="8079530767338315840">પુનરાવર્તન કરો</translation>
 <translation id="8079602123447022758">આ સેટિંગ મેનેજ કરવામાં આવે છે, વધુ માહિતી માટે બે વાર ટૅપ કરો</translation>
 <translation id="8080028325999236607">બધા ટૅબ્સ બંધ કરો</translation>
 <translation id="8084285576995584326">તમારા Google એકાઉન્ટનો ડેટા નિયંત્રિત કરો</translation>
@@ -1145,6 +1156,7 @@
 <translation id="8319076807703933069">નવી શોધ</translation>
 <translation id="8323906514956095947">ટૅબના વધુ વિકલ્પો માટે, ટચ કરીને થોડીવાર દબાવી રાખો</translation>
 <translation id="8328777765163860529">બધું બંધ કરો</translation>
+<translation id="8331621926962374866">જ્યારે Chrome લૉકડાઉન મોડમાં હોય, ત્યારે ચોક્કસ વેબ ટેક્નોલોજી બ્લૉક કરવામાં આવે છે, જેના કારણે અમુક વેબસાઇટ વધારે ધીમી લોડ થાય કે યોગ્ય રીતે ઑપરેટ થાય નહીં એમ બની શકે છે.</translation>
 <translation id="8343993175958086504">તમારી સામગ્રીનું બૅકઅપ લો અને કોઈપણ ડિવાઇસ પર તેનો ઉપયોગ કરો.</translation>
 <translation id="834783239627985533">સૌથી વધુ મુલાકાત લીધેલી સાઇટ</translation>
 <translation id="8378714024927312812">તમારી સંસ્થા દ્વારા મેનેજ કરેલ</translation>
@@ -1289,9 +1301,11 @@
 <translation id="952704832371081537">રદ કરો</translation>
 <translation id="953008885340860025">Chromeમાંથી સાઇન આઉટ થયા</translation>
 <translation id="959066944189734975">તમે <ph name="CHANNEL_NAME" />ને ફૉલો કરી રહ્યાં છો</translation>
+<translation id="97300214378190234">જ્યારે પણ તમે અન્ય ઍપમાં લિંક પર ટૅપ કરો, ત્યારે Chromeનો ઉપયોગ કરો.</translation>
 <translation id="973493300226275298">તમામ ઑનલાઇન સ્ટોર પર કોઈ પ્રોડક્ટની કિંમત ટ્રૅક કરો. જ્યારે પણ કિંમતમાં ઘટાડો થાય, ત્યારે તમે અલર્ટ મેળવશો.</translation>
 <translation id="981498610235328462">તમારી સંસ્થા માત્ર અમુક ચોક્કસ એકાઉન્ટ વડે તમને સાઇન ઇન કરવાની મંજૂરી આપે છે. મંજૂરી ન હોય એવા એકાઉન્ટને છુપાવવામાં આવે છે.</translation>
 <translation id="984509647832111802">સિંકની સુવિધા કામ કરી રહી નથી.</translation>
+<translation id="984879470761322682">Chromeમાં લૉકડાઉન મોડ બંધ કરવા માટે તમારા ડિવાઇસ પર તે બંધ કરો.</translation>
 <translation id="988141524645182168">અન્ય ઉપકરણો</translation>
 <translation id="989988560359834682">ઍડ્રેસમાં ફેરફાર કરો</translation>
 <translation id="994757059139821576">લેખ માટે સૂચનો</translation>

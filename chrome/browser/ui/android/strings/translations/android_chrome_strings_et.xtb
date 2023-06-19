@@ -128,7 +128,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="164269334534774161">Vaatate selle lehe võrguühenduseta koopiat kuupäevast <ph name="CREATION_TIME" /></translation>
 <translation id="1644574205037202324">Ajalugu</translation>
 <translation id="1657932388559784161">Lehe statistika alumine leht on suletud</translation>
-<translation id="1668122540633280551">Valige, kuidas video eelvaateid Chrome'i avalehel automaatselt esitatakse.</translation>
 <translation id="1670399744444387456">Põhiseaded</translation>
 <translation id="1671236975893690980">Allalaadimine on ootel …</translation>
 <translation id="1672586136351118594">Ära kuva uuesti</translation>
@@ -271,7 +270,6 @@ Kui kustutate oma sirvimisajaloo – kogu ajaloo või konkreetse saidi ajaloo �
 <translation id="2536728043171574184">Kuvatakse on lehe võrguühenduseta koopia</translation>
 <translation id="2546283357679194313">Küpsised ja saidiandmed</translation>
 <translation id="2558569818338050235">Teie sirvimisajalugu mõjutab kuvatavaid reklaame</translation>
-<translation id="2561519700418191927">Video eelvaated</translation>
 <translation id="2567385386134582609">KUJUTIS</translation>
 <translation id="2567545343356994513">Kiirem ennetav kaitse ohtlike veebisaitide, allalaadimiste ja laienduste vastu</translation>
 <translation id="2569733278091928697">Saate hõlpsasti hallata meedia juhtnuppe, inkognito seansse, allalaadimisi ja muudki</translation>
@@ -510,7 +508,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="3775705724665058594">Saatmine teie seadmetesse</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{1 vaheleht}other{# vahelehte}}</translation>
 <translation id="3795154175078851242">Kopeeri pilt koos lingiga</translation>
-<translation id="3803784507854318295">Automaatesituse haldamine</translation>
 <translation id="3810838688059735925">Video</translation>
 <translation id="3810973564298564668">Halda</translation>
 <translation id="3819178904835489326">Tuvastati <ph name="NUMBER_OF_DOWNLOADS" /> allalaadimist</translation>
@@ -563,7 +560,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4095146165863963773">Kas kustutada rakenduse andmed?</translation>
 <translation id="4096227151372679484">Järjehoidja salvestamise voog on avatud poolel kõrgusel</translation>
 <translation id="4101475238162928417">Oma muudest seadmetest paroolide, järjehoidjate ja muu hankimiseks sünkroonige</translation>
-<translation id="410351446219883937">Automaatesitus</translation>
 <translation id="4106587138345390261">Chrome katsetab uusi funktsioone, mis võimaldaksid saitidel pakkuda väiksema teabemahu juures samasugust sirvimiskogemust</translation>
 <translation id="4108314971463891922">Jälgi</translation>
 <translation id="4108998448622696017">Tuvastab ohtlikke sündmusi ja hoiatab teid enne, kui need juhtuvad.</translation>
@@ -634,7 +630,6 @@ Privaatse oleku märgid täiustavad veebis privaatsust ja neid ei saa kasutada t
 <translation id="4484496141267039529">Ühendus puudub. Proovige hiljem uuesti.</translation>
 <translation id="4487967297491345095">Kõik Chrome'i rakenduse andmed kustutatakse jäädavalt. See hõlmab kõiki faile, seadeid, kontosid, andmebaase jms.</translation>
 <translation id="449126573531210296">Krüpteerige sünkroonitud paroolid oma Google'i kontoga</translation>
-<translation id="4504667196171871375">WiFi- ja mobiilsidevõrgus</translation>
 <translation id="4508528996305412043">Voo kaardimenüü on avatud</translation>
 <translation id="4509501256689523862">Sirvimisel kuvatavate reklaamide isikupärastamine oleneb sellest seadest, <ph name="BEGIN_LINK_1" />reklaamiteemadest<ph name="END_LINK_1" />, teie <ph name="BEGIN_LINK_2" />küpsisefailide seadetest<ph name="END_LINK_2" /> ja sellest, kas kuvatud sait isikupärastab reklaame.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{# päev tagasi}other{# päeva tagasi}}</translation>
@@ -1313,7 +1308,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="7944772052836377867">Sünkroonimisfunktsioon peab teie isiku kinnitama</translation>
 <translation id="7947953824732555851">Nõustu ja logi sisse</translation>
 <translation id="7957413488482743710">Virtuaalkaart peidab teie päriskaardi, et teid võimalike pettuste eest kaitsta. <ph name="BEGIN_LINK1" />Lisateave virtuaalkaartide kohta<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">Mitte kunagi</translation>
 <translation id="7961926449547174351">Olete keelanud juurdepääsu salvestusruumile. Selle lubamiseks avage menüü Seaded.</translation>
 <translation id="7963646190083259054">Teenusepakkuja:</translation>
 <translation id="7965838025086216108">Saate salvestatud paroole kasutada mis tahes seadmes. Need salvestatakse konto <ph name="ACCOUNT" /> puhul Google'i paroolihaldurisse.</translation>
@@ -1520,7 +1514,6 @@ Näiteks võivad mõned veebisaidid taotlusele reageerida nii, et näitavad teil
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ja veel <ph name="TAB_COUNT_ONE" /> vaheleht suletakse}other{<ph name="INCOGNITO_TAB_COUNT" /> inkognito ja veel <ph name="TAB_COUNT_MANY" /> vahelehte suletakse}}</translation>
 <translation id="8970887620466824814">Midagi läks valesti.</translation>
 <translation id="8972098258593396643">Kas soovite alla laadida vaikekausta?</translation>
-<translation id="8987641763863173640">Videoeelvaate seadete haldamine</translation>
 <translation id="8987736167266086032">Jätkake poolelijäänud kohast</translation>
 <translation id="8989968390305463310">Teie sirvimisajalugu mõjutab kuvatavaid reklaame ja huvisid vastavalt allolevatele prognoosidele. Teie privaatsuse kaitsmiseks kustutab Chrome automaatselt teie huvisid jooksvalt iga kuu. Huvisid võidakse värskendada, kui te neid ei eemalda.</translation>
 <translation id="8993760627012879038">Uue vahelehe avamine inkognito režiimis</translation>

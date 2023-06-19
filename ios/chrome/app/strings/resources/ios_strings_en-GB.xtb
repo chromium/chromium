@@ -28,6 +28,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1126809382673880764">Does not protect you against dangerous websites, downloads and extensions. You’ll still get Safe Browsing protection, where available, in other Google services, like Gmail and Search.</translation>
 <translation id="1145536944570833626">Delete existing data.</translation>
 <translation id="1147031633655575115">Signed in as <ph name="USER" /></translation>
+<translation id="1150989369772528668">Calendar</translation>
 <translation id="1154984953698510061">See other tabs</translation>
 <translation id="1161340988127985692">Ask to open links from other apps in Incognito</translation>
 <translation id="1164064664035028907">Use strong password:</translation>
@@ -68,6 +69,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1358214951266274152">Visit link that you copied</translation>
 <translation id="1360432990279830238">Sign out and turn off sync?</translation>
 <translation id="1363028406613469049">Track</translation>
+<translation id="1365106417372288489">Your iPhone was recently restored, which might have changed your default browser.</translation>
 <translation id="1375321115329958930">Saved passwords</translation>
 <translation id="1377255359165588604">Sync has stopped working.</translation>
 <translation id="1377321085342047638">Card number</translation>
@@ -142,6 +144,7 @@ To change this setting, <ph name="BEGIN_LINK" />clear the Chrome data in your ac
 <translation id="1872096359983322073">Torch</translation>
 <translation id="1883255238294161206">Collapse list</translation>
 <translation id="1894023287452300670">Track price here</translation>
+<translation id="189531189292803889">Your iPad was recently restored, which might have changed your default browser.</translation>
 <translation id="1910975740091000991">Chrome for iOS</translation>
 <translation id="1911619930368729126">Upload to Google Drive</translation>
 <translation id="1923342640370224680">Last Hour</translation>
@@ -1015,6 +1018,7 @@ While in Incognito, sites can't use cookies to see your browsing activity across
 <translation id="750493650310597496">0 selected</translation>
 <translation id="7508728395076009983">To lock your incognito tabs, set up touch ID, face ID or a passcode.</translation>
 <translation id="7514365320538308">Download</translation>
+<translation id="7524055474074101597">Access your passwords and more across apps.</translation>
 <translation id="7531345132340165516">Current site</translation>
 <translation id="7537586195939242955">Sorry, your Pass cannot be installed to Passbook at this time.</translation>
 <translation id="754655535278952384">Checked <ph name="TIME" /></translation>
@@ -1091,6 +1095,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="7993619969781047893">Features on some sites may break</translation>
 <translation id="800361585186029508">Opens the inputted URLs in Google Chrome.</translation>
 <translation id="8005666035647241369">To Google Password Manager on this device</translation>
+<translation id="8009225694047762179">Manage Passwords</translation>
 <translation id="8011489434346330032">Web Inspector</translation>
 <translation id="8016714545083187120">Always use secure connections</translation>
 <translation id="802154636333426148">Download failed</translation>
@@ -1107,6 +1112,7 @@ Sites can use cookies to see your browsing activity across different sites, for 
 <translation id="8073872304774253879">Make searches and browsing better</translation>
 <translation id="8076492880354921740">Tabs</translation>
 <translation id="8077675488769462025">Inactive tabs</translation>
+<translation id="8079530767338315840">Repeat</translation>
 <translation id="8079602123447022758">This setting is managed; double-tap for more information</translation>
 <translation id="8080028325999236607">Close All Tabs</translation>
 <translation id="8084285576995584326">Control your Google Account data</translation>

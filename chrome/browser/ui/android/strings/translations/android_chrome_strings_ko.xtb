@@ -128,7 +128,6 @@
 <translation id="164269334534774161"><ph name="CREATION_TIME" />에 작성된 이 페이지의 오프라인 사본을 보는 중입니다.</translation>
 <translation id="1644574205037202324">방문 기록</translation>
 <translation id="1657932388559784161">페이지 통계 하단 시트가 닫힘</translation>
-<translation id="1668122540633280551">Chrome 홈페이지에서 동영상 미리보기가 자동으로 재생되는 방식을 선택합니다.</translation>
 <translation id="1670399744444387456">기본</translation>
 <translation id="1671236975893690980">다운로드 대기 중...</translation>
 <translation id="1672586136351118594">다시 표시하지 않음</translation>
@@ -271,7 +270,6 @@
 <translation id="2536728043171574184">이 페이지의 오프라인 사본 보는 중</translation>
 <translation id="2546283357679194313">쿠키 및 사이트 데이터</translation>
 <translation id="2558569818338050235">사용자의 방문 기록에 맞춘 광고가 표시됩니다.</translation>
-<translation id="2561519700418191927">동영상 미리보기</translation>
 <translation id="2567385386134582609">이미지</translation>
 <translation id="2567545343356994513">위험한 웹사이트, 다운로드 항목 및 확장 프로그램에 더 빠르게 대응하여 선제적 보호 조치를 취합니다.</translation>
 <translation id="2569733278091928697">미디어 제어, 시크릿 세션, 다운로드 등을 간편하게 관리할 수 있습니다.</translation>
@@ -510,7 +508,6 @@
 <translation id="3775705724665058594">기기로 전송</translation>
 <translation id="3791957072666773229">{TAB_COUNT,plural, =1{탭 1개}other{탭 #개}}</translation>
 <translation id="3795154175078851242">링크가 있는 이미지 복사</translation>
-<translation id="3803784507854318295">자동 재생 관리</translation>
 <translation id="3810838688059735925">동영상</translation>
 <translation id="3810973564298564668">관리</translation>
 <translation id="3819178904835489326">다운로드 <ph name="NUMBER_OF_DOWNLOADS" />개 삭제됨</translation>
@@ -563,7 +560,6 @@
 <translation id="4095146165863963773">앱 데이터를 삭제하시겠습니까?</translation>
 <translation id="4096227151372679484">북마크 저장 흐름이 절반 높이로 열림</translation>
 <translation id="4101475238162928417">동기화하여 다른 기기에서 비밀번호, 북마크 등을 가져오세요.</translation>
-<translation id="410351446219883937">자동재생</translation>
 <translation id="4106587138345390261">Chrome은 사용자의 정보를 더 적게 사용하면서도 사이트에서 동일한 탐색 환경을 제공할 수 있는 새로운 기능을 알아보고 있습니다</translation>
 <translation id="4108314971463891922">팔로우</translation>
 <translation id="4108998448622696017">위험한 이벤트가 발생하면 이를 감지하여 알립니다.</translation>
@@ -634,7 +630,6 @@
 <translation id="4484496141267039529">연결되지 않았습니다. 나중에 다시 시도하세요.</translation>
 <translation id="4487967297491345095">모든 파일, 설정, 계정, 데이터베이스 등을 포함한 Chrome의 모든 앱 데이터가 완전히 삭제됩니다.</translation>
 <translation id="449126573531210296">Google 계정을 사용해 동기화된 비밀번호 암호화</translation>
-<translation id="4504667196171871375">Wi-Fi 및 모바일 데이터에서</translation>
 <translation id="4508528996305412043">피드 카드 메뉴가 열림</translation>
 <translation id="4509501256689523862">인터넷을 탐색할 때 이 설정, <ph name="BEGIN_LINK_1" />광고 주제<ph name="END_LINK_1" />, 나의 <ph name="BEGIN_LINK_2" />쿠키 설정<ph name="END_LINK_2" />, 시청 중인 사이트에서 광고를 맞춤설정하는지 여부에 따라 나에게 표시되는 광고의 맞춤설정 여부가 달라집니다.</translation>
 <translation id="4513387527876475750">{DAYS,plural, =1{#일 전}other{#일 전}}</translation>
@@ -1313,7 +1308,6 @@
 <translation id="7944772052836377867">동기화를 위해 본인 인증 필요</translation>
 <translation id="7947953824732555851">수락 및 로그인</translation>
 <translation id="7957413488482743710">가상 카드는 실제 카드를 숨겨서 사기당할 위험을 줄여줍니다. <ph name="BEGIN_LINK1" />가상 카드 자세히 알아보기<ph name="END_LINK1" /></translation>
-<translation id="7961015016161918242">사용하지 않음</translation>
 <translation id="7961926449547174351">저장소 액세스 권한을 사용 중지했습니다. 설정으로 이동하여 사용 설정해 주세요.</translation>
 <translation id="7963646190083259054">공급업체:</translation>
 <translation id="7965838025086216108">저장된 비밀번호는 모든 기기에서 사용할 수 있습니다. <ph name="ACCOUNT" />의 Google 비밀번호 관리자에 비밀번호가 저장됩니다.</translation>
@@ -1520,7 +1514,6 @@
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_ONE" />개가 닫힙니다.}other{시크릿 탭 <ph name="INCOGNITO_TAB_COUNT" />개와 일반 탭 <ph name="TAB_COUNT_MANY" />개가 닫힙니다.}}</translation>
 <translation id="8970887620466824814">문제 발생</translation>
 <translation id="8972098258593396643">기본 폴더에 다운로드하시겠습니까?</translation>
-<translation id="8987641763863173640">동영상 미리보기 설정 관리</translation>
 <translation id="8987736167266086032">멈춘 부분에서 계속</translation>
 <translation id="8989968390305463310">방문 기록에 따라 표시되는 광고 및 아래의 예측 관심분야가 달라집니다. 개인 정보를 보호하기 위해 Chrome에서는 매월 최소 한 번씩 수시로 관심분야를 자동 삭제합니다. 관심분야는 직접 삭제하지 않는 한 새로고침될 수 있습니다.</translation>
 <translation id="8993760627012879038">시크릿 모드로 새 탭 열기</translation>

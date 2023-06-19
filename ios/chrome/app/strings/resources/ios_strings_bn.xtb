@@ -28,6 +28,7 @@
 <translation id="1126809382673880764">এই মোডে আপনার ডিভাইসের ক্ষতি করতে পারে এমন ওয়েবসাইট, ডাউনলোড অথবা এক্সটেনশন থেকে কোনও সুরক্ষা পাওয়া সম্ভব হয় না। তবে Gmail এবং Search-এর মতো অন্যান্য Google পরিষেবায়, যেখানে উপলভ্য সেখানে আপনি এখনও 'Safe Browsing'-এর সুরক্ষা পাবেন।</translation>
 <translation id="1145536944570833626">বিদ্যমান ডেটা মুছুন।</translation>
 <translation id="1147031633655575115"><ph name="USER" /> হিসেবে সাইন-ইন করেছেন</translation>
+<translation id="1150989369772528668">ক্যালেন্ডার</translation>
 <translation id="1154984953698510061">অন্যান্য ট্যাব দেখুন</translation>
 <translation id="1161340988127985692">ছদ্মবেশী মোডে অন্য়ান্য অ্যাপের লিঙ্ক খোলার অনুমতি দেওয়া</translation>
 <translation id="1164064664035028907">স্ট্রং পাসওয়ার্ড ব্যবহার করুন:</translation>
@@ -1092,6 +1093,7 @@
 <translation id="7993619969781047893">কিছু কিছু সাইটের ফিচারগুলি কাজ নাও করতে পারে</translation>
 <translation id="800361585186029508">Google Chrome-এ ইনপুট করা ইউআরএলগুলি খোলে।</translation>
 <translation id="8005666035647241369">এই ডিভাইসে Google পাসওয়ার্ড ম্যানেজারে</translation>
+<translation id="8009225694047762179">পাসওয়ার্ড পরিচালনা করুন</translation>
 <translation id="8011489434346330032">ওয়েব ইন্সপেক্টর</translation>
 <translation id="8016714545083187120">সবসময় সুরক্ষিত কানেকশন ব্যবহার করুন</translation>
 <translation id="802154636333426148">ডাউনলোড করা যায়নি</translation>
@@ -1108,6 +1110,7 @@
 <translation id="8073872304774253879">সার্চ এবং ব্রাউজিং অভিজ্ঞতা আরও উন্নত করুন</translation>
 <translation id="8076492880354921740">ট্যাবগুলি</translation>
 <translation id="8077675488769462025">ইনঅ্যাক্টিভ ট্যাব</translation>
+<translation id="8079530767338315840">পুনরাবৃত্তি করুন</translation>
 <translation id="8079602123447022758">এই সেটিং ম্যানেজ করা হয়েছে, আরও তথ্য জানতে ডবল ট্যাপ করুন</translation>
 <translation id="8080028325999236607">সমস্ত ট্যাব বন্ধ করুন</translation>
 <translation id="8084285576995584326">আপনার Google অ্যাকাউন্টের ডেটা নিয়ন্ত্রণ করুন</translation>
