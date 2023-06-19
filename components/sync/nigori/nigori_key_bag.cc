@@ -28,11 +28,11 @@ sync_pb::NigoriKey NigoriToProto(const Nigori& nigori,
   return proto;
 }
 
-sync_pb::PrivateKey KeyPairToPrivateKeyProto(
+sync_pb::CrossUserSharingPrivateKey KeyPairToPrivateKeyProto(
     const uint32_t version,
     const CrossUserSharingPublicPrivateKeyPair& key_pair) {
   auto raw_private_key = key_pair.GetRawPrivateKey();
-  sync_pb::PrivateKey output;
+  sync_pb::CrossUserSharingPrivateKey output;
   output.set_version(version);
   output.set_x25519_private_key(
       std::string(std::begin(raw_private_key), std::end(raw_private_key)));
@@ -79,7 +79,8 @@ NigoriKeyBag NigoriKeyBag::CreateFromProto(const sync_pb::NigoriKeyBag& proto) {
       DLOG(ERROR) << "Invalid NigoriKey protocol buffer message.";
     }
   }
-  for (const sync_pb::PrivateKey& key : proto.private_key()) {
+  for (const sync_pb::CrossUserSharingPrivateKey& key :
+       proto.cross_user_sharing_private_key()) {
     if (!output.AddKeyPairFromProto(key)) {
       DLOG(WARNING) << "Could not add PrivateKey protocol buffer message.";
     }
@@ -103,7 +104,8 @@ sync_pb::NigoriKeyBag NigoriKeyBag::ToProto() const {
     *output.add_key() = NigoriToProto(*nigori, key_name);
   }
   for (const auto& [key_version, key_pair] : key_pairs_map_) {
-    *output.add_private_key() = KeyPairToPrivateKeyProto(key_version, key_pair);
+    *output.add_cross_user_sharing_private_key() =
+        KeyPairToPrivateKeyProto(key_version, key_pair);
   }
 
   return output;
@@ -174,7 +176,8 @@ void NigoriKeyBag::AddAllUnknownKeysFrom(const NigoriKeyBag& other) {
   }
 }
 
-bool NigoriKeyBag::AddKeyPairFromProto(const sync_pb::PrivateKey& key) {
+bool NigoriKeyBag::AddKeyPairFromProto(
+    const sync_pb::CrossUserSharingPrivateKey& key) {
   std::vector<uint8_t> private_key(key.x25519_private_key().begin(),
                                    key.x25519_private_key().end());
   absl::optional<CrossUserSharingPublicPrivateKeyPair> key_pair =

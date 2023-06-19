@@ -68,7 +68,7 @@ class NigoriKeyBag {
 
   // Similar to AddKeyPair, but reads the private-key material from a proto and
   // derives the public-key from the private-key.
-  bool AddKeyPairFromProto(const sync_pb::PrivateKey& key);
+  bool AddKeyPairFromProto(const sync_pb::CrossUserSharingPrivateKey& key);
 
   // Encryption of strings (possibly binary). Returns true if success.
   // |key_name| must be known. |encrypted_output| must not be null.

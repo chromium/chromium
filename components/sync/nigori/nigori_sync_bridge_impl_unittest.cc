@@ -74,8 +74,8 @@ MATCHER_P(HasPublicKeyWithVersion, key_version, "") {
     return false;
   }
   const sync_pb::NigoriSpecifics& specifics = entity_data->specifics.nigori();
-  return specifics.has_public_key() &&
-         specifics.public_key().version() == key_version;
+  return specifics.has_cross_user_sharing_public_key() &&
+         specifics.cross_user_sharing_public_key().version() == key_version;
 }
 
 MATCHER(HasCustomPassphraseNigori, "") {

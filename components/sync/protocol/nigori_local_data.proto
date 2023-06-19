@@ -100,7 +100,7 @@ message NigoriModel {
   optional NigoriSpecifics.TrustedVaultDebugInfo trusted_vault_debug_info = 13;
 
   // Current Public-key.
-  optional PublicKey public_key = 14;
+  optional CrossUserSharingPublicKey cross_user_sharing_public_key = 14;
 }
 
 // Sync proto to store Nigori data in storage. Proto should be encrypted with

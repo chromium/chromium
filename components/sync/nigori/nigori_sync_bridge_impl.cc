@@ -230,7 +230,7 @@ bool IsValidEncryptedTypesTransition(bool old_encrypt_everything,
 }
 
 absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
-    const sync_pb::PublicKey& public_key) {
+    const sync_pb::CrossUserSharingPublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
   return CrossUserSharingPublicKey::CreateByImport(key);
@@ -717,12 +717,12 @@ absl::optional<ModelError> NigoriSyncBridgeImpl::UpdateLocalState(
   state_.pending_keys = specifics.encryption_keybag();
   state_.cryptographer->ClearDefaultEncryptionKey();
 
-  if (specifics.has_public_key()) {
+  if (specifics.has_cross_user_sharing_public_key()) {
     // Remote update wins over local update.
     state_.cross_user_sharing_public_key =
-        PublicKeyFromProto(specifics.public_key());
+        PublicKeyFromProto(specifics.cross_user_sharing_public_key());
     state_.cross_user_sharing_key_pair_version =
-        specifics.public_key().version();
+        specifics.cross_user_sharing_public_key().version();
   }
 
   absl::optional<ModelError> error =

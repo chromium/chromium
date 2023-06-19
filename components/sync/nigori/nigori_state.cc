@@ -105,15 +105,16 @@ void UpdateSpecificsFromKeyDerivationParams(
 }
 
 absl::optional<CrossUserSharingPublicKey> PublicKeyFromProto(
-    const sync_pb::PublicKey& public_key) {
+    const sync_pb::CrossUserSharingPublicKey& public_key) {
   std::vector<uint8_t> key(public_key.x25519_public_key().begin(),
                            public_key.x25519_public_key().end());
   return CrossUserSharingPublicKey::CreateByImport(key);
 }
 
-sync_pb::PublicKey PublicKeyToProto(const CrossUserSharingPublicKey& public_key,
-                                    uint32_t key_pair_version) {
-  sync_pb::PublicKey output;
+sync_pb::CrossUserSharingPublicKey PublicKeyToProto(
+    const CrossUserSharingPublicKey& public_key,
+    uint32_t key_pair_version) {
+  sync_pb::CrossUserSharingPublicKey output;
   const auto key = public_key.GetRawPublicKey();
   output.set_x25519_public_key(std::string(key.begin(), key.end()));
   output.set_version(key_pair_version);
@@ -171,10 +172,11 @@ NigoriState NigoriState::CreateFromLocalProto(
 
   state.trusted_vault_debug_info = proto.trusted_vault_debug_info();
 
-  if (proto.has_public_key()) {
+  if (proto.has_cross_user_sharing_public_key()) {
     state.cross_user_sharing_public_key =
-        PublicKeyFromProto(proto.public_key());
-    state.cross_user_sharing_key_pair_version = proto.public_key().version();
+        PublicKeyFromProto(proto.cross_user_sharing_public_key());
+    state.cross_user_sharing_key_pair_version =
+        proto.cross_user_sharing_public_key().version();
   }
   return state;
 }
@@ -241,7 +243,7 @@ sync_pb::NigoriModel NigoriState::ToLocalProto() const {
   *proto.mutable_trusted_vault_debug_info() = trusted_vault_debug_info;
   if (cross_user_sharing_public_key.has_value() &&
       cross_user_sharing_key_pair_version.has_value()) {
-    *proto.mutable_public_key() =
+    *proto.mutable_cross_user_sharing_public_key() =
         PublicKeyToProto(cross_user_sharing_public_key.value(),
                          cross_user_sharing_key_pair_version.value());
   }
@@ -297,7 +299,7 @@ sync_pb::NigoriSpecifics NigoriState::ToSpecificsProto() const {
 
   if (cross_user_sharing_public_key.has_value() &&
       cross_user_sharing_key_pair_version.has_value()) {
-    *specifics.mutable_public_key() =
+    *specifics.mutable_cross_user_sharing_public_key() =
         PublicKeyToProto(cross_user_sharing_public_key.value(),
                          cross_user_sharing_key_pair_version.value());
   }

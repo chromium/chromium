@@ -27,14 +27,14 @@ message NigoriKey {
   optional bytes mac_key = 4;
 }
 
-message PrivateKey {
+message CrossUserSharingPrivateKey {
   // The key version, used for key rotation.
   optional int32 version = 1;
   // Private key on Curve25519 (32 bytes).
   optional bytes X25519_private_key = 2;
 }
 
-message PublicKey {
+message CrossUserSharingPublicKey {
   // The key version, used for key rotation and consensus.
   optional int32 version = 1;
   // Public key on Curve25519 (32 bytes).
@@ -46,7 +46,7 @@ message NigoriKeyBag {
   repeated NigoriKey key = 2;
   // Used for encrypting/authenticating using Public-private cryptography
   // primarily across user accounts, e.g. sharing offers.
-  repeated PrivateKey private_key = 3;
+  repeated CrossUserSharingPrivateKey cross_user_sharing_private_key = 3;
 }
 
 // Properties of nigori sync object.
@@ -247,7 +247,7 @@ message NigoriSpecifics {
   reserved 52;
   reserved "encrypt_printers_authorization_servers";
 
-  // Current Public-key to expose in registry for sharing offers outside account
-  // boundary.
-  optional PublicKey public_key = 53;
+  // Current cross user sharing Public-key to expose in server registry
+  // for sharing offers outside account boundary.
+  optional CrossUserSharingPublicKey cross_user_sharing_public_key = 53;
 }

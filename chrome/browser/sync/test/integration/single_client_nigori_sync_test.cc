@@ -718,11 +718,12 @@ IN_PROC_BROWSER_TEST_F(
   // Commit of specifics with key pair happens during SetupSync().
   ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
 
-  EXPECT_TRUE(specifics.has_public_key());
-  EXPECT_TRUE(specifics.public_key().has_x25519_public_key());
-  EXPECT_TRUE(specifics.public_key().has_version());
-  EXPECT_EQ(specifics.public_key().version(), 0);
-  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+  EXPECT_TRUE(specifics.has_cross_user_sharing_public_key());
+  EXPECT_TRUE(
+      specifics.cross_user_sharing_public_key().has_x25519_public_key());
+  EXPECT_TRUE(specifics.cross_user_sharing_public_key().has_version());
+  EXPECT_EQ(specifics.cross_user_sharing_public_key().version(), 0);
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               SizeIs(X25519_PUBLIC_VALUE_LEN));
 
   const std::vector<std::vector<uint8_t>>& keystore_keys =
@@ -742,18 +743,19 @@ IN_PROC_BROWSER_TEST_F(
   sync_pb::NigoriKeyBag decrypted_keys;
 
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
-  ASSERT_THAT(decrypted_keys.private_key(), SizeIs(1));
-  auto private_key_proto =
-      decrypted_keys.private_key().at(0).x25519_private_key();
+  ASSERT_THAT(decrypted_keys.cross_user_sharing_private_key(), SizeIs(1));
+  auto private_key_proto = decrypted_keys.cross_user_sharing_private_key()
+                               .at(0)
+                               .x25519_private_key();
   EXPECT_THAT(private_key_proto, SizeIs(X25519_PRIVATE_KEY_LEN));
-  EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
+  EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
   absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
       syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           raw_private_key);
   EXPECT_TRUE(private_key.has_value());
-  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(private_key->GetRawPublicKey()));
 }
 
@@ -786,11 +788,12 @@ IN_PROC_BROWSER_TEST_F(
   // Commit of specifics with key pair happens during SetupSync().
   ASSERT_TRUE(GetServerNigori(GetFakeServer(), &specifics));
 
-  EXPECT_TRUE(specifics.has_public_key());
-  EXPECT_TRUE(specifics.public_key().has_x25519_public_key());
-  EXPECT_TRUE(specifics.public_key().has_version());
-  EXPECT_EQ(specifics.public_key().version(), 0);
-  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+  EXPECT_TRUE(specifics.has_cross_user_sharing_public_key());
+  EXPECT_TRUE(
+      specifics.cross_user_sharing_public_key().has_x25519_public_key());
+  EXPECT_TRUE(specifics.cross_user_sharing_public_key().has_version());
+  EXPECT_EQ(specifics.cross_user_sharing_public_key().version(), 0);
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               SizeIs(X25519_PUBLIC_VALUE_LEN));
 
   const std::vector<std::vector<uint8_t>>& keystore_keys =
@@ -810,18 +813,19 @@ IN_PROC_BROWSER_TEST_F(
                                              &decrypted_keys_str));
   sync_pb::NigoriKeyBag decrypted_keys;
   EXPECT_TRUE(decrypted_keys.ParseFromString(decrypted_keys_str));
-  ASSERT_THAT(decrypted_keys.private_key(), SizeIs(1));
-  auto private_key_proto =
-      decrypted_keys.private_key().at(0).x25519_private_key();
+  ASSERT_THAT(decrypted_keys.cross_user_sharing_private_key(), SizeIs(1));
+  auto private_key_proto = decrypted_keys.cross_user_sharing_private_key()
+                               .at(0)
+                               .x25519_private_key();
   EXPECT_THAT(private_key_proto, SizeIs(X25519_PRIVATE_KEY_LEN));
-  EXPECT_EQ(decrypted_keys.private_key().at(0).version(), 0);
+  EXPECT_EQ(decrypted_keys.cross_user_sharing_private_key().at(0).version(), 0);
   std::vector<uint8_t> raw_private_key(private_key_proto.begin(),
                                        private_key_proto.end());
   absl::optional<syncer::CrossUserSharingPublicPrivateKeyPair> private_key =
       syncer::CrossUserSharingPublicPrivateKeyPair::CreateByImport(
           raw_private_key);
   EXPECT_TRUE(private_key.has_value());
-  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(private_key->GetRawPublicKey()));
 }
 

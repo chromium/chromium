@@ -755,7 +755,7 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriModel& proto) {
   VISIT(pending_keystore_decryptor_token);
   VISIT(last_default_trusted_vault_key_name);
   VISIT(trusted_vault_debug_info);
-  VISIT(public_key);
+  VISIT(cross_user_sharing_public_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::NigoriLocalData& proto) {
@@ -764,12 +764,12 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriLocalData& proto) {
   VISIT(nigori_model);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::PublicKey& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPublicKey& proto) {
   VISIT(version);
   VISIT_BYTES(x25519_public_key);
 }
 
-VISIT_PROTO_FIELDS(const sync_pb::PrivateKey& proto) {
+VISIT_PROTO_FIELDS(const sync_pb::CrossUserSharingPrivateKey& proto) {
   VISIT(version);
   VISIT(x25519_private_key);
 }
@@ -803,7 +803,7 @@ VISIT_PROTO_FIELDS(const sync_pb::NigoriSpecifics& proto) {
   VISIT(custom_passphrase_key_derivation_method);
   VISIT(custom_passphrase_key_derivation_salt);
   VISIT(trusted_vault_debug_info);
-  VISIT(public_key);
+  VISIT(cross_user_sharing_public_key);
 }
 
 VISIT_PROTO_FIELDS(const sync_pb::WebauthnCredentialSpecifics& proto) {
@@ -1275,7 +1275,7 @@ VISIT_PROTO_FIELDS(const sync_pb::UserDisplayInfo& proto) {
 VISIT_PROTO_FIELDS(const sync_pb::UserInfo& proto) {
   VISIT(user_id);
   VISIT(user_display_info);
-  VISIT(public_key);
+  VISIT(cross_user_sharing_public_key);
 }
 
 VISIT_PROTO_FIELDS(

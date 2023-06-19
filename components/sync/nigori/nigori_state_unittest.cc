@@ -109,9 +109,9 @@ TEST(NigoriStateTest, ShouldConvertPublicKeyStateToSpecifics) {
 
   NigoriSpecifics specifics = state.ToSpecificsProto();
 
-  EXPECT_THAT(specifics.public_key().x25519_public_key(),
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(key));
-  EXPECT_THAT(specifics.public_key().version(), Eq(1));
+  EXPECT_THAT(specifics.cross_user_sharing_public_key().version(), Eq(1));
 }
 
 TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
@@ -128,9 +128,9 @@ TEST(NigoriStateTest, ShouldContainPublicKeyInLocalProto) {
 
   sync_pb::NigoriModel nigori_model = state.ToLocalProto();
 
-  ASSERT_THAT(nigori_model.public_key().x25519_public_key(),
+  ASSERT_THAT(nigori_model.cross_user_sharing_public_key().x25519_public_key(),
               testing::ElementsAreArray(key));
-  ASSERT_THAT(nigori_model.public_key().version(), Eq(1));
+  ASSERT_THAT(nigori_model.cross_user_sharing_public_key().version(), Eq(1));
 }
 
 TEST(NigoriStateTest, ShouldClonePublicKey) {
