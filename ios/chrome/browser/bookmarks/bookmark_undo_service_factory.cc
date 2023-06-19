@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
+#include "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
 
 #include "base/memory/ptr_util.h"
 #include "base/no_destructor.h"
@@ -35,11 +35,9 @@ BookmarkUndoServiceFactory* BookmarkUndoServiceFactory::GetInstance() {
 BookmarkUndoServiceFactory::BookmarkUndoServiceFactory()
     : BrowserStateKeyedServiceFactory(
           "BookmarkUndoService",
-          BrowserStateDependencyManager::GetInstance()) {
-}
+          BrowserStateDependencyManager::GetInstance()) {}
 
-BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() {
-}
+BookmarkUndoServiceFactory::~BookmarkUndoServiceFactory() {}
 
 std::unique_ptr<KeyedService>
 BookmarkUndoServiceFactory::BuildServiceInstanceFor(

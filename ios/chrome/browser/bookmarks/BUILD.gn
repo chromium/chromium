@@ -12,6 +12,8 @@ source_set("bookmarks") {
     "bookmark_client_impl.h",
     "bookmark_model_bridge_observer.h",
     "bookmark_model_bridge_observer.mm",
+    "bookmark_undo_service_factory.cc",
+    "bookmark_undo_service_factory.h",
     "local_or_syncable_bookmark_model_factory.cc",
     "local_or_syncable_bookmark_model_factory.h",
     "local_or_syncable_bookmark_sync_service_factory.cc",
@@ -38,7 +40,6 @@ source_set("bookmarks") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/signin:system_identity",
     "//ios/chrome/browser/signin:system_identity_manager",
-    "//ios/chrome/browser/undo",
     "//ios/web",
   ]
   public_deps = [ ":bookmarks_utils" ]
@@ -50,6 +51,7 @@ source_set("bookmarks") {
 }
 
 source_set("bookmarks_utils") {
+  configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "bookmark_remover_helper.cc",
     "bookmark_remover_helper.h",

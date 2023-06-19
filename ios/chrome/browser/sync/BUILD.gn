@@ -84,7 +84,6 @@ source_set("sync") {
     "//ios/chrome/browser/sync/glue",
     "//ios/chrome/browser/sync/sessions",
     "//ios/chrome/browser/tabs",
-    "//ios/chrome/browser/undo",
     "//ios/chrome/browser/webdata_services",
     "//ios/chrome/common",
     "//ios/components/webui:url_constants",

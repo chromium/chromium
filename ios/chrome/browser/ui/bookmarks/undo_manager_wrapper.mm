@@ -8,9 +8,9 @@
 
 #import "components/undo/bookmark_undo_service.h"
 #import "components/undo/undo_manager.h"
+#import "ios/chrome/browser/bookmarks/bookmark_undo_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/ui/bookmarks/undo_manager_bridge_observer.h"
-#import "ios/chrome/browser/undo/bookmark_undo_service_factory.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."

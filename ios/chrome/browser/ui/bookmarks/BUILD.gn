@@ -123,7 +123,6 @@ source_set("utils") {
     "//ios/chrome/browser/shared/ui/util",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
-    "//ios/chrome/browser/undo",
     "//ios/chrome/common/ui/colors",
     "//ios/third_party/material_components_ios",
     "//ui/base",
