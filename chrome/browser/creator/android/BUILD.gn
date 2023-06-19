@@ -59,7 +59,6 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.creator"
 }
 

@@ -7,6 +7,7 @@ import("//build/config/android/rules.gni")
 import("//chrome/browser/buildflags.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditText.java",
     "java/src/org/chromium/chrome/browser/omnibox/AutocompleteEditTextModelBase.java",
@@ -220,7 +221,7 @@ android_library("java") {
     "//ui/base/mojom:mojom_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.omnibox"
 }
 
@@ -529,6 +530,5 @@ robolectric_library("junit") {
     "//url:gurl_junit_shadows",
     "//url:gurl_junit_test_support",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   resources_package = "org.chromium.chrome.browser.omnibox.test"
 }

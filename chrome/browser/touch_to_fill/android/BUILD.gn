@@ -17,6 +17,7 @@ source_set("android") {
   deps = [
     ":jni_headers",
     "//chrome/browser/touch_to_fill:public",
+    "//chrome/browser/touch_to_fill/android/internal:jni",
     "//chrome/browser/ui",
     "//components/password_manager/core/browser",
     "//components/strings:components_strings_grit",
@@ -29,7 +30,6 @@ source_set("android") {
 
 generate_jni("jni_headers") {
   sources = [
-    "internal/java/src/org/chromium/chrome/browser/touch_to_fill/TouchToFillBridge.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/Credential.java",
     "java/src/org/chromium/chrome/browser/touch_to_fill/data/WebAuthnCredential.java",
   ]

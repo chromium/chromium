@@ -1,5 +1,6 @@
 include_rules = {
-  "+chrome/android/features/keyboard_accessory/jni_headers",
+  "+chrome/android/features/keyboard_accessory/internal/jni",
+  "+chrome/android/features/keyboard_accessory/public/jni",
   "+chrome/android/features/start_surface/jni_headers",
   "+components/resources/android",
 }

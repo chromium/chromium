@@ -7,6 +7,14 @@ import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
+generate_jni("jni") {
+  sources = [
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
+    "java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetBridge.java",
+  ]
+}
+
 android_library("internal_java") {
   deps = [
     ":java_resources",
@@ -51,6 +59,7 @@ android_library("internal_java") {
     "//ui/base/ime/mojom:mojom_java",
     "//url:gurl_java",
   ]
+  srcjar_deps = [ ":jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
@@ -119,7 +128,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/tab_layout_component/KeyboardAccessoryTabLayoutViewBinder.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/utils/InsecureFillingDialogUtils.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.keyboard_accessory"
 }
 

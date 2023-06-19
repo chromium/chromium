@@ -7,7 +7,7 @@
 #include "base/android/jni_string.h"
 #include "base/android/scoped_java_ref.h"
 #include "base/check.h"
-#include "chrome/browser/touch_to_fill/password_generation/android/jni_headers/TouchToFillPasswordGenerationBridge_jni.h"
+#include "chrome/browser/touch_to_fill/password_generation/android/internal/jni/TouchToFillPasswordGenerationBridge_jni.h"
 #include "components/password_manager/core/common/password_manager_features.h"
 #include "content/public/browser/web_contents.h"
 #include "ui/android/view_android.h"

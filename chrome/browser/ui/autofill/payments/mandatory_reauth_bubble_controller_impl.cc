@@ -16,7 +16,7 @@
 
 #if BUILDFLAG(IS_ANDROID)
 #include "base/android/jni_android.h"
-#include "chrome/browser/mandatory_reauth/android/jni_headers/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
+#include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetControllerBridge_jni.h"
 #else
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_finder.h"

@@ -64,6 +64,10 @@ android_library("internal_ui_factory_java") {
   sources = _ui_factory_sources
 }
 
+generate_jni("internal_jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/password_check/PasswordCheckBridge.java" ]
+}
+
 android_library("internal_java") {
   deps = [
     ":java_resources",
@@ -105,6 +109,7 @@ android_library("internal_java") {
     "//url:gurl_java",
     _public_target,
   ]
+  srcjar_deps = [ ":internal_jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckBridge.java",
     "java/src/org/chromium/chrome/browser/password_check/PasswordCheckCoordinator.java",
@@ -119,7 +124,7 @@ android_library("internal_java") {
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckChangePasswordHelper.java",
     "java/src/org/chromium/chrome/browser/password_check/helper/PasswordCheckIconHelper.java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.password_check"
 }
 

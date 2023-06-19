@@ -166,10 +166,9 @@ android_library("test_java") {
 
 generate_jni("jni_headers") {
   visibility = [ "//chrome/browser" ]
-  sources = [
-    "internal/java/src/org/chromium/chrome/browser/password_check/PasswordCheckBridge.java",
-    "java/src/org/chromium/chrome/browser/password_check/CompromisedCredential.java",
-  ]
+  sources = [ "java/src/org/chromium/chrome/browser/password_check/CompromisedCredential.java" ]
+  public_deps =
+      [ "//chrome/browser/password_check/android/internal:internal_jni" ]
 }
 
 android_resources("java_resources") {

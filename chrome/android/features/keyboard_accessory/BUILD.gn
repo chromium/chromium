@@ -19,12 +19,10 @@ java_group("internal_java") {
   ]
 }
 
-generate_jni("jni_headers") {
-  sources = [
-    "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/AutofillKeyboardAccessoryViewBridge.java",
-    "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingComponentBridge.java",
-    "internal/java/src/org/chromium/chrome/browser/keyboard_accessory/all_passwords_bottom_sheet/AllPasswordsBottomSheetBridge.java",
-    "public/java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
+group("jni_headers") {
+  public_deps = [
+    "//chrome/android/features/keyboard_accessory/internal:jni",
+    "//chrome/android/features/keyboard_accessory/public:jni",
   ]
 }
 

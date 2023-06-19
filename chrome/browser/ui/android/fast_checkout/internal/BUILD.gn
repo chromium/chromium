@@ -7,7 +7,12 @@ import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutBridge.java" ]
+}
+
 android_library("java") {
+  srcjar_deps = [ ":jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutBridge.java",
     "java/src/org/chromium/chrome/browser/ui/fast_checkout/FastCheckoutCoordinator.java",
@@ -52,7 +57,7 @@ android_library("java") {
     "//ui/android:ui_no_recycler_view_java",
     "//ui/android:ui_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.ui.fast_checkout"
 }
 

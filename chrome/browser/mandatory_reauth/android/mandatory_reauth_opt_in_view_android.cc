@@ -6,7 +6,7 @@
 
 #include <jni.h>
 
-#include "chrome/browser/mandatory_reauth/android/jni_headers/MandatoryReauthOptInBottomSheetViewBridge_jni.h"
+#include "chrome/browser/mandatory_reauth/android/internal/jni/MandatoryReauthOptInBottomSheetViewBridge_jni.h"
 #include "ui/android/view_android.h"
 #include "ui/android/window_android.h"
 

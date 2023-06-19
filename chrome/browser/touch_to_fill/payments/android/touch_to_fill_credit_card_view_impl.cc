@@ -5,7 +5,7 @@
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_impl.h"
 
 #include "chrome/browser/autofill/android/personal_data_manager_android.h"
-#include "chrome/browser/touch_to_fill/payments/android/jni_headers/TouchToFillCreditCardViewBridge_jni.h"
+#include "chrome/browser/touch_to_fill/payments/android/internal/jni/TouchToFillCreditCardViewBridge_jni.h"
 #include "chrome/browser/touch_to_fill/payments/android/touch_to_fill_credit_card_view_controller.h"
 #include "components/autofill/core/common/autofill_features.h"
 #include "content/public/browser/web_contents.h"

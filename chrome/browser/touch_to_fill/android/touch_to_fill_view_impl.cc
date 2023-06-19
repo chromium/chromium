@@ -12,8 +12,8 @@
 #include "base/android/jni_string.h"
 #include "base/strings/string_piece.h"
 #include "base/time/time.h"
+#include "chrome/browser/touch_to_fill/android/internal/jni/TouchToFillBridge_jni.h"
 #include "chrome/browser/touch_to_fill/android/jni_headers/Credential_jni.h"
-#include "chrome/browser/touch_to_fill/android/jni_headers/TouchToFillBridge_jni.h"
 #include "chrome/browser/touch_to_fill/android/jni_headers/WebAuthnCredential_jni.h"
 #include "chrome/browser/touch_to_fill/touch_to_fill_controller.h"  // nogncheck
 #include "chrome/browser/ui/passwords/ui_utils.h"

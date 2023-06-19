@@ -4,7 +4,12 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("util_jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferences.java" ]
+}
+
 android_library("util_java") {
+  srcjar_deps = [ ":util_jni" ]
   sources = [ "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferences.java" ]
 
   deps = [
@@ -12,11 +17,10 @@ android_library("util_java") {
     "//chrome/browser/preferences:java",
     "//components/policy/android:policy_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/chrome/browser/policy/CloudManagementAndroidConnection.java",
     "java/src/org/chromium/chrome/browser/policy/PolicyServiceFactory.java",
@@ -34,8 +38,6 @@ android_library("java") {
     ":delegate_java",
     ":util_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("delegate_java") {
@@ -62,9 +64,9 @@ android_library("delegate_public_impl_java") {
 generate_jni("jni_headers") {
   sources = [
     "java/src/org/chromium/chrome/browser/policy/CloudManagementAndroidConnection.java",
-    "java/src/org/chromium/chrome/browser/policy/CloudManagementSharedPreferences.java",
     "java/src/org/chromium/chrome/browser/policy/PolicyServiceFactory.java",
   ]
+  public_deps = [ ":util_jni" ]
 }
 
 robolectric_library("junit") {

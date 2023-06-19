@@ -7,6 +7,10 @@ import("//build/config/locales.gni")
 import("//chrome/common/features.gni")
 import("//tools/grit/grit_rule.gni")
 
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java" ]
+}
+
 android_library("java") {
   deps = [
     ":java_resources",
@@ -35,6 +39,7 @@ android_library("java") {
     "//url:gurl_java",
   ]
 
+  srcjar_deps = [ ":jni" ]
   sources = [
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBottomSheetContent.java",
     "java/src/org/chromium/chrome/browser/ui/android/webid/AccountSelectionBridge.java",
@@ -45,7 +50,6 @@ android_library("java") {
   ]
 
   resources_package = "org.chromium.chrome.browser.ui.android.webid"
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_resources("java_resources") {

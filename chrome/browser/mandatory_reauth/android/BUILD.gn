@@ -13,9 +13,6 @@ android_library("java") {
   ]
 }
 
-generate_jni("jni_headers") {
-  sources = [
-    "internal/java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetControllerBridge.java",
-    "internal/java/src/org/chromium/chrome/browser/mandatory_reauth/MandatoryReauthOptInBottomSheetViewBridge.java",
-  ]
+group("jni_headers") {
+  public_deps = [ "//chrome/browser/mandatory_reauth/android/internal:jni" ]
 }

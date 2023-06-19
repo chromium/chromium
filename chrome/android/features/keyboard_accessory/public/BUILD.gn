@@ -4,6 +4,10 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("jni") {
+  sources = [ "java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java" ]
+}
+
 android_library("public_java") {
   deps = [
     "//base:base_java",
@@ -25,7 +29,10 @@ android_library("public_java") {
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/Provider.java",
     "java/src/org/chromium/chrome/browser/keyboard_accessory/data/UserInfoField.java",
   ]
-  srcjar_deps = [ ":java_enums_srcjar" ]
+  srcjar_deps = [
+    ":java_enums_srcjar",
+    ":jni",
+  ]
 }
 
 java_cpp_enum("java_enums_srcjar") {
