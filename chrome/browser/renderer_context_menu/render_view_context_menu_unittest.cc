@@ -22,6 +22,7 @@
 #include "chrome/browser/extensions/test_extension_prefs.h"
 #include "chrome/browser/feed/web_feed_tab_helper.h"
 #include "chrome/browser/password_manager/chrome_password_manager_client.h"
+#include "chrome/browser/password_manager/password_store_factory.h"
 #include "chrome/browser/prefs/incognito_mode_prefs.h"
 #include "chrome/browser/renderer_context_menu/render_view_context_menu_test_util.h"
 #include "chrome/browser/search_engines/template_url_service_factory.h"
@@ -47,6 +48,8 @@
 #include "components/feed/feed_feature_list.h"
 #include "components/lens/buildflags.h"
 #include "components/lens/lens_features.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
+#include "components/password_manager/core/browser/password_manager_test_utils.h"
 #include "components/policy/core/common/policy_pref_names.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -564,6 +567,11 @@ class RenderViewContextMenuPrefsTest : public ChromeRenderViewHostTestHarness {
     DownloadCoreServiceFactory::GetForBrowserContext(profile())
         ->SetDownloadManagerDelegateForTesting(
             std::make_unique<ChromeDownloadManagerDelegate>(profile()));
+    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+        GetBrowserContext(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            content::BrowserContext,
+                            password_manager::MockPasswordStoreInterface>));
   }
 
   void TearDown() override {

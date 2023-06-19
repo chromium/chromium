@@ -44,6 +44,7 @@
 #include "components/password_manager/core/browser/credential_cache.h"
 #include "components/password_manager/core/browser/credentials_filter.h"
 #include "components/password_manager/core/browser/mock_password_manager_settings_service.h"
+#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #include "components/password_manager/core/browser/password_form.h"
 #include "components/password_manager/core/browser/password_manager.h"
 #include "components/password_manager/core/browser/password_manager_test_utils.h"
@@ -93,7 +94,6 @@
 #include "chrome/browser/autofill/mock_password_accessory_controller.h"
 #include "chrome/browser/password_manager/android/password_accessory_controller_impl.h"
 #include "chrome/browser/password_manager/android/password_generation_controller.h"
-#include "components/password_manager/core/browser/mock_password_store_interface.h"
 #endif  // BUILDFLAG(IS_ANDROID)
 
 using autofill::FieldRendererId;
@@ -343,6 +343,12 @@ class ChromePasswordManagerClientTest : public ChromeRenderViewHostTestHarness {
 
 void ChromePasswordManagerClientTest::SetUp() {
   ChromeRenderViewHostTestHarness::SetUp();
+
+  PasswordStoreFactory::GetInstance()->SetTestingFactory(
+      GetBrowserContext(),
+      base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                          content::BrowserContext,
+                          password_manager::MockPasswordStoreInterface>));
 
   blink::AssociatedInterfaceProvider* remote_interfaces =
       web_contents()->GetPrimaryMainFrame()->GetRemoteAssociatedInterfaces();
@@ -651,6 +657,15 @@ class ChromePasswordManagerClientSchemeTest
     : public ChromePasswordManagerClientTest,
       public ::testing::WithParamInterface<const char*> {
  public:
+  void SetUp() override {
+    ChromePasswordManagerClientTest::SetUp();
+    PasswordStoreFactory::GetInstance()->SetTestingFactory(
+        GetBrowserContext(),
+        base::BindRepeating(&password_manager::BuildPasswordStoreInterface<
+                            content::BrowserContext,
+                            password_manager::MockPasswordStoreInterface>));
+  }
+
   static std::vector<const char*> GetSchemes() {
     std::vector<const char*> result;
     for (const SchemeTestCase& test_case : kSchemeTestCases) {

@@ -252,6 +252,11 @@ bool ChromePasswordManagerClient::IsFillingEnabled(const GURL& url) const {
     return false;
   }
 
+  // Filling is impossible if password store in unavailable.
+  if (!GetProfilePasswordStore()) {
+    return false;
+  }
+
   const bool ssl_errors = net::IsCertStatusError(GetMainFrameCertStatus());
   if (log_manager_->IsLoggingActive()) {
     password_manager::BrowserSavePasswordProgressLogger logger(
