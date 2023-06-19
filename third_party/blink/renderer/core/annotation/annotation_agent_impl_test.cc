@@ -90,7 +90,8 @@ class AnnotationAgentImplTest : public SimTest {
     if (!range)
       return nullptr;
 
-    auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+    auto* container =
+        AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
     EXPECT_TRUE(container);
     if (!container)
       return nullptr;
@@ -102,7 +103,8 @@ class AnnotationAgentImplTest : public SimTest {
   // Creates an agent with a mock selector that will always fail to find a
   // range when attaching.
   AnnotationAgentImpl* CreateAgentFailsAttach() {
-    auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+    auto* container =
+        AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
     EXPECT_TRUE(container);
     if (!container)
       return nullptr;
@@ -125,7 +127,8 @@ class AnnotationAgentImplTest : public SimTest {
           mojom::blink::AnnotationType::kSharedHighlight) {
     auto* selector = MakeGarbageCollected<TextAnnotationSelector>(
         TextFragmentSelector::FromTextDirective(text_selector));
-    auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+    auto* container =
+        AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
     return container->CreateUnboundAgent(type, *selector);
   }
   // Performs a check that the given node is fully visible in the visual
@@ -201,7 +204,7 @@ TEST_F(AnnotationAgentImplTest, AgentType) {
     TEST PAGE
   )HTML");
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* shared_highlight_agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
@@ -227,7 +230,7 @@ TEST_F(AnnotationAgentImplTest, CreatingDoesntBindOrAttach) {
     TEST PAGE
   )HTML");
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
@@ -246,7 +249,7 @@ TEST_F(AnnotationAgentImplTest, Bind) {
     TEST PAGE
   )HTML");
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
@@ -268,7 +271,7 @@ TEST_F(AnnotationAgentImplTest, RemoveDisconnectsBindings) {
     TEST PAGE
   )HTML");
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
@@ -295,8 +298,9 @@ TEST_F(AnnotationAgentImplTest, RemoveClearsState) {
     <!DOCTYPE html>
     TEST PAGE
   )HTML");
+  Compositor().BeginFrame();
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
@@ -304,7 +308,7 @@ TEST_F(AnnotationAgentImplTest, RemoveClearsState) {
 
   EXPECT_FALSE(IsRemoved(agent));
 
-  agent->Attach();
+  Compositor().BeginFrame();
   ASSERT_TRUE(agent->IsAttached());
 
   agent->Remove();
@@ -313,22 +317,24 @@ TEST_F(AnnotationAgentImplTest, RemoveClearsState) {
   EXPECT_FALSE(agent->IsAttached());
 }
 
-// Tests that attaching an agent to DOM in the document happens synchronously.
-TEST_F(AnnotationAgentImplTest, AttachIsSynchronous) {
+// Tests that attaching an agent to DOM in the document happens in a BeginFrame.
+TEST_F(AnnotationAgentImplTest, AttachDuringBeginFrame) {
   SimRequest request("https://example.com/test.html", "text/html");
   LoadURL("https://example.com/test.html");
   request.Complete(R"HTML(
     <!DOCTYPE html>
     TEST PAGE
   )HTML");
+  Compositor().BeginFrame();
 
-  auto* container = AnnotationAgentContainerImpl::From(GetDocument());
+  auto* container = AnnotationAgentContainerImpl::CreateIfNeeded(GetDocument());
   ASSERT_TRUE(container);
   auto* agent = container->CreateUnboundAgent(
       mojom::blink::AnnotationType::kSharedHighlight,
       *MakeGarbageCollected<MockAnnotationSelector>());
 
-  agent->Attach();
+  ASSERT_FALSE(agent->IsAttached());
+  Compositor().BeginFrame();
   EXPECT_TRUE(agent->IsAttached());
 }
 
@@ -341,6 +347,7 @@ TEST_F(AnnotationAgentImplTest, SuccessfulAttachCreatesMarker) {
     <!DOCTYPE html>
     <p id='text'>TEST FOO PAGE BAR</p>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* p = GetDocument().getElementById("text");
 
@@ -352,14 +359,9 @@ TEST_F(AnnotationAgentImplTest, SuccessfulAttachCreatesMarker) {
   auto* agent_bar = CreateAgentForRange(range_bar);
   ASSERT_TRUE(agent_bar);
 
-  agent_foo->Attach();
+  Compositor().BeginFrame();
+
   ASSERT_TRUE(agent_foo->IsAttached());
-
-  // A marker should have been created on "FOO" but not yet on "BAR".
-  EXPECT_EQ(NumMarkersInRange(*range_foo), 1ul);
-  EXPECT_EQ(NumMarkersInRange(*range_bar), 0ul);
-
-  agent_bar->Attach();
   ASSERT_TRUE(agent_bar->IsAttached());
 
   // Both "FOO" and "BAR" should each have a single marker.
@@ -382,6 +384,7 @@ TEST_F(AnnotationAgentImplTest, RemovedAgentRemovesMarkers) {
     <!DOCTYPE html>
     <p id='text'>TEST FOO PAGE BAR</p>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* p = GetDocument().getElementById("text");
 
@@ -393,8 +396,7 @@ TEST_F(AnnotationAgentImplTest, RemovedAgentRemovesMarkers) {
   auto* agent_bar = CreateAgentForRange(range_bar);
   ASSERT_TRUE(agent_bar);
 
-  agent_foo->Attach();
-  agent_bar->Attach();
+  Compositor().BeginFrame();
   ASSERT_EQ(NumMarkersInRange(*range_foo), 1ul);
   ASSERT_EQ(NumMarkersInRange(*range_bar), 1ul);
 
@@ -419,6 +421,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachment) {
     <!DOCTYPE html>
     <p id='text'>TEST FOO PAGE BAR</p>
   )HTML");
+  Compositor().BeginFrame();
 
   auto* agent = CreateAgentFailsAttach();
   ASSERT_TRUE(agent);
@@ -428,7 +431,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachment) {
       CreateRangeToExpectedText(p, 0, 17, "TEST FOO PAGE BAR");
   ASSERT_EQ(NumMarkersInRange(*range), 0ul);
 
-  agent->Attach();
+  Compositor().BeginFrame();
 
   EXPECT_EQ(NumMarkersInRange(*range), 0ul);
   EXPECT_FALSE(agent->IsAttached());
@@ -444,6 +447,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachmentReportsToHost) {
     <!DOCTYPE html>
     <p id='text'>TEST FOO PAGE BAR</p>
   )HTML");
+  Compositor().BeginFrame();
 
   auto* agent = CreateAgentFailsAttach();
   ASSERT_TRUE(agent);
@@ -455,7 +459,7 @@ TEST_F(AnnotationAgentImplTest, AgentFailsAttachmentReportsToHost) {
   ASSERT_TRUE(host.agent_.is_connected());
   ASSERT_FALSE(host.did_finish_attachment_rect_);
 
-  agent->Attach();
+  Compositor().BeginFrame();
   host.FlushForTesting();
 
   ASSERT_TRUE(host.did_finish_attachment_rect_);
@@ -471,6 +475,7 @@ TEST_F(AnnotationAgentImplTest, AttachmentToOverlappingMarkerReportsToHost) {
     <!DOCTYPE html>
     <p id='text'>TEST FOO PAGE BAR</p>
   )HTML");
+  Compositor().BeginFrame();
 
   Element* element_text = GetDocument().getElementById("text");
 
@@ -494,18 +499,14 @@ TEST_F(AnnotationAgentImplTest, AttachmentToOverlappingMarkerReportsToHost) {
   ASSERT_FALSE(host_foo.did_finish_attachment_rect_);
   ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
 
-  agent_foo->Attach();
+  Compositor().BeginFrame();
+
   ASSERT_TRUE(agent_foo->IsAttached());
+  ASSERT_TRUE(agent_bar->IsAttached());
 
   host_foo.FlushForTesting();
 
   EXPECT_TRUE(host_foo.did_finish_attachment_rect_);
-  ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
-
-  agent_bar->Attach();
-  ASSERT_TRUE(agent_bar->IsAttached());
-
-  host_bar.FlushForTesting();
   EXPECT_TRUE(host_bar.did_finish_attachment_rect_);
 }
 
@@ -581,21 +582,18 @@ TEST_F(AnnotationAgentImplTest, AttachmentReportsRectsToHost) {
   ASSERT_FALSE(host_foo.did_finish_attachment_rect_);
   ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
 
-  agent_foo->Attach();
+  Compositor().BeginFrame();
+
   EXPECT_TRUE(agent_foo->IsAttached());
-
-  host_foo.FlushForTesting();
-
-  ASSERT_TRUE(host_foo.did_finish_attachment_rect_);
-  EXPECT_EQ(*host_foo.did_finish_attachment_rect_, gfx::Rect(0, 1010, 30, 10));
-  ASSERT_FALSE(host_bar.did_finish_attachment_rect_);
-
-  agent_bar->Attach();
   EXPECT_TRUE(agent_bar->IsAttached());
 
+  host_foo.FlushForTesting();
   host_bar.FlushForTesting();
 
+  ASSERT_TRUE(host_foo.did_finish_attachment_rect_);
   ASSERT_TRUE(host_bar.did_finish_attachment_rect_);
+
+  EXPECT_EQ(*host_foo.did_finish_attachment_rect_, gfx::Rect(0, 1010, 30, 10));
   EXPECT_EQ(*host_bar.did_finish_attachment_rect_, gfx::Rect(0, 2010, 30, 10));
 }
 
@@ -637,7 +635,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoView) {
 
   MockAnnotationAgentHost host_foo;
   host_foo.BindToAgent(*agent_foo);
-  agent_foo->Attach();
+  Compositor().BeginFrame();
   ASSERT_TRUE(agent_foo->IsAttached());
 
   host_foo.FlushForTesting();
@@ -700,7 +698,7 @@ TEST_F(AnnotationAgentImplTest, AgentScrollIntoViewZoomed) {
 
   MockAnnotationAgentHost host_foo;
   host_foo.BindToAgent(*agent_foo);
-  agent_foo->Attach();
+  Compositor().BeginFrame();
   ASSERT_TRUE(agent_foo->IsAttached());
 
   host_foo.FlushForTesting();
@@ -744,9 +742,8 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewWithDirtyLayout) {
 
   MockAnnotationAgentHost host_foo;
   host_foo.BindToAgent(*agent_foo);
-  agent_foo->Attach();
+  Compositor().BeginFrame();
   ASSERT_TRUE(agent_foo->IsAttached());
-  host_foo.FlushForTesting();
 
   element_text->setAttribute(html_names::kStyleAttr, "top: 2000px");
 
@@ -801,7 +798,7 @@ TEST_F(AnnotationAgentImplTest, ScrollIntoViewCollapsedRange) {
 
   MockAnnotationAgentHost host;
   host.BindToAgent(*agent);
-  agent->Attach();
+  Compositor().BeginFrame();
 
   // Attachment should fail for this collapsed range.
   EXPECT_FALSE(agent->IsAttached());
@@ -839,15 +836,13 @@ TEST_F(AnnotationAgentImplTest, OpenDetailsElement) {
   MockAnnotationAgentHost host;
   host.BindToAgent(*agent);
 
-  bool finished = false;
   EXPECT_FALSE(agent->IsAttachmentPending());
-  agent->Attach(base::BindLambdaForTesting([&finished]() { finished = true; }));
+  Compositor().BeginFrame();
   host.FlushForTesting();
 
   // Since the matching text is inside a <details> it is initially hidden. The
   // attachment will be asynchronous as the <details> element must be opened
   // which needs to happen in a safe place during the document lifecycle.
-  EXPECT_FALSE(finished);
   EXPECT_TRUE(agent->IsAttachmentPending());
   EXPECT_FALSE(agent->IsAttached());
   EXPECT_FALSE(host.did_finish_attachment_rect_);
@@ -866,7 +861,6 @@ TEST_F(AnnotationAgentImplTest, OpenDetailsElement) {
   EXPECT_TRUE(element_details->FastHasAttribute(html_names::kOpenAttr));
   EXPECT_FALSE(agent->IsAttachmentPending());
   EXPECT_TRUE(agent->IsAttached());
-  EXPECT_TRUE(finished);
   EXPECT_TRUE(host.did_finish_attachment_rect_);
 
   // ScrollIntoView should now correctly scroll to the expanded details element.
@@ -897,10 +891,8 @@ TEST_F(AnnotationAgentImplTest, OpenHiddenUntilFoundElement) {
 
   auto* agent = CreateTextFinderAgent("foobar");
 
-  bool finished = false;
-  agent->Attach(base::BindLambdaForTesting([&finished]() { finished = true; }));
+  Compositor().BeginFrame();
 
-  EXPECT_FALSE(finished);
   EXPECT_TRUE(element->FastHasAttribute(html_names::kHiddenAttr));
   EXPECT_TRUE(agent->IsAttachmentPending());
 
@@ -936,11 +928,8 @@ TEST_F(AnnotationAgentImplTest, ActivatesContentVisibilityAuto) {
 
   auto* agent = CreateTextFinderAgent("foobar");
 
-  bool finished = false;
+  Compositor().BeginFrame();
 
-  agent->Attach(base::BindLambdaForTesting([&finished]() { finished = true; }));
-
-  EXPECT_FALSE(finished);
   EXPECT_TRUE(agent->IsAttachmentPending());
 
   // Produce a compositor frame. This should process the DOM mutations and
@@ -973,7 +962,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntMutateDom) {
       CreateTextFinderAgent("FOO", mojom::blink::AnnotationType::kTextFinder);
   ASSERT_TRUE(agent_foo);
 
-  agent_foo->Attach();
+  Compositor().BeginFrame();
 
   // Attachment should have succeeded but the <p> should remain hidden.
   ASSERT_TRUE(agent_foo->IsAttached());
@@ -982,7 +971,7 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntMutateDom) {
   // Sanity check that a shared highlight does un-hide the <p>
   auto* agent_bar = CreateTextFinderAgent(
       "BAR", mojom::blink::AnnotationType::kSharedHighlight);
-  agent_bar->Attach();
+  Compositor().BeginFrame();
   ASSERT_TRUE(agent_bar->IsAttachmentPending());
   Compositor().BeginFrame();
   ASSERT_TRUE(agent_bar->IsAttached());
@@ -1009,16 +998,16 @@ TEST_F(AnnotationAgentImplTest, TextFinderDoesntAddMarkers) {
       CreateAgentForRange(range_foo, mojom::blink::AnnotationType::kTextFinder);
   ASSERT_TRUE(agent_foo);
 
-  agent_foo->Attach();
+  Compositor().BeginFrame();
 
   // Attachment should have succeeded but no markers should be created.
   EXPECT_EQ(NumMarkersInRange(*doc_range), 0ul);
 
   // Sanity-check that a shared highlight does increase the marker count.
   RangeInFlatTree* range_bar = CreateRangeToExpectedText(p, 14, 17, "BAR");
-  auto* agent_bar = CreateAgentForRange(
-      range_bar, mojom::blink::AnnotationType::kSharedHighlight);
-  agent_bar->Attach();
+  CreateAgentForRange(range_bar,
+                      mojom::blink::AnnotationType::kSharedHighlight);
+  Compositor().BeginFrame();
   EXPECT_EQ(NumMarkersInRange(*doc_range), 1ul);
 }
 

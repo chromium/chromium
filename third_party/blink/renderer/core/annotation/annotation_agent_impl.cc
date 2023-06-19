@@ -86,27 +86,22 @@ void AnnotationAgentImpl::Bind(
       WTF::BindOnce(&AnnotationAgentImpl::Remove, WrapWeakPersistent(this)));
 }
 
-void AnnotationAgentImpl::Attach() {
+void AnnotationAgentImpl::Attach(AnnotationAgentContainerImpl::PassKey) {
   TRACE_EVENT("blink", "AnnotationAgentImpl::Attach");
   CHECK(!IsRemoved());
   CHECK(!IsAttached());
   CHECK(!pending_range_);
+  CHECK(owning_container_->IsLifecycleCleanForAttachment());
 
   // We may still have an old range despite the CHECK above if the range become
   // collapsed due to DOM changes.
   attached_range_.Clear();
 
-  did_try_attach_ = true;
+  needs_attachment_ = false;
   Document& document = *owning_container_->GetSupplementable();
   selector_->FindRange(document, AnnotationSelector::kSynchronous,
                        WTF::BindOnce(&AnnotationAgentImpl::DidFinishFindRange,
                                      WrapWeakPersistent(this)));
-}
-
-void AnnotationAgentImpl::Attach(base::OnceClosure did_finish_callback) {
-  CHECK(!did_finish_attachment_callback_);
-  did_finish_attachment_callback_ = std::move(did_finish_callback);
-  Attach();
 }
 
 bool AnnotationAgentImpl::IsAttached() const {
@@ -342,10 +337,6 @@ void AnnotationAgentImpl::ProcessAttachmentFinished() {
 
     // Empty rect means the selector didn't find its content.
     agent_host_->DidFinishAttachment(range_rect_in_document);
-  }
-
-  if (did_finish_attachment_callback_) {
-    std::move(did_finish_attachment_callback_).Run();
   }
 }
 

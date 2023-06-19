@@ -52,11 +52,6 @@ class CORE_EXPORT ElementFragmentAnchor final : public FragmentAnchor {
   // scrolls.
   void DidScroll(mojom::blink::ScrollType type) override;
 
-  // Attempts to focus the anchor if we couldn't focus right after install
-  // (because rendering was blocked at the time). This can cause script to run
-  // so we can't do it in Invoke.
-  void PerformScriptableActions() override;
-
   void Trace(Visitor*) const override;
 
  private:

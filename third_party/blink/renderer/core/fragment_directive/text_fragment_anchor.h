@@ -27,52 +27,61 @@ class TextDirective;
 
 // TextFragmentAnchor is the coordinator class for applying text directives
 // from the URL (also known as "scroll-to-text") to a document. This class'
-// purpose is to integrate with Blink's loading and lifecycle states. The
-// actual logic of performing the text search and applying highlights is
-// delegated out to the core annotation API.
+// purpose is to integrate with Blink's loading and lifecycle states and
+// execute behavior specific to scroll-to-text. The actual logic of performing
+// the text search and applying highlights is delegated out to the core
+// annotation API. The Annotations API performs the text matching while this
+// class tracks the state of its created annotations and performs necessary
+// actions based on that state.
+//
+// This class has three distinct responsibilities:
+//
+// 1) Vet security restrictions and create an annotation for each text
+//    directive in the URL.
+// 2) Track the state of the first matching directive, apply "effects" to it
+//    (highlight, scroll to it, apply focus, etc.).
+// 3) Mark non-matching directives as needing to retry their search. The
+//    initial search occurs after parsing completes; if the load event takes
+//    longer this class retries unmatched directives again at the load event.
 //
 // A frame will try to create a TextFragmentAnchor when parsing in a document
 // completes. If the URL has a valid text directive an instance of
 // TextFragmentAnchor will be created and stored on the LocalFrameView.
+// TextFragmentAnchor then turns the directive into AnnotationAgents to perform
+// the text search.
 //
 // The anchor performs its operations via the InvokeSelector method which is
 // invoked repeatedly, each time layout finishes in the document. Thus, the
 // anchor is guaranteed that layout is clean in InvokeSelector; however,
 // end-of-layout is a script-forbidden section so no actions that can result in
-// script being run can be invoked from there. Scriptable actions will instead
-// cause a BeginMainFrame to be scheduled and run in that frame before the
-// lifecycle, where script is allowed.
+// script being run can be invoked from there. Script-running actions are
+// performed in finalization py posting an animation frame task.
 //
 // TextFragmentAnchor is a state machine that transitions state via
-// InvokeSelector (and some external events). Here are the state transitions:
+// InvokeSelector (and some external events). The state represents the status
+// of the first matching directive, which is the directive to which effects
+// will be applied. Here are the state transitions (see the enum definition for
+// details of each state):
 //
 //           ┌──────┐
 //           │   ┌──┴────────────────────────┐
-//           └───►       kSearching          ├────────────┐
-//               └─────────────┬─────────────┘            │
-//                             │                          │
-//         ┌─────┬─────────────▼─────────────┐            │
-//         └────►│ kWaitingForDOMMutations   │            │
-//               └─────────────┬─────────────┘            │
-//                             │                          │
-//               ┌─────────────▼─────────────┐◄───────────┘
-//               │        kApplyEffects      ├────────────┐
-//               └─────────────┬─────────────┘            │
-//                             │                          │
-//         ┌─────┬─────────────▼─────────────┐            │
-//         └────►│ kEffectsAppliedKeepInView │            │
-//               └─────────────┬─────────────┘            │
-//                             │                          │
-//               ┌------------─▼-------------┐            │
-//         ┌─────┤     [[SearchFinished]]    |◄───────────┘
-//         │     └-------------┬-------------┘
-//         │                   │
-//         │     ┌─────────────▼─────────────┬─────┐
-//         │     │    kScriptableActions     │◄────┘
-//         │     └───────────────────────────┘
-//         │                   │
-//         │     ┌─────────────▼─────────────┐
-//         └─────►           kDone           │
+//           └───►       kSearching          ├───────┐
+//               └─────────────┬─────────────┘       │
+//           ┌──────┐          │                     │
+//           │   ┌──┴──────────▼─────────────┐       │
+//           └───►  kWaitingForDOMMutations  │       │
+//               └─────────────┬─────────────┘       │
+//                             │                     │
+//               ┌─────────────▼─────────────┐       │
+//               │        kApplyEffects      │◄──────┤
+//               └─────────────┬─────────────┘       │
+//           ┌──────┐          │                     │
+//           │   ┌──┴──────────▼─────────────┐       │
+//           └───►        kKeepInView        │       │
+//               └─────────────┬─────────────┘       │
+//                             │                     │
+//               ┌─────────────▼─────────────┐       │
+//               │           kDone           │◄──────┘
 //               └───────────────────────────┘
 class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
  public:
@@ -107,8 +116,6 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
 
   void Installed() override;
 
-  void PerformScriptableActions() override;
-
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   void Trace(Visitor*) const override;
@@ -116,9 +123,9 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   bool IsTextFragmentAnchor() override { return true; }
 
  private:
-  // Performs attachment (text search for each directive) for each directive
-  // that hasn't yet found a match.
-  void TryAttachingUnattachedDirectives();
+  // Called after annotation agents attempt attachment to check each
+  // agent's state and update this class' state machine.
+  void UpdateCurrentState();
 
   // Called once matched text is ready (any necessary DOM mutations have been
   // been processed). CSS style and scroll into view can now be performed.
@@ -129,16 +136,20 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   bool EnsureFirstMatchInViewIfNeeded();
 
   // Called when the search is finished. Reports metrics and activates the
-  // element fragment anchor if we didn't find a match. If a match was found or
-  // an element fragment is used, moves the anchor into kScriptableActions.
-  // Otherwise, moves to kDone.
+  // element fragment anchor if we didn't find a match. Schedules a
+  // finalization task to perform any needed script-running actions and move to
+  // kDone.
   void DidFinishSearch();
+
+  // Called in an animation frame, performs any nfinal actions that need a
+  // script-safe section and moves the anchor into the kDone state.
+  void FinalizeAnchor();
 
   void ApplyTargetToCommonAncestor(const EphemeralRangeInFlatTree& range);
 
-  void DidFinishAttachment(AnnotationAgentImpl* agent);
-
   bool HasSearchEngineSource();
+
+  bool ShouldKeepSearching();
 
   // This keeps track of each TextDirective and its associated
   // AnnotationAgentImpl. The directive is the DOM object exposed to JS that's
@@ -148,6 +159,11 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
       std::pair<Member<TextDirective>, Member<AnnotationAgentImpl>>;
   HeapVector<DirectiveAnnotationPair> directive_annotation_pairs_;
 
+  // Used to track which annotations have already recorded a match in
+  // UpdateCurrentState so we can track metrics across multiple attachment
+  // attempts.
+  HeapHashSet<Member<AnnotationAgentImpl>> matched_annotations_;
+
   // Once the first directive (in specified order) has been successfully
   // attached to DOM its annotation will be stored in `first_match_`.
   Member<const AnnotationAgentImpl> first_match_;
@@ -156,11 +172,10 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
   // find a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
 
-  // Set to true after the first time InvokeSelector is called.
-  bool did_perform_initial_attachment_ = false;
-
   // Set to true once InvokeSelector has been called after IsLoadCompleted.
   bool did_perform_post_load_attachment_ = false;
+
+  bool finalize_pending_ = false;
 
   enum AnchorState {
     // We're still waiting to find any matches. Either a search hasn't yet been
@@ -170,18 +185,18 @@ class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
     kSearching,
     // At least one match has been found but requires some kind of DOM mutation
     // (e.g. expanding a <details> element). Wait in this state until those
-    // complete. InvokeSelector will be a no-op in this state.
+    // complete. InvokeSelector will be a no-op in this state other than
+    // checking
+    // whether this has completed.
     kWaitingForDOMMutations,
     // The matched text is found and fully ready so InvokeSelector will now
     // apply effects like CSS :target, scrollIntoView, etc.
     kApplyEffects,
-    // The first match has been processed and scrolled into view. The anchor is
-    // kept alive in this state until the load event fires. All that's done
-    // during this state is to keep the match centered in the viewport.
-    kEffectsAppliedKeepInView,
-    // Effects have been applied but there's still something left to do in a
-    // script-allowed section. Entered only after the load event has fired.
-    kScriptableActions,
+    // The first match has been completely processed. The anchor is kept alive
+    // in this state until the load event fires and all remaining directives
+    // are matched. All that's done during this state is to keep the match
+    // centered in the viewport in spite of layout shifts.
+    kKeepInView,
     // All actions completed - the anchor can be disposed.
     kDone
   } state_ = kSearching;

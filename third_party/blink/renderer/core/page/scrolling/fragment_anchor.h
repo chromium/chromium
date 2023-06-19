@@ -52,7 +52,6 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   virtual void Installed() = 0;
 
   virtual void DidScroll(mojom::blink::ScrollType type) = 0;
-  virtual void PerformScriptableActions() = 0;
 
   virtual void Trace(Visitor*) const;
 

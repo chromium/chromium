@@ -38,10 +38,6 @@ class CORE_EXPORT SelectorFragmentAnchor : public FragmentAnchor {
   bool should_scroll_ = false;
   // Whether the user has scrolled the page
   bool user_scrolled_ = false;
-  // Whether the page has been made visible. Used to ensure we wait until the
-  // page has been made visible to start matching, to help prevent brute force
-  // search attacks.
-  bool page_has_been_visible_ = false;
 };
 }  // namespace blink
 

@@ -141,6 +141,13 @@ void ElementFragmentAnchor::Installed() {
   if (frame_->GetDocument()->HaveRenderBlockingResourcesLoaded())
     ApplyFocusIfNeeded();
 
+  if (needs_focus_) {
+    // Attempts to focus the anchor if we couldn't focus above. This can cause
+    // script to run so we can't do it from Invoke.
+    frame_->GetDocument()->EnqueueAnimationFrameTask(WTF::BindOnce(
+        &ElementFragmentAnchor::ApplyFocusIfNeeded, WrapPersistent(this)));
+  }
+
   needs_invoke_ = true;
 }
 
@@ -161,10 +168,6 @@ void ElementFragmentAnchor::Trace(Visitor* visitor) const {
   FragmentAnchor::Trace(visitor);
 }
 
-void ElementFragmentAnchor::PerformScriptableActions() {
-  ApplyFocusIfNeeded();
-}
-
 void ElementFragmentAnchor::ApplyFocusIfNeeded() {
   // SVG images can load synchronously during style recalc but it's ok to focus
   // since we disallow scripting. For everything else, focus() could run script
@@ -175,11 +178,14 @@ void ElementFragmentAnchor::ApplyFocusIfNeeded() {
   if (!needs_focus_)
     return;
 
-  if (!frame_->GetDocument()->HaveRenderBlockingResourcesLoaded())
+  if (!anchor_node_) {
+    needs_focus_ = false;
     return;
+  }
 
-  if (!anchor_node_)
+  if (!frame_->GetDocument()->HaveRenderBlockingResourcesLoaded()) {
     return;
+  }
 
   frame_->GetDocument()->UpdateStyleAndLayoutTree();
 
