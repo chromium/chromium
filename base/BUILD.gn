@@ -1673,6 +1673,13 @@ component("base") {
       ]
     }
 
+    if (is_apple) {
+      sources += [
+        "base_paths_apple.cc",
+        "base_paths_apple.h",
+      ]
+    }
+
     if (is_mac) {
       sources += [
         "base_paths_mac.h",
@@ -2181,8 +2188,8 @@ component("base") {
   # iOS
   if (is_ios) {
     sources += [
-      "base_paths_mac.h",
-      "base_paths_mac.mm",
+      "base_paths_ios.h",
+      "base_paths_ios.mm",
       "critical_closure_internal_ios.mm",
       "native_library_ios.mm",
       "power_monitor/power_monitor_device_source_ios.mm",

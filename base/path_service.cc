@@ -28,8 +28,10 @@ bool PathProvider(int key, FilePath* result);
 
 #if BUILDFLAG(IS_WIN)
 bool PathProviderWin(int key, FilePath* result);
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 bool PathProviderMac(int key, FilePath* result);
+#elif BUILDFLAG(IS_IOS)
+bool PathProviderIOS(int key, FilePath* result);
 #elif BUILDFLAG(IS_ANDROID)
 bool PathProviderAndroid(int key, FilePath* result);
 #elif BUILDFLAG(IS_FUCHSIA)
@@ -76,13 +78,25 @@ Provider base_provider_win = {
 };
 #endif
 
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
 Provider base_provider_mac = {
   PathProviderMac,
   &base_provider,
 #ifndef NDEBUG
   PATH_MAC_START,
   PATH_MAC_END,
+#endif
+  true
+};
+#endif
+
+#if BUILDFLAG(IS_IOS)
+Provider base_provider_ios = {
+  PathProviderIOS,
+  &base_provider,
+#ifndef NDEBUG
+  PATH_IOS_START,
+  PATH_IOS_END,
 #endif
   true
 };
@@ -131,8 +145,10 @@ struct PathData {
   PathData() : cache_disabled(false) {
 #if BUILDFLAG(IS_WIN)
     providers = &base_provider_win;
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
     providers = &base_provider_mac;
+#elif BUILDFLAG(IS_IOS)
+    providers = &base_provider_ios;
 #elif BUILDFLAG(IS_ANDROID)
     providers = &base_provider_android;
 #elif BUILDFLAG(IS_FUCHSIA)

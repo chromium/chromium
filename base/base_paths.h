@@ -12,8 +12,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "base/base_paths_win.h"
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
 #include "base/base_paths_mac.h"
+#elif BUILDFLAG(IS_IOS)
+#include "base/base_paths_ios.h"
 #elif BUILDFLAG(IS_ANDROID)
 #include "base/base_paths_android.h"
 #endif

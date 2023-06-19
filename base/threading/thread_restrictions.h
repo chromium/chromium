@@ -491,7 +491,9 @@ class StackSamplingProfiler;
 class TestCustomDisallow;
 class Thread;
 
-void GetNSExecutablePath(base::FilePath* path);
+namespace apple::internal {
+base::FilePath GetExecutablePath();
+}
 
 #if DCHECK_IS_ON()
 // NOT_TAIL_CALLED if dcheck-is-on so it's always evident who irrevocably
@@ -665,7 +667,7 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] ScopedAllowBlocking {
   friend bool ::HasWaylandDisplay(
       base::Environment* env);  // http://crbug.com/1246928
   friend bool ash::CameraAppUIShouldEnableLocalOverride(const std::string&);
-  friend void base::GetNSExecutablePath(base::FilePath*);
+  friend base::FilePath base::apple::internal::GetExecutablePath();
   friend bool base::internal::ReadProcFile(const FilePath& file,
                                            std::string* buffer);
   friend bool chrome::PathProvider(int,

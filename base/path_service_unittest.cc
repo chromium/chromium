@@ -62,7 +62,7 @@ bool ReturnsValidPath(int key) {
   if (key == DIR_TASKBAR_PINS)
     check_path_exists = false;
 #endif
-#if BUILDFLAG(IS_APPLE)
+#if BUILDFLAG(IS_MAC)
   if (key != DIR_EXE && key != DIR_MODULE && key != FILE_EXE &&
       key != FILE_MODULE) {
     if (path.ReferencesParent()) {
@@ -75,7 +75,7 @@ bool ReturnsValidPath(int key) {
     LOG(INFO) << "Path (" << path << ") references parent.";
     return false;
   }
-#endif  // BUILDFLAG(IS_APPLE)
+#endif  // BUILDFLAG(IS_MAC)
   if (!result) {
     LOG(INFO) << "PathService::Get() returned false.";
     return false;
@@ -149,8 +149,12 @@ TEST_F(PathServiceTest, Get) {
   for (int key = PATH_WIN_START + 1; key < PATH_WIN_END; ++key) {
     EXPECT_PRED1(ReturnsValidPath, key);
   }
-#elif BUILDFLAG(IS_APPLE)
+#elif BUILDFLAG(IS_MAC)
   for (int key = PATH_MAC_START + 1; key < PATH_MAC_END; ++key) {
+    EXPECT_PRED1(ReturnsValidPath, key);
+  }
+#elif BUILDFLAG(IS_IOS)
+  for (int key = PATH_IOS_START + 1; key < PATH_IOS_END; ++key) {
     EXPECT_PRED1(ReturnsValidPath, key);
   }
 #elif BUILDFLAG(IS_ANDROID)
