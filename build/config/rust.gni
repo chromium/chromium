@@ -83,8 +83,7 @@ declare_args() {
   # Individual Rust components.
 
   # Conversions between Rust types and C++ types.
-  enable_rust_base_conversions =
-      is_linux || is_android || enable_all_rust_features
+  enable_rust_base_conversions = enable_all_rust_features
 
   # The base::JSONReader implementation. Requires base conversions.
   enable_rust_json = enable_all_rust_features
@@ -93,7 +92,7 @@ declare_args() {
   enable_rust_crash = is_linux || is_android || enable_all_rust_features
 
   # Support for QR code generation - see https://crbug.com/1431991.
-  enable_rust_qr = is_linux || is_android || enable_all_rust_features
+  enable_rust_qr = enable_all_rust_features
 
   # Support for Rust mojo bindings.
   enable_rust_mojo = enable_all_rust_features

@@ -14,8 +14,6 @@
 //build/config/compiler
 //build/config/sanitizers
 //build/rust
-//build/rust/std
-//build/rust/std/rules
 //buildtools/third_party/libc++
 //buildtools/third_party/libc++abi
 //buildtools/third_party/libunwind
@@ -59,7 +57,6 @@
 //third_party/metrics_proto
 //third_party/modp_b64
 //third_party/protobuf
-//third_party/rust
 //third_party/zlib
 //tools/android/errorprone_plugin
 //tools/grit
