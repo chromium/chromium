@@ -43,8 +43,8 @@ bool ReadOrigin(base::PickleIterator* iter, url::Origin* origin) {
 void SerializeFormFieldDataVector(const std::vector<FormFieldData>& fields,
                                   base::Pickle* pickle) {
   pickle->WriteInt(static_cast<int>(fields.size()));
-  for (size_t i = 0; i < fields.size(); ++i) {
-    SerializeFormFieldData(fields[i], pickle);
+  for (const FormFieldData& field : fields) {
+    SerializeFormFieldData(field, pickle);
   }
 }
 
@@ -179,13 +179,14 @@ std::ostream& operator<<(std::ostream& os, const FormData& form) {
   os << base::UTF16ToUTF8(form.name) << " " << form.url << " " << form.action
      << " " << form.main_frame_origin << " " << form.is_form_tag << " "
      << "Fields:";
-  for (size_t i = 0; i < form.fields.size(); ++i) {
-    os << form.fields[i] << ",";
+  for (const FormFieldData& field : form.fields) {
+    os << field << ",";
   }
   return os;
 }
 
-FormFieldData* FormData::FindFieldByGlobalId(const FieldGlobalId& global_id) {
+const FormFieldData* FormData::FindFieldByGlobalId(
+    const FieldGlobalId& global_id) const {
   auto fields_it =
       base::ranges::find(fields, global_id, &FormFieldData::global_id);
 
