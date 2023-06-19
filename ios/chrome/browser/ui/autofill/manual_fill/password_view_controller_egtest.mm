@@ -524,7 +524,7 @@ id<GREYMatcher> CancelUsingOtherPasswordButton() {
       assertWithMatcher:grey_sufficientlyVisible()];
 
   [[EarlGrey selectElementWithMatcher:ManualFallbackPasswordTableViewMatcher()]
-      performAction:grey_typeText(@"text")];
+      performAction:grey_replaceText(@"text")];
 
   // Verify the password controller table view and the password icon is NOT
   // visible.

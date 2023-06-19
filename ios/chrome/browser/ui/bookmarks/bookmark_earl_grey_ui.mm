@@ -670,16 +670,20 @@ id<GREYMatcher> SearchIconButton() {
 
   NSString* titleIdentifier = @"bookmark_editing_text";
 
-  // Type the folder title.
+  // Type the folder title, tapping to provide focus first so that we can \n
+  // later.
+  [[EarlGrey
+      selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
+      performAction:grey_tap()];
   [[EarlGrey
       selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
       performAction:grey_replaceText(folderTitle)];
 
   // Press the keyboard return key.
   if (pressReturn) {
-    [[EarlGrey
-        selectElementWithMatcher:[self textFieldMatcherForID:titleIdentifier]]
-        performAction:grey_typeText(@"\n")];
+    // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+    // replaceText can properly handle \n.
+    [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
     // Wait until the editing textfield is gone.
     ConditionBlock condition = ^{

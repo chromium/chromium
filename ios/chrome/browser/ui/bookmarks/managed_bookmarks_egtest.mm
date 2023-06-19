@@ -91,7 +91,7 @@ void VerifyBookmarkNodeWithLabelNotNil(NSString* bookmark_node_label) {
 void SearchBookmarksForText(NSString* search_text) {
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(search_text)];
+      performAction:grey_replaceText(search_text)];
 }
 
 }  // namespace

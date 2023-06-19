@@ -262,7 +262,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(searchString)];
+      performAction:grey_replaceText(searchString)];
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -339,7 +339,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   NSString* searchString = base::SysUTF8ToNSString(mockURL.spec().c_str());
 
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(searchString)];
+      performAction:grey_replaceText(searchString)];
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -779,7 +779,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   NSString* searchString =
       [NSString stringWithFormat:@"%s", _URL1.path().c_str()];
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(searchString)];
+      performAction:grey_replaceText(searchString)];
 
   // Swipe TableView down.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(

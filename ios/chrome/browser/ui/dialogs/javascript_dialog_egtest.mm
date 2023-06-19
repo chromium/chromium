@@ -229,7 +229,7 @@ void TypeInPrompt(NSString* input) {
       grey_accessibilityID(kJavaScriptDialogTextFieldAccessibilityIdentifier),
       nil);
   [[EarlGrey selectElementWithMatcher:text_field_matcher]
-      performAction:grey_typeText(input)];
+      performAction:grey_replaceText(input)];
 }
 
 void TapCancel() {

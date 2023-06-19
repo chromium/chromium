@@ -79,7 +79,7 @@ void WaitForWebViewContainingText(NSString* text) {
   std::string URLSpec = _testServer->GetURL("/destination.html").spec();
 
   [[EarlGrey selectElementWithMatcher:ios_web_view::AddressField()]
-      performAction:grey_typeText(base::SysUTF8ToNSString(URLSpec))];
+      performAction:grey_replaceText(base::SysUTF8ToNSString(URLSpec))];
 
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(@"Go")]
       performAction:grey_tap()];

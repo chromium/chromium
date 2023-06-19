@@ -102,9 +102,9 @@ void WaitForHttpAuthDialog() {
 
     // Enter valid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
-        performAction:grey_typeText(@"gooduser")];
+        performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
-        performAction:grey_typeText(@"goodpass")];
+        performAction:grey_replaceText(@"goodpass")];
     [[EarlGrey selectElementWithMatcher:LoginButton()]
         performAction:grey_tap()];
   }  // EG synchronization disabled block.
@@ -135,9 +135,9 @@ void WaitForHttpAuthDialog() {
 
     // Enter invalid username and password.
     [[EarlGrey selectElementWithMatcher:UsernameField()]
-        performAction:grey_typeText(@"gooduser")];
+        performAction:grey_replaceText(@"gooduser")];
     [[EarlGrey selectElementWithMatcher:PasswordField()]
-        performAction:grey_typeText(@"goodpass")];
+        performAction:grey_replaceText(@"goodpass")];
     [[EarlGrey selectElementWithMatcher:LoginButton()]
         performAction:grey_tap()];
 

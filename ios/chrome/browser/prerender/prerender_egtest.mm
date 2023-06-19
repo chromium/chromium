@@ -119,8 +119,12 @@ GREYElementInteraction* RequestDesktopButton() {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([pageString stringByAppendingString:@"\n"])];
+      performAction:grey_replaceText(pageString)];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   [ChromeEarlGrey waitForPageToFinishLoading];
   [[self class] closeAllTabs];
   [ChromeEarlGrey openNewTab];
@@ -150,7 +154,7 @@ GREYElementInteraction* RequestDesktopButton() {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(
+      performAction:grey_replaceText(
                         [pageString substringToIndex:[pageString length] - 6])];
 
   // Wait until prerender request reaches the server.
@@ -198,7 +202,7 @@ GREYElementInteraction* RequestDesktopButton() {
   // Type the begining of the address to have the autocomplete suggestion.
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(
+      performAction:grey_replaceText(
                         [pageString substringToIndex:[pageString length] - 6])];
 
   // Wait until prerender request reaches the server.

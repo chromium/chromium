@@ -374,7 +374,10 @@ id<GREYMatcher> TabWithTitle(const std::string& tab_title) {
   [ChromeEarlGrey loadURL:secondURL];
 
   // Execute some JavaScript in the omnibox.
-  [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:document.write('foo')\n"];
+  [ChromeEarlGreyUI focusOmniboxAndType:@"javascript:document.write('foo')"];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
   [ChromeEarlGrey waitForWebStateContainingText:"foo"];
 
   // Verify that the JavaScript did not affect history by going back and then

@@ -1935,7 +1935,9 @@ void CopyPasswordDetailWithID(int detail_id) {
       assertWithMatcher:grey_notNil()];
 
   [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      performAction:grey_typeText(@"2")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchTextField()]
+      performAction:grey_replaceText(@"2")];
 
   [[self interactionForSinglePasswordEntryWithDomain:@"example11.com"
                                             username:@"user1"]
@@ -1968,7 +1970,8 @@ void CopyPasswordDetailWithID(int detail_id) {
   // bar will hide the "Edit" button in the top toolbar. Recover this when the
   // "Edit" button is moved to the bottom toolbar in the new Settings UI.
   //  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-  //      performAction:grey_typeText(@"u\n")];
+  //      performAction:grey_replaceText(@"u")];
+  //  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [[EarlGrey
       selectElementWithMatcher:grey_accessibilityID(kPasswordsTableViewId)]
@@ -2044,7 +2047,7 @@ void CopyPasswordDetailWithID(int detail_id) {
   // bar will hide the "Edit" button in the top toolbar. Recover this when the
   // "Edit" button is moved to the bottom toolbar in the new Settings UI.
   //  [[EarlGrey selectElementWithMatcher:SearchTextField()]
-  //      performAction:grey_typeText(@"2")];
+  //      performAction:grey_replaceText(@"2")];
 
   TapNavigationBarEditButton();
 
@@ -2070,8 +2073,9 @@ void CopyPasswordDetailWithID(int detail_id) {
       performAction:grey_tap()];
 
   // Remove filter search term.
+  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:SearchTextField()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   // Only password 1 should show.
   [GetInteractionForPasswordEntry(@"example11.com, user1")
@@ -2224,8 +2228,9 @@ void CopyPasswordDetailWithID(int detail_id) {
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       assertWithMatcher:grey_textFieldValue(@"concrete username1")];
 
+  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   [[EarlGrey selectElementWithMatcher:PasswordDetailUsername()]
       performAction:grey_replaceText(@"concrete username2")];

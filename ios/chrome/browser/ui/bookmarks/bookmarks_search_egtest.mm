@@ -97,9 +97,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"French URL")]
       assertWithMatcher:grey_notNil()];
 
-  // Search 'o'.
+  // Search 'o', tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"o")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"o")];
 
   // Verify that folders are not filtered out.
   [[EarlGrey
@@ -107,8 +109,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_notNil()];
 
   // Search 'on'.
-  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"n")];
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"n" flags:0];
 
   // Verify we are left only with the "First" and "Second" one.
   // 'on' matches 'pony.html' and 'Second'
@@ -127,8 +129,8 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Search again for 'ony'.
-  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"y")];
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"y" flags:0];
 
   // Verify we are left only with the "First" one for 'pony.html'.
   [[EarlGrey
@@ -148,9 +150,14 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Search 'zz'.
+  // Search 'zz', tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"zz\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"zz")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Verify that we have a 'No Results' label somewhere.
   [[EarlGrey selectElementWithMatcher:grey_text(l10n_util::GetNSString(
@@ -181,7 +188,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Searching.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"i")];
+      performAction:grey_replaceText(@"i")];
 
   // Verify that scrim is not visible.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -189,8 +196,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
       assertWithMatcher:grey_nil()];
 
   // Go back to original folder content.
+  // TODO(crbug.com/1454514): Revert to grey_clearText when fixed in EG.
+  // (grey_replaceText(@""))
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_clearText()];
+      performAction:grey_replaceText(@"")];
 
   // Verify that scrim is visible again.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -281,9 +290,11 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
   [BookmarkEarlGreyUI openBookmarks];
   [BookmarkEarlGreyUI openMobileBookmarks];
 
-  // Search.
+  // Search, tapping first to provide focus.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"X")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"X")];
 
   // Verify we have no items.
   [[EarlGrey
@@ -328,7 +339,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First")];
+      performAction:grey_replaceText(@"First")];
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -345,7 +356,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First")];
+      performAction:grey_replaceText(@"First")];
 
   // Invoke Edit through context menu.
   [BookmarkEarlGreyUI
@@ -384,7 +395,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(existingFolderTitle)];
+      performAction:grey_replaceText(existingFolderTitle)];
 
   // Invoke Edit through long press.
   [[EarlGrey selectElementWithMatcher:TappableBookmarkNodeWithLabel(
@@ -429,7 +440,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First URL")];
+      performAction:grey_replaceText(@"First URL")];
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"First URL")]
@@ -448,7 +459,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 1")];
+      performAction:grey_replaceText(@"Folder 1")];
 
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1")]
@@ -495,7 +506,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Verify we now have a navigation bar.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
@@ -518,7 +532,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -569,7 +586,10 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"URL\n")];
+      performAction:grey_replaceText(@"URL")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -628,7 +648,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"URL\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"URL")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode, using context menu.
   [[EarlGrey
@@ -698,7 +723,12 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and hide keyboard.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"First\n")];
+      performAction:grey_tap()];
+  [[EarlGrey selectElementWithMatcher:SearchIconButton()]
+      performAction:grey_replaceText(@"First")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   // Change to edit mode
   [[EarlGrey
@@ -768,7 +798,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and go to folder 1.1.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 1.1")];
+      performAction:grey_replaceText(@"Folder 1.1")];
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 1.1")]
       performAction:grey_tap()];
@@ -779,7 +809,7 @@ using chrome_test_util::TappableBookmarkNodeWithLabel;
 
   // Search and go to Folder 2.
   [[EarlGrey selectElementWithMatcher:SearchIconButton()]
-      performAction:grey_typeText(@"Folder 2")];
+      performAction:grey_replaceText(@"Folder 2")];
   [[EarlGrey
       selectElementWithMatcher:TappableBookmarkNodeWithLabel(@"Folder 2")]
       performAction:grey_tap()];

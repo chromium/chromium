@@ -98,8 +98,9 @@ constexpr char kFindInPageClearButtonKindOfClassName[] =
 }
 
 - (void)typeFindInPageText:(NSString*)text {
-  [[EarlGrey selectElementWithMatcher:[self findInPageInputField]]
-      performAction:grey_typeText(text)];
+  // TODO(crbug.com/1454851): This should use grey_replaceText, but the clear
+  // button doesn't show up, so use simulatePhysicalKeyboardEvent instead.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:text flags:0];
 }
 
 - (void)pasteTextToFindInPage:(NSString*)text {

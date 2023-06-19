@@ -389,8 +389,12 @@ enum class TestType {
       performAction:grey_tap()];
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([pageString stringByAppendingString:@"\n"])];
+      performAction:grey_replaceText(pageString)];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
+
   [ChromeEarlGrey waitForWebStateContainingText:kInterstitialText];
   [self assertFailedUpgrade:1];
   GREYAssertEqual(2, _HTTPResponseCounter,
@@ -416,7 +420,7 @@ enum class TestType {
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   // Type a single character. This causes two prerender attempts.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([pageString substringToIndex:1])];
+      performAction:grey_replaceText([pageString substringToIndex:1])];
 
   // Wait until prerender request reaches the server.
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
@@ -479,7 +483,7 @@ enum class TestType {
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([testURLString substringToIndex:1])];
+      performAction:grey_replaceText([testURLString substringToIndex:1])];
 
   bool prerendered = WaitUntilConditionOrTimeout(kWaitForPageLoadTimeout, ^{
     // The first response was for the http:// URL. The remaining responses are

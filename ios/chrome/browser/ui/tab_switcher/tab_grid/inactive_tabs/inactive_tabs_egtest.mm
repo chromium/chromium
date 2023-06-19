@@ -370,7 +370,7 @@ id<GREYMatcher> GetMatcherForUserEducationSettingsButton() {
 
   // Search for the title of the 3rd inactive tab.
   [[EarlGrey selectElementWithMatcher:TabGridSearchBar()]
-      performAction:grey_typeText(@"Tab3")];
+      performAction:grey_replaceText(@"Tab3")];
 
   // Check that the tab is here.
   [[EarlGrey selectElementWithMatcher:TabWithTitle(@"Tab3")]

@@ -132,7 +132,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([@"test" stringByAppendingString:@"\n"])];
+      performAction:grey_replaceText(@"test")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [ChromeEarlGrey waitForWebStateContainingText:kGoogleURL];
 
@@ -160,7 +163,10 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([@"test" stringByAppendingString:@"\n"])];
+      performAction:grey_replaceText(@"test")];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [ChromeEarlGrey waitForWebStateContainingText:kYahooURL];
 }

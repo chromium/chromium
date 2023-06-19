@@ -340,7 +340,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(omniboxInput)];
+      performAction:grey_replaceText(omniboxInput)];
 
   TapSwitchToTabButton(_URL1);
   [ChromeEarlGrey waitForWebStateContainingText:kPage1];
@@ -366,7 +366,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(base::SysUTF8ToNSString(_URL1.host()))];
+      performAction:grey_replaceText(base::SysUTF8ToNSString(_URL1.host()))];
 
   // Omnibox can reorder itself in multiple animations, so add an extra wait
   // here.
@@ -436,7 +436,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(omniboxInput)];
+      performAction:grey_replaceText(omniboxInput)];
 
   // Check that both elements are displayed.
   // Omnibox can reorder itself in multiple animations, so add an extra wait
@@ -462,7 +462,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"hello")];
+      performAction:grey_replaceText(@"hello")];
 
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> textMatcher = grey_descendant(
@@ -511,7 +511,7 @@ std::unique_ptr<net::test_server::HttpResponse> StandardResponse(
   [ChromeEarlGrey
       waitForSufficientlyVisibleElementWithMatcher:chrome_test_util::Omnibox()];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"hello")];
+      performAction:grey_replaceText(@"hello")];
 
   // Matcher for a URL-what-you-typed suggestion.
   id<GREYMatcher> textMatcher = grey_descendant(

@@ -318,10 +318,9 @@ void CloseSigninManagedAccountDialogIfAny(FakeSystemIdentity* fakeIdentity) {
                  grey_accessibilityID(
                      kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
       performAction:grey_tap()];
-  [[EarlGrey selectElementWithMatcher:
-                 grey_accessibilityID(
-                     kSyncEncryptionPassphraseTextFieldAccessibilityIdentifier)]
-      performAction:grey_typeText(passphrase)];
+  // TODO(crbug.com/1454849): replaceText causes the view to dismiss. Needs
+  // investigation.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:passphrase flags:0];
 
   [[EarlGrey
       selectElementWithMatcher:grey_allOf(

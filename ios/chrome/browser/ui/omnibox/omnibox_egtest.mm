@@ -271,7 +271,10 @@ void FocusFakebox() {
           .spec());
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText([NSString stringWithFormat:@"%@\n", URL])];
+      performAction:grey_replaceText(URL)];
+  // TODO(crbug.com/1454516): Use simulatePhysicalKeyboardEvent until
+  // replaceText can properly handle \n.
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"\n" flags:0];
 
   [ChromeEarlGrey waitForWebStateContainingText:kHeaderPageSuccess];
 }
@@ -624,7 +627,7 @@ void FocusFakebox() {
 
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"Obama")];
+      performAction:grey_replaceText(@"Obama")];
 
   // The popup should open.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
@@ -657,7 +660,7 @@ void FocusFakebox() {
 
   [ChromeEarlGreyUI focusOmnibox];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"Obama")];
+      performAction:grey_replaceText(@"Obama")];
 
   // The popup should open.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::OmniboxPopupList()]
@@ -752,7 +755,7 @@ void FocusFakebox() {
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText(_URL.GetContent())];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"hello")];
+      performAction:grey_replaceText(@"hello")];
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       assertWithMatcher:chrome_test_util::OmniboxText("hello")];
 }
@@ -936,7 +939,7 @@ void FocusFakebox() {
 
   // Writing in the omnibox field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"this is a test")];
+      performAction:grey_replaceText(@"this is a test")];
 
   // Click on the omnibox.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
@@ -1006,7 +1009,7 @@ void FocusFakebox() {
       assertWithMatcher:grey_sufficientlyVisible()];
   // Write in the omnibox field.
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
-      performAction:grey_typeText(@"this is a test")];
+      performAction:grey_replaceText(@"this is a test")];
 
   [[EarlGrey selectElementWithMatcher:chrome_test_util::Omnibox()]
       performAction:grey_tap()];
@@ -1296,13 +1299,17 @@ void FocusFakebox() {
   [self populateHistory];
 
   // Clears the url and replace it with local url prefix.
-  [ChromeEarlGreyUI focusOmniboxAndType:@"127"];
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::DefocusedLocationView()]
+      performAction:grey_tap()];
+  [ChromeEarlGrey simulatePhysicalKeyboardEvent:@"127" flags:0];
 
   // We expect to have an autocomplete.
   [ChromeEarlGrey waitForUIElementToAppearWithMatcher:
                       chrome_test_util::OmniboxAutocompleteLabel()];
 
   // Pressing spacebar.
+  // TODO(crbug.com/1454516): This should use grey_typeText when fixed.
   [ChromeEarlGrey simulatePhysicalKeyboardEvent:@" " flags:0];
 
   // Autocomplete removed.
