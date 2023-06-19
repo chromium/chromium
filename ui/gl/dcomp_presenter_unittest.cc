@@ -1493,44 +1493,19 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
     test_initialized_ = false;
   }
 
-  void InitializeTest(const gfx::Size& window_size,
-                      std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm>
-                          matching_algorithm = nullptr) {
+  void InitializeTest(const gfx::Size& window_size) {
     ASSERT_FALSE(test_initialized_)
         << "InitializeTest should only be called once per test";
     test_initialized_ = true;
 
     ResizeWindow(window_size);
 
-    matching_algorithm_ = std::move(matching_algorithm);
     capture_names_in_test_.clear();
-
-    {
-      // TODO(crbug.com/1455231): Let all matches succeed until we tune the
-      // inexact parameters
-      matching_algorithm_ =
-          std::make_unique<ui::test::FuzzySkiaGoldMatchingAlgorithm>(
-              /*max_different_pixels=*/INT_MAX,
-              /*pixel_delta_threshold=*/255 * 4);
-    }
   }
 
   // An offset to move the test output off the top-left edges so that we don't
   // need to dilate the edges of |SobelSkiaGoldMatchingAlgorithm|.
   static const int kPaddingFromEdgeForAntiAliasedOutput = 5;
-
-  // Returns a matching algorithm that ignores anti-aliased edges. Different
-  // hardware will render anti-aliasing slightly differently, so this is useful
-  // if we care that we have anti-aliasing (which can be verified when we triage
-  // the baseline), but not the specific values of it.
-  static std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm>
-  GetMatchingAlgorithmForAntiAliasedOutput() {
-    // TODO(crbug.com/1455231): Tune these parameters
-    return std::make_unique<ui::test::SobelSkiaGoldMatchingAlgorithm>(
-        /*max_different_pixels=*/1,
-        /*pixel_delta_threshold=*/1,
-        /*edge_threshold=*/0);
-  }
 
   void ResizeWindow(const gfx::Size& window_size) {
     EXPECT_TRUE(presenter_->Resize(window_size, 1.0, gfx::ColorSpace(), true));
@@ -1600,8 +1575,7 @@ class DCompPresenterSkiaGoldTest : public DCompPresenterPixelTest {
  private:
   static ui::test::SkiaGoldPixelDiff pixel_diff_;
 
-  // The matching algorithm for goldctl to use. |nullptr| is valid and implies
-  // "exact" matching.
+  // The matching algorithm for goldctl to use.
   std::unique_ptr<ui::test::SkiaGoldMatchingAlgorithm> matching_algorithm_;
 
   // |true|, if |InitializeTest| has been called.
@@ -1661,8 +1635,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformScale) {
 
 // Check that a rotation transform works.
 TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
-  InitializeTest(gfx::Size(100, 100),
-                 GetMatchingAlgorithmForAntiAliasedOutput());
+  InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
@@ -1686,8 +1659,7 @@ TEST_F(DCompPresenterSkiaGoldTest, TransformRotation) {
 // This kind of transform is uncommon, but should be supported when rotations
 // are supported.
 TEST_F(DCompPresenterSkiaGoldTest, TransformShear) {
-  InitializeTest(gfx::Size(100, 100),
-                 GetMatchingAlgorithmForAntiAliasedOutput());
+  InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
@@ -1835,8 +1807,7 @@ TEST_F(DCompPresenterSkiaGoldTest, SurfaceSerialForcesCommit) {
 
 // Check that we support simple rounded corners.
 TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
-  InitializeTest(gfx::Size(100, 100),
-                 GetMatchingAlgorithmForAntiAliasedOutput());
+  InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
@@ -1856,8 +1827,7 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerSimple) {
 
 // Check that we support rounded corners with complex radii.
 TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
-  InitializeTest(gfx::Size(100, 100),
-                 GetMatchingAlgorithmForAntiAliasedOutput());
+  InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
@@ -1890,10 +1860,8 @@ TEST_F(DCompPresenterSkiaGoldTest, RoundedCornerNonUniformRadii) {
 // This is a common case in e.g. the omnibox.
 TEST_F(DCompPresenterSkiaGoldTest,
        NoSeamsBetweenAdjacentSolidColorsWithSharedRoundedCorner) {
-  InitializeTest(
-      gfx::Size(100, 100),
-      // We specifically don't want to ignore anti-aliasing in this test
-      nullptr);
+  // We specifically don't want to ignore anti-aliasing in this test
+  InitializeTest(gfx::Size(100, 100));
 
   InitializeRootAndScheduleRootSurface(current_window_size(), SkColors::kBlack);
 
