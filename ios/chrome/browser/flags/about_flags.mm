@@ -703,6 +703,7 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "SyncEnableContactInfoDataTypeInTransportMode,"
      "EnablePasswordsAccountStorage,"
      "EnableBookmarksAccountStorage,"
+     "EnablePreferencesAccountStorage,"
      "ReadingListEnableDualReadingListModel,"
      "ReadingListEnableSyncTransportModeUponSignIn,"
      "SyncEnableHistoryDataType"},
