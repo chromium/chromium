@@ -33,7 +33,6 @@ import errno
 import logging
 import multiprocessing
 import os
-import psutil
 import signal
 import subprocess
 import sys
@@ -122,11 +121,6 @@ class Executive(object):
         Will fail silently if pid does not exist.
         """
         if sys.platform == 'win32':
-            # Log some basic memory information in order to better understand
-            # OOM failures on Windows. This lacks commit information but might
-            # still be sufficient.
-            _log.debug(psutil.virtual_memory())
-
             # Workaround for race condition that occurs when the browser is
             # killed as it's launching a process. This sometimes leaves a child
             # process that is in a suspended state.
