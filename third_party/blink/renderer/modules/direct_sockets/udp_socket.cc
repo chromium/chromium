@@ -161,9 +161,7 @@ mojom::blink::DirectBoundUDPSocketOptionsPtr CreateBoundUDPSocketOptions(
           "equivalent.");
       return {};
     }
-    socket_options->ipv6_only = options->ipv6Only()
-                                    ? network::mojom::OptionalBool::kTrue
-                                    : network::mojom::OptionalBool::kFalse;
+    socket_options->ipv6_only = options->ipv6Only();
   }
 
   socket_options->local_addr =
