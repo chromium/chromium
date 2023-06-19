@@ -876,8 +876,6 @@ void PageSpecificContentSettings::OnStorageAccessed(
     OnContentBlocked(ContentSettingsType::COOKIES);
   } else {
     AddToContainer(allowed_local_shared_objects_, storage_type, url);
-    NotifyDelegate(&Delegate::OnStorageAccessAllowed, storage_type,
-                   url::Origin::Create(url), std::ref(*originating_page));
     OnContentAllowed(ContentSettingsType::COOKIES);
   }
 
@@ -903,8 +901,6 @@ void PageSpecificContentSettings::OnCookiesAccessed(
   } else {
     allowed_local_shared_objects_.cookies()->AddCookies(details);
     OnContentAllowed(ContentSettingsType::COOKIES);
-    NotifyDelegate(&Delegate::OnCookieAccessAllowed, details.cookie_list,
-                   std::ref(*originating_page));
   }
 
   MaybeUpdateParent(&PageSpecificContentSettings::OnCookiesAccessed, details,
@@ -929,8 +925,6 @@ void PageSpecificContentSettings::OnServiceWorkerAccessed(
   if (allowed) {
     allowed_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));
-    NotifyDelegate(&Delegate::OnServiceWorkerAccessAllowed,
-                   url::Origin::Create(scope), std::ref(*originating_page));
   } else {
     blocked_local_shared_objects_.service_workers()->Add(
         url::Origin::Create(scope));

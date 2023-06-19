@@ -6,7 +6,6 @@
 #define CHROME_BROWSER_CONTENT_SETTINGS_PAGE_SPECIFIC_CONTENT_SETTINGS_DELEGATE_H_
 
 #include "build/build_config.h"
-#include "chrome/browser/browsing_data/access_context_audit_service.h"
 #include "components/browsing_data/content/browsing_data_model.h"
 #include "components/content_settings/browser/page_specific_content_settings.h"
 #include "components/custom_handlers/protocol_handler.h"
@@ -92,13 +91,6 @@ class PageSpecificContentSettingsDelegate
       content::WebContents* web_contents) override;
   void OnContentAllowed(ContentSettingsType type) override;
   void OnContentBlocked(ContentSettingsType type) override;
-  void OnStorageAccessAllowed(StorageType storage_type,
-                              const url::Origin& origin,
-                              content::Page& page) override;
-  void OnCookieAccessAllowed(const net::CookieList& accessed_cookies,
-                             content::Page& page) override;
-  void OnServiceWorkerAccessAllowed(const url::Origin& origin,
-                                    content::Page& page) override;
 
   // content::WebContentsObserver:
   void PrimaryPageChanged(content::Page& page) override;
@@ -119,9 +111,6 @@ class PageSpecificContentSettingsDelegate
   // The setting on the pending protocol handler registration. Persisted in case
   // the user opens the bubble and makes changes multiple times.
   ContentSetting pending_protocol_handler_setting_ = CONTENT_SETTING_DEFAULT;
-
-  std::unique_ptr<AccessContextAuditService::CookieAccessHelper>
-      cookie_access_helper_;
 };
 
 }  // namespace chrome

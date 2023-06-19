@@ -47,61 +47,6 @@ reviewer.
   </summary>
 </histogram>
 
-<histogram name="Privacy.AccessContextAudit.CookieDomainCount" units="units"
-    expires_after="2022-01-30">
-  <owner>msramek@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    The number of unique cookie domains for which accesses has been recorded for
-    in the Access Context Audit database. Logged on initialization of the Access
-    Context Audit DB on 1% of starts.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccessContextAudit.DatabaseSize" units="KiB"
-    expires_after="2022-01-30">
-  <owner>msramek@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    Size of the Access Context Audit database file in KiB. Determined by
-    directly inspecting the database file. Logged on initialization of the
-    Access Context Audit DB on 1% of starts.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccessContextAudit.RecordCount" units="units"
-    expires_after="2022-01-30">
-  <owner>msramek@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    The total number of access records stored in the Access Context Audit
-    database. Logged on initialization of the Acceess Context Audit DB on 1% of
-    starts.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccessContextAudit.StorageOriginCount" units="units"
-    expires_after="2022-01-30">
-  <owner>msramek@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    The number of unique origins associated with origin keyed storage APIs
-    recorded in the Access Context Audit database. Logged on initialization of
-    the Access Context Audit DB on 1% of starts.
-  </summary>
-</histogram>
-
-<histogram name="Privacy.AccessContextAudit.TopFrameOriginCount" units="units"
-    expires_after="2022-01-30">
-  <owner>msramek@chromium.org</owner>
-  <owner>sauski@google.com</owner>
-  <summary>
-    The number of unique top frame origins for which access to storage APIs has
-    been recorded in the Access Context Audit database. Logged on initialization
-    of the Acceess Context Audit DB on 1% of starts.
-  </summary>
-</histogram>
-
 <histogram name="Privacy.AccuracyTip.AccuracyTipInteraction"
     enum="AccuracyTipInteraction" expires_after="2022-08-21">
   <obsolete>

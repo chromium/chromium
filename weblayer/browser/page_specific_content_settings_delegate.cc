@@ -97,17 +97,4 @@ void PageSpecificContentSettingsDelegate::OnContentAllowed(
 void PageSpecificContentSettingsDelegate::OnContentBlocked(
     ContentSettingsType type) {}
 
-void PageSpecificContentSettingsDelegate::OnStorageAccessAllowed(
-    content_settings::mojom::ContentSettingsManager::StorageType storage_type,
-    const url::Origin& origin,
-    content::Page& page) {}
-
-void PageSpecificContentSettingsDelegate::OnCookieAccessAllowed(
-    const net::CookieList& accessed_cookies,
-    content::Page& page) {}
-
-void PageSpecificContentSettingsDelegate::OnServiceWorkerAccessAllowed(
-    const url::Origin& origin,
-    content::Page& page) {}
-
 }  // namespace weblayer

@@ -182,23 +182,6 @@ class PageSpecificContentSettings
 
     // Notifies the delegate a particular content settings type was blocked.
     virtual void OnContentBlocked(ContentSettingsType type) = 0;
-
-    // Notifies the delegate that access to storage of type |storage_type| was
-    // granted in |page|.
-    virtual void OnStorageAccessAllowed(
-        mojom::ContentSettingsManager::StorageType storage_type,
-        const url::Origin& origin,
-        content::Page& page) = 0;
-
-    // Notifies the delegate that access was granted to |accessed_cookies| in
-    // |page|.
-    virtual void OnCookieAccessAllowed(const net::CookieList& accessed_cookies,
-                                       content::Page& page) = 0;
-
-    // Notifies the delegate that access was granted to service workers for
-    // |origin|.
-    virtual void OnServiceWorkerAccessAllowed(const url::Origin& origin,
-                                              content::Page& page) = 0;
   };
 
   // Classes that want to be notified about site data events must implement

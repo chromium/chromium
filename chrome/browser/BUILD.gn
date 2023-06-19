@@ -217,8 +217,6 @@ static_library("browser") {
     "browser_process_platform_part.h",
     "browser_process_platform_part_base.cc",
     "browser_process_platform_part_base.h",
-    "browsing_data/access_context_audit_database.cc",
-    "browsing_data/access_context_audit_database.h",
     "browsing_data/access_context_audit_service.cc",
     "browsing_data/access_context_audit_service.h",
     "browsing_data/access_context_audit_service_factory.cc",

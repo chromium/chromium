@@ -23,8 +23,6 @@
 #include "base/strings/utf_string_conversions.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
-#include "chrome/browser/browsing_data/access_context_audit_service.h"
-#include "chrome/browser/browsing_data/access_context_audit_service_factory.h"
 #include "chrome/browser/browsing_data/browsing_data_file_system_util.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -317,14 +315,6 @@ void CookieTreeNode::AddChildSortedByTitle(
                   static_cast<size_t>(iter - children().begin()));
 }
 
-void CookieTreeNode::ReportDeletionToAuditService(
-    const url::Origin& origin,
-    AccessContextAuditDatabase::StorageAPIType type) {
-  auto* audit_service = GetModel()->access_context_audit_service();
-  if (audit_service)
-    audit_service->RemoveAllRecordsForOriginKeyedStorage(origin, type);
-}
-
 ///////////////////////////////////////////////////////////////////////////////
 // CookieTreeCookieNode
 
@@ -385,10 +375,6 @@ class CookieTreeDatabaseNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kWebDatabase);
-
       container->database_helper_->DeleteDatabase(
           usage_info_->storage_key.origin());
       container->database_info_list_.erase(usage_info_);
@@ -433,10 +419,6 @@ class CookieTreeLocalStorageNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          local_storage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kLocalStorage);
-
       container->local_storage_helper_->DeleteStorageKey(
           local_storage_info_->storage_key, base::DoNothing());
       container->local_storage_info_list_.erase(local_storage_info_);
@@ -520,10 +502,6 @@ class CookieTreeIndexedDBNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kIndexedDB);
-
       container->indexed_db_helper_->DeleteIndexedDB(usage_info_->storage_key,
                                                      base::DoNothing());
       container->indexed_db_info_list_.erase(usage_info_);
@@ -568,10 +546,6 @@ class CookieTreeFileSystemNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          file_system_info_->origin,
-          AccessContextAuditDatabase::StorageAPIType::kFileSystem);
-
       container->file_system_helper_->DeleteFileSystemOrigin(
           file_system_info_->origin);
       container->file_system_info_list_.erase(file_system_info_);
@@ -669,10 +643,6 @@ class CookieTreeServiceWorkerNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kServiceWorker);
-
       container->service_worker_helper_->DeleteServiceWorkers(
           usage_info_->storage_key.origin());
       container->service_worker_info_list_.erase(usage_info_);
@@ -759,10 +729,6 @@ class CookieTreeCacheStorageNode : public CookieTreeNode {
     LocalDataContainer* container = GetLocalDataContainerForNode(this);
 
     if (container) {
-      ReportDeletionToAuditService(
-          usage_info_->storage_key.origin(),
-          AccessContextAuditDatabase::StorageAPIType::kCacheStorage);
-
       container->cache_storage_helper_->DeleteCacheStorage(
           usage_info_->storage_key);
       container->cache_storage_info_list_.erase(usage_info_);
@@ -1237,28 +1203,18 @@ std::unique_ptr<CookiesTreeModel> CookiesTreeModel::CreateForProfileDeprecated(
       LocalDataContainer::CreateFromStoragePartition(
           profile->GetDefaultStoragePartition(),
           CookiesTreeModel::GetCookieDeletionDisabledCallback(profile)),
-      profile->GetExtensionSpecialStoragePolicy(),
-      AccessContextAuditServiceFactory::GetForProfile(profile)));
+      profile->GetExtensionSpecialStoragePolicy()));
 }
 
 CookiesTreeModel::CookiesTreeModel(
     std::unique_ptr<LocalDataContainer> data_container,
     ExtensionSpecialStoragePolicy* special_storage_policy)
-    : CookiesTreeModel(std::move(data_container),
-                       special_storage_policy,
-                       nullptr) {}
-
-CookiesTreeModel::CookiesTreeModel(
-    std::unique_ptr<LocalDataContainer> data_container,
-    ExtensionSpecialStoragePolicy* special_storage_policy,
-    AccessContextAuditService* access_context_audit_service)
     : ui::TreeNodeModel<CookieTreeNode>(
           std::make_unique<CookieTreeRootNode>(this)),
 #if BUILDFLAG(ENABLE_EXTENSIONS)
       special_storage_policy_(special_storage_policy),
 #endif
-      data_container_(std::move(data_container)),
-      access_context_audit_service_(access_context_audit_service) {
+      data_container_(std::move(data_container)) {
   data_container_->Init(this);
 }
 
