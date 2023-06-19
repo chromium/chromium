@@ -164,7 +164,7 @@ class ArcVmmManagerTest : public testing::Test {
         [trim_result, this](
             ArcVmWorkingSetTrimExecutor::ResultCallback callback,
             ArcVmReclaimType reclaim_type, int page_limit) {
-          if (reclaim_type == ArcVmReclaimType::kReclaimAll) {
+          if (reclaim_type == ArcVmReclaimType::kReclaimAllGuestOnly) {
             trim_type_reclaim_counter_++;
           } else if (reclaim_type ==
                      ArcVmReclaimType::kReclaimGuestPageCaches) {
@@ -187,7 +187,7 @@ class ArcVmmManagerTest : public testing::Test {
   ArcVmmManager* manager() { return manager_; }
   TestConciergeClient* client() { return concierge_client_.get(); }
 
-  int reclaim_all_conter() { return trim_type_reclaim_counter_; }
+  int reclaim_guest_conter() { return trim_type_reclaim_counter_; }
   int drop_pages_counter() { return trim_type_drop_pages_counter_; }
 
  protected:
@@ -284,7 +284,7 @@ TEST_F(ArcVmmManagerTest, DropCachesAfterEnableSuccess) {
   EXPECT_EQ(0, client()->swap_out_count());
   EXPECT_EQ(0, client()->disable_count());
 
-  EXPECT_EQ(1, reclaim_all_conter());
+  EXPECT_EQ(1, reclaim_guest_conter());
   EXPECT_EQ(1, drop_pages_counter());
 }
 

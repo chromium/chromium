@@ -92,7 +92,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
   // feature is enabled, guest memory is locked and should be reclaimed from
   // guest through ArcMemoryBridge's reclaim API (if "guest_reclaim_enabled"
   // param is enabled). Otherwise the memory should be reclaimed from host
-  // through ArcSessionManager's TrimVmMemory.
+  // through ArcSessionManager's TrimVmMemory if requested.
   if (base::FeatureList::IsEnabled(arc::kGuestZram) &&
       arc::kGuestReclaimEnabled.Get()) {
     if (!context) {
@@ -116,7 +116,7 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
         base::BindOnce(&ArcVmWorkingSetTrimExecutor::OnArcVmMemoryGuestReclaim,
                        std::make_unique<base::ElapsedTimer>(),
                        std::move(callback)));
-  } else {
+  } else if (reclaim_type == ArcVmReclaimType::kReclaimAll) {
     arc::ArcSessionManager* arc_session_manager = arc::ArcSessionManager::Get();
     if (!arc_session_manager) {
       LogErrorAndInvokeCallback("ArcSessionManager unavailable",
@@ -125,6 +125,8 @@ void ArcVmWorkingSetTrimExecutor::OnDropArcVmCaches(
     }
 
     arc_session_manager->TrimVmMemory(std::move(callback), page_limit);
+  } else {
+    std::move(callback).Run(true, "");
   }
 }
 

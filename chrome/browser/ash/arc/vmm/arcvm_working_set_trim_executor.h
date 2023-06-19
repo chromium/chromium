@@ -20,7 +20,8 @@ namespace arc {
 enum class ArcVmReclaimType {
   kReclaimNone = 0,
   kReclaimGuestPageCaches,
-  kReclaimAll,  // both guest page caches and shmem
+  kReclaimAll,           // drop guest page caches and do zram reclaim
+  kReclaimAllGuestOnly,  // drop guest page caches and do guest zram reclaim
 };
 
 class ArcVmWorkingSetTrimExecutor {

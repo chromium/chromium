@@ -354,7 +354,8 @@ void ArcVmmManager::ShrinkArcVmMemoryAndEnableSwap(
                           trim_call_, base::DoNothing(),
                           arc::ArcVmReclaimType::kReclaimGuestPageCaches,
                           arc::ArcSession::kNoPageLimit))))),
-      arc::ArcVmReclaimType::kReclaimAll, arc::ArcSession::kNoPageLimit);
+      arc::ArcVmReclaimType::kReclaimAllGuestOnly,
+      arc::ArcSession::kNoPageLimit);
 }
 
 void ArcVmmManager::SetShrinkResult(bool success) {
