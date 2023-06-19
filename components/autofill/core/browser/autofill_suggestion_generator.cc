@@ -416,7 +416,8 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
     const CreditCard* candidate_card) const {
   switch (candidate_card->record_type()) {
     case CreditCard::LOCAL_CARD:
-      candidate_card = GetServerCardForLocalCard(candidate_card);
+      candidate_card =
+          personal_data_->GetServerCardForLocalCard(candidate_card);
 
       // If we could not find a matching server duplicate, return false.
       if (!candidate_card) {
@@ -432,25 +433,6 @@ bool AutofillSuggestionGenerator::ShouldShowVirtualCardOption(
       NOTREACHED();
       return false;
   }
-}
-
-const CreditCard* AutofillSuggestionGenerator::GetServerCardForLocalCard(
-    const CreditCard* local_card) const {
-  DCHECK(local_card);
-  if (local_card->record_type() != CreditCard::LOCAL_CARD)
-    return nullptr;
-
-  std::vector<CreditCard*> server_cards =
-      personal_data_->GetServerCreditCards();
-  auto it =
-      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
-        return local_card->IsLocalOrServerDuplicateOf(*server_card);
-      });
-
-  if (it != server_cards.end())
-    return *it;
-
-  return nullptr;
 }
 
 // TODO(crbug.com/1346331): Separate logic for desktop, Android dropdown, and
@@ -628,7 +610,7 @@ void AutofillSuggestionGenerator::AdjustVirtualCardSuggestionContent(
     const AutofillType& type) const {
   if (credit_card.record_type() == CreditCard::LOCAL_CARD) {
     const CreditCard* server_duplicate_card =
-        GetServerCardForLocalCard(&credit_card);
+        personal_data_->GetServerCardForLocalCard(&credit_card);
     DCHECK(server_duplicate_card);
     suggestion.payload = Suggestion::BackendId(server_duplicate_card->guid());
   }
@@ -704,15 +686,7 @@ void AutofillSuggestionGenerator::SetCardArtURL(
     return;
   }
 
-  GURL card_art_url;
-  if (credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
-    card_art_url = credit_card.card_art_url();
-  } else if (credit_card.record_type() == CreditCard::LOCAL_CARD) {
-    const CreditCard* server_duplicate_card =
-        GetServerCardForLocalCard(&credit_card);
-    if (server_duplicate_card)
-      card_art_url = server_duplicate_card->card_art_url();
-  }
+  GURL card_art_url = personal_data_->GetCardArtURL(credit_card);
 
   if (card_art_url.is_empty() || !card_art_url.is_valid())
     return;

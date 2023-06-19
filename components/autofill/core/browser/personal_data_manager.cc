@@ -1393,6 +1393,22 @@ PersonalDataManager::GetActiveAutofillPromoCodeOffersForOrigin(
   return promo_code_offers_for_origin;
 }
 
+GURL PersonalDataManager::GetCardArtURL(const CreditCard& credit_card) const {
+  if (credit_card.record_type() == CreditCard::MASKED_SERVER_CARD) {
+    return credit_card.card_art_url();
+  }
+
+  if (credit_card.record_type() == CreditCard::LOCAL_CARD) {
+    const CreditCard* server_duplicate_card =
+        GetServerCardForLocalCard(&credit_card);
+    if (server_duplicate_card) {
+      return server_duplicate_card->card_art_url();
+    }
+  }
+
+  return GURL();
+}
+
 gfx::Image* PersonalDataManager::GetCreditCardArtImageForUrl(
     const GURL& card_art_url) const {
   gfx::Image* cached_image = GetCachedCardArtImageForUrl(card_art_url);
@@ -1761,6 +1777,26 @@ bool PersonalDataManager::IsCardPresentAsBothLocalAndServerCards(
     }
   }
   return false;
+}
+
+const CreditCard* PersonalDataManager::GetServerCardForLocalCard(
+    const CreditCard* local_card) const {
+  DCHECK(local_card);
+  if (local_card->record_type() != CreditCard::LOCAL_CARD) {
+    return nullptr;
+  }
+
+  std::vector<CreditCard*> server_cards = GetServerCreditCards();
+  auto it =
+      base::ranges::find_if(server_cards, [&](const CreditCard* server_card) {
+        return local_card->IsLocalOrServerDuplicateOf(*server_card);
+      });
+
+  if (it != server_cards.end()) {
+    return *it;
+  }
+
+  return nullptr;
 }
 
 void PersonalDataManager::SetProfilesForAllSources(

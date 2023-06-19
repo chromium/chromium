@@ -368,6 +368,9 @@ class PersonalDataManager : public KeyedService,
   std::vector<const AutofillOfferData*>
   GetActiveAutofillPromoCodeOffersForOrigin(GURL origin) const;
 
+  // Return the URL for the card art image, if available.
+  GURL GetCardArtURL(const CreditCard& credit_card) const;
+
   // Returns the customized credit card art image for the |card_art_url|. If no
   // image has been cached, an asynchronous request will be sent to fetch the
   // image and this function will return nullptr.
@@ -466,6 +469,12 @@ class PersonalDataManager : public KeyedService,
   // Check if `credit_card` has a duplicate card present in either Local or
   // Server card lists.
   bool IsCardPresentAsBothLocalAndServerCards(const CreditCard& credit_card);
+
+  // Returns a pointer to the server card that has duplicate information of the
+  // `local_card`. It is not guaranteed that a server card is found. If not,
+  // nullptr is returned.
+  const CreditCard* GetServerCardForLocalCard(
+      const CreditCard* local_card) const;
 
   // Cancels any pending queries to the server web database.
   void CancelPendingServerQueries();

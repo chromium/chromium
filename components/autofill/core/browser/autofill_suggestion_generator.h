@@ -110,12 +110,6 @@ class AutofillSuggestionGenerator {
   // `candidate_card`.
   bool ShouldShowVirtualCardOption(const CreditCard* candidate_card) const;
 
-  // Returns a pointer to the server card that has duplicate information of the
-  // `local_card`. It is not guaranteed that a server card is found. If not,
-  // nullptr is returned.
-  const CreditCard* GetServerCardForLocalCard(
-      const CreditCard* local_card) const;
-
  protected:
   // Creates a suggestion for the given `credit_card`. `type` denotes the
   // AutofillType of the field that is focused when the query is triggered.

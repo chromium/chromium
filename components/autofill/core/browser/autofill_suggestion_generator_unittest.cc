@@ -352,19 +352,19 @@ TEST_F(AutofillSuggestionGeneratorTest, GetServerCardForLocalCard) {
 
   // The server card should be returned if the local card is passed in.
   const CreditCard* result =
-      suggestion_generator()->GetServerCardForLocalCard(&local_card);
+      personal_data()->GetServerCardForLocalCard(&local_card);
   ASSERT_TRUE(result);
   EXPECT_EQ(server_card.guid(), result->guid());
 
   // Should return nullptr if a server card is passed in.
-  EXPECT_FALSE(suggestion_generator()->GetServerCardForLocalCard(&server_card));
+  EXPECT_FALSE(personal_data()->GetServerCardForLocalCard(&server_card));
 
   // Should return nullptr if no server card has the same information as the
   // local card.
   server_card.SetNumber(u"5454545454545454");
   personal_data()->ClearCreditCards();
   personal_data()->AddServerCreditCard(server_card);
-  EXPECT_FALSE(suggestion_generator()->GetServerCardForLocalCard(&local_card));
+  EXPECT_FALSE(personal_data()->GetServerCardForLocalCard(&local_card));
 }
 
 // The suggestions of credit cards with card linked offers are moved to the
