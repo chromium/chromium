@@ -429,7 +429,7 @@ class USER_MANAGER_EXPORT UserManagerBase : public UserManager {
   // TaskRunner for UI thread.
   scoped_refptr<base::SingleThreadTaskRunner> task_runner_;
 
-  const raw_ptr<PrefService> local_state_;
+  const raw_ptr<PrefService, DanglingUntriaged> local_state_;
 
   base::WeakPtrFactory<UserManagerBase> weak_factory_{this};
 };

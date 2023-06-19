@@ -152,11 +152,12 @@ class PrivacyHubNotificationControllerTest : public AshTestBase {
     return nullptr;
   }
 
-  raw_ptr<PrivacyHubNotificationController> controller_;
+  raw_ptr<PrivacyHubNotificationController, DanglingUntriaged> controller_;
   const FakeSensorDisabledNotificationDelegate delegate_;
   const base::HistogramTester histogram_tester_;
   base::test::ScopedFeatureList scoped_feature_list_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
+      nullptr;
   std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
 };
 

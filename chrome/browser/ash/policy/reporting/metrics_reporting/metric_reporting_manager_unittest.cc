@@ -900,8 +900,8 @@ class EventDrivenTelemetryCollectorPoolTest
 
   content::BrowserTaskEnvironment task_environment_;
 
-  raw_ptr<CollectorBase> https_latency_collector_ptr_;
-  raw_ptr<CollectorBase> network_telemetry_collector_ptr_;
+  raw_ptr<CollectorBase, DanglingUntriaged> https_latency_collector_ptr_;
+  raw_ptr<CollectorBase, DanglingUntriaged> network_telemetry_collector_ptr_;
 
   std::unique_ptr<::testing::NiceMock<MockDelegate>> mock_delegate_;
   ::ash::ScopedTestingCrosSettings cros_settings_;

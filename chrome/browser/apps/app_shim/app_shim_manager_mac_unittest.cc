@@ -518,7 +518,7 @@ class AppShimManagerTest : public testing::Test {
   }
 
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<MockDelegate> delegate_;
+  raw_ptr<MockDelegate, DanglingUntriaged> delegate_;
   std::unique_ptr<TestingAppShimManager> manager_;
   base::FilePath profile_path_a_;
   base::FilePath profile_path_b_;

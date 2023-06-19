@@ -97,7 +97,7 @@ class MockCupsPrinterWithMarginsAndAttributes : public MockCupsPrinter {
  private:
   std::map<base::StringPiece, ipp_attribute_t*> supported_attributes_;
   std::map<base::StringPiece, ipp_attribute_t*> default_attributes_;
-  raw_ptr<ipp_attribute_t> media_col_database_;
+  raw_ptr<ipp_attribute_t, DanglingUntriaged> media_col_database_;
 };
 
 class PrintBackendCupsIppHelperTest : public ::testing::Test {
@@ -112,7 +112,7 @@ class PrintBackendCupsIppHelperTest : public ::testing::Test {
     printer_.reset();
   }
 
-  raw_ptr<ipp_t> ipp_;
+  raw_ptr<ipp_t, DanglingUntriaged> ipp_;
   std::unique_ptr<MockCupsPrinterWithMarginsAndAttributes> printer_;
 };
 

@@ -93,7 +93,7 @@ class FastCheckoutTabHelperBrowserTest : public PlatformBrowserTest {
 
  private:
   raw_ptr<MockFastCheckoutCapabilitiesFetcher> fetcher_ = nullptr;
-  raw_ptr<MockFastCheckoutClient> mock_fast_checkout_client_;
+  raw_ptr<MockFastCheckoutClient, DanglingUntriaged> mock_fast_checkout_client_;
   autofill::TestAutofillClientInjector<autofill::TestContentAutofillClient>
       autofill_client_injector_;
 };

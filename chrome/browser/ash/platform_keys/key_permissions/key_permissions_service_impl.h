@@ -87,8 +87,9 @@ class KeyPermissionsServiceImpl : public KeyPermissionsService {
 
   const bool is_regular_user_profile_;
   const bool profile_is_managed_;
-  const raw_ptr<PlatformKeysService> platform_keys_service_;
-  const raw_ptr<KeyPermissionsManager> profile_key_permissions_manager_;
+  const raw_ptr<PlatformKeysService, DanglingUntriaged> platform_keys_service_;
+  const raw_ptr<KeyPermissionsManager, DanglingUntriaged>
+      profile_key_permissions_manager_;
   base::WeakPtrFactory<KeyPermissionsServiceImpl> weak_factory_{this};
 };
 

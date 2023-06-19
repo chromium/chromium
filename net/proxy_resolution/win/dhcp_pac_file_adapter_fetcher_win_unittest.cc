@@ -142,7 +142,7 @@ class MockDhcpPacFileAdapterFetcher : public DhcpPacFileAdapterFetcher {
   int fetcher_delay_ms_ = 1;
   int fetcher_result_ = OK;
   std::string pac_script_;
-  raw_ptr<MockPacFileFetcher> fetcher_;
+  raw_ptr<MockPacFileFetcher, DanglingUntriaged> fetcher_;
   base::OneShotTimer fetcher_timer_;
   scoped_refptr<DelayingDhcpQuery> dhcp_query_;
 };
@@ -297,7 +297,7 @@ class MockDhcpRealFetchPacFileAdapterFetcher
     return PacFileFetcherImpl::Create(url_request_context_);
   }
 
-  raw_ptr<URLRequestContext> url_request_context_;
+  raw_ptr<URLRequestContext, DanglingUntriaged> url_request_context_;
 };
 
 TEST(DhcpPacFileAdapterFetcher, MockDhcpRealFetch) {

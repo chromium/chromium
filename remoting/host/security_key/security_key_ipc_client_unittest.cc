@@ -78,7 +78,7 @@ class SecurityKeyIpcClientTest : public testing::Test,
   // after each stage of the tests has been completed.
   std::unique_ptr<base::RunLoop> run_loop_;
 
-  raw_ptr<MockChromotingHostServicesProvider> api_provider_;
+  raw_ptr<MockChromotingHostServicesProvider, DanglingUntriaged> api_provider_;
 
   // The object under test.
   std::unique_ptr<SecurityKeyIpcClient> security_key_ipc_client_;

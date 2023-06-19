@@ -160,7 +160,7 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoHidDevice final : public FidoDevice {
   // All the FidoHidDevice instances are owned by U2fRequest. So it is safe to
   // let the FidoHidDevice share the device::mojo::HidManager raw pointer from
   // U2fRequest.
-  raw_ptr<device::mojom::HidManager> hid_manager_;
+  raw_ptr<device::mojom::HidManager, DanglingUntriaged> hid_manager_;
   device::mojom::HidDeviceInfoPtr device_info_;
   scoped_refptr<FidoHidDevice::RefCountedHidConnection> connection_;
   base::WeakPtrFactory<FidoHidDevice> weak_factory_{this};

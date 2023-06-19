@@ -91,7 +91,8 @@ class MediaFoundationCdmFactoryTest : public testing::Test {
   ComPtr<MockMFCdmFactory> mf_cdm_factory_;
   ComPtr<MockMFCdmAccess> mf_cdm_access_;
   ComPtr<MockMFCdm> mf_cdm_;
-  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>> cdm_helper_ = nullptr;
+  raw_ptr<StrictMock<MockCdmAuxiliaryHelper>, DanglingUntriaged> cdm_helper_ =
+      nullptr;
   std::unique_ptr<MediaFoundationCdmFactory> cdm_factory_;
   base::MockCallback<CdmCreatedCB> cdm_created_cb_;
 };

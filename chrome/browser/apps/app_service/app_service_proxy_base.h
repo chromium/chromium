@@ -346,7 +346,8 @@ class AppServiceProxyBase : public KeyedService,
     // field.
     raw_ptr<AppServiceProxyBase> host_;
 
-    raw_ptr<apps::IconLoader> overriding_icon_loader_for_testing_;
+    raw_ptr<apps::IconLoader, DanglingUntriaged>
+        overriding_icon_loader_for_testing_;
   };
 
   virtual bool IsValidProfile();

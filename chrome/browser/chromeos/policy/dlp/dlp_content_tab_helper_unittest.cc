@@ -57,7 +57,7 @@ class DlpContentTabHelperTest : public ChromeRenderViewHostTestHarness {
   std::unique_ptr<ScopedDlpContentObserverForTesting>
       scoped_dlp_content_observer_;
   TabActivitySimulator tab_activity_simulator_;
-  raw_ptr<TabStripModel> tab_strip_model_;
+  raw_ptr<TabStripModel, DanglingUntriaged> tab_strip_model_;
   std::unique_ptr<Browser> browser_;
 };
 

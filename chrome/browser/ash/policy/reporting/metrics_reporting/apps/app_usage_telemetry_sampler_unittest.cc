@@ -146,7 +146,7 @@ class AppUsageTelemetrySamplerTest : public ::testing::Test {
   std::unique_ptr<AppUsageTelemetrySampler> app_usage_telemetry_sampler_;
 
  private:
-  raw_ptr<::ash::FakeChromeUserManager> fake_user_manager_;
+  raw_ptr<::ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<::user_manager::ScopedUserManager> scoped_user_manager_;
 };
 

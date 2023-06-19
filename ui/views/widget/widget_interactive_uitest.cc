@@ -2052,7 +2052,7 @@ class WidgetInputMethodInteractiveTest : public DesktopWidgetTestInteractive {
   }
 
  private:
-  raw_ptr<Widget> deactivate_widget_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> deactivate_widget_ = nullptr;
 };
 
 #if BUILDFLAG(IS_MAC)

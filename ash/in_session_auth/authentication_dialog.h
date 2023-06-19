@@ -41,7 +41,7 @@ class AuthenticationDialog : public views::DialogDelegateView {
     }
 
    private:
-    raw_ptr<AuthenticationDialog> const dialog_;
+    raw_ptr<AuthenticationDialog, DanglingUntriaged> const dialog_;
   };
 
   // |on_auth_complete| is called when the user has been authenticated

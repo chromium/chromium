@@ -79,7 +79,7 @@ class ViewAXPlatformNodeDelegateMacTest : public ViewsTestBase {
 
  protected:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<AccessibleView> view_;
+  raw_ptr<AccessibleView, DanglingUntriaged> view_;
 };
 
 TEST_F(ViewAXPlatformNodeDelegateMacTest,

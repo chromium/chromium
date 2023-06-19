@@ -90,7 +90,7 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
 
   // DisplayOverlayController owns this class, no need to deallocate.
   const raw_ptr<DisplayOverlayController> controller_ = nullptr;
-  const raw_ptr<Action> action_ = nullptr;
+  const raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
 
   raw_ptr<EditLabels> labels_view_ = nullptr;
   raw_ptr<NameTag> labels_name_tag_ = nullptr;

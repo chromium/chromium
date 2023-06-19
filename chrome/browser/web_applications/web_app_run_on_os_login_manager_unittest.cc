@@ -113,7 +113,7 @@ class WebAppRunOnOsLoginManagerTestBase : public WebAppTest {
   }
 
   std::vector<apps::AppLaunchParams> launched_apps_;
-  raw_ptr<FakeWebAppProvider> provider_;
+  raw_ptr<FakeWebAppProvider, DanglingUntriaged> provider_;
   base::test::ScopedFeatureList scoped_feature_list_;
 };
 

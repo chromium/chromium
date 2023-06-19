@@ -73,7 +73,7 @@ class FakeServiceClient : public mojom::AccessibilityServiceClient,
   }
 
  private:
-  raw_ptr<mojom::AccessibilityService> service_;
+  raw_ptr<mojom::AccessibilityService, DanglingUntriaged> service_;
   base::OnceClosure automation_bound_closure_;
   base::OnceClosure tts_bound_closure_;
 

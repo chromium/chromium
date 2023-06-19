@@ -60,8 +60,9 @@ class NearbyPresenceServiceImpl
   void OnDeviceChanged(mojom::PresenceDevicePtr device) override;
   void OnDeviceLost(mojom::PresenceDevicePtr device) override;
 
-  const raw_ptr<PrefService> pref_service_ = nullptr;
-  const raw_ptr<ash::nearby::NearbyProcessManager> process_manager_ = nullptr;
+  const raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
+  const raw_ptr<ash::nearby::NearbyProcessManager, DanglingUntriaged>
+      process_manager_ = nullptr;
   std::unique_ptr<ash::nearby::NearbyProcessManager::NearbyProcessReference>
       process_reference_;
 

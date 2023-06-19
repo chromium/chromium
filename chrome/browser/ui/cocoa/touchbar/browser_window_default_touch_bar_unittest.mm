@@ -74,7 +74,8 @@ class BrowserWindowDefaultTouchBarUnitTest : public BrowserWithTestWindowTest {
   }
 
   CocoaTestHelper cocoa_test_helper_;
-  raw_ptr<CommandUpdater> command_updater_;  // Weak, owned by Browser.
+  raw_ptr<CommandUpdater, DanglingUntriaged>
+      command_updater_;  // Weak, owned by Browser.
 
   std::unique_ptr<TemplateURLServiceFactoryTestUtil> template_service_util_;
 

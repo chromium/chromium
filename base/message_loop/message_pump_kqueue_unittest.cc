@@ -51,7 +51,8 @@ class MessagePumpKqueueTest : public testing::Test {
   }
 
  private:
-  raw_ptr<MessagePumpKqueue> pump_;  // Weak, owned by |executor_|.
+  raw_ptr<MessagePumpKqueue, DanglingUntriaged>
+      pump_;  // Weak, owned by |executor_|.
   SingleThreadTaskExecutor executor_;
 };
 

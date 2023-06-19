@@ -142,7 +142,7 @@ class FrameCookieAccessObserver : public content::WebContentsObserver {
                          const content::CookieAccessDetails& details) override;
 
  private:
-  const raw_ptr<content::RenderFrameHost> render_frame_host_;
+  const raw_ptr<content::RenderFrameHost, DanglingUntriaged> render_frame_host_;
   CookieOperation access_type_;
   base::RunLoop run_loop_;
 };
@@ -177,7 +177,7 @@ class UserActivationObserver : public content::WebContentsObserver {
   void FrameReceivedUserActivation(
       content::RenderFrameHost* render_frame_host) override;
 
-  raw_ptr<content::RenderFrameHost> const render_frame_host_;
+  raw_ptr<content::RenderFrameHost, DanglingUntriaged> const render_frame_host_;
   base::RunLoop run_loop_;
 };
 

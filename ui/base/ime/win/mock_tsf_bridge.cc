@@ -9,7 +9,10 @@
 
 namespace ui {
 
-MockTSFBridge::MockTSFBridge() = default;
+MockTSFBridge::MockTSFBridge()
+    : text_input_client_(nullptr),
+      ime_key_event_dispatcher_(nullptr),
+      tsf_text_store_(nullptr) {}
 
 MockTSFBridge::~MockTSFBridge() = default;
 

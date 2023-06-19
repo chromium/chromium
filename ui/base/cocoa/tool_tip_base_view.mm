@@ -57,7 +57,7 @@
 @implementation ToolTipBaseView {
   // These are part of the magic tooltip code from WebKit's WebHTMLView:
   id __weak _trackingRectOwner;
-  raw_ptr<void> _trackingRectUserData;
+  raw_ptr<void, DanglingUntriaged> _trackingRectUserData;
   NSTrackingRectTag _lastToolTipTag;
   NSString* __strong _toolTip;
 }

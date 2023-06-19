@@ -42,7 +42,7 @@ class NetworkBandwidthSamplerTest : public ::testing::Test {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<Profile> profile_;
+  raw_ptr<Profile, DanglingUntriaged> profile_;
 };
 
 TEST_F(NetworkBandwidthSamplerTest, DoesNotReportDownloadSpeedByDefault) {

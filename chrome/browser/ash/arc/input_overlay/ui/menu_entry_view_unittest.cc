@@ -115,7 +115,7 @@ class MenuEntryViewTest : public exo::test::ExoTestBase {
   }
 
   // Kept around to determine bounds(), not owned.
-  raw_ptr<MenuEntryView> menu_entry_view_;
+  raw_ptr<MenuEntryView, DanglingUntriaged> menu_entry_view_;
   // Used to simulate mouse actions at a particular location, to be changed upon
   // dragging.
   gfx::Point local_location_;

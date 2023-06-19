@@ -47,7 +47,7 @@ class EventObservationCrosapi : public crosapi::mojom::TelemetryEventObserver {
   extensions::ExtensionId extension_id_;
   mojo::Receiver<crosapi::mojom::TelemetryEventObserver> receiver_;
   std::unique_ptr<Delegate> delegate_;
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
 
 }  // namespace chromeos

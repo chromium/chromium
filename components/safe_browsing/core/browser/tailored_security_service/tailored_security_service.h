@@ -165,7 +165,7 @@ class TailoredSecurityService : public KeyedService {
 
   // Stores pointer to IdentityManager instance. It must outlive the
   // TailoredSecurityService and can be null during tests.
-  raw_ptr<signin::IdentityManager> identity_manager_;
+  raw_ptr<signin::IdentityManager, DanglingUntriaged> identity_manager_;
 
   // Pending TailoredSecurity queries to be canceled if not complete by
   // profile shutdown.

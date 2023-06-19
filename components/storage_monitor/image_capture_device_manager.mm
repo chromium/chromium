@@ -33,7 +33,8 @@ storage_monitor::ImageCaptureDeviceManager* g_image_capture_device_manager =
   // Guaranteed to outlive this class.
   // TODO(gbillock): Update when ownership chains go up through
   // a StorageMonitor subclass.
-  raw_ptr<storage_monitor::StorageMonitor::Receiver> _notifications;
+  raw_ptr<storage_monitor::StorageMonitor::Receiver, DanglingUntriaged>
+      _notifications;
 }
 
 - (void)setNotifications:

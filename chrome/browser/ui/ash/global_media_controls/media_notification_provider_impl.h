@@ -136,7 +136,7 @@ class ASH_EXPORT MediaNotificationProviderImpl
 
   raw_ptr<CastMediaNotificationProducerKeyedService> cast_service_ = nullptr;
 
-  raw_ptr<Profile> profile_for_testing_ = nullptr;
+  raw_ptr<Profile, DanglingUntriaged> profile_for_testing_ = nullptr;
   raw_ptr<global_media_controls::mojom::DeviceService>
       device_service_for_testing_ = nullptr;
 

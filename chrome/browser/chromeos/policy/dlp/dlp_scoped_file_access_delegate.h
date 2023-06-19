@@ -67,7 +67,7 @@ class DlpScopedFileAccessDelegate
   // This is a pointer to a global dbus client singleton that is owned by the
   // browser instance. It is initialized and destructed at the same time as
   // dbus.
-  raw_ptr<chromeos::DlpClient> client_;
+  raw_ptr<chromeos::DlpClient, LeakedDanglingUntriaged> client_;
 
   base::WeakPtrFactory<DlpScopedFileAccessDelegate> weak_ptr_factory_;
 };

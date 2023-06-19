@@ -96,7 +96,7 @@ class FastInkHostCreateFrameUtilTest : public AshTestBase {
   }
 
   UiResourceManager resource_manager_;
-  raw_ptr<aura::Window> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<gfx::GpuMemoryBuffer> gpu_memory_buffer_;
 };
 

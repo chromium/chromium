@@ -250,7 +250,7 @@ class CreditCardFidoAuthenticator
   webauthn::InternalAuthenticator* authenticator();
 
   // Card being unmasked.
-  raw_ptr<const CreditCard> card_;
+  raw_ptr<const CreditCard, DanglingUntriaged> card_;
 
   // The current flow in progress.
   Flow current_flow_ = NONE_FLOW;

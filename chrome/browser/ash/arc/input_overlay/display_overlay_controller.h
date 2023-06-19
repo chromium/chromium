@@ -188,15 +188,15 @@ class DisplayOverlayController : public ui::EventHandler,
   const raw_ptr<TouchInjector> touch_injector_;
 
   // References to UI elements owned by the overlay widget.
-  raw_ptr<InputMappingView> input_mapping_view_ = nullptr;
-  raw_ptr<InputMenuView> input_menu_view_ = nullptr;
-  raw_ptr<ButtonOptionsMenu> button_options_menu_ = nullptr;
-  raw_ptr<MenuEntryView> menu_entry_ = nullptr;
-  raw_ptr<EditFinishView> edit_finish_view_ = nullptr;
-  raw_ptr<MessageView> message_ = nullptr;
-  raw_ptr<EducationalView> educational_view_ = nullptr;
-  raw_ptr<NudgeView> nudge_view_ = nullptr;
-  raw_ptr<EditingList> editing_list_ = nullptr;
+  raw_ptr<InputMappingView, DanglingUntriaged> input_mapping_view_ = nullptr;
+  raw_ptr<InputMenuView, DanglingUntriaged> input_menu_view_ = nullptr;
+  raw_ptr<ButtonOptionsMenu, DanglingUntriaged> button_options_menu_ = nullptr;
+  raw_ptr<MenuEntryView, DanglingUntriaged> menu_entry_ = nullptr;
+  raw_ptr<EditFinishView, DanglingUntriaged> edit_finish_view_ = nullptr;
+  raw_ptr<MessageView, DanglingUntriaged> message_ = nullptr;
+  raw_ptr<EducationalView, DanglingUntriaged> educational_view_ = nullptr;
+  raw_ptr<NudgeView, DanglingUntriaged> nudge_view_ = nullptr;
+  raw_ptr<EditingList, DanglingUntriaged> editing_list_ = nullptr;
 
   DisplayMode display_mode_ = DisplayMode::kNone;
 };

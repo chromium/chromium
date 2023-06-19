@@ -6791,8 +6791,8 @@ class RenderWidgetHostViewAuraKeyboardTest
 
  private:
   // Not owned.
-  raw_ptr<RenderWidgetHostViewAuraKeyboardMockInputMethod> input_method_ =
-      nullptr;
+  raw_ptr<RenderWidgetHostViewAuraKeyboardMockInputMethod, DanglingUntriaged>
+      input_method_ = nullptr;
 };
 #endif
 

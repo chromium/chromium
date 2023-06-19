@@ -34,7 +34,7 @@ class VIEWS_EXPORT MouseWatcherViewHost : public MouseWatcherHost {
   bool IsMouseOverWindow();
 
   // View we're listening for events over.
-  const raw_ptr<const View> view_;
+  const raw_ptr<const View, DanglingUntriaged> view_;
   // Insets added to the bounds of the view.
   const gfx::Insets hot_zone_insets_;
 };

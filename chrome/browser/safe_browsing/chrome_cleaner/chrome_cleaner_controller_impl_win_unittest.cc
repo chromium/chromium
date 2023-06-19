@@ -440,7 +440,7 @@ class ChromeCleanerControllerTest
   MockChromeCleanerProcess::Options cleaner_process_options_;
 
   StrictMock<MockChromeCleanerControllerObserver> mock_observer_;
-  raw_ptr<ChromeCleanerControllerImpl> controller_;
+  raw_ptr<ChromeCleanerControllerImpl, DanglingUntriaged> controller_;
   ChromeCleanerRunner::ProcessStatus cleaner_process_status_;
 
   std::vector<Profile*> profiles_tagged_;
@@ -716,7 +716,7 @@ class ChromeCleanerControllerReporterInteractionTest
 
   ChromeCleanerController::State initial_state_;
 
-  raw_ptr<ChromeCleanerControllerImpl> controller_ = nullptr;
+  raw_ptr<ChromeCleanerControllerImpl, DanglingUntriaged> controller_ = nullptr;
   StrictMock<MockChromeCleanerControllerObserver> mock_observer_;
 };
 

@@ -210,7 +210,7 @@ class Action {
   absl::optional<float> radius_;
   // By default, it doesn't support modifier key.
   bool support_modifier_key_ = false;
-  raw_ptr<ActionView> action_view_ = nullptr;
+  raw_ptr<ActionView, DanglingUntriaged> action_view_ = nullptr;
 
  private:
   friend class TouchInjectorTest;

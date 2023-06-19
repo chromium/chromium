@@ -1776,6 +1776,8 @@ bool MenuController::OnKeyPressed(const ui::KeyEvent& event) {
 MenuController::MenuController(bool for_drop,
                                internal::MenuControllerDelegate* delegate)
     : for_drop_(for_drop),
+      result_(nullptr),
+      drop_target_(nullptr),
       active_mouse_view_tracker_(std::make_unique<ViewTracker>()),
       delegate_(delegate),
       alert_animation_(this) {

@@ -134,7 +134,7 @@ class AppPlatformMetricsServiceTestBase : public ::testing::Test {
   raw_ptr<syncer::TestSyncService> sync_service_ = nullptr;
   base::HistogramTester histogram_tester_;
   std::unique_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
-  raw_ptr<ash::FakeChromeUserManager> fake_user_manager_;
+  raw_ptr<ash::FakeChromeUserManager, DanglingUntriaged> fake_user_manager_;
   std::unique_ptr<user_manager::ScopedUserManager> scoped_user_manager_;
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };

@@ -97,7 +97,7 @@ class NET_EXPORT CertDatabase {
 
   class Notifier;
   friend class Notifier;
-  raw_ptr<Notifier> notifier_ = nullptr;
+  raw_ptr<Notifier, DanglingUntriaged> notifier_ = nullptr;
 #endif
 };
 

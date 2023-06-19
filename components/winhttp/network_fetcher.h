@@ -115,7 +115,7 @@ class NetworkFetcher : public base::RefCountedThreadSafe<NetworkFetcher> {
   SEQUENCE_CHECKER(sequence_checker_);
   scoped_refptr<base::SequencedTaskRunner> main_task_runner_;
 
-  const raw_ref<const HINTERNET>
+  const raw_ref<const HINTERNET, LeakedDanglingUntriaged>
       session_handle_;  // Owned by NetworkFetcherFactory.
   scoped_refptr<ProxyConfiguration> proxy_configuration_;
   ScopedHInternet connect_handle_;

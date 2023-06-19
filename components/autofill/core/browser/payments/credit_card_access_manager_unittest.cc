@@ -573,7 +573,8 @@ class CreditCardAccessManagerTest : public testing::Test {
       credit_card_access_manager_;
   raw_ptr<TestCreditCardOtpAuthenticator> otp_authenticator_;
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
-  raw_ptr<TestCreditCardFidoAuthenticator> fido_authenticator_;
+  raw_ptr<TestCreditCardFidoAuthenticator, DanglingUntriaged>
+      fido_authenticator_;
 #endif
 };
 
@@ -2086,7 +2087,7 @@ class CreditCardAccessManagerBetterAuthOptInLogTest
  private:
   const std::string fido_opt_in_not_offered_histogram =
       "Autofill.BetterAuth.OptInPromoNotOfferedReason";
-  raw_ptr<CreditCard> card_;
+  raw_ptr<CreditCard, DanglingUntriaged> card_;
 };
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)

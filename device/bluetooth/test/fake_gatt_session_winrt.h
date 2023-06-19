@@ -101,7 +101,8 @@ class FakeGattSessionStaticsWinrt
               GattSession*>** operation) override;
 
  private:
-  raw_ptr<BluetoothTestWinrt> bluetooth_test_winrt_ = nullptr;
+  raw_ptr<BluetoothTestWinrt, DanglingUntriaged> bluetooth_test_winrt_ =
+      nullptr;
 };
 
 }  // namespace device

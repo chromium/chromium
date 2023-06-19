@@ -123,7 +123,7 @@ class IconCache : public IconLoader {
   void OnRelease(IconLoader::Key);
 
   std::map<IconLoader::Key, Value> map_;
-  raw_ptr<IconLoader> wrapped_loader_;
+  raw_ptr<IconLoader, DanglingUntriaged> wrapped_loader_;
   GarbageCollectionPolicy gc_policy_;
 
   SEQUENCE_CHECKER(sequence_checker_);

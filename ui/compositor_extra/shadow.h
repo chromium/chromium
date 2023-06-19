@@ -102,7 +102,7 @@ class Shadow : public ui::ImplicitAnimationObserver, public ui::LayerOwner {
   // will always point to a global ShadowDetails instance that is guaranteed
   // to outlive the Shadow instance. See ui/gfx/shadow_util.h for how these
   // ShadowDetails instances are created.
-  raw_ptr<const gfx::ShadowDetails> details_ = nullptr;
+  raw_ptr<const gfx::ShadowDetails, LeakedDanglingUntriaged> details_ = nullptr;
 
   // The style of shadow. Use MD style by default.
   gfx::ShadowStyle style_ = gfx::ShadowStyle::kMaterialDesign;

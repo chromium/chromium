@@ -96,9 +96,9 @@ class FastInkHostTest
   gfx::Rect expected_quad_rect_;
   gfx::Rect expected_quad_layer_rect_;
 
-  raw_ptr<aura::Window> host_window_;
+  raw_ptr<aura::Window, DanglingUntriaged> host_window_;
   std::unique_ptr<FastInkHost> fast_ink_host_;
-  raw_ptr<TestLayerTreeFrameSink> layer_tree_frame_sink_;
+  raw_ptr<TestLayerTreeFrameSink, DanglingUntriaged> layer_tree_frame_sink_;
   std::unique_ptr<TestBeginFrameSource> begin_frame_source_;
 };
 

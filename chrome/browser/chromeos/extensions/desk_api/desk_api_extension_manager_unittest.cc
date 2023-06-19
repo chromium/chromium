@@ -135,9 +135,9 @@ class DeskApiExtensionManagerTest : public ::testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
 
-  raw_ptr<TestingProfile> affiliated_user_profile_;
-  raw_ptr<TestingProfile> incognito_profile_;
-  raw_ptr<TestingProfile> unaffiliated_user_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> affiliated_user_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> incognito_profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> unaffiliated_user_profile_;
 };
 
 TEST_F(DeskApiExtensionManagerTest, ExtensionNotInstalledOnInitWhenPrefNotSet) {

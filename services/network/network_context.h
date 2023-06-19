@@ -847,8 +847,8 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) NetworkContext
 #endif  // BUILDFLAG(IS_CT_SUPPORTED)
 
 #if BUILDFLAG(IS_CHROMEOS)
-  raw_ptr<CertVerifierWithTrustAnchors> cert_verifier_with_trust_anchors_ =
-      nullptr;
+  raw_ptr<CertVerifierWithTrustAnchors, DanglingUntriaged>
+      cert_verifier_with_trust_anchors_ = nullptr;
 #endif
 
 #if BUILDFLAG(IS_DIRECTORY_TRANSFER_REQUIRED)

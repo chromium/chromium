@@ -125,7 +125,7 @@ class MediaItemUIDeviceSelectorView
   bool is_audio_device_switching_enabled_ = false;
   bool has_cast_device_ = false;
   const std::string item_id_;
-  const raw_ptr<MediaItemUIDeviceSelectorDelegate> delegate_;
+  const raw_ptr<MediaItemUIDeviceSelectorDelegate, DanglingUntriaged> delegate_;
   std::string current_device_id_ =
       media::AudioDeviceDescription::kDefaultDeviceId;
   SkColor foreground_color_ = global_media_controls::kDefaultForegroundColor;

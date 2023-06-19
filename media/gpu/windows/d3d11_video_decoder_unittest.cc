@@ -238,7 +238,7 @@ class D3D11VideoDecoderTest : public ::testing::Test {
   scoped_refptr<base::SingleThreadTaskRunner> gpu_task_runner_;
 
   std::unique_ptr<VideoDecoder> decoder_;
-  raw_ptr<D3D11VideoDecoder> d3d11_decoder_raw_ = nullptr;
+  raw_ptr<D3D11VideoDecoder, DanglingUntriaged> d3d11_decoder_raw_ = nullptr;
   gpu::GpuPreferences gpu_preferences_;
   gpu::GpuDriverBugWorkarounds gpu_workarounds_;
   // This field is not a raw_ptr<> because it was filtered by the rewriter for:

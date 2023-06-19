@@ -171,7 +171,7 @@ class TestingProfileManager : public ProfileObserver {
   std::unique_ptr<ScopedTestingLocalState> owned_local_state_;
 
   // Weak reference to the profile manager.
-  raw_ptr<ProfileManager> profile_manager_;
+  raw_ptr<ProfileManager, DanglingUntriaged> profile_manager_;
 
   // Map of profile_name to TestingProfile* from CreateTestingProfile().
   TestingProfilesMap testing_profiles_;

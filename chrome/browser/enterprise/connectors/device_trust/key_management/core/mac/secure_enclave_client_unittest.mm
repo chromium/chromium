@@ -89,7 +89,8 @@ class SecureEnclaveClientTest : public testing::Test {
                             query, kSecAttrKeyType)));
   }
 
-  raw_ptr<MockSecureEnclaveHelper> mock_secure_enclave_helper_ = nullptr;
+  raw_ptr<MockSecureEnclaveHelper, DanglingUntriaged>
+      mock_secure_enclave_helper_ = nullptr;
   std::unique_ptr<SecureEnclaveClient> secure_enclave_client_;
   base::ScopedCFTypeRef<SecKeyRef> test_key_;
   bool data_protection_keychain_ = false;

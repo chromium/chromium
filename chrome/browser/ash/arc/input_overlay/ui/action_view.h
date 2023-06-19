@@ -122,7 +122,7 @@ class ActionView : public views::View {
   void AddTouchPoint(ActionType action_type);
 
   // Reference to the action of this UI.
-  raw_ptr<Action> action_ = nullptr;
+  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
   // Reference to the owner class.
   const raw_ptr<DisplayOverlayController> display_overlay_controller_ = nullptr;
   // Labels for mapping hints.
@@ -135,7 +135,7 @@ class ActionView : public views::View {
   // Touch point only shows up in the edit mode for users to align the position.
   // This view owns the touch point as one of its children and |touch_point_|
   // is for quick access.
-  raw_ptr<TouchPoint> touch_point_ = nullptr;
+  raw_ptr<TouchPoint, DanglingUntriaged> touch_point_ = nullptr;
   DisplayMode display_mode_ = DisplayMode::kView;
 
  private:

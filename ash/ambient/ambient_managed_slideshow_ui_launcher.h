@@ -69,7 +69,7 @@ class AmbientManagedSlideshowUiLauncher
       ambient_backend_model_observer_{this};
   ScopedSessionObserver session_observer_{this};
 
-  const raw_ptr<ScreensaverImagesPolicyHandler>
+  const raw_ptr<ScreensaverImagesPolicyHandler, DanglingUntriaged>
       screensaver_images_policy_handler_;
 
   base::WeakPtrFactory<AmbientManagedSlideshowUiLauncher> weak_factory_{this};

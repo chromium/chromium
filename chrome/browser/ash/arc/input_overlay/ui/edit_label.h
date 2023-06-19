@@ -48,7 +48,7 @@ class EditLabel : public views::LabelButton {
   bool OnKeyPressed(const ui::KeyEvent& event) override;
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
-  raw_ptr<Action> action_ = nullptr;
+  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
   size_t index_ = 0;
 };
 

@@ -216,7 +216,7 @@ class UI_TOUCH_SELECTION_EXPORT TouchSelectionController
 
   void LogSelectionEnd();
 
-  const raw_ptr<TouchSelectionControllerClient> client_;
+  const raw_ptr<TouchSelectionControllerClient, DanglingUntriaged> client_;
   const Config config_;
 
   InputEventType response_pending_input_event_;

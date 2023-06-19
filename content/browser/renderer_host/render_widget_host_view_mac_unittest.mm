@@ -558,7 +558,7 @@ class RenderWidgetHostViewMacTest : public RenderViewHostImplTestHarness {
   scoped_refptr<SiteInstanceGroup> site_instance_group_;
   testing::NiceMock<MockRenderWidgetHostOwnerDelegate> mock_owner_delegate_;
   std::unique_ptr<MockRenderWidgetHostImpl> host_;
-  raw_ptr<RenderWidgetHostViewMac> rwhv_mac_ = nullptr;
+  raw_ptr<RenderWidgetHostViewMac, DanglingUntriaged> rwhv_mac_ = nullptr;
   RenderWidgetHostViewCocoa* __strong rwhv_cocoa_;
   CocoaTestHelperWindow* __strong window_;
 
@@ -1737,7 +1737,7 @@ class InputMethodMacTest : public RenderWidgetHostViewMacTest {
   std::unique_ptr<MockRenderProcessHost> child_process_host_;
   scoped_refptr<SiteInstanceGroup> child_site_instance_group_;
   std::unique_ptr<MockRenderWidgetHostImpl> child_widget_;
-  raw_ptr<TestRenderWidgetHostView> child_view_;
+  raw_ptr<TestRenderWidgetHostView, DanglingUntriaged> child_view_;
 
  private:
   std::unique_ptr<TestBrowserContext> child_browser_context_;

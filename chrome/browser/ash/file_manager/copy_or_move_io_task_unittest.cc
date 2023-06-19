@@ -962,7 +962,7 @@ class CopyOrMoveIOTaskWithScansTest
       scanning_expectations_;
   storage::FileSystemURLSet directory_scanning_expectations_;
   std::unique_ptr<TestingProfileManager> profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
 TEST_P(CopyOrMoveIOTaskWithScansTest, BlockSingleFileUsingResultBlocked) {

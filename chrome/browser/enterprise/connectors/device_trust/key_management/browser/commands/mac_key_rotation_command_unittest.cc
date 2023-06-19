@@ -101,9 +101,12 @@ class MacKeyRotationCommandTest : public testing::Test {
   network::TestURLLoaderFactory test_url_loader_factory_;
   scoped_refptr<network::SharedURLLoaderFactory> test_shared_loader_factory_;
   std::unique_ptr<MacKeyRotationCommand> rotation_command_;
-  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
-  raw_ptr<MockKeyNetworkDelegate> mock_network_delegate_ = nullptr;
-  raw_ptr<MockKeyPersistenceDelegate> mock_persistence_delegate_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient, DanglingUntriaged>
+      mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockKeyNetworkDelegate, DanglingUntriaged> mock_network_delegate_ =
+      nullptr;
+  raw_ptr<MockKeyPersistenceDelegate, DanglingUntriaged>
+      mock_persistence_delegate_ = nullptr;
   test::ScopedKeyPersistenceDelegateFactory scoped_factory_;
   KeyRotationCommand::Params params_;
 };

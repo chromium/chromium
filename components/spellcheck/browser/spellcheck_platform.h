@@ -164,7 +164,7 @@ class ScopedEnglishLanguageForTest {
   ScopedEnglishLanguageForTest();
   ~ScopedEnglishLanguageForTest();
  private:
-  raw_ptr<SpellcheckerStateInternal> state_;
+  raw_ptr<SpellcheckerStateInternal, DanglingUntriaged> state_;
 };
 
 }  // namespace spellcheck_platform

@@ -38,7 +38,7 @@ class UserReportingSettingsTest : public ::testing::Test {
 
   ::content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_{TestingBrowserProcess::GetGlobal()};
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
   std::unique_ptr<UserReportingSettings> user_reporting_settings_;
 };
 

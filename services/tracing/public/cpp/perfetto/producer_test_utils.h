@@ -116,7 +116,7 @@ class TestTraceWriter : public perfetto::TraceWriter {
   TestTraceWriter& operator=(TestTraceWriter&&) = delete;
 
  private:
-  raw_ptr<TestProducerClient> producer_client_;
+  raw_ptr<TestProducerClient, DanglingUntriaged> producer_client_;
 };
 
 // Wrapper class around TestProducerClient useful for testing a trace data

@@ -58,7 +58,7 @@ class RgbKeyboardManagerTest : public testing::Test {
   // ImeControllerImpl must be destroyed after RgbKeyboardManager.
   std::unique_ptr<ImeControllerImpl> ime_controller_;
   std::unique_ptr<RgbKeyboardManager> manager_;
-  raw_ptr<FakeRgbkbdClient> client_;
+  raw_ptr<FakeRgbkbdClient, DanglingUntriaged> client_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

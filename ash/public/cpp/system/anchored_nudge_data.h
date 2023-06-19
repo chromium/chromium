@@ -68,7 +68,7 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // Unowned. Must outlive the `AnchoredNudge`.
   // TODO(b/285988197): Make setting an `anchor_view` optional. Nudges without
   // an anchor will show on the leading bottom of the screen.
-  raw_ptr<views::View> anchor_view;
+  raw_ptr<views::View, DanglingUntriaged> anchor_view;
 
   // Used to set bubble placement in relation to the anchor view.
   // A value of `BOTTOM_CENTER` means that the nudge will be anchored from its

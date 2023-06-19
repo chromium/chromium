@@ -103,7 +103,7 @@ class VIEWS_EXAMPLES_EXPORT DesignerExample : public ExampleBase,
     static bool IsRight(GrabHandlePosition position);
 
     GrabHandlePosition position_;
-    raw_ptr<GrabHandles> grab_handles_;
+    raw_ptr<GrabHandles, DanglingUntriaged> grab_handles_;
     raw_ptr<View> attached_view_ = nullptr;
     gfx::Point mouse_drag_pos_;
   };

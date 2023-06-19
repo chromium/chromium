@@ -64,7 +64,7 @@ class VIEWS_EXAMPLES_EXPORT TableExample : public ExampleBase,
   std::string SelectedColumnName();
 
   // The table to be tested.
-  raw_ptr<TableView> table_ = nullptr;
+  raw_ptr<TableView, DanglingUntriaged> table_ = nullptr;
 
   raw_ptr<Checkbox> column1_visible_checkbox_ = nullptr;
   raw_ptr<Checkbox> column2_visible_checkbox_ = nullptr;

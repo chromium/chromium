@@ -128,7 +128,8 @@ class COMPONENT_EXPORT(FILE_ACCESS) ScopedFileAccessDelegate {
 
    private:
     bool restore_original_callback_;
-    raw_ptr<RequestFilesAccessIOCallback> original_callback_ = nullptr;
+    raw_ptr<RequestFilesAccessIOCallback, DanglingUntriaged>
+        original_callback_ = nullptr;
   };
   // Get a callback to get file access to files for system component
   // destination. Can be called from IO or UI thread. The callback should be

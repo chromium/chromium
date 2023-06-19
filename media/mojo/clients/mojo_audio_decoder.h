@@ -101,7 +101,7 @@ class MojoAudioDecoder final : public AudioDecoder,
 
   // Raw pointer is safe since both `this` and the `media_log` are owned by
   // WebMediaPlayerImpl with the correct declaration order.
-  raw_ptr<MediaLog> media_log_;
+  raw_ptr<MediaLog, DanglingUntriaged> media_log_;
 
   InitCB init_cb_;
   OutputCB output_cb_;

@@ -57,7 +57,7 @@ class PrivacyHubSpeakOnMuteControllerTest : public AshTestBase {
   }
 
  private:
-  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController>
+  raw_ptr<SpeakOnMuteDetectionPrivacySwitchController, DanglingUntriaged>
       speak_on_mute_controller_;
   // Instantiates a fake controller (the real one is created in
   // ChromeBrowserMainExtraPartsAsh::PreProfileInit() which is not called in

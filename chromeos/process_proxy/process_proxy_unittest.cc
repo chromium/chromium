@@ -58,7 +58,7 @@ class TestRunner {
 
  protected:
   std::string id_;
-  raw_ptr<const base::Process> process_;
+  raw_ptr<const base::Process, DanglingUntriaged> process_;
 
   base::OnceClosure done_read_closure_;
 };
@@ -263,7 +263,7 @@ class ProcessProxyTest : public testing::Test {
 
   raw_ptr<ProcessProxyRegistry> registry_;
   std::string id_;
-  raw_ptr<const base::Process> process_ = nullptr;
+  raw_ptr<const base::Process, DanglingUntriaged> process_ = nullptr;
 
   base::test::TaskEnvironment task_environment_;
 };

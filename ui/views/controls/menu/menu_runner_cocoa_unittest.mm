@@ -95,7 +95,7 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
   static constexpr int kWindowHeight = 200;
   static constexpr int kWindowOffset = 100;
 
-  MenuRunnerCocoaTest() = default;
+  MenuRunnerCocoaTest() : runner_(nullptr), parent_(nullptr) {}
 
   MenuRunnerCocoaTest(const MenuRunnerCocoaTest&) = delete;
   MenuRunnerCocoaTest& operator=(const MenuRunnerCocoaTest&) = delete;
@@ -276,8 +276,9 @@ class MenuRunnerCocoaTest : public ViewsTestBase,
 
  protected:
   std::unique_ptr<TestModel> menu_;
-  raw_ptr<internal::MenuRunnerImplInterface> runner_ = nullptr;
-  raw_ptr<views::Widget> parent_ = nullptr;
+  raw_ptr<internal::MenuRunnerImplInterface, DanglingUntriaged> runner_ =
+      nullptr;
+  raw_ptr<views::Widget, DanglingUntriaged> parent_ = nullptr;
   NSRect last_anchor_frame_ = NSZeroRect;
   NSUInteger native_view_subview_count_ = 0;
   int menu_close_count_ = 0;

@@ -479,7 +479,7 @@ class VIEWS_EXPORT TableView : public views::View,
   // Updates the focus rings of the TableView and the TableHeader if necessary.
   void UpdateFocusRings();
 
-  raw_ptr<ui::TableModel> model_ = nullptr;
+  raw_ptr<ui::TableModel, DanglingUntriaged> model_ = nullptr;
 
   std::vector<ui::TableColumn> columns_;
 

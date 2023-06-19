@@ -54,7 +54,7 @@ class KioskSessionPluginHandler {
                                  bool is_hung) override;
     void WebContentsDestroyed() override;
 
-    const raw_ptr<KioskSessionPluginHandler> owner_;
+    const raw_ptr<KioskSessionPluginHandler, DanglingUntriaged> owner_;
     std::set<int> hung_plugins_;
     base::OneShotTimer hung_wait_timer_;
   };

@@ -235,7 +235,7 @@ class TooltipControllerTest : public ViewsTestBase {
 
  protected:
 #if !BUILDFLAG(ENABLE_DESKTOP_AURA) || BUILDFLAG(IS_WIN)
-  raw_ptr<TooltipAura> tooltip_;  // not owned.
+  raw_ptr<TooltipAura, DanglingUntriaged> tooltip_;  // not owned.
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
   raw_ptr<TestTooltipLacros> tooltip_;  // not owned.
 #endif

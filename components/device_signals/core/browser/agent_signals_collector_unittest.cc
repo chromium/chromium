@@ -113,7 +113,8 @@ class AgentSignalsCollectorTest : public testing::Test {
 
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
-  raw_ptr<StrictMock<MockCrowdStrikeClient>> mocked_crowdstrike_client_;
+  raw_ptr<StrictMock<MockCrowdStrikeClient>, DanglingUntriaged>
+      mocked_crowdstrike_client_;
   std::unique_ptr<AgentSignalsCollector> collector_;
   base::HistogramTester histogram_tester_;
 };

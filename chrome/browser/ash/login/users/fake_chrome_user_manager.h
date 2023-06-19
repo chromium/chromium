@@ -211,7 +211,8 @@ class FakeChromeUserManager : public ChromeUserManager {
   bool current_user_child_ = false;
   bool mock_user_image_manager_enabled_ = false;
 
-  raw_ptr<MultiProfileUserController> multi_profile_user_controller_ = nullptr;
+  raw_ptr<MultiProfileUserController, DanglingUntriaged>
+      multi_profile_user_controller_ = nullptr;
 
   // If set this is the active user. If empty, the first created user is the
   // active user.

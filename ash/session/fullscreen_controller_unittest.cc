@@ -86,7 +86,7 @@ class FullscreenControllerTestBase : public AshTestBase {
 
   std::unique_ptr<aura::Window> window_;
   raw_ptr<WindowState, ExperimentalAsh> window_state_ = nullptr;
-  raw_ptr<TestShellDelegate> test_shell_delegate_ = nullptr;
+  raw_ptr<TestShellDelegate, DanglingUntriaged> test_shell_delegate_ = nullptr;
 };
 
 class FullscreenControllerTest : public FullscreenControllerTestBase,

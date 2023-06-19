@@ -503,7 +503,7 @@ class VIEWS_EXPORT TreeView : public View,
   bool editable_ = true;
 
   // The controller.
-  raw_ptr<TreeViewController> controller_ = nullptr;
+  raw_ptr<TreeViewController, DanglingUntriaged> controller_ = nullptr;
 
   // Whether or not the root is shown in the tree.
   bool root_shown_ = true;

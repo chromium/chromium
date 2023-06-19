@@ -382,7 +382,8 @@ class MediaClientAppUsingCameraInBrowserEnvironmentTest
   MediaClientImpl media_client_;
   SystemNotificationHelper system_notification_helper_;
   user_manager::FakeUserManager user_manager_;
-  raw_ptr<MockNewWindowDelegate> new_window_delegate_ = nullptr;
+  raw_ptr<MockNewWindowDelegate, DanglingUntriaged> new_window_delegate_ =
+      nullptr;
   std::unique_ptr<ash::TestNewWindowDelegateProvider> window_delegate_provider_;
   std::vector<media::VideoCaptureDeviceInfo> video_capture_devices_;
 };

@@ -170,7 +170,7 @@ class ConnectorsManagerTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   base::test::ScopedFeatureList scoped_feature_list_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 
   // Set to the default value of their legacy policy.
   std::map<std::string, TagSettings> expected_tags_ = {};

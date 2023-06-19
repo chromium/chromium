@@ -80,7 +80,7 @@ class ASH_EXPORT DeskButtonWidget : public ShelfComponent,
   // centered in the shelf.
   gfx::Point GetCenteredOrigin() const;
 
-  raw_ptr<DelegateView> delegate_view_ = nullptr;
+  raw_ptr<DelegateView, DanglingUntriaged> delegate_view_ = nullptr;
 
   gfx::Rect target_bounds_;
 

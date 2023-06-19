@@ -2795,7 +2795,8 @@ class AppPlatformMetricsObserverTest : public AppPlatformMetricsServiceTest {
   }
 
   MockAppPlatformMetricsObserver observer_;
-  raw_ptr<AppPlatformMetricsService> app_platform_metrics_service_;
+  raw_ptr<AppPlatformMetricsService, DanglingUntriaged>
+      app_platform_metrics_service_;
 };
 
 TEST_P(AppPlatformMetricsObserverTest, ShouldNotifyObserverOnAppInstalled) {

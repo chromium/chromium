@@ -79,7 +79,8 @@ class SecureEnclaveSigningKeyTest : public testing::Test {
     key_ = provider.GenerateSigningKeySlowly(acceptable_algorithms);
   }
 
-  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient, DanglingUntriaged>
+      mock_secure_enclave_client_ = nullptr;
   std::unique_ptr<crypto::UnexportableSigningKey> key_;
   base::ScopedCFTypeRef<SecKeyRef> test_key_;
 };

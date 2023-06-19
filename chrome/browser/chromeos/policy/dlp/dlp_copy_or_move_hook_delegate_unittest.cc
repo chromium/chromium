@@ -125,7 +125,7 @@ class DlpCopyOrMoveHookDelegateTest : public testing::Test {
       storage::FileSystemURL::CreateForTest(GURL("destination"));
   std::unique_ptr<MockDlpRulesManager> scoped_manager;
 
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   std::unique_ptr<TestingProfile> scoped_profile_;
   raw_ptr<ash::FakeChromeUserManager, ExperimentalAsh> user_manager_{

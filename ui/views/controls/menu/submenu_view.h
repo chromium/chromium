@@ -216,7 +216,7 @@ class VIEWS_EXPORT SubmenuView : public View,
 
   // If non-null, indicates a drop is in progress and drop_item is the item
   // the drop is over.
-  raw_ptr<MenuItemView> drop_item_;
+  raw_ptr<MenuItemView, DanglingUntriaged> drop_item_;
 
   // Position of the drop.
   MenuDelegate::DropPosition drop_position_ = MenuDelegate::DropPosition::kNone;

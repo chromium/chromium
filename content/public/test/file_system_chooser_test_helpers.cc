@@ -58,7 +58,7 @@ class CancellingSelectFileDialog : public ui::SelectFileDialog {
 
  private:
   ~CancellingSelectFileDialog() override = default;
-  raw_ptr<SelectFileDialogParams> out_params_;
+  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
 };
 
 class FakeSelectFileDialog : public ui::SelectFileDialog {
@@ -118,7 +118,7 @@ class FakeSelectFileDialog : public ui::SelectFileDialog {
  private:
   ~FakeSelectFileDialog() override = default;
   std::vector<ui::SelectedFileInfo> result_;
-  raw_ptr<SelectFileDialogParams> out_params_;
+  raw_ptr<SelectFileDialogParams, LeakedDanglingUntriaged> out_params_;
 };
 
 }  // namespace

@@ -72,7 +72,7 @@ class StorageMonitorWinTest : public testing::Test {
   std::unique_ptr<TestStorageMonitorWin> monitor_;
 
   // Weak pointer; owned by the device notifications class.
-  raw_ptr<TestVolumeMountWatcherWin> volume_mount_watcher_;
+  raw_ptr<TestVolumeMountWatcherWin, DanglingUntriaged> volume_mount_watcher_;
 
   MockRemovableStorageObserver observer_;
 

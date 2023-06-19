@@ -440,7 +440,7 @@ class AppServiceAppIconTest : public AppIconFactoryTest {
 
  private:
   std::unique_ptr<TestingProfile> profile_;
-  raw_ptr<AppServiceProxy> proxy_;
+  raw_ptr<AppServiceProxy, DanglingUntriaged> proxy_;
   std::unique_ptr<apps::FakePublisherForIconTest> fake_publisher_;
 
   std::unique_ptr<crostini::CrostiniTestHelper> crostini_test_helper_;

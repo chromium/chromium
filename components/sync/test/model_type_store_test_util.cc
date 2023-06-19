@@ -61,7 +61,7 @@ class ForwardingModelTypeStore : public ModelTypeStore {
   }
 
  private:
-  raw_ptr<ModelTypeStore> other_;
+  raw_ptr<ModelTypeStore, DanglingUntriaged> other_;
 };
 
 }  // namespace

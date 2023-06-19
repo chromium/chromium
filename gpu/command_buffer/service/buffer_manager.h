@@ -40,7 +40,7 @@ class GPU_GLES2_EXPORT Buffer : public base::RefCounted<Buffer> {
     GLintptr offset;
     GLsizeiptr size;
     GLenum access;
-    raw_ptr<void> pointer;           // Pointer returned by driver.
+    raw_ptr<void, DanglingUntriaged> pointer;  // Pointer returned by driver.
     scoped_refptr<gpu::Buffer> shm;  // Client side mem buffer.
     unsigned int shm_offset;  // Client side mem buffer offset.
 

@@ -41,7 +41,7 @@ class CocoaMouseCapture::ActiveEventTap {
   // The currently active event tap, or null if there is none.
   static ActiveEventTap* g_active_event_tap;
 
-  raw_ptr<CocoaMouseCapture> owner_;  // Weak. Owns this.
+  raw_ptr<CocoaMouseCapture, DanglingUntriaged> owner_;  // Weak. Owns this.
   id local_monitor_ = nil;
   id global_monitor_ = nil;
 };

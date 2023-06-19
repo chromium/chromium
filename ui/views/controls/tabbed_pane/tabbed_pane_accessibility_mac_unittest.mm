@@ -44,7 +44,7 @@ id GetLegacyA11yAttributeValue(id obj, NSString* attribute) {
 
 class TabbedPaneAccessibilityMacTest : public WidgetTest {
  public:
-  TabbedPaneAccessibilityMacTest() = default;
+  TabbedPaneAccessibilityMacTest() : widget_(nullptr), tabbed_pane_(nullptr) {}
 
   TabbedPaneAccessibilityMacTest(const TabbedPaneAccessibilityMacTest&) =
       delete;
@@ -91,8 +91,8 @@ class TabbedPaneAccessibilityMacTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<TabbedPane> tabbed_pane_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<TabbedPane, DanglingUntriaged> tabbed_pane_ = nullptr;
 };
 
 // Test the Tab's a11y information compared to a Cocoa NSTabViewItem.

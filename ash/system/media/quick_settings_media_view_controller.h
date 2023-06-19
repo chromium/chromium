@@ -82,7 +82,7 @@ class ASH_EXPORT QuickSettingsMediaViewController
   global_media_controls::MediaItemUIObserverSet media_item_ui_observer_set_{
       this};
 
-  raw_ptr<QuickSettingsMediaView> media_view_ = nullptr;
+  raw_ptr<QuickSettingsMediaView, DanglingUntriaged> media_view_ = nullptr;
 };
 
 }  // namespace ash

@@ -353,8 +353,8 @@ class IdentityManager : public KeyedService,
     raw_ptr<SigninClient> signin_client = nullptr;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-    raw_ptr<account_manager::AccountManagerFacade> account_manager_facade =
-        nullptr;
+    raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
+        account_manager_facade = nullptr;
 #endif
 
     InitParameters();
@@ -672,7 +672,8 @@ class IdentityManager : public KeyedService,
   const raw_ptr<SigninClient> signin_client_;
 #endif
 #if BUILDFLAG(IS_CHROMEOS)
-  const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
+  const raw_ptr<account_manager::AccountManagerFacade, DanglingUntriaged>
+      account_manager_facade_;
 #endif
 
   IdentityMutator identity_mutator_;

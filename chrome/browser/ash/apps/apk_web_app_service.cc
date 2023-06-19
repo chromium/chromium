@@ -138,7 +138,7 @@ class ApkWebAppServiceDelegateImpl : public ApkWebAppService::Delegate,
   }
 
   raw_ptr<Profile> profile_;
-  raw_ptr<ArcAppListPrefs> arc_app_list_prefs_;
+  raw_ptr<ArcAppListPrefs, DanglingUntriaged> arc_app_list_prefs_;
 
   // Must go last.
   base::WeakPtrFactory<ApkWebAppServiceDelegateImpl> weak_ptr_factory_{this};

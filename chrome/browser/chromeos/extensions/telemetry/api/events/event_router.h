@@ -56,7 +56,7 @@ class EventRouter {
                                 std::unique_ptr<EventObservationCrosapi>>>
       observers_;
 
-  const raw_ptr<content::BrowserContext> browser_context_;
+  const raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
 
 }  // namespace chromeos

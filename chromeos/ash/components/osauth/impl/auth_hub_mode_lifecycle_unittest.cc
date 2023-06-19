@@ -113,7 +113,9 @@ class AuthHubModeLifecycleTest : public ::testing::Test {
   std::unique_ptr<AuthPartsImpl> parts_;
   StrictMock<MockModeLifecycleOwner> owner_;
   AuthHubModeLifecycle lifecycle_{&owner_};
-  base::flat_map<AshAuthFactor, base::raw_ptr<MockAuthFactorEngine>> engines_;
+  base::flat_map<AshAuthFactor,
+                 base::raw_ptr<MockAuthFactorEngine, DanglingUntriaged>>
+      engines_;
   base::flat_map<AshAuthFactor, AuthFactorEngine::CommonInitCallback>
       init_callbacks_;
 };

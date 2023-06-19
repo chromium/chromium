@@ -189,7 +189,8 @@ class WebKioskAppManagerTest : public BrowserWithTestWindowTest {
   raw_ptr<apps::AppServiceProxy, ExperimentalAsh> app_service_ = nullptr;
 
   // A keyed service not owned by this class.
-  raw_ptr<web_app::FakeWebAppProvider> fake_web_app_provider_;
+  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged>
+      fake_web_app_provider_;
 
   std::unique_ptr<FakePublisher> app_publisher_;
 

@@ -196,7 +196,7 @@ class TestAXNodeWrapper : public AXPlatformNodeDelegate {
   AXOffscreenResult DetermineOffscreenResult(gfx::RectF bounds) const;
 
   raw_ptr<AXTree> tree_;
-  raw_ptr<AXNode> node_;
+  raw_ptr<AXNode, DanglingUntriaged> node_;
   ui::AXUniqueId unique_id_;
   raw_ptr<AXPlatformNode> platform_node_;
   gfx::AcceleratedWidget native_event_target_;

@@ -132,8 +132,8 @@ class ViewMacTest : public test::WidgetTest {
   }
 
  private:
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<ThreeFingerSwipeView> view_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<ThreeFingerSwipeView, DanglingUntriaged> view_ = nullptr;
 };
 
 // Three-finger swipes send immediate events and they cannot be tracked.

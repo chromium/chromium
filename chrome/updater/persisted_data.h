@@ -153,7 +153,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   SEQUENCE_CHECKER(sequence_checker_);
 
   const UpdaterScope scope_;
-  raw_ptr<PrefService> pref_service_ = nullptr;
+  raw_ptr<PrefService, DanglingUntriaged> pref_service_ = nullptr;
 };
 
 void RegisterPersistedDataPrefs(scoped_refptr<PrefRegistrySimple> registry);

@@ -93,7 +93,7 @@ class NetworkLocationProvider : public LocationProvider
   scoped_refptr<GeolocationManager::PermissionObserverList>
       permission_observers_;
 
-  raw_ptr<GeolocationManager> geolocation_manager_;
+  raw_ptr<GeolocationManager, DanglingUntriaged> geolocation_manager_;
 #endif
 
   // The  wifi data and a flag to indicate if the data set is complete.

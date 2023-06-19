@@ -452,7 +452,7 @@ class AndroidSmsAppSetupControllerImplTest : public testing::Test {
   absl::optional<bool> last_delete_cookie_result_;
   absl::optional<bool> last_remove_app_result_;
 
-  raw_ptr<web_app::FakeWebAppProvider> provider_;
+  raw_ptr<web_app::FakeWebAppProvider, DanglingUntriaged> provider_;
 
   TestingProfile profile_;
   raw_ptr<HostContentSettingsMap, ExperimentalAsh> host_content_settings_map_;

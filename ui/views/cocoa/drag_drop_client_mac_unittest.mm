@@ -165,7 +165,11 @@ class DragDropView : public View {
 
 class DragDropClientMacTest : public WidgetTest {
  public:
-  DragDropClientMacTest() : widget_(new Widget) {}
+  DragDropClientMacTest()
+      : widget_(new Widget),
+        bridge_(nullptr),
+        ns_window_host_(nullptr),
+        target_(nullptr) {}
 
   DragDropClientMacTest(const DragDropClientMacTest&) = delete;
   DragDropClientMacTest& operator=(const DragDropClientMacTest&) = delete;
@@ -221,10 +225,12 @@ class DragDropClientMacTest : public WidgetTest {
   }
 
  protected:
-  raw_ptr<Widget> widget_ = nullptr;
-  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge> bridge_ = nullptr;
-  raw_ptr<NativeWidgetMacNSWindowHost> ns_window_host_ = nullptr;
-  raw_ptr<DragDropView> target_ = nullptr;
+  raw_ptr<Widget, DanglingUntriaged> widget_ = nullptr;
+  raw_ptr<remote_cocoa::NativeWidgetNSWindowBridge, DanglingUntriaged> bridge_ =
+      nullptr;
+  raw_ptr<NativeWidgetMacNSWindowHost, DanglingUntriaged> ns_window_host_ =
+      nullptr;
+  raw_ptr<DragDropView, DanglingUntriaged> target_ = nullptr;
   base::scoped_nsobject<MockDraggingInfo> dragging_info_;
 };
 

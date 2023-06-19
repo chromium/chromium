@@ -104,7 +104,7 @@ class FilePreviewTest : public testing::Test {
   TestImageDecoder decoder_;
   SkColor last_pixel_color_ = SK_ColorTRANSPARENT;
   base::CallbackListSubscription invalidation_subscription_;
-  raw_ptr<FilePreviewController> controller_ = nullptr;
+  raw_ptr<FilePreviewController, DanglingUntriaged> controller_ = nullptr;
   ui::ImageModel model_;
 };
 

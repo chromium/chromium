@@ -366,12 +366,12 @@ class OpcodeFactory {
 
   // Points to the lowest currently available address of the memory
   // used to make the opcodes. This pointer increments as opcodes are made.
-  raw_ptr<char, AllowPtrArithmetic> memory_top_;
+  raw_ptr<char, AllowPtrArithmetic | DanglingUntriaged> memory_top_;
 
   // Points to the highest currently available address of the memory
   // used to make the opcodes. This pointer decrements as opcode strings are
   // allocated.
-  raw_ptr<char, AllowPtrArithmetic> memory_bottom_;
+  raw_ptr<char, AllowPtrArithmetic | DanglingUntriaged> memory_bottom_;
 };
 
 }  // namespace sandbox

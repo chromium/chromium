@@ -1021,7 +1021,7 @@ class AppSessionTroubleshootingShortcutsTest
       ui::Accelerator(ui::VKEY_MEDIA_LAUNCH_APP1, ui::EF_NONE);
 
  private:
-  raw_ptr<FakeNewWindowDelegate> fake_new_window_delegate_;
+  raw_ptr<FakeNewWindowDelegate, DanglingUntriaged> fake_new_window_delegate_;
   std::unique_ptr<ash::TestNewWindowDelegateProvider>
       test_new_window_delegate_provider_;
 };

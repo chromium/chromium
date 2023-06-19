@@ -176,7 +176,7 @@ class DefaultEventDelegate : public EventObservationCrosapi::Delegate {
   }
 
  private:
-  raw_ptr<content::BrowserContext> browser_context_;
+  raw_ptr<content::BrowserContext, DanglingUntriaged> browser_context_;
 };
 
 }  // namespace

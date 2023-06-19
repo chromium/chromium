@@ -160,7 +160,7 @@ class ChromeAppListItem {
  private:
   std::unique_ptr<ash::AppListItemMetadata> metadata_;
   raw_ptr<Profile> profile_;
-  raw_ptr<AppListModelUpdater> model_updater_ = nullptr;
+  raw_ptr<AppListModelUpdater, DanglingUntriaged> model_updater_ = nullptr;
 };
 
 #endif  // CHROME_BROWSER_ASH_APP_LIST_CHROME_APP_LIST_ITEM_H_

@@ -108,10 +108,12 @@ class ColorPaletteControllerTest : public NoSessionAshTestBase {
   }
 
  private:
-  raw_ptr<DarkLightModeControllerImpl> dark_light_mode_controller_;  // unowned
-  raw_ptr<WallpaperControllerImpl> wallpaper_controller_;            // unowned
+  raw_ptr<DarkLightModeControllerImpl, DanglingUntriaged>
+      dark_light_mode_controller_;  // unowned
+  raw_ptr<WallpaperControllerImpl, DanglingUntriaged>
+      wallpaper_controller_;  // unowned
 
-  raw_ptr<ColorPaletteController> color_palette_controller_;
+  raw_ptr<ColorPaletteController, DanglingUntriaged> color_palette_controller_;
 };
 
 TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {

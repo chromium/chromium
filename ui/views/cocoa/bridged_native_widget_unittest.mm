@@ -504,7 +504,8 @@ class BridgedNativeWidgetTestBase : public ui::CocoaTest {
 
  protected:
   std::unique_ptr<Widget> widget_;
-  raw_ptr<MockNativeWidgetMac> native_widget_mac_;  // Weak. Owned by |widget_|.
+  raw_ptr<MockNativeWidgetMac, DanglingUntriaged>
+      native_widget_mac_;  // Weak. Owned by |widget_|.
 
   // Use a frameless window, otherwise Widget will try to center the window
   // before the tests covering the Init() flow are ready to do that.

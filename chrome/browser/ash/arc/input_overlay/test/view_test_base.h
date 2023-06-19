@@ -44,10 +44,10 @@ class ViewTestBase : public views::ViewsTestBase {
   std::unique_ptr<InputMappingView> input_mapping_view_;
   std::unique_ptr<views::Widget> widget_;
 
-  raw_ptr<ActionView> move_action_view_;
-  raw_ptr<ActionView> tap_action_view_;
-  raw_ptr<Action> move_action_;
-  raw_ptr<Action> tap_action_;
+  raw_ptr<ActionView, DanglingUntriaged> move_action_view_;
+  raw_ptr<ActionView, DanglingUntriaged> tap_action_view_;
+  raw_ptr<Action, DanglingUntriaged> move_action_;
+  raw_ptr<Action, DanglingUntriaged> tap_action_;
   gfx::Point root_location_;
   gfx::Point local_location_;
 

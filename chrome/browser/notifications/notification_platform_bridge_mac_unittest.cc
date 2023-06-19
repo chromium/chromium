@@ -135,8 +135,10 @@ class NotificationPlatformBridgeMacTest : public testing::Test {
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
   raw_ptr<TestingProfile> profile_ = nullptr;
-  raw_ptr<StubNotificationDispatcherMac> banner_dispatcher_ = nullptr;
-  raw_ptr<StubNotificationDispatcherMac> alert_dispatcher_ = nullptr;
+  raw_ptr<StubNotificationDispatcherMac, DanglingUntriaged> banner_dispatcher_ =
+      nullptr;
+  raw_ptr<StubNotificationDispatcherMac, DanglingUntriaged> alert_dispatcher_ =
+      nullptr;
 };
 
 TEST_F(NotificationPlatformBridgeMacTest, TestDisplayNoButtons) {

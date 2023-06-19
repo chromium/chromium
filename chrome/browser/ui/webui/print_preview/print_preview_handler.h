@@ -320,7 +320,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Note that this is not propagated to LocalPrinterHandlerLacros.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  raw_ptr<crosapi::mojom::LocalPrinter> local_printer_ = nullptr;
+  raw_ptr<crosapi::mojom::LocalPrinter, DanglingUntriaged> local_printer_ =
+      nullptr;
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_LACROS)
@@ -331,8 +332,8 @@ class PrintPreviewHandler : public content::WebUIMessageHandler {
   // Null if the interface is unavailable.
   // The pointer is constant - if ash crashes and the mojo connection is lost,
   // lacros will automatically be restarted.
-  raw_ptr<crosapi::mojom::DriveIntegrationService> drive_integration_service_ =
-      nullptr;
+  raw_ptr<crosapi::mojom::DriveIntegrationService, DanglingUntriaged>
+      drive_integration_service_ = nullptr;
 #endif
 
   base::WeakPtrFactory<PrintPreviewHandler> weak_factory_{this};

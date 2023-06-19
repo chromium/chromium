@@ -76,7 +76,7 @@ class PersonalizationAppKeyboardBacklightProviderImpl
   // Pointer to profile of user that opened personalization SWA. Not owned.
   raw_ptr<Profile> const profile_ = nullptr;
 
-  raw_ptr<KeyboardBacklightColorController>
+  raw_ptr<KeyboardBacklightColorController, DanglingUntriaged>
       keyboard_backlight_color_controller_for_testing_;
 
   mojo::Receiver<mojom::KeyboardBacklightProvider> keyboard_backlight_receiver_{

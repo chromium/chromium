@@ -251,7 +251,7 @@ class CertificateProviderServiceTest : public testing::Test {
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::SingleThreadTaskRunner::CurrentDefaultHandle
       task_runner_current_default_handle_;
-  raw_ptr<TestDelegate> test_delegate_ = nullptr;
+  raw_ptr<TestDelegate, DanglingUntriaged> test_delegate_ = nullptr;
   testing::StrictMock<MockObserver> observer_;
   std::unique_ptr<CertificateProvider> certificate_provider_;
   std::unique_ptr<CertificateProviderService> service_;

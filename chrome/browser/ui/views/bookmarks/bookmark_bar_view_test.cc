@@ -1070,7 +1070,7 @@ class BookmarkBarViewTest9 : public BookmarkBarViewEventTestBase {
   }
 
   int start_y_;
-  raw_ptr<views::MenuItemView> first_menu_;
+  raw_ptr<views::MenuItemView, DanglingUntriaged> first_menu_;
 };
 
 #if BUILDFLAG(IS_LINUX)  // TODO(crbug.com/1216392): Flakily times out on Linux.

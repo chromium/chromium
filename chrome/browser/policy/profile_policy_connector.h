@@ -137,7 +137,7 @@ class ProfilePolicyConnector final : public PolicyService::Observer {
   // a PolicyService for testability.
   void OnProxiedPoliciesPropagated(PolicyServiceImpl* policy_service);
 
-  raw_ptr<const user_manager::User> user_ = nullptr;
+  raw_ptr<const user_manager::User, DanglingUntriaged> user_ = nullptr;
 
   // Some of the user policy configuration affects browser global state, and
   // can only come from one Profile. |is_primary_user_| is true if this

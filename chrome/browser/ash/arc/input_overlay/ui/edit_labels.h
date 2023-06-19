@@ -55,7 +55,7 @@ class EditLabels : public views::View {
   void InitForActionMoveKeyboard();
 
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
-  raw_ptr<Action> action_ = nullptr;
+  raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
 
   std::vector<EditLabel*> labels_;
 };

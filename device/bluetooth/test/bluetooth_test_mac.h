@@ -202,7 +202,8 @@ class BluetoothTestMac : public BluetoothTestBase {
   // Utility function for finding CBUUIDs with relatively nice SHA256 hashes.
   std::string FindCBUUIDForHashTarget();
 
-  raw_ptr<BluetoothLowEnergyAdapterApple> adapter_low_energy_ = nullptr;
+  raw_ptr<BluetoothLowEnergyAdapterApple, DanglingUntriaged>
+      adapter_low_energy_ = nullptr;
   std::unique_ptr<ScopedMockCentralManager> mock_central_manager_;
 
   // Value set by -[CBPeripheral setNotifyValue:forCharacteristic:] call.

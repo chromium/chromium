@@ -359,8 +359,9 @@ class GPU_GLES2_EXPORT SharedContextState
   const raw_ptr<viz::MetalContextProvider> metal_context_provider_ = nullptr;
   const raw_ptr<DawnContextProvider> dawn_context_provider_ = nullptr;
   bool created_on_compositor_gpu_thread_ = false;
-  raw_ptr<GrDirectContext> gr_context_ = nullptr;
-  raw_ptr<skgpu::graphite::Context> graphite_context_ = nullptr;
+  raw_ptr<GrDirectContext, DanglingUntriaged> gr_context_ = nullptr;
+  raw_ptr<skgpu::graphite::Context, DanglingUntriaged> graphite_context_ =
+      nullptr;
   std::unique_ptr<skgpu::graphite::Recorder> gpu_main_graphite_recorder_;
   std::unique_ptr<skgpu::graphite::Recorder> viz_compositor_graphite_recorder_;
 
@@ -372,19 +373,20 @@ class GPU_GLES2_EXPORT SharedContextState
   // Most recent surface that this ShareContextState was made current with.
   // Avoids a call to MakeCurrent with a different surface, if we don't
   // care which surface is current.
-  raw_ptr<gl::GLSurface> last_current_surface_ = nullptr;
+  raw_ptr<gl::GLSurface, DanglingUntriaged> last_current_surface_ = nullptr;
 
   scoped_refptr<gles2::FeatureInfo> feature_info_;
 
   // raster decoders and display compositor share this context_state_.
   std::unique_ptr<gles2::ContextState> context_state_;
 
-  raw_ptr<gl::ProgressReporter> progress_reporter_ = nullptr;
+  raw_ptr<gl::ProgressReporter, DanglingUntriaged> progress_reporter_ = nullptr;
   sk_sp<GrDirectContext> owned_gr_context_;
   std::unique_ptr<ServiceTransferCache> transfer_cache_;
   uint64_t skia_gr_cache_size_ = 0;
   std::vector<uint8_t> scratch_deserialization_buffer_;
-  raw_ptr<gpu::raster::GrShaderCache> gr_shader_cache_ = nullptr;
+  raw_ptr<gpu::raster::GrShaderCache, DanglingUntriaged> gr_shader_cache_ =
+      nullptr;
 
   // |need_context_state_reset| is set whenever Skia may have altered the
   // driver's GL state.

@@ -90,7 +90,8 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_SingleNudge) {
   anchored_nudge_manager()->Show(nudge_data);
 
   // Ensure the nudge is visible and has set the provided contents.
-  auto nudge = GetShownNudges()[id];
+  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
+      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
   ASSERT_TRUE(nudge);
   EXPECT_TRUE(nudge->GetVisible());
   EXPECT_EQ(text, nudge->GetBodyText());
@@ -161,7 +162,8 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_WithButtons) {
   anchored_nudge_manager()->Show(nudge_data);
 
   // Ensure the nudge is visible and has set the provided contents.
-  auto nudge = GetShownNudges()[id];
+  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
+      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
   EXPECT_TRUE(nudge);
   EXPECT_EQ(dismiss_text, nudge->GetDismissButton()->GetText());
 
@@ -243,7 +245,8 @@ TEST_F(AnchoredNudgeManagerImplTest, ShowNudge_NudgeWithIdAlreadyExists) {
 
   // Show a nudge with some initial contents.
   anchored_nudge_manager()->Show(nudge_data);
-  auto nudge = GetShownNudges()[id];
+  raw_ptr<AnchoredNudge, DanglingUntriaged> nudge =
+      raw_ptr<AnchoredNudge, DanglingUntriaged>(GetShownNudges()[id]);
   EXPECT_EQ(text, nudge->GetBodyText());
   EXPECT_EQ(anchor_view, nudge->GetAnchorView());
 

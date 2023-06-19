@@ -61,9 +61,9 @@ class WinSystemSignalsServiceTest : public testing::Test {
   base::HistogramTester histogram_tester_;
   absl::optional<base::test::ScopedOSInfoOverride> os_info_override_;
 
-  raw_ptr<MockFileSystemService> file_system_service_;
-  raw_ptr<MockWmiClient> wmi_client_;
-  raw_ptr<MockWscClient> wsc_client_;
+  raw_ptr<MockFileSystemService, DanglingUntriaged> file_system_service_;
+  raw_ptr<MockWmiClient, DanglingUntriaged> wmi_client_;
+  raw_ptr<MockWscClient, DanglingUntriaged> wsc_client_;
   std::unique_ptr<WinSystemSignalsService> win_system_signals_service_;
 };
 

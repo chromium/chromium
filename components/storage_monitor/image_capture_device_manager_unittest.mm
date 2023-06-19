@@ -266,7 +266,7 @@ class ImageCaptureDeviceManagerTest : public testing::Test {
 
  protected:
   content::BrowserTaskEnvironment task_environment_;
-  raw_ptr<TestStorageMonitor> monitor_;
+  raw_ptr<TestStorageMonitor, DanglingUntriaged> monitor_;
   TestCameraListener listener_;
 };
 

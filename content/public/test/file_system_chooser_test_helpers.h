@@ -65,7 +65,7 @@ class FakeSelectFileDialogFactory : public ui::SelectFileDialogFactory {
 
  private:
   std::vector<ui::SelectedFileInfo> result_;
-  raw_ptr<SelectFileDialogParams> out_params_;
+  raw_ptr<SelectFileDialogParams, DanglingUntriaged> out_params_;
 };
 
 }  // namespace content

@@ -30,7 +30,7 @@ class TemplateURLServiceFactoryTestUtil {
   TemplateURLService* model() const;
 
  private:
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
 #endif  // CHROME_BROWSER_SEARCH_ENGINES_TEMPLATE_URL_SERVICE_FACTORY_TEST_UTIL_H_

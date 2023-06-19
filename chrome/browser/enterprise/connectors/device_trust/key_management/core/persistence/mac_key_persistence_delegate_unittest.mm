@@ -80,7 +80,8 @@ class MacKeyPersistenceDelegateTest : public testing::Test {
   }
 
   std::unique_ptr<MacKeyPersistenceDelegate> persistence_delegate_;
-  raw_ptr<MockSecureEnclaveClient> mock_secure_enclave_client_ = nullptr;
+  raw_ptr<MockSecureEnclaveClient, DanglingUntriaged>
+      mock_secure_enclave_client_ = nullptr;
 };
 
 // Tests that storing a key with an OS key trust level invokes the clients'

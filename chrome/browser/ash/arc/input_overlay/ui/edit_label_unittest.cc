@@ -104,8 +104,8 @@ class EditLabelTest : public ViewTestBase {
   std::unique_ptr<EditingList> editing_list_;
   std::unique_ptr<TestButtonOptionsMenu> tap_action_menu_;
   std::unique_ptr<TestButtonOptionsMenu> move_action_menu_;
-  raw_ptr<ActionViewListItem> tap_action_list_item_;
-  raw_ptr<ActionViewListItem> move_action_list_item_;
+  raw_ptr<ActionViewListItem, DanglingUntriaged> tap_action_list_item_;
+  raw_ptr<ActionViewListItem, DanglingUntriaged> move_action_list_item_;
 
  private:
   void SetUp() override {

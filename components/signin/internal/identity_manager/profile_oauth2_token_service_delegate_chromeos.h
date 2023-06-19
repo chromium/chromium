@@ -94,8 +94,9 @@ class ProfileOAuth2TokenServiceDelegateChromeOS
                                   const GoogleServiceAuthError& error);
 
   // Non-owning pointers.
-  const raw_ptr<SigninClient> signin_client_;
-  const raw_ptr<AccountTrackerService> account_tracker_service_;
+  const raw_ptr<SigninClient, DanglingUntriaged> signin_client_;
+  const raw_ptr<AccountTrackerService, DanglingUntriaged>
+      account_tracker_service_;
   const raw_ptr<network::NetworkConnectionTracker> network_connection_tracker_;
   const raw_ptr<account_manager::AccountManagerFacade> account_manager_facade_;
 

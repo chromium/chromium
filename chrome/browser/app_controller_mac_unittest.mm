@@ -82,7 +82,7 @@ class AppControllerTest : public PlatformTest {
 
   content::BrowserTaskEnvironment task_environment_;
   TestingProfileManager profile_manager_;
-  raw_ptr<TestingProfile> profile_;
+  raw_ptr<TestingProfile, DanglingUntriaged> profile_;
 };
 
 class AppControllerKeyEquivalentTest : public PlatformTest {

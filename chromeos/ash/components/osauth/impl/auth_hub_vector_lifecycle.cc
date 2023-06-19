@@ -40,7 +40,7 @@ enum class EngineAttemptStatus {
 }  // namespace
 
 struct AuthHubVectorLifecycle::FactorAttemptState {
-  base::raw_ptr<AuthFactorEngine> engine;
+  base::raw_ptr<AuthFactorEngine, DanglingUntriaged> engine;
   EngineAttemptStatus status;
 };
 

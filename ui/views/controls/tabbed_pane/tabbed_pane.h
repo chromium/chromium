@@ -136,7 +136,7 @@ class VIEWS_EXPORT TabbedPane : public View {
   void GetAccessibleNodeData(ui::AXNodeData* node_data) override;
 
   // A listener notified when tab selection changes. Weak, not owned.
-  raw_ptr<TabbedPaneListener> listener_ = nullptr;
+  raw_ptr<TabbedPaneListener, DanglingUntriaged> listener_ = nullptr;
 
   // The tab strip and contents container. The child indices of these members
   // correspond to match each TabbedPaneTab with its respective content View.

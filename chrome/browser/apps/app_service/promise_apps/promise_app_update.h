@@ -50,8 +50,8 @@ class PromiseAppUpdate {
   bool ShouldShowChanged() const;
 
  private:
-  raw_ptr<const PromiseApp> state_ = nullptr;
-  raw_ptr<const PromiseApp> delta_ = nullptr;
+  raw_ptr<const PromiseApp, DanglingUntriaged> state_ = nullptr;
+  raw_ptr<const PromiseApp, DanglingUntriaged> delta_ = nullptr;
 };
 
 std::ostream& operator<<(std::ostream& out, const PromiseAppUpdate& update);
