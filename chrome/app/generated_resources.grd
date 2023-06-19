@@ -8737,6 +8737,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       </message>
 
       <!-- Password Manager Tutorial Strings -->
+      <message name="IDS_TUTORIAL_PASSWORD_MANAGER_OPEN_MENU" desc="The description of the 'open menu' step in password manager tutorial">
+        Open the menu
+      </message>
       <message name="IDS_TUTORIAL_PASSWORD_MANAGER_SELECT_SETTINGS" desc="The description of the 'select settings' step in password manager tutorial">
         Click “Settings”
       </message>

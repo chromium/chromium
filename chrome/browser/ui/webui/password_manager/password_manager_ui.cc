@@ -498,6 +498,8 @@ void AddPluralStrings(content::WebUI* web_ui) {
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
                                       kSettingsMenuItemElementId);
 DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI, kAddShortcutElementId);
+DEFINE_CLASS_ELEMENT_IDENTIFIER_VALUE(PasswordManagerUI,
+                                      kOverflowMenuElementId);
 DEFINE_CLASS_CUSTOM_ELEMENT_EVENT_TYPE(PasswordManagerUI,
                                        kAddShortcutCustomEventId);
 
@@ -556,5 +558,6 @@ void PasswordManagerUI::CreateHelpBubbleHandler(
       std::move(handler), std::move(client), this,
       std::vector<ui::ElementIdentifier>{
           PasswordManagerUI::kSettingsMenuItemElementId,
-          PasswordManagerUI::kAddShortcutElementId});
+          PasswordManagerUI::kAddShortcutElementId,
+          PasswordManagerUI::kOverflowMenuElementId});
 }
