@@ -34,7 +34,7 @@ class OneDriveUploadHandler
       public base::RefCounted<OneDriveUploadHandler> {
  public:
   using UploadCallback =
-      base::OnceCallback<void(const storage::FileSystemURL&)>;
+      base::OnceCallback<void(const storage::FileSystemURL&, int64_t)>;
 
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,
@@ -84,6 +84,8 @@ class OneDriveUploadHandler
   const storage::FileSystemURL source_url_;
   ::file_manager::io_task::IOTaskId observed_task_id_;
   UploadCallback callback_;
+  // Total size (in bytes) required to upload.
+  int64_t upload_size_ = 0;
   base::WeakPtrFactory<OneDriveUploadHandler> weak_ptr_factory_{this};
 };
 

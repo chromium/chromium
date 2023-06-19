@@ -9,6 +9,7 @@
 
 #include "base/gtest_prod_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_system_provider/mount_path_util.h"
 #include "chrome/browser/ash/file_system_provider/provided_file_system_interface.h"
@@ -38,6 +39,17 @@ FORWARD_DECLARE_TEST(
     OneDriveTest,
     FailToOpenFileFromAndroidOneDriveDirectoryNotAccessibleToODFS);
 }  // namespace file_manager::file_tasks
+
+namespace {
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
+enum class OfficeFilesTransferRequired {
+  kNotRequired = 0,
+  kMove = 1,
+  kCopy = 2,
+  kMaxValue = kCopy,
+};
+}  // namespace
 
 namespace ash::cloud_upload {
 
@@ -152,9 +164,10 @@ class CloudOpenTask : public BrowserListObserver,
   void ConfirmMoveOrStartUpload();
   void StartUpload();
 
-  void FinishedDriveUpload(const GURL& url);
+  void FinishedDriveUpload(const GURL& url, int64_t size);
   void FinishedOneDriveUpload(base::WeakPtr<Profile> profile_weak_ptr,
-                              const storage::FileSystemURL& url);
+                              const storage::FileSystemURL& url,
+                              int64_t size);
 
   bool InitAndShowDialog(mojom::DialogPage dialog_page);
   mojom::DialogArgsPtr CreateDialogArgs(mojom::DialogPage dialog_page);
@@ -184,6 +197,7 @@ class CloudOpenTask : public BrowserListObserver,
       ::file_manager::file_tasks::FindTasksCallback
           find_all_types_of_tasks_callback,
       std::unique_ptr<std::vector<std::string>> mime_types);
+  void RecordUploadLatencyUMA();
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   std::vector<storage::FileSystemURL> file_urls_;
@@ -192,6 +206,10 @@ class CloudOpenTask : public BrowserListObserver,
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
   CloudUploadDialog* pending_dialog_ = nullptr;
+  base::ElapsedTimer upload_timer_;
+  int64_t upload_total_size_ = 0;
+  OfficeFilesTransferRequired transfer_required_ =
+      OfficeFilesTransferRequired::kNotRequired;
 };
 
 // Return True if feature `kUploadOfficeToCloud` is enabled and is eligible for

@@ -37,7 +37,7 @@ class DriveUploadHandler
       public drivefs::DriveFsHostObserver,
       public base::RefCounted<DriveUploadHandler> {
  public:
-  using UploadCallback = base::OnceCallback<void(const GURL&)>;
+  using UploadCallback = base::OnceCallback<void(const GURL&, int64_t)>;
 
   // Starts the upload workflow for the file specified at construct time.
   static void Upload(Profile* profile,
@@ -100,6 +100,8 @@ class DriveUploadHandler
   base::OneShotTimer alternate_url_timeout_;
   base::OneShotTimer alternate_url_poll_timer_;
   UploadCallback callback_;
+  // Total size (in bytes) required to upload.
+  int64_t upload_size_ = 0;
   std::unique_ptr<::file_manager::ScopedSuppressDriveNotificationsForPath>
       scoped_suppress_drive_notifications_for_path_ = nullptr;
   base::WeakPtrFactory<DriveUploadHandler> weak_ptr_factory_{this};

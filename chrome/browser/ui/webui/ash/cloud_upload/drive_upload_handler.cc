@@ -40,8 +40,9 @@ constexpr char kUploadResultMetricName[] =
 // Runs the callback provided to `DriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<DriveUploadHandler> drive_upload_handler,
                   DriveUploadHandler::UploadCallback callback,
-                  const GURL& hosted_url) {
-  std::move(callback).Run(hosted_url);
+                  const GURL& hosted_url,
+                  int64_t upload_size) {
+  std::move(callback).Run(hosted_url, upload_size);
 }
 
 std::string GetTargetAppName(base::FilePath file_path) {
@@ -197,7 +198,7 @@ void DriveUploadHandler::OnEndUpload(GURL hosted_url,
     }
   }
   if (callback_) {
-    std::move(callback_).Run(hosted_url);
+    std::move(callback_).Run(hosted_url, upload_size_);
   }
 }
 
@@ -213,6 +214,7 @@ void DriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kInProgress:
       if (status.total_bytes > 0) {
+        upload_size_ = status.total_bytes;
         move_progress_ = 100 * status.bytes_transferred / status.total_bytes;
       }
       UpdateProgressNotification();

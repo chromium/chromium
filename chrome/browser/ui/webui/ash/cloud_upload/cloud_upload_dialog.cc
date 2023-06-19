@@ -14,8 +14,10 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/strings/escape.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/apps/app_service/app_service_proxy.h"
 #include "chrome/browser/apps/app_service/app_service_proxy_factory.h"
 #include "chrome/browser/ash/arc/fileapi/arc_documents_provider_util.h"
@@ -83,15 +85,6 @@ constexpr char kFileHandlerSelectionMetricName[] =
 
 constexpr char kFirstTimeMicrosoft365AvailabilityMetric[] =
     "FileBrowser.OfficeFiles.Setup.FirstTimeMicrosoft365Availability";
-
-// These values are persisted to logs. Entries should not be renumbered and
-// numeric values should never be reused.
-enum class OfficeFilesTransferRequired {
-  kNotRequired = 0,
-  kMove = 1,
-  kCopy = 2,
-  kMaxValue = kCopy,
-};
 
 // Records the file handler selected on the first page of Office setup.
 //
@@ -454,18 +447,21 @@ void CloudOpenTask::OpenOrMoveFiles() {
   if (cloud_provider_ == CloudProvider::kGoogleDrive &&
       PathIsOnDriveFS(profile_, file_urls_.front().path())) {
     // The files are on Drive already.
+    transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric,
                               OfficeFilesTransferRequired::kNotRequired);
     OpenAlreadyHostedDriveUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnODFS(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from ODFS.
+    transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
                               OfficeFilesTransferRequired::kNotRequired);
     OpenODFSUrls();
   } else if (cloud_provider_ == CloudProvider::kOneDrive &&
              UrlIsOnAndroidOneDrive(profile_, file_urls_.front())) {
     // The files are on OneDrive already, selected from Android OneDrive.
+    transfer_required_ = OfficeFilesTransferRequired::kNotRequired;
     UMA_HISTOGRAM_ENUMERATION(kOneDriveTransferRequiredMetric,
                               OfficeFilesTransferRequired::kNotRequired);
     OpenAndroidOneDriveUrlsIfAccountMatchedODFS();
@@ -475,6 +471,7 @@ void CloudOpenTask::OpenOrMoveFiles() {
                              file_manager::io_task::OperationType::kCopy
                          ? OfficeFilesTransferRequired::kCopy
                          : OfficeFilesTransferRequired::kMove;
+    transfer_required_ = operation;
     switch (cloud_provider_) {
       case CloudProvider::kGoogleDrive:
         UMA_HISTOGRAM_ENUMERATION(kDriveTransferRequiredMetric, operation);
@@ -753,6 +750,7 @@ void CloudOpenTask::CheckEmailAndOpenURLs(
 void CloudOpenTask::StartUpload() {
   DCHECK_EQ(pending_uploads_, 0UL);
   pending_uploads_ = file_urls_.size();
+  upload_timer_ = base::ElapsedTimer();
 
   if (cloud_provider_ == CloudProvider::kGoogleDrive) {
     for (const auto& file_url : file_urls_) {
@@ -770,30 +768,64 @@ void CloudOpenTask::StartUpload() {
   }
 }
 
-void CloudOpenTask::FinishedDriveUpload(const GURL& url) {
+void CloudOpenTask::FinishedDriveUpload(const GURL& url, int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
   OpenUploadedDriveUrl(url);
+  if (size > 0) {
+    upload_total_size_ += size;
+  }
   if (--pending_uploads_) {
     return;
   }
+  RecordUploadLatencyUMA();
   file_manager::file_tasks::SetOfficeFileMovedToGoogleDrive(profile_,
                                                             base::Time::Now());
 }
 
 void CloudOpenTask::FinishedOneDriveUpload(
     base::WeakPtr<Profile> profile_weak_ptr,
-    const storage::FileSystemURL& url) {
+    const storage::FileSystemURL& url,
+    int64_t size) {
   DCHECK_GT(pending_uploads_, 0UL);
   Profile* profile = profile_weak_ptr.get();
   if (!profile) {
     return;
   }
+  if (size > 0) {
+    upload_total_size_ += size;
+  }
   OpenODFSUrl(profile, url);
   if (--pending_uploads_) {
     return;
   }
+  RecordUploadLatencyUMA();
   file_manager::file_tasks::SetOfficeFileMovedToOneDrive(profile,
                                                          base::Time::Now());
+}
+
+void CloudOpenTask::RecordUploadLatencyUMA() {
+  const int64_t kMegabyte = 1000 * 1000;
+  std::string uma_size;
+  if (upload_total_size_ > 1000 * kMegabyte) {
+    uma_size = "1000MB-and-above";
+  } else if (upload_total_size_ > 100 * kMegabyte) {
+    uma_size = "0100MB-to-1GB";
+  } else if (upload_total_size_ > 10 * kMegabyte) {
+    uma_size = "0010MB-to-100MB";
+  } else if (upload_total_size_ > 1 * kMegabyte) {
+    uma_size = "0001MB-to-10MB";
+  } else if (upload_total_size_ <= 1 * kMegabyte) {
+    uma_size = "0000MB-to-1MB";
+  }
+  auto* transfer =
+      (transfer_required_ == OfficeFilesTransferRequired::kCopy ? "Copy"
+                                                                : "Move");
+  auto* provider =
+      (cloud_provider_ == CloudProvider::kGoogleDrive ? "GoogleDrive"
+                                                      : "OneDrive");
+  const auto metric = base::StrCat({"FileBrowser.OfficeFiles.FileOpen.Time.",
+                                    transfer, ".", uma_size, ".To.", provider});
+  base::UmaHistogramMediumTimes(metric, upload_timer_.Elapsed());
 }
 
 // Create the arguments necessary for showing the dialog. We first need to

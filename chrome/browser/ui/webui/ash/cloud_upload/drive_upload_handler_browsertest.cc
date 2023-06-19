@@ -245,7 +245,7 @@ class DriveUploadHandlerTest
 
   // The exit point of the test. `WaitForUploadComplete` will not complete until
   // this is called.
-  void OnUploadDone(const GURL& url) {
+  void OnUploadDone(const GURL& url, int64_t size) {
     ASSERT_FALSE(url.is_empty());
     ASSERT_TRUE(run_loop_);
     run_loop_->Quit();

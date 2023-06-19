@@ -7,6 +7,7 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/metrics/histogram_macros.h"
+#include "base/timer/elapsed_timer.h"
 #include "chrome/browser/ash/file_manager/copy_or_move_io_task.h"
 #include "chrome/browser/ash/file_manager/file_tasks.h"
 #include "chrome/browser/ash/file_manager/fileapi_util.h"
@@ -33,8 +34,9 @@ constexpr char kUploadResultMetricName[] =
 // Runs the callback provided to `OneDriveUploadHandler::Upload`.
 void OnUploadDone(scoped_refptr<OneDriveUploadHandler> one_drive_upload_handler,
                   OneDriveUploadHandler::UploadCallback callback,
-                  const FileSystemURL& uploaded_file_url) {
-  std::move(callback).Run(uploaded_file_url);
+                  const FileSystemURL& uploaded_file_url,
+                  int64_t upload_size) {
+  std::move(callback).Run(uploaded_file_url, upload_size);
 }
 
 }  // namespace
@@ -188,7 +190,7 @@ void OneDriveUploadHandler::OnEndUpload(const FileSystemURL& uploaded_file_url,
     }
   }
   if (callback_) {
-    std::move(callback_).Run(uploaded_file_url);
+    std::move(callback_).Run(uploaded_file_url, upload_size_);
   }
 }
 
@@ -204,6 +206,7 @@ void OneDriveUploadHandler::OnIOTaskStatus(
       return;
     case file_manager::io_task::State::kInProgress:
       if (status.total_bytes > 0) {
+        upload_size_ = status.total_bytes;
         notification_manager_->ShowUploadProgress(
             100 * status.bytes_transferred / status.total_bytes);
       }

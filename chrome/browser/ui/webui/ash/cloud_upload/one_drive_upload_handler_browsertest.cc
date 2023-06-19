@@ -173,7 +173,8 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
 
   // The exit point of the test. `WaitForUploadComplete` will not complete until
   // this is called.
-  void OnUploadDone(const storage::FileSystemURL& uploaded_file_url) {
+  void OnUploadDone(const storage::FileSystemURL& uploaded_file_url,
+                    int64_t size) {
     ASSERT_TRUE(uploaded_file_url.is_valid());
     ASSERT_TRUE(run_loop_);
     run_loop_->Quit();
