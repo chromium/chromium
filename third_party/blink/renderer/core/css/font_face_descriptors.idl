@@ -5,15 +5,15 @@
 // https://drafts.csswg.org/css-font-loading/#dictdef-fontfacedescriptors
 
 dictionary FontFaceDescriptors {
-    DOMString style = "normal";
-    DOMString weight = "normal";
-    DOMString stretch = "normal";
-    DOMString unicodeRange = "U+0-10FFFF";
-    DOMString variant = "normal";
-    DOMString featureSettings = "normal";
-    DOMString display = "auto";
-    [MeasureAs=FontFaceAscentOverride] DOMString ascentOverride = "normal";
-    [MeasureAs=FontFaceDescentOverride] DOMString descentOverride = "normal";
-    [MeasureAs=FontFaceLineGapOverride] DOMString lineGapOverride = "normal";
-    [MeasureAs=FontFaceSizeAdjust] DOMString sizeAdjust = "100%";
+    CSSOMString style = "normal";
+    CSSOMString weight = "normal";
+    CSSOMString stretch = "normal";
+    CSSOMString unicodeRange = "U+0-10FFFF";
+    CSSOMString variant = "normal";
+    CSSOMString featureSettings = "normal";
+    CSSOMString display = "auto";
+    [MeasureAs=FontFaceAscentOverride] CSSOMString ascentOverride = "normal";
+    [MeasureAs=FontFaceDescentOverride] CSSOMString descentOverride = "normal";
+    [MeasureAs=FontFaceLineGapOverride] CSSOMString lineGapOverride = "normal";
+    [MeasureAs=FontFaceSizeAdjust] CSSOMString sizeAdjust = "100%";
 };
