@@ -284,6 +284,11 @@ void SyncServiceImpl::Initialize() {
     }
   }
 
+  // *After* setting up `auth_manager_`, run a prefs migration that depends on
+  // the account state.
+  sync_prefs_.MaybeMigratePrefsForReplacingSyncWithSignin(
+      GetSyncAccountStateForPrefs());
+
   if (!IsLocalSyncEnabled()) {
     const bool account_info_fully_loaded =
         auth_manager_->IsActiveAccountInfoFullyLoaded();

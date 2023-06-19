@@ -66,9 +66,6 @@ SyncUserSettingsImpl::SyncUserSettingsImpl(
           std::move(sync_account_state_for_prefs_callback)) {
   DCHECK(crypto_);
   DCHECK(prefs_);
-
-  prefs_->MaybeMigratePrefsForReplacingSyncWithSignin(
-      sync_account_state_for_prefs_callback_.Run());
 }
 
 SyncUserSettingsImpl::~SyncUserSettingsImpl() = default;
