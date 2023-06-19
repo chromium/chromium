@@ -8,6 +8,7 @@ import("//build/config/arm.gni")
 import("//build/config/sanitizers/sanitizers.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//third_party/libaom/libaom_srcs.gni")
+import("//third_party/libaom/libaom_test_srcs.gni")
 import("//third_party/libaom/options.gni")
 import("//third_party/nasm/nasm_assemble.gni")
 
@@ -209,6 +210,7 @@ if (current_cpu == "arm64" || cpu_arch_full == "arm-neon" ||
 }
 
 static_library("libaom") {
+  check_includes = false
   if (!is_debug && is_win) {
     configs -= [ "//build/config/compiler:default_optimization" ]
     configs += [ "//build/config/compiler:optimize_max" ]
@@ -293,4 +295,43 @@ fuzzer_test("libaom_av1_dec_fuzzer") {
   seed_corpus = "fuzz/av1_dec_fuzzer_corpus"
   deps = [ ":libaom" ]
   additional_configs = [ ":libaom_config" ]
+}
+
+config("test_libaom_config") {
+  include_dirs = [ "//third_party/libaom/source/libaom/third_party/libwebm" ]
+}
+
+test("test_libaom") {
+  sources = aom_libwebm_sources
+  sources += aom_webm_decoder_sources
+  sources += aom_webm_encoder_sources
+  sources += aom_common_app_util_sources
+  sources += aom_decoder_app_util_sources
+  sources += aom_encoder_app_util_sources
+  sources += aom_unit_test_common_sources
+  sources += aom_unit_test_decoder_sources
+  sources += aom_unit_test_encoder_sources
+  sources += aom_unit_test_wrapper_sources
+  sources += [ "source/gen_src/usage_exit.c" ]
+
+  deps = [
+    ":libaom",
+    "//third_party/googletest:gtest",
+  ]
+
+  defines = [ "CHROMIUM" ]
+
+  if (is_android) {
+    use_raw_android_executable = true
+    defines += [ "LIBAOM_TEST_DATA_PATH=libaom_testdata" ]
+  } else {
+    defines += [ "LIBAOM_TEST_DATA_PATH=../../third_party/libaom/testdata" ]
+  }
+
+  configs -= [ "//build/config/compiler:chromium_code" ]
+  configs += [
+    "//build/config/compiler:no_chromium_code",
+    ":libaom_config",
+    ":test_libaom_config",
+  ]
 }

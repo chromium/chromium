@@ -143,8 +143,11 @@ gen_config_files linux/generic "-DAOM_TARGET_CPU=generic ${all_platforms}"
 # Strip .pl files from gni
 sed -i.bak '/\.pl",$/d' libaom_srcs.gni
 rm libaom_srcs.gni.bak
-# libaom_srcs.gni and aom_version.h are shared.
+# libaom_srcs.gni, libaom_test_srcs.gni, usage_exit.c
+# and aom_version.h are shared.
 cp libaom_srcs.gni "${BASE}"
+cp libaom_test_srcs.gni "${BASE}"
+cp gen_src/usage_exit.c "${BASE}/source/gen_src"
 cp config/aom_version.h "${CFG}/config/"
 
 reset_dirs linux/ia32
