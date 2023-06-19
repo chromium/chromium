@@ -56,7 +56,10 @@ def ReadCssProperties(filename):
       # Properties with id = 0 are invalid. Skip them.
       if property_id == 0:
         continue
-      properties[property_id] = EnumToCssProperty(enum_name)
+      label = EnumToCssProperty(enum_name)
+      if line.strip().startswith('//'):
+        label += ' (obsolete)'
+      properties[property_id] = label
 
   return properties
 

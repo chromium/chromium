@@ -68247,24 +68247,24 @@ Called by update_use_counter_css.py.-->
   <int value="128" label="text-align"/>
   <int value="129" label="text-decoration"/>
   <int value="130" label="text-indent"/>
-  <int value="131" label="text-line-through"/>
-  <int value="132" label="text-line-through-color"/>
-  <int value="133" label="text-line-through-mode"/>
-  <int value="134" label="text-line-through-style"/>
-  <int value="135" label="text-line-through-width"/>
+  <int value="131" label="text-line-through (obsolete)"/>
+  <int value="132" label="text-line-through-color (obsolete)"/>
+  <int value="133" label="text-line-through-mode (obsolete)"/>
+  <int value="134" label="text-line-through-style (obsolete)"/>
+  <int value="135" label="text-line-through-width (obsolete)"/>
   <int value="136" label="text-overflow"/>
-  <int value="137" label="text-overline"/>
-  <int value="138" label="text-overline-color"/>
-  <int value="139" label="text-overline-mode"/>
-  <int value="140" label="text-overline-style"/>
-  <int value="141" label="text-overline-width"/>
+  <int value="137" label="text-overline (obsolete)"/>
+  <int value="138" label="text-overline-color (obsolete)"/>
+  <int value="139" label="text-overline-mode (obsolete)"/>
+  <int value="140" label="text-overline-style (obsolete)"/>
+  <int value="141" label="text-overline-width (obsolete)"/>
   <int value="142" label="text-shadow"/>
   <int value="143" label="text-transform"/>
-  <int value="144" label="text-underline"/>
-  <int value="145" label="text-underline-color"/>
-  <int value="146" label="text-underline-mode"/>
-  <int value="147" label="text-underline-style"/>
-  <int value="148" label="text-underline-width"/>
+  <int value="144" label="text-underline (obsolete)"/>
+  <int value="145" label="text-underline-color (obsolete)"/>
+  <int value="146" label="text-underline-mode (obsolete)"/>
+  <int value="147" label="text-underline-style (obsolete)"/>
+  <int value="148" label="text-underline-width (obsolete)"/>
   <int value="149" label="top"/>
   <int value="150" label="transition"/>
   <int value="151" label="transition-delay"/>
@@ -68292,10 +68292,10 @@ Called by update_use_counter_css.py.-->
   <int value="173" label="alias-webkit-animation-play-state"/>
   <int value="174" label="alias-webkit-animation-timing-function"/>
   <int value="175" label="alias-webkit-appearance"/>
-  <int value="176" label="webkit-aspect-ratio"/>
+  <int value="176" label="webkit-aspect-ratio (obsolete)"/>
   <int value="177" label="alias-webkit-backface-visibility"/>
   <int value="178" label="alias-webkit-background-clip"/>
-  <int value="179" label="webkit-background-composite"/>
+  <int value="179" label="webkit-background-composite (obsolete)"/>
   <int value="180" label="alias-webkit-background-origin"/>
   <int value="181" label="alias-webkit-background-size"/>
   <int value="182" label="alias-webkit-border-after"/>
@@ -68310,7 +68310,7 @@ Called by update_use_counter_css.py.-->
   <int value="191" label="alias-webkit-border-end-color"/>
   <int value="192" label="alias-webkit-border-end-style"/>
   <int value="193" label="alias-webkit-border-end-width"/>
-  <int value="194" label="webkit-border-fit"/>
+  <int value="194" label="webkit-border-fit (obsolete)"/>
   <int value="195" label="webkit-border-horizontal-spacing"/>
   <int value="196" label="webkit-border-image"/>
   <int value="197" label="alias-webkit-border-radius"/>
@@ -68322,21 +68322,21 @@ Called by update_use_counter_css.py.-->
   <int value="203" label="webkit-box-align"/>
   <int value="204" label="webkit-box-direction"/>
   <int value="205" label="webkit-box-flex"/>
-  <int value="206" label="webkit-box-flex-group"/>
-  <int value="207" label="webkit-box-lines"/>
+  <int value="206" label="webkit-box-flex-group (obsolete)"/>
+  <int value="207" label="webkit-box-lines (obsolete)"/>
   <int value="208" label="webkit-box-ordinal-group"/>
   <int value="209" label="webkit-box-orient"/>
   <int value="210" label="webkit-box-pack"/>
   <int value="211" label="webkit-box-reflect"/>
   <int value="212" label="alias-webkit-box-shadow"/>
-  <int value="213" label="webkit-color-correction"/>
-  <int value="214" label="webkit-column-axis"/>
+  <int value="213" label="webkit-color-correction (obsolete)"/>
+  <int value="214" label="webkit-column-axis (obsolete)"/>
   <int value="215" label="webkit-column-break-after"/>
   <int value="216" label="webkit-column-break-before"/>
   <int value="217" label="webkit-column-break-inside"/>
   <int value="218" label="alias-webkit-column-count"/>
   <int value="219" label="alias-webkit-column-gap"/>
-  <int value="220" label="webkit-column-progression"/>
+  <int value="220" label="webkit-column-progression (obsolete)"/>
   <int value="221" label="alias-webkit-column-rule"/>
   <int value="222" label="alias-webkit-column-rule-color"/>
   <int value="223" label="alias-webkit-column-rule-style"/>
@@ -68345,7 +68345,7 @@ Called by update_use_counter_css.py.-->
   <int value="226" label="alias-webkit-column-width"/>
   <int value="227" label="alias-webkit-columns"/>
   <int value="228" label="webkit-box-decoration-break (obsolete)"/>
-  <int value="229" label="webkit-filter"/>
+  <int value="229" label="webkit-filter (obsolete)"/>
   <int value="230" label="align-content"/>
   <int value="231" label="align-items"/>
   <int value="232" label="align-self"/>
@@ -68357,7 +68357,7 @@ Called by update_use_counter_css.py.-->
   <int value="238" label="flex-shrink"/>
   <int value="239" label="flex-wrap"/>
   <int value="240" label="justify-content"/>
-  <int value="241" label="webkit-font-size-delta"/>
+  <int value="241" label="webkit-font-size-delta (obsolete)"/>
   <int value="242" label="grid-template-columns"/>
   <int value="243" label="grid-template-rows"/>
   <int value="244" label="grid-column-start"/>
@@ -68369,16 +68369,16 @@ Called by update_use_counter_css.py.-->
   <int value="250" label="grid-auto-flow"/>
   <int value="251" label="webkit-highlight"/>
   <int value="252" label="alias-webkit-hyphenate-character"/>
-  <int value="253" label="webkit-hyphenate-limit-after"/>
-  <int value="254" label="webkit-hyphenate-limit-before"/>
-  <int value="255" label="webkit-hyphenate-limit-lines"/>
-  <int value="256" label="webkit-hyphens"/>
-  <int value="257" label="webkit-line-box-contain"/>
-  <int value="258" label="webkit-line-align"/>
+  <int value="253" label="webkit-hyphenate-limit-after (obsolete)"/>
+  <int value="254" label="webkit-hyphenate-limit-before (obsolete)"/>
+  <int value="255" label="webkit-hyphenate-limit-lines (obsolete)"/>
+  <int value="256" label="webkit-hyphens (obsolete)"/>
+  <int value="257" label="webkit-line-box-contain (obsolete)"/>
+  <int value="258" label="webkit-line-align (obsolete)"/>
   <int value="259" label="webkit-line-break"/>
   <int value="260" label="webkit-line-clamp"/>
-  <int value="261" label="webkit-line-grid"/>
-  <int value="262" label="webkit-line-snap"/>
+  <int value="261" label="webkit-line-grid (obsolete)"/>
+  <int value="262" label="webkit-line-snap (obsolete)"/>
   <int value="263" label="alias-webkit-logical-width"/>
   <int value="264" label="alias-webkit-logical-height"/>
   <int value="265" label="webkit-margin-after-collapse"/>
@@ -68390,12 +68390,12 @@ Called by update_use_counter_css.py.-->
   <int value="271" label="alias-webkit-margin-before"/>
   <int value="272" label="alias-webkit-margin-end"/>
   <int value="273" label="alias-webkit-margin-start"/>
-  <int value="274" label="webkit-marquee"/>
-  <int value="275" label="webkit-marquee-direction"/>
-  <int value="276" label="webkit-marquee-increment"/>
-  <int value="277" label="webkit-marquee-repetition"/>
-  <int value="278" label="webkit-marquee-speed"/>
-  <int value="279" label="webkit-marquee-style"/>
+  <int value="274" label="webkit-marquee (obsolete)"/>
+  <int value="275" label="webkit-marquee-direction (obsolete)"/>
+  <int value="276" label="webkit-marquee-increment (obsolete)"/>
+  <int value="277" label="webkit-marquee-repetition (obsolete)"/>
+  <int value="278" label="webkit-marquee-speed (obsolete)"/>
+  <int value="279" label="webkit-marquee-style (obsolete)"/>
   <int value="280" label="webkit-mask"/>
   <int value="281" label="webkit-mask-box-image"/>
   <int value="282" label="webkit-mask-box-image-outset"/>
@@ -68418,7 +68418,7 @@ Called by update_use_counter_css.py.-->
   <int value="299" label="alias-webkit-max-logical-height"/>
   <int value="300" label="alias-webkit-min-logical-width"/>
   <int value="301" label="alias-webkit-min-logical-height"/>
-  <int value="302" label="webkit-nbsp-mode"/>
+  <int value="302" label="webkit-nbsp-mode (obsolete)"/>
   <int value="303" label="order"/>
   <int value="304" label="alias-webkit-padding-after"/>
   <int value="305" label="alias-webkit-padding-before"/>
@@ -68456,25 +68456,25 @@ Called by update_use_counter_css.py.-->
   <int value="337" label="webkit-user-drag"/>
   <int value="338" label="webkit-user-modify"/>
   <int value="339" label="alias-webkit-user-select"/>
-  <int value="340" label="webkit-flow-into"/>
-  <int value="341" label="webkit-flow-from"/>
-  <int value="342" label="webkit-region-fragment"/>
-  <int value="343" label="webkit-region-break-after"/>
-  <int value="344" label="webkit-region-break-before"/>
-  <int value="345" label="webkit-region-break-inside"/>
-  <int value="346" label="shape-inside"/>
+  <int value="340" label="webkit-flow-into (obsolete)"/>
+  <int value="341" label="webkit-flow-from (obsolete)"/>
+  <int value="342" label="webkit-region-fragment (obsolete)"/>
+  <int value="343" label="webkit-region-break-after (obsolete)"/>
+  <int value="344" label="webkit-region-break-before (obsolete)"/>
+  <int value="345" label="webkit-region-break-inside (obsolete)"/>
+  <int value="346" label="shape-inside (obsolete)"/>
   <int value="347" label="shape-outside"/>
   <int value="348" label="shape-margin"/>
-  <int value="349" label="shape-padding"/>
-  <int value="350" label="webkit-wrap-flow"/>
-  <int value="351" label="webkit-wrap-through"/>
-  <int value="352" label="webkit-wrap"/>
+  <int value="349" label="shape-padding (obsolete)"/>
+  <int value="350" label="webkit-wrap-flow (obsolete)"/>
+  <int value="351" label="webkit-wrap-through (obsolete)"/>
+  <int value="352" label="webkit-wrap (obsolete)"/>
   <int value="353" label="webkit-tap-highlight-color (obsolete)"/>
-  <int value="354" label="webkit-app-region"/>
+  <int value="354" label="webkit-app-region (obsolete)"/>
   <int value="355" label="clip-path"/>
   <int value="356" label="clip-rule"/>
   <int value="357" label="mask"/>
-  <int value="358" label="enable-background"/>
+  <int value="358" label="enable-background (obsolete)"/>
   <int value="359" label="filter"/>
   <int value="360" label="flood-color"/>
   <int value="361" label="flood-opacity"/>
@@ -68483,7 +68483,7 @@ Called by update_use_counter_css.py.-->
   <int value="364" label="stop-opacity"/>
   <int value="365" label="color-interpolation"/>
   <int value="366" label="color-interpolation-filters"/>
-  <int value="367" label="color-profile"/>
+  <int value="367" label="color-profile (obsolete)"/>
   <int value="368" label="color-rendering"/>
   <int value="369" label="fill"/>
   <int value="370" label="fill-opacity"/>
@@ -68505,18 +68505,18 @@ Called by update_use_counter_css.py.-->
   <int value="386" label="alignment-baseline"/>
   <int value="387" label="baseline-shift"/>
   <int value="388" label="dominant-baseline"/>
-  <int value="389" label="glyph-orientation-horizontal"/>
-  <int value="390" label="glyph-orientation-vertical"/>
-  <int value="391" label="kerning"/>
+  <int value="389" label="glyph-orientation-horizontal (obsolete)"/>
+  <int value="390" label="glyph-orientation-vertical (obsolete)"/>
+  <int value="391" label="kerning (obsolete)"/>
   <int value="392" label="text-anchor"/>
   <int value="393" label="vector-effect"/>
   <int value="394" label="writing-mode"/>
-  <int value="395" label="webkit-svg-shadow"/>
-  <int value="396" label="webkit-cursor-visibility"/>
+  <int value="395" label="webkit-svg-shadow (obsolete)"/>
+  <int value="396" label="webkit-cursor-visibility (obsolete)"/>
   <int value="397" label="image-orientation (obsolete)"/>
-  <int value="398" label="image-resolution"/>
-  <int value="399" label="webkit-blend-mode"/>
-  <int value="400" label="webkit-background-blend-mode"/>
+  <int value="398" label="image-resolution (obsolete)"/>
+  <int value="399" label="webkit-blend-mode (obsolete)"/>
+  <int value="400" label="webkit-background-blend-mode (obsolete)"/>
   <int value="401" label="text-decoration-line"/>
   <int value="402" label="text-decoration-style"/>
   <int value="403" label="text-decoration-color"/>
@@ -68526,8 +68526,8 @@ Called by update_use_counter_css.py.-->
   <int value="407" label="min-zoom"/>
   <int value="408" label="orientation"/>
   <int value="409" label="user-zoom"/>
-  <int value="410" label="webkit-dashboard-region"/>
-  <int value="411" label="webkit-overflow-scrolling"/>
+  <int value="410" label="webkit-dashboard-region (obsolete)"/>
+  <int value="411" label="webkit-overflow-scrolling (obsolete)"/>
   <int value="412" label="alias-webkit-app-region"/>
   <int value="413" label="alias-webkit-filter"/>
   <int value="414" label="webkit-box-decoration-break"/>
@@ -68554,11 +68554,11 @@ Called by update_use_counter_css.py.-->
   <int value="435" label="mask-source-type"/>
   <int value="436" label="isolation"/>
   <int value="437" label="object-position"/>
-  <int value="438" label="internal-callback"/>
+  <int value="438" label="internal-callback (obsolete)"/>
   <int value="439" label="shape-image-threshold"/>
   <int value="440" label="column-fill"/>
   <int value="441" label="text-justify"/>
-  <int value="442" label="touch-action-delay"/>
+  <int value="442" label="touch-action-delay (obsolete)"/>
   <int value="443" label="justify-self"/>
   <int value="444" label="scroll-behavior"/>
   <int value="445" label="will-change"/>
@@ -68572,11 +68572,11 @@ Called by update_use_counter_css.py.-->
   <int value="453" label="grid"/>
   <int value="454" label="all"/>
   <int value="455" label="justify-items"/>
-  <int value="456" label="scroll-blocks-on"/>
-  <int value="457" label="alias-motion-path"/>
-  <int value="458" label="alias-motion-offset"/>
-  <int value="459" label="alias-motion-rotation"/>
-  <int value="460" label="motion"/>
+  <int value="456" label="scroll-blocks-on (obsolete)"/>
+  <int value="457" label="alias-motion-path (obsolete)"/>
+  <int value="458" label="alias-motion-offset (obsolete)"/>
+  <int value="459" label="alias-motion-rotation (obsolete)"/>
+  <int value="460" label="motion (obsolete)"/>
   <int value="461" label="x"/>
   <int value="462" label="y"/>
   <int value="463" label="rx"/>
@@ -68616,10 +68616,10 @@ Called by update_use_counter_css.py.-->
   <int value="497" label="alias-webkit-shape-margin"/>
   <int value="498" label="alias-webkit-shape-outside"/>
   <int value="499" label="scroll-snap-type"/>
-  <int value="500" label="scroll-snap-points-x"/>
-  <int value="501" label="scroll-snap-points-y"/>
-  <int value="502" label="scroll-snap-coordinate"/>
-  <int value="503" label="scroll-snap-destination"/>
+  <int value="500" label="scroll-snap-points-x (obsolete)"/>
+  <int value="501" label="scroll-snap-points-y (obsolete)"/>
+  <int value="502" label="scroll-snap-coordinate (obsolete)"/>
+  <int value="503" label="scroll-snap-destination (obsolete)"/>
   <int value="504" label="translate"/>
   <int value="505" label="rotate"/>
   <int value="506" label="scale"/>
@@ -68635,7 +68635,7 @@ Called by update_use_counter_css.py.-->
   <int value="516" label="font-display"/>
   <int value="517" label="contain"/>
   <int value="518" label="d"/>
-  <int value="519" label="line-height-step"/>
+  <int value="519" label="line-height-step (obsolete)"/>
   <int value="520" label="break-after"/>
   <int value="521" label="break-before"/>
   <int value="522" label="break-inside"/>
@@ -68648,7 +68648,7 @@ Called by update_use_counter_css.py.-->
   <int value="529" label="column-span"/>
   <int value="530" label="column-width"/>
   <int value="531" label="columns"/>
-  <int value="532" label="apply-at-rule"/>
+  <int value="532" label="apply-at-rule (obsolete)"/>
   <int value="533" label="font-variant-caps"/>
   <int value="534" label="hyphens"/>
   <int value="535" label="font-variant-numeric"/>
@@ -68658,11 +68658,11 @@ Called by update_use_counter_css.py.-->
   <int value="539" label="user-select"/>
   <int value="540" label="offset-distance"/>
   <int value="541" label="offset-path"/>
-  <int value="542" label="offset-rotation"/>
+  <int value="542" label="offset-rotation (obsolete)"/>
   <int value="543" label="offset"/>
   <int value="544" label="offset-anchor"/>
   <int value="545" label="offset-position"/>
-  <int value="546" label="text-decoration-skip"/>
+  <int value="546" label="text-decoration-skip (obsolete)"/>
   <int value="547" label="caret-color"/>
   <int value="548" label="offset-rotate"/>
   <int value="549" label="font-variation-settings"/>
@@ -68762,20 +68762,20 @@ Called by update_use_counter_css.py.-->
   <int value="643" label="syntax"/>
   <int value="644" label="overscroll-behavior-inline"/>
   <int value="645" label="overscroll-behavior-block"/>
-  <int value="646" label="content-size"/>
+  <int value="646" label="content-size (obsolete)"/>
   <int value="647" label="font-optical-sizing"/>
   <int value="648" label="contain-intrinsic-block-size"/>
   <int value="649" label="contain-intrinsic-height"/>
   <int value="650" label="contain-intrinsic-inline-size"/>
   <int value="651" label="contain-intrinsic-size"/>
   <int value="652" label="contain-intrinsic-width"/>
-  <int value="653" label="render-subtree"/>
+  <int value="653" label="render-subtree (obsolete)"/>
   <int value="654" label="origin-trial-test-property"/>
-  <int value="655" label="subtree-visibility"/>
+  <int value="655" label="subtree-visibility (obsolete)"/>
   <int value="656" label="math-style"/>
   <int value="657" label="aspect-ratio"/>
   <int value="658" label="appearance"/>
-  <int value="659" label="math-superscript-shift-style"/>
+  <int value="659" label="math-superscript-shift-style (obsolete)"/>
   <int value="660" label="ruby-position"/>
   <int value="661" label="text-underline-offset"/>
   <int value="662" label="content-visibility"/>
@@ -68794,7 +68794,7 @@ Called by update_use_counter_css.py.-->
   <int value="675" label="line-gap-override"/>
   <int value="676" label="math-shift"/>
   <int value="677" label="math-depth"/>
-  <int value="678" label="advance-proportional-override"/>
+  <int value="678" label="advance-proportional-override (obsolete)"/>
   <int value="679" label="overflow-clip-margin"/>
   <int value="680" label="scrollbar-width"/>
   <int value="681" label="system"/>
