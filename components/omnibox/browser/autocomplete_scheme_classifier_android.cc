@@ -7,7 +7,7 @@
 #include "base/android/jni_android.h"
 #include "base/android/scoped_java_ref.h"
 #include "components/omnibox/browser/autocomplete_scheme_classifier.h"
-#include "components/omnibox/browser/jni_headers/AutocompleteSchemeClassifier_jni.h"
+#include "components/omnibox/browser/scheme_classifier_jni/AutocompleteSchemeClassifier_jni.h"
 
 // static
 AutocompleteSchemeClassifier* AutocompleteSchemeClassifierAndroid::FromJavaObj(

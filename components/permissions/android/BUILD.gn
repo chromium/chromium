@@ -13,8 +13,6 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/permissions/BluetoothScanningPermissionDialog.java",
     "java/src/org/chromium/components/permissions/PermissionDialogController.java",
     "java/src/org/chromium/components/permissions/PermissionDialogDelegate.java",
-    "java/src/org/chromium/components/permissions/PermissionUtil.java",
-    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
     "java/src/org/chromium/components/permissions/nfc/NfcSystemLevelSetting.java",
   ]
 }
@@ -99,6 +97,7 @@ java_strings_grd("permissions_strings_grd") {
 }
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/permissions/AndroidPermissionRequester.java",
     "java/src/org/chromium/components/permissions/BluetoothChooserAndroidDelegate.java",
@@ -131,12 +130,20 @@ android_library("java") {
     "//third_party/androidx:androidx_vectordrawable_vectordrawable_java",
     "//ui/android:ui_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.components.permissions"
+}
+
+generate_jni("core_jni") {
+  sources = [
+    "java/src/org/chromium/components/permissions/PermissionUtil.java",
+    "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
+  ]
 }
 
 # Contains sources that do no depend on //content.
 android_library("core_java") {
+  srcjar_deps = [ ":core_jni" ]
   sources = [
     "java/src/org/chromium/components/permissions/PermissionUtil.java",
     "java/src/org/chromium/components/permissions/PermissionsAndroidFeatureList.java",
@@ -150,7 +157,6 @@ android_library("core_java") {
     "//third_party/androidx:androidx_core_core_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 robolectric_library("components_permissions_junit_tests") {

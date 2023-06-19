@@ -4,6 +4,13 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("variations_jni") {
+  sources = [
+    "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
+    "java/src/org/chromium/components/variations/firstrun/VariationsSeedBridge.java",
+  ]
+}
+
 android_library("variations_java") {
   deps = [
     "//base:base_java",
@@ -15,7 +22,8 @@ android_library("variations_java") {
     "//third_party/android_deps:protobuf_lite_runtime_java",
     "//third_party/androidx:androidx_annotation_annotation_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":variations_jni" ]
   sources = [
     "java/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProvider.java",
     "java/src/org/chromium/components/variations/VariationsAssociatedData.java",
@@ -43,12 +51,12 @@ static_library("test_support") {
 
 android_library("test_support_java") {
   testonly = true
+  srcjar_deps = [ ":test_support_jni_headers" ]
   sources = [ "javatests/src/org/chromium/components/variations/NormalizedMurmurHashEntropyProviderTestUtilsBridge.java" ]
   deps = [
     "//base:jni_java",
     "//build/android:build_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 android_library("unit_device_javatests") {

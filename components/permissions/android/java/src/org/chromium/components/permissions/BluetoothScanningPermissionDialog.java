@@ -283,7 +283,7 @@ public class BluetoothScanningPermissionDialog {
         return mItemAdapter;
     }
 
-    @VisibleForTesting(otherwise = VisibleForTesting.PRIVATE)
+    @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
         void onDialogFinished(long nativeBluetoothScanningPromptAndroid, int eventType);

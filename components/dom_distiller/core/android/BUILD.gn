@@ -4,6 +4,14 @@
 
 import("//build/config/android/rules.gni")
 
+generate_jni("jni_headers") {
+  sources = [
+    "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
+    "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",
+    "java/src/org/chromium/components/dom_distiller/core/DomDistillerUrlUtils.java",
+  ]
+}
+
 android_library("dom_distiller_core_java") {
   deps = [
     "//base:base_java",
@@ -13,7 +21,8 @@ android_library("dom_distiller_core_java") {
     "//third_party/androidx:androidx_annotation_annotation_java",
     "//url:gurl_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "java/src/org/chromium/components/dom_distiller/core/DistilledPagePrefs.java",
     "java/src/org/chromium/components/dom_distiller/core/DomDistillerService.java",

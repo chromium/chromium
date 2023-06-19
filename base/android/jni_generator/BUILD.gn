@@ -13,6 +13,7 @@ generate_jni("jni_sample_header") {
 }
 
 android_library("jni_sample_java") {
+  srcjar_deps = [ ":jni_sample_header" ]
   sources = [
     "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java",
     "java/src/org/chromium/example/jni_generator/SampleForTests.java",
@@ -22,19 +23,6 @@ android_library("jni_sample_java") {
     "//base:jni_java",
     "//build/android:build_java",
   ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
-}
-
-android_library("jni_annotation_sample_java") {
-  sources = [ "java/src/org/chromium/example/jni_generator/SampleForAnnotationProcessor.java" ]
-
-  deps = [
-    "//base:jni_java",
-    "//build/android:build_java",
-  ]
-
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 }
 
 source_set("jni_sample_native_side") {
@@ -72,10 +60,7 @@ android_apk("sample_jni_apk") {
 
 # Serves to test that generated bindings compile properly.
 group("jni_generator_tests") {
-  deps = [
-    ":jni_annotation_sample_java",
-    ":sample_jni_apk",
-  ]
+  deps = [ ":sample_jni_apk" ]
 }
 
 java_annotation_processor("jni_processor") {

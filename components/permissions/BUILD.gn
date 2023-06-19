@@ -177,6 +177,7 @@ source_set("permissions") {
       "//components/location/android:location_settings_dialog_enums_java",
       "//components/location/android:settings",
       "//components/messages/android:android",
+      "//components/permissions/android:core_jni",
       "//components/permissions/android:jni_headers",
       "//components/permissions/android:native",
       "//components/prefs",

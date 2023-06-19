@@ -45,7 +45,10 @@ static_library("android") {
   ]
 
   deps = [
+    ":feature_list_jni",
     ":jni_headers",
+    ":minimal_jni",
+    ":service_jni",
     "//base",
     "//components/keyed_service/core",
     "//components/payments/content",
@@ -74,14 +77,10 @@ generate_jni("jni_headers") {
     "java/src/org/chromium/components/payments/JourneyLogger.java",
     "java/src/org/chromium/components/payments/OriginSecurityChecker.java",
     "java/src/org/chromium/components/payments/PaymentAppServiceBridge.java",
-    "java/src/org/chromium/components/payments/PaymentFeatureMap.java",
-    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
     "java/src/org/chromium/components/payments/PaymentHandlerNavigationThrottle.java",
     "java/src/org/chromium/components/payments/PaymentManifestDownloader.java",
     "java/src/org/chromium/components/payments/PaymentManifestParser.java",
     "java/src/org/chromium/components/payments/PaymentManifestWebDataService.java",
-    "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
-    "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java",
     "java/src/org/chromium/components/payments/PaymentValidator.java",
     "java/src/org/chromium/components/payments/SslValidityChecker.java",
     "java/src/org/chromium/components/payments/UrlUtil.java",
@@ -111,8 +110,11 @@ android_resources("java_resources") {
 
 # Minimal target to depend on PaymentDetailsUpdateService. This should be kept
 # as small as possible, as it will always be included in chrome's base module.
+generate_jni("service_jni") {
+  sources = [ "java/src/org/chromium/components/payments/PaymentRequestUpdateEventListener.java" ]
+}
+
 android_library("service_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/Address.java",
     "java/src/org/chromium/components/payments/PackageManagerDelegate.java",
@@ -135,11 +137,17 @@ android_library("service_java") {
   srcjar_deps = [
     ":error_strings_generated_srcjar",
     ":payment_details_update_service_aidl",
+    ":service_jni",
   ]
 }
 
+generate_jni("feature_list_jni") {
+  sources =
+      [ "java/src/org/chromium/components/payments/PaymentFeatureMap.java" ]
+}
+
 android_library("feature_list_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+  srcjar_deps = [ ":feature_list_jni" ]
   sources = [
     "java/src/org/chromium/components/payments/PaymentFeatureList.java",
     "java/src/org/chromium/components/payments/PaymentFeatureMap.java",
@@ -153,7 +161,6 @@ android_library("feature_list_java") {
 }
 
 android_library("full_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/AndroidPaymentApp.java",
     "java/src/org/chromium/components/payments/AndroidPaymentAppFactory.java",
@@ -230,6 +237,7 @@ android_library("full_java") {
     "//url/mojom:url_mojom_origin_java",
   ]
   srcjar_deps = [
+    ":jni_headers",
     ":payments_journey_logger_enum_javagen",
     ":prefs_strings_generated_srcjar",
   ]
@@ -242,8 +250,14 @@ android_library("pre_purchase_query_enum_java") {
 }
 
 # Minimal target that only includes what downstream code depends on.
+generate_jni("minimal_jni") {
+  sources = [
+    "java/src/org/chromium/components/payments/PaymentHandlerHost.java",
+    "java/src/org/chromium/components/payments/PaymentRequestSpec.java",
+  ]
+}
+
 android_library("minimal_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/components/payments/CSPChecker.java",
     "java/src/org/chromium/components/payments/MojoStructCollection.java",
@@ -274,6 +288,7 @@ android_library("minimal_java") {
   srcjar_deps = [
     ":app_creation_failure_reason_generated_enum",
     ":method_strings_generated_srcjar",
+    ":minimal_jni",
     ":payment_app_type_generated_enum",
   ]
   resources_package = "org.chromium.components.payments"

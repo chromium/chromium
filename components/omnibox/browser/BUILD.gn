@@ -489,7 +489,7 @@ static_library("location_bar") {
       "autocomplete_scheme_classifier_android.h",
       "omnibox_url_emphasizer.cc",
     ]
-    deps += [ ":jni_headers" ]
+    deps += [ ":scheme_classifier_jni" ]
   }
 }
 
@@ -528,8 +528,16 @@ if (is_android) {
     ]
   }
 
+  generate_jni("scheme_classifier_jni") {
+    sources = [
+      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
+      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
+    ]
+  }
+
   android_library("scheme_classifier_java") {
     resources_package = "org.chromium.components.omnibox"
+    srcjar_deps = [ ":scheme_classifier_jni" ]
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
       "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
@@ -542,7 +550,6 @@ if (is_android) {
       "//components/security_state/core:security_state_enums_java",
       "//third_party/androidx:androidx_annotation_annotation_java",
     ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_library("browser_java") {
@@ -584,8 +591,10 @@ if (is_android) {
       "//third_party/omnibox_proto:omnibox_proto_java",
     ]
 
-    srcjar_deps = [ ":browser_java_enums_srcjar" ]
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+    srcjar_deps = [
+      ":browser_java_enums_srcjar",
+      ":jni_headers",
+    ]
   }
 
   robolectric_library("junit") {
@@ -641,8 +650,6 @@ if (is_android) {
     sources = [
       "android/java/src/org/chromium/components/omnibox/AutocompleteMatch.java",
       "android/java/src/org/chromium/components/omnibox/AutocompleteResult.java",
-      "android/java/src/org/chromium/components/omnibox/AutocompleteSchemeClassifier.java",
-      "android/java/src/org/chromium/components/omnibox/OmniboxUrlEmphasizer.java",
       "android/java/src/org/chromium/components/omnibox/SuggestionAnswer.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxAction.java",
       "android/java/src/org/chromium/components/omnibox/action/OmniboxActionFactory.java",

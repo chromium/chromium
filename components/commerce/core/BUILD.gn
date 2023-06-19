@@ -227,15 +227,9 @@ static_library("shopping_service") {
     ]
 
     deps += [
-      ":shopping_service_jni_headers",
+      "//components/commerce/core/android:core_jni",
       "//url:gurl_android",
     ]
-  }
-}
-
-if (is_android) {
-  generate_jni("shopping_service_jni_headers") {
-    sources = [ "android/java/src/org/chromium/components/commerce/core/ShoppingService.java" ]
   }
 }
 
