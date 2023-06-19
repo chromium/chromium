@@ -93,7 +93,7 @@ class AlertIndicatorButton : public views::ImageButton,
 
   // Resets the images to display on the button to reflect |state| and the
   // parent tab's button color.  Should be called when either of these changes.
-  void ResetImages(TabAlertState state);
+  void UpdateIconForAlertState(TabAlertState state);
 
   const raw_ptr<Tab> parent_tab_;
 

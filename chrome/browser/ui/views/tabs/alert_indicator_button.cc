@@ -21,6 +21,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/pointer/touch_ui_controller.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/animation/multi_animation.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -108,6 +109,32 @@ std::unique_ptr<gfx::Animation> CreateTabAlertIndicatorFadeAnimation(
   return std::move(animation);
 }
 
+ui::ImageModel GetTabAlertIndicatorImageForPressedState(
+    TabAlertState alert_state,
+    ui::ColorId button_color) {
+  switch (alert_state) {
+    case TabAlertState::AUDIO_PLAYING:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          TabAlertState::AUDIO_MUTING, button_color);
+    case TabAlertState::AUDIO_MUTING:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(
+          TabAlertState::AUDIO_PLAYING, button_color);
+    case TabAlertState::MEDIA_RECORDING:
+    case TabAlertState::TAB_CAPTURING:
+    case TabAlertState::BLUETOOTH_CONNECTED:
+    case TabAlertState::USB_CONNECTED:
+    case TabAlertState::PIP_PLAYING:
+    case TabAlertState::DESKTOP_CAPTURING:
+    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
+    case TabAlertState::HID_CONNECTED:
+    case TabAlertState::SERIAL_CONNECTED:
+    case TabAlertState::VR_PRESENTING_IN_HEADSET:
+      return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
+                                                             button_color);
+  }
+  NOTREACHED_NORETURN();
+}
+
 }  // namespace
 
 class AlertIndicatorButton::FadeAnimationDelegate
@@ -159,7 +186,7 @@ void AlertIndicatorButton::TransitionToAlertState(
       showing_alert_state_;
 
   if (next_state)
-    ResetImages(next_state.value());
+    UpdateIconForAlertState(next_state.value());
 
   if ((alert_state_ == TabAlertState::AUDIO_PLAYING &&
        next_state == TabAlertState::AUDIO_MUTING) ||
@@ -214,7 +241,7 @@ void AlertIndicatorButton::UpdateEnabledForMuteToggle() {
 void AlertIndicatorButton::OnParentTabButtonColorChanged() {
   if (alert_state_ == TabAlertState::AUDIO_PLAYING ||
       alert_state_ == TabAlertState::AUDIO_MUTING)
-    ResetImages(alert_state_.value());
+    UpdateIconForAlertState(alert_state_.value());
 }
 
 views::View* AlertIndicatorButton::GetTooltipHandlerForPoint(
@@ -315,83 +342,104 @@ ui::ImageModel AlertIndicatorButton::GetTabAlertIndicatorImage(
   const bool touch_ui = ui::TouchUiController::Get()->touch_ui();
   switch (alert_state) {
     case TabAlertState::AUDIO_PLAYING:
-      icon = touch_ui ? &kTabAudioRoundedIcon : &kTabAudioIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kVolumeUpChromeRefreshIcon;
+      } else {
+        icon = touch_ui ? &kTabAudioRoundedIcon : &kTabAudioIcon;
+      }
       break;
     case TabAlertState::AUDIO_MUTING:
-      icon = touch_ui ? &kTabAudioMutingRoundedIcon : &kTabAudioMutingIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kVolumeOffChromeRefreshIcon;
+      } else {
+        icon = touch_ui ? &kTabAudioMutingRoundedIcon : &kTabAudioMutingIcon;
+      }
       break;
     case TabAlertState::MEDIA_RECORDING:
     case TabAlertState::DESKTOP_CAPTURING:
-      icon = &kTabMediaRecordingIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kRadioButtonCheckedIcon;
+      } else {
+        icon = &kTabMediaRecordingIcon;
+      }
       break;
     case TabAlertState::TAB_CAPTURING:
-      icon =
-          touch_ui ? &kTabMediaCapturingWithArrowIcon : &kTabMediaCapturingIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kCaptureIcon;
+      } else {
+        icon = touch_ui ? &kTabMediaCapturingWithArrowIcon
+                        : &kTabMediaCapturingIcon;
+      }
+
       // Tab capturing and presenting icon uses a different width compared to
       // the other tab alert indicator icons.
       image_width = GetLayoutConstant(TAB_ALERT_INDICATOR_CAPTURE_ICON_WIDTH);
       break;
     case TabAlertState::BLUETOOTH_CONNECTED:
-      icon = &kTabBluetoothConnectedIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kBluetoothConnectedIcon;
+      } else {
+        icon = &kTabBluetoothConnectedIcon;
+      }
       break;
     case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-      icon = &kTabBluetoothScanActiveIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kBluetoothScanningChromeRefreshIcon;
+      } else {
+        icon = &kTabBluetoothScanActiveIcon;
+      }
       break;
     case TabAlertState::USB_CONNECTED:
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kUsbChromeRefreshIcon;
+      } else {
+        icon = &kTabUsbConnectedIcon;
+      }
       icon = &kTabUsbConnectedIcon;
       break;
     case TabAlertState::HID_CONNECTED:
-      icon = &vector_icons::kVideogameAssetIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kVideogameAssetChromeRefreshIcon;
+      } else {
+        icon = &vector_icons::kVideogameAssetIcon;
+      }
       break;
     case TabAlertState::SERIAL_CONNECTED:
-      // TODO(https://crbug.com/917204): This icon is too large to fit properly
-      // as a tab indicator and should be replaced.
-      icon = &vector_icons::kSerialPortIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kSerialPortChromeRefreshIcon;
+      } else {
+        // TODO(https://crbug.com/917204): This icon is too large to fit
+        // properly as a tab indicator and should be replaced.
+        icon = &vector_icons::kSerialPortIcon;
+      }
       break;
     case TabAlertState::PIP_PLAYING:
-      icon = &kPictureInPictureAltIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kPictureInPictureAltIcon;
+      } else {
+        icon = &kPictureInPictureAltIcon;
+      }
       break;
     case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      icon = &vector_icons::kVrHeadsetIcon;
+      if (features::IsChromeRefresh2023()) {
+        icon = &vector_icons::kCardboardIcon;
+      } else {
+        icon = &vector_icons::kVrHeadsetIcon;
+      }
       break;
   }
   DCHECK(icon);
   return ui::ImageModel::FromVectorIcon(*icon, button_color, image_width);
 }
 
-ui::ImageModel GetTabAlertIndicatorAffordanceImage(TabAlertState alert_state,
-                                                   ui::ColorId button_color) {
-  switch (alert_state) {
-    case TabAlertState::AUDIO_PLAYING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          TabAlertState::AUDIO_MUTING, button_color);
-    case TabAlertState::AUDIO_MUTING:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(
-          TabAlertState::AUDIO_PLAYING, button_color);
-    case TabAlertState::MEDIA_RECORDING:
-    case TabAlertState::TAB_CAPTURING:
-    case TabAlertState::BLUETOOTH_CONNECTED:
-    case TabAlertState::USB_CONNECTED:
-    case TabAlertState::PIP_PLAYING:
-    case TabAlertState::DESKTOP_CAPTURING:
-    case TabAlertState::BLUETOOTH_SCAN_ACTIVE:
-    case TabAlertState::HID_CONNECTED:
-    case TabAlertState::SERIAL_CONNECTED:
-    case TabAlertState::VR_PRESENTING_IN_HEADSET:
-      return AlertIndicatorButton::GetTabAlertIndicatorImage(alert_state,
-                                                             button_color);
-  }
-  NOTREACHED_NORETURN();
-}
-
-void AlertIndicatorButton::ResetImages(TabAlertState state) {
+void AlertIndicatorButton::UpdateIconForAlertState(TabAlertState state) {
   const ui::ColorId color = parent_tab_->GetAlertIndicatorColor(state);
   const ui::ImageModel indicator_image =
       GetTabAlertIndicatorImage(state, color);
   SetImageModel(views::Button::STATE_NORMAL, indicator_image);
   SetImageModel(views::Button::STATE_DISABLED, indicator_image);
   SetImageModel(views::Button::STATE_PRESSED,
-                GetTabAlertIndicatorAffordanceImage(state, color));
+                GetTabAlertIndicatorImageForPressedState(state, color));
 }
 
 BEGIN_METADATA(AlertIndicatorButton, views::ImageButton)
