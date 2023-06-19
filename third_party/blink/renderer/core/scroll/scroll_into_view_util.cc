@@ -165,9 +165,12 @@ absl::optional<PhysicalRect> PerformBubblingScrollIntoView(
 
     if (area_to_scroll) {
       ScrollOffset scroll_before = area_to_scroll->GetScrollOffset();
-      DCHECK(area_to_scroll->GetSmoothScrollSequencer());
+      CHECK(!params->is_for_scroll_sequence ||
+            area_to_scroll->GetSmoothScrollSequencer());
       wtf_size_t num_scroll_sequences =
-          area_to_scroll->GetSmoothScrollSequencer()->GetCount();
+          params->is_for_scroll_sequence
+              ? area_to_scroll->GetSmoothScrollSequencer()->GetCount()
+              : 0ul;
 
       absolute_rect_to_scroll =
           area_to_scroll->ScrollIntoView(absolute_rect_to_scroll, params);
@@ -273,16 +276,34 @@ void ScrollRectToVisible(const LayoutObject& layout_object,
 
   LocalFrame* frame = layout_object.GetFrame();
 
-  frame->GetSmoothScrollSequencer().AbortAnimations();
-  frame->GetSmoothScrollSequencer().SetScrollType(params->type);
   params->is_for_scroll_sequence |=
       params->type == mojom::blink::ScrollType::kProgrammatic;
+
+  SmoothScrollSequencer* old_sequencer = nullptr;
+  if (params->is_for_scroll_sequence) {
+    old_sequencer = frame->CreateNewSmoothScrollSequence();
+    frame->GetSmoothScrollSequencer()->SetScrollType(params->type);
+  }
 
   absl::optional<PhysicalRect> updated_absolute_rect =
       PerformBubblingScrollIntoView(*enclosing_box, absolute_rect, params,
                                     from_remote_frame);
 
-  frame->GetSmoothScrollSequencer().RunQueuedAnimations();
+  if (params->is_for_scroll_sequence) {
+    if (frame->GetSmoothScrollSequencer()->IsEmpty()) {
+      // If the scroll into view was a no-op (the element was already in the
+      // proper place), reinstate any previously running smooth scroll sequence
+      // so that it can continue running. This prevents unintentionally
+      // clobbering a scroll by e.g. setting focus() to an in-view element.
+      frame->ReinstateSmoothScrollSequence(old_sequencer);
+    } else {
+      // Otherwise clobber any previous sequence.
+      if (old_sequencer) {
+        old_sequencer->AbortAnimations();
+      }
+      frame->GetSmoothScrollSequencer()->RunQueuedAnimations();
+    }
+  }
 
   // If the scroll into view stopped early (i.e. before the local root),
   // there's no need to continue bubbling or finishing a scroll focused

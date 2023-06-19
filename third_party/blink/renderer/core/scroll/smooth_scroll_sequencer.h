@@ -11,6 +11,7 @@
 
 namespace blink {
 
+class LocalFrame;
 class ScrollableArea;
 
 struct SequencedScroll final : public GarbageCollected<SequencedScroll> {
@@ -41,8 +42,7 @@ struct SequencedScroll final : public GarbageCollected<SequencedScroll> {
 class CORE_EXPORT SmoothScrollSequencer final
     : public GarbageCollected<SmoothScrollSequencer> {
  public:
-  SmoothScrollSequencer()
-      : scroll_type_(mojom::blink::ScrollType::kProgrammatic) {}
+  explicit SmoothScrollSequencer(LocalFrame& owner_frame);
   void SetScrollType(mojom::blink::ScrollType type) { scroll_type_ = type; }
 
   // Add a scroll offset animation to the back of a queue.
@@ -65,6 +65,9 @@ class CORE_EXPORT SmoothScrollSequencer final
   // https://crbug.com/1339003.
   wtf_size_t GetCount() const;
 
+  // Returns true if there are no scrolls queued.
+  bool IsEmpty() const;
+
   void DidDisposeScrollableArea(const ScrollableArea&);
 
   void Trace(Visitor*) const;
@@ -72,6 +75,7 @@ class CORE_EXPORT SmoothScrollSequencer final
  private:
   HeapVector<Member<SequencedScroll>> queue_;
   Member<ScrollableArea> current_scrollable_;
+  Member<LocalFrame> owner_frame_;
   mojom::blink::ScrollType scroll_type_;
 };
 

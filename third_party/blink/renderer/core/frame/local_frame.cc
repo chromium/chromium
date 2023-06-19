@@ -861,6 +861,8 @@ void LocalFrame::DidAttachDocument() {
   Selection().DidAttachDocument(document);
   notified_color_scheme_ = false;
 
+  smooth_scroll_sequencer_.Clear();
+
 #if !BUILDFLAG(IS_ANDROID)
   // For PWAs with display_override "window-controls-overlay", titlebar area
   // rect bounds sent from the browser need to persist on navigation to keep the
@@ -2414,12 +2416,39 @@ void LocalFrame::AnimateSnapFling(base::TimeTicks monotonic_time) {
   GetEventHandler().AnimateSnapFling(monotonic_time);
 }
 
-SmoothScrollSequencer& LocalFrame::GetSmoothScrollSequencer() {
+SmoothScrollSequencer* LocalFrame::CreateNewSmoothScrollSequence() {
+  if (!IsLocalRoot()) {
+    return LocalFrameRoot().CreateNewSmoothScrollSequence();
+  }
+
+  SmoothScrollSequencer* old_sequencer = smooth_scroll_sequencer_;
+  smooth_scroll_sequencer_ = MakeGarbageCollected<SmoothScrollSequencer>(*this);
+  return old_sequencer;
+}
+
+void LocalFrame::ReinstateSmoothScrollSequence(
+    SmoothScrollSequencer* sequencer) {
+  if (!IsLocalRoot()) {
+    LocalFrameRoot().ReinstateSmoothScrollSequence(sequencer);
+    return;
+  }
+
+  smooth_scroll_sequencer_ = sequencer;
+}
+
+void LocalFrame::FinishedScrollSequence() {
+  if (!IsLocalRoot()) {
+    LocalFrameRoot().FinishedScrollSequence();
+    return;
+  }
+
+  smooth_scroll_sequencer_.Clear();
+}
+
+SmoothScrollSequencer* LocalFrame::GetSmoothScrollSequencer() const {
   if (!IsLocalRoot())
     return LocalFrameRoot().GetSmoothScrollSequencer();
-  if (!smooth_scroll_sequencer_)
-    smooth_scroll_sequencer_ = MakeGarbageCollected<SmoothScrollSequencer>();
-  return *smooth_scroll_sequencer_;
+  return smooth_scroll_sequencer_;
 }
 
 ukm::UkmRecorder* LocalFrame::GetUkmRecorder() {

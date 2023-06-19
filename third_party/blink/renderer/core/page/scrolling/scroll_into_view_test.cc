@@ -313,6 +313,78 @@ TEST_F(ScrollIntoViewTest, NewScrollIntoViewAbortsCurrentAnimation) {
   ASSERT_EQ(container1->scrollTop(), 0);
 }
 
+// Ensure an in-progress smooth sequenced scroll isn't interrupted by a
+// scrollIntoView call that doesn't actually cause scrolling.
+TEST_F(ScrollIntoViewTest, NoOpScrollIntoViewContinuesCurrentAnimation) {
+  v8::HandleScope HandleScope(
+      WebView().GetPage()->GetAgentGroupScheduler().Isolate());
+  WebView().MainFrameViewWidget()->Resize(gfx::Size(800, 600));
+  SimRequest request("https://example.com/test.html", "text/html");
+  LoadURL("https://example.com/test.html");
+  request.Complete(R"HTML(
+    <style>
+      body { margin: 0; }
+    </style>
+    <div id='space' style='height: 500px'></div>
+    <div id='visibleElement' style='height: 100px'></div>
+    <div id='container' style='height: 300px; overflow: scroll'>
+      <div id='space' style='height: 1000px'></div>
+      <div id='content' style='height: 1000px'></div>
+    </div>
+  )HTML");
+
+  Element* container = GetDocument().getElementById("container");
+  Element* content = GetDocument().getElementById("content");
+  Element* visibleElement = GetDocument().getElementById("visibleElement");
+
+  Compositor().BeginFrame();
+  ASSERT_EQ(Window().scrollY(), 0);
+  ASSERT_EQ(container->scrollTop(), 0);
+
+  {
+    ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+    options->setBlock("start");
+    options->setBehavior("smooth");
+    auto* arg =
+        MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
+    content->scrollIntoView(arg);
+  }
+
+  Compositor().BeginFrame();  // update run_state_.
+  Compositor().BeginFrame();  // Set start_time = now.
+  Compositor().BeginFrame(0.2);
+  ASSERT_NEAR(Window().scrollY(),
+              (::features::IsImpulseScrollAnimationEnabled() ? 250 : 241), 1);
+  ASSERT_EQ(container->scrollTop(), 0);
+
+  // Since visibleElement is already on screen, this call should be a no-op.
+  {
+    ScrollIntoViewOptions* options = ScrollIntoViewOptions::Create();
+    // "nearest" is a no-op if the element is fully on-screen.
+    options->setBlock("nearest");
+    options->setBehavior("smooth");
+    auto* arg =
+        MakeGarbageCollected<V8UnionBooleanOrScrollIntoViewOptions>(options);
+    visibleElement->scrollIntoView(arg);
+  }
+
+  // The window animation should continue running but the container shouldn't
+  // yet have started.
+  Compositor().BeginFrame();
+  ASSERT_NEAR(Window().scrollY(),
+              (::features::IsImpulseScrollAnimationEnabled() ? 258 : 260), 1);
+  ASSERT_EQ(container->scrollTop(),
+            0);  // container should not have scrolled yet.
+
+  // Finish the animation to make sure the animation to content finishes
+  // without interruption.
+  while (Compositor().NeedsBeginFrame()) {
+    Compositor().BeginFrame();
+  }
+  EXPECT_EQ(Window().scrollY(), container->OffsetHeight());
+  EXPECT_EQ(container->scrollTop(), 1000);
+}
+
 TEST_F(ScrollIntoViewTest, ScrollWindowAbortsCurrentAnimation) {
   v8::HandleScope HandleScope(
       WebView().GetPage()->GetAgentGroupScheduler().Isolate());

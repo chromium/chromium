@@ -740,7 +740,7 @@ ChromeClient* VisualViewport::GetChromeClient() const {
 SmoothScrollSequencer* VisualViewport::GetSmoothScrollSequencer() const {
   if (!IsActiveViewport())
     return nullptr;
-  return &LocalMainFrame().GetSmoothScrollSequencer();
+  return LocalMainFrame().GetSmoothScrollSequencer();
 }
 
 void VisualViewport::SetScrollOffset(
@@ -785,9 +785,9 @@ PhysicalRect VisualViewport::ScrollIntoView(
     if (params->is_for_scroll_sequence) {
       DCHECK(params->type == mojom::blink::ScrollType::kProgrammatic ||
              params->type == mojom::blink::ScrollType::kUser);
-      if (SmoothScrollSequencer* sequencer = GetSmoothScrollSequencer()) {
-        sequencer->QueueAnimation(this, new_scroll_offset, params->behavior);
-      }
+      CHECK(GetSmoothScrollSequencer());
+      GetSmoothScrollSequencer()->QueueAnimation(this, new_scroll_offset,
+                                                 params->behavior);
     } else {
       SetScrollOffset(new_scroll_offset, params->type, params->behavior,
                       ScrollCallback());

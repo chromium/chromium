@@ -2491,6 +2491,7 @@ class VisualViewportScrollIntoViewTest : public VisualViewportSimTest {
         mojom::blink::ScrollType::kProgrammatic,
         /*make_visible_in_visual_viewport=*/true,
         mojom::blink::ScrollBehavior::kInstant, is_for_scroll_sequence);
+    GetDocument().GetFrame()->CreateNewSmoothScrollSequence();
     WebView().GetPage()->GetVisualViewport().ScrollIntoView(
         bottom_element->BoundingBox(), scroll_params);
   }
