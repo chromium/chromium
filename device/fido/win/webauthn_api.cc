@@ -31,6 +31,8 @@ namespace device {
 
 namespace {
 
+raw_ptr<WinWebAuthnApi> g_api_override = nullptr;
+
 // Time out all Windows API requests after 5 minutes. We maintain our own
 // timeout and cancel the operation when it expires, so this value simply needs
 // to be larger than the largest internal request timeout.
@@ -172,7 +174,8 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
 
   // WinWebAuthnApi:
   bool IsAvailable() const override {
-    return is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_1);
+    return base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi) &&
+           is_bound_ && (api_version_ >= WEBAUTHN_API_VERSION_1);
   }
 
   bool SupportsSilentDiscovery() const override {
@@ -288,8 +291,22 @@ class WinWebAuthnApiImpl : public WinWebAuthnApi {
   decltype(&WebAuthNGetApiVersionNumber) get_api_version_number_ = nullptr;
 };
 
+WinWebAuthnApi::ScopedOverride::ScopedOverride(WinWebAuthnApi* api) {
+  CHECK(api);
+  CHECK(!g_api_override);
+  g_api_override = api;
+}
+
+WinWebAuthnApi::ScopedOverride::~ScopedOverride() {
+  CHECK(g_api_override);
+  g_api_override = nullptr;
+}
+
 // static
 WinWebAuthnApi* WinWebAuthnApi::GetDefault() {
+  if (g_api_override) {
+    return g_api_override;
+  }
   static base::NoDestructor<WinWebAuthnApiImpl> api;
   return api.get();
 }
@@ -297,6 +314,11 @@ WinWebAuthnApi* WinWebAuthnApi::GetDefault() {
 WinWebAuthnApi::WinWebAuthnApi() = default;
 
 WinWebAuthnApi::~WinWebAuthnApi() = default;
+
+bool WinWebAuthnApi::SupportsHybrid() {
+  return base::FeatureList::IsEnabled(device::kWebAuthnWindowsUIv6) &&
+         IsAvailable() && Version() >= WEBAUTHN_API_VERSION_6;
+}
 
 std::pair<CtapDeviceResponseCode,
           absl::optional<AuthenticatorMakeCredentialResponse>>

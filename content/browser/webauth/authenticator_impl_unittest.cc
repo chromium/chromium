@@ -588,8 +588,6 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     // Disable the Windows WebAuthn API integration by default. Individual tests
     // can modify this.
     fake_win_webauthn_api_.set_available(false);
-    AuthenticatorEnvironment::GetInstance()->SetWinWebAuthnApiForTesting(
-        &fake_win_webauthn_api_);
 #endif
 
     ResetVirtualDevice();
@@ -614,9 +612,6 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
     AuthenticatorEnvironment::GetInstance()
         ->ReplaceDefaultDiscoveryFactoryForTesting(
             std::move(virtual_device_factory));
-#if BUILDFLAG(IS_WIN)
-    virtual_device_factory_->set_win_webauthn_api(&fake_win_webauthn_api_);
-#endif
   }
 
   void SetMojoErrorHandler(
@@ -628,6 +623,8 @@ class AuthenticatorTestBase : public RenderViewHostTestHarness {
       virtual_device_factory_;
 #if BUILDFLAG(IS_WIN)
   device::FakeWinWebAuthnApi fake_win_webauthn_api_;
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override_{
+      &fake_win_webauthn_api_};
 #endif
 
  private:
@@ -1523,6 +1520,7 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   NavigateAndCommit(GURL(kTestOrigin1));
   mojo::Remote<blink::mojom::Authenticator> authenticator =
       ConnectToAuthenticator();
@@ -1562,6 +1560,7 @@ class OffTheRecordAuthenticatorImplTest : public AuthenticatorImplTest {
 // Tests that IsUVPAA returns true if the version of Windows supports an
 // appropriate warning.
 TEST_F(OffTheRecordAuthenticatorImplTest, WinIsUVPAAIncognito) {
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   NavigateAndCommit(GURL(kTestOrigin1));
   fake_win_webauthn_api_.set_available(true);
   fake_win_webauthn_api_.set_is_uvpaa(true);
@@ -8238,6 +8237,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WithAppIDExtension) {
 // credProtect.
 TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
   // The canned response returned by the Windows API fake is for acme.com.
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   fake_win_webauthn_api_.set_available(true);
   NavigateAndCommit(GURL("https://acme.com"));
   for (const bool supports_cred_protect : {false, true}) {
@@ -8268,6 +8268,7 @@ TEST_F(ResidentKeyAuthenticatorImplTest, WinCredProtectApiVersion) {
 
 // Tests that the incognito flag is plumbed through conditional UI requests.
 TEST_F(ResidentKeyAuthenticatorImplTest, ConditionalUI_Incognito) {
+  virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
   fake_win_webauthn_api_.set_available(true);
   fake_win_webauthn_api_.set_version(WEBAUTHN_API_VERSION_4);
   fake_win_webauthn_api_.set_supports_silent_discovery(true);

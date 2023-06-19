@@ -33,10 +33,6 @@
 
 namespace device {
 
-#if BUILDFLAG(IS_WIN)
-class WinWebAuthnApi;
-#endif  // BUILDFLAG(IS_WIN)
-
 // FidoDiscoveryFactory offers methods to construct instances of
 // FidoDiscoveryBase for a given |transport| protocol.
 class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
@@ -111,13 +107,8 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
 #if BUILDFLAG(IS_WIN)
   // Instantiates a FidoDiscovery for the native Windows WebAuthn API where
   // available. Returns nullptr otherwise.
-  std::unique_ptr<FidoDiscoveryBase> MaybeCreateWinWebAuthnApiDiscovery();
-
-  // Sets the WinWebAuthnApi instance to be used for creating the discovery for
-  // the Windows authenticator. If none is set,
-  // MaybeCreateWinWebAuthnApiDiscovery() returns nullptr.
-  void set_win_webauthn_api(WinWebAuthnApi* api);
-  WinWebAuthnApi* win_webauthn_api() const;
+  virtual std::unique_ptr<FidoDiscoveryBase>
+  MaybeCreateWinWebAuthnApiDiscovery();
 #endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -168,9 +159,6 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoDiscoveryFactory {
       cable_invalidated_pairing_callback_;
   absl::optional<base::RepeatingCallback<void(cablev2::Event)>>
       cable_event_callback_;
-#if BUILDFLAG(IS_WIN)
-  raw_ptr<WinWebAuthnApi> win_webauthn_api_ = nullptr;
-#endif  // BUILDFLAG(IS_WIN)
 #if BUILDFLAG(IS_CHROMEOS)
   base::RepeatingCallback<std::string()> generate_request_id_callback_;
   bool require_legacy_cros_authenticator_ = false;

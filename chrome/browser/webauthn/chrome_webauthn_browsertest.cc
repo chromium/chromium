@@ -47,6 +47,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 namespace {
@@ -196,11 +197,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthnBrowserTest, WinLargeBlob) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.set_version(WEBAUTHN_API_VERSION_3);
-  auto virtual_device_factory =
-      std::make_unique<device::test::VirtualFidoDeviceFactory>();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
-  content::ScopedAuthenticatorEnvironmentForTesting auth_env(
-      std::move(virtual_device_factory));
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   constexpr char kMakeCredentialLargeBlob[] = R"(
     let cred_id;
@@ -625,6 +622,13 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
       });
     }
 
+#if BUILDFLAG(IS_WIN)
+    std::unique_ptr<device::FidoDiscoveryBase>
+    MaybeCreateWinWebAuthnApiDiscovery() override {
+      return nullptr;
+    }
+#endif  // BUILDFLAG(IS_WIN)
+
    private:
     // PendingDiscovery yields a single virtual authenticator when requested to
     // do so by calling the result of |GetAddAuthenticatorCallback|.
@@ -774,6 +778,11 @@ class WebAuthnCableSecondFactor : public WebAuthnBrowserTest {
   // This field is not a raw_ptr<> to avoid returning a reference to a temporary
   // T* (result of implicitly casting raw_ptr<T> to T*).
   RAW_PTR_EXCLUSION AuthenticatorRequestDialogModel* model_ = nullptr;
+#if BUILDFLAG(IS_WIN)
+  device::FakeWinWebAuthnApi fake_win_webauthn_api_;
+  device::WinWebAuthnApi::ScopedOverride override_win_webauthn_api_{
+      &fake_win_webauthn_api_};
+#endif
 };
 
 // TODO(https://crbug.com/1219708): this test is flaky on Mac.

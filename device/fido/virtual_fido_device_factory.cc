@@ -53,5 +53,21 @@ bool VirtualFidoDeviceFactory::IsTestOverride() {
   return true;
 }
 
+void VirtualFidoDeviceFactory::set_discover_win_webauthn_api_authenticator(
+    bool on) {
+  discover_win_webauthn_api_authenticator_ = on;
+}
+
+#if BUILDFLAG(IS_WIN)
+std::unique_ptr<device::FidoDiscoveryBase>
+VirtualFidoDeviceFactory::MaybeCreateWinWebAuthnApiDiscovery() {
+  if (!discover_win_webauthn_api_authenticator_) {
+    return nullptr;
+  }
+
+  return FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery();
+}
+#endif
+
 }  // namespace test
 }  // namespace device

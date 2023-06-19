@@ -27,6 +27,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/webauthn_api.h"
 #endif
 
 #if BUILDFLAG(IS_MAC)
@@ -140,7 +141,7 @@ void FidoRequestHandlerBase::InitDiscoveries(
         true;
     WinWebAuthnApiAuthenticator::IsUserVerifyingPlatformAuthenticatorAvailable(
         transport_availability_info_.is_off_the_record_context,
-        fido_discovery_factory->win_webauthn_api(),
+        device::WinWebAuthnApi::GetDefault(),
         base::BindOnce(&FidoRequestHandlerBase::OnWinIsUvpaa,
                        weak_factory_.GetWeakPtr()));
 

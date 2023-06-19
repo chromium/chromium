@@ -30,6 +30,19 @@ namespace device {
 // methods.
 class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
  public:
+  // ScopedOverride, while in scope, overrides the result of `GetDefault`,
+  // below. Only one can be in scope at a time.
+  class COMPONENT_EXPORT(DEVICE_FIDO) ScopedOverride {
+   public:
+    explicit ScopedOverride(WinWebAuthnApi* api);
+    ~ScopedOverride();
+
+    ScopedOverride(const ScopedOverride&) = delete;
+    ScopedOverride(const ScopedOverride&&) = delete;
+    ScopedOverride& operator=(const ScopedOverride&) = delete;
+    ScopedOverride& operator=(const ScopedOverride&&) = delete;
+  };
+
   // Returns the default implementation of WinWebAuthnApi backed by
   // webauthn.dll. May return nullptr if webauthn.dll cannot be loaded.
   static WinWebAuthnApi* GetDefault();
@@ -47,6 +60,9 @@ class COMPONENT_EXPORT(DEVICE_FIDO) WinWebAuthnApi {
   //
   // This should be preferred to checking the API version.
   virtual bool SupportsSilentDiscovery() const = 0;
+
+  // Returns true if webauthn.dll supports hybrid.
+  bool SupportsHybrid();
 
   virtual HRESULT IsUserVerifyingPlatformAuthenticatorAvailable(
       BOOL* available) = 0;

@@ -108,4 +108,9 @@ BASE_FEATURE(kWebAuthnSkipSingleAccountMacOS,
              "WebAuthenticationSkipSingleAccountMacOS",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enabled in M116. Remove in or after M119.
+BASE_FEATURE(kWebAuthnWindowsUIv6,
+             "WebAuthenticationWindowsUIv6",
+             base::FEATURE_ENABLED_BY_DEFAULT);
+
 }  // namespace device

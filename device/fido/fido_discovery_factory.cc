@@ -196,14 +196,6 @@ FidoDiscoveryFactory::SingleDiscovery(
 }
 
 #if BUILDFLAG(IS_WIN)
-void FidoDiscoveryFactory::set_win_webauthn_api(WinWebAuthnApi* api) {
-  win_webauthn_api_ = api;
-}
-
-WinWebAuthnApi* FidoDiscoveryFactory::win_webauthn_api() const {
-  return win_webauthn_api_;
-}
-
 std::unique_ptr<FidoDiscoveryBase>
 FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
   // TODO(martinkr): Inject the window from which the request originated.
@@ -211,9 +203,10 @@ FidoDiscoveryFactory::MaybeCreateWinWebAuthnApiDiscovery() {
   // dialog should be centered over the originating Chrome Window; the
   // foreground window may have changed to something else since the request
   // was issued.
-  return win_webauthn_api_ && win_webauthn_api_->IsAvailable()
+  WinWebAuthnApi* const api = WinWebAuthnApi::GetDefault();
+  return api && api->IsAvailable()
              ? std::make_unique<WinWebAuthnApiAuthenticatorDiscovery>(
-                   GetForegroundWindow(), win_webauthn_api_)
+                   GetForegroundWindow(), api)
              : nullptr;
 }
 #endif  // BUILDFLAG(IS_WIN)

@@ -30,6 +30,7 @@
 
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/win/fake_webauthn_api.h"
+#include "device/fido/win/webauthn_api.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 using ::testing::_;
@@ -635,7 +636,7 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
       /* clang-format on */
   };
   FakeWinWebAuthnApi api;
-  fake_discovery_factory_.set_win_webauthn_api(&api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&api);
   for (const auto& test_case : kTestCases) {
     SCOPED_TRACE(::testing::Message()
                  << "api_available=" << test_case.api_available);
@@ -645,6 +646,7 @@ TEST_F(FidoRequestHandlerTest, TransportAvailabilityOfWindowsAuthenticator) {
 
     TestObserver observer;
     ForgeNextHidDiscovery();
+    fake_discovery_factory_.set_discover_win_webauthn_api_authenticator(true);
     EmptyRequestHandler request_handler(
         {FidoTransportProtocol::kUsbHumanInterfaceDevice},
         &fake_discovery_factory_);

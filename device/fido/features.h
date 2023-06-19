@@ -82,6 +82,10 @@ BASE_DECLARE_FEATURE(kWebAuthnPrelinkPlayServices);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
 
+// Delegate to Windows UI with webauthn.dll version six.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

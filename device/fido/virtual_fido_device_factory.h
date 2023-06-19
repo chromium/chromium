@@ -45,6 +45,16 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   VirtualFidoDevice::State* mutable_state();
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace();
 
+  // set_discover_win_webauthn_api_authenticator controls whether the
+  // WebWebAuthnApi authenticator will be discovered. Create a
+  // `WinWebAuthnApi::ScopedOverride` before settings to true.
+  void set_discover_win_webauthn_api_authenticator(bool on);
+
+#if BUILDFLAG(IS_WIN)
+  std::unique_ptr<device::FidoDiscoveryBase>
+  MaybeCreateWinWebAuthnApiDiscovery() override;
+#endif
+
  protected:
   // device::FidoDiscoveryFactory:
   std::vector<std::unique_ptr<FidoDiscoveryBase>> Create(
@@ -59,6 +69,7 @@ class VirtualFidoDeviceFactory : public device::FidoDiscoveryFactory {
   scoped_refptr<VirtualFidoDevice::State> state_ = new VirtualFidoDevice::State;
   scoped_refptr<VirtualFidoDeviceDiscovery::Trace> trace_ =
       new VirtualFidoDeviceDiscovery::Trace;
+  bool discover_win_webauthn_api_authenticator_ = false;
 };
 
 }  // namespace test

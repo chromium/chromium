@@ -149,8 +149,7 @@ password_manager::PasskeyCredential::Source ToPasswordManagerSource(
 bool WebAuthnApiSupportsHybrid() {
   device::WinWebAuthnApi* const webauthn_api =
       device::WinWebAuthnApi::GetDefault();
-  return webauthn_api && webauthn_api->IsAvailable() &&
-         webauthn_api->Version() >= 6;
+  return webauthn_api && webauthn_api->SupportsHybrid();
 }
 #endif
 
@@ -1240,6 +1239,9 @@ void AuthenticatorRequestDialogModel::PopulateMechanisms() {
     }
     bool skip_to_phone_confirmation =
         is_get_assertion &&
+#if BUILDFLAG(IS_WIN)
+        !WebAuthnApiSupportsHybrid() &&
+#endif
         transport_availability_.has_platform_authenticator_credential ==
             device::FidoRequestHandlerBase::RecognizedCredential::
                 kNoRecognizedCredential &&
@@ -1285,6 +1287,12 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
     return absl::nullopt;
   }
 
+#if BUILDFLAG(IS_WIN)
+  const bool windows_handles_hybrid = WebAuthnApiSupportsHybrid();
+#else
+  constexpr bool windows_handles_hybrid = false;
+#endif
+
   std::vector<Mechanism::Type> priority_list;
 
   if (transport_availability_.request_type ==
@@ -1293,17 +1301,22 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
         transport_availability_.has_empty_allow_list ||
         transport_availability_.is_only_hybrid_or_internal;
     if (!use_conditional_mediation_) {
-      // If there's a match on the platform authenticator, jump to that.
-      if (transport_availability_.has_icloud_keychain_credential ==
-          device::FidoRequestHandlerBase::RecognizedCredential::
-              kHasRecognizedCredential) {
-        priority_list.emplace_back(Mechanism::ICloudKeychain());
-      }
-      if (transport_availability_.has_platform_authenticator_credential ==
-          device::FidoRequestHandlerBase::RecognizedCredential::
-              kHasRecognizedCredential) {
-        priority_list.emplace_back(
-            Mechanism::Transport(AuthenticatorTransport::kInternal));
+      // The following is moot in practice if `windows_handles_hybrid` because,
+      // in that situation, neither an `internal` transport nor iCloud Keychain
+      // will be available. But this simplifies unittests.
+      if (!windows_handles_hybrid) {
+        // If there's a match on the platform authenticator, jump to that.
+        if (transport_availability_.has_icloud_keychain_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential) {
+          priority_list.emplace_back(Mechanism::ICloudKeychain());
+        }
+        if (transport_availability_.has_platform_authenticator_credential ==
+            device::FidoRequestHandlerBase::RecognizedCredential::
+                kHasRecognizedCredential) {
+          priority_list.emplace_back(
+              Mechanism::Transport(AuthenticatorTransport::kInternal));
+        }
       }
 
       // If it's caBLEv1, or server-linked caBLEv2, jump to that.
@@ -1337,6 +1350,10 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
       }
     }
 
+    if (windows_handles_hybrid) {
+      priority_list.emplace_back(Mechanism::WindowsAPI());
+    }
+
     if (is_passkey_request && paired_phone_names().empty() &&
         // On Windows WebAuthn API < 4, we cannot tell in advance if the
         // platform authenticator can fulfill a get assertion request. In that
@@ -1350,6 +1367,12 @@ AuthenticatorRequestDialogModel::IndexOfPriorityMechanism() {
   } else {
     CHECK_EQ(transport_availability_.request_type,
              device::FidoRequestType::kMakeCredential);
+
+    if (windows_handles_hybrid) {
+      // If Windows supports hybrid then we defer to Windows in all cases.
+      priority_list.emplace_back(Mechanism::WindowsAPI());
+    }
+
     const bool is_passkey_request =
         resident_key_requirement() !=
         device::ResidentKeyRequirement::kDiscouraged;

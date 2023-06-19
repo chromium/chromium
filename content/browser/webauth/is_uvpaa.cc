@@ -17,8 +17,8 @@
 #endif
 
 #if BUILDFLAG(IS_WIN)
-#include "content/browser/webauth/authenticator_environment.h"
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/webauthn_api.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -50,8 +50,7 @@ void IsUVPlatformAuthenticatorAvailable(
     IsUVPlatformAuthenticatorAvailableCallback callback) {
   device::WinWebAuthnApiAuthenticator::
       IsUserVerifyingPlatformAuthenticatorAvailable(
-          is_off_the_record,
-          AuthenticatorEnvironment::GetInstance()->win_webauthn_api(),
+          is_off_the_record, device::WinWebAuthnApi::GetDefault(),
           std::move(callback));
 }
 

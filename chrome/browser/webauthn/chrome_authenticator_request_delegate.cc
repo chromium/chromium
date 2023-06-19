@@ -73,6 +73,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "chrome/browser/webauthn/local_credential_management_win.h"
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/webauthn_api.h"
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
@@ -630,7 +631,17 @@ void ChromeAuthenticatorRequestDelegate::ConfigureCable(
     }
   }
 
+#if BUILDFLAG(IS_WIN)
+  device::WinWebAuthnApi* const webauthn_api =
+      device::WinWebAuthnApi::GetDefault();
+  const bool system_handles_cable =
+      webauthn_api && webauthn_api->SupportsHybrid();
+#else
+  constexpr bool system_handles_cable = false;
+#endif
+
   const bool non_extension_cablev2_enabled =
+      !system_handles_cable &&
       (!cable_extension_permitted ||
        (!cable_extension_provided &&
         request_type == device::FidoRequestType::kGetAssertion) ||

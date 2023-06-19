@@ -1590,8 +1590,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinMakeCredential) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.set_is_uvpaa(true);
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   ASSERT_EQ(kOkMessage,
             EvalJs(shell()->web_contents(),
@@ -1603,8 +1602,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
   device::FakeWinWebAuthnApi fake_api;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   // Errors documented for WebAuthNGetErrorName() in <webauthn.h>.
   const std::map<HRESULT, std::string> errors{
@@ -1642,8 +1640,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest, WinGetAssertion) {
 
   device::FakeWinWebAuthnApi fake_api;
   fake_api.InjectNonDiscoverableCredential(credential_id, "www.acme.com");
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   GetParameters get_parameters;
   get_parameters.allow_credentials =
@@ -1658,8 +1655,7 @@ IN_PROC_BROWSER_TEST_F(WebAuthJavascriptClientBrowserTest,
   EXPECT_TRUE(
       NavigateToURL(shell(), GetHttpsURL("www.acme.com", "/title1.html")));
   device::FakeWinWebAuthnApi fake_api;
-  auto* virtual_device_factory = InjectVirtualFidoDeviceFactory();
-  virtual_device_factory->set_win_webauthn_api(&fake_api);
+  device::WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&fake_api);
 
   // Errors documented for WebAuthNGetErrorName() in <webauthn.h>.
   const std::set<HRESULT> errors{

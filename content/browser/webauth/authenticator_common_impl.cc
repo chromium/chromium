@@ -64,6 +64,7 @@
 #if BUILDFLAG(IS_WIN)
 #include "device/fido/features.h"
 #include "device/fido/win/authenticator.h"
+#include "device/fido/win/webauthn_api.h"
 #endif
 
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_WIN)
@@ -297,13 +298,6 @@ std::unique_ptr<device::FidoDiscoveryFactory> MakeDiscoveryFactory(
       GetWebAuthenticationDelegate()->GetTouchIdAuthenticatorConfig(
           render_frame_host->GetBrowserContext()));
 #endif  // BUILDFLAG(IS_MAC)
-
-#if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(device::kWebAuthUseNativeWinApi)) {
-    discovery_factory->set_win_webauthn_api(
-        AuthenticatorEnvironment::GetInstance()->win_webauthn_api());
-  }
-#endif  // BUILDFLAG(IS_WIN)
 
 #if BUILDFLAG(IS_CHROMEOS)
   // Ignore the ChromeOS u2fd virtual U2F HID device so that it doesn't collide
@@ -1214,8 +1208,7 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
   std::move(callback).Run(true);
 #elif BUILDFLAG(IS_WIN)
   device::WinWebAuthnApiAuthenticator::IsConditionalMediationAvailable(
-      AuthenticatorEnvironment::GetInstance()->win_webauthn_api(),
-      std::move(callback));
+      device::WinWebAuthnApi::GetDefault(), std::move(callback));
 #else
   std::move(callback).Run(false);
 #endif

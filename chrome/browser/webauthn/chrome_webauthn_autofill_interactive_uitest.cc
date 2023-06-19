@@ -334,20 +334,15 @@ class WebAuthnWindowsAutofillIntegrationTest
     fake_webauthn_api_->InjectDiscoverableCredential(
         kCredentialID1, std::move(rp), std::move(user));
 
-    // Inject the fake Windows platform authenticator.
-    auto device_factory =
-        std::make_unique<device::test::VirtualFidoDeviceFactory>();
-    device_factory->set_win_webauthn_api(fake_webauthn_api_.get());
-    scoped_auth_env_ =
-        std::make_unique<content::ScopedAuthenticatorEnvironmentForTesting>(
-            std::move(device_factory));
+    win_webauthn_api_override_ =
+        std::make_unique<device::WinWebAuthnApi::ScopedOverride>(
+            fake_webauthn_api_.get());
   }
 
   void PostRunTestOnMainThread() override {
     // To avoid dangling raw_ptr's, these objects need to be destroyed before
     // the test class.
-    virtual_device_factory_ = nullptr;
-    scoped_auth_env_.reset();
+    win_webauthn_api_override_.reset();
     WebAuthnAutofillIntegrationTest::PostRunTestOnMainThread();
   }
 
@@ -357,8 +352,8 @@ class WebAuthnWindowsAutofillIntegrationTest
 
  protected:
   std::unique_ptr<device::FakeWinWebAuthnApi> fake_webauthn_api_;
-  std::unique_ptr<content::ScopedAuthenticatorEnvironmentForTesting>
-      scoped_auth_env_;
+  std::unique_ptr<device::WinWebAuthnApi::ScopedOverride>
+      win_webauthn_api_override_;
 };
 
 IN_PROC_BROWSER_TEST_F(WebAuthnWindowsAutofillIntegrationTest, SelectAccount) {

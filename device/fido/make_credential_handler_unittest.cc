@@ -865,11 +865,12 @@ TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetric) {
 
 #if BUILDFLAG(IS_WIN)
 TEST_F(FidoMakeCredentialHandlerTest, ReportTransportMetricWin) {
-  FakeWinWebAuthnApi win_api_;
-  win_api_.set_version(WEBAUTHN_API_VERSION_3);
-  win_api_.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
+  FakeWinWebAuthnApi win_api;
+  win_api.set_version(WEBAUTHN_API_VERSION_3);
+  win_api.set_transport(WEBAUTHN_CTAP_TRANSPORT_BLE);
+  WinWebAuthnApi::ScopedOverride win_webauthn_api_override(&win_api);
   base::HistogramTester histograms;
-  fake_discovery_factory_->set_win_webauthn_api(&win_api_);
+  fake_discovery_factory_->set_discover_win_webauthn_api_authenticator(true);
   auto request_handler = CreateMakeCredentialHandler();
   callback().WaitForCallback();
   EXPECT_EQ(MakeCredentialStatus::kSuccess, callback().status());
