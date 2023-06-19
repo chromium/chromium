@@ -2351,7 +2351,15 @@ class ContentAnalysisScriptedPreviewlessPrintBrowserTest
 };
 
 #if !BUILDFLAG(IS_CHROMEOS)
-IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, PrintNow) {
+// Test is flaky on Linux and Mac OS, especially sanitizer bots, for the
+// parameters where `!content_analysis_allows_print()`.
+// TODO(crbug.com/1454426): Re-enabled when fixed.
+#if BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_MAC)
+#define MAYBE_PrintNow DISABLED_PrintNow
+#else
+#define MAYBE_PrintNow PrintNow
+#endif
+IN_PROC_BROWSER_TEST_P(ContentAnalysisPrintBrowserTest, MAYBE_PrintNow) {
   AddPrinter("printer_name");
 
   if (UseService() && !content_analysis_allows_print()) {
