@@ -182,10 +182,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
 
 [['AboutPage', 'os_about_page_tests.js'],
  ['ApnDetailDialog', 'apn_detail_dialog_tests.js'],
- [
-   'ApnSubpage', 'apn_subpage_tests.js',
-   {enabled: ['ash::features::kApnRevamp']}
- ],
+ // TODO(crbug.com/1455866): Enable the ApnSubpage test.
+ // [
+ //   'ApnSubpage', 'apn_subpage_tests.js',
+ //   {enabled: ['ash::features::kApnRevamp']}
+ // ],
  ['AppsPage', 'apps_page_test.js'],
  ['AppNotificationsSubpage', 'app_notifications_subpage_tests.js'],
  ['AppManagementFileHandlingItem', 'app_management/file_handling_item_test.js'],
