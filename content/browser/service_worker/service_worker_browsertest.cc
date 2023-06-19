@@ -5974,13 +5974,12 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     ASSERT_EQ("DONE", EvalJs(GetPrimaryMainFrame(),
                              "register('/service_worker/static_router.js')"));
     observer1.WaitUntilRunning();
-    scoped_refptr<ServiceWorkerVersion> version =
-        wrapper()->GetLiveVersion(observer1.version_id());
-    ASSERT_EQ(EmbeddedWorkerStatus::RUNNING, version->running_status());
+    active_version_ = wrapper()->GetLiveVersion(observer1.version_id());
+    ASSERT_EQ(EmbeddedWorkerStatus::RUNNING, active_version_->running_status());
 
     // Stop the current running service worker.
-    StopServiceWorker(version.get());
-    ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, version->running_status());
+    StopServiceWorker(active_version_.get());
+    ASSERT_EQ(EmbeddedWorkerStatus::STOPPED, active_version_->running_status());
   }
 
   int GetRequestCount(const std::string& relative_url) const {
@@ -5990,6 +5989,14 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
     }
     return it->second.size();
   }
+
+  EvalJsResult GetInnerText() {
+    return EvalJs(GetPrimaryMainFrame(), "document.body.innerText;");
+  }
+
+  scoped_refptr<ServiceWorkerVersion> version() { return active_version_; }
+
+  base::HistogramTester& histogram_tester() { return histogram_tester_; }
 
  private:
   void RegisterRequestHandlerForTest() {
@@ -6022,7 +6029,46 @@ class ServiceWorkerStaticRouterBrowserTest : public ServiceWorkerBrowserTest {
   std::map<std::string, std::vector<net::test_server::HttpRequest>>
       request_log_;
   base::test::ScopedFeatureList feature_list_;
+  scoped_refptr<ServiceWorkerVersion> active_version_;
+  base::HistogramTester histogram_tester_;
 };
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceNetworkFetchHandler) {
+  SetupAndRegisterServiceWorker();
+  ReloadBlockUntilNavigationsComplete(shell(), 1);
+
+  const std::string relative_url = "/service_worker/fetch_handler";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the fetch handler",
+            GetInnerText());
+  // The result should be got from the fetch handler, and no network access is
+  // expected.
+  EXPECT_EQ(0, GetRequestCount(relative_url));
+}
+
+IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
+                       MainResourceNetworkFallback) {
+  SetupAndRegisterServiceWorker();
+  WorkerRunningStatusObserver observer(public_context());
+  // ReloadBlockUntilNavigationsComplete(shell(), 1);
+  const std::string relative_url = "/service_worker/direct";
+  ASSERT_TRUE(
+      NavigateToURL(shell(), embedded_test_server()->GetURL(relative_url)));
+  EXPECT_EQ("[ServiceWorkerStaticRouter] Response from the network",
+            GetInnerText());
+  // The result should be got from the network.
+  EXPECT_EQ(1, GetRequestCount(relative_url));
+
+  // Ensure the ServiceWorker will start even if the navigation results in the
+  // fallback via Static Routing.
+  observer.WaitUntilRunning();
+  EXPECT_EQ(EmbeddedWorkerStatus::RUNNING, version()->running_status());
+  histogram_tester().ExpectBucketCount(
+      "ServiceWorker.StartWorker.Purpose",
+      static_cast<int>(ServiceWorkerMetrics::EventType::STATIC_ROUTER), 1);
+}
 
 IN_PROC_BROWSER_TEST_F(ServiceWorkerStaticRouterBrowserTest,
                        SubresourceNetworkFetchHandler) {

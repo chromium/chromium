@@ -224,6 +224,46 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   scoped_refptr<ServiceWorkerContextWrapper> context = core->wrapper();
   DCHECK(context);
 
+  // Check if registered static route rules match the request.
+  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter) &&
+      active_worker->router_evaluator()) {
+    CHECK(active_worker->router_evaluator()->IsValid());
+    auto sources =
+        active_worker->router_evaluator()->Evaluate(resource_request_);
+    if (!sources.empty()) {  // matched the rule.
+      // TODO(crbug.com/1371756): support other sources in the full form.
+      // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+      if (sources[0].type ==
+          blink::ServiceWorkerRouterSource::SourceType::kNetwork) {
+        // Network fallback is requested.
+        // URLLoader in |fallback_callback_|, in other words |url_loader_| which
+        // is referred in
+        // NavigationURLLoaderImpl::FallbackToNonInterceptedRequest() is not
+        // ready until ServiceWorkerMainResourceLoader::StartRequest() finishes,
+        // so calling the fallback at this point doesn't correctly handle the
+        // fallback process. Use PostTask to run the callback after finishing
+        // StartRequset(), also start the ServiceWorker manually since we don't
+        // instantiate ServiceWorkerFetchDispatcher, which involves the
+        // ServiceWorker startup.
+        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+            FROM_HERE,
+            base::BindOnce(
+                [](NavigationLoaderInterceptor::FallbackCallback
+                       fallback_callback,
+                   scoped_refptr<ServiceWorkerVersion> active_worker) {
+                  std::move(fallback_callback)
+                      .Run(false /* reset_subresource_loader_params */,
+                           net::LoadTimingInfo());
+                  active_worker->StartWorker(
+                      ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                      base::DoNothing());
+                },
+                std::move(fallback_callback_), active_worker));
+        return;
+      }
+    }
+  }
+
   // Dispatch the fetch event.
   fetch_dispatcher_ = std::make_unique<ServiceWorkerFetchDispatcher>(
       blink::mojom::FetchAPIRequest::From(resource_request_),

@@ -133,6 +133,8 @@ const char* EventTypeToSuffix(ServiceWorkerMetrics::EventType event_type) {
       return "_BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED";
     case ServiceWorkerMetrics::EventType::WARM_UP:
       return "_WARM_UP";
+    case ServiceWorkerMetrics::EventType::STATIC_ROUTER:
+      return "_STATIC_ROUTING";
   }
   return "_UNKNOWN";
 }
@@ -204,6 +206,8 @@ const char* ServiceWorkerMetrics::EventTypeToString(EventType event_type) {
       return "Bypass Only If ServiceWorker Is Not Started";
     case ServiceWorkerMetrics::EventType::WARM_UP:
       return "Warm Up";
+    case ServiceWorkerMetrics::EventType::STATIC_ROUTER:
+      return "Static Routing";
   }
   NOTREACHED() << "Got unexpected event type: " << static_cast<int>(event_type);
   return "error";
@@ -421,6 +425,8 @@ void ServiceWorkerMetrics::RecordEventDuration(EventType event,
     case EventType::BYPASS_ONLY_IF_SERVICE_WORKER_NOT_STARTED:
     // The bypass_only_if_service_worker_not_started should not be sent as an
     // event.
+    case EventType::STATIC_ROUTER:
+    // Static Routing should not be sent as an event.
     case EventType::UNKNOWN:
       NOTREACHED() << "Invalid event type";
       break;
