@@ -26,6 +26,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -98,6 +99,7 @@
 #include "content/public/browser/url_data_source.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/browser/web_ui_controller.h"
+#include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/common/url_constants.h"
 #include "content/public/test/browser_test.h"
@@ -3413,4 +3415,34 @@ IN_PROC_BROWSER_TEST_F(DevToolsSyncTest, GetSyncInformation) {
 // TODO(https://crbug.com/1277018): Fix flakyness. Test is disabled for now.
 IN_PROC_BROWSER_TEST_F(DevToolsTest, DISABLED_NoCrashFor1270184) {
   OpenDevToolsWindow("/devtools/regress-crbug-1270184.html", true);
+}
+
+class DevToolsProcessPerSiteUpToMainFrameThresholdTest : public DevToolsTest {
+ public:
+  DevToolsProcessPerSiteUpToMainFrameThresholdTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        features::kProcessPerSiteUpToMainFrameThreshold);
+  }
+
+  ~DevToolsProcessPerSiteUpToMainFrameThresholdTest() override = default;
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(DevToolsProcessPerSiteUpToMainFrameThresholdTest,
+                       DontReuseProcess) {
+  OpenDevToolsWindow(kDebuggerTestPage, false);
+  DevToolsWindow* window =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(main_web_contents(), true);
+  WebContents* webcontents =
+      DevToolsWindowTesting::Get(window)->main_web_contents();
+
+  DevToolsWindow* window2 =
+      DevToolsWindowTesting::OpenDevToolsWindowSync(GetInspectedTab(), false);
+  WebContents* webcontents2 =
+      DevToolsWindowTesting::Get(window2)->main_web_contents();
+
+  ASSERT_NE(webcontents->GetPrimaryMainFrame()->GetProcess(),
+            webcontents2->GetPrimaryMainFrame()->GetProcess());
 }

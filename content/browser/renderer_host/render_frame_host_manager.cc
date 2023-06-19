@@ -373,9 +373,14 @@ void UpdateProcessReusePolicyForProcessPerSiteWithMainFrameThreshold(
   // target for DevTools to  attach to. Exclude localhost and IP based host name
   // for process reuse to work around the problem, unless a field parameter
   // explicitly allows it.
-  const GURL& url = site_instance->GetSiteURL();
+  const GURL& site_url = site_instance->GetSiteURL();
   if (!features::kProcessPerSiteMainFrameAllowIPAndLocalhost.Get() &&
-      (url.HostIsIPAddress() || net::IsLocalHostname(url.host()))) {
+      (site_url.HostIsIPAddress() || net::IsLocalHostname(site_url.host()))) {
+    return;
+  }
+
+  // Disallow process reuse when scheme is not HTTP(S).
+  if (!site_url.SchemeIsHTTPOrHTTPS()) {
     return;
   }
 
