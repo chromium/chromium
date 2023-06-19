@@ -27,6 +27,7 @@
 #include "net/base/isolation_info.h"
 #include "net/base/load_flags.h"
 #include "net/base/request_priority.h"
+#include "net/base/tracing.h"
 #include "net/http/http_server_properties.h"
 #include "net/log/net_log.h"
 #include "net/nqe/effective_connection_type_observer.h"
@@ -89,6 +90,12 @@ const char* RequestStartTriggerString(RequestStartTrigger trigger) {
     case RequestStartTrigger::PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED:
       return "PEER_TO_PEER_CONNECTIONS_COUNT_CHANGED";
   }
+}
+
+uint64_t CalculateTrackId(ResourceScheduler* scheduler) {
+  static uint32_t sNextId = 0;
+  CHECK(scheduler);
+  return (reinterpret_cast<uint64_t>(scheduler) << 32) | sNextId++;
 }
 
 }  // namespace
@@ -174,12 +181,7 @@ class ResourceScheduler::RequestQueue {
   void Insert(ScheduledResourceRequestImpl* request);
 
   // Removes |request| from the queue.
-  void Erase(ScheduledResourceRequestImpl* request) {
-    PointerMap::iterator it = pointers_.find(request);
-    CHECK(it != pointers_.end());
-    queue_.erase(it->second);
-    pointers_.erase(it);
-  }
+  void Erase(ScheduledResourceRequestImpl* request);
 
   NetQueue::iterator GetNextHighestIterator() { return queue_.begin(); }
 
@@ -228,6 +230,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
                                const RequestPriorityParams& priority,
                                bool is_async)
       : client_id_(client_id),
+        trace_track_(perfetto::Track(CalculateTrackId(scheduler))),
         request_(request),
         ready_(false),
         deferred_(false),
@@ -237,6 +240,9 @@ class ResourceScheduler::ScheduledResourceRequestImpl
         priority_(priority),
         fifo_ordering_(0),
         scheme_host_port_(request->url()) {
+    TRACE_EVENT_BEGIN("network.scheduler", "ScheduledResourceRequest",
+                      trace_track_, "url", request->url(), "priority",
+                      priority_.priority);
     DCHECK(!request_->GetUserData(kUserDataKey));
     request_->SetUserData(kUserDataKey, std::make_unique<UnownedPointer>(this));
   }
@@ -246,6 +252,7 @@ class ResourceScheduler::ScheduledResourceRequestImpl
       delete;
 
   ~ScheduledResourceRequestImpl() override {
+    TRACE_EVENT_END("network.scheduler", trace_track_);
     request_->RemoveUserData(kUserDataKey);
     scheduler_->RemoveRequest(this);
   }
@@ -259,6 +266,8 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   // Starts the request. If |start_mode| is START_ASYNC, the request will not
   // be started immediately.
   void Start(StartMode start_mode) {
+    TRACE_EVENT_INSTANT("network.scheduler", "RequestStart", trace_track_,
+                        "mode", start_mode == START_ASYNC ? "async" : "sync");
     DCHECK(!ready_);
 
     // If the request was deferred, need to start it.  Otherwise, will just not
@@ -281,13 +290,18 @@ class ResourceScheduler::ScheduledResourceRequestImpl
     ready_ = true;
   }
 
-  void set_request_priority_params(const RequestPriorityParams& priority) {
+  void Reprioritize(const RequestPriorityParams& priority) {
+    TRACE_EVENT_INSTANT("network.scheduler", "RequestReprioritize",
+                        trace_track_, "old_priority", priority_.priority,
+                        "new_priority", priority.priority);
     priority_ = priority;
   }
+
   const RequestPriorityParams& get_request_priority_params() const {
     return priority_;
   }
   ClientId client_id() const { return client_id_; }
+  perfetto::Track trace_track() const { return trace_track_; }
   net::URLRequest* url_request() { return request_; }
   const net::URLRequest* url_request() const { return request_; }
   bool is_async() const { return is_async_; }
@@ -325,9 +339,14 @@ class ResourceScheduler::ScheduledResourceRequestImpl
   static const void* const kUserDataKey;
 
   // ScheduledResourceRequest implemnetation
-  void WillStartRequest(bool* defer) override { deferred_ = *defer = !ready_; }
+  void WillStartRequest(bool* defer) override {
+    deferred_ = *defer = !ready_;
+    TRACE_EVENT_INSTANT("network.scheduler", "RequestWillStart", trace_track_,
+                        "defered", deferred_);
+  }
 
   const ClientId client_id_;
+  perfetto::Track trace_track_;
   raw_ptr<net::URLRequest> request_;
   bool ready_;
   bool deferred_;
@@ -367,8 +386,20 @@ bool ResourceScheduler::ScheduledResourceSorter::operator()(
 void ResourceScheduler::RequestQueue::Insert(
     ScheduledResourceRequestImpl* request) {
   DCHECK(!base::Contains(pointers_, request));
+  TRACE_EVENT_INSTANT("network.scheduler", "RequestEnqueue",
+                      request->trace_track());
   request->set_fifo_ordering(MakeFifoOrderingId());
   pointers_[request] = queue_.insert(request);
+}
+
+void ResourceScheduler::RequestQueue::Erase(
+    ScheduledResourceRequestImpl* request) {
+  TRACE_EVENT_INSTANT("network.scheduler", "RequestDequeue",
+                      request->trace_track());
+  PointerMap::iterator it = pointers_.find(request);
+  CHECK(it != pointers_.end());
+  queue_.erase(it->second);
+  pointers_.erase(it);
 }
 
 // Each client represents a tab.
@@ -472,7 +503,7 @@ class ResourceScheduler::Client
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
     request->url_request()->SetPriority(new_priority_params.priority);
-    request->set_request_priority_params(new_priority_params);
+    request->Reprioritize(new_priority_params);
     SetRequestAttributes(request, DetermineRequestAttributes(request));
     if (!pending_requests_.IsQueued(request)) {
       DCHECK(base::Contains(in_flight_requests_, request));
@@ -1324,8 +1355,7 @@ void ResourceScheduler::ReprioritizeRequest(net::URLRequest* request,
   if (client_it == client_map_.end()) {
     // The client was likely deleted shortly before we received this IPC.
     request->SetPriority(new_priority_params.priority);
-    scheduled_resource_request->set_request_priority_params(
-        new_priority_params);
+    scheduled_resource_request->Reprioritize(new_priority_params);
     return;
   }
 
