@@ -6700,3 +6700,6 @@ crbug.com/1429309 [ Mac ] external/wpt/css/css-position/fixed-z-index-blend.html
 crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.tentative.any.html [ Failure Pass ]
 
 crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-double-submit-requestsubmit.html [ Pass Timeout ]
+
+# Temporarily disabled to unblock https://crrev.com/c/4610580
+crbug.com/1442863 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
