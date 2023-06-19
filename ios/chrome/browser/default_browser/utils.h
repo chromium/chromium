@@ -68,20 +68,12 @@ void LogOpenHTTPURLFromExternalURL();
 // past expired logs for `type` that have happened too far in the past.
 void LogLikelyInterestedDefaultBrowserUserActivity(DefaultPromoType type);
 
-// Logs the timestamp of a user tap on the "Remind Me Later" button in the
-// Fullscreen Promo.
-void LogRemindMeLaterPromoActionInteraction();
-
 // Logs to the FET that a default browser promo has been shown.
 void LogToFETDefaultBrowserPromoShown(feature_engagement::Tracker* tracker);
 
 // Logs to the FET that the user has pasted a URL into the omnibox if certain
 // conditions are met.
 void LogToFETUserPastedURLIntoOmnibox(feature_engagement::Tracker* tracker);
-
-// Returns true if the user has tapped on the "Remind Me Later" button and the
-// delay time threshold has been met.
-bool ShouldShowRemindMeLaterDefaultBrowserFullscreenPromo();
 
 // Returns true if the passed default browser badge `feature` should be shown.
 // Also makes the necessary calls to the FET for keeping track of usage, as well
@@ -90,14 +82,6 @@ bool ShouldTriggerDefaultBrowserHighlightFeature(
     const base::Feature& feature,
     feature_engagement::Tracker* tracker,
     syncer::SyncService* syncService);
-
-// Returns true if the user is in the group that will be shown the Remind Me
-// Later button in the fullscreen promo.
-bool IsInRemindMeLaterGroup();
-
-// Returns true if the user is in the group that will be shown a modified
-// description and "Learn More" text.
-bool IsInModifiedStringsGroup();
 
 // Returns true if the user is not in the blue dot default browser experiment,
 // or if they are in the group with all DB promos enabled.
@@ -132,12 +116,6 @@ bool IsDefaultBrowserTriggerCriteraExperimentEnabled();
 // Returns true if Default Browser promo should be triggered on omnibox
 // copy-paste.
 bool ShouldTriggerDefaultBrowserPromoOnOmniboxCopyPaste();
-
-// Returns true if the user is in the CTA experiment in the open links group.
-bool IsInCTAOpenLinksGroup();
-
-// Returns true if the user is in the CTA experiment in the switch group.
-bool IsInCTASwitchGroup();
 
 // Returns true if the user has interacted with the Fullscreen Promo previously.
 // Returns false otherwise.
