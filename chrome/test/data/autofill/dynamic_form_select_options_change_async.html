@@ -24,9 +24,13 @@
 
 <script>
 function CountryChanged() {
-  // Reset input fields to verify that they get refilled.
-  document.getElementById("firstname").value = '';
-  document.getElementById("address1").value = '';
+  // Update 'state' <select> asynchronously so that
+  // AutofillAgent::SelectControlDidChange() triggers the refill not
+  // AutofillAgent::TriggerRefillIfNeeded().
+  window.setTimeout(CountryChangedAsync, 0);
+}
+
+function CountryChangedAsync() {
   window['refill'] = true;
   console.log('An event happened that should trigger a refill.');
 

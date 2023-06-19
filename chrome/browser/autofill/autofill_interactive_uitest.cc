@@ -3584,13 +3584,40 @@ IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
   ASSERT_TRUE(std::move(refill).Wait());
 
   // Make sure the new form was filled correctly.
-  EXPECT_EQ("Milton", GetFieldValueById("firstname"));
-  EXPECT_EQ("4120 Freidrich Lane", GetFieldValueById("address1"));
-  EXPECT_EQ("TX", GetFieldValueById("state"));
-  EXPECT_EQ("Austin", GetFieldValueById("city"));
-  EXPECT_EQ("Initech", GetFieldValueById("company"));
-  EXPECT_EQ("red.swingline@initech.com", GetFieldValueById("email"));
-  EXPECT_EQ("15125551234", GetFieldValueById("phone"));
+  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
+  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
+  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
+  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  EXPECT_EQ(kDefaultAddressValues.company, GetFieldValueById("company"));
+  EXPECT_EQ(kDefaultAddressValues.email, GetFieldValueById("email"));
+  EXPECT_EQ(kDefaultAddressValues.phone, GetFieldValueById("phone"));
+}
+
+// Test that we can Autofill dynamically changing selects that have options
+// added and removed, when the updating occurs asynchronously.
+IN_PROC_BROWSER_TEST_F(AutofillInteractiveTestDynamicForm,
+                       DynamicChangingFormFill_SelectUpdatedAsync) {
+  CreateTestProfile();
+  GURL url = embedded_test_server()->GetURL(
+      "a.com", "/autofill/dynamic_form_select_options_change_async.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), url));
+
+  ValueWaiter refill = ListenForRefill("state");
+  // Trigger first fill.
+  ASSERT_TRUE(AutofillFlow(GetElementById("firstname"), this));
+  // Wait till the first onchange event fired on the 'state' field after the
+  // <option>s in the 'state' <select> have been updated.
+  AdvanceClock(kLessThanLimitBeforeRefill);
+  ASSERT_TRUE(std::move(refill).Wait());
+
+  // Make sure the new form was re-filled correctly.
+  EXPECT_EQ(kDefaultAddressValues.first_name, GetFieldValueById("firstname"));
+  EXPECT_EQ(kDefaultAddressValues.address1, GetFieldValueById("address1"));
+  EXPECT_EQ(kDefaultAddressValues.state_short, GetFieldValueById("state"));
+  EXPECT_EQ(kDefaultAddressValues.city, GetFieldValueById("city"));
+  EXPECT_EQ(kDefaultAddressValues.company, GetFieldValueById("company"));
+  EXPECT_EQ(kDefaultAddressValues.email, GetFieldValueById("email"));
+  EXPECT_EQ(kDefaultAddressValues.phone, GetFieldValueById("phone"));
 }
 
 // Test that we can Autofill dynamically changing selects that have options
