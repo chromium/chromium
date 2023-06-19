@@ -309,11 +309,13 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // With `kReplaceSyncPromosWithSignInPromos`, both HISTORY and
-  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode.
+  // With `kReplaceSyncPromosWithSignInPromos`, all the history-related types
+  // should be enabled in transport mode.
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
 
   // With `kReplaceSyncPromosWithSignInPromos`, both PREFERENCES and
   // PRIORITY_PREFERENCES should be enabled in transport mode.
@@ -357,12 +359,14 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Without `kReplaceSyncPromosWithSignInPromos`, neither HISTORY nor
-  // HISTORY_DELETE_DIRECTIVES should be enabled in transport mode (even if the
-  // user has opted in).
+  // Without `kReplaceSyncPromosWithSignInPromos`, none of the history-related
+  // types should be enabled in transport mode (even if the user has opted in).
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::HISTORY));
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(
       syncer::HISTORY_DELETE_DIRECTIVES));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
+  EXPECT_FALSE(
+      GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
 
   // Without `kReplaceSyncPromosWithSignInPromos`, neither PREFERENCES nor
   // PRIORITY_PREFERENCES should be enabled in transport mode (even if the user

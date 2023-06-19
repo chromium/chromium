@@ -23,7 +23,10 @@ class SessionModelTypeController : public syncer::ModelTypeController {
   SessionModelTypeController(
       syncer::SyncService* sync_service,
       PrefService* pref_service,
-      std::unique_ptr<syncer::ModelTypeControllerDelegate> delegate);
+      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+          delegate_for_full_sync_mode,
+      std::unique_ptr<syncer::ModelTypeControllerDelegate>
+          delegate_for_transport_mode);
 
   SessionModelTypeController(const SessionModelTypeController&) = delete;
   SessionModelTypeController& operator=(const SessionModelTypeController&) =
