@@ -452,18 +452,18 @@ public final class Fido2Api {
         final int a = writeHeader(OBJECT_MAGIC, parcel);
 
         // 2: appId
-        if (options.appid != null) {
+        if (options.extensions.appid != null) {
             final int b = writeHeader(2, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(2, parcel);
-            parcel.writeString(options.appid);
+            parcel.writeString(options.extensions.appid);
             writeLength(d, parcel);
             writeLength(c, parcel);
             writeLength(b, parcel);
         }
 
         // 4: user verification methods
-        if (options.userVerificationMethods) {
+        if (options.extensions.userVerificationMethods) {
             final int b = writeHeader(4, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
@@ -474,7 +474,7 @@ public final class Fido2Api {
         }
 
         // 8: device public key
-        if (options.devicePublicKey != null) {
+        if (options.extensions.devicePublicKey != null) {
             final int b = writeHeader(8, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
@@ -485,12 +485,12 @@ public final class Fido2Api {
         }
 
         // 11: PRF
-        if (options.prf) {
+        if (options.extensions.prf) {
             final int b = writeHeader(11, parcel);
             final int c = writeHeader(OBJECT_MAGIC, parcel);
             final int d = writeHeader(1, parcel);
-            parcel.writeInt(2 * options.prfInputs.length);
-            for (PrfValues input : options.prfInputs) {
+            parcel.writeInt(2 * options.extensions.prfInputs.length);
+            for (PrfValues input : options.extensions.prfInputs) {
                 parcel.writeByteArray(input.id);
                 if (input.second == null) {
                     parcel.writeByteArray(input.first);

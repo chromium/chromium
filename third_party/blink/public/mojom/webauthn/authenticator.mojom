@@ -352,6 +352,12 @@ struct PublicKeyCredentialRequestOptions {
   // Indicates the relying party's need for a user-verifying authenticator.
   UserVerificationRequirement user_verification;
 
+  // Webauthn extension related input parameters.
+  AuthenticationExtensionsClientInputs extensions;
+};
+
+// Parameters for webauthn Extensions.
+struct AuthenticationExtensionsClientInputs {
   // The contents of the appid extension, if any. See
   // https://w3c.github.io/webauthn/#sctn-appid-extension
   string? appid;

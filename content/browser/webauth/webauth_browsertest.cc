@@ -584,6 +584,8 @@ class WebAuthLocalClientBrowserTest : public WebAuthBrowserTestBase {
 
     std::vector<uint8_t> kTestChallenge{0, 0, 0};
     auto mojo_options = blink::mojom::PublicKeyCredentialRequestOptions::New();
+    mojo_options->extensions =
+        blink::mojom::AuthenticationExtensionsClientInputs::New();
     mojo_options->challenge = kTestChallenge;
     mojo_options->timeout = base::Seconds(30);
     mojo_options->relying_party_id = "acme.com";

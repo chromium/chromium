@@ -29,6 +29,8 @@
 namespace webauthn {
 namespace {
 
+using blink::mojom::AuthenticationExtensionsClientInputs;
+using blink::mojom::AuthenticationExtensionsClientInputsPtr;
 using blink::mojom::CommonCredentialInfo;
 using blink::mojom::CommonCredentialInfoPtr;
 using blink::mojom::GetAssertionAuthenticatorResponse;
@@ -119,22 +121,23 @@ TEST(WebAuthenticationJSONConversionTest,
   auto options = PublicKeyCredentialRequestOptions::New(
       /*is_conditional=*/false, kChallenge, kTimeout, kRpId,
       GetCredentialList(), device::UserVerificationRequirement::kRequired,
-      kAppId,
-      std::vector<device::CableDiscoveryData>{
-          {device::CableDiscoveryData::Version::V1, device::CableEidArray{},
-           device::CableEidArray{}, device::CableSessionPreKeyArray{}}},
+      AuthenticationExtensionsClientInputs::New(
+          kAppId,
+          std::vector<device::CableDiscoveryData>{
+              {device::CableDiscoveryData::Version::V1, device::CableEidArray{},
+               device::CableEidArray{}, device::CableSessionPreKeyArray{}}},
 #if BUILDFLAG(IS_ANDROID)
-      /*user_verification_methods=*/false,
+          /*user_verification_methods=*/false,
 #endif
-      /*prf=*/false, std::vector<blink::mojom::PRFValuesPtr>(),
-      /*large_blob_read=*/true,
-      /*large_blob_write=*/std::vector<uint8_t>{8, 9, 10},
-      /*get_cred_blob=*/true,
-      blink::mojom::RemoteDesktopClientOverride::New(
-          url::Origin::Create(GURL(kOrigin)),
-          /*same_origin_with_ancestors=*/true),
-      // TODO: support devicePubKey in JSON when it's stable.
-      /*device_public_key=*/nullptr);
+          /*prf=*/false, std::vector<blink::mojom::PRFValuesPtr>(),
+          /*large_blob_read=*/true,
+          /*large_blob_write=*/std::vector<uint8_t>{8, 9, 10},
+          /*get_cred_blob=*/true,
+          blink::mojom::RemoteDesktopClientOverride::New(
+              url::Origin::Create(GURL(kOrigin)),
+              /*same_origin_with_ancestors=*/true),
+          // TODO: support devicePubKey in JSON when it's stable.
+          /*device_public_key=*/nullptr));
 
   base::Value value = ToValue(options);
   std::string json;

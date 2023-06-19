@@ -332,6 +332,7 @@ TEST_F(CreditCardFidoAuthenticatorTest, ParseRequestOptions) {
   EXPECT_EQ(kTestRelyingPartyId, request_options_ptr->relying_party_id);
   EXPECT_EQ(kTestCredentialId,
             BytesToBase64(request_options_ptr->allow_credentials.front().id));
+  EXPECT_FALSE(request_options_ptr->extensions.is_null());
 }
 
 TEST_F(CreditCardFidoAuthenticatorTest, ParseAssertionResponse) {

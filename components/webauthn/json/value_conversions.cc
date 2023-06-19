@@ -403,6 +403,7 @@ base::Value ToValue(
 
 base::Value ToValue(
     const blink::mojom::PublicKeyCredentialRequestOptionsPtr& options) {
+  CHECK(!options->extensions.is_null());
   base::Value::Dict value;
   value.Set("challenge", Base64UrlEncode(options->challenge));
   value.Set("rpId", options->relying_party_id);
@@ -418,41 +419,43 @@ base::Value ToValue(
 
   base::Value::Dict extensions;
 
-  if (options->appid) {
-    extensions.Set("appid", *options->appid);
+  if (options->extensions->appid) {
+    extensions.Set("appid", *options->extensions->appid);
   }
 
   base::Value::List cable_authentication_data;
   for (const device::CableDiscoveryData& cable :
-       options->cable_authentication_data) {
+       options->extensions->cable_authentication_data) {
     cable_authentication_data.Append(ToValue(cable));
   }
   if (!cable_authentication_data.empty()) {
     extensions.Set("cableAuthentication", std::move(cable_authentication_data));
   }
 
-  if (options->get_cred_blob) {
+  if (options->extensions->get_cred_blob) {
     extensions.Set("getCredBlob", true);
   }
 
-  if (options->large_blob_read || options->large_blob_write) {
+  if (options->extensions->large_blob_read ||
+      options->extensions->large_blob_write) {
     base::Value::Dict large_blob_value;
-    if (options->large_blob_read) {
+    if (options->extensions->large_blob_read) {
       large_blob_value.Set("read", true);
     }
-    if (options->large_blob_write) {
-      large_blob_value.Set("write",
-                           Base64UrlEncode(*options->large_blob_write));
+    if (options->extensions->large_blob_write) {
+      large_blob_value.Set(
+          "write", Base64UrlEncode(*options->extensions->large_blob_write));
     }
     extensions.Set("largeBlob", std::move(large_blob_value));
   }
 
-  if (options->remote_desktop_client_override) {
-    extensions.Set("remoteDesktopClientOverride",
-                   ToValue(*options->remote_desktop_client_override));
+  if (options->extensions->remote_desktop_client_override) {
+    extensions.Set(
+        "remoteDesktopClientOverride",
+        ToValue(*options->extensions->remote_desktop_client_override));
   }
 
-  DCHECK(!options->prf);
+  DCHECK(!options->extensions->prf);
 
   if (!extensions.empty()) {
     value.Set("extensions", std::move(extensions));

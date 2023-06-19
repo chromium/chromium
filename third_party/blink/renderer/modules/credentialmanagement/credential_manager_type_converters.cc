@@ -47,6 +47,8 @@
 namespace mojo {
 
 using blink::mojom::blink::AttestationConveyancePreference;
+using blink::mojom::blink::AuthenticationExtensionsClientInputs;
+using blink::mojom::blink::AuthenticationExtensionsClientInputsPtr;
 using blink::mojom::blink::AuthenticatorAttachment;
 using blink::mojom::blink::AuthenticatorSelectionCriteria;
 using blink::mojom::blink::AuthenticatorSelectionCriteriaPtr;
@@ -661,59 +663,74 @@ TypeConverter<PublicKeyCredentialRequestOptionsPtr,
   }
 
   if (options.hasExtensions()) {
-    auto* extensions = options.extensions();
-    if (extensions->hasAppid()) {
-      mojo_options->appid = extensions->appid();
-    }
-    if (extensions->hasCableAuthentication()) {
-      Vector<CableAuthenticationPtr> mojo_data;
-      for (auto& data : extensions->cableAuthentication()) {
-        if (data->version() < 1 || data->version() > 2) {
-          continue;
-        }
-        CableAuthenticationPtr mojo_cable = CableAuthentication::From(*data);
-        if (mojo_cable) {
-          mojo_data.push_back(std::move(mojo_cable));
-        }
-      }
-      if (mojo_data.size() > 0) {
-        mojo_options->cable_authentication_data = std::move(mojo_data);
-      }
-    }
-#if BUILDFLAG(IS_ANDROID)
-    if (extensions->hasUvm()) {
-      mojo_options->user_verification_methods = extensions->uvm();
-    }
-#endif
-    if (extensions->hasLargeBlob()) {
-      if (extensions->largeBlob()->hasRead()) {
-        mojo_options->large_blob_read = extensions->largeBlob()->read();
-      }
-      if (extensions->largeBlob()->hasWrite()) {
-        mojo_options->large_blob_write =
-            ConvertTo<Vector<uint8_t>>(extensions->largeBlob()->write());
-      }
-    }
-    if (extensions->hasGetCredBlob() && extensions->getCredBlob()) {
-      mojo_options->get_cred_blob = true;
-    }
-    if (extensions->hasRemoteDesktopClientOverride()) {
-      mojo_options->remote_desktop_client_override =
-          RemoteDesktopClientOverride::From(
-              *extensions->remoteDesktopClientOverride());
-    }
-    if (extensions->hasDevicePubKey()) {
-      mojo_options->device_public_key =
-          DevicePublicKeyRequest::From(*extensions->devicePubKey());
-    }
-    if (extensions->hasPrf()) {
-      mojo_options->prf = true;
-      mojo_options->prf_inputs =
-          ConvertTo<Vector<PRFValuesPtr>>(*extensions->prf());
-    }
+    mojo_options->extensions =
+        ConvertTo<blink::mojom::blink::AuthenticationExtensionsClientInputsPtr>(
+            *options.extensions());
+  } else {
+    mojo_options->extensions =
+        blink::mojom::blink::AuthenticationExtensionsClientInputs::New();
   }
 
   return mojo_options;
+}
+
+// static
+AuthenticationExtensionsClientInputsPtr
+TypeConverter<AuthenticationExtensionsClientInputsPtr,
+              blink::AuthenticationExtensionsClientInputs>::
+    Convert(const blink::AuthenticationExtensionsClientInputs& inputs) {
+  auto mojo_inputs =
+      blink::mojom::blink::AuthenticationExtensionsClientInputs::New();
+  if (inputs.hasAppid()) {
+    mojo_inputs->appid = inputs.appid();
+  }
+  if (inputs.hasCableAuthentication()) {
+    Vector<CableAuthenticationPtr> mojo_data;
+    for (auto& data : inputs.cableAuthentication()) {
+      if (data->version() < 1 || data->version() > 2) {
+        continue;
+      }
+      CableAuthenticationPtr mojo_cable = CableAuthentication::From(*data);
+      if (mojo_cable) {
+        mojo_data.push_back(std::move(mojo_cable));
+      }
+    }
+    if (mojo_data.size() > 0) {
+      mojo_inputs->cable_authentication_data = std::move(mojo_data);
+    }
+  }
+#if BUILDFLAG(IS_ANDROID)
+  if (inputs.hasUvm()) {
+    mojo_inputs->user_verification_methods = inputs.uvm();
+  }
+#endif
+  if (inputs.hasLargeBlob()) {
+    if (inputs.largeBlob()->hasRead()) {
+      mojo_inputs->large_blob_read = inputs.largeBlob()->read();
+    }
+    if (inputs.largeBlob()->hasWrite()) {
+      mojo_inputs->large_blob_write =
+          ConvertTo<Vector<uint8_t>>(inputs.largeBlob()->write());
+    }
+  }
+  if (inputs.hasGetCredBlob() && inputs.getCredBlob()) {
+    mojo_inputs->get_cred_blob = true;
+  }
+  if (inputs.hasRemoteDesktopClientOverride()) {
+    mojo_inputs->remote_desktop_client_override =
+        RemoteDesktopClientOverride::From(
+            *inputs.remoteDesktopClientOverride());
+  }
+  if (inputs.hasDevicePubKey()) {
+    mojo_inputs->device_public_key =
+        DevicePublicKeyRequest::From(*inputs.devicePubKey());
+  }
+  if (inputs.hasPrf()) {
+    mojo_inputs->prf = true;
+    mojo_inputs->prf_inputs = ConvertTo<Vector<PRFValuesPtr>>(*inputs.prf());
+  }
+
+  return mojo_inputs;
 }
 
 // static

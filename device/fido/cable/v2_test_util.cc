@@ -438,23 +438,27 @@ class TestPlatform : public authenticator::Platform {
     CHECK_EQ(request.client_data_hash.size(), params->challenge.size());
     memcpy(request.client_data_hash.data(), params->challenge.data(),
            params->challenge.size());
-    if (params->device_public_key) {
+    if (params->extensions && params->extensions->device_public_key) {
       request.device_public_key.emplace();
     }
-    for (const auto& prf_input_from_request : params->prf_inputs) {
-      PRFInput prf_input_to_authenticator;
-      prf_input_to_authenticator.credential_id =
-          std::move(prf_input_from_request->id);
-      CHECK(fido_parsing_utils::ExtractArray(
-          prf_input_from_request->first, 0, &prf_input_to_authenticator.salt1));
-      if (prf_input_from_request->second) {
-        prf_input_to_authenticator.salt2.emplace();
+    if (params->extensions) {
+      for (const auto& prf_input_from_request :
+           params->extensions->prf_inputs) {
+        PRFInput prf_input_to_authenticator;
+        prf_input_to_authenticator.credential_id =
+            std::move(prf_input_from_request->id);
         CHECK(fido_parsing_utils::ExtractArray(
-            *prf_input_from_request->second, 0,
-            &prf_input_to_authenticator.salt2.value()));
-      }
+            prf_input_from_request->first, 0,
+            &prf_input_to_authenticator.salt1));
+        if (prf_input_from_request->second) {
+          prf_input_to_authenticator.salt2.emplace();
+          CHECK(fido_parsing_utils::ExtractArray(
+              *prf_input_from_request->second, 0,
+              &prf_input_to_authenticator.salt2.value()));
+        }
 
-      request.prf_inputs.emplace_back(std::move(prf_input_to_authenticator));
+        request.prf_inputs.emplace_back(std::move(prf_input_to_authenticator));
+      }
     }
 
     std::pair<device::CtapRequestCommand, absl::optional<cbor::Value>>

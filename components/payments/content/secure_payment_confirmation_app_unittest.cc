@@ -34,6 +34,7 @@ namespace {
 using ::base::test::RunOnceCallback;
 using ::testing::_;
 using ::testing::Eq;
+using ::testing::Property;
 
 static constexpr char kChallengeBase64[] = "aaaa";
 static constexpr char kCredentialIdBase64[] = "cccc";
@@ -129,6 +130,12 @@ TEST_F(SecurePaymentConfirmationAppTest, Smoke) {
               blink::mojom::PublicKeyCredentialRequestOptionsPtr options,
               blink::mojom::Authenticator::GetAssertionCallback callback) {
             EXPECT_EQ(options->challenge, expected_bytes);
+            auto struct_ptr_is_not_null = Property(
+                &mojo::StructPtr<
+                    blink::mojom::AuthenticationExtensionsClientInputs>::
+                    is_null,
+                false);
+            EXPECT_THAT(options->extensions, struct_ptr_is_not_null);
             std::move(callback).Run(
                 blink::mojom::AuthenticatorStatus::SUCCESS,
                 blink::mojom::GetAssertionAuthenticatorResponse::New(),

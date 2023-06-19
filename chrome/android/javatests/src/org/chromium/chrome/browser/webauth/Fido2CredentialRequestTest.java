@@ -50,9 +50,11 @@ import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorAttachment;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.AuthenticatorTransport;
+import org.chromium.blink.mojom.DevicePublicKeyRequest;
 import org.chromium.blink.mojom.GetAssertionAuthenticatorResponse;
 import org.chromium.blink.mojom.MakeCredentialAuthenticatorResponse;
 import org.chromium.blink.mojom.PaymentOptions;
+import org.chromium.blink.mojom.PrfValues;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialParameters;
@@ -874,7 +876,7 @@ public class Fido2CredentialRequestTest {
     public void testGetAssertionWithUvmRequestedWithoutUvmResponded_success() {
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
-        mRequestOptions.userVerificationMethods = true;
+        mRequestOptions.extensions.userVerificationMethods = true;
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
@@ -891,7 +893,7 @@ public class Fido2CredentialRequestTest {
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
 
-        mRequestOptions.userVerificationMethods = true;
+        mRequestOptions.extensions.userVerificationMethods = true;
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
@@ -1016,7 +1018,7 @@ public class Fido2CredentialRequestTest {
     @SmallTest
     public void testGetAssertion_appIdUsed() {
         PublicKeyCredentialRequestOptions customOptions = mRequestOptions;
-        customOptions.appid = "www.example.com";
+        customOptions.extensions.appid = "www.example.com";
         mIntentSender.setNextResultIntent(Fido2ApiTestHelper.createSuccessfulGetAssertionIntent());
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
@@ -1037,7 +1039,7 @@ public class Fido2CredentialRequestTest {
         AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
-        mRequestOptions.userVerificationMethods = true;
+        mRequestOptions.extensions.userVerificationMethods = true;
 
         TestThreadUtils.runOnUiThreadBlocking(() -> {
             authenticator.getAssertion(mRequestOptions,
@@ -1047,6 +1049,52 @@ public class Fido2CredentialRequestTest {
         mCallback.blockUntilCalled();
         Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
         Fido2ApiTestHelper.validateGetAssertionResponse(mCallback.getGetAssertionResponse());
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuthenticatorImplGetAssertionWithPrf_success() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithPrf());
+        PrfValues prfValues = new PrfValues();
+        prfValues.first = new byte[] {1, 2, 3, 4, 5, 6};
+        mRequestOptions.extensions.prf = true;
+        mRequestOptions.extensions.prfInputs = new PrfValues[] {
+                prfValues,
+        };
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            authenticator.getAssertion(mRequestOptions,
+                    (status, response,
+                            dom_exception) -> mCallback.onSignResponse(status, response));
+        });
+        mCallback.blockUntilCalled();
+
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Fido2ApiTestHelper.validatePrfResults(mCallback.getGetAssertionResponse().prfResults);
+        Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
+    }
+
+    @Test
+    @SmallTest
+    public void testAuthenticatorImplGetAssertionWithDevicePubKey_success() {
+        AuthenticatorImpl authenticator = new AuthenticatorImpl(mIntentSender, mFrameHost);
+        mIntentSender.setNextResultIntent(
+                Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithDevicePubKey());
+        mRequestOptions.extensions.devicePublicKey = new DevicePublicKeyRequest();
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            authenticator.getAssertion(mRequestOptions,
+                    (status, response,
+                            dom_exception) -> mCallback.onSignResponse(status, response));
+        });
+        mCallback.blockUntilCalled();
+
+        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        Fido2ApiTestHelper.validateDevicePubKey(
+                mCallback.getGetAssertionResponse().devicePublicKey);
         Fido2ApiTestHelper.verifyRespondedBeforeTimeout(mStartTimeMs);
     }
 
@@ -1073,7 +1121,7 @@ public class Fido2CredentialRequestTest {
                 InternalAuthenticator.createForTesting(mIntentSender, mFrameHost);
         mIntentSender.setNextResultIntent(
                 Fido2ApiTestHelper.createSuccessfulGetAssertionIntentWithUvm());
-        mRequestOptions.userVerificationMethods = true;
+        mRequestOptions.extensions.userVerificationMethods = true;
 
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { authenticator.getAssertion(mRequestOptions.serialize()); });
