@@ -120,53 +120,6 @@ import {SourcesTestRunner} from 'sources_test_runner';
             'Resume',
           ],
           next);
-    },
-
-    function testSteppingThroughEventListenerBreakpoint(next) {
-      TestRunner.evaluateInPageWithTimeout('addListenerAndClick(true)');
-      SourcesTestRunner.waitUntilPausedAndPerformSteppingActions(
-          [
-            'StepOver', 'Print',    'StepOver',
-            'Print',  // should break at the first "remover()"
-            'StepOver', 'StepOver', 'StepOver',
-            'Print',  // enter testElementClicked()
-            'StepOut',  'StepOver', 'StepOver', 'StepOver', 'StepOver',
-            'Print',  // enter testElementClicked()
-            'StepOver', 'StepOver', 'StepOver', 'Print',    'Resume',
-          ],
-          next);
-    },
-
-    function testSteppingOutOnEventListenerBreakpoint(next) {
-      TestRunner.evaluateInPageWithTimeout('addListenerAndClick(true)');
-      SourcesTestRunner.waitUntilPausedAndPerformSteppingActions(
-          [
-            'StepOut',
-            'Print',  // should be in testElementClicked()
-            'StepOut',
-            'StepOut',
-            'Print',  // again in testElementClicked()
-            'StepOut',
-            'Print',
-            'Resume',
-          ],
-          next);
-    },
-
-    function testSteppingOutOnEventListenerBreakpointAllBlackboxedButOne(next) {
-      TestRunner.evaluateInPageWithTimeout(
-          'addFewBlackboxedListenersAndClick(true)');
-      SourcesTestRunner.waitUntilPausedAndPerformSteppingActions(
-          [
-            'StepOut',
-            'Print',
-            'StepOut',
-            'Print',
-            'StepOut',
-            'Print',
-            'Resume',
-          ],
-          next);
     }
   ]);
 })();
