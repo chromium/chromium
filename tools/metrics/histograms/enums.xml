@@ -43023,6 +43023,13 @@ Called by update_permissions_policy_enum.py.-->
   <int value="2" label="Multiple accounts"/>
 </enum>
 
+<enum name="FedCmPopupWindowResult">
+  <int value="0" label="Accounts received and pop-up closed by IDP"/>
+  <int value="1" label="Accounts received but pop-up not closed by IDP"/>
+  <int value="2" label="Accounts not received but pop-up closed by IDP"/>
+  <int value="3" label="Accounts not received and pop-up not closed by IDP"/>
+</enum>
+
 <enum name="FedCmPreventSilentAccessFrameType">
   <int value="0" label="Main frame"/>
   <int value="1" label="Iframe which is same-site as main frame"/>

@@ -49,6 +49,8 @@ FedCmAccountSelectionView::~FedCmAccountSelectionView() {
   should_destroy_bubble_widget_ = false;
   Close();
 
+  // We use this boolean to record metrics in Close(), reset it after Close().
+  is_mismatch_continue_clicked_ = false;
   TabStripModelObserver::StopObservingAll(this);
 }
 
@@ -62,6 +64,8 @@ void FedCmAccountSelectionView::Show(
   // If IDP sign-in modal dialog is open, we delay the showing of the accounts
   // dialog until the modal dialog is destroyed.
   if (idp_signin_modal_dialog_) {
+    popup_window_state_ =
+        PopupWindowResult::kAccountsReceivedAndPopupNotClosedByIdp;
     show_accounts_dialog_callback_ = base::BindOnce(
         &FedCmAccountSelectionView::Show, weak_ptr_factory_.GetWeakPtr(),
         top_frame_etld_plus_one, iframe_etld_plus_one,
@@ -142,6 +146,8 @@ void FedCmAccountSelectionView::Show(
   // WebContents are hidden.
 
   if (!idp_close_popup_time_.is_null()) {
+    popup_window_state_ =
+        PopupWindowResult::kAccountsReceivedAndPopupClosedByIdp;
     UMA_HISTOGRAM_MEDIUM_TIMES(
         "Blink.FedCm.IdpSigninStatus."
         "IdpClosePopupToBrowserShowAccountsDuration",
@@ -382,6 +388,8 @@ void FedCmAccountSelectionView::OnCloseButtonClicked(const ui::Event& event) {
 void FedCmAccountSelectionView::OnSigninToIdP() {
   delegate_->OnSigninToIdP();
   is_mismatch_continue_clicked_ = true;
+  popup_window_state_ =
+      PopupWindowResult::kAccountsNotReceivedAndPopupNotClosedByIdp;
   UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.MismatchDialogResult",
                             MismatchDialogResult::kContinued);
 }
@@ -405,6 +413,8 @@ void FedCmAccountSelectionView::CloseModalDialog() {
     idp_signin_modal_dialog_.reset();
     should_show_bubble_widget_ = true;
     idp_close_popup_time_ = base::TimeTicks::Now();
+    popup_window_state_ =
+        PopupWindowResult::kAccountsNotReceivedAndPopupClosedByIdp;
   }
 
   if (show_accounts_dialog_callback_) {
@@ -494,5 +504,13 @@ void FedCmAccountSelectionView::OnDismiss(DismissReason dismiss_reason) {
         dismiss_reason == DismissReason::kCloseButton
             ? MismatchDialogResult::kDismissedByCloseIcon
             : MismatchDialogResult::kDismissedForOtherReasons);
+  }
+
+  // Pop-up window can only be opened through clicking the "Continue" button on
+  // the mismatch dialog. Hence, we record the outcome only after the dialog is
+  // closed.
+  if (is_mismatch_continue_clicked_) {
+    UMA_HISTOGRAM_ENUMERATION("Blink.FedCm.IdpSigninStatus.PopupWindowResult",
+                              popup_window_state_);
   }
 }

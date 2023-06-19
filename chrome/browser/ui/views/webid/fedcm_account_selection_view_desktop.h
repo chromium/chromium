@@ -111,6 +111,19 @@ class FedCmAccountSelectionView : public AccountSelectionView,
                            MismatchDialogDestroyedMetric);
   FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
                            MismatchDialogContinueClickedThenDestroyedMetric);
+  FRIEND_TEST_ALL_PREFIXES(
+      FedCmAccountSelectionViewDesktopTest,
+      IdpSigninStatusAccountsReceivedAndNoPopupClosedByIdpMetric);
+  FRIEND_TEST_ALL_PREFIXES(
+      FedCmAccountSelectionViewDesktopTest,
+      IdpSigninStatusAccountsNotReceivedAndPopupClosedByIdpMetric);
+  FRIEND_TEST_ALL_PREFIXES(
+      FedCmAccountSelectionViewDesktopTest,
+      IdpSigninStatusAccountsNotReceivedAndNoPopupClosedByIdpMetric);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           IdpSigninStatusPopupClosedBeforeAccountsPopulated);
+  FRIEND_TEST_ALL_PREFIXES(FedCmAccountSelectionViewDesktopTest,
+                           IdpSigninStatusPopupClosedAfterAccountsPopulated);
 
   enum class State {
     // User is shown message that they are not currently signed-in to IdP.
@@ -144,6 +157,19 @@ class FedCmAccountSelectionView : public AccountSelectionView,
     kDismissedForOtherReasons,
 
     kMaxValue = kDismissedForOtherReasons
+  };
+
+  // This enum describes the outcome of the pop-up window and is used for
+  // histograms. Do not remove or modify existing values, but you may add new
+  // values at the end. This enum should be kept in sync with
+  // FedCmPopupWindowResult in tools/metrics/histograms/enums.xml.
+  enum class PopupWindowResult {
+    kAccountsReceivedAndPopupClosedByIdp,
+    kAccountsReceivedAndPopupNotClosedByIdp,
+    kAccountsNotReceivedAndPopupClosedByIdp,
+    kAccountsNotReceivedAndPopupNotClosedByIdp,
+
+    kMaxValue = kAccountsNotReceivedAndPopupNotClosedByIdp
   };
 
   // views::WidgetObserver:
@@ -224,6 +250,9 @@ class FedCmAccountSelectionView : public AccountSelectionView,
 
   // Time when IdentityProvider.close() was called for metrics purposes.
   base::TimeTicks idp_close_popup_time_;
+
+  // The current state of the IDP sign-in pop-up window, if initiated by user.
+  PopupWindowResult popup_window_state_;
 
   base::WeakPtrFactory<FedCmAccountSelectionView> weak_ptr_factory_{this};
 };

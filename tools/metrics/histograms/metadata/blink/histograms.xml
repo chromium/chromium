@@ -1153,6 +1153,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Blink.FedCm.IdpSigninStatus.PopupWindowResult"
+    enum="FedCmPopupWindowResult" expires_after="M125">
+  <owner>tanzachary@chromium.org</owner>
+  <owner>web-identity-eng@google.com</owner>
+  <summary>
+    Records the outcome of the IDP sign-in pop-up window. Recorded once per
+    pop-up window triggered by the user.
+  </summary>
+</histogram>
+
 <histogram name="Blink.FedCm.IdpSigninStatus.ShowPopupWindowResult"
     enum="FedCmShowPopupWindowResult" expires_after="M125">
   <owner>tanzachary@chromium.org</owner>
