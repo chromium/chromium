@@ -764,12 +764,6 @@ void LoginDisplayHostMojo::HandleOnFocusPod(const AccountId& account_id) {
   focused_pod_account_id_ = account_id;
 }
 
-void LoginDisplayHostMojo::HandleOnNoPodFocused() {
-  user_selection_screen_->HandleNoPodFocused();
-  focused_pod_account_id_ = EmptyAccountId();
-  ErrorScreen::AllowOfflineLoginPerUser(true);
-}
-
 bool LoginDisplayHostMojo::HandleFocusLockScreenApps(bool reverse) {
   NOTREACHED();
   return false;

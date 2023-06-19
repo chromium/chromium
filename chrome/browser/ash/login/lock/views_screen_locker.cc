@@ -155,10 +155,6 @@ void ViewsScreenLocker::HandleOnFocusPod(const AccountId& account_id) {
   WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
 }
 
-void ViewsScreenLocker::HandleOnNoPodFocused() {
-  user_selection_screen_->HandleNoPodFocused();
-}
-
 bool ViewsScreenLocker::HandleFocusLockScreenApps(bool reverse) {
   if (lock_screen_app_focus_handler_.is_null())
     return false;

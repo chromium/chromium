@@ -175,11 +175,6 @@ void LoginScreenClientImpl::OnFocusPod(const AccountId& account_id) {
     delegate_->HandleOnFocusPod(account_id);
 }
 
-void LoginScreenClientImpl::OnNoPodFocused() {
-  if (delegate_)
-    delegate_->HandleOnNoPodFocused();
-}
-
 void LoginScreenClientImpl::FocusLockScreenApps(bool reverse) {
   // If delegate is not set, or it fails to handle focus request, call
   // |HandleFocusLeavingLockScreenApps| so the lock screen service can
@@ -322,14 +317,6 @@ void LoginScreenClientImpl::OnSystemTrayBubbleShown() {
 void LoginScreenClientImpl::OnLoginScreenShown() {
   for (LoginScreenShownObserver& observer : login_screen_shown_observers_)
     observer.OnLoginScreenShown();
-}
-
-void LoginScreenClientImpl::LoadWallpaper(const AccountId& account_id) {
-  WallpaperControllerClientImpl::Get()->ShowUserWallpaper(account_id);
-}
-
-void LoginScreenClientImpl::SignOutUser() {
-  ash::ScreenLocker::default_screen_locker()->Signout();
 }
 
 void LoginScreenClientImpl::CancelAddUser() {

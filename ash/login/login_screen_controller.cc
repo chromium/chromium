@@ -198,40 +198,11 @@ void LoginScreenController::OnFocusPod(const AccountId& account_id) {
   client_->OnFocusPod(account_id);
 }
 
-void LoginScreenController::OnNoPodFocused() {
-  GetModel()->NotifyFocusPod(EmptyAccountId());
-  if (!client_) {
-    return;
-  }
-  client_->OnNoPodFocused();
-}
-
-void LoginScreenController::LoadWallpaper(const AccountId& account_id) {
-  if (!client_) {
-    return;
-  }
-  client_->LoadWallpaper(account_id);
-}
-
-void LoginScreenController::SignOutUser() {
-  if (!client_) {
-    return;
-  }
-  client_->SignOutUser();
-}
-
 void LoginScreenController::CancelAddUser() {
   if (!client_) {
     return;
   }
   client_->CancelAddUser();
-}
-
-void LoginScreenController::LoginAsGuest() {
-  if (!client_) {
-    return;
-  }
-  client_->LoginAsGuest();
 }
 
 void LoginScreenController::ShowGuestTosScreen() {

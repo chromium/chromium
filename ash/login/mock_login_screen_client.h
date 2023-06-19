@@ -77,11 +77,7 @@ class MockLoginScreenClient : public LoginScreenClient {
               (const AccountId& account_id),
               (override));
   MOCK_METHOD(void, OnFocusPod, (const AccountId& account_id), (override));
-  MOCK_METHOD(void, OnNoPodFocused, (), (override));
-  MOCK_METHOD(void, LoadWallpaper, (const AccountId& account_id), (override));
-  MOCK_METHOD(void, SignOutUser, (), (override));
   MOCK_METHOD(void, CancelAddUser, (), (override));
-  MOCK_METHOD(void, LoginAsGuest, (), (override));
   MOCK_METHOD(void, ShowGuestTosScreen, (), (override));
   MOCK_METHOD(void,
               OnMaxIncorrectPasswordAttempted,

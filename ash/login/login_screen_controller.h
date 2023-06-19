@@ -79,11 +79,7 @@ class ASH_EXPORT LoginScreenController : public LoginScreen,
       const std::string& code);
   bool GetSecurityTokenPinRequestCanceled() const;
   void OnFocusPod(const AccountId& account_id);
-  void OnNoPodFocused();
-  void LoadWallpaper(const AccountId& account_id);
-  void SignOutUser();
   void CancelAddUser();
-  void LoginAsGuest();
   void ShowGuestTosScreen();
   void OnMaxIncorrectPasswordAttempted(const AccountId& account_id);
   void FocusLockScreenApps(bool reverse);
