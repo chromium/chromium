@@ -141,6 +141,7 @@ source_set("unit_tests") {
   testonly = true
   sources = [
     "assistant_client_v1_unittests.cc",
+    "external_services/grpc_services_initializer_unittests.cc",
     "grpc_http_connection_client_unittests.cc",
   ]
 
@@ -148,6 +149,7 @@ source_set("unit_tests") {
     ":assistant_client",
     ":grpc_service",
     ":http_connection_client",
+    "external_services:grpc_services_initializer",
     "//base/test:test_support",
     "//chromeos/ash/services/assistant/public/cpp",
     "//chromeos/assistant/internal",
