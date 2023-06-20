@@ -40,7 +40,7 @@ BASE_FEATURE(kAndroidSurfaceControlMagnifier,
 // Enables FLEDGE and Attribution Reporting API integration.
 BASE_FEATURE(kAttributionFencedFrameReportingBeacon,
              "AttributionFencedFrameReportingBeacon",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Launches the audio service on the browser startup.
 BASE_FEATURE(kAudioServiceLaunchOnStartup,
