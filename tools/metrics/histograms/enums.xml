@@ -95949,6 +95949,14 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="1" label="Fail to create shortcut"/>
 </enum>
 
+<enum name="ShortcutsMenuIconAndDataDifference">
+  <int value="0" label="Number of icons match number of shortcuts menu items"/>
+  <int value="1"
+      label="Number of icons lower than number of shortcuts menu items"/>
+  <int value="2"
+      label="Number of shortcuts menu items lower than number of icons"/>
+</enum>
+
 <enum name="ShortcutsMenuWinRegistrationResult">
   <int value="0" label="Success"/>
   <int value="1" label="Failed to create shortcuts menu icons directory"/>

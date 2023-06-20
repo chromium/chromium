@@ -1418,6 +1418,20 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.ShortcutsMenuBitmapAndItemCount.Results"
+    enum="ShortcutsMenuIconAndDataDifference" expires_after="2024-07-13">
+  <owner>dibyapal@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    Records the difference in result between the shortcuts menu icons downloaded
+    compared to the shortcuts menu item information stored in the web
+    applications/ DB for that web app. This is measured during OS integration
+    registration, unregistration or update during the Configuration phase of the
+    sub managers. This is not measured when the app is not installed, or if
+    there are no shortcuts menu items infos in the DB.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.ShortcutsMenuRegistration.Result" enum="BooleanSuccess"
     expires_after="2023-11-12">
   <owner>dibyapal@chromium.org</owner>

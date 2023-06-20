@@ -5,12 +5,15 @@
 #ifndef CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 #define CHROME_BROWSER_WEB_APPLICATIONS_OS_INTEGRATION_SHORTCUT_MENU_HANDLING_SUB_MANAGER_H_
 
+#include <vector>
+
 #include "base/files/file_path.h"
 #include "base/functional/callback_forward.h"
 #include "chrome/browser/web_applications/os_integration/os_integration_sub_manager.h"
 #include "chrome/browser/web_applications/proto/web_app_os_integration_state.pb.h"
 #include "chrome/browser/web_applications/web_app_icon_manager.h"
 #include "chrome/browser/web_applications/web_app_id.h"
+#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace web_app {
@@ -39,9 +42,11 @@ class ShortcutMenuHandlingSubManager : public OsIntegrationSubManager {
                        base::OnceClosure callback) override;
 
  private:
-  void StoreShortcutMenuData(const AppId& app_id,
-                             proto::ShortcutMenus* shortcut_menus,
-                             WebAppIconManager::ShortcutIconDataVector data);
+  void StoreShortcutMenuData(
+      const AppId& app_id,
+      std::vector<WebAppShortcutsMenuItemInfo> shortcut_menu_item_info,
+      proto::ShortcutMenus* shortcut_menus,
+      WebAppIconManager::ShortcutIconDataVector data);
   void StartShortcutsMenuUnregistration(
       const AppId& app_id,
       const proto::WebAppOsIntegrationState& current_state,
