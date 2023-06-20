@@ -585,17 +585,6 @@ void InjectNTP(Browser* browser) {
                                 sceneState.currentOrigin);
 }
 
-- (BOOL)presentSignInAccountsViewControllerIfNecessary {
-  ChromeBrowserState* browserState = self.currentInterface.browserState;
-  DCHECK(browserState);
-  if ([SignedInAccountsViewController
-          shouldBePresentedForBrowserState:browserState]) {
-    [self presentSignedInAccountsViewControllerForBrowserState:browserState];
-    return YES;
-  }
-  return NO;
-}
-
 - (void)sceneState:(SceneState*)sceneState
     hasPendingURLs:(NSSet<UIOpenURLContext*>*)URLContexts {
   DCHECK(URLContexts);
@@ -822,6 +811,19 @@ void InjectNTP(Browser* browser) {
         }
         [weakSelf presentSigninUpgradePromo];
       }));
+}
+
+// Present the sign-in accounts view if the accounts have changed while in
+// background.
+- (BOOL)presentSignInAccountsViewControllerIfNecessary {
+  ChromeBrowserState* browserState = self.currentInterface.browserState;
+  DCHECK(browserState);
+  if ([SignedInAccountsViewController
+          shouldBePresentedForBrowserState:browserState]) {
+    [self presentSignedInAccountsViewControllerForBrowserState:browserState];
+    return YES;
+  }
+  return NO;
 }
 
 - (void)initializeUI {
