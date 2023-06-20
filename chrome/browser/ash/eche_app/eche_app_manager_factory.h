@@ -137,6 +137,8 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
   EcheAppManagerFactory(const EcheAppManagerFactory&) = delete;
   EcheAppManagerFactory& operator=(const EcheAppManagerFactory&) = delete;
 
+  std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
+
  private:
   friend base::NoDestructor<EcheAppManagerFactory>;
   friend class EcheAppManagerFactoryTest;
@@ -149,8 +151,6 @@ class EcheAppManagerFactory : public ProfileKeyedServiceFactory {
       content::BrowserContext* context) const override;
   void RegisterProfilePrefs(
       user_prefs::PrefRegistrySyncable* registry) override;
-
-  std::unique_ptr<SystemInfo> GetSystemInfo(Profile* profile) const;
 
   std::unique_ptr<LaunchedAppInfo> last_launched_app_info_;
 

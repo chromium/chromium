@@ -14,8 +14,7 @@
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace ash {
-namespace eche_app {
+namespace ash::eche_app {
 
 namespace network_config = ::chromeos::network_config;
 using network_config::mojom::ConnectionStateType;
@@ -28,6 +27,8 @@ const ConnectionStateType kFakeWifiConnectionState =
 const bool kFakeDebugMode = false;
 const char kFakeGaiaId[] = "123";
 const char kFakeDeviceType[] = "Chromebook";
+const char kFakeOsVersion[] = "1.2.3.4";
+const char kFakeChannel[] = "Dev";
 const bool kFakeMeasureLatency = false;
 const bool kFakeSendStartSignaling = true;
 const bool kFakeDisableStunServer = false;
@@ -41,6 +42,8 @@ void ParseJson(const std::string& json,
                bool& debug_mode,
                std::string& gaia_id,
                std::string& device_type,
+               std::string& os_version,
+               std::string& channel,
                bool& measure_latency,
                bool& send_start_signaling,
                bool& disable_stun_server,
@@ -75,6 +78,16 @@ void ParseJson(const std::string& json,
       message_dictionary->FindString(kJsonDeviceTypeKey);
   if (device_type_ptr)
     device_type = *device_type_ptr;
+  const std::string* os_version_ptr =
+      message_dictionary->FindString(kJsonOsVersionKey);
+  if (os_version_ptr) {
+    os_version = *os_version_ptr;
+  }
+  const std::string* channel_ptr =
+      message_dictionary->FindString(kJsonChannelKey);
+  if (channel_ptr) {
+    channel = *channel_ptr;
+  }
   absl::optional<bool> measure_latency_opt =
       message_dictionary->FindBool(kJsonMeasureLatencyKey);
   if (measure_latency_opt.has_value())
@@ -233,6 +246,8 @@ class SystemInfoProviderTest : public testing::Test {
                                                  .SetBoardName(kFakeBoardName)
                                                  .SetGaiaId(kFakeGaiaId)
                                                  .SetDeviceType(kFakeDeviceType)
+                                                 .SetOsVersion(kFakeOsVersion)
+                                                 .SetChannel(kFakeChannel)
                                                  .Build(),
                                              remote_cros_network_config_.get());
     fake_observer_ = std::make_unique<FakeObserver>();
@@ -348,6 +363,8 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   bool debug_mode = true;
   std::string gaia_id = "";
   std::string device_type = "";
+  std::string os_version = "";
+  std::string channel = "";
   bool measure_latency = true;
   bool send_start_signaling = false;
   bool disable_stun_server = true;
@@ -356,8 +373,8 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   GetSystemInfo();
   std::string json = Callback::GetSystemInfo();
   ParseJson(json, device_name, board_name, tablet_mode, wifi_connection_state,
-            debug_mode, gaia_id, device_type, measure_latency,
-            send_start_signaling, disable_stun_server,
+            debug_mode, gaia_id, device_type, os_version, channel,
+            measure_latency, send_start_signaling, disable_stun_server,
             check_android_network_info);
 
   EXPECT_EQ(device_name, kFakeDeviceName);
@@ -367,6 +384,8 @@ TEST_F(SystemInfoProviderTest, GetSystemInfoHasCorrectJson) {
   EXPECT_EQ(debug_mode, kFakeDebugMode);
   EXPECT_EQ(gaia_id, kFakeGaiaId);
   EXPECT_EQ(device_type, kFakeDeviceType);
+  EXPECT_EQ(os_version, kFakeOsVersion);
+  EXPECT_EQ(channel, kFakeChannel);
   EXPECT_EQ(measure_latency, kFakeMeasureLatency);
   EXPECT_EQ(send_start_signaling, kFakeSendStartSignaling);
   EXPECT_EQ(disable_stun_server, kFakeDisableStunServer);
@@ -406,5 +425,4 @@ TEST_F(SystemInfoProviderTest,
   EXPECT_EQ(1u, GetNumAndroidStateObserverCalls());
 }
 
-}  // namespace eche_app
-}  // namespace ash
+}  // namespace ash::eche_app

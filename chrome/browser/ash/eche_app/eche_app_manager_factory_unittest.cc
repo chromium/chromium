@@ -13,8 +13,11 @@
 #include "ash/test/test_ash_web_view_factory.h"
 #include "ash/webui/eche_app_ui/apps_launch_info_provider.h"
 #include "ash/webui/eche_app_ui/eche_alert_generator.h"
+#include "ash/webui/eche_app_ui/system_info.h"
 #include "base/memory/raw_ptr.h"
+#include "base/test/scoped_chromeos_version_info.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/time/time.h"
 #include "chrome/browser/ash/eche_app/eche_app_notification_controller.h"
 #include "chrome/browser/notifications/notification_display_service_tester.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -245,6 +248,37 @@ TEST_F(EcheAppManagerFactoryWithBackgroundTest, LaunchEcheApp) {
   // Eche tray should be visible when streaming is active, not ative when
   // launch.
   EXPECT_FALSE(eche_tray()->is_active());
+}
+
+TEST_F(EcheAppManagerFactoryTest, GetSystemInfo) {
+  const char kLsbRelease[] =
+      "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
+      "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
+  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
+  std::unique_ptr<SystemInfo> system_info =
+      EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
+
+  EXPECT_EQ("1.2.3", system_info->GetOsVersion());
+  EXPECT_EQ("Chrome device", system_info->GetDeviceType());
+}
+
+TEST_F(EcheAppManagerFactoryTest, GetSystemInfo_flagDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+
+  scoped_feature_list.InitWithFeatures(
+      /*enabled_features=*/{features::kEcheSWA},
+      /*disabled_features=*/{features::kEcheMetricsRevamp});
+  const char kLsbRelease[] =
+      "CHROMEOS_RELEASE_NAME=Non Chrome OS\n"
+      "CHROMEOS_RELEASE_VERSION=1.2.3.4\n";
+  const base::Time lsb_release_time(base::Time::FromDoubleT(12345.6));
+  base::test::ScopedChromeOSVersionInfo version(kLsbRelease, lsb_release_time);
+  std::unique_ptr<SystemInfo> system_info =
+      EcheAppManagerFactory::GetInstance()->GetSystemInfo(GetProfile());
+
+  EXPECT_EQ("", system_info->GetOsVersion());
+  EXPECT_EQ("Chrome device", system_info->GetDeviceType());
 }
 
 }  // namespace eche_app

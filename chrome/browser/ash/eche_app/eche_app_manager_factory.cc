@@ -34,6 +34,7 @@
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/web_applications/app_browser_controller.h"
+#include "chrome/common/channel_info.h"
 #include "chromeos/ash/components/multidevice/logging/logging.h"
 #include "chromeos/ash/components/phonehub/phone_hub_manager.h"
 #include "chromeos/ash/services/secure_channel/presence_monitor_impl.h"
@@ -43,6 +44,7 @@
 #include "components/account_id/account_id.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/user_manager/user_manager.h"
+#include "components/version_info/channel.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/devicetype_utils.h"
@@ -316,12 +318,19 @@ std::unique_ptr<SystemInfo> EcheAppManagerFactory::GetSystemInfo(
       gaia_id = account_id.GetGaiaId();
     }
   }
-  return SystemInfo::Builder()
-      .SetDeviceName(device_name)
+
+  SystemInfo::Builder system_info;
+  system_info.SetDeviceName(device_name)
       .SetBoardName(board_name)
       .SetGaiaId(gaia_id)
-      .SetDeviceType(base::UTF16ToUTF8(device_type))
-      .Build();
+      .SetDeviceType(base::UTF16ToUTF8(device_type));
+
+  if (features::IsEcheMetricsRevampEnabled()) {
+    system_info.SetOsVersion(base::SysInfo::OperatingSystemVersion())
+        .SetChannel(chrome::GetChannelName(chrome::WithExtendedStable(true)));
+  }
+
+  return system_info.Build();
 }
 
 void EcheAppManagerFactory::SetLastLaunchedAppInfo(
