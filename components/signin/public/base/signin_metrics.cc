@@ -630,6 +630,7 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
     case AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
     case AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
       break;
 
     // But not these access points.
@@ -667,7 +668,6 @@ void RecordConsistencyPromoUserAction(AccountConsistencyPromoAction action,
     case AccessPoint::ACCESS_POINT_SETTINGS_SYNC_OFF_ROW:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_SIGNIN_PROMO:
     case AccessPoint::ACCESS_POINT_POST_DEVICE_RESTORE_BACKGROUND_SIGNIN:
-    case AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
     case AccessPoint::ACCESS_POINT_NTP_FEED_BOTTOM_PROMO:
     case AccessPoint::ACCESS_POINT_DESKTOP_SIGNIN_MANAGER:
     case AccessPoint::ACCESS_POINT_FOR_YOU_FRE:

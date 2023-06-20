@@ -25,6 +25,7 @@
 #import "components/search_engines/template_url_service.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/identity_manager/objc/identity_manager_observer_bridge.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/app/application_delegate/app_state.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_observer_bridge.h"
 #import "ios/chrome/browser/discover_feed/discover_feed_service.h"
@@ -815,8 +816,14 @@
   if (isSignedIn || isSigninNotAllowed || isSyncDisabled) {
     [handler showSettingsFromViewController:self.baseViewController];
   } else {
+    // TODO(crbug.com/1447012): Show the SSO screen directly if there are no
+    // device-level accounts.
+    const AuthenticationOperation operation =
+        base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+            ? AuthenticationOperationSigninOnly
+            : AuthenticationOperationSigninAndSync;
     ShowSigninCommand* const showSigninCommand = [[ShowSigninCommand alloc]
-        initWithOperation:AuthenticationOperationSigninAndSync
+        initWithOperation:operation
               accessPoint:signin_metrics::AccessPoint::
                               ACCESS_POINT_NTP_SIGNED_OUT_ICON];
     [handler showSignin:showSigninCommand

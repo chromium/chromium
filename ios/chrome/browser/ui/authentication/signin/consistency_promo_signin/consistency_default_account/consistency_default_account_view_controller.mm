@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/authentication/signin/consistency_promo_signin/consistency_default_account/consistency_default_account_view_controller.h"
 
+#import "base/notreached.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/strings/grit/components_strings.h"
@@ -36,6 +37,27 @@ constexpr CGFloat kContentSpacing = 16.;
 constexpr CGFloat kExtraNavBarTopPadding = 3.;
 // Vertical insets of primary button.
 constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
+
+// The label the bottom sheet should display, or null if there should be none.
+NSString* GetPromoLabelString(signin_metrics::AccessPoint accessPoint) {
+  switch (accessPoint) {
+    case signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO:
+      return l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO:
+      return l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_WEB_SIGNIN:
+      return l10n_util::GetNSString(
+          IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+    case signin_metrics::AccessPoint::ACCESS_POINT_NTP_SIGNED_OUT_ICON:
+      return l10n_util::GetNSString(
+          IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL);
+    default:
+      // Nothing prevents instantiating ConsistencyDefaultAccountViewController
+      // with an arbitrary entry point, API-wise. In doubt, no label is a good,
+      // generic default that fits all entry points.
+      return nil;
+  }
+}
 
 }
 
@@ -203,27 +225,20 @@ constexpr CGFloat kPrimaryButtonVerticalInsets = 15.5;
         constraintEqualToAnchor:self.contentView.trailingAnchor
                        constant:kContentMargin],
   ]];
+
   // Add the label.
-  UILabel* label = [[UILabel alloc] init];
-  if (self.accessPoint ==
-      signin_metrics::AccessPoint::ACCESS_POINT_SEND_TAB_TO_SELF_PROMO) {
-    label.text =
-        l10n_util::GetNSString(IDS_SEND_TAB_TO_SELF_SIGN_IN_PROMO_LABEL);
-  } else if (self.accessPoint == signin_metrics::AccessPoint::
-                                     ACCESS_POINT_NTP_FEED_CARD_MENU_PROMO) {
-    label.text =
-        l10n_util::GetNSString(IDS_IOS_FEED_CARD_SIGN_IN_ONLY_PROMO_LABEL);
-  } else {
-    label.text =
-        l10n_util::GetNSString(IDS_IOS_CONSISTENCY_PROMO_DEFAULT_ACCOUNT_LABEL);
+  NSString* labelText = GetPromoLabelString(self.accessPoint);
+  if (labelText) {
+    UILabel* label = [[UILabel alloc] init];
+    label.text = labelText;
+    label.textColor = [UIColor colorNamed:kGrey700Color];
+    label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
+    label.numberOfLines = 0;
+    [self.contentView addArrangedSubview:label];
+    [label.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor]
+        .active = YES;
   }
 
-  label.textColor = [UIColor colorNamed:kGrey700Color];
-  label.font = [UIFont preferredFontForTextStyle:UIFontTextStyleSubheadline];
-  label.numberOfLines = 0;
-  [self.contentView addArrangedSubview:label];
-  [label.widthAnchor constraintEqualToAnchor:self.contentView.widthAnchor]
-      .active = YES;
   // Add IdentityButtonControl for the default identity.
   self.identityButtonControl =
       [[IdentityButtonControl alloc] initWithFrame:CGRectZero];

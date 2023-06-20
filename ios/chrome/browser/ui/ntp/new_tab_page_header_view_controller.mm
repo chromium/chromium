@@ -5,6 +5,7 @@
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_view_controller.h"
 
 #import "base/check.h"
+#import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
 #import "base/metrics/histogram_macros.h"
@@ -12,6 +13,7 @@
 #import "base/strings/sys_string_conversions.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/shared/public/commands/application_commands.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
@@ -30,6 +32,7 @@
 #import "ios/chrome/browser/ui/lens/lens_entrypoint.h"
 #import "ios/chrome/browser/ui/ntp/logo_vendor.h"
 #import "ios/chrome/browser/ui/ntp/metrics/new_tab_page_metrics_recorder.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_controller_delegate.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_commands.h"
 #import "ios/chrome/browser/ui/ntp/new_tab_page_header_constants.h"
@@ -387,6 +390,7 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
   // Set up a button. Details for the button will be set through delegate
   // implementation of UserAccountImageUpdateDelegate.
   self.identityDiscButton = [UIButton buttonWithType:UIButtonTypeCustom];
+  self.identityDiscButton.accessibilityIdentifier = kNTPFeedHeaderIdentityDisc;
   [self.identityDiscButton addTarget:self.commandHandler
                               action:@selector(identityDiscWasTapped)
                     forControlEvents:UIControlEventTouchUpInside];
@@ -669,7 +673,11 @@ NSString* const kScribbleFakeboxElementId = @"fakebox";
       kPersonCropCircleSymbol, ntp_home::kSignedOutIdentityIconDimension);
 
   self.identityDiscAccessibilityLabel =
-      l10n_util::GetNSString(IDS_IOS_IDENTITY_DISC_SIGNED_OUT);
+      base::FeatureList::IsEnabled(syncer::kReplaceSyncPromosWithSignInPromos)
+          ? l10n_util::GetNSString(
+                IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL)
+          : l10n_util::GetNSString(
+                IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC);
   // `self.identityDiscButton` should not be updated if the view has not been
   // created yet.
   if (self.identityDiscButton) {

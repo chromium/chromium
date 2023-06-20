@@ -13,6 +13,7 @@
 #import "components/signin/public/base/signin_metrics.h"
 #import "components/signin/public/base/signin_switches.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
 #import "ios/chrome/browser/metrics/metrics_app_interface.h"
 #import "ios/chrome/browser/policy/policy_earl_grey_utils.h"
 #import "ios/chrome/browser/policy/policy_util.h"
@@ -31,6 +32,7 @@
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmark_earl_grey_ui.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
+#import "ios/chrome/browser/ui/ntp/new_tab_page_constants.h"
 #import "ios/chrome/browser/ui/recent_tabs/recent_tabs_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/settings_table_view_controller_constants.h"
@@ -204,6 +206,16 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
     config.features_disabled.push_back(
         bookmarks::kEnableBookmarksAccountStorage);
   }
+
+  if ([self isRunningTest:@selector(testOpenSignInAndSyncFromNTP)]) {
+    config.features_disabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+  if ([self isRunningTest:@selector(testOpenSignInFromNTPIfHasDeviceAccount)]) {
+    config.features_enabled.push_back(
+        syncer::kReplaceSyncPromosWithSignInPromos);
+  }
+
   return config;
 }
 
@@ -928,8 +940,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
   SetSigninEnterprisePolicyValue(BrowserSigninMode::kDisabled);
 
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -949,8 +961,8 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       performAction:grey_tap()];
 
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityID(kNTPFeedHeaderIdentityDisc)]
       performAction:grey_tap()];
 
   // Ensure the Settings menu is displayed.
@@ -958,19 +970,38 @@ void SetSigninEnterprisePolicyValue(BrowserSigninMode signinMode) {
       assertWithMatcher:grey_sufficientlyVisible()];
 }
 
-// Tests that a signed-out user can open "Sign in" screen from the NTP.
-- (void)testOpenSignInFromNTP {
+// Tests that a signed-out user can open "Sign in and sync" screen from the NTP.
+- (void)testOpenSignInAndSyncFromNTP {
   // Select the identity disc particle.
-  [[EarlGrey selectElementWithMatcher:grey_accessibilityLabel(GetNSString(
-                                          IDS_IOS_IDENTITY_DISC_SIGNED_OUT))]
+  [[EarlGrey
+      selectElementWithMatcher:
+          grey_accessibilityLabel(GetNSString(
+              IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL_WITH_SYNC))]
       performAction:grey_tap()];
 
-  // Ensure the sign-in menu is displayed. The existence of the skip
+  // Ensure the sign-in and sync menu is displayed. The existence of the skip
   // accessibility button on screen verifies that tha sign-in screen was
   // shown.
   [[EarlGrey selectElementWithMatcher:grey_accessibilityID(
                                           kSkipSigninAccessibilityIdentifier)]
       performAction:grey_tap()];
+}
+
+// Tests that a signed-out user can open "Sign in" sheet from the NTP.
+- (void)testOpenSignInFromNTPIfHasDeviceAccount {
+  [SigninEarlGrey addFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
+
+  // Select the identity disc particle.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_ACCESSIBILITY_LABEL))]
+      performAction:grey_tap()];
+
+  // Ensure the sign-in sheet is displayed.
+  [[EarlGrey selectElementWithMatcher:
+                 grey_accessibilityLabel(l10n_util::GetNSString(
+                     IDS_IOS_IDENTITY_DISC_SIGNED_OUT_PROMO_LABEL))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 // Tests that opening the sign-in screen from the Settings and signing in works
