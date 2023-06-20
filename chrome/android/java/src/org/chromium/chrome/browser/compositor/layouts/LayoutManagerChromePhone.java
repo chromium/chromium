@@ -97,15 +97,10 @@ public class LayoutManagerChromePhone extends LayoutManagerChrome {
             // overview mode when the animation is finished.
             if (getActiveLayoutType() == LayoutType.SIMPLE_ANIMATION) {
                 setNextLayout(getLayoutForType(LayoutType.TAB_SWITCHER), true);
+                getActiveLayout().onTabClosed(time(), id, nextId, incognito);
             } else {
-                showLayout(LayoutType.TAB_SWITCHER, true);
+                super.tabClosed(id, nextId, incognito, tabRemoved);
             }
-        }
-        getActiveLayout().onTabClosed(time(), id, nextId, incognito);
-        boolean animate = !tabRemoved && animationsEnabled();
-        if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
-                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview && !animate) {
-            showLayout(LayoutType.TAB_SWITCHER, false);
         }
     }
 

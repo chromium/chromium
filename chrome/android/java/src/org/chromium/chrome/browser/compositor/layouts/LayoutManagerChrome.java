@@ -401,6 +401,17 @@ public class LayoutManagerChrome
     }
 
     @Override
+    protected void tabClosed(int id, int nextId, boolean incognito, boolean tabRemoved) {
+        boolean showOverview = nextId == Tab.INVALID_TAB_ID;
+        boolean animate = !tabRemoved && animationsEnabled();
+        if (getActiveLayoutType() != LayoutType.TAB_SWITCHER
+                && getActiveLayoutType() != LayoutType.START_SURFACE && showOverview) {
+            showLayout(LayoutType.TAB_SWITCHER, animate);
+        }
+        super.tabClosed(id, nextId, incognito, tabRemoved);
+    }
+
+    @Override
     public void onTabsAllClosing(boolean incognito) {
         if (getActiveLayout() == mStaticLayout) return;
 
