@@ -11,7 +11,7 @@
 #include "base/message_loop/message_pump_type.h"
 #include "base/test/test_support_android.h"
 #include "base/threading/thread.h"
-#include "components/cronet/android/cronet_tests_jni_headers/QuicTestServer_jni.h"
+#include "components/cronet/android/cronet_test_apk_jni/QuicTestServer_jni.h"
 #include "components/cronet/android/test/cronet_test_util.h"
 #include "net/base/ip_address.h"
 #include "net/base/ip_endpoint.h"

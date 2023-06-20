@@ -426,7 +426,6 @@ cronet_impl_native_java_deps_to_package = [
 
 # cronet_impl_native_base_java.jar - native implementation of the Cronet engine.
 android_library("cronet_impl_native_base_java") {
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   sources = [
     "java/src/org/chromium/net/impl/BidirectionalStreamBuilderImpl.java",
     "java/src/org/chromium/net/impl/BidirectionalStreamNetworkException.java",
@@ -454,6 +453,7 @@ android_library("cronet_impl_native_base_java") {
   deps += cronet_impl_native_java_deps_to_package
 
   srcjar_deps = cronet_impl_native_java_srcjar_deps
+  srcjar_deps += [ ":cronet_jni_headers" ]
 }
 
 # Groups all Cronet implementations and the common code into a single Java dependency.
@@ -865,21 +865,6 @@ instrumentation_test_apk("cronet_sample_test_apk") {
   }
 }
 
-generate_jni("cronet_tests_jni_headers") {
-  testonly = true
-  sources = [
-    "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
-    "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
-    "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
-    "test/src/org/chromium/net/CronetTestUtil.java",
-    "test/src/org/chromium/net/MockCertVerifier.java",
-    "test/src/org/chromium/net/MockUrlRequestJobFactory.java",
-    "test/src/org/chromium/net/NativeTestServer.java",
-    "test/src/org/chromium/net/QuicTestServer.java",
-    "test/src/org/chromium/net/TestUploadDataStreamHandler.java",
-  ]
-}
-
 shared_library("cronet_tests") {
   testonly = true
   assert_no_deps = [ ":cronet_static" ]
@@ -909,6 +894,7 @@ shared_library("cronet_tests") {
   ]
 
   deps = [
+    ":cronet_test_apk_jni",
     ":cronet_tests_jni_headers",
     "//base",
     "//base:i18n",
@@ -938,10 +924,22 @@ android_resources("cronet_test_apk_resources") {
   ]
 }
 
+generate_jni("cronet_test_apk_jni") {
+  testonly = true
+  sources = [
+    "test/src/org/chromium/net/CronetTestUtil.java",
+    "test/src/org/chromium/net/MockCertVerifier.java",
+    "test/src/org/chromium/net/MockUrlRequestJobFactory.java",
+    "test/src/org/chromium/net/NativeTestServer.java",
+    "test/src/org/chromium/net/QuicTestServer.java",
+    "test/src/org/chromium/net/TestUploadDataStreamHandler.java",
+  ]
+}
+
 android_library("cronet_test_apk_java") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":cronet_test_apk_jni" ]
   sources = [
     "test/src/org/chromium/net/CronetTestApplication.java",
     "test/src/org/chromium/net/CronetTestUtil.java",
@@ -1059,10 +1057,19 @@ cronet_javatests_deps_to_package = [
   "//third_party/androidx:androidx_annotation_annotation_experimental_java",
 ]
 
+generate_jni("cronet_tests_jni_headers") {
+  testonly = true
+  sources = [
+    "test/javatests/src/org/chromium/net/CronetUrlRequestContextTest.java",
+    "test/javatests/src/org/chromium/net/CronetUrlRequestTest.java",
+    "test/javatests/src/org/chromium/net/ExperimentalOptionsTest.java",
+  ]
+}
+
 android_library("cronet_javatests") {
   testonly = true
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
 
+  srcjar_deps = [ ":cronet_tests_jni_headers" ]
   sources = [
     "test/javatests/src/org/chromium/net/BidirectionalStreamQuicTest.java",
     "test/javatests/src/org/chromium/net/BidirectionalStreamTest.java",
@@ -1461,12 +1468,14 @@ jar_src("jar_cronet_impl_native_java_source") {
     "//net/android:net_java",
     "//url:url_java",
   ]
-  srcjar_deps = cronet_impl_native_java_srcjar_deps + [
-                  ":cronet_jni_registration",
-                  "//base:base_android_java_enums_srcjar",
-                  "//net/android:net_android_java_enums_srcjar",
-                  "//net/android:net_errors_java",
-                ]
+
+  srcjar_deps = cronet_impl_native_java_srcjar_deps
+  srcjar_deps += [
+    ":cronet_jni_registration",
+    "//base:base_android_java_enums_srcjar",
+    "//net/android:net_android_java_enums_srcjar",
+    "//net/android:net_errors_java",
+  ]
   excluded_patterns = _jar_excluded_patterns
   jar_path = "$_package_dir/cronet_impl_native_java-src.jar"
 }

@@ -14,7 +14,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/test/bind.h"
 #include "components/cronet/android/cronet_context_adapter.h"
-#include "components/cronet/android/cronet_tests_jni_headers/CronetTestUtil_jni.h"
+#include "components/cronet/android/cronet_test_apk_jni/CronetTestUtil_jni.h"
 #include "components/cronet/android/cronet_url_request_adapter.h"
 #include "components/cronet/cronet_context.h"
 #include "components/cronet/cronet_url_request.h"
