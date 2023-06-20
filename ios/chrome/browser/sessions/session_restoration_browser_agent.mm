@@ -256,6 +256,12 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (!CanSaveSession())
     return;
 
+  if (batch_in_progress_) {
+    save_after_batch_ = true;
+    save_immediately_ = save_immediately_ || immediately;
+    return;
+  }
+
   [session_service_ saveSession:session_ios_factory_
                       sessionID:session_identifier_
                       directory:browser_state_->GetStatePath()
@@ -405,6 +411,23 @@ void SessionRestorationBrowserAgent::WillDetachWebStateAt(
 
   // Persist the session state if a background tab is detached.
   SaveSession(/*immediately=*/false);
+}
+
+void SessionRestorationBrowserAgent::WillBeginBatchOperation(
+    WebStateList* web_state_list) {
+  batch_in_progress_ = true;
+  save_after_batch_ = false;
+  save_immediately_ = false;
+}
+
+void SessionRestorationBrowserAgent::BatchOperationEnded(
+    WebStateList* web_state_list) {
+  batch_in_progress_ = false;
+  if (save_after_batch_) {
+    SaveSession(save_immediately_);
+    save_after_batch_ = false;
+    save_immediately_ = false;
+  }
 }
 
 #pragma mark - WebStateObserver
