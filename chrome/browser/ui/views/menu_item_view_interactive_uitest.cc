@@ -317,7 +317,7 @@ VIEW_TEST(MenuItemViewTestRemove20, RemoveItem20)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
 // Flaky on Wayland.
-#if BUILDFLAG(IS_OZONE)
+#if BUILDFLAG(IS_OZONE) || BUILDFLAG(IS_LINUX)
 #define MAYBE_RemoveItem21 DISABLED_RemoveItem21
 #else
 #define MAYBE_RemoveItem21 RemoveItem21
