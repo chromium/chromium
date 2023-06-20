@@ -5,6 +5,8 @@
 #ifndef ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
 #define ASH_WM_DESKS_TEMPLATES_SAVED_DESK_UTIL_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 
 class PrefRegistrySimple;
@@ -33,6 +35,10 @@ ASH_EXPORT SavedDeskDialogController* GetSavedDeskDialogController();
 
 // Will return null if overview mode is not active.
 ASH_EXPORT SavedDeskPresenter* GetSavedDeskPresenter();
+
+// Returns the app ID of the window, if present. Returns an empty string
+// otherwise.
+ASH_EXPORT std::string GetAppId(aura::Window* window);
 
 // Returns true if `window` was launched from an admin template.
 bool IsAdminTemplateWindow(aura::Window* window);

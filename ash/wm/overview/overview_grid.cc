@@ -66,7 +66,6 @@
 #include "base/ranges/algorithm.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/ui/base/window_properties.h"
-#include "components/app_restore/full_restore_utils.h"
 #include "ui/aura/client/aura_constants.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
@@ -2729,7 +2728,7 @@ void OverviewGrid::UpdateNumSavedDeskUnsupportedWindows(aura::Window* window,
                               (Shell::Get()
                                    ->overview_controller()
                                    ->disable_app_id_check_for_saved_desks() ||
-                               !full_restore::GetAppId(window).empty());
+                               !saved_desk_util::GetAppId(window).empty());
   int addend = increment ? 1 : -1;
   if (!DeskTemplate::IsAppTypeSupported(window) || !has_restore_id) {
     num_unsupported_windows_ += addend;

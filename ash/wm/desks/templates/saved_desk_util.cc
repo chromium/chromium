@@ -7,11 +7,13 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/session/session_types.h"
+#include "ash/public/cpp/window_properties.h"
 #include "ash/session/session_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/wm/desks/templates/saved_desk_constants.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_session.h"
+#include "components/app_restore/full_restore_utils.h"
 #include "components/app_restore/window_properties.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
@@ -82,6 +84,23 @@ SavedDeskPresenter* GetSavedDeskPresenter() {
       overview_controller->overview_session()->saved_desk_presenter();
   DCHECK(presenter);
   return presenter;
+}
+
+std::string GetAppId(aura::Window* window) {
+  // Check with full restore first.
+  if (std::string app_id = full_restore::GetAppId(window); !app_id.empty()) {
+    return app_id;
+  }
+
+  // Otherwise, check if there's a window property.
+  // TODO(b/288153585): Figure out if the kAppIDKey property is always going to
+  // be set for window types that we care about. If that is the case, we should
+  // be able to drop the call to full restore.
+  if (const std::string* app_id_property = window->GetProperty(kAppIDKey)) {
+    return *app_id_property;
+  }
+
+  return "";
 }
 
 bool IsAdminTemplateWindow(aura::Window* window) {
