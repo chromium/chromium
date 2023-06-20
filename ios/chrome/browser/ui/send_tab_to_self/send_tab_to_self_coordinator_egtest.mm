@@ -4,6 +4,7 @@
 
 #import "base/functional/bind.h"
 #import "components/send_tab_to_self/features.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/signin/fake_system_identity.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
 #import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
@@ -142,6 +143,14 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
   AppLaunchConfiguration config;
   config.features_enabled.push_back(
       send_tab_to_self::kSendTabToSelfSigninPromo);
+  if ([self isRunningTest:@selector
+            (testHideButtonIfSignedOutAndNoDeviceAccount)]) {
+    config.features_disabled.push_back(kConsistencyNewAccountInterface);
+  }
+  if ([self isRunningTest:@selector
+            (testShowButtonIfSignedOutAndNoDeviceAccount)]) {
+    config.features_enabled.push_back(kConsistencyNewAccountInterface);
+  }
   return config;
 }
 
@@ -156,6 +165,21 @@ std::unique_ptr<net::test_server::HttpResponse> RespondWithConstantPage(
       selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
                                    IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
       assertWithMatcher:grey_notVisible()];
+}
+
+// Tests that the entry point button is shown to a signed out user, even if
+// there are no device-level accounts.
+- (void)testShowButtonIfSignedOutAndNoDeviceAccount {
+  [ChromeEarlGrey loadURL:self.testServer->GetURL("/")];
+  [ChromeEarlGrey waitForWebStateContainingText:kPageContent];
+
+  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabShareButton()]
+      performAction:grey_tap()];
+
+  [[EarlGrey
+      selectElementWithMatcher:grey_accessibilityLabel(l10n_util::GetNSString(
+                                   IDS_IOS_SHARE_MENU_SEND_TAB_TO_SELF_ACTION))]
+      assertWithMatcher:grey_sufficientlyVisible()];
 }
 
 - (void)testShowPromoIfSignedOutAndHasDeviceAccount {

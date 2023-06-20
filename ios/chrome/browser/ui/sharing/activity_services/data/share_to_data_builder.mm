@@ -9,6 +9,7 @@
 #import "components/send_tab_to_self/entry_point_display_reason.h"
 #import "ios/chrome/browser/find_in_page/abstract_find_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
+#import "ios/chrome/browser/shared/public/features/features.h"
 #import "ios/chrome/browser/shared/ui/util/url_with_title.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service.h"
 #import "ios/chrome/browser/signin/chrome_account_manager_service_factory.h"
@@ -79,11 +80,12 @@ ShareToData* ShareToDataForWebState(web::WebState* web_state,
       ChromeBrowserState::FromBrowserState(web_state->GetBrowserState());
   ChromeAccountManagerService* accountManagerService =
       ChromeAccountManagerServiceFactory::GetForBrowserState(browser_state);
-  // Divergence between iOS and other platforms: today the sign-in promo UI only
-  // supports the case where there are already accounts on the device.
+  // When there are no device-level accounts, it's only possible to show the
+  // promo UI if IsConsistencyNewAccountInterfaceEnabled() is true.
   BOOL can_send_tab_to_self =
-      !browser_state->IsOffTheRecord() && accountManagerService &&
-      accountManagerService->HasIdentities() &&
+      !browser_state->IsOffTheRecord() &&
+      (accountManagerService->HasIdentities() ||
+       IsConsistencyNewAccountInterfaceEnabled()) &&
       send_tab_to_self::GetEntryPointDisplayReason(
           finalURLToShare,
           SyncServiceFactory::GetForBrowserState(browser_state),
