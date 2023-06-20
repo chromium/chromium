@@ -23,7 +23,6 @@
 #include "base/time/time.h"
 #include "base/trace_event/trace_log.h"
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/scheduler/web_thread_scheduler.h"
 #include "third_party/blink/renderer/platform/allow_discouraged_type.h"
@@ -836,8 +835,6 @@ class PLATFORM_EXPORT MainThreadSchedulerImpl
     base::TimeDelta rendering_blocking_duration_since_last_frame;
 
     WTF::Vector<AgentGroupSchedulerScope> agent_group_scheduler_scope_stack;
-
-    std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter;
 
     std::unique_ptr<TaskAttributionTracker> task_attribution_tracker;
     Persistent<HeapHashSet<WeakMember<AgentGroupSchedulerImpl>>>

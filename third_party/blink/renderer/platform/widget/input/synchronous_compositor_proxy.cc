@@ -6,8 +6,6 @@
 
 #include "base/functional/bind.h"
 #include "base/memory/shared_memory_mapping.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 #include "third_party/skia/include/core/SkCanvas.h"
@@ -20,9 +18,6 @@ namespace blink {
 SynchronousCompositorProxy::SynchronousCompositorProxy(
     InputHandlerProxy* input_handler_proxy)
     : input_handler_proxy_(input_handler_proxy),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.SynchronousCompositorProxy")),
       viz_frame_submission_enabled_(
           features::IsUsingVizFrameSubmissionForWebView()),
       page_scale_factor_(0.f),
@@ -269,16 +264,6 @@ void SynchronousCompositorProxy::SetBeginFrameSourcePaused(bool paused) {
 void SynchronousCompositorProxy::BeginFrame(
     const viz::BeginFrameArgs& args,
     const HashMap<uint32_t, viz::FrameTimingDetails>& timing_details) {
-  if (!layer_tree_frame_sink_ || !needs_begin_frames_) {
-    // Received a BeginFrame without the needs_begin_frames_ signal present,
-    // so the PowerModeVoter in SynchronousLayerTreeFrameSink will not cover
-    // this IPC. Track it via a one-off vote here instead.
-    animation_power_mode_voter_->VoteFor(
-        power_scheduler::PowerMode::kAnimation);
-    animation_power_mode_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kAnimationTimeout);
-  }
-
   if (layer_tree_frame_sink_) {
     base::flat_map<uint32_t, viz::FrameTimingDetails> timings;
     for (const auto& pair : timing_details) {

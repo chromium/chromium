@@ -77,7 +77,6 @@ include_rules = [
     "+build",
     "+cc/paint",
     "+components/crash/core/common/crash_key.h",
-    "+components/power_scheduler",
     "+net/base/features.h",
     "+net/cookies",
     "+net/http/structured_headers.h",

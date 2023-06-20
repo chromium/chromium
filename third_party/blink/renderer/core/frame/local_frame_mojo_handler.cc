@@ -8,8 +8,6 @@
 #include "base/numerics/safe_conversions.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "services/network/public/cpp/url_loader_completion_status.h"
 #include "services/network/public/mojom/url_response_head.mojom.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
@@ -325,10 +323,7 @@ void ActiveURLMessageFilter::DidDispatchOrReject(mojo::Message* message,
 }
 
 LocalFrameMojoHandler::LocalFrameMojoHandler(blink::LocalFrame& frame)
-    : frame_(frame),
-      script_execution_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.ScriptExecutionVoter")) {
+    : frame_(frame) {
   frame.GetRemoteNavigationAssociatedInterfaces()->GetInterface(
       back_forward_cache_controller_host_remote_.BindNewEndpointAndPassReceiver(
           frame.GetTaskRunner(TaskType::kInternalDefault)));
@@ -806,8 +801,6 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
 
   v8::HandleScope handle_scope(ToIsolate(frame_));
   v8::Local<v8::Value> result;
-  script_execution_power_mode_voter_->VoteFor(
-      power_scheduler::PowerMode::kScriptExecution);
   if (!CallMethodOnFrame(frame_, object_name, method_name, std::move(arguments),
                          converter.get())
            .ToLocal(&result)) {
@@ -819,9 +812,6 @@ void LocalFrameMojoHandler::JavaScriptMethodExecuteRequest(
   } else {
     std::move(callback).Run({});
   }
-
-  script_execution_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kScriptExecutionTimeout);
 }
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequest(
@@ -830,9 +820,6 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
     JavaScriptExecuteRequestCallback callback) {
   TRACE_EVENT_INSTANT0("test_tracing", "JavaScriptExecuteRequest",
                        TRACE_EVENT_SCOPE_THREAD);
-
-  script_execution_power_mode_voter_->VoteFor(
-      power_scheduler::PowerMode::kScriptExecution);
 
   v8::HandleScope handle_scope(ToIsolate(frame_));
   v8::Local<v8::Value> result =
@@ -852,9 +839,6 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequest(
   } else {
     std::move(callback).Run({});
   }
-
-  script_execution_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kScriptExecutionTimeout);
 }
 
 void LocalFrameMojoHandler::JavaScriptExecuteRequestForTests(
@@ -939,9 +923,6 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
     return;
   }
 
-  script_execution_power_mode_voter_->VoteFor(
-      power_scheduler::PowerMode::kScriptExecution);
-
   WebScriptSource web_script_source(javascript);
   frame_->RequestExecuteScript(
       world_id, {&web_script_source, 1u},
@@ -959,9 +940,6 @@ void LocalFrameMojoHandler::JavaScriptExecuteRequestInIsolatedWorld(
           ? mojom::blink::WantResultOption::kWantResultDateAndRegExpAllowed
           : mojom::blink::WantResultOption::kNoResult,
       mojom::blink::PromiseResultOption::kDoNotWait);
-
-  script_execution_power_mode_voter_->ResetVoteAfterTimeout(
-      power_scheduler::PowerModeVoter::kScriptExecutionTimeout);
 }
 
 #if BUILDFLAG(IS_MAC)

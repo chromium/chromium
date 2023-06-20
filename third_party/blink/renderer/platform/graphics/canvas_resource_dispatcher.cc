@@ -9,9 +9,6 @@
 #include "base/debug/stack_trace.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/trace_event.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/quads/compositor_frame.h"
 #include "components/viz/common/quads/texture_draw_quad.h"
@@ -78,9 +75,6 @@ CanvasResourceDispatcher::CanvasResourceDispatcher(
       placeholder_canvas_id_(canvas_id),
       num_unreclaimed_frames_posted_(0),
       client_(client),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation.Canvas")),
       task_runner_(std::move(task_runner)),
       agent_group_scheduler_compositor_task_runner_(
           std::move(agent_group_scheduler_compositor_task_runner)) {
@@ -373,14 +367,6 @@ void CanvasResourceDispatcher::SetNeedsBeginFrameInternal() {
 
   bool needs_begin_frame = needs_begin_frame_ && !suspend_animation_;
   sink_->SetNeedsBeginFrame(needs_begin_frame);
-
-  if (needs_begin_frame) {
-    animation_power_mode_voter_->VoteFor(
-        power_scheduler::PowerMode::kAnimation);
-  } else {
-    animation_power_mode_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kAnimationTimeout);
-  }
 }
 
 bool CanvasResourceDispatcher::HasTooManyPendingFrames() const {

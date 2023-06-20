@@ -346,7 +346,6 @@ component("core") {
     "//components/attribution_reporting:mojom_blink",
     "//components/paint_preview/common",
     "//components/performance_manager/public/mojom:mojom_blink",
-    "//components/power_scheduler",
     "//components/shared_highlighting/core/common",
     "//components/web_package",
     "//gin",

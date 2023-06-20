@@ -105,7 +105,6 @@ class DummyFrameScheduler : public FrameScheduler {
   }
   void OnFirstContentfulPaintInMainFrame() override {}
   void OnFirstMeaningfulPaint() override {}
-  void OnLoad() override {}
   void OnMainFrameInteractive() override {}
   bool IsExemptFromBudgetBasedThrottling() const override { return false; }
   std::unique_ptr<blink::mojom::blink::PauseSubresourceLoadingHandle>

@@ -138,9 +138,6 @@ class FrameScheduler : public FrameOrWorkerScheduler {
   // frame.
   virtual void OnFirstMeaningfulPaint() = 0;
 
-  // Tells the scheduler that the "onload" event has occurred for this frame.
-  virtual void OnLoad() = 0;
-
   // Returns true if this frame is should not throttled (e.g. due to an active
   // connection).
   // Note that this only applies to the current frame,

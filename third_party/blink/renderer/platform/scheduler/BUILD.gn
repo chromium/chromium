@@ -178,7 +178,6 @@ blink_platform_sources("scheduler") {
   deps = [
     "//base",
     "//cc",
-    "//components/power_scheduler",
     "//device/base/synchronization",
     "//services/metrics/public/cpp:ukm_builders",
     "//services/metrics/public/mojom",
