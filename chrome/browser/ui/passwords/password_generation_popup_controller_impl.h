@@ -26,7 +26,6 @@
 #include "ui/gfx/native_widget_types.h"
 
 #if !BUILDFLAG(IS_ANDROID)
-#include "components/password_manager/core/browser/password_strength_calculation.h"
 #include "components/zoom/zoom_observer.h"
 #endif  // !BUILDFLAG(IS_ANDROID)
 
@@ -53,8 +52,6 @@ class PasswordGenerationPopupView;
 // determining the location of the popup, handling keypress events while the
 // popup is active, and notifying both the renderer and the password manager
 // if the password is accepted.
-// It is also used for computing the password strength for manually typed
-// passwords.
 //
 // NOTE: This is used on Android only to display the editing popup.
 //
@@ -92,15 +89,6 @@ class PasswordGenerationPopupControllerImpl
 
   // Create a PasswordGenerationPopupView if one doesn't already exist.
   void Show(GenerationUIState state);
-
-  // Updates popup based on the strength of the password typed by the user.
-  // If typed password is empty, creates a popup without the strength indicator.
-  // If typed password is weak, creates a popup with the strength indicator.
-  // If typed password is not weak, hides the popup (if one exists).
-  void UpdatePopupBasedOnTypedPasswordStrength();
-
-  // Update the password typed by the user.
-  void UpdateTypedPassword(const std::u16string& new_user_typed_password);
 
   // Update the value of the generated password to be displayed in the UI (e.g.
   // upon editing the generated password).
@@ -174,8 +162,6 @@ class PasswordGenerationPopupControllerImpl
   const std::u16string& password() const override;
   std::u16string SuggestedText() const override;
   const std::u16string& HelpText() const override;
-  bool IsUserTypedPasswordWeak() const override;
-  bool IsStateMinimized() const override;
 
   bool HandleKeyPressEvent(const content::NativeWebKeyboardEvent& event);
 
@@ -184,12 +170,6 @@ class PasswordGenerationPopupControllerImpl
 
   // Accept password if it's selected.
   bool PossiblyAcceptPassword();
-
-  // Displays password generation dropdown with strength indicator when
-  // `is_weak` is true, hides the dropdown otherwise. If the length of
-  // `checked_password` is higher than 5 and the user is in the experiment with
-  // minimized state, displayed popup is just a warning icon.
-  void OnWeakCheckComplete(const std::string& checked_password, bool is_weak);
 
   // Handle to the popup. May be NULL if popup isn't showing.
   raw_ptr<PasswordGenerationPopupView> view_;
@@ -220,13 +200,6 @@ class PasswordGenerationPopupControllerImpl
   // Help text in the footer.
   std::u16string help_text_;
 
-  // Password typed by the user. Currently used for computing the password
-  // strength.
-  std::u16string user_typed_password_;
-
-  // Whether the password currently typed by the user is weak.
-  bool user_typed_password_is_weak_ = false;
-
   // The current password that is considered generated. This is the password to
   // be displayed in the user generation dialog.
   std::u16string current_generated_password_;
@@ -236,15 +209,6 @@ class PasswordGenerationPopupControllerImpl
 
   // The state of the generation popup.
   GenerationUIState state_;
-
-  // Whether the popup is in a minimized state.
-  bool state_minimized_ = false;
-
-#if !BUILDFLAG(IS_ANDROID)
-  // Calculates password strength in a sandboxed utility process.
-  std::unique_ptr<password_manager::PasswordStrengthCalculation>
-      password_strength_calculation_;
-#endif
 
   std::unique_ptr<KeyPressRegistrator> key_press_handler_manager_;
 

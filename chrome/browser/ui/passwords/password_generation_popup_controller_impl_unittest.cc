@@ -25,11 +25,11 @@ using autofill::password_generation::PasswordGenerationUIData;
 using ::testing::_;
 
 PasswordGenerationUIData CreatePasswordGenerationUIData() {
-  return PasswordGenerationUIData(
-      gfx::RectF(100, 20), /*max_length=*/20, u"element",
-      /*user_typed_password=*/std::u16string(), autofill::FieldRendererId(100),
-      /*is_generation_element_password_type=*/true, base::i18n::TextDirection(),
-      autofill::FormData());
+  return PasswordGenerationUIData(gfx::RectF(100, 20), /*max_length=*/20,
+                                  u"element", autofill::FieldRendererId(100),
+                                  /*is_generation_element_password_type=*/true,
+                                  base::i18n::TextDirection(),
+                                  autofill::FormData());
 }
 
 class MockPasswordManagerDriver

@@ -53,8 +53,6 @@ class MockPasswordGenerationPopupController
   MOCK_METHOD(GenerationUIState, state, (), (const override));
   MOCK_METHOD(bool, password_selected, (), (const override));
   MOCK_METHOD(const std::u16string&, password, (), (const override));
-  MOCK_METHOD(bool, IsUserTypedPasswordWeak, (), (const override));
-  MOCK_METHOD(bool, IsStateMinimized, (), (const override));
   MOCK_METHOD(const std::u16string&, HelpText, (), (const override));
   MOCK_METHOD(std::u16string, SuggestedText, (), (const override));
 
@@ -91,7 +89,6 @@ class PasswordGenerationPopupViewBrowsertest
     ON_CALL(controller(), state)
         .WillByDefault(Return(PasswordGenerationPopupController::
                                   GenerationUIState::kOfferGeneration));
-    ON_CALL(controller(), IsStateMinimized).WillByDefault(Return(false));
     ON_CALL(controller(), SuggestedText).WillByDefault(Return(suggested_text));
   }
 
@@ -99,14 +96,9 @@ class PasswordGenerationPopupViewBrowsertest
     ON_CALL(controller(), state)
         .WillByDefault(Return(PasswordGenerationPopupController::
                                   GenerationUIState::kEditGeneratedPassword));
-    ON_CALL(controller(), IsStateMinimized).WillByDefault(Return(false));
     ON_CALL(controller(), SuggestedText)
         .WillByDefault(Return(l10n_util::GetStringUTF16(
             IDS_PASSWORD_GENERATION_EDITING_SUGGESTION)));
-  }
-
-  void PrepareMinimizedState() {
-    ON_CALL(controller(), IsStateMinimized).WillByDefault(Return(true));
   }
 
   // Marks the popup as selected (i.e. the state it is in when a user hovers
@@ -120,9 +112,7 @@ class PasswordGenerationPopupViewBrowsertest
     ASSERT_TRUE(view()->Show());
     // If this update is not forced, the password selection state does not get
     // taken into account.
-    if (!controller().IsStateMinimized()) {
-      view()->PasswordSelectionUpdated();
-    }
+    view()->PasswordSelectionUpdated();
   }
 
  private:
@@ -183,11 +173,6 @@ IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest,
                        EditingSuggestionStateHovered) {
   PrepareEditingSuggestionState();
   SetSelected(true);
-  ShowAndVerifyUi();
-}
-
-IN_PROC_BROWSER_TEST_P(PasswordGenerationPopupViewBrowsertest, MinimizedState) {
-  PrepareMinimizedState();
   ShowAndVerifyUi();
 }
 

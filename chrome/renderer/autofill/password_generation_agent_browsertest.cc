@@ -15,7 +15,6 @@
 #include "base/strings/stringprintf.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/scoped_feature_list.h"
 #include "build/build_config.h"
 #include "chrome/renderer/autofill/fake_mojo_password_manager_driver.h"
 #include "chrome/renderer/autofill/fake_password_generation_driver.h"
@@ -798,46 +797,6 @@ TEST_F(PasswordGenerationAgentTest, MaximumCharsForGenerationOffer) {
   histogram_tester.ExpectBucketCount(
       "PasswordGeneration.Event",
       autofill::password_generation::GENERATION_POPUP_SHOWN, 1);
-}
-
-TEST_F(PasswordGenerationAgentTest,
-       MaximumCharsForGenerationOfferIgnoredWithEnabledStrengthIndicator) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitAndEnableFeature(
-      password_manager::features::kPasswordStrengthIndicator);
-
-  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
-  SetFoundFormEligibleForGeneration(
-      password_generation_, GetMainFrame()->GetDocument(),
-      /*new_password_id=*/"first_password", /*confirm_password_id=*/nullptr);
-  ExpectAutomaticGenerationAvailable("first_password", kAvailable);
-
-  WebDocument document = GetMainFrame()->GetDocument();
-  WebElement element =
-      document.GetElementById(WebString::FromUTF8("first_password"));
-  ASSERT_FALSE(element.IsNull());
-  WebInputElement first_password_element = element.To<WebInputElement>();
-
-  // Dropdown should not be hidden with more characters than maximum for
-  // generation when strength indicator feature is enabled.
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_))
-      .Times(AtMost(1));
-  SimulateUserInputChangeForElement(
-      &first_password_element,
-      std::string(PasswordGenerationAgent::kMaximumCharsForGenerationOffer + 1,
-                  'a'));
-  testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
-
-  // Dropdown should be hidden when focus changes.
-  EXPECT_CALL(fake_pw_client_, GenerationElementLostFocus());
-  FocusField("username");
-  fake_pw_client_.Flush();
-
-  // Focusing the password field should bring the generation dropdown again.
-  EXPECT_CALL(fake_pw_client_, AutomaticGenerationAvailable(_));
-  FocusField("first_password");
-  fake_pw_client_.Flush();
-  testing::Mock::VerifyAndClearExpectations(&fake_pw_client_);
 }
 
 TEST_F(PasswordGenerationAgentTest, MinimumLengthForEditedPassword) {

@@ -6255,11 +6255,6 @@
     "expiry_milestone": 118
   },
   {
-    "name": "password-strength-indicator",
-    "owners": ["mtimbur@google.com", "rgod@google.com", "mamir@chromium.org"],
-    "expiry_milestone": 110
-  },
-  {
     "name": "passwords-grouping",
     "owners": ["vsemeniuk@google.com", "vasilii"],
     "expiry_milestone": 117

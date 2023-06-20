@@ -39,7 +39,6 @@
 #include "ui/views/controls/separator.h"
 #include "ui/views/controls/styled_label.h"
 #include "ui/views/layout/box_layout.h"
-#include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/flex_layout_view.h"
 #include "ui/views/vector_icons.h"
 #include "ui/views/widget/widget.h"
@@ -51,12 +50,6 @@ using password_manager::features::PasswordGenerationVariation;
 // The max width prevents the popup from growing too much when the password
 // field is too long.
 constexpr int kPasswordGenerationMaxWidth = 480;
-
-// Fixed dimensions of the minimized version of the popup, displayed in
-// `kPasswordStrengthIndicatorWithMinimizedState` experiment when the typed
-// password is weak and has over 5 characters.
-constexpr int kMinimizedPopupWidth = 42;
-constexpr int kMinimizedPopupHeight = 32;
 
 // The default icon size used in the password generation drop down.
 constexpr int kIconSize = 16;
@@ -70,39 +63,6 @@ void AddSpacerWithSize(int spacer_width, bool resize, views::View* view) {
       ->SetFlexForView(view->AddChildView(std::move(spacer)),
                        /*flex=*/resize ? 1 : 0,
                        /*use_min_size=*/true);
-}
-
-// Adds the password strength string and the warning icon children to the
-// view.
-std::unique_ptr<views::View> CreatePasswordStrengthView(
-    const std::u16string& password_strength_text) {
-  auto password_strength_view = std::make_unique<views::View>();
-
-  auto warning_icon = std::make_unique<views::ImageView>();
-  warning_icon->SetCanProcessEventsWithinSubtree(false);
-  warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-      vector_icons::kNotificationWarningIcon, ui::kColorAlertMediumSeverityIcon,
-      kIconSize));
-  password_strength_view->AddChildView(std::move(warning_icon));
-
-  auto* layout = password_strength_view->SetLayoutManager(
-      std::make_unique<views::BoxLayout>(
-          views::BoxLayout::Orientation::kHorizontal));
-  layout->set_cross_axis_alignment(
-      views::BoxLayout::CrossAxisAlignment::kCenter);
-
-  // Add space between the icon and the password strength string.
-  AddSpacerWithSize(autofill::PopupBaseView::GetHorizontalPadding(), false,
-                    password_strength_view.get());
-
-  auto* password_strength_label =
-      password_strength_view->AddChildView(std::make_unique<views::Label>(
-          password_strength_text, views::style::CONTEXT_DIALOG_BODY_TEXT,
-          views::style::STYLE_HIGHLIGHTED));
-  password_strength_label->SetMultiLine(true);
-  password_strength_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
-
-  return password_strength_view;
 }
 
 // Returns the message id of the help text which may differ depending on
@@ -345,7 +305,7 @@ bool PasswordGenerationPopupViewViews::Show() {
 void PasswordGenerationPopupViewViews::Hide() {
   // The controller is no longer valid after it hides us.
   controller_ = nullptr;
-  if (FullPopupVisible()) {
+  if (password_view_) {
     password_view_->reset_controller();
   }
 
@@ -359,7 +319,7 @@ void PasswordGenerationPopupViewViews::UpdateState() {
 }
 
 void PasswordGenerationPopupViewViews::UpdateGeneratedPasswordValue() {
-  if (FullPopupVisible()) {
+  if (password_view_) {
     password_view_->UpdateGeneratedPassword(controller_->password());
   }
   Layout();
@@ -370,7 +330,7 @@ bool PasswordGenerationPopupViewViews::UpdateBoundsAndRedrawPopup() {
 }
 
 void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
-  DCHECK(FullPopupVisible());
+  CHECK(password_view_);
 
   if (controller_->password_selected()) {
     DCHECK(this->password_view_);
@@ -389,15 +349,6 @@ void PasswordGenerationPopupViewViews::PasswordSelectionUpdated() {
 void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   SetBackground(
       views::CreateThemedSolidBackground(ui::kColorDropdownBackground));
-  if (controller_->IsStateMinimized()) {
-    SetLayoutManager(std::make_unique<views::FillLayout>());
-    auto warning_icon = std::make_unique<views::ImageView>();
-    warning_icon->SetImage(ui::ImageModel::FromVectorIcon(
-        vector_icons::kNotificationWarningIcon,
-        ui::kColorAlertMediumSeverityIcon, kIconSize));
-    AddChildView(std::move(warning_icon));
-    return;
-  }
 
   views::BoxLayout* box_layout =
       SetLayoutManager(std::make_unique<views::BoxLayout>(
@@ -410,13 +361,6 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
       provider->GetDistanceMetric(DISTANCE_TOAST_LABEL_VERTICAL);
   const int kHorizontalMargin =
       provider->GetDistanceMetric(DISTANCE_UNRELATED_CONTROL_HORIZONTAL);
-
-  if (controller_->IsUserTypedPasswordWeak()) {
-    auto* password_strength_view = AddChildView(CreatePasswordStrengthView(
-        l10n_util::GetStringUTF16(IDS_PASSWORD_WEAKNESS_INDICATOR)));
-    password_strength_view->SetBorder(views::CreateEmptyBorder(
-        gfx::Insets::VH(kVerticalPadding, kHorizontalMargin)));
-  }
 
   auto password_view = std::make_unique<GeneratedPasswordBox>();
   password_view->SetBorder(views::CreateEmptyBorder(
@@ -460,10 +404,6 @@ void PasswordGenerationPopupViewViews::CreateLayoutAndChildren() {
   help_label->SetDisplayedOnBackgroundColor(ui::kColorBubbleFooterBackground);
 }
 
-bool PasswordGenerationPopupViewViews::FullPopupVisible() const {
-  return password_view_;
-}
-
 void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
     ui::AXNodeData* node_data) {
   // TODO(crbug.com/1404297): kListBox is used for the same reason as in
@@ -481,10 +421,6 @@ void PasswordGenerationPopupViewViews::GetAccessibleNodeData(
 }
 
 gfx::Size PasswordGenerationPopupViewViews::CalculatePreferredSize() const {
-  if (!FullPopupVisible()) {
-    return gfx::Size(kMinimizedPopupWidth, kMinimizedPopupHeight);
-  }
-
   int width =
       std::max(password_view_->GetPreferredSize().width(),
                gfx::ToEnclosingRect(controller_->element_bounds()).width());

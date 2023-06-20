@@ -20,8 +20,6 @@ class PasswordGenerationPopupViewTester {
   virtual ~PasswordGenerationPopupViewTester() {}
 
   virtual void SimulateMouseMovementAt(const gfx::Point& point) = 0;
-
-  virtual bool IsPopupMinimized() const = 0;
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORD_GENERATION_POPUP_VIEW_TESTER_H_

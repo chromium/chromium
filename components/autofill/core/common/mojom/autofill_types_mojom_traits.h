@@ -605,11 +605,6 @@ struct StructTraits<autofill::mojom::PasswordGenerationUIDataDataView,
     return r.generation_element;
   }
 
-  static const std::u16string& user_typed_password(
-      const autofill::password_generation::PasswordGenerationUIData& r) {
-    return r.user_typed_password;
-  }
-
   static autofill::FieldRendererId generation_element_id(
       const autofill::password_generation::PasswordGenerationUIData& r) {
     return r.generation_element_id;

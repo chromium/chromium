@@ -112,7 +112,6 @@ struct PasswordGenerationUIData {
   PasswordGenerationUIData(const gfx::RectF& bounds,
                            int max_length,
                            const std::u16string& generation_element,
-                           const std::u16string& user_typed_password,
                            FieldRendererId generation_element_id,
                            bool is_generation_element_password_type,
                            base::i18n::TextDirection text_direction,
@@ -134,9 +133,6 @@ struct PasswordGenerationUIData {
 
   // Name of the password field to which the generation popup is attached.
   std::u16string generation_element;
-
-  // The password typed by the user.
-  std::u16string user_typed_password;
 
   // Renderer ID of the generation element.
   FieldRendererId generation_element_id;

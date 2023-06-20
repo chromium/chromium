@@ -57,14 +57,6 @@ using autofill::PopupHidingReason;
 using password_manager::features::PasswordGenerationVariation;
 #endif  // !BUILDFLAG(IS_ANDROID)
 
-namespace {
-
-// Minimum number of characters of the typed password to display a minimized
-// version of the generation popup.
-constexpr int kMinCharsForMinimizedPopup = 6;
-
-}  // namespace
-
 // Handles registration for key events with RenderFrameHost.
 class PasswordGenerationPopupControllerImpl::KeyPressRegistrator {
  public:
@@ -230,24 +222,6 @@ void PasswordGenerationPopupControllerImpl::PasswordAccepted() {
     weak_this->HideImpl();
 }
 
-// TODO(crbug.com/1345766): Add test checking that delayed call to this function
-// does not hide generation popup triggered by an empty password field.
-void PasswordGenerationPopupControllerImpl::OnWeakCheckComplete(
-    const std::string& checked_password,
-    bool is_weak) {
-  user_typed_password_is_weak_ = is_weak;
-  state_minimized_ =
-      is_weak && checked_password.length() >= kMinCharsForMinimizedPopup &&
-      password_manager::features::kPasswordStrengthIndicatorWithMinimizedState
-          .Get();
-
-  if (is_weak) {
-    Show(kOfferGeneration);
-  } else if (!user_typed_password_.empty()) {
-    HideImpl();
-  }
-}
-
 void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
   // When switching from editing to generation state, regenerate the password.
   if (state == kOfferGeneration &&
@@ -287,36 +261,6 @@ void PasswordGenerationPopupControllerImpl::Show(GenerationUIState state) {
 
   if (observer_)
     observer_->OnPopupShown(state_);
-}
-
-void PasswordGenerationPopupControllerImpl::
-    UpdatePopupBasedOnTypedPasswordStrength() {
-  if (user_typed_password_.empty()) {
-    user_typed_password_is_weak_ = false;
-    state_minimized_ = false;
-    Show(kOfferGeneration);
-    return;
-  }
-
-#if !BUILDFLAG(IS_ANDROID)
-  if (!password_strength_calculation_) {
-    password_strength_calculation_ =
-        std::make_unique<password_manager::PasswordStrengthCalculation>();
-  }
-  const std::string user_typed_password =
-      base::UTF16ToUTF8(user_typed_password_);
-  password_manager::PasswordStrengthCalculation::CompletionCallback completion =
-      base::BindOnce(
-          &PasswordGenerationPopupControllerImpl::OnWeakCheckComplete,
-          weak_ptr_factory_.GetWeakPtr(), user_typed_password);
-  password_strength_calculation_->CheckPasswordWeakInSandbox(
-      user_typed_password, std::move(completion));
-#endif  // !BUILDFLAG(IS_ANDROID)
-}
-
-void PasswordGenerationPopupControllerImpl::UpdateTypedPassword(
-    const std::u16string& new_user_typed_password) {
-  user_typed_password_ = new_user_typed_password;
 }
 
 void PasswordGenerationPopupControllerImpl::UpdateGeneratedPassword(
@@ -484,12 +428,4 @@ std::u16string PasswordGenerationPopupControllerImpl::SuggestedText() const {
 
 const std::u16string& PasswordGenerationPopupControllerImpl::HelpText() const {
   return help_text_;
-}
-
-bool PasswordGenerationPopupControllerImpl::IsUserTypedPasswordWeak() const {
-  return user_typed_password_is_weak_;
-}
-
-bool PasswordGenerationPopupControllerImpl::IsStateMinimized() const {
-  return state_minimized_;
 }

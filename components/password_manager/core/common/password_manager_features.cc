@@ -211,11 +211,6 @@ BASE_FEATURE(kRevampedPasswordManagementBubble,
              base::FEATURE_DISABLED_BY_DEFAULT);
 #endif
 
-// Enables the password strength indicator.
-BASE_FEATURE(kPasswordStrengthIndicator,
-             "PasswordStrengthIndicator",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
 #if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
 // Displays at least the decryptable and never saved logins in the password
 // manager

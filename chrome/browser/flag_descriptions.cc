@@ -2701,11 +2701,6 @@ const char kPasswordsImportM2Description[] =
     "Extends passwords import flow in password settings with conflict "
     "resolution functionality.";
 
-const char kPasswordStrengthIndicatorName[] = "Password strength indicator";
-const char kPasswordStrengthIndicatorDescription[] =
-    "Enables password strength indicator when typing a password during a "
-    "sign-up and password change flows.";
-
 const char kForceEnableFastCheckoutCapabilitiesName[] =
     "Force enable fast checkout capabilities";
 const char kForceEnableFastCheckoutCapabilitiesDescription[] =
