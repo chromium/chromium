@@ -5919,11 +5919,11 @@ TEST_F(PrefetchServiceNewLimitsTest, NonEagerPrefetchEvictedAtLimit) {
       std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
           /*num_on_prefetch_likely_calls=*/4));
 
-  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
-  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
-  EXPECT_CALL(mock_eviction_callback, Run(url_2)).Times(1);
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
+  EXPECT_CALL(mock_destruction_callback, Run(url_2)).Times(1);
   PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh())
-      ->SetPrefetchEvictionCallback(mock_eviction_callback.Get());
+      ->SetPrefetchDestructionCallback(mock_destruction_callback.Get());
 
   base::WeakPtr<PrefetchContainer> prefetch_1 =
       CompletePrefetch(url_1, blink::mojom::SpeculationEagerness::kModerate);
@@ -6038,10 +6038,10 @@ TEST_F(PrefetchServiceNewLimitsTest, PrefetchWithNoCandidateIsNotStarted) {
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   ASSERT_TRUE(prefetch_document_manager);
 
-  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
-  EXPECT_CALL(mock_eviction_callback, Run(url_2)).Times(1);
-  prefetch_document_manager->SetPrefetchEvictionCallback(
-      mock_eviction_callback.Get());
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url_2)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
 
   // Send 3 candidates to PrefetchDocumentManager.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -6099,10 +6099,10 @@ TEST_F(PrefetchServiceNewLimitsTest,
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   ASSERT_TRUE(prefetch_document_manager);
 
-  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
-  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
-  prefetch_document_manager->SetPrefetchEvictionCallback(
-      mock_eviction_callback.Get());
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
 
   // Send 2 candidates to PrefetchDocumentManager.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -6163,10 +6163,10 @@ TEST_F(PrefetchServiceNewLimitsTest,
       PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
   ASSERT_TRUE(prefetch_document_manager);
 
-  base::MockRepeatingCallback<void(const GURL& url)> mock_eviction_callback;
-  EXPECT_CALL(mock_eviction_callback, Run(url_1)).Times(1);
-  prefetch_document_manager->SetPrefetchEvictionCallback(
-      mock_eviction_callback.Get());
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url_1)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
 
   // Send 2 candidates to PrefetchDocumentManager.
   std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
@@ -6191,6 +6191,59 @@ TEST_F(PrefetchServiceNewLimitsTest,
   // |prefetch_1| should have been removed.
   EXPECT_FALSE(prefetch_1);
   EXPECT_TRUE(prefetch_2);
+}
+
+// Test to see if we can re-prefetch a url whose previous prefetch expired.
+TEST_F(PrefetchServiceNewLimitsTest, PrefetchReset) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitWithFeaturesAndParameters(
+      {{features::kPrefetchUseContentRefactor,
+        {{"ineligible_decoy_request_probability", "0"},
+         {"prefetch_container_lifetime_s", "1"}}}},
+      {});
+
+  NavigateAndCommit(GURL("https://example.com"));
+  MakePrefetchService(
+      std::make_unique<testing::NiceMock<MockPrefetchServiceDelegate>>(
+          /*num_on_prefetch_likely_calls=*/2));
+
+  auto* prefetch_document_manager =
+      PrefetchDocumentManager::GetOrCreateForCurrentDocument(main_rfh());
+
+  const auto url = GURL("https://example.com/one");
+  base::MockRepeatingCallback<void(const GURL& url)> mock_destruction_callback;
+  EXPECT_CALL(mock_destruction_callback, Run(url)).Times(1);
+  prefetch_document_manager->SetPrefetchDestructionCallback(
+      mock_destruction_callback.Get());
+
+  auto candidate = blink::mojom::SpeculationCandidate::New();
+  candidate->url = url;
+  candidate->action = blink::mojom::SpeculationAction::kPrefetch;
+  candidate->eagerness = blink::mojom::SpeculationEagerness::kEager;
+  candidate->referrer = blink::mojom::Referrer::New();
+
+  // Start and complete prefetch of |url|.
+  std::vector<blink::mojom::SpeculationCandidatePtr> candidates;
+  candidates.push_back(candidate.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  base::WeakPtr<PrefetchContainer> prefetch = CompleteExistingPrefetch(url);
+  ASSERT_TRUE(prefetch);
+  EXPECT_EQ(prefetch->GetPrefetchStatus(), PrefetchStatus::kPrefetchSuccessful);
+
+  // Fast forward by a second and expire |prefetch|.
+  task_environment()->FastForwardBy(base::Seconds(1));
+  EXPECT_FALSE(prefetch);
+
+  // Try reprefetching |url|.
+  // TODO(crbug.com/1245014): Ideally this prefetch would be requeued
+  // automatically.
+  candidates.clear();
+  candidates.push_back(candidate.Clone());
+  prefetch_document_manager->ProcessCandidates(candidates,
+                                               /*devtools_observer=*/nullptr);
+  // Prefetch for |url| should have started again.
+  VerifyCommonRequestState(url, /*use_prefetch_proxy=*/false);
 }
 
 }  // namespace

@@ -395,6 +395,10 @@ PrefetchContainer::~PrefetchContainer() {
   // UKM event.
 
   builder.Record(ukm::UkmRecorder::Get());
+
+  if (prefetch_document_manager_) {
+    prefetch_document_manager_->PrefetchWillBeDestroyed(this);
+  }
 }
 
 PrefetchContainer::Reader::Reader(PrefetchContainer& prefetch_container)

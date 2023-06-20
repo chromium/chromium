@@ -35,7 +35,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
     : public DocumentUserData<PrefetchDocumentManager>,
       public WebContentsObserver {
  public:
-  using PrefetchEvictionCallback = base::RepeatingCallback<void(const GURL&)>;
+  using PrefetchDestructionCallback =
+      base::RepeatingCallback<void(const GURL&)>;
 
   ~PrefetchDocumentManager() override;
 
@@ -117,8 +118,11 @@ class CONTENT_EXPORT PrefetchDocumentManager
   // decision.
   bool CanPrefetchNow(PrefetchContainer* next_prefetch);
 
-  // See documentation for |prefetch_eviction_callback_|.
-  void SetPrefetchEvictionCallback(PrefetchEvictionCallback callback);
+  // See documentation for |prefetch_destruction_callback_|.
+  void SetPrefetchDestructionCallback(PrefetchDestructionCallback callback);
+
+  // Called when a PrefetchContainer started by |this| is being destroyed.
+  void PrefetchWillBeDestroyed(PrefetchContainer* prefetch);
 
   // Destroys |prefetch|. |prefetch| could either be owned by |this| or by
   // PrefetchService.
@@ -167,9 +171,8 @@ class CONTENT_EXPORT PrefetchDocumentManager
 
   bool no_vary_search_support_enabled_ = false;
 
-  // Callback that is run after a prefetch started by this document is
-  // evicted.
-  PrefetchEvictionCallback prefetch_eviction_callback_;
+  // Callback that is run when a prefetch started by |this| is being destroyed.
+  PrefetchDestructionCallback prefetch_destruction_callback_;
 
   base::WeakPtrFactory<PrefetchDocumentManager> weak_method_factory_{this};
 

@@ -42,7 +42,7 @@ EagernessSet EagernessSetFromFeatureParam(base::StringPiece value) {
   return set;
 }
 
-void PrefetchEvictionCallback(WeakDocumentPtr document, const GURL& url) {
+void PrefetchDestructionCallback(WeakDocumentPtr document, const GURL& url) {
   PreloadingDecider* preloading_decider =
       PreloadingDecider::GetForCurrentDocument(
           document.AsRenderFrameHostIfValid());
@@ -98,8 +98,8 @@ PreloadingDecider::PreloadingDecider(RenderFrameHost* rfh)
       prerenderer_(std::make_unique<PrerendererImpl>(render_frame_host())) {
   if (PrefetchContentRefactorIsEnabled() && PrefetchNewLimitsEnabled()) {
     PrefetchDocumentManager::GetOrCreateForCurrentDocument(rfh)
-        ->SetPrefetchEvictionCallback(base::BindRepeating(
-            &PrefetchEvictionCallback, rfh->GetWeakDocumentPtr()));
+        ->SetPrefetchDestructionCallback(base::BindRepeating(
+            &PrefetchDestructionCallback, rfh->GetWeakDocumentPtr()));
   }
 }
 

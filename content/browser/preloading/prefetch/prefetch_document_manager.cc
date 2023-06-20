@@ -87,7 +87,7 @@ SpeculationCandidateToPrefetchUrlParams(
 PrefetchDocumentManager::PrefetchDocumentManager(RenderFrameHost* rfh)
     : DocumentUserData(rfh),
       WebContentsObserver(WebContents::FromRenderFrameHost(rfh)),
-      prefetch_eviction_callback_(base::DoNothing()) {}
+      prefetch_destruction_callback_(base::DoNothing()) {}
 
 PrefetchDocumentManager::~PrefetchDocumentManager() {
   // On destruction, removes any owned prefetches from |PrefetchService|. Other
@@ -451,9 +451,14 @@ bool PrefetchDocumentManager::CanPrefetchNow(PrefetchContainer* prefetch) {
   }
 }
 
-void PrefetchDocumentManager::SetPrefetchEvictionCallback(
-    PrefetchEvictionCallback callback) {
-  prefetch_eviction_callback_ = std::move(callback);
+void PrefetchDocumentManager::SetPrefetchDestructionCallback(
+    PrefetchDestructionCallback callback) {
+  prefetch_destruction_callback_ = std::move(callback);
+}
+
+void PrefetchDocumentManager::PrefetchWillBeDestroyed(
+    PrefetchContainer* prefetch) {
+  prefetch_destruction_callback_.Run(prefetch->GetURL());
 }
 
 void PrefetchDocumentManager::EvictPrefetch(
@@ -467,7 +472,6 @@ void PrefetchDocumentManager::EvictPrefetch(
     GetPrefetchService()->EvictPrefetch(prefetch->GetPrefetchContainerKey());
   }
   all_prefetches_.erase(url);
-  prefetch_eviction_callback_.Run(url);
 }
 
 DOCUMENT_USER_DATA_KEY_IMPL(PrefetchDocumentManager);
