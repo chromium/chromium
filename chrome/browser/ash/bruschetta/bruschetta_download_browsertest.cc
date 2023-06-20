@@ -129,8 +129,9 @@ std::unique_ptr<net::ClientCertStore> CreateEmptyClientCertStore() {
 IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
                        TestDownloadUrlNotFound) {
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = SimpleURLLoaderDownload::StartDownload(
-      browser()->profile(), GURL("bad url"), future.GetCallback());
+  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  download->StartDownload(browser()->profile(), GURL("bad url"),
+                          future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
   auto hash = future.Get<std::string>();
@@ -153,8 +154,8 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest, TestHappyPath) {
           base::BindRepeating(&CreateStubClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = SimpleURLLoaderDownload::StartDownload(
-      browser()->profile(), url_, future.GetCallback());
+  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  download->StartDownload(browser()->profile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
   auto hash = future.Get<std::string>();
@@ -183,8 +184,8 @@ IN_PROC_BROWSER_TEST_F(BruschettaHttpsDownloadBrowserTest,
           base::BindRepeating(&CreateEmptyClientCertStore));
 
   base::test::TestFuture<base::FilePath, std::string> future;
-  auto download = SimpleURLLoaderDownload::StartDownload(
-      browser()->profile(), url_, future.GetCallback());
+  auto download = std::make_unique<SimpleURLLoaderDownload>();
+  download->StartDownload(browser()->profile(), url_, future.GetCallback());
 
   auto path = future.Get<base::FilePath>();
   auto hash = future.Get<std::string>();

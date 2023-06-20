@@ -95,28 +95,7 @@ std::string Sha256FileForTesting(const base::FilePath& path) {
   return Sha256File(path);
 }
 
-std::unique_ptr<SimpleURLLoaderDownload> SimpleURLLoaderDownload::StartDownload(
-    Profile* profile,
-    GURL url,
-    base::OnceCallback<void(base::FilePath path, std::string sha256)>
-        callback) {
-  return base::WrapUnique(new SimpleURLLoaderDownload(profile, std::move(url),
-                                                      std::move(callback)));
-}
-
-SimpleURLLoaderDownload::SimpleURLLoaderDownload(
-    Profile* profile,
-    GURL url,
-    base::OnceCallback<void(base::FilePath path, std::string sha256)> callback)
-    : url_(std::move(url)), callback_(std::move(callback)) {
-  // We're owned (through a few levels of owning class) by the installer view
-  // which won't outlive the profile, so it's safe to pass around the raw
-  // pointer.
-  base::ThreadPool::PostTaskAndReplyWithResult(
-      FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
-      base::BindOnce(&SimpleURLLoaderDownload::Download,
-                     weak_ptr_factory_.GetWeakPtr(), profile));
-}
+SimpleURLLoaderDownload::SimpleURLLoaderDownload() = default;
 
 SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   auto seq = base::ThreadPool::CreateSequencedTaskRunner({base::MayBlock()});
@@ -124,6 +103,23 @@ SimpleURLLoaderDownload::~SimpleURLLoaderDownload() {
   if (post_deletion_closure_for_testing_) {
     seq->PostTask(FROM_HERE, std::move(post_deletion_closure_for_testing_));
   }
+}
+
+void SimpleURLLoaderDownload::StartDownload(
+    Profile* profile,
+    GURL url,
+    base::OnceCallback<void(base::FilePath path, std::string sha256)>
+        callback) {
+  DCHECK(url_.is_empty()) << " each instance is single use";
+  url_ = std::move(url);
+  callback_ = std::move(callback);
+  // We're owned (through a few levels of owning class) by the installer view
+  // which won't outlive the profile, so it's safe to pass around the raw
+  // pointer.
+  base::ThreadPool::PostTaskAndReplyWithResult(
+      FROM_HERE, {base::MayBlock()}, base::BindOnce(&MakeTempDir),
+      base::BindOnce(&SimpleURLLoaderDownload::Download,
+                     weak_ptr_factory_.GetWeakPtr(), profile));
 }
 
 void SimpleURLLoaderDownload::Download(

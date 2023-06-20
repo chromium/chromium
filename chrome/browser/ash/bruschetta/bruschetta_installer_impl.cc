@@ -172,10 +172,10 @@ void BruschettaInstallerImpl::OnFirmwareDlcInstalled(
     strategy =
         cmdline->GetSwitchValueASCII(kBruschettaInstallerDownloadStrategyFlag);
   }
-  if (strategy == kBruschettaInstallerDownloadStrategySimpleURLLoader) {
-    DownloadBootDiskURLLoader();
-  } else {
+  if (strategy == kBruschettaInstallerDownloadStrategyDownloadService) {
     DownloadBootDiskDownloadService();
+  } else {
+    DownloadBootDiskURLLoader();
   }
 }
 
@@ -335,7 +335,8 @@ void BruschettaInstallerImpl::DownloadBootDiskURLLoader() {
 
   const std::string* url = config_.FindDict(prefs::kPolicyImageKey)
                                ->FindString(prefs::kPolicyURLKey);
-  boot_disk_download_ = SimpleURLLoaderDownload::StartDownload(
+  boot_disk_download_ = download_factory_.Run();
+  boot_disk_download_->StartDownload(
       profile_, GURL(*url),
       base::BindOnce(
           &bruschetta::BruschettaInstallerImpl::OnBootDiskDownloadedURLLoader,
@@ -372,10 +373,17 @@ void BruschettaInstallerImpl::OnBootDiskDownloadedURLLoader(base::FilePath path,
 void BruschettaInstallerImpl::DownloadPflashURLLoader() {
   VLOG(2) << "Downloading pflash";
   NotifyObserver(State::kPflashDownload);
+  const base::Value::Dict* pflash = config_.FindDict(prefs::kPolicyPflashKey);
+  if (!pflash) {
+    VLOG(2) << "No pflash file set, skipping to OpenFds";
 
-  const std::string* url = config_.FindDict(prefs::kPolicyPflashKey)
-                               ->FindString(prefs::kPolicyURLKey);
-  pflash_download_ = SimpleURLLoaderDownload::StartDownload(
+    OpenFds();
+    return;
+  }
+
+  const std::string* url = pflash->FindString(prefs::kPolicyURLKey);
+  pflash_download_ = download_factory_.Run();
+  pflash_download_->StartDownload(
       profile_, GURL(*url),
       base::BindOnce(
           &bruschetta::BruschettaInstallerImpl::OnPflashDownloadedURLLoader,
