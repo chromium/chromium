@@ -171,7 +171,7 @@
       ]
     },
     {
-      "channel": "dev",
+      "channel": "beta",
       "extension_types": ["extension"],
       "min_manifest_version": 3
     }

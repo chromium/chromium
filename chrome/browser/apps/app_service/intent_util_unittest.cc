@@ -27,9 +27,11 @@
 #include "components/services/app_service/public/cpp/intent_filter.h"
 #include "components/services/app_service/public/cpp/intent_filter_util.h"
 #include "components/services/app_service/public/cpp/intent_util.h"
+#include "components/version_info/channel.h"
 #include "extensions/common/api/app_runtime.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "mojo/public/cpp/bindings/struct_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
@@ -431,12 +433,20 @@ TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_FileHandlers) {
             R"(filesystem:chrome://file-manager/.*\..*)");
 }
 
-TEST_F(IntentUtilsTest, CreateIntentFiltersForExtension_WebFileHandlers) {
-  // Extension feature flag.
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(
-      extensions_features::kExtensionWebFileHandlers);
+class IntentUtilsForExtensionsTest : public IntentUtilsTest {
+ public:
+  IntentUtilsForExtensionsTest() : channel_(version_info::Channel::BETA) {
+    feature_list_.InitAndEnableFeature(
+        extensions_features::kExtensionWebFileHandlers);
+  }
 
+ private:
+  base::test::ScopedFeatureList feature_list_;
+  extensions::ScopedCurrentChannel channel_;
+};
+
+TEST_F(IntentUtilsForExtensionsTest,
+       CreateIntentFiltersForExtension_WebFileHandlers) {
   // Create extension that provides file_handlers.
   extensions::ExtensionBuilder extension_builder("Test");
   static const char kManifest[] = R"(

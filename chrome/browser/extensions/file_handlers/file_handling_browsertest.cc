@@ -5,6 +5,7 @@
 #include <string>
 
 #include "chrome/browser/extensions/extension_browsertest.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_test.h"
 #include "extensions/common/extension_features.h"
 #include "extensions/common/manifest_handlers/web_file_handlers_info.h"
@@ -15,13 +16,15 @@ namespace {
 
 class FileHandlingWithoutFeatureBrowserTest : public ExtensionBrowserTest {
  public:
-  FileHandlingWithoutFeatureBrowserTest() {
+  FileHandlingWithoutFeatureBrowserTest()
+      : channel_(version_info::Channel::BETA) {
     feature_list_.InitAndDisableFeature(
         extensions_features::kExtensionWebFileHandlers);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  extensions::ScopedCurrentChannel channel_;
 };
 
 // Web File Handlers are either parsed or emit a warning, depending on the

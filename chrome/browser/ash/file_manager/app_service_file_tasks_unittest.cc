@@ -38,10 +38,12 @@
 #include "components/sync_preferences/testing_pref_service_syncable.h"
 #include "components/user_manager/scoped_user_manager.h"
 #include "components/user_manager/user_type.h"
+#include "components/version_info/channel.h"
 #include "content/public/test/browser_task_environment.h"
 #include "extensions/browser/entry_info.h"
 #include "extensions/common/extension_builder.h"
 #include "extensions/common/extension_features.h"
+#include "extensions/common/features/feature_channel.h"
 #include "storage/browser/file_system/external_mount_points.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -653,13 +655,14 @@ TEST_F(AppServiceFileTasksTestEnabled, FindAppServiceExtension) {
 // Enable MV3 File Handlers.
 class AppServiceFileHandlersTest : public AppServiceFileTasksTestEnabled {
  public:
-  AppServiceFileHandlersTest() {
+  AppServiceFileHandlersTest() : channel_(version_info::Channel::BETA) {
     feature_list_.InitAndEnableFeature(
         extensions_features::kExtensionWebFileHandlers);
   }
 
  private:
   base::test::ScopedFeatureList feature_list_;
+  extensions::ScopedCurrentChannel channel_;
 };
 
 // Verify App Service tasks for extensions with MV3 File Handlers.

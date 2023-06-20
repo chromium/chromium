@@ -97,7 +97,8 @@ class ExtensionAppsChromeOsBrowserTest
 
  private:
   base::test::ScopedFeatureList feature_list_;
-  extensions::ScopedCurrentChannel current_channel_{version_info::Channel::DEV};
+  extensions::ScopedCurrentChannel current_channel_{
+      version_info::Channel::BETA};
 };
 
 // Open the extension action url when opening a matching file type.
