@@ -1087,6 +1087,7 @@ component("base") {
   deps = [
     ":message_pump_buildflags",
     "//base/allocator:buildflags",
+    "//base/allocator/partition_allocator:allocator_shim",
     "//base/allocator/partition_allocator:raw_ptr",
     "//base/third_party/double_conversion",
     "//base/third_party/dynamic_annotations",
@@ -1130,6 +1131,7 @@ component("base") {
     ":sanitizer_buildflags",
     ":synchronization_buildflags",
     ":tracing_buildflags",
+    "//base/allocator/partition_allocator:allocator_shim",
     "//base/allocator/partition_allocator:buildflags",
     "//base/numerics:base_numerics",
     "//build:chromecast_buildflags",
@@ -1156,63 +1158,8 @@ component("base") {
   }
 
   if (use_allocator_shim) {
-    sources += [
-      "allocator/partition_allocator/shim/allocator_shim.cc",
-      "allocator/partition_allocator/shim/allocator_shim.h",
-      "allocator/partition_allocator/shim/allocator_shim_internals.h",
-    ]
-    if (use_partition_alloc) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_partition_alloc.h",
-        "allocator/partition_allocator/shim/nonscannable_allocator.cc",
-        "allocator/partition_allocator/shim/nonscannable_allocator.h",
-      ]
-    }
-    if (is_android) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_shim_override_cpp_symbols.h",
-        "allocator/partition_allocator/shim/allocator_shim_override_linker_wrapped_symbols.h",
-      ]
-      all_dependent_configs += [ "//base/allocator:wrap_malloc_symbols" ]
-    }
     if (is_apple) {
-      sources += [
-        "allocator/early_zone_registration_mac.h",
-        "allocator/partition_allocator/shim/allocator_shim_override_mac_default_zone.h",
-        "allocator/partition_allocator/shim/allocator_shim_override_mac_symbols.h",
-        "allocator/partition_allocator/shim/early_zone_registration_constants.h",
-      ]
-      configs += [ "//base/allocator:mac_no_default_new_delete_symbols" ]
-    }
-    if (is_chromeos || is_linux) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_shim_override_cpp_symbols.h",
-        "allocator/partition_allocator/shim/allocator_shim_override_glibc_weak_symbols.h",
-        "allocator/partition_allocator/shim/allocator_shim_override_libc_symbols.h",
-      ]
-    }
-    if (is_win) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_shim_override_ucrt_symbols_win.h",
-        "allocator/partition_allocator/shim/winheap_stubs_win.cc",
-        "allocator/partition_allocator/shim/winheap_stubs_win.h",
-      ]
-    }
-
-    if (!use_partition_alloc_as_malloc) {
-      if (is_android) {
-        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc" ]
-      }
-      if (is_apple) {
-        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc" ]
-      }
-      if (is_chromeos || is_linux) {
-        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_glibc.cc" ]
-      }
-      if (is_win) {
-        sources += [ "allocator/partition_allocator/shim/allocator_shim_default_dispatch_to_winheap.cc" ]
-      }
+      sources += [ "allocator/early_zone_registration_mac.h" ]
     }
   }
 
@@ -2028,10 +1975,6 @@ component("base") {
   # Desktop Mac.
   if (is_mac) {
     sources += [
-      "allocator/partition_allocator/shim/allocator_interception_mac.h",
-      "allocator/partition_allocator/shim/allocator_interception_mac.mm",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
-      "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
       "enterprise_util.cc",
       "enterprise_util.h",
       "files/file_path_watcher_fsevents.cc",
@@ -2250,14 +2193,7 @@ component("base") {
         "profiler/suspendable_thread_delegate_mac.h",
       ]
     }
-    if (use_allocator_shim) {
-      sources += [
-        "allocator/partition_allocator/shim/allocator_interception_mac.h",
-        "allocator/partition_allocator/shim/allocator_interception_mac.mm",
-        "allocator/partition_allocator/shim/malloc_zone_functions_mac.cc",
-        "allocator/partition_allocator/shim/malloc_zone_functions_mac.h",
-      ]
-    } else {
+    if (!use_allocator_shim) {
       sources -= [
         "sampling_heap_profiler/poisson_allocation_sampler.cc",
         "sampling_heap_profiler/poisson_allocation_sampler.h",
