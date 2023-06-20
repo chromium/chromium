@@ -53,6 +53,7 @@ class SidePanelUtil {
       Browser* browser,
       SidePanelEntry::Id id,
       absl::optional<SidePanelOpenTrigger> trigger);
+  static void RecordComboboxShown();
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_SIDE_PANEL_SIDE_PANEL_UTIL_H_

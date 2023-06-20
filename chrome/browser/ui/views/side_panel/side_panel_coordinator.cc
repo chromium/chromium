@@ -705,6 +705,9 @@ std::unique_ptr<views::Combobox> SidePanelCoordinator::CreateCombobox() {
   combobox->SetMenuSelectionAtCallback(
       base::BindRepeating(&SidePanelCoordinator::OnComboboxChangeTriggered,
                           base::Unretained(this)));
+  on_menu_will_show_subscription_ = combobox->AddMenuWillShowCallback(
+      base::BindRepeating(&SidePanelCoordinator::OnComboboxMenuWillShow,
+                          base::Unretained(this)));
   combobox->SetSelectedIndex(
       combobox_model_->GetIndexForKey((GetLastActiveEntryKey().value_or(
           SidePanelEntry::Key(GetDefaultEntry())))));
@@ -733,6 +736,10 @@ bool SidePanelCoordinator::OnComboboxChangeTriggered(size_t index) {
   views::ElementTrackerViews::GetInstance()->NotifyCustomEvent(
       kSidePanelComboboxChangedCustomEventId, header_combobox_);
   return true;
+}
+
+void SidePanelCoordinator::OnComboboxMenuWillShow() {
+  SidePanelUtil::RecordComboboxShown();
 }
 
 void SidePanelCoordinator::SetSelectedEntryInCombobox(

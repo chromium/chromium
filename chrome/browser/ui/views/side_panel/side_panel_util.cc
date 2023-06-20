@@ -218,3 +218,7 @@ void SidePanelUtil::RecordEntryShowTriggeredMetrics(
         trigger);
   }
 }
+
+void SidePanelUtil::RecordComboboxShown() {
+  base::UmaHistogramBoolean("SidePanel.ComboboxMenuShown", true);
+}

@@ -47,6 +47,8 @@ class VIEWS_EXPORT Combobox : public View,
   METADATA_HEADER(Combobox);
 
   using MenuSelectionAtCallback = base::RepeatingCallback<bool(size_t index)>;
+  using MenuWillShowCallbackList = base::RepeatingClosureList;
+  using MenuWillShowCallback = MenuWillShowCallbackList::CallbackType;
 
   static constexpr style::TextContext kContext = style::CONTEXT_BUTTON;
   static constexpr style::TextStyle kStyle = style::STYLE_PRIMARY;
@@ -117,6 +119,9 @@ class VIEWS_EXPORT Combobox : public View,
   void SetMenuSelectionAtCallback(MenuSelectionAtCallback callback) {
     menu_selection_at_callback_ = std::move(callback);
   }
+
+  base::CallbackListSubscription AddMenuWillShowCallback(
+      MenuWillShowCallback callback);
 
   // Set whether the arrow should be shown to the user.
   void SetShouldShowArrow(bool should_show_arrow) {
@@ -208,6 +213,9 @@ class VIEWS_EXPORT Combobox : public View,
   // returns true no other action is taken, if it returns false then the model
   // will updated based on the selection.
   MenuSelectionAtCallback menu_selection_at_callback_;
+
+  // Callbacks notified when the dropdown menu is about to show.
+  MenuWillShowCallbackList on_menu_will_show_;
 
   // The current selected index; nullopt means no selection.
   absl::optional<size_t> selected_index_ = absl::nullopt;

@@ -330,6 +330,11 @@ std::u16string Combobox::GetTextForRow(size_t row) {
                                             : GetModel()->GetItemAt(row);
 }
 
+base::CallbackListSubscription Combobox::AddMenuWillShowCallback(
+    MenuWillShowCallback callback) {
+  return on_menu_will_show_.Add(std::move(callback));
+}
+
 ////////////////////////////////////////////////////////////////////////////////
 // Combobox, View overrides:
 
@@ -637,6 +642,8 @@ void Combobox::ArrowButtonPressed(const ui::Event& event) {
 }
 
 void Combobox::ShowDropDownMenu(ui::MenuSourceType source_type) {
+  on_menu_will_show_.Notify();
+
   constexpr int kMenuBorderWidthTop = 1;
   // Menu's requested position's width should be the same as local bounds so the
   // border of the menu lines up with the border of the combobox. The y

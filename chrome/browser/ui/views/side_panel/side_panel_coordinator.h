@@ -185,6 +185,10 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
   // delays as the side panel content when there are delays for loading content.
   bool OnComboboxChangeTriggered(size_t index);
 
+  // Called before the combobox dropdown menu is about to show. Used to record
+  // the combobox shown metric.
+  void OnComboboxMenuWillShow();
+
   // Sets the entry corresponding to `entry_key` as selected in the combobox.
   void SetSelectedEntryInCombobox(const SidePanelEntry::Key& entry_key);
 
@@ -259,6 +263,9 @@ class SidePanelCoordinator final : public SidePanelRegistryObserver,
       nullptr;
 
   base::ObserverList<SidePanelViewStateObserver> view_state_observers_;
+
+  // Combobox menu subscription.
+  base::CallbackListSubscription on_menu_will_show_subscription_;
 
   base::ScopedMultiSourceObservation<SidePanelRegistry,
                                      SidePanelRegistryObserver>
