@@ -17,9 +17,6 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "cc/base/features.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -71,14 +68,7 @@ CompositorFrameSinkSupport::CompositorFrameSinkSupport(
       frame_sink_id_(frame_sink_id),
       surface_resource_holder_(this),
       is_root_(is_root),
-      allow_copy_output_requests_(is_root),
-      // Don't track the root surface for PowerMode voting. All child surfaces
-      // are tracked individually instead, and tracking the root surface could
-      // override votes from the children.
-      power_mode_voter_(
-          is_root ? nullptr
-                  : power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-                        "PowerModeVoter.Animation")) {
+      allow_copy_output_requests_(is_root) {
   // This may result in SetBeginFrameSource() being called.
   frame_sink_manager_->RegisterCompositorFrameSinkSupport(frame_sink_id_, this);
 }
@@ -989,25 +979,11 @@ void CompositorFrameSinkSupport::UpdateNeedsBeginFramesInternal() {
 void CompositorFrameSinkSupport::StartObservingBeginFrameSource() {
   added_frame_observer_ = true;
   begin_frame_source_->AddObserver(this);
-  if (power_mode_voter_) {
-    power_mode_voter_->VoteFor(
-        frame_sink_type_ == mojom::CompositorFrameSinkType::kMediaStream ||
-                frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo
-            ? power_scheduler::PowerMode::kVideoPlayback
-            : power_scheduler::PowerMode::kAnimation);
-  }
 }
 
 void CompositorFrameSinkSupport::StopObservingBeginFrameSource() {
   added_frame_observer_ = false;
   begin_frame_source_->RemoveObserver(this);
-  if (power_mode_voter_) {
-    power_mode_voter_->ResetVoteAfterTimeout(
-        frame_sink_type_ == mojom::CompositorFrameSinkType::kMediaStream ||
-                frame_sink_type_ == mojom::CompositorFrameSinkType::kVideo
-            ? power_scheduler::PowerModeVoter::kVideoTimeout
-            : power_scheduler::PowerModeVoter::kAnimationTimeout);
-  }
 }
 
 const FrameSinkId& CompositorFrameSinkSupport::GetFrameSinkId() const {

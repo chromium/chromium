@@ -20,7 +20,6 @@
 #include "cc/scheduler/scheduler_settings.h"
 #include "cc/scheduler/scheduler_state_machine.h"
 #include "cc/tiles/tile_priority.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_args.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
@@ -95,14 +94,13 @@ class SchedulerClient {
 
 class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
  public:
-  Scheduler(
-      SchedulerClient* client,
-      const SchedulerSettings& scheduler_settings,
-      int layer_tree_host_id,
-      base::SingleThreadTaskRunner* task_runner,
-      std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
-      CompositorFrameReportingController* compositor_frame_reporting_controller,
-      power_scheduler::PowerModeArbiter* power_mode_arbiter);
+  Scheduler(SchedulerClient* client,
+            const SchedulerSettings& scheduler_settings,
+            int layer_tree_host_id,
+            base::SingleThreadTaskRunner* task_runner,
+            std::unique_ptr<CompositorTimingHistory> compositor_timing_history,
+            CompositorFrameReportingController*
+                compositor_frame_reporting_controller);
   Scheduler(const Scheduler&) = delete;
   ~Scheduler() override;
 
@@ -351,10 +349,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   // arrive so that |client_| can be informed about changes.
   base::TimeDelta last_frame_interval_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
-  power_scheduler::PowerMode last_power_mode_vote_ =
-      power_scheduler::PowerMode::kIdle;
-
  private:
   // Posts the deadline task if needed by checking
   // SchedulerStateMachine::CurrentBeginImplFrameDeadlineMode(). This only
@@ -402,8 +396,6 @@ class CC_EXPORT Scheduler : public viz::BeginFrameObserverBase {
   bool IsInsideAction(SchedulerStateMachine::Action action) {
     return inside_action_ == action;
   }
-
-  void UpdatePowerModeVote();
 };
 
 }  // namespace cc

@@ -1,5 +1,4 @@
 include_rules = [
-  "+components/power_scheduler",
   "+gpu/ipc/client/client_shared_image_interface.h",
   "+mojo/public/cpp/bindings",
   "+services/viz/public/mojom/compositing",

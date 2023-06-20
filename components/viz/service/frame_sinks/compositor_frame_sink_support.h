@@ -15,7 +15,6 @@
 #include "base/memory/read_only_shared_memory_region.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/frame_sinks/begin_frame_source.h"
 #include "components/viz/common/frame_timing_details_map.h"
 #include "components/viz/common/quads/compositor_frame.h"
@@ -466,8 +465,6 @@ class VIZ_SERVICE_EXPORT CompositorFrameSinkSupport
   std::unique_ptr<SurfaceAnimationManager> surface_animation_manager_;
   // The sequence ID for the save directive pending copy.
   uint32_t in_flight_save_sequence_id_ = 0;
-
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_voter_;
 
   base::flat_set<base::PlatformThreadId> thread_ids_;
 

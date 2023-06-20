@@ -34,7 +34,6 @@
 #include "cc/trees/paint_holding_reason.h"
 #include "cc/trees/render_frame_metadata_observer.h"
 #include "cc/trees/scoped_abort_remaining_swap_promises.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/viz/common/frame_sinks/delay_based_time_source.h"
 #include "components/viz/common/frame_timing_details.h"
 #include "components/viz/common/gpu/raster_context_provider.h"
@@ -100,8 +99,7 @@ void SingleThreadProxy::Start() {
         this, scheduler_settings, layer_tree_host_->GetId(),
         task_runner_provider_->MainThreadTaskRunner(),
         std::move(compositor_timing_history),
-        host_impl_->compositor_frame_reporting_controller(),
-        power_scheduler::PowerModeArbiter::GetInstance());
+        host_impl_->compositor_frame_reporting_controller());
   }
 }
 
