@@ -58,6 +58,7 @@ class V8CrowdsourcedCompileHintsProducer
   void ClearData();
 
  private:
+  void ScheduleDataDeletionTask(ExecutionContext* execution_context);
   bool SendDataToUkm();
   static void AddNoise(unsigned* data);
 
@@ -70,9 +71,7 @@ class V8CrowdsourcedCompileHintsProducer
     // We've tried once to send the data to UKM (but we didn't necessarily send
     // it successfully; e.g., because of throttling or because we didn't have
     // enough data).
-    kDataGenerationFinished,
-
-    kDisabled
+    kFinishedOrDisabled
   };
   State state_ = State::kCollectingData;
 
