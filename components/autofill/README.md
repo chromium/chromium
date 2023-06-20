@@ -388,6 +388,10 @@ As the votes generation is asynchronous, it is not guaranteed that the results
 are available by the time the upload cache is flushed. In this case, votes are
 only uploaded on the next navigation.
 
+## How to introduce new field types?
+
+See go/autofill-new-fieldtypes-in-data-model-dd.
+
 <!-- TODO:
 ## How are addresses compared, updated or added?
 *
