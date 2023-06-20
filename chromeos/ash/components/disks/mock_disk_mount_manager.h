@@ -78,12 +78,6 @@ class MockDiskMountManager : public DiskMountManager {
                DiskMountManager::UnmountDeviceRecursivelyCallbackType),
               (override));
 
-  // Invokes fake device insert events.
-  void NotifyDeviceInsertEvents();
-
-  // Invokes fake device remove events.
-  void NotifyDeviceRemoveEvents();
-
   // Invokes specified mount event.
   void NotifyMountEvent(MountEvent event,
                         MountError error_code,
@@ -116,12 +110,6 @@ class MockDiskMountManager : public DiskMountManager {
       const DiskMountManager::MountPoint& mount_info);
 
  private:
-  // Is used to implement AddObserver.
-  void AddObserverInternal(DiskMountManager::Observer* observer);
-
-  // Is used to implement RemoveObserver.
-  void RemoveObserverInternal(DiskMountManager::Observer* observer);
-
   // Is used to implement disks.
   const DiskMountManager::Disks& disksInternal() const { return disks_; }
 
@@ -130,12 +118,6 @@ class MockDiskMountManager : public DiskMountManager {
   // Returns Disk object associated with the |source_path| or NULL on failure.
   const Disk* FindDiskBySourcePathInternal(
       const std::string& source_path) const;
-
-  // Notifies observers about device status update.
-  void NotifyDeviceChanged(DeviceEvent event, const std::string& path);
-
-  // Notifies observers about disk status update.
-  void NotifyDiskChanged(DiskEvent event, const Disk* disk);
 
   // The list of observers.
   base::ObserverList<DiskMountManager::Observer> observers_;
