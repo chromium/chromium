@@ -1064,7 +1064,7 @@
     },
     {
       // https://drafts.csswg.org/css-scroll-snap-2
-      name: "CSSScrollSnap2",
+      name: "CSSScrollStart",
       status: "test",
     },
     {

@@ -340,7 +340,7 @@ void ScrollableArea::SetScrollOffset(const ScrollOffset& offset,
   gfx::Vector2d animation_adjustment = gfx::ToRoundedVector2d(clamped_offset) -
                                        gfx::ToRoundedVector2d(previous_offset);
 
-  if (RuntimeEnabledFeatures::CSSScrollSnap2Enabled()) {
+  if (RuntimeEnabledFeatures::CSSScrollStartEnabled()) {
     // After a scroller has been explicitly scrolled, we should no longer apply
     // scroll-start.
     if (IsExplicitScrollType(scroll_type)) {

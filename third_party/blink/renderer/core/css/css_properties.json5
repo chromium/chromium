@@ -4462,7 +4462,7 @@
       },
       keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-inline",
@@ -4478,7 +4478,7 @@
       },
       keywords: ["auto", "start", "end", "center", "top", "bottom", "left", "right"],
       typedom_types: ["Keyword", "Length", "Percentage"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-x",
@@ -4493,7 +4493,7 @@
         name: "scroll-start",
         resolver: "horizontal"
       },
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-y",
@@ -4508,7 +4508,7 @@
         name: "scroll-start",
         resolver: "vertical"
       },
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-block",
@@ -4523,7 +4523,7 @@
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-inline",
@@ -4538,7 +4538,7 @@
       },
       keywords: ["none", "auto"],
       typedom_types: ["Keyword"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-x",
@@ -4552,7 +4552,7 @@
         resolver: "horizontal"
       },
       keywords: ["none", "auto"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target-y",
@@ -4566,7 +4566,7 @@
         resolver: "vertical"
       },
       keywords: ["none", "auto"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-timeline-attachment",
@@ -7379,13 +7379,13 @@
       name: "scroll-start",
       longhands: ["scroll-start-block", "scroll-start-inline"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-start-target",
       longhands: ["scroll-start-target-block", "scroll-start-target-inline"],
       property_methods: ["ParseShorthand", "CSSValueFromComputedStyleInternal"],
-      runtime_flag: "CSSScrollSnap2",
+      runtime_flag: "CSSScrollStart",
     },
     {
       name: "scroll-timeline",
