@@ -121,6 +121,7 @@ chrome.inputMethodPrivate.InputContext;
  *   enableGestureTyping: (boolean|undefined),
  *   enablePrediction: (boolean|undefined),
  *   enableSoundOnKeypress: (boolean|undefined),
+ *   physicalKeyboardAutoCorrectionEnabledByDefault: (boolean|undefined),
  *   physicalKeyboardAutoCorrectionLevel: (number|undefined),
  *   physicalKeyboardEnableCapitalization: (boolean|undefined),
  *   physicalKeyboardEnableDiacriticsOnLongpress: (boolean|undefined),
