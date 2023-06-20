@@ -1,0 +1,42 @@
+This is a testharness.js-based test.
+PASS e.style['anchor-name'] = "none" should set the property value
+PASS e.style['anchor-name'] = "--foo" should set the property value
+PASS e.style['anchor-name'] = "foo-bar" should not set the property value
+PASS e.style['anchor-name'] = "--foo --bar" should not set the property value
+PASS e.style['anchor-name'] = "--foo, --bar" should not set the property value
+PASS e.style['anchor-name'] = "100px" should not set the property value
+PASS e.style['anchor-name'] = "100%" should not set the property value
+PASS Property anchor-name value 'none'
+PASS Property anchor-name value '--foo'
+PASS Property anchor-name has initial value none
+PASS Property anchor-name does not inherit
+FAIL CSS Transitions: property <anchor-name> from [--foo] to [none] at (-0.3) should be [none] assert_equals: expected "none " but got "- - foo "
+FAIL CSS Transitions: property <anchor-name> from [--foo] to [none] at (0) should be [none] assert_equals: expected "none " but got "- - foo "
+FAIL CSS Transitions: property <anchor-name> from [--foo] to [none] at (0.3) should be [none] assert_equals: expected "none " but got "- - foo "
+PASS CSS Transitions: property <anchor-name> from [--foo] to [none] at (0.5) should be [none]
+PASS CSS Transitions: property <anchor-name> from [--foo] to [none] at (0.6) should be [none]
+PASS CSS Transitions: property <anchor-name> from [--foo] to [none] at (1) should be [none]
+PASS CSS Transitions: property <anchor-name> from [--foo] to [none] at (1.5) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (-0.3) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (0) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (0.3) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (0.5) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (0.6) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (1) should be [none]
+PASS CSS Transitions with transition: all: property <anchor-name> from [--foo] to [none] at (1.5) should be [none]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (-0.3) should be [--foo]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (0) should be [--foo]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (0.3) should be [--foo]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (0.5) should be [none]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (0.6) should be [none]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (1) should be [none]
+PASS CSS Animations: property <anchor-name> from [--foo] to [none] at (1.5) should be [none]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (-0.3) should be [--foo]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (0) should be [--foo]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (0.3) should be [--foo]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (0.5) should be [none]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (0.6) should be [none]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (1) should be [none]
+PASS Web Animations: property <anchor-name> from [--foo] to [none] at (1.5) should be [none]
+Harness: the test ran to completion.
+

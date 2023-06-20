@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+FAIL CSS Transitions: property <clear> from [initial] to [both] at (-0.3) should be [both] assert_equals: expected "both " but got "none "
+FAIL CSS Transitions: property <clear> from [initial] to [both] at (0) should be [both] assert_equals: expected "both " but got "none "
+FAIL CSS Transitions: property <clear> from [initial] to [both] at (0.3) should be [both] assert_equals: expected "both " but got "none "
+PASS CSS Transitions: property <clear> from [initial] to [both] at (0.5) should be [both]
+PASS CSS Transitions: property <clear> from [initial] to [both] at (0.6) should be [both]
+PASS CSS Transitions: property <clear> from [initial] to [both] at (1) should be [both]
+PASS CSS Transitions: property <clear> from [initial] to [both] at (1.5) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (-0.3) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (0) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (0.3) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (0.5) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (0.6) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (1) should be [both]
+PASS CSS Transitions with transition: all: property <clear> from [initial] to [both] at (1.5) should be [both]
+PASS CSS Animations: property <clear> from [initial] to [both] at (-0.3) should be [initial]
+PASS CSS Animations: property <clear> from [initial] to [both] at (0) should be [initial]
+PASS CSS Animations: property <clear> from [initial] to [both] at (0.3) should be [initial]
+PASS CSS Animations: property <clear> from [initial] to [both] at (0.5) should be [both]
+PASS CSS Animations: property <clear> from [initial] to [both] at (0.6) should be [both]
+PASS CSS Animations: property <clear> from [initial] to [both] at (1) should be [both]
+PASS CSS Animations: property <clear> from [initial] to [both] at (1.5) should be [both]
+PASS Web Animations: property <clear> from [initial] to [both] at (-0.3) should be [initial]
+PASS Web Animations: property <clear> from [initial] to [both] at (0) should be [initial]
+PASS Web Animations: property <clear> from [initial] to [both] at (0.3) should be [initial]
+PASS Web Animations: property <clear> from [initial] to [both] at (0.5) should be [both]
+PASS Web Animations: property <clear> from [initial] to [both] at (0.6) should be [both]
+PASS Web Animations: property <clear> from [initial] to [both] at (1) should be [both]
+PASS Web Animations: property <clear> from [initial] to [both] at (1.5) should be [both]
+Harness: the test ran to completion.
+

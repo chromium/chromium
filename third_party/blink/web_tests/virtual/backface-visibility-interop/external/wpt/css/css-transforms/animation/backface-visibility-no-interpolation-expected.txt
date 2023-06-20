@@ -1,0 +1,31 @@
+This is a testharness.js-based test.
+FAIL CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (-0.3) should be [hidden] assert_equals: expected "hidden " but got "visible "
+FAIL CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (0) should be [hidden] assert_equals: expected "hidden " but got "visible "
+FAIL CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (0.3) should be [hidden] assert_equals: expected "hidden " but got "visible "
+PASS CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (0.5) should be [hidden]
+PASS CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (0.6) should be [hidden]
+PASS CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (1) should be [hidden]
+PASS CSS Transitions: property <backface-visibility> from [initial] to [hidden] at (1.5) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (-0.3) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (0) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (0.3) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (0.5) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (0.6) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (1) should be [hidden]
+PASS CSS Transitions with transition: all: property <backface-visibility> from [initial] to [hidden] at (1.5) should be [hidden]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (-0.3) should be [initial]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (0) should be [initial]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (0.3) should be [initial]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (0.5) should be [hidden]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (0.6) should be [hidden]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (1) should be [hidden]
+PASS CSS Animations: property <backface-visibility> from [initial] to [hidden] at (1.5) should be [hidden]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (-0.3) should be [initial]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (0) should be [initial]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (0.3) should be [initial]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (0.5) should be [hidden]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (0.6) should be [hidden]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (1) should be [hidden]
+PASS Web Animations: property <backface-visibility> from [initial] to [hidden] at (1.5) should be [hidden]
+Harness: the test ran to completion.
+
