@@ -872,6 +872,7 @@ if (current_toolchain == default_toolchain) {
       "$google_play_services_package:google_play_services_cast_framework_java",
       "$google_play_services_package:google_play_services_cast_java",
       "$google_play_services_package:google_play_services_gcm_java",
+      "$google_play_services_package:google_play_services_tasks_java",
       "//base:base_java_test_support",
       "//base:base_java_test_support_uncommon",
       "//base:base_junit_test_support",

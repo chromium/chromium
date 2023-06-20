@@ -41,8 +41,6 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
-import org.chromium.components.externalauth.ExternalAuthUtils;
-import org.chromium.components.externalauth.UserRecoverableErrorHandler;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.version_info.VersionInfo;
 import org.chromium.content_public.browser.ClientDataJson;
@@ -183,11 +181,19 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         // on security keys. There was a bug where discoverable credentials
         // accidentally included attestation, which was confusing, so that's
         // filtered here.
-        mAttestationAcceptable = options.authenticatorSelection == null
+        final boolean rkDiscouraged = options.authenticatorSelection == null
                 || options.authenticatorSelection.residentKey == ResidentKeyRequirement.DISCOURAGED;
+        mAttestationAcceptable = rkDiscouraged;
         mEchoCredProps = options.credProps;
 
-        if (isCredManEnabled()) {
+        // residentKey=discouraged requests are often for the traditional,
+        // non-syncing platform authenticator on Android. A number of sites use
+        // this and, so as not to disrupt them with Android 14, these requests
+        // continue to be sent directly to Play Services.
+        //
+        // Otherwise these requests are for security keys, and Play Services is
+        // currently the best answer for those requests too.
+        if (!rkDiscouraged && isCredManEnabled()) {
             makeCredentialViaCredMan(options, origin);
             return;
         }
@@ -198,24 +204,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             return;
         }
 
-        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
-        Parcel args = call.start();
-        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
-        args.writeStrongBinder(result);
-        args.writeInt(1); // This indicates that the following options are present.
-
         try {
-            Fido2Api.appendBrowserMakeCredentialOptionsToParcel(options,
-                    Uri.parse(convertOriginToString(origin)), /* clientDataHash= */ null, args);
+            Fido2ApiCallHelper.getInstance().invokeFido2MakeCredential(options,
+                    Uri.parse(convertOriginToString(origin)), /* clientDataHash= */ null,
+                    this::onGotPendingIntent, this::onBinderCallException);
         } catch (NoSuchAlgorithmException e) {
             returnErrorAndResetCallback(AuthenticatorStatus.ALGORITHM_UNSUPPORTED);
             return;
         }
-
-        Task<PendingIntent> task = call.run(Fido2ApiCall.METHOD_BROWSER_REGISTER,
-                Fido2ApiCall.TRANSACTION_REGISTER, args, result);
-        task.addOnSuccessListener(this::onGotPendingIntent);
-        task.addOnFailureListener(this::onBinderCallException);
     }
 
     private void onBinderCallException(Exception e) {
@@ -424,8 +420,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     }
 
     private boolean apiAvailable() {
-        return ExternalAuthUtils.getInstance().canUseGooglePlayServices(
-                new UserRecoverableErrorHandler.Silent());
+        return Fido2ApiCallHelper.getInstance().arePlayServicesAvailable();
     }
 
     private void onWebAuthnCredentialDetailsListReceived(PublicKeyCredentialRequestOptions options,
@@ -532,18 +527,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mConditionalUiState = ConditionalUiState.REQUEST_SENT_TO_PLATFORM;
         }
 
-        Fido2ApiCall call = new Fido2ApiCall(ContextUtils.getApplicationContext());
-        Parcel args = call.start();
-        Fido2ApiCall.PendingIntentResult result = new Fido2ApiCall.PendingIntentResult();
-        args.writeStrongBinder(result);
-        args.writeInt(1); // This indicates that the following options are present.
-
-        Fido2Api.appendBrowserGetAssertionOptionsToParcel(
-                options, Uri.parse(callerOriginString), clientDataHash, /*tunnelId=*/null, args);
-        Task<PendingIntent> task = call.run(
-                Fido2ApiCall.METHOD_BROWSER_SIGN, Fido2ApiCall.TRANSACTION_SIGN, args, result);
-        task.addOnSuccessListener(this::onGotPendingIntent);
-        task.addOnFailureListener(this::onBinderCallException);
+        Fido2ApiCallHelper.getInstance().invokeFido2GetAssertion(options,
+                Uri.parse(callerOriginString), clientDataHash, this::onGotPendingIntent,
+                this::onBinderCallException);
     }
 
     private void dispatchHybridGetAssertionRequest(PublicKeyCredentialRequestOptions options,
