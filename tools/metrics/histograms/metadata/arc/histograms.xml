@@ -1417,7 +1417,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.ButtonGroupRepositionOperationType"
-    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
+    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-12-19">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
@@ -1465,7 +1465,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Arc.InputOverlay.MenuEntryRepositionOperationType"
-    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-06-13">
+    enum="ArcInputOverlayRepositionOperationType" expires_after="2023-12-19">
   <owner>cuicuiruan@google.com</owner>
   <owner>arc-gaming@google.com</owner>
   <summary>
