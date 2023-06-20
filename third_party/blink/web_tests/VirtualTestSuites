@@ -2113,5 +2113,16 @@
       "--disable-features=CSPWildcardsInPermissionsPolicies"
     ],
     "expires": "Dec 1, 2023"
+  },
+  {
+    "prefix": "produce-compile-hints",
+    "platforms": ["Linux"],
+    "bases": [
+      "external/wpt/fetch",
+      "external/wpt/loading",
+      "external/wpt/html/semantics/scripting-1"
+    ],
+    "args": ["--enable-features=ProduceCompileHints"],
+    "expires": "never"
   }
 ]
