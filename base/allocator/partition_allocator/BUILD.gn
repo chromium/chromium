@@ -33,46 +33,6 @@ config("memory_tagging") {
   }
 }
 
-# Used to shim malloc symbols on Android. see //base/allocator/README.md.
-config("wrap_malloc_symbols") {
-  ldflags = [
-    "-Wl,-wrap,calloc",
-    "-Wl,-wrap,free",
-    "-Wl,-wrap,malloc",
-    "-Wl,-wrap,memalign",
-    "-Wl,-wrap,posix_memalign",
-    "-Wl,-wrap,pvalloc",
-    "-Wl,-wrap,realloc",
-    "-Wl,-wrap,valloc",
-
-    # Not allocating memory, but part of the API
-    "-Wl,-wrap,malloc_usable_size",
-
-    # <stdlib.h> functions
-    "-Wl,-wrap,realpath",
-
-    # <string.h> functions
-    "-Wl,-wrap,strdup",
-    "-Wl,-wrap,strndup",
-
-    # <unistd.h> functions
-    "-Wl,-wrap,getcwd",
-
-    # <stdio.h> functions
-    "-Wl,-wrap,asprintf",
-    "-Wl,-wrap,vasprintf",
-  ]
-}
-
-config("mac_no_default_new_delete_symbols") {
-  if (!is_component_build) {
-    # This is already set when we compile libc++, see
-    # buildtools/third_party/libc++/BUILD.gn. But it needs to be set here as
-    # well, since the shim defines the symbols, to prevent them being exported.
-    cflags = [ "-fvisibility-global-new-delete-hidden" ]
-  }
-}
-
 if (is_fuchsia) {
   config("fuchsia_sync_lib") {
     libs = [
@@ -422,89 +382,6 @@ component("partition_alloc") {
   # This is incompatible with stack protectors since the TLS won't be pkey-tagged.
   if (enable_pkeys && is_debug) {
     configs += [ ":no_stack_protector" ]
-  }
-}
-
-source_set("allocator_shim") {
-  sources = []
-  all_dependent_configs = []
-  defines = [ "BASE_IMPLEMENTATION" ]
-
-  if (use_allocator_shim) {
-    sources += [
-      "shim/allocator_shim.cc",
-      "shim/allocator_shim.h",
-      "shim/allocator_shim_internals.h",
-    ]
-    if (use_partition_alloc) {
-      sources += [
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.cc",
-        "shim/allocator_shim_default_dispatch_to_partition_alloc.h",
-        "shim/nonscannable_allocator.cc",
-        "shim/nonscannable_allocator.h",
-      ]
-    }
-    if (is_android) {
-      sources += [
-        "shim/allocator_shim_override_cpp_symbols.h",
-        "shim/allocator_shim_override_linker_wrapped_symbols.h",
-      ]
-      all_dependent_configs += [ ":wrap_malloc_symbols" ]
-    }
-    if (is_apple) {
-      sources += [
-        "shim/allocator_interception_mac.h",
-        "shim/allocator_interception_mac.mm",
-        "shim/allocator_shim_override_mac_default_zone.h",
-        "shim/allocator_shim_override_mac_symbols.h",
-        "shim/early_zone_registration_constants.h",
-        "shim/malloc_zone_functions_mac.cc",
-        "shim/malloc_zone_functions_mac.h",
-      ]
-      configs += [ ":mac_no_default_new_delete_symbols" ]
-    }
-    if (is_chromeos || is_linux) {
-      sources += [
-        "shim/allocator_shim_override_cpp_symbols.h",
-        "shim/allocator_shim_override_glibc_weak_symbols.h",
-        "shim/allocator_shim_override_libc_symbols.h",
-      ]
-    }
-    if (is_win) {
-      sources += [
-        "shim/allocator_shim_override_ucrt_symbols_win.h",
-        "shim/winheap_stubs_win.cc",
-        "shim/winheap_stubs_win.h",
-      ]
-    }
-
-    if (!use_partition_alloc_as_malloc) {
-      if (is_android) {
-        sources += [
-          "shim/allocator_shim_default_dispatch_to_linker_wrapped_symbols.cc",
-        ]
-      }
-      if (is_apple) {
-        sources +=
-            [ "shim/allocator_shim_default_dispatch_to_mac_zoned_malloc.cc" ]
-      }
-      if (is_chromeos || is_linux) {
-        sources += [ "shim/allocator_shim_default_dispatch_to_glibc.cc" ]
-      }
-      if (is_win) {
-        sources += [ "shim/allocator_shim_default_dispatch_to_winheap.cc" ]
-      }
-    }
-
-    deps = [
-      ":buildflags",
-      ":partition_alloc",
-      "//base:base_static",  # For base_export.h
-    ]
-  }
-
-  if (build_with_chromium) {
-    visibility = [ "//base:base" ]
   }
 }
 
