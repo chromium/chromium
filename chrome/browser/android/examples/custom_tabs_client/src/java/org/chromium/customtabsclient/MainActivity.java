@@ -33,6 +33,8 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.WindowInsets;
 import android.view.WindowMetrics;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.AutoCompleteTextView;
@@ -328,6 +330,17 @@ public class MainActivity
                 new ArrayAdapter<>(this, android.R.layout.simple_list_item_1, urlsDropdown);
         mEditUrl.setAdapter(adapter);
         mEditUrl.setOnClickListener(v -> mEditUrl.showDropDown());
+        mEditUrl.setOnEditorActionListener((v, actionId, event) -> {
+            if (actionId == EditorInfo.IME_ACTION_DONE) {
+                mEditUrl.clearFocus();
+                // Hide the keyboard
+                InputMethodManager imm =
+                        (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
+                imm.hideSoftInputFromWindow(mEditUrl.getWindowToken(), 0);
+                return true;
+            }
+            return false;
+        });
     }
 
     private void updateUrlsList() {
