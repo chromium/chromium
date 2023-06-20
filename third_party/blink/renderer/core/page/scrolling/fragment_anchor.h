@@ -62,6 +62,10 @@ class CORE_EXPORT FragmentAnchor : public GarbageCollected<FragmentAnchor> {
   virtual void ScrollElementIntoViewWithOptions(Element* element_to_scroll,
                                                 ScrollIntoViewOptions* options);
 
+  // Called when additional searchable content may have become available in the
+  // document.
+  virtual void NewContentMayBeAvailable() {}
+
   Member<LocalFrame> frame_;
 };
 

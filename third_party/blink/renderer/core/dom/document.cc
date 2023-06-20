@@ -287,6 +287,7 @@
 #include "third_party/blink/renderer/core/page/page_animator.h"
 #include "third_party/blink/renderer/core/page/plugin_script_forbidden_scope.h"
 #include "third_party/blink/renderer/core/page/pointer_lock_controller.h"
+#include "third_party/blink/renderer/core/page/scrolling/fragment_anchor.h"
 #include "third_party/blink/renderer/core/page/scrolling/overscroll_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/root_scroller_controller.h"
 #include "third_party/blink/renderer/core/page/scrolling/scroll_state_callback.h"
@@ -5586,6 +5587,12 @@ void Document::NotifyUpdateCharacterData(CharacterData* character_data,
 void Document::NotifyChangeChildren(
     const ContainerNode& container,
     const ContainerNode::ChildrenChange& change) {
+  if (LocalFrameView* frame_view = View()) {
+    if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor()) {
+      anchor->NewContentMayBeAvailable();
+    }
+  }
+
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {
         observer->DidChangeChildren(container, change);
@@ -5596,6 +5603,18 @@ void Document::NotifyAttributeChanged(const Element& element,
                                       const QualifiedName& name,
                                       const AtomicString& old_value,
                                       const AtomicString& new_value) {
+  if (LocalFrameView* frame_view = View()) {
+    if (FragmentAnchor* anchor = frame_view->GetFragmentAnchor()) {
+      // There are other attributes (not to mention style changes) that could
+      // potentially make more content available to to the fragment anchor but
+      // this is a best effort heuristic, based on commonly seen patterns in the
+      // wild, so isn't meant to be comprehensive.
+      if (name == html_names::kHiddenAttr) {
+        anchor->NewContentMayBeAvailable();
+      }
+    }
+  }
+
   synchronous_mutation_observer_set_.ForEachObserver(
       [&](SynchronousMutationObserver* observer) {
         observer->AttributeChanged(element, name, old_value, new_value);
