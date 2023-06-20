@@ -7,15 +7,19 @@
 #include "ui/events/keycodes/keyboard_code_conversion_mac.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation TaskManagerMacTableView : NSTableView
 
 - (void)keyDown:(NSEvent*)event {
-  ui::KeyboardCode keyCode = ui::KeyboardCodeFromKeyCode([event keyCode]);
+  ui::KeyboardCode keyCode = ui::KeyboardCodeFromKeyCode(event.keyCode);
   NSMutableIndexSet* indexSet = [NSMutableIndexSet indexSet];
-  NSIndexSet* selectedRows = [self selectedRowIndexes];
-  size_t firstSelectedRow = [selectedRows firstIndex];
-  size_t lastSelectedRow = [selectedRows lastIndex];
-  size_t totalRows = [self numberOfRows];
+  NSIndexSet* selectedRows = self.selectedRowIndexes;
+  size_t firstSelectedRow = selectedRows.firstIndex;
+  size_t lastSelectedRow = selectedRows.lastIndex;
+  size_t totalRows = self.numberOfRows;
 
   if (keyCode == ui::VKEY_UP && firstSelectedRow > 0) {
     [indexSet addIndex:firstSelectedRow - 1];
