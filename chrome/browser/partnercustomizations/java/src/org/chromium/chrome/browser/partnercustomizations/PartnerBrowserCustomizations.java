@@ -201,13 +201,12 @@ public class PartnerBrowserCustomizations {
         // Setup an initializing async task.
         final AsyncTask<Void> initializeAsyncTask = new AsyncTask<Void>() {
             private boolean mHomepageUriChanged;
-            private long mStartTime;
+            private long mStartTime = SystemClock.elapsedRealtime();
 
             @Override
             protected Void doInBackground() {
                 try {
                     partnerCustomizationsUma.logAsyncInitStarted();
-                    mStartTime = SystemClock.elapsedRealtime();
                     boolean systemOrPreStable =
                             (context.getApplicationInfo().flags & ApplicationInfo.FLAG_SYSTEM) == 1
                             || !VersionInfo.isStableBuild();
