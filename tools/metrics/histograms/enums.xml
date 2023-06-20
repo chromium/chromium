@@ -34472,15 +34472,6 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Apple Calendar"/>
 </enum>
 
-<!-- This must be kept current with explore_sites_types.h's
-     ExploreSitesCatalogUpdateRequestResult -->
-
-<enum name="ExploreSitesCatalogUpdateRequestResult">
-  <int value="0" label="New Catalog"/>
-  <int value="1" label="Existing catalog is current"/>
-  <int value="2" label="Failure"/>
-</enum>
-
 <!-- This must be kept current with
      //chrome/browser/android/explore_sites/catalog.proto's CategoryType. -->
 
