@@ -340,7 +340,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Storage.Blob.RegisterURLTimeWithoutPartitioningSupport"
-    units="ms" expires_after="2023-10-15">
+    units="ms" expires_after="2023-12-17">
   <owner>awillia@chromium.org</owner>
   <owner>chrome-owp-storage@chromium.org</owner>
   <summary>

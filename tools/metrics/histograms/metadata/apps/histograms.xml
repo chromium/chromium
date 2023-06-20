@@ -554,7 +554,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.DriveZeroStateProvider.Latency" units="ms"
-    expires_after="2023-10-01">
+    expires_after="2023-12-17">
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>wrong@chromium.org</owner>
@@ -731,7 +731,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Keyword.NumberOfKeywordsInQuery" units="count"
-    expires_after="2023-08-15">
+    expires_after="2023-12-17">
   <owner>wrong@chromium.org</owner>
   <owner>amandadeacon@chromium.org</owner>
   <owner>rbeccahsu@google.com</owner>
@@ -812,7 +812,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.OmniboxProvider.QueryTime" units="ms"
-    expires_after="2023-10-08">
+    expires_after="2023-12-17">
   <owner>wrong@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -863,7 +863,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.PersistentProto.ReadStatus"
-    enum="PersistentProtoReadStatus" expires_after="2023-09-17">
+    enum="PersistentProtoReadStatus" expires_after="2023-12-17">
   <owner>wrong@chromium.org</owner>
   <owner>tby@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
@@ -984,7 +984,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppList.Search.Error" enum="AppListUserEventError"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>wrong@chromium.org</owner>
   <owner>thanhdng@chromium.org</owner>
   <owner>tby@chromium.org</owner>
@@ -1579,7 +1579,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListBubbleShowSource" enum="AppListShowSource"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <owner>chromeos-launcher@google.com</owner>
@@ -1752,7 +1752,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListPlayStoreQueryState"
-    enum="AppListPlayStoreQueryState" expires_after="2023-09-01">
+    enum="AppListPlayStoreQueryState" expires_after="2023-12-17">
   <owner>tby@chromium.org</owner>
   <owner>ypitsishin@chromium.org</owner>
   <owner>chrome-knowledge-eng@google.com</owner>
@@ -1806,7 +1806,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListSearchAutocomplete" enum="SearchBoxTextMatch"
-    expires_after="2023-08-20">
+    expires_after="2023-12-17">
   <owner>yulunwu@chromium.org</owner>
   <owner>tbarzic@chromium.org</owner>
   <summary>
@@ -1892,7 +1892,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Apps.AppListShowSource" enum="AppListShowSource"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>tbarzic@chromium.org</owner>
   <owner>newcomer@chromium.org</owner>
   <summary>

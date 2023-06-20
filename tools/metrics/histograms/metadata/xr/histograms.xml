@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="VRSessionTime" units="ms" expires_after="2023-10-15">
+<histogram name="VRSessionTime" units="ms" expires_after="2023-12-17">
   <owner>alcooper@chromium.org</owner>
   <owner>xr-dev@chromium.org</owner>
   <summary>

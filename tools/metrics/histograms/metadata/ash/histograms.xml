@@ -2488,7 +2488,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Desks.NumberOfWindowsClosed2" units="units"
-    expires_after="2023-12-10">
+    expires_after="2023-12-17">
   <owner>aprilzhou@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -2763,7 +2763,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.DeskTemplate.AddOrUpdateTemplateStatus"
-    enum="DeskModelAddOrUpdateEntryStatus" expires_after="2023-10-15">
+    enum="DeskModelAddOrUpdateEntryStatus" expires_after="2023-12-17">
   <owner>yzd@google.com</owner>
   <owner>janetmac@chromium.org</owner>
   <summary>
@@ -4604,7 +4604,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram base="true" name="Ash.Overview.AnimationSmoothness.Close" units="%"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
 <!-- Name completed by histogram_suffixes
      name="TabletOrClamshellMode" -->
 
@@ -5257,7 +5257,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastBatchIOTaskDuration" units="ms"
-    expires_after="2023-10-17">
+    expires_after="2023-12-17">
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>
@@ -5267,7 +5267,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Ash.Projector.PendingScreencastChangeInterval" units="ms"
-    expires_after="2023-10-17">
+    expires_after="2023-12-17">
   <owner>xiqiruan@chromium.org</owner>
   <owner>cros-projector@google.com</owner>
   <summary>

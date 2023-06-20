@@ -742,7 +742,7 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Cras.StreamFlags" units="value" expires_after="2023-10-15">
+<histogram name="Cras.StreamFlags" units="value" expires_after="2023-12-17">
 <!-- Name completed by histogram_suffixes
      name="Cras.Direction" and
      name="Cras.ClientType" -->

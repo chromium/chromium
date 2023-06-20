@@ -50,7 +50,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="BookmarkManager.ResultsRenderedTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>johntlee@chromium.org</owner>
   <owner>dbeam@chromium.org</owner>
   <summary>

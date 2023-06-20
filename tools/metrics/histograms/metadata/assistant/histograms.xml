@@ -158,7 +158,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.OptInFlowStatus" enum="AssistantOptInFlowStatus"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>updowndota@chromium.org</owner>
   <owner>croissant-eng@chromium.org</owner>
   <summary>Record the status of the Assistant opt-in flow.</summary>
@@ -201,7 +201,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceReadyTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
   <summary>
@@ -211,7 +211,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Assistant.ServiceStartTime" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2023-12-17">
   <owner>updowndota@chromium.org</owner>
   <owner>xiaohuic@chromium.org</owner>
   <owner>assistive-eng@google.com</owner>
