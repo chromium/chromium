@@ -6,6 +6,8 @@
  * #type=style
  * #css_wrapper_metadata_end */
 
-:host(.showing-subpage) os-settings-section:not(.expanded) {
+/* When showing a subpage, only show the respective top-level page (active page)
+ * and hide all other pages. */
+:host(.showing-subpage) page-displayer:not([active]) {
   display: none;
 }

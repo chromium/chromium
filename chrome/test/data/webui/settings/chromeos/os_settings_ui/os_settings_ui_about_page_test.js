@@ -59,7 +59,7 @@ suite('<os-settings-ui> about page', () => {
         await waitBeforeNextRender(aboutPage);
 
         const aboutSection = aboutPage.shadowRoot.querySelector(
-            `os-settings-section[section="${Section.kAboutChromeOs}"]`);
+            `page-displayer[section="${Section.kAboutChromeOs}"]`);
         assertEquals(aboutSection, aboutPage.shadowRoot.activeElement);
       });
 

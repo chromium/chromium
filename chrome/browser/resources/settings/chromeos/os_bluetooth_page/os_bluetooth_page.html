@@ -3,11 +3,14 @@
 <os-settings-animated-pages id="pages"
     section="[[section_]]">
   <div route-path="default">
-    <os-settings-bluetooth-summary
-        on-start-pairing="onStartPairing_"
-        system-properties="[[systemProperties_]]">
-    </os-settings-bluetooth-summary>
+    <os-settings-section page-title="$i18n{bluetoothPageTitle}">
+      <os-settings-bluetooth-summary
+          on-start-pairing="onStartPairing_"
+          system-properties="[[systemProperties_]]">
+      </os-settings-bluetooth-summary>
+    </os-settings-section>
   </div>
+
   <template is="dom-if" route-path="/bluetoothDevices">
     <os-settings-subpage page-title="$i18n{bluetoothPageTitle}">
       <div slot="subpage-title-extra">

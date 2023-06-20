@@ -44,49 +44,52 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <div class="settings-box first two-line">
-      <template is="dom-if" if="[[syncStatus]]">
-        <!-- Does not use <cr-link-row> due to custom aria label. -->
-        <div id="profile-icon"
-            style="background-image: [[getIconImageSet_(profileIconUrl_)]]"
-            on-click="onAccountManagerClick_"
-            actionable$="[[isAccountManagerEnabled_]]">
-        </div>
-        <div class="middle two-line no-min-width"
-            id="profile-row"
-            on-click="onAccountManagerClick_"
-            actionable$="[[isAccountManagerEnabled_]]">
-          <div class="flex text-elide settings-box-text">
-            <span id="profile-name" aria-hidden="true">
-              [[getProfileName_(profileName_)]]
-            </span>
-            <div id="profile-label" class="secondary"
-                aria-hidden="true">
-              [[profileLabel_]]
-            </div>
+    <os-settings-section page-title="$i18n{osPeoplePageTitle}">
+      <div class="settings-box first two-line">
+        <template is="dom-if" if="[[syncStatus]]">
+          <!-- Does not use <cr-link-row> due to custom aria label. -->
+          <div id="profile-icon"
+              style="background-image: [[getIconImageSet_(profileIconUrl_)]]"
+              on-click="onAccountManagerClick_"
+              actionable$="[[isAccountManagerEnabled_]]">
           </div>
-          <cr-icon-button class="subpage-arrow"
-              hidden="[[!isAccountManagerEnabled_]]"
-              id="account-manager-subpage-trigger"
-              aria-label="$i18n{accountManagerSubMenuLabel}"
-              aria-describedby="profile-name profile-label"
-              aria-roledescription="$i18n{subpageArrowRoleDescription}">
-          </cr-icon-button>
-        </div>
+          <div class="middle two-line no-min-width"
+              id="profile-row"
+              on-click="onAccountManagerClick_"
+              actionable$="[[isAccountManagerEnabled_]]">
+            <div class="flex text-elide settings-box-text">
+              <span id="profile-name" aria-hidden="true">
+                [[getProfileName_(profileName_)]]
+              </span>
+              <div id="profile-label" class="secondary"
+                  aria-hidden="true">
+                [[profileLabel_]]
+              </div>
+            </div>
+            <cr-icon-button class="subpage-arrow"
+                hidden="[[!isAccountManagerEnabled_]]"
+                id="account-manager-subpage-trigger"
+                aria-label="$i18n{accountManagerSubMenuLabel}"
+                aria-describedby="profile-name profile-label"
+                aria-roledescription="$i18n{subpageArrowRoleDescription}">
+            </cr-icon-button>
+          </div>
+        </template>
+      </div>
+      <cr-link-row id="sync-setup"
+          start-icon="cr:sync"
+          label="$i18n{syncAndNonPersonalizedServices}"
+          sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
+          on-click="onSyncClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <template is="dom-if" if="[[showParentalControls_]]">
+        <settings-parental-controls-page>
+        </settings-parental-controls-page>
       </template>
-    </div>
-    <cr-link-row id="sync-setup"
-        start-icon="cr:sync"
-        label="$i18n{syncAndNonPersonalizedServices}"
-        sub-label="[[getSyncAndGoogleServicesSubtext_(syncStatus)]]"
-        on-click="onSyncClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-    <template is="dom-if" if="[[showParentalControls_]]">
-      <settings-parental-controls-page>
-      </settings-parental-controls-page>
-    </template>
+    </os-settings-section>
   </div>
+
   <template is="dom-if" route-path="/osSyncSetup">
     <os-settings-subpage
         page-title="$i18n{syncPageTitle}"

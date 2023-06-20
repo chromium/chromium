@@ -87,9 +87,8 @@ export interface MainPageMixinInterface extends RouteObserverMixinInterface {
 }
 
 /**
- * Responds to route changes by expanding, collapsing, or scrolling to
- * sections on the page. Expanded sections take up the full height of the
- * container. At most one section should be expanded at any given time.
+ * Responds to route changes by "activating" the respective top-level page,
+ * effectively showing that page and potentially hiding other pages.
  */
 export const MainPageMixin = dedupingMixin(
     <T extends Constructor<PolymerElement>>(superClass: T): T&
@@ -123,79 +122,10 @@ export const MainPageMixin = dedupingMixin(
                   '#advancedPageTemplate')!.get();
         }
 
-        /**
-         * Finds the settings section corresponding to the given route. If the
-         * section is lazily loaded it force-renders it.
-         * Note: If the section resides within "advanced" settings, a
-         * 'hide-container' event is fired (necessary to avoid flashing).
-         * Callers are responsible for firing a 'show-container' event.
-         *
-         * TODO(b/286429941) Once the section element is updated to a simple
-         * card element, this method should no longer be used and should be
-         * removed. Prefer using ensurePageForRoute() instead.
-         */
-        private ensureSectionForRoute_(route: Route): Promise<HTMLElement> {
-          const section = this.querySection(route.section);
-          if (section) {
-            return Promise.resolve(section);
-          }
+        private async enterSubpage(route: Route): Promise<void> {
+          // Make the parent page visible to ensure the subpage is visible
+          await this.activatePage(route);
 
-          // The function to use to wait for <dom-if>s to render.
-          const waitFn = beforeNextRender.bind(null, this);
-
-          return new Promise(resolve => {
-            if (this.isMainPageContainer && isAdvancedRoute(route)) {
-              this.dispatchCustomEvent_('hide-container');
-              waitFn(async () => {
-                await this.loadAdvancedPage();
-                resolve(castExists(this.querySection(route.section)));
-              });
-            } else {
-              waitFn(() => {
-                resolve(castExists(this.querySection(route.section)));
-              });
-            }
-          });
-        }
-
-        /**
-         * Finds the settings page corresponding to the given route. If the
-         * page is lazily loaded (ie. under the advanced section), then
-         * force-render it.
-         * Note: If the page resides within "advanced" settings, a
-         * 'hide-container' event is fired (necessary to avoid flashing).
-         * Callers are responsible for firing a 'show-container' event.
-         */
-        private ensurePageForRoute(route: Route):
-            Promise<PageDisplayerElement> {
-          const section = this.queryPage(route.section);
-          if (section) {
-            return Promise.resolve(section);
-          }
-
-          // The function to use to wait for <dom-if>s to render.
-          const waitFn = beforeNextRender.bind(null, this);
-
-          return new Promise(resolve => {
-            if (this.isMainPageContainer && isAdvancedRoute(route)) {
-              this.dispatchCustomEvent_('hide-container');
-              waitFn(async () => {
-                await this.loadAdvancedPage();
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            } else {
-              waitFn(() => {
-                resolve(castExists(this.queryPage(route.section)));
-              });
-            }
-          });
-        }
-
-        private async enterSubpage_(route: Route) {
-          if (isRevampWayfindingEnabled()) {
-            // Make the parent page visible to ensure the subpage is visible
-            await this.activatePage(route);
-          }
           this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
@@ -205,18 +135,10 @@ export const MainPageMixin = dedupingMixin(
           // the lazy loaded module.
           ensureLazyLoaded();
 
-          // TODO(b/286429941) Once the section element is updated to a simple
-          // card element, remove the need to add the expanded class.
-          const section = await this.ensureSectionForRoute_(route);
-          section.classList.add('expanded');
-
           this.dispatchCustomEvent_('show-container');
         }
 
-        private enterMainPage_(oldRoute: Route): Promise<void> {
-          const oldSection = castExists(this.querySection(oldRoute.section));
-          oldSection.classList.remove('expanded');
-
+        private enterMainPage_(_oldRoute: Route): Promise<void> {
           this.classList.remove('showing-subpage');
           return new Promise((resolve) => {
             requestAnimationFrame(() => {
@@ -242,18 +164,15 @@ export const MainPageMixin = dedupingMixin(
         }
 
         private async scrollToSection(route: Route): Promise<void> {
-          const section = await this.ensureSectionForRoute_(route);
-          this.dispatchCustomEvent_('showing-section', {detail: section});
+          const page = await this.ensurePageForRoute(route);
+          this.dispatchCustomEvent_('showing-section', {detail: page});
           this.dispatchCustomEvent_('show-container');
         }
 
         /**
          * Effectively displays the page for the given |route|.
-         * Queries the shadow DOM for the respective os-settings-section element
+         * Queries the shadow DOM for the respective page-displayer element
          * for the given |route| and marks it as active.
-         *
-         * NOTE: This method should only be used when the
-         * `OsSettingsRevampWayfinding` feature flag is enabled.
          */
         private async activatePage(route: Route): Promise<void> {
           const page = await this.ensurePageForRoute(route);
@@ -340,7 +259,7 @@ export const MainPageMixin = dedupingMixin(
                 return;
 
               case RouteState.SUBPAGE:
-                this.enterSubpage_(newRoute);
+                this.enterSubpage(newRoute);
                 return;
 
               case RouteState.ROOT:
@@ -362,7 +281,7 @@ export const MainPageMixin = dedupingMixin(
 
               // Navigating directly to a subpage via search on the main page
               case RouteState.SUBPAGE:
-                this.enterSubpage_(newRoute);
+                this.enterSubpage(newRoute);
                 return;
 
               // Happens when clearing search results (Navigating from
@@ -385,7 +304,7 @@ export const MainPageMixin = dedupingMixin(
                 return;
 
               case RouteState.SUBPAGE:
-                this.enterSubpage_(newRoute);
+                this.enterSubpage(newRoute);
                 return;
 
               case RouteState.ROOT:
@@ -419,7 +338,7 @@ export const MainPageMixin = dedupingMixin(
                 if (!oldRoute.contains(newRoute) &&
                     !newRoute.contains(oldRoute)) {
                   this.enterMainPage_(oldRoute).then(() => {
-                    this.enterSubpage_(newRoute);
+                    this.enterSubpage(newRoute);
                   });
                   return;
                 }
@@ -453,7 +372,7 @@ export const MainPageMixin = dedupingMixin(
             switch (newState) {
               // There are currently no known examples of this transition
               case RouteState.SUBPAGE:
-                this.enterSubpage_(newRoute);
+                this.enterSubpage(newRoute);
                 return;
 
               // There are currently no known examples of these transitions.
@@ -468,17 +387,36 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Helper function to get a section from the shadow DOM.
-         *
-         * TODO(b/286429941) Once the section element is updated to a simple
-         * card element, this method is no longer needed and can be removed.
+         * Finds the settings page corresponding to the given route. If the
+         * page is lazily loaded (ie. under the advanced section), then
+         * force-render it.
+         * Note: If the page resides within "advanced" settings, a
+         * 'hide-container' event is fired (necessary to avoid flashing).
+         * Callers are responsible for firing a 'show-container' event.
          */
-        private querySection(section: Section|null): HTMLElement|null {
-          if (section === null) {
-            return null;
+        private ensurePageForRoute(route: Route):
+            Promise<PageDisplayerElement> {
+          const section = this.queryPage(route.section);
+          if (section) {
+            return Promise.resolve(section);
           }
-          return this.shadowRoot!.querySelector(
-              `os-settings-section[section="${section}"]`);
+
+          // The function to use to wait for <dom-if>s to render.
+          const waitFn = beforeNextRender.bind(null, this);
+
+          return new Promise(resolve => {
+            if (this.isMainPageContainer && isAdvancedRoute(route)) {
+              this.dispatchCustomEvent_('hide-container');
+              waitFn(async () => {
+                await this.loadAdvancedPage();
+                resolve(castExists(this.queryPage(route.section)));
+              });
+            } else {
+              waitFn(() => {
+                resolve(castExists(this.queryPage(route.section)));
+              });
+            }
+          });
         }
 
         /**

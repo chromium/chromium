@@ -15,6 +15,7 @@ import '/shared/settings/controls/extension_controlled_indicator.js';
 import '../settings_shared.css.js';
 import '../settings_vars.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page/os_settings_subpage.js';
 import './os_search_selection_dialog.js';
 import './search_engine.js';

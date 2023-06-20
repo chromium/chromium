@@ -11,19 +11,14 @@
  *
  * Example:
  *
- *    <os-settings-section
- *        page-title="[[pageTitle]]"
- *        section="[[Section.kNetwork]]">
+ *    <os-settings-section page-title="[[pageTitle]]">
  *      <!-- Insert your section controls here -->
  *    </os-settings-section>
  */
 
-import '//resources/cr_elements/cr_shared_vars.css.js';
+import 'chrome://resources/cr_elements/cr_shared_vars.css.js';
 
-import {PolymerElement} from '//resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {assert} from 'chrome://resources/js/assert_ts.js';
-
-import {Section} from '../mojom-webui/routes.mojom-webui.js';
+import {PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {getTemplate} from './os_settings_section.html.js';
 
@@ -39,16 +34,6 @@ export class OsSettingsSectionElement extends PolymerElement {
   static get properties() {
     return {
       /**
-       * If defined, the value must match one of the Section enum entries from
-       * routes.mojom. MainPageBeMixin will expand this section if this section
-       * name matches currentRoute.section.
-       */
-      section: {
-        type: Number,
-        reflectToAttribute: true,
-      },
-
-      /**
        * Title for the section header. Initialize so we can use the
        * getTitleHiddenStatus_ method for accessibility.
        */
@@ -59,16 +44,7 @@ export class OsSettingsSectionElement extends PolymerElement {
     };
   }
 
-  section: Section;
   pageTitle: string;
-
-  override ready() {
-    super.ready();
-
-    if (this.section !== undefined) {
-      assert(this.section in Section, `Invalid section: ${this.section}.`);
-    }
-  }
 
   /**
    * Get the value to which to set the aria-hidden attribute of the section

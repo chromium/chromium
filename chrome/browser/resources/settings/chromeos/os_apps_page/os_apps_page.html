@@ -9,77 +9,79 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <cr-link-row id="appManagement"
-        label="$i18n{appManagementTitle}"
-        on-click="onClickAppManagement_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-    <template is="dom-if" if="[[showAppNotificationsRow_]]">
-      <cr-link-row id="appNotifications"
-          label="$i18n{appNotificationsTitle}"
-          on-click="onClickAppNotifications_"
-          role-description="$i18n{subpageArrowRoleDescription}"
-          sub-label= "[[getAppListCountDescription_(
-              appsWithNotifications_.*, isDndEnabled_)]]">
+    <os-settings-section page-title="$i18n{appsPageTitle}">
+      <cr-link-row id="appManagement"
+          label="$i18n{appManagementTitle}"
+          on-click="onClickAppManagement_"
+          role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[showAndroidApps_]]">
-      <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
-        <div id="android-apps" class="settings-box first"
-            actionable$="[[androidAppsInfo.playStoreEnabled]]"
-            on-click="onAndroidAppsSubpageClick_">
-          <div class="start settings-box-text">
-            $i18n{androidAppsPageLabel}
-            <div class="secondary" id="secondaryText">
-              <localized-link
-                  localized-string="[[i18nAdvanced('androidAppsSubtext')]]">
-              </localized-link>
-            </div>
-          </div>
-          <cr-policy-pref-indicator pref="[[prefs.arc.enabled]]"
-              icon-aria-label="$i18n{androidAppsPageTitle}">
-          </cr-policy-pref-indicator>
-          <template is="dom-if" if="[[androidAppsInfo.playStoreEnabled]]">
-            <cr-icon-button class="subpage-arrow"
-                aria-label="$i18n{androidAppsPageTitle}"
-                aria-describedby="secondaryText"
-                aria-roledescription="$i18n{subpageArrowRoleDescription}">
-            </cr-icon-button>
-          </template>
-          <template is="dom-if" if="[[!androidAppsInfo.playStoreEnabled]]">
-            <div class="separator"></div>
-            <cr-button id="enable"
-                disabled="[[isEnforced_(prefs.arc.enabled)]]"
-                on-click="onEnableAndroidAppsClick_"
-                aria-label="$i18n{androidAppsPageTitle}"
-                aria-roledescription="$i18n{androidAppsEnableButtonRole}"
-                deep-link-focus-id$="[[Setting.kTurnOnPlayStore]]">
-              $i18n{androidAppsEnable}
-            </cr-button>
-          </template>
-        </div>
-      </template>
-      <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
-        <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
-            on-click="onManageAndroidAppsClick_"
-            external
-            deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
+      <template is="dom-if" if="[[showAppNotificationsRow_]]">
+        <cr-link-row id="appNotifications"
+            label="$i18n{appNotificationsTitle}"
+            on-click="onClickAppNotifications_"
+            role-description="$i18n{subpageArrowRoleDescription}"
+            sub-label= "[[getAppListCountDescription_(
+                appsWithNotifications_.*, isDndEnabled_)]]">
         </cr-link-row>
       </template>
-    </template>
-    <template is="dom-if" if="[[showStartup_]]">
-      <div class="settings-box">
-        <div class="start settings-box-text" aria-hidden="true">
-            $i18n{onStartupTitle}
+      <template is="dom-if" if="[[showAndroidApps_]]">
+        <template is="dom-if" if="[[isPlayStoreAvailable_]]" restamp>
+          <div id="android-apps" class="settings-box first"
+              actionable$="[[androidAppsInfo.playStoreEnabled]]"
+              on-click="onAndroidAppsSubpageClick_">
+            <div class="start settings-box-text">
+              $i18n{androidAppsPageLabel}
+              <div class="secondary" id="secondaryText">
+                <localized-link
+                    localized-string="[[i18nAdvanced('androidAppsSubtext')]]">
+                </localized-link>
+              </div>
+            </div>
+            <cr-policy-pref-indicator pref="[[prefs.arc.enabled]]"
+                icon-aria-label="$i18n{androidAppsPageTitle}">
+            </cr-policy-pref-indicator>
+            <template is="dom-if" if="[[androidAppsInfo.playStoreEnabled]]">
+              <cr-icon-button class="subpage-arrow"
+                  aria-label="$i18n{androidAppsPageTitle}"
+                  aria-describedby="secondaryText"
+                  aria-roledescription="$i18n{subpageArrowRoleDescription}">
+              </cr-icon-button>
+            </template>
+            <template is="dom-if" if="[[!androidAppsInfo.playStoreEnabled]]">
+              <div class="separator"></div>
+              <cr-button id="enable"
+                  disabled="[[isEnforced_(prefs.arc.enabled)]]"
+                  on-click="onEnableAndroidAppsClick_"
+                  aria-label="$i18n{androidAppsPageTitle}"
+                  aria-roledescription="$i18n{androidAppsEnableButtonRole}"
+                  deep-link-focus-id$="[[Setting.kTurnOnPlayStore]]">
+                $i18n{androidAppsEnable}
+              </cr-button>
+            </template>
+          </div>
+        </template>
+        <template is="dom-if" if="[[!isPlayStoreAvailable_]]" restamp>
+          <cr-link-row id="manageApps" label="$i18n{androidAppsManageApps}"
+              on-click="onManageAndroidAppsClick_"
+              external
+              deep-link-focus-id$="[[Setting.kManageAndroidPreferences]]">
+          </cr-link-row>
+        </template>
+      </template>
+      <template is="dom-if" if="[[showStartup_]]">
+        <div class="settings-box">
+          <div class="start settings-box-text" aria-hidden="true">
+              $i18n{onStartupTitle}
+          </div>
+          <settings-dropdown-menu id="onStartupDropdown"
+              label="$i18n{onStartupTitle}"
+              pref="{{prefs.settings.restore_apps_and_pages}}"
+              menu-options="[[onStartupOptions_]]"
+              deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
+          </settings-dropdown-menu>
         </div>
-        <settings-dropdown-menu id="onStartupDropdown"
-            label="$i18n{onStartupTitle}"
-            pref="{{prefs.settings.restore_apps_and_pages}}"
-            menu-options="[[onStartupOptions_]]"
-            deep-link-focus-id$="[[Setting.kRestoreAppsAndPages]]">
-        </settings-dropdown-menu>
-      </div>
-    </template>
+      </template>
+    </os-settings-section>
   </div>
 
   <!-- APP NOTIFICATIONS -->

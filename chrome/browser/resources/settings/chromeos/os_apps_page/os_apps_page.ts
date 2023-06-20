@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 import 'chrome://resources/cr_elements/policy/cr_policy_pref_indicator.js';
 import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import '../settings_shared.css.js';

@@ -16,122 +16,124 @@
     focus-config="[[focusConfig_]]">
 
   <div route-path="default">
-    <template is="dom-if" if="[[!isGuestMode_]]" restamp>
-      <cr-link-row id="lockScreenSubpageTrigger"
-          on-click="onConfigureLockClick_"
-          label="[[selectLockScreenTitleString_(hasPinLogin)]]"
-          sub-label="[[getPasswordState_(hasPin,
-              prefs.settings.enable_screen_lock.value)]]"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
-          label="$i18n{manageOtherPeople}"
-          on-click="onManageOtherPeople_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <div class="hr"></div>
-      <template is="dom-if" if="[[isSmartPrivacyEnabled_]]" restamp>
-        <cr-link-row id="smartPrivacySubpageTrigger"
-            on-click="onSmartPrivacy_"
-            label="$i18n{smartPrivacyTitle}"
+    <os-settings-section page-title="$i18n{privacyPageTitle}">
+      <template is="dom-if" if="[[!isGuestMode_]]" restamp>
+        <cr-link-row id="lockScreenSubpageTrigger"
+            on-click="onConfigureLockClick_"
+            label="[[selectLockScreenTitleString_(hasPinLogin)]]"
+            sub-label="[[getPasswordState_(hasPin,
+                prefs.settings.enable_screen_lock.value)]]"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row id="manageOtherPeopleSubpageTrigger" class="hr"
+            label="$i18n{manageOtherPeople}"
+            on-click="onManageOtherPeople_"
             role-description="$i18n{subpageArrowRoleDescription}">
         </cr-link-row>
         <div class="hr"></div>
+        <template is="dom-if" if="[[isSmartPrivacyEnabled_]]" restamp>
+          <cr-link-row id="smartPrivacySubpageTrigger"
+              on-click="onSmartPrivacy_"
+              label="$i18n{smartPrivacyTitle}"
+              role-description="$i18n{subpageArrowRoleDescription}">
+          </cr-link-row>
+          <div class="hr"></div>
+        </template>
       </template>
-    </template>
 
 <if expr="_google_chrome">
-    <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
-      <settings-metrics-consent-toggle-button
-          id="metricsConsentToggle"
-          deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
-          prefs="{{prefs}}">
-      </settings-metrics-consent-toggle-button>
-      <div class="hr"></div>
-    </template>
-    <template is="dom-if" if="[[isRevenBranding_]]">
-      <settings-toggle-button
-          id="enable-hw-data-usage"
-          pref="{{prefs.cros.reven.enable_hw_data_usage}}"
-          label="[[i18n('enableHWDataUsage')]]"
-          sub-label="[[i18n('enableHWDataUsageDesc')]]">
-        </settings-toggle-button>
-      <div class="hr"></div>
-    </template>
+      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+        <settings-metrics-consent-toggle-button
+            id="metricsConsentToggle"
+            deep-link-focus-id$="[[Setting.kUsageStatsAndCrashReports]]"
+            prefs="{{prefs}}">
+        </settings-metrics-consent-toggle-button>
+        <div class="hr"></div>
+      </template>
+      <template is="dom-if" if="[[isRevenBranding_]]">
+        <settings-toggle-button
+            id="enable-hw-data-usage"
+            pref="{{prefs.cros.reven.enable_hw_data_usage}}"
+            label="[[i18n('enableHWDataUsage')]]"
+            sub-label="[[i18n('enableHWDataUsageDesc')]]">
+          </settings-toggle-button>
+        <div class="hr"></div>
+      </template>
 </if>
-    <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+      <template is="dom-if" if="[[!showPrivacyHubPage_]]" restamp>
+        <settings-toggle-button
+            id="suggested-content"
+            pref="{{prefs.settings.suggested_content_enabled}}"
+            label="$i18n{enableSuggestedContent}"
+            sub-label="$i18n{enableSuggestedContentDesc}"
+            learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+        </settings-toggle-button>
+        <div class="hr"></div>
+      </template>
       <settings-toggle-button
-          id="suggested-content"
-          pref="{{prefs.settings.suggested_content_enabled}}"
-          label="$i18n{enableSuggestedContent}"
-          sub-label="$i18n{enableSuggestedContentDesc}"
-          learn-more-url="$i18n{suggestedContentLearnMoreURL}">
+          id="verifiedAccessToggle"
+          pref="{{
+            prefs.cros.device.attestation_for_content_protection_enabled}}"
+          label="$i18n{enableContentProtectionAttestation}"
+          on-settings-boolean-control-change="onVerifiedAccessChange_"
+          deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
       </settings-toggle-button>
-      <div class="hr"></div>
-    </template>
-    <settings-toggle-button
-        id="verifiedAccessToggle"
-        pref="{{
-          prefs.cros.device.attestation_for_content_protection_enabled}}"
-        label="$i18n{enableContentProtectionAttestation}"
-        on-settings-boolean-control-change="onVerifiedAccessChange_"
-        deep-link-focus-id$="[[Setting.kVerifiedAccess]]">
-    </settings-toggle-button>
-    <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
-      <div class="hr"></div>
-      <cr-link-row id="privacyHubSubpageTrigger"
-          on-click="onPrivacyHubClick_"
-          label="$i18n{privacyHubTitle}"
-          sub-label="$i18n{privacyHubSubtext}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[isThunderboltSupported_]]">
-      <div class="hr"></div>
-      <!-- This toggle is always disabled. The underlying pref state is
-            handled by the JS impl. This is to prevent toggling the pref
-            before the user confirms the action. -->
-      <div id="dataAccessProtectionWrapper"
-          tabindex="0"
-          on-focus="onDataAccessToggleFocus_"
-          on-keypress="onDataAccessToggleKeyPress_">
-        <settings-toggle-button
-            id="crosSettingDataAccessToggle"
-            class="peripheral-data-access-protection"
-            pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
-            label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-            sub-label=
-                "$i18n{peripheralDataAccessProtectionToggleDescription}"
-            deep-link-focus-id$=
-                "[[Setting.kPeripheralDataAccessProtection]]"
-            on-click="onPeripheralProtectionClick_"
-            learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
-            hidden$="[[isLocalStateDataAccessPref_(
-                dataAccessProtectionPrefName_)]]"
-            disabled
-            inverted>
-        </settings-toggle-button>
-        <settings-toggle-button
-            id="localStateDataAccessToggle"
-            class="peripheral-data-access-protection"
-            pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
-            label="$i18n{peripheralDataAccessProtectionToggleTitle}"
-            sub-label=
-                "$i18n{peripheralDataAccessProtectionToggleDescription}"
-            deep-link-focus-id$=
-                "[[Setting.kPeripheralDataAccessProtection]]"
-            on-click="onPeripheralProtectionClick_"
-            learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
-            hidden$="[[isCrosSettingDataAccessPref_(
-                dataAccessProtectionPrefName_)]]"
-            disabled
-            inverted>
-        </settings-toggle-button>
-      </div>
-    </template>
-    <template is="dom-if" if="[[showSecureDnsSetting_]]">
-      <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
-    </template>
+      <template is="dom-if" if="[[showPrivacyHubPage_]]" restamp>
+        <div class="hr"></div>
+        <cr-link-row id="privacyHubSubpageTrigger"
+            on-click="onPrivacyHubClick_"
+            label="$i18n{privacyHubTitle}"
+            sub-label="$i18n{privacyHubSubtext}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isThunderboltSupported_]]">
+        <div class="hr"></div>
+        <!-- This toggle is always disabled. The underlying pref state is
+              handled by the JS impl. This is to prevent toggling the pref
+              before the user confirms the action. -->
+        <div id="dataAccessProtectionWrapper"
+            tabindex="0"
+            on-focus="onDataAccessToggleFocus_"
+            on-keypress="onDataAccessToggleKeyPress_">
+          <settings-toggle-button
+              id="crosSettingDataAccessToggle"
+              class="peripheral-data-access-protection"
+              pref="{{prefs.cros.device.peripheral_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label=
+                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$=
+                  "[[Setting.kPeripheralDataAccessProtection]]"
+              on-click="onPeripheralProtectionClick_"
+              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isLocalStateDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
+              disabled
+              inverted>
+          </settings-toggle-button>
+          <settings-toggle-button
+              id="localStateDataAccessToggle"
+              class="peripheral-data-access-protection"
+              pref="{{prefs.settings.local_state_device_pci_data_access_enabled}}"
+              label="$i18n{peripheralDataAccessProtectionToggleTitle}"
+              sub-label=
+                  "$i18n{peripheralDataAccessProtectionToggleDescription}"
+              deep-link-focus-id$=
+                  "[[Setting.kPeripheralDataAccessProtection]]"
+              on-click="onPeripheralProtectionClick_"
+              learn-more-url="$i18n{peripheralDataAccessLearnMoreURL}"
+              hidden$="[[isCrosSettingDataAccessPref_(
+                  dataAccessProtectionPrefName_)]]"
+              disabled
+              inverted>
+          </settings-toggle-button>
+        </div>
+      </template>
+      <template is="dom-if" if="[[showSecureDnsSetting_]]">
+        <settings-secure-dns prefs="{{prefs}}"></settings-secure-dns>
+      </template>
+    </os-settings-section>
   </div>
 
   <template is="dom-if" if="[[!isGuestMode_]]" restamp>

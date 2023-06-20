@@ -21,6 +21,7 @@ import 'chrome://resources/cr_components/settings_prefs/prefs.js';
 import '../settings_shared.css.js';
 import '../os_settings_page/os_settings_animated_pages.js';
 import '../os_settings_page/os_settings_subpage.js';
+import '../os_settings_page/os_settings_section.js';
 import '../os_settings_icons.css.js';
 import './cellular_setup_dialog.js';
 import './esim_rename_dialog.js';

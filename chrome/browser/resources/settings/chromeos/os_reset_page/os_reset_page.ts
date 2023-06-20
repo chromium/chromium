@@ -7,6 +7,7 @@
  * 'os-settings-reset-page' is the OS settings page containing reset
  * settings.
  */
+import '../os_settings_page/os_settings_section.js';
 import './os_powerwash_dialog.js';
 
 import {getEuicc, getNonPendingESimProfiles} from 'chrome://resources/ash/common/cellular_setup/esim_manager_utils.js';

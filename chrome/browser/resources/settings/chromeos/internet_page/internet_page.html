@@ -30,76 +30,78 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <network-summary default-network="{{defaultNetwork}}"
-        device-states="{{deviceStates}}"
-        hotspot-info="{{hotspotInfo}}"
-        on-active-networks-updated="attemptDeepLink">
-    </network-summary>
-    <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
-        managedNetworkAvailable)]]">
-      <cr-expand-button
-          aria-label="$i18n{internetAddConnectionExpandA11yLabel}"
-          class="settings-box two-line"
-          expanded="{{addConnectionExpanded_}}"
-          id="expandAddConnections">
-        <span aria-hidden="true">
-          $i18n{internetAddConnection}
-        </span>
-      </cr-expand-button>
-      <template is="dom-if" if="[[addConnectionExpanded_]]">
-        <div class="list-frame vertical-list">
-          <template is="dom-if" if="[[shouldShowAddWiFiRow_(globalPolicy_,
-              managedNetworkAvailable, deviceStates)]]">
-            <div actionable class="list-item" on-click="onAddWiFiClick_">
-              <div class="start settings-box-text"
-                  id="add-wifi-label" aria-hidden="true">
-                $i18n{internetAddWiFi}
+    <os-settings-section page-title="$i18n{internetPageTitle}">
+      <network-summary default-network="{{defaultNetwork}}"
+          device-states="{{deviceStates}}"
+          hotspot-info="{{hotspotInfo}}"
+          on-active-networks-updated="attemptDeepLink">
+      </network-summary>
+      <template is="dom-if" if="[[allowAddConnection_(globalPolicy_,
+          managedNetworkAvailable)]]">
+        <cr-expand-button
+            aria-label="$i18n{internetAddConnectionExpandA11yLabel}"
+            class="settings-box two-line"
+            expanded="{{addConnectionExpanded_}}"
+            id="expandAddConnections">
+          <span aria-hidden="true">
+            $i18n{internetAddConnection}
+          </span>
+        </cr-expand-button>
+        <template is="dom-if" if="[[addConnectionExpanded_]]">
+          <div class="list-frame vertical-list">
+            <template is="dom-if" if="[[shouldShowAddWiFiRow_(globalPolicy_,
+                managedNetworkAvailable, deviceStates)]]">
+              <div actionable class="list-item" on-click="onAddWiFiClick_">
+                <div class="start settings-box-text"
+                    id="add-wifi-label" aria-hidden="true">
+                  $i18n{internetAddWiFi}
+                </div>
+                <cr-icon-button class="icon-add-wifi"
+                    aria-labelledby="add-wifi-label"></cr-icon-button>
               </div>
-              <cr-icon-button class="icon-add-wifi"
-                  aria-labelledby="add-wifi-label"></cr-icon-button>
-            </div>
-          </template>
-          <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
-              on-click="onAddVpnClick_">
-            <div class="start settings-box-text"
-                id="add-vpn-label" aria-hidden="true">
-              $i18n{internetAddVPN}
-            </div>
-            <template is="dom-if" if="[[vpnIsProhibited_]]">
-              <cr-policy-indicator id="vpnPolicyIndicator"
-                  icon-aria-label="$i18n{networkVpnBuiltin}"
-                  indicator-type="devicePolicy"
-                  on-click="doNothing_">
-              </cr-policy-indicator>
             </template>
-            <cr-icon-button class="icon-add-circle"
-                aria-labelledby="add-vpn-label"
-                disabled="[[vpnIsProhibited_]]">
-            </cr-icon-button>
-          </div>
-          <template is="dom-repeat" items="[[vpnProviders_]]">
-            <div actionable class="list-item"
-                on-click="onAddThirdPartyVpnClick_">
-              <div class="start settings-box-text">
-                [[getAddThirdPartyVpnLabel_(item)]]
+            <div actionable$="[[!vpnIsProhibited_]]" class="list-item"
+                on-click="onAddVpnClick_">
+              <div class="start settings-box-text"
+                  id="add-vpn-label" aria-hidden="true">
+                $i18n{internetAddVPN}
               </div>
-              <cr-icon-button class="icon-external"
-                  aria-label$="[[getAddThirdPartyVpnLabel_(item)]]">
+              <template is="dom-if" if="[[vpnIsProhibited_]]">
+                <cr-policy-indicator id="vpnPolicyIndicator"
+                    icon-aria-label="$i18n{networkVpnBuiltin}"
+                    indicator-type="devicePolicy"
+                    on-click="doNothing_">
+                </cr-policy-indicator>
+              </template>
+              <cr-icon-button class="icon-add-circle"
+                  aria-labelledby="add-vpn-label"
+                  disabled="[[vpnIsProhibited_]]">
               </cr-icon-button>
             </div>
-          </template>
+            <template is="dom-repeat" items="[[vpnProviders_]]">
+              <div actionable class="list-item"
+                  on-click="onAddThirdPartyVpnClick_">
+                <div class="start settings-box-text">
+                  [[getAddThirdPartyVpnLabel_(item)]]
+                </div>
+                <cr-icon-button class="icon-external"
+                    aria-label$="[[getAddThirdPartyVpnLabel_(item)]]">
+                </cr-icon-button>
+              </div>
+            </template>
+          </div>
+        </template>
+      </template>
+      <template is="dom-if" if="[[!allowAddConnection_(globalPolicy_,
+          managedNetworkAvailable)]]">
+        <div class="settings-box">
+          <iron-icon class="policy" icon="cr20:domain"></iron-icon>
+          <div class="settings-box-text">
+            $i18n{internetAddConnectionNotAllowed}
+          </div>
         </div>
       </template>
-    </template>
-    <template is="dom-if" if="[[!allowAddConnection_(globalPolicy_,
-        managedNetworkAvailable)]]">
-      <div class="settings-box">
-        <iron-icon class="policy" icon="cr20:domain"></iron-icon>
-        <div class="settings-box-text">
-          $i18n{internetAddConnectionNotAllowed}
-        </div>
-      </div>
-    </template>
+    </os-settings-section>
   </div>
 
   <template is="dom-if" route-path="/networkDetail" restamp>

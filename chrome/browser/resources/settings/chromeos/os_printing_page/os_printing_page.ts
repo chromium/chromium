@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page/os_settings_subpage.js';
 import '../settings_shared.css.js';
 import './cups_printers.js';

@@ -10,6 +10,7 @@ import '/shared/settings/controls/password_prompt_dialog.js';
 import '../settings_shared.css.js';
 import '../nearby_share_page/nearby_share_subpage.js';
 import '../os_settings_page/os_settings_animated_pages.js';
+import '../os_settings_page/os_settings_section.js';
 import '../os_settings_page/os_settings_subpage.js';
 import 'chrome://resources/cr_components/localized_link/localized_link.js';
 import './multidevice_feature_toggle.js';

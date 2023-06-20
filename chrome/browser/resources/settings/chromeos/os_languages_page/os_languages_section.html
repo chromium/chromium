@@ -10,32 +10,34 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <cr-link-row
-        id="languagesPageTrigger"
-        label="$i18n{languagesPageTitle}"
-        sub-label="[[getLanguageDisplayName_(
-            languages.prospectiveUILanguage, languageHelper)]]"
-        on-click="onLanguagesV2Click_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-    <cr-link-row
-        class="hr"
-        id="inputPageTrigger"
-        label="[[inputPageTitle_]]"
-        sub-label="[[getInputMethodDisplayName_(
-          languages.inputMethods.currentId, languageHelper)]]"
-        on-click="onInputClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-    <template is="dom-if" if="[[smartInputsEnabled_]]">
+    <os-settings-section page-title="$i18n{osLanguagesPageTitle}">
       <cr-link-row
-          class="hr"
-          id="smartInputsSubpageTrigger"
-          label="$i18n{smartInputsTitle}"
-          on-click="onSmartInputsClick_"
+          id="languagesPageTrigger"
+          label="$i18n{languagesPageTitle}"
+          sub-label="[[getLanguageDisplayName_(
+              languages.prospectiveUILanguage, languageHelper)]]"
+          on-click="onLanguagesV2Click_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
+      <cr-link-row
+          class="hr"
+          id="inputPageTrigger"
+          label="[[inputPageTitle_]]"
+          sub-label="[[getInputMethodDisplayName_(
+            languages.inputMethods.currentId, languageHelper)]]"
+          on-click="onInputClick_"
+          role-description="$i18n{subpageArrowRoleDescription}">
+      </cr-link-row>
+      <template is="dom-if" if="[[smartInputsEnabled_]]">
+        <cr-link-row
+            class="hr"
+            id="smartInputsSubpageTrigger"
+            label="$i18n{smartInputsTitle}"
+            on-click="onSmartInputsClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+    </os-settings-section>
   </div>
 
   <!-- "Languages" page. -->

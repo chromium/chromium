@@ -3,42 +3,45 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div route-path="default">
-    <template is="dom-if" if="[[!isBulkPinningEnabled_]]">
-      <settings-toggle-button
-          id="disconnectGoogleDriveAccount"
-          pref="{{prefs.gdata.disabled}}"
-          label="$i18n{disconnectGoogleDriveAccount}"
-          deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
-      </settings-toggle-button>
-    </template>
-    <template is="dom-if" if="[[isBulkPinningEnabled_]]">
-      <cr-link-row
-          id="GoogleDriveLink"
-          class="hr" on-click="onGoogleDrive_"
-          label="$i18n{googleDriveLabel}"
-          sub-label="[[googleDriveSignedInLabel_(driveDisabled_)]]"
+    <os-settings-section page-title="$i18n{filesPageTitle}">
+      <template is="dom-if" if="[[!isBulkPinningEnabled_]]">
+        <settings-toggle-button
+            id="disconnectGoogleDriveAccount"
+            pref="{{prefs.gdata.disabled}}"
+            label="$i18n{disconnectGoogleDriveAccount}"
+            deep-link-focus-id$="[[Setting.kGoogleDriveConnection]]">
+        </settings-toggle-button>
+      </template>
+      <template is="dom-if" if="[[isBulkPinningEnabled_]]">
+        <cr-link-row
+            id="GoogleDriveLink"
+            class="hr" on-click="onGoogleDrive_"
+            label="$i18n{googleDriveLabel}"
+            sub-label="[[googleDriveSignedInLabel_(driveDisabled_)]]"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[showOfficeSettings_]]">
+        <cr-link-row
+            id="OneDriveLink"
+            class="hr" on-click="onTapOneDrive_"
+            label="$i18n{oneDriveLabel}"
+            sub-label="[[oneDriveSignedInLabel_(oneDriveConnectionState_)]]"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+        <cr-link-row id="office" class="hr" on-click="onTapOffice_"
+            label="$i18n{officeLabel}"
+            sub-label="$i18n{officeSublabel}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
+          label="$i18n{smbSharesTitle}"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[showOfficeSettings_]]">
-      <cr-link-row
-          id="OneDriveLink"
-          class="hr" on-click="onTapOneDrive_"
-          label="$i18n{oneDriveLabel}"
-          sub-label="[[oneDriveSignedInLabel_(oneDriveConnectionState_)]]"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-      <cr-link-row id="office" class="hr" on-click="onTapOffice_"
-          label="$i18n{officeLabel}"
-          sub-label="$i18n{officeSublabel}"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <cr-link-row id="smbShares" class="hr" on-click="onTapSmbShares_"
-        label="$i18n{smbSharesTitle}"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
+    </os-settings-section>
   </div>
+
   <template is="dom-if" route-path="/smbShares">
     <os-settings-subpage page-title="$i18n{smbSharesTitle}">
       <settings-smb-shares-page prefs="[[prefs]]">

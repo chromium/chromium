@@ -14,81 +14,84 @@
     section="[[section_]]"
     focus-config="[[focusConfig_]]">
   <div id="main" route-path="default">
-    <template is="dom-if"
-        if="[[showPointersRow_(hasMouse_, hasPointingStick_,
-                               hasTouchpad_, isDeviceSettingsSplitEnabled_)]]">
-      <cr-link-row id="pointersRow"
-          label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
-                                     hasTouchpad_)]]"
-          on-click="onPointersClick_"
+    <os-settings-section page-title="$i18n{devicePageTitle}">
+      <template is="dom-if"
+          if="[[showPointersRow_(hasMouse_, hasPointingStick_,
+                                hasTouchpad_, isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row id="pointersRow"
+            label="[[getPointersTitle_(hasMouse_, hasPointingStick_,
+                                      hasTouchpad_)]]"
+            on-click="onPointersClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDeviceMouseRow_(mice,
+                                      isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
+            on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDeviceTouchpadRow_(touchpads,
+                                          isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDeviceTouchpadRow"
+            aria-label="$i18n{touchpadTitle}"
+            label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if"
+          if="[[showPerDevicePointingStickRow_(pointingSticks,
+                                              isDeviceSettingsSplitEnabled_)]]">
+        <cr-link-row class="hr" id="perDevicePointingStickRow"
+            aria-label="$i18n{pointingStickTitle}"
+            label="$i18n{pointingStickTitle}"
+            on-click="onPerDevicePointingStickClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
+        <cr-link-row class="hr" id="perDeviceKeyboardRow"
+            label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
+            on-click="onPerDeviceKeyboardClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
+        <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
+            on-click="onKeyboardClick_"
+            role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
+      </template>
+      <template is="dom-if" if="[[hasStylus_]]">
+        <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
+            on-click="onStylusClick_"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <template is="dom-if" if="[[isPeripheralCustomizationEnabled]]">
+        <cr-link-row class="hr" id="tabletRow" label="$i18n{tabletTitle}"
+            on-click="onGraphicsTabletClick"
+            role-description="$i18n{subpageArrowRoleDescription}">
+        </cr-link-row>
+      </template>
+      <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
+          on-click="onDisplayClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    </template>
-    <template is="dom-if"
-        if="[[showPerDeviceMouseRow_(mice,
-                                     isDeviceSettingsSplitEnabled_)]]">
-      <cr-link-row class="hr" id="perDeviceMouseRow" label="$i18n{mouseTitle}"
-          on-click="onPerDeviceMouseClick_" aria-label="$i18n{mouseTitle}"
+      <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
+          on-click="onAudioClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
-    <template is="dom-if"
-        if="[[showPerDeviceTouchpadRow_(touchpads,
-                                        isDeviceSettingsSplitEnabled_)]]">
-      <cr-link-row class="hr" id="perDeviceTouchpadRow"
-          aria-label="$i18n{touchpadTitle}"
-          label="$i18n{touchpadTitle}" on-click="onPerDeviceTouchpadClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if"
-        if="[[showPerDevicePointingStickRow_(pointingSticks,
-                                             isDeviceSettingsSplitEnabled_)]]">
-      <cr-link-row class="hr" id="perDevicePointingStickRow"
-          aria-label="$i18n{pointingStickTitle}"
-          label="$i18n{pointingStickTitle}"
-          on-click="onPerDevicePointingStickClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[isDeviceSettingsSplitEnabled_]]">
-      <cr-link-row class="hr" id="perDeviceKeyboardRow"
-          label="$i18n{keyboardTitle}" aria-label="$i18n{keyboardTitle}"
-          on-click="onPerDeviceKeyboardClick_"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[!isDeviceSettingsSplitEnabled_]]">
-      <cr-link-row class="hr" id="keyboardRow" label="$i18n{keyboardTitle}"
-          on-click="onKeyboardClick_"
+      <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
+          label="$i18n{storageTitle}" on-click="onStorageClick_"
           role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    </template>
-    <template is="dom-if" if="[[hasStylus_]]">
-      <cr-link-row class="hr" id="stylusRow" label="$i18n{stylusTitle}"
-          on-click="onStylusClick_"
+      <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
+          on-click="onPowerClick_"
           role-description="$i18n{subpageArrowRoleDescription}">
       </cr-link-row>
-    </template>
-    <template is="dom-if" if="[[isPeripheralCustomizationEnabled]]">
-      <cr-link-row class="hr" id="tabletRow" label="$i18n{tabletTitle}"
-          on-click="onGraphicsTabletClick"
-          role-description="$i18n{subpageArrowRoleDescription}">
-      </cr-link-row>
-    </template>
-    <cr-link-row class="hr" id="displayRow" label="$i18n{displayTitle}"
-        on-click="onDisplayClick_"
-        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    <cr-link-row class="hr" id="audioRow" label="$i18n{audioTitle}"
-        on-click="onAudioClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
-    <cr-link-row class="hr" hidden="[[hideStorageInfo_]]" id="storageRow"
-        label="$i18n{storageTitle}" on-click="onStorageClick_"
-        role-description="$i18n{subpageArrowRoleDescription}"></cr-link-row>
-    <cr-link-row class="hr" id="powerRow" label="$i18n{powerTitle}"
-        on-click="onPowerClick_"
-        role-description="$i18n{subpageArrowRoleDescription}">
-    </cr-link-row>
+    </os-settings-section>
   </div>
+
   <template is="dom-if" route-path="/pointer-overlay">
     <os-settings-subpage
         page-title="[[getPointersTitle_(hasMouse_, hasPointingStick_,
