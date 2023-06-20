@@ -49,24 +49,6 @@ BASE_DECLARE_FEATURE(kEvDetailsInPageInfo);
 
 #if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 BASE_DECLARE_FEATURE(kGetTheMostOutOfChrome);
-
-BASE_DECLARE_FEATURE(kIOSPromoPasswordBubble);
-
-// This enum lists the possible params for the kIOSPromoPasswordBubble promo.
-// The first two are the launch candidates, the second two are for experimental
-// groups and the last two are for debugging/testing. Direct/indirect refers to
-// the experiment variant (whether showing the user a QR directly or show them a
-// landing page first).
-enum class IOSPromoPasswordBubbleActivation {
-  kContextualDirect,
-  kContextualIndirect,
-  kNonContextualDirect,
-  kNonContextualIndirect,
-  kAlwaysShowWithPasswordBubbleDirect,
-  kAlwaysShowWithPasswordBubbleIndirect,
-};
-extern const base::FeatureParam<IOSPromoPasswordBubbleActivation>
-    kIOSPromoPasswordBubbleActivationParam;
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)

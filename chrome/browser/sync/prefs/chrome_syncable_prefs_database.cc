@@ -6,6 +6,7 @@
 
 #include "base/containers/fixed_flat_map.h"
 #include "base/strings/string_piece.h"
+#include "chrome/browser/promos/promos_pref_names.h"
 #include "chrome/browser/ui/webui/side_panel/read_anything/read_anything_prefs.h"
 #include "chrome/common/pref_names.h"
 #include "components/embedder_support/pref_names.h"
@@ -256,6 +257,9 @@ enum {
   kShowDeskButtonInShelf = 100203,
   kOsDogfoodGroupsSyncPrefName = 100204,
   kProjectorSWAUIPrefsMigrated = 100205,
+  kiOSPasswordPromoLastImpressionTimestamp = 100206,
+  kiOSPasswordPromoImpressionsCounter = 100207,
+  kiOSPasswordPromoOptOut = 100208,
   // See components/sync_preferences/README.md about adding new entries here.
   // vvvvv IMPORTANT! vvvvv
   // Note to the reviewer: IT IS YOUR RESPONSIBILITY to ensure that new syncable
@@ -883,6 +887,15 @@ const auto& SyncablePreferences() {
         // TODO(crbug.com/1420978): Declare this in the corresponding header.
         {"webauthn.cablev2_pairings",
          {syncable_prefs_ids::kWebauthnCablev2Pairings, syncer::PREFERENCES,
+          false}},
+        {promos_prefs::kiOSPasswordPromoLastImpressionTimestamp,
+         {syncable_prefs_ids::kiOSPasswordPromoLastImpressionTimestamp,
+          syncer::PREFERENCES, false}},
+        {promos_prefs::kiOSPasswordPromoImpressionsCounter,
+         {syncable_prefs_ids::kiOSPasswordPromoImpressionsCounter,
+          syncer::PREFERENCES, false}},
+        {promos_prefs::kiOSPasswordPromoOptOut,
+         {syncable_prefs_ids::kiOSPasswordPromoOptOut, syncer::PREFERENCES,
           false}},
   });
   return kChromeSyncablePrefsAllowlist;
