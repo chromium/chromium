@@ -1088,6 +1088,11 @@ const char kTabGridRecencySortName[] = "Change TabGrid sorting";
 const char kTabGridRecencySortDescription[] =
     "When enabled, the tabs in the Tab Grid are sorted differently.";
 
+const char kTabGridRefactoringName[] = "Enable tab grid refactoring";
+const char kTabGridRefactoringDescription[] =
+    "When enabled, the Tab Grid use the refactored version, it should not have "
+    "any visual difference nor different feature with the legacy one.";
+
 const char kTabGridNewTransitionsName[] = "Enable new TabGrid transitions";
 const char kTabGridNewTransitionsDescription[] =
     "When enabled, the new Tab Grid to Browser (and vice versa) transitions"

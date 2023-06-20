@@ -273,3 +273,7 @@ const char kDefaultBrowserTriggerOnOmniboxCopyPaste[] =
 BASE_FEATURE(kThemeColorInToolbar,
              "ThemeColorInToolbar",
              base::FEATURE_DISABLED_BY_DEFAULT);
+
+BASE_FEATURE(kTabGridRefactoring,
+             "TabGridRefactoring",
+             base::FEATURE_DISABLED_BY_DEFAULT);

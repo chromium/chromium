@@ -1630,6 +1630,9 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
     {"toolbar-theme-color", flag_descriptions::kThemeColorInToolbarName,
      flag_descriptions::kThemeColorInToolbarDescription, flags_ui::kOsIos,
      FEATURE_VALUE_TYPE(kThemeColorInToolbar)},
+    {"tab-grid-refactoring", flag_descriptions::kTabGridRefactoringName,
+     flag_descriptions::kTabGridRefactoringDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kTabGridRefactoring)},
 };
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
