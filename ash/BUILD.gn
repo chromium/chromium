@@ -404,8 +404,6 @@ component("ash") {
     "clipboard/views/clipboard_history_bitmap_item_view.h",
     "clipboard/views/clipboard_history_delete_button.cc",
     "clipboard/views/clipboard_history_delete_button.h",
-    "clipboard/views/clipboard_history_file_item_view.cc",
-    "clipboard/views/clipboard_history_file_item_view.h",
     "clipboard/views/clipboard_history_item_view.cc",
     "clipboard/views/clipboard_history_item_view.h",
     "clipboard/views/clipboard_history_label.cc",

@@ -4,6 +4,7 @@
 
 #include "ash/clipboard/views/clipboard_history_label.h"
 
+#include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
 #include "ash/style/typography.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -13,8 +14,12 @@
 namespace ash {
 ClipboardHistoryLabel::ClipboardHistoryLabel(const std::u16string& text)
     : views::Label(text) {
+  // TODO(http://b/267693870): Remove `SetPreferredSize()` entirely when
+  // refreshing clipboard history items' delete button UI.
   SetPreferredSize(
-      gfx::Size(INT_MAX, ClipboardHistoryViews::kLabelPreferredHeight));
+      gfx::Size(clipboard_history_util::GetPreferredItemViewWidth() -
+                    ClipboardHistoryViews::kContentsInsets.width(),
+                ClipboardHistoryViews::kLabelPreferredHeight));
   if (chromeos::features::IsJellyEnabled()) {
     TypographyProvider::Get()->StyleLabel(TypographyToken::kCrosBody1, *this);
   } else {

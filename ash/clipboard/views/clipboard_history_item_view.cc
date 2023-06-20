@@ -4,12 +4,13 @@
 
 #include "ash/clipboard/views/clipboard_history_item_view.h"
 
+#include <memory>
+
 #include "ash/clipboard/clipboard_history.h"
 #include "ash/clipboard/clipboard_history_item.h"
 #include "ash/clipboard/clipboard_history_util.h"
 #include "ash/clipboard/views/clipboard_history_bitmap_item_view.h"
 #include "ash/clipboard/views/clipboard_history_delete_button.h"
-#include "ash/clipboard/views/clipboard_history_file_item_view.h"
 #include "ash/clipboard/views/clipboard_history_main_button.h"
 #include "ash/clipboard/views/clipboard_history_text_item_view.h"
 #include "ash/clipboard/views/clipboard_history_view_constants.h"
@@ -25,12 +26,14 @@
 #include "ui/views/accessibility/view_accessibility.h"
 #include "ui/views/animation/ink_drop.h"
 #include "ui/views/border.h"
+#include "ui/views/controls/image_view.h"
 #include "ui/views/controls/menu/menu_item_view.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/box_layout_view.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 #include "ui/views/view_class_properties.h"
+#include "ui/views/view_targeter_delegate.h"
 
 namespace ash {
 namespace {
@@ -52,7 +55,7 @@ const gfx::Insets GetDeleteButtonMargins(
       NOTREACHED_NORETURN();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      return ClipboardHistoryViews::kDefaultItemDeleteButtonMargins;
+      return ClipboardHistoryViews::kTextItemDeleteButtonMargins;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       return ClipboardHistoryViews::kBitmapItemDeleteButtonMargins;
@@ -60,28 +63,42 @@ const gfx::Insets GetDeleteButtonMargins(
 }
 }  // namespace
 
-ClipboardHistoryItemView::ContentsView::ContentsView(
-    ClipboardHistoryItemView* container)
-    : container_(container) {
-  SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
-  SetBorder(views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets));
-}
-
-ClipboardHistoryItemView::ContentsView::~ContentsView() = default;
-
-// Accepts the event only when |delete_button_| should be the handler.
-bool ClipboardHistoryItemView::ContentsView::DoesIntersectRect(
-    const views::View* target,
-    const gfx::Rect& rect) const {
-  const views::View* const delete_button = container_->delete_button_;
-  if (!delete_button->GetVisible()) {
-    return false;
+// Container class for everything that visibly appears in a menu item.
+class ClipboardHistoryItemView::DisplayView
+    : public views::BoxLayoutView,
+      public views::ViewTargeterDelegate {
+ public:
+  METADATA_HEADER(DisplayView);
+  explicit DisplayView(ClipboardHistoryItemView* container)
+      : container_(container) {
+    SetEventTargeter(std::make_unique<views::ViewTargeter>(this));
+    SetCrossAxisAlignment(views::BoxLayout::CrossAxisAlignment::kStart);
+    SetBorder(views::CreateEmptyBorder(ClipboardHistoryViews::kContentsInsets));
   }
 
-  gfx::RectF rect_in_delete_button(rect);
-  ConvertRectToTarget(this, delete_button, &rect_in_delete_button);
-  return delete_button->HitTestRect(gfx::ToEnclosedRect(rect_in_delete_button));
-}
+  DisplayView(const DisplayView& rhs) = delete;
+  DisplayView& operator=(const DisplayView& rhs) = delete;
+
+  ~DisplayView() override = default;
+
+ private:
+  // views::ViewTargeterDelegate:
+  bool DoesIntersectRect(const views::View* target,
+                         const gfx::Rect& rect) const override {
+    const views::View* const delete_button = container_->delete_button_;
+    if (!delete_button->GetVisible()) {
+      return false;
+    }
+
+    gfx::RectF rect_in_delete_button(rect);
+    ConvertRectToTarget(this, delete_button, &rect_in_delete_button);
+    return delete_button->HitTestRect(
+        gfx::ToEnclosedRect(rect_in_delete_button));
+  }
+
+  // The parent item view.
+  const raw_ptr<ClipboardHistoryItemView> container_;
+};
 
 // static
 std::unique_ptr<ClipboardHistoryItemView>
@@ -97,14 +114,12 @@ ClipboardHistoryItemView::CreateFromClipboardHistoryItem(
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kText:
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
       return std::make_unique<ClipboardHistoryTextItemView>(
           item_id, clipboard_history, container);
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       return std::make_unique<ClipboardHistoryBitmapItemView>(
-          item_id, clipboard_history, container);
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kFile:
-      return std::make_unique<ClipboardHistoryFileItemView>(
           item_id, clipboard_history, container);
   }
 }
@@ -177,6 +192,7 @@ void ClipboardHistoryItemView::HandleMainButtonPressEvent(
 }
 
 void ClipboardHistoryItemView::Init() {
+  views::BoxLayoutView* display_view = nullptr;
   views::Builder<views::View>(this)
       .SetFocusBehavior(views::View::FocusBehavior::ACCESSIBLE_ONLY)
       .SetLayoutManager(std::make_unique<views::FillLayout>())
@@ -187,10 +203,28 @@ void ClipboardHistoryItemView::Init() {
           views::Builder<views::View>(
               std::make_unique<ClipboardHistoryMainButton>(this))
               .CopyAddressTo(&main_button_),
-          views::Builder<views::View>(CreateContentsView())
-              .CopyAddressTo(&contents_view_)
-              .AddChild(views::Builder<views::View>(CreateDeleteButton())))
+          views::Builder<views::BoxLayoutView>(
+              std::make_unique<DisplayView>(this))
+              .CopyAddressTo(&display_view)
+              .AddChild(views::Builder<views::View>(CreateContentsView())
+                            .AddChild(views::Builder<views::View>(
+                                CreateDeleteButton()))))
       .BuildChildren();
+
+  const auto* const item = GetClipboardHistoryItem();
+  CHECK(item);
+  if (item->display_format() ==
+      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
+    CHECK(item->icon());
+    views::Builder<views::View>(display_view)
+        .AddChildAt(views::Builder<views::ImageView>()
+                        .SetImageSize(ClipboardHistoryViews::kIconSize)
+                        .SetProperty(views::kMarginsKey,
+                                     ClipboardHistoryViews::kIconMargins)
+                        .SetImage(*item->icon()),
+                    /*index=*/0)
+        .BuildChildren();
+  }
 
   subscription_ = container_->AddSelectedChangedCallback(base::BindRepeating(
       &ClipboardHistoryItemView::OnSelectionChanged, base::Unretained(this)));
@@ -383,7 +417,7 @@ void ClipboardHistoryItemView::SetPseudoFocus(PseudoFocus new_pseudo_focus) {
   }
 }
 
-BEGIN_METADATA(ClipboardHistoryItemView, ContentsView, views::View)
+BEGIN_METADATA(ClipboardHistoryItemView, DisplayView, views::View)
 END_METADATA
 
 BEGIN_METADATA(ClipboardHistoryItemView, views::View)

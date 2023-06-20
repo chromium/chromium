@@ -31,7 +31,7 @@ class ClipboardHistoryBitmapItemView : public ClipboardHistoryItemView {
   class BitmapContentsView;
 
   // ClipboardHistoryItemView:
-  std::unique_ptr<ContentsView> CreateContentsView() override;
+  std::unique_ptr<views::View> CreateContentsView() override;
 
   // The format of the associated `ClipboardData`.
   const ui::ClipboardInternalFormat data_format_;

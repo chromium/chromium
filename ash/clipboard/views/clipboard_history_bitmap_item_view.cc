@@ -152,12 +152,11 @@ class FadeImageView : public views::ImageView,
 ////////////////////////////////////////////////////////////////////////////////
 // ClipboardHistoryBitmapItemView::BitmapContentsView
 
-class ClipboardHistoryBitmapItemView::BitmapContentsView
-    : public ClipboardHistoryBitmapItemView::ContentsView {
+class ClipboardHistoryBitmapItemView::BitmapContentsView : public views::View {
  public:
   METADATA_HEADER(BitmapContentsView);
   explicit BitmapContentsView(ClipboardHistoryBitmapItemView* container)
-      : ContentsView(container), container_(container) {
+      : container_(container) {
     views::Builder<views::View>(this)
         .SetLayoutManager(std::make_unique<views::FillLayout>())
         .AddChild(
@@ -268,7 +267,7 @@ class ClipboardHistoryBitmapItemView::BitmapContentsView
   raw_ptr<views::ImageView, ExperimentalAsh> image_view_ = nullptr;
 };
 
-BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, ContentsView)
+BEGIN_METADATA(ClipboardHistoryBitmapItemView, BitmapContentsView, views::View)
 END_METADATA
 
 ////////////////////////////////////////////////////////////////////////////////
@@ -296,7 +295,7 @@ ClipboardHistoryBitmapItemView::ClipboardHistoryBitmapItemView(
 
 ClipboardHistoryBitmapItemView::~ClipboardHistoryBitmapItemView() = default;
 
-std::unique_ptr<ClipboardHistoryBitmapItemView::ContentsView>
+std::unique_ptr<views::View>
 ClipboardHistoryBitmapItemView::CreateContentsView() {
   return std::make_unique<BitmapContentsView>(this);
 }

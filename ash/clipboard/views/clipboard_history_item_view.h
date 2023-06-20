@@ -11,7 +11,6 @@
 #include "base/unguessable_token.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
-#include "ui/views/view_targeter_delegate.h"
 
 namespace views {
 class MenuItemView;
@@ -69,33 +68,12 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
   clipboard_history_util::Action action() const { return action_; }
 
  protected:
-  // Used by subclasses to draw contents, such as text or bitmaps.
-  class ContentsView : public views::View, public views::ViewTargeterDelegate {
-   public:
-    METADATA_HEADER(ContentsView);
-    explicit ContentsView(ClipboardHistoryItemView* container);
-    ContentsView(const ContentsView& rhs) = delete;
-    ContentsView& operator=(const ContentsView& rhs) = delete;
-    ~ContentsView() override;
-
-   protected:
-    ClipboardHistoryItemView* container() { return container_; }
-
-   private:
-    // views::ViewTargeterDelegate:
-    bool DoesIntersectRect(const views::View* target,
-                           const gfx::Rect& rect) const override;
-
-    // The parent of ContentsView.
-    const raw_ptr<ClipboardHistoryItemView, ExperimentalAsh> container_;
-  };
-
   ClipboardHistoryItemView(const base::UnguessableToken& item_id,
                            const ClipboardHistory* clipboard_history,
                            views::MenuItemView* container);
 
   // Creates the contents view.
-  virtual std::unique_ptr<ContentsView> CreateContentsView() = 0;
+  virtual std::unique_ptr<views::View> CreateContentsView() = 0;
 
   const ClipboardHistoryItem* GetClipboardHistoryItem() const;
 
@@ -118,6 +96,8 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
     // Marks the end. It should not be assigned to `pseudo_focus_`.
     kMaxValue = 3
   };
+
+  class DisplayView;
 
   // views::View:
   gfx::Size CalculatePreferredSize() const override;
@@ -151,7 +131,6 @@ class ASH_EXPORT ClipboardHistoryItemView : public views::View {
 
   // Owned by the view hierarchy.
   raw_ptr<views::View, ExperimentalAsh> main_button_ = nullptr;
-  raw_ptr<views::View, ExperimentalAsh> contents_view_ = nullptr;
   raw_ptr<views::View, ExperimentalAsh> delete_button_ = nullptr;
 
   PseudoFocus pseudo_focus_ = PseudoFocus::kEmpty;

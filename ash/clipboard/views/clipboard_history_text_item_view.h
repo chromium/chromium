@@ -33,11 +33,9 @@ class ClipboardHistoryTextItemView : public ClipboardHistoryItemView {
   const std::u16string& text() const { return text_; }
 
   // ClipboardHistoryItemView:
-  std::unique_ptr<ContentsView> CreateContentsView() override;
+  std::unique_ptr<views::View> CreateContentsView() override;
 
  private:
-  class TextContentsView;
-
   // Text to show.
   const std::u16string text_;
 };
