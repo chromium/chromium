@@ -3296,6 +3296,9 @@
     {
       name: "SolidColorLayers",
     },
+    {
+      name: "SparseObjectPaintProperties",
+    },
     // An origin trial feature name is required for this, even though it's
     // actually enabled by the more specific trial. Having these as separate
     // features will allow Blink to distinguish for which thing the trial

@@ -108,7 +108,9 @@ blink_core_sources_paint = [
   "object_paint_invalidator.cc",
   "object_paint_invalidator.h",
   "object_paint_properties.cc",
+  "sparse_vector.h",
   "object_paint_properties.h",
+  "object_paint_properties_sparse.h",
   "object_paint_properties_impl.h",
   "outline_painter.cc",
   "outline_painter.h",
@@ -219,6 +221,7 @@ blink_core_sources_paint = [
 blink_core_tests_paint = [
   "block_painter_test.cc",
   "box_painter_test.cc",
+  "sparse_vector_test.cc",
   "box_paint_invalidator_test.cc",
   "clip_path_clipper_test.cc",
   "clip_rect_test.cc",

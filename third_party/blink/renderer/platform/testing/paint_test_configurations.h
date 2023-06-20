@@ -23,6 +23,7 @@ enum {
   kCompositeScrollAfterPaint = 1 << 3,
   kUsedColorSchemeRootScrollbars = 1 << 4,
   kFluentScrollbar = 1 << 5,
+  kSparseObjectPaintProperties = 1 << 6,
 };
 
 class PaintTestConfigurations
@@ -30,7 +31,8 @@ class PaintTestConfigurations
       private ScopedPaintUnderInvalidationCheckingForTest,
       private ScopedSolidColorLayersForTest,
       private ScopedCompositeScrollAfterPaintForTest,
-      private ScopedUsedColorSchemeRootScrollbarsForTest {
+      private ScopedUsedColorSchemeRootScrollbarsForTest,
+      private ScopedSparseObjectPaintPropertiesForTest {
  public:
   PaintTestConfigurations()
       : ScopedPaintUnderInvalidationCheckingForTest(GetParam() &
@@ -39,7 +41,9 @@ class PaintTestConfigurations
         ScopedCompositeScrollAfterPaintForTest(GetParam() &
                                                kCompositeScrollAfterPaint),
         ScopedUsedColorSchemeRootScrollbarsForTest(
-            GetParam() & kUsedColorSchemeRootScrollbars) {
+            GetParam() & kUsedColorSchemeRootScrollbars),
+        ScopedSparseObjectPaintPropertiesForTest(GetParam() &
+                                                 kSparseObjectPaintProperties) {
     std::vector<base::test::FeatureRef> enabled_features = {};
     std::vector<base::test::FeatureRef> disabled_features = {};
     if (GetParam() & kScrollUnification) {
