@@ -5436,26 +5436,6 @@
             ]
         }
     ],
-    "ExtendScriptResourceLifetime": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "ExtendScriptResourceLifetime"
-                    ]
-                }
-            ]
-        }
-    ],
     "ExtensionTelemetryDeclarativeNetRequestSignalStudy": [
         {
             "platforms": [
@@ -5685,19 +5665,15 @@
             ],
             "experiments": [
                 {
-                    "name": "LowPriLoading_20221102",
+                    "name": "LowPriAsyncExec_1_03_ext_20230612",
                     "params": {
-                        "low_pri_async_loading_cross_site_only": "true",
-                        "low_pri_async_loading_feature_limit": "5s",
-                        "low_pri_async_loading_main_frame_only": "true"
+                        "low_pri_async_exec_cross_site_only": "true",
+                        "low_pri_async_exec_feature_limit": "3s",
+                        "low_pri_async_exec_main_frame_only": "true",
+                        "low_pri_async_exec_timeout": "1s"
                     },
                     "enable_features": [
-                        "LowPriorityScriptLoading"
-                    ],
-                    "disable_features": [
-                        "DOMContentLoadedWaitForAsyncScript",
-                        "DelayAsyncScriptExecution",
-                        "ImageLoadingPrioritizationFix",
+                        "ExtendScriptResourceLifetime",
                         "LowPriorityAsyncScriptExecution"
                     ]
                 }
