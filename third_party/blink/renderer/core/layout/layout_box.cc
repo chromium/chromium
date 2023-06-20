@@ -1030,13 +1030,19 @@ LayoutUnit LayoutBox::ClientHeightFrom(LayoutUnit height) const {
 
 int LayoutBox::PixelSnappedClientWidth() const {
   NOT_DESTROYED();
-  return SnapSizeToPixel(ClientWidth(), Location().X() + ClientLeft());
+  LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                        ? PhysicalLocation().left
+                        : Location().X();
+  return SnapSizeToPixel(ClientWidth(), left + ClientLeft());
 }
 
 DISABLE_CFI_PERF
 int LayoutBox::PixelSnappedClientHeight() const {
   NOT_DESTROYED();
-  return SnapSizeToPixel(ClientHeight(), Location().Y() + ClientTop());
+  LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                       ? PhysicalLocation().top
+                       : Location().Y();
+  return SnapSizeToPixel(ClientHeight(), top + ClientTop());
 }
 
 LayoutUnit LayoutBox::ClientWidthWithTableSpecialBehavior() const {
@@ -1119,17 +1125,24 @@ LayoutUnit LayoutBox::ScrollHeight() const {
 
 int LayoutBox::PixelSnappedScrollWidth() const {
   NOT_DESTROYED();
-  return SnapSizeToPixel(ScrollWidth(), Location().X() + ClientLeft());
+  LayoutUnit left = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                        ? PhysicalLocation().left
+                        : Location().X();
+  return SnapSizeToPixel(ScrollWidth(), left + ClientLeft());
 }
 
 int LayoutBox::PixelSnappedScrollHeight() const {
   NOT_DESTROYED();
-  if (IsScrollContainer())
+  LayoutUnit top = RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+                       ? PhysicalLocation().top
+                       : Location().Y();
+  if (IsScrollContainer()) {
     return SnapSizeToPixel(GetScrollableArea()->ScrollHeight(),
-                           Location().Y() + ClientTop());
+                           top + ClientTop());
+  }
   // For objects with visible overflow, this matches IE.
   // FIXME: Need to work right with writing modes.
-  return SnapSizeToPixel(ScrollHeight(), Location().Y() + ClientTop());
+  return SnapSizeToPixel(ScrollHeight(), top + ClientTop());
 }
 
 void LayoutBox::SetMargin(const NGPhysicalBoxStrut& box) {

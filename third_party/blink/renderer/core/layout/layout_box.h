@@ -393,11 +393,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   }
 
   // TODO(crbug.com/962299): This method snaps to pixels incorrectly because
-  // Location() is not the correct paint offset. It's also incorrect in flipped
-  // blocks writing mode.
+  // PhysicalLocation() is not the correct paint offset.
   gfx::Rect PixelSnappedBorderBoxRect() const {
     NOT_DESTROYED();
-    return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalOffset(Location())));
+    return gfx::Rect(PixelSnappedBorderBoxSize(PhysicalLocation()));
   }
   // TODO(crbug.com/962299): This method is only correct when |offset| is the
   // correct paint offset.

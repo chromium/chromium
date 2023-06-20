@@ -2117,8 +2117,13 @@
     {
       // crbug.com/1353190
       name: "LayoutNGNoCopyBack",
-      depends_on: ["RemoveConvertToLayerCoords", "ScrollableAreaNoSnapping"],
+      depends_on: ["LayoutNGNoLocation", "RemoveConvertToLayerCoords", "ScrollableAreaNoSnapping"],
       status: "test",
+    },
+    {
+      // crbug.com/1353190
+      name: "LayoutNGNoLocation",
+      status: "stable",
     },
     {
       name: "LayoutNGShapeCache",
