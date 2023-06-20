@@ -142,6 +142,7 @@ class HistoryBrowserTest : public InProcessBrowserTest {
     base::RunLoop run_loop;
     history_service->GetAnnotatedVisits(
         options,
+        /*compute_redirect_chain_start_properties=*/true,
         base::BindLambdaForTesting(
             [&](std::vector<history::AnnotatedVisit> visits) {
               annotated_visits = std::move(visits);

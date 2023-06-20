@@ -49,7 +49,8 @@ class TestHistoryBackendForSync : public HistoryBackendForSync {
                        VisitID originator_visit_id,
                        VisitRow* visit_row) override;
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
-      const VisitVector& visit_rows) override;
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties) override;
   VisitID AddSyncedVisit(
       const GURL& url,
       const std::u16string& title,

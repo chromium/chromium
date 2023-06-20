@@ -35,6 +35,7 @@ class HistoryClustersServiceTestApi {
     options.duplicate_policy = history::QueryOptions::KEEP_ALL_DUPLICATES;
     history_service_->GetAnnotatedVisits(
         options,
+        /*compute_redirect_chain_start_properties=*/true,
         base::BindLambdaForTesting(
             [&](std::vector<history::AnnotatedVisit> visits) {
               annotated_visits = std::move(visits);

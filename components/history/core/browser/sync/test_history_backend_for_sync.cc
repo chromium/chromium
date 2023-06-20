@@ -170,7 +170,8 @@ bool TestHistoryBackendForSync::GetForeignVisit(
 }
 
 std::vector<AnnotatedVisit> TestHistoryBackendForSync::ToAnnotatedVisits(
-    const VisitVector& visit_rows) {
+    const VisitVector& visit_rows,
+    bool compute_redirect_chain_start_properties) {
   std::vector<AnnotatedVisit> annotated_visits;
   for (const VisitRow& visit_row : visit_rows) {
     URLRow url_row;

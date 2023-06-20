@@ -2188,6 +2188,7 @@ void HistoryBackend::SetOnCloseContextAnnotationsForVisit(
 
 std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
     const QueryOptions& options,
+    bool compute_redirect_chain_start_properties,
     bool* limited_by_max_count) {
   // Gets `VisitVector` matching `options`, then for each visit, gets the
   // associated `URLRow`, `VisitContextAnnotations`, and
@@ -2211,11 +2212,12 @@ std::vector<AnnotatedVisit> HistoryBackend::GetAnnotatedVisits(
 
   DCHECK_LE(static_cast<int>(visit_rows.size()), options.EffectiveMaxCount());
 
-  return ToAnnotatedVisits(visit_rows);
+  return ToAnnotatedVisits(visit_rows, compute_redirect_chain_start_properties);
 }
 
 std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
-    const VisitVector& visit_rows) {
+    const VisitVector& visit_rows,
+    bool compute_redirect_chain_start_properties) {
   if (!db_)
     return {};
 
@@ -2244,10 +2246,13 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
     db_->GetContentAnnotationsForVisit(visit_row.visit_id,
                                        &content_annotations);
 
-    VisitRow redirect_start = GetRedirectChainStart(visit_row);
-    VisitID referring_visit_of_redirect_chain_start =
-        redirect_start.referring_visit;
-    VisitID opener_visit_of_redirect_chain_start = redirect_start.opener_visit;
+    VisitID referring_visit_of_redirect_chain_start = 0;
+    VisitID opener_visit_of_redirect_chain_start = 0;
+    if (compute_redirect_chain_start_properties) {
+      VisitRow redirect_start = GetRedirectChainStart(visit_row);
+      referring_visit_of_redirect_chain_start = redirect_start.referring_visit;
+      opener_visit_of_redirect_chain_start = redirect_start.opener_visit;
+    }
 
     const auto source = sources.count(visit_row.visit_id) == 0
                             ? VisitSource::SOURCE_BROWSED
@@ -2263,7 +2268,8 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
 }
 
 std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
-    const std::vector<VisitID>& visit_ids) {
+    const std::vector<VisitID>& visit_ids,
+    bool compute_redirect_chain_start_properties) {
   if (!db_)
     return {};
   VisitVector visit_rows;
@@ -2272,13 +2278,14 @@ std::vector<AnnotatedVisit> HistoryBackend::ToAnnotatedVisits(
     if (db_->GetRowForVisit(visit_id, &visit_row))
       visit_rows.push_back(visit_row);
   }
-  return ToAnnotatedVisits(visit_rows);
+  return ToAnnotatedVisits(visit_rows, compute_redirect_chain_start_properties);
 }
 
 std::vector<ClusterVisit> HistoryBackend::ToClusterVisits(
     const std::vector<VisitID>& visit_ids,
     bool include_duplicates) {
-  auto annotated_visits = ToAnnotatedVisits(visit_ids);
+  auto annotated_visits = ToAnnotatedVisits(
+      visit_ids, /*compute_redirect_chain_start_properties=*/false);
   std::vector<ClusterVisit> cluster_visits;
   std::set<VisitID> seen_duplicate_ids;
   base::ranges::for_each(annotated_visits, [&](const auto& annotated_visit) {

@@ -1011,7 +1011,9 @@ HistorySyncBridge::QueryRedirectChainAndMakeEntityData(
 
     // Query the URL and annotation info for the current subchain.
     std::vector<AnnotatedVisit> annotated_visits =
-        history_backend_->ToAnnotatedVisits(subchain_visits);
+        history_backend_->ToAnnotatedVisits(
+            subchain_visits,
+            /*compute_redirect_chain_start_properties=*/false);
     if (annotated_visits.empty()) {
       // Again, this can happen if there's invalid data in the DB. In that case,
       // skip this subchain but still try to handle any others.

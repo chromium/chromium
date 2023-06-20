@@ -33,7 +33,8 @@ class HistoryBackendForSync {
   virtual VisitVector GetRedirectChain(VisitRow visit) = 0;
 
   virtual std::vector<AnnotatedVisit> ToAnnotatedVisits(
-      const VisitVector& visit_rows) = 0;
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties) = 0;
 
   virtual bool GetForeignVisit(const std::string& originator_cache_guid,
                                VisitID originator_visit_id,

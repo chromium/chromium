@@ -497,16 +497,19 @@ class HistoryBackend : public base::RefCountedThreadSafe<HistoryBackend>,
 
   std::vector<AnnotatedVisit> GetAnnotatedVisits(
       const QueryOptions& options,
+      bool compute_redirect_chain_start_properties,
       bool* limited_by_max_count = nullptr);
 
   // Utility method to Construct `AnnotatedVisit`s.
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
-      const VisitVector& visit_rows) override;
+      const VisitVector& visit_rows,
+      bool compute_redirect_chain_start_properties) override;
 
   // Like above, but will first construct `visit_rows` from each `VisitID`
   // before delegating to the overloaded `ToAnnotatedVisits()` above.
   std::vector<AnnotatedVisit> ToAnnotatedVisits(
-      const std::vector<VisitID>& visit_ids);
+      const std::vector<VisitID>& visit_ids,
+      bool compute_redirect_chain_start_properties);
 
   // Utility method to construct `ClusterVisit`s. Since `duplicate_visits` isn't
   // always useful and requires extra SQL executions, it's only populated if
