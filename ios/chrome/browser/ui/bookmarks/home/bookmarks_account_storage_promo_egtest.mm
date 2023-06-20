@@ -98,11 +98,7 @@ using chrome_test_util::SecondarySignInButton;
   FakeSystemIdentity* fakeIdentity1 = [FakeSystemIdentity fakeIdentity1];
   // Sign-in+sync with identity1.
   [SigninEarlGreyUI signinWithFakeIdentity:fakeIdentity1 enableSync:YES];
-  [ChromeEarlGrey signOutAndClearIdentities];
-  // Wait for the spinner triggered by the previous method to disappear.
-  // TODO(crbug.com/1448618): This can be removed once
-  // `signOutAndClearIdentities` has a completion block.
-  WaitForActivityOverlayToDisappear();
+  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
   // Sign-in with bookmark account storage with identity2.
   FakeSystemIdentity* fakeIdentity2 = [FakeSystemIdentity fakeIdentity2];
   [SigninEarlGrey addFakeIdentity:fakeIdentity2];

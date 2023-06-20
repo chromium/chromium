@@ -88,11 +88,7 @@ NSString* const kReadURL = @"http://readfoobar.com";
   [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]
                                 enableSync:YES];
   // Sign-out and remove data.
-  [ChromeEarlGrey signOutAndClearIdentities];
-  // Wait for the spinner triggered by the previous method to disappear.
-  // TODO(crbug.com/1448618): This can be removed once
-  // `signOutAndClearIdentities` has a completion block.
-  WaitForActivityOverlayToDisappear();
+  [ChromeEarlGrey signOutAndClearIdentitiesAndWaitForCompletion];
 
   [ReadingListEarlGreyUI openReadingList];
   [SigninEarlGreyUI
