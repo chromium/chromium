@@ -161,8 +161,6 @@ SaveAddressProfileView::SaveAddressProfileView(
   // it would have been an update prompt.
   DCHECK(!controller_->GetOriginalProfile());
 
-  set_close_on_deactivate(false);
-
   // TODO(crbug.com/1167060): Accept action should consider the selected
   // nickname when saving the address.
   SetAcceptCallback(base::BindOnce(
