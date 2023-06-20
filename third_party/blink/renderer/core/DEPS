@@ -6,7 +6,6 @@ include_rules = [
     "+base/memory/values_equivalent.h",
     "+base/files/file.h",
     "+base/files/file_path.h",
-    "+base/i18n/char_iterator.h",
     "+base/mac/foundation_util.h",
     "+base/mac/scoped_cftyperef.h",
     "+base/memory/scoped_refptr.h",
