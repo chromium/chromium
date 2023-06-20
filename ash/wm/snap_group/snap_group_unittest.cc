@@ -17,6 +17,7 @@
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/overview/overview_item.h"
+#include "ash/wm/overview/overview_item_view.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
@@ -25,6 +26,7 @@
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/splitview/split_view_divider_view.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller_test_api.h"
+#include "ash/wm/window_preview_view.h"
 #include "ash/wm/window_state.h"
 #include "ash/wm/window_util.h"
 #include "ash/wm/wm_event.h"
@@ -876,6 +878,56 @@ TEST_F(SnapGroupEntryPointArm1Test, UseShortcutToMinimizeWindows) {
                                       ui::EF_SHIFT_DOWN | ui::EF_COMMAND_DOWN);
   EXPECT_TRUE(WindowState::Get(w1.get())->IsMinimized());
   EXPECT_TRUE(WindowState::Get(w2.get())->IsMinimized());
+}
+
+TEST_F(SnapGroupEntryPointArm1Test,
+       SkipPairingInOverviewWhenClickingEmptyArea) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  WaitForOverviewEnterAnimation();
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  OverviewItem* w2_overview_item = GetOverviewItemForWindow(w2.get());
+  EXPECT_TRUE(w2_overview_item);
+  const gfx::Point outside_point =
+      gfx::ToRoundedPoint(
+          w2_overview_item->GetTransformedBounds().bottom_right()) +
+      gfx::Vector2d(20, 20);
+
+  // Verify that clicking on an empty area in overview will exit the paring.
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_FALSE(Shell::Get()->snap_group_controller()->AreWindowsInSnapGroup(
+      w1.get(), w2.get()));
+}
+
+TEST_F(SnapGroupEntryPointArm1Test, SkipPairingInOverviewWithEscapeKey) {
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+
+  SnapOneTestWindow(w1.get(), chromeos::WindowStateType::kPrimarySnapped);
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  EXPECT_TRUE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  GetEventGenerator()->PressAndReleaseKey(ui::VKEY_ESCAPE, ui::EF_NONE);
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+  EXPECT_EQ(WindowState::Get(w1.get())->GetStateType(),
+            chromeos::WindowStateType::kPrimarySnapped);
+  EXPECT_FALSE(Shell::Get()->snap_group_controller()->AreWindowsInSnapGroup(
+      w1.get(), w2.get()));
 }
 
 // Tests that the lock widget will not show on the shared edge of two unsnapped
