@@ -17,6 +17,8 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/prefs/pref_service.h"
 #import "components/strings/grit/components_strings.h"
+#import "components/sync/base/features.h"
+#import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/autofill/personal_data_manager_factory.h"
 #import "ios/chrome/browser/net/crurl.h"
 #import "ios/chrome/browser/shared/coordinator/alert/action_sheet_coordinator.h"
@@ -37,8 +39,6 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_profile_edit_coordinator.h"
 #import "ios/chrome/browser/ui/settings/autofill/cells/autofill_address_profile_source.h"
@@ -96,14 +96,12 @@ typedef NS_ENUM(NSInteger, ItemType) {
 @property(nonatomic, getter=isAutofillProfileEnabled)
     BOOL autofillProfileEnabled;
 
-// If the syncing is enabled, stores the signed in user's email.
-@property(nonatomic, strong) NSString* syncingUserEmail;
+// The account email of the signed-in user, or nil if there is no
+// signed-in user.
+@property(nonatomic, strong) NSString* userEmail;
 
 // Default NO. YES, when the autofill syncing is enabled.
 @property(nonatomic, assign, getter=isSyncEnabled) BOOL syncEnabled;
-
-// Default NO. YES, if the user is signed in.
-@property(nonatomic, assign) BOOL signedIn;
 
 // Coordinator that managers a UIAlertController to delete addresses.
 @property(nonatomic, strong) ActionSheetCoordinator* deletionSheetCoordinator;
@@ -144,7 +142,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
   self.tableView.accessibilityIdentifier = kAutofillProfileTableViewID;
   self.tableView.estimatedSectionFooterHeight =
       kTableViewHeaderFooterViewHeight;
-  [self setSyncingUserEmail];
+  [self determineUserEmail];
   [self updateUIForEditState];
   [self loadModel];
 }
@@ -267,7 +265,11 @@ typedef NS_ENUM(NSInteger, ItemType) {
     item.autofillProfileSource = AutofillLocalProfile;
     if (base::FeatureList::IsEnabled(
             autofill::features::kAutofillAccountProfileStorage) &&
-        self.signedIn) {
+        base::FeatureList::IsEnabled(syncer::kSyncEnableContactInfoDataType) &&
+        base::FeatureList::IsEnabled(
+            syncer::kSyncEnableContactInfoDataTypeInTransportMode) &&
+        // Denotes that the user is signed-in.
+        self.userEmail != nil) {
       item.image = CustomSymbolTemplateWithPointSize(
           kCloudSlashSymbol, kCloudSlashSymbolPointSize);
     }
@@ -529,7 +531,7 @@ typedef NS_ENUM(NSInteger, ItemType) {
     [self setEditing:NO animated:NO];
   }
 
-  [self setSyncingUserEmail];
+  [self determineUserEmail];
   [self updateUIForEditState];
   [self reloadData];
 }
@@ -546,24 +548,19 @@ typedef NS_ENUM(NSInteger, ItemType) {
       _browser->GetBrowserState()->GetPrefs(), isEnabled);
 }
 
-- (void)setSyncingUserEmail {
+- (void)determineUserEmail {
   self.syncEnabled = NO;
-  self.signedIn = NO;
+  self.userEmail = nil;
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           _browser->GetBrowserState());
-  DCHECK(authenticationService);
+  CHECK(authenticationService);
   id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
   if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            _browser->GetBrowserState());
-    self.signedIn = YES;
-    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
-      self.syncingUserEmail = identity.userEmail;
-      self.syncEnabled = YES;
-    }
+    self.userEmail = identity.userEmail;
+    self.syncEnabled = _personalDataManager->IsSyncEnabledFor(
+        syncer::UserSelectableType::kAutofill);
   }
 }
 
@@ -733,8 +730,8 @@ typedef NS_ENUM(NSInteger, ItemType) {
         IDS_IOS_SETTINGS_AUTOFILL_DELETE_ACCOUNT_ADDRESS_CONFIRMATION_TITLE);
     std::u16string confirmationString =
         base::i18n::MessageFormatter::FormatWithNamedArgs(
-            pattern, "email", base::SysNSStringToUTF16(self.syncingUserEmail),
-            "count", profileCount);
+            pattern, "email", base::SysNSStringToUTF16(self.userEmail), "count",
+            profileCount);
     return base::SysUTF16ToNSString(confirmationString);
   }
   if (syncProfiles) {
