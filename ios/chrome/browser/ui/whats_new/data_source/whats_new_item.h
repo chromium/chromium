@@ -23,7 +23,8 @@ enum class WhatsNewType {
   kIncognitoLock = 8,
   kCalendarEvent = 9,
   kChromeActions = 10,
-  kMaxValue = kChromeActions,
+  kMiniMaps = 11,
+  kMaxValue = kMiniMaps,
 };
 
 class GURL;

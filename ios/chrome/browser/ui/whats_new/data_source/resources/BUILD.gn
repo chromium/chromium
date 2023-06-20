@@ -181,6 +181,8 @@ bundle_data("screenshots_files") {
     "incognito_lock_darkmode.json",
     "incognito_tabs_from_other_apps.json",
     "incognito_tabs_from_other_apps_darkmode.json",
+    "mini_maps.json",
+    "mini_maps_darkmode.json",
   ]
   outputs = [ "{{bundle_resources_dir}}/{{source_file_part}}" ]
 }

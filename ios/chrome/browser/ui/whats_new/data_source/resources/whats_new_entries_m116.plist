@@ -127,6 +127,41 @@
             <key>LearnMoreUrlString</key>
             <string>https://support.google.com/chrome/?p=bling_default_browser</string>
         </dict>
+        <dict>
+            <key>Type</key>
+            <integer>11</integer>
+            <key>Title</key>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE</string>
+            <key>Subtitle</key>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SUBTITLE</string>
+            <key>ImageName</key>
+            <string>mini_maps</string>
+            <key>ImageTexts</key>
+            <dict>
+                <key>IDS_MAPS</key>
+                <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_MAPS</string>
+                <key>IDS_OPEN_IN_APP</key>
+                <string>IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_OPEN_IN_APP</string>
+            </dict>
+            <key>IconImageName</key>
+            <string>pin</string>
+            <key>IconBackgroundColor</key>
+            <string>blue</string>
+            <key>IsSymbol</key>
+            <true/>
+            <key>InstructionSteps</key>
+            <array>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_1</string>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2</string>
+            <string>IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_3</string>
+            </array>
+            <key>HasPrimaryAction</key>
+            <false/>
+            <key>PrimaryActionTitle</key>
+            <string></string>
+            <key>LearnMoreUrlString</key>
+            <string>https://support.google.com/chrome/?p=ios_mini_maps</string>
+        </dict>
     </array>
    <key>ChromeTips</key>
     <array>

@@ -115,6 +115,7 @@
     case WhatsNewType::kIncognitoLock:
     case WhatsNewType::kCalendarEvent:
     case WhatsNewType::kChromeActions:
+    case WhatsNewType::kMiniMaps:
       break;
     default:
       NOTREACHED();
@@ -197,6 +198,7 @@
     case WhatsNewType::kIncognitoLock:
     case WhatsNewType::kCalendarEvent:
     case WhatsNewType::kChromeActions:
+    case WhatsNewType::kMiniMaps:
       break;
     default:
       NOTREACHED();

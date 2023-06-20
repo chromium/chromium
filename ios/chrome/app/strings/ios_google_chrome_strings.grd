@@ -620,6 +620,12 @@ Things to consider:
       <message name="IDS_IOS_WHATS_NEW_INCOGNITO_LOCK_SUBTITLE" desc="Incognito Lock subtitle displayed in What's New. [iOS only]">
         Lock your incognito when you leave Chrome or switch to a different app.
       </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_TITLE" desc="Mini Maps title displayed in What's New. [iOS only]">
+        Maps in Chrome
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_2" desc="Text of the row indicating the second step of of the Mini Maps feature. [iOS only]">
+        Tap “View with Google Maps on Chrome”
+      </message>
       <message name="IDS_IOS_CHANGE_COMPROMISED_PASSWORD_DESCRIPTION_BRANDED" desc="Text inside Password Details screen shown when password was compromised. [iOS only]" meaning="Text which explains the user that current password is compromised and it should be changed.">
           Your password was exposed in a data breach. Google Password Manager recommends changing it now.
       </message>

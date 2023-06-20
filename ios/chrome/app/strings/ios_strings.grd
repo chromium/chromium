@@ -3851,6 +3851,21 @@ Try to use a unique password for every site.
       <message name="IDS_IOS_WHATS_NEW_CALENDAR_STEP_3" desc="Text of the row indicating the third step of creating a Google calandar event. [iOS only]">
         Complete the event and save
       </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SUBTITLE" desc="Mini Maps subtitle displayed in What's New. [iOS only]">
+        Use addresses on webpages to get local info and directions.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_1" desc="Text of the row indicating the first step of of the Mini Maps feature. [iOS only]">
+        Touch &amp; Hold an address.
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_STEP_3" desc="Text of the row indicating the third step of of the Mini Maps feature. [iOS only]">
+        For route options, tap “Get Directions”
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_MAPS" desc="Text in image displaying Google maps title. [iOS only]">
+        Maps
+      </message>
+      <message name="IDS_IOS_WHATS_NEW_MINI_MAPS_SCREENSHOT_TEXT_OPEN_IN_APP" desc="Text in image displaying Open in App. [iOS only]">
+        Open in App…
+      </message>
       <message name="IDS_IOS_SIGN_IN_INVALID_ACCOUNT_MESSAGE" desc="Message of the alert displayed when the user sign in with a restricted account.">
         Your organization allows you to sign in only with certain accounts.
       </message>
