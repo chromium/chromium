@@ -28,13 +28,13 @@
 #define THIRD_PARTY_BLINK_RENDERER_CORE_URL_DOM_URL_UTILS_H_
 
 #include "third_party/blink/renderer/core/core_export.h"
-#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/core/url/dom_url_utils_read_only.h"
 #include "third_party/blink/renderer/platform/wtf/forward.h"
 
 namespace blink {
 
 class KURL;
+class ScriptState;
 
 class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
  public:
@@ -46,7 +46,7 @@ class CORE_EXPORT DOMURLUtils : public DOMURLUtilsReadOnly {
   void setPassword(const String&);
   void setHost(const String&);
   void setHostname(const String&);
-  void setPort(ExecutionContext* execution_context, const String&);
+  void setPort(ScriptState*, const String&);
   void setPathname(const String&);
   void setHash(const String&);
   virtual void setSearch(const String&);

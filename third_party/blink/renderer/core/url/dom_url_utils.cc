@@ -88,8 +88,7 @@ void DOMURLUtils::setHostname(const String& value) {
     SetURL(kurl);
 }
 
-void DOMURLUtils::setPort(ExecutionContext* execution_context,
-                          const String& value) {
+void DOMURLUtils::setPort(ScriptState* script_state, const String& value) {
   KURL kurl = Url();
   if (!kurl.CanSetHostOrPort())
     return;
@@ -98,8 +97,8 @@ void DOMURLUtils::setPort(ExecutionContext* execution_context,
     kurl.SetPort(value, &value_overflow);
     if (value_overflow &&
         base::FeatureList::IsEnabled(features::kURLSetPortCheckOverflow)) {
-      execution_context->CountUse(
-          mojom::blink::WebFeature::kURLSetPortCheckOverflow);
+      UseCounter::Count(ExecutionContext::From(script_state),
+                        mojom::blink::WebFeature::kURLSetPortCheckOverflow);
     }
   } else {
     kurl.RemovePort();

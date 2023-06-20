@@ -190,7 +190,7 @@ void URLSearchParams::append(const String& name, const String& value) {
   RunUpdateSteps();
 }
 
-void URLSearchParams::deleteAllWithName(ExecutionContext*, const String& name) {
+void URLSearchParams::deleteAllWithName(ScriptState*, const String& name) {
   for (wtf_size_t i = 0; i < params_.size();) {
     if (params_[i].first == name)
       params_.EraseAt(i);
@@ -200,12 +200,12 @@ void URLSearchParams::deleteAllWithName(ExecutionContext*, const String& name) {
   RunUpdateSteps();
 }
 
-void URLSearchParams::deleteAllWithName(ExecutionContext* execution_context,
+void URLSearchParams::deleteAllWithName(ScriptState* script_state,
                                         const String& name,
                                         const ScriptValue& ignored) {
-  UseCounter::Count(execution_context,
+  UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
-  deleteAllWithName(execution_context, name);
+  deleteAllWithName(script_state, name);
 }
 
 String URLSearchParams::get(const String& name) const {
@@ -225,7 +225,7 @@ Vector<String> URLSearchParams::getAll(const String& name) const {
   return result;
 }
 
-bool URLSearchParams::has(ExecutionContext*, const String& name) const {
+bool URLSearchParams::has(ScriptState*, const String& name) const {
   for (const auto& param : params_) {
     if (param.first == name)
       return true;
@@ -233,12 +233,12 @@ bool URLSearchParams::has(ExecutionContext*, const String& name) const {
   return false;
 }
 
-bool URLSearchParams::has(ExecutionContext* execution_context,
+bool URLSearchParams::has(ScriptState* script_state,
                           const String& name,
                           const ScriptValue& ignored) const {
-  UseCounter::Count(execution_context,
+  UseCounter::Count(ExecutionContext::From(script_state),
                     WebFeature::kURLSearchParams_Has_Delete_MultipleArguments);
-  return has(execution_context, name);
+  return has(script_state, name);
 }
 
 void URLSearchParams::set(const String& name, const String& value) {

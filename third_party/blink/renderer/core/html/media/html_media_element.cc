@@ -946,20 +946,19 @@ HTMLMediaElement::NetworkState HTMLMediaElement::getNetworkState() const {
   return network_state_;
 }
 
-String HTMLMediaElement::canPlayType(ExecutionContext* context,
-                                     const String& mime_type) const {
+String HTMLMediaElement::canPlayType(const String& mime_type) const {
   MIMETypeRegistry::SupportsType support =
       GetSupportsType(ContentType(mime_type));
 
   if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
           blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType)) {
-    blink::IdentifiabilityMetricBuilder(context->UkmSourceID())
+    blink::IdentifiabilityMetricBuilder(GetDocument().UkmSourceID())
         .Add(
             blink::IdentifiableSurface::FromTypeAndToken(
                 blink::IdentifiableSurface::Type::kHTMLMediaElement_CanPlayType,
                 IdentifiabilityBenignStringToken(mime_type)),
             static_cast<uint64_t>(support))
-        .Record(context->UkmRecorder());
+        .Record(GetDocument().UkmRecorder());
   }
   String can_play;
 

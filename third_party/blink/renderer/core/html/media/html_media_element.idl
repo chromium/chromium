@@ -48,7 +48,7 @@ enum CanPlayTypeResult { "" /* empty string */, "maybe", "probably" };
     [CEReactions] attribute DOMString preload;
     readonly attribute TimeRanges buffered;
     void load();
-    [CallWith=ExecutionContext, HighEntropy, Measure] CanPlayTypeResult canPlayType(DOMString type);
+    [HighEntropy, Measure] CanPlayTypeResult canPlayType(DOMString type);
 
     // ready state
     const unsigned short HAVE_NOTHING = 0;
