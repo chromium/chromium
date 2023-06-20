@@ -74,9 +74,13 @@ constexpr net::NetworkTrafficAnnotationTag kTrafficAnnotation =
 
 constexpr char kImageFetcherUmaClient[] = "ShoppingList";
 
-constexpr base::TimeDelta kDelayPriceTrackingchip = base::Seconds(1);
+constexpr base::TimeDelta kDelayIconView = base::Seconds(1);
 
 bool ShouldDelayChipUpdate() {
+  if (base::FeatureList::IsEnabled(commerce::kPriceInsights)) {
+    return commerce::kPriceInsightsDelayChip.Get();
+  }
+
   return static_cast<commerce::PriceTrackingChipExperimentVariation>(
              commerce::kCommercePriceTrackingChipExperimentVariation.Get()) ==
          commerce::PriceTrackingChipExperimentVariation::kDelayChip;
@@ -172,20 +176,55 @@ void ShoppingListUiTabHelper::DidStopLoading() {
 
 void ShoppingListUiTabHelper::TriggerUpdateForIconView() {
   if (!ShouldDelayChipUpdate()) {
-    UpdatePriceTrackingIconView();
+    if (shopping_service_->IsPriceInsightsEligible()) {
+      UpdatePriceInsightsIconView();
+    } else {
+      UpdatePriceTrackingIconView();
+    }
+  } else {
+    DelayUpdateForIconView();
+  }
+}
+
+void ShoppingListUiTabHelper::DelayUpdateForIconView() {
+  if (!is_first_load_for_nav_finished_) {
     return;
   }
 
-  if (last_fetched_image_.IsEmpty() || !is_first_load_for_nav_finished_) {
+  if (shopping_service_->IsPriceInsightsEligible()) {
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ShoppingListUiTabHelper::UpdatePriceInsightsIconView,
+                weak_ptr_factory_.GetWeakPtr()),
+            kDelayIconView);
+
+  } else {
+    if (last_fetched_image_.IsEmpty()) {
+      return;
+    }
+
+    content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
+        ->PostDelayedTask(
+            FROM_HERE,
+            base::BindOnce(
+                &ShoppingListUiTabHelper::UpdatePriceTrackingIconView,
+                weak_ptr_factory_.GetWeakPtr()),
+            kDelayIconView);
+  }
+}
+
+void ShoppingListUiTabHelper::UpdatePriceInsightsIconView() {
+  DCHECK(web_contents());
+
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+
+  if (!browser || !browser->window()) {
     return;
   }
 
-  content::GetUIThreadTaskRunner({base::TaskPriority::BEST_EFFORT})
-      ->PostDelayedTask(
-          FROM_HERE,
-          base::BindOnce(&ShoppingListUiTabHelper::UpdatePriceTrackingIconView,
-                         weak_ptr_factory_.GetWeakPtr()),
-          kDelayPriceTrackingchip);
+  browser->window()->UpdatePageActionIcon(PageActionIconType::kPriceInsights);
 }
 
 void ShoppingListUiTabHelper::OnSubscribe(
@@ -231,8 +270,13 @@ bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
 }
 
 bool ShoppingListUiTabHelper::ShouldShowPriceInsightsIconView() {
-  return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
-         price_insights_info_.has_value();
+  bool should_show = shopping_service_ &&
+                     shopping_service_->IsPriceInsightsEligible() &&
+                     price_insights_info_.has_value();
+
+  return ShouldDelayChipUpdate()
+             ? should_show && is_first_load_for_nav_finished_
+             : should_show;
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
@@ -275,7 +319,7 @@ void ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse(
 
   price_insights_info_.emplace(info.value());
   MakeShoppingInsightsSidePanelAvailable();
-  // TODO(meiliang): call TriggerUpdateForIconView();
+  TriggerUpdateForIconView();
 }
 
 void ShoppingListUiTabHelper::SetPriceTrackingState(

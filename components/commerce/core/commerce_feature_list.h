@@ -90,6 +90,8 @@ extern const base::FeatureParam<bool> kDeleteAllMerchantsOnClearBrowsingHistory;
 // Feature flag for Price Insights.
 BASE_DECLARE_FEATURE(kPriceInsights);
 BASE_DECLARE_FEATURE(kPriceInsightsRegionLaunched);
+extern const char kPriceInsightsDelayChipParam[];
+extern const base::FeatureParam<bool> kPriceInsightsDelayChip;
 
 BASE_DECLARE_FEATURE(kShoppingList);
 BASE_DECLARE_FEATURE(kShoppingListRegionLaunched);

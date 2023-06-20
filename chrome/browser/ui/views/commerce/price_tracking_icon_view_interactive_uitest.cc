@@ -97,6 +97,8 @@ class PriceTrackingIconViewInteractiveTest : public InProcessBrowserTest {
     mock_tab_helper_ = static_cast<MockShoppingListUiTabHelper*>(
         MockShoppingListUiTabHelper::FromWebContents(
             browser()->tab_strip_model()->GetActiveWebContents()));
+    mock_tab_helper_->SetShoppingServiceForTesting(mock_shopping_service_);
+
     const gfx::Image image = mock_tab_helper_->GetValidProductImage();
     ON_CALL(*mock_tab_helper_, GetProductImage)
         .WillByDefault(

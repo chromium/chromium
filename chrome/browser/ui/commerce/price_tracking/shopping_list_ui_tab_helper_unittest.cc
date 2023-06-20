@@ -196,7 +196,8 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionEventsUpdateState) {
 
 // The price tracking icon shouldn't be available if no image URL was provided
 // by the shopping service.
-TEST_F(ShoppingListUiTabHelperTest, TestIconAvailabilityIfNoImage) {
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceTrackingIconAvailabilityIfNoImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -221,7 +222,8 @@ TEST_F(ShoppingListUiTabHelperTest, TestIconAvailabilityIfNoImage) {
 
 // The price tracking state should not update in the helper if there is no image
 // returbed by the shopping service.
-TEST_F(ShoppingListUiTabHelperTest, TestIconAvailabilityWithImage) {
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceTrackingIconAvailabilityWithImage) {
   ASSERT_FALSE(tab_helper_->IsPriceTracking());
 
   AddProductBookmark(bookmark_model_.get(), u"title", GURL(kProductUrl),
@@ -313,7 +315,8 @@ TEST_F(ShoppingListUiTabHelperTest, TestSubscriptionChangeNoBookmark) {
 }
 
 // The following tests are for the chip experiment - chip delay variation.
-TEST_F(ShoppingListUiTabHelperTest, TestIconAvailableAfterLoading) {
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceTrackingIconAvailableAfterLoading) {
   base::test::ScopedFeatureList feature_list;
   EnableChipExperimentVariation(
       feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
@@ -339,7 +342,8 @@ TEST_F(ShoppingListUiTabHelperTest, TestIconAvailableAfterLoading) {
   EXPECT_TRUE(tab_helper_->ShouldShowPriceTrackingIconView());
 }
 
-TEST_F(ShoppingListUiTabHelperTest, TestIconNotAvailableDuringLoading) {
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceTrackingIconNotAvailableDuringLoading) {
   base::test::ScopedFeatureList feature_list;
   EnableChipExperimentVariation(
       feature_list, commerce::PriceTrackingChipExperimentVariation::kDelayChip);
@@ -430,6 +434,63 @@ TEST_F(ShoppingListUiTabHelperTest,
   SimulateNavigationCommitted(GURL(kProductUrl));
   base::RunLoop().RunUntilIdle();
 
+  EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
+}
+
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceInsightsIconAvailableAfterLoading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{commerce::kPriceInsights,
+        {{commerce::kPriceInsightsDelayChipParam, "true"}}}},
+      {});
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  absl::optional<ProductInfo> product_info = CreateProductInfo(
+      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
+  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
+
+  absl::optional<PriceInsightsInfo> price_insights_info =
+      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      price_insights_info);
+  // Simulate the navigation is committed and has stopped loading.
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kProductUrl), web_contents_);
+  simulator->SetKeepLoading(false);
+  simulator->Start();
+  simulator->Commit();
+  base::RunLoop().RunUntilIdle();
+  EXPECT_TRUE(tab_helper_->ShouldShowPriceInsightsIconView());
+}
+
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceInsightsIconNotAvailableDuringLoading) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeaturesAndParameters(
+      {{commerce::kPriceInsights,
+        {{commerce::kPriceInsightsDelayChipParam, "true"}}}},
+      {});
+
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  absl::optional<ProductInfo> product_info = CreateProductInfo(
+      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
+  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
+
+  absl::optional<PriceInsightsInfo> price_insights_info =
+      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      price_insights_info);
+
+  // Simulate the navigation is committed but has not stopped loading.
+  auto simulator = content::NavigationSimulator::CreateBrowserInitiated(
+      GURL(kProductUrl), web_contents_);
+  simulator->SetKeepLoading(true);
+  simulator->Start();
+  simulator->Commit();
+  base::RunLoop().RunUntilIdle();
   EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 

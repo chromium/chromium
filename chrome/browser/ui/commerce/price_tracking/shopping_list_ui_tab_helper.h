@@ -120,6 +120,8 @@ class ShoppingListUiTabHelper
 
   void UpdatePriceTrackingIconView();
 
+  void UpdatePriceInsightsIconView();
+
   // Update the flag tracking the price tracking state of the product from
   // subscriptions.
   void UpdatePriceTrackingStateFromSubscriptions();
@@ -142,6 +144,8 @@ class ShoppingListUiTabHelper
   void MakeShoppingInsightsSidePanelUnavailable();
 
   SidePanelUI* GetSidePanelUI() const;
+
+  void DelayUpdateForIconView();
 
   // The shopping service is tied to the lifetime of the browser context
   // which will always outlive this tab helper.
