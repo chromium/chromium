@@ -74,14 +74,6 @@ LazyLevelDb::LazyLevelDb(const std::string& uma_client_name,
       "Extensions.Database.Open." + uma_client_name, 1,
       leveldb_env::LEVELDB_STATUS_MAX, leveldb_env::LEVELDB_STATUS_MAX + 1,
       base::Histogram::kUmaTargetedHistogramFlag);
-  db_restore_histogram_ = base::LinearHistogram::FactoryGet(
-      "Extensions.Database.Database.Restore." + uma_client_name, 1,
-      LEVELDB_DB_RESTORE_MAX, LEVELDB_DB_RESTORE_MAX + 1,
-      base::Histogram::kUmaTargetedHistogramFlag);
-  value_restore_histogram_ = base::LinearHistogram::FactoryGet(
-      "Extensions.Database.Value.Restore." + uma_client_name, 1,
-      LEVELDB_VALUE_RESTORE_MAX, LEVELDB_VALUE_RESTORE_MAX + 1,
-      base::Histogram::kUmaTargetedHistogramFlag);
 }
 
 LazyLevelDb::~LazyLevelDb() = default;
@@ -120,31 +112,6 @@ ValueStore::Status LazyLevelDb::Delete(const std::string& key) {
   return ToValueStoreError(DeleteValue(db_.get(), key));
 }
 
-ValueStore::BackingStoreRestoreStatus LazyLevelDb::LogRestoreStatus(
-    ValueStore::BackingStoreRestoreStatus restore_status) const {
-  switch (restore_status) {
-    case ValueStore::RESTORE_NONE:
-      NOTREACHED();
-      break;
-    case ValueStore::DB_RESTORE_DELETE_SUCCESS:
-      db_restore_histogram_->Add(LEVELDB_DB_RESTORE_DELETE_SUCCESS);
-      break;
-    case ValueStore::DB_RESTORE_DELETE_FAILURE:
-      db_restore_histogram_->Add(LEVELDB_DB_RESTORE_DELETE_FAILURE);
-      break;
-    case ValueStore::DB_RESTORE_REPAIR_SUCCESS:
-      db_restore_histogram_->Add(LEVELDB_DB_RESTORE_REPAIR_SUCCESS);
-      break;
-    case ValueStore::VALUE_RESTORE_DELETE_SUCCESS:
-      value_restore_histogram_->Add(LEVELDB_VALUE_RESTORE_DELETE_SUCCESS);
-      break;
-    case ValueStore::VALUE_RESTORE_DELETE_FAILURE:
-      value_restore_histogram_->Add(LEVELDB_VALUE_RESTORE_DELETE_FAILURE);
-      break;
-  }
-  return restore_status;
-}
-
 ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
     const std::string* key) {
   leveldb::Status s;
@@ -153,9 +120,9 @@ ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
     // Deleting involves writing to the log, so it's possible to have a
     // perfectly OK database but still have a delete fail.
     if (s.ok())
-      return LogRestoreStatus(ValueStore::VALUE_RESTORE_DELETE_SUCCESS);
+      return ValueStore::VALUE_RESTORE_DELETE_SUCCESS;
     else if (s.IsIOError())
-      return LogRestoreStatus(ValueStore::VALUE_RESTORE_DELETE_FAILURE);
+      return ValueStore::VALUE_RESTORE_DELETE_FAILURE;
     // Any other kind of failure triggers a db repair.
   }
 
@@ -204,9 +171,6 @@ ValueStore::BackingStoreRestoreStatus LazyLevelDb::FixCorruption(
       restore_status = ValueStore::DB_RESTORE_DELETE_FAILURE;
     }
   }
-
-  // Only log for the final and most extreme form of database restoration.
-  LogRestoreStatus(restore_status);
 
   return restore_status;
 }
