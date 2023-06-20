@@ -30,6 +30,7 @@ namespace {
 
 using ash::SpacedClient;
 using base::SequencedTaskRunner;
+using base::StringPiece;
 using base::TimeDelta;
 using base::UmaHistogramBoolean;
 using mojom::FileMetadata;
@@ -92,7 +93,7 @@ ostream& operator<<(ostream& out, Quoter<T> q) {
   // Does the string start with 'k'?
   if (!s.empty() && s.front() == 'k') {
     // Skip the 'k' prefix.
-    return out << base::StringPiece(s).substr(1);
+    return out << StringPiece(s).substr(1);
   }
 
   // No 'k' prefix. Print between parentheses.
@@ -224,6 +225,13 @@ int64_t GetSize(const FileMetadata& metadata) {
   const int64_t kAverageHostedFileSize = 7800;
   return metadata.type == FileMetadata::Type::kHosted ? kAverageHostedFileSize
                                                       : metadata.size;
+}
+
+Path AppendAbsoluteToMountPath(const Path& mount_path, StringPiece path) {
+  DCHECK(!path.empty());
+  DCHECK_EQ(path.front(), '/');
+  path.remove_prefix(1);
+  return mount_path.Append(path);
 }
 
 }  // namespace
@@ -767,6 +775,16 @@ void PinManager::BatterySaverModeStateChanged(
   }
 }
 
+bool PinManager::IsUntrackedPath(const Path& path) {
+  DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+  return base::ranges::any_of(
+      untracked_shortcut_paths_.cbegin(), untracked_shortcut_paths_.cend(),
+      [&path](const Path& untracked_path) {
+        return untracked_path == path || untracked_path.IsParent(path);
+      });
+}
+
 void PinManager::ListItems(const Id dir_id, Path dir_path) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   VLOG(1) << "Visiting " << dir_id << " " << Quote(dir_path);
@@ -925,6 +943,14 @@ void PinManager::HandleQueryItem(Id dir_id,
       VLOG(1) << "Skipped shortcut " << id << " " << Quote(path) << " to "
               << Quote(md.type) << " "
               << Id(md.shortcut_details->target_stable_id);
+
+      absl::optional<Path> target_path = md.shortcut_details->target_path;
+      if (target_path.has_value() &&
+          !mount_path_.Append("root").IsParent(target_path.value())) {
+        // The shortcut's target directory resides outside of My drive.
+        untracked_shortcut_paths_.emplace(
+            AppendAbsoluteToMountPath(mount_path_, path.value()));
+      }
       return;
     }
 

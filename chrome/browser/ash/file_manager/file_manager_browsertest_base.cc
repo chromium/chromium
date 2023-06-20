@@ -1393,7 +1393,10 @@ class DriveFsTestVolume : public TestVolume {
     metadata.folder_feature.is_external_media =
         entry.folder_feature.is_external_media;
     metadata.alternate_url = entry.alternate_url;
-    metadata.shortcut = (entry.entry_type == AddEntriesMessage::LINK);
+    if (entry.entry_type == AddEntriesMessage::LINK) {
+      metadata.shortcut = true;
+      metadata.shortcut_target_path = target_path;
+    }
     metadata.can_pin = entry.can_pin;
     fake_drivefs_helper_->fake_drivefs().SetMetadata(std::move(metadata));
 

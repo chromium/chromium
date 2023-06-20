@@ -281,22 +281,28 @@ extensions::api::file_manager_private::BulkPinStage DrivefsPinStageToJs(
   return extensions::api::file_manager_private::BULK_PIN_STAGE_NONE;
 }
 
-bool IsPinManagerAvailableAndSyncingForProfile(Profile* profile) {
-  if (!profile) {
+bool IsPinManagerSyncingForProfile(drivefs::pinning::PinManager* pin_manager) {
+  if (!pin_manager) {
     return false;
   }
-  drive::DriveIntegrationService* integration_service =
-      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
-  if (!integration_service || !integration_service->IsMounted() ||
-      !integration_service->GetPinManager()) {
-    return false;
-  }
-  auto* const pin_manager = integration_service->GetPinManager();
   if (pin_manager->GetProgress().stage !=
       drivefs::pin_manager_types::mojom::Stage::kSyncing) {
     return false;
   }
   return true;
+}
+
+drivefs::pinning::PinManager* GetPinManager(Profile* profile) {
+  if (!profile) {
+    return nullptr;
+  }
+  drive::DriveIntegrationService* integration_service =
+      drive::DriveIntegrationServiceFactory::FindForProfile(profile);
+  if (!integration_service || !integration_service->IsMounted()) {
+    return nullptr;
+  }
+
+  return integration_service->GetPinManager();
 }
 
 bool IsPathUnderMyDrive(const base::FilePath& relative_path) {
@@ -442,10 +448,12 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     properties_->available_when_metered = properties_->available_offline;
     properties_->pinned = metadata->pinned;
 
-    if (IsPinManagerAvailableAndSyncingForProfile(running_profile_) &&
+    if (drivefs::pinning::PinManager* const pin_manager =
+            GetPinManager(running_profile_);
+        IsPinManagerSyncingForProfile(pin_manager) &&
         IsPathUnderMyDrive(relative_path_)) {
       if (metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
-          !metadata->shortcut_details) {
+          !pin_manager->IsUntrackedPath(file_system_url_.path())) {
         // Folders can't be pinned automatically to provide a way to intercept
         // items being added to these folders. However items in the folders will
         // be pinned, so to ensure the UI shows these folders as available

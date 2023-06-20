@@ -463,6 +463,7 @@ struct FileMetadata {
 };
 
 // Details relating to the target item that a shortcut refers to.
+// Next MinVersion: 2
 struct ShortcutDetails {
   int64 target_stable_id = 0;
 
@@ -477,6 +478,9 @@ struct ShortcutDetails {
   // In the case the target the shortcut points to can't be found or doesn't
   // have permission, relay that information back.
   LookupStatus target_lookup_status;
+
+  // The absolute path on disk of the target this shortcut points to.
+  [MinVersion=1] mojo_base.mojom.FilePath? target_path;
 };
 
 struct ImageMetadata {

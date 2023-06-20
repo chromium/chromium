@@ -358,7 +358,16 @@ void FakeDriveFs::SetMetadata(const FakeMetadata& metadata) {
   stored_metadata.pinned = metadata.pinned;
   stored_metadata.available_offline = metadata.available_offline;
   stored_metadata.shared = metadata.shared;
-  stored_metadata.shortcut = metadata.shortcut;
+  if (metadata.shortcut) {
+    drivefs::mojom::ShortcutDetails shortcut_details;
+    shortcut_details.target_lookup_status =
+        drivefs::mojom::ShortcutDetails::LookupStatus::kOk;
+    if (!metadata.shortcut_target_path.empty()) {
+      shortcut_details.target_path =
+          absl::make_optional<base::FilePath>(metadata.shortcut_target_path);
+    }
+    stored_metadata.shortcut_details = std::move(shortcut_details);
+  }
   stored_metadata.alternate_url = metadata.alternate_url;
   stored_metadata.can_pin = metadata.can_pin;
 }
@@ -467,10 +476,8 @@ void FakeDriveFs::GetMetadata(const base::FilePath& path,
   if (stored_metadata.hosted) {
     metadata->can_pin = CanPinStatus::kDisabled;
   }
-  if (stored_metadata.shortcut) {
-    metadata->shortcut_details = mojom::ShortcutDetails::New();
-    metadata->shortcut_details->target_lookup_status =
-        mojom::ShortcutDetails::LookupStatus::kOk;
+  if (stored_metadata.shortcut_details.has_value()) {
+    metadata->shortcut_details = stored_metadata.shortcut_details->Clone();
   }
 
   std::move(callback).Run(drive::FILE_ERROR_OK, std::move(metadata));

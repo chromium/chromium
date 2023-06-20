@@ -1552,11 +1552,6 @@ testcase.driveFolderShouldShowOfflineTickWhenBulkPinningEnabled = async () => {
   // actually get pinned but the class should still be added).
   await remoteCall.waitForElement(appId, '#file-list [file-name="A"].pinned');
 
-  // Shortcuts should get excluded from the above logic and should remain the
-  // same as they were initially (in this case unpinned).
-  await remoteCall.waitForElement(
-      appId, '#file-list [file-name="G"]:not(.pinned)');
-
   // Disable the bulk pinning preference and wait for the folder to lose the
   // pinned class.
   await sendTestMessage({name: 'setBulkPinningEnabledPref', enabled: false});
