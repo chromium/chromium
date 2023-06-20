@@ -2,16 +2,12 @@ name: Release Latest Browsers
 on:
   workflow_dispatch:
     inputs:
-      confirmed:
-        description: This action is deprecated. Do you mean to do this?
-        type: boolean
       revision:
         description: SHA (first 12 chars) to release
         type: string
 
 jobs:
   release:
-    if: inputs.confirmed
     name: Trigger release run
     runs-on: ubuntu-latest
     timeout-minutes: 20
