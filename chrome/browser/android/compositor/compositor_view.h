@@ -18,7 +18,6 @@
 #include "third_party/skia/include/core/SkColor.h"
 
 namespace cc::slim {
-class Layer;
 class SolidColorLayer;
 }  // namespace cc::slim
 
@@ -143,7 +142,6 @@ class CompositorView : public content::CompositorClient,
 
   scoped_refptr<cc::slim::SolidColorLayer> root_layer_;
   raw_ptr<SceneLayer> scene_layer_;
-  scoped_refptr<cc::slim::Layer> scene_layer_layer_;
 
   int current_surface_format_;
   int content_width_;

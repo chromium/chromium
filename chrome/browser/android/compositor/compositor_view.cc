@@ -285,11 +285,9 @@ void CompositorView::SetSceneLayer(JNIEnv* env,
     scene_layer_ = scene_layer;
 
     if (!scene_layer) {
-      scene_layer_layer_ = nullptr;
       return;
     }
 
-    scene_layer_layer_ = scene_layer->layer();
     root_layer_->InsertChild(scene_layer->layer(), 0);
   }
 
