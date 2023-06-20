@@ -401,6 +401,8 @@ crbug.com/1444804 [ android-pixel-4 android-r angle-disabled no-passthrough ] Pi
 # Flake on Linux NVIDIA
 crbug.com/1453989 [ linux nvidia ] Pixel_VideoStreamFrom2DAlphaCanvas_DisableOOPRaster [ RetryOnFailure ]
 
+crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLCopyImage [ Skip ]
+crbug.com/1456360 [ chromeos chromeos-board-amd64-generic ] Pixel_WebGLSadCanvas [ Skip ]
 
 #######################################################################
 # Automated Entries After This Point - Do Not Manually Add Below Here #
