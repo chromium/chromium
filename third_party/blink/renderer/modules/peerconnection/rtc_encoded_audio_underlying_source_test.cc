@@ -21,7 +21,7 @@
 namespace blink {
 
 namespace {
-class FakeTransformableFrame : public webrtc::TransformableFrameInterface {
+class FakeTransformableFrame : public webrtc::TransformableAudioFrameInterface {
  public:
   FakeTransformableFrame() = default;
   ~FakeTransformableFrame() override = default;
@@ -32,6 +32,17 @@ class FakeTransformableFrame : public webrtc::TransformableFrameInterface {
   uint32_t GetSsrc() const override { return 0; }
   // 255 is not a valid payload type (which can be in the range [0..127]).
   uint8_t GetPayloadType() const override { return 255; }
+  void SetRTPTimestamp(uint32_t timestamp) override {}
+  const webrtc::RTPHeader& GetHeader() const override { return header_; }
+  rtc::ArrayView<const uint32_t> GetContributingSources() const override {
+    return {};
+  }
+  const absl::optional<uint16_t> SequenceNumber() const override {
+    return absl::nullopt;
+  }
+
+ private:
+  webrtc::RTPHeader header_;
 };
 }  // namespace
 

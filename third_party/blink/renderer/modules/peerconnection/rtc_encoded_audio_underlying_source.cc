@@ -80,20 +80,11 @@ void RTCEncodedAudioUnderlyingSource::OnFrameFromSource(
     return;
   }
 
-  RTCEncodedAudioFrame* encoded_frame = nullptr;
-  if (is_receiver_) {
-    // Receivers produce frames as webrtc::TransformableAudioFrameInterface,
-    // which allows exposing the CSRCs.
-    std::unique_ptr<webrtc::TransformableAudioFrameInterface> audio_frame =
-        base::WrapUnique(static_cast<webrtc::TransformableAudioFrameInterface*>(
-            webrtc_frame.release()));
-    encoded_frame =
-        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(audio_frame));
-  } else {
-    encoded_frame =
-        MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(webrtc_frame));
-  }
-  Controller()->Enqueue(encoded_frame);
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> audio_frame =
+      base::WrapUnique(static_cast<webrtc::TransformableAudioFrameInterface*>(
+          webrtc_frame.release()));
+  Controller()->Enqueue(
+      MakeGarbageCollected<RTCEncodedAudioFrame>(std::move(audio_frame)));
 }
 
 void RTCEncodedAudioUnderlyingSource::Close() {

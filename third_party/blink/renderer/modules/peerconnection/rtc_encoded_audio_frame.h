@@ -31,8 +31,6 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
 
  public:
   explicit RTCEncodedAudioFrame(
-      std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame);
-  explicit RTCEncodedAudioFrame(
       std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame);
   explicit RTCEncodedAudioFrame(
       scoped_refptr<RTCEncodedAudioFrameDelegate> delegate);

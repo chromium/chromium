@@ -29,6 +29,10 @@ class MockTransformableAudioFrame
               GetDirection,
               (),
               (const, override));
+  MOCK_METHOD(const absl::optional<uint16_t>,
+              SequenceNumber,
+              (),
+              (const, override));
 };
 
 }  // namespace blink

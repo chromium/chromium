@@ -26,8 +26,8 @@ class RTCEncodedAudioFrameDelegate
     : public WTF::ThreadSafeRefCounted<RTCEncodedAudioFrameDelegate> {
  public:
   explicit RTCEncodedAudioFrameDelegate(
-      std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame,
-      Vector<uint32_t> contributing_sources,
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
+      rtc::ArrayView<const unsigned int> contributing_sources,
       absl::optional<uint16_t> sequence_number);
 
   uint32_t Timestamp() const;
@@ -39,12 +39,11 @@ class RTCEncodedAudioFrameDelegate
   Vector<uint32_t> ContributingSources() const;
   absl::optional<uint64_t> AbsCaptureTime() const;
   std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
-  std::unique_ptr<webrtc::TransformableFrameInterface> CloneWebRtcFrame(
-      String& exception_message);
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 
  private:
   mutable base::Lock lock_;
-  std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame_
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame_
       GUARDED_BY(lock_);
   Vector<uint32_t> contributing_sources_ GUARDED_BY(lock_);
   absl::optional<uint16_t> sequence_number_ GUARDED_BY(lock_);

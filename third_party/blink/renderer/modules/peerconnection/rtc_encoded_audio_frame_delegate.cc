@@ -14,12 +14,13 @@ namespace blink {
 const void* RTCEncodedAudioFramesAttachment::kAttachmentKey;
 
 RTCEncodedAudioFrameDelegate::RTCEncodedAudioFrameDelegate(
-    std::unique_ptr<webrtc::TransformableFrameInterface> webrtc_frame,
-    Vector<uint32_t> contributing_sources,
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface> webrtc_frame,
+    rtc::ArrayView<const unsigned int> contributing_sources,
     absl::optional<uint16_t> sequence_number)
     : webrtc_frame_(std::move(webrtc_frame)),
-      contributing_sources_(std::move(contributing_sources)),
-      sequence_number_(sequence_number) {}
+      sequence_number_(sequence_number) {
+  contributing_sources_.assign(contributing_sources);
+}
 
 uint32_t RTCEncodedAudioFrameDelegate::Timestamp() const {
   base::AutoLock lock(lock_);
@@ -101,19 +102,10 @@ RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
   return std::move(webrtc_frame_);
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
-RTCEncodedAudioFrameDelegate::CloneWebRtcFrame(String& exception_message) {
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+RTCEncodedAudioFrameDelegate::CloneWebRtcFrame() {
   base::AutoLock lock(lock_);
-  if (webrtc_frame_->GetDirection() ==
-      webrtc::TransformableFrameInterface::Direction::kReceiver) {
-    return webrtc::CloneAudioFrame(
-        static_cast<webrtc::TransformableAudioFrameInterface*>(
-            webrtc_frame_.get()));
-  } else {
-    exception_message =
-        "Cloning of outgoing RTCEncodedAudioFrames is not supported.";
-    return nullptr;
-  }
+  return webrtc::CloneAudioFrame(webrtc_frame_.get());
 }
 
 }  // namespace blink
