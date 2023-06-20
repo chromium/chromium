@@ -194,7 +194,8 @@ gfx::ImageSkia GetNetworkImageForNetwork(
       // disconnected.
       const SkColor icon_color =
           chromeos::features::IsJellyrollEnabled()
-              ? color_provider->GetColor(cros_tokens::kCrosSysPrimary)
+              ? network_icon::GetDefaultColorForIconType(
+                    color_provider, network_icon::ICON_TYPE_LIST)
               : AshColorProvider::Get()->GetContentLayerColor(
                     AshColorProvider::ContentLayerType::kIconColorPrimary);
       network_image = gfx::ImageSkiaOperations::CreateSuperimposedImage(
