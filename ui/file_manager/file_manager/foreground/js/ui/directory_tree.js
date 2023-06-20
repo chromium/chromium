@@ -1180,10 +1180,16 @@ class VolumeItem extends DirectoryItem {
     if (modelItem.volumeInfo_.providerId !== '@smb' &&
         modelItem.volumeInfo_.volumeType !==
             VolumeManagerCommon.VolumeType.SMB) {
-      this.volumeInfo_.resolveDisplayRoot((displayRoot) => {
-        this.resolved_ = true;
-        this.updateSubDirectories(false /* recursive */);
-      });
+      this.volumeInfo_.resolveDisplayRoot(
+          (displayRoot) => {
+            this.resolved_ = true;
+            this.updateSubDirectories(false /* recursive */);
+          },
+          (error) => {
+            console.warn(
+                'Failed to resolve display root of',
+                modelItem.volumeInfo_.volumeType, 'due to', error);
+          });
     }
   }
 
@@ -1496,9 +1502,14 @@ export class DriveVolumeItem extends VolumeItem {
     if (!target.classList.contains('expand-icon')) {
       // If the Drive volume is clicked, select one of the children instead of
       // this item itself.
-      this.volumeInfo_.resolveDisplayRoot((displayRoot) => {
-        this.searchAndSelectByEntry(displayRoot);
-      });
+      this.volumeInfo_.resolveDisplayRoot(
+          (displayRoot) => {
+            this.searchAndSelectByEntry(displayRoot);
+          },
+          (error) => {
+            console.warn(
+                'Unable to select display root for', target, 'due to', error);
+          });
     }
   }
 
@@ -2280,14 +2291,18 @@ export class DirectoryTree extends Tree {
     if (!volumeInfo) {
       return;
     }
-    volumeInfo.resolveDisplayRoot(async () => {
-      if (this.sequence_ !== currentSequence) {
-        return;
-      }
-      if (!(await this.searchAndSelectByEntry(entry))) {
-        this.selectedItem = null;
-      }
-    });
+    volumeInfo.resolveDisplayRoot(
+        async () => {
+          if (this.sequence_ !== currentSequence) {
+            return;
+          }
+          if (!(await this.searchAndSelectByEntry(entry))) {
+            this.selectedItem = null;
+          }
+        },
+        (error) => {
+          console.warn('Failed to select by entry due to', error);
+        });
   }
 
   /**
