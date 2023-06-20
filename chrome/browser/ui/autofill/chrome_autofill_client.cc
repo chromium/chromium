@@ -551,11 +551,20 @@ void ChromeAutofillClient::ShowMandatoryReauthOptInPrompt(
 }
 
 void ChromeAutofillClient::ShowMandatoryReauthOptInConfirmation() {
+#if BUILDFLAG(IS_ANDROID)
+  if (!autofill_snackbar_controller_impl_) {
+    autofill_snackbar_controller_impl_ =
+        std::make_unique<AutofillSnackbarControllerImpl>(web_contents());
+  }
+  autofill_snackbar_controller_impl_->Show(
+      AutofillSnackbarType::kMandatoryReauth);
+#else
   MandatoryReauthBubbleControllerImpl::CreateForWebContents(web_contents());
   // TODO(crbug.com/4555994): Pass in the bubble type as a parameter so we
   // enforce that the confirmation bubble is shown.
   MandatoryReauthBubbleControllerImpl::FromWebContents(web_contents())
       ->ReshowBubble();
+#endif
 }
 
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
