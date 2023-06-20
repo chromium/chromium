@@ -165,8 +165,14 @@ IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
   EXPECT_FALSE(controller->caret_layer_for_testing());
 }
 
+// TODO(https://crbug.com/1453993): Failing in ChromeOS.
+#if BUILDFLAG(IS_CHROMEOS)
+#define MAYBE_CaretHighlightOmnibox DISABLED_CaretHighlightOmnibox
+#else
+#define MAYBE_CaretHighlightOmnibox CaretHighlightOmnibox
+#endif
 IN_PROC_BROWSER_TEST_F(AccessibilityHighlightsBrowserTest,
-                       CaretHighlightOmnibox) {
+                       MAYBE_CaretHighlightOmnibox) {
   AccessibilityFocusRingControllerImpl* controller =
       Shell::Get()->accessibility_focus_ring_controller();
   PrefService* prefs = browser()->profile()->GetPrefs();
