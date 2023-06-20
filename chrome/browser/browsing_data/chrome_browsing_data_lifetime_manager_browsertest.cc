@@ -245,8 +245,9 @@ IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
 }
 #endif
 
+// Failing crbug.com/1456542.
 IN_PROC_BROWSER_TEST_P(ChromeBrowsingDataLifetimeManagerScheduledRemovalTest,
-                       History) {
+                       DISABLED_History) {
   // No history saved in incognito mode.
   if (IsIncognito())
     return;
