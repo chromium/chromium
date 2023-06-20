@@ -901,7 +901,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Platform.Libhwsec.RetryAction{Category}"
-    enum="HwsecRetryActionEnum" expires_after="2023-06-19">
+    enum="HwsecRetryActionEnum" expires_after="2023-12-19">
   <owner>yich@google.com</owner>
   <owner>cros-hwsec-userland-eng+uma@google.com</owner>
   <summary>
@@ -912,10 +912,14 @@ chromium-metrics-reviews@google.com.
   </summary>
   <token key="Category">
     <variant name="" summary="hwsec"/>
+    <variant name=".Attestation" summary="Attestation"/>
+    <variant name=".Attestation.IsQuoted" summary="Attestation::IsQuoted"/>
+    <variant name=".Attestation.Quote" summary="Attestation::Quote"/>
     <variant name=".Config" summary="Config"/>
+    <variant name=".Config.GetCurrentBootMode"
+        summary="Config::GetCurrentBootMode"/>
     <variant name=".Config.IsCurrentUserSet"
         summary="Config::IsCurrentUserSet"/>
-    <variant name=".Config.Quote" summary="Config::Quote"/>
     <variant name=".Config.SetCurrentUser" summary="Config::SetCurrentUser"/>
     <variant name=".Config.ToOperationPolicy"
         summary="Config::ToOperationPolicy"/>
@@ -1071,6 +1075,9 @@ chromium-metrics-reviews@google.com.
     <variant name=".Vendor.IsSrkRocaVulnerable"
         summary="Vendor::IsSrkRocaVulnerable"/>
     <variant name=".Vendor.SendRawCommand" summary="Vendor::SendRawCommand"/>
+    <variant name=".VersionAttestation" summary="VersionAttestation"/>
+    <variant name=".VersionAttestation.AttestVersion"
+        summary="VersionAttestation::AttestVersion"/>
   </token>
 </histogram>
 
