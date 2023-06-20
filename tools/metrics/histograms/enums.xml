@@ -19944,6 +19944,15 @@ Called by update_net_error_codes.py.-->
   <int value="3" label="Processed"/>
 </enum>
 
+<enum name="ConversionOsRegistrationResult">
+  <int value="0" label="Passed to OS"/>
+  <int value="1" label="Unsupported"/>
+  <int value="2" label="Invalid registration url"/>
+  <int value="3" label="Prohibited by browser policy"/>
+  <int value="4" label="Excessive queue size"/>
+  <int value="5" label="Rejected by OS"/>
+</enum>
+
 <enum name="ConversionRegisterDataHostOutcome">
   <int value="0" label="Processed immediately"/>
   <int value="1" label="Deferred"/>

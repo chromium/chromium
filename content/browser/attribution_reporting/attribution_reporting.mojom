@@ -20,6 +20,8 @@ enum OsRegistrationType {
   kTrigger = 1,
 };
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum OsRegistrationResult {
   kPassedToOs = 0,
   kUnsupported = 1,

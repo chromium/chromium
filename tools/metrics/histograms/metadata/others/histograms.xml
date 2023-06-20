@@ -3529,19 +3529,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Conversions.AttributionOsRegistrationResult"
-    enum="BooleanSuccess" expires_after="M121">
-  <owner>linnan@chromium.org</owner>
-  <owner>johnidel@chromium.org</owner>
-  <owner>measurement-api-dev+metrics@google.com</owner>
-  <summary>
-    Measures how often attribution OS registrations are succesfully registered
-    with Android. Only recorded on Android when the
-    AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
-    registration sent to Android when the result is returned.
-  </summary>
-</histogram>
-
 <histogram name="Conversions.AttributionSrcRequestStatus"
     enum="ConversionAttributionSrcRequestStatus" expires_after="M121">
   <owner>linnan@chromium.org</owner>
@@ -3823,6 +3810,23 @@ chromium-metrics-reviews@google.com.
     emit two status, one when the navigation started and the data host was
     registered, and one when the navigation finished or failed.
   </summary>
+</histogram>
+
+<histogram name="Conversions.OsRegistrationResult.{Type}"
+    enum="ConversionOsRegistrationResult" expires_after="M121">
+  <owner>linnan@chromium.org</owner>
+  <owner>johnidel@chromium.org</owner>
+  <owner>measurement-api-dev+metrics@google.com</owner>
+  <summary>
+    Measures how often attribution OS registrations were succesfully registered
+    with Android or failed and why. Only recorded on Android when the
+    AttributionReportingCrossAppWeb feature is enabled. Recorded for each OS
+    registration processed by the attribution manager layer.
+  </summary>
+  <token key="Type">
+    <variant name="Source"/>
+    <variant name="Trigger"/>
+  </token>
 </histogram>
 
 <histogram name="Conversions.ProcessRegisterDataHostDelay" units="ms"

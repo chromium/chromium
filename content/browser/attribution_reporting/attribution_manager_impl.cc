@@ -1398,15 +1398,22 @@ void AttributionManagerImpl::NotifyOsRegistration(
   for (auto& observer : observers_) {
     observer.OnOsRegistration(now, registration, is_debug_key_allowed, result);
   }
+  switch (registration.GetType()) {
+    case attribution_reporting::mojom::OsRegistrationType::kSource:
+      base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Source",
+                                    result);
+      break;
+    case attribution_reporting::mojom::OsRegistrationType::kTrigger:
+      base::UmaHistogramEnumeration("Conversions.OsRegistrationResult.Trigger",
+                                    result);
+      break;
+  }
 }
 
 void AttributionManagerImpl::OnOsRegistration(
     bool is_debug_key_allowed,
     const OsRegistration& registration,
     bool success) {
-  base::UmaHistogramBoolean("Conversions.AttributionOsRegistrationResult",
-                            success);
-
   NotifyOsRegistration(registration, is_debug_key_allowed,
                        success ? OsRegistrationResult::kPassedToOs
                                : OsRegistrationResult::kRejectedByOs);
