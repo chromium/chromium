@@ -3651,7 +3651,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
       </message>
       <!-- TODO(crbug.com/1433644): Add final string. -->
       <message name="IDS_STORAGE_ACCESS_PERMISSION_BUBBLE_MESSAGE" desc="Text displayed in the omnibox bubble for the StorageAccess permission." translateable="false">
-        These embedded sites can use info they’ve saved about you as you browse <ph name="HOST">$1<ex>example.com</ex></ph>.
+        These sites can use info they’ve saved about you as you browse <ph name="HOST">$1<ex>example.com</ex></ph>.
       </message>
 
 

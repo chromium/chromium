@@ -51,11 +51,10 @@ PermissionToggleRowView::PermissionToggleRowView(
     std::u16string requesting_origin_string;
     switch (permission.type) {
       case ContentSettingsType::STORAGE_ACCESS:
-        requesting_origin_string = l10n_util::GetStringFUTF16(
-            IDS_PAGE_INFO_STORAGE_ACCESS_SECONDARY_TEXT,
+        requesting_origin_string =
             url_formatter::FormatOriginForSecurityDisplay(
                 *permission.requesting_origin,
-                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC));
+                url_formatter::SchemeDisplay::OMIT_CRYPTOGRAPHIC);
         break;
       default:
         NOTREACHED();
