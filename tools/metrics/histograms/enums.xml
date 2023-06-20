@@ -106354,6 +106354,10 @@ Full version information for the fingerprint enum values:
 </enum>
 
 <enum name="TranslateInitiationStatus">
+  <obsolete>
+    Removed 06/2023 because the corresponding histogram was deprecated,
+    superseded by TranslateTriggerDecision.
+  </obsolete>
   <int value="0" label="Completely disabled by prefs"/>
   <int value="1" label="Completely disabled by switch"/>
   <int value="2" label="Disabled by user configuration"/>
@@ -106482,6 +106486,8 @@ Full version information for the fingerprint enum values:
   <int value="17" label="Automatic translation, by Href"/>
   <int value="18" label="Automatic translation to predefined target"/>
   <int value="19" label="Show icon in omnibox"/>
+  <int value="20"
+      label="Disabled, source language matches that of previous page"/>
 </enum>
 
 <enum name="TranslateUIInteraction">

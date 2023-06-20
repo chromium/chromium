@@ -30,75 +30,6 @@ class MetricsRecorder {
   MetricsRecorder(const MetricsRecorder&) = delete;
   MetricsRecorder& operator=(const MetricsRecorder&) = delete;
 
-  void CheckInitiationStatus(
-      int expected_disabled_by_prefs,
-      int expected_disabled_by_config,
-      int expected_disabled_by_build,
-      int expected_language_is_not_supported,
-      int expected_mime_type_is_not_supported,
-      int expected_url_is_not_supported,
-      int expected_similar_languages,
-      int expected_accept_languages,
-      int expected_auto_by_config,
-      int expected_auto_by_link,
-      int expected_show_infobar,
-      int expected_language_in_ulp,
-      int expected_aborted_by_ranker,
-      int expected_aborted_by_matches_previous_language) {
-    Snapshot();
-
-    EXPECT_EQ(
-        expected_disabled_by_prefs,
-        GetCountWithoutSnapshot(
-            TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_PREFS));
-    EXPECT_EQ(
-        expected_disabled_by_config,
-        GetCountWithoutSnapshot(
-            TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG));
-    EXPECT_EQ(expected_disabled_by_build,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_KEY));
-    EXPECT_EQ(expected_language_is_not_supported,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::
-                      INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED));
-    EXPECT_EQ(expected_mime_type_is_not_supported,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::
-                      INITIATION_STATUS_MIME_TYPE_IS_NOT_SUPPORTED));
-    EXPECT_EQ(
-        expected_url_is_not_supported,
-        GetCountWithoutSnapshot(
-            TranslateBrowserMetrics::INITIATION_STATUS_URL_IS_NOT_SUPPORTED));
-    EXPECT_EQ(
-        expected_similar_languages,
-        GetCountWithoutSnapshot(
-            TranslateBrowserMetrics::INITIATION_STATUS_SIMILAR_LANGUAGES));
-    EXPECT_EQ(expected_accept_languages,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_ACCEPT_LANGUAGES));
-    EXPECT_EQ(expected_auto_by_config,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_CONFIG));
-    EXPECT_EQ(expected_auto_by_link,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_LINK));
-    EXPECT_EQ(expected_show_infobar,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_SHOW_INFOBAR));
-    EXPECT_EQ(expected_language_in_ulp,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IN_ULP));
-    EXPECT_EQ(
-        expected_aborted_by_ranker,
-        GetCountWithoutSnapshot(
-            TranslateBrowserMetrics::INITIATION_STATUS_ABORTED_BY_RANKER));
-    EXPECT_EQ(expected_aborted_by_matches_previous_language,
-              GetCountWithoutSnapshot(
-                  TranslateBrowserMetrics::
-                      INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE));
-  }
-
   void CheckTranslateHrefHintStatus(
       int expected_auto_translated,
       int expected_auto_translated_different_target_language,
@@ -205,55 +136,6 @@ class MetricsRecorder {
   std::unique_ptr<HistogramSamples> base_samples_;
   std::unique_ptr<HistogramSamples> samples_;
 };
-
-TEST(TranslateBrowserMetricsTest, ReportInitiationStatus) {
-  MetricsRecorder recorder("Translate.InitiationStatus.v2");
-
-  recorder.CheckInitiationStatus(0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_PREFS);
-  recorder.CheckInitiationStatus(1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
-  recorder.CheckInitiationStatus(1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_KEY);
-  recorder.CheckInitiationStatus(1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_MIME_TYPE_IS_NOT_SUPPORTED);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_URL_IS_NOT_SUPPORTED);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_SIMILAR_LANGUAGES);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_ACCEPT_LANGUAGES);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_CONFIG);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_LINK);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_SHOW_INFOBAR);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IN_ULP);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::INITIATION_STATUS_ABORTED_BY_RANKER);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0);
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::
-          INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE);
-  recorder.CheckInitiationStatus(1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1, 1);
-}
 
 TEST(TranslateBrowserMetricsTest, ReportMenuTranslationUnavailableReason) {
   MetricsRecorder recorder("Translate.MenuTranslation.UnavailableReasons");

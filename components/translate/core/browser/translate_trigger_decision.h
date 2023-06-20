@@ -60,8 +60,6 @@ struct TranslateTriggerDecision {
   // 3. Ranker isn't requesting that the UI be suppressed.
   bool ShouldShowUI() const;
 
-  std::vector<TranslateBrowserMetrics::InitiationStatusType>
-      initiation_statuses;
   std::vector<int> ranker_events;
   std::string auto_translate_target;
   std::string href_translate_source;

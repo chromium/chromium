@@ -375,9 +375,6 @@ void TranslateManager::TranslatePage(const std::string& original_source_lang,
     if (translate::IsForceTranslateEnabled()) {
       source_lang = translate::kUnknownLanguageCode;
     }
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::
-            INITIATION_STATUS_IDENTICAL_LANGUAGE_USE_SOURCE_LANGUAGE_UNKNOWN);
   }
 
   // Trigger the "translating now" UI.
@@ -717,9 +714,9 @@ bool TranslateManager::ShouldSuppressBubbleUI(
       ShouldOverrideMatchesPreviousLanguageDecision()) {
     return false;
   }
-  TranslateBrowserMetrics::ReportInitiationStatus(
-      TranslateBrowserMetrics::
-          INITIATION_STATUS_ABORTED_BY_MATCHES_PREVIOUS_LANGUAGE);
+
+  GetActiveTranslateMetricsLogger()->LogTriggerDecision(
+      TriggerDecision::kDisabledMatchesPreviousLanguage);
   return true;
 }
 
@@ -810,16 +807,12 @@ void TranslateManager::FilterIsTranslatePossible(
       language_state_.translation_declined() ||
       language_state_.IsPageTranslated()) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DOESNT_NEED_TRANSLATION);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledDoesntNeedTranslation);
   }
 
   if (!base::FeatureList::IsEnabled(translate::kTranslate)) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_SWITCH);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledTranslationFeatureDisabled);
   }
@@ -828,8 +821,6 @@ void TranslateManager::FilterIsTranslatePossible(
   // sense there, either.
   if (net::NetworkChangeNotifier::IsOffline()) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_NO_NETWORK);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledOffline);
   }
@@ -840,8 +831,6 @@ void TranslateManager::FilterIsTranslatePossible(
     // the first place. Leave kOfferTranslateEnabled on, though, because that
     // settings syncs and we don't want to turn off translate everywhere else.
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_KEY);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledMissingAPIKey);
   }
@@ -850,8 +839,6 @@ void TranslateManager::FilterIsTranslatePossible(
   // See bug: 217945, 1208340.
   if (!IsMimeTypeSupported(translate_driver_->GetContentsMimeType())) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_MIME_TYPE_IS_NOT_SUPPORTED);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledMIMETypeNotSupported);
   }
@@ -861,16 +848,12 @@ void TranslateManager::FilterIsTranslatePossible(
   const GURL& page_url = translate_driver_->GetVisibleURL();
   if (!translate_client_->IsTranslatableURL(page_url)) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_URL_IS_NOT_SUPPORTED);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledURLNotSupported);
   }
 
   if (!translate_prefs->IsOfferTranslateEnabled()) {
     decision->PreventAllTriggering();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_PREFS);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::DISABLED_BY_PREF);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -884,8 +867,6 @@ void TranslateManager::FilterIsTranslatePossible(
     // regular auto-translate/show UI.
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_SIMILAR_LANGUAGES);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kDisabledSimilarLanguages);
   }
@@ -899,8 +880,6 @@ void TranslateManager::FilterIsTranslatePossible(
     // regular auto-translate/show UI.
     decision->PreventAutoTranslate();
     decision->PreventShowingUI();
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::UNSUPPORTED_LANGUAGE);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -923,8 +902,6 @@ void TranslateManager::FilterAutoTranslate(
     // feature; the user will get an infobar, so they can control whether the
     // page's text is sent to the translate server.
     decision->auto_translate_target = always_translate_target;
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::AUTO_TRANSLATION_BY_PREF);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -932,8 +909,6 @@ void TranslateManager::FilterAutoTranslate(
   } else if (!link_auto_translate_target.empty()) {
     // This page was navigated through a click from a translated page.
     decision->auto_translate_target = link_auto_translate_target;
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_AUTO_BY_LINK);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::AUTO_TRANSLATION_BY_LINK);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -962,8 +937,6 @@ void TranslateManager::FilterForUserPrefs(
     // language blocklist.
     decision->PreventShowingPredefinedLanguageTranslateUI();
 
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::LANGUAGE_DISABLED_BY_USER_CONFIG);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -986,8 +959,6 @@ void TranslateManager::FilterForUserPrefs(
     decision->PreventShowingPredefinedLanguageTranslateUI();
     decision->PreventPredefinedLanguageAutoTranslate();
 
-    decision->initiation_statuses.push_back(
-        TranslateBrowserMetrics::INITIATION_STATUS_DISABLED_BY_CONFIG);
     decision->ranker_events.push_back(
         metrics::TranslateEventProto::URL_DISABLED_BY_USER_CONFIG);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
@@ -1074,8 +1045,6 @@ void TranslateManager::MaybeShowOmniboxIcon(
   if (decision.IsTriggeringPossible()) {
     // Show the omnibox icon if any translate trigger is possible.
     language_state_.SetTranslateEnabled(true);
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::INITIATION_STATUS_SHOW_ICON);
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kShowIcon);
   }
@@ -1155,9 +1124,10 @@ bool TranslateManager::MaterializeDecision(
         TriggerDecision::kShowUIFromHref);
   }
 
-  if (did_show_ui)
+  if (did_show_ui) {
     GetActiveTranslateMetricsLogger()->LogTriggerDecision(
         TriggerDecision::kShowUI);
+  }
 
   return did_show_ui;
 }
@@ -1193,72 +1163,9 @@ void TranslateManager::RecordDecisionMetrics(
   }
 
   if (!decision.can_auto_translate() && !decision.can_auto_href_translate() &&
-      decision.can_auto_translate_for_predefined_language()) {
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::
-            INITIATION_STATUS_AUTO_BY_PREDEFINED_TARGET_LANGUAGE);
-
+      (decision.can_auto_translate_for_predefined_language() ||
+       decision.can_show_predefined_language_translate_ui())) {
     return;
-  }
-
-  if (!decision.can_auto_translate() && !decision.can_auto_href_translate() &&
-      decision.can_show_predefined_language_translate_ui()) {
-    TranslateBrowserMetrics::ReportInitiationStatus(
-        TranslateBrowserMetrics::
-            INITIATION_STATUS_SHOW_UI_PREDEFINED_TARGET_LANGUAGE);
-
-    return;
-  }
-
-  // If the chosen outcome is to show the UI or let it be suppressed, log a few
-  // explicit things.
-  if (!decision.can_auto_translate() && decision.can_show_ui()) {
-    // By getting here it's expected that nothing caused the translation to
-    // be aborted or happen automatically. Because of that,
-    // |decision.initiation_statuses| should be empty.
-    DCHECK(decision.initiation_statuses.empty());
-
-    if (decision.should_suppress_from_ranker() || !ui_shown) {
-      TranslateBrowserMetrics::ReportInitiationStatus(
-          TranslateBrowserMetrics::INITIATION_STATUS_SUPPRESS_INFOBAR);
-    }
-
-    // If the UI was suppressed, log the suppression source.
-    if (decision.should_suppress_from_ranker()) {
-      TranslateBrowserMetrics::ReportInitiationStatus(
-          TranslateBrowserMetrics::INITIATION_STATUS_ABORTED_BY_RANKER);
-    } else {
-      // Always log INITIATION_STATUS_SHOW_INFOBAR regardless of whether it's
-      // being subsequently suppressed or not. It's a measure of how often a
-      // decision is taken to show it, and other metrics track *actual*
-      // instances of it being shown.
-      TranslateBrowserMetrics::ReportInitiationStatus(
-          TranslateBrowserMetrics::INITIATION_STATUS_SHOW_INFOBAR);
-    }
-
-    // There's nothing else to log if the UI was shown.
-    return;
-  }
-
-  // To match previous behavior, this function will log the first initiation
-  // status that was recorded in the vector. This ensures that the histograms
-  // reflect which conditions were met first to either trigger or prevent
-  // translate triggering.
-  if (!decision.initiation_statuses.empty()) {
-    auto status = decision.initiation_statuses[0];
-    if (status !=
-        TranslateBrowserMetrics::INITIATION_STATUS_DOESNT_NEED_TRANSLATION) {
-      // Don't record INITIATION_STATUS_DOESNT_NEED_TRANSLATION because it's
-      // very frequent and not important to track.
-      TranslateBrowserMetrics::ReportInitiationStatus(status);
-    }
-
-    // The following metrics are logged alongside extra info.
-    if (status ==
-        TranslateBrowserMetrics::INITIATION_STATUS_LANGUAGE_IS_NOT_SUPPORTED) {
-      TranslateBrowserMetrics::ReportUnsupportedLanguageAtInitiation(
-          page_language_code);
-    }
   }
 }
 

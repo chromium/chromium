@@ -160,17 +160,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Translate.InitiationStatus.v2"
-    enum="TranslateInitiationStatus" expires_after="2023-12-04">
-  <owner>megjablon@google.com</owner>
-  <owner>chrome-language@google.com</owner>
-  <summary>
-    The reason why Chrome decided to perform the next action (e.g., to show
-    infobar, to translate a page without any prompting, and so on) when Chrome
-    Translate is ready to translate a page.
-  </summary>
-</histogram>
-
 <histogram name="Translate.LanguageDetection.ContentLength" units="characters"
     expires_after="2023-12-17">
   <owner>sclittle@chromium.org</owner>
