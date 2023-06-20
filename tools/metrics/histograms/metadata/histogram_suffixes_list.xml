@@ -4478,24 +4478,6 @@ chromium-metrics-reviews@google.com.
   <affected-histogram name="Platform.Memory.VMs"/>
 </histogram_suffixes>
 
-<histogram_suffixes name="ProfileMenuGAIASource" separator=".">
-  <suffix name="GAIAAddSession"
-      label="GAIA-initiated interaction indicating a service type of Add a
-             Session"/>
-  <suffix name="GAIADefault"
-      label="GAIA-initiated interaction indicating the default service type"/>
-  <suffix name="GAIASignout"
-      label="GAIA-initiated interaction indicating a service type of Signout"/>
-  <suffix name="GAIASignoutIncognito"
-      label="GAIA-initiated interaction indicating a service type of Signout
-             and go Incognito (used for AndroidAccountManagementMenu)"/>
-  <suffix name="GAIASignup"
-      label="GAIA-initiated interaction indicating a service type of Add an
-             account"/>
-  <suffix name="NonGAIA" label="Interaction was not initiated from GAIA"/>
-  <affected-histogram name="Profile.AndroidAccountManagementMenu"/>
-</histogram_suffixes>
-
 <histogram_suffixes name="ProfilePictureDownload" separator=".">
   <suffix name="Default.LoggedIn" label="default picture, after login"/>
   <suffix name="Default.OOBE" label="default picture, in OOBE"/>

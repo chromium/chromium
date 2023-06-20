@@ -88370,33 +88370,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Multiple names (sync enabled for one of them)"/>
 </enum>
 
-<enum name="ProfileAndroidAccountManagementMenu">
-  <int value="0" label="Opened Menu">
-    User arrived at the Account management screen.
-  </int>
-  <int value="1" label="Add Account">
-    User arrived at the Account management screen, and clicked Add account.
-  </int>
-  <int value="2" label="Go Incognito">
-    User arrived at the Account management screen, and clicked Go incognito.
-  </int>
-  <int value="3" label="Primary Account">
-    User arrived at the Account management screen, and clicked on primary.
-  </int>
-  <int value="4" label="Secondary Account">
-    User arrived at the Account management screen, and clicked on secondary.
-  </int>
-  <int value="5" label="Toggled Signout">
-    User arrived at the Account management screen, toggled Chrome signout.
-  </int>
-  <int value="6" label="Confirm Signout">
-    User toggled Chrome signout, and clicked Signout.
-  </int>
-  <int value="7" label="Cancel Signout">
-    User toggled Chrome signout, and clicked Cancel.
-  </int>
-</enum>
-
 <enum name="ProfileAuth">
   <int value="0" label="Authentication was unnecessary (profile not locked)"/>
   <int value="1" label="Authentication performed using local credentials"/>
@@ -88579,11 +88552,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="4" label="Webdata DB error"/>
   <int value="5" label="Webdata keyword DB error"/>
   <int value="8" label="Payment manifest DB error"/>
-</enum>
-
-<enum name="ProfileGaiaPhotoOptions">
-  <int value="0" label="User opted to use GAIA photo"/>
-  <int value="1" label="User opted not to use GAIA photo"/>
 </enum>
 
 <enum name="ProfileImageDownloadResult">
@@ -88874,13 +88842,6 @@ https://www.dmtf.org/sites/default/files/standards/documents/DSP0134_2.7.1.pdf
   <int value="2" label="Mixed sync consent status"/>
   <int value="3" label="Unknown sync consent status"/>
   <int value="4" label="Error getting sync consent status"/>
-</enum>
-
-<enum name="ProfileSyncCustomize">
-  <int value="0" label="Customized sync options"/>
-  <int value="1" label="Chose what to sync"/>
-  <int value="2" label="Encrypted all data"/>
-  <int value="3" label="Selected a passphrase"/>
 </enum>
 
 <enum name="ProfileSyncStatus">

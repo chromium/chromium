@@ -433,10 +433,6 @@ void PeopleHandler::HandleSetDatatypes(const base::Value::List& args) {
 
   // Choosing data types to sync never fails.
   ResolveJavascriptCallback(*callback_id, base::Value(kConfigurePageStatus));
-
-  ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_CUSTOMIZE);
-  if (!configuration.sync_everything)
-    ProfileMetrics::LogProfileSyncInfo(ProfileMetrics::SYNC_CHOOSE);
 }
 
 void PeopleHandler::HandleGetStoredAccounts(const base::Value::List& args) {
@@ -546,8 +542,6 @@ void PeopleHandler::HandleSetEncryptionPassphrase(
   } else {
     sync_user_settings->SetEncryptionPassphrase(passphrase);
     successfully_set = true;
-    ProfileMetrics::LogProfileSyncInfo(
-        ProfileMetrics::SYNC_CREATED_NEW_PASSPHRASE);
   }
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }
@@ -573,10 +567,6 @@ void PeopleHandler::HandleSetDecryptionPassphrase(
   bool successfully_set = false;
   if (!passphrase.empty() && sync_user_settings->IsPassphraseRequired()) {
     successfully_set = sync_user_settings->SetDecryptionPassphrase(passphrase);
-    if (successfully_set) {
-      ProfileMetrics::LogProfileSyncInfo(
-          ProfileMetrics::SYNC_ENTERED_EXISTING_PASSPHRASE);
-    }
   }
   ResolveJavascriptCallback(callback_id, base::Value(successfully_set));
 }

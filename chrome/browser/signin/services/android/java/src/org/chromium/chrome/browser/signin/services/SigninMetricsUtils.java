@@ -9,8 +9,6 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
-import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.metrics.AccountConsistencyPromoAction;
 import org.chromium.components.signin.metrics.SigninAccessPoint;
 
@@ -33,13 +31,6 @@ public class SigninMetricsUtils {
         int CANCELLED = 4;
         int NULL_ACCOUNT_NAME = 5;
         int NUM_STATES = 6;
-    }
-    /**
-     * Logs a {@link ProfileAccountManagementMetrics} for a given {@link GAIAServiceType}.
-     */
-    public static void logProfileAccountManagementMenu(
-            @ProfileAccountManagementMetrics int metric, @GAIAServiceType int gaiaServiceType) {
-        SigninMetricsUtilsJni.get().logProfileAccountManagementMenu(metric, gaiaServiceType);
     }
 
     /**
@@ -82,7 +73,6 @@ public class SigninMetricsUtils {
     @VisibleForTesting(otherwise = VisibleForTesting.PACKAGE_PRIVATE)
     @NativeMethods
     public interface Natives {
-        void logProfileAccountManagementMenu(int metric, int gaiaServiceType);
         void logSigninUserActionForAccessPoint(int accessPoint);
     }
 

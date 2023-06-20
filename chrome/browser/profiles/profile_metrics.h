@@ -101,24 +101,6 @@ class ProfileMetrics {
     NUM_DELETE_PROFILE_METRICS
   };
 
-  // The options for sync are logged after the user has changed their sync
-  // setting. See people_handler.h.
-  // These values are persisted to logs. Entries should not be renumbered and
-  // numeric values should never be reused.
-  enum ProfileSync {
-    SYNC_CUSTOMIZE = 0,           // User decided to customize sync
-    SYNC_CHOOSE,                  // User chose what to sync
-    SYNC_CREATED_NEW_PASSPHRASE,  // User created a passphrase to encrypt data
-    SYNC_ENTERED_EXISTING_PASSPHRASE,  // User entered an existing passphrase
-    NUM_PROFILE_SYNC_METRICS
-  };
-
-  enum ProfileGaia {
-    GAIA_OPT_IN = 0,          // User changed to GAIA photo as avatar
-    GAIA_OPT_OUT,             // User changed to not use GAIA photo as avatar
-    NUM_PROFILE_GAIA_METRICS
-  };
-
   enum ProfileAuth {
     AUTH_UNNECESSARY,     // Profile was not locked
     AUTH_LOCAL,           // Profile was authenticated locally
@@ -127,45 +109,6 @@ class ProfileMetrics {
     AUTH_FAILED_OFFLINE,  // Profile failed authentication and was offline
     NUM_PROFILE_AUTH_METRICS
   };
-
-#if BUILDFLAG(IS_ANDROID)
-  // Enum for tracking user interactions with the account management menu
-  // on Android.
-  //
-  // A Java counterpart will be generated for this enum.
-  // GENERATED_JAVA_ENUM_PACKAGE: org.chromium.chrome.browser.profiles
-  // GENERATED_JAVA_CLASS_NAME_OVERRIDE: ProfileAccountManagementMetrics
-  // GENERATED_JAVA_PREFIX_TO_STRIP: PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_
-  enum ProfileAndroidAccountManagementMenu {
-    // User arrived at the Account management screen.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_VIEW = 0,
-    // User arrived at the Account management screen, and clicked Add account.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_ADD_ACCOUNT = 1,
-    // User arrived at the Account management screen, and clicked Go incognito.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_GO_INCOGNITO = 2,
-    // User arrived at the Account management screen, and clicked on primary.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_CLICK_PRIMARY_ACCOUNT = 3,
-    // User arrived at the Account management screen, and clicked on secondary.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_CLICK_SECONDARY_ACCOUNT = 4,
-    // Despite the name of this enum, the following three interactions track
-    // actions triggered from all user-triggered entry points for the signout
-    // dialog.  Currently these are:
-    // * The Account management settings screen
-    // * The Sync settings screen
-    // * The Google Services settings screen
-    //
-    // User toggled Chrome signout.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_TOGGLE_SIGNOUT = 5,
-    // User toggled Chrome signout, and clicked Signout.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_SIGNOUT_SIGNOUT = 6,
-    // User toggled Chrome signout, and clicked Cancel.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_SIGNOUT_CANCEL = 7,
-    // User arrived at the android Account management screen directly from some
-    // Gaia requests.
-    PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_DIRECT_ADD_ACCOUNT = 8,
-    NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS,
-  };
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // Returns whether profile |entry| is considered active for metrics.
   static bool IsProfileActive(const ProfileAttributesEntry* entry);
@@ -183,14 +126,6 @@ class ProfileMetrics {
       ProfileSignedInFlowOutcome outcome);
   static void LogProfileAvatarSelection(size_t icon_index);
   static void LogProfileDeleteUser(ProfileDelete metric);
-  static void LogProfileSwitchGaia(ProfileGaia metric);
-  static void LogProfileSyncInfo(ProfileSync metric);
-
-#if BUILDFLAG(IS_ANDROID)
-  static void LogProfileAndroidAccountManagementMenu(
-      ProfileAndroidAccountManagementMenu metric,
-      signin::GAIAServiceType gaia_service);
-#endif  // BUILDFLAG(IS_ANDROID)
 
   // These functions should only be called on the UI thread because they hook
   // into g_browser_process through a helper function.

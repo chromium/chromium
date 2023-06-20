@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ui/webui/settings/settings_manage_profile_handler.h"
 
+#include <cstdint>
 #include <utility>
 
 #include "base/functional/bind.h"
@@ -153,7 +154,7 @@ void ManageProfileHandler::HandleSetProfileIconToGaiaAvatar(
     // Only log if they changed to the GAIA photo.
     // Selection of GAIA photo as avatar is logged as part of the function
     // below.
-    ProfileMetrics::LogProfileSwitchGaia(ProfileMetrics::GAIA_OPT_IN);
+    ProfileMetrics::LogProfileAvatarSelection(SIZE_MAX);
   }
 
   ProfileMetrics::LogProfileUpdate(profile_->GetPath());

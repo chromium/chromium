@@ -54,16 +54,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Profile.AndroidAccountManagementMenu"
-    enum="ProfileAndroidAccountManagementMenu" expires_after="2021-08-29">
-  <owner>bsazonov@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Track user interactions that can be performed in the Android account
-    management menu.
-  </summary>
-</histogram>
-
 <histogram name="Profile.AppCount" units="units" expires_after="2022-08-01">
   <owner>etienneb@chromium.org</owner>
   <owner>gab@chromium.org</owner>
@@ -572,28 +562,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The type of profile's unconsented primary account. Recorded on startup of
     Chrome and whenever Chrome is used after at least 30 minutes of inactivity.
-  </summary>
-</histogram>
-
-<histogram name="Profile.SwitchGaiaPhotoSettings"
-    enum="ProfileGaiaPhotoOptions" expires_after="2018-08-30">
-  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
-  <summary>
-    Counts of when users switch to using their GAIA photo instead of an avatar
-    icon or the opposite when they switch back to an avatar icon instead of
-    their GAIA photo.
-  </summary>
-</histogram>
-
-<histogram name="Profile.SyncCustomize" enum="ProfileSyncCustomize"
-    expires_after="2021-10-10">
-  <owner>msalama@chromium.org</owner>
-  <owner>chrome-signin-team@google.com</owner>
-  <summary>
-    Number of times and ways the user customized the sync options of their
-    profile. Percentages are not meaningful. To determine percentages, take the
-    count of a given action over the count of number of customizations. The
-    histogram has expired in '2018-08-30' and is resurrected in '2020-03-09'.
   </summary>
 </histogram>
 

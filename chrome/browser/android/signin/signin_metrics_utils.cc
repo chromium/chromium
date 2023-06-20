@@ -7,15 +7,6 @@
 #include "chrome/browser/signin/services/android/jni_headers/SigninMetricsUtils_jni.h"
 #include "components/signin/public/base/signin_metrics.h"
 
-static void JNI_SigninMetricsUtils_LogProfileAccountManagementMenu(
-    JNIEnv* env,
-    jint metric,
-    jint gaia_service_type) {
-  ProfileMetrics::LogProfileAndroidAccountManagementMenu(
-      static_cast<ProfileMetrics::ProfileAndroidAccountManagementMenu>(metric),
-      static_cast<signin::GAIAServiceType>(gaia_service_type));
-}
-
 static void JNI_SigninMetricsUtils_LogSigninUserActionForAccessPoint(
     JNIEnv* env,
     jint access_point) {

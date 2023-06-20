@@ -18,9 +18,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.components.signin.GAIAServiceType;
 import org.chromium.components.signin.identitymanager.ConsentLevel;
 import org.chromium.components.user_prefs.UserPrefs;
@@ -164,8 +162,6 @@ public class SignOutDialogCoordinator {
                          .build();
         mDialogManager = dialogManager;
 
-        SigninMetricsUtils.logProfileAccountManagementMenu(
-                ProfileAccountManagementMetrics.TOGGLE_SIGNOUT, gaiaServiceType);
         mDialogManager.showDialog(mModel, ModalDialogType.APP);
     }
 
@@ -189,15 +185,7 @@ public class SignOutDialogCoordinator {
             }
 
             @Override
-            public void onDismiss(PropertyModel model, int dismissalCause) {
-                if (dismissalCause == DialogDismissalCause.POSITIVE_BUTTON_CLICKED) {
-                    SigninMetricsUtils.logProfileAccountManagementMenu(
-                            ProfileAccountManagementMetrics.SIGNOUT_SIGNOUT, mGaiaServiceType);
-                } else {
-                    SigninMetricsUtils.logProfileAccountManagementMenu(
-                            ProfileAccountManagementMetrics.SIGNOUT_CANCEL, mGaiaServiceType);
-                }
-            }
+            public void onDismiss(PropertyModel model, int dismissalCause) {}
         };
     }
 

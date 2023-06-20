@@ -21,7 +21,6 @@ import androidx.preference.PreferenceScreen;
 import org.chromium.chrome.R;
 import org.chromium.chrome.browser.preferences.Pref;
 import org.chromium.chrome.browser.profiles.Profile;
-import org.chromium.chrome.browser.profiles.ProfileAccountManagementMetrics;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
 import org.chromium.chrome.browser.settings.SettingsLauncherImpl;
 import org.chromium.chrome.browser.signin.services.DisplayableProfileData;
@@ -29,7 +28,6 @@ import org.chromium.chrome.browser.signin.services.IdentityServicesProvider;
 import org.chromium.chrome.browser.signin.services.ProfileDataCache;
 import org.chromium.chrome.browser.signin.services.SigninManager;
 import org.chromium.chrome.browser.signin.services.SigninManager.SignInStateObserver;
-import org.chromium.chrome.browser.signin.services.SigninMetricsUtils;
 import org.chromium.chrome.browser.sync.SyncServiceFactory;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator;
 import org.chromium.chrome.browser.ui.signin.SignOutDialogCoordinator.Listener;
@@ -97,9 +95,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
             mGaiaServiceType =
                     getArguments().getInt(SHOW_GAIA_SERVICE_TYPE_EXTRA, mGaiaServiceType);
         }
-
-        SigninMetricsUtils.logProfileAccountManagementMenu(
-                ProfileAccountManagementMetrics.VIEW, mGaiaServiceType);
 
         mProfileDataCache = ProfileDataCache.createWithDefaultImageSizeAndNoBadge(requireContext());
     }
@@ -322,9 +317,6 @@ public class AccountManagementFragment extends PreferenceFragmentCompat
         addAccountPreference.setTitle(R.string.signin_add_account_to_device);
         addAccountPreference.setOnPreferenceClickListener(preference -> {
             if (!isVisible() || !isResumed()) return false;
-
-            SigninMetricsUtils.logProfileAccountManagementMenu(
-                    ProfileAccountManagementMetrics.ADD_ACCOUNT, mGaiaServiceType);
 
             AccountManagerFacade accountManagerFacade = AccountManagerFacadeProvider.getInstance();
             accountManagerFacade.createAddAccountIntent((@Nullable Intent intent) -> {

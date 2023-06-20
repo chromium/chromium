@@ -392,61 +392,6 @@ void ProfileMetrics::LogProfileDeleteUser(ProfileDelete metric) {
   }
 }
 
-void ProfileMetrics::LogProfileSwitchGaia(ProfileGaia metric) {
-  if (metric == GAIA_OPT_IN)
-    LogProfileAvatarSelection(SIZE_MAX);
-  base::UmaHistogramEnumeration("Profile.SwitchGaiaPhotoSettings", metric,
-                                NUM_PROFILE_GAIA_METRICS);
-}
-
-void ProfileMetrics::LogProfileSyncInfo(ProfileSync metric) {
-  DCHECK(metric < NUM_PROFILE_SYNC_METRICS);
-  base::UmaHistogramEnumeration("Profile.SyncCustomize", metric,
-                                NUM_PROFILE_SYNC_METRICS);
-}
-
-#if BUILDFLAG(IS_ANDROID)
-void ProfileMetrics::LogProfileAndroidAccountManagementMenu(
-    ProfileAndroidAccountManagementMenu metric,
-    signin::GAIAServiceType gaia_service) {
-  // The first parameter to the histogram needs to be literal, because of the
-  // optimized implementation of |base::UmaHistogramEnumeration|. Do not attempt
-  // to refactor.
-  switch (gaia_service) {
-    case signin::GAIA_SERVICE_TYPE_NONE:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.NonGAIA", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_SIGNOUT:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignout", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_INCOGNITO:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignoutIncognito", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_ADDSESSION:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIAAddSession", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_SIGNUP:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIASignup", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-    case signin::GAIA_SERVICE_TYPE_DEFAULT:
-      base::UmaHistogramEnumeration(
-          "Profile.AndroidAccountManagementMenu.GAIADefault", metric,
-          NUM_PROFILE_ANDROID_ACCOUNT_MANAGEMENT_MENU_METRICS);
-      break;
-  }
-}
-#endif  // BUILDFLAG(IS_ANDROID)
-
 void ProfileMetrics::LogProfileLaunch(Profile* profile) {
   if (profile->IsChild()) {
     base::RecordAction(
