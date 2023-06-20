@@ -386,9 +386,6 @@ crbug.com/1159539 [ win amd-0x7340 angle-d3d11 passthrough ] deqp/functional/gle
 
 crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/sub.html [ Failure ]
 crbug.com/angleproject/7079 [ angle-metal mac mac-x86_64 passthrough ] deqp/functional/gles3/fboinvalidate/whole.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.2_samples.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.4_samples.html [ Failure ]
-crbug.com/angleproject/7079 [ angle-metal mac-x86_64 monterey passthrough ] deqp/functional/gles3/fbomultisample.8_samples.html [ Failure ]
 
 ## Metal AMD ##
 
@@ -426,26 +423,15 @@ crbug.com/1446664 [ mac amd-0x67ef angle-metal passthrough ] deqp/functional/gle
 ## Metal Intel ##
 
 crbug.com/angleproject/6430 [ angle-metal intel mac passthrough ] deqp/functional/gles3/readpixel.html [ Failure ]
-crbug.com/angleproject/6430 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/fboinvalidate/default.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/basic_types_interleaved_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/basic_types_separate_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_centroid.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_flat.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/interpolation_smooth.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/point_size.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_interleaved_points.html [ Failure ]
-crbug.com/1316389 [ angle-metal intel monterey passthrough ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
 crbug.com/1316389 [ angle-metal intel passthrough ventura ] deqp/functional/gles3/transformfeedback/random_separate_points.html [ Failure ]
-crbug.com/angleproject/8026 [ angle-metal intel monterey passthrough ] conformance2/uniforms/dependent-buffer-change.html [ Failure ]
 
 ## Metal Apple Silicon ##
 
@@ -637,7 +623,6 @@ crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] conformance2/rendering/framebuffer-render-to-layer.html [ Failure ]
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/fbocompleteness.html [ Failure ]
 crbug.com/1130119 [ mac apple passthrough angle-opengl ] deqp/functional/gles3/shadertexturefunction/texturegrad.html [ Failure ]
-crbug.com/1240443 [ angle-opengl apple-apple-m1 monterey passthrough ] conformance/renderbuffers/stencil-renderbuffer-initialization.html [ Failure ]
 
 # Newly added tests on NVIDIA passthrough
 crbug.com/982292 [ mac nvidia angle-opengl passthrough ] conformance/extensions/webgl-multi-draw.html [ Failure ]
