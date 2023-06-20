@@ -643,6 +643,7 @@ template("msvc_toolchain") {
         is_official_build = false
         use_clang_coverage = false
         use_sanitizer_coverage = false
+        generate_linker_map = false
 
         # On Windows, cross-compile for x86 changes the `host_toolchain`
         # into x86 too so as to avoid compiling things twice (see

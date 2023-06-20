@@ -840,6 +840,7 @@ template("apple_toolchain") {
         is_official_build = false
         use_clang_coverage = false
         use_sanitizer_coverage = false
+        generate_linker_map = false
       }
     }
   }
