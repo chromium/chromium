@@ -446,6 +446,8 @@ public final class ProductionSupportedFlagList {
                             + "with a preferred framerate defined."),
             Flag.baseFeature(AwFeatures.WEBVIEW_REPORT_FRAME_METRICS,
                     "Report frame metrics to Google, if metrics reporting has been enabled."),
+            Flag.baseFeature(AwFeatures.WEBVIEW_CLEAR_FUNCTOR_IN_BACKGROUND,
+                    "Clear the draw functor after some time in background."),
             // Add new commandline switches and features above. The final entry should have a
             // trailing comma for cleaner diffs.
     };
