@@ -4,6 +4,7 @@
 
 #include "third_party/blink/renderer/modules/ml/webnn/ml_graph_type_converter.h"
 
+#include "third_party/blink/renderer/bindings/modules/v8/v8_ml_clamp_options.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operand.h"
 #include "third_party/blink/renderer/modules/ml/webnn/ml_operator.h"
 
@@ -82,6 +83,29 @@ uint64_t GetOperatorOutputId(const MLOperator* op,
   CHECK_LE(index, op->Outputs().size());
   const auto* output = op->Outputs()[index].Get();
   return operand_to_id_map.at(output);
+}
+
+OperatorPtr CreateClampOperator(const OperandToIdMap& operand_to_id_map,
+                                const MLOperator* clamp) {
+  const uint64_t input_operand_id =
+      GetOperatorInputId(clamp, operand_to_id_map);
+  const uint64_t output_operand_id =
+      GetOperatorOutputId(clamp, operand_to_id_map);
+
+  auto operator_mojo = webnn::mojom::blink::Operator::New();
+  operator_mojo->kind = Operator::Kind::kClamp;
+  operator_mojo->input_operands = {input_operand_id};
+  operator_mojo->output_operands = {output_operand_id};
+  auto clamp_attributes = webnn::mojom::blink::ClampAttributes::New();
+  const auto* options = static_cast<const MLClampOptions*>(clamp->Options());
+  CHECK(options);
+  clamp_attributes->min_value =
+      options->getMinValueOr(-std::numeric_limits<float>::infinity());
+  clamp_attributes->max_value =
+      options->getMaxValueOr(+std::numeric_limits<float>::infinity());
+  operator_mojo->attributes = webnn::mojom::blink::OperatorAttributes::NewClamp(
+      std::move(clamp_attributes));
+  return operator_mojo;
 }
 
 OperatorPtr CreateElementWiseBinaryOperator(
@@ -168,6 +192,8 @@ OperatorPtr CreateSoftmaxOperator(const OperandToIdMap& operand_to_id_map,
 OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
                                   const MLOperator* op) {
   switch (op->Kind()) {
+    case MLOperator::OperatorKind::kClamp:
+      return CreateClampOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kAdd:
     case MLOperator::OperatorKind::kSub:
     case MLOperator::OperatorKind::kMul:
@@ -181,7 +207,6 @@ OperatorPtr ConvertToMojoOperator(const OperandToIdMap& operand_to_id_map,
       return CreateReshapeOperator(operand_to_id_map, op);
     case MLOperator::OperatorKind::kSoftmax:
       return CreateSoftmaxOperator(operand_to_id_map, op);
-    case MLOperator::OperatorKind::kClamp:
     case MLOperator::OperatorKind::kConv2d:
     case MLOperator::OperatorKind::kGemm:
     case MLOperator::OperatorKind::kAveragePool2d:

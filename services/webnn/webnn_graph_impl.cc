@@ -4,6 +4,7 @@
 
 #include "services/webnn/webnn_graph_impl.h"
 
+#include <math.h>
 #include <utility>
 #include <vector>
 
@@ -107,6 +108,41 @@ const mojom::Operand* GetMojoOperand(
   return id_to_operand_map.at(operand_id).get();
 }
 
+bool ValidateClamp(const IdToOperandMap& id_to_operand_map,
+                   const mojom::OperatorPtr& operation) {
+  auto* input = GetMojoOperand(id_to_operand_map, operation->input_operands);
+  auto* output = GetMojoOperand(id_to_operand_map, operation->output_operands);
+  if (!input || !output || !operation->attributes) {
+    // The clamp operator is invalid.
+    return false;
+  }
+  auto& clamp_attributes = operation->attributes->get_clamp();
+  if (!clamp_attributes) {
+    // The attributes of clamp were not configured.
+    return false;
+  }
+  if (std::isnan(clamp_attributes->min_value) ||
+      std::isnan(clamp_attributes->max_value)) {
+    // The min or max value are nan.
+    return false;
+  }
+  if (clamp_attributes->min_value >= clamp_attributes->max_value) {
+    // The min value must be below the max value.
+    return false;
+  }
+  if (output->data_type != input->data_type) {
+    // The output data type doesn't match input data type.
+    return false;
+  }
+
+  if (output->dimensions != input->dimensions) {
+    // The output shape is not expected.
+    return false;
+  }
+
+  return true;
+}
+
 bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
                                const mojom::OperatorPtr& operation) {
   auto* a = GetMojoOperand(id_to_operand_map, operation->input_operands, 0);
@@ -127,7 +163,7 @@ bool ValidateElementWiseBinary(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   if (output->dimensions != dims_output.value()) {
-    // The output shapes are not expected.
+    // The output shape is not expected.
     return false;
   }
   return true;
@@ -147,7 +183,7 @@ bool ValidateRelu(const IdToOperandMap& id_to_operand_map,
   }
 
   if (output->dimensions != input->dimensions) {
-    // The output shapes are not expected.
+    // The output shape is not expected.
     return false;
   }
   return true;
@@ -175,7 +211,7 @@ bool ValidateReshape(const IdToOperandMap& id_to_operand_map,
       ValidateAndCalculateElementsNumber(input->dimensions);
   CHECK(input_number_of_elements.has_value());
   if (output_number_of_elements.value() != input_number_of_elements.value()) {
-    // The output shapes are not expected.
+    // The output shape is not expected.
     return false;
   }
   return true;
@@ -194,7 +230,7 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
     return false;
   }
   if (output->dimensions != input->dimensions) {
-    // The output shapes are not expected.
+    // The output shape is not expected.
     return false;
   }
   if (!IsFloatingPointType(input->data_type)) {
@@ -212,6 +248,8 @@ bool ValidateSoftmax(const IdToOperandMap& id_to_operand_map,
 bool ValidateOperator(const IdToOperandMap& id_to_operand_map,
                       const mojom::OperatorPtr& operation) {
   switch (operation->kind) {
+    case mojom::Operator::Kind::kClamp:
+      return ValidateClamp(id_to_operand_map, operation);
     case mojom::Operator::Kind::kAdd:
     case mojom::Operator::Kind::kSub:
     case mojom::Operator::Kind::kMul:

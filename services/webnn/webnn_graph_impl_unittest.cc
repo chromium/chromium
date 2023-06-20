@@ -93,6 +93,128 @@ struct OperandInfo {
   std::vector<uint32_t> dimensions;
 };
 
+struct ClampTester {
+  OperandInfo input;
+  struct ClampAttributes {
+    float min_value;
+    float max_value;
+  };
+  ClampAttributes attributes;
+  OperandInfo output;
+  bool expected;
+
+  void Test(WebNNGraphImplTest& helper) {
+    // Build the graph with mojo type.
+    auto graph_info = mojom::GraphInfo::New();
+    uint64_t input_operand_id =
+        helper.BuildInput(graph_info, "input", input.dimensions, input.type);
+    uint64_t output_operand_id = helper.BuildOutput(
+        graph_info, "output", output.dimensions, output.type);
+    auto operation = CreateOperator(mojom::Operator::Kind::kClamp,
+                                    {input_operand_id}, {output_operand_id});
+    mojom::ClampAttributesPtr mojo_attributes = mojom::ClampAttributes::New();
+    mojo_attributes->min_value = attributes.min_value;
+    mojo_attributes->max_value = attributes.max_value;
+    operation->attributes =
+        mojom::OperatorAttributes::NewClamp(std::move(mojo_attributes));
+    graph_info->operators.emplace_back(std::move(operation));
+    auto result = helper.ValidateGraph(std::move(graph_info));
+    EXPECT_EQ(result, expected);
+  }
+};
+
+TEST_F(WebNNGraphImplTest, ClampTest) {
+  {
+    // Test clamp operator with both the minimum and maximum values.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kInt8,
+                          .dimensions = {3, 4}},
+                .attributes = {.min_value = 0.0, .max_value = 6.0},
+                .output = {.type = mojom::Operand::DataType::kInt8,
+                           .dimensions = {3, 4}},
+                .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test clamp operator with the min value is infinite.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {2, 3, 4}},
+                .attributes = {.min_value = static_cast<float>(-1.0 / 0.0),
+                               .max_value = 3.0},
+                .output = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 3, 4}},
+                .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test clamp operator with the max value is infinite.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {2, 3, 4}},
+                .attributes = {.min_value = 0.0,
+                               .max_value = static_cast<float>(1.0 / 0.0)},
+                .output = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 3, 4}},
+                .expected = true}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when max value = 0 and min value = 0.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {1, 2, 2, 7}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {1, 2, 2, 7}},
+                .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when the max value is less than the min value.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 2}},
+                .attributes = {.min_value = 7.0, .max_value = 3.0},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {4, 2}},
+                .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when the min value is NAN.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {2, 3, 4}},
+                .attributes = {.min_value = NAN, .max_value = 3.0},
+                .output = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 3, 4}},
+                .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph when the max value is NAN.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kInt32,
+                          .dimensions = {2, 3, 4}},
+                .attributes = {.min_value = 0.0, .max_value = NAN},
+                .output = {.type = mojom::Operand::DataType::kInt32,
+                           .dimensions = {2, 3, 4}},
+                .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for the output shapes are not expected.
+    ClampTester{.input = {.type = mojom::Operand::DataType::kFloat32,
+                          .dimensions = {4, 2}},
+                .output = {.type = mojom::Operand::DataType::kFloat32,
+                           .dimensions = {2}},
+                .expected = false}
+        .Test(*this);
+  }
+  {
+    // Test the invalid graph for output types don't match.
+    ClampTester{
+        .input = {.type = mojom::Operand::DataType::kFloat32,
+                  .dimensions = {2}},
+        .output = {.type = mojom::Operand::DataType::kInt32, .dimensions = {2}},
+        .expected = false}
+        .Test(*this);
+  }
+}
+
 struct ElementWiseBinaryTester {
   mojom::Operator::Kind kind;
   OperandInfo lhs;

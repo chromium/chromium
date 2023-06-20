@@ -212,6 +212,117 @@ TEST_P(MLGraphTestMojo, CreateWebNNGraphTest) {
   }
 }
 
+struct ClampTester {
+  OperandInfoBlink input;
+  struct ClampOptions {
+    absl::optional<float> min_value;
+    absl::optional<float> max_value;
+  };
+  ClampOptions options;
+  OperandInfoMojo expected_operand;
+  ClampOptions expected_attributes;
+
+  void Test(MLGraphTestMojo& helper,
+            V8TestingScope& scope,
+            MLGraphBuilder* builder) {
+    // Build the graph.
+    auto* input_operand = BuildInput(builder, "input", input.dimensions,
+                                     input.type, scope.GetExceptionState());
+    MLClampOptions* ml_clamp_options = MLClampOptions::Create();
+    if (options.min_value) {
+      ml_clamp_options->setMinValue(options.min_value.value());
+    }
+    if (options.max_value) {
+      ml_clamp_options->setMaxValue(options.max_value.value());
+    }
+    auto* output_operand = builder->clamp(input_operand, ml_clamp_options,
+                                          scope.GetExceptionState());
+    auto [graph, build_exception] =
+        helper.BuildGraph(scope, builder, {{"output", output_operand}});
+    ASSERT_NE(graph, nullptr);
+
+    auto graph_info = helper.GetGraphInfo();
+    // Verify the graph information of mojo are as expected.
+    ASSERT_EQ(graph_info->operators.size(), 1u);
+    auto& operation = graph_info->operators[0];
+    EXPECT_EQ(operation->kind, blink_mojom::Operator::Kind::kClamp);
+    auto& clamp_attributes = operation->attributes->get_clamp();
+    EXPECT_EQ(clamp_attributes->min_value, expected_attributes.min_value);
+    EXPECT_EQ(clamp_attributes->max_value, expected_attributes.max_value);
+    EXPECT_EQ(graph_info->output_operands.size(), 1u);
+    auto output_operand_id = graph_info->output_operands[0];
+    auto output_operand_iter =
+        graph_info->id_to_operand_map.find(output_operand_id);
+    ASSERT_TRUE(output_operand_iter != graph_info->id_to_operand_map.end());
+    EXPECT_EQ(output_operand_iter->value->data_type, expected_operand.type);
+    EXPECT_EQ(output_operand_iter->value->dimensions,
+              expected_operand.dimensions);
+  }
+};
+
+TEST_P(MLGraphTestMojo, ClampTest) {
+  V8TestingScope scope;
+  // Bind fake WebNN Context in the service for testing.
+  ScopedWebNNServiceBinder scoped_setup_binder(*this, scope);
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndEnableFeature(
+      blink::features::kEnableMachineLearningNeuralNetworkService);
+  auto* options = MLContextOptions::Create();
+  // Create WebNN Context with GPU device preference.
+  options->setDevicePreference(V8MLDevicePreference::Enum::kGpu);
+  auto* builder = CreateMLGraphBuilder(scope.GetExecutionContext(), options);
+  {
+    // Test clamp operator with default options that no minimum and maximum
+    // values are defined.
+    ClampTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat32,
+                  .dimensions = {1, 2, 2, 1}},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat32,
+                             .dimensions = {1, 2, 2, 1}},
+        .expected_attributes = {.min_value =
+                                    -std::numeric_limits<float>::infinity(),
+                                .max_value =
+                                    +std::numeric_limits<float>::infinity()}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test clamp operator with the minimum value defined.
+    ClampTester{
+        .input = {.type = V8MLOperandType::Enum::kFloat16,
+                  .dimensions = {2, 4}},
+        .options = {0.0, absl::nullopt},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kFloat16,
+                             .dimensions = {2, 4}},
+        .expected_attributes = {.min_value = 0.0,
+                                .max_value =
+                                    +std::numeric_limits<float>::infinity()}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test clamp operator with the maximum value defined.
+    ClampTester{
+        .input = {.type = V8MLOperandType::Enum::kInt32,
+                  .dimensions = {3, 1, 6}},
+        .options = {absl::nullopt, 6.0},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kInt32,
+                             .dimensions = {3, 1, 6}},
+        .expected_attributes = {.min_value =
+                                    -std::numeric_limits<float>::infinity(),
+                                .max_value = 6.0}}
+        .Test(*this, scope, builder);
+  }
+  {
+    // Test clamp operator with both the minimum and maximum values defined.
+    ClampTester{
+        .input = {.type = V8MLOperandType::Enum::kUint8, .dimensions = {7}},
+        .options = {0.0, 6.0},
+        .expected_operand = {.type = blink_mojom::Operand::DataType::kUint8,
+                             .dimensions = {7}},
+        .expected_attributes = {.min_value = 0.0, .max_value = 6.0}}
+        .Test(*this, scope, builder);
+  }
+}
+
 struct ElementWiseBinaryTester {
   ElementWiseBinaryKind kind;
   OperandInfoBlink lhs;

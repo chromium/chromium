@@ -28,11 +28,25 @@ struct Operand {
   string? name;
 };
 
+// Contains the attributes of clamp operator.
+struct ClampAttributes {
+  // The minimum value of the range.
+  float min_value;
+  // The maximum value of the range.
+  float max_value;
+};
+
+// Holds one of operator attributes.
+union OperatorAttributes {
+  ClampAttributes clamp;
+};
+
 // Represents the operations defined in `MLGraphBuilder` that describes the
 // functional semantics.
 struct Operator {
   enum Kind {
     // Keep the order as the same as build methods of `MLGraphBuilder`.
+    kClamp,
     kAdd,
     kSub,
     kMul,
@@ -52,6 +66,8 @@ struct Operator {
   // The id array from the `GraphInfo.operands` will be used to map the output
   // operands of `Operator`.
   array<uint64> output_operands;
+  // The attributes of `Operator`.
+  OperatorAttributes? attributes;
 };
 
 // Describes an entire WebNN graph information.
