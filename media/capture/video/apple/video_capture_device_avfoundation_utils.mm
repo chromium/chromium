@@ -70,11 +70,11 @@ GetVideoCaptureDeviceNames() {
       VideoCaptureTransportType device_transport_type =
           (transport_type == kIOAudioDeviceTransportTypeBuiltIn ||
            transport_type == kIOAudioDeviceTransportTypeUSB)
-              ? VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN
+              ? VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN
               : VideoCaptureTransportType::OTHER_TRANSPORT;
 #else
       VideoCaptureTransportType device_transport_type =
-          VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN;
+          VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN;
 #endif
       DeviceNameAndTransportType* name_and_transport_type =
           [[DeviceNameAndTransportType alloc]

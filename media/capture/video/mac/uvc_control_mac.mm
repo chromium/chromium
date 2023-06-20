@@ -594,7 +594,7 @@ std::string UvcControl::GetDeviceModelId(
     VideoCaptureTransportType transport_type) {
   // Skip the AVFoundation's not USB nor built-in devices.
   if (capture_api == VideoCaptureApi::MACOSX_AVFOUNDATION &&
-      transport_type != VideoCaptureTransportType::MACOSX_USB_OR_BUILT_IN) {
+      transport_type != VideoCaptureTransportType::APPLE_USB_OR_BUILT_IN) {
     return "";
   }
   if (capture_api == VideoCaptureApi::MACOSX_DECKLINK) {
