@@ -5247,7 +5247,7 @@
       'linux-lacros-asan-lsan-rel': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'chrome',
