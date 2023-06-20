@@ -23,7 +23,7 @@ extern const CGFloat kNTPBackgroundColorBrightnessIncognito;
 
 // Stackview constraints.
 extern const CGFloat kTopButtonsBottomMargin;
-extern const CGFloat kBottomButtonsBottomMargin;
+extern const CGFloat kBottomButtonsTopMargin;
 extern const CGFloat kAdaptiveToolbarMargin;
 extern const CGFloat kAdaptiveToolbarStackViewSpacing;
 

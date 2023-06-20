@@ -19,8 +19,7 @@
 @property(nonatomic, strong, readonly) UIStackView* buttonStackView;
 
 // Constraint for the top of the location bar.
-@property(nonatomic, strong, readwrite)
-    NSLayoutConstraint* locationBarTopConstraint;
+@property(nonatomic, strong) NSLayoutConstraint* locationBarTopConstraint;
 
 // Initialize this View with the button `factory`.
 - (instancetype)initWithButtonFactory:(ToolbarButtonFactory*)factory

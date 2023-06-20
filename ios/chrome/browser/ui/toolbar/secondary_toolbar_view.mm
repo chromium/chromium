@@ -24,18 +24,6 @@
 namespace {
 const CGFloat kToolsMenuOffset = -7;
 
-// Vertical stack view for `SecondaryToolbarView` containing the
-// `locationBarContainer` and `buttonStackView`.
-UIStackView* SecondaryToolbarVerticalStackView() {
-  UIStackView* verticalStackView = [[UIStackView alloc] init];
-  verticalStackView.translatesAutoresizingMaskIntoConstraints = NO;
-  verticalStackView.axis = UILayoutConstraintAxisVertical;
-  verticalStackView.spacing = kTopButtonsBottomMargin;
-  verticalStackView.distribution = UIStackViewDistributionFill;
-  verticalStackView.alignment = UIStackViewAlignmentCenter;
-  return verticalStackView;
-}
-
 // Button shown when the view is collapsed to exit fullscreen.
 UIButton* SecondaryToolbarCollapsedToolbarButton() {
   UIButton* collapsedToolbarButton = [[UIButton alloc] init];
@@ -99,7 +87,15 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
 @end
 
-@implementation SecondaryToolbarView
+@implementation SecondaryToolbarView {
+  // Constraint between `self.topAnchor` and `buttonStackView.topAnchor`. Active
+  // when the omnibox is not in the bottom toolbar.
+  NSLayoutConstraint* _buttonStackViewNoOmniboxConstraint;
+  // Constraint between `locationBarContainer.bottomAnchor` and
+  // `buttonStackView.topAnchor`. Active when the omnibox is in the bottom
+  // toolbar.
+  NSLayoutConstraint* _locationBarBottomConstraint;
+}
 
 @synthesize allButtons = _allButtons;
 @synthesize backButton = _backButton;
@@ -176,26 +172,24 @@ UIView* SecondaryToolbarLocationBarContainerView(
       [[UIStackView alloc] initWithArrangedSubviews:self.allButtons];
   self.buttonStackView.distribution = UIStackViewDistributionEqualSpacing;
   self.buttonStackView.translatesAutoresizingMaskIntoConstraints = NO;
+  [contentView addSubview:self.buttonStackView];
 
   UILayoutGuide* safeArea = self.safeAreaLayoutGuide;
 
   if (IsBottomOmniboxSteadyStateEnabled()) {
-    self.verticalStackView = SecondaryToolbarVerticalStackView();
+    self.buttonStackView.backgroundColor = self.backgroundColor;
     self.collapsedToolbarButton = SecondaryToolbarCollapsedToolbarButton();
     self.locationBarContainer =
         SecondaryToolbarLocationBarContainerView(self.buttonFactory);
 
-    [contentView addSubview:self.verticalStackView];
+    // Add locationBarContainer below buttons as it might move under the
+    // buttons.
+    [contentView insertSubview:self.locationBarContainer
+                  belowSubview:self.buttonStackView];
+
+    // Put `collapsedToolbarButton` on top of everything.
     [contentView addSubview:self.collapsedToolbarButton];
-    [self.verticalStackView addArrangedSubview:self.locationBarContainer];
-    [self.verticalStackView addArrangedSubview:self.buttonStackView];
-
-    // VerticalStackView constraints.
-    AddSameConstraintsToSides(
-        self.verticalStackView, self,
-        LayoutSides::kTop | LayoutSides::kLeading | LayoutSides::kTrailing);
-
-    // CollapsedToolbarButton constraints.
+    [contentView bringSubviewToFront:self.collapsedToolbarButton];
     AddSameConstraints(self, self.collapsedToolbarButton);
 
     // LocationBarView constraints.
@@ -209,6 +203,13 @@ UIView* SecondaryToolbarLocationBarContainerView(
     // Top margin of location bar, constant controlled by view controller.
     self.locationBarTopConstraint = [self.locationBarContainer.topAnchor
         constraintEqualToAnchor:self.topAnchor];
+    _locationBarBottomConstraint = [self.buttonStackView.topAnchor
+        constraintEqualToAnchor:self.locationBarContainer.bottomAnchor
+                       constant:kBottomAdaptiveLocationBarBottomMargin];
+    _buttonStackViewNoOmniboxConstraint = [self.buttonStackView.topAnchor
+        constraintEqualToAnchor:self.topAnchor
+                       constant:kBottomButtonsTopMargin];
+    [self updateButtonStackViewConstraint];
 
     [NSLayoutConstraint activateConstraints:@[
       self.locationBarTopConstraint,
@@ -219,13 +220,15 @@ UIView* SecondaryToolbarLocationBarContainerView(
       [self.locationBarContainer.trailingAnchor
           constraintEqualToAnchor:safeArea.trailingAnchor
                          constant:-kExpandedLocationBarHorizontalMargin],
+      [self.buttonStackView.topAnchor
+          constraintGreaterThanOrEqualToAnchor:self.topAnchor
+                                      constant:kBottomButtonsTopMargin],
     ]];
 
   } else {  // Bottom omnibox flag disabled.
-    [contentView addSubview:self.buttonStackView];
     [self.buttonStackView.topAnchor
         constraintEqualToAnchor:self.topAnchor
-                       constant:kBottomButtonsBottomMargin]
+                       constant:kBottomButtonsTopMargin]
         .active = YES;
   }
 
@@ -279,12 +282,30 @@ UIView* SecondaryToolbarLocationBarContainerView(
   [locationBarView setContentHuggingPriority:UILayoutPriorityDefaultLow
                                      forAxis:UILayoutConstraintAxisHorizontal];
 
+  [self updateButtonStackViewConstraint];
   if (!self.locationBarContainer || !locationBarView) {
     return;
   }
 
   [self.locationBarContainer addSubview:locationBarView];
   AddSameConstraints(self.locationBarView, self.locationBarContainer);
+}
+
+#pragma mark - Private
+
+/// Updates `buttonStackView.topAnchor` constraints when adding/removing the
+/// location bar.
+- (void)updateButtonStackViewConstraint {
+  // Reset `buttonStackView` top constraints.
+  _locationBarBottomConstraint.active = NO;
+  _buttonStackViewNoOmniboxConstraint.active = NO;
+
+  // Set the correct constrant for `buttonStackView.topAnchor`.
+  if (self.locationBarView) {
+    _locationBarBottomConstraint.active = YES;
+  } else {
+    _buttonStackViewNoOmniboxConstraint.active = YES;
+  }
 }
 
 @end
