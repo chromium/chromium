@@ -17,6 +17,7 @@ source_set("set_up_list") {
   configs += [ "//build/config/compiler:enable_arc" ]
   deps = [
     "//base",
+    "//components/password_manager/core/common:features",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/ntp:set_up_list_item_type",
     "//ios/chrome/browser/shared/ui/elements",
