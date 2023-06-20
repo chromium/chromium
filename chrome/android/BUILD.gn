@@ -3509,6 +3509,7 @@ group("jni_headers") {
     "//chrome/browser/preferences:jni_headers",
     "//chrome/browser/privacy:jni_headers",
     "//chrome/browser/profiles/android:jni_headers",
+    "//chrome/browser/quick_delete:jni_headers",
     "//chrome/browser/search_engines/android:jni_headers",
     "//chrome/browser/segmentation_platform:jni_headers",
     "//chrome/browser/tab:jni_headers",
