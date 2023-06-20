@@ -248,8 +248,11 @@ TEST(EligibilityModuleTest, TestFeaturesForSecondPassCached) {
                                                           images);
   ASSERT_EQ(eligible_image_ids.size(), 1U);
   EXPECT_EQ(eligible_image_ids.at(0), "image1");
+  const base::flat_map<std::string, double> shopping_scores = {{"image1", 0.1}};
+  const base::flat_map<std::string, double> sens_scores = {{"image1", 0.1}};
   const std::vector<std::string> second_pass_eligible_image_ids =
-      module.RunSecondPassPostClassificationEligibility({}, {});
+      module.RunSecondPassPostClassificationEligibility(shopping_scores,
+                                                        sens_scores);
   ASSERT_EQ(second_pass_eligible_image_ids.size(), 1U);
   EXPECT_EQ(second_pass_eligible_image_ids.at(0), "image1");
 }
@@ -292,15 +295,16 @@ TEST(EligibilityModuleTest, TestReuseModuleBetweenImageSets) {
     ASSERT_EQ(eligible_image_ids.size(), 2U);
     EXPECT_THAT(eligible_image_ids, UnorderedElementsAre("image1", "image3"));
     const base::flat_map<std::string, double> shopping_scores = {
-        {"image1", 0.7}, {"image3", 0.7}};
+        {"image1", 0.7}, {"image3", 0.8}};
     const base::flat_map<std::string, double> sens_scores = {{"image1", 0.1},
                                                              {"image3", 0.1}};
     const std::vector<std::string> second_pass_eligible_image_ids =
         module.RunSecondPassPostClassificationEligibility(shopping_scores,
                                                           sens_scores);
     ASSERT_EQ(second_pass_eligible_image_ids.size(), 2U);
-    EXPECT_THAT(second_pass_eligible_image_ids,
-                UnorderedElementsAre("image1", "image3"));
+    // Ordered by shoppy score desc.
+    EXPECT_EQ(second_pass_eligible_image_ids.at(0), "image3");
+    EXPECT_EQ(second_pass_eligible_image_ids.at(1), "image1");
   }
   {
     // Run 2 with the module.

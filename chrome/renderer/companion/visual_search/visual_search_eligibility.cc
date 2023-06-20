@@ -13,8 +13,16 @@
 #include "base/notreached.h"
 
 namespace companion::visual_search {
+namespace {
 constexpr char kNormalizedPrefix[] = "normalized_";
 constexpr int kMaxNumStored = 200;
+
+// Return true if p1 should be sorted before p2.
+bool SortDesc(const std::pair<std::string, double>& p1,
+              const std::pair<std::string, double>& p2) {
+  return p1.second >= p2.second;
+}
+}  // namespace
 
 EligibilityModule::EligibilityModule(const EligibilitySpec& spec)
     : spec_(spec), have_run_first_pass_(false) {}
@@ -83,11 +91,20 @@ EligibilityModule::RunSecondPassPostClassificationEligibility(
     }
   }
   RenormalizeForThirdPass();
-  std::vector<std::string> eligible_image_ids;
+  std::vector<std::pair<std::string, double>> eligible_image_ids_with_scores;
   for (const std::string& image_id : eligible_after_second_pass_) {
     if (IsEligible(spec_.post_renormalization_rules(), image_id)) {
-      eligible_image_ids.push_back(image_id);
+      eligible_image_ids_with_scores.push_back(
+          std::make_pair(image_id, shopping_classifier_scores.at(image_id)));
     }
+  }
+  std::sort(eligible_image_ids_with_scores.begin(),
+            eligible_image_ids_with_scores.end(), SortDesc);
+
+  std::vector<std::string> eligible_image_ids;
+  eligible_image_ids.reserve(eligible_image_ids_with_scores.size());
+  for (auto& id_score_pair : eligible_image_ids_with_scores) {
+    eligible_image_ids.push_back(std::move(id_score_pair.first));
   }
   return eligible_image_ids;
 }

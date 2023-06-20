@@ -50,10 +50,10 @@ class EligibilityModule {
       const std::vector<SingleImageGeometryFeatures>& images);
 
   // Applies the classifier_score_rules and post_renormalization_rules from the
-  // eligibility spec and outputs the list of image identifiers that pass, in
-  // no particular order. Should be run after RunFirstPassEligibility above
-  // is run and only if the image geometry features have not changed since
-  // that method was called.
+  // eligibility spec and outputs the list of image identifiers that pass,
+  // sorted by descending shoppy score. Should be run after
+  // RunFirstPassEligibility above is run and only if the image geometry
+  // features have not changed since that method was called.
   std::vector<std::string> RunSecondPassPostClassificationEligibility(
       const base::flat_map<std::string, double>& shopping_classifier_scores,
       const base::flat_map<std::string, double>& sensitivity_classifier_scores);
