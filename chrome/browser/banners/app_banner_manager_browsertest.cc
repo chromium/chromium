@@ -116,6 +116,13 @@ class AppBannerManagerTest : public AppBannerManager {
       const GURL& manifest_id) override {
     return false;
   }
+  void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
+                             std::string result_label) override {}
+
+  segmentation_platform::SegmentationPlatformService*
+  GetSegmentationPlatformService() override {
+    return nullptr;
+  }
 
  protected:
   // The overridden RequestAppBanner() can filter out about:blank calls

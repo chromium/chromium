@@ -111260,6 +111260,14 @@ others/histograms.xml -->
   <int value="15" label="Main frame navigation cancelled manifest update"/>
 </enum>
 
+<enum name="WebAppMlInstallUserResponse">
+  <int value="0" label="Install accepted"/>
+  <int value="1" label="Dialog ignored without interaction"/>
+  <int value="2" label="Dialog cancelled via user interaction"/>
+  <int value="3"
+      label="Guardrails prevented usage of (any) ML response, no dialog shown"/>
+</enum>
+
 <enum name="WebAppMoverResult">
   <summary>Result of executing the WebAppMover on Chrome startup.</summary>
   <int value="0" label="Invalid Finch Configuration"/>

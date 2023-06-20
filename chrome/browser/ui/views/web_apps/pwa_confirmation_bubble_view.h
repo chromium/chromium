@@ -5,6 +5,8 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_PWA_CONFIRMATION_BUBBLE_VIEW_H_
 
+#include <memory>
+
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/views/location_bar/location_bar_bubble_delegate_view.h"
@@ -13,19 +15,23 @@
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/views/widget/widget.h"
 
+class PageActionIconView;
+
 namespace content {
 class WebContents;
 }  // namespace content
 
 namespace views {
 class Checkbox;
-}
+}  // namespace views
 
 namespace feature_engagement {
 class Tracker;
-}
+}  // namespace feature_engagement
 
-class PageActionIconView;
+namespace webapps {
+class MlInstallOperationTracker;
+}  // namespace webapps
 
 // PWAConfirmationBubbleView provides a bubble dialog for accepting or rejecting
 // the installation of a PWA (Progressive Web App) anchored off the PWA install
@@ -35,14 +41,16 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
   static bool IsShowing();
   static PWAConfirmationBubbleView* GetBubble();
 
-  PWAConfirmationBubbleView(views::View* anchor_view,
-                            content::WebContents* web_contents,
-                            PageActionIconView* highlight_icon_button,
-                            std::unique_ptr<WebAppInstallInfo> web_app_info,
-                            chrome::AppInstallationAcceptanceCallback callback,
-                            chrome::PwaInProductHelpState iph_state,
-                            PrefService* prefs,
-                            feature_engagement::Tracker* tracker);
+  PWAConfirmationBubbleView(
+      views::View* anchor_view,
+      content::WebContents* web_contents,
+      PageActionIconView* highlight_icon_button,
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      chrome::AppInstallationAcceptanceCallback callback,
+      chrome::PwaInProductHelpState iph_state,
+      PrefService* prefs,
+      feature_engagement::Tracker* tracker);
 
   PWAConfirmationBubbleView(const PWAConfirmationBubbleView&) = delete;
   PWAConfirmationBubbleView& operator=(const PWAConfirmationBubbleView&) =
@@ -70,6 +78,7 @@ class PWAConfirmationBubbleView : public LocationBarBubbleDelegateView {
  private:
   raw_ptr<PageActionIconView> highlight_icon_button_ = nullptr;
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   chrome::AppInstallationAcceptanceCallback callback_;
 
   // Checkbox to launch window with tab strip.

@@ -12,6 +12,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/observer_list.h"
+#include "base/types/pass_key.h"
 #include "components/site_engagement/content/site_engagement_observer.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_params.h"
@@ -32,8 +33,13 @@ class RenderFrameHost;
 class WebContents;
 }  // namespace content
 
+namespace segmentation_platform {
+class SegmentationPlatformService;
+}  // namespace segmentation_platform
+
 namespace webapps {
 class InstallableManager;
+class MLInstallabilityPromoter;
 enum class WebappInstallSource;
 struct InstallableData;
 struct Screenshot;
@@ -240,6 +246,20 @@ class AppBannerManager : public content::WebContentsObserver,
   virtual void SaveInstallationAcceptedForMl(const GURL& manifest_id) = 0;
   virtual bool IsMlPromotionBlockedByHistoryGuardrail(
       const GURL& manifest_id) = 0;
+
+  // This is called by the MLInstallabilityPromoter when, for this current web
+  // contents:
+  // - There is no existing install (tracked by the MlInstallOperationTracker).
+  // - Ml install prompting is not blocked by guardrails (via
+  //   IsMlPromotionBlockedByHistoryGuardrail).
+  // - The web contents is visible.
+  // - Metrics have been gathered and the ML model has returned with a given
+  //   classification.
+  virtual void OnMlInstallPrediction(base::PassKey<MLInstallabilityPromoter>,
+                                     std::string result_label) = 0;
+
+  virtual segmentation_platform::SegmentationPlatformService*
+  GetSegmentationPlatformService() = 0;
 
  protected:
   explicit AppBannerManager(content::WebContents* web_contents);

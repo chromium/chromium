@@ -26,6 +26,8 @@
 #include "chrome/test/base/ui_test_utils.h"
 #include "components/feature_engagement/public/feature_constants.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/test/browser_test.h"
 #include "ui/views/test/widget_test.h"
 #include "ui/views/widget/any_widget_observer.h"
@@ -53,6 +55,15 @@ class PWAConfirmationBubbleViewBrowserTest
     return app_info;
   }
 
+  std::unique_ptr<webapps::MlInstallOperationTracker> GetInstallTracker(
+      Browser* browser) {
+    content::WebContents* web_contents =
+        browser->tab_strip_model()->GetActiveWebContents();
+    return webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+        ->RegisterCurrentInstallForWebContents(
+            webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON);
+  }
+
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
 
@@ -61,7 +72,8 @@ class PWAConfirmationBubbleViewBrowserTest
 
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        ShowBubbleInPWAWindow) {
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
   app_info->title = u"Test app";
   app_info->start_url = GURL("https://example.com");
   Profile* profile = browser()->profile();
@@ -69,29 +81,27 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   Browser* browser = ::web_app::LaunchWebAppBrowser(profile, app_id);
 
   app_info = GetAppInfo();
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser);
+
   // Tests that we don't crash when showing the install prompt in a PWA window.
   chrome::ShowPWAInstallBubble(
       browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      base::DoNothing());
-
-  // Tests that we don't crash when attempting to show bubble when it's already
-  // shown.
-  app_info = std::make_unique<WebAppInstallInfo>();
-  app_info->title = u"Test app 3";
-  app_info->start_url = GURL("https://example3.com");
-  app_info->user_display_mode = mojom::UserDisplayMode::kStandalone;
-  chrome::ShowPWAInstallBubble(
-      browser->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      base::DoNothing());
+      std::move(install_tracker), base::DoNothing());
 }
 
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        CancelledDialogReportsMetrics) {
   auto app_info = GetAppInfo();
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
+
   base::RunLoop loop;
   // Show the PWA install dialog.
   chrome::ShowPWAInstallBubble(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      std::move(install_tracker),
       base::BindLambdaForTesting(
           [&](bool accepted,
               std::unique_ptr<WebAppInstallInfo> app_info_callback) {
@@ -114,10 +124,15 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        CancelledDialogReportsIphIgnored) {
   auto app_info = GetAppInfo();
   GURL start_url = app_info->start_url;
+
   base::RunLoop loop;
   // Show the PWA install dialog.
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
   chrome::ShowPWAInstallBubble(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      web_contents, std::move(app_info), std::move(install_tracker),
       base::BindLambdaForTesting(
           [&](bool accepted,
               std::unique_ptr<WebAppInstallInfo> app_info_callback) {
@@ -167,8 +182,11 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
   }
   base::RunLoop loop;
   // Show the PWA install dialog.
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
   chrome::ShowPWAInstallBubble(
       browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
+      std::move(install_tracker),
       base::BindLambdaForTesting(
           [&](bool accepted,
               std::unique_ptr<WebAppInstallInfo> app_info_callback) {
@@ -193,8 +211,12 @@ IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
 IN_PROC_BROWSER_TEST_F(PWAConfirmationBubbleViewBrowserTest,
                        CancelFromNavigation) {
   absl::optional<bool> dialog_accepted_ = absl::nullopt;
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      GetInstallTracker(browser());
   chrome::ShowPWAInstallBubble(
       browser()->tab_strip_model()->GetActiveWebContents(), GetAppInfo(),
+      std::move(install_tracker),
       base::BindLambdaForTesting(
           [&](bool accepted,
               std::unique_ptr<WebAppInstallInfo> app_info_callback) {

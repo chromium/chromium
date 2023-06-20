@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
 #define CHROME_BROWSER_UI_VIEWS_WEB_APPS_WEB_APP_CONFIRMATION_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "base/memory/raw_ptr_exclusion.h"
@@ -21,14 +22,20 @@ class Textfield;
 class RadioButton;
 }  // namespace views
 
+namespace webapps {
+class MlInstallOperationTracker;
+}  // namespace webapps
+
 // WebAppConfirmationView provides views for editing the details to
 // create a web app with. (More tools > Add to desktop)
 class WebAppConfirmationView : public views::DialogDelegateView,
                                public views::TextfieldController {
  public:
   METADATA_HEADER(WebAppConfirmationView);
-  WebAppConfirmationView(std::unique_ptr<WebAppInstallInfo> web_app_info,
-                         chrome::AppInstallationAcceptanceCallback callback);
+  WebAppConfirmationView(
+      std::unique_ptr<WebAppInstallInfo> web_app_info,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+      chrome::AppInstallationAcceptanceCallback callback);
   WebAppConfirmationView(const WebAppConfirmationView&) = delete;
   WebAppConfirmationView& operator=(const WebAppConfirmationView&) = delete;
   ~WebAppConfirmationView() override;
@@ -53,6 +60,8 @@ class WebAppConfirmationView : public views::DialogDelegateView,
   // The WebAppInstallInfo that the user is editing.
   // Cleared when the dialog completes (Accept/WindowClosing).
   std::unique_ptr<WebAppInstallInfo> web_app_info_;
+
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
 
   // The callback to be invoked when the dialog is completed.
   chrome::AppInstallationAcceptanceCallback callback_;

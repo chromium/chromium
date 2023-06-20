@@ -24,6 +24,10 @@ namespace feature_engagement {
 class Tracker;
 }
 
+namespace webapps {
+class MlInstallOperationTracker;
+}  // namespace webapps
+
 namespace web_app {
 
 class WebAppDetailedInstallDialogDelegate
@@ -33,6 +37,7 @@ class WebAppDetailedInstallDialogDelegate
   WebAppDetailedInstallDialogDelegate(
       content::WebContents* web_contents,
       std::unique_ptr<WebAppInstallInfo> install_info,
+      std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
       chrome::AppInstallationAcceptanceCallback callback,
       chrome::PwaInProductHelpState iph_state,
       PrefService* prefs,
@@ -50,10 +55,11 @@ class WebAppDetailedInstallDialogDelegate
       content::NavigationHandle* navigation_handle) override;
 
  private:
-  void CloseDialog();
+  void CloseDialogAsIgnored();
 
   raw_ptr<content::WebContents> web_contents_;
   std::unique_ptr<WebAppInstallInfo> install_info_;
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker_;
   chrome::AppInstallationAcceptanceCallback callback_;
   chrome::PwaInProductHelpState iph_state_;
   raw_ptr<PrefService> prefs_;

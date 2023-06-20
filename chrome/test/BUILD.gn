@@ -494,6 +494,8 @@ static_library("test_support") {
       "//components/constrained_window",
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
+      "//components/segmentation_platform/public:public",
+      "//components/segmentation_platform/public:test_support",
     ]
 
     sources += [

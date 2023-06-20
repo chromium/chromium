@@ -14,6 +14,7 @@
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #include "chrome/browser/ui/intent_picker_tab_helper.h"
 #include "chrome/browser/ui/web_applications/web_app_dialog_utils.h"
 #include "chrome/browser/web_applications/extensions/bookmark_app_util.h"
@@ -26,6 +27,7 @@
 #include "components/webapps/browser/banners/app_banner_metrics.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
 #include "extensions/browser/extension_registry.h"
 #include "extensions/common/constants.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -85,6 +87,9 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
   Profile* profile =
       Profile::FromBrowserContext(web_contents->GetBrowserContext());
   extension_registry_ = extensions::ExtensionRegistry::Get(profile);
+  segmentation_platform_service_ =
+      segmentation_platform::SegmentationPlatformServiceFactory::GetForProfile(
+          profile);
   auto* provider = web_app::WebAppProvider::GetForWebApps(profile);
   // May be null in unit tests e.g. TabDesktopMediaListTest.*.
   if (provider)
@@ -150,6 +155,14 @@ bool AppBannerManagerDesktop::IsWebAppConsideredInstalled() const {
       .has_value();
 }
 
+void AppBannerManagerDesktop::OnMlInstallPrediction(
+    base::PassKey<MLInstallabilityPromoter>,
+    std::string result_label) {
+  if (result_label == "ShowInstallPrompt") {
+    ShowBannerUi(WebappInstallSource::ML_PROMOTION);
+  }
+}
+
 bool AppBannerManagerDesktop::IsAppFullyInstalledForSiteUrl(
     const GURL& site_url) const {
   return web_app::FindInstalledAppWithUrlInScope(
@@ -206,6 +219,11 @@ bool AppBannerManagerDesktop::IsMlPromotionBlockedByHistoryGuardrail(
   CHECK(profile);
   return web_app::IsMlPromotionBlockedByHistoryGuardrail(
       profile->GetPrefs(), web_app::GenerateAppIdFromManifestId(manifest_id));
+}
+
+segmentation_platform::SegmentationPlatformService*
+AppBannerManagerDesktop::GetSegmentationPlatformService() {
+  return segmentation_platform_service_.get();
 }
 
 web_app::WebAppRegistrar& AppBannerManagerDesktop::registrar() {

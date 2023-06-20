@@ -264,8 +264,8 @@ void FetchManifestAndInstallCommand::OnGetWebAppInstallInfo(
     Abort(webapps::InstallResultCode::kGetWebAppInstallInfoFailed);
     return;
   }
-
   web_app_info_ = std::move(fallback_web_app_info);
+  CHECK(web_app_info_->manifest_id.is_valid());
   LogInstallInfo();
 
   FetchManifest();

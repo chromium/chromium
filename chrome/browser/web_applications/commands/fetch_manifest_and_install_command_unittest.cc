@@ -158,7 +158,9 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
       blink::mojom::ManifestPtr opt_manifest = blink::mojom::ManifestPtr()) {
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
 
-    page_state.page_install_info = std::make_unique<WebAppInstallInfo>();
+    page_state.page_install_info = std::make_unique<WebAppInstallInfo>(
+        GenerateManifestIdFromStartUrlOnly(kWebAppUrl));
+    page_state.page_install_info->start_url = kWebAppUrl;
     page_state.has_service_worker = true;
     page_state.opt_manifest =
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest();
@@ -233,7 +235,8 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
 }
 
 TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>();
+  auto web_app_info = std::make_unique<WebAppInstallInfo>(
+      GenerateManifestIdFromStartUrlOnly(kWebAppUrl));
   web_app_info->start_url = kWebAppUrl;
   web_app_info->title = u"test app";
   web_app_info->scope = kWebAppUrl;

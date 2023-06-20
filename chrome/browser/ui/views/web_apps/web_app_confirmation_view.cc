@@ -20,6 +20,7 @@
 #include "chrome/grit/generated_resources.h"
 #include "components/constrained_window/constrained_window_views.h"
 #include "components/strings/grit/components_strings.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "ui/accessibility/ax_node_data.h"
@@ -79,8 +80,11 @@ WebAppConfirmationView::~WebAppConfirmationView() {}
 
 WebAppConfirmationView::WebAppConfirmationView(
     std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback)
-    : web_app_info_(std::move(web_app_info)), callback_(std::move(callback)) {
+    : web_app_info_(std::move(web_app_info)),
+      install_tracker_(std::move(install_tracker)),
+      callback_(std::move(callback)) {
   DCHECK(web_app_info_);
   const ChromeLayoutProvider* layout_provider = ChromeLayoutProvider::Get();
 
@@ -198,7 +202,10 @@ bool WebAppConfirmationView::ShouldShowCloseButton() const {
 
 void WebAppConfirmationView::WindowClosing() {
   if (callback_) {
-    DCHECK(web_app_info_);
+    CHECK(web_app_info_);
+    CHECK(install_tracker_);
+    install_tracker_->ReportResult(web_app_info_->manifest_id,
+                                   webapps::MlInstallUserResponse::kCancelled);
     std::move(callback_).Run(false, std::move(web_app_info_));
   }
 }
@@ -222,6 +229,11 @@ bool WebAppConfirmationView::Accept() {
             ? web_app::mojom::UserDisplayMode::kStandalone
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
+  install_tracker_->ReportResult(web_app_info_->manifest_id,
+                                 webapps::MlInstallUserResponse::kAccepted);
+  // Some tests repeatedly create this class, and it's not guaranteed this class
+  // is destroyed for subsequent calls. So reset the tracker manually here.
+  install_tracker_.reset();
   std::move(callback_).Run(true, std::move(web_app_info_));
   return true;
 }
@@ -250,11 +262,16 @@ END_METADATA
 
 namespace chrome {
 
-void ShowWebAppInstallDialog(content::WebContents* web_contents,
-                             std::unique_ptr<WebAppInstallInfo> web_app_info,
-                             AppInstallationAcceptanceCallback callback) {
-  auto* dialog =
-      new WebAppConfirmationView(std::move(web_app_info), std::move(callback));
+void ShowWebAppInstallDialog(
+    content::WebContents* web_contents,
+    std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
+    AppInstallationAcceptanceCallback callback) {
+  CHECK(web_app_info);
+  CHECK(web_app_info->manifest_id.is_valid());
+  CHECK(install_tracker);
+  auto* dialog = new WebAppConfirmationView(
+      std::move(web_app_info), std::move(install_tracker), std::move(callback));
   constrained_window::ShowWebModalDialogViews(dialog, web_contents);
 
   if (g_auto_accept_web_app_for_testing) {

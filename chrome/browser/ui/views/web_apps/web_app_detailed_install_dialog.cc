@@ -32,6 +32,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/strings/grit/components_strings.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
 #include "components/webapps/common/constants.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
@@ -221,8 +222,9 @@ class ImageCarouselView : public views::View {
       image_views_[i]->SetImage(
           ui::ImageModel::FromImageSkia(gfx::ImageSkia::CreateFromBitmap(
               (*screenshots_)[i].image, current_scale)));
-      if ((*screenshots_)[i].label)
+      if ((*screenshots_)[i].label) {
         image_views_[i]->SetAccessibleName((*screenshots_)[i].label.value());
+      }
     }
   }
 
@@ -271,8 +273,9 @@ class ImageCarouselView : public views::View {
     // Scroll past all the fully visible images
     int delta = image_width * (container_width / image_width);
 
-    if (button_type == ButtonType::TRAILING)
+    if (button_type == ButtonType::TRAILING) {
       delta = -delta;
+    }
 
     const gfx::Rect& bounds = image_inner_container_->bounds();
     int x = bounds.x() + delta;
@@ -313,6 +316,7 @@ namespace chrome {
 void ShowWebAppDetailedInstallDialog(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> install_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback,
     const std::vector<webapps::Screenshot>& screenshots,
     chrome::PwaInProductHelpState iph_state) {
@@ -335,8 +339,8 @@ void ShowWebAppDetailedInstallDialog(
 
   auto delegate =
       std::make_unique<web_app::WebAppDetailedInstallDialogDelegate>(
-          web_contents, std::move(install_info), std::move(callback),
-          std::move(iph_state), prefs, tracker);
+          web_contents, std::move(install_info), std::move(install_tracker),
+          std::move(callback), std::move(iph_state), prefs, tracker);
   auto* delegate_ptr = delegate.get();
   auto dialog_model =
       ui::DialogModel::Builder(std::move(delegate))
@@ -383,6 +387,7 @@ namespace web_app {
 WebAppDetailedInstallDialogDelegate::WebAppDetailedInstallDialogDelegate(
     content::WebContents* web_contents,
     std::unique_ptr<WebAppInstallInfo> web_app_info,
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker,
     chrome::AppInstallationAcceptanceCallback callback,
     chrome::PwaInProductHelpState iph_state,
     PrefService* prefs,
@@ -390,19 +395,23 @@ WebAppDetailedInstallDialogDelegate::WebAppDetailedInstallDialogDelegate(
     : WebContentsObserver(web_contents),
       web_contents_(web_contents),
       install_info_(std::move(web_app_info)),
+      install_tracker_(std::move(install_tracker)),
       callback_(std::move(callback)),
       iph_state_(std::move(iph_state)),
       prefs_(prefs),
       tracker_(tracker) {
-  DCHECK(install_info_);
-  DCHECK(prefs_);
+  CHECK(install_info_);
+  CHECK(install_info_->manifest_id.is_valid());
+  CHECK(install_tracker_);
+  CHECK(prefs_);
 }
 
 WebAppDetailedInstallDialogDelegate::~WebAppDetailedInstallDialogDelegate() {
   // TODO(crbug.com/1327363): move this to dialog->SetHighlightedButton.
   Browser* browser = chrome::FindBrowserWithWebContents(web_contents_);
-  if (!browser)
+  if (!browser) {
     return;
+  }
 
   BrowserView* browser_view = BrowserView::GetBrowserViewForBrowser(browser);
 
@@ -428,12 +437,16 @@ void WebAppDetailedInstallDialogDelegate::OnAccept() {
     tracker_->NotifyEvent(feature_engagement::events::kDesktopPwaInstalled);
   }
 
+  install_tracker_->ReportResult(install_info_->manifest_id,
+                                 webapps::MlInstallUserResponse::kAccepted);
+
   std::move(callback_).Run(true, std::move(install_info_));
 }
 
 void WebAppDetailedInstallDialogDelegate::OnCancel() {
-  if (callback_.is_null())
+  if (callback_.is_null()) {
     return;
+  }
 
   base::RecordAction(base::UserMetricsAction("WebAppDetailedInstallCancelled"));
   if (iph_state_ == chrome::PwaInProductHelpState::kShown && install_info_) {
@@ -442,17 +455,21 @@ void WebAppDetailedInstallDialogDelegate::OnCancel() {
     web_app::RecordInstallIphIgnored(prefs_, app_id, base::Time::Now());
   }
 
+  install_tracker_->ReportResult(install_info_->manifest_id,
+                                 webapps::MlInstallUserResponse::kCancelled);
+
   std::move(callback_).Run(false, std::move(install_info_));
 }
 
 void WebAppDetailedInstallDialogDelegate::OnVisibilityChanged(
     content::Visibility visibility) {
-  if (visibility == content::Visibility::HIDDEN)
-    CloseDialog();
+  if (visibility == content::Visibility::HIDDEN) {
+    CloseDialogAsIgnored();
+  }
 }
 
 void WebAppDetailedInstallDialogDelegate::WebContentsDestroyed() {
-  CloseDialog();
+  CloseDialogAsIgnored();
 }
 
 void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
@@ -466,13 +483,18 @@ void WebAppDetailedInstallDialogDelegate::DidFinishNavigation(
   if (!url::IsSameOriginWith(
           navigation_handle->GetPreviousPrimaryMainFrameURL(),
           navigation_handle->GetURL())) {
-    CloseDialog();
+    CloseDialogAsIgnored();
   }
 }
 
-void WebAppDetailedInstallDialogDelegate::CloseDialog() {
-  if (dialog_model() && dialog_model()->host())
+void WebAppDetailedInstallDialogDelegate::CloseDialogAsIgnored() {
+  if (install_info_) {
+    install_tracker_->ReportResult(install_info_->manifest_id,
+                                   webapps::MlInstallUserResponse::kIgnored);
+  }
+  if (dialog_model() && dialog_model()->host()) {
     dialog_model()->host()->Close();
+  }
 }
 
 }  // namespace web_app

@@ -422,7 +422,6 @@ TabImpl::TabImpl(ProfileImpl* profile,
   PrerenderTabHelper::CreateForWebContents(web_contents_.get());
 
   webapps::InstallableManager::CreateForWebContents(web_contents_.get());
-  webapps::MLInstallabilityPromoter::CreateForWebContents(web_contents_.get());
 
 #if BUILDFLAG(IS_ANDROID)
   // Must be created after InstallableManager and MLInstallabilityPromoter.

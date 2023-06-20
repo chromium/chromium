@@ -10,6 +10,10 @@
 #include "components/segmentation_platform/public/types/processed_value.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
+namespace base {
+class Value;
+}
+
 namespace segmentation_platform {
 
 // Input provided for segment selection, based on the current state of the
@@ -30,11 +34,16 @@ struct InputContext : base::RefCounted<InputContext> {
   absl::optional<processing::ProcessedValue> GetMetadataArgument(
       base::StringPiece arg_name) const;
 
+  base::Value ToDebugValue() const;
+
  private:
   friend class base::RefCounted<InputContext>;
 
   ~InputContext();
 };
+
+// For logging and debug purposes.
+std::ostream& operator<<(std::ostream& out, const InputContext& value);
 
 }  // namespace segmentation_platform
 

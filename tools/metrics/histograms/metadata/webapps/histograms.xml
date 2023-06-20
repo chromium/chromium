@@ -1050,6 +1050,35 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.MlInstall.DialogResponse"
+    enum="WebAppMlInstallUserResponse" expires_after="2024-09-10">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwa-team@google.com</owner>
+  <summary>
+    Records the user's response to an install dialog, but only if the dialog was
+    triggered by the ML promotion prediction system, or if the dialog was
+    already showing when the ML prediction system returned a result. Note that
+    in the second case, the ML prediction could have been anything, but in the
+    first case, the prediction is always to show the installation UX. The ML
+    prediction always happens after a page is loaded, relevant UKM metrics are
+    gathered, and 3 seconds have gone past. If the result is 'blocked by
+    guardrails', then that can only occur if there wasn't install UX showing
+    when ML finished the prediction, and the programatic guardrails applied.
+    This is reported irrespective of the ML result.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.MlInstall.InstallSource" enum="WebappInstallSource"
+    expires_after="2024-09-10">
+  <owner>dmurph@chromium.org</owner>
+  <owner>desktop-pwa-team@google.com</owner>
+  <summary>
+    Recorded when a result occurs on an installation dialog that was either
+    triggered via ML or was showing through another means when ML returned a
+    classification result for the web contents.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.Mover.Result" enum="WebAppMoverResult"
     expires_after="2022-04-24">
   <owner>dmurph@chromium.org</owner>

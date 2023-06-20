@@ -105,6 +105,17 @@ void ChromeAppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
   }
 }
 
+segmentation_platform::SegmentationPlatformService*
+ChromeAppBannerManagerAndroid::GetSegmentationPlatformService() {
+  // TODO(https://crbug.com/1449993): Implement.
+  // Note: By returning a non-nullptr, all of the Ml code (after metrics
+  // gathering) in `MlInstallabilityPromoter` will execute, including requesting
+  // classifiction & eventually calling `OnMlInstallPrediction` above. Make sure
+  // that the contract of that class is being followed appropriately, and the ML
+  // parts are correct.
+  return nullptr;
+}
+
 bool ChromeAppBannerManagerAndroid::MaybeShowInProductHelp() const {
   if (!base::FeatureList::IsEnabled(
           feature_engagement::kIPHPwaInstallAvailableFeature)) {

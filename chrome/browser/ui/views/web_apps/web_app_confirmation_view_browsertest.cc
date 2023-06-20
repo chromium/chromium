@@ -8,9 +8,14 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_dialogs.h"
 #include "chrome/browser/ui/test/test_browser_dialog.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/common/chrome_features.h"
 #include "chrome/test/base/in_process_browser_test.h"
+#include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
+#include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
 #include "content/public/test/browser_test.h"
 
@@ -25,15 +30,24 @@ class WebAppConfirmViewBrowserTest
 
   // DialogBrowserTest:
   void ShowUi(const std::string& name) override {
-    auto app_info = std::make_unique<WebAppInstallInfo>();
+    auto app_info = std::make_unique<WebAppInstallInfo>(
+        web_app::GenerateManifestIdFromStartUrlOnly(
+            GURL("https://example.com")));
     app_info->title = u"Test app";
     app_info->start_url = GURL("https://example.com");
 
     auto callback = [](bool result, std::unique_ptr<WebAppInstallInfo>) {};
 
-    chrome::ShowWebAppInstallDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        std::move(app_info), base::BindLambdaForTesting(callback));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+        webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+            ->RegisterCurrentInstallForWebContents(
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+    chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                    std::move(install_tracker),
+                                    base::BindLambdaForTesting(callback));
   }
 
   void SetUp() override {
@@ -54,7 +68,8 @@ class WebAppConfirmViewBrowserTest
 };
 
 IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
-  auto app_info = std::make_unique<WebAppInstallInfo>();
+  auto app_info = std::make_unique<WebAppInstallInfo>(
+      web_app::GenerateManifestIdFromStartUrlOnly(GURL("https://example.com")));
   app_info->title = u"Test app";
   app_info->start_url = GURL("https://example.com");
 
@@ -66,9 +81,16 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, ShowWebAppInstallDialog) {
     is_accepted = result;
   };
 
-  chrome::ShowWebAppInstallDialog(
-      browser()->tab_strip_model()->GetActiveWebContents(), std::move(app_info),
-      base::BindLambdaForTesting(callback));
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+  std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+      webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+          ->RegisterCurrentInstallForWebContents(
+              webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+  chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                  std::move(install_tracker),
+                                  base::BindLambdaForTesting(callback));
   EXPECT_TRUE(is_accepted);
 }
 
@@ -90,7 +112,9 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
   };
 
   for (const TestCases& test_case : test_cases) {
-    auto app_info = std::make_unique<WebAppInstallInfo>();
+    auto app_info = std::make_unique<WebAppInstallInfo>(
+        web_app::GenerateManifestIdFromStartUrlOnly(
+            GURL("https://example.com")));
     app_info->title = test_case.input;
     app_info->start_url = GURL("https://example.com");
 
@@ -102,9 +126,16 @@ IN_PROC_BROWSER_TEST_P(WebAppConfirmViewBrowserTest, NormalizeTitles) {
       title = info->title;
     };
 
-    chrome::ShowWebAppInstallDialog(
-        browser()->tab_strip_model()->GetActiveWebContents(),
-        std::move(app_info), base::BindLambdaForTesting(callback));
+    content::WebContents* web_contents =
+        browser()->tab_strip_model()->GetActiveWebContents();
+    std::unique_ptr<webapps::MlInstallOperationTracker> install_tracker =
+        webapps::MLInstallabilityPromoter::FromWebContents(web_contents)
+            ->RegisterCurrentInstallForWebContents(
+                webapps::WebappInstallSource::MENU_CREATE_SHORTCUT);
+
+    chrome::ShowWebAppInstallDialog(web_contents, std::move(app_info),
+                                    std::move(install_tracker),
+                                    base::BindLambdaForTesting(callback));
     EXPECT_TRUE(is_accepted) << test_case.input;
     EXPECT_EQ(test_case.expected_result, title) << test_case.input;
   }
