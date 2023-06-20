@@ -102,16 +102,18 @@ class CONTENT_EXPORT RenderViewHostDelegateView {
   // retrieved by doing a Shift-Tab.
   virtual void TakeFocus(bool reverse) {}
 
-  // Returns the height of the top controls in DIP.
+  // Returns the height of the top controls in physical pixels (not DIPs).
   virtual int GetTopControlsHeight() const;
 
-  // Returns the minimum visible height the top controls can have in DIP.
+  // Returns the minimum visible height the top controls can have in physical
+  // pixels (not DIPs).
   virtual int GetTopControlsMinHeight() const;
 
-  // Returns the height of the bottom controls in DIP.
+  // Returns the height of the bottom controls in physical pixels (not DIPs).
   virtual int GetBottomControlsHeight() const;
 
-  // Returns the minimum visible height the bottom controls can have in DIP.
+  // Returns the minimum visible height the bottom controls can have in physical
+  // pixels (not DIPs).
   virtual int GetBottomControlsMinHeight() const;
 
   // Returns true if the changes in browser controls height (including min

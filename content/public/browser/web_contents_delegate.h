@@ -637,7 +637,8 @@ class CONTENT_EXPORT WebContentsDelegate {
   // whether they will shrink the Blink's view size. Note that they are not
   // complete in the sense that there is no API to tell content to poll these
   // values again, except part of resize. But this is not needed by embedder
-  // because it's always accompanied by view size change.
+  // because it's always accompanied by view size change. The values returned
+  // by these APIs are in physical pixels (not DIPs).
   virtual int GetTopControlsHeight();
   virtual int GetTopControlsMinHeight();
   virtual int GetBottomControlsHeight();
