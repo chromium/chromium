@@ -29,7 +29,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
 
 template <>
 struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
-    StructTraits<network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView,
+    StructTraits<network::mojom::NonEmptyNetworkIsolationKeyDataView,
                  net::NetworkIsolationKey> {
   static const net::SchemefulSite& top_frame_site(
       const net::NetworkIsolationKey& input) {
@@ -49,42 +49,8 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input.GetNonce();
   }
 
-  static bool Read(
-      network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView data,
-      net::NetworkIsolationKey* out);
-};
-
-template <>
-struct COMPONENT_EXPORT(NETWORK_CPP_BASE) StructTraits<
-    network::mojom::CrossSiteFlagEnabledNetworkIsolationKeyDataView,
-    net::NetworkIsolationKey> {
-  static const net::SchemefulSite& top_frame_site(
-      const net::NetworkIsolationKey& input) {
-    return input.GetTopFrameSite().value();
-  }
-
-  static const net::SchemefulSite& frame_site(
-      const net::NetworkIsolationKey& input) {
-    return input
-        .GetFrameSiteForSerialization(
-            net::NetworkIsolationKey::SerializationPasskey())
-        .value();
-  }
-
-  static bool is_cross_site(const net::NetworkIsolationKey& input) {
-    absl::optional<bool> is_cross_site = input.GetIsCrossSiteForSerialization(
-        net::NetworkIsolationKey::SerializationPasskey());
-    return is_cross_site.value();
-  }
-
-  static const absl::optional<base::UnguessableToken>& nonce(
-      const net::NetworkIsolationKey& input) {
-    return input.GetNonce();
-  }
-
-  static bool Read(
-      network::mojom::CrossSiteFlagEnabledNetworkIsolationKeyDataView data,
-      net::NetworkIsolationKey* out);
+  static bool Read(network::mojom::NonEmptyNetworkIsolationKeyDataView data,
+                   net::NetworkIsolationKey* out);
 };
 
 template <>
@@ -96,12 +62,7 @@ struct COMPONENT_EXPORT(NETWORK_CPP_BASE)
     return input;
   }
 
-  static const net::NetworkIsolationKey& frame_site_enabled(
-      const net::NetworkIsolationKey& input) {
-    return input;
-  }
-
-  static const net::NetworkIsolationKey& cross_site_flag_enabled(
+  static const net::NetworkIsolationKey& non_empty(
       const net::NetworkIsolationKey& input) {
     return input;
   }

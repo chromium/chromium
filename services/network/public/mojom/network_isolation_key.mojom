@@ -11,36 +11,14 @@ import "services/network/public/mojom/schemeful_site.mojom";
 struct EmptyNetworkIsolationKey {
 };
 
-// Used to represent a `net::NetworkIsolationKey` when
-// `net::NetworkIsolationKey::GetMode()` returns `kFrameSiteEnabled`.
-struct FrameSiteEnabledNetworkIsolationKey {
+// This struct is used for NetworkIsolationKeys that aren't empty.
+struct NonEmptyNetworkIsolationKey {
 
   // The top-level site of the `net::NetworkIsolationKey`.
   SchemefulSite top_frame_site;
 
   // The frame site of the `net::NetworkIsolationKey`.
   SchemefulSite frame_site;
-
-  // A nonce indicating that the `net::NetworkIsolationKey` should always be
-  // considered transient (and therefore, ineligible for having corresponding
-  // resources cached by the HTTP cache). This value will only be set in cases
-  // where the `net::NetworkIsolationKey` was created with a nonce.
-  mojo_base.mojom.UnguessableToken? nonce;
-};
-
-// Used to represent a `net::NetworkIsolationKey` when
-// `net::NetworkIsolationKey::GetMode()` returns `kCrossSiteFlagEnabled`.
-struct CrossSiteFlagEnabledNetworkIsolationKey {
-
-  // The top-level site of the `net::NetworkIsolationKey`.
-  SchemefulSite top_frame_site;
-
-  // The frame site of the `net::NetworkIsolationKey`.
-  SchemefulSite frame_site;
-
-  // A boolean indicating whether the `net::NetworkIsolationKey` was created
-  // with a frame site that was schemefully cross-site with the top-level site.
-  bool is_cross_site;
 
   // A nonce indicating that the `net::NetworkIsolationKey` should always be
   // considered transient (and therefore, ineligible for having corresponding
@@ -52,6 +30,5 @@ struct CrossSiteFlagEnabledNetworkIsolationKey {
 // Mapped to `net::NetworkIsolationKey`.
 union NetworkIsolationKey {
   EmptyNetworkIsolationKey empty;
-  FrameSiteEnabledNetworkIsolationKey frame_site_enabled;
-  CrossSiteFlagEnabledNetworkIsolationKey cross_site_flag_enabled;
+  NonEmptyNetworkIsolationKey non_empty;
 };

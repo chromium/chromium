@@ -26,19 +26,6 @@ std::string GetSiteDebugString(const absl::optional<SchemefulSite>& site) {
 }  // namespace
 
 NetworkIsolationKey::NetworkIsolationKey(
-    SerializationPasskey,
-    SchemefulSite top_frame_site,
-    SchemefulSite frame_site,
-    bool is_cross_site,
-    absl::optional<base::UnguessableToken> nonce)
-    : top_frame_site_(std::move(top_frame_site)),
-      frame_site_(std::move(frame_site)),
-      is_cross_site_(is_cross_site),
-      nonce_(std::move(nonce)) {
-  CHECK_EQ(GetMode(), Mode::kCrossSiteFlagEnabled);
-}
-
-NetworkIsolationKey::NetworkIsolationKey(
     const SchemefulSite& top_frame_site,
     const SchemefulSite& frame_site,
     const absl::optional<base::UnguessableToken>& nonce)

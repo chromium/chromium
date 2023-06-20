@@ -18,8 +18,7 @@ class Origin;
 }
 
 namespace network::mojom {
-class FrameSiteEnabledNetworkIsolationKeyDataView;
-class CrossSiteFlagEnabledNetworkIsolationKeyDataView;
+class NonEmptyNetworkIsolationKeyDataView;
 }
 
 namespace net {
@@ -35,10 +34,7 @@ class NET_EXPORT NetworkIsolationKey {
   class SerializationPasskey {
    private:
     friend struct mojo::StructTraits<
-        network::mojom::FrameSiteEnabledNetworkIsolationKeyDataView,
-        NetworkIsolationKey>;
-    friend struct mojo::StructTraits<
-        network::mojom::CrossSiteFlagEnabledNetworkIsolationKeyDataView,
+        network::mojom::NonEmptyNetworkIsolationKeyDataView,
         NetworkIsolationKey>;
     SerializationPasskey() = default;
     ~SerializationPasskey() = default;
@@ -50,14 +46,6 @@ class NET_EXPORT NetworkIsolationKey {
     CookiePartitionKeyPasskey() = default;
     ~CookiePartitionKeyPasskey() = default;
   };
-
-  // This constructor is used for deserialization when `GetMode()` returns
-  // `kCrossSiteFlagEnabled`.
-  NetworkIsolationKey(SerializationPasskey,
-                      SchemefulSite top_frame_site,
-                      SchemefulSite frame_site,
-                      bool is_cross_site,
-                      absl::optional<base::UnguessableToken> nonce);
 
   // Full constructor.  When a request is initiated by the top frame, it must
   // also populate the |frame_site| parameter when calling this constructor.
@@ -209,14 +197,6 @@ class NET_EXPORT NetworkIsolationKey {
       CookiePartitionKeyPasskey) const {
     CHECK(!IsEmpty());
     return frame_site_;
-  }
-
-  // Same as above but for the is-cross-site bit.
-  const absl::optional<bool>& GetIsCrossSiteForSerialization(
-      SerializationPasskey) const {
-    CHECK(!IsEmpty());
-    CHECK_EQ(GetMode(), Mode::kCrossSiteFlagEnabled);
-    return is_cross_site_;
   }
 
   // Getter for the nonce.
