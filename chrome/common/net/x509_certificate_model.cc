@@ -24,8 +24,8 @@
 #include "net/cert/pki/parse_name.h"
 #include "net/cert/pki/signature_algorithm.h"
 #include "net/cert/pki/verify_signed_data.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "net/der/parser.h"
@@ -1315,9 +1315,8 @@ std::string X509CertificateModel::GetSerialNumberHexified() const {
 bool X509CertificateModel::GetTimes(base::Time* not_before,
                                     base::Time* not_after) const {
   DCHECK(parsed_successfully_);
-  return net::der::GeneralizedTimeToTime(tbs_.validity_not_before,
-                                         not_before) &&
-         net::der::GeneralizedTimeToTime(tbs_.validity_not_after, not_after);
+  return net::GeneralizedTimeToTime(tbs_.validity_not_before, not_before) &&
+         net::GeneralizedTimeToTime(tbs_.validity_not_after, not_after);
 }
 
 OptionalStringOrError X509CertificateModel::GetIssuerCommonName() const {

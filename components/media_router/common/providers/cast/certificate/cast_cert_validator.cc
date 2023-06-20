@@ -29,8 +29,8 @@
 #include "net/cert/pki/path_builder.h"
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/trust_store_in_memory.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
 #include "third_party/boringssl/src/include/openssl/digest.h"
@@ -386,8 +386,9 @@ CastCertError VerifyDeviceCertUsingCustomTrustStore(
   // Do path building and RFC 5280 compatible certificate verification using the
   // two Cast trust anchors and Cast signature policy.
   net::der::GeneralizedTime verification_time;
-  if (!net::der::EncodeTimeAsGeneralizedTime(time, &verification_time))
+  if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
     return CastCertError::ERR_UNEXPECTED;
+  }
   net::CertPathBuilder path_builder(
       target_cert, trust_store, &path_builder_delegate, verification_time,
       net::KeyPurpose::CLIENT_AUTH, net::InitialExplicitPolicy::kFalse,

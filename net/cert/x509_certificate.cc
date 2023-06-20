@@ -35,8 +35,8 @@
 #include "net/cert/pki/verify_certificate_chain.h"
 #include "net/cert/pki/verify_name_match.h"
 #include "net/cert/pki/verify_signed_data.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/parser.h"
 #include "net/dns/dns_util.h"
 #include "third_party/boringssl/src/include/openssl/evp.h"
@@ -770,8 +770,8 @@ bool X509Certificate::ParsedFields::Initialize(
     return false;
   }
 
-  if (!der::GeneralizedTimeToTime(tbs.validity_not_before, &valid_start_) ||
-      !der::GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
+  if (!GeneralizedTimeToTime(tbs.validity_not_before, &valid_start_) ||
+      !GeneralizedTimeToTime(tbs.validity_not_after, &valid_expiry_)) {
     return false;
   }
   serial_number_ = tbs.serial_number.AsString();

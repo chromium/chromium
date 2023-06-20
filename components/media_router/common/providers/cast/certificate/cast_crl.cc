@@ -20,8 +20,8 @@
 #include "net/cert/pki/simple_path_builder_delegate.h"
 #include "net/cert/pki/trust_store_in_memory.h"
 #include "net/cert/pki/verify_certificate_chain.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_util.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -101,8 +101,7 @@ bool ConvertTimeSeconds(uint64_t seconds,
   base::Time unix_timestamp =
       base::Time::UnixEpoch() +
       base::Seconds(base::saturated_cast<int64_t>(seconds));
-  return net::der::EncodeTimeAsGeneralizedTime(unix_timestamp,
-                                               generalized_time);
+  return net::EncodeTimeAsGeneralizedTime(unix_timestamp, generalized_time);
 }
 
 // Verifies the CRL is signed by a trusted CRL authority at the time the CRL
@@ -162,7 +161,7 @@ bool VerifyCRL(const Crl& crl,
 
   // Verify the issuer certificate.
   net::der::GeneralizedTime verification_time;
-  if (!net::der::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
+  if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
     VLOG(2) << "CRL - Unable to parse verification time.";
     return false;
   }
@@ -318,7 +317,7 @@ bool CastCRLImpl::CheckRevocation(
 
   // Check the validity of the CRL at the specified time.
   net::der::GeneralizedTime verification_time;
-  if (!net::der::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
+  if (!net::EncodeTimeAsGeneralizedTime(time, &verification_time)) {
     VLOG(2) << "CRL verification time malformed.";
     return false;
   }

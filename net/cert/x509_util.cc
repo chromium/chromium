@@ -26,8 +26,8 @@
 #include "net/cert/pki/parse_certificate.h"
 #include "net/cert/pki/parse_name.h"
 #include "net/cert/pki/signature_algorithm.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert/x509_certificate.h"
-#include "net/der/encode_values.h"
 #include "net/der/input.h"
 #include "net/der/parse_values.h"
 #include "third_party/boringssl/src/include/openssl/bytestring.h"
@@ -164,8 +164,9 @@ bool AddName(CBB* cbb, base::StringPiece name) {
 
 bool CBBAddTime(CBB* cbb, base::Time time) {
   der::GeneralizedTime generalized_time;
-  if (!der::EncodeTimeAsGeneralizedTime(time, &generalized_time))
+  if (!EncodeTimeAsGeneralizedTime(time, &generalized_time)) {
     return false;
+  }
 
   // Per RFC 5280, 4.1.2.5, times which fit in UTCTime must be encoded as
   // UTCTime rather than GeneralizedTime.

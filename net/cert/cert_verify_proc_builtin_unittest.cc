@@ -22,8 +22,8 @@
 #include "net/cert/pki/trust_store.h"
 #include "net/cert/pki/trust_store_collection.h"
 #include "net/cert/pki/trust_store_in_memory.h"
+#include "net/cert/time_conversions.h"
 #include "net/cert_net/cert_net_fetcher_url_request.h"
-#include "net/der/encode_values.h"
 #include "net/log/net_log_with_source.h"
 #include "net/log/test_net_log.h"
 #include "net/test/cert_builder.h"
@@ -604,7 +604,7 @@ TEST_F(CertVerifyProcBuiltinTest, DebugData) {
   EXPECT_EQ(time, debug_data->verification_time());
 
   base::Time der_verification_time_converted_back_to_base_time;
-  EXPECT_TRUE(net::der::GeneralizedTimeToTime(
+  EXPECT_TRUE(net::GeneralizedTimeToTime(
       debug_data->der_verification_time(),
       &der_verification_time_converted_back_to_base_time));
   // GeneralizedTime only has seconds precision.
