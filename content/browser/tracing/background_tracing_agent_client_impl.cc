@@ -48,10 +48,6 @@ void BackgroundTracingAgentClientImpl::OnTriggerBackgroundTrace(
       base::StrCat({"org.chromium.background_tracing.", name}));
 }
 
-void BackgroundTracingAgentClientImpl::OnAbortBackgroundTrace() {
-  BackgroundTracingManagerImpl::GetInstance().AbortScenario();
-}
-
 BackgroundTracingAgentClientImpl::BackgroundTracingAgentClientImpl(
     mojo::Remote<tracing::mojom::BackgroundTracingAgent> agent)
     : agent_(std::move(agent)) {

@@ -380,10 +380,6 @@ void BackgroundTracingManagerImpl::GenerateMetadataProto(
 }
 
 void BackgroundTracingManagerImpl::AbortScenarioForTesting() {
-  AbortScenario();
-}
-
-void BackgroundTracingManagerImpl::AbortScenario() {
   if (active_scenario_) {
     active_scenario_->AbortScenario();
   }

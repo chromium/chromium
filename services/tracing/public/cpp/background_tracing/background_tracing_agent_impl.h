@@ -45,7 +45,6 @@ class COMPONENT_EXPORT(BACKGROUND_TRACING_CPP) BackgroundTracingAgentImpl
       uint64_t name_hash,
       base::Histogram::Sample actual_value);
   void SendTriggerMessage(const std::string& histogram_name);
-  void SendAbortBackgroundTracingMessage();
 
   mojo::Remote<mojom::BackgroundTracingAgentClient> client_;
   base::Time histogram_last_changed_;

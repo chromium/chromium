@@ -123,8 +123,4 @@ void BackgroundTracingAgentImpl::SendTriggerMessage(
   client_->OnTriggerBackgroundTrace(histogram_name);
 }
 
-void BackgroundTracingAgentImpl::SendAbortBackgroundTracingMessage() {
-  client_->OnAbortBackgroundTrace();
-}
-
 }  // namespace tracing

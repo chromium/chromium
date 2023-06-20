@@ -82,7 +82,6 @@ class BackgroundTracingManagerImpl : public BackgroundTracingManager {
       std::unique_ptr<BackgroundTracingConfig>,
       ReceiveCallback receive_callback,
       DataFiltering data_filtering) override;
-  void AbortScenario();
   bool HasActiveScenario() override;
 
   // Named triggers

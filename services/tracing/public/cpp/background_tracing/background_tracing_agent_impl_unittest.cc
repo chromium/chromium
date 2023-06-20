@@ -26,14 +26,9 @@ class BackgroundTracingAgentClientRecorder
     on_trigger_background_trace_histogram_name_ = histogram_name;
   }
 
-  void OnAbortBackgroundTrace() override { ++on_abort_background_trace_count_; }
-
   int on_initialized_count() const { return on_initialized_count_; }
   int on_trigger_background_trace_count() const {
     return on_trigger_background_trace_count_;
-  }
-  int on_abort_background_trace_count() const {
-    return on_abort_background_trace_count_;
   }
 
   const std::string& on_trigger_background_trace_histogram_name() const {
@@ -43,7 +38,6 @@ class BackgroundTracingAgentClientRecorder
  private:
   int on_initialized_count_ = 0;
   int on_trigger_background_trace_count_ = 0;
-  int on_abort_background_trace_count_ = 0;
   std::string on_trigger_background_trace_histogram_name_;
 };
 
@@ -96,7 +90,6 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramDoesNotTrigger) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(0, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
 }
 
 TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
@@ -111,7 +104,6 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_ExistingSample) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
   EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
 }
 
@@ -127,7 +119,6 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_SameThread) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
   EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
 }
 
@@ -145,7 +136,6 @@ TEST_F(BackgroundTracingAgentImplTest, TestHistogramTriggers_CrossThread) {
 
   EXPECT_EQ(1, recorder()->on_initialized_count());
   EXPECT_EQ(1, recorder()->on_trigger_background_trace_count());
-  EXPECT_EQ(0, recorder()->on_abort_background_trace_count());
   EXPECT_EQ("foo2", recorder()->on_trigger_background_trace_histogram_name());
 }
 

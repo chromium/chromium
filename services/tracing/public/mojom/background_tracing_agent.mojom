@@ -8,7 +8,6 @@ module tracing.mojom;
 interface BackgroundTracingAgentClient {
   OnInitialized();
   OnTriggerBackgroundTrace(string histogram_name);
-  OnAbortBackgroundTrace();
 };
 
 // This interface is used to allow clients (the browser process) to monitor for
