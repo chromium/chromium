@@ -390,6 +390,44 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="WebApp.DedupeInstallUrls.AppsDeduped" units="apps"
+    expires_after="2023-11-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The number of web apps deduped *for each install URL* that had more than one
+    web app associated with it. Recorded at the end of each
+    DedupeInstallUrlsCommand scan, about 3 times at start up (once per external
+    web app install source) and once whenever web app policy changes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.DedupeInstallUrls.InstallUrlsDeduped"
+    units="install URLs" expires_after="2023-11-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The number of install URLs that had multiple web apps associated with it
+    during a run of DedupeInstallUrlsCommand. Recorded at the end of each
+    DedupeInstallUrlsCommand scan, about 3 times at start up (once per external
+    web app install source) and once whenever web app policy changes.
+  </summary>
+</histogram>
+
+<histogram name="WebApp.DedupeInstallUrls.SessionRunCount" units="runs"
+    expires_after="2023-11-01">
+  <owner>alancutter@chromium.org</owner>
+  <owner>desktop-pwas-team@google.com</owner>
+  <summary>
+    The number of times the DedupeInstallUrlsCommand ran in a single browser
+    profile session. Note that because this is recorded for each run, if it is
+    run 3 times the client will emit 1, 2 and 3 in succession. Recorded at the
+    start of each DedupeInstallUrlsCommand scan, about 3 times at start up (once
+    per external web app install source) and once whenever web app policy
+    changes.
+  </summary>
+</histogram>
+
 <histogram name="WebApp.DefaultOffline.ClosingReason"
     enum="DefaultOfflineClosingReason" expires_after="2023-11-12">
   <owner>finnur@chromium.org</owner>

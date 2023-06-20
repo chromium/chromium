@@ -5,6 +5,7 @@
 #include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 
 #include "base/test/bind.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/test_future.h"
 #include "chrome/browser/web_applications/externally_managed_app_manager.h"
 #include "chrome/browser/web_applications/policy/web_app_policy_manager.h"
@@ -117,6 +118,7 @@ TEST_F(DedupeInstallUrlsCommandTest,
   // This test checks that the placeholder is removed with a successful policy
   // install of install URL A.
 
+  base::HistogramTester histogram_tester;
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
@@ -166,6 +168,16 @@ TEST_F(DedupeInstallUrlsCommandTest,
       (WebApp::ExternalConfigMap{
           {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
           {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.SessionRunCount"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
+      base::BucketsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest,
@@ -181,6 +193,7 @@ TEST_F(DedupeInstallUrlsCommandTest,
   // This test checks that the placeholder is removed with a force reinstall of
   // install URL A via PreinstalledWebAppManager.
 
+  base::HistogramTester histogram_tester;
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
@@ -225,6 +238,16 @@ TEST_F(DedupeInstallUrlsCommandTest,
       (WebApp::ExternalConfigMap{
           {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
           {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.SessionRunCount"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
+      base::BucketsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
@@ -245,6 +268,7 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
   // This test checks that the placeholder is deduped into the real app after a
   // policy synchronisation run that's already satisfied.
 
+  base::HistogramTester histogram_tester;
   GURL install_url("https://example.com/install_url");
   GURL manifest_url("https://example.com/manifest.json");
   GURL start_url("https://example.com/start_url");
@@ -313,6 +337,17 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
       (WebApp::ExternalConfigMap{
           {WebAppManagement::Type::kPolicy, {false, {install_url}, {}}},
           {WebAppManagement::Type::kDefault, {false, {install_url}, {}}}}));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.SessionRunCount"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1),
+                               base::Bucket(3, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
+              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
+      base::BucketsAre(base::Bucket(2, 1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
@@ -338,6 +373,7 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
   // This test checks that the placeholder is removed with a force reinstall of
   // install URL A via PreinstalledWebAppManager.
 
+  base::HistogramTester histogram_tester;
   GURL install_url("https://example.com/install_url");
   GURL alternate_install_url(
       "https://example.com/install_url?with_query_param");
@@ -405,6 +441,17 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
                                         {false, {alternate_install_url}, {}}},
                                        {WebAppManagement::Type::kDefault,
                                         {false, {install_url}, {}}}}));
+
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.SessionRunCount"),
+              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1),
+                               base::Bucket(3, 1)));
+  EXPECT_THAT(histogram_tester.GetAllSamples(
+                  "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
+              base::BucketsAre(base::Bucket(0, 2), base::Bucket(1, 1)));
+  EXPECT_THAT(
+      histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
+      base::BucketsAre(base::Bucket(2, 1)));
 }
 
 }  // namespace web_app

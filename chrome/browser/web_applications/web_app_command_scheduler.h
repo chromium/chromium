@@ -356,6 +356,12 @@ class WebAppCommandScheduler {
   // WebContentsManager.
   std::unique_ptr<WebAppUrlLoader> url_loader_;
 
+  // Track how many times ScheduleDedupeInstallUrls() is invoked for metrics to
+  // check that it's not happening excessively.
+  // TODO(crbug.com/1434692): Remove once validating that the numbers look okay
+  // out in the wild.
+  size_t dedupe_install_urls_run_count_ = 0;
+
   base::WeakPtrFactory<WebAppCommandScheduler> weak_ptr_factory_{this};
 };
 

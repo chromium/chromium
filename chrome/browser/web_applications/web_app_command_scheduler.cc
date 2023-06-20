@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/types/expected.h"
 #include "base/values.h"
@@ -648,6 +649,10 @@ void WebAppCommandScheduler::ScheduleDedupeInstallUrls(
     base::OnceClosure callback,
     const base::Location& location) {
   CHECK(base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls));
+
+  base::UmaHistogramCounts100("WebApp.DedupeInstallUrls.SessionRunCount",
+                              ++dedupe_install_urls_run_count_);
+
   if (IsShuttingDown()) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, std::move(callback));

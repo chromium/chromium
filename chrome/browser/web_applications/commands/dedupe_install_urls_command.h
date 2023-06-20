@@ -25,7 +25,6 @@ namespace web_app {
 class RemoveInstallUrlJob;
 
 // See WebAppCommandScheduler::ScheduleDedupeInstallUrls() for documentation.
-// TODO(crbug.com/1427340): Add metrics for this command.
 class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
  public:
   static base::AutoReset<bool> ScopedSuppressForTesting();
@@ -41,9 +40,9 @@ class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
   base::Value ToDebugValue() const override;
 
  private:
-  void CommandComplete();
   void ProcessPendingJobsOrComplete();
   void JobComplete(webapps::UninstallResultCode code);
+  void RecordMetrics();
 
   const raw_ref<Profile> profile_;
   base::OnceClosure completed_callback_;
@@ -51,7 +50,8 @@ class DedupeInstallUrlsCommand : public WebAppCommandTemplate<AllAppsLock> {
   const AllAppsLockDescription lock_description_;
   std::unique_ptr<AllAppsLock> lock_;
 
-  base::Value::Dict debug_value_;
+  base::flat_map<GURL, base::flat_set<AppId>> install_url_to_apps_;
+  base::flat_map<GURL, AppId> dedupe_choices_;
   base::Value::List completed_job_debug_values_;
 
   std::vector<std::unique_ptr<RemoveInstallUrlJob>> pending_jobs_;
