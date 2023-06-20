@@ -59,6 +59,7 @@ ChromeMediaRouterFactory::ChromeMediaRouterFactory() = default;
 
 ChromeMediaRouterFactory::~ChromeMediaRouterFactory() = default;
 
+// TODO(https://crbug.com/1455493): Update profile selection logic.
 content::BrowserContext* ChromeMediaRouterFactory::GetBrowserContextToUse(
     content::BrowserContext* context) const {
   return base::FeatureList::IsEnabled(kMediaRouterOTRInstance)
