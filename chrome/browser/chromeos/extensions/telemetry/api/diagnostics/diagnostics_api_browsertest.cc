@@ -113,7 +113,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
         crosapi::DiagnosticsRoutineEnum::kFingerprintAlive,
         crosapi::DiagnosticsRoutineEnum::kSmartctlCheckWithPercentageUsed,
         crosapi::DiagnosticsRoutineEnum::kEmmcLifetime,
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPower,
     });
 
     SetServiceForTesting(std::move(fake_service_impl));
@@ -149,8 +148,7 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
               "nvme_self_test",
               "fingerprint_alive",
               "smartctl_check_with_percentage_used",
-              "emmc_lifetime",
-              "bluetooth_power"
+              "emmc_lifetime"
             ]
           }, response);
         chrome.test.succeed();
@@ -461,37 +459,6 @@ IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
       async function runBatteryHealthRoutine() {
         const response =
           await chrome.os.diagnostics.runBatteryHealthRoutine();
-        chrome.test.assertEq({id: 0, status: "ready"}, response);
-        chrome.test.succeed();
-      }
-    ]);
-  )");
-}
-
-IN_PROC_BROWSER_TEST_F(TelemetryExtensionDiagnosticsApiBrowserTest,
-                       RunBluetoothPowerRoutineSuccess) {
-  // Configure FakeDiagnosticsService.
-  {
-    auto expected_response = crosapi::DiagnosticsRunRoutineResponse::New();
-    expected_response->id = 0;
-    expected_response->status = crosapi::DiagnosticsRoutineStatusEnum::kReady;
-
-    // Set the return value for a call to RunBluetoothPowerRoutine.
-    auto fake_service_impl = std::make_unique<FakeDiagnosticsService>();
-    fake_service_impl->SetRunRoutineResponse(std::move(expected_response));
-
-    // Set the expected called routine.
-    fake_service_impl->SetExpectedLastCalledRoutine(
-        crosapi::DiagnosticsRoutineEnum::kBluetoothPower);
-
-    SetServiceForTesting(std::move(fake_service_impl));
-  }
-
-  CreateExtensionAndRunServiceWorker(R"(
-    chrome.test.runTests([
-      async function runBluetoothPowerRoutine() {
-        const response =
-          await chrome.os.diagnostics.runBluetoothPowerRoutine();
         chrome.test.assertEq({id: 0, status: "ready"}, response);
         chrome.test.succeed();
       }

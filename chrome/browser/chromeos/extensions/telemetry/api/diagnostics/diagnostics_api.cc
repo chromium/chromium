@@ -210,12 +210,6 @@ void OsDiagnosticsRunBatteryHealthRoutineFunction::RunIfAllowed() {
   GetRemoteService()->RunBatteryHealthRoutine(GetOnResult());
 }
 
-// OsDiagnosticsRunBluetoothPowerRoutineFunction -------------------------------
-
-void OsDiagnosticsRunBluetoothPowerRoutineFunction::RunIfAllowed() {
-  GetRemoteService()->RunBluetoothPowerRoutine(GetOnResult());
-}
-
 // OsDiagnosticsRunCpuCacheRoutineFunction -------------------------------------
 
 void OsDiagnosticsRunCpuCacheRoutineFunction::RunIfAllowed() {
