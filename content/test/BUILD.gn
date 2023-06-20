@@ -2047,6 +2047,7 @@ test("content_browsertests") {
     deps += [ "//third_party/ocmock" ]
     data_deps += [ "//content/shell:content_shell" ]
     data += [ "$root_out_dir/Content Shell.app/" ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
   }
 
   if (is_ios) {
@@ -2750,6 +2751,7 @@ test("content_unittests") {
       "../browser/accessibility/browser_accessibility_mac_unittest.mm",
       "../browser/child_process_task_port_provider_mac_unittest.cc",
       "../browser/cocoa/system_hotkey_map_unittest.mm",
+      "../browser/media/capture/screen_capture_kit_fullscreen_module_unittest.mm",
       "../browser/renderer_host/input/mouse_wheel_rails_filter_unittest_mac.cc",
       "../browser/renderer_host/input/web_input_event_builders_mac_unittest.mm",
       "../browser/renderer_host/native_web_keyboard_event_mac_unittest.mm",
@@ -3132,6 +3134,7 @@ test("content_unittests") {
       "IOSurface.framework",
       "AuthenticationServices.framework",
     ]
+    weak_frameworks = [ "ScreenCaptureKit.framework" ]  # macOS 12.3
   }
   if (is_chromeos_ash) {
     sources += [

@@ -2710,6 +2710,8 @@ source_set("browser") {
         "media/capture/mouse_cursor_overlay_controller_mac.mm",
         "media/capture/screen_capture_kit_device_mac.h",
         "media/capture/screen_capture_kit_device_mac.mm",
+        "media/capture/screen_capture_kit_fullscreen_module.h",
+        "media/capture/screen_capture_kit_fullscreen_module.mm",
         "media/capture/views_widget_video_capture_device_mac.cc",
         "media/capture/views_widget_video_capture_device_mac.h",
       ]
