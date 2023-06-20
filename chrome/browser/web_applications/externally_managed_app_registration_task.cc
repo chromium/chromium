@@ -62,8 +62,12 @@ ExternallyManagedAppRegistrationTask::~ExternallyManagedAppRegistrationTask() {
 
 void ExternallyManagedAppRegistrationTask::OnRegistrationCompleted(
     const GURL& scope) {
-  if (!content::ServiceWorkerContext::ScopeMatches(scope, install_url()))
+  if (!callback_) {
     return;
+  }
+  if (!content::ServiceWorkerContext::ScopeMatches(scope, install_url())) {
+    return;
+  }
 
   registration_timer_.Stop();
   std::move(callback_).Run(RegistrationResultCode::kSuccess);
@@ -92,6 +96,9 @@ void ExternallyManagedAppRegistrationTask::CheckHasServiceWorker() {
 
 void ExternallyManagedAppRegistrationTask::OnDidCheckHasServiceWorker(
     content::ServiceWorkerCapability capability) {
+  if (!callback_) {
+    return;
+  }
   if (capability != content::ServiceWorkerCapability::NO_SERVICE_WORKER) {
     registration_timer_.Stop();
     // This is posted as a task because the serviceworker check can be
@@ -121,6 +128,9 @@ void ExternallyManagedAppRegistrationTask::OnWebContentsReady(
 }
 
 void ExternallyManagedAppRegistrationTask::OnRegistrationTimeout() {
+  if (!callback_) {
+    return;
+  }
   std::move(callback_).Run(RegistrationResultCode::kTimeout);
 }
 
