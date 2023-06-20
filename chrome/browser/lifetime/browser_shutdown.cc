@@ -385,6 +385,9 @@ void ReadLastShutdownFile(ShutdownType type,
   if (shutdown_ms == 0 || num_procs == 0)
     return;
 
+  // TODO(1456205): Remove these metrics as follow-up to
+  // https://crrev.com/c/4624774. They are replaced by Shutdown.*.time2.
+
   const char* time_metric_name = nullptr;
   switch (type) {
     case ShutdownType::kNotValid:

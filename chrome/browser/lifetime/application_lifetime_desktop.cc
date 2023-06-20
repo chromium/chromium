@@ -240,6 +240,10 @@ void SessionEnding() {
   // Write important data first.
   g_browser_process->EndSession();
 
+  // Emit the shutdown metric for the end-session case. The process will exit
+  // after this point.
+  browser_shutdown::RecordShutdownMetrics();
+
 #if BUILDFLAG(IS_WIN)
   base::win::SetShouldCrashOnProcessDetach(false);
 #endif  // BUILDFLAG(IS_WIN)
