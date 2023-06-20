@@ -166,7 +166,7 @@ class DeleteOnCloseDelegate : public NotificationDelegate {
 };
 
 // The default app id used to create simple notifications.
-const std::string kDefaultAppId = "app1";
+const char kDefaultAppId[] = "app1";
 
 }  // anonymous namespace
 
@@ -919,6 +919,79 @@ TEST_F(MessageCenterImplTest, TotalNotificationBlocker) {
   message_center()->RemoveAllNotifications(false /* by_user */,
                                            MessageCenter::RemoveType::ALL);
   EXPECT_EQ(0u, message_center()->NotificationCount());
+}
+
+// Tests that notification state is updated when a notification blocker is
+// removed.
+TEST_F(MessageCenterImplTest, NotificationsUpdatedWhenBlockerRemoved) {
+  // Add two notifications and display them as popups.
+  NotifierId notifier_id1(NotifierType::APPLICATION, "app1");
+  NotifierId notifier_id2(NotifierType::APPLICATION, "app2");
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithNotifierId("id1", notifier_id1.id));
+  message_center()->AddNotification(
+      CreateSimpleNotificationWithNotifierId("id2", notifier_id2.id));
+  message_center()->DisplayedNotification("id1", DISPLAY_SOURCE_POPUP);
+  message_center()->DisplayedNotification("id2", DISPLAY_SOURCE_POPUP);
+
+  // Verify that they are not blocked.
+  ASSERT_EQ(2u, message_center()->NotificationCount());
+  NotificationList::Notifications notifications =
+      message_center()->GetVisibleNotifications();
+  ASSERT_TRUE(NotificationsContain(notifications, "id1"));
+  ASSERT_TRUE(NotificationsContain(notifications, "id2"));
+  NotificationList::PopupNotifications popups =
+      message_center()->GetPopupNotifications();
+  ASSERT_EQ(2u, popups.size());
+  ASSERT_TRUE(PopupNotificationsContain(popups, "id1"));
+  ASSERT_TRUE(PopupNotificationsContain(popups, "id2"));
+
+  {
+    // Block all notifications, including popups (except those from
+    // `notifier_id2`).
+    TotalNotificationBlocker blocker(message_center(), notifier_id2);
+    blocker.SetNotificationsEnabled(false);
+    blocker.SetPopupNotificationsEnabled(false);
+
+    // Verify that "id1" is blocked and "id2" is not.
+    ASSERT_EQ(1u, message_center()->NotificationCount());
+    ASSERT_FALSE(NotificationsContain(
+        message_center()->GetVisibleNotifications(), "id1"));
+    ASSERT_TRUE(NotificationsContain(
+        message_center()->GetVisibleNotifications(), "id2"));
+    popups = message_center()->GetPopupNotifications();
+    ASSERT_EQ(1u, popups.size());
+    ASSERT_FALSE(PopupNotificationsContain(popups, "id1"));
+    ASSERT_TRUE(PopupNotificationsContain(popups, "id2"));
+
+    // Add a third notification.
+    message_center()->AddNotification(
+        CreateSimpleNotificationWithNotifierId("id3", notifier_id1.id));
+    message_center()->DisplayedNotification("id3", DISPLAY_SOURCE_POPUP);
+
+    // Verify that "id3" is blocked.
+    ASSERT_EQ(1u, message_center()->NotificationCount());
+    ASSERT_FALSE(NotificationsContain(
+        message_center()->GetVisibleNotifications(), "id3"));
+    popups = message_center()->GetPopupNotifications();
+    ASSERT_EQ(1u, popups.size());
+    ASSERT_FALSE(PopupNotificationsContain(popups, "id3"));
+
+    // Remove the blocker (it is removed in its dtor, which is called when
+    // exiting this scope).
+  }
+
+  // Verify that the notifications are not blocked, and in particular that "id2"
+  // is now shown as a popup since it didn't initially get to show as a popup.
+  EXPECT_EQ(3u, message_center()->NotificationCount());
+  notifications = message_center()->GetVisibleNotifications();
+  EXPECT_TRUE(NotificationsContain(notifications, "id1"));
+  EXPECT_TRUE(NotificationsContain(notifications, "id2"));
+  EXPECT_TRUE(NotificationsContain(notifications, "id3"));
+  popups = message_center()->GetPopupNotifications();
+  EXPECT_EQ(2u, popups.size());
+  EXPECT_TRUE(PopupNotificationsContain(popups, "id2"));
+  EXPECT_TRUE(PopupNotificationsContain(popups, "id3"));
 }
 
 TEST_F(MessageCenterImplTest, RemoveAllNotifications) {

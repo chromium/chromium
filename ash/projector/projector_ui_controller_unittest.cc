@@ -323,6 +323,9 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotification) {
       /*count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
                                     /*count=*/2);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowFailureNotificationWithTitle) {
@@ -362,6 +365,9 @@ TEST_F(ProjectorUiControllerTest, ShowFailureNotificationWithTitle) {
       /*expected_count=*/1);
   histogram_tester.ExpectTotalCount(kProjectorCreationFlowErrorHistogramName,
                                     /*count=*/1);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
@@ -400,6 +406,9 @@ TEST_F(ProjectorUiControllerTest, ShowSaveFailureNotification) {
   histogram_tester.ExpectUniqueSample(kProjectorCreationFlowErrorHistogramName,
                                       ProjectorCreationFlowError::kSaveError,
                                       /*count=*/2);
+
+  message_center::MessageCenter::Get()->RemoveObserver(
+      &mock_message_center_observer);
 }
 
 TEST_F(ProjectorUiControllerTest, OnCanvasInitialized) {

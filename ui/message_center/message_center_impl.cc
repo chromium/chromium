@@ -89,6 +89,7 @@ void MessageCenterImpl::RemoveNotificationBlocker(
   }
   blocker->RemoveObserver(this);
   blockers_.erase(iter);
+  OnBlockingStateChanged(blocker);
 }
 
 void MessageCenterImpl::OnBlockingStateChanged(NotificationBlocker* blocker) {
