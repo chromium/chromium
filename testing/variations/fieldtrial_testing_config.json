@@ -7062,6 +7062,21 @@
             ]
         }
     ],
+    "IOSIPHForSafariSwitcherHistoryOnly": [
+        {
+            "platforms": [
+                "ios"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "IPH_iOSHistoryOnOverflowMenuFeature"
+                    ]
+                }
+            ]
+        }
+    ],
     "IOSInactiveTabs": [
         {
             "platforms": [
