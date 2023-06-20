@@ -976,38 +976,31 @@
     },
     {
       name: "CSSOffsetPathBasicShapesCircleAndEllipse",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathBasicShapesRectanglesAndPolygon",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathCoordBox",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathRay",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathRayContain",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPathUrl",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOffsetPositionAnchor",
-      status: "experimental",
-      base_feature: "none",
+      status: "stable",
     },
     {
       name: "CSSOverflowForReplacedElements",

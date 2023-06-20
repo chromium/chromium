@@ -286,8 +286,10 @@ objectFit
 objectPosition
 objectViewBox
 offset
+offsetAnchor
 offsetDistance
 offsetPath
+offsetPosition
 offsetRotate
 opacity
 order
