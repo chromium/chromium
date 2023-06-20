@@ -6,7 +6,11 @@
 
 #import "base/metrics/histogram_functions.h"
 #import "base/strings/sys_string_conversions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "ios/web/navigation/nscoder_util.h"
+#import "ios/web/navigation/proto_util.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
 #import "ios/web/public/web_client.h"
 #import "net/base/mac/url_conversions.h"
 
@@ -46,6 +50,32 @@ const char kNavigationItemSerializedRequestHeadersSizeHistogram[] =
   GURL _URL;
   GURL _virtualURL;
   std::u16string _title;
+}
+
+- (instancetype)initWithProto:
+    (const web::proto::NavigationItemStorage&)storage {
+  if ((self = [super init])) {
+    _URL = GURL(storage.url());
+    _virtualURL = GURL(storage.virtual_url());
+    _title = base::UTF8ToUTF16(storage.title());
+    _timestamp = web::TimeFromProto(storage.timestamp());
+    _userAgentType = web::UserAgentTypeFromProto(storage.user_agent());
+    _referrer = web::ReferrerFromProto(storage.referrer());
+    _HTTPRequestHeaders =
+        web::HttpRequestHeadersFromProto(storage.http_request_headers());
+  }
+  return self;
+}
+
+- (void)serializeToProto:(web::proto::NavigationItemStorage&)storage {
+  storage.set_url(_URL.spec());
+  storage.set_virtual_url(_virtualURL.spec());
+  storage.set_title(base::UTF16ToUTF8(_title));
+  web::SerializeTimeToProto(_timestamp, *storage.mutable_timestamp());
+  storage.set_user_agent(web::UserAgentTypeToProto(_userAgentType));
+  web::SerializeReferrerToProto(_referrer, *storage.mutable_referrer());
+  web::SerializeHttpRequestHeadersToProto(
+      _HTTPRequestHeaders, *storage.mutable_http_request_headers());
 }
 
 #pragma mark - NSObject

@@ -16,6 +16,9 @@
 #include "url/gurl.h"
 
 namespace web {
+namespace proto {
+class NavigationItemStorage;
+}  // namespace proto
 
 // Keys used to serialize navigation properties.
 
@@ -64,6 +67,12 @@ extern const char kNavigationItemSerializedRequestHeadersSizeHistogram[];
 @property(nonatomic, assign) web::UserAgentType userAgentType;
 @property(nonatomic, copy)
     NSDictionary<NSString*, NSString*>* HTTPRequestHeaders;
+
+// Convenience initializer that creates an instance from proto representation.
+- (instancetype)initWithProto:(const web::proto::NavigationItemStorage&)storage;
+
+// Serializes the CRWNavigationItemStorage into `storage`.
+- (void)serializeToProto:(web::proto::NavigationItemStorage&)storage;
 
 @end
 

@@ -16,6 +16,7 @@
 #import "ios/web/navigation/navigation_item_storage_builder.h"
 #import "ios/web/navigation/navigation_item_storage_test_util.h"
 #import "ios/web/public/navigation/referrer.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
 #import "testing/gtest/include/gtest/gtest.h"
 #import "testing/gtest_mac.h"
 #import "testing/platform_test.h"
@@ -58,6 +59,17 @@ TEST_F(CRWNavigationItemStorageTest, EncodeDecode) {
       [[NSKeyedUnarchiver alloc] initForReadingFromData:data error:nil];
   unarchiver.requiresSecureCoding = NO;
   id decoded = [unarchiver decodeObjectForKey:NSKeyedArchiveRootObjectKey];
+  EXPECT_TRUE(web::ItemStoragesAreEqual(item_storage(), decoded));
+}
+
+// Tests that converting CRWNavigationItemStorage to proto and back results in
+// an equivalent storage.
+TEST_F(CRWNavigationItemStorageTest, EncodeDecodeToProto) {
+  web::proto::NavigationItemStorage storage;
+  [item_storage() serializeToProto:storage];
+
+  CRWNavigationItemStorage* decoded =
+      [[CRWNavigationItemStorage alloc] initWithProto:storage];
   EXPECT_TRUE(web::ItemStoragesAreEqual(item_storage(), decoded));
 }
 
