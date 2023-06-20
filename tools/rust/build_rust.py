@@ -698,6 +698,11 @@ def main():
                         action='store_true',
                         help='build the latest revision')
     parser.add_argument(
+        '--prepare-run-xpy',
+        action='store_true',
+        help='set up the build directory to use --run-xpy subsequently. For '
+        'debugging.')
+    parser.add_argument(
         '--run-xpy',
         action='store_true',
         help='run x.py command in configured Rust checkout. Quits after '
@@ -717,40 +722,12 @@ def main():
         args.skip_checkout = True
         args.skip_llvm_build = True
 
-    if sys.platform == 'win32':
-        # Use curl to prime Windows's root cert store (crbug.com/1448442).
-        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
-
-    if args.rust_force_head_revision:
-        assert not args.skip_checkout
-        checkout_revision = GetLatestRustCommit()
-    else:
-        checkout_revision = RUST_REVISION
-
     args.gcc_toolchain = None
     if sys.platform.startswith('linux') and not args.update_deps:
         # Fetch GCC package here and pass it to build.py to avoid it doing the
         # same again. Used for the LLVM build and for any C/C++ targets inside
         # the Rust toolchain build.
         MaybeDownloadHostGcc(args)
-
-    if not args.skip_checkout:
-        CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
-
-    if not args.update_deps:
-        VerifyStage0JsonHash()
-        if args.verify_stage0_hash:
-            # The above function exits and prints the actual hash if
-            # verification failed so we just quit here; if we reach this point,
-            # the hash is valid.
-            return 0
-
-    (x86_64_llvm_config, aarch64_llvm_config,
-     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
-                                           args.build_mac_arm,
-                                           args.gcc_toolchain)
-
-    AddCMakeToPath()
 
     # Require zlib compression.
     if sys.platform == 'win32':
@@ -775,6 +752,49 @@ def main():
     xpy = XPy(zlib_path, libxml2_dirs, args.build_mac_arm, args.gcc_toolchain,
               args.verbose)
 
+    # Assume the checkout has already been prepared. A full build or a
+    # --prepare-run-xpy run will set it up.
+    if args.run_xpy:
+        # Ensure the config.toml was previously generated.
+        config_path = os.path.join(RUST_SRC_DIR, 'config.toml')
+        assert os.path.exists(config_path)
+        assert os.path.isfile(config_path)
+
+        if rest[0] == '--':
+            rest = rest[1:]
+        xpy.run(rest[0], rest[1:])
+        return 0
+    else:
+        assert not rest
+
+    if sys.platform == 'win32':
+        # Use curl to prime Windows's root cert store (crbug.com/1448442).
+        RunCommand(['curl', '-I', 'https://static.rust-lang.org'])
+
+    if args.rust_force_head_revision:
+        assert not args.skip_checkout
+        checkout_revision = GetLatestRustCommit()
+    else:
+        checkout_revision = RUST_REVISION
+
+    if not args.skip_checkout:
+        CheckoutGitRepo('Rust', RUST_GIT_URL, checkout_revision, RUST_SRC_DIR)
+
+    if not args.update_deps:
+        VerifyStage0JsonHash()
+        if args.verify_stage0_hash:
+            # The above function exits and prints the actual hash if
+            # verification failed so we just quit here; if we reach this point,
+            # the hash is valid.
+            return 0
+
+    (x86_64_llvm_config, aarch64_llvm_config,
+     target_llvm_dir) = BuildLLVMLibraries(args.skip_llvm_build,
+                                           args.build_mac_arm,
+                                           args.gcc_toolchain)
+
+    AddCMakeToPath()
+
     # Set up config.toml in Rust source tree.
     xpy.configure(args.build_mac_arm, x86_64_llvm_config, aarch64_llvm_config)
 
@@ -785,17 +805,10 @@ def main():
         cargo_bin = os.path.join(path, 'cargo', 'bin', 'cargo')
     CargoVendor(cargo_bin)
 
-    # Deps are updated, so we're done now.
-    if args.update_deps:
+    # Deps are updated, so we're done now. All steps needed for --run-xpy to
+    # work should be above this.
+    if args.update_deps or args.prepare_run_xpy:
         return 0
-
-    if args.run_xpy:
-        if rest[0] == '--':
-            rest = rest[1:]
-        xpy.run(rest[0], rest[1:])
-        return 0
-    else:
-        assert not rest
 
     building_on_host_triple = RustTargetTriple()
     xpy_args = ['--build', building_on_host_triple]
