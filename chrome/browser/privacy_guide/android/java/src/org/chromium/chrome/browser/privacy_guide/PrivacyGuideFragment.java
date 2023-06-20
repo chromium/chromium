@@ -114,7 +114,7 @@ public class PrivacyGuideFragment extends Fragment {
         mDoneButton = (ButtonCompat) mView.findViewById(R.id.done_button);
         mDoneButton.setOnClickListener((View v) -> {
             PrivacyGuideMetricsDelegate.recordMetricsForDoneButton();
-            getActivity().onBackPressed();
+            getActivity().finish();
         });
 
         return mView;
@@ -136,6 +136,11 @@ public class PrivacyGuideFragment extends Fragment {
         int currentIdx = mViewPager.getCurrentItem();
         int nextIdx = currentIdx + 1;
 
+        if (nextIdx >= mPagerAdapter.getItemCount()) {
+            // There are no allowed next steps.
+            return;
+        }
+
         mViewPager.setCurrentItem(nextIdx);
         updateButtonVisibility();
         recordMetricsOnButtonPress(currentIdx, nextIdx);
@@ -144,6 +149,11 @@ public class PrivacyGuideFragment extends Fragment {
     private void previousStep() {
         int currentIdx = mViewPager.getCurrentItem();
         int prevIdx = currentIdx - 1;
+
+        if (prevIdx < 1 || currentIdx >= mPagerAdapter.getItemCount() - 1) {
+            // There are no allowed previous steps.
+            return;
+        }
 
         mViewPager.setCurrentItem(prevIdx);
         updateButtonVisibility();
@@ -204,7 +214,7 @@ public class PrivacyGuideFragment extends Fragment {
     @Override
     public boolean onOptionsItemSelected(@NonNull MenuItem item) {
         if (item.getItemId() == R.id.close_menu_id) {
-            getActivity().onBackPressed();
+            getActivity().finish();
             return true;
         }
 
