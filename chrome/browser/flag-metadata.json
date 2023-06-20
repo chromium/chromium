@@ -5141,6 +5141,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "media-route-dial-provider",
+    "owners": [ "sunggch@microsoft.com" ],
+    "expiry_milestone": 124
+  },
+  {
     "name": "media-router-cast-allow-all-ips",
     "owners": [ "mfoltz" ],
     // This flag is used by users with unusual network configurations to allow

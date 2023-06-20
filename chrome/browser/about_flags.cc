@@ -4893,6 +4893,10 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kMediaRouterOtrInstanceName,
      flag_descriptions::kMediaRouterOtrInstanceDescription, kOsAll,
      FEATURE_VALUE_TYPE(media_router::kMediaRouterOTRInstance)},
+    {"media-route-dial-provider",
+     flag_descriptions::kDialMediaRouteProviderName,
+     flag_descriptions::kDialMediaRouteProviderDescription, kOsDesktop,
+     FEATURE_VALUE_TYPE(media_router::kDialMediaRouteProvider)},
 
     {"enable-preinstalled-web-app-duplication-fixer",
      flag_descriptions::kEnablePreinstalledWebAppDuplicationFixerName,

@@ -57,6 +57,10 @@ BASE_DECLARE_FEATURE(kGlobalMediaControlsCastStartStop);
 // Presentation API. If disabled, only the allowlisted sites can do so.
 BASE_DECLARE_FEATURE(kAllowAllSitesToInitiateMirroring);
 
+// If enabled, The browser allows discovery of the DIAL support cast device.
+// It sends a discovery SSDP message every 120 seconds.
+BASE_DECLARE_FEATURE(kDialMediaRouteProvider);
+
 // If enabled, the Cast Media Route Provider starts a session without
 // terminating any existing session on the same sink.
 BASE_DECLARE_FEATURE(kStartCastSessionWithoutTerminating);
