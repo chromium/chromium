@@ -5,7 +5,9 @@
 
 #include <cstring>
 
+#include "base/command_line.h"
 #include "build/build_config.h"
+#include "chrome/common/chrome_switches.h"
 #include "ppapi/c/dev/ppb_audio_input_dev.h"
 #include "ppapi/c/dev/ppb_audio_output_dev.h"
 #include "ppapi/c/dev/ppb_buffer_dev.h"
@@ -111,4 +113,9 @@ bool IsSupportedPepperInterface(const char* name) {
 
 #undef LEGACY_IFACE
   return false;
+}
+
+bool IsNaclAllowed() {
+  return !base::CommandLine::ForCurrentProcess()->HasSwitch(
+      switches::kDisableNaCl);
 }

@@ -31,6 +31,7 @@
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/media/cdm_registration.h"
+#include "chrome/common/ppapi_utils.h"
 #include "chrome/common/url_constants.h"
 #include "chrome/grit/common_resources.h"
 #include "chrome/grit/generated_resources.h"
@@ -158,28 +159,31 @@ void ChromeContentClient::AddPlugins(
 #endif  // BUILDFLAG(ENABLE_PDF)
 
 #if BUILDFLAG(ENABLE_NACL)
-  // Handle Native Client just like the PDF plugin. This means that it is
-  // enabled by default for the non-portable case.  This allows apps installed
-  // from the Chrome Web Store to use NaCl even if the command line switch
-  // isn't set.  For other uses of NaCl we check for the command line switch.
-  content::ContentPluginInfo nacl;
-  // The nacl plugin is now built into the Chromium binary.
-  nacl.is_internal = true;
-  nacl.path = base::FilePath(nacl::kInternalNaClPluginFileName);
-  nacl.name = nacl::kNaClPluginName;
-  content::WebPluginMimeType nacl_mime_type(nacl::kNaClPluginMimeType,
-                                            nacl::kNaClPluginExtension,
-                                            nacl::kNaClPluginDescription);
-  nacl.mime_types.push_back(nacl_mime_type);
-  content::WebPluginMimeType pnacl_mime_type(nacl::kPnaclPluginMimeType,
-                                             nacl::kPnaclPluginExtension,
-                                             nacl::kPnaclPluginDescription);
-  nacl.mime_types.push_back(pnacl_mime_type);
-  nacl.internal_entry_points.get_interface = g_nacl_get_interface;
-  nacl.internal_entry_points.initialize_module = g_nacl_initialize_module;
-  nacl.internal_entry_points.shutdown_module = g_nacl_shutdown_module;
-  nacl.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
-  plugins->push_back(nacl);
+  // By default NaCl plugin info is loaded in every process. There is now logic
+  // in ChromeBrowserMainExtraPartsNaclDeprecation which checks some runtime
+  // conditions to see if NaCl should be disabled. If so, it sets a command line
+  // flag which is propagated to all relevant child processes. If this comment
+  // line flag has been set, then NaCl plugin info is not loaded.
+  if (IsNaclAllowed()) {
+    content::ContentPluginInfo nacl;
+    // The nacl plugin is now built into the Chromium binary.
+    nacl.is_internal = true;
+    nacl.path = base::FilePath(nacl::kInternalNaClPluginFileName);
+    nacl.name = nacl::kNaClPluginName;
+    content::WebPluginMimeType nacl_mime_type(nacl::kNaClPluginMimeType,
+                                              nacl::kNaClPluginExtension,
+                                              nacl::kNaClPluginDescription);
+    nacl.mime_types.push_back(nacl_mime_type);
+    content::WebPluginMimeType pnacl_mime_type(nacl::kPnaclPluginMimeType,
+                                               nacl::kPnaclPluginExtension,
+                                               nacl::kPnaclPluginDescription);
+    nacl.mime_types.push_back(pnacl_mime_type);
+    nacl.internal_entry_points.get_interface = g_nacl_get_interface;
+    nacl.internal_entry_points.initialize_module = g_nacl_initialize_module;
+    nacl.internal_entry_points.shutdown_module = g_nacl_shutdown_module;
+    nacl.permissions = ppapi::PERMISSION_PRIVATE | ppapi::PERMISSION_DEV;
+    plugins->push_back(nacl);
+  }
 #endif  // BUILDFLAG(ENABLE_NACL)
 }
 

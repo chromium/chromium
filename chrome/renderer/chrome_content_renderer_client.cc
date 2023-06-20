@@ -36,6 +36,7 @@
 #include "chrome/common/crash_keys.h"
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pepper_permission_util.h"
+#include "chrome/common/ppapi_utils.h"
 #include "chrome/common/privacy_budget/privacy_budget_settings_provider.h"
 #include "chrome/common/profiler/thread_profiler.h"
 #include "chrome/common/profiler/unwind_util.h"
@@ -1033,24 +1034,29 @@ WebPlugin* ChromeContentRendererClient::CreatePlugin(
           const Extension* extension =
               extensions::RendererExtensionRegistry::Get()
                   ->GetExtensionOrAppByURL(manifest_url);
-          if (extension) {
-            is_module_allowed =
-                IsNativeNaClAllowed(app_url, is_nacl_unrestricted, extension);
+          if (IsNaclAllowed()) {
+            if (extension) {
+              is_module_allowed =
+                  IsNativeNaClAllowed(app_url, is_nacl_unrestricted, extension);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-            // Allow Terminal System App to load the SSH extension NaCl module.
-          } else if (IsTerminalSystemWebAppNaClPage(app_url)) {
-            is_module_allowed = true;
+              // Allow Terminal System App to load the SSH extension NaCl
+              // module.
+            } else if (IsTerminalSystemWebAppNaClPage(app_url)) {
+              is_module_allowed = true;
 #endif
-          } else {
-            WebDocument document = frame->GetDocument();
-            is_module_allowed =
-                has_enable_nacl_switch ||
-                (is_pnacl_mime_type &&
-                 blink::WebOriginTrials::isTrialEnabled(&document, "PNaCl"));
+            } else {
+              WebDocument document = frame->GetDocument();
+              is_module_allowed =
+                  has_enable_nacl_switch ||
+                  (is_pnacl_mime_type &&
+                   blink::WebOriginTrials::isTrialEnabled(&document, "PNaCl"));
+            }
           }
           if (!is_module_allowed) {
             WebString error_message;
-            if (is_nacl_mime_type) {
+            if (!IsNaclAllowed()) {
+              error_message = "NaCl is disabled.";
+            } else if (is_nacl_mime_type) {
               error_message =
                   "Only unpacked extensions and apps installed from the Chrome "
                   "Web Store can load NaCl modules without enabling Native "

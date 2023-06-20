@@ -9,4 +9,8 @@
 // browser.
 bool IsSupportedPepperInterface(const char* name);
 
+// Returns whether any NaCl usage is allowed in Chrome. This checks command-line
+// flags since this can be called from non-browser processes.
+bool IsNaclAllowed();
+
 #endif  // CHROME_COMMON_PPAPI_UTILS_H_

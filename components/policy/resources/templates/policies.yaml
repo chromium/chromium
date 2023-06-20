@@ -1119,6 +1119,7 @@ policies:
   1118: PhysicalKeyboardAutocorrect
   1119: PhysicalKeyboardPredictiveWriting
   1120: ColorCorrectionEnabled
+  1121: NativeClientForceAllowed
 atomic_groups:
   1: Homepage
   2: RemoteAccess

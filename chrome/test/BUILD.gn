@@ -2504,6 +2504,10 @@ if (!is_android) {
       sources += [ "../browser/ui/views/device_signals_consent/consent_dialog_browsertest.cc" ]
     }
 
+    if (!is_fuchsia) {
+      sources += [ "../browser/chrome_browser_main_extra_parts_nacl_deprecation_browsertest.cc" ]
+    }
+
     if (is_chrome_branded && !is_android) {
       sources += [
         "../browser/ui/views/promos/ios_promo_password_bubble_browsertest.cc",

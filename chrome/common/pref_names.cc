@@ -1400,6 +1400,9 @@ const char kImportDialogHistory[] = "import_dialog_history";
 const char kImportDialogSavedPasswords[] = "import_dialog_saved_passwords";
 const char kImportDialogSearchEngine[] = "import_dialog_search_engine";
 
+// Boolean controlling whether native client is force allowed by policy.
+const char kNativeClientForceAllowed[] = "native_client_force_allowed";
+
 // Profile avatar and name
 const char kProfileAvatarIndex[] = "profile.avatar_index";
 const char kProfileName[] = "profile.name";
