@@ -58,7 +58,7 @@ SafeBrowsingUrlCheckerImpl::Notifier::operator=(Notifier&& other) = default;
 void SafeBrowsingUrlCheckerImpl::Notifier::OnStartSlowCheck() {
   if (callback_) {
     std::move(callback_).Run(slow_check_notifier_.BindNewPipeAndPassReceiver(),
-                             false, false, false, false);
+                             false, false);
     return;
   }
 
@@ -73,9 +73,8 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
     bool did_perform_url_real_time_check,
     bool did_check_url_real_time_allowlist) {
   if (callback_) {
-    std::move(callback_).Run(mojo::NullReceiver(), proceed, showed_interstitial,
-                             did_perform_url_real_time_check,
-                             did_check_url_real_time_allowlist);
+    std::move(callback_).Run(mojo::NullReceiver(), proceed,
+                             showed_interstitial);
     return;
   }
 
@@ -88,9 +87,7 @@ void SafeBrowsingUrlCheckerImpl::Notifier::OnCompleteCheck(
   }
 
   if (slow_check_notifier_) {
-    slow_check_notifier_->OnCompleteCheck(proceed, showed_interstitial,
-                                          did_perform_url_real_time_check,
-                                          did_check_url_real_time_allowlist);
+    slow_check_notifier_->OnCompleteCheck(proceed, showed_interstitial);
     slow_check_notifier_.reset();
     return;
   }
