@@ -30,7 +30,7 @@ readonly HEADLESS="${HEADLESS:-true}"
 
 # The directory and file wherein to store BiDi logs.
 readonly LOG_DIR="${LOG_DIR:-logs}"
-readonly LOG_FILE="$LOG_DIR/$(date '+%Y-%m-%d-%H-%M-%S').log"
+readonly LOG_FILE="${LOG_FILE:-$LOG_DIR/$(date '+%Y-%m-%d-%H-%M-%S').log}"
 
 # Node.JS options
 readonly NODE_OPTIONS="${NODE_OPTIONS:---unhandled-rejections=strict}"
