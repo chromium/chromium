@@ -81,6 +81,9 @@ class TabListViewBinder {
                     ResourcesCompat.getDrawable(res, selectedTabBackground, theme),
                     (int) res.getDimension(R.dimen.tab_list_selected_inset_low_end));
             view.setForeground(model.get(TabProperties.IS_SELECTED) ? drawable : null);
+        } else if (TabProperties.IS_INCOGNITO == propertyKey) {
+            updateColors(view, model.get(TabProperties.IS_INCOGNITO),
+                    model.get(TabProperties.IS_SELECTED));
         } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
             if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
                 view.setOnClickListener(null);
@@ -107,8 +110,10 @@ class TabListViewBinder {
         bindListTab(model, view, propertyKey);
 
         if (TabProperties.IS_INCOGNITO == propertyKey) {
-            updateColors(view, model.get(TabProperties.IS_INCOGNITO),
-                    model.get(TabProperties.IS_SELECTED));
+            ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
+            ImageViewCompat.setImageTintList(closeButton,
+                    TabUiThemeProvider.getActionButtonTintList(view.getContext(),
+                            model.get(TabProperties.IS_INCOGNITO), /*isSelected=*/false));
         }
     }
 
@@ -121,10 +126,6 @@ class TabListViewBinder {
     private static void updateColors(ViewGroup view, boolean isIncognito, boolean isSelected) {
         // TODO(crbug.com/1455397): isSelected is ignored as the selected row is only outlined not
         // colored so it should use the unselected color. This will be addressed in a fixit.
-        ImageView closeButton = (ImageView) view.findViewById(R.id.end_button);
-        ImageViewCompat.setImageTintList(closeButton,
-                TabUiThemeProvider.getActionButtonTintList(
-                        view.getContext(), isIncognito, /*isSelected=*/false));
 
         View cardView = view.findViewById(R.id.content_view);
         cardView.getBackground().mutate();
