@@ -140,8 +140,8 @@ void AccessibilityPanelLayoutManager::UpdateWindowBounds() {
 }
 
 void AccessibilityPanelLayoutManager::UpdateWorkAreaForPanelHeight() {
-  bool has_height = panel_window_ && panel_window_->bounds().y() == 0 &&
-                    panel_state_ == AccessibilityPanelState::FULL_WIDTH;
+  bool has_height =
+      panel_window_ && panel_state_ == AccessibilityPanelState::FULL_WIDTH;
   const int height = has_height ? panel_window_->bounds().height() : 0;
   WorkAreaInsets* const work_area_insets =
       Shell::GetPrimaryRootWindowController()->work_area_insets();
