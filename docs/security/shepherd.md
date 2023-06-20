@@ -219,7 +219,7 @@ help.
       corruption.
     * Set a provisional `FoundIn` of the current Extended Stable.
     * Assign it to the current [V8
-      Sheriff](https://goto.googleplex.com/current-v8-sheriff) with
+      Sheriff](https://goto.google.com/current-v8-sheriff) with
       a comment explaining that the severity and `FoundIn` are provisional.
       Note that V8 CHECK failure crashes can have security implications, so
       don't triage it yourself.
