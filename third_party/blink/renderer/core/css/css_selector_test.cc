@@ -296,4 +296,11 @@ TEST(CSSSelector, PseudoTrueChild) {
   EXPECT_EQ("> div", selector[0].SelectorText());
 }
 
+TEST(CSSSelector, PseudoTrueSpecificity) {
+  CSSSelector selector;
+  selector.SetTrue();
+  selector.SetLastInComplexSelector(true);
+  EXPECT_EQ(0u, selector.Specificity());
+}
+
 }  // namespace blink

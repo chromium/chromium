@@ -171,6 +171,10 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           }
         case kPseudoRelativeAnchor:
           return 0;
+        case kPseudoTrue:
+          // The :true pseudo-class should never be web-exposed, and should
+          // therefore not affect specificity either.
+          return 0;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:
