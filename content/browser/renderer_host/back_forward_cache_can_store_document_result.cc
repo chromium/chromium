@@ -189,6 +189,8 @@ ProtoEnum::BackForwardCacheNotRestoredReason NotRestoredReasonToTraceEnum(
       return ProtoEnum::FENCED_FRAMES_EMBEDDER;
     case Reason::kCookieDisabled:
       return ProtoEnum::COOKIE_DISABLED;
+    case Reason::kHTTPAuthRequired:
+      return ProtoEnum::HTTP_AUTH_REQUIRED;
     case Reason::kBlocklistedFeatures:
       return ProtoEnum::BLOCKLISTED_FEATURES;
     case Reason::kUnknown:
@@ -448,6 +450,8 @@ std::string BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToString(
       return "Pages using FencedFrames cannot be stored in bfcache.";
     case Reason::kCookieDisabled:
       return "Cookie is disabled for the page.";
+    case Reason::kHTTPAuthRequired:
+      return "Same-origin HTTP authentication is required in another tab.";
   }
 }
 
@@ -532,6 +536,8 @@ BackForwardCacheCanStoreDocumentResult::NotRestoredReasonToReportString(
       return "Cache-control:no-store";
     case Reason::kCookieDisabled:
       return "Cookie is disabled";
+    case Reason::kHTTPAuthRequired:
+      return "Same-origin HTTP authentication is required in another tab";
     case Reason::kDisableForRenderFrameHostCalled:
       return DisabledReasonsToString(disabled_reasons_,
                                      /*for_not_restored_reasons=*/true);

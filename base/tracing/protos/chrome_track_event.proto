@@ -651,6 +651,7 @@ message BackForwardCacheCanStoreDocumentResult {
     ERROR_DOCUMENT = 54;
     FENCED_FRAMES_EMBEDDER = 55;
     COOKIE_DISABLED = 56;
+    HTTP_AUTH_REQUIRED = 57;
   }
 
   optional BackForwardCacheNotRestoredReason

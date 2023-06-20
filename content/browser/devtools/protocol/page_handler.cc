@@ -1474,6 +1474,8 @@ Page::BackForwardCacheNotRestoredReason NotRestoredReasonToProtocol(
       return Page::BackForwardCacheNotRestoredReasonEnum::FencedFramesEmbedder;
     case Reason::kCookieDisabled:
       return Page::BackForwardCacheNotRestoredReasonEnum::CookieDisabled;
+    case Reason::kHTTPAuthRequired:
+      return Page::BackForwardCacheNotRestoredReasonEnum::HTTPAuthRequired;
     case Reason::kBlocklistedFeatures:
       // Blocklisted features should be handled separately and be broken down
       // into sub reasons.
@@ -1754,6 +1756,7 @@ Page::BackForwardCacheNotRestoredReasonType MapNotRestoredReasonToType(
     case Reason::kErrorDocument:
     case Reason::kFencedFramesEmbedder:
     case Reason::kCookieDisabled:
+    case Reason::kHTTPAuthRequired:
       return Page::BackForwardCacheNotRestoredReasonTypeEnum::Circumstantial;
     case Reason::kCacheControlNoStore:
     case Reason::kCacheControlNoStoreCookieModified:

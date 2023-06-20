@@ -2028,9 +2028,13 @@ void StoragePartitionImpl::OnAuthRequired(
                   url::SchemeHostPort(last_committed_url.scheme(),
                                       last_committed_url.host(),
                                       last_committed_url.IntPort())) {
-            rfh->EvictFromBackForwardCacheWithReason(
-                BackForwardCacheMetrics::NotRestoredReason::
-                    kCacheControlNoStore);
+            BackForwardCacheCanStoreDocumentResult flattened_reasons;
+            flattened_reasons.No(BackForwardCacheMetrics::NotRestoredReason::
+                                     kCacheControlNoStore);
+            flattened_reasons.No(
+                BackForwardCacheMetrics::NotRestoredReason::kHTTPAuthRequired);
+            rfh->EvictFromBackForwardCacheWithFlattenedReasons(
+                flattened_reasons);
           }
         }
       }
