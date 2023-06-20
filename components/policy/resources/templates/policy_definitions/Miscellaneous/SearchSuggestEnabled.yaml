@@ -18,8 +18,8 @@ items:
 - caption: Disable search suggestions
   value: false
 owners:
-- file://components/policy/OWNERS
-- emaxx@chromium.org
+- chrome-desktop-search@google.com
+- jdonnelly@google.com
 schema:
   type: boolean
 supported_on:
