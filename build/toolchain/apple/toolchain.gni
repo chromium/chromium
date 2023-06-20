@@ -755,8 +755,7 @@ template("single_apple_toolchain") {
             "-header-path {{target_gen_dir}}/{{target_output_name}}.h " +
             "-depfile {{target_out_dir}}/{{module_name}}.d " +
             "-bridge-header {{bridge_header}} $_extra_flags " +
-            "{{swiftflags}} {{defines}} {{include_dirs}} {{module_dirs}} " +
-            "{{inputs}}"
+            "{{swiftflags}} {{include_dirs}} {{module_dirs}} {{inputs}}"
       }
     }
 

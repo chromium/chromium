@@ -52,7 +52,7 @@ def fix_module_imports(header_path, output_path):
       header_file.write(line)
 
 
-def compile_module(module, sources, settings, extra_args, tmpdir):
+def compile_module(module, sources, settings, extras, tmpdir):
   """Compile `module` from `sources` using `settings`."""
   output_file_map = {}
   if settings.whole_module_optimization:
@@ -100,73 +100,67 @@ def compile_module(module, sources, settings, extra_args, tmpdir):
     output_file_map_file.write(json.dumps(output_file_map))
     output_file_map_file.flush()
 
-  additional_args = []
+  extra_args = []
   if settings.file_compilation_dir:
-    additional_args.extend([
+    extra_args.extend([
         '-file-compilation-dir',
         settings.file_compilation_dir,
     ])
 
   if settings.bridge_header:
-    additional_args.extend([
+    extra_args.extend([
         '-import-objc-header',
         os.path.abspath(settings.bridge_header),
     ])
 
   if settings.whole_module_optimization:
-    additional_args.append('-whole-module-optimization')
+    extra_args.append('-whole-module-optimization')
 
   if settings.target:
-    additional_args.extend([
+    extra_args.extend([
         '-target',
         settings.target,
     ])
 
   if settings.sdk:
-    additional_args.extend([
+    extra_args.extend([
         '-sdk',
         os.path.abspath(settings.sdk),
     ])
 
   if settings.swift_version:
-    additional_args.extend([
+    extra_args.extend([
         '-swift-version',
         settings.swift_version,
     ])
 
   if settings.include_dirs:
     for include_dir in settings.include_dirs:
-      additional_args.append('-I' + include_dir)
+      extra_args.append('-I' + include_dir)
 
   if settings.system_include_dirs:
     for system_include_dir in settings.system_include_dirs:
-      additional_args.extend(['-Xcc', '-isystem', '-Xcc', system_include_dir])
+      extra_args.extend(['-Xcc', '-isystem', '-Xcc', system_include_dir])
 
   if settings.framework_dirs:
     for framework_dir in settings.framework_dirs:
-      additional_args.extend([
+      extra_args.extend([
           '-F',
           framework_dir,
       ])
 
   if settings.system_framework_dirs:
     for system_framework_dir in settings.system_framework_dirs:
-      additional_args.extend([
+      extra_args.extend([
           '-F',
           system_framework_dir,
       ])
 
   if settings.enable_cxx_interop:
-    additional_args.extend([
+    extra_args.extend([
         '-Xfrontend',
         '-enable-cxx-interop',
-        '-enable-experimental-cxx-interop',
     ])
-
-  # Assume that all extra arguments need to be passed to the clang parser
-  # embedded in the swift compiler (this should mostly be -D arguments).
-  for extra_arg in extra_args:
-    additional_args.extend(['-Xcc', extra_arg])
 
   # The swiftc compiler uses a global module cache that is not robust against
   # changes in the sub-modules nor against corruption (see crbug.com/1358073).
@@ -201,7 +195,7 @@ def compile_module(module, sources, settings, extra_args, tmpdir):
       output_file_map_path,
       '-pch-output-dir',
       os.path.abspath(settings.pch_output_dir),
-  ] + additional_args + sources)
+  ] + extra_args + extras + sources)
 
   process.communicate()
   if process.returncode:
@@ -308,7 +302,7 @@ def main(args):
                       default='',
                       action='store',
                       help='compilation directory to embed in the debug info')
-  parser.add_argument('-enable-experimental-cxx-interop',
+  parser.add_argument('-enable-cxx-interop',
                       dest='enable_cxx_interop',
                       action='store_true',
                       help='allow importing C++ modules into Swift')
