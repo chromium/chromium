@@ -771,6 +771,8 @@ void StyleAdjuster::AdjustForForcedColorsMode(ComputedStyleBuilder& builder) {
   builder.SetTextShadow(ComputedStyleInitialValues::InitialTextShadow());
   builder.SetBoxShadow(ComputedStyleInitialValues::InitialBoxShadow());
   builder.SetColorScheme({AtomicString("light"), AtomicString("dark")});
+  builder.SetScrollbarColor(
+      ComputedStyleInitialValues::InitialScrollbarColor());
   if (builder.ShouldForceColor(builder.AccentColor())) {
     builder.SetAccentColor(ComputedStyleInitialValues::InitialAccentColor());
   }
