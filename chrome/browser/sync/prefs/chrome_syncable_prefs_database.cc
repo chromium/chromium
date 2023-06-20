@@ -267,8 +267,6 @@ enum {
 
 const auto& SyncablePreferences() {
   // Non-iOS specific list of syncable preferences.
-  // TODO(crbug.com/1448000): Revise the history opt-in requirement flag for
-  // prefs.
   static const auto kChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>({
 #if BUILDFLAG(IS_ANDROID)
@@ -721,7 +719,7 @@ const auto& SyncablePreferences() {
           false}},
         {performance_manager::user_tuning::prefs::kTabDiscardingExceptions,
          {syncable_prefs_ids::kTabDiscardingExceptions, syncer::PREFERENCES,
-          false}},
+          true}},
         {prefs::kAccessibilityImageLabelsEnabled,
          {syncable_prefs_ids::kAccessibilityImageLabelsEnabled,
           syncer::PREFERENCES, false}},
@@ -816,37 +814,37 @@ const auto& SyncablePreferences() {
         // content_settings_registry.
         {"profile.content_settings.exceptions.anti_abuse",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsAntiAbuse,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.automatic_downloads",
          {syncable_prefs_ids::
               kProfileContentSettingsExceptionsAutomaticDownloads,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.cookies",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsCookies,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.get_display_media_set_select_all_"
          "screens",
          {syncable_prefs_ids::
               kProfileContentSettingsExceptionsGetDisplayMediaSetSelectAllScreens,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.images",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsImages,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.javascript",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsJavascript,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.local_fonts",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsLocalFonts,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.mouselock",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsMouselock,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.popups",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsPopups,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.content_settings.exceptions.window_placement",
          {syncable_prefs_ids::kProfileContentSettingsExceptionsWindowPlacement,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {"profile.default_content_setting_values.anti_abuse",
          {syncable_prefs_ids::kProfileDefaultContentSettingValuesAntiAbuse,
           syncer::PREFERENCES, false}},

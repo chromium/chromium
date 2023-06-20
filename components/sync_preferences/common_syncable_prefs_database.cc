@@ -118,8 +118,6 @@ enum {
 
 const auto& SyncablePreferences() {
   // List of syncable preferences common across platforms.
-  // TODO(crbug.com/1448000): Revise the history opt-in requirement flag for
-  // prefs.
   static const auto kCommonSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, SyncablePrefMetadata>({
     {autofill::prefs::kAutofillCreditCardEnabled,
@@ -218,7 +216,7 @@ const auto& SyncablePreferences() {
          {syncable_prefs_ids::kCustomLinksInitialized, syncer::PREFERENCES,
           false}},
         {ntp_tiles::prefs::kCustomLinksList,
-         {syncable_prefs_ids::kCustomLinksList, syncer::PREFERENCES, false}},
+         {syncable_prefs_ids::kCustomLinksList, syncer::PREFERENCES, true}},
         {omnibox::kKeywordSpaceTriggeringEnabled,
          {syncable_prefs_ids::kKeywordSpaceTriggeringEnabled,
           syncer::PREFERENCES, false}},
@@ -291,7 +289,7 @@ const auto& SyncablePreferences() {
           false}},
         {translate::prefs::kPrefNeverPromptSitesWithTime,
          {syncable_prefs_ids::kPrefNeverPromptSitesWithTime,
-          syncer::PREFERENCES, false}},
+          syncer::PREFERENCES, true}},
         {translate::prefs::kPrefTranslateRecentTarget,
          {syncable_prefs_ids::kPrefTranslateRecentTarget, syncer::PREFERENCES,
           false}},

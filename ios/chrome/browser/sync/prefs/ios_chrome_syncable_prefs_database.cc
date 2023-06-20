@@ -47,8 +47,6 @@ enum {
 
 const auto& SyncablePreferences() {
   // iOS specific list of syncable preferences.
-  // TODO(crbug.com/1448000): Revise the history opt-in requirement flag for
-  // prefs.
   static const auto kIOSChromeSyncablePrefsAllowlist = base::MakeFixedFlatMap<
       base::StringPiece, sync_preferences::SyncablePrefMetadata>(
       {{prefs::kArticlesForYouEnabled,
