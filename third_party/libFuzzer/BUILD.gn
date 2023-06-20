@@ -33,7 +33,6 @@ source_set("libfuzzer") {
     "src/FuzzerIO.cpp",
     "src/FuzzerIOPosix.cpp",
     "src/FuzzerIOWindows.cpp",
-    "src/FuzzerInterceptors.cpp",
     "src/FuzzerLoop.cpp",
     "src/FuzzerMerge.cpp",
     "src/FuzzerMutate.cpp",
@@ -46,6 +45,9 @@ source_set("libfuzzer") {
     "src/FuzzerUtilPosix.cpp",
     "src/FuzzerUtilWindows.cpp",
   ]
+  if (!using_sanitizer) {
+    sources += [ "src/FuzzerInterceptors.cpp" ]
+  }
 
   configs -= fuzzing_engine_remove_configs
   configs += fuzzing_engine_add_configs
