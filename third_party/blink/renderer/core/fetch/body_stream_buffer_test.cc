@@ -691,7 +691,7 @@ TEST_P(BodyStreamBufferTest, AbortSignalMakesAborted) {
   // This BytesConsumer is not drainable.
   BytesConsumer* src = MakeGarbageCollected<ReplayingBytesConsumer>(
       scope.GetDocument().GetTaskRunner(TaskType::kNetworking));
-  auto* controller = AbortController::Create(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetScriptState());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(), src, controller->signal(),
       /*cached_metadata_handler=*/nullptr);
@@ -724,7 +724,7 @@ TEST_P(BodyStreamBufferTest,
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* controller = AbortController::Create(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetScriptState());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(), src, controller->signal(),
       /*cached_metadata_handler=*/nullptr);
@@ -759,7 +759,7 @@ TEST_P(BodyStreamBufferTest, AbortAfterStartLoadingCallsDataLoaderClientAbort) {
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* controller = AbortController::Create(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetScriptState());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(), src, controller->signal(),
       /*cached_metadata_handler=*/nullptr);
@@ -795,7 +795,7 @@ TEST_P(BodyStreamBufferTest,
 
   EXPECT_CALL(checkpoint, Call(3));
 
-  auto* controller = AbortController::Create(scope.GetExecutionContext());
+  auto* controller = AbortController::Create(scope.GetScriptState());
   BodyStreamBuffer* buffer = BodyStreamBuffer::Create(
       scope.GetScriptState(), src, controller->signal(),
       /*cached_metadata_handler=*/nullptr);

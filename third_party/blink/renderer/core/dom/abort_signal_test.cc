@@ -40,7 +40,8 @@ class AbortSignalTest : public PageTestBase {
   void SetUp() override {
     PageTestBase::SetUp();
 
-    controller_ = AbortController::Create(GetFrame().DomWindow());
+    ScriptState* script_state = ToScriptStateForMainWorld(&GetFrame());
+    controller_ = AbortController::Create(script_state);
     signal_ = controller_->signal();
   }
 

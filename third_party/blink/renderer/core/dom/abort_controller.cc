@@ -6,15 +6,16 @@
 
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/dom/abort_signal.h"
+#include "third_party/blink/renderer/core/execution_context/execution_context.h"
 #include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/blink/renderer/platform/heap/visitor.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 
 namespace blink {
 
-AbortController* AbortController::Create(ExecutionContext* context) {
+AbortController* AbortController::Create(ScriptState* script_state) {
   return MakeGarbageCollected<AbortController>(
-      MakeGarbageCollected<AbortSignal>(context,
+      MakeGarbageCollected<AbortSignal>(ExecutionContext::From(script_state),
                                         AbortSignal::SignalType::kController));
 }
 
