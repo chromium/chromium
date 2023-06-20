@@ -208,8 +208,13 @@ TEST_P(StylusWritingGestureTest, TestGestureDeleteWithWordGranularity) {
       // Deleting a word and its trailing space in between two other words
       // should leave the words either side with a single space between them.
       TestCase(28, 52, "A BC DEF", "A DEF"),
+      // Deleting a word and its leading space in between two other words
+      // should leave the words either side with a single space between them.
+      TestCase(10, 40, "A BC DEF", "A DEF"),
       // Same as above but with the spaces on both sides.
       TestCase(12, 48, "A BC DEF", "A DEF"),
+      // Similar to above but spaces aren't originally part of the selection.
+      TestCase(30, 50, "AB CD EF GH", "AB EF GH"),
       // Removing the last word is an edge case as there's no word past it to
       // check.
       TestCase(32, 72, "ABCDE FGH", "ABCDE"),
@@ -443,6 +448,33 @@ TEST_P(StylusWritingGestureTest, TestGestureSelect) {
   EXPECT_EQ("AB CD EF GH", input->Value());
   EXPECT_EQ(1, range.StartOffset());
   EXPECT_EQ(4, range.EndOffset());
+  EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
+            last_gesture_result);
+}
+
+TEST_P(StylusWritingGestureTest, TestGestureSelectsNoSpacesEitherSide) {
+  const bool is_RTL = GetParam();
+  auto* input = SetUpSingleInput(is_RTL);
+  input->SetValue("AB CD EF GH");
+  const int width = input->BoundsInWidget().width();
+
+  mojom::blink::StylusWritingGestureDataPtr gesture_data(
+      mojom::blink::StylusWritingGestureData::New());
+  gesture_data->action = mojom::blink::StylusWritingGestureAction::SELECT_TEXT;
+  gesture_data->start_rect = GetRect(20, 6, 0, 0, width, is_RTL);
+  gesture_data->end_rect = GetRect(90, 6, 0, 0, width, is_RTL);
+  gesture_data->text_alternative = text_alternative;
+  gesture_data->granularity =
+      mojom::blink::StylusWritingGestureGranularity::WORD;
+
+  WidgetImpl()->HandleStylusWritingGestureAction(
+      std::move(gesture_data),
+      WTF::BindOnce(&StylusWritingGestureTest::ResultCallback,
+                    base::Unretained(this)));
+  WebRange range = Controller()->GetSelectionOffsets();
+  EXPECT_EQ("AB CD EF GH", input->Value());
+  EXPECT_EQ(3, range.StartOffset());
+  EXPECT_EQ(8, range.EndOffset());
   EXPECT_EQ(mojom::blink::HandwritingGestureResult::kSuccess,
             last_gesture_result);
 }
