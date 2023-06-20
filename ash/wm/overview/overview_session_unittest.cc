@@ -1599,6 +1599,28 @@ TEST_P(OverviewSessionTest, AcceleratorInOverviewSession) {
   EXPECT_TRUE(IsUIShown(ewh));
 }
 
+// Tests that overview session will exit when clicking on the empty area in
+// overview.
+TEST_P(OverviewSessionTest, ExitOverviewWhenClickingEmptyArea) {
+  std::unique_ptr<aura::Window> window(CreateTestWindow());
+  ToggleOverview();
+  OverviewController* overview_controller = GetOverviewController();
+  ASSERT_TRUE(overview_controller->InOverviewSession());
+  ASSERT_EQ(1u, GetOverviewSession()->grid_list().size());
+
+  OverviewItem* overview_item = GetOverviewItemForWindow(window.get());
+  EXPECT_TRUE(overview_item);
+  const auto outside_point =
+      gfx::ToRoundedPoint(
+          overview_item->GetTransformedBounds().bottom_right()) +
+      gfx::Vector2d(20, 20);
+
+  auto* event_generator = GetEventGenerator();
+  event_generator->MoveMouseTo(outside_point);
+  event_generator->ClickLeftButton();
+  EXPECT_FALSE(overview_controller->InOverviewSession());
+}
+
 // Tests hitting the escape and back keys exits overview mode.
 TEST_P(OverviewSessionTest, ExitOverviewWithKey) {
   std::unique_ptr<aura::Window> window(CreateTestWindow());
