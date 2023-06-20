@@ -42,10 +42,15 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // make themes work with the feature.
   ApplyDefaultChromeRefreshToolbarColors(mixer, key);
 
-  // The colors for the Profile Menu with the material design should be applied
-  // regardless of whether a custom theme is enabled.
+  // Some colors in the material design should be applied regardless of whether
+  // a custom theme is enabled.
   // TODO(tluk): Factor the always-applied material color definitions into a
   // separate file.
+
+  // Download bubble colors.
+  mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
+
+  // Profile Menu colors.
   mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
   mixer[kColorProfileMenuIconButton] = {ui::kColorSysOnTonalContainer};
@@ -57,7 +62,7 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuSyncOffIcon] = {ui::kColorMenuIcon};
   mixer[kColorProfileMenuSyncPausedIcon] = {ui::kColorSysPrimary};
 
-  // Tab Search Colors.
+  // Tab Search colors.
   mixer[kColorTabSearchBackground] = {ui::kColorSysSurface};
   mixer[kColorTabSearchDivider] = {ui::kColorSysOnBaseDivider};
   mixer[kColorTabSearchMediaIcon] = {ui::kColorSysOnSurfaceSubtle};
@@ -103,7 +108,6 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorBookmarkDragImageBackground] = {ui::kColorSysPrimary};
   mixer[kColorBookmarkFolderIcon] = {kColorBookmarkBarForeground};
   mixer[kColorCapturedTabContentsBorder] = {ui::kColorSysPrimary};
-  mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
   mixer[kColorDownloadItemForegroundDisabled] = BlendForMinContrast(
       ui::GetResultingPaintColor(ui::kColorSysStateDisabled,
                                  kColorDownloadShelfBackground),
