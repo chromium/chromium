@@ -48,6 +48,7 @@
 #include "third_party/blink/renderer/core/css/resolver/style_builder_converter.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver.h"
 #include "third_party/blink/renderer/core/css/resolver/style_resolver_state.h"
+#include "third_party/blink/renderer/core/css/style_color.h"
 #include "third_party/blink/renderer/core/css/style_engine.h"
 #include "third_party/blink/renderer/core/css/zoom_adjusted_pixel_value.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
@@ -69,6 +70,7 @@
 #include "third_party/blink/renderer/core/view_transition/view_transition_style_tracker.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/geometry/length.h"
+#include "third_party/blink/renderer/platform/graphics/color.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
 #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
@@ -1832,7 +1834,20 @@ void Color::ApplyValue(StyleResolverState& state,
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetColor(builder.InitialColorForColorScheme());
   } else {
-    builder.SetColor(StyleBuilderConverter::ConvertStyleColor(state, value));
+    // color-mix with currentcolor is a special case for this property.
+    // currentColor used in the color property value refers to the parent's
+    // computed currentColor which means we can fully resolve currentColor at
+    // ApplyValue time to get the correct resolved and used values for the color
+    // property, even for the color-mix() function.
+    // For typed OM, currentColor and color-mix() functions containing
+    // currentColor should have been preserved for values in computedStyleMap().
+    // See crbug.com/1099874
+    StyleColor color = StyleBuilderConverter::ConvertStyleColor(state, value);
+    if (color.IsUnresolvedColorMixFunction()) {
+      color = StyleColor(color.GetUnresolvedColorMix().Resolve(
+          state.ParentNode()->ComputedStyleRef().Color().GetColor()));
+    }
+    builder.SetColor(color);
   }
   builder.SetColorIsInherited(false);
   builder.SetColorIsCurrentColor(false);
@@ -2435,8 +2450,9 @@ void Content::ApplyInitial(StyleResolverState& state) const {
 }
 
 void Content::ApplyInherit(StyleResolverState& state) const {
-  // FIXME: In CSS3, it will be possible to inherit content. In CSS2 it is not.
-  // This note is a reminder that eventually "inherit" needs to be supported.
+  // FIXME: In CSS3, it will be possible to inherit content. In CSS2 it is
+  // not. This note is a reminder that eventually "inherit" needs to be
+  // supported.
 }
 
 void Content::ApplyValue(StyleResolverState& state,
@@ -3591,8 +3607,8 @@ cssvalue::CSSFontVariationValue* ConsumeFontVariationTag(
   }
   AtomicString tag = token.Value().ToAtomicString();
   for (wtf_size_t i = 0; i < kTagNameLength; ++i) {
-    // Limits the range of characters to 0x20-0x7E, following the tag name rules
-    // defined in the OpenType specification.
+    // Limits the range of characters to 0x20-0x7E, following the tag name
+    // rules defined in the OpenType specification.
     UChar character = tag[i];
     if (character < 0x20 || character > 0x7E) {
       return nullptr;
@@ -3726,8 +3742,17 @@ void InternalVisitedColor::ApplyValue(StyleResolverState& state,
     DCHECK_EQ(state.GetElement(), state.GetDocument().documentElement());
     builder.SetInternalVisitedColor(builder.InitialColorForColorScheme());
   } else {
-    builder.SetInternalVisitedColor(
-        StyleBuilderConverter::ConvertStyleColor(state, value, true));
+    // color-mix with currentcolor is a special case for this property.
+    // See Color::ApplyValue.
+    // Using Color instead of InternalVisitedColor here, see
+    // https://bugs.chromium.org/p/chromium/issues/detail?id=1236297#c5.
+    StyleColor color =
+        StyleBuilderConverter::ConvertStyleColor(state, value, true);
+    if (color.IsUnresolvedColorMixFunction()) {
+      color = StyleColor(color.GetUnresolvedColorMix().Resolve(
+          state.ParentNode()->ComputedStyleRef().Color().GetColor()));
+    }
+    builder.SetInternalVisitedColor(color);
   }
   builder.SetInternalVisitedColorIsCurrentColor(false);
 }
@@ -7881,8 +7906,8 @@ void TextAlign::ApplyValue(StyleResolverState& state,
   const auto* ident_value = DynamicTo<CSSIdentifierValue>(value);
   if (ident_value &&
       ident_value->GetValueID() != CSSValueID::kWebkitMatchParent) {
-    // Special case for th elements - UA stylesheet text-align does not apply if
-    // parent's computed value for text-align is not its initial value
+    // Special case for th elements - UA stylesheet text-align does not apply
+    // if parent's computed value for text-align is not its initial value
     // https://html.spec.whatwg.org/C/#tables-2
     if (ident_value->GetValueID() == CSSValueID::kInternalCenter &&
         state.ParentStyle()->GetTextAlign() !=
