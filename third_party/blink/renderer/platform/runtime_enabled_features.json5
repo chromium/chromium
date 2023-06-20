@@ -3964,10 +3964,9 @@
     },
     {
       name: "WebGPUWebCodecs",
-      base_feature: "none",
-      origin_trial_feature_name: "WebGPUWebCodecs",
+      status: "stable",
       public: true,
-      // Make the WebGPUDeveloperFeatures also enabled this OT feature.
+      // Make the WebGPUDeveloperFeatures also enabled this feature.
       implied_by: ["WebGPUDeveloperFeatures"],
     },
     {

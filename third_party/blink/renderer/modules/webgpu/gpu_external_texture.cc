@@ -26,14 +26,12 @@ GPUExternalTexture* ExternalTextureCache::Import(
     ExecutionContext* execution_context,
     const GPUExternalTextureDescriptor* descriptor,
     ExceptionState& exception_state) {
-  // Gate VideoFrame importExternalTexture on the WebGPUWebCodecs OT.
   if (descriptor->source()->GetContentType() ==
           V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame &&
       !RuntimeEnabledFeatures::WebGPUWebCodecsEnabled(execution_context)) {
     exception_state.ThrowTypeError(
         "VideoFrame isn't supported for importExternalTexture. This feature "
-        "requires the WebGPUWebCodecs origin trial or "
-        "--enable-webgpu-developer-features");
+        "requires --enable-webgpu-developer-features");
     return nullptr;
   }
 
