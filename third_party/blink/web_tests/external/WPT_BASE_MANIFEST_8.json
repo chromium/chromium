@@ -158299,6 +158299,19 @@
        {}
       ]
      ],
+     "overflow-clip-rounded-table.html": [
+      "5484129e7fdedd49a4c4bea509a00dd94c6ec1c3",
+      [
+       null,
+       [
+        [
+         "/css/css-overflow/overflow-clip-rounded-table-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "overflow-clip-x-visible-y-svg.html": [
       "bd903cdfd68f604064d46a6d50d64d4784b7a0de",
       [
@@ -228989,6 +229002,19 @@
        {}
       ]
      ],
+     "pseudo-rendering-invalidation.html": [
+      "9b6d07c08d394ffe18f8690198d4091b60d4b771",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/pseudo-rendering-invalidation-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
      "root-captured-as-different-tag.html": [
       "4264db81699c395e9af0a693915b92069df7a93d",
       [
@@ -229252,6 +229278,32 @@
        [
         [
          "/css/css-view-transitions/set-universal-specificity-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "snapshot-containing-block-absolute.html": [
+      "50ec138e594c0a6fc3647cda70f5f2f43b78fb9d",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/snapshot-containing-block-absolute-ref.html",
+         "=="
+        ]
+       ],
+       {}
+      ]
+     ],
+     "snapshot-containing-block-static.html": [
+      "753312bce3990b1f9d15c596c855c1d0cf1cce82",
+      [
+       null,
+       [
+        [
+         "/css/css-view-transitions/snapshot-containing-block-static-ref.html",
          "=="
         ]
        ],
@@ -273858,11 +273910,11 @@
   "support": {
    ".cache": {
     "gitignore2.json": [
-     "21beaddbfcb6f8a92985ca630340ad5c6fdd5312",
+     "2f1437ee92ca3a1d8d6656affb8d2ed11011eb40",
      []
     ],
     "mtime.json": [
-     "866c37768b2c8cae22effd00bbd05ec025fff66d",
+     "c3e41d411cf709e8c412f14fc80b4badf98389fc",
      []
     ]
    },
@@ -315656,6 +315708,10 @@
       "5a265c7a73978fdf7e84fbfbf72e2593433cd264",
       []
      ],
+     "overflow-clip-rounded-table-ref.html": [
+      "5452c4efcff59aa15b0a6a040f51706d95ea4e6c",
+      []
+     ],
      "overflow-clip-x-visible-y-svg-ref.html": [
       "31e831d011de19491c502d7db8c4a0b084ec7b84",
       []
@@ -335366,6 +335422,10 @@
       "bb4f2df0f8124d6f002a233c6af9872a74cc88eb",
       []
      ],
+     "pseudo-rendering-invalidation-ref.html": [
+      "f622f94b5f5b07f26b500e8316e1f8c28b5eb900",
+      []
+     ],
      "root-captured-as-different-tag-ref.html": [
       "92bd70f6f4eb24096392289040d85aca2ae43742",
       []
@@ -335416,6 +335476,14 @@
      ],
      "set-universal-specificity-ref.html": [
       "4bf2164c7ae078cb48ea3eaf0881434e0f0945dd",
+      []
+     ],
+     "snapshot-containing-block-absolute-ref.html": [
+      "3d307ce3c7eaf0d7b218a5803ca2ea3603de0355",
+      []
+     ],
+     "snapshot-containing-block-static-ref.html": [
+      "8ed60934cafe3970b4bd8e5ddcbc79818b10679b",
       []
      ],
      "support": {
@@ -358265,28 +358333,6 @@
         []
        ]
       },
-      "text-styles": {
-       "2d.text.draw.space.collapse.end.html.ini": [
-        "620eec257d704aaa3612d3cb8348484a0ce6e22f",
-        []
-       ],
-       "2d.text.draw.space.collapse.other.html.ini": [
-        "488f17836492b6c183e49348915a200bfdbde30c",
-        []
-       ],
-       "2d.text.draw.space.collapse.space.html.ini": [
-        "83db1b1b56fbc5b1333ee13729745fe4619484a6",
-        []
-       ],
-       "2d.text.draw.space.collapse.start.html.ini": [
-        "cb362816aec4af3bfbd525527f4e8dff101ff5f5",
-        []
-       ],
-       "2d.text.measure.width.space.html.ini": [
-        "4b2bf8bce658a5b92789a5ab4d2f013b76cc9d35",
-        []
-       ]
-      },
       "wide-gamut-canvas": {
        "2d.color.space.p3.fillText.shadow.html.ini": [
         "cb2b23ea57f6ab2b64c6c7b1793bd0eba07343d1",
@@ -358660,38 +358706,6 @@
         "70d7b046cb226cfcb2bfeebe3477d3b580d8270a",
         []
        ],
-       "2d.text.draw.space.collapse.end.html.ini": [
-        "620eec257d704aaa3612d3cb8348484a0ce6e22f",
-        []
-       ],
-       "2d.text.draw.space.collapse.end.worker.js.ini": [
-        "b89b065ee6f86f6a7aa4b6d3ba3c0423b804de46",
-        []
-       ],
-       "2d.text.draw.space.collapse.other.html.ini": [
-        "488f17836492b6c183e49348915a200bfdbde30c",
-        []
-       ],
-       "2d.text.draw.space.collapse.other.worker.js.ini": [
-        "240545835a2a6062468039321a54a096782405ef",
-        []
-       ],
-       "2d.text.draw.space.collapse.space.html.ini": [
-        "83db1b1b56fbc5b1333ee13729745fe4619484a6",
-        []
-       ],
-       "2d.text.draw.space.collapse.space.worker.js.ini": [
-        "962e9edf7e707ee4fbb1e236fb54e356f814cce1",
-        []
-       ],
-       "2d.text.draw.space.collapse.start.html.ini": [
-        "cb362816aec4af3bfbd525527f4e8dff101ff5f5",
-        []
-       ],
-       "2d.text.draw.space.collapse.start.worker.js.ini": [
-        "474c87d1c4b3ed417a22f00525a152c031c09448",
-        []
-       ],
        "2d.text.draw.stroke.basic.png": [
         "fb3b5b830d345d2aa858e41673e08f99977baf08",
         []
@@ -358742,14 +358756,6 @@
        ],
        "2d.text.drawing.style.wordSpacing.measure.relative.worker.js.ini": [
         "2142c1260983365f0a7bf1f3370b8164e24be26d",
-        []
-       ],
-       "2d.text.measure.width.space.html.ini": [
-        "4f69c9fc580d63529b8ca3487ab47b70fe43e994",
-        []
-       ],
-       "2d.text.measure.width.space.worker.js.ini": [
-        "e78e6b6a1fb5c47d93790929bbbfe085f688ca1e",
         []
        ]
       }
@@ -358878,7 +358884,7 @@
          []
         ],
         "text-styles.yaml": [
-         "0eba21943c08be58e03b0f0930ca92566dc336e1",
+         "76149894b6c4d6cff15b4b3462a87e2f1f1c3671",
          []
         ],
         "the-canvas-element.yaml": [
@@ -358892,7 +358898,7 @@
          []
         ],
         "text.yaml": [
-         "e37535741ef5b101ad4166151acba8177876b31a",
+         "ee06c713dafe93ce98b8551a9787a29c2f9a602f",
          []
         ],
         "the-offscreen-canvas.yaml": [
@@ -397568,7 +397574,7 @@
      []
     ],
     "reconfiguring-encoder.https.any.js.ini": [
-     "d9d15a96b19351b59fe90c5b545ddd97f8429b88",
+     "d380bdb0a76208778a6acdf0c922fe920515815e",
      []
     ],
     "sfx-aac.mp4": [
@@ -462487,6 +462493,13 @@
         {}
        ]
       ],
+      "auto-014.html": [
+       "f34dbec396ff7e43db48e9d0b9321d94b42cfab4",
+       [
+        null,
+        {}
+       ]
+      ],
       "contain-intrinsic-size-009.html": [
        "0aa62eaaeff5d6cc2fd499b1bf6907e11cbe0e37",
        [
@@ -462545,21 +462558,21 @@
       ],
       "parsing": {
        "contain-intrinsic-size-computed.html": [
-        "18461c0ed2e818b40584c85fbcb70d3a760b8d3e",
+        "1de987c0a10257b509d64c629e17f253752b7af7",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-invalid.html": [
-        "b63b6f3826b5c0063e89ac42aedb1cedd6b95d92",
+        "d50e582b2bbf125a67df84f84b26058080d7e760",
         [
          null,
          {}
         ]
        ],
        "contain-intrinsic-size-valid.html": [
-        "8fd7e64d067d0a164d558ba97a3d99ccfdae0428",
+        "94fc57a61c8990a16f3d3572569b4d5668f92abc",
         [
          null,
          {}
@@ -531430,28 +531443,28 @@
         ]
        ],
        "2d.text.draw.space.collapse.end.html": [
-        "ab49fcb4f600bf19cc1d3bb17b17afbefff6f556",
+        "aebdd0e87e5de65b7d7e8f28b19c6f623218aee3",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.other.html": [
-        "30727c858e4479e76bfdfdd6f7435a09ef66d1a1",
+        "1400d7c5d83fb16b902a3dadc5539f72850885cf",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.html": [
-        "23405071725a3bf7c6d0e535635bea3487d682f1",
+        "271c9bacaddb028db307f3326296c54e5fcf9935",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.html": [
-        "cee64201eedf2f9112c84a0b99f479632ca631a8",
+        "6f1b81e533eb42fd950c8fc4251a0af40c7d1971",
         [
          null,
          {}
@@ -543085,14 +543098,14 @@
         ]
        ],
        "2d.text.draw.space.collapse.end.html": [
-        "a9dcfb11c42f891fe6405624aab2c8a2950ff38c",
+        "060f41bb976358c6f3fd7e21b9308af77216bc8d",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.end.worker.js": [
-        "87ae8b8d58bd76f0c86dc8a335ff863f0c0d85c2",
+        "4c436006e3b13e773a39adcfdc9a954ed640839c",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.end.worker.html",
          {}
@@ -543113,42 +543126,42 @@
         ]
        ],
        "2d.text.draw.space.collapse.other.html": [
-        "c9808a4c71616be86b0dd70b3291a425d97f5d41",
+        "41bca9bce6a017d2a434755b5a2e0f4adffb7592",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.other.worker.js": [
-        "f072b76dd81bec651b7552ab2b6cb938235f88d2",
+        "a662955bec09d3eb5501b532c9dd60774d7b2e0e",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.other.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.html": [
-        "1ed09048961c25b4841009ee124edfc51380c381",
+        "6a2b305b7474c2f5bf6f5d93080466d4c45d572b",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.space.worker.js": [
-        "979a8a0f1cc55ea5683d84239b93e4de241bef5f",
+        "b1e8d8e872d4f068c9542c237c10755724eee3b0",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.space.worker.html",
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.html": [
-        "1581ce111cecb855d8cdb0cf003ada4004529dcc",
+        "cadb1c3b60a1879094484de320924d7b819a1665",
         [
          null,
          {}
         ]
        ],
        "2d.text.draw.space.collapse.start.worker.js": [
-        "79f8326561c2a7bbd5215e088db883c55f6337b7",
+        "d7ae819eea3de72f3d29ce240e8f29985d5d3d58",
         [
          "html/canvas/offscreen/text/2d.text.draw.space.collapse.start.worker.html",
          {}
@@ -561279,7 +561292,7 @@
         ]
        ],
        "dialog-focus-previous-outside.html": [
-        "efd242c57694b8f8cc88c6974ef5236cca400200",
+        "82f201f11aab6dbb614520e8031216611978122e",
         [
          null,
          {}
