@@ -21,6 +21,10 @@
 #include "base/win/windows_version.h"
 #endif
 
+#if BUILDFLAG(IS_APPLE)
+#include "base/apple/bundle_locations.h"
+#endif
+
 namespace base {
 
 namespace {
@@ -128,11 +132,6 @@ TEST_F(PathServiceTest, Get) {
       FILE_MODULE,
       // PathProviderPosix handles it but fails at some point.
       DIR_USER_DESKTOP};
-#elif BUILDFLAG(IS_IOS)
-  constexpr std::array kUnsupportedKeys = {
-      // DIR_USER_DESKTOP is not implemented on iOS. See crbug.com/1257402.
-      DIR_USER_DESKTOP};
-
 #elif BUILDFLAG(IS_FUCHSIA)
   constexpr std::array kUnsupportedKeys = {
       // TODO(crbug.com/1231928): Implement DIR_USER_DESKTOP.
@@ -339,8 +338,12 @@ TEST_F(PathServiceTest, GetProgramFiles) {
 }
 #endif  // BUILDFLAG(IS_WIN)
 
-// DIR_ASSETS is DIR_MODULE except on Fuchsia where it is the package root
-// and Android where it is overridden in tests by test_support_android.cc.
+// Tests that DIR_ASSETS is
+// - the package root on Fuchsia,
+// - overridden in tests by test_support_android.cc,
+// - equals to base::apple::FrameworkBundlePath() on iOS,
+// - a sub-directory of base::apple::FrameworkBundlePath() on iOS catalyst,
+// - equals to DIR_MODULE otherwise.
 TEST_F(PathServiceTest, DIR_ASSETS) {
   FilePath path;
   ASSERT_TRUE(PathService::Get(DIR_ASSETS, &path));
@@ -349,6 +352,10 @@ TEST_F(PathServiceTest, DIR_ASSETS) {
 #elif BUILDFLAG(IS_ANDROID)
   // This key is overridden in //base/test/test_support_android.cc.
   EXPECT_EQ(path.value(), kExpectedChromiumTestsRoot);
+#elif BUILDFLAG(IS_IOS_MACCATALYST)
+  EXPECT_TRUE(base::apple::FrameworkBundlePath().IsParent(path));
+#elif BUILDFLAG(IS_IOS)
+  EXPECT_EQ(path, base::apple::FrameworkBundlePath());
 #else
   EXPECT_EQ(path, PathService::CheckedGet(DIR_MODULE));
 #endif

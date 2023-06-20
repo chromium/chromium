@@ -429,7 +429,7 @@ NativeLibrary LoadTestLibrary(StringPiece library_name) {
   // macros in a function returning non-null.
   const auto load = [&](NativeLibrary* library) {
     FilePath library_path;
-#if BUILDFLAG(IS_FUCHSIA)
+#if BUILDFLAG(IS_FUCHSIA) || BUILDFLAG(IS_IOS)
     // TODO(crbug.com/1262430): Find a solution that works across platforms.
     ASSERT_TRUE(PathService::Get(DIR_ASSETS, &library_path));
 #else

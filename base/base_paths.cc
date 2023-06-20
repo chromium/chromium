@@ -20,7 +20,7 @@ bool PathProvider(int key, FilePath* result) {
         return false;
       *result = result->DirName();
       return true;
-#if !BUILDFLAG(IS_FUCHSIA)
+#if !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
     case DIR_MODULE:
       if (!PathService::Get(FILE_MODULE, result))
         return false;
@@ -28,7 +28,7 @@ bool PathProvider(int key, FilePath* result) {
       return true;
     case DIR_ASSETS:
       return PathService::Get(DIR_MODULE, result);
-#endif  // !BUILDFLAG(IS_FUCHSIA)
+#endif  // !BUILDFLAG(IS_FUCHSIA) && !BUILDFLAG(IS_IOS)
     case DIR_TEMP:
       return GetTempDir(result);
     case DIR_HOME:
