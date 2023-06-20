@@ -303,4 +303,25 @@ TEST(CSSSelector, PseudoTrueSpecificity) {
   EXPECT_EQ(0u, selector.Specificity());
 }
 
+TEST(CSSSelector, ImplicitScopeSpecificity) {
+  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
+                                         /* is_implicit */ false),
+                             CSSSelector("scope", /* is_implicit */ true)};
+  selector[0].SetRelation(CSSSelector::kChild);
+  selector[1].SetLastInComplexSelector(true);
+  EXPECT_EQ("> div", selector[0].SelectorText());
+  EXPECT_EQ(CSSSelector::kTagSpecificity, selector[0].Specificity());
+}
+
+TEST(CSSSelector, ExplicitScopeSpecificity) {
+  CSSSelector selector[2] = {CSSSelector(QualifiedName("div"),
+                                         /* is_implicit */ false),
+                             CSSSelector("scope", /* is_implicit */ false)};
+  selector[0].SetRelation(CSSSelector::kChild);
+  selector[1].SetLastInComplexSelector(true);
+  EXPECT_EQ(":scope > div", selector[0].SelectorText());
+  EXPECT_EQ(CSSSelector::kTagSpecificity | CSSSelector::kClassLikeSpecificity,
+            selector[0].Specificity());
+}
+
 }  // namespace blink

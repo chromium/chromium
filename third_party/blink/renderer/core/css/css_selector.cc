@@ -175,6 +175,16 @@ inline unsigned CSSSelector::SpecificityForOneSelector() const {
           // The :true pseudo-class should never be web-exposed, and should
           // therefore not affect specificity either.
           return 0;
+        case kPseudoScope:
+          if (is_implicitly_added_) {
+            // Implicit :scope pseudo-classes are added to selectors
+            // within @scope. Such pseudo-classes must not have any effect
+            // on the specificity of the scoped selector.
+            //
+            // https://drafts.csswg.org/css-cascade-6/#scope-effects
+            return 0;
+          }
+          break;
         // FIXME: PseudoAny should base the specificity on the sub-selectors.
         // See http://lists.w3.org/Archives/Public/www-style/2010Sep/0530.html
         case kPseudoAny:
