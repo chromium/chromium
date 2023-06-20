@@ -60,7 +60,10 @@ SkColor GetWallpaperColor(bool is_dark_mode_enabled) {
 }
 
 PrefService* GetUserPrefService(const AccountId& account_id) {
-  DCHECK(account_id.is_valid());
+  if (!account_id.is_valid()) {
+    CHECK_IS_TEST();
+    return nullptr;
+  }
   return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
       account_id);
 }
