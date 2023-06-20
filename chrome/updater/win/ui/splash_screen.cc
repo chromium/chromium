@@ -10,7 +10,6 @@
 #include "base/check.h"
 #include "base/check_op.h"
 #include "base/logging.h"
-#include "base/notreached.h"
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 #include "chrome/updater/win/ui/resources/updater_installer_strings.h"
@@ -93,18 +92,13 @@ void SplashScreen::Dismiss(base::OnceClosure on_close_closure) {
     case WindowState::STATE_CREATED:
       SwitchToState(WindowState::STATE_CLOSED);
       break;
-
     case WindowState::STATE_SHOW_NORMAL:
       SwitchToState(WindowState::STATE_FADING);
       break;
-
     case WindowState::STATE_CLOSED:
     case WindowState::STATE_FADING:
     case WindowState::STATE_INITIALIZED:
       break;
-
-    default:
-      NOTREACHED();
   }
 }
 
@@ -220,7 +214,9 @@ LRESULT SplashScreen::OnDestroy(UINT, WPARAM, LPARAM, BOOL& handled) {
     CHECK(IsWindow());
     KillTimer(kClosingTimerID);
   }
-  std::move(on_close_closure_).Run();
+  if (on_close_closure_) {
+    std::move(on_close_closure_).Run();
+  }
   handled = true;
   return 0;
 }
