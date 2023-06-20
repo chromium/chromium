@@ -6,8 +6,7 @@
 
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
-<script src="../resources/interpolation-testcommon-without-serialization.js"></script>
-
+<script src="/css/support/interpolation-testcommon.js"></script>
 <style>
 @font-palette-values --custom-palette {
   font-family: "Color font";
@@ -109,10 +108,10 @@ test(t => {
   var anim = target.animate({ fontPalette: ['normal', 'inherit'] }, 1000);
   anim.pause();
   anim.currentTime = 500;
-  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal, light 50%)');
+  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal 50%, light)');
 
   container.setAttribute('class', 'container2');
-  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal, dark 50%)');
+  assert_equals(getComputedStyle(target).fontPalette, 'palette-mix(in oklab, normal 50%, dark)');
 }, "An interpolation to inherit updates correctly on a parent style change.");
 
 test(t => {
@@ -137,7 +136,7 @@ test(t => {
     animation.currentTime = 500;
   });
   assert_equals(getComputedStyle(target).fontPalette,
-                "palette-mix(in oklab, light, normal 50%)");
+                "palette-mix(in oklab, light 50%, normal)");
 }, "Test additive animations");
 
 </script>

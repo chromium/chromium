@@ -209,6 +209,8 @@ blink_core_sources_css = [
   "css_paint_image_generator.h",
   "css_paint_value.cc",
   "css_paint_value.h",
+  "css_palette_mix_value.h",
+  "css_palette_mix_value.cc",
   "css_path_value.cc",
   "css_path_value.h",
   "css_pending_substitution_value.cc",

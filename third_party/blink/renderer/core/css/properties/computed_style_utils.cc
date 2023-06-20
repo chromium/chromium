@@ -111,22 +111,21 @@ CSSValue* ConvertFontPaletteToCSSValue(const blink::FontPalette* palette) {
       }
       result->Append(*color_space_css_value_list);
 
-      CSSValue* start = ConvertFontPaletteToCSSValue(palette->GetStart().get());
-      result->Append(*start);
-
-      CSSValueList* end_palette_with_percentage =
+      CSSValueList* start_palette_with_percentage =
           CSSValueList::CreateSpaceSeparated();
+      CSSValue* start = ConvertFontPaletteToCSSValue(palette->GetStart().get());
+      start_palette_with_percentage->Append(*start);
+      CSSValue* param = CSSNumericLiteralValue::Create(
+          (1.0 - palette->GetPercentage()) * 100,
+          CSSPrimitiveValue::UnitType::kPercentage);
+      start_palette_with_percentage->Append(*param);
+      result->Append(*start_palette_with_percentage);
+
       CSSValue* end = ConvertFontPaletteToCSSValue(palette->GetEnd().get());
       if (*start == *end) {
         return start;
       }
-      end_palette_with_percentage->Append(*end);
-
-      CSSValue* param = CSSNumericLiteralValue::Create(
-          palette->GetPercentage() * 100,
-          CSSPrimitiveValue::UnitType::kPercentage);
-      end_palette_with_percentage->Append(*param);
-      result->Append(*end_palette_with_percentage);
+      result->Append(*end);
 
       return result;
     }

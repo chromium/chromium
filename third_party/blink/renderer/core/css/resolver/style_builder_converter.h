@@ -102,6 +102,7 @@ class StyleBuilderConverterBase {
       const Document*);
   static FontSizeAdjust ConvertFontSizeAdjust(const CSSValue&);
   static scoped_refptr<FontPalette> ConvertFontPalette(const CSSValue&);
+  static scoped_refptr<FontPalette> ConvertPaletteMix(const CSSValue&);
 };
 
 // Note that we assume the parser only allows valid CSSValue types.

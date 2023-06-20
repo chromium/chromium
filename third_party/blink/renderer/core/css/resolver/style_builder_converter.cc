@@ -49,6 +49,7 @@
 #include "third_party/blink/renderer/core/css/css_math_expression_node.h"
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
+#include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_pending_system_font_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
@@ -79,10 +80,12 @@
 #include "third_party/blink/renderer/core/style/shape_offset_path_operation.h"
 #include "third_party/blink/renderer/core/style/style_overflow_clip_margin.h"
 #include "third_party/blink/renderer/core/style/style_svg_resource.h"
+#include "third_party/blink/renderer/platform/fonts/font_palette.h"
 #include "third_party/blink/renderer/platform/fonts/opentype/open_type_math_support.h"
 #include "third_party/blink/renderer/platform/geometry/layout_unit.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/use_counter.h"
+#include "third_party/blink/renderer/platform/runtime_enabled_features.h"
 #include "third_party/blink/renderer/platform/wtf/hash_map.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -495,6 +498,42 @@ scoped_refptr<FontPalette> StyleBuilderConverter::ConvertFontPalette(
   return StyleBuilderConverterBase::ConvertFontPalette(value);
 }
 
+scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertPaletteMix(
+    const CSSValue& value) {
+  DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+
+  auto* palette_mix_value = DynamicTo<cssvalue::CSSPaletteMixValue>(value);
+  if (palette_mix_value) {
+    scoped_refptr<FontPalette> palette1 =
+        ConvertFontPalette(palette_mix_value->Palette1());
+    if (palette1 == nullptr) {
+      // Use normal palette.
+      palette1 = FontPalette::Create();
+    }
+    scoped_refptr<FontPalette> palette2 =
+        ConvertFontPalette(palette_mix_value->Palette2());
+    if (palette2 == nullptr) {
+      palette2 = FontPalette::Create();
+    }
+
+    Color::ColorSpace color_space =
+        palette_mix_value->ColorInterpolationSpace();
+    Color::HueInterpolationMethod hue_interpolation_method =
+        palette_mix_value->HueInterpolationMethod();
+
+    double alpha_multiplier;
+    double normalized_percentage;
+    if (cssvalue::CSSColorMixValue::NormalizePercentages(
+            palette_mix_value->Percentage1(), palette_mix_value->Percentage2(),
+            normalized_percentage, alpha_multiplier)) {
+      return FontPalette::Mix(palette1, palette2, normalized_percentage,
+                              alpha_multiplier, color_space,
+                              hue_interpolation_method);
+    }
+  }
+  return nullptr;
+}
+
 scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertFontPalette(
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
@@ -517,7 +556,11 @@ scoped_refptr<FontPalette> StyleBuilderConverterBase::ConvertFontPalette(
     return FontPalette::Create(custom_identifier->Value());
   }
 
-  return nullptr;
+  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled()) {
+    return ConvertPaletteMix(value);
+  } else {
+    return nullptr;
+  }
 }
 
 float MathScriptScaleFactor(StyleResolverState& state) {

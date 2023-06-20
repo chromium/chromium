@@ -2098,7 +2098,10 @@
   {
     "prefix": "font-palette-animation",
     "platforms": ["Linux"],
-    "bases": ["wpt_internal/css/css-fonts/animations"],
+    "bases": [
+      "wpt_internal/css/css-fonts/animations",
+      "wpt_internal/css/css-fonts/palette-mix-computed.tentative.html"
+    ],
     "exclusive_tests": "ALL",
     "args": [
       "--enable-blink-features=FontPaletteAnimation"

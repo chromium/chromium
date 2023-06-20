@@ -38,6 +38,7 @@
 #include "third_party/blink/renderer/core/css/css_math_function_value.h"
 #include "third_party/blink/renderer/core/css/css_numeric_literal_value.h"
 #include "third_party/blink/renderer/core/css/css_paint_value.h"
+#include "third_party/blink/renderer/core/css/css_palette_mix_value.h"
 #include "third_party/blink/renderer/core/css/css_path_value.h"
 #include "third_party/blink/renderer/core/css/css_primitive_value.h"
 #include "third_party/blink/renderer/core/css/css_property_names.h"
@@ -5303,6 +5304,102 @@ CSSValue* ConsumeLineHeight(CSSParserTokenRange& range,
   }
   return ConsumeLengthOrPercent(range, context,
                                 CSSPrimitiveValue::ValueRange::kNonNegative);
+}
+
+CSSValue* ConsumePaletteMixFunction(CSSParserTokenRange& range,
+                                    const CSSParserContext& context) {
+  // Grammar proposal in: https://github.com/w3c/csswg-drafts/issues/8922
+  //
+  // palette-mix() = palette-mix(<color-interpolation-method> , [ [normal |
+  // light | dark | <palette-identifier> | <palette-mix()>] && <percentage
+  // [0,100]>? ]#{2})
+  DCHECK(RuntimeEnabledFeatures::FontPaletteAnimationEnabled());
+
+  if (range.Peek().FunctionId() != CSSValueID::kPaletteMix) {
+    return nullptr;
+  }
+
+  CSSParserTokenRange range_copy = range;
+  CSSParserTokenRange args = ConsumeFunction(range_copy);
+  Color::ColorSpace color_space;
+  Color::HueInterpolationMethod hue_interpolation_method =
+      Color::HueInterpolationMethod::kShorter;
+  if (!ConsumeColorInterpolationSpace(args, color_space,
+                                      hue_interpolation_method)) {
+    return nullptr;
+  }
+
+  auto consume_endpoint_palette_with_percentage =
+      [](CSSParserTokenRange& args, const CSSParserContext& context)
+      -> std::pair<CSSValue*, CSSPrimitiveValue*> {
+    if (!ConsumeCommaIncludingWhitespace(args)) {
+      return std::make_pair(nullptr, nullptr);
+    }
+
+    CSSValue* palette = ConsumeFontPalette(args, context);
+    CSSPrimitiveValue* percentage =
+        ConsumePercent(args, context, CSSPrimitiveValue::ValueRange::kAll);
+    // Percentage can be followed by a palette.
+    if (!palette) {
+      palette = ConsumeFontPalette(args, context);
+      if (!palette) {
+        return std::make_pair(nullptr, nullptr);
+      }
+    }
+    // Reject negative values and values > 100%, but not calc() values.
+    if (percentage && percentage->IsNumericLiteralValue() &&
+        (percentage->GetDoubleValue() < 0.0 ||
+         percentage->GetDoubleValue() > 100.0)) {
+      return std::make_pair(nullptr, nullptr);
+    }
+    return std::make_pair(palette, percentage);
+  };
+
+  auto palette_with_percentage_1 =
+      consume_endpoint_palette_with_percentage(args, context);
+  auto palette_with_percentage_2 =
+      consume_endpoint_palette_with_percentage(args, context);
+  CSSValue* palette1 = palette_with_percentage_1.first;
+  CSSValue* palette2 = palette_with_percentage_2.first;
+  CSSPrimitiveValue* percentage1 = palette_with_percentage_1.second;
+  CSSPrimitiveValue* percentage2 = palette_with_percentage_2.second;
+
+  if (!palette1 || !palette2) {
+    return nullptr;
+  }
+  // If both values are literally zero (and not calc()) reject at parse time.
+  if (percentage1 && percentage2 && percentage1->IsNumericLiteralValue() &&
+      percentage1->GetDoubleValue() == 0.0f &&
+      percentage2->IsNumericLiteralValue() &&
+      percentage2->GetDoubleValue() == 0.0) {
+    return nullptr;
+  }
+
+  if (!args.AtEnd()) {
+    return nullptr;
+  }
+
+  range = range_copy;
+
+  return MakeGarbageCollected<cssvalue::CSSPaletteMixValue>(
+      palette1, palette2, percentage1, percentage2, color_space,
+      hue_interpolation_method);
+}
+
+CSSValue* ConsumeFontPalette(CSSParserTokenRange& range,
+                             const CSSParserContext& context) {
+  if (range.Peek().Id() == CSSValueID::kNormal ||
+      range.Peek().Id() == CSSValueID::kLight ||
+      range.Peek().Id() == CSSValueID::kDark) {
+    return css_parsing_utils::ConsumeIdent(range);
+  }
+
+  if (RuntimeEnabledFeatures::FontPaletteAnimationEnabled() &&
+      range.Peek().FunctionId() == CSSValueID::kPaletteMix) {
+    return ConsumePaletteMixFunction(range, context);
+  }
+
+  return ConsumeDashedIdent(range, context);
 }
 
 CSSValueList* ConsumeFontFamily(CSSParserTokenRange& range) {

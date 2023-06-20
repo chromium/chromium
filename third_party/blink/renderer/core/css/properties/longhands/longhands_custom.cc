@@ -3391,13 +3391,7 @@ const CSSValue* FontPalette::ParseSingleValue(
     CSSParserTokenRange& range,
     const CSSParserContext& context,
     const CSSParserLocalContext&) const {
-  if (range.Peek().Id() == CSSValueID::kNormal ||
-      range.Peek().Id() == CSSValueID::kLight ||
-      range.Peek().Id() == CSSValueID::kDark) {
-    return css_parsing_utils::ConsumeIdent(range);
-  }
-
-  return css_parsing_utils::ConsumeDashedIdent(range, context);
+  return css_parsing_utils::ConsumeFontPalette(range, context);
 }
 
 const CSSValue* FontSizeAdjust::ParseSingleValue(

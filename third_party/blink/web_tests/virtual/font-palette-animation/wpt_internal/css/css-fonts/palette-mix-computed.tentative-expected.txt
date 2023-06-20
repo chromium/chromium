@@ -1,0 +1,30 @@
+This is a testharness.js-based test.
+PASS Property font-palette value 'palette-mix(in oklab, light 30%, dark)'
+PASS Property font-palette value 'palette-mix(in oklab, light 30%, light)'
+PASS Property font-palette value 'palette-mix(in oklab, light 30%, normal)'
+PASS Property font-palette value 'palette-mix(in oklab, --custom-palette 30%, normal)'
+FAIL Property font-palette value 'palette-mix(in oklab, light 50%, dark 50%)' assert_equals: expected "palette-mix(in oklab, light, dark)" but got "palette-mix(in oklab, light 50%, dark)"
+FAIL Property font-palette value 'palette-mix(in oklab, light, dark 50%)' assert_equals: expected "palette-mix(in oklab, light, dark)" but got "palette-mix(in oklab, light 50%, dark)"
+FAIL Property font-palette value 'palette-mix(in oklab, light 50%, dark)' assert_equals: expected "palette-mix(in oklab, light, dark)" but got "palette-mix(in oklab, light 50%, dark)"
+FAIL Property font-palette value 'palette-mix(in oklab, light, dark)' assert_equals: expected "palette-mix(in oklab, light, dark)" but got "palette-mix(in oklab, light 50%, dark)"
+FAIL Property font-palette value 'palette-mix(in oklab, light 50%, dark 70%)' assert_equals: expected "palette-mix(in oklab, light 50%, dark 70%)" but got "palette-mix(in oklab, light 41.6667%, dark)"
+FAIL Property font-palette value 'palette-mix(in oklab, light 70%, dark 70%)' assert_equals: expected "palette-mix(in oklab, light 70%, dark 70%)" but got "palette-mix(in oklab, light 50%, dark)"
+PASS Property font-palette value 'palette-mix(in oklab, light, dark 70%)'
+PASS Property font-palette value 'palette-mix(in oklab, light 30%, dark 70%)'
+PASS Property font-palette value 'palette-mix(in oklab, light 60%, dark)'
+FAIL Property font-palette value 'palette-mix(in oklab, light 10%, dark 40%)' assert_equals: expected "palette-mix(in oklab, light 10%, dark 40%)" but got "palette-mix(in oklab, light 20%, dark)"
+PASS Property font-palette value 'palette-mix(in hsl, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in hwb, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in lch, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in oklch, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in lab, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in oklab, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in srgb, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in srgb-linear, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in xyz, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in xyz-d50, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in xyz-d65, light 10%, dark)'
+PASS Property font-palette value 'palette-mix(in oklab, palette-mix(in srgb, light 30%, normal) 20%, dark)'
+PASS Property font-palette value 'palette-mix(in oklab, palette-mix(in srgb, light 30%, normal) 30%, palette-mix(in srgb, --custom-palette 30%, dark))'
+Harness: the test ran to completion.
+
