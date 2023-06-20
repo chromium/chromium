@@ -552,8 +552,9 @@ public class StatusMediator implements PermissionDialogController.Observer,
                     ThemeUtils.getThemedToolbarIconTintRes(mBrandedColorScheme)));
         }
 
-        return mSearchEngineLogoUtils.getSearchEngineLogo(mResources, mBrandedColorScheme,
-                mProfileSupplier.get(), mTemplateUrlServiceSupplier.get());
+        Profile profile = mProfileSupplier.hasValue() ? mProfileSupplier.get() : null;
+        return mSearchEngineLogoUtils.getSearchEngineLogo(
+                mResources, mBrandedColorScheme, profile, mTemplateUrlServiceSupplier.get());
     }
 
     /** Return the resource id for the accessibility description or 0 if none apply. */
