@@ -100,7 +100,8 @@ EpochTopics CreateTestEpochTopics(
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
                      kPaddedTopTopicsStartIndex, kTaxonomyVersion,
-                     kModelVersion, calculation_time);
+                     kModelVersion, calculation_time,
+                     /*from_manually_triggered_calculation=*/false);
 }
 
 class PortalActivationWaiter : public content::WebContentsObserver {

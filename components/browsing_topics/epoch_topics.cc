@@ -42,13 +42,16 @@ EpochTopics::EpochTopics(
     size_t padded_top_topics_start_index,
     int taxonomy_version,
     int64_t model_version,
-    base::Time calculation_time)
+    base::Time calculation_time,
+    bool from_manually_triggered_calculation)
     : top_topics_and_observing_domains_(
           std::move(top_topics_and_observing_domains)),
       padded_top_topics_start_index_(padded_top_topics_start_index),
       taxonomy_version_(taxonomy_version),
       model_version_(model_version),
-      calculation_time_(calculation_time) {
+      calculation_time_(calculation_time),
+      from_manually_triggered_calculation_(
+          from_manually_triggered_calculation) {
   DCHECK_EQ(base::checked_cast<int>(top_topics_and_observing_domains_.size()),
             blink::features::kBrowsingTopicsNumberOfTopTopicsPerEpoch.Get());
   DCHECK_LE(padded_top_topics_start_index,
@@ -122,7 +125,8 @@ EpochTopics EpochTopics::FromDictValue(const base::Value::Dict& dict_value) {
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
                      padded_top_topics_start_index, taxonomy_version,
-                     model_version, calculation_time);
+                     model_version, calculation_time,
+                     /*from_manually_triggered_calculation=*/false);
 }
 
 base::Value::Dict EpochTopics::ToDictValue() const {

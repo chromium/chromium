@@ -178,6 +178,7 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
                                site_data_manager,
                                annotator,
                                epochs,
+                               /*is_manually_triggered=*/false,
                                std::move(callback)),
       rand_uint64_queue_(std::move(rand_uint64_queue)) {}
 
@@ -194,6 +195,7 @@ TesterBrowsingTopicsCalculator::TesterBrowsingTopicsCalculator(
                                site_data_manager,
                                annotator,
                                base::circular_deque<EpochTopics>(),
+                               /*is_manually_triggered=*/false,
                                base::DoNothing()),
       use_mock_result_(true),
       mock_result_(std::move(mock_result)),

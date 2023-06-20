@@ -114,6 +114,8 @@ class BrowsingTopicsState
                            EpochsForSite_OneEpoch_SwitchTimeNotArrived);
   FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
                            EpochsForSite_OneEpoch_SwitchTimeArrived);
+  FRIEND_TEST_ALL_PREFIXES(BrowsingTopicsStateTest,
+                           EpochsForSite_OneEpoch_ManuallyTriggered);
 
   base::TimeDelta CalculateSiteStickyTimeDelta(
       const std::string& top_domain) const;

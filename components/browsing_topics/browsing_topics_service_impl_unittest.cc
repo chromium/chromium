@@ -77,7 +77,8 @@ EpochTopics CreateTestEpochTopics(
 
   return EpochTopics(std::move(top_topics_and_observing_domains),
                      padded_top_topics_start_index, kTaxonomyVersion,
-                     model_version, calculation_time);
+                     model_version, calculation_time,
+                     /*from_manually_triggered_calculation=*/false);
 }
 
 }  // namespace
@@ -120,6 +121,7 @@ class TesterBrowsingTopicsService : public BrowsingTopicsServiceImpl {
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
+      bool is_manually_triggered,
       BrowsingTopicsCalculator::CalculateCompletedCallback callback) override {
     DCHECK(!mock_calculator_results_.empty());
 

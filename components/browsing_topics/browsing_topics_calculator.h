@@ -64,6 +64,7 @@ class BrowsingTopicsCalculator {
       content::BrowsingTopicsSiteDataManager* site_data_manager,
       Annotator* annotator,
       const base::circular_deque<EpochTopics>& epochs,
+      bool is_manually_triggered,
       CalculateCompletedCallback callback);
 
   BrowsingTopicsCalculator(const BrowsingTopicsCalculator&) = delete;
@@ -72,6 +73,8 @@ class BrowsingTopicsCalculator {
   BrowsingTopicsCalculator& operator=(BrowsingTopicsCalculator&&) = delete;
 
   virtual ~BrowsingTopicsCalculator();
+
+  bool is_manually_triggered() const { return is_manually_triggered_; }
 
  protected:
   // This method exists for the purposes of overriding in tests.
@@ -129,6 +132,10 @@ class BrowsingTopicsCalculator {
 
   // Used for the async tasks querying the HistoryService.
   base::CancelableTaskTracker history_task_tracker_;
+
+  // Whether this calculator was generated via the topics-internals page rather
+  // than via a scheduled task.
+  bool is_manually_triggered_;
 
   base::WeakPtrFactory<BrowsingTopicsCalculator> weak_ptr_factory_{this};
 };

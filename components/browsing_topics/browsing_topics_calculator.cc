@@ -184,13 +184,15 @@ BrowsingTopicsCalculator::BrowsingTopicsCalculator(
     content::BrowsingTopicsSiteDataManager* site_data_manager,
     Annotator* annotator,
     const base::circular_deque<EpochTopics>& epochs,
+    bool is_manually_triggered,
     CalculateCompletedCallback callback)
     : privacy_sandbox_settings_(privacy_sandbox_settings),
       history_service_(history_service),
       site_data_manager_(site_data_manager),
       annotator_(annotator),
       calculate_completed_callback_(std::move(callback)),
-      calculation_time_(base::Time::Now()) {
+      calculation_time_(base::Time::Now()),
+      is_manually_triggered_(is_manually_triggered) {
   history_data_start_time_ = DeriveHistoryDataStartTime(
       calculation_time_, epochs,
       privacy_sandbox_settings_->TopicsDataAccessibleSince());
@@ -463,7 +465,7 @@ void BrowsingTopicsCalculator::OnGetTopicsForHostsCompleted(
       EpochTopics(std::move(top_topics_and_observing_domains),
                   padded_top_topics_start_index,
                   blink::features::kBrowsingTopicsTaxonomyVersion.Get(),
-                  model_version, calculation_time_));
+                  model_version, calculation_time_, is_manually_triggered_));
 }
 
 void BrowsingTopicsCalculator::OnCalculateCompleted(

@@ -25,7 +25,8 @@ class EpochTopics {
               size_t padded_top_topics_start_index,
               int taxonomy_version,
               int64_t model_version,
-              base::Time calculation_time);
+              base::Time calculation_time,
+              bool from_manually_triggered_calculation);
 
   EpochTopics(const EpochTopics&) = delete;
   EpochTopics& operator=(const EpochTopics&) = delete;
@@ -86,6 +87,10 @@ class EpochTopics {
 
   base::Time calculation_time() const { return calculation_time_; }
 
+  bool from_manually_triggered_calculation() const {
+    return from_manually_triggered_calculation_;
+  }
+
  private:
   absl::optional<Topic> TopicForSiteHelper(
       const std::string& top_domain,
@@ -125,6 +130,13 @@ class EpochTopics {
   // failed calculation, as historically this field is only set for successful
   // calculations.
   base::Time calculation_time_;
+
+  // Whether the topic calculation was manually triggered via the UI. It is used
+  // to distinguish manual calculations from scheduled calculations so that
+  // topics calculated via the UI can be immediately visible to the tester,
+  // instead of being visible only after a caller-dependant delay. The value
+  // does not persist after restarting the browser (it is not saved).
+  bool from_manually_triggered_calculation_ = false;
 };
 
 }  // namespace browsing_topics
