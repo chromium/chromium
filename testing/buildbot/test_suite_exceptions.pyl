@@ -1251,7 +1251,7 @@
       },
       'linux-chromeos-dbg': {
         'swarming': {
-          'shards': 60,
+          'shards': 80,
         },
       },
       'linux-chromeos-rel': {
