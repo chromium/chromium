@@ -497,9 +497,10 @@ class MenuControllerTest : public ViewsTestBase,
 
   void TestMenuFitsOnScreen(MenuAnchorPosition menu_anchor_position,
                             const gfx::Rect& monitor_bounds) {
-    SCOPED_TRACE(base::StringPrintf(
-        "MenuAnchorPosition: %d, monitor_bounds: @%s\n", menu_anchor_position,
-        monitor_bounds.ToString().c_str()));
+    SCOPED_TRACE(
+        base::StringPrintf("MenuAnchorPosition: %d, monitor_bounds: @%s\n",
+                           static_cast<int>(menu_anchor_position),
+                           monitor_bounds.ToString().c_str()));
     MenuBoundsOptions options;
     options.menu_anchor = menu_anchor_position;
     options.monitor_bounds = monitor_bounds;
@@ -546,9 +547,10 @@ class MenuControllerTest : public ViewsTestBase,
 
   void TestMenuFitsOnScreenSmallAnchor(MenuAnchorPosition menu_anchor_position,
                                        const gfx::Rect& monitor_bounds) {
-    SCOPED_TRACE(base::StringPrintf(
-        "MenuAnchorPosition: %d, monitor_bounds: @%s\n", menu_anchor_position,
-        monitor_bounds.ToString().c_str()));
+    SCOPED_TRACE(
+        base::StringPrintf("MenuAnchorPosition: %d, monitor_bounds: @%s\n",
+                           static_cast<int>(menu_anchor_position),
+                           monitor_bounds.ToString().c_str()));
     MenuBoundsOptions options;
     options.menu_anchor = menu_anchor_position;
     options.monitor_bounds = monitor_bounds;
@@ -598,9 +600,10 @@ class MenuControllerTest : public ViewsTestBase,
 
   void TestMenuFitsOnSmallScreen(MenuAnchorPosition menu_anchor_position,
                                  const gfx::Rect& monitor_bounds) {
-    SCOPED_TRACE(base::StringPrintf(
-        "MenuAnchorPosition: %d, monitor_bounds: @%s\n", menu_anchor_position,
-        monitor_bounds.ToString().c_str()));
+    SCOPED_TRACE(
+        base::StringPrintf("MenuAnchorPosition: %d, monitor_bounds: @%s\n",
+                           static_cast<int>(menu_anchor_position),
+                           monitor_bounds.ToString().c_str()));
     MenuBoundsOptions options;
     options.menu_anchor = menu_anchor_position;
     options.monitor_bounds = monitor_bounds;

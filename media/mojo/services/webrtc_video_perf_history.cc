@@ -388,7 +388,7 @@ void WebrtcVideoPerfHistory::OnGotStatsCollectionForRequest(
            << (stats_collection
                    ? base::StringPrintf("smooth:%d entries:%zu prediction:%d",
                                         is_smooth, stats_collection->size(),
-                                        prediction)
+                                        static_cast<int>(prediction))
                    : (database_success ? "no info" : "query FAILED"));
 
   std::move(got_info_cb).Run(is_smooth);

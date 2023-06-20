@@ -300,7 +300,8 @@ void FtlServicesPlayground::HandleStatusError(
     return;
   }
 
-  fprintf(stderr, "RPC failed. Code=%d, Message=%s\n", status.error_code(),
+  fprintf(stderr, "RPC failed. Code=%d, Message=%s\n",
+          static_cast<int>(status.error_code()),
           status.error_message().c_str());
   std::move(on_done).Run();
 }

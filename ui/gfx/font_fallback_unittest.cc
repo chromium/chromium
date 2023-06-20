@@ -67,9 +67,9 @@ class GetFallbackFontTest
       font_option += std::string("F") + base_font_option.family_name;
     if (base_font_option.delta || base_font_option.style ||
         base_font_option.style) {
-      font_option +=
-          base::StringPrintf("_d%ds%dw%d", base_font_option.delta,
-                             base_font_option.style, base_font_option.weight);
+      font_option += base::StringPrintf(
+          "_d%ds%dw%d", base_font_option.delta, base_font_option.style,
+          static_cast<int>(base_font_option.weight));
     }
 
     std::string language_tag = test_case.language_tag;

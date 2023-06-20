@@ -283,9 +283,9 @@ std::string DisabledReasonsToString(
       // extension related reasons saying "Extensions".
       string_to_add = reason.report_string;
     } else {
-      string_to_add = base::StringPrintf("%d:%d:%s:%s", reason.source,
-                                         reason.id, reason.description.c_str(),
-                                         reason.context.c_str());
+      string_to_add = base::StringPrintf(
+          "%d:%d:%s:%s", static_cast<int>(reason.source), reason.id,
+          reason.description.c_str(), reason.context.c_str());
     }
     descriptions.push_back(string_to_add);
   }

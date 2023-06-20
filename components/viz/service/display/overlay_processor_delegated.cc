@@ -204,7 +204,8 @@ bool OverlayProcessorDelegated::AttemptWithStrategies(
       num_quads_skipped++;
     } else {
       DBG_DRAW_RECT("delegated.overlay.failed", display_rect);
-      DBG_LOG("delegated.overlay.failed", "error code %d", candidate_status);
+      DBG_LOG("delegated.overlay.failed", "error code %d",
+              static_cast<int>(candidate_status));
 
       switch (candidate_status) {
         case OverlayCandidate::CandidateStatus::kFailNotAxisAligned:
@@ -314,7 +315,8 @@ void OverlayProcessorDelegated::ProcessForOverlays(
 
   UMA_HISTOGRAM_ENUMERATION("Viz.DelegatedCompositing.Status",
                             delegated_status_);
-  DBG_LOG("delegation_status", "delegation status: %d", delegated_status_);
+  DBG_LOG("delegation_status", "delegation status: %d",
+          static_cast<int>(delegated_status_));
   DBG_DRAW_RECT("delegated.outgoing.damage", (*damage_rect));
 
   TRACE_COUNTER1(TRACE_DISABLED_BY_DEFAULT("viz.debug.overlay_planes"),

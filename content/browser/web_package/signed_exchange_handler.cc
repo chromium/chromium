@@ -622,7 +622,7 @@ void SignedExchangeHandler::OnVerifyCert(
       error_message = base::StringPrintf(
           "CT verification failed. result: %s, policy compliance: %d",
           net::ErrorToShortString(error_code).c_str(),
-          cv_result.policy_compliance);
+          static_cast<int>(cv_result.policy_compliance));
       result = SignedExchangeLoadResult::kCTVerificationError;
     } else {
       error_message =

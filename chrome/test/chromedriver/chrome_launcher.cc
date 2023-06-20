@@ -953,7 +953,8 @@ Status ProcessExtension(const std::string& extension,
                     "updated?");
     } else if (result != crx_file::VerifierResult::OK_FULL) {
       return Status(kUnknownError,
-                    base::StringPrintf("CRX verification failed: %d", result));
+                    base::StringPrintf("CRX verification failed: %d",
+                                       static_cast<int>(result)));
     }
   } else {
     // Not a CRX file. Generate RSA keypair to get a valid extension id.

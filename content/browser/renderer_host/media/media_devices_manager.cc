@@ -960,8 +960,9 @@ void MediaDevicesManager::VideoInputDevicesEnumerated(
   ReportVideoEnumerationResult(result_code);
 
   if (result_code != DeviceEnumerationResult::kSuccess) {
-    std::string log_message = base::StringPrintf(
-        "VideoInputDevicesEnumerated got error %d", result_code);
+    std::string log_message =
+        base::StringPrintf("VideoInputDevicesEnumerated got error %d",
+                           static_cast<int>(result_code));
     // Log to both WebRTC logs (for feedback reports) and text logs for
     // manually-collected chrome logs at customers.
     SendLogMessage(log_message);

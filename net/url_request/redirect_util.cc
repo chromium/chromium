@@ -110,7 +110,7 @@ scoped_refptr<HttpResponseHeaders> RedirectUtil::SynthesizeRedirectHeaders(
       "Location: %s\n"
       "Cross-Origin-Resource-Policy: Cross-Origin\n"
       "Non-Authoritative-Reason: %s",
-      response_code, redirect_destination.spec().c_str(),
+      static_cast<int>(response_code), redirect_destination.spec().c_str(),
       redirect_reason.c_str());
 
   std::string http_origin;
