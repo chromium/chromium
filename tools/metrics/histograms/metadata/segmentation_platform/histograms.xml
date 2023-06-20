@@ -753,6 +753,19 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="SegmentationPlatform.SyncSessions.TimeFromStartupToSyncUpdate"
+    units="ms" expires_after="2023-12-04">
+  <owner>ritikagup@google.com</owner>
+  <owner>chrome-segmentation-platform@google.com</owner>
+  <summary>
+    The time taken from chrome startup to the time sync session update is
+    received. This is not recorded for first sync update. This includes the
+    network delay for receiving the sync session updates. The metric is recorded
+    at each sync update if chrome was started after the remote session was
+    updated.
+  </summary>
+</histogram>
+
 <histogram
     name="SegmentationPlatform.SyncSessions.TimeFromTabLoadedToSyncUpdate"
     units="ms" expires_after="2023-12-04">

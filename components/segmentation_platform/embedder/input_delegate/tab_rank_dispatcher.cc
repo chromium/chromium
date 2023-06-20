@@ -31,6 +31,12 @@ void RecordDelayFromStartupToFirstSyncUpdate(
       sync_delay_duration);
 }
 
+void RecordDelayFromStartupToSyncUpdate(base::TimeDelta sync_delay_duration) {
+  base::UmaHistogramLongTimes100(
+      "SegmentationPlatform.SyncSessions.TimeFromStartupToSyncUpdate",
+      sync_delay_duration);
+}
+
 void RecordDelayFromTabLoadToSyncUpdate(base::TimeDelta sync_delay_duration) {
   base::UmaHistogramLongTimes100(
       "SegmentationPlatform.SyncSessions.TimeFromTabLoadedToSyncUpdate",
@@ -186,6 +192,10 @@ void TabRankDispatcher::OnForeignSessionUpdated() {
         tab_fetcher_->GetRemoteTabsCountAfterTime(foreign_session_updated_time -
                                                   base::Days(1)));
 
+  } else if (chrome_startup_timestamp_ >
+             sync_session_modified_timestamp.value()) {
+    RecordDelayFromStartupToSyncUpdate(foreign_session_updated_time -
+                                       chrome_startup_timestamp_);
   } else {
     RecordDelayFromTabLoadToSyncUpdate(foreign_session_updated_time -
                                        sync_session_modified_timestamp.value());
