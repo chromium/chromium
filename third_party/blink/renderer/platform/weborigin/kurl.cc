@@ -251,7 +251,7 @@ KURL::KURL(const String& url) {
 
 // Initializes with a GURL. This is used to covert from a GURL to a KURL.
 KURL::KURL(const GURL& gurl) {
-  Init(NullURL() /* base */, String(gurl.spec().c_str()) /* relative */,
+  Init(NullURL() /* base */, String(gurl.spec()) /* relative */,
        nullptr /* query_encoding */);
 }
 
