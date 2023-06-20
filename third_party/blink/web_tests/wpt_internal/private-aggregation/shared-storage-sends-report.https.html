@@ -8,14 +8,6 @@
 <script>
 'use strict';
 
-// Payload with contributions [{bucket: 1n, value: 2}]
-const ONE_CONTRIBUTION_EXAMPLE_PAYLOAD =
-    'omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt';
-
-// Payload with contributions [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}]
-const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
-    'omRkYXRhgqJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAaJldmFsdWVEAAAABGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAA2lvcGVyYXRpb25paGlzdG9ncmFt';
-
 promise_test(async () => {
   await addModuleOnce("resources/shared-storage-module.js");
 

@@ -1,3 +1,11 @@
+// Payload with contributions [{bucket: 1n, value: 2}]
+const ONE_CONTRIBUTION_EXAMPLE_PAYLOAD =
+    'omRkYXRhgaJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAWlvcGVyYXRpb25paGlzdG9ncmFt';
+
+// Payload with contributions [{bucket: 1n, value: 2}, {bucket: 3n, value: 4}]
+const MULTIPLE_CONTRIBUTIONS_EXAMPLE_PAYLOAD =
+    'omRkYXRhgqJldmFsdWVEAAAAAmZidWNrZXRQAAAAAAAAAAAAAAAAAAAAAaJldmFsdWVEAAAABGZidWNrZXRQAAAAAAAAAAAAAAAAAAAAA2lvcGVyYXRpb25paGlzdG9ncmFt';
+
 /**
  * Delay method that waits for prescribed number of milliseconds.
  */
@@ -87,7 +95,7 @@ const verifyAggregationServicePayloads = (aggregation_service_payloads, expected
  * undefined. The `expected_cleartext_payload` should be the expected value of
  * debug_cleartext_payload if debug mode is enabled; otherwise, undefined.
  */
-const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_payload) => {
+const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_payload, context_id = undefined) => {
   if (debug_key || expected_cleartext_payload) {
     // A debug key cannot be set without debug mode being enabled and the
     // `expected_cleartext_payload` should be undefined if debug mode is not
@@ -99,6 +107,7 @@ const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_pa
   verifySharedInfo(report.shared_info, is_debug_enabled);
 
   if (debug_key) {
+    assert_own_property(report, 'debug_key');
     assert_equals(report.debug_key, debug_key);
   } else {
     assert_not_own_property(report, 'debug_key');
@@ -107,8 +116,22 @@ const verifyReport = (report, is_debug_enabled, debug_key, expected_cleartext_pa
   assert_own_property(report, 'aggregation_service_payloads');
   verifyAggregationServicePayloads(report.aggregation_service_payloads, expected_cleartext_payload);
 
+  if (context_id) {
+    assert_own_property(report, 'context_id');
+    assert_equals(report.context_id, context_id);
+  } else {
+    assert_not_own_property(report, 'context_id');
+  }
+
   // Check there are no extra keys
-  assert_equals(Object.keys(report).length, debug_key ? 3 : 2);
+  let expected_length = 2;
+  if (debug_key) {
+    ++expected_length;
+  }
+  if (context_id) {
+    ++expected_length;
+  }
+  assert_equals(Object.keys(report).length, expected_length);
 };
 
 /**
