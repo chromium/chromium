@@ -1526,6 +1526,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.CharactersTranslated"
+    units="count" expires_after="2024-02-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of characters sent to the translate service. Records once
+    per session upon the destruction of the Live Translate Controller.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.LiveTranslate.EnableFrom{Entrypoint}"
     enum="BooleanEnabled" expires_after="2023-06-13">
   <owner>evliu@google.com</owner>
