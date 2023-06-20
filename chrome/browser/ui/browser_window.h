@@ -12,6 +12,7 @@
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
 #include "base/functional/callback_helpers.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/apps/intent_helper/apps_navigation_types.h"
@@ -410,6 +411,11 @@ class BrowserWindow : public ui::BaseWindow {
   // Shows the Bookmark bubble. |url| is the URL being bookmarked,
   // |already_bookmarked| is true if the url is already bookmarked.
   virtual void ShowBookmarkBubble(const GURL& url, bool already_bookmarked) = 0;
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  // Maybe shows the IOS Password Promo Bubble.
+  virtual void MaybeShowIOSPasswordPromoBubble() = 0;
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
   // Shows the Screenshot bubble.
   virtual sharing_hub::ScreenshotCapturedBubble* ShowScreenshotCapturedBubble(

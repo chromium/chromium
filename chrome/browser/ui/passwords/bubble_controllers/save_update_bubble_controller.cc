@@ -177,6 +177,8 @@ void SaveUpdateBubbleController::OnSaveClicked() {
               ->ShouldOfferOptInAndMoveToAccountStoreAfterSavingLocally()) {
         delegate_
             ->AuthenticateUserForAccountStoreOptInAfterSavingLocallyAndMovePassword();
+      } else {
+        delegate_->MaybeShowIOSPasswordPromo();
       }
     }
   }

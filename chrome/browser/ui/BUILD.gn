@@ -5651,6 +5651,7 @@ static_library("ui") {
       "side_search:side_search_tab_data_proto",
       "//base",
       "//chrome/browser/apps:icon_standardizer",
+      "//chrome/browser/promos:utils",
       "//chrome/browser/ui/views",
       "//chromeos/components/kiosk",
       "//components/commerce/core:public",

@@ -821,6 +821,16 @@ void ManagePasswordsUIController::
                      passwords_data_.form_manager()->GetPendingCredentials()));
 }
 
+void ManagePasswordsUIController::MaybeShowIOSPasswordPromo() {
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  Browser* browser = chrome::FindBrowserWithWebContents(web_contents());
+  if (!browser) {
+    return;
+  }
+  browser->window()->MaybeShowIOSPasswordPromoBubble();
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+}
+
 void ManagePasswordsUIController::
     AuthenticateUserForAccountStoreOptInAndMovePassword() {
   DCHECK_EQ(GetState(),

@@ -115,6 +115,7 @@ class PasswordsModelDelegateMock
       (override));
   MOCK_METHOD(void, ShowBiometricActivationConfirmation, (), (override));
   MOCK_METHOD(void, OnBiometricAuthBeforeFillingDeclined, (), (override));
+  MOCK_METHOD(void, MaybeShowIOSPasswordPromo, (), (override));
 };
 
 #endif  // CHROME_BROWSER_UI_PASSWORDS_PASSWORDS_MODEL_DELEGATE_MOCK_H_

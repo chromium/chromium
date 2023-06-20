@@ -262,6 +262,10 @@ TestBrowserWindow::ShowScreenshotCapturedBubble(content::WebContents* contents,
 }
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void TestBrowserWindow::MaybeShowIOSPasswordPromoBubble() {}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 send_tab_to_self::SendTabToSelfBubbleView*
 TestBrowserWindow::ShowSendTabToSelfDevicePickerBubble(
     content::WebContents* contents) {

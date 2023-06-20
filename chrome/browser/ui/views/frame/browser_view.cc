@@ -281,6 +281,11 @@
 #include "components/remote_cocoa/browser/application_host.h"
 #endif
 
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#include "chrome/browser/promos/promos_utils.h"
+#include "chrome/browser/ui/views/promos/ios_promo_password_bubble.h"
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #if defined(USE_AURA)
 #include "chrome/browser/ui/views/theme_profile_key.h"
 #include "ui/aura/client/window_parenting_client.h"
@@ -2484,6 +2489,36 @@ void BrowserView::ShowIntentPickerBubble(
 void BrowserView::ShowBookmarkBubble(const GURL& url, bool already_bookmarked) {
   toolbar_->ShowBookmarkBubble(url, already_bookmarked);
 }
+
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+void BrowserView::MaybeShowIOSPasswordPromoBubble() {
+  if (!browser_) {
+    return;
+  }
+
+  if (promos_utils::ShouldShowIOSPasswordPromo()) {
+    ToolbarButtonProvider* button_provider =
+        BrowserView::GetBrowserViewForBrowser(browser_.get())
+            ->toolbar_button_provider();
+
+    IOSPromoPasswordBubble::PromoVariant variant;
+    if (promos_utils::IsDirectVariantIOSPasswordPromo()) {
+      variant = IOSPromoPasswordBubble::PromoVariant::QR_CODE_VARIANT;
+    } else if (promos_utils::IsIndirectVariantIOSPasswordPromo()) {
+      variant =
+          IOSPromoPasswordBubble::PromoVariant::GET_STARTED_BUTTON_VARIANT;
+    } else {
+      NOTREACHED_NORETURN();
+    }
+
+    IOSPromoPasswordBubble::ShowBubble(
+        button_provider->GetAnchorView(PageActionIconType::kManagePasswords),
+        button_provider->GetPageActionIconView(
+            PageActionIconType::kManagePasswords),
+        variant, browser_.get());
+  }
+}
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 qrcode_generator::QRCodeGeneratorBubbleView*
 BrowserView::ShowQRCodeGeneratorBubble(content::WebContents* contents,

@@ -10,6 +10,7 @@
 
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "build/branding_buildflags.h"
 #include "components/password_manager/core/browser/manage_passwords_referrer.h"
 #include "components/password_manager/core/browser/ui/password_check_referrer.h"
 #include "components/password_manager/core/common/credential_manager_types.h"
@@ -189,6 +190,10 @@ class PasswordsModelDelegate {
   // Called when user clicked "No thanks" button on Biometric Authentication
   // before filling promo dialog.
   virtual void OnBiometricAuthBeforeFillingDeclined() = 0;
+
+  // Called from the Save/Update bubble controller to decide whether or not we
+  // should show the user the Chrome for iOS promo.
+  virtual void MaybeShowIOSPasswordPromo() = 0;
 
  protected:
   virtual ~PasswordsModelDelegate() = default;
