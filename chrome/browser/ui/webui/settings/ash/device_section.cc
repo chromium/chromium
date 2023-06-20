@@ -1065,8 +1065,9 @@ void AddDevicePowerStrings(content::WebUIDataSource* html_source) {
   };
   html_source->AddLocalizedStrings(kPowerStrings);
 
-  // TODO(b:216035280): create and link to real "learn more" webpage.
-  html_source->AddString("powerAdaptiveChargingLearnMoreUrl", u"about://blank");
+  html_source->AddString(
+      "powerAdaptiveChargingLearnMoreUrl",
+      u"https://support.google.com/chromebook/?p=settings_adaptive_charging");
 
   // TODO(b:278957245): create and link to real "learn more" webpage.
   html_source->AddString("powerBatterySaverLearnMoreUrl", "about://blank");
