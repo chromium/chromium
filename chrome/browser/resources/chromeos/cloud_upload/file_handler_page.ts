@@ -4,6 +4,7 @@
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assert, assertNotReached} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {DialogTask, MetricsRecordedSetupPage, UserAction} from './cloud_upload.mojom-webui.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -70,21 +71,23 @@ export class FileHandlerPageElement extends HTMLElement {
       const {name, icon, type} =
           this.getDriveAppInfo(dialogArgs.args.fileNames);
 
-      const fileTypeElement = this.$<HTMLSpanElement>('#file-type');
-      assert(fileTypeElement);
-      fileTypeElement.innerText = type;
+      const titleElement = this.$<HTMLSpanElement>('#title');
+      assert(titleElement);
+      titleElement.innerText =
+          loadTimeData.getStringF('fileHandlerTitle', type);
 
       const driveCard = new CloudProviderCardElement();
       driveCard.setParameters(
-          CloudProviderType.DRIVE, name, 'Uses Google Drive');
+          CloudProviderType.DRIVE, name,
+          loadTimeData.getString('googleDriveStorage'));
       driveCard.setIconClass(icon);
       driveCard.id = 'drive';
       this.addCloudProviderCard(driveCard);
 
       const officeCard = new CloudProviderCardElement();
       officeCard.setParameters(
-          CloudProviderType.ONE_DRIVE, 'Microsoft 365',
-          'Uses Microsoft OneDrive');
+          CloudProviderType.ONE_DRIVE, loadTimeData.getString('microsoft365'),
+          loadTimeData.getString('oneDriveStorage'));
       officeCard.setIconClass('office');
       officeCard.id = 'onedrive';
       this.addCloudProviderCard(officeCard);
@@ -206,14 +209,25 @@ export class FileHandlerPageElement extends HTMLElement {
   // different types, or any error finding the right app, we just default to
   // Docs.
   private getDriveAppInfo(fileNames: string[]) {
-    // TODO(b:254586358): i18n these names.
     const fileName = (fileNames[0] || '').toLowerCase();
     if (/\.xls[m,x]?$/.test(fileName)) {
-      return {name: 'Google Sheets', icon: 'sheets', type: 'Excel'};
+      return {
+        name: loadTimeData.getString('googleSheets'),
+        icon: 'sheets',
+        type: loadTimeData.getString('excel'),
+      };
     } else if (/\.pptx?$/.test(fileName)) {
-      return {name: 'Google Slides', icon: 'slides', type: 'Powerpoint'};
+      return {
+        name: loadTimeData.getString('googleSlides'),
+        icon: 'slides',
+        type: loadTimeData.getString('powerPoint'),
+      };
     } else {
-      return {name: 'Google Docs', icon: 'docs', type: 'Word'};
+      return {
+        name: loadTimeData.getString('googleDocs'),
+        icon: 'docs',
+        type: loadTimeData.getString('word'),
+      };
     }
   }
 

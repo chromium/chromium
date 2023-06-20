@@ -6779,6 +6779,44 @@ Your <ph name="DEVICE_TYPE">{0}<ex>Chromebook</ex></ph> will be locked now.
     Try enabling Google Drive in Settings.
   </message>
 
+  <!-- Office file handler selection dialog -->
+  <message name="IDS_OFFICE_FILE_HANDLER_TITLE" desc="Title for office file handler selection dialog, which allows the user to choose an app to open office files.">
+    Choose an app to open <ph name="FILE_TYPE">$1<ex>Word</ex></ph> files
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_WORD" desc="File type for Word.">
+    Word
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_EXCEL" desc="File type for Excel.">
+    Excel
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_FILE_TYPE_POWERPOINT" desc="File type for PowerPoint.">
+    PowerPoint
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_DOCS" desc="App name for Google Docs.">
+    Google Docs
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SHEETS" desc="App name for Google Sheets.">
+    Google Sheets
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_GOOGLE_SLIDES" desc="App name for Google Slides.">
+    Google Slides
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT" desc="App name for Microsoft 365.">
+    Microsoft 365
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_APP_OTHERS" desc="App name for others.">
+    Other apps
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_STORAGE_GOOGLE" desc="Description for using Google Drive as storage.">
+    Uses Google Drive storage
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_STORAGE_MICROSOFT" desc="Description for using Microsoft OneDrive as storage.">
+    Uses Microsoft OneDrive storage
+  </message>
+  <message name="IDS_OFFICE_FILE_HANDLER_OPEN_BUTTON" desc="Text for a button located in the dialog footer which opens the app.">
+    Open
+  </message>
+
   <!-- Office setup and move dialogs -->
   <message name="IDS_CONNECT_TO_ONEDRIVE_TITLE" desc="Title for a dialog which allows the user to connect Files app and Microsoft OneDrive storage.">
     Connect to Microsoft OneDrive
