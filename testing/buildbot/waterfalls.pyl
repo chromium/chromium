@@ -2173,7 +2173,7 @@
           'isolate_profile_data',
           'nougat-x86-emulator',
           'emulator-4-cores',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'additional_compile_targets': [
@@ -2192,7 +2192,7 @@
       'chromeos-js-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromeos_js_code_coverage_browser_tests'
@@ -2209,7 +2209,7 @@
         'mixins': [
           'fuchsia-code-coverage',
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
       },
       'ios-simulator-code-coverage': {
@@ -2230,7 +2230,7 @@
       'linux-chromeos-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': [
           'gn_all',
@@ -2244,7 +2244,7 @@
         'browser_config': 'release',
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'chromium_linux_gtests',
@@ -2256,7 +2256,7 @@
       'linux-js-code-coverage': {
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'js_code_coverage_browser_tests'
@@ -2268,7 +2268,7 @@
         ],
         'mixins': [
           'isolate_profile_data',
-          'linux-bionic'
+          'linux-jammy'
         ],
         'test_suites': {
           'gtest_tests': 'linux_lacros_gtests',
