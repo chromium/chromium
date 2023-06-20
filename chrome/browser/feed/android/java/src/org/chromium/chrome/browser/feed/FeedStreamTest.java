@@ -1186,6 +1186,18 @@ public class FeedStreamTest {
         assertTrue(stream.supportsOptions());
     }
 
+    @Test
+    @SmallTest
+    public void testTriggerManualRefresh() {
+        bindToView();
+        FeedStream.FeedActionsHandlerImpl handler =
+                (FeedStream.FeedActionsHandlerImpl) mContentManager.getContextValues(0).get(
+                        FeedActionsHandler.KEY);
+
+        handler.triggerManualRefresh();
+        verify(mStreamsMediator).refreshStream();
+    }
+
     private int getLoadMoreTriggerScrollDistance() {
         return (int) TypedValue.applyDimension(TypedValue.COMPLEX_UNIT_DIP,
                 LOAD_MORE_TRIGGER_SCROLL_DISTANCE_DP,

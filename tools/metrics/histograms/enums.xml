@@ -44247,6 +44247,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="64"
       label="User tapped on the 'Continue' of the sign-in promo UI."/>
   <int value="65" label="User tapped on the 'Cancel' of the sign-in promo UI."/>
+  <int value="66" label="User initiated a non-swipe manual refresh."/>
 </enum>
 
 <enum name="FeedUserCommandType">

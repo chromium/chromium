@@ -222,4 +222,7 @@ public interface FeedActionsHandler {
      * @param docid Uniquely identifies the content.
      */
     default void contentViewed(long docid) {}
+
+    /** Triggers a manual refresh of the feed. */
+    default void triggerManualRefresh() {}
 }

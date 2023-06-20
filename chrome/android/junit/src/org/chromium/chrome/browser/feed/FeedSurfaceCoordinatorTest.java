@@ -32,6 +32,7 @@ import org.junit.runner.RunWith;
 import org.mockito.ArgumentCaptor;
 import org.mockito.Captor;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 import org.robolectric.Robolectric;
@@ -233,6 +234,8 @@ public class FeedSurfaceCoordinatorTest {
     @Rule
     public final MockitoRule mMockitoRule = MockitoJUnit.rule();
 
+    private FeedSurfaceMediator mMediatorSpy;
+
     @Before
     public void setUp() {
         mActivity = Robolectric.buildActivity(Activity.class).get();
@@ -286,6 +289,9 @@ public class FeedSurfaceCoordinatorTest {
         mCoordinator = createCoordinator();
 
         mRecyclerView.setLayoutManager(mLayoutManager);
+
+        mMediatorSpy = Mockito.spy(mCoordinator.getMediatorForTesting());
+        mCoordinator.setMediatorForTesting(mMediatorSpy);
 
         // Print logs to stdout.
         ShadowLog.stream = System.out;
@@ -432,8 +438,23 @@ public class FeedSurfaceCoordinatorTest {
     }
 
     @Test
-    public void testLogManualRefresh() {
+    public void testNonSwipeRefresh() {
+        mCoordinator.nonSwipeRefresh();
+        verify(mMediatorSpy).manualRefresh(any());
+        verify(mLaunchReliabilityLogger, times(1)).logManualRefresh(anyLong());
+    }
+
+    @Test
+    public void testOnRefresh() {
         mCoordinator.onRefresh();
+        verify(mMediatorSpy).manualRefresh(any());
+        verify(mLaunchReliabilityLogger, times(1)).logManualRefresh(anyLong());
+    }
+
+    @Test
+    public void testReload() {
+        mCoordinator.reload();
+        verify(mMediatorSpy).manualRefresh(any());
         verify(mLaunchReliabilityLogger, times(1)).logManualRefresh(anyLong());
     }
 

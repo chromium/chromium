@@ -77,7 +77,13 @@ public interface HybridListRenderer {
     /**
      * Called when a pull to refresh is initiated by the user.
      */
+    @Deprecated
     default void onPullToRefreshStarted() {}
+
+    /**
+     * Called when a manual refresh is initiated by the user.
+     */
+    default void onManualRefreshStarted() {}
 
     /**
      * Returns helper to manager the list layout.

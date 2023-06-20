@@ -627,7 +627,7 @@ void FeedStream::ManualRefresh(const StreamType& stream_type,
     return std::move(callback).Run(false);
   }
 
-  // The user has manually pulled to refresh. In this case we allow resetting
+  // The user has manually refreshed. In this case we allow resetting
   // the request throttler. Without this, it's likely the user will hit a
   // request limit.
   feed::prefs::SetThrottlerRequestCounts({}, *profile_prefs_);

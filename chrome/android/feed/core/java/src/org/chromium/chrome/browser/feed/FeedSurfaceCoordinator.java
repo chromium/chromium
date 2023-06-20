@@ -88,7 +88,6 @@ public class FeedSurfaceCoordinator
     private final boolean mShowDarkBackground;
     private final boolean mIsPlaceholderShownInitially;
     private final FeedSurfaceDelegate mDelegate;
-    private final FeedSurfaceMediator mMediator;
     private final BottomSheetController mBottomSheetController;
     private final WindowAndroid mWindowAndroid;
     private final Supplier<ShareDelegate> mShareSupplier;
@@ -101,6 +100,8 @@ public class FeedSurfaceCoordinator
     // FeedReliabilityLogger params.
     private final @SurfaceType int mSurfaceType;
     private final long mEmbeddingSurfaceCreatedTimeNs;
+
+    private FeedSurfaceMediator mMediator;
 
     private UiConfig mUiConfig;
     private FrameLayout mRootView;
@@ -560,11 +561,27 @@ public class FeedSurfaceCoordinator
 
     @Override
     public void reload() {
-        onRefresh();
+        manualRefresh();
     }
 
+    /**
+     * Implements SwipeRefreshLayout.OnRefreshListener to be used only for pull
+     * to refresh.
+     */
     @Override
     public void onRefresh() {
+        manualRefresh();
+        getFeatureEngagementTracker().notifyEvent(EventConstants.FEED_SWIPE_REFRESHED);
+    }
+
+    public void nonSwipeRefresh() {
+        if (mSwipeRefreshLayout != null) {
+            mSwipeRefreshLayout.startRefreshingAtTheBottom();
+        }
+        manualRefresh();
+    }
+
+    private void manualRefresh() {
         updateReloadButtonVisibility(/*isReloading=*/true);
         if (mReliabilityLogger != null) {
             mReliabilityLogger.getLaunchLogger().logManualRefresh(
@@ -577,14 +594,6 @@ public class FeedSurfaceCoordinator
             mSwipeRefreshLayout.setAccessibilityLiveRegion(View.ACCESSIBILITY_LIVE_REGION_NONE);
             mSwipeRefreshLayout.setContentDescription("");
         });
-        getFeatureEngagementTracker().notifyEvent(EventConstants.FEED_SWIPE_REFRESHED);
-    }
-
-    public void nonSwipeRefresh() {
-        if (mSwipeRefreshLayout != null) {
-            mSwipeRefreshLayout.startRefreshingAtTheBottom();
-        }
-        onRefresh();
     }
 
     void updateReloadButtonVisibility(boolean isReloading) {
@@ -861,6 +870,11 @@ public class FeedSurfaceCoordinator
     @VisibleForTesting
     public FeedSurfaceMediator getMediatorForTesting() {
         return mMediator;
+    }
+
+    @VisibleForTesting
+    public void setMediatorForTesting(FeedSurfaceMediator mediator) {
+        mMediator = mediator;
     }
 
     @VisibleForTesting

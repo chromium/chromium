@@ -195,8 +195,10 @@ enum class FeedUserActionType {
   kTappedFeedSignInPromoUIContinue = 64,
   // User tapped on the "Cancel" of the sign-in promote UI. iOS only.
   kTappedFeedSignInPromoUICancel = 65,
+  // User initiated non-swipe manual refresh of the feed.
+  kNonSwipeManualRefresh = 66,
 
-  kMaxValue = kTappedFeedSignInPromoUICancel,
+  kMaxValue = kNonSwipeManualRefresh,
 };
 
 // For testing and debugging only.
