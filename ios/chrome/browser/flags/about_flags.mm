@@ -706,6 +706,8 @@ const FeatureEntry::Choice kReplaceSyncPromosWithSignInPromosChoices[] = {
      "EnablePreferencesAccountStorage,"
      "ReadingListEnableDualReadingListModel,"
      "ReadingListEnableSyncTransportModeUponSignIn,"
+     "ConsistencyNewAccountInterface,"
+     "AutofillAccountProfileStorage,"
      "SyncEnableHistoryDataType"},
 };
 
