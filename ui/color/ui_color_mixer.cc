@@ -52,13 +52,8 @@ void AddUiColorMixer(ColorProvider* provider,
   mixer[kColorButtonBackgroundTonalDisabled] = {
       kColorSysStateDisabledContainer};
   mixer[kColorButtonBackgroundTonalFocused] = {kColorButtonBackgroundTonal};
-  mixer[kColorButtonBackgroundWithAttention] = {
-      dark_mode ? SkColorSetRGB(0x35, 0x36, 0x3A) : SK_ColorWHITE};
   mixer[kColorButtonBorder] = {kColorMidground};
   mixer[kColorButtonBorderDisabled] = {kColorSubtleEmphasisBackground};
-  mixer[kColorButtonFeatureAttentionHighlight] =
-      ui::PickGoogleColor(ui::kColorAccent, kColorButtonBackgroundWithAttention,
-                          color_utils::kMinimumVisibleContrastRatio);
   mixer[kColorButtonForeground] =
       PickGoogleColor(kColorAccent, kColorButtonBackground,
                       color_utils::kMinimumReadableContrastRatio);
