@@ -62,8 +62,13 @@ import {ConsoleTestRunner} from 'console_test_runner';
   ApplicationTestRunner.dumpIndexedDBTree();
 
   // Create database
-  ApplicationTestRunner.createDatabaseAsync(databaseName);
-  await new Promise(waitDatabaseAdded);
+  try {
+    ApplicationTestRunner.createDatabaseAsync(databaseName);
+    await new Promise(waitDatabaseAdded);
+  } catch (e) {
+    TestRunner.addResult(await TestRunnet.evaluateInPageAsync('window.location.href'));
+    throw e;
+  }
   var idbDatabaseTreeElement = UI.panels.resources.sidebar.indexedDBListTreeElement.idbDatabaseTreeElements[0];
   databaseId = idbDatabaseTreeElement.databaseId;
   TestRunner.addResult('Created database.');
