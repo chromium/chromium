@@ -8848,15 +8848,18 @@ Element* Element::ImplicitAnchorElement() {
   if (!RuntimeEnabledFeatures::CSSAnchorPositioningEnabled()) {
     return nullptr;
   }
-  HTMLElement* html_element = DynamicTo<HTMLElement>(this);
-  if (!html_element) {
-    return nullptr;
-  }
-  if (Element* anchor = html_element->anchorElement()) {
-    return anchor;
-  }
-  if (Element* select_menu = html_element->ownerSelectMenuElement()) {
-    return select_menu;
+  if (HTMLElement* html_element = DynamicTo<HTMLElement>(this)) {
+    if (Element* anchor = html_element->anchorElement()) {
+      return anchor;
+    }
+    if (Element* select_menu = html_element->ownerSelectMenuElement()) {
+      return select_menu;
+    }
+  } else if (PseudoElement* pseudo_element = DynamicTo<PseudoElement>(this)) {
+    PseudoId pseudo_id = pseudo_element->GetPseudoId();
+    if (pseudo_id == kPseudoIdBefore || pseudo_id == kPseudoIdAfter) {
+      return pseudo_element->OriginatingElement()->ImplicitAnchorElement();
+    }
   }
   return nullptr;
 }
