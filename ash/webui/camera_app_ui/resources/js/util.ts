@@ -3,7 +3,7 @@
 // found in the LICENSE file.
 
 import * as animate from './animation.js';
-import {assert, assertInstanceof} from './assert.js';
+import {assert, assertInstanceof, assertString} from './assert.js';
 import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import * as loadTimeData from './models/load_time_data.js';
@@ -374,6 +374,14 @@ export function assertEnumVariant<T extends string>(
   const ret = checkEnumVariant(enumType, value);
   assert(ret !== null, `${value} is not a valid enum variant`);
   return ret;
+}
+
+/**
+ * Asserts that the argument is an I18nString, throws error otherwise.
+ */
+export function assertI18nString(value: unknown): I18nString {
+  const stringValue = assertString(value);
+  return assertEnumVariant(I18nString, stringValue);
 }
 
 /**

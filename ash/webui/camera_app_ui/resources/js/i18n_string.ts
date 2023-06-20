@@ -128,6 +128,7 @@ export enum I18nString {
   MOVING_IN_TOP_RIGHT_DIRECTION = 'moving_in_top_right_direction',
   MSG_DOCUMENT_DETECTED = 'msg_document_detected',
   MSG_PROCESSING_IMAGE = 'msg_processing_image',
+  MSG_PROCESSING_VIDEO = 'msg_processing_video',
   // I18nString.NAME: Bypass the presubmit check for unused strings. Used here:
   // https://source.chromium.org/chromium/chromium/src/+/main:chrome/browser/ash/web_applications/camera_app/camera_system_web_app_info.cc
   // NAME = 'name',

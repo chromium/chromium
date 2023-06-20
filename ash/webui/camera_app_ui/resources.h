@@ -146,6 +146,7 @@ const struct {
     {"moving_in_top_right_direction", IDS_MOVING_IN_TOP_RIGHT_DIRECTION},
     {"msg_document_detected", IDS_MSG_DOCUMENT_DETECTED},
     {"msg_processing_image", IDS_MSG_PROCESSING_IMAGE},
+    {"msg_processing_video", IDS_MSG_PROCESSING_VIDEO},
     {"name", IDS_NAME},
     {"next_page_count", IDS_NEXT_PAGE_COUNT},
     {"no_document_guide_msg", IDS_NO_DOCUMENT_GUIDE_MSG},

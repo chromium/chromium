@@ -35,6 +35,11 @@ export interface DialogEnterOptions {
 type WarningEnterOptions = string;
 
 /**
+ * Flash view processing message name.
+ */
+export type FlashEnterOptions = string;
+
+/**
  * Options for open PTZ panel.
  */
 export class PTZPanelOptions {
@@ -93,8 +98,8 @@ export class OptionPanelOptions {
 // TODO(pihsun): After we migrate all files into TypeScript, we can have some
 // sort of "global" view registration, so we can enforce the enter / leave type
 // at compile time.
-export type EnterOptions =
-    DialogEnterOptions|OptionPanelOptions|PTZPanelOptions|WarningEnterOptions;
+export type EnterOptions = DialogEnterOptions|FlashEnterOptions|
+    OptionPanelOptions|PTZPanelOptions|WarningEnterOptions;
 
 export type LeaveCondition = {
   kind: 'BACKGROUND_CLICKED'|'ESC_KEY_PRESSED'|'STOP_STREAMING',

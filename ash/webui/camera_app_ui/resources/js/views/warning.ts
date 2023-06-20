@@ -2,12 +2,12 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {assert, assertString} from '../assert.js';
+import {assert} from '../assert.js';
 import * as dom from '../dom.js';
 import {I18nString} from '../i18n_string.js';
 import * as loadTimeData from '../models/load_time_data.js';
 import {ViewName} from '../type.js';
-import {assertEnumVariant} from '../util.js';
+import {assertI18nString} from '../util.js';
 
 import {EnterOptions, LeaveCondition, View} from './view.js';
 
@@ -22,14 +22,6 @@ export const WarningType = {
   NO_CAMERA: I18nString.ERROR_MSG_NO_CAMERA,
 };
 /* eslint-enable @typescript-eslint/naming-convention */
-
-/**
- * Asserts that the argument is an I18nString, throws error otherwise.
- */
-function assertI18nString(value: unknown): I18nString {
-  const stringValue = assertString(value);
-  return assertEnumVariant(I18nString, stringValue);
-}
 
 /**
  * Creates the warning-view controller.
