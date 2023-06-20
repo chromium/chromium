@@ -363,6 +363,10 @@ public final class ProductionSupportedFlagList {
                             + "client uuid as the log's client ID."),
             Flag.baseFeature(ContentFeatures.MAIN_THREAD_COMPOSITING_PRIORITY,
                     "When enabled runs the main thread at compositing priority."),
+            Flag.baseFeature(ContentFeatures.REDUCE_SUBRESOURCE_RESPONSE_STARTED_IPC,
+                    "When enabled, reduces SubresourceResponseStarted IPC by sending"
+                            + "subresource notifications only if the user has allowed"
+                            + "HTTPS-related exceptions."),
             Flag.baseFeature(AwFeatures.WEBVIEW_UMA_UPLOAD_QUALITY_OF_SERVICE_SET_TO_DEFAULT,
                     "If enabled, the frequency to upload UMA is increased."),
             Flag.baseFeature("CanvasColorCache"),
