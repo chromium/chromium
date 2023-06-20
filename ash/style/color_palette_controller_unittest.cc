@@ -6,6 +6,7 @@
 
 #include <ostream>
 
+#include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/ash_prefs.h"
 #include "ash/shell.h"
@@ -121,6 +122,16 @@ TEST_F(ColorPaletteControllerTest, ExpectedEmptyValues) {
             color_palette_controller()->GetColorScheme(kAccountId));
   EXPECT_EQ(absl::nullopt,
             color_palette_controller()->GetStaticColor(kAccountId));
+}
+
+// Verifies that when the TimeOfDayWallpaper feature is active, the default
+// color scheme is Neutral instead of TonalSpot.
+TEST_F(ColorPaletteControllerTest, ExpectedColorScheme_TimeOfDay) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {ash::features::kTimeOfDayWallpaper, chromeos::features::kJelly}, {});
+  EXPECT_EQ(ColorScheme::kNeutral,
+            color_palette_controller()->GetColorScheme(kAccountId));
 }
 
 TEST_F(ColorPaletteControllerTest,
@@ -452,6 +463,18 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
       .Times(1);
 
   color_palette_controller()->SelectLocalAccount(kAccountId);
+}
+
+// Verifies that when the TimeOfDayWallpaper feature is active, the default
+// color scheme is Neutral instead of TonalSpot in local_state.
+TEST_F(ColorPaletteControllerLocalPrefTest, NoLocalAccount_TimeOfDayScheme) {
+  base::test::ScopedFeatureList feature_list;
+  feature_list.InitWithFeatures(
+      {ash::features::kTimeOfDayWallpaper, chromeos::features::kJelly}, {});
+  // Since `kAccountId` is not logged in, this triggers default local_state
+  // behavior.
+  EXPECT_EQ(ColorScheme::kNeutral,
+            color_palette_controller()->GetColorScheme(kAccountId));
 }
 
 TEST_F(ColorPaletteControllerLocalPrefTest,
