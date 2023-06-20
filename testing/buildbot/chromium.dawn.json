@@ -8,8 +8,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "args": [
@@ -56,8 +57,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -192,8 +194,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "args": [
@@ -240,8 +243,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -376,8 +380,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "args": [
@@ -424,8 +429,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -560,8 +566,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "args": [
@@ -608,8 +615,9 @@
           "--gs-results-bucket=chromium-result-details",
           "--recover-devices",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -743,8 +751,9 @@
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -768,8 +777,9 @@
           "--enable-implicit-device-sync",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -795,8 +805,9 @@
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -821,8 +832,9 @@
           "--use-wire",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -852,8 +864,9 @@
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -877,8 +890,9 @@
           "--enable-implicit-device-sync",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -904,8 +918,9 @@
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -930,8 +945,9 @@
           "--enable-backend-validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -956,8 +972,9 @@
           "--use-wire",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1374,8 +1391,9 @@
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1399,8 +1417,9 @@
           "--enable-implicit-device-sync",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -1426,8 +1445,9 @@
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1452,8 +1472,9 @@
           "--enable-backend-validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1478,8 +1499,9 @@
           "--use-wire",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1894,8 +1916,9 @@
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1919,8 +1942,9 @@
           "--enable-implicit-device-sync",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -1946,8 +1970,9 @@
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1972,8 +1997,9 @@
           "--enable-backend-validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -1998,8 +2024,9 @@
           "--use-wire",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2416,8 +2443,9 @@
         "args": [
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2441,8 +2469,9 @@
           "--enable-implicit-device-sync",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -2468,8 +2497,9 @@
           "--enable-toggles=skip_validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2494,8 +2524,9 @@
           "--enable-backend-validation",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2520,8 +2551,9 @@
           "--use-wire",
           "--no-xvfb",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2935,8 +2967,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -2962,8 +2995,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -2991,8 +3025,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3019,8 +3054,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3047,8 +3083,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3495,8 +3532,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3522,8 +3560,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -3551,8 +3590,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3579,8 +3619,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -3607,8 +3648,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4057,8 +4099,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4084,8 +4127,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -4113,8 +4157,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4141,8 +4186,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4169,8 +4215,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4617,8 +4664,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4642,8 +4690,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -4669,8 +4718,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4695,8 +4745,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -4721,8 +4772,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5217,8 +5269,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5244,8 +5297,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -5273,8 +5327,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5301,8 +5356,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5329,8 +5385,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5777,8 +5834,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5802,8 +5860,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -5829,8 +5888,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5855,8 +5915,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -5881,8 +5942,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6303,8 +6365,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6334,8 +6397,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -6367,8 +6431,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6399,8 +6464,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6764,8 +6830,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6789,8 +6856,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -6816,8 +6884,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6842,8 +6911,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -6868,8 +6938,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7178,8 +7249,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7203,8 +7275,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -7230,8 +7303,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7256,8 +7330,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7282,8 +7357,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7740,8 +7816,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7765,8 +7842,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -7792,8 +7870,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7818,8 +7897,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -7844,8 +7924,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8154,8 +8235,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8179,8 +8261,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -8206,8 +8289,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8232,8 +8316,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8258,8 +8343,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8682,8 +8768,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8707,8 +8794,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -8734,8 +8822,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8760,8 +8849,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -8786,8 +8876,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9124,8 +9215,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9149,8 +9241,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -9176,8 +9269,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9202,8 +9296,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9228,8 +9323,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9643,8 +9739,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9668,8 +9765,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -9695,8 +9793,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9721,8 +9820,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -9747,8 +9847,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10085,8 +10186,9 @@
       {
         "args": [
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10110,8 +10212,9 @@
         "args": [
           "--enable-implicit-device-sync",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "ci_only": true,
         "merge": {
@@ -10137,8 +10240,9 @@
         "args": [
           "--enable-toggles=skip_validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10163,8 +10267,9 @@
         "args": [
           "--enable-backend-validation",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"
@@ -10189,8 +10294,9 @@
         "args": [
           "--use-wire",
           "--use-gpu-in-tests",
+          "--exclusive-device-type-preference=discrete,integrated",
           "--test-launcher-retry-limit=0",
-          "--exclusive-device-type-preference=discrete,integrated"
+          "--test-launcher-batch-limit=512"
         ],
         "merge": {
           "script": "//testing/merge_scripts/standard_gtest_merge.py"

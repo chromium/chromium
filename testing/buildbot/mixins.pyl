@@ -527,9 +527,11 @@
     '$mixin_append': {
       'args': [
         '--use-gpu-in-tests',
+        '--exclusive-device-type-preference=discrete,integrated',
         # Dawn test retries deliberately disabled to prevent flakiness.
         '--test-launcher-retry-limit=0',
-        '--exclusive-device-type-preference=discrete,integrated',
+        # Reduces size of stdout of a batch crbug.com/1456415
+        '--test-launcher-batch-limit=512',
       ],
     },
   },
