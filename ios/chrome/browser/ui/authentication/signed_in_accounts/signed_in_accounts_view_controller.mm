@@ -107,24 +107,35 @@ BOOL gSignedInAccountsViewControllerIsShown = NO;
   if (authService->HasPrimaryIdentity(signin::ConsentLevel::kSignin)) {
     authService->ApproveAccountList();
   }
-
+  __weak __typeof(self) weakSelf = self;
   [self.presentingViewController dismissViewControllerAnimated:YES
-                                                    completion:completion];
+                                                    completion:^{
+                                                      [weakSelf teardownUI];
+                                                      if (completion) {
+                                                        completion();
+                                                      }
+                                                    }];
 }
 
 - (void)dealloc {
+  CHECK(!_browserState);
+}
+
+- (void)teardownUI {
+  if (!_browserState) {
+    return;
+  }
+  [_accountTableView teardownUI];
+  _browserState = nullptr;
   [_primaryButton removeTarget:self
                         action:@selector(onPrimaryButtonPressed:)
               forControlEvents:UIControlEventTouchDown];
   [_secondaryButton removeTarget:self
                           action:@selector(onSecondaryButtonPressed:)
                 forControlEvents:UIControlEventTouchDown];
+  _primaryButton = nil;
+  _secondaryButton = nil;
   self.identityManager = nullptr;
-}
-
-- (void)teardownUI {
-  [_accountTableView teardownUI];
-  _browserState = nullptr;
 }
 
 #pragma mark UIViewController
