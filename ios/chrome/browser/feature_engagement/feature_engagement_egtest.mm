@@ -65,12 +65,6 @@ id<GREYMatcher> TranslateManualTriggerBadge() {
       grey_ancestor(TranslateManualTriggerButton()), nil);
 }
 
-// Matcher for the New Tab Tip Bubble.
-id<GREYMatcher> NewTabTipBubble() {
-  return grey_accessibilityLabel(
-      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT));
-}
-
 // Matcher for the Bottom Toolbar Tip Bubble.
 id<GREYMatcher> BottomToolbarTipBubble() {
   return grey_accessibilityLabel(l10n_util::GetNSStringWithFixup(
@@ -93,14 +87,6 @@ id<GREYMatcher> DefaultSiteViewTip() {
 id<GREYMatcher> TabPinnedTip() {
   return grey_accessibilityLabel(
       l10n_util::GetNSString(IDS_IOS_PINNED_TAB_OVERFLOW_ACTION_IPH_TEXT));
-}
-
-// Opens and closes the tab switcher.
-void OpenAndCloseTabSwitcher() {
-  [ChromeEarlGreyUI openTabGrid];
-
-  [[EarlGrey selectElementWithMatcher:chrome_test_util::TabGridDoneButton()]
-      performAction:grey_tap()];
 }
 
 // Opens the tools menu and request the desktop version of the page.
@@ -180,36 +166,6 @@ void RequestDesktopVersion() {
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 150)
       onElementWithMatcher:chrome_test_util::ToolsMenuView()]
       assertWithMatcher:grey_notNil()];
-}
-
-// Verifies that the New Tab Tip appears when all conditions are met.
-// TODO(crbug.com/934248) The test is flaky.
-- (void)DISABLED_testNewTabTipPromoShouldShow {
-  [self enableDemoModeForFeature:"IPH_NewTabTip"];
-
-  // Navigate to a page other than the NTP to allow for the New Tab Tip to
-  // appear.
-  [ChromeEarlGrey loadURL:GURL("chrome://version")];
-
-  // Open and close the tab switcher to trigger the New Tab tip.
-  OpenAndCloseTabSwitcher();
-
-  // Verify that the New Tab Tip appeared.
-  [[EarlGrey selectElementWithMatcher:NewTabTipBubble()]
-      assertWithMatcher:grey_sufficientlyVisible()];
-}
-
-// Verifies that the New Tab Tip does not appear if all conditions are met,
-// but the NTP is open.
-- (void)testNewTabTipPromoDoesNotAppearOnNTP {
-  [self enableDemoModeForFeature:"IPH_NewTabTip"];
-
-  // Open and close the tab switcher to potentially trigger the New Tab Tip.
-  OpenAndCloseTabSwitcher();
-
-  // Verify that the New Tab Tip did not appear.
-  [[EarlGrey selectElementWithMatcher:NewTabTipBubble()]
-      assertWithMatcher:grey_notVisible()];
 }
 
 // Verifies that the bottom toolbar tip is displayed when the phone is in split

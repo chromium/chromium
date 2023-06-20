@@ -363,9 +363,13 @@ enum class IPHDismissalReasonType {
   self.engagementTimer = nil;
 }
 
-// Invoked when the keybord is dismissed.
+// Invoked when the keyboard is dismissed.
 - (void)onKeyboardHide:(NSNotification*)notification {
-  [self dismissAnimated:YES reason:IPHDismissalReasonType::kOnKeyboardHide];
+  BOOL usesScreenReader = UIAccessibilityIsVoiceOverRunning() ||
+                          UIAccessibilityIsSwitchControlRunning();
+  if (usesScreenReader && !self.bubbleShouldAutoDismissUnderAccessibility) {
+    [self dismissAnimated:YES reason:IPHDismissalReasonType::kOnKeyboardHide];
+  }
 }
 
 // Calculates the frame of the BubbleView. `rect` is the frame of the bubble's

@@ -16,6 +16,7 @@
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "components/signin/ios/browser/active_state_manager.h"
 #import "components/translate/core/browser/translate_manager.h"
 #import "ios/chrome/browser/app_launcher/app_launcher_abuse_detector.h"
@@ -43,6 +44,7 @@
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
 #import "ios/chrome/browser/promos_manager/features.h"
 #import "ios/chrome/browser/reading_list/reading_list_browser_agent.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/sessions/session_restoration_browser_agent.h"
 #import "ios/chrome/browser/shared/coordinator/alert/repost_form_coordinator.h"
 #import "ios/chrome/browser/shared/coordinator/default_browser_promo/non_modal_default_browser_promo_scheduler_scene_agent.h"
@@ -766,6 +768,8 @@ enum class ToolbarKind {
   _webNavigationBrowserAgent =
       WebNavigationBrowserAgent::FromBrowser(self.browser);
   _urlLoadingBrowserAgent = UrlLoadingBrowserAgent::FromBrowser(self.browser);
+  _urlLoadingNotifierBrowserAgent =
+      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
 
   _toolbarCoordinator =
       [[ToolbarCoordinator alloc] initWithBrowser:self.browser];
@@ -774,10 +778,19 @@ enum class ToolbarKind {
       feature_engagement::TrackerFactory::GetForBrowserState(browserState);
   HostContentSettingsMap* settingsMap =
       ios::HostContentSettingsMapFactory::GetForBrowserState(browserState);
+  segmentation_platform::DeviceSwitcherResultDispatcher*
+      deviceSwitcherResultDispatcher = nullptr;
+  if (!browserState->IsOffTheRecord()) {
+    deviceSwitcherResultDispatcher =
+        segmentation_platform::SegmentationPlatformServiceFactory::
+            GetDispatcherForBrowserState(browserState);
+  }
   _bubblePresenter =
       [[BubblePresenter alloc] initWithTracker:engagementTracker
                         hostContentSettingsMap:settingsMap
-                                  webStateList:self.browser->GetWebStateList()];
+                                  webStateList:self.browser->GetWebStateList()
+                deviceSwitcherResultDispatcher:deviceSwitcherResultDispatcher
+                               loadingNotifier:_urlLoadingNotifierBrowserAgent];
   _bubblePresenter.layoutGuideCenter = _layoutGuideCenter;
   _bubblePresenter.delegate = self;
   [_dispatcher startDispatchingToTarget:_bubblePresenter
@@ -851,8 +864,6 @@ enum class ToolbarKind {
   self.tabLifecycleMediator.NTPCoordinator = _NTPCoordinator;
 
   _lensCoordinator = [[LensCoordinator alloc] initWithBrowser:self.browser];
-  _urlLoadingNotifierBrowserAgent =
-      UrlLoadingNotifierBrowserAgent::FromBrowser(self.browser);
   _voiceSearchController =
       ios::provider::CreateVoiceSearchController(self.browser);
 

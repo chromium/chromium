@@ -233,10 +233,15 @@ class BrowserViewControllerTest : public BlockCleanupTest {
     HostContentSettingsMap* settings_map =
         ios::HostContentSettingsMapFactory::GetForBrowserState(
             chrome_browser_state_.get());
+    UrlLoadingNotifierBrowserAgent* urlLoadingNotifier_ =
+        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
+
     bubble_presenter_ = [[BubblePresenter alloc]
-               initWithTracker:(feature_engagement::Tracker*)tracker
-        hostContentSettingsMap:(HostContentSettingsMap*)settings_map
-                  webStateList:browser_->GetWebStateList()];
+                       initWithTracker:(feature_engagement::Tracker*)tracker
+                hostContentSettingsMap:(HostContentSettingsMap*)settings_map
+                          webStateList:browser_->GetWebStateList()
+        deviceSwitcherResultDispatcher:nullptr
+                       loadingNotifier:urlLoadingNotifier_];
     [dispatcher startDispatchingToTarget:bubble_presenter_
                              forProtocol:@protocol(HelpCommands)];
 
@@ -300,9 +305,6 @@ class BrowserViewControllerTest : public BlockCleanupTest {
 
     SessionRestorationBrowserAgent* sessionRestorationBrowserAgent_ =
         SessionRestorationBrowserAgent::FromBrowser(browser_.get());
-
-    UrlLoadingNotifierBrowserAgent* urlLoadingNotifier_ =
-        UrlLoadingNotifierBrowserAgent::FromBrowser(browser_.get());
 
     tab_events_mediator_ = [[TabEventsMediator alloc]
         initWithWebStateList:browser_.get()->GetWebStateList()

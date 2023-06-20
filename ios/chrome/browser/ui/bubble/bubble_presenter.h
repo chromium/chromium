@@ -12,12 +12,18 @@
 @class BubbleViewControllerPresenter;
 class HostContentSettingsMap;
 @class LayoutGuideCenter;
+class UrlLoadingNotifierBrowserAgent;
 class WebStateList;
 
 namespace feature_engagement {
 class Tracker;
 }  // namespace feature_engagement
 
+namespace segmentation_platform {
+class DeviceSwitcherResultDispatcher;
+}  // namespace segmentation_platform
+
+// TODO(crbug.com/1454553): refactor the class.
 // Object handling the presentation of the different bubbles tips. The class is
 // holding all the bubble presenters.
 @interface BubblePresenter : NSObject <HelpCommands>
@@ -25,8 +31,13 @@ class Tracker;
 // Initializes a BubblePresenter whose bubbles are presented on the
 // `rootViewController`.
 - (instancetype)initWithTracker:(feature_engagement::Tracker*)engagementTracker
-         hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                   webStateList:(WebStateList*)webStateList
+            hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
+                      webStateList:(WebStateList*)webStateList
+    deviceSwitcherResultDispatcher:
+        (segmentation_platform::DeviceSwitcherResultDispatcher*)
+            deviceSwitcherResultDispatcher
+                   loadingNotifier:
+                       (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier
     NS_DESIGNATED_INITIALIZER;
 
 - (instancetype)init NS_UNAVAILABLE;

@@ -1430,42 +1430,44 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
   }
 
   if (kIPHiOSNewTabToolbarItemFeature.name == feature->name) {
-    // the IPH of the new tab button on the tool bar (at bottom on iPhone or on
-    // top on iPad) is shown if:
-    // * the user has opened the url from omnibox for >= 5 times in a week.
-    // * the user has used the new tab toolbar item <= 2 times in a week.
-    // * the IPH is shown at most 1 time a week, 2 times a year.
+    // The IPH of the new tab button on the tool bar (at bottom on iPhone or on
+    // top on iPad).
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
+    // The user has opened the url from omnibox for >= 2 times in the past week.
     config->used = EventConfig(feature_engagement::events::kOpenUrlFromOmnibox,
-                               Comparator(GREATER_THAN_OR_EQUAL, 5), 7, 30);
+                               Comparator(GREATER_THAN_OR_EQUAL, 2), 7, 7);
+    // The IPH is shown at most 1 time a week.
     config->trigger = EventConfig("iph_new_tab_toolbar_item_trigger",
                                   Comparator(EQUAL, 0), 7, 7);
+    // The user hasn't used the new tab toolbar item in the past day.
+    config->event_configs.insert(
+        EventConfig(feature_engagement::events::kNewTabToolbarItemUsed,
+                    Comparator(EQUAL, 0), 1, 1));
+    // The IPH is shown at most 2 times a year.
     config->event_configs.insert(EventConfig("iph_new_tab_toolbar_item_trigger",
                                              Comparator(LESS_THAN, 2), 365,
                                              365));
-    config->event_configs.insert(
-        EventConfig(feature_engagement::events::kNewTabToolbarItemUsed,
-                    Comparator(LESS_THAN_OR_EQUAL, 2), 7, 30));
     return config;
   }
 
   if (kIPHiOSTabGridToolbarItemFeature.name == feature->name) {
-    // the IPH of the tab grid button on the tool bar (at bottom on iPhone or on
-    // top on iPad) is shown if:
-    // * the user has tapped the new tab toolbar item < 2 times in a week.
-    // * the IPH is shown at most 1 time a week, 2 times a year.
+    // The IPH of the tab grid button on the tool bar (at bottom on iPhone or on
+    // top on iPad).
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;
     config->availability = Comparator(ANY, 0);
     config->session_rate = Comparator(EQUAL, 0);
+    // The user has tapped the new tab toolbar item < 2 times in a week.
     config->used =
         EventConfig(feature_engagement::events::kTabGridToolbarItemUsed,
                     Comparator(LESS_THAN, 2), 7, 30);
+    // The IPH is shown at most 1 time a week.
     config->trigger = EventConfig("iph_tab_grid_toolbar_item_trigger",
                                   Comparator(EQUAL, 0), 7, 7);
+    // The IPH is shown at most 2 times a year.
     config->event_configs.insert(
         EventConfig("iph_tab_grid_toolbar_item_trigger",
                     Comparator(LESS_THAN, 2), 365, 365));

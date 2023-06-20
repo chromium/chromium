@@ -429,9 +429,6 @@ BASE_FEATURE(kIPHBottomToolbarTipFeature,
 BASE_FEATURE(kIPHLongPressToolbarTipFeature,
              "IPH_LongPressToolbarTip",
              base::FEATURE_DISABLED_BY_DEFAULT);
-BASE_FEATURE(kIPHNewTabTipFeature,
-             "IPH_NewTabTip",
-             base::FEATURE_DISABLED_BY_DEFAULT);
 BASE_FEATURE(kIPHNewIncognitoTabTipFeature,
              "IPH_NewIncognitoTabTip",
              base::FEATURE_DISABLED_BY_DEFAULT);

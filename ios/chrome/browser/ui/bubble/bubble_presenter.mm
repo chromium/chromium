@@ -12,7 +12,11 @@
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/feature_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_event_global_tracker.h"
+#import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
+#import "ios/chrome/browser/iph_for_new_chrome_user/utils.h"
+#import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
@@ -23,6 +27,8 @@
 #import "ios/chrome/browser/ui/bubble/bubble_presenter_delegate.h"
 #import "ios/chrome/browser/ui/bubble/bubble_util.h"
 #import "ios/chrome/browser/ui/bubble/bubble_view_controller_presenter.h"
+#import "ios/chrome/browser/url_loading/url_loading_notifier_browser_agent.h"
+#import "ios/chrome/browser/url_loading/url_loading_observer_bridge.h"
 #import "ios/chrome/common/ui/util/ui_util.h"
 #import "ios/chrome/grit/ios_chromium_strings.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -40,7 +46,7 @@ namespace {
 const CGFloat kBubblePresentationDelay = 1;
 }  // namespace
 
-@interface BubblePresenter ()
+@interface BubblePresenter () <URLLoadingObserver>
 
 // Used to display the bottom toolbar tip in-product help promotion bubble.
 // `nil` if the tip bubble has not yet been presented. Once the bubble is
@@ -57,7 +63,7 @@ const CGFloat kBubblePresentationDelay = 1;
 // the new tab tip bubble has not yet been presented. Once the bubble is
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
-    BubbleViewControllerPresenter* tabTipBubblePresenter;
+    BubbleViewControllerPresenter* openNewTabIPHBubblePresenter;
 @property(nonatomic, strong, readwrite)
     BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 @property(nonatomic, strong)
@@ -82,20 +88,37 @@ const CGFloat kBubblePresentationDelay = 1;
 
 @end
 
-@implementation BubblePresenter
+@implementation BubblePresenter {
+  std::unique_ptr<UrlLoadingObserverBridge> _loadingObserverBridge;
+  UrlLoadingNotifierBrowserAgent* _loadingNotifier;
+
+  segmentation_platform::DeviceSwitcherResultDispatcher*
+      _deviceSwitcherResultDispatcher;
+}
 
 #pragma mark - Public
 
 - (instancetype)initWithTracker:(feature_engagement::Tracker*)engagementTracker
-         hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
-                   webStateList:(WebStateList*)webStateList {
+            hostContentSettingsMap:(HostContentSettingsMap*)settingsMap
+                      webStateList:(WebStateList*)webStateList
+    deviceSwitcherResultDispatcher:
+        (segmentation_platform::DeviceSwitcherResultDispatcher*)
+            deviceSwitcherResultDispatcher
+                   loadingNotifier:
+                       (UrlLoadingNotifierBrowserAgent*)urlLoadingNotifier {
   self = [super init];
   if (self) {
     DCHECK(webStateList);
+    DCHECK(urlLoadingNotifier);
     _webStateList = webStateList;
     _engagementTracker = engagementTracker;
     _settingsMap = settingsMap;
+    _deviceSwitcherResultDispatcher = deviceSwitcherResultDispatcher;
     self.started = YES;
+
+    _loadingObserverBridge = std::make_unique<UrlLoadingObserverBridge>(self);
+    _loadingNotifier = urlLoadingNotifier;
+    _loadingNotifier->AddObserver(_loadingObserverBridge.get());
   }
   return self;
 }
@@ -105,6 +128,9 @@ const CGFloat kBubblePresentationDelay = 1;
   self.webStateList = nullptr;
   self.engagementTracker = nullptr;
   self.settingsMap = nullptr;
+
+  _loadingNotifier->RemoveObserver(_loadingObserverBridge.get());
+  _loadingObserverBridge.reset();
 }
 
 - (void)showHelpBubbleIfEligible {
@@ -155,7 +181,7 @@ const CGFloat kBubblePresentationDelay = 1;
 }
 
 - (void)hideAllHelpBubbles {
-  [self.tabTipBubblePresenter dismissAnimated:NO];
+  [self.openNewTabIPHBubblePresenter dismissAnimated:NO];
   [self.incognitoTabTipBubblePresenter dismissAnimated:NO];
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
@@ -168,12 +194,11 @@ const CGFloat kBubblePresentationDelay = 1;
   [self.defaultPageModeTipBubblePresenter dismissAnimated:NO];
 }
 
+// TODO(crbug.com/1448656): remove code.
 - (void)userEnteredTabSwitcher {
-  if (self.tabTipBubblePresenter.userEngaged) {
-    base::RecordAction(base::UserMetricsAction("NewTabTipTargetSelected"));
-  }
 }
 
+// TODO(crbug.com/1448656): remove code.
 - (void)toolsMenuDisplayed {
   if (self.incognitoTabTipBubblePresenter.userEngaged) {
     base::RecordAction(
@@ -372,12 +397,6 @@ const CGFloat kBubblePresentationDelay = 1;
 #pragma mark - Private
 
 - (void)presentBubbles {
-  // If the tip bubble has already been presented and the user is still
-  // considered engaged, it can't be overwritten or set to `nil` or else it will
-  // reset the `userEngaged` property. Once the user is not engaged, the bubble
-  // can be safely overwritten or set to `nil`.
-  if (!self.tabTipBubblePresenter.userEngaged)
-    [self presentNewTabTipBubble];
   if (!self.incognitoTabTipBubblePresenter.userEngaged)
     [self presentNewIncognitoTabTipBubble];
 
@@ -386,6 +405,7 @@ const CGFloat kBubblePresentationDelay = 1;
   [self presentBottomToolbarTipBubble];
 }
 
+// TODO(crbug.com/1448656): remove code.
 - (void)presentLongPressBubble {
   if (self.longPressToolbarTipBubblePresenter.userEngaged)
     return;
@@ -448,6 +468,7 @@ const CGFloat kBubblePresentationDelay = 1;
   return presenter;
 }
 
+// TODO(crbug.com/1448656): remove code.
 // Presents a bubble associated with the bottom toolbar tip in-product help
 // promotion.
 - (void)presentBottomToolbarTipBubble {
@@ -483,16 +504,22 @@ const CGFloat kBubblePresentationDelay = 1;
       feature_engagement::events::kBottomToolbarOpened);
 }
 
-// Optionally presents a bubble associated with the new tab tip in-product help
-// promotion. If the feature engagement tracker determines it is valid to show
-// the new tab tip, then it initializes `tabTipBubblePresenter` and presents
-// the bubble. If it is not valid to show the new tab tip,
-// `tabTipBubblePresenter` is set to `nil` and no bubble is shown.
-- (void)presentNewTabTipBubble {
+// Optionally presents a bubble associated with the new tab iph. If the feature
+// engagement tracker determines it is valid to show the new tab tip, then it
+// initializes `openNewTabIPHBubblePresenter` and presents the bubble. If it is
+// not valid to show the new tab tip, `openNewTabIPHBubblePresenter` is set to
+// `nil` and no bubble is shown. This method requires that `self.browserState`
+// is not NULL.
+- (void)presentNewTabToolbarItemBubble {
+  if (!iph_for_new_chrome_user::IsUserEligible(
+          _deviceSwitcherResultDispatcher)) {
+    return;
+  }
+
   if (![self canPresentBubble])
     return;
 
-  // Do not present the new tab tips on NTP.
+  // Do not present the new tab IPH on NTP.
   web::WebState* currentWebState = self.webStateList->GetActiveWebState();
   if (!currentWebState ||
       currentWebState->GetVisibleURL() == kChromeUINewTabURL) {
@@ -503,26 +530,28 @@ const CGFloat kBubblePresentationDelay = 1;
       IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
                                                   : BubbleArrowDirectionUp;
   NSString* text =
-      l10n_util::GetNSStringWithFixup(IDS_IOS_NEW_TAB_IPH_PROMOTION_TEXT);
-  CGPoint tabSwitcherAnchor = [self anchorPointToGuide:kTabSwitcherGuide
-                                             direction:arrowDirection];
+      l10n_util::GetNSStringWithFixup(IDS_IOS_OPEN_NEW_TAB_IPH_TEXT);
+  CGPoint newTabButtonAnchor = [self anchorPointToGuide:kNewTabButtonGuide
+                                              direction:arrowDirection];
 
   // If the feature engagement tracker does not consider it valid to display
   // the new tab tip, then end early to prevent the potential reassignment
-  // of the existing `tabTipBubblePresenter` to nil.
+  // of the existing `openNewTabIPHBubblePresenter` to nil.
   BubbleViewControllerPresenter* presenter =
-      [self presentBubbleForFeature:feature_engagement::kIPHNewTabTipFeature
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSNewTabToolbarItemFeature
                           direction:arrowDirection
                           alignment:BubbleAlignmentTrailing
                                text:text
               voiceOverAnnouncement:nil
-                        anchorPoint:tabSwitcherAnchor];
+                        anchorPoint:newTabButtonAnchor];
   if (!presenter)
     return;
 
-  self.tabTipBubblePresenter = presenter;
+  self.openNewTabIPHBubblePresenter = presenter;
 }
 
+// TODO(crbug.com/1448656): remove code.
 // Presents a bubble associated with the new incognito tab tip in-product help
 // promotion.
 - (void)presentNewIncognitoTabTipBubble {
@@ -672,4 +701,15 @@ const CGFloat kBubblePresentationDelay = 1;
   return NO;
 }
 
+#pragma mark - URLLoadingObserver
+
+- (void)tabWillLoadURL:(GURL)URL
+        transitionType:(ui::PageTransition)transitionType {
+  web::WebState* currentWebState = _webStateList->GetActiveWebState();
+  if (currentWebState &&
+      ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
+       (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK))) {
+    [self presentNewTabToolbarItemBubble];
+  }
+}
 @end

@@ -20,9 +20,9 @@ namespace {
 // List Badge to be shown.
 const int kMinChromeOpensRequiredForReadingList = 5;
 
-// The minimum number of times Chrome must be opened in order for the New Tab
-// Tip to be shown.
-const int kMinChromeOpensRequiredForNewTabTip = 3;
+// The minimum number of times url must be opened in order for the New Tab IPH
+// to be displayed.
+const int kMinURLOpensRequiredForNewTabIPH = 2;
 
 }  // namespace
 
@@ -59,15 +59,15 @@ class FeatureEngagementTest : public PlatformTest {
     return params;
   }
 
-  std::map<std::string, std::string> NewTabTipPromoParams() {
+  std::map<std::string, std::string> IPHiOSNewTabToolbarItemParams() {
     std::map<std::string, std::string> params;
     params["event_1"] =
-        "name:chrome_opened;comparator:>=3;window:90;storage:90";
-    params["event_trigger"] =
-        "name:new_tab_tip_trigger;comparator:<2;window:1095;storage:"
-        "1095";
+        "name:open_url_from_omnibox;comparator:>=2;window:7;storage:7";
+    params["event_trigger"] = "name:iph_new_tab_toolbar_item_trigger;"
+                              "comparator:==0;window:7;storage:"
+                              "7";
     params["event_used"] =
-        "name:new_tab_opened;comparator:==0;window:90;storage:90";
+        "name:new_tab_toolbar_item_used;comparator:==0;window:1;storage:1";
     params["session_rate"] = "==0";
     params["availability"] = "any";
     return params;
@@ -238,12 +238,13 @@ TEST_F(FeatureEngagementTest, TestBadgedTranslateManualTriggerShouldShowOnce) {
       feature_engagement::kIPHBadgedTranslateManualTriggerFeature));
 }
 
-// Verifes that the New Tab Tip Promo is triggered after the proper conditions
+// Verifies that the New Tab IPH is triggered after the proper conditions
 // are met.
-TEST_F(FeatureEngagementTest, TestNewTabTipPromoShouldShow) {
+TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldShow) {
   feature_engagement::test::ScopedIphFeatureList list;
   list.InitAndEnableFeaturesWithParameters(
-      {{feature_engagement::kIPHNewTabTipFeature, NewTabTipPromoParams()}});
+      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
+        IPHiOSNewTabToolbarItemParams()}});
 
   std::unique_ptr<feature_engagement::Tracker> tracker =
       feature_engagement::CreateTestTracker();
@@ -251,14 +252,38 @@ TEST_F(FeatureEngagementTest, TestNewTabTipPromoShouldShow) {
   tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
   run_loop_.Run();
 
-  // Ensure that Chrome has been launched enough times to meet the trigger
+  // Ensure that url has been opened enough times to meet the trigger
   // condition.
-  for (int index = 0; index < kMinChromeOpensRequiredForNewTabTip; index++) {
-    tracker->NotifyEvent(feature_engagement::events::kChromeOpened);
+  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
+    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
   }
 
-  EXPECT_TRUE(
-      tracker->ShouldTriggerHelpUI(feature_engagement::kIPHNewTabTipFeature));
+  EXPECT_TRUE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
+}
+
+// Verifies that the New Tab IPH is not triggered.
+TEST_F(FeatureEngagementTest, TestNewTabToolbarItemIPHShouldNotShow) {
+  feature_engagement::test::ScopedIphFeatureList list;
+  list.InitAndEnableFeaturesWithParameters(
+      {{feature_engagement::kIPHiOSNewTabToolbarItemFeature,
+        IPHiOSNewTabToolbarItemParams()}});
+
+  std::unique_ptr<feature_engagement::Tracker> tracker =
+      feature_engagement::CreateTestTracker();
+  // Make sure tracker is initialized.
+  tracker->AddOnInitializedCallback(BoolArgumentQuitClosure());
+  run_loop_.Run();
+
+  for (int index = 0; index < kMinURLOpensRequiredForNewTabIPH; index++) {
+    tracker->NotifyEvent(feature_engagement::events::kOpenUrlFromOmnibox);
+  }
+
+  // The kNewTabToolbarItemUsed event will prevent the trigger.
+  tracker->NotifyEvent(feature_engagement::events::kNewTabToolbarItemUsed);
+
+  EXPECT_FALSE(tracker->ShouldTriggerHelpUI(
+      feature_engagement::kIPHiOSNewTabToolbarItemFeature));
 }
 
 // Verifies that the bottom toolbar tip triggers.
