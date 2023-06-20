@@ -100,6 +100,8 @@ std::string ConvertUninstallSourceToStringType(
       return "External Lock Screen";
     case webapps::WebappUninstallSource::kTestCleanup:
       return "Test cleanup";
+    case webapps::WebappUninstallSource::kInstallUrlDeduping:
+      return "Install URL deduping";
   }
 }
 

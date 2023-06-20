@@ -94,6 +94,13 @@ class WebAppRegistrar : public ProfileManagerObserver {
   // has a specific install_url.
   absl::optional<AppId> LookUpAppIdByInstallUrl(const GURL& install_url) const;
 
+  // Returns a WebApp if there exists an app inside the registry that
+  // has a specific `install_source` with `install_url`.
+  // If there are multiple matches an arbitrary one is returned.
+  const WebApp* LookUpAppByInstallSourceInstallUrl(
+      WebAppManagement::Type install_source,
+      const GURL& install_url) const;
+
   // Returns whether the app with |app_id| is currently listed in the registry.
   // ie. we have data for web app manifest and icons, and this |app_id| can be
   // used in other registrar methods.

@@ -16,6 +16,8 @@ class Profile;
 
 namespace web_app {
 
+class WebApp;
+
 extern const char kCrxAppPrefix[];
 
 // Compute a deterministic name based on the URL. We use this pseudo name
@@ -83,6 +85,10 @@ absl::optional<AppId> FindInstalledAppWithUrlInScope(Profile* profile,
 // Searches for the first app id in the registry which is not locally installed
 // and for which the |url| is in scope.
 bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url);
+
+// Tests if `app` is marked as a placeholder app or appears to be one despite
+// not being marked due to corruption, see: https://crbug.com/1427340
+bool LooksLikePlaceholder(const WebApp& app);
 
 }  // namespace web_app
 

@@ -308,6 +308,9 @@ class WebApp {
     // Note that list is not meant to be an exhaustive enumeration of all
     // possible policy_ids but rather just a supplement for tricky cases.
     base::flat_set<std::string> additional_policy_ids;
+
+    // Any new fields added should consider adding config merge logic to
+    // BuildOperationsToDedupeInstallUrlConfigsIntoSelectedApp().
   };
 
   using ExternalConfigMap =

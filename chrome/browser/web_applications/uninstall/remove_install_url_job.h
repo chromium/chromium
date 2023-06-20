@@ -17,6 +17,7 @@
 #include "chrome/browser/web_applications/web_app_id.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/uninstall_result_code.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "url/gurl.h"
 
 class Profile;
@@ -25,14 +26,19 @@ namespace web_app {
 
 class RemoveInstallSourceJob;
 
-// Removes an install source's install URL from the first matching web app.
+// Removes `install_source`'s `install_url` from `app_id`, if `app_id` is unset
+// then the first matching web app that has `install_url` for `install_source`
+// will be used.
 // This will remove the install source if there are no remaining install URLs
 // for that install source which in turn will remove the web app if there are no
 // remaining install sources for the web app.
+// TODO(crbug.com/1434692): There could potentially be multiple app matches for
+// `install_source` and `install_url`, handle this case explicitly.
 class RemoveInstallUrlJob : public UninstallJob {
  public:
   RemoveInstallUrlJob(webapps::WebappUninstallSource uninstall_source,
                       Profile& profile,
+                      absl::optional<AppId> app_id,
                       WebAppManagement::Type install_source,
                       GURL install_url);
   ~RemoveInstallUrlJob() override;
@@ -48,6 +54,7 @@ class RemoveInstallUrlJob : public UninstallJob {
   webapps::WebappUninstallSource uninstall_source_;
   // `this` must be owned by `profile_`.
   raw_ref<Profile> profile_;
+  absl::optional<AppId> app_id_;
   WebAppManagement::Type install_source_;
   GURL install_url_;
 

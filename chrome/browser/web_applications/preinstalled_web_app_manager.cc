@@ -48,6 +48,7 @@
 #include "chrome/browser/web_applications/preinstalled_web_apps/preinstalled_web_apps.h"
 #include "chrome/browser/web_applications/user_uninstalled_preinstalled_web_app_prefs.h"
 #include "chrome/browser/web_applications/web_app.h"
+#include "chrome/browser/web_applications/web_app_helpers.h"
 #include "chrome/browser/web_applications/web_app_install_utils.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
@@ -89,6 +90,7 @@ namespace web_app {
 namespace {
 
 bool g_skip_startup_for_testing_ = false;
+bool g_bypass_awaiting_dependencies_for_testing_ = false;
 bool g_bypass_offline_manifest_requirement_for_testing_ = false;
 bool g_override_previous_user_uninstall_for_testing_ = false;
 const base::Value::List* g_configs_for_testing = nullptr;
@@ -238,6 +240,8 @@ absl::optional<std::string> GetDisableReason(
           .LookUpAppIdByInstallUrl(options.install_url)
           .has_value();
   bool ignore_user_uninstalled_prefs = [&]() {
+    // TODO(crbug.com/1363027): Use LookUpAppByInstallSourceInstallUrl() instead
+    // of LookupExternalAppId() throughout this file.
     absl::optional<AppId> app_id =
         registrar->LookupExternalAppId(options.install_url);
     return app_id.has_value() &&
@@ -470,6 +474,38 @@ absl::optional<std::string> GetDisableReason(
   return absl::nullopt;
 }
 
+bool IsReinstallPastMilestoneNeededSinceLastSync(
+    const PrefService& prefs,
+    int force_reinstall_for_milestone) {
+  std::string last_preinstall_synchronize_milestone =
+      prefs.GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
+
+  return IsReinstallPastMilestoneNeeded(last_preinstall_synchronize_milestone,
+                                        version_info::GetMajorVersionNumber(),
+                                        force_reinstall_for_milestone);
+}
+
+bool ShouldForceReinstall(const ExternalInstallOptions& options,
+                          const PrefService& prefs,
+                          const WebAppRegistrar& registrar) {
+  if (options.force_reinstall_for_milestone &&
+      IsReinstallPastMilestoneNeededSinceLastSync(
+          prefs, options.force_reinstall_for_milestone.value())) {
+    return true;
+  }
+
+  if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
+    // TODO(crbug.com/1427340): Add metrics for this event.
+    const WebApp* app = registrar.LookUpAppByInstallSourceInstallUrl(
+        WebAppManagement::Type::kDefault, options.install_url);
+    if (app && LooksLikePlaceholder(*app)) {
+      return true;
+    }
+  }
+
+  return false;
+}
+
 }  // namespace
 
 class PreinstalledWebAppManager::DeviceDataInitializedEvent
@@ -560,20 +596,30 @@ void PreinstalledWebAppManager::SkipStartupForTesting() {
   g_skip_startup_for_testing_ = true;
 }
 
+// static
+base::AutoReset<bool>
+PreinstalledWebAppManager::BypassAwaitingDependenciesForTesting() {
+  return {&g_bypass_awaiting_dependencies_for_testing_, true};
+}
+
+// static
 void PreinstalledWebAppManager::BypassOfflineManifestRequirementForTesting() {
   g_bypass_offline_manifest_requirement_for_testing_ = true;
 }
 
+// static
 void PreinstalledWebAppManager::
     OverridePreviousUserUninstallConfigForTesting() {
   g_override_previous_user_uninstall_for_testing_ = true;
 }
 
+// static
 void PreinstalledWebAppManager::SetConfigsForTesting(
     const base::Value::List* configs) {
   g_configs_for_testing = configs;
 }
 
+// static
 void PreinstalledWebAppManager::SetFileUtilsForTesting(
     FileUtilsWrapper* file_utils) {
   g_file_utils_for_testing = file_utils;
@@ -655,13 +701,19 @@ void PreinstalledWebAppManager::LoadAndSynchronizeForTesting(
 
 void PreinstalledWebAppManager::LoadAndSynchronize(
     SynchronizeCallback callback) {
+  base::OnceClosure load_and_synchronize = base::BindOnce(
+      &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
+      base::BindOnce(&PreinstalledWebAppManager::Synchronize,
+                     weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+
+  if (g_bypass_awaiting_dependencies_for_testing_) {
+    std::move(load_and_synchronize).Run();
+    return;
+  }
+
   int num_barriers_issued = 2;
   base::RepeatingClosure barrier_closure = base::BarrierClosure(
-      num_barriers_issued,
-      base::BindOnce(
-          &PreinstalledWebAppManager::Load, weak_ptr_factory_.GetWeakPtr(),
-          base::BindOnce(&PreinstalledWebAppManager::Synchronize,
-                         weak_ptr_factory_.GetWeakPtr(), std::move(callback))));
+      num_barriers_issued, std::move(load_and_synchronize));
   device_data_initialized_event_->Post(barrier_closure);
 
   // Make sure ExtensionSystem is ready to know if default apps new installation
@@ -812,12 +864,8 @@ void PreinstalledWebAppManager::PostProcessConfigs(
     debug_info_->enabled_configs = parsed_configs.options_list;
   }
 
-  // Triggers |force_reinstall| in ExternallyManagedAppManager if milestone
-  // increments across |force_reinstall_for_milestone|.
   for (ExternalInstallOptions& options : parsed_configs.options_list) {
-    if (options.force_reinstall_for_milestone &&
-        IsReinstallPastMilestoneNeededSinceLastSync(
-            options.force_reinstall_for_milestone.value())) {
+    if (ShouldForceReinstall(options, *profile_->GetPrefs(), *registrar_)) {
       options.force_reinstall = true;
     }
   }
@@ -965,17 +1013,6 @@ bool PreinstalledWebAppManager::IsNewUser() {
   PrefService* prefs = profile_->GetPrefs();
   return prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion)
       .empty();
-}
-
-bool PreinstalledWebAppManager::IsReinstallPastMilestoneNeededSinceLastSync(
-    int force_reinstall_for_milestone) {
-  PrefService* prefs = profile_->GetPrefs();
-  std::string last_preinstall_synchronize_milestone =
-      prefs->GetString(prefs::kWebAppsLastPreinstallSynchronizeVersion);
-
-  return IsReinstallPastMilestoneNeeded(last_preinstall_synchronize_milestone,
-                                        version_info::GetMajorVersionNumber(),
-                                        force_reinstall_for_milestone);
 }
 
 PreinstalledWebAppManager::DebugInfo::DebugInfo() = default;

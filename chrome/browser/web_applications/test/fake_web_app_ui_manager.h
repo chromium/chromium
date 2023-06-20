@@ -75,7 +75,7 @@ class FakeWebAppUiManager : public WebAppUiManager {
   void TriggerInstallDialog(content::WebContents* web_contents) override;
 
  private:
-  std::map<AppId, size_t> app_id_to_num_windows_map_;
+  base::flat_map<AppId, size_t> app_id_to_num_windows_map_;
   int num_reparent_tab_calls_ = 0;
   OnLaunchWebAppCallback on_launch_web_app_callback_;
 };

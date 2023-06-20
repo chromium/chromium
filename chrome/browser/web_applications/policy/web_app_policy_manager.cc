@@ -667,6 +667,10 @@ bool WebAppPolicyManager::IsPreventCloseEnabled(const AppId& app_id) const {
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 
+void WebAppPolicyManager::RefreshPolicyInstalledAppsForTesting() {
+  RefreshPolicyInstalledApps();
+}
+
 void WebAppPolicyManager::OnAppsSynchronized(
     std::map<GURL, ExternallyManagedAppManager::InstallResult> install_results,
     std::map<GURL, bool> uninstall_results) {

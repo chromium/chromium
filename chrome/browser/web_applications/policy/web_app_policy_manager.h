@@ -108,6 +108,8 @@ class WebAppPolicyManager {
 
   bool IsPreventCloseEnabled(const AppId& app_id) const;
 
+  void RefreshPolicyInstalledAppsForTesting();
+
  private:
   friend class WebAppPolicyManagerTest;
 

@@ -584,7 +584,7 @@ base::Value ExternallyManagedAppManager::SynchronizeInstalledAppsOnLockAcquired(
 
   if (urls_to_remove.empty()) {
     // If there are no uninstalls, this will trigger the installs.
-    ContinueOrCompleteSynchronization(install_source);
+    ContinueSynchronization(install_source);
   } else {
     UninstallApps(
         urls_to_remove, install_source,
@@ -626,7 +626,7 @@ void ExternallyManagedAppManager::InstallForSynchronizeCallback(
   --request.remaining_install_requests;
   DCHECK_GE(request.remaining_install_requests, 0);
 
-  ContinueOrCompleteSynchronization(source);
+  ContinueSynchronization(source);
 }
 
 void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
@@ -640,10 +640,10 @@ void ExternallyManagedAppManager::UninstallForSynchronizeCallback(
   --request.remaining_uninstall_requests;
   DCHECK_GE(request.remaining_uninstall_requests, 0);
 
-  ContinueOrCompleteSynchronization(source);
+  ContinueSynchronization(source);
 }
 
-void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
+void ExternallyManagedAppManager::ContinueSynchronization(
     ExternalInstallSource source) {
   auto source_and_request = synchronize_requests_.find(source);
   DCHECK(source_and_request != synchronize_requests_.end());
@@ -668,13 +668,30 @@ void ExternallyManagedAppManager::ContinueOrCompleteSynchronization(
   if (request.remaining_install_requests > 0)
     return;
 
+  if (base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls)) {
+    command_scheduler_->ScheduleDedupeInstallUrls(
+        base::BindOnce(&ExternallyManagedAppManager::CompleteSynchronization,
+                       weak_ptr_factory_.GetWeakPtr(), source));
+  } else {
+    CompleteSynchronization(source);
+  }
+}
+
+void ExternallyManagedAppManager::CompleteSynchronization(
+    ExternalInstallSource source) {
+  auto source_and_request = synchronize_requests_.find(source);
+  DCHECK(source_and_request != synchronize_requests_.end());
+
+  SynchronizeRequest& request = source_and_request->second;
   CHECK(request.callback);
+
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(request.callback),
                                 std::move(request.install_results),
                                 std::move(request.uninstall_results)));
   synchronize_requests_.erase(source);
 }
+
 void ExternallyManagedAppManager::ClearSynchronizeRequestsForTesting() {
   synchronize_requests_.erase(synchronize_requests_.begin(),
                               synchronize_requests_.end());

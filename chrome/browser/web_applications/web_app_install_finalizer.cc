@@ -315,6 +315,7 @@ void WebAppInstallFinalizer::UninstallExternalWebAppByUrl(
   DCHECK(IsExternalInstallSource(external_install_source));
   command_manager_->ScheduleCommand(std::make_unique<WebAppUninstallCommand>(
       std::make_unique<RemoveInstallUrlJob>(uninstall_source, *profile_,
+                                            /*app_id=*/absl::nullopt,
                                             external_install_source, app_url),
       std::move(callback)));
 }

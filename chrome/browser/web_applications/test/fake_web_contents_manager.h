@@ -43,6 +43,10 @@ class FakeWebContentsManager : public WebContentsManager {
     ~FakePageState();
     FakePageState(FakePageState&&);
 
+    AppId PopulateWithBasicManifest(GURL install_url,
+                                    GURL manifest_url,
+                                    GURL start_url);
+
     // `WebAppUrlLoader::LoadUrl`:
     // If this is populated, then a redirection is always assumed. If the
     // redirection is allowed by the `LoadUrlComparison`, then `url_load_result`
@@ -97,8 +101,13 @@ class FakeWebContentsManager : public WebContentsManager {
   void DeleteIconState(const GURL& icon_url);
 
   // Set the behavior for calls to `LoadUrl`, `GetWebAppInstallInfo`, and
-  // `CheckInstallabilityAndRetrieveManifest`  from wrappers returned by this
+  // `CheckInstallabilityAndRetrieveManifest` from wrappers returned by this
   // fake class.
+  AppId CreateBasicInstallPageState(
+      const GURL& install_url,
+      const GURL& manifest_url,
+      const GURL& start_url,
+      base::StringPiece16 name = u"Basic app name");
   void SetPageState(const GURL& gurl, FakePageState page_state);
   FakePageState& GetOrCreatePageState(const GURL& gurl);
   void DeletePageState(const GURL& gurl);

@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/location.h"
@@ -18,6 +19,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/web_applications/commands/callback_command.h"
 #include "chrome/browser/web_applications/commands/clear_browsing_data_command.h"
+#include "chrome/browser/web_applications/commands/dedupe_install_urls_command.h"
 #include "chrome/browser/web_applications/commands/externally_managed_install_command.h"
 #include "chrome/browser/web_applications/commands/fetch_installability_for_chrome_management.h"
 #include "chrome/browser/web_applications/commands/fetch_manifest_and_install_command.h"
@@ -53,6 +55,7 @@
 #include "chrome/browser/web_applications/web_app_ui_manager.h"
 #include "chrome/browser/web_applications/web_contents/web_app_data_retriever.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
+#include "chrome/common/chrome_features.h"
 #include "components/keep_alive_registry/keep_alive_registry.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
 #include "components/keep_alive_registry/scoped_keep_alive.h"
@@ -638,6 +641,22 @@ void WebAppCommandScheduler::SynchronizeOsIntegration(
   provider_->command_manager().ScheduleCommand(
       std::make_unique<OsIntegrationSynchronizeCommand>(
           app_id, synchronize_options, std::move(synchronize_callback)),
+      location);
+}
+
+void WebAppCommandScheduler::ScheduleDedupeInstallUrls(
+    base::OnceClosure callback,
+    const base::Location& location) {
+  CHECK(base::FeatureList::IsEnabled(features::kWebAppDedupeInstallUrls));
+  if (IsShuttingDown()) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, std::move(callback));
+    return;
+  }
+
+  provider_->command_manager().ScheduleCommand(
+      std::make_unique<DedupeInstallUrlsCommand>(profile_.get(),
+                                                 std::move(callback)),
       location);
 }
 

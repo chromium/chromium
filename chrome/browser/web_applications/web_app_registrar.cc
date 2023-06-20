@@ -719,6 +719,22 @@ absl::optional<AppId> WebAppRegistrar::LookUpAppIdByInstallUrl(
   return absl::nullopt;
 }
 
+const WebApp* WebAppRegistrar::LookUpAppByInstallSourceInstallUrl(
+    WebAppManagement::Type install_source,
+    const GURL& install_url) const {
+  for (const WebApp& app : GetApps()) {
+    const WebApp::ExternalConfigMap& config_map =
+        app.management_to_external_config_map();
+    auto it = config_map.find(install_source);
+    if (it != config_map.end()) {
+      if (base::Contains(it->second.install_urls, install_url)) {
+        return &app;
+      }
+    }
+  }
+  return nullptr;
+}
+
 bool WebAppRegistrar::IsInstalled(const AppId& app_id) const {
   const WebApp* web_app = GetAppById(app_id);
   if (!web_app || web_app->is_uninstalling())

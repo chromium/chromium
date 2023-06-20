@@ -10,6 +10,7 @@
 #include "base/strings/string_number_conversions.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/web_applications/web_app.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/common/webui_url_constants.h"
@@ -118,6 +119,21 @@ bool IsNonLocallyInstalledAppWithUrlInScope(Profile* profile, const GURL& url) {
   return provider ? provider->registrar_unsafe()
                         .IsNonLocallyInstalledAppWithUrlInScope(url)
                   : false;
+}
+
+bool LooksLikePlaceholder(const WebApp& app) {
+  for (const auto& [install_source, config] :
+       app.management_to_external_config_map()) {
+    if (config.is_placeholder) {
+      return true;
+    }
+    for (const GURL& install_url : config.install_urls) {
+      if (app.untranslated_name() == install_url.spec()) {
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 }  // namespace web_app

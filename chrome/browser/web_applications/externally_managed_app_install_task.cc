@@ -226,7 +226,7 @@ void ExternallyManagedAppInstallTask::OnPlaceholderUninstalled(
     content::WebContents* web_contents,
     ResultCallback result_callback,
     webapps::UninstallResultCode code) {
-  if (code != webapps::UninstallResultCode::kSuccess) {
+  if (!UninstallSucceeded(code)) {
     LOG(ERROR) << "Failed to uninstall placeholder for: "
                << install_options_.install_url;
     std::move(result_callback)

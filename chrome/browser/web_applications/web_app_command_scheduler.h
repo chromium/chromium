@@ -317,6 +317,15 @@ class WebAppCommandScheduler {
       absl::optional<SynchronizeOsOptions> synchronize_options = absl::nullopt,
       const base::Location& location = FROM_HERE);
 
+  // Finds web apps that share the same install URLs (possibly across different
+  // install sources) and dedupes the install URL configs into the most
+  // recently installed non-placeholder-like web app.
+  // Placeholder-like web apps are either marked as placeholder or have
+  // their name set to their start URL like a placeholder. This is an erroneous
+  // state some web apps have gotten into, see https://crbug.com/1427340.
+  void ScheduleDedupeInstallUrls(base::OnceClosure callback,
+                                 const base::Location& location = FROM_HERE);
+
   // TODO(https://crbug.com/1298130): expose all commands for web app
   // operations.
 

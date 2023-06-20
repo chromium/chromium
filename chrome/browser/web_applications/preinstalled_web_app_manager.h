@@ -78,7 +78,10 @@ class PreinstalledWebAppManager {
 
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
 
+  // TODO(crbug.com/1434692): All these should return a base::AutoReset<bool> to
+  // avoid leaking override state beyond unit test execution.
   static void SkipStartupForTesting();
+  static base::AutoReset<bool> BypassAwaitingDependenciesForTesting();
   static void BypassOfflineManifestRequirementForTesting();
 
   static void OverridePreviousUserUninstallConfigForTesting();

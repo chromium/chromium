@@ -301,6 +301,7 @@ apps::Readiness ConvertWebappUninstallSourceToReadiness(
     case webapps::WebappUninstallSource::kExternalPolicy:
     case webapps::WebappUninstallSource::kSystemPreinstalled:
     case webapps::WebappUninstallSource::kExternalLockScreen:
+    case webapps::WebappUninstallSource::kInstallUrlDeduping:
       return apps::Readiness::kUninstalledByNonUser;
   }
 }

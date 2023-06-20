@@ -16,13 +16,70 @@
 
 namespace web_app {
 
+namespace {
+
+struct MatchingWebAppResult {
+  raw_ptr<const WebApp> app = nullptr;
+  bool is_only_install_url = false;
+};
+
+MatchingWebAppResult FindMatchingWebApp(
+    const WebAppRegistrar& registrar,
+    const absl::optional<AppId>& app_id,
+    const WebAppManagement::Type& install_source,
+    const GURL& install_url) {
+  if (app_id.has_value()) {
+    const WebApp* candidate_app = registrar.GetAppById(app_id.value());
+    if (!candidate_app) {
+      return {};
+    }
+    const WebApp::ExternalConfigMap& config_map =
+        candidate_app->management_to_external_config_map();
+    auto map_it = config_map.find(install_source);
+    if (map_it == config_map.end()) {
+      return {};
+    }
+
+    const base::flat_set<GURL>& install_urls = map_it->second.install_urls;
+    if (!base::Contains(install_urls, install_url)) {
+      return {};
+    }
+
+    return {
+        .app = candidate_app,
+        .is_only_install_url = install_urls.size() == 1u,
+    };
+  }
+
+  for (const WebApp& candidate_app : registrar.GetApps()) {
+    const WebApp::ExternalConfigMap& config_map =
+        candidate_app.management_to_external_config_map();
+    auto it = config_map.find(install_source);
+    if (it != config_map.end()) {
+      const base::flat_set<GURL>& install_urls = it->second.install_urls;
+      if (base::Contains(install_urls, install_url)) {
+        return {
+            .app = &candidate_app,
+            .is_only_install_url = install_urls.size() == 1u,
+        };
+      }
+    }
+  }
+
+  return {};
+}
+
+}  // namespace
+
 RemoveInstallUrlJob::RemoveInstallUrlJob(
     webapps::WebappUninstallSource uninstall_source,
     Profile& profile,
+    absl::optional<AppId> app_id,
     WebAppManagement::Type install_source,
     GURL install_url)
     : uninstall_source_(uninstall_source),
       profile_(profile),
+      app_id_(std::move(app_id)),
       install_source_(install_source),
       install_url_(std::move(install_url)) {}
 
@@ -32,21 +89,8 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
   lock_ = &lock;
   callback_ = std::move(callback);
 
-  const WebApp* app = nullptr;
-  bool is_only_install_url = false;
-  for (const WebApp& candidate_app : lock_->registrar().GetApps()) {
-    const WebApp::ExternalConfigMap& config_map =
-        candidate_app.management_to_external_config_map();
-    auto it = config_map.find(install_source_);
-    if (it != config_map.end()) {
-      const WebApp::ExternalManagementConfig& config = it->second;
-      if (base::Contains(config.install_urls, install_url_)) {
-        app = &candidate_app;
-        is_only_install_url = config.install_urls.size() == 1u;
-        break;
-      }
-    }
-  }
+  auto [app, is_only_install_url] = FindMatchingWebApp(
+      lock_->registrar(), app_id_, install_source_, install_url_);
 
   if (!app) {
     CompleteAndSelfDestruct(webapps::UninstallResultCode::kNoAppToUninstall);
@@ -76,7 +120,7 @@ void RemoveInstallUrlJob::Start(AllAppsLock& lock, Callback callback) {
 
 base::Value RemoveInstallUrlJob::ToDebugValue() const {
   base::Value::Dict dict;
-  dict.Set("job", "RemoveInstallUrlJob");
+  dict.Set("!job", "RemoveInstallUrlJob");
   dict.Set("install_source", base::ToString(install_source_));
   dict.Set("install_url", install_url_.spec());
   dict.Set("callback", callback_.is_null());

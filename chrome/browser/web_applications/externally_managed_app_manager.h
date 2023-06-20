@@ -233,7 +233,8 @@ class ExternallyManagedAppManager {
   void UninstallForSynchronizeCallback(ExternalInstallSource source,
                                        const GURL& install_url,
                                        bool succeeded);
-  void ContinueOrCompleteSynchronization(ExternalInstallSource source);
+  void ContinueSynchronization(ExternalInstallSource source);
+  void CompleteSynchronization(ExternalInstallSource source);
 
   void PostMaybeStartNext();
 
