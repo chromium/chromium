@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/public/commands/browsing_data_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
 #import "ios/chrome/browser/shared/public/commands/open_new_tab_command.h"
+#import "ios/chrome/browser/shared/public/commands/show_signin_command.h"
 #import "ios/chrome/browser/shared/ui/symbols/chrome_icon.h"
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
@@ -340,22 +341,19 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
                                                                         kSettings];
 }
 
-- (void)openReauthDialogAsSyncIsInAuthError {
-  AuthenticationService* authService = self.authService;
-  id<SystemIdentity> identity =
-      authService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
-  if (authService->HasCachedMDMErrorForIdentity(identity)) {
-    authService->ShowMDMErrorDialogForIdentity(identity);
-    return;
-  }
-  // Sync enters in a permanent auth error state when fetching an access token
-  // fails with invalid credentials. This corresponds to Gaia responding with an
-  // "invalid grant" error. The current implementation of the iOS SSOAuth
-  // library user by Chrome removes the identity from the device when receiving
-  // an "invalid grant" response, which leads to the account being also signed
-  // out of Chrome. So the sync permanent auth error is a transient state on
-  // iOS. The decision was to avoid handling this error in the UI, which means
-  // that the reauth dialog is not actually presented on iOS.
+- (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity {
+  self.authService->ShowMDMErrorDialogForIdentity(identity);
+}
+
+- (void)openPrimaryAccountReauthDialog {
+  id<ApplicationCommands> applicationCommands =
+      static_cast<id<ApplicationCommands>>(
+          self.browser->GetCommandDispatcher());
+  ShowSigninCommand* signinCommand = [[ShowSigninCommand alloc]
+      initWithOperation:AuthenticationOperationPrimaryAccountReauth
+            accessPoint:AccessPoint::ACCESS_POINT_SETTINGS];
+  [applicationCommands showSignin:signinCommand
+               baseViewController:self.viewController];
 }
 
 #pragma mark - SyncObserverModelBridge

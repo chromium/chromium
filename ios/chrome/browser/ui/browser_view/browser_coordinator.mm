@@ -2378,13 +2378,13 @@ enum class ToolbarKind {
 
 #pragma mark - SyncPresenter (Public)
 
-- (void)showReauthenticateSignin {
+- (void)showPrimaryAccountReauth {
   [HandlerForProtocol(self.dispatcher, ApplicationCommands)
-              showSignin:
-                  [[ShowSigninCommand alloc]
-                      initWithOperation:AuthenticationOperationReauthenticate
-                            accessPoint:signin_metrics::AccessPoint::
-                                            ACCESS_POINT_REAUTH_INFO_BAR]
+              showSignin:[[ShowSigninCommand alloc]
+                             initWithOperation:
+                                 AuthenticationOperationPrimaryAccountReauth
+                                   accessPoint:signin_metrics::AccessPoint::
+                                                   ACCESS_POINT_REAUTH_INFO_BAR]
       baseViewController:self.viewController];
 }
 

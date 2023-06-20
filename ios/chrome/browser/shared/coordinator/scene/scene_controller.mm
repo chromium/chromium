@@ -1680,13 +1680,25 @@ void InjectNTP(Browser* browser) {
   Browser* mainBrowser = self.mainInterface.browser;
 
   switch (command.operation) {
-    case AuthenticationOperationReauthenticate:
+    case AuthenticationOperationPrimaryAccountReauth:
       self.signinCoordinator = [SigninCoordinator
-          reAuthenticationCoordinatorWithBaseViewController:baseViewController
-                                                    browser:mainBrowser
-                                                accessPoint:command.accessPoint
-                                                promoAction:command
-                                                                .promoAction];
+          primaryAccountReauthCoordinatorWithBaseViewController:
+              baseViewController
+                                                        browser:mainBrowser
+                                                    accessPoint:command
+                                                                    .accessPoint
+                                                    promoAction:
+                                                        command.promoAction];
+      break;
+    case AuthenticationOperationSigninAndSyncReauth:
+      self.signinCoordinator = [SigninCoordinator
+          signinAndSyncReauthCoordinatorWithBaseViewController:
+              baseViewController
+                                                       browser:mainBrowser
+                                                   accessPoint:command
+                                                                   .accessPoint
+                                                   promoAction:
+                                                       command.promoAction];
       break;
     case AuthenticationOperationSigninAndSync:
       self.signinCoordinator = [SigninCoordinator

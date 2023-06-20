@@ -96,20 +96,37 @@ class PrefRegistrySyncable;
                                     accessPoint:(signin_metrics::AccessPoint)
                                                     accessPoint;
 
-// Returns a coordinator for re-authentication workflow.
+// Returns a coordinator for re-authentication workflow. This should only be
+// called when the primary account is available.
 // `viewController` presents the sign-in.
 // `accessPoint` access point from the sign-in where is started.
 // `promoAction` is promo button used to trigger the sign-in.
 + (instancetype)
-    reAuthenticationCoordinatorWithBaseViewController:
+    primaryAccountReauthCoordinatorWithBaseViewController:
         (UIViewController*)viewController
-                                              browser:(Browser*)browser
-                                          accessPoint:
-                                              (signin_metrics::AccessPoint)
-                                                  accessPoint
-                                          promoAction:
-                                              (signin_metrics::PromoAction)
-                                                  promoAction;
+                                                  browser:(Browser*)browser
+                                              accessPoint:
+                                                  (signin_metrics::AccessPoint)
+                                                      accessPoint
+                                              promoAction:
+                                                  (signin_metrics::PromoAction)
+                                                      promoAction;
+
+// Returns a coordinator for re-authentication workflow. This should only be
+// called when there is no primary account.
+// `viewController` presents the sign-in.
+// `accessPoint` access point from the sign-in where is started.
+// `promoAction` is promo button used to trigger the sign-in.
++ (instancetype)
+    signinAndSyncReauthCoordinatorWithBaseViewController:
+        (UIViewController*)viewController
+                                                 browser:(Browser*)browser
+                                             accessPoint:
+                                                 (signin_metrics::AccessPoint)
+                                                     accessPoint
+                                             promoAction:
+                                                 (signin_metrics::PromoAction)
+                                                     promoAction;
 
 // Returns a coordinator for re-authentication workflow for Trusted
 // Vault for the primary identity. This is done with TrustedVaultService.

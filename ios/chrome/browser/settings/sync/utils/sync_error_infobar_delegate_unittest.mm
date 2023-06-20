@@ -57,7 +57,7 @@ TEST_F(SyncErrorInfobarDelegateTest, SyncServiceSignInNeedsUpdate) {
           Return(syncer::SyncService::UserActionableError::kSignInNeedsUpdate));
 
   id presenter = OCMStrictProtocolMock(@protocol(SyncPresenter));
-  [[presenter expect] showReauthenticateSignin];
+  [[presenter expect] showPrimaryAccountReauth];
   std::unique_ptr<SyncErrorInfoBarDelegate> delegate(
       new SyncErrorInfoBarDelegate(chrome_browser_state_.get(), presenter));
 

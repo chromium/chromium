@@ -5,12 +5,19 @@
 #ifndef IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
 #define IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_SYNC_ERROR_SETTINGS_COMMAND_HANDLER_H_
 
+@protocol SystemIdentity;
+
 // Protocol to communicate actions following Sync errors from the mediator to
 // its coordinator.
 @protocol SyncErrorSettingsCommandHandler <NSObject>
 
-// Opens the reauth sync dialog.
-- (void)openReauthDialogAsSyncIsInAuthError;
+// Opens MDM error dialog. This method should be called when there is a MDM
+// error.
+- (void)openMDMErrodDialogWithSystemIdentity:(id<SystemIdentity>)identity;
+
+// Opens the reauth dialog. This method should be called only when the primary
+// account is available.
+- (void)openPrimaryAccountReauthDialog;
 
 // Opens the passphrase dialog.
 - (void)openPassphraseDialog;

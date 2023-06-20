@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "GREYMatchersShorthand.h"
 #import "base/ios/ios_util.h"
 #import "base/test/ios/wait_util.h"
 #import "base/time/time.h"
@@ -326,8 +327,10 @@ void WaitForSettingDoneButton() {
       tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
   // Scroll and select the Encryption item.
-  [[[EarlGrey selectElementWithMatcher:ButtonWithAccessibilityLabelId(
-                                           IDS_IOS_MANAGE_SYNC_ENCRYPTION)]
+  [[[EarlGrey
+      selectElementWithMatcher:grey_allOf(ButtonWithAccessibilityLabelId(
+                                              IDS_IOS_MANAGE_SYNC_ENCRYPTION),
+                                          grey_sufficientlyVisible(), nil)]
          usingSearchAction:grey_scrollInDirection(kGREYDirectionDown, 200)
       onElementWithMatcher:grey_accessibilityID(
                                kManageSyncTableViewAccessibilityIdentifier)]

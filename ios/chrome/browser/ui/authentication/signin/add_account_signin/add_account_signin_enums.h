@@ -8,12 +8,20 @@
 #import <Foundation/Foundation.h>
 
 // Intent for the add account sign-in flow.
-typedef NS_ENUM(NSUInteger, AddAccountSigninIntent) {
-  // Adds a secondary account that will only be used for the web.
-  AddAccountSigninIntentAddSecondaryAccount,
-  // Reauthenticates with the previous primary account. Since it is
-  // a primary account, sign-in consent is required.
-  AddAccountSigninIntentReauthPrimaryAccount,
+enum class AddAccountSigninIntent {
+  // Adds a secondary account that will only be used for the web. This intent
+  // can only be used when there is a primary account (sign-in or sync).
+  kAddSecondaryAccount,
+  // Reauthenticates with the current primary account, using the SSOAuth add
+  // account dialog. The sync consent screen will not be presented to the user.
+  // This intent can only be used when there is a primary account with sync
+  // consent.
+  kPrimaryAccountReauth,
+  // Reauthenticates with the previous primary account, using the SSOAuth add
+  // account dialog. After that dialog, the sign-in+sync consent dialog will be
+  // presented to the user. This intent can only be used when there is no
+  // primary account.
+  kSigninAndSyncReauth,
 };
 
 #endif  // IOS_CHROME_BROWSER_UI_AUTHENTICATION_SIGNIN_ADD_ACCOUNT_SIGNIN_ADD_ACCOUNT_SIGNIN_ENUMS_H_

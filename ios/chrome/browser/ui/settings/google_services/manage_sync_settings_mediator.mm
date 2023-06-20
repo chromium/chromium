@@ -142,6 +142,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   self = [super init];
   if (self) {
     DCHECK(syncService);
+    CHECK(authenticationService);
+    _authenticationService = authenticationService;
     _syncService = syncService;
     _syncObserver = std::make_unique<SyncObserverBridge>(self, syncService);
     _autocompleteWalletPreference = [[PrefBackedBoolean alloc]
@@ -164,6 +166,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 }
 
 - (void)disconnect {
+  _authenticationService = nullptr;
   _syncObserver.reset();
   _syncService = nullptr;
   _autocompleteWalletPreference.observer = nil;
@@ -687,8 +690,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 - (BOOL)disabledBecauseOfSyncError {
   switch (_syncService->GetUserActionableError()) {
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
-    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
       return YES;
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
     case syncer::SyncService::UserActionableError::kNone:
     case syncer::SyncService::UserActionableError::kNeedsPassphrase:
     case syncer::SyncService::UserActionableError::
@@ -886,7 +889,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       case EncryptionItemType:
       case GoogleActivityControlsItemType:
       case DataFromChromeSync:
-      case ReauthDialogAsSyncIsInAuthErrorItemType:
+      case PrimaryAccountReauthErrorItemType:
       case ShowPassphraseDialogErrorItemType:
       case SyncNeedsTrustedVaultKeyErrorItemType:
       case SyncTrustedVaultRecoverabilityDegradedErrorItemType:
@@ -924,9 +927,16 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case DataFromChromeSync:
       [self.commandHandler openDataFromChromeSyncWebPage];
       break;
-    case ReauthDialogAsSyncIsInAuthErrorItemType:
-      [self.syncErrorHandler openReauthDialogAsSyncIsInAuthError];
+    case PrimaryAccountReauthErrorItemType: {
+      id<SystemIdentity> identity = _authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin);
+      if (_authenticationService->HasCachedMDMErrorForIdentity(identity)) {
+        [self.syncErrorHandler openMDMErrodDialogWithSystemIdentity:identity];
+      } else {
+        [self.syncErrorHandler openPrimaryAccountReauthDialog];
+      }
       break;
+    }
     case ShowPassphraseDialogErrorItemType:
       [self.syncErrorHandler openPassphraseDialog];
       break;
@@ -962,12 +972,12 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 
 // Creates an item to display the sync error. `itemType` should only be one of
 // those types:
-//   + ReauthDialogAsSyncIsInAuthErrorItemType
+//   + PrimaryAccountReauthErrorItemType
 //   + ShowPassphraseDialogErrorItemType
 //   + SyncNeedsTrustedVaultKeyErrorItemType
 //   + SyncTrustedVaultRecoverabilityDegradedErrorItemType
 - (TableViewItem*)createSyncErrorItemWithItemType:(NSInteger)itemType {
-  DCHECK((itemType == ReauthDialogAsSyncIsInAuthErrorItemType) ||
+  DCHECK((itemType == PrimaryAccountReauthErrorItemType) ||
          (itemType == ShowPassphraseDialogErrorItemType) ||
          (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
          (itemType == SyncTrustedVaultRecoverabilityDegradedErrorItemType))
@@ -1078,43 +1088,35 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 // Returns the sync error item type or absl::nullopt if the item
 // is not an error.
 - (absl::optional<SyncSettingsItemType>)syncErrorItemType {
-  switch (self.syncAccountState) {
-    case SyncSettingsAccountState::kSignedOut:
-    case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
-      return absl::nullopt;
-    case SyncSettingsAccountState::kSignedIn:
-    case SyncSettingsAccountState::kSyncing:
-      if (self.isSyncDisabledByAdministrator) {
-        return absl::make_optional<SyncSettingsItemType>(
-            SyncDisabledByAdministratorErrorItemType);
-      }
-      switch (_syncService->GetUserActionableError()) {
-        case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-          return absl::make_optional<SyncSettingsItemType>(
-              ReauthDialogAsSyncIsInAuthErrorItemType);
-        case syncer::SyncService::UserActionableError::kNeedsPassphrase:
-          return absl::make_optional<SyncSettingsItemType>(
-              ShowPassphraseDialogErrorItemType);
-        case syncer::SyncService::UserActionableError::
-            kNeedsTrustedVaultKeyForPasswords:
-        case syncer::SyncService::UserActionableError::
-            kNeedsTrustedVaultKeyForEverything:
-          return absl::make_optional<SyncSettingsItemType>(
-              SyncNeedsTrustedVaultKeyErrorItemType);
-        case syncer::SyncService::UserActionableError::
-            kTrustedVaultRecoverabilityDegradedForPasswords:
-        case syncer::SyncService::UserActionableError::
-            kTrustedVaultRecoverabilityDegradedForEverything:
-          return absl::make_optional<SyncSettingsItemType>(
-              SyncTrustedVaultRecoverabilityDegradedErrorItemType);
-        case syncer::SyncService::UserActionableError::
-            kGenericUnrecoverableError:
-        case syncer::SyncService::UserActionableError::kNone:
-          return absl::nullopt;
-      }
-      NOTREACHED();
+  if (self.isSyncDisabledByAdministrator) {
+    return absl::make_optional<SyncSettingsItemType>(
+        SyncDisabledByAdministratorErrorItemType);
+  }
+  switch (_syncService->GetUserActionableError()) {
+    case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
+      return absl::make_optional<SyncSettingsItemType>(
+          PrimaryAccountReauthErrorItemType);
+    case syncer::SyncService::UserActionableError::kNeedsPassphrase:
+      return absl::make_optional<SyncSettingsItemType>(
+          ShowPassphraseDialogErrorItemType);
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kNeedsTrustedVaultKeyForEverything:
+      return absl::make_optional<SyncSettingsItemType>(
+          SyncNeedsTrustedVaultKeyErrorItemType);
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForPasswords:
+    case syncer::SyncService::UserActionableError::
+        kTrustedVaultRecoverabilityDegradedForEverything:
+      return absl::make_optional<SyncSettingsItemType>(
+          SyncTrustedVaultRecoverabilityDegradedErrorItemType);
+    case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
+    case syncer::SyncService::UserActionableError::kNone:
       return absl::nullopt;
   }
+  NOTREACHED();
+  return absl::nullopt;
 }
 
 // Returns whether the sync setup service state has changed since the last

@@ -15,8 +15,14 @@ typedef void (^ShowSigninCommandCompletionCallback)(BOOL succeeded);
 
 typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // Operation to start a re-authenticate operation. The user is presented with
-  // the SSOAuth re-authenticate web page.
-  AuthenticationOperationReauthenticate,
+  // the SSOAuth re-authenticate dialog. This command can only be used if there
+  // is a primary account. Please note that the primary account can disappear
+  // (for external reasons) when the reauth is in progress.
+  AuthenticationOperationPrimaryAccountReauth,
+  // Operation to start a re-authenticate operation. The user is presented with
+  // the SSOAuth re-authenticate dialog. This command can only be used if there
+  // is no primary account.
+  AuthenticationOperationSigninAndSyncReauth,
   // Operation to start a sign-in and sync operation. The user is presented with
   // the sign-in page with the user consent.
   AuthenticationOperationSigninAndSync,
@@ -24,7 +30,8 @@ typedef NS_ENUM(NSInteger, AuthenticationOperation) {
   // the consistency web sign-in dialog.
   AuthenticationOperationSigninOnly,
   // Operation to add a secondary account. The user is presented with the
-  // SSOAUth sin-in page.
+  // SSOAUth sign-in page. This command can only be used if there is a primary
+  // account.
   AuthenticationOperationAddAccount,
   // Operation to start a forced sign-in operation. The user is presented with
   // the sign-in page with information about the policy and cannot dimiss it.

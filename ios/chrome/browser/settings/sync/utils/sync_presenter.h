@@ -14,8 +14,9 @@ enum class TrustedVaultUserActionTriggerForUMA;
 // Protocol used to display sync-related UI.
 @protocol SyncPresenter
 
-// Asks the presenter to display the reauthenticate signin UI.
-- (void)showReauthenticateSignin;
+// Asks the presenter to display the reauthenticate the primary account.
+// The primary should be available.
+- (void)showPrimaryAccountReauth;
 
 // Asks the presenter to display the sync encryption passphrase UI.
 - (void)showSyncPassphraseSettings;

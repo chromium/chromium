@@ -51,10 +51,6 @@ class AddAccountSigninManagerTest : public PlatformTest {
         fake_system_identity_manager()->CreateInteractionManager());
   }
 
-  signin::IdentityManager* GetIdentityManager() {
-    return IdentityManagerFactory::GetForBrowserState(browser_state_.get());
-  }
-
   void WaitForFakeAddAccountViewPresented(NSString* expectedUserEmail) {
     EXPECT_NSEQ(expectedUserEmail,
                 identity_interaction_manager_.lastStartAuthActivityUserEmail);
@@ -88,9 +84,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
 
     signin_manager_ = [[AddAccountSigninManager alloc]
         initWithBaseViewController:base_view_controller_
-        identityInteractionManager:identity_interaction_manager_
-                       prefService:prefs
-                   identityManager:GetIdentityManager()];
+        identityInteractionManager:identity_interaction_manager_];
     signin_manager_delegate_ =
         OCMStrictProtocolMock(@protocol(AddAccountSigninManagerDelegate));
     signin_manager_.delegate = signin_manager_delegate_;
@@ -116,7 +110,7 @@ class AddAccountSigninManagerTest : public PlatformTest {
 // Verifies the following state in the successful add account flow:
 //   - Account is added to the identity service
 //   - Completion callback is called with success state
-TEST_F(AddAccountSigninManagerTest, AddAccountIntent) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithEmail) {
   // Verify that completion was called with success state.
   FakeSystemIdentityInteractionManager.identity = fake_identity_;
   OCMExpect([signin_manager_delegate_
@@ -124,9 +118,9 @@ TEST_F(AddAccountSigninManagerTest, AddAccountIntent) {
           SigninCoordinatorResultSuccess
                                              identity:fake_identity_]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
-  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
+  [signin_manager_ showSigninWithDefaultUserEmail:fake_identity_.userEmail];
+  WaitForFakeAddAccountViewPresented(
+      /*expectedUserEmail=*/fake_identity_.userEmail);
   [identity_interaction_manager_ simulateDidTapAddAccount];
   WaitForFakeAddAccountViewDismissed();
 }
@@ -134,16 +128,16 @@ TEST_F(AddAccountSigninManagerTest, AddAccountIntent) {
 // Verifies the following state in the add account flow with a user cancel:
 //   - Account is not added to the identity service
 //   - Completion callback is called with user cancel state
-TEST_F(AddAccountSigninManagerTest, AddAccountIntentWithUserCancel) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithEmailIntentWithUserCancel) {
   // Verify that completion was called with canceled result state.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
                                              identity:nil]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
-  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
+  [signin_manager_ showSigninWithDefaultUserEmail:@"email@example.com"];
+  WaitForFakeAddAccountViewPresented(
+      /*expectedUserEmail=*/@"email@example.com");
   [identity_interaction_manager_ simulateDidTapCancel];
   WaitForFakeAddAccountViewDismissed();
 }
@@ -153,29 +147,29 @@ TEST_F(AddAccountSigninManagerTest, AddAccountIntentWithUserCancel) {
 //   - Account is not added to the identity service
 //   - Completion callback is called with user cancel state
 TEST_F(AddAccountSigninManagerTest,
-       AddAccountIntentWithErrorHandledByViewController) {
+       AddAccountWithEmailWithErrorHandledByViewController) {
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFailedWithError:[OCMArg any]]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
-  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
+  [signin_manager_ showSigninWithDefaultUserEmail:@"email@example.com"];
+  WaitForFakeAddAccountViewPresented(
+      /*expectedUserEmail=*/@"email@example.com");
   [identity_interaction_manager_ simulateDidThrowUnhandledError];
   WaitForFakeAddAccountViewDismissed();
 }
 
-TEST_F(AddAccountSigninManagerTest, AddAccountSigninInterrupted) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithEmailSigninInterrupted) {
   // Verify that completion was called with interrupted result state.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultInterrupted
                                              identity:nil]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentAddSecondaryAccount];
-  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
+  [signin_manager_ showSigninWithDefaultUserEmail:@"email@example.com"];
+  WaitForFakeAddAccountViewPresented(
+      /*expectedUserEmail=*/@"email@example.com");
   __block BOOL completionCalled = NO;
   [signin_manager_ interruptAddAccountAnimated:YES
                                     completion:^() {
@@ -188,7 +182,7 @@ TEST_F(AddAccountSigninManagerTest, AddAccountSigninInterrupted) {
 // Verifies the following state in the successful reauth flow:
 //   - Account is added to the identity service
 //   - Completion callback is called with success state
-TEST_F(AddAccountSigninManagerTest, ReauthIntentWithSuccess) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithSuccess) {
   // Verify that completion was called with canceled result state.
   FakeSystemIdentityInteractionManager.identity = fake_identity_;
   OCMExpect([signin_manager_delegate_
@@ -196,10 +190,8 @@ TEST_F(AddAccountSigninManagerTest, ReauthIntentWithSuccess) {
           SigninCoordinatorResultSuccess
                                              identity:fake_identity_]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
-  WaitForFakeAddAccountViewPresented(
-      /*expectedUserEmail=*/base::SysUTF8ToNSString(kTestEmail));
+  [signin_manager_ showSigninWithDefaultUserEmail:nil];
+  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   [identity_interaction_manager_ simulateDidTapAddAccount];
   WaitForFakeAddAccountViewDismissed();
 }
@@ -207,17 +199,15 @@ TEST_F(AddAccountSigninManagerTest, ReauthIntentWithSuccess) {
 // Verifies the following state in the reauth flow with a user cancel:
 //   - Account is not added to the identity service
 //   - Completion callback is called with user cancel state
-TEST_F(AddAccountSigninManagerTest, ReauthIntentWithUserCancel) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailWithUserCancel) {
   // Verify that completion was called with canceled result state.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultCanceledByUser
                                              identity:nil]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
-  WaitForFakeAddAccountViewPresented(
-      /*expectedUserEmail=*/base::SysUTF8ToNSString(kTestEmail));
+  [signin_manager_ showSigninWithDefaultUserEmail:nil];
+  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   [identity_interaction_manager_ simulateDidTapCancel];
   WaitForFakeAddAccountViewDismissed();
 }
@@ -227,8 +217,11 @@ TEST_F(AddAccountSigninManagerTest, ReauthIntentWithUserCancel) {
 //   - Completion callback is called with success state
 //
 // Regression test for crbug/1443096
+// TODO(crbug.com/1454101): This test is not relevant anymore in this class.
+// This should be migrated in a EGTest or an unittest for
+// AddAccountSigninCoordinator.
 TEST_F(AddAccountSigninManagerTest,
-       ReauthIntentWithSuccessNoLastKnowSyncAccount) {
+       AddAccountWithoutEmailWithSuccessNoLastKnowSyncAccount) {
   PrefService* prefs = browser_state_->GetPrefs();
   prefs->ClearPref(prefs::kGoogleServicesLastUsername);
   prefs->ClearPref(prefs::kGoogleServicesLastGaiaId);
@@ -240,8 +233,7 @@ TEST_F(AddAccountSigninManagerTest,
           SigninCoordinatorResultSuccess
                                              identity:fake_identity_]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
+  [signin_manager_ showSigninWithDefaultUserEmail:nil];
   WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   [identity_interaction_manager_ simulateDidTapAddAccount];
   WaitForFakeAddAccountViewDismissed();
@@ -252,31 +244,27 @@ TEST_F(AddAccountSigninManagerTest,
 //   - Account is not added to the identity service
 //   - Completion callback is called with user cancel state
 TEST_F(AddAccountSigninManagerTest,
-       ReauthIntentWithErrorHandledByViewController) {
+       AddAccountWithoutEmailWithErrorHandledByViewController) {
   // Verify that completion was called with canceled result state and an error
   // is shown.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFailedWithError:[OCMArg any]]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
-  WaitForFakeAddAccountViewPresented(
-      /*expectedUserEmail=*/base::SysUTF8ToNSString(kTestEmail));
+  [signin_manager_ showSigninWithDefaultUserEmail:nil];
+  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   [identity_interaction_manager_ simulateDidThrowUnhandledError];
   WaitForFakeAddAccountViewDismissed();
 }
 
-TEST_F(AddAccountSigninManagerTest, ReauthSigninInterrupted) {
+TEST_F(AddAccountSigninManagerTest, AddAccountWithoutEmailSigninInterrupted) {
   // Verify that completion was called with interrupted result state.
   OCMExpect([signin_manager_delegate_
       addAccountSigninManagerFinishedWithSigninResult:
           SigninCoordinatorResultInterrupted
                                              identity:nil]);
 
-  [signin_manager_
-      showSigninWithIntent:AddAccountSigninIntentReauthPrimaryAccount];
-  WaitForFakeAddAccountViewPresented(
-      /*expectedUserEmail=*/base::SysUTF8ToNSString(kTestEmail));
+  [signin_manager_ showSigninWithDefaultUserEmail:nil];
+  WaitForFakeAddAccountViewPresented(/*expectedUserEmail=*/nil);
   __block BOOL completionCalled = NO;
   [signin_manager_ interruptAddAccountAnimated:YES
                                     completion:^() {

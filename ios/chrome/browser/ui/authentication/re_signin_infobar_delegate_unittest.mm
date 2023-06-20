@@ -157,7 +157,7 @@ TEST_F(ReSignInInfoBarDelegateTest, TestAccept) {
   [[presenter expect]
       showSignin:[OCMArg checkWithBlock:^BOOL(id command) {
         EXPECT_TRUE([command isKindOfClass:[ShowSigninCommand class]]);
-        EXPECT_EQ(AuthenticationOperationReauthenticate,
+        EXPECT_EQ(AuthenticationOperationSigninAndSyncReauth,
                   static_cast<ShowSigninCommand*>(command).operation);
         return YES;
       }]];

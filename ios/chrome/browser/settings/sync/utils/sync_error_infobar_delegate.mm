@@ -91,7 +91,7 @@ std::u16string SyncErrorInfoBarDelegate::GetButtonLabel(
 bool SyncErrorInfoBarDelegate::Accept() {
   switch (error_state_) {
     case syncer::SyncService::UserActionableError::kSignInNeedsUpdate:
-      [presenter_ showReauthenticateSignin];
+      [presenter_ showPrimaryAccountReauth];
       break;
 
     case syncer::SyncService::UserActionableError::kGenericUnrecoverableError:
