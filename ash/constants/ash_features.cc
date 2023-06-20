@@ -1448,7 +1448,7 @@ BASE_FEATURE(kLacrosProfileBackwardMigration,
 // removed. This is kill-switch just in case of accident.
 BASE_FEATURE(kLacrosSxSPrimaryRemove,
              "LacrosSxSPrimaryRemove",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // If enabled, the Language Pack corresponding to the application locale is
 // downloaded and installed during OOBE. This pre-fetching is aimed at improving
