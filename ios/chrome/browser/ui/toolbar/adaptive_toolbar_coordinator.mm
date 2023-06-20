@@ -22,6 +22,7 @@
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/fullscreen/fullscreen_controller.h"
+#import "ios/chrome/browser/ui/fullscreen/fullscreen_ui_updater.h"
 #import "ios/chrome/browser/ui/menu/browser_action_factory.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_coordinator+subclassing.h"
 #import "ios/chrome/browser/ui/toolbar/adaptive_toolbar_mediator.h"
@@ -48,7 +49,10 @@
 
 @end
 
-@implementation AdaptiveToolbarCoordinator
+@implementation AdaptiveToolbarCoordinator {
+  // Observer that updates `toolbarViewController` for fullscreen events.
+  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
+}
 
 #pragma mark - ChromeCoordinator
 
@@ -87,6 +91,9 @@
       initWithBrowser:browser
              scenario:MenuScenarioHistogram::kToolbarMenu];
 
+  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
+      FullscreenController::FromBrowser(browser), self.viewController);
+
   self.viewController.menuProvider = self.mediator;
 }
 
@@ -94,6 +101,7 @@
   [super stop];
   [self.mediator disconnect];
   self.mediator = nil;
+  _fullscreenUIUpdater = nullptr;
   _started = NO;
 }
 

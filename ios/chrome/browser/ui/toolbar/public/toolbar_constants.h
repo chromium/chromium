@@ -57,11 +57,15 @@ extern const CGFloat kDimmedToolbarSpotlightAlpha;
 extern const CGFloat kExpandedLocationBarHorizontalMargin;
 extern const CGFloat kContractedLocationBarHorizontalMargin;
 
-// Adaptive Location bar constants.
-extern const CGFloat kAdaptiveLocationBarBackgroundAlpha;
-extern const CGFloat kAdaptiveLocationBarBackgroundAlphaIncognito;
+// Top adaptive Location bar constants.
 extern const CGFloat kAdaptiveLocationBarVerticalMargin;
 extern const CGFloat kAdaptiveLocationBarVerticalMarginFullscreen;
+
+// Bottom adaptive location bar constants.
+extern const CGFloat kBottomAdaptiveLocationBarTopMargin;
+extern const CGFloat kBottomAdaptiveLocationBarBottomMargin;
+extern const CGFloat kBottomAdaptiveLocationBarVerticalMarginFullscreen;
+
 // Additional margin, which should grow only when the preferred content size is
 // non-default.
 extern const CGFloat kLocationBarVerticalMarginDynamicType;

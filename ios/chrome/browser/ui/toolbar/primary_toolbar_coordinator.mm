@@ -28,10 +28,7 @@
 #error "This file requires ARC support."
 #endif
 
-@interface PrimaryToolbarCoordinator () {
-  // Observer that updates `toolbarViewController` for fullscreen events.
-  std::unique_ptr<FullscreenUIUpdater> _fullscreenUIUpdater;
-}
+@interface PrimaryToolbarCoordinator ()
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -68,9 +65,6 @@
   self.viewController.buttonFactory =
       [self buttonFactoryWithType:ToolbarType::kPrimary];
 
-  _fullscreenUIUpdater = std::make_unique<FullscreenUIUpdater>(
-      FullscreenController::FromBrowser(self.browser), self.viewController);
-
   [super start];
   self.started = YES;
 }
@@ -80,7 +74,6 @@
     return;
   [super stop];
   [self.browser->GetCommandDispatcher() stopDispatchingToTarget:self];
-  _fullscreenUIUpdater = nullptr;
   self.started = NO;
 }
 

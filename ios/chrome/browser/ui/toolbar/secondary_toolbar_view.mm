@@ -203,9 +203,10 @@ UIView* SecondaryToolbarLocationBarContainerView(
       AddSameConstraints(self.locationBarView, self.locationBarContainer);
     }
 
-    // LocationBarContainer constraints. The constant value is set by the VC.
+    // Height of location bar, constant controlled by view controller.
     self.locationBarContainerHeight =
         [self.locationBarContainer.heightAnchor constraintEqualToConstant:0];
+    // Top margin of location bar, constant controlled by view controller.
     self.locationBarTopConstraint = [self.locationBarContainer.topAnchor
         constraintEqualToAnchor:self.topAnchor];
 
@@ -284,16 +285,6 @@ UIView* SecondaryToolbarLocationBarContainerView(
 
   [self.locationBarContainer addSubview:locationBarView];
   AddSameConstraints(self.locationBarView, self.locationBarContainer);
-}
-
-#pragma mark - ToolbarCollapsing
-
-- (CGFloat)expandedToolbarHeight {
-  return self.intrinsicContentSize.height;
-}
-
-- (CGFloat)collapsedToolbarHeight {
-  return 0.0;
 }
 
 @end
