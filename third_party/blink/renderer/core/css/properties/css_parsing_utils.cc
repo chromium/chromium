@@ -4479,11 +4479,6 @@ bool ConsumeAnimationShorthand(
   return true;
 }
 
-CSSValue* ConsumeSingleTimelineAttachment(CSSParserTokenRange& range) {
-  return ConsumeIdent<CSSValueID::kLocal, CSSValueID::kDefer,
-                      CSSValueID::kAncestor>(range);
-}
-
 CSSValue* ConsumeSingleTimelineAxis(CSSParserTokenRange& range) {
   return ConsumeIdent<CSSValueID::kBlock, CSSValueID::kInline, CSSValueID::kX,
                       CSSValueID::kY>(range);

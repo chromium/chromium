@@ -488,35 +488,6 @@ inline CSSValueID PlatformEnumToCSSValueID(TextWrap v) {
   return CSSValueID::kNone;
 }
 
-template <>
-inline TimelineAttachment CssValueIDToPlatformEnum(CSSValueID v) {
-  switch (v) {
-    case CSSValueID::kLocal:
-      return TimelineAttachment::kLocal;
-    case CSSValueID::kDefer:
-      return TimelineAttachment::kDefer;
-    case CSSValueID::kAncestor:
-      return TimelineAttachment::kAncestor;
-    default:
-      NOTREACHED();
-      return TimelineAttachment::kAncestor;
-  }
-}
-
-template <>
-inline CSSValueID PlatformEnumToCSSValueID(TimelineAttachment v) {
-  switch (v) {
-    case TimelineAttachment::kLocal:
-      return CSSValueID::kLocal;
-    case TimelineAttachment::kDefer:
-      return CSSValueID::kDefer;
-    case TimelineAttachment::kAncestor:
-      return CSSValueID::kAncestor;
-  }
-  NOTREACHED();
-  return CSSValueID::kLocal;
-}
-
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_CSS_VALUE_ID_MAPPINGS_H_

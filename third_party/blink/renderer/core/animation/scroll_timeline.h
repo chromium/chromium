@@ -45,14 +45,12 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   static ScrollTimeline* Create(Document* document,
                                 Element* source,
-                                ScrollAxis axis,
-                                TimelineAttachment attachment);
+                                ScrollAxis axis);
 
   // Construct ScrollTimeline objects through one of the Create methods, which
   // perform initial snapshots, as it can't be done during the constructor due
   // to possibly depending on overloaded functions.
   ScrollTimeline(Document*,
-                 TimelineAttachment attachment,
                  ReferenceType reference_type,
                  Element* reference,
                  ScrollAxis axis);
@@ -63,10 +61,7 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
   Element* source() const;
   const V8ScrollAxis axis() const { return V8ScrollAxis(GetAxis()); }
 
-  bool Matches(TimelineAttachment,
-               ReferenceType,
-               Element* reference_element,
-               ScrollAxis) const;
+  bool Matches(ReferenceType, Element* reference_element, ScrollAxis) const;
 
   ScrollAxis GetAxis() const override;
 
@@ -82,8 +77,6 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
     return absl::make_optional(ANIMATION_TIME_DELTA_FROM_SECONDS(100));
   }
 
-  TimelineAttachment GetTimelineAttachment() const { return attachment_type_; }
-
   ScrollTimelineAttachment* CurrentAttachment() {
     return (attachments_.size() == 1u) ? attachments_.back().Get() : nullptr;
   }
@@ -92,11 +85,8 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
     return const_cast<ScrollTimeline*>(this)->CurrentAttachment();
   }
 
-  void AddAttachment(ScrollTimelineAttachment*);
-  void RemoveAttachment(ScrollTimelineAttachment*);
-
  protected:
-  ScrollTimeline(Document*, TimelineAttachment, ScrollTimelineAttachment*);
+  ScrollTimeline(Document*, ScrollTimelineAttachment*);
 
   Node* ComputeResolvedSource() const;
 
@@ -118,7 +108,6 @@ class CORE_EXPORT ScrollTimeline : public ScrollSnapshotTimeline {
 
   TimelineState ComputeTimelineState() const override;
 
-  TimelineAttachment attachment_type_;
   HeapVector<Member<ScrollTimelineAttachment>, 1> attachments_;
 };
 

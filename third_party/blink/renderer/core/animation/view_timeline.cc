@@ -214,7 +214,7 @@ ViewTimeline* ViewTimeline::Create(Document& document,
                                              subject, inset_start_side);
 
   ViewTimeline* view_timeline = MakeGarbageCollected<ViewTimeline>(
-      &document, TimelineAttachment::kLocal, subject, axis,
+      &document, subject, axis,
       TimelineInset(inset_start_side, inset_end_side));
 
   if (start_inset_value && IsStyleDependent(start_inset_value.value()))
@@ -227,18 +227,12 @@ ViewTimeline* ViewTimeline::Create(Document& document,
 }
 
 ViewTimeline::ViewTimeline(Document* document,
-                           TimelineAttachment attachment,
                            Element* subject,
                            ScrollAxis axis,
                            TimelineInset inset)
     : ScrollTimeline(
           document,
-          attachment,
-          attachment == TimelineAttachment::kDefer
-              ? nullptr
-              : MakeGarbageCollected<ViewTimelineAttachment>(subject,
-                                                             axis,
-                                                             inset)) {}
+          MakeGarbageCollected<ViewTimelineAttachment>(subject, axis, inset)) {}
 
 void ViewTimeline::CalculateOffsets(PaintLayerScrollableArea* scrollable_area,
                                     ScrollOrientation physical_orientation,
@@ -473,16 +467,12 @@ Element* ViewTimeline::subject() const {
                              : nullptr;
 }
 
-bool ViewTimeline::Matches(TimelineAttachment attachment_type,
-                           Element* subject,
+bool ViewTimeline::Matches(Element* subject,
                            ScrollAxis axis,
                            const TimelineInset& inset) const {
-  if (!ScrollTimeline::Matches(attachment_type, ReferenceType::kNearestAncestor,
+  if (!ScrollTimeline::Matches(ReferenceType::kNearestAncestor,
                                /* reference_element */ subject, axis)) {
     return false;
-  }
-  if (GetTimelineAttachment() == TimelineAttachment::kDefer) {
-    return attachment_type == TimelineAttachment::kDefer;
   }
   const auto* attachment =
       DynamicTo<ViewTimelineAttachment>(CurrentAttachment());

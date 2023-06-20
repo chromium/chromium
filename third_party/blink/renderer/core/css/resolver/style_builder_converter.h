@@ -380,9 +380,6 @@ class StyleBuilderConverter {
 
   static Vector<TimelineAxis> ConvertViewTimelineAxis(StyleResolverState&,
                                                       const CSSValue&);
-  static Vector<TimelineAttachment> ConvertViewTimelineAttachment(
-      StyleResolverState&,
-      const CSSValue&);
   static Vector<TimelineInset> ConvertViewTimelineInset(StyleResolverState&,
                                                         const CSSValue&);
   static ScopedCSSNameList* ConvertViewTimelineName(StyleResolverState&,

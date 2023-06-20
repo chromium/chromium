@@ -223,24 +223,15 @@ class CORE_EXPORT CSSAnimations final {
       return timeline_attachments_;
     }
 
-    // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-    void SetAttachingTimeline(ScrollTimelineAttachment*, ScrollTimeline*);
-    ScrollTimeline* GetAttachingTimeline(ScrollTimelineAttachment*);
-    const AttachingTimelineMap& GetAttachingTimelines() const {
-      return attaching_timelines_;
-    }
-
     bool IsEmpty() const {
       return scroll_timelines_.empty() && view_timelines_.empty() &&
-             deferred_timelines_.empty() && timeline_attachments_.empty() &&
-             attaching_timelines_.empty();
+             deferred_timelines_.empty() && timeline_attachments_.empty();
     }
     void Clear() {
       scroll_timelines_.clear();
       view_timelines_.clear();
       deferred_timelines_.clear();
       timeline_attachments_.clear();
-      attaching_timelines_.clear();
     }
     void Trace(Visitor*) const;
 
@@ -249,9 +240,6 @@ class CORE_EXPORT CSSAnimations final {
     CSSViewTimelineMap view_timelines_;
     CSSDeferredTimelineMap deferred_timelines_;
     TimelineAttachmentMap timeline_attachments_;
-
-    // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-    AttachingTimelineMap attaching_timelines_;
   };
 
   TimelineData timeline_data_;
@@ -361,26 +349,6 @@ class CORE_EXPORT CSSAnimations final {
       TimelineAttachmentMap& result);
 
   static void CalculateTimelineAttachmentUpdate(CSSAnimationUpdate&,
-                                                Element& animating_element);
-
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  template <typename TimelineType>
-  static void CollectTimelinesWithAttachmentInto(
-      const TimelineData*,
-      const CSSAnimationUpdate*,
-      TimelineAttachment,
-      CSSTimelineMap<TimelineType>& result);
-
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  template <typename TimelineType>
-  static void CalculateChangedAttachingTimelines(
-      const CSSTimelineMap<TimelineType>& ancestor_attached_timelines,
-      const CSSTimelineMap<TimelineType>& deferred_timelines,
-      const AttachingTimelineMap* existing_attaching_timelines,
-      AttachingTimelineMap& changed_attaching_timelines);
-
-  // TODO(crbug.com/1446702): Remove scroll/view-timeline-attachment.
-  static void CalculateAttachingTimelinesUpdate(CSSAnimationUpdate&,
                                                 Element& animating_element);
 
   static const TimelineData* GetTimelineData(const Element&);

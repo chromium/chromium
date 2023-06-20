@@ -3177,17 +3177,6 @@ Vector<TimelineAxis> StyleBuilderConverter::ConvertViewTimelineAxis(
   return axes;
 }
 
-Vector<TimelineAttachment> StyleBuilderConverter::ConvertViewTimelineAttachment(
-    StyleResolverState& state,
-    const CSSValue& value) {
-  Vector<TimelineAttachment> attachments;
-  for (const Member<const CSSValue>& item : To<CSSValueList>(value)) {
-    attachments.push_back(
-        To<CSSIdentifierValue>(*item).ConvertTo<TimelineAttachment>());
-  }
-  return attachments;
-}
-
 TimelineInset StyleBuilderConverter::ConvertSingleTimelineInset(
     StyleResolverState& state,
     const CSSValue& value) {

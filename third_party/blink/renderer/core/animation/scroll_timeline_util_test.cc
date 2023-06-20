@@ -78,8 +78,7 @@ TEST_F(ScrollTimelineUtilTest, ToCompositorScrollTimelineNullSource) {
   // documentElement from the document.
   Element* source = nullptr;
   ScrollTimeline* timeline = ScrollTimeline::Create(
-      &GetDocument(), source, ScrollTimeline::ScrollAxis::kBlock,
-      TimelineAttachment::kLocal);
+      &GetDocument(), source, ScrollTimeline::ScrollAxis::kBlock);
 
   scoped_refptr<CompositorScrollTimeline> compositor_timeline =
       ToCompositorScrollTimeline(timeline);

@@ -98,7 +98,6 @@ class TestScrollTimeline : public ScrollTimeline {
  public:
   TestScrollTimeline(Document* document, Element* source, bool snapshot = true)
       : ScrollTimeline(document,
-                       TimelineAttachment::kLocal,
                        ScrollTimeline::ReferenceType::kSource,
                        source,
                        ScrollAxis::kY) {
@@ -128,11 +127,7 @@ class TestScrollTimeline : public ScrollTimeline {
 class TestViewTimeline : public ViewTimeline {
  public:
   TestViewTimeline(Document* document, Element* subject, bool snapshot = true)
-      : ViewTimeline(document,
-                     TimelineAttachment::kLocal,
-                     subject,
-                     ScrollAxis::kY,
-                     TimelineInset()) {
+      : ViewTimeline(document, subject, ScrollAxis::kY, TimelineInset()) {
     if (snapshot) {
       UpdateSnapshot();
     }
@@ -230,8 +225,7 @@ TEST_F(ScrollTimelineTest, AttachOrDetachAnimationWithNullSource) {
   // documentElement from the document.
   Element* scroll_source = nullptr;
   Persistent<ScrollTimeline> scroll_timeline = ScrollTimeline::Create(
-      &GetDocument(), scroll_source, ScrollTimeline::ScrollAxis::kBlock,
-      TimelineAttachment::kLocal);
+      &GetDocument(), scroll_source, ScrollTimeline::ScrollAxis::kBlock);
 
   // Sanity checks.
   ASSERT_EQ(scroll_timeline->source(), nullptr);

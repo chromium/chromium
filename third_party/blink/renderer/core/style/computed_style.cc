@@ -281,17 +281,13 @@ static bool DiffAffectsScrollAnimations(const ComputedStyle& old_style,
                                         const ComputedStyle& new_style) {
   if (!base::ValuesEquivalent(old_style.ScrollTimelineName(),
                               new_style.ScrollTimelineName()) ||
-      (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis()) ||
-      (old_style.ScrollTimelineAttachment() !=
-       new_style.ScrollTimelineAttachment())) {
+      (old_style.ScrollTimelineAxis() != new_style.ScrollTimelineAxis())) {
     return true;
   }
   if (!base::ValuesEquivalent(old_style.ViewTimelineName(),
                               new_style.ViewTimelineName()) ||
       (old_style.ViewTimelineAxis() != new_style.ViewTimelineAxis()) ||
-      (old_style.ViewTimelineInset() != new_style.ViewTimelineInset()) ||
-      (old_style.ViewTimelineAttachment() !=
-       new_style.ViewTimelineAttachment())) {
+      (old_style.ViewTimelineInset() != new_style.ViewTimelineInset())) {
     return true;
   }
   if (!base::ValuesEquivalent(old_style.TimelineScope(),

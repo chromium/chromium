@@ -266,9 +266,9 @@ TEST_F(FrameTest, UserActivationTriggerHistograms) {
 }
 
 TEST_F(FrameTest, NavigateClearsScrollSnapshotClients) {
-  ScrollTimeline::Create(
-      &GetDocument(), GetDocument().ScrollingElementNoLayout(),
-      ScrollTimeline::ScrollAxis::kBlock, TimelineAttachment::kLocal);
+  ScrollTimeline::Create(&GetDocument(),
+                         GetDocument().ScrollingElementNoLayout(),
+                         ScrollTimeline::ScrollAxis::kBlock);
 
   EXPECT_EQ(
       GetDocument().GetFrame()->GetScrollSnapshotClientsForTesting().size(),
