@@ -15607,6 +15607,11 @@ Called by update_protocol_commands_enum.py.-->
   <int value="0" label="Root Certificate"/>
 </enum>
 
+<enum name="CertificateChangeNotificationType">
+  <int value="0" label="Trust"/>
+  <int value="1" label="Client Cert"/>
+</enum>
+
 <enum name="CertificateErrorReportEvent">
   <int value="0" label="Submitted"/>
   <int value="1" label="Failed"/>
