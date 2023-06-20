@@ -114,7 +114,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
 
         if (!isVisible || mMostRecentTab == null) {
             mPropertyModel.set(IS_VISIBLE, false);
-            mMostRecentTab = null;
+            cleanUp();
             return;
         }
 
@@ -147,9 +147,7 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
         if (mMostRecentTab == tabToTrack) return tabToTrack != null;
 
         if (tabToTrack == null) {
-            mMostRecentTab = null;
-            mPropertyModel.set(TITLE, "");
-            mPropertyModel.set(FAVICON, mTabListFaviconProvider.getDefaultFaviconDrawable(false));
+            cleanUp();
             return false;
         } else {
             mMostRecentTab = tabToTrack;
@@ -171,6 +169,9 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
 
         if (mPropertyModel != null) {
             mPropertyModel.set(CLICK_LISTENER, null);
+            if (mMostRecentTab != null) {
+                cleanUp();
+            }
         }
     }
 
@@ -211,6 +212,12 @@ public class SingleTabSwitcherOnTabletMediator implements ConfigurationChangedOb
     @VisibleForTesting
     void setMostRecentTab(Tab mostRecentTab) {
         mMostRecentTab = mostRecentTab;
+    }
+
+    private void cleanUp() {
+        mMostRecentTab = null;
+        mPropertyModel.set(TITLE, null);
+        mPropertyModel.set(FAVICON, null);
     }
 
     int getMarginDefaultForTesting() {
