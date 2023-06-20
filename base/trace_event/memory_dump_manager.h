@@ -50,6 +50,11 @@ class BASE_EXPORT MemoryDumpManager {
   static MemoryDumpManager* GetInstance();
   static std::unique_ptr<MemoryDumpManager> CreateInstanceForTesting();
 
+  // Resets the initialization. When destroying and recreating the manager in
+  // multi threaded environment is hard, this method can be used to reset the
+  // state to begin new initialization.
+  void ResetForTesting();
+
   MemoryDumpManager(const MemoryDumpManager&) = delete;
   MemoryDumpManager& operator=(const MemoryDumpManager&) = delete;
 

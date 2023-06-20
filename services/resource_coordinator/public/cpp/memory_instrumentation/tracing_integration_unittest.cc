@@ -145,7 +145,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
   }
 
   void InitializeClientProcess(mojom::ProcessType process_type) {
-    mdm_ = MemoryDumpManager::CreateInstanceForTesting();
+    mdm_ = MemoryDumpManager::GetInstance();
     mdm_->set_dumper_registrations_ignored_for_testing(true);
 
     mojo::PendingRemote<mojom::Coordinator> coordinator;
@@ -160,7 +160,8 @@ class MemoryTracingIntegrationTest : public testing::Test {
 
   void TearDown() override {
     TraceLog::GetInstance()->SetDisabled();
-    mdm_.reset();
+    mdm_->ResetForTesting();
+    mdm_ = nullptr;
     client_process_.reset();
     coordinator_.reset();
     task_environment_.reset();
@@ -246,7 +247,7 @@ class MemoryTracingIntegrationTest : public testing::Test {
     return MemoryDumpScheduler::GetInstance()->is_enabled_for_testing();
   }
 
-  std::unique_ptr<MemoryDumpManager> mdm_;
+  raw_ptr<MemoryDumpManager> mdm_;
 
  private:
   std::unique_ptr<base::test::SingleThreadTaskEnvironment> task_environment_;
@@ -443,8 +444,7 @@ TEST_F(MemoryTracingIntegrationTest, PeriodicDumpingWithMultipleModes) {
   mdm_->UnregisterAndDeleteDumpProviderSoon(std::move(mdp));
 }
 
-// TODO(https://crbug.com/1426515): Re-enable this test
-TEST_F(MemoryTracingIntegrationTest, DISABLED_TestWhitelistingMDP) {
+TEST_F(MemoryTracingIntegrationTest, TestWhitelistingMDP) {
   InitializeClientProcess(mojom::ProcessType::RENDERER);
   base::trace_event::SetDumpProviderAllowlistForTesting(kTestMDPWhitelist);
   std::unique_ptr<MockMemoryDumpProvider> mdp1(new MockMemoryDumpProvider);
@@ -464,9 +464,7 @@ TEST_F(MemoryTracingIntegrationTest, DISABLED_TestWhitelistingMDP) {
 }
 
 // Regression test for https://crbug.com/766274 .
-// TODO(https://crbug.com/1426515): Re-enable this test
-TEST_F(MemoryTracingIntegrationTest,
-       DISABLED_GenerationChangeDoesntReenterMDM) {
+TEST_F(MemoryTracingIntegrationTest, GenerationChangeDoesntReenterMDM) {
   InitializeClientProcess(mojom::ProcessType::RENDERER);
 
   // We want the ThreadLocalEventBuffer MDPs to auto-register to repro this bug.
