@@ -399,8 +399,8 @@ namespace usb {
     // to acquire the device.
     //
     // |handle|: A connection handle to reset.
-    static void resetDevice(ConnectionHandle handle,
-                            ResetDeviceCallback callback);
+    [supportsPromises] static void resetDevice(ConnectionHandle handle,
+                                               ResetDeviceCallback callback);
   };
 
   interface Events {

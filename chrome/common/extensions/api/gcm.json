@@ -28,33 +28,30 @@
             "minItems": 1,
             "maxItems": 100,
             "description": "A list of server IDs that are allowed to send messages to the application. It should contain at least one and no more than 100 sender IDs."
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Function called when registration completes. It should check $(ref:runtime.lastError) for error when <code>registrationId</code> is empty.",
-            "parameters": [
-              {
-                "name": "registrationId",
-                "type": "string",
-                "description": "A registration ID assigned to the application by the FCM."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Function called when registration completes. It should check $(ref:runtime.lastError) for error when <code>registrationId</code> is empty.",
+          "parameters": [
+            {
+              "name": "registrationId",
+              "type": "string",
+              "description": "A registration ID assigned to the application by the FCM."
+            }
+          ]
+        }
       },
       {
         "name": "unregister",
         "type": "function",
         "description": "Unregisters the application from FCM.",
-        "parameters": [
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "A function called after the unregistration completes. Unregistration was successful if $(ref:runtime.lastError) is not set.",
-            "parameters": []
-          }
-        ]
+        "parameters": [],
+        "returns_async": {
+          "name": "callback",
+          "description": "A function called after the unregistration completes. Unregistration was successful if $(ref:runtime.lastError) is not set.",
+          "parameters": []
+        }
       },
       {
         "name": "send",
@@ -93,20 +90,19 @@
                 "description": "Message data to send to the server. Case-insensitive <code>goog.</code> and <code>google</code>, as well as case-sensitive <code>collapse_key</code> are disallowed as key prefixes. Sum of all key/value pairs should not exceed $(ref:gcm.MAX_MESSAGE_SIZE)."
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "A function called after the message is successfully queued for sending. $(ref:runtime.lastError) should be checked, to ensure a message was sent without problems.",
-            "parameters": [
-              {
-                "name": "messageId",
-                "type": "string",
-                "description": "The ID of the message that the callback was issued for."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "A function called after the message is successfully queued for sending. $(ref:runtime.lastError) should be checked, to ensure a message was sent without problems.",
+          "parameters": [
+            {
+              "name": "messageId",
+              "type": "string",
+              "description": "The ID of the message that the callback was issued for."
+            }
+          ]
+        }
       }
     ],
     "events": [

@@ -151,9 +151,9 @@ namespace notifications {
     // that represents the created notification.
     //
     // The callback is required before Chrome 42.
-    static void create(optional DOMString notificationId,
-                       NotificationOptions options,
-                       optional CreateCallback callback);
+    [supportsPromises] static void create(optional DOMString notificationId,
+                                          NotificationOptions options,
+                                          optional CreateCallback callback);
 
     // Updates an existing notification.
     // |notificationId|: The id of the notification to be updated. This is
@@ -162,9 +162,9 @@ namespace notifications {
     // |callback|: Called to indicate whether a matching notification existed.
     //
     // The callback is required before Chrome 42.
-    static void update(DOMString notificationId,
-                       NotificationOptions options,
-                       optional UpdateCallback callback);
+    [supportsPromises] static void update(DOMString notificationId,
+                                          NotificationOptions options,
+                                          optional UpdateCallback callback);
 
     // Clears the specified notification.
     // |notificationId|: The id of the notification to be cleared. This is
@@ -172,17 +172,18 @@ namespace notifications {
     // |callback|: Called to indicate whether a matching notification existed.
     //
     // The callback is required before Chrome 42.
-    static void clear(DOMString notificationId,
-                      optional ClearCallback callback);
+    [supportsPromises] static void clear(DOMString notificationId,
+                                         optional ClearCallback callback);
 
     // Retrieves all the notifications of this app or extension.
     // |callback|: Returns the set of notification_ids currently in the system.
-    static void getAll(GetAllCallback callback);
+    [supportsPromises] static void getAll(GetAllCallback callback);
 
     // Retrieves whether the user has enabled notifications from this app
     // or extension.
     // |callback|: Returns the current permission level.
-    static void getPermissionLevel(PermissionLevelCallback callback);
+    [supportsPromises] static void getPermissionLevel(
+        PermissionLevelCallback callback);
   };
 
   interface Events {

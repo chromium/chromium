@@ -73,21 +73,20 @@
                 "description": "A string to use instead of the raw value of the 'name' key from manifest.json."
               }
             }
-          },
-          {
-            "name": "callback",
-            "type": "function",
-            "description": "Called when the user has either accepted/rejected the dialog, or some error occurred (such as invalid manifest or icon image data).",
-            "optional": true,
-            "parameters": [
-              {
-                "name": "result",
-                "$ref": "Result",
-                "description": "A string result code, which will be empty upon success. The possible values in the case of errors include 'unknown_error', 'user_cancelled', 'manifest_error', 'icon_error', 'invalid_id', and 'invalid_icon_url'."
-              }
-            ]
           }
-        ]
+        ],
+        "returns_async": {
+          "name": "callback",
+          "description": "Called when the user has either accepted/rejected the dialog, or some error occurred (such as invalid manifest or icon image data).",
+          "optional": true,
+          "parameters": [
+            {
+              "name": "result",
+              "$ref": "Result",
+              "description": "A string result code, which will be empty upon success. The possible values in the case of errors include 'unknown_error', 'user_cancelled', 'manifest_error', 'icon_error', 'invalid_id', and 'invalid_icon_url'."
+            }
+          ]
+        }
       }
     ]
   }
