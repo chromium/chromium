@@ -19,11 +19,11 @@ base::FilePath GetTestDataRoot() {
 
 void LoadTestProto(const std::string& proto_text,
                    google::protobuf::MessageLite& proto) {
-  base::TestProtoLoader loader;
+  base::TestProtoLoader loader(GetTestDataRoot().Append(FILE_PATH_LITERAL(
+                                   "base/test/test_proto.descriptor")),
+                               "base.test.TestMessage");
   std::string serialized_message;
-  loader.ParseFromText(GetTestDataRoot().Append(FILE_PATH_LITERAL(
-                           "base/test/test_proto.descriptor")),
-                       "base.test.TestMessage", proto_text, serialized_message);
+  loader.ParseFromText(proto_text, serialized_message);
   ASSERT_TRUE(proto.ParseFromString(serialized_message));
 }
 

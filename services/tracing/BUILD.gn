@@ -90,6 +90,7 @@ source_set("tests") {
     "perfetto/consumer_host_unittest.cc",
     "perfetto/perfetto_integration_unittest.cc",
     "perfetto/privacy_filtering_check_unittest.cc",
+    "public/cpp/perfetto/perfetto_config_unittest.cc",
     "public/cpp/perfetto/trace_event_data_source_unittest.cc",
     "public/cpp/perfetto/trace_packet_tokenizer_unittest.cc",
     "public/cpp/perfetto/traced_value_proto_writer_unittest.cc",
@@ -102,6 +103,7 @@ source_set("tests") {
     ":test_utils",
     "//base",
     "//base:base_stack_sampling_profiler_test_util",
+    "//base/test:proto_test_support",
     "//base/test:test_support",
     "//build:chromeos_buildflags",
     "//mojo/public/cpp/bindings",
@@ -151,6 +153,9 @@ source_set("tests") {
     }
   }
 
+  data_deps = [ "//third_party/perfetto/protos/perfetto/config:descriptor" ]
+  data = [ "$root_gen_dir/third_party/perfetto/protos/perfetto/config/config.descriptor" ]
+
   if (enable_loader_lock_sampling) {
     if (is_win) {
       sources +=
@@ -158,7 +163,7 @@ source_set("tests") {
     }
 
     deps += [ ":loader_lock_sampler_test_strings" ]
-    data_deps = [ ":loader_lock_sampler_test_dll" ]
+    data_deps += [ ":loader_lock_sampler_test_dll" ]
   }
 }
 
