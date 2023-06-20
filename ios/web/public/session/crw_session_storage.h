@@ -11,6 +11,12 @@
 #include "components/sessions/core/session_id.h"
 #include "ios/web/common/user_agent.h"
 
+namespace web {
+namespace proto {
+class WebStateStorage;
+}  // namespace proto
+}  // namespace web
+
 @class CRWNavigationItemStorage;
 @class CRWSessionUserData;
 @class CRWSessionCertificatePolicyCacheStorage;
@@ -30,6 +36,12 @@
 @property(nonatomic, assign) SessionID uniqueIdentifier;
 @property(nonatomic, assign) base::Time lastActiveTime;
 @property(nonatomic, assign) base::Time creationTime;
+
+// Convenience initializer that creates an instance from proto representation.
+- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage;
+
+// Serializes the CRWSessionStorage into `storage`.
+- (void)serializeToProto:(web::proto::WebStateStorage&)storage;
 
 @end
 

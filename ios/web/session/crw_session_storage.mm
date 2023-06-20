@@ -7,11 +7,17 @@
 #import "base/mac/foundation_util.h"
 #import "base/memory/ptr_util.h"
 #import "base/metrics/histogram_functions.h"
+#import "base/strings/utf_string_conversions.h"
 #import "base/time/time.h"
 #import "ios/web/common/features.h"
 #import "ios/web/navigation/nscoder_util.h"
+#import "ios/web/public/session/crw_navigation_item_storage.h"
 #import "ios/web/public/session/crw_session_certificate_policy_cache_storage.h"
 #import "ios/web/public/session/crw_session_user_data.h"
+#import "ios/web/public/session/proto/metadata.pb.h"
+#import "ios/web/public/session/proto/navigation.pb.h"
+#import "ios/web/public/session/proto/proto_util.h"
+#import "ios/web/public/session/proto/storage.pb.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -49,6 +55,69 @@ NSString* const kTabIdKey = @"TabId";
   // The unique identifier, stored as the underlying type since SessionID
   // has not public default constructor, thus cannot be an ivar/property.
   SessionID::id_type _uniqueIdentifier;
+}
+
+- (instancetype)initWithProto:(const web::proto::WebStateStorage&)storage {
+  if ((self = [super init])) {
+    _hasOpener = storage.has_opener();
+    _userAgentType = web::UserAgentTypeFromProto(storage.user_agent());
+    _certPolicyCacheStorage = [[CRWSessionCertificatePolicyCacheStorage alloc]
+        initWithProto:storage.certs_cache()];
+
+    const web::proto::NavigationStorage& navigationStorage =
+        storage.navigation();
+    _lastCommittedItemIndex = navigationStorage.last_committed_item_index();
+    NSMutableArray<CRWNavigationItemStorage*>* itemStorages =
+        [[NSMutableArray alloc]
+            initWithCapacity:navigationStorage.items_size()];
+    for (const web::proto::NavigationItemStorage& itemStorage :
+         navigationStorage.items()) {
+      [itemStorages addObject:[[CRWNavigationItemStorage alloc]
+                                  initWithProto:itemStorage]];
+    }
+    _itemStorages = [itemStorages copy];
+
+    const web::proto::WebStateMetadataStorage& metadataStorage =
+        storage.metadata();
+    _creationTime = web::TimeFromProto(metadataStorage.creation_time());
+    _lastActiveTime = web::TimeFromProto(metadataStorage.last_active_time());
+  }
+  return self;
+}
+
+- (void)serializeToProto:(web::proto::WebStateStorage&)storage {
+  storage.set_has_opener(_hasOpener);
+  storage.set_user_agent(web::UserAgentTypeToProto(_userAgentType));
+  [_certPolicyCacheStorage serializeToProto:*storage.mutable_certs_cache()];
+
+  web::proto::NavigationStorage* navigationStorage =
+      storage.mutable_navigation();
+  navigationStorage->set_last_committed_item_index(_lastCommittedItemIndex);
+  for (CRWNavigationItemStorage* itemStorage in _itemStorages) {
+    [itemStorage serializeToProto:*navigationStorage->add_items()];
+  }
+
+  web::proto::WebStateMetadataStorage* metadataStorage =
+      storage.mutable_metadata();
+  web::SerializeTimeToProto(_creationTime,
+                            *metadataStorage->mutable_creation_time());
+  web::SerializeTimeToProto(_lastActiveTime,
+                            *metadataStorage->mutable_last_active_time());
+  metadataStorage->set_navigation_item_count(_itemStorages.count);
+
+  if (_lastCommittedItemIndex >= 0) {
+    NSUInteger const activePageIndex =
+        static_cast<NSUInteger>(_lastCommittedItemIndex);
+    if (activePageIndex < _itemStorages.count) {
+      CRWNavigationItemStorage* const activePageItem =
+          _itemStorages[activePageIndex];
+      web::proto::PageMetadataStorage* pageMetadataStorage =
+          metadataStorage->mutable_active_page();
+      pageMetadataStorage->set_page_title(
+          base::UTF16ToUTF8(activePageItem.title));
+      pageMetadataStorage->set_page_url(activePageItem.URL.spec());
+    }
+  }
 }
 
 #pragma mark - NSCoding
