@@ -56,18 +56,6 @@ EVENTS_BASE_EXPORT char16_t DomCodeToUsLayoutCharacter(DomCode dom_code,
     DomKey* dom_key,
     KeyboardCode* key_code);
 
-// Obtains the control character corresponding to a physical key;
-// that is, the meaning of the physical key state (dom_code, and flags
-// containing EF_CONTROL_DOWN) under the base US English layout.
-// Returns true and sets the output parameters if the (dom_code, flags) pair
-// is interpreted as a control character; otherwise the output parameters
-// are untouched.
-[[nodiscard]] EVENTS_BASE_EXPORT bool DomCodeToControlCharacter(
-    DomCode dom_code,
-    int flags,
-    DomKey* dom_key,
-    KeyboardCode* key_code);
-
 // Returns a Windows-based VKEY for a non-printable DOM Level 3 |key|.
 // The returned VKEY is non-located (e.g. VKEY_SHIFT).
 EVENTS_BASE_EXPORT KeyboardCode

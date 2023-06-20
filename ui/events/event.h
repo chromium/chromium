@@ -848,15 +848,6 @@ class EVENTS_EXPORT KeyEvent : public Event {
   // BMP characters.
   char16_t GetCharacter() const;
 
-  // If this is a keystroke event with key_code_ VKEY_RETURN, returns '\r';
-  // otherwise returns the same as GetCharacter().
-  char16_t GetUnmodifiedText() const;
-
-  // If the Control key is down in the event, returns a layout-independent
-  // character (corresponding to US layout); otherwise returns the same
-  // as GetUnmodifiedText().
-  char16_t GetText() const;
-
   // True if this is a character event, false if this is a keystroke event.
   bool is_char() const { return is_char_; }
 

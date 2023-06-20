@@ -1073,36 +1073,56 @@ char16_t KeyEvent::GetCharacter() const {
     DomKey::Base utf32_character = key_.ToCharacter();
     char16_t ucs2_character = static_cast<char16_t>(utf32_character);
     DCHECK_EQ(static_cast<DomKey::Base>(ucs2_character), utf32_character);
-    // Check if the control character is down. Note that ALTGR is represented
-    // on Windows as CTRL|ALT, so we need to make sure that is not set.
-    if ((flags() & (EF_ALTGR_DOWN | EF_CONTROL_DOWN)) == EF_CONTROL_DOWN) {
-      // For a control character, key_ contains the corresponding printable
-      // character. To preserve existing behaviour for now, return the control
-      // character here; this will likely change -- see e.g. crbug.com/471488.
-      if (ucs2_character >= 0x20 && ucs2_character <= 0x7E)
-        return ucs2_character & 0x1F;
-      if (ucs2_character == '\r')
+
+    // Check if the control character is down.
+#if BUILDFLAG(IS_WIN)
+    // Note that ALTGR is represented on Windows as CTRL|ALT, so we need to make
+    // sure that is not set.
+    bool is_control_down =
+        (flags() & (EF_ALTGR_DOWN | EF_CONTROL_DOWN)) == EF_CONTROL_DOWN;
+#else
+    bool is_control_down = flags() & EF_CONTROL_DOWN;
+#endif
+    if (is_control_down) {
+      char16_t shifted_character = ucs2_character;
+      // In some operating systems such as Linux, Ctrl + Some Printable
+      // Character gives a control character. This follows caret notation
+      // defined for ASCII control characters where the printable character
+      // follows a caret (^; represents a control press). We retain this
+      // behavior for compatibility.
+      if (!(flags() & EF_SHIFT_DOWN)) {
+        // Note: Software that supports control characters also allow the
+        // "unshifted" version of the printable character. In theory, we should
+        // consult the keyboard layout to retrieve the shifted character but we
+        // only supported US layout for this case in the past, so we only
+        // support this behavior.
+        if (char16_t maybe_character = DomCodeToUsLayoutCharacter(
+                UsLayoutDomKeyToDomCode(key_), EF_SHIFT_DOWN);
+            maybe_character) {
+          shifted_character = maybe_character;
+        }
+      }
+      if (shifted_character >= '@' && shifted_character <= '_') {
+        return shifted_character - '@';
+      }
+      if (shifted_character == '?') {
+        return '\x7f';
+      }
+
+      // In ye olden days, Ctrl + Enter meant soft enter, i.e. new line. Some
+      // applications such as Microsoft Word still carry this behavior. We
+      // retain this behavior.
+      if (ucs2_character == '\r') {
         return '\n';
+      }
     }
+
     return ucs2_character;
   }
-  return 0;
-}
-
-char16_t KeyEvent::GetText() const {
-  if ((flags() & EF_CONTROL_DOWN) != 0) {
-    DomKey key;
-    KeyboardCode key_code;
-    if (DomCodeToControlCharacter(code_, flags(), &key, &key_code))
-      return key.ToCharacter();
-  }
-  return GetUnmodifiedText();
-}
-
-char16_t KeyEvent::GetUnmodifiedText() const {
-  if (!is_char_ && (key_code_ == VKEY_RETURN))
+  if (!is_char_ && key_code_ == ui::VKEY_RETURN) {
     return '\r';
-  return GetCharacter();
+  }
+  return 0;
 }
 
 bool KeyEvent::IsUnicodeKeyCode() const {

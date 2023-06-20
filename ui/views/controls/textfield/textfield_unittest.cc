@@ -1033,11 +1033,11 @@ TEST_F(TextfieldTest, MAYBE_KeysWithModifiersTest) {
   SendKeyPress(ui::VKEY_OEM_MINUS, ctrl | shift);
 
   if (TestingNativeCrOs())
-    EXPECT_EQ(u"TeTEx34", textfield_->GetText());
+    EXPECT_EQ(u"TeTEx34=+", textfield_->GetText());
   else if (TestingNativeMac())
-    EXPECT_EQ(u"TheTxE134", textfield_->GetText());
+    EXPECT_EQ(u"TheTxE134=+", textfield_->GetText());
   else
-    EXPECT_EQ(u"TeTEx234", textfield_->GetText());
+    EXPECT_EQ(u"TeTEx234=+", textfield_->GetText());
 }
 
 TEST_F(TextfieldTest, ControlAndSelectTest) {

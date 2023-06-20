@@ -53,8 +53,6 @@ void ExpectMouseWheelEventsEqual(const MouseWheelEvent& expected,
 
 void ExpectKeyEventsEqual(const KeyEvent& expected, const KeyEvent& actual) {
   EXPECT_EQ(expected.GetCharacter(), actual.GetCharacter());
-  EXPECT_EQ(expected.GetUnmodifiedText(), actual.GetUnmodifiedText());
-  EXPECT_EQ(expected.GetText(), actual.GetText());
   EXPECT_EQ(expected.is_char(), actual.is_char());
   EXPECT_EQ(expected.is_repeat(), actual.is_repeat());
   EXPECT_EQ(expected.GetConflatedWindowsKeyCode(),
