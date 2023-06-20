@@ -73,14 +73,22 @@ bool TokenService::StoreEnrollmentToken(const std::string& token) {
 
 std::string TokenService::GetEnrollmentToken() const {
   std::wstring token;
-  base::win::RegKey key;
-  if (key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
-               Wow6432(KEY_READ)) != ERROR_SUCCESS ||
-      key.ReadValue(kRegValueEnrollmentToken, &token) != ERROR_SUCCESS) {
-    return std::string();
+
+  if (base::win::RegKey key;
+      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyCloudManagement,
+               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
+      key.ReadValue(kRegValueEnrollmentToken, &token) == ERROR_SUCCESS) {
+    return base::SysWideToUTF8(token);
   }
 
-  return base::SysWideToUTF8(token);
+  if (base::win::RegKey key;
+      key.Open(HKEY_LOCAL_MACHINE, kRegKeyCompanyLegacyCloudManagement,
+               Wow6432(KEY_READ)) == ERROR_SUCCESS &&
+      key.ReadValue(kRegValueCloudManagementEnrollmentToken, &token) ==
+          ERROR_SUCCESS) {
+    return base::SysWideToUTF8(token);
+  }
+  return {};
 }
 
 bool TokenService::StoreDmToken(const std::string& token) {

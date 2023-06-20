@@ -578,8 +578,11 @@ The updater also checks for policy updates when the `RunPeriodicTasks` RPC is
 invoked at periodic intervals.
 
 #### Windows
-The `EnrollmentToken` REG_SZ value is read from
-`HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.
+The enrollment token is searched in the order:
+* The `EnrollmentToken` REG_SZ value from
+  `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`
+* The `CloudManagementEnrollmentToken` REG_SZ value from
+  `HKLM\Software\Policies\{COMPANY_SHORTNAME}\{BROWSER_NAME}`
 
 The `EnrollmentMandatory` REG_DWORD value is also read from
 `HKLM\Software\Policies\{COMPANY_SHORTNAME}\CloudManagement`.

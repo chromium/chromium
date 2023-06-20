@@ -50,6 +50,11 @@ const wchar_t kRegKeyCompanyCloudManagement[] =
     COMPANY_POLICIES_KEY L"CloudManagement\\";
 const wchar_t kRegValueEnrollmentToken[] = L"EnrollmentToken";
 
+const wchar_t kRegKeyCompanyLegacyCloudManagement[] =
+    COMPANY_POLICIES_KEY BROWSER_NAME_STRING L"\\";
+const wchar_t kRegValueCloudManagementEnrollmentToken[] =
+    L"CloudManagementEnrollmentToken";
+
 const wchar_t kRegValueEnrollmentMandatory[] = L"EnrollmentMandatory";
 
 const wchar_t kRegKeyCompanyEnrollment[] = COMPANY_KEY L"Enrollment\\";

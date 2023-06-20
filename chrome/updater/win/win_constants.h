@@ -91,6 +91,10 @@ extern const wchar_t kRegValueAutoRunOnOSUpgrade[];
 extern const wchar_t kRegKeyCompanyCloudManagement[];
 extern const wchar_t kRegValueEnrollmentToken[];
 
+// Legacy registry for enrollment token.
+extern const wchar_t kRegKeyCompanyLegacyCloudManagement[];
+extern const wchar_t kRegValueCloudManagementEnrollmentToken[];
+
 // The name of the policy indicating that enrollment in cloud-based device
 // management is mandatory.
 extern const wchar_t kRegValueEnrollmentMandatory[];
