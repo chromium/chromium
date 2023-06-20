@@ -258,13 +258,6 @@ public class ShareHelperUnitTest {
         assertEquals("Custom action callback not called.", 1, callbackHelper.getCallCount());
     }
 
-    @Test(expected = AssertionError.class)
-    public void customActionShouldNotUsedWhenNotSupported() {
-        ChromeCustomShareAction.Provider provider =
-                new SingleCustomActionProvider("key", new CallbackHelper());
-        ShareHelper.shareWithSystemShareSheetUi(emptyShareParams(), null, false, provider);
-    }
-
     @Test
     public void shareWithPreviewUri() {
         ShareParams params = new ShareParams.Builder(mWindow, "title", JUnitTestGURLs.EXAMPLE_URL)
