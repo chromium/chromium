@@ -1767,6 +1767,9 @@
   <message name="IDS_FILE_BROWSER_GOOGLE_DRIVE_SINGLE_FILE_SYNCING_LABEL" desc="The text used when Google drive items are being downloaded and this represents the total number of items to sync.">
     Syncing 1 file
   </message>
+  <message name="IDS_FILE_BROWSER_BULK_PINNING_CALCULATING" desc="Text used when the progress panel is still calculating the estimated time remaining">
+    Calculating...
+  </message>
   <message name="IDS_FILE_BROWSER_BULK_PINNING_SPACE" desc="Text in the dialog offering the Google Drive bulk pinning feature">
     This will use about <ph name="REQUIRED_SPACE">$1<ex>12.2 GB</ex></ph>. You currently have <ph name="FREE_SPACE">$2<ex>96.8 GB</ex></ph> available.
   </message>

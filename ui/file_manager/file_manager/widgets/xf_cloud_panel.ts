@@ -214,11 +214,12 @@ export class XfCloudPanel extends XfBase {
               value="${this.percentage}">
             ${this.percentage}%
           </progress>
+          <div class="progress-description">
           ${
         this.seconds && this.seconds > 0 ?
-            html`<div class="progress-description">${
-                util.secondsToRemainingTimeString(this.seconds)}</div>` :
-            html``}
+            util.secondsToRemainingTimeString(this.seconds) :
+            str('DRIVE_BULK_PINNING_CALCULATING')}
+          </div>
         </div>
         <div class="static" id="progress-finished">
           <xf-icon type="${
