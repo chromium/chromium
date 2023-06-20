@@ -253,9 +253,8 @@ class FileUploadJob {
 
   SEQUENCE_CHECKER(job_sequence_checker_);
 
-  // Note: Cannot be const, since `retry_count` needs to be decremented.
-  UploadSettings settings_ GUARDED_BY_CONTEXT(job_sequence_checker_);
-
+  // Job parameters matching the event.
+  const UploadSettings settings_;
   UploadTracker tracker_ GUARDED_BY_CONTEXT(job_sequence_checker_);
 
   // Event helper instance for event currently being processed by the job

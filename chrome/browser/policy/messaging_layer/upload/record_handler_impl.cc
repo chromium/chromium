@@ -110,8 +110,6 @@ void ProcessFileUpload(base::WeakPtr<FileUploadJob::Delegate> delegate,
       }
       // Check whether this upload is already being processed, based on the
       // whole `upload_settings` (including retry count).
-      const auto settings = log_upload_event.upload_settings();
-      const auto tracker = log_upload_event.upload_tracker();
       FileUploadJob::Manager::GetInstance()->Register(
           priority, std::move(record_copy), std::move(log_upload_event),
           delegate,
