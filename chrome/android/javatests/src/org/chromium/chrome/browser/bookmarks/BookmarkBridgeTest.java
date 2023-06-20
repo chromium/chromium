@@ -16,7 +16,6 @@ import org.junit.runner.RunWith;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.UiThreadTest;
 import org.chromium.base.test.util.Batch;
-import org.chromium.base.test.util.DisabledTest;
 import org.chromium.base.test.util.Feature;
 import org.chromium.base.test.util.RequiresRestart;
 import org.chromium.chrome.browser.profiles.Profile;
@@ -339,7 +338,6 @@ public class BookmarkBridgeTest {
     @SmallTest
     @UiThreadTest
     @RequiresRestart
-    @DisabledTest(message = "Broken on official bot, crbug.com/1165869")
     public void testAddToReadingList() {
         Assert.assertNull("Should return null for non http/https URLs.",
                 mBookmarkBridge.addToReadingList("a", new GURL("chrome://flags")));
