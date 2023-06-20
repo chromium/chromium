@@ -181,7 +181,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test('testTabDiscardExceptionsAddDialogSubmitExisting', async function() {
@@ -196,7 +196,7 @@ suite('TabDiscardExceptionsDialog', function() {
     assertSubmit([EXISTING_RULE, VALID_RULE]);
     const action =
         await performanceMetricsProxy.whenCalled('recordExceptionListAction');
-    assertEquals(HighEfficiencyModeExceptionListAction.ADD, action);
+    assertEquals(HighEfficiencyModeExceptionListAction.ADD_MANUAL, action);
   });
 
   test(

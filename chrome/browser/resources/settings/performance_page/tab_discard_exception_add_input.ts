@@ -47,7 +47,7 @@ export class TabDiscardExceptionAddInputElement extends
     const rule = this.rule.trim();
     this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD);
+        HighEfficiencyModeExceptionListAction.ADD_MANUAL);
   }
 }
 

@@ -450,7 +450,7 @@ suite('TabDiscardExceptionList', function() {
     assertEquals('', addDialog.$.input.$.input.value);
     await inputDialog(addDialog, 'bar');
     assertEquals(
-        HighEfficiencyModeExceptionListAction.ADD,
+        HighEfficiencyModeExceptionListAction.ADD_MANUAL,
         await performanceMetricsProxy.whenCalled('recordExceptionListAction'));
     assertExceptionListEquals(['foo', 'bar']);
   });

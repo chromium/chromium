@@ -19,12 +19,13 @@ export enum BatterySaverModeState {
 // These values are persisted to logs. Entries should not be renumbered and
 // numeric values should never be reused.
 export enum HighEfficiencyModeExceptionListAction {
-  ADD = 0,
+  ADD_MANUAL = 0,
   EDIT = 1,
   REMOVE = 2,
+  ADD_FROM_CURRENT = 3,
 
   // Must be last.
-  COUNT = 3,
+  COUNT = 4,
 }
 
 // These values are persisted to logs. Entries should not be renumbered and

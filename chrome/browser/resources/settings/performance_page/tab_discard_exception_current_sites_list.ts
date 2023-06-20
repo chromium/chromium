@@ -98,7 +98,7 @@ export class TabDiscardExceptionCurrentSitesListElement extends
       this.appendPrefListItem(TAB_DISCARD_EXCEPTIONS_PREF, rule);
     });
     this.metricsProxy_.recordExceptionListAction(
-        HighEfficiencyModeExceptionListAction.ADD);
+        HighEfficiencyModeExceptionListAction.ADD_FROM_CURRENT);
   }
 }
 
