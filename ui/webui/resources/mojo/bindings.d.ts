@@ -165,7 +165,7 @@ export namespace mojo {
     function Enum(): MojomType;
 
     interface NullableValueKindProperties {
-      isPrimaryNullableValueKindField: boolean;
+      isPrimary: boolean;
       linkedValueFieldName?: string;
       originalFieldName: string;
     }

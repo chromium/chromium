@@ -5,6 +5,7 @@
 
 import mojom.generate.generator as generator
 import mojom.generate.module as mojom
+import mojom.generate.pack as pack
 import itertools
 import os
 import sys
@@ -51,6 +52,17 @@ _kind_to_ts_type = {
     mojom.INT64: "bigint",
     mojom.UINT64: "bigint",
     mojom.DOUBLE: "number",
+    mojom.NULLABLE_BOOL: "boolean",
+    mojom.NULLABLE_INT8: "number",
+    mojom.NULLABLE_UINT8: "number",
+    mojom.NULLABLE_INT16: "number",
+    mojom.NULLABLE_UINT16: "number",
+    mojom.NULLABLE_INT32: "number",
+    mojom.NULLABLE_UINT32: "number",
+    mojom.NULLABLE_FLOAT: "number",
+    mojom.NULLABLE_INT64: "bigint",
+    mojom.NULLABLE_UINT64: "bigint",
+    mojom.NULLABLE_DOUBLE: "number",
     mojom.STRING: "string",
     mojom.NULLABLE_STRING: "string",
     mojom.HANDLE: "MojoHandle",
@@ -234,6 +246,10 @@ class Generator(generator.Generator):
 
   def GetFilters(self):
     ts_filters = {
+        "is_nullable_value_kind_packed_field":
+        pack.IsNullableValueKindPackedField,
+        "is_primary_nullable_value_kind_packed_field":
+        pack.IsPrimaryNullableValueKindPackedField,
         "constant_value": self._GetConstantValue,
         "default_ts_value": self._GetDefaultValue,
         "imports_for_kind": self._GetImportsForKind,

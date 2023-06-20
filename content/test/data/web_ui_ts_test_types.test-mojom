@@ -13,4 +13,3 @@ struct TsCacheItem {
   url.mojom.Url url;
   string contents;
 };
-
