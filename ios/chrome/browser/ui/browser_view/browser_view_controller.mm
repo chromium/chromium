@@ -2294,12 +2294,17 @@ enum HeaderBehaviour {
 // Translates the footer view up and down according to `progress`, where a
 // progress of 1.0 fully shows the footer and a progress of 0.0 fully hides it.
 - (void)updateFootersForFullscreenProgress:(CGFloat)progress {
-
   self.footerFullscreenProgress = progress;
+
+  const CGFloat expandedToolbarHeight = [self secondaryToolbarHeightWithInset];
+  if (!expandedToolbarHeight) {
+    // If `secondaryToolbarHeightWithInset` returns 0, secondary toolbar is
+    // hidden. In that case don't update it's height on fullscreen progress.
+    return;
+  }
 
   const CGFloat offset =
       AlignValueToPixel((1.0 - progress) * [self secondaryToolbarHeightDelta]);
-  const CGFloat expandedToolbarHeight = [self secondaryToolbarHeightWithInset];
   // Update the height constraint and force a layout on the container view
   // so that the update is animatable.
   const CGFloat height = expandedToolbarHeight - offset;
