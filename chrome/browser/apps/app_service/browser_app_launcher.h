@@ -46,10 +46,12 @@ class BrowserAppLauncher {
   // Launches an app for the given `app_id` in a way specified by `params`. This
   // interface should only be used in testing code where reqired a sync launch
   // for browser apps. Please try to use AppServiceProxy::LaunchAppWithParams()
-  // interface where possible. This interface is deprecated in the production
-  // code, using this interface might cause behaviour difference between the
-  // production code and testing code.
+  // interface where possible.
   // Note: This code will block until the launch occurs.
+  //
+  // Deprecated. Prefer `LaunchAppWithParams()` or `LaunchAppWithIntent`.
+  // This interface is deprecated in production code, as using it might cause
+  // behaviour difference between the production code and test code.
   // TODO(crbug.com/1289100): Remove this interface if all usages are removed.
   content::WebContents* LaunchAppWithParamsForTesting(AppLaunchParams params);
 
