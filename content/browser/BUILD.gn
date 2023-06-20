@@ -2812,7 +2812,7 @@ source_set("browser") {
     ]
   }
 
-  if (is_android || is_linux || is_chromeos) {
+  if (is_android || is_linux) {
     deps += [ "//content/browser/system_dns_resolution" ]
   }
 

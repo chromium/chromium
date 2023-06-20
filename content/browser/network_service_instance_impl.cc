@@ -419,7 +419,7 @@ void CreateInProcessNetworkService(
 #endif
 }
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 // Runs a self-owned SystemDnsResolverMojoImpl. This is meant to run on a
 // high-priority thread pool.
 void RunSystemDnsResolverOnThreadPool(
@@ -486,7 +486,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
   }
 #endif  // BUILDFLAG(IS_POSIX)
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   if (GetContentClient()
           ->browser()
           ->ShouldRunOutOfProcessSystemDnsResolution() &&
@@ -500,7 +500,7 @@ network::mojom::NetworkServiceParamsPtr CreateNetworkServiceParams() {
                                   dns_remote.InitWithNewPipeAndPassReceiver()));
     network_service_params->system_dns_resolver = std::move(dns_remote);
   }
-#endif
+#endif  // BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
 
   return network_service_params;
 }

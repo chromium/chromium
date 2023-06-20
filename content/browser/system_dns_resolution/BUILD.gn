@@ -4,7 +4,7 @@
 
 import("//build/buildflag_header.gni")
 
-if (is_android || is_linux || is_chromeos) {
+if (is_android || is_linux) {
   # //net/dns "friends" this target (so these source files can include private
   # headers from //net/dns).
   source_set("system_dns_resolution") {

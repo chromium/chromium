@@ -112,7 +112,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
 
   const auto& addr_list1 = future.Get<absl::optional<net::AddressList>>();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // If system DNS resolution runs in the browser process, check here that the
   // resolver received the correct number of resolves.
   EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
@@ -135,7 +135,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   const auto& addr_list1 = future1.Get<absl::optional<net::AddressList>>();
   const auto& addr_list2 = future2.Get<absl::optional<net::AddressList>>();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // If system DNS resolution runs in the browser process, check here that the
   // resolver received the correct number of resolves.
   EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kHostname1), 1u);
@@ -163,7 +163,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   auto [result, resolve_error_info, resolved_addresses, endpoints] =
       future.Take();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // If system DNS resolution runs in the browser process, check here that
   // the resolver received the correct number of resolves.
   EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(kFailHostname), 1u);
@@ -195,7 +195,7 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
 
   auto [addr_list, os_error_result, net_error_result] = future.Take();
 
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
+#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_LINUX)
   // If system DNS resolution runs in the browser process, check here that the
   // resolver received the correct number of resolves.
   EXPECT_EQ(host_resolver()->NumResolvesForHostPattern(net::GetHostName()), 1u);
