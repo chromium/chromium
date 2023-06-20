@@ -313,13 +313,17 @@ bool MediaRecorderHandler::Start(int timeslice,
   }
 
   // For each track in tracks, if the User Agent cannot record the track using
-  // the current configuration, abort. See step 13 in
+  // the current configuration, abort. See step 14 in
   // https://w3c.github.io/mediacapture-record/MediaRecorder.html#dom-mediarecorder-start
-  if (!use_video_tracks && CanSupportVideoType(type)) {
-    return false;
-  }
-  if (!use_audio_tracks && CanSupportAudioType(type)) {
-    return false;
+  if (!type.empty()) {
+    const bool video_type_supported = CanSupportVideoType(type);
+    const bool audio_type_supported = CanSupportAudioType(type);
+    if (use_video_tracks && !video_type_supported) {
+      return false;
+    }
+    if (use_audio_tracks && !(video_type_supported || audio_type_supported)) {
+      return false;
+    }
   }
 
   muxer_ = std::make_unique<media::WebmMuxer>(
