@@ -383,8 +383,20 @@ ApplyUpdateResult MmapHashPrefixMap::ReadFromDisk(
     const V4StoreFileFormat& file_format) {
   DCHECK(file_format.list_update_response().additions().empty());
   for (const auto& hash_file : file_format.hash_files()) {
-    if (!GetFileInfo(hash_file.prefix_size()).Initialize(hash_file)) {
+    PrefixSize prefix_size = hash_file.prefix_size();
+    auto& file_info = GetFileInfo(prefix_size);
+    if (!file_info.Initialize(hash_file)) {
       return MMAP_FAILURE;
+    }
+    static const base::FeatureParam<bool> kCheckMapSorted{
+        &kMmapSafeBrowsingDatabase, "check-sb-map-sorted", true};
+    if (kCheckMapSorted.Get()) {
+      HashPrefixesView prefixes = file_info.GetView();
+      uint32_t end = prefixes.size() / prefix_size;
+      if (!std::is_sorted(PrefixIterator(prefixes, 0, prefix_size),
+                          PrefixIterator(prefixes, end, prefix_size))) {
+        return MMAP_FAILURE;
+      }
     }
   }
   return APPLY_UPDATE_SUCCESS;

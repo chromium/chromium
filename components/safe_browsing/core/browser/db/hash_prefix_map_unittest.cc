@@ -144,6 +144,19 @@ TEST_F(HashPrefixMapTest, ReadFile) {
   EXPECT_EQ(view[4], "foo");
 }
 
+TEST_F(HashPrefixMapTest, ReadFileNotSorted) {
+  base::WriteFile(GetPath("foo"), "zzzzaaaa");
+
+  V4StoreFileFormat file_format;
+  auto* hash_file = file_format.add_hash_files();
+  hash_file->set_prefix_size(4);
+  hash_file->set_extension("foo");
+  hash_file->set_file_size(8);
+
+  MmapHashPrefixMap map(GetBasePath());
+  EXPECT_EQ(map.ReadFromDisk(file_format), MMAP_FAILURE);
+}
+
 TEST_F(HashPrefixMapTest, ReadMultipleFiles) {
   base::WriteFile(GetPath("foo"), "foo");
   base::WriteFile(GetPath("bar"), "bar");
@@ -324,8 +337,12 @@ TEST_F(HashPrefixMapTest, UsesFileOffsets) {
   uint32_t keep_end = hash_file.offsets()[2] * 4;
   // Null out all data outside of the two offsets.
   for (size_t i = 0; i < contents.size(); i++) {
-    if (i < keep_start || i >= keep_end)
+    if (i < keep_start) {
       contents[i] = '\0';
+    }
+    if (i >= keep_end) {
+      contents[i] = '\xff';
+    }
   }
 
   // Rewrite the hash file with only a partial set of hashes.
