@@ -9,6 +9,9 @@
 #import "components/autofill/core/common/autofill_features.h"
 #import "components/strings/grit/components_strings.h"
 #import "ios/chrome/browser/shared/ui/elements/activity_overlay_egtest_util.h"
+#import "ios/chrome/browser/signin/fake_system_identity.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey.h"
+#import "ios/chrome/browser/ui/authentication/signin_earl_grey_ui_test_util.h"
 #import "ios/chrome/browser/ui/autofill/autofill_app_interface.h"
 #import "ios/chrome/browser/ui/settings/autofill/autofill_constants.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -510,6 +513,7 @@ id<GREYMatcher> SearchBarScrim() {
 // city is added to the required fields. When it is emptied, the save button in
 // displayed. The profile is an account profile.
 - (void)testRequiredFields {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -566,6 +570,7 @@ id<GREYMatcher> SearchBarScrim() {
       performAction:grey_tap()];
 
   [self exitSettingsMenu];
+  [SigninEarlGrey signOut];
 }
 
 // Tests that when country selection view opens, the currently selected country
@@ -590,6 +595,7 @@ id<GREYMatcher> SearchBarScrim() {
 // Tests that when the state data is removed, the "Done" button is enabled for
 // "Germany" but not for "India". Similarly, the "Done" is disabled for "US".
 - (void)testDoneButtonByRequirementsOfCountries {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -656,11 +662,13 @@ id<GREYMatcher> SearchBarScrim() {
   // field for "India".
   [[EarlGrey selectElementWithMatcher:NavigationBarDoneButton()]
       assertWithMatcher:grey_not(grey_enabled())];
+  [SigninEarlGrey signOut];
 }
 
 // Tests that the footer text is correctly displayed when there are multiple
 // required empty fields.
 - (void)testFooterWithMultipleErrors {
+  [SigninEarlGreyUI signinWithFakeIdentity:[FakeSystemIdentity fakeIdentity1]];
   [AutofillAppInterface saveExampleAccountProfile];
   [self openEditProfile:kProfileLabel];
 
@@ -683,6 +691,7 @@ id<GREYMatcher> SearchBarScrim() {
   [[EarlGrey
       selectElementWithMatcher:[self footerWithCountOfEmptyRequiredFields:2]]
       assertWithMatcher:grey_nil()];
+  [SigninEarlGrey signOut];
 }
 
 @end

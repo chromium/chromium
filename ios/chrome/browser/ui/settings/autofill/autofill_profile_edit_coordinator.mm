@@ -16,8 +16,6 @@
 #import "ios/chrome/browser/shared/ui/table_view/table_view_utils.h"
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
-#import "ios/chrome/browser/sync/sync_setup_service.h"
-#import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/autofill/autofill_country_selection_table_view_controller.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator.h"
 #import "ios/chrome/browser/ui/autofill/autofill_profile_edit_mediator_delegate.h"
@@ -93,7 +91,7 @@
       initWithStyle:ChromeTableViewStyle()];
   self.sharedViewController = [[AutofillProfileEditTableViewController alloc]
       initWithDelegate:self.mediator
-             userEmail:[self syncingUserEmail]
+             userEmail:[self userEmail]
             controller:self.viewController
           settingsView:YES];
   self.mediator.consumer = self.sharedViewController;
@@ -156,22 +154,14 @@
 
 #pragma mark - Private
 
-- (NSString*)syncingUserEmail {
+- (NSString*)userEmail {
   AuthenticationService* authenticationService =
       AuthenticationServiceFactory::GetForBrowserState(
           self.browser->GetBrowserState());
-  DCHECK(authenticationService);
+  CHECK(authenticationService);
   id<SystemIdentity> identity =
-      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSync);
-  if (identity) {
-    SyncSetupService* syncSetupService =
-        SyncSetupServiceFactory::GetForBrowserState(
-            self.browser->GetBrowserState());
-    if (syncSetupService->IsDataTypeActive(syncer::AUTOFILL)) {
-      return identity.userEmail;
-    }
-  }
-  return nil;
+      authenticationService->GetPrimaryIdentity(signin::ConsentLevel::kSignin);
+  return identity ? identity.userEmail : nil;
 }
 
 @end
