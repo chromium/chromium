@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html>
+<head>
+<script src="/resources/testharness.js"></script>
+<script src="/resources/testharnessreport.js"></script>
+</head>
+<body>
+<script>
+const MESSAGES = ['my message', undefined];
+
+const REASONS = ['validation', 'internal'];
+
+for (const message of MESSAGES) {
+  for (const reason of REASONS) {
+    test((t) => {
+      const error = new GPUPipelineError(message, { reason });
+      assert_true(error instanceof GPUPipelineError);
+      assert_equals(error.name, 'GPUPipelineError');
+      assert_equals(error.message, message || '');
+      assert_equals(error.reason, reason);
+    }, `call GPUPipelineError constructor with message ${message} and reason ${reason}`);
+  }
+}
+</script>
+</body>
+</html>
