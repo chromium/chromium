@@ -129,17 +129,16 @@ CopyOrMoveIOTaskPolicyImpl::CopyOrMoveIOTaskPolicyImpl(
       profile_(profile),
       file_system_context_(file_system_context),
       settings_(std::move(settings)) {
-  // The value of `block_until_verdict` is consistent for all settings, so we
-  // just check the value for the first valid setting.
-  auto valid_setting = base::ranges::find_if(
-      settings_,
-      [](const absl::optional<enterprise_connectors::AnalysisSettings>&
-             setting) { return setting.has_value(); });
-  // We should always find one. Otherwise, we wouldn't need scanning at all and
-  // the normal CopyOrMoveIOTaskImpl should have been created.
-  DCHECK(valid_setting != settings_.end());
-  report_only_scans_ = valid_setting->value().block_until_verdict ==
-                       enterprise_connectors::BlockUntilVerdict::kNoBlock;
+  if (!settings_.empty()) {
+    // The value of `block_until_verdict` is consistent for all settings, so we
+    // just check the value for the first valid setting.
+    auto valid_setting = base::ranges::find_if(
+        settings_,
+        [](const absl::optional<enterprise_connectors::AnalysisSettings>&
+               setting) { return setting.has_value(); });
+    report_only_scans_ = valid_setting->value().block_until_verdict ==
+                         enterprise_connectors::BlockUntilVerdict::kNoBlock;
+  }
 }
 
 CopyOrMoveIOTaskPolicyImpl::~CopyOrMoveIOTaskPolicyImpl() = default;
@@ -225,7 +224,10 @@ void CopyOrMoveIOTaskPolicyImpl::VerifyTransfer() {
 
 storage::FileSystemOperation::ErrorBehavior
 CopyOrMoveIOTaskPolicyImpl::GetErrorBehavior() {
-  if (report_only_scans_) {
+  // This function is called when the transfer starts and DLP restrictions are
+  // applied before the transfer. If there's any file blocked by DLP, the error
+  // behavior should be skip instead of abort.
+  if (report_only_scans_ && !has_blocked_files_) {
     return storage::FileSystemOperation::ERROR_BEHAVIOR_ABORT;
   }
   // For the enterprise connectors, we want files to be copied/moved if they are
@@ -244,10 +246,9 @@ CopyOrMoveIOTaskPolicyImpl::GetHookDelegate(size_t idx) {
   auto progress_callback = google_apis::CreateRelayCallback(
       base::BindRepeating(&CopyOrMoveIOTaskPolicyImpl::OnCopyOrMoveProgress,
                           weak_ptr_factory_.GetWeakPtr(), idx));
-
-  if (report_only_scans_) {
-    // For report-only scans, no blocking should be performed, so we use the
-    // normal delegate.
+  if (settings_.empty() || report_only_scans_) {
+    // For DLP only restrictions or report-only scans, no blocking should be
+    // performed, so we use the normal delegate.
     return std::make_unique<FileManagerCopyOrMoveHookDelegate>(
         progress_callback);
   }
@@ -343,9 +344,10 @@ void CopyOrMoveIOTaskPolicyImpl::OnCheckIfTransferAllowed(
     has_blocked_files_ = true;
   }
 
-  if (report_only_scans_) {
-    // Don't do any scans. Instead, the scans are performed after the copy/move
-    // is completed.
+  if (settings_.empty() || report_only_scans_) {
+    // Don't do any scans. It's either dlp-only restrictions (if `settings_` is
+    // empty), or the scans will performed after the copy/move is completed
+    // (report_only_scans_ is true).
     StartTransfer();
     return;
   }

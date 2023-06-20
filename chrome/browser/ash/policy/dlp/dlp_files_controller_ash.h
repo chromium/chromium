@@ -113,7 +113,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Returns a sublist of |transferred_files| disallowed to be transferred to
   // |destination| in |result_callback|. |is_move| is true if it's a move
   // operation. Otherwise it's false.
-  void CheckIfTransferAllowed(
+  virtual void CheckIfTransferAllowed(
       absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<storage::FileSystemURL>& transferred_files,
       storage::FileSystemURL destination,
@@ -123,9 +123,9 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Retrieves metadata for each entry in |files| and returns it as a list in
   // |result_callback|. If |destination| is passed, marks the files that are not
   // allowed to be uploaded to that particular destination.
-  void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
-                      absl::optional<DlpFileDestination> destination,
-                      GetDlpMetadataCallback result_callback);
+  virtual void GetDlpMetadata(const std::vector<storage::FileSystemURL>& files,
+                              absl::optional<DlpFileDestination> destination,
+                              GetDlpMetadataCallback result_callback);
 
   // Filters files disallowed to be uploaded to `destination`.
   virtual void FilterDisallowedUploads(
@@ -147,9 +147,9 @@ class DlpFilesControllerAsh : public DlpFilesController {
       const base::FilePath& file_path);
 
   // Checks whether launching `app_update` with `intent` is allowed.
-  void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
-                            apps::IntentPtr intent,
-                            CheckIfDlpAllowedCallback result_callback);
+  virtual void CheckIfLaunchAllowed(const apps::AppUpdate& app_update,
+                                    apps::IntentPtr intent,
+                                    CheckIfDlpAllowedCallback result_callback);
 
   // Returns true if `app_update` is blocked from opening any of the
   // files in `intent`.
@@ -159,7 +159,7 @@ class DlpFilesControllerAsh : public DlpFilesController {
   // Returns a sublist of `transferred_files` which aren't allowed to be
   // transferred to either `destination_url` or `destination_component` in
   // `result_callback`.
-  void IsFilesTransferRestricted(
+  virtual void IsFilesTransferRestricted(
       absl::optional<file_manager::io_task::IOTaskId> task_id,
       const std::vector<FileDaemonInfo>& transferred_files,
       const DlpFileDestination& destination,
@@ -167,16 +167,16 @@ class DlpFilesControllerAsh : public DlpFilesController {
       IsFilesTransferRestrictedCallback result_callback);
 
   // Returns restriction information for `source_url`.
-  std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
+  virtual std::vector<DlpFileRestrictionDetails> GetDlpRestrictionDetails(
       const std::string& source_url);
 
   // Returns a list of components to which the transfer of a file with
   // `source_url` is blocked.
-  std::vector<data_controls::Component> GetBlockedComponents(
+  virtual std::vector<data_controls::Component> GetBlockedComponents(
       const std::string& source_url);
 
   // Returns whether a dlp policy matches for the `file`.
-  bool IsDlpPolicyMatched(const FileDaemonInfo& file);
+  virtual bool IsDlpPolicyMatched(const FileDaemonInfo& file);
 
   // Checks whether dropping `dropped_files` to `data_dst` is allowed.
   virtual void CheckIfDropAllowed(
