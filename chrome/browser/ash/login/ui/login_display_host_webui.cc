@@ -1124,6 +1124,10 @@ void ShowLoginWizard(OobeScreenId first_screen) {
   input_method::InputMethodManager* manager =
       input_method::InputMethodManager::Get();
 
+  if (g_browser_process && g_browser_process->local_state()) {
+    manager->GetActiveIMEState()->SetInputMethodLoginDefault();
+  }
+
   system::InputDeviceSettings::Get()->SetNaturalScroll(
       base::CommandLine::ForCurrentProcess()->HasSwitch(
           switches::kNaturalScrollDefault));
