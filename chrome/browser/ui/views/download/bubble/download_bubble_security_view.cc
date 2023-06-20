@@ -265,6 +265,12 @@ void DownloadBubbleSecurityView::AddIconAndText() {
                                /*adjust_height_for_width=*/true));
   if (features::IsChromeRefresh2023()) {
     styled_label_->SetDefaultTextStyle(views::style::STYLE_BODY_3);
+    // Align the centers of icon and the first line of label.
+    styled_label_->SetProperty(
+        views::kMarginsKey,
+        gfx::Insets().set_top(icon_size / 2 +
+                              GetLayoutInsets(DOWNLOAD_ICON).top() -
+                              styled_label_->GetLineHeight() / 2));
   }
 
   checkbox_ = wrapper->AddChildView(std::make_unique<views::Checkbox>(
