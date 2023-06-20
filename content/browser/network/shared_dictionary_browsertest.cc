@@ -11,6 +11,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/platform_thread.h"
 #include "base/time/time.h"
+#include "build/build_config.h"
 #include "content/public/browser/clear_site_data_utils.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/common/content_features.h"
@@ -66,7 +67,13 @@ bool WaitForHistogram(const std::string& histogram_name,
 
 enum class FeatureState { kDisabled, kBackendOnly, kFullyEnabled };
 enum class BrowserType { kNormal, kOffTheRecord };
-enum class FetchType { kLinkRelDictionary, kFetchApi };
+enum class FetchType {
+  kLinkRelDictionary,
+  kFetchApi,
+  kFetchApiFromDedicatedWorker,
+  kFetchApiFromSharedWorker,
+  kFetchApiFromServiceWorker,
+};
 
 std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
   return JsReplace(R"(
@@ -82,6 +89,48 @@ std::string LinkRelDictionaryScript(const GURL& dictionary_url) {
 
 std::string FetchDictionaryScript(const GURL& dictionary_url) {
   return JsReplace("fetch($1);", dictionary_url);
+}
+
+std::string StartTestDedicatedWorkerScript(const GURL& dictionary_url) {
+  return JsReplace(R"(
+          (async () => {
+            const script = '/shared_dictionary/fetch_dictionary.js';
+            const worker = new Worker(script);
+            worker.postMessage($1);
+          })();
+        )",
+                   dictionary_url);
+}
+
+std::string StartTestSharedWorkerScript(const GURL& dictionary_url) {
+  return JsReplace(R"(
+          (async () => {
+            const script =
+                new URL(location).searchParams.has('otworker') ?
+                  '/shared_dictionary/fetch_dictionary.js?ot=enabled' :
+                  '/shared_dictionary/fetch_dictionary.js';
+            const worker = new SharedWorker(script);
+            worker.port.start();
+            worker.port.postMessage($1);
+          })();
+        )",
+                   dictionary_url);
+}
+
+std::string RegisterTestServiceWorkerScript(const GURL& dictionary_url) {
+  return JsReplace(R"(
+          (async () => {
+            const script =
+                new URL(location).searchParams.has('otworker') ?
+                  '/shared_dictionary/fetch_dictionary.js?ot=enabled' :
+                  '/shared_dictionary/fetch_dictionary.js';
+            const registration = await navigator.serviceWorker.register(
+                script,
+                {scope: '/shared_dictionary/'});
+            registration.installing.postMessage($1);
+          })();
+        )",
+                   dictionary_url);
 }
 
 class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
@@ -105,6 +154,18 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
     }
     return file_size;
   }
+  std::string GetTestDataFile(const std::string& name) {
+    base::FilePath file_path;
+    CHECK(base::PathService::Get(base::DIR_SOURCE_ROOT, &file_path));
+    std::string contents;
+    {
+      base::ScopedAllowBlockingForTesting allow_blocking;
+      CHECK(base::ReadFileToString(
+          file_path.Append(GetTestDataFilePath()).AppendASCII(name),
+          &contents));
+    }
+    return contents;
+  }
 
   void RunWriteDictionaryTest(Shell* shell,
                               FetchType fetch_type,
@@ -121,6 +182,15 @@ class SharedDictionaryBrowserTestBase : public ContentBrowserTest {
         break;
       case FetchType::kFetchApi:
         script = FetchDictionaryScript(dictionary_url);
+        break;
+      case FetchType::kFetchApiFromDedicatedWorker:
+        script = StartTestDedicatedWorkerScript(dictionary_url);
+        break;
+      case FetchType::kFetchApiFromSharedWorker:
+        script = StartTestSharedWorkerScript(dictionary_url);
+        break;
+      case FetchType::kFetchApiFromServiceWorker:
+        script = RegisterTestServiceWorkerScript(dictionary_url);
         break;
     }
     EXPECT_TRUE(ExecJs(shell->web_contents()->GetPrimaryMainFrame(), script));
@@ -177,7 +247,9 @@ class SharedDictionaryFeatureStateBrowserTest
 
     // Need to use URLLoaderInterceptor to test the behavior of Origin Trial.
     url_loader_interceptor_.emplace(base::BindRepeating(
-        &SharedDictionaryFeatureStateBrowserTest::InterceptRequest));
+        &SharedDictionaryFeatureStateBrowserTest::InterceptRequest,
+        GetTestDataFile("shared_dictionary/blank.html"),
+        GetTestDataFile("shared_dictionary/fetch_dictionary.js")));
   }
 
   void TearDownOnMainThread() override { url_loader_interceptor_.reset(); }
@@ -188,10 +260,9 @@ class SharedDictionaryFeatureStateBrowserTest
 
  private:
   // URLLoaderInterceptor callback
-  static bool InterceptRequest(URLLoaderInterceptor::RequestParams* params) {
-    if (params->url_request.url.path() != "/blank.html") {
-      return false;
-    }
+  static bool InterceptRequest(const std::string& blink_html_content,
+                               const std::string& fetch_dictionary_js_content,
+                               URLLoaderInterceptor::RequestParams* params) {
     // Find the appropriate origin trial token.
     base::StringPiece origin_trial_token;
     std::string origin_trial_query_param;
@@ -202,6 +273,22 @@ class SharedDictionaryFeatureStateBrowserTest
       }
     }
 
+    if (params->url_request.url.path() == "/blank.html") {
+      InterceptBlankPageRequest(params, origin_trial_token, blink_html_content);
+      return true;
+    } else if (params->url_request.url.path() ==
+               "/shared_dictionary/fetch_dictionary.js") {
+      InterceptFetchDictionaryScriptRequest(params, origin_trial_token,
+                                            fetch_dictionary_js_content);
+      return true;
+    }
+    return false;
+  }
+
+  static void InterceptBlankPageRequest(
+      URLLoaderInterceptor::RequestParams* params,
+      base::StringPiece origin_trial_token,
+      const std::string& content) {
     // Construct and send the response.
     std::string headers =
         "HTTP/1.1 200 OK\nContent-Type: text/html; charset=utf-8\n";
@@ -209,9 +296,26 @@ class SharedDictionaryFeatureStateBrowserTest
       base::StrAppend(&headers, {"Origin-Trial: ", origin_trial_token, "\n"});
     }
     headers += '\n';
-    std::string body = "<!DOCTYPE html><body>Hello world!</body>";
-    URLLoaderInterceptor::WriteResponse(headers, body, params->client.get());
-    return true;
+    URLLoaderInterceptor::WriteResponse(headers, content, params->client.get(),
+                                        /*ssl_info=*/absl::nullopt,
+                                        params->url_request.url);
+  }
+
+  static void InterceptFetchDictionaryScriptRequest(
+      URLLoaderInterceptor::RequestParams* params,
+      base::StringPiece origin_trial_token,
+      const std::string& content) {
+    // Construct and send the response.
+    std::string headers =
+        "HTTP/1.1 200 OK\nContent-Type: application/javascript; "
+        "charset=utf-8\n";
+    if (!origin_trial_token.empty()) {
+      base::StrAppend(&headers, {"Origin-Trial: ", origin_trial_token, "\n"});
+    }
+    headers += '\n';
+    URLLoaderInterceptor::WriteResponse(headers, content, params->client.get(),
+                                        /*ssl_info=*/absl::nullopt,
+                                        params->url_request.url);
   }
 
   std::unique_ptr<net::EmbeddedTestServer> https_server_;
@@ -269,6 +373,69 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
   RunWriteDictionaryTest(
       shell(), FetchType::kFetchApi,
       GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromDedicatedWorker) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromDedicatedWorker,
+      GURL("https://shared-dictionary.test/blank.html"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromDedicatedWorkerWithOriginTrial) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromDedicatedWorker,
+      GURL("https://shared-dictionary.test/blank.html?ot=enabled"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Shared workers are not supported on Android.
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromSharedWorker) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromSharedWorker,
+      GURL("https://shared-dictionary.test/blank.html"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromSharedWorkerWithOriginTrial) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromSharedWorker,
+      GURL("https://shared-dictionary.test/blank.html?otworker"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromServiceWorker) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromServiceWorker,
+      GURL("https://shared-dictionary.test/blank.html"),
+      https_server()->GetURL("/shared_dictionary/test.dict"),
+      "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
+      /*expect_success=*/GetFeatureState() == FeatureState::kFullyEnabled);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryFeatureStateBrowserTest,
+                       FetchApiFromServiceWorkerWithOriginTrial) {
+  RunWriteDictionaryTest(
+      shell(), FetchType::kFetchApiFromServiceWorker,
+      GURL("https://shared-dictionary.test/blank.html?otworker"),
       https_server()->GetURL("/shared_dictionary/test.dict"),
       "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB",
       /*expect_success=*/GetFeatureState() != FeatureState::kDisabled);
@@ -383,6 +550,51 @@ IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
           ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
           : "Net.SharedDictionaryWriterInMemory.DictionarySize",
       /*expect_success=*/false);
+}
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryFromDedicatedWorker) {
+  RunWriteDictionaryTest(
+      GetBrowserType() == BrowserType::kNormal ? shell()
+                                               : CreateOffTheRecordBrowser(),
+      FetchType::kFetchApiFromDedicatedWorker,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+}
+
+#if !BUILDFLAG(IS_ANDROID)
+// Shared workers are not supported on Android.
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryFromSharedWorker) {
+  RunWriteDictionaryTest(
+      GetBrowserType() == BrowserType::kNormal ? shell()
+                                               : CreateOffTheRecordBrowser(),
+      FetchType::kFetchApiFromSharedWorker,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
+}
+#endif  // !BUILDFLAG(IS_ANDROID)
+
+IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest,
+                       FetchDictionaryFromServiceWorker) {
+  RunWriteDictionaryTest(
+      GetBrowserType() == BrowserType::kNormal ? shell()
+                                               : CreateOffTheRecordBrowser(),
+      FetchType::kFetchApiFromServiceWorker,
+      embedded_test_server()->GetURL("/shared_dictionary/blank.html"),
+      embedded_test_server()->GetURL("/shared_dictionary/test.dict"),
+      GetBrowserType() == BrowserType::kNormal
+          ? "Net.SharedDictionaryManagerOnDisk.DictionarySizeKB"
+          : "Net.SharedDictionaryWriterInMemory.DictionarySize",
+      /*expect_success=*/true);
 }
 
 IN_PROC_BROWSER_TEST_P(SharedDictionaryBrowserTest, ClearSiteData) {

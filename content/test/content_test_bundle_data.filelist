@@ -6701,6 +6701,7 @@ data/set_cookie.html
 data/set_cookie.html.mock-http-headers
 data/set_document_cookie.html
 data/shared_dictionary/blank.html
+data/shared_dictionary/fetch_dictionary.js
 data/shared_dictionary/test.dict
 data/shared_dictionary/test.dict.mock-http-headers
 data/shared_storage/customizable_module.js
