@@ -1,5 +1,4 @@
 # TODO(crbug.com/1111979) Enable all tests on lacros.
--BrowsingDataRemoverBrowserTest.StorageRemovedFromDisk
 -DeclarativeContentApiTest.RulesPersistence
 -ExternalProtocolDialogBrowserTest.TestFocus
 -FolderUploadConfirmationViewTest.InitiallyFocusesCancel
