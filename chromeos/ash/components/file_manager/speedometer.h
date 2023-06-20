@@ -9,16 +9,6 @@
 #include "base/containers/ring_buffer.h"
 #include "base/time/time.h"
 
-namespace {
-struct SpeedSample {
-  // Total bytes processed up to this point in time.
-  int64_t bytes_count;
-
-  // Time when the sample was created.
-  base::TimeTicks time;
-};
-}  // namespace
-
 namespace file_manager {
 
 // Calculates the remaining time for an operation based on the initial total
@@ -28,51 +18,45 @@ namespace file_manager {
 // time" from now until the projected end time.
 class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
  public:
-  Speedometer();
+  // Sets the expected total number of bytes for the operation.
+  void SetTotalBytes(int64_t total_bytes) { total_bytes_ = total_bytes; }
 
-  Speedometer(const Speedometer& other) = delete;
-  Speedometer operator=(const Speedometer& other) = delete;
-  ~Speedometer() = default;
-
-  // Set the total bytes for the operation.
-  void SetTotalBytes(int64_t total_bytes);
-
-  // Number of samples currently maintained.
+  // Gets the number of samples currently maintained.
   size_t GetSampleCount() const;
 
   // Projected remaining time, it can be negative or infinity.
   double GetRemainingSeconds() const;
 
-  // Adds a sample with the current timestamp and the given number of |bytes|
+  // Adds a sample with the current timestamp and the given number of bytes.
   // Does nothing if the previous sample was received less than a second ago.
   // `total_processed_bytes`: Total bytes processed by the task so far.
   void Update(int64_t total_processed_bytes);
 
  private:
   // Computes a linear interpolation of the samples stored in |samples_|.
-  // It doesn't calculate if there isn't enough samples.
-  // The calculated speed is the slope of the linear interpolation in
-  // bytes per millisecond.
-  // The linear interpolation goes through the point
-  // (average_time, average_bytes).
   void Interpolate();
 
-  // Stores the `sample` and enforces the `max_sample_` constraint.
-  void AppendSample(SpeedSample sample);
+  struct Sample {
+    // Time when the sample was created, in seconds since `start_time_`.
+    double time;
 
-  // Maintains the 20 most recent samples.
-  base::RingBuffer<SpeedSample, 20> samples_;
-
-  // The total number of bytes, this is the 100% value for an operation/task.
-  int64_t total_bytes_;
-
-  // The projected time to finish the operation, in milliseconds from the
-  // `start_time_`.
-  double projected_end_time_ = 0;
+    // Total bytes processed up to this point in time.
+    int64_t bytes;
+  };
 
   // Time the Speedometer started. Used to calculate the delta from here to each
   // sample time.
-  const base::TimeTicks start_time_;
+  const base::TimeTicks start_time_ = base::TimeTicks::Now();
+
+  // The expected total number of bytes, which will be reached when the task
+  // finishes.
+  int64_t total_bytes_ = 0;
+
+  // The projected time to finish the operation, in seconds from `start_time_`.
+  double end_time_ = 0;
+
+  // Maintains the 20 most recent samples.
+  base::RingBuffer<Sample, 20> samples_;
 };
 
 }  // namespace file_manager
