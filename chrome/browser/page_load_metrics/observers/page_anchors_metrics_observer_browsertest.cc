@@ -173,8 +173,16 @@ IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
       ukm::builders::NavigationPredictorUserInteractions::kAnchorIndexName, 0);
 }
 
+// TODO(crbug.com/1456408): Test is flaky on linux-chromeos-dbg.
+#if BUILDFLAG(IS_CHROMEOS) && !defined(NDEBUG)
+#define MAYBE_TestDifferentUKMSourceIdsPerNavigation \
+  DISABLED_TestDifferentUKMSourceIdsPerNavigation
+#else
+#define MAYBE_TestDifferentUKMSourceIdsPerNavigation \
+  TestDifferentUKMSourceIdsPerNavigation
+#endif
 IN_PROC_BROWSER_TEST_F(PageAnchorsMetricsObserverBrowserTest,
-                       TestDifferentUKMSourceIdsPerNavigation) {
+                       MAYBE_TestDifferentUKMSourceIdsPerNavigation) {
   // Start with page 1.
   ResetUKM();
   NavigateTo(GetTestURL("/1.html"));
