@@ -159,6 +159,8 @@ class OtpVerificationDialogCoordinator {
                         mContext.getResources().getString(
                                 org.chromium.chrome.browser.ui.autofill.internal.R.string
                                         .autofill_payments_otp_verification_dialog_positive_button_label))
-                .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true);
+                .with(ModalDialogProperties.POSITIVE_BUTTON_DISABLED, true)
+                .with(ModalDialogProperties.BUTTON_STYLES,
+                        ModalDialogProperties.ButtonStyles.PRIMARY_FILLED_NEGATIVE_OUTLINE);
     }
 }
