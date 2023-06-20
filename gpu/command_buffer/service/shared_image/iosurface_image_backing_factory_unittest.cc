@@ -578,12 +578,14 @@ class IOSurfaceImageBackingFactoryScanoutTest
  public:
   bool can_create_scanout_shared_image(viz::SharedImageFormat format,
                                        bool has_pixel_data = false) const {
-    if (format.is_multi_plane()) {
-      return !has_pixel_data;
-    } else if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
+    if (format == viz::SinglePlaneFormat::kBGRA_1010102) {
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
+    } else if (format == viz::MultiPlaneFormat::kNV12) {
+      return supports_ycbcr_420v_ && !has_pixel_data;
+    } else if (format == viz::MultiPlaneFormat::kP010) {
+      return supports_ycbcr_p010_ && !has_pixel_data;
     }
     return true;
   }
