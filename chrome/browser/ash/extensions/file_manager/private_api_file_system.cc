@@ -938,6 +938,12 @@ FileManagerPrivateInternalGetDisallowedTransfersFunction::Run() {
     return RespondNow(Error("File URL was invalid"));
   }
 
+  // If the new UX flow is enabled, return an empty list so the copy/move
+  // operation can start.
+  if (policy::DlpFilesController::kNewFilesPolicyUXEnabled) {
+    return RespondNow(WithArguments(base::Value::List()));
+  }
+
   policy::DlpFilesControllerAsh* files_controller =
       static_cast<policy::DlpFilesControllerAsh*>(
           rules_manager->GetDlpFilesController());
