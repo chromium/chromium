@@ -9,6 +9,7 @@
 #include "ash/public/cpp/input_device_settings_controller.h"
 #include "ash/public/cpp/schedule_enums.h"
 #include "ash/public/mojom/input_device_settings.mojom.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/values.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_controller.h"
@@ -42,6 +43,10 @@ void ReportScreenCompletedToChoobe(ChoobeFlowController* controller) {
       TouchpadScrollScreenView::kScreenId);
 }
 
+void RecordSettingChangedMetric(bool initial_value, bool current_value) {
+  base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Touchpad-scroll",
+                            initial_value != current_value);
+}
 }  // namespace
 
 // static
@@ -136,6 +141,7 @@ void TouchpadScrollScreen::ShowImpl() {
     return;
   }
 
+  initial_pref_value_ = GetNaturalScrollPrefValue();
   view_->SetReverseScrolling(GetNaturalScrollPrefValue());
 
   base::Value::Dict data;
@@ -154,6 +160,8 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
   if (action_id == kUserActionNext) {
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
+    RecordSettingChangedMetric(initial_pref_value_,
+                               GetNaturalScrollPrefValue());
     exit_callback_.Run(Result::kNext);
     return;
   }
@@ -164,6 +172,8 @@ void TouchpadScrollScreen::OnUserAction(const base::Value::List& args) {
         ->return_to_choobe_screen = true;
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
+    RecordSettingChangedMetric(initial_pref_value_,
+                               GetNaturalScrollPrefValue());
     exit_callback_.Run(Result::kNext);
     return;
   }

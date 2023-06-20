@@ -7,6 +7,7 @@
 #include <vector>
 
 #include "base/containers/flat_set.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/oobe_screen.h"
@@ -34,15 +35,6 @@ const StaticOobeScreenId kOptionalScreens[] = {
     DisplaySizeScreenView::kScreenId,
     ThemeSelectionScreenView::kScreenId,
 };
-
-bool IsOptionalScreen(OobeScreenId screen_id) {
-  for (const auto& screen : kOptionalScreens) {
-    if (screen.AsId() == screen_id) {
-      return true;
-    }
-  }
-  return false;
-}
 
 // Returns the last screen in a set, given the order of screens in the
 // `kOptionalScreens` array, if the set is empty, the function will return
@@ -206,6 +198,19 @@ bool ChoobeFlowController::IsScreenCompleted(OobeScreenId id) {
 }
 
 void ChoobeFlowController::OnChoobeFlowExit() {
+  base::UmaHistogramBoolean("OOBE.CHOOBE.FlowSkipped",
+                            completed_screens_ids_.empty());
+
+  for (auto static_id : kOptionalScreens) {
+    OobeScreenId id = static_id.AsId();
+    std::string screen_name = id.name;
+    screen_name[0] = std::toupper(screen_name[0]);
+    std::string histogram_name = "OOBE.CHOOBE.ScreenCompleted." + screen_name;
+    bool is_completed =
+        completed_screens_ids_.find(id) != completed_screens_ids_.end();
+    base::UmaHistogramBoolean(histogram_name, is_completed);
+  }
+
   ClearPreferences(*ProfileManager::GetActiveUserProfile()->GetPrefs());
   is_choobe_active_ = false;
 }
@@ -255,6 +260,15 @@ bool ChoobeFlowController::IsScreenEligible(OobeScreenId id) {
   }
   return !wizard_controller->GetScreen(id)->ShouldBeSkipped(
       *host->GetWizardContext());
+}
+
+bool ChoobeFlowController::IsOptionalScreen(OobeScreenId screen_id) {
+  for (const auto& screen : kOptionalScreens) {
+    if (screen.AsId() == screen_id) {
+      return true;
+    }
+  }
+  return false;
 }
 
 }  // namespace ash

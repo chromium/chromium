@@ -7,6 +7,8 @@
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/shell.h"
+#include "base/metrics/histogram_functions.h"
+#include "base/numerics/ranges.h"
 #include "chrome/browser/ash/login/login_pref_names.h"
 #include "chrome/browser/ash/login/users/chrome_user_manager_util.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -64,6 +66,12 @@ bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
 }
 
 void PersistSelectedFactor(PrefService* prefs, double factor) {
+  float current_factor = GetCurrentZoomFactor(prefs);
+  bool factor_changed = !base::IsApproximatelyEqual(
+      current_factor, static_cast<float>(factor), 0.01f);
+  base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Display-size",
+                            factor_changed);
+
   prefs->SetDouble(prefs::kOobeDisplaySizeFactorDeferred, factor);
 }
 

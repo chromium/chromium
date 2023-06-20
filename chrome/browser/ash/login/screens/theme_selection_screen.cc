@@ -49,9 +49,12 @@ std::string GetSelectedThemeString(Profile* profile) {
   }
 }
 
-void RecordSelectedTheme(Profile* profile) {
+void RecordSelectedTheme(Profile* profile,
+                         ThemeSelectionScreen::SelectedTheme initial_theme) {
   base::UmaHistogramEnumeration("OOBE.ThemeSelectionScreen.SelectedTheme",
                                 GetSelectedTheme(profile));
+  base::UmaHistogramBoolean("OOBE.CHOOBE.SettingChanged.Theme-selection",
+                            GetSelectedTheme(profile) != initial_theme);
 }
 
 bool ShouldShowChoobeReturnButton(ChoobeFlowController* controller) {
@@ -141,6 +144,8 @@ void ThemeSelectionScreen::ShowImpl() {
   if (!view_)
     return;
 
+  initial_theme_ = GetSelectedTheme(ProfileManager::GetActiveUserProfile());
+
   base::Value::Dict data;
   data.Set("selectedTheme",
            GetSelectedThemeString(ProfileManager::GetActiveUserProfile()));
@@ -172,7 +177,7 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
                                       selected_theme == SelectedTheme::kDark);
     }
   } else if (action_id == kUserActionNext) {
-    RecordSelectedTheme(profile);
+    RecordSelectedTheme(profile, initial_theme_);
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kProceed);
@@ -180,7 +185,7 @@ void ThemeSelectionScreen::OnUserAction(const base::Value::List& args) {
     LoginDisplayHost::default_host()
         ->GetWizardContext()
         ->return_to_choobe_screen = true;
-    RecordSelectedTheme(profile);
+    RecordSelectedTheme(profile, initial_theme_);
     ReportScreenCompletedToChoobe(
         WizardController::default_controller()->choobe_flow_controller());
     exit_callback_.Run(Result::kProceed);
