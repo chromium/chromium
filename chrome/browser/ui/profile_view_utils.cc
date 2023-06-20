@@ -98,3 +98,25 @@ std::u16string GetProfileMenuDisplayName(
 
   return profile_name;
 }
+
+std::vector<ProfileAttributesEntry*> GetAllOtherProfileEntriesForProfileSubMenu(
+    const Profile* current_profile) {
+  auto profile_entries =
+      g_browser_process->profile_manager()
+          ->GetProfileAttributesStorage()
+          .GetAllProfilesAttributesSortedByLocalProfileName();
+
+  std::vector<ProfileAttributesEntry*> result;
+
+  for (ProfileAttributesEntry* profile_entry : profile_entries) {
+    // The current profile and omitted profiles are excluded.
+    if (profile_entry->GetPath() == current_profile->GetPath() ||
+        profile_entry->IsOmitted()) {
+      continue;
+    }
+
+    result.push_back(profile_entry);
+  }
+
+  return result;
+}

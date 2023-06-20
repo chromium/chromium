@@ -1416,15 +1416,17 @@ void AppMenu::PopulateMenu(MenuItemView* parent, MenuModel* model) {
           std::u16string chip_label;
           std::u16string gaia_name = model->GetLabelAt(i);
           auto all_profile_entries =
-              g_browser_process->profile_manager()
-                  ->GetProfileAttributesStorage()
-                  .GetAllProfilesAttributesSortedByLocalProfileName();
-          for (ProfileAttributesEntry* profile_entry : all_profile_entries) {
-            if (GetProfileMenuDisplayName(profile_entry) == gaia_name) {
-              chip_label = profile_entry->GetLocalProfileName();
-              break;
-            }
+              GetAllOtherProfileEntriesForProfileSubMenu(browser_->profile());
+          size_t profile_index = (model->GetCommandIdAt(i) -
+                                  AppMenuModel::kMinOtherProfileCommandId) /
+                                 AppMenuModel::kNumUnboundedMenuTypes;
+          if (profile_index < all_profile_entries.size() &&
+              GetProfileMenuDisplayName(all_profile_entries[profile_index]) ==
+                  gaia_name) {
+            chip_label =
+                all_profile_entries[profile_index]->GetLocalProfileName();
           }
+
           if (!chip_label.empty()) {
             AddChipToProfileMenuItem(
                 browser_, item, chip_label, 0 /*horizontal_padding*/,

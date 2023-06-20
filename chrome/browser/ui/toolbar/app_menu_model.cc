@@ -333,17 +333,8 @@ ProfileSubMenuModel::ProfileSubMenuModel(
   if (!profile->IsIncognitoProfile() && !profile->IsGuestSession()) {
     AddSeparator(ui::NORMAL_SEPARATOR);
     AddTitle(l10n_util::GetStringUTF16(IDS_OTHER_CHROME_PROFILES_TITLE));
-    auto profile_entries =
-        g_browser_process->profile_manager()
-            ->GetProfileAttributesStorage()
-            .GetAllProfilesAttributesSortedByLocalProfileName();
+    auto profile_entries = GetAllOtherProfileEntriesForProfileSubMenu(profile);
     for (ProfileAttributesEntry* profile_entry : profile_entries) {
-      // The current profile and omitted profiles are excluded.
-      if (profile_entry->GetPath() == profile->GetPath() ||
-          profile_entry->IsOmitted()) {
-        continue;
-      }
-
       std::u16string display_name = GetProfileMenuDisplayName(profile_entry);
       int menu_id = GetAndIncrementNextMenuID();
       AddItemWithIcon(menu_id,
