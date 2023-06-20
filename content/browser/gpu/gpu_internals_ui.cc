@@ -601,6 +601,36 @@ const char* GetProfileName(gpu::VideoCodecProfile profile) {
       return "av1 profile high";
     case gpu::AV1PROFILE_PROFILE_PRO:
       return "av1 profile pro";
+    case gpu::VVCPROFILE_MAIN10:
+      return "vvc profile main10";
+    case gpu::VVCPROFILE_MAIN12:
+      return "vvc profile main12";
+    case gpu::VVCPROFILE_MAIN12_INTRA:
+      return "vvc profile main12 intra";
+    case gpu::VVCPROIFLE_MULTILAYER_MAIN10:
+      return "vvc profile multilayer main10";
+    case gpu::VVCPROFILE_MAIN10_444:
+      return "vvc profile main10 444";
+    case gpu::VVCPROFILE_MAIN12_444:
+      return "vvc profile main12 444";
+    case gpu::VVCPROFILE_MAIN16_444:
+      return "vvc profile main16 444";
+    case gpu::VVCPROFILE_MAIN12_444_INTRA:
+      return "vvc profile main12 444 intra";
+    case gpu::VVCPROFILE_MAIN16_444_INTRA:
+      return "vvc profile main16 444 intra";
+    case gpu::VVCPROFILE_MULTILAYER_MAIN10_444:
+      return "vvc profile multilayer main10 444";
+    case gpu::VVCPROFILE_MAIN10_STILL_PICTURE:
+      return "vvc profile main10 stillpicture";
+    case gpu::VVCPROFILE_MAIN12_STILL_PICTURE:
+      return "vvc profile main12 stillpicture";
+    case gpu::VVCPROFILE_MAIN10_444_STILL_PICTURE:
+      return "vvc profile main10 444 stillpicture";
+    case gpu::VVCPROFILE_MAIN12_444_STILL_PICTURE:
+      return "vvc profile main12 444 stillpicture";
+    case gpu::VVCPROFILE_MAIN16_444_STILL_PICTURE:
+      return "vvc profile main16 444 stillpicture";
   }
   NOTREACHED();
   return "";

@@ -109216,6 +109216,21 @@ Full version information for the fingerprint enum values:
   <int value="34" label="HEVC ScreenExtended"/>
   <int value="35" label="HEVC ScalableRext"/>
   <int value="36" label="HEVC HighThroughputScreenExtended"/>
+  <int value="37" label="VVC Main10"/>
+  <int value="38" label="VVC Main12"/>
+  <int value="39" label="VVC Main12 Intra"/>
+  <int value="40" label="VVC Multi-layer Main10"/>
+  <int value="41" label="VVC Main10 444"/>
+  <int value="42" label="VVC Main12 444"/>
+  <int value="43" label="VVC Main16 444"/>
+  <int value="44" label="VVC Main12 444 Intra"/>
+  <int value="45" label="VVC Main16 444 Intra"/>
+  <int value="46" label="VVC Multi-layer Main10 444"/>
+  <int value="47" label="VVC Main10 Still-picture"/>
+  <int value="48" label="VVC Main12 Still-picture"/>
+  <int value="49" label="VVC Main10 444 Still-picture"/>
+  <int value="50" label="VVC Main12 444 Still-picture"/>
+  <int value="51" label="VVC Main16 444 Still-picture"/>
 </enum>
 
 <enum name="VideoColorSpace.PrimaryID">
