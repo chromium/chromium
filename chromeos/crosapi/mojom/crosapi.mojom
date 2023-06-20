@@ -77,6 +77,7 @@ import "chromeos/crosapi/mojom/printing_metrics.mojom";
 import "chromeos/crosapi/mojom/probe_service.mojom";
 import "chromeos/crosapi/mojom/remoting.mojom";
 import "chromeos/crosapi/mojom/resource_manager.mojom";
+import "chromeos/crosapi/mojom/screen_ai_downloader.mojom";
 import "chromeos/crosapi/mojom/screen_manager.mojom";
 import "chromeos/crosapi/mojom/select_file.mojom";
 import "chromeos/crosapi/mojom/sharesheet.mojom";
@@ -139,8 +140,8 @@ struct BrowserInfo {
 // please note the milestone when you added it, to help us reason about
 // compatibility between the client applications and older ash-chrome binaries.
 //
-// Next version: 109
-// Next method id: 112
+// Next version: 110
+// Next method id: 113
 [Stable, Uuid="8b79c34f-2bf8-4499-979a-b17cac522c1e",
  RenamedFrom="crosapi.mojom.AshChromeService"]
 interface Crosapi {
@@ -498,6 +499,12 @@ interface Crosapi {
   // with Chrome Remote Desktop functionality available in ash-chrome.
   // Added in M93.
   [MinVersion=32] BindRemoting@37(pending_receiver<Remoting> receiver);
+
+  // Binds the Screen AI downloader interface which allows Lacros to send
+  // component download request to Ash.
+  // Added in M117.
+  [MinVersion=110]
+  BindScreenAIDownloader@113(pending_receiver<ScreenAIDownloader> receiver);
 
   // Binds the ScreenManager interface for interacting with windows, screens and
   // displays.

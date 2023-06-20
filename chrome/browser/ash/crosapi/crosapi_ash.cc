@@ -84,6 +84,7 @@
 #include "chrome/browser/ash/crosapi/prefs_ash.h"
 #include "chrome/browser/ash/crosapi/remoting_ash.h"
 #include "chrome/browser/ash/crosapi/resource_manager_ash.h"
+#include "chrome/browser/ash/crosapi/screen_ai_downloader_ash.h"
 #include "chrome/browser/ash/crosapi/screen_manager_ash.h"
 #include "chrome/browser/ash/crosapi/search_provider_ash.h"
 #include "chrome/browser/ash/crosapi/select_file_ash.h"
@@ -260,6 +261,7 @@ CrosapiAsh::CrosapiAsh(CrosapiDependencyRegistry* registry)
       probe_service_ash_(std::make_unique<ash::ProbeServiceAsh>()),
       remoting_ash_(std::make_unique<RemotingAsh>()),
       resource_manager_ash_(std::make_unique<ResourceManagerAsh>()),
+      screen_ai_downloader_ash_(std::make_unique<ScreenAIDownloaderAsh>()),
       screen_manager_ash_(std::make_unique<ScreenManagerAsh>()),
       search_provider_ash_(std::make_unique<SearchProviderAsh>()),
       select_file_ash_(std::make_unique<SelectFileAsh>()),
@@ -737,6 +739,11 @@ void CrosapiAsh::BindRemoting(mojo::PendingReceiver<mojom::Remoting> receiver) {
 void CrosapiAsh::BindResourceManager(
     mojo::PendingReceiver<mojom::ResourceManager> receiver) {
   resource_manager_ash_->BindReceiver(std::move(receiver));
+}
+
+void CrosapiAsh::BindScreenAIDownloader(
+    mojo::PendingReceiver<mojom::ScreenAIDownloader> receiver) {
+  screen_ai_downloader_ash_->Bind(std::move(receiver));
 }
 
 void CrosapiAsh::BindScreenManager(

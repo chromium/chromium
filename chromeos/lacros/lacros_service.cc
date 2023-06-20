@@ -86,6 +86,7 @@
 #include "chromeos/crosapi/mojom/probe_service.mojom.h"
 #include "chromeos/crosapi/mojom/remoting.mojom.h"
 #include "chromeos/crosapi/mojom/resource_manager.mojom.h"
+#include "chromeos/crosapi/mojom/screen_ai_downloader.mojom.h"
 #include "chromeos/crosapi/mojom/screen_manager.mojom.h"
 #include "chromeos/crosapi/mojom/select_file.mojom.h"
 #include "chromeos/crosapi/mojom/sharesheet.mojom.h"
@@ -473,6 +474,9 @@ LacrosService::LacrosService()
   ConstructRemote<crosapi::mojom::ResourceManager,
                   &crosapi::mojom::Crosapi::BindResourceManager,
                   Crosapi::MethodMinVersions::kBindResourceManagerMinVersion>();
+  ConstructRemote<
+      crosapi::mojom::ScreenAIDownloader, &Crosapi::BindScreenAIDownloader,
+      Crosapi::MethodMinVersions::kBindScreenAIDownloaderMinVersion>();
   ConstructRemote<crosapi::mojom::ScreenManager,
                   &crosapi::mojom::Crosapi::BindScreenManager,
                   Crosapi::MethodMinVersions::kBindScreenManagerMinVersion>();

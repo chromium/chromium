@@ -86,6 +86,7 @@ mojom("mojom") {
     "probe_service.mojom",
     "remoting.mojom",
     "resource_manager.mojom",
+    "screen_ai_downloader.mojom",
     "screen_manager.mojom",
     "select_file.mojom",
     "sharesheet.mojom",

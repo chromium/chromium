@@ -1,0 +1,20 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+module crosapi.mojom;
+
+import "mojo/public/mojom/base/file_path.mojom";
+
+// Interface for download of Screen AI component. Implemented by ash-chrome.
+// Next version: 1
+// Next method id: 2
+[Stable, Uuid="36b1fdf3-6c5c-4411-be0d-949a43037a34"]
+interface ScreenAIDownloader {
+  // Requests downloading the component.
+  DownloadComponent@0() => (mojo_base.mojom.FilePath? loaded_folder);
+
+  // Updates the last usage time of the service. This is used by Ash to know if
+  // the DLC should be kept up to date, or is not needed and can be deleted.
+  SetLastUsageTime@1();
+};

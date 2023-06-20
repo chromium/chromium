@@ -58,7 +58,7 @@ class ScreenAIInstallState {
 
   // Stores current time in a local state preference as the last time that the
   // service is used.
-  virtual void SetLastUsageTime();
+  virtual void SetLastUsageTime() = 0;
 
   void AddObserver(Observer* observer);
   void RemoveObserver(Observer* observer);
