@@ -339,14 +339,7 @@ public interface TabObserver {
     void onContentViewScrollingStateChanged(boolean scrolling);
 
     /**
-     * Back press refactor related. Called when navigation state is invalidated by
-     * {@link org.chromium.content_public.browser.InvalidateTypes.TAB}.
+     * Back press refactor related. Called when navigation state is invalidated.
      */
-    void onTabNavigationStateInvalidated();
-
-    /**
-     * Back press refactor related. Called when navigation state is invalidated by
-     * {@link org.chromium.content_public.browser.InvalidateTypes.LOAD}.
-     */
-    void onLoadNavigationStateInvalidated();
+    void onNavigationStateChanged();
 }

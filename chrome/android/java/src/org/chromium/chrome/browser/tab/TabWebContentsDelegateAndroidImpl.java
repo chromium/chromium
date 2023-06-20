@@ -182,6 +182,10 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
 
     @Override
     public void navigationStateChanged(int flags) {
+        if (BackPressManager.isEnabled()) {
+            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
+            while (observers.hasNext()) observers.next().onNavigationStateChanged();
+        }
         if ((flags & InvalidateTypes.TAB) != 0) {
             MediaCaptureNotificationServiceImpl.updateMediaNotificationForTab(
                     ContextUtils.getApplicationContext(), mTab.getId(), mTab.getWebContents(),
@@ -192,14 +196,6 @@ final class TabWebContentsDelegateAndroidImpl extends TabWebContentsDelegateAndr
             UsbNotificationManager.updateUsbNotificationForTab(ContextUtils.getApplicationContext(),
                     UsbNotificationService.class, mTab.getId(), mTab.getWebContents(),
                     mTab.getUrl(), mTab.isIncognito());
-            if (BackPressManager.isEnabled()) {
-                RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-                while (observers.hasNext()) observers.next().onTabNavigationStateInvalidated();
-            }
-        }
-        if ((flags & InvalidateTypes.LOAD) != 0 && BackPressManager.isEnabled()) {
-            RewindableIterator<TabObserver> observers = mTab.getTabObservers();
-            while (observers.hasNext()) observers.next().onLoadNavigationStateInvalidated();
         }
         if ((flags & InvalidateTypes.TITLE) != 0) {
             // Update cached title then notify observers.

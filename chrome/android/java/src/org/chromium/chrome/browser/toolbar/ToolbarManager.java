@@ -856,12 +856,7 @@ public class ToolbarManager implements UrlFocusChangeListener, ThemeColorObserve
             }
 
             @Override
-            public void onTabNavigationStateInvalidated() {
-                onBackPressStateChanged();
-            }
-
-            @Override
-            public void onLoadNavigationStateInvalidated() {
+            public void onNavigationStateChanged() {
                 onBackPressStateChanged();
             }
         };
