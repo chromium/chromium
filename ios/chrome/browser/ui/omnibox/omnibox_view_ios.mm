@@ -35,7 +35,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_metrics_helper.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_ui_features.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/navigation/referrer.h"
@@ -55,19 +55,19 @@ using base::UserMetricsAction;
 #pragma mark - OminboxViewIOS
 
 OmniboxViewIOS::OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                               WebOmniboxEditModelDelegate* edit_model_delegate,
+                               WebLocationBar* location_bar,
                                ChromeBrowserState* browser_state,
                                id<OmniboxCommands> omnibox_focuser)
     : OmniboxView(
-          edit_model_delegate
+          location_bar
               ? std::make_unique<ChromeOmniboxClientIOS>(
-                    edit_model_delegate,
+                    location_bar,
                     browser_state,
                     feature_engagement::TrackerFactory::GetForBrowserState(
                         browser_state))
               : nullptr),
       field_(field),
-      edit_model_delegate_(edit_model_delegate),
+      location_bar_(location_bar),
       omnibox_focuser_(omnibox_focuser),
       ignore_popup_updates_(false),
       popup_provider_(nullptr) {
@@ -350,11 +350,11 @@ void OmniboxViewIOS::OnDidBeginEditing() {
   if (!popup_was_open_before_editing_began)
     [field_ enterPreEditState];
 
-  // `edit_model_delegate_` is only forwarding the call to the BVC. This should
-  // only happen when the omnibox is being focused and it starts showing the
-  // popup; if the popup was already open, no need to call this.
+  // `location_bar_` is only forwarding the call to the BVC. This should only
+  // happen when the omnibox is being focused and it starts showing the popup;
+  // if the popup was already open, no need to call this.
   if (!popup_was_open_before_editing_began)
-    edit_model_delegate_->OnSetFocus();
+    location_bar_->OnSetFocus();
 }
 
 void OmniboxViewIOS::OnWillEndEditing() {
@@ -519,7 +519,7 @@ void OmniboxViewIOS::OnDidChange(bool processing_user_event) {
 void OmniboxViewIOS::OnAccept() {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
   NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(edit_model_delegate_->GetWebState());
+      NewTabPageTabHelper::FromWebState(location_bar_->GetWebState());
   if (NTPTabHelper->IsActive()) {
     RecordHomeAction(IOSHomeActionType::kOmnibox,
                      NTPTabHelper->ShouldShowStartSurface());
@@ -658,7 +658,7 @@ void OmniboxViewIOS::EndEditing() {
 
     // The controller looks at the current pre-edit state, so the call to
     // OnKillFocus() must come after exiting pre-edit.
-    edit_model_delegate_->OnKillFocus();
+    location_bar_->OnKillFocus();
 
     // Blow away any in-progress edits.
     RevertAll();

@@ -2,33 +2,30 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_IMPL_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_IMPL_H_
 
-#include "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
+#include "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 
 @protocol LocationBarURLLoader;
 @protocol OmniboxControllerDelegate;
 @protocol OmniboxFocusDelegate;
 
-// A minimal implementation of WebOmniboxEditModelDelegate. Designed to work
+// A minimal implementation of WebLocationBar. Designed to work
 // with LocationBarMediator and LocationBarCoordinator.
-// TODO(crbug.com/818641): downgrade from WebOmniboxEditModelDelegate subclass
-// straight to OmniboxEditModelDelegate subclass once OmniboxViewIOS doesn't
-// need it.
-// TODO(crbug.com/1404748): Adjust the previous TODO as OmniboxEditModelDelegate
-//  no longer exists.
-class WebOmniboxEditModelDelegateImpl : public WebOmniboxEditModelDelegate {
+// TODO(crbug.com/818641): downgrade from WebLocationBar subclass straight to
+// WebLocationBar once OmniboxViewIOS doesn't need it.
+class WebLocationBarImpl : public WebLocationBar {
  public:
-  WebOmniboxEditModelDelegateImpl(id<OmniboxControllerDelegate> delegate,
-                                  id<OmniboxFocusDelegate> focus_delegate);
-  ~WebOmniboxEditModelDelegateImpl() override;
+  WebLocationBarImpl(id<OmniboxControllerDelegate> delegate,
+                     id<OmniboxFocusDelegate> focus_delegate);
+  ~WebLocationBarImpl() override;
 
   void SetURLLoader(id<LocationBarURLLoader> URLLoader) {
     URLLoader_ = URLLoader;
   }
 
-  // WebOmniboxEditModelDelegate methods.
+  // WebLocationBar methods.
   web::WebState* GetWebState() override;
   void OnKillFocus() override;
   void OnSetFocus() override;
@@ -46,4 +43,4 @@ class WebOmniboxEditModelDelegateImpl : public WebOmniboxEditModelDelegate {
   __weak id<LocationBarURLLoader> URLLoader_;
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_IMPL_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_IMPL_H_

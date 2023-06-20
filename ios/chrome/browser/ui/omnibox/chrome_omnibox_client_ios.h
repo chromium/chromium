@@ -11,14 +11,14 @@
 #include "ios/chrome/browser/autocomplete/autocomplete_scheme_classifier_impl.h"
 
 class ChromeBrowserState;
-class WebOmniboxEditModelDelegate;
+class WebLocationBar;
 namespace feature_engagement {
 class Tracker;
 }
 
 class ChromeOmniboxClientIOS : public OmniboxClient {
  public:
-  ChromeOmniboxClientIOS(WebOmniboxEditModelDelegate* edit_model_delegate,
+  ChromeOmniboxClientIOS(WebLocationBar* location_bar,
                          ChromeBrowserState* browser_state,
                          feature_engagement::Tracker* tracker);
 
@@ -77,7 +77,7 @@ class ChromeOmniboxClientIOS : public OmniboxClient {
   LocationBarModel* GetLocationBarModel() override;
 
  private:
-  WebOmniboxEditModelDelegate* edit_model_delegate_;
+  WebLocationBar* location_bar_;
   ChromeBrowserState* browser_state_;
   AutocompleteSchemeClassifierImpl scheme_classifier_;
   feature_engagement::Tracker* engagement_tracker_;

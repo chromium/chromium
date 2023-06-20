@@ -19,7 +19,7 @@
 
 class ChromeBrowserState;
 class GURL;
-class WebOmniboxEditModelDelegate;
+class WebLocationBar;
 struct AutocompleteMatch;
 @class OmniboxTextFieldIOS;
 @protocol OmniboxCommands;
@@ -33,7 +33,7 @@ class OmniboxViewIOS : public OmniboxView,
  public:
   // Retains `field`.
   OmniboxViewIOS(OmniboxTextFieldIOS* field,
-                 WebOmniboxEditModelDelegate* edit_model_delegate,
+                 WebLocationBar* location_bar,
                  ChromeBrowserState* browser_state,
                  id<OmniboxCommands> omnibox_focuser);
 
@@ -173,7 +173,7 @@ class OmniboxViewIOS : public OmniboxView,
 
   OmniboxTextFieldIOS* field_;
 
-  WebOmniboxEditModelDelegate* edit_model_delegate_;  // weak, owns us
+  WebLocationBar* location_bar_;  // weak, owns us
   // Focuser, used to transition the location bar to focused/defocused state as
   // necessary.
   __weak id<OmniboxCommands> omnibox_focuser_;

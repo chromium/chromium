@@ -61,7 +61,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_focus_delegate.h"
 #import "ios/chrome/browser/ui/omnibox/omnibox_text_field_ios.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_coordinator.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate_impl.h"
+#import "ios/chrome/browser/ui/omnibox/web_location_bar_impl.h"
 #import "ios/chrome/browser/url_loading/image_search_param_generator.h"
 #import "ios/chrome/browser/url_loading/url_loading_browser_agent.h"
 #import "ios/chrome/browser/url_loading/url_loading_params.h"
@@ -91,7 +91,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
                                       OmniboxControllerDelegate,
                                       URLDragDataSource> {
   // API endpoint for omnibox.
-  std::unique_ptr<WebOmniboxEditModelDelegateImpl> _editModelDelegate;
+  std::unique_ptr<WebLocationBarImpl> _locationBar;
   // Observer that updates `viewController` for fullscreen events.
   std::unique_ptr<FullscreenUIUpdater> _omniboxFullscreenUIUpdater;
   // Observer that updates BadgeViewController for fullscreen events.
@@ -177,9 +177,8 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.viewController.layoutGuideCenter =
       LayoutGuideCenterForBrowser(self.browser);
 
-  _editModelDelegate =
-      std::make_unique<WebOmniboxEditModelDelegateImpl>(self, self.delegate);
-  _editModelDelegate->SetURLLoader(self);
+  _locationBar = std::make_unique<WebLocationBarImpl>(self, self.delegate);
+  _locationBar->SetURLLoader(self);
   _locationBarModelDelegate.reset(new LocationBarModelDelegateIOS(
       self.browser->GetWebStateList(), self.browserState));
   _locationBarModel = std::make_unique<LocationBarModelImpl>(
@@ -188,7 +187,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   self.omniboxCoordinator =
       [[OmniboxCoordinator alloc] initWithBaseViewController:nil
                                                      browser:self.browser];
-  self.omniboxCoordinator.editModelDelegate = _editModelDelegate.get();
+  self.omniboxCoordinator.locationBar = _locationBar.get();
   self.omniboxCoordinator.presenterDelegate = self.popupPresenterDelegate;
   [self.omniboxCoordinator start];
 
@@ -260,7 +259,7 @@ const size_t kMaxURLDisplayChars = 32 * 1024;
   [self.omniboxCoordinator stop];
   [self.badgeMediator disconnect];
   self.badgeMediator = nil;
-  _editModelDelegate.reset();
+  _locationBar.reset();
 
   self.viewController = nil;
   [self.mediator disconnect];

@@ -1356,8 +1356,8 @@ void OmniboxViewViews::OnFocus() {
 
   // TODO(oshima): Get control key state.
   model()->OnSetFocus(false);
-  // Don't call edit_model_delegate()->OnSetFocus, this view has already
-  // acquired focus.
+  // Don't call WebLocationBar::OnSetFocus(), this view has already acquired
+  // focus.
 
   // Restore the selection we saved in OnBlur() if it's still valid.
   if (!saved_selection_for_focus_change_.empty()) {

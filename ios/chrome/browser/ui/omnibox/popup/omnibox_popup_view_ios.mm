@@ -27,7 +27,7 @@
 #import "ios/chrome/browser/ui/omnibox/omnibox_util.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_view_suggestions_delegate.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/grit/ios_theme_resources.h"
 #import "ios/web/public/thread/web_thread.h"
 #import "net/url_request/url_request_context_getter.h"
@@ -40,10 +40,10 @@ using base::UserMetricsAction;
 
 OmniboxPopupViewIOS::OmniboxPopupViewIOS(
     OmniboxEditModel* edit_model,
-    WebOmniboxEditModelDelegate* edit_model_delegate,
+    WebLocationBar* location_bar,
     OmniboxPopupViewSuggestionsDelegate* delegate)
     : edit_model_(edit_model),
-      edit_model_delegate_(edit_model_delegate),
+      location_bar_(location_bar),
       delegate_(delegate) {
   DCHECK(delegate);
   DCHECK(edit_model);
@@ -100,7 +100,7 @@ void OmniboxPopupViewIOS::OnMatchSelected(
     WindowOpenDisposition disposition) {
   base::RecordAction(UserMetricsAction("MobileOmniboxUse"));
   NewTabPageTabHelper* NTPTabHelper =
-      NewTabPageTabHelper::FromWebState(edit_model_delegate_->GetWebState());
+      NewTabPageTabHelper::FromWebState(location_bar_->GetWebState());
   if (NTPTabHelper->IsActive()) {
     RecordHomeAction(IOSHomeActionType::kOmnibox,
                      NTPTabHelper->ShouldShowStartSurface());

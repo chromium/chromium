@@ -8,8 +8,8 @@ source_set("omnibox") {
   sources = [
     "omnibox_controller_delegate.h",
     "omnibox_focus_delegate.h",
-    "web_omnibox_edit_model_delegate.cc",
-    "web_omnibox_edit_model_delegate.h",
+    "web_location_bar.cc",
+    "web_location_bar.h",
   ]
   deps = [
     "//base",
@@ -116,8 +116,8 @@ source_set("omnibox_internal") {
     "omnibox_view_controller.mm",
     "omnibox_view_ios.h",
     "omnibox_view_ios.mm",
-    "web_omnibox_edit_model_delegate_impl.h",
-    "web_omnibox_edit_model_delegate_impl.mm",
+    "web_location_bar_impl.h",
+    "web_location_bar_impl.mm",
     "zero_suggest_prefetch_helper.h",
     "zero_suggest_prefetch_helper.mm",
   ]
@@ -301,9 +301,9 @@ source_set("unit_tests") {
     "//components/search_engines",
     "//ios/chrome/app/strings",
     "//ios/chrome/browser/main",
-    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/browser/test:test_support",
     "//ios/chrome/browser/shared/model/browser_state:test_support",
+    "//ios/chrome/browser/shared/model/paths",
     "//ios/chrome/browser/shared/model/url:constants",
     "//ios/chrome/browser/shared/model/web_state_list",
     "//ios/chrome/browser/shared/model/web_state_list/test:test_support",

@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_
-#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_
+#ifndef IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_H_
+#define IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_H_
 
 #include "components/search_engines/template_url.h"
 #include "ui/base/page_transition_types.h"
@@ -19,13 +19,10 @@ class WebState;
 
 // An interface providing information about the current page, the navigation
 // entry, and the omnibox edit. Similar to //c/b/ui/location_bar/location_bar.h.
-// TODO(crbug.com/1404748): OmniboxEditModelDelegate no longer exists. Rename to
-//  LocationBarIOS or another suitable name.
-class WebOmniboxEditModelDelegate {
+class WebLocationBar {
  public:
-  WebOmniboxEditModelDelegate(const WebOmniboxEditModelDelegate&) = delete;
-  WebOmniboxEditModelDelegate& operator=(const WebOmniboxEditModelDelegate&) =
-      delete;
+  WebLocationBar(const WebLocationBar&) = delete;
+  WebLocationBar& operator=(const WebLocationBar&) = delete;
 
   // Returns the WebState of the currently active tab.
   virtual web::WebState* GetWebState() = 0;
@@ -47,8 +44,8 @@ class WebOmniboxEditModelDelegate {
   virtual LocationBarModel* GetLocationBarModel() = 0;
 
  protected:
-  WebOmniboxEditModelDelegate();
-  virtual ~WebOmniboxEditModelDelegate();
+  WebLocationBar();
+  virtual ~WebLocationBar();
 };
 
-#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_OMNIBOX_EDIT_MODEL_DELEGATE_H_
+#endif  // IOS_CHROME_BROWSER_UI_OMNIBOX_WEB_LOCATION_BAR_H_

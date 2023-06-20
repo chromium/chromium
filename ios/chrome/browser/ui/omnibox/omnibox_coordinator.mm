@@ -92,7 +92,7 @@
   // OmniboxPopupViewSuggestionsDelegate instead of OmniboxViewIOS.
   std::unique_ptr<OmniboxViewIOS> _editView;
 }
-@synthesize editModelDelegate = _editModelDelegate;
+@synthesize locationBar = _locationBar;
 @synthesize keyboardDelegate = _keyboardDelegate;
 @synthesize viewController = _viewController;
 @synthesize mediator = _mediator;
@@ -137,13 +137,13 @@
       UrlLoadingBrowserAgent::FromBrowser(self.browser);
   self.viewController.pasteDelegate = self.mediator;
 
-  DCHECK(self.editModelDelegate);
+  DCHECK(self.locationBar);
 
   id<OmniboxCommands> focuser =
       static_cast<id<OmniboxCommands>>(self.browser->GetCommandDispatcher());
-  _editView = std::make_unique<OmniboxViewIOS>(
-      self.textField, self.editModelDelegate, self.browser->GetBrowserState(),
-      focuser);
+  _editView = std::make_unique<OmniboxViewIOS>(self.textField, self.locationBar,
+                                               self.browser->GetBrowserState(),
+                                               focuser);
   self.pasteDelegate = [[OmniboxTextFieldPasteDelegate alloc] init];
   [self.textField setPasteDelegate:self.pasteDelegate];
 
@@ -184,7 +184,7 @@
   self.viewController.textChangeDelegate = nil;
   self.returnDelegate.acceptDelegate = nil;
   _editView.reset();
-  self.editModelDelegate = nil;
+  self.locationBar = nil;
   self.viewController = nil;
   self.mediator.templateURLService = nullptr;  // Unregister the observer.
   if (self.keyboardAccessoryView) {
@@ -254,8 +254,8 @@
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
-      std::make_unique<OmniboxPopupViewIOS>(
-          _editView->model(), self.editModelDelegate, _editView.get());
+      std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
+                                            self.locationBar, _editView.get());
 
   _editView->SetPopupProvider(popupView.get());
 

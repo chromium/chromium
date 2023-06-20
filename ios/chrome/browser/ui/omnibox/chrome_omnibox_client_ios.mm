@@ -29,7 +29,7 @@
 #import "ios/chrome/browser/sessions/ios_chrome_session_tab_helper.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
-#import "ios/chrome/browser/ui/omnibox/web_omnibox_edit_model_delegate.h"
+#import "ios/chrome/browser/ui/omnibox/web_location_bar.h"
 #import "ios/chrome/common/intents/SearchInChromeIntent.h"
 #import "ios/chrome/grit/ios_strings.h"
 #import "ios/web/public/navigation/navigation_manager.h"
@@ -42,10 +42,10 @@
 #endif
 
 ChromeOmniboxClientIOS::ChromeOmniboxClientIOS(
-    WebOmniboxEditModelDelegate* edit_model_delegate,
+    WebLocationBar* location_bar,
     ChromeBrowserState* browser_state,
     feature_engagement::Tracker* tracker)
-    : edit_model_delegate_(edit_model_delegate),
+    : location_bar_(location_bar),
       browser_state_(browser_state),
       engagement_tracker_(tracker) {
   CHECK(engagement_tracker_);
@@ -59,17 +59,16 @@ ChromeOmniboxClientIOS::CreateAutocompleteProviderClient() {
 }
 
 bool ChromeOmniboxClientIOS::CurrentPageExists() const {
-  return (edit_model_delegate_->GetWebState() != nullptr);
+  return (location_bar_->GetWebState() != nullptr);
 }
 
 const GURL& ChromeOmniboxClientIOS::GetURL() const {
-  return CurrentPageExists()
-             ? edit_model_delegate_->GetWebState()->GetVisibleURL()
-             : GURL::EmptyGURL();
+  return CurrentPageExists() ? location_bar_->GetWebState()->GetVisibleURL()
+                             : GURL::EmptyGURL();
 }
 
 bool ChromeOmniboxClientIOS::IsLoading() const {
-  return edit_model_delegate_->GetWebState()->IsLoading();
+  return location_bar_->GetWebState()->IsLoading();
 }
 
 bool ChromeOmniboxClientIOS::IsPasteAndGoEnabled() const {
@@ -82,8 +81,7 @@ bool ChromeOmniboxClientIOS::IsDefaultSearchProviderEnabled() const {
 }
 
 SessionID ChromeOmniboxClientIOS::GetSessionID() const {
-  return IOSChromeSessionTabHelper::FromWebState(
-             edit_model_delegate_->GetWebState())
+  return IOSChromeSessionTabHelper::FromWebState(location_bar_->GetWebState())
       ->session_id();
 }
 
@@ -198,7 +196,7 @@ void ChromeOmniboxClientIOS::OnResultChanged(
     ui::PageTransition transition = ui::PageTransitionFromInt(
         match.transition | ui::PAGE_TRANSITION_FROM_ADDRESS_BAR);
     service->StartPrerender(match.destination_url, web::Referrer(), transition,
-                            edit_model_delegate_->GetWebState(),
+                            location_bar_->GetWebState(),
                             is_inline_autocomplete);
   } else {
     service->CancelPrerender();
@@ -237,19 +235,18 @@ void ChromeOmniboxClientIOS::OnURLOpenedFromOmnibox(OmniboxLog* log) {
 }
 
 void ChromeOmniboxClientIOS::DiscardNonCommittedNavigations() {
-  edit_model_delegate_->GetWebState()
+  location_bar_->GetWebState()
       ->GetNavigationManager()
       ->DiscardNonCommittedItems();
 }
 
 const std::u16string& ChromeOmniboxClientIOS::GetTitle() const {
-  return CurrentPageExists() ? edit_model_delegate_->GetWebState()->GetTitle()
+  return CurrentPageExists() ? location_bar_->GetWebState()->GetTitle()
                              : base::EmptyString16();
 }
 
 gfx::Image ChromeOmniboxClientIOS::GetFavicon() const {
-  return favicon::WebFaviconDriver::FromWebState(
-             edit_model_delegate_->GetWebState())
+  return favicon::WebFaviconDriver::FromWebState(location_bar_->GetWebState())
       ->GetFavicon();
 }
 
@@ -266,11 +263,11 @@ void ChromeOmniboxClientIOS::OnAutocompleteAccept(
     const AutocompleteMatch& match,
     const AutocompleteMatch& alternative_nav_match,
     IDNA2008DeviationCharacter deviation_char_in_hostname) {
-  edit_model_delegate_->OnNavigate(
-      destination_url, post_content, disposition, transition,
-      destination_url_entered_without_scheme, match);
+  location_bar_->OnNavigate(destination_url, post_content, disposition,
+                            transition, destination_url_entered_without_scheme,
+                            match);
 }
 
 LocationBarModel* ChromeOmniboxClientIOS::GetLocationBarModel() {
-  return edit_model_delegate_->GetLocationBarModel();
+  return location_bar_->GetLocationBarModel();
 }

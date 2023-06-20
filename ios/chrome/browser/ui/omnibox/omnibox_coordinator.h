@@ -7,7 +7,7 @@
 
 #import "ios/chrome/browser/shared/coordinator/chrome_coordinator/chrome_coordinator.h"
 
-class WebOmniboxEditModelDelegate;
+class WebLocationBar;
 @protocol EditViewAnimatee;
 @class OmniboxPopupCoordinator;
 @class OmniboxTextFieldIOS;
@@ -23,7 +23,7 @@ class WebOmniboxEditModelDelegate;
     OmniboxPopupCoordinator* popupCoordinator;
 // The edit controller interfacing the `textField` and the omnibox components
 // code. Needs to be set before the coordinator is started.
-@property(nonatomic, assign) WebOmniboxEditModelDelegate* editModelDelegate;
+@property(nonatomic, assign) WebLocationBar* locationBar;
 // Returns the animatee for the omnibox focus orchestrator.
 @property(nonatomic, strong, readonly) id<EditViewAnimatee> animatee;
 
@@ -38,7 +38,7 @@ class WebOmniboxEditModelDelegate;
 - (id<LocationBarOffsetProvider>)offsetProvider;
 
 // Start this coordinator. When it starts, it expects to have `textField` and
-// `editModelDelegate`.
+// `locationBar`.
 - (void)start;
 // Stop this coordinator.
 - (void)stop;
