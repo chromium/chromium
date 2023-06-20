@@ -405,6 +405,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_DiffFileSystem) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(dst_url.path().value(), request.destination_url());
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
+  EXPECT_EQ(1u, request.io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_SameFileSystem) {
@@ -528,6 +529,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ErrorResponse) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(dst_url.path().value(), request.destination_url());
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
@@ -609,6 +611,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_MultiFolder) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(dst_url.path().value(), request.destination_url());
   EXPECT_EQ(::dlp::FileAction::COPY, request.file_action());
+  EXPECT_EQ(1u, request.io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, CheckIfTransferAllowed_ExternalFiles) {
@@ -717,6 +720,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MixedFiles) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(kExampleUrl1, request.destination_url());
   EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
@@ -777,6 +781,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_ErrorResponse) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(kExampleUrl1, request.destination_url());
   EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MultiFolder) {
@@ -858,6 +863,7 @@ TEST_F(DlpFilesControllerAshTest, FilterDisallowedUploads_MultiFolder) {
               testing::UnorderedElementsAreArray(expected_requested_files));
   EXPECT_EQ(kExampleUrl1, request.destination_url());
   EXPECT_EQ(::dlp::FileAction::UPLOAD, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, GetDlpMetadata) {
@@ -1488,6 +1494,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed_ErrorResponse) {
   EXPECT_EQ(request.files_paths()[0], file_path1.value());
   EXPECT_EQ(kExampleUrl1, request.destination_url());
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 // Tests dropping a mix of an external file and a local directory.
@@ -1547,6 +1554,7 @@ TEST_F(DlpFilesControllerAshTest, CheckIfDropAllowed) {
   EXPECT_EQ(request.files_paths()[0], file_path2.value());
   EXPECT_EQ(kExampleUrl1, request.destination_url());
   EXPECT_EQ(::dlp::FileAction::MOVE, request.file_action());
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 TEST_F(DlpFilesControllerAshTest, IsFilesTransferRestricted_MyFiles) {
@@ -2251,6 +2259,7 @@ TEST_F(DlpFilesAppServiceTest, CheckIfLaunchAllowed_ErrorResponse) {
   EXPECT_EQ(last_check_files_transfer_request.files_paths()[0], path);
   EXPECT_EQ(last_check_files_transfer_request.destination_component(),
             ::dlp::DlpComponent::ARC);
+  EXPECT_FALSE(last_check_files_transfer_request.has_io_task_id());
 }
 
 TEST_F(DlpFilesAppServiceTest, CheckIfLaunchAllowed_EmptyIntent) {
@@ -2429,6 +2438,7 @@ TEST_P(DlpFilesAppLaunchTest, CheckIfAppLaunchAllowed) {
   EXPECT_TRUE(last_check_files_transfer_request.has_file_action());
   EXPECT_EQ(last_check_files_transfer_request.file_action(),
             ::dlp::FileAction::SHARE);
+  EXPECT_FALSE(last_check_files_transfer_request.has_io_task_id());
 
   std::vector<std::string> expected_requested_files;
   expected_requested_files.push_back(path1);
@@ -2579,6 +2589,7 @@ TEST_P(DlpFilesDnDTest, CheckIfDropAllowed) {
   EXPECT_EQ(request.files_paths()[0], file_path1.value());
   ASSERT_TRUE(request.has_destination_component());
   EXPECT_EQ(request.destination_component(), expected_component);
+  EXPECT_FALSE(request.has_io_task_id());
 }
 
 class DlpFilesControllerAshComponentsTest

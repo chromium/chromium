@@ -1209,6 +1209,9 @@ void DlpFilesControllerAsh::ContinueCheckIfTransferAllowed(
   request.set_destination_url(destination.path().value());
   request.set_file_action(is_move ? ::dlp::FileAction::MOVE
                                   : ::dlp::FileAction::COPY);
+  if (task_id) {
+    request.set_io_task_id(task_id.value());
+  }
 
   auto return_transfers_callback =
       base::BindOnce(&DlpFilesControllerAsh::ReturnDisallowedFiles,
