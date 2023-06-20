@@ -20,13 +20,12 @@ CryptohomePasswordEngine::~CryptohomePasswordEngine() = default;
 
 absl::optional<cryptohome::AuthFactorRef>
 CryptohomePasswordEngine::LookUpFactor(UserContext& context) {
-  if (!context.GetAuthFactorsConfiguration().HasConfiguredFactor(
-          cryptohome::AuthFactorType::kPassword)) {
+  const cryptohome::AuthFactor* password_factor =
+      context.GetAuthFactorsData().FindOnlinePasswordFactor();
+  if (!password_factor) {
     return absl::nullopt;
   }
-  return context.GetAuthFactorsConfiguration()
-      .FindFactorByType(cryptohome::AuthFactorType::kPassword)
-      ->ref();
+  return password_factor->ref();
 }
 
 void CryptohomePasswordEngine::OnAuthFactorUpdate(
