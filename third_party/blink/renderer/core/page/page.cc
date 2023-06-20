@@ -751,14 +751,20 @@ void Page::SettingsChanged(ChangeType change_type) {
     case ChangeType::kDOMWorlds: {
       if (!GetSettings().GetForceMainWorldInitialization())
         break;
+      recordreplay::Assert("[RUN-2195-2193] Page::SettingsChanged kDOMWorlds A %d", RecordReplayId());
       for (Frame* frame = MainFrame(); frame;
            frame = frame->Tree().TraverseNext()) {
+        recordreplay::Assert(
+            "[RUN-2195-2193] Page::SettingsChanged kDOMWorlds B %d", frame->RecordReplayId());
         if (auto* window = DynamicTo<LocalDOMWindow>(frame->DomWindow())) {
+          recordreplay::Assert("[RUN-2195-2193] Page::SettingsChanged kDOMWorlds C %d",
+                               window->RecordReplayId());
           // Forcibly instantiate WindowProxy.
           window->GetScriptController().WindowProxy(
               DOMWrapperWorld::MainWorld());
         }
       }
+      recordreplay::Assert("[RUN-2195-2193] Page::SettingsChanged kDOMWorlds D %d", RecordReplayId());
       break;
     }
     case ChangeType::kMediaControls:

@@ -114,6 +114,7 @@ void Settings::SetDelegate(SettingsDelegate* delegate) {
 }
 
 void Settings::Invalidate(SettingsDelegate::ChangeType change_type) {
+  recordreplay::Assert("[RUN-2195-2193] Settings::Invalidate %d %d", !!delegate_, (int)change_type);
   if (delegate_)
     delegate_->SettingsChanged(change_type);
 }

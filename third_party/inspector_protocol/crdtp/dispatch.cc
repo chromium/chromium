@@ -11,6 +11,8 @@
 #include "frontend_channel.h"
 #include "protocol_core.h"
 
+#include "base/record_replay.h"
+
 namespace crdtp {
 // =============================================================================
 // DispatchResponse - Error status and chaining / fall through
@@ -18,6 +20,7 @@ namespace crdtp {
 
 // static
 DispatchResponse DispatchResponse::Success() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::Success");
   DispatchResponse result;
   result.code_ = DispatchCode::SUCCESS;
   return result;
@@ -25,6 +28,7 @@ DispatchResponse DispatchResponse::Success() {
 
 // static
 DispatchResponse DispatchResponse::FallThrough() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::FallThrough");
   DispatchResponse result;
   result.code_ = DispatchCode::FALL_THROUGH;
   return result;
@@ -32,6 +36,8 @@ DispatchResponse DispatchResponse::FallThrough() {
 
 // static
 DispatchResponse DispatchResponse::ParseError(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::ParseError %s",
+                       message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::PARSE_ERROR;
   result.message_ = std::move(message);
@@ -40,6 +46,7 @@ DispatchResponse DispatchResponse::ParseError(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InvalidRequest(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InvalidRequest %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::INVALID_REQUEST;
   result.message_ = std::move(message);
@@ -48,6 +55,7 @@ DispatchResponse DispatchResponse::InvalidRequest(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::MethodNotFound(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::MethodNotFound %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::METHOD_NOT_FOUND;
   result.message_ = std::move(message);
@@ -56,6 +64,7 @@ DispatchResponse DispatchResponse::MethodNotFound(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InvalidParams(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InvalidParams %s", message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::INVALID_PARAMS;
   result.message_ = std::move(message);
@@ -64,6 +73,7 @@ DispatchResponse DispatchResponse::InvalidParams(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::InternalError() {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::InternalError");
   DispatchResponse result;
   result.code_ = DispatchCode::INTERNAL_ERROR;
   result.message_ = "Internal error";
@@ -72,6 +82,8 @@ DispatchResponse DispatchResponse::InternalError() {
 
 // static
 DispatchResponse DispatchResponse::ServerError(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::SeverError %s",
+                       message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::SERVER_ERROR;
   result.message_ = std::move(message);
@@ -80,6 +92,8 @@ DispatchResponse DispatchResponse::ServerError(std::string message) {
 
 // static
 DispatchResponse DispatchResponse::SessionNotFound(std::string message) {
+  recordreplay::Assert("[RUN-2194-2193] DispatchResponse::SessionNotFound %s",
+                       message.c_str());
   DispatchResponse result;
   result.code_ = DispatchCode::SESSION_NOT_FOUND;
   result.message_ = std::move(message);

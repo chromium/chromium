@@ -1996,9 +1996,8 @@ void InspectorNetworkAgent::getResponseBody(
   bool base64_encoded;
   Response response = GetResponseBody(request_id, &content, &base64_encoded);
 
-  recordreplay::Assert(
-      "[RUN-1515-1924] InspectorNetworkAgent::getResponseBody %d %s",
-      response.IsSuccess(), request_id.Ascii().c_str());
+  recordreplay::Assert("[RUN-2194] InspectorNetworkAgent::getResponseBody %d",
+                       (int)response.Code());
 
   if (response.IsSuccess()) {
     callback->sendSuccess(content, base64_encoded);
