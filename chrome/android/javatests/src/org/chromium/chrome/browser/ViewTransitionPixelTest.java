@@ -27,10 +27,12 @@ import org.chromium.base.test.util.Criteria;
 import org.chromium.base.test.util.CriteriaHelper;
 import org.chromium.base.test.util.CriteriaNotSatisfiedException;
 import org.chromium.base.test.util.Feature;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.util.ChromeRenderTestRule;
+import org.chromium.chrome.test.util.browser.Features.DisableFeatures;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.content_public.browser.test.util.Coordinates;
 import org.chromium.content_public.browser.test.util.DOMUtils;
@@ -288,6 +290,8 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testVirtualKeyboardResizesVisual() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_VISUAL);
 
@@ -330,6 +334,8 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testVirtualKeyboardResizesContent() throws Throwable {
         startKeyboardTest(VirtualKeyboardMode.RESIZES_CONTENT);
 
@@ -372,6 +378,8 @@ public class ViewTransitionPixelTest {
     @Test
     @MediumTest
     @Feature({"RenderTest"})
+    // TODO(crbug.com/1453741): Fix test with CREATE_NEW_TAB_INITIALIZE_RENDERER.
+    @DisableFeatures(ChromeFeatureList.CREATE_NEW_TAB_INITIALIZE_RENDERER)
     public void testDialog() throws Throwable {
         String url = "/chrome/test/data/android/view_transition_dialog.html";
         mActivityTestRule.startMainActivityWithURL(mTestServer.getURL(url));
