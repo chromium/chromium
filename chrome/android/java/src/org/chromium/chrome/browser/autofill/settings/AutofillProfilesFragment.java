@@ -38,6 +38,7 @@ import org.chromium.chrome.browser.autofill.editors.EditorObserverForTest;
 import org.chromium.chrome.browser.feedback.FragmentHelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncher;
 import org.chromium.chrome.browser.feedback.HelpAndFeedbackLauncherImpl;
+import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.payments.SettingsAutofillAndPaymentsObserver;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.settings.ChromeManagedPreferenceDelegate;
@@ -278,6 +279,13 @@ public class AutofillProfilesFragment extends PreferenceFragmentCompat
             return false;
         }
         if (profile.getSource() == Source.ACCOUNT) {
+            return false;
+        }
+        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.AUTOFILL_ACCOUNT_PROFILE_STORAGE)
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE)
+                || !ChromeFeatureList.isEnabled(
+                        ChromeFeatureList.SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE)) {
             return false;
         }
         SyncService syncService = SyncServiceFactory.getForProfile(mProfile);

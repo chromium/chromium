@@ -117,6 +117,7 @@ public abstract class ChromeFeatureList {
     public static final String APP_LANGUAGE_PROMPT = "AppLanguagePrompt";
     public static final String APP_LANGUAGE_PROMPT_ULP = "AppLanguagePromptULP";
     public static final String APP_MENU_MOBILE_SITE_OPTION = "AppMenuMobileSiteOption";
+    public static final String AUTOFILL_ACCOUNT_PROFILE_STORAGE = "AutofillAccountProfileStorage";
     public static final String AUTOFILL_ADDRESS_PROFILE_SAVE_PROMPT_NICKNAME_SUPPORT =
             "AutofillAddressProfileSavePromptNicknameSupport";
     public static final String AUTOFILL_ALLOW_NON_HTTP_ACTIVATION =
@@ -434,6 +435,9 @@ public abstract class ChromeFeatureList {
     public static final String SYNC_ANDROID_LIMIT_NTP_PROMO_IMPRESSIONS =
             "SyncAndroidLimitNTPPromoImpressions";
     public static final String SYNC_ENABLE_HISTORY_DATA_TYPE = "SyncEnableHistoryDataType";
+    public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE = "SyncEnableContactInfoDataType";
+    public static final String SYNC_ENABLE_CONTACT_INFO_DATA_TYPE_IN_TRANSPORT_MODE =
+            "SyncEnableContactInfoDataTypeInTransportMode";
     public static final String TAB_DRAG_DROP_ANDROID = "TabDragDropAndroid";
     public static final String TAB_ENGAGEMENT_REPORTING_ANDROID = "TabEngagementReportingAndroid";
     public static final String TAB_GRID_LAYOUT_ANDROID = "TabGridLayoutAndroid";
