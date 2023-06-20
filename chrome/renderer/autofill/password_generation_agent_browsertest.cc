@@ -1134,6 +1134,27 @@ TEST_F(PasswordGenerationAgentTest, JavascriptClearedTheField) {
   base::RunLoop().RunUntilIdle();
 }
 
+TEST_F(PasswordGenerationAgentTest, JavascriptClearedThePassword_TypeUsername) {
+  LoadHTMLWithUserGesture(kAccountCreationFormHTML);
+  constexpr char kGenerationElementId[] = "first_password";
+  SetFoundFormEligibleForGeneration(password_generation_,
+                                    GetMainFrame()->GetDocument(),
+                                    /*new_password_id=*/kGenerationElementId,
+                                    /*confirm_password_id=*/nullptr);
+
+  ExpectAutomaticGenerationAvailable(kGenerationElementId, kAvailable);
+  std::u16string password = u"long_pwd";
+  EXPECT_CALL(fake_pw_client_, PresaveGeneratedPassword(_, Eq(password)));
+  password_generation_->GeneratedPasswordAccepted(password);
+
+  // Edit some other field.
+  EXPECT_CALL(fake_pw_client_, PasswordNoLongerGenerated(testing::_));
+  ExecuteJavaScriptForTests(
+      "document.getElementById('first_password').value = '';");
+  FocusField("username");
+  SimulateUserTypingASCIICharacter('a', true);
+}
+
 TEST_F(PasswordGenerationAgentTest, GenerationFallback_NoFocusedElement) {
   // Checks the fallback doesn't cause a crash just in case no password element
   // had focus so far.

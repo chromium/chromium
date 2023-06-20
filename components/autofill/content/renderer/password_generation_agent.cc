@@ -558,13 +558,18 @@ bool PasswordGenerationAgent::TextDidChangeInTextField(
         current_generation_item_->password_is_generated_ && !element.IsNull() &&
         element.Form() ==
             current_generation_item_->generation_element_.Form()) {
-      std::unique_ptr<FormData> presaved_form_data(CreateFormDataToPresave());
-      std::u16string generated_password =
+      const std::u16string generated_password =
           current_generation_item_->generation_element_.Value().Utf16();
-      if (presaved_form_data) {
-        CHECK(!generated_password.empty());
-        GetPasswordGenerationDriver().PresaveGeneratedPassword(
-            *presaved_form_data, generated_password);
+      if (generated_password.empty()) {
+        // JS cleared the generated password in the meantime. Consider the user
+        // left the generation state.
+        PasswordNoLongerGenerated();
+      } else {
+        std::unique_ptr<FormData> presaved_form_data(CreateFormDataToPresave());
+        if (presaved_form_data) {
+          GetPasswordGenerationDriver().PresaveGeneratedPassword(
+              *presaved_form_data, generated_password);
+        }
       }
     }
     return false;
