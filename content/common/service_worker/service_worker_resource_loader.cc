@@ -16,10 +16,14 @@ void ServiceWorkerResourceLoader::SetCommitResponsibility(
 }
 
 void ServiceWorkerResourceLoader::RecordFetchResponseFrom() {
-  UMA_HISTOGRAM_ENUMERATION(
-      IsMainResourceLoader()
-          ? "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom"
-          : "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
-      commit_responsibility_);
+  if (IsMainResourceLoader()) {
+    UMA_HISTOGRAM_ENUMERATION(
+        "ServiceWorker.FetchEvent.MainResource.FetchResponseFrom",
+        commit_responsibility_);
+  } else {
+    UMA_HISTOGRAM_ENUMERATION(
+        "ServiceWorker.FetchEvent.Subresource.FetchResponseFrom",
+        commit_responsibility_);
+  }
 }
 }  // namespace content
