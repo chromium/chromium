@@ -21,6 +21,8 @@
             <string>blue</string>
             <key>IsSymbol</key>
             <true/>
+            <key>IsSystemSymbol</key>
+            <true/>
             <key>InstructionSteps</key>
             <array>
             <string>IDS_IOS_WHATS_NEW_FEATURE_SEARCH_TABS_STEP_1</string>
@@ -51,6 +53,8 @@
             <string>blue</string>
             <key>IsSymbol</key>
             <true/>
+            <key>IsSystemSymbol</key>
+            <true/>
             <key>InstructionSteps</key>
             <array>
             <string>IDS_IOS_WHATS_NEW_FEATURE_NEW_MENU_STEP_1</string>
@@ -79,6 +83,8 @@
             <key>IconBackgroundColor</key>
             <string>pink</string>
             <key>IsSymbol</key>
+            <true/>
+            <key>IsSystemSymbol</key>
             <true/>
             <key>InstructionSteps</key>
             <array>
@@ -109,6 +115,8 @@
             <key>IconBackgroundColor</key>
             <string>yellow</string>
             <key>IsSymbol</key>
+            <false/>
+            <key>IsSystemSymbol</key>
             <false/>
             <key>InstructionSteps</key>
             <array>
@@ -143,6 +151,8 @@
             <string>white</string>
             <key>IsSymbol</key>
             <false/>
+            <key>IsSystemSymbol</key>
+            <false/>
             <key>InstructionSteps</key>
             <array>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_CHROME_DEFAULT_STEP_1</string>
@@ -173,6 +183,8 @@
             <string>yellow</string>
             <key>IsSymbol</key>
             <false/>
+            <key>IsSystemSymbol</key>
+            <false/>
             <key>InstructionSteps</key>
             <array>
             <string>IDS_IOS_WHATS_NEW_CHROME_TIP_PASSWORDS_IN_OTHER_APPS_STEP_1</string>
@@ -201,6 +213,8 @@
             <key>IconBackgroundColor</key>
             <string>blue</string>
             <key>IsSymbol</key>
+            <true/>
+            <key>IsSystemSymbol</key>
             <true/>
             <key>InstructionSteps</key>
             <array>

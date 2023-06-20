@@ -40,6 +40,7 @@ NSString* const kDictionaryTypeKey = @"Type";
 NSString* const kDictionaryTitleKey = @"Title";
 NSString* const kDictionarySubtitleKey = @"Subtitle";
 NSString* const kDictionaryIsSymbolKey = @"IsSymbol";
+NSString* const kDictionaryIsSystemSymbolKey = @"IsSystemSymbol";
 NSString* const kDictionaryBannerImageKey = @"BannerImageName";
 NSString* const kDictionaryImageNameKey = @"ImageName";
 NSString* const kDictionaryImageTextKey = @"ImageTexts";
@@ -59,16 +60,24 @@ UIColor* GenerateColor(NSString* color) {
     return [UIColor colorNamed:kPink400Color];
   } else if ([color isEqualToString:@"yellow"]) {
     return [UIColor colorNamed:kYellow500Color];
+  } else if ([color isEqualToString:@"black"]) {
+    return [UIColor colorNamed:kGrey800Color];
+  } else if ([color isEqualToString:@"purple"]) {
+    return [UIColor colorNamed:kPurple500Color];
   } else {
     return nil;
   }
 }
 
 // Returns a UIImage given an image name.
-UIImage* GenerateImage(BOOL is_symbol, NSString* image) {
+UIImage* GenerateImage(BOOL is_symbol, NSString* image, BOOL is_system_symbol) {
   if (is_symbol) {
-    return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    if (is_system_symbol) {
+      return DefaultSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
+    }
+    return CustomSymbolTemplateWithPointSize(image, kIconImageWhatsNew);
   }
+
   return [UIImage imageNamed:image];
 }
 
@@ -191,17 +200,18 @@ WhatsNewItem* ConstructWhatsNewItem(NSDictionary* entry) {
     whats_new_item.heroBannerImage =
         [hero_banner_image length] == 0
             ? nil
-            : GenerateImage(false, hero_banner_image);
+            : GenerateImage(false, hero_banner_image, false);
 
     // Load the entry banner image.
     whats_new_item.bannerImage =
-        GenerateImage(false, entry[kDictionaryBannerImageKey]);
+        GenerateImage(false, entry[kDictionaryBannerImageKey], false);
   }
 
   // Load the entry icon.
   BOOL is_symbol = [entry[kDictionaryIsSymbolKey] boolValue];
-  whats_new_item.iconImage =
-      GenerateImage(is_symbol, entry[kDictionaryIconImageKey]);
+  BOOL is_system_symbol = [entry[kDictionaryIsSystemSymbolKey] boolValue];
+  whats_new_item.iconImage = GenerateImage(
+      is_symbol, entry[kDictionaryIconImageKey], is_system_symbol);
 
   // Load the entry icon background image.
   whats_new_item.backgroundColor =
@@ -272,6 +282,5 @@ NSString* WhatsNewFilePath() {
   NSString* entries_file_path = [bundle_path
       stringByAppendingPathComponent:IsWhatsNewM116Enabled() ? kfileNameM116
                                                              : kfileName];
-  //[bundle_path stringByAppendingPathComponent:kfileName];
   return entries_file_path;
 }
