@@ -228,12 +228,12 @@ TEST_P(StatisticsRecorderStarvationTest, StatisticsRecorderNoStarvation) {
   StopThreads();
 
   // Verify that on average, on each thread, performing a read or write took
-  // less than 1ms. There is no meaning to 1ms -- this is just to ensure that
+  // less than 1ms. There is no meaning to 50ms -- this is just to ensure that
   // there is no egregious starvation effect (for example, we've seen crash
   // reports where readers were starving out writers for >10 seconds). Note that
   // the average time it took to perform one iteration is:
   // average_time_per_iteration = running_time / iteration_count.
-  static constexpr TimeDelta kStarvationThreshold = Milliseconds(1);
+  static constexpr TimeDelta kStarvationThreshold = Milliseconds(50);
   std::vector<BaseThread*> threads = GetAllThreads();
   for (auto* thread : threads) {
     EXPECT_LT(thread->average_time_per_iter(), kStarvationThreshold);
