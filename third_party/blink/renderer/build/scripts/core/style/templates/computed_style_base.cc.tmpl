@@ -31,13 +31,13 @@ ASSERT_SIZE(ComputedStyleBase, SameSizeVerifierForComputedStyleBase);
 // can instantiate this class.
 ComputedStyleBase::ComputedStyleBase() :
 {% set comma = joiner(", ") %}
+{% for subgroup in computed_style.subgroups %}
+    {{comma()}}{{subgroup.member_name}}({{subgroup.type_name}}::Create())
+{% endfor %}
 {% for field in computed_style.fields %}
     {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
 {% endfor %}
 {
-  {% for subgroup in computed_style.subgroups %}
-  {{subgroup.member_name}}.Init();
-  {% endfor %}
 }
 
 {% for name, groups_to_diff in diff_functions_map.items() %}

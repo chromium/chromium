@@ -68,14 +68,13 @@ class {{group.type_name}} : public RefCounted<{{group.type_name}}> {
 {% endfor %}
 ComputedStyleBase::{{group.type_name}}::{{group.type_name}}() {{print_if(group.fields|length > 0, ':')}}
   {% set comma = joiner(", ") %}
+  {% for subgroup in group.subgroups %}
+    {{comma()}}{{subgroup.member_name}}({{subgroup.type_name}}::Create())
+  {% endfor %}
   {% for field in group.fields %}
       {{comma()}}{{field.name}}({{encode(field, field.default_value)}})
   {% endfor %}
-  {
-  {% for subgroup in group.subgroups %}
-    {{subgroup.member_name}}.Init();
-  {% endfor %}
-  }
+  {}
 
 ComputedStyleBase::{{group.type_name}}::{{group.type_name}}(const {{group.type_name}}& other) :
   {% set comma = joiner(", ") %}
