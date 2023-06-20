@@ -45,20 +45,29 @@ GPUExternalTexture* ExternalTextureCache::Import(
   switch (descriptor->source()->GetContentType()) {
     case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kHTMLVideoElement: {
       HTMLVideoElement* video = descriptor->source()->GetAsHTMLVideoElement();
-
       auto cache = from_html_video_element_.find(video);
       if (cache != from_html_video_element_.end()) {
         external_texture = cache->value;
-        if (!external_texture->NeedsToUpdate()) {
-          break;
+
+        // If we got a cache miss, or `ContinueCheckingCurrentVideoFrame`
+        // returned false, make a new external texture.
+        // `ContinueCheckingCurrentVideoFrame` returns false if the frame has
+        // expired and it no longer needs to be checked for expiry.
+        if (external_texture->NeedsToUpdate()) {
+          external_texture = GPUExternalTexture::FromHTMLVideoElement(
+              this, video, descriptor, exception_state);
         }
+      } else {
+        external_texture = GPUExternalTexture::FromHTMLVideoElement(
+            this, video, descriptor, exception_state);
       }
-      // If we got a cache miss, or `ContinueCheckingCurrentVideoFrame` returned
-      // false, make a new external texture. `ContinueCheckingCurrentVideoFrame`
-      // returns false if the frame has expired and it no longer needs to be
-      // checked for expiry.
-      external_texture = GPUExternalTexture::FromHTMLVideoElement(
-          this, video, descriptor, exception_state);
+
+      // GPUExternalTexture imported from HTMLVideoElement should be expired
+      // at the end of task.
+      if (external_texture) {
+        external_texture->Refresh();
+        ExpireAtEndOfTask(external_texture);
+      }
       break;
     }
     case V8UnionHTMLVideoElementOrVideoFrame::ContentType::kVideoFrame: {
@@ -75,11 +84,6 @@ GPUExternalTexture* ExternalTextureCache::Import(
     }
     default:
       NOTREACHED();
-  }
-
-  if (external_texture) {
-    external_texture->Refresh();
-    ExpireAtEndOfTask(external_texture);
   }
 
   return external_texture;
