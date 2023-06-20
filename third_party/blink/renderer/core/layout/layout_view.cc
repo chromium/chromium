@@ -45,6 +45,7 @@
 #include "third_party/blink/renderer/core/layout/hit_test_result.h"
 #include "third_party/blink/renderer/core/layout/layout_counter.h"
 #include "third_party/blink/renderer/core/layout/layout_embedded_content.h"
+#include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_inline_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/list/layout_ng_list_item.h"
 #include "third_party/blink/renderer/core/layout/ng/ng_block_node.h"
@@ -256,6 +257,31 @@ LayoutUnit LayoutView::ComputeMinimumWidth() {
   return min;
 }
 
+void LayoutView::AddChild(LayoutObject* new_child, LayoutObject* before_child) {
+  if (new_child->StyleRef().StyleType() == kPseudoIdViewTransition) {
+    // The view-transition pseudo tree is needs to be laid out within the
+    // "snapshot containing block". This is implemented by inserting an
+    // anonymous LayoutViewTransitionRoot between the ::view-transition and
+    // LayoutView.
+    CHECK(!before_child);
+    CHECK(!GetViewTransitionRoot());
+
+    LayoutViewTransitionRoot* snapshot_containing_block =
+        MakeGarbageCollected<LayoutViewTransitionRoot>(GetDocument());
+    LayoutBlockFlow::AddChild(snapshot_containing_block,
+                              /*before_child=*/nullptr);
+    snapshot_containing_block->AddChild(new_child);
+
+    ViewTransition* transition =
+        ViewTransitionUtils::GetActiveTransition(GetDocument());
+    CHECK(transition);
+    transition->UpdateSnapshotContainingBlockStyle();
+    return;
+  }
+
+  LayoutBlockFlow::AddChild(new_child, before_child);
+}
+
 bool LayoutView::IsChildAllowed(LayoutObject* child,
                                 const ComputedStyle&) const {
   NOT_DESTROYED();
@@ -372,6 +398,11 @@ TrackedDescendantsMap& LayoutView::SvgTextDescendantsMap() {
   if (!svg_text_descendants_)
     svg_text_descendants_ = MakeGarbageCollected<TrackedDescendantsMap>();
   return *svg_text_descendants_;
+}
+
+LayoutViewTransitionRoot* LayoutView::GetViewTransitionRoot() const {
+  // Returns nullptr if LastChild isn't a ViewTransitionRoot.
+  return DynamicTo<LayoutViewTransitionRoot>(LastChild());
 }
 
 void LayoutView::Paint(const PaintInfo& paint_info) const {

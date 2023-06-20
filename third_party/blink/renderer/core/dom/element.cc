@@ -8266,19 +8266,42 @@ void Element::RecalcTransitionPseudoTreeStyle(
       continue;
     }
 
+    // Nested pseudo elements don't keep pointers to their children, only their
+    // parents (i.e. firstChild() in a  ::view-transition is nullptr but
+    // parentNode of ::view-transition-group is ::view-transition). However,
+    // the layout tree is reattached by descending the DOM tree by child
+    // pointers so if any pseudo needs a reattach we have to explicitly mark
+    // all descendant pseudos as needing a reattach explicitly.
+    // TODO(crbug.com/1455139): Implement tree traversal for nested pseudos.
+    if (transition_pseudo->NeedsReattachLayoutTree()) {
+      container_pseudo->SetNeedsReattachLayoutTree();
+    }
+
     PseudoElement* wrapper_pseudo = container_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionImagePair, style_recalc_change,
         style_recalc_context, view_transition_name);
     if (!wrapper_pseudo) {
       continue;
     }
+    if (container_pseudo->NeedsReattachLayoutTree()) {
+      wrapper_pseudo->SetNeedsReattachLayoutTree();
+    }
 
-    wrapper_pseudo->UpdatePseudoElement(
+    PseudoElement* old_pseudo = wrapper_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionOld, style_recalc_change, style_recalc_context,
         view_transition_name);
-    wrapper_pseudo->UpdatePseudoElement(
+    PseudoElement* new_pseudo = wrapper_pseudo->UpdatePseudoElement(
         kPseudoIdViewTransitionNew, style_recalc_change, style_recalc_context,
         view_transition_name);
+
+    if (wrapper_pseudo->NeedsReattachLayoutTree()) {
+      if (old_pseudo) {
+        old_pseudo->SetNeedsReattachLayoutTree();
+      }
+      if (new_pseudo) {
+        new_pseudo->SetNeedsReattachLayoutTree();
+      }
+    }
 
     container_pseudo->ClearChildNeedsStyleRecalc();
     wrapper_pseudo->ClearChildNeedsStyleRecalc();

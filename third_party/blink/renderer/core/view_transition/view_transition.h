@@ -214,6 +214,10 @@ class CORE_EXPORT ViewTransition : public ScriptWrappable,
   // associated with this transition.
   bool ShouldThrottleRendering() const;
 
+  // Ensure the LayoutViewTransitionRoot, representing the snapshot containing
+  // block concept, has up to date style.
+  void UpdateSnapshotContainingBlockStyle();
+
  private:
   friend class ViewTransitionTest;
   friend class AXViewTransitionTest;
