@@ -3764,6 +3764,9 @@ extern const char kShowTouchHudDescription[];
 extern const char kSnoopingProtectionName[];
 extern const char kSnoopingProtectionDescription[];
 
+extern const char kSpeakOnMuteOptInNudgePrefsResetName[];
+extern const char kSpeakOnMuteOptInNudgePrefsResetDescription[];
+
 extern const char kSpectreVariant2MitigationName[];
 extern const char kSpectreVariant2MitigationDescription[];
 
