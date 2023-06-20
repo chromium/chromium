@@ -85,7 +85,6 @@ public class JavascriptAppModalDialogTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1295498")
     @Feature({"Browser", "Main"})
     public void testBeforeUnloadDialog() throws TimeoutException, ExecutionException {
         sActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
@@ -154,7 +153,6 @@ public class JavascriptAppModalDialogTest {
      */
     @Test
     @MediumTest
-    @DisabledTest(message = "https://crbug.com/1295498")
     @Feature({"Browser", "Main"})
     public void testBeforeUnloadOnReloadDialog() throws TimeoutException, ExecutionException {
         sActivityTestRule.loadUrl(BEFORE_UNLOAD_URL);
