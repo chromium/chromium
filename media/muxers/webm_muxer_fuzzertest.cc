@@ -17,6 +17,7 @@
 #include "media/base/video_frame.h"
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "media/muxers/webm_muxer.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 // Min and max number of encodec video/audio packets to send in the WebmMuxer.
 const int kMinNumIterations = 1;
@@ -91,7 +92,7 @@ extern "C" int LLVMFuzzerTestOneInput(const uint8_t* data, size_t size) {
         const media::AudioParameters params(
             media::AudioParameters::AUDIO_PCM_LOW_LATENCY, layout, sample_rate,
             60 * sample_rate);
-        muxer.OnEncodedAudio(params, str, base::TimeTicks());
+        muxer.OnEncodedAudio(params, str, absl::nullopt, base::TimeTicks());
         base::RunLoop().RunUntilIdle();
       }
     } while (num_iterations--);

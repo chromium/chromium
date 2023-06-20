@@ -171,7 +171,7 @@ class MediaRecorderHandlerFixture : public ScopedMockOverlayScrollbars {
                                 std::string encoded_data,
                                 base::TimeTicks timestamp) {
     media_recorder_handler_->OnEncodedAudio(params, std::move(encoded_data),
-                                            timestamp);
+                                            absl::nullopt, timestamp);
   }
 
   void OnAudioBusForTesting(const media::AudioBus& audio_bus) {

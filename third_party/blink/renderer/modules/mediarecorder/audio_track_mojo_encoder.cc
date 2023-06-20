@@ -173,7 +173,7 @@ void AudioTrackMojoEncoder::OnEncodeOutput(
       reinterpret_cast<char*>(encoded_buffer.encoded_data.get()),
       encoded_buffer.encoded_data_size);
   on_encoded_audio_cb_.Run(encoded_buffer.params, encoded_data,
-                           encoded_buffer.timestamp);
+                           std::move(codec_desc), encoded_buffer.timestamp);
 }
 
 }  // namespace blink

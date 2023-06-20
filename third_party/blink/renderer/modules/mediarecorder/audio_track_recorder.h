@@ -13,6 +13,8 @@
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
 #include "base/threading/thread_checker.h"
+#include "media/base/audio_encoder.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/modules/mediastream/web_media_stream_audio_sink.h"
 #include "third_party/blink/renderer/modules/mediarecorder/track_recorder.h"
 #include "third_party/blink/renderer/modules/modules_export.h"
@@ -54,18 +56,21 @@ class MODULES_EXPORT AudioTrackRecorder
   class CallbackInterface : public GarbageCollectedMixin {
    public:
     // Called to indicate there is encoded audio data available.
-    virtual void OnEncodedAudio(const media::AudioParameters& params,
-                                std::string encoded_data,
-                                base::TimeTicks capture_time) = 0;
+    virtual void OnEncodedAudio(
+        const media::AudioParameters& params,
+        std::string encoded_data,
+        absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+        base::TimeTicks capture_time) = 0;
 
     // Called when a track's ready state changes.
     virtual void OnSourceReadyStateChanged() = 0;
   };
 
-  using OnEncodedAudioCB =
-      base::RepeatingCallback<void(const media::AudioParameters& params,
-                                   std::string encoded_data,
-                                   base::TimeTicks capture_time)>;
+  using OnEncodedAudioCB = base::RepeatingCallback<void(
+      const media::AudioParameters& params,
+      std::string encoded_data,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks capture_time)>;
 
   static CodecId GetPreferredCodecId();
 

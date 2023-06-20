@@ -385,6 +385,7 @@ void WebmEncoderMuxer::OnAudioEncoded(
       reinterpret_cast<const char*>(encoded_audio.encoded_data.get()),
       encoded_audio.encoded_data_size};
   webm_muxer_.OnEncodedAudio(encoded_audio.params, std::move(encoded_data),
+                             std::move(codec_description),
                              encoded_audio.timestamp);
 }
 

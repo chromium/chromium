@@ -332,9 +332,11 @@ bool WebmMuxer::OnEncodedVideo(const VideoParameters& params,
   return PartiallyFlushQueues();
 }
 
-bool WebmMuxer::OnEncodedAudio(const AudioParameters& params,
-                               std::string encoded_data,
-                               base::TimeTicks timestamp) {
+bool WebmMuxer::OnEncodedAudio(
+    const AudioParameters& params,
+    std::string encoded_data,
+    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    base::TimeTicks timestamp) {
   TRACE_EVENT1("media", __func__, "timestamp", timestamp - base::TimeTicks());
   DVLOG(2) << __func__ << " - " << encoded_data.size() << "B ts " << timestamp;
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

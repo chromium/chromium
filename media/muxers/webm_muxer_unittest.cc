@@ -30,6 +30,7 @@
 #include "media/muxers/live_webm_muxer_delegate.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -141,9 +142,9 @@ TEST_P(WebmMuxerTest,
   // Force an error in libwebm and expect OnEncodedVideo to fail.
   webm_muxer_->ForceOneLibWebmErrorForTesting();
   base::TimeTicks now = base::TimeTicks::Now();
-  bool audio_success =
-      !GetParam().num_audio_tracks ||
-      webm_muxer_->OnEncodedAudio(audio_params, encoded_data, now);
+  bool audio_success = !GetParam().num_audio_tracks ||
+                       webm_muxer_->OnEncodedAudio(audio_params, encoded_data,
+                                                   absl::nullopt, now);
   bool video_success =
       !GetParam().num_video_tracks ||
       webm_muxer_->OnEncodedVideo(video_params, encoded_data, std::string(),
@@ -170,9 +171,9 @@ TEST_P(WebmMuxerTest,
       webm_muxer_->OnEncodedVideo(video_params, encoded_data, std::string(),
                                   now + base::Milliseconds(1),
                                   /*is_key_frame=*/true);
-  bool audio_success =
-      !GetParam().num_audio_tracks ||
-      webm_muxer_->OnEncodedAudio(audio_params, encoded_data, now);
+  bool audio_success = !GetParam().num_audio_tracks ||
+                       webm_muxer_->OnEncodedAudio(audio_params, encoded_data,
+                                                   absl::nullopt, now);
   EXPECT_FALSE(audio_success && video_success);
 }
 
@@ -283,8 +284,8 @@ TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
       .Times(AtLeast(1))
       .WillRepeatedly(
           WithArgs<0>(Invoke(this, &WebmMuxerTest::SaveEncodedDataLen)));
-  EXPECT_TRUE(webm_muxer_->OnEncodedAudio(audio_params, encoded_data,
-                                          base::TimeTicks::Now()));
+  EXPECT_TRUE(webm_muxer_->OnEncodedAudio(
+      audio_params, encoded_data, absl::nullopt, base::TimeTicks::Now()));
 
   // First time around WriteCallback() is pinged a number of times to write the
   // Matroska header, but at the end it dumps |encoded_data|.
@@ -298,8 +299,8 @@ TEST_P(WebmMuxerTest, OnEncodedAudioTwoFrames) {
       .Times(AtLeast(1))
       .WillRepeatedly(
           WithArgs<0>(Invoke(this, &WebmMuxerTest::SaveEncodedDataLen)));
-  EXPECT_TRUE(webm_muxer_->OnEncodedAudio(audio_params, encoded_data,
-                                          base::TimeTicks::Now()));
+  EXPECT_TRUE(webm_muxer_->OnEncodedAudio(
+      audio_params, encoded_data, absl::nullopt, base::TimeTicks::Now()));
 
   // The second time around the callbacks should include a SimpleBlock header,
   // namely the track index, a timestamp and a flags byte, for a total of 6B.
@@ -417,7 +418,7 @@ TEST_P(WebmMuxerTest, VideoIsStoredWhileWaitingForAudio) {
       .Times(AnyNumber());
 
   // Timestamp: 0 (audio origin)
-  webm_muxer_->OnEncodedAudio(audio_params, encoded_audio,
+  webm_muxer_->OnEncodedAudio(audio_params, encoded_audio, absl::nullopt,
                               base::TimeTicks() + base::Milliseconds(3));
   webm_muxer_.reset();
 }
@@ -509,7 +510,7 @@ class WebmMuxerTestUnparametrized : public testing::Test {
         media::AudioParameters::Format::AUDIO_PCM_LOW_LATENCY,
         ChannelLayoutConfig::Mono(), frame_rate_hz, frames_per_buffer);
     webm_muxer_->OnEncodedAudio(
-        audio_params, "audio_at_offset",
+        audio_params, "audio_at_offset", absl::nullopt,
         base::TimeTicks() + base::Milliseconds(system_timestamp_offset_ms));
   }
 

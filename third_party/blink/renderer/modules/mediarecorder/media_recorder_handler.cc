@@ -642,16 +642,19 @@ void MediaRecorderHandler::HandleEncodedVideo(
   }
 }
 
-void MediaRecorderHandler::OnEncodedAudio(const media::AudioParameters& params,
-                                          std::string encoded_data,
-                                          base::TimeTicks timestamp) {
+void MediaRecorderHandler::OnEncodedAudio(
+    const media::AudioParameters& params,
+    std::string encoded_data,
+    absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+    base::TimeTicks timestamp) {
   DCHECK(IsMainThread());
 
   if (invalidated_)
     return;
   if (!muxer_)
     return;
-  if (!muxer_->OnEncodedAudio(params, std::move(encoded_data), timestamp)) {
+  if (!muxer_->OnEncodedAudio(params, std::move(encoded_data),
+                              std::move(codec_description), timestamp)) {
     recorder_->OnError(DOMExceptionCode::kUnknownError,
                        "Error muxing audio data");
   }

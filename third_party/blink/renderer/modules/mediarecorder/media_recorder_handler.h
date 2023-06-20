@@ -111,9 +111,11 @@ class MODULES_EXPORT MediaRecorderHandler final
                           bool is_key_frame) override;
   void OnVideoEncodingError() override;
   // AudioTrackRecorder::CallbackInterface overrides.
-  void OnEncodedAudio(const media::AudioParameters& params,
-                      std::string encoded_data,
-                      base::TimeTicks timestamp) override;
+  void OnEncodedAudio(
+      const media::AudioParameters& params,
+      std::string encoded_data,
+      absl::optional<media::AudioEncoder::CodecDescription> codec_description,
+      base::TimeTicks timestamp) override;
   // [Audio/Video]TrackRecorder::CallbackInterface overrides.
   void OnSourceReadyStateChanged() override;
 
