@@ -35,7 +35,11 @@ std::unique_ptr<DawnInstance> DawnInstance::Create(
   if (dawn_search_path.empty())
 #endif
   {
+#if BUILDFLAG(IS_IOS)
+    if (base::PathService::Get(base::DIR_ASSETS, &module_path)) {
+#else
     if (base::PathService::Get(base::DIR_MODULE, &module_path)) {
+#endif
       dawn_search_path = module_path.AsEndingWithSeparator().MaybeAsASCII();
     }
   }
