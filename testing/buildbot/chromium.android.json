@@ -10777,7 +10777,7 @@
             }
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
-          "shards": 3
+          "shards": 2
         },
         "test": "webview_trichrome_64_cts_tests",
         "test_id_prefix": "ninja://android_webview/test:webview_trichrome_64_cts_tests/",
