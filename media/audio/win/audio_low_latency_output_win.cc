@@ -388,7 +388,6 @@ void WASAPIAudioOutputStream::Start(AudioSourceCallback* callback) {
   num_written_frames_ = endpoint_buffer_size_frames_;
   last_position_ = 0;
   last_qpc_position_ = 0;
-  last_timestamp_ = base::TimeTicks();
 
   // Recreate `peak_detector_` everytime we create a new `render_thread_`, to
   // avoid ThreadChecker DCHECKs.
@@ -683,7 +682,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
     // a RT thread.
     hr = audio_clock_->GetPosition(&position, &qpc_position);
     if (SUCCEEDED(hr)) {
-      base::TimeTicks current_timestamp = base::TimeTicks::Now();
       // Check for glitches. Records a glitch whenever the stream's position has
       // moved forward significantly less than the performance counter has. The
       // threshold is set to half the buffer size, to limit false positives.
@@ -693,7 +691,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       // the data begins playing through the device.
       if (last_position_ != 0) {
         CHECK(last_qpc_position_);
-        CHECK_GT(last_timestamp_, base::TimeTicks());
 
         // The device position is the offset from the start of the stream to the
         // current position in the stream. The units in which this offset is
@@ -707,15 +704,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         // only says that the device frequency reported by successive calls to
         // GetFrequency never changes during the lifetime of a stream "in
         // Windows Vista".
-        {
-            // TODO(olka): Exploratory check. Run it for a couple of days on
-            // Canary/Dev and remove.
-            UINT64 device_frequency_now = 0;
-            hr = audio_clock_->GetFrequency(&device_frequency_now);
-            if (SUCCEEDED(hr)) {
-                CHECK_EQ(device_frequency, device_frequency_now);
-            }
-        }
         CHECK_GE(position, last_position_);
         base::TimeDelta position_time_increase =
             media::AudioTimestampHelper::FramesToTime(position - last_position_,
@@ -725,17 +713,10 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         // IAudioClock::GetPosition() documentation. Presumably monotonically
         // increasing, but there are known cases when it can jump backward due
         // to driver bugs, etc.
-
-        // TODO(olka): Exploratory check. Run it for a couple of days on
-        // Canary/Dev and remove.
-        CHECK_GE(qpc_position, last_qpc_position_);
-
         base::TimeDelta qpc_position_time_increase =
             qpc_position < last_qpc_position_
                 ? base::TimeDelta()
                 : base::Microseconds((qpc_position - last_qpc_position_) / 10);
-        base::TimeDelta timestamp_increase =
-            current_timestamp - last_timestamp_;
 
         // We probably should not trust qpc_position being reported in 100 ns
         // intervals in some cases, in a remote desktop situation, for example.
@@ -743,11 +724,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
         // are using a low resolution timers (~15 ms precision), the difference
         // between the two should be well under 40 ms. But let's be
         // concervative.
-        // TODO(olka): Exploratory check. Run it for a couple of days on
-        // Canary/Dev and remove.
-        CHECK_LT((timestamp_increase - qpc_position_time_increase).magnitude(),
-                 base::Milliseconds(100));
-
         // |gap_duration| can be positive or negative. Negative means a bigger
         // chunk of the buffer was consumed. Too big (how big?) positive means
         // no audio was played for a while, which potentially resulted in a
@@ -768,7 +744,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
 
       last_position_ = position;
       last_qpc_position_ = qpc_position;
-      last_timestamp_ = current_timestamp;
 
       // Number of frames already played out through the speaker (estimation).
       const uint64_t played_out_frames =
@@ -786,10 +761,6 @@ bool WASAPIAudioOutputStream::RenderAudioFromSource(UINT64 device_frequency) {
       // Convert the delay from frames to time.
       delay = media::AudioTimestampHelper::FramesToTime(
           delay_frames, format_.Format.nSamplesPerSec);
-
-      // TODO(olka): Exploratory check. Run it for a couple of days on
-      // Canary/Dev and remove.
-      CHECK_LE(delay, base::Seconds(10));
 
       // Note: the obtained |qpc_position| value is in 100ns intervals and from
       // the same time origin as QPC. We can simply convert it into us dividing

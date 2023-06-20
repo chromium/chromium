@@ -262,9 +262,6 @@ class MEDIA_EXPORT WASAPIAudioOutputStream
   // The performance counter read during the last call to RenderAudioFromSource.
   UINT64 last_qpc_position_ = 0;
 
-  // The timestamp of the last call to RenderAudioFromSource().
-  base::TimeTicks last_timestamp_;
-
   // Pointer to the client that will deliver audio samples to be played out.
   raw_ptr<AudioSourceCallback> source_;
 
