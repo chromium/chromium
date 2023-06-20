@@ -29,7 +29,6 @@ source_set("lib") {
     "//components/gwp_asan/common:crash_keys",
     "//components/memory_system",
     "//components/metrics",
-    "//components/power_scheduler",
     "//components/safe_browsing/android:safe_browsing_api_handler",
     "//components/services/heap_profiling/public/cpp",
     "//components/spellcheck:buildflags",

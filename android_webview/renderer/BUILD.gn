@@ -41,7 +41,6 @@ source_set("renderer") {
     "//components/js_injection/renderer",
     "//components/network_hints/renderer",
     "//components/page_load_metrics/renderer",
-    "//components/power_scheduler",
     "//components/resources",
     "//components/safe_browsing/content/common:interfaces",
     "//components/safe_browsing/content/renderer:throttles",

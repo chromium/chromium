@@ -9,9 +9,6 @@
 #include "base/memory/raw_ptr.h"
 #include "base/no_destructor.h"
 #include "base/trace_event/trace_event.h"
-#include "components/power_scheduler/power_mode.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
-#include "components/power_scheduler/power_mode_voter.h"
 
 namespace android_webview {
 
@@ -54,10 +51,7 @@ void BeginFrameSourceWebView::BeginFrameSourceClient::OnNeedsBeginFrames(
 BeginFrameSourceWebView::BeginFrameSourceWebView()
     : ExternalBeginFrameSource(&bfs_client_),
       bfs_client_(this),
-      parent_observer_(std::make_unique<BeginFrameObserver>(this)),
-      animation_power_mode_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Animation")) {
+      parent_observer_(std::make_unique<BeginFrameObserver>(this)) {
   OnSetBeginFrameSourcePaused(true);
 }
 
@@ -92,14 +86,10 @@ void BeginFrameSourceWebView::ObserveBeginFrameSource(
 void BeginFrameSourceWebView::OnNeedsBeginFrames(bool needs_begin_frames) {
   if (needs_begin_frames) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN0("cc,benchmark", "NeedsBeginFrames", this);
-    animation_power_mode_voter_->VoteFor(
-        power_scheduler::PowerMode::kAnimation);
     if (observed_begin_frame_source_)
       observed_begin_frame_source_->AddObserver(parent_observer_.get());
   } else {
     TRACE_EVENT_NESTABLE_ASYNC_END0("cc,benchmark", "NeedsBeginFrames", this);
-    animation_power_mode_voter_->ResetVoteAfterTimeout(
-        power_scheduler::PowerModeVoter::kAnimationTimeout);
     if (observed_begin_frame_source_)
       observed_begin_frame_source_->RemoveObserver(parent_observer_.get());
   }
