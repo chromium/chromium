@@ -289,12 +289,6 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
 
   ShelfFocusCycler* shelf_focus_cycler() { return shelf_focus_cycler_.get(); }
 
-  void set_is_tablet_mode_animation_running(bool value) {
-    is_tablet_mode_animation_running_ = value;
-  }
-  bool is_tablet_mode_animation_running() const {
-    return is_tablet_mode_animation_running_;
-  }
   int auto_hide_lock() const { return auto_hide_lock_; }
   int disable_auto_hide() const { return disable_auto_hide_; }
 
@@ -383,14 +377,6 @@ class ASH_EXPORT Shelf : public ShelfLayoutManagerObserver {
   // Shelf to ensure it outlives the Navigation Widget.
   std::unique_ptr<NavigationWidgetAnimationMetricsReporter>
       navigation_widget_metrics_reporter_;
-
-  // True while the animation to enter or exit tablet mode is running. Sometimes
-  // this value is true when the shelf movements are not actually animating
-  // (animation value = 0.0). This is because this is set to true when we
-  // enter/exit tablet mode but the animation is not started until a shelf
-  // OnBoundsChanged is called because of tablet mode. Use this value to sync
-  // the animation for HomeButton.
-  bool is_tablet_mode_animation_running_ = false;
 
   // Used by ScopedAutoHideLock to maintain the state of the lock for auto-hide
   // shelf.

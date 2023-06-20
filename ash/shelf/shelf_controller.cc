@@ -227,9 +227,6 @@ void ShelfController::OnTabletModeStarted() {
   // on exit.
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id())) {
-      // Only animate into tablet mode if the shelf alignment will not change.
-      if (shelf->IsHorizontalAlignment())
-        shelf->set_is_tablet_mode_animation_running(true);
       shelf->SetAlignment(ShelfAlignment::kBottom);
     }
   }
@@ -241,13 +238,6 @@ void ShelfController::OnTabletModeEnded() {
     return;
 
   SetShelfBehaviorsFromPrefs();
-  // Only animate out of tablet mode if the shelf alignment will not change.
-  for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
-    if (Shelf* shelf = GetShelfForDisplay(display.id())) {
-      if (shelf->IsHorizontalAlignment())
-        shelf->set_is_tablet_mode_animation_running(true);
-    }
-  }
 }
 
 void ShelfController::OnDisplayConfigurationChanged() {

@@ -2626,8 +2626,6 @@ void ShelfView::OnBoundsAnimatorProgressed(views::BoundsAnimator* animator) {
 }
 
 void ShelfView::OnBoundsAnimatorDone(views::BoundsAnimator* animator) {
-  shelf_->set_is_tablet_mode_animation_running(false);
-
   if (move_animation_tracker_) {
     move_animation_tracker_->Stop();
     move_animation_tracker_.reset();
