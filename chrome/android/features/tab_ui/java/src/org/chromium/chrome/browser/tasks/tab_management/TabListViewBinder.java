@@ -32,18 +32,16 @@ class TabListViewBinder {
     // TODO(1023557): Merge with TabGridViewBinder for shared properties.
     private static void bindListTab(
             PropertyModel model, ViewGroup view, @Nullable PropertyKey propertyKey) {
-        View fastView = view;
-
         if (TabProperties.TITLE == propertyKey) {
             String title = model.get(TabProperties.TITLE);
-            ((TextView) fastView.findViewById(R.id.title)).setText(title);
+            ((TextView) view.findViewById(R.id.title)).setText(title);
         } else if (TabProperties.FAVICON == propertyKey) {
             if (TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
                 return;
             }
 
             Drawable favicon = model.get(TabProperties.FAVICON).getDefaultDrawable();
-            setFavicon(fastView, favicon);
+            setFavicon(view, favicon);
         } else if (TabProperties.FAVICON_FETCHER == propertyKey) {
             if (!TabUiFeatureUtilities.isTabGroupsAndroidContinuationEnabled(view.getContext())) {
                 return;
@@ -57,21 +55,8 @@ class TabListViewBinder {
             fetcher.fetch(tabFavicon -> {
                 if (fetcher != model.get(TabProperties.FAVICON_FETCHER)) return;
 
-                setFavicon(fastView, tabFavicon.getDefaultDrawable());
+                setFavicon(view, tabFavicon.getDefaultDrawable());
             });
-        } else if (TabProperties.TAB_CLOSED_LISTENER == propertyKey) {
-            if (model.get(TabProperties.TAB_CLOSED_LISTENER) == null) {
-                fastView.findViewById(R.id.end_button).setOnClickListener(null);
-            } else {
-                fastView.findViewById(R.id.end_button).setOnClickListener(v -> {
-                    int tabId = model.get(TabProperties.TAB_ID);
-                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
-                });
-            }
-        } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
-            fastView.findViewById(R.id.end_button)
-                    .setContentDescription(
-                            model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
         } else if (TabProperties.IS_SELECTED == propertyKey) {
             int selectedTabBackground =
                     model.get(TabProperties.SELECTED_TAB_BACKGROUND_DRAWABLE_ID);
@@ -84,18 +69,9 @@ class TabListViewBinder {
         } else if (TabProperties.IS_INCOGNITO == propertyKey) {
             updateColors(view, model.get(TabProperties.IS_INCOGNITO),
                     model.get(TabProperties.IS_SELECTED));
-        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
-            if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
-                view.setOnClickListener(null);
-            } else {
-                view.setOnClickListener(v -> {
-                    int tabId = model.get(TabProperties.TAB_ID);
-                    model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
-                });
-            }
         } else if (TabProperties.URL_DOMAIN == propertyKey) {
             String domain = model.get(TabProperties.URL_DOMAIN);
-            ((TextView) fastView.findViewById(R.id.description)).setText(domain);
+            ((TextView) view.findViewById(R.id.description)).setText(domain);
         }
     }
 
@@ -114,6 +90,28 @@ class TabListViewBinder {
             ImageViewCompat.setImageTintList(closeButton,
                     TabUiThemeProvider.getActionButtonTintList(view.getContext(),
                             model.get(TabProperties.IS_INCOGNITO), /*isSelected=*/false));
+        } else if (TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING == propertyKey) {
+            view.findViewById(R.id.end_button)
+                    .setContentDescription(
+                            model.get(TabProperties.CLOSE_BUTTON_DESCRIPTION_STRING));
+        } else if (TabProperties.TAB_SELECTED_LISTENER == propertyKey) {
+            if (model.get(TabProperties.TAB_SELECTED_LISTENER) == null) {
+                view.setOnClickListener(null);
+            } else {
+                view.setOnClickListener(v -> {
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    model.get(TabProperties.TAB_SELECTED_LISTENER).run(tabId);
+                });
+            }
+        } else if (TabProperties.TAB_CLOSED_LISTENER == propertyKey) {
+            if (model.get(TabProperties.TAB_CLOSED_LISTENER) == null) {
+                view.findViewById(R.id.end_button).setOnClickListener(null);
+            } else {
+                view.findViewById(R.id.end_button).setOnClickListener(v -> {
+                    int tabId = model.get(TabProperties.TAB_ID);
+                    model.get(TabProperties.TAB_CLOSED_LISTENER).run(tabId);
+                });
+            }
         }
     }
 
@@ -182,6 +180,8 @@ class TabListViewBinder {
 
             // The row should act as one large button.
             ImageView endButton = selectableTabListView.findViewById(R.id.end_button);
+            endButton.setOnClickListener(onClickListener);
+            endButton.setOnLongClickListener(onLongClickListener);
             endButton.setImportantForAccessibility(View.IMPORTANT_FOR_ACCESSIBILITY_NO);
         } else if (TabProperties.TAB_SELECTION_DELEGATE == propertyKey) {
             assert model.get(TabProperties.TAB_SELECTION_DELEGATE) != null;
