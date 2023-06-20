@@ -215,9 +215,13 @@ export class ColorSelector extends WithPersonalizationStore {
     if (!isSelectionEvent(e)) {
       return;
     }
-    this.dispatchEvent(new CustomEvent(
-        wallpaperColorSelectedEventName,
-        {bubbles: true, composed: true, detail: null}));
+    const eventTarget = e.target as HTMLElement;
+    if (eventTarget.id === 'wallpaperColorIcon') {
+      // Only dispatch the event if the icon is clicked.
+      this.dispatchEvent(new CustomEvent(
+          wallpaperColorSelectedEventName,
+          {bubbles: true, composed: true, detail: null}));
+    }
   }
 
   /** Invoked when a preset color is selected. */
