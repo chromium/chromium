@@ -5,11 +5,15 @@
 #import <UIKit/UIKit.h>
 
 #include "base/check.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "ui/display/display.h"
 #include "ui/display/screen_base.h"
+#include "ui/gfx/native_widget_types.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace display {
 namespace {
@@ -28,7 +32,7 @@ class ScreenNotification {
 
 @implementation ScreenObserver
 
-- (instancetype)initWithNotfier:(display::ScreenNotification*)notifier {
+- (instancetype)initWithNotifier:(display::ScreenNotification*)notifier {
   if (self = [super init]) {
     _notifier = notifier;
     NSNotificationCenter* defaultCenter = [NSNotificationCenter defaultCenter];
@@ -45,7 +49,7 @@ class ScreenNotification {
     return;
   }
   // This notification comes before UIScreen can change its bounds so post a
-  // task so the update ocurrs after the UIScreen has been updated.
+  // task so the update occurs after the UIScreen has been updated.
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&display::ScreenNotification::ScreenChanged,
                                 base::Unretained(_notifier)));
@@ -59,8 +63,7 @@ namespace {
 class ScreenIos : public ScreenBase, public ScreenNotification {
  public:
   ScreenIos() {
-    observer_ = base::scoped_nsobject<ScreenObserver>(
-        [[ScreenObserver alloc] initWithNotfier:this]);
+    observer_ = [[ScreenObserver alloc] initWithNotifier:this];
     ScreenChanged();
   }
 
@@ -104,14 +107,14 @@ class ScreenIos : public ScreenBase, public ScreenNotification {
   }
 
  private:
-  base::scoped_nsobject<ScreenObserver> observer_;
+  ScreenObserver* __strong observer_;
 };
 
 }  // namespace
 
 // static
 gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView view) {
-  return [view window];
+  return gfx::NativeWindow(view.Get().window);
 }
 
 Screen* CreateNativeScreen() {

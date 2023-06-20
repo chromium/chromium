@@ -31,7 +31,7 @@ static std::unique_ptr<content::ShellMainDelegate> g_main_delegate;
     willConnectToSession:(UISceneSession*)session
                  options:(UISceneConnectionOptions*)connectionOptions {
   CHECK_EQ(1u, content::Shell::windows().size());
-  UIWindow* window = content::Shell::windows()[0]->window();
+  UIWindow* window = content::Shell::windows()[0]->window().Get();
 
   // The rootViewController must be added after a windowScene is set
   // so stash it in a temp variable and then reattach it. If we don't

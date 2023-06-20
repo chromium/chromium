@@ -99,8 +99,8 @@ ContentWebState::ContentWebState(const CreateParams& params,
       this, params.browser_state, web_contents_->GetController());
   web_frames_manager_ = std::make_unique<ContentWebFramesManager>(this);
 
-  UIScrollView* web_contents_view =
-      base::mac::ObjCCastStrict<UIScrollView>(web_contents_->GetNativeView());
+  UIScrollView* web_contents_view = base::mac::ObjCCastStrict<UIScrollView>(
+      web_contents_->GetNativeView().Get());
 
   web_view_ = [[CRCWebViewportContainerView alloc] init];
   // Comment this back in to show visual glitches that might be present.
@@ -600,8 +600,8 @@ bool ContentWebState::ShouldAnimateBrowserControlsHeightChanges() {
 
 bool ContentWebState::DoBrowserControlsShrinkRendererSize(
     content::WebContents* web_contents) {
-  UIScrollView* web_contents_view =
-      base::mac::ObjCCastStrict<UIScrollView>(web_contents->GetNativeView());
+  UIScrollView* web_contents_view = base::mac::ObjCCastStrict<UIScrollView>(
+      web_contents->GetNativeView().Get());
   if (web_contents_view.contentInset.top > GetTopControlsMinHeight()) {
     return true;
   }

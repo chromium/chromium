@@ -178,7 +178,7 @@ void SelectFileDialogImpl::SelectFileImpl(
     allows_other_file_types = true;
   }
 
-  UIViewController* controller = gfx_window.rootViewController;
+  UIViewController* controller = gfx_window.Get().rootViewController;
   native_file_dialog_ =
       [[NativeFileDialog alloc] initWithDialog:weak_factory_.GetWeakPtr()
                                 viewController:controller

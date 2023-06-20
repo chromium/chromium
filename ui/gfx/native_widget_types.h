@@ -77,11 +77,9 @@ struct IAccessible;
 struct objc_object;
 @class UIImage;
 @class UIView;
-@class UIWindow;
 #else
 class UIImage;
 class UIView;
-class UIWindow;
 #endif  // __OBJC__
 #elif BUILDFLAG(IS_MAC)
 #ifdef __OBJC__
@@ -123,8 +121,8 @@ using NativeWindow = aura::Window*;
 using NativeEvent = ui::Event*;
 #elif BUILDFLAG(IS_IOS)
 using NativeCursor = void*;
-using NativeView = UIView*;
-using NativeWindow = UIWindow*;
+using NativeView = base::apple::WeakUIView;
+using NativeWindow = base::apple::WeakUIWindow;
 using NativeEvent = base::apple::OwnedUIEvent;
 #elif BUILDFLAG(IS_MAC)
 using NativeCursor = base::apple::OwnedNSCursor;

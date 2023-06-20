@@ -6,7 +6,7 @@
 
 #import <AppKit/AppKit.h>
 #import <ApplicationServices/ApplicationServices.h>
-#import <Cocoa/Cocoa.h>
+#include <Foundation/Foundation.h>
 #include <IOKit/IOKitLib.h>
 #include <IOKit/graphics/IOGraphicsLib.h>
 #include <QuartzCore/CVDisplayLink.h>
@@ -15,6 +15,7 @@
 #include <map>
 #include <memory>
 
+#include "base/apple/bridging.h"
 #include "base/functional/bind.h"
 #include "base/i18n/rtl.h"
 #include "base/logging.h"
@@ -22,7 +23,6 @@
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
 #include "base/mac/scoped_ioobject.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/strings/sys_string_conversions.h"
 #include "base/timer/timer.h"
 #include "base/trace_event/trace_event.h"
@@ -33,6 +33,10 @@
 #include "ui/gfx/icc_profile.h"
 #include "ui/gfx/mac/coordinate_conversion.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 extern "C" {
 Boolean CGDisplayUsesForceToGray(void);
 }
@@ -42,17 +46,17 @@ namespace {
 
 struct DisplayMac {
   const Display display;
-  NSScreen* const ns_screen;  // weak
+  NSScreen* const __weak ns_screen;
 };
 
 NSScreen* GetMatchingScreen(const gfx::Rect& match_rect) {
   // Default to the monitor with the current keyboard focus, in case
   // |match_rect| is not on any screen at all.
-  NSScreen* max_screen = [NSScreen mainScreen];
+  NSScreen* max_screen = NSScreen.mainScreen;
   int max_area = 0;
 
-  for (NSScreen* screen in [NSScreen screens]) {
-    gfx::Rect monitor_area = gfx::ScreenRectFromNSRect([screen frame]);
+  for (NSScreen* screen in NSScreen.screens) {
+    gfx::Rect monitor_area = gfx::ScreenRectFromNSRect(screen.frame);
     gfx::Rect intersection = gfx::IntersectRects(monitor_area, match_rect);
     int area = intersection.width() * intersection.height();
     if (area > max_area) {
@@ -138,8 +142,9 @@ std::string DisplayNameFromDisplayInfo(
   if (!info)
     return std::string();
 
-  CFDictionaryRef names = base::mac::GetValueFromDictionary<CFDictionaryRef>(
-      info.get(), CFSTR(kDisplayProductName));
+  NSDictionary* names = base::apple::CFToNSPtrCast(
+      base::mac::GetValueFromDictionary<CFDictionaryRef>(
+          info.get(), CFSTR(kDisplayProductName)));
   if (!names)
     return std::string();
 
@@ -151,45 +156,40 @@ std::string DisplayNameFromDisplayInfo(
   // countries and variants are ignored if they don't exist in one or the other,
   // but taken into account if they are present in both. If no match is found,
   // the first entry is used.
-  struct SearchContext {
-    CFStringRef name = 0;
-    int match_size = -1;
-  } context;
-  CFDictionaryApplyFunction(
-      names,
-      [](const void* key, const void* value, void* context) {
-        SearchContext* result = static_cast<SearchContext*>(context);
-        CFStringRef key_string = base::mac::CFCast<CFStringRef>(key);
-        CFStringRef value_string = base::mac::CFCast<CFStringRef>(value);
-        if (!key_string || !value_string)
-          return;
+  std::string configured_locale = base::i18n::GetConfiguredLocale();
 
-        std::string locale = base::i18n::GetCanonicalLocale(
-            base::SysCFStringRefToUTF8(key_string));
-        std::string configured_locale = base::i18n::GetConfiguredLocale();
-        int match = base::ranges::mismatch(locale, configured_locale).first -
-                    locale.begin();
-        if (match > result->match_size) {
-          result->name = value_string;
-        }
-      },
-      &context);
+  NSString* name = nil;
+  int match_size = -1;
+  for (NSString* key in names) {
+    NSString* value = base::mac::ObjCCast<NSString>(names[key]);
+    if (!value) {
+      continue;
+    }
+    std::string locale =
+        base::i18n::GetCanonicalLocale(base::SysNSStringToUTF8(key));
+    int match = base::ranges::mismatch(locale, configured_locale).first -
+                locale.begin();
+    if (match > match_size) {
+      name = value;
+    }
+  }
 
-  if (!context.name)
+  if (!name) {
     return std::string();
-  return base::SysCFStringRefToUTF8(context.name);
+  }
+  return base::SysNSStringToUTF8(name);
 }
 
 DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   TRACE_EVENT0("ui", "BuildDisplayForScreen");
-  NSRect frame = [screen frame];
+  NSRect frame = screen.frame;
 
   CGDirectDisplayID display_id =
-      [[screen deviceDescription][@"NSScreenNumber"] unsignedIntValue];
+      [screen.deviceDescription[@"NSScreenNumber"] unsignedIntValue];
 
   Display display(display_id, gfx::Rect(NSRectToCGRect(frame)));
-  NSRect visible_frame = [screen visibleFrame];
-  NSScreen* primary = [[NSScreen screens] firstObject];
+  NSRect visible_frame = screen.visibleFrame;
+  NSScreen* primary = NSScreen.screens.firstObject;
 
   // Convert work area's coordinate systems.
   if ([screen isEqual:primary]) {
@@ -203,7 +203,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   }
 
   // Compute device scale factor
-  CGFloat scale = [screen backingScaleFactor];
+  CGFloat scale = screen.backingScaleFactor;
   if (Display::HasForceDeviceScaleFactor())
     scale = Display::GetForcedDeviceScaleFactor();
   display.set_device_scale_factor(scale);
@@ -213,9 +213,9 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   float hdr_max_lum_relative = 1.f;
   if (@available(macOS 10.15, *)) {
     const float max_potential_edr_value =
-        [screen maximumPotentialExtendedDynamicRangeColorComponentValue];
+        screen.maximumPotentialExtendedDynamicRangeColorComponentValue;
     const float max_edr_value =
-        [screen maximumExtendedDynamicRangeColorComponentValue];
+        screen.maximumExtendedDynamicRangeColorComponentValue;
     if (max_potential_edr_value > 1.f) {
       enable_hdr = true;
       hdr_max_lum_relative =
@@ -226,7 +226,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   // Compute DisplayColorSpaces.
   gfx::ICCProfile icc_profile;
   {
-    CGColorSpaceRef cg_color_space = [[screen colorSpace] CGColorSpace];
+    CGColorSpaceRef cg_color_space = screen.colorSpace.CGColorSpace;
     if (cg_color_space) {
       base::ScopedCFTypeRef<CFDataRef> cf_icc_profile(
           CGColorSpaceCopyICCData(cg_color_space));
@@ -270,7 +270,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
   }
   display.set_is_monochrome(CGDisplayUsesForceToGray());
 
-  // Query the display's referesh rate.
+  // Query the display's refresh rate.
   {
     CVDisplayLinkRef display_link = nullptr;
     if (CVDisplayLinkCreateWithCGDisplay(display_id, &display_link) ==
@@ -306,7 +306,7 @@ DisplayMac BuildDisplayForScreen(NSScreen* screen) {
 }
 
 DisplayMac BuildPrimaryDisplay() {
-  return BuildDisplayForScreen([[NSScreen screens] firstObject]);
+  return BuildDisplayForScreen(NSScreen.screens.firstObject);
 }
 
 std::vector<DisplayMac> BuildDisplaysFromQuartz() {
@@ -329,7 +329,7 @@ std::vector<DisplayMac> BuildDisplaysFromQuartz() {
 
   using ScreenIdsToScreensMap = std::map<CGDirectDisplayID, NSScreen*>;
   ScreenIdsToScreensMap screen_ids_to_screens;
-  for (NSScreen* screen in [NSScreen screens]) {
+  for (NSScreen* screen in NSScreen.screens) {
     NSDictionary* screen_device_description = [screen deviceDescription];
     CGDirectDisplayID screen_id =
         [screen_device_description[@"NSScreenNumber"] unsignedIntValue];
@@ -383,24 +383,24 @@ class ScreenMac : public Screen {
       OnNSScreensMayHaveChanged();
     };
 
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-    screen_color_change_observer_.reset(
-        [[center addObserverForName:NSScreenColorSpaceDidChangeNotification
-                             object:nil
-                              queue:nil
-                         usingBlock:update_block] retain]);
-    screen_params_change_observer_.reset([[center
+    NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
+    screen_color_change_observer_ =
+        [center addObserverForName:NSScreenColorSpaceDidChangeNotification
+                            object:nil
+                             queue:nil
+                        usingBlock:update_block];
+    screen_params_change_observer_ = [center
         addObserverForName:NSApplicationDidChangeScreenParametersNotification
                     object:nil
                      queue:nil
-                usingBlock:update_block] retain]);
+                usingBlock:update_block];
   }
 
   ScreenMac(const ScreenMac&) = delete;
   ScreenMac& operator=(const ScreenMac&) = delete;
 
   ~ScreenMac() override {
-    NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
+    NSNotificationCenter* center = NSNotificationCenter.defaultCenter;
     [center removeObserver:screen_color_change_observer_];
     [center removeObserver:screen_params_change_observer_];
 
@@ -415,8 +415,8 @@ class ScreenMac : public Screen {
 
   bool IsWindowUnderCursor(gfx::NativeWindow native_window) override {
     NSWindow* window = native_window.GetNativeNSWindow();
-    return [NSWindow windowNumberAtPoint:[NSEvent mouseLocation]
-             belowWindowWithWindowNumber:0] == [window windowNumber];
+    return [NSWindow windowNumberAtPoint:NSEvent.mouseLocation
+               belowWindowWithWindowNumber:0] == window.windowNumber;
   }
 
   gfx::NativeWindow GetWindowAtScreenPoint(const gfx::Point& point) override {
@@ -430,20 +430,23 @@ class ScreenMac : public Screen {
     const NSPoint ns_point = gfx::ScreenPointToNSPoint(point);
 
     // Note: [NSApp orderedWindows] doesn't include NSPanels.
-    for (NSWindow* window : [NSApp orderedWindows]) {
+    for (NSWindow* window in NSApp.orderedWindows) {
       if (ignore.count(window))
         continue;
 
-      if (![window isOnActiveSpace])
+      if (!window.onActiveSpace) {
         continue;
+      }
 
       // NativeWidgetMac::Close() calls -orderOut: on NSWindows before actually
       // closing them.
-      if (![window isVisible])
+      if (!window.visible) {
         continue;
+      }
 
-      if (NSPointInRect(ns_point, [window frame]))
+      if (NSPointInRect(ns_point, window.frame)) {
         return window;
+      }
     }
 
     return nil;
@@ -467,7 +470,7 @@ class ScreenMac : public Screen {
     // Note the following line calls -[NSWindow
     // _bestScreenBySpaceAssignmentOrGeometry] which is quite expensive and
     // performs IPC with the window server process.
-    NSScreen* match_screen = [window screen];
+    NSScreen* match_screen = window.screen;
 
     if (!match_screen)
       return GetPrimaryDisplay();
@@ -477,23 +480,25 @@ class ScreenMac : public Screen {
 
   Display GetDisplayNearestView(gfx::NativeView native_view) const override {
     NSView* view = native_view.GetNativeNSView();
-    NSWindow* window = [view window];
+    NSWindow* window = view.window;
     if (!window)
       return GetPrimaryDisplay();
     return GetDisplayNearestWindow(window);
   }
 
   Display GetDisplayNearestPoint(const gfx::Point& point) const override {
-    NSArray* screens = [NSScreen screens];
-    if ([screens count] <= 1)
+    NSArray* screens = NSScreen.screens;
+    if (screens.count <= 1) {
       return GetPrimaryDisplay();
+    }
 
     NSPoint ns_point = NSPointFromCGPoint(point.ToCGPoint());
     NSScreen* primary = screens[0];
-    ns_point.y = NSMaxY([primary frame]) - ns_point.y;
+    ns_point.y = NSMaxY(primary.frame) - ns_point.y;
     for (NSScreen* screen in screens) {
-      if (NSMouseInRect(ns_point, [screen frame], NO))
+      if (NSMouseInRect(ns_point, screen.frame, NO)) {
         return GetCachedDisplayForScreen(screen);
+      }
     }
 
     NSScreen* nearest_screen = primary;
@@ -518,7 +523,7 @@ class ScreenMac : public Screen {
   Display GetPrimaryDisplay() const override {
     // Primary display is defined as the display with the menubar,
     // which is always at index 0.
-    NSScreen* primary = [[NSScreen screens] firstObject];
+    NSScreen* primary = NSScreen.screens.firstObject;
     Display display = GetCachedDisplayForScreen(primary);
     return display;
   }
@@ -586,8 +591,8 @@ class ScreenMac : public Screen {
 
   // The observers notified by NSScreenColorSpaceDidChangeNotification and
   // NSApplicationDidChangeScreenParametersNotification.
-  base::scoped_nsobject<id> screen_color_change_observer_;
-  base::scoped_nsobject<id> screen_params_change_observer_;
+  id __strong screen_color_change_observer_;
+  id __strong screen_params_change_observer_;
 
   DisplayChangeNotifier change_notifier_;
 };
@@ -597,7 +602,7 @@ class ScreenMac : public Screen {
 // static
 gfx::NativeWindow Screen::GetWindowForView(gfx::NativeView native_view) {
   NSView* view = native_view.GetNativeNSView();
-  return [view window];
+  return view.window;
 }
 
 Screen* CreateNativeScreen() {

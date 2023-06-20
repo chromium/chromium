@@ -49,7 +49,7 @@ ShellBluetoothChooserCoordinatorHolder::ShellBluetoothChooserCoordinatorHolder(
     content::ShellBluetoothChooserIOS* bluetooth_chooser_ios,
     const std::u16string& title) {
   coordinator_ = [[ShellBluetoothChooserCoordinator alloc]
-      initWithBaseViewController:native_window.rootViewController
+      initWithBaseViewController:native_window.Get().rootViewController
                            title:base::SysUTF16ToNSString(title)
                 bluetoothChooser:bluetooth_chooser_ios];
 }

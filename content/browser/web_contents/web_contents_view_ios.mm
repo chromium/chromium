@@ -67,7 +67,7 @@ WebContentsViewIOS::WebContentsViewIOS(
 WebContentsViewIOS::~WebContentsViewIOS() {}
 
 gfx::NativeView WebContentsViewIOS::GetNativeView() const {
-  return ui_view_->view_.get();
+  return gfx::NativeView(ui_view_->view_.get());
 }
 
 gfx::NativeView WebContentsViewIOS::GetContentNativeView() const {
@@ -83,7 +83,7 @@ gfx::NativeWindow WebContentsViewIOS::GetTopLevelNativeWindow() const {
   if (!view) {
     return gfx::NativeWindow();
   }
-  return gfx::NativeWindow([view window]);
+  return gfx::NativeWindow(view.Get().window);
 }
 
 gfx::Rect WebContentsViewIOS::GetContainerBounds() const {

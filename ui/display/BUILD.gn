@@ -100,6 +100,10 @@ component("display") {
 
   defines = [ "DISPLAY_IMPLEMENTATION" ]
 
+  if (is_apple) {
+    configs += [ "//build/config/compiler:enable_arc" ]
+  }
+
   public_deps = [
     ":display_features",
     "//ui/display/types",

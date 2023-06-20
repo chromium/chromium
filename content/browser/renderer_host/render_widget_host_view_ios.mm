@@ -409,7 +409,7 @@ void RenderWidgetHostViewIOS::InitAsChild(gfx::NativeView parent_view) {}
 void RenderWidgetHostViewIOS::SetSize(const gfx::Size& size) {}
 void RenderWidgetHostViewIOS::SetBounds(const gfx::Rect& rect) {}
 gfx::NativeView RenderWidgetHostViewIOS::GetNativeView() {
-  return ui_view_->view_.get();
+  return gfx::NativeView(ui_view_->view_.get());
 }
 gfx::NativeViewAccessible RenderWidgetHostViewIOS::GetNativeViewAccessible() {
   return {};
@@ -814,7 +814,7 @@ bool RenderWidgetHostViewIOS::CanResignFirstResponderForTesting() const {
 
 void RenderWidgetHostViewIOS::UpdateNativeViewTree(gfx::NativeView view) {
   if (view) {
-    [ui_view_->view_ updateView:(UIScrollView*)view];
+    [ui_view_->view_ updateView:(UIScrollView*)view.Get()];
   } else {
     [ui_view_->view_ removeView];
   }
