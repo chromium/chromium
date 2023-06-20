@@ -1032,9 +1032,9 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
 
+  registry->RegisterBooleanPref(prefs::kAccessibilityColorFiltering, false);
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    registry->RegisterBooleanPref(prefs::kAccessibilityColorFiltering, false);
     registry->RegisterBooleanPref(
         prefs::kAccessibilityColorFilteringHasBeenSetup, false);
   }

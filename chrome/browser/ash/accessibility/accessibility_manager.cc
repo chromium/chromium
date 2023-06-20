@@ -1349,6 +1349,21 @@ void AccessibilityManager::OnSwitchAccessDisabled() {
   switch_access_loader_->Unload();
 }
 
+void AccessibilityManager::SetColorCorrectionEnabled(bool enabled) {
+  if (!profile_) {
+    return;
+  }
+
+  PrefService* pref_service = profile_->GetPrefs();
+  pref_service->SetBoolean(prefs::kAccessibilityColorFiltering, enabled);
+  pref_service->CommitPendingWrite();
+}
+
+bool AccessibilityManager::IsColorCorrectionEnabled() const {
+  return profile_ &&
+         profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityColorFiltering);
+}
+
 bool AccessibilityManager::IsBrailleDisplayConnected() const {
   return braille_display_connected_;
 }

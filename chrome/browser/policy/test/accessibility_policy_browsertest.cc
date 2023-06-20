@@ -463,4 +463,40 @@ IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, AutoclickEnabled) {
   EXPECT_FALSE(accessibility_manager->IsDisableAutoclickDialogVisibleForTest());
 }
 
+IN_PROC_BROWSER_TEST_F(AccessibilityPolicyTest, ColorCorrectionEnabled) {
+  // Verifies that the color correction accessibility feature can be controlled
+  // through policy.
+  AccessibilityManager* accessibility_manager = AccessibilityManager::Get();
+
+  accessibility_manager->SetColorCorrectionEnabled(false);
+  // Verify that color correction is initially disabled.
+  EXPECT_FALSE(accessibility_manager->IsColorCorrectionEnabled());
+
+  // Manually enable color correction.
+  accessibility_manager->SetColorCorrectionEnabled(true);
+  EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
+
+  // Verify that policy overrides the manual setting.
+  PolicyMap policies;
+  policies.Set(key::kColorCorrectionEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(false),
+               nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_FALSE(accessibility_manager->IsColorCorrectionEnabled());
+
+  // Verify that color correction cannot be enabled manually anymore.
+  accessibility_manager->SetColorCorrectionEnabled(true);
+  EXPECT_FALSE(accessibility_manager->IsColorCorrectionEnabled());
+
+  policies.Set(key::kColorCorrectionEnabled, POLICY_LEVEL_MANDATORY,
+               POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD, base::Value(true),
+               nullptr);
+  UpdateProviderPolicy(policies);
+  EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
+
+  // Verify that color correction cannot be disabled manually anymore.
+  accessibility_manager->SetColorCorrectionEnabled(false);
+  EXPECT_TRUE(accessibility_manager->IsColorCorrectionEnabled());
+}
+
 }  // namespace policy

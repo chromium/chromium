@@ -250,6 +250,12 @@ class AccessibilityManager
   // Returns if Switch Access is enabled.
   bool IsSwitchAccessEnabled() const;
 
+  // Invoked to enable or disable Color Correction.
+  void SetColorCorrectionEnabled(bool enabled);
+
+  // Returns if Color Correction is enabled.
+  bool IsColorCorrectionEnabled() const;
+
   // Returns true if a braille display is connected to the system, otherwise
   // false.
   bool IsBrailleDisplayConnected() const;
