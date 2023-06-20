@@ -92,6 +92,14 @@ class TabStripControllerTest : public PlatformTest {
         WebStateOpener());
   }
 
+  void DetachWebStateForTesting(int index) {
+    browser_->GetWebStateList()->DetachWebStateAt(index);
+  }
+
+  void ActivateWebStateForTesting(int index) {
+    browser_->GetWebStateList()->ActivateWebStateAt(index);
+  }
+
   web::WebTaskEnvironment task_environment_;
   std::unique_ptr<TestChromeBrowserState> browser_state_;
   std::unique_ptr<TestBrowser> browser_;
@@ -118,6 +126,58 @@ TEST_F(TabStripControllerTest, LoadAndDisplay) {
   // parent view (which contains exactly one scroll view).
   EXPECT_EQ(3U,
             [[[[[controller_ view] subviews] objectAtIndex:0] subviews] count]);
+}
+
+// Tests the active index when an active WebState is detached.
+TEST_F(TabStripControllerTest, DetachActiveWebState) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  AddWebStateForTesting("Tab Title 1");
+  AddWebStateForTesting("Tab Title 2");
+  AddWebStateForTesting("Tab Title 3");
+
+  ActivateWebStateForTesting(1);
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+
+  // Detaching an active WebState shouldn't change the active index.
+  DetachWebStateForTesting(1);
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+}
+
+// Tests the active index when a WebState before an active WebState is detached.
+TEST_F(TabStripControllerTest, DetachWebStateBeforeActiveWebState) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  AddWebStateForTesting("Tab Title 1");
+  AddWebStateForTesting("Tab Title 2");
+  AddWebStateForTesting("Tab Title 3");
+
+  ActivateWebStateForTesting(1);
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+
+  // Detaching a WebState before an active WebState decrements the active index.
+  DetachWebStateForTesting(0);
+  EXPECT_EQ(0, browser_->GetWebStateList()->active_index());
+}
+
+// Tests the active index when a WebState after an active WebState is detached.
+TEST_F(TabStripControllerTest, DetachWebStateAfterActiveWebState) {
+  if (ui::GetDeviceFormFactor() != ui::DEVICE_FORM_FACTOR_TABLET) {
+    return;
+  }
+  AddWebStateForTesting("Tab Title 1");
+  AddWebStateForTesting("Tab Title 2");
+  AddWebStateForTesting("Tab Title 3");
+
+  ActivateWebStateForTesting(1);
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
+
+  // Detaching a WebState after an active WebState shouldn't change the active
+  // index.
+  DetachWebStateForTesting(2);
+  EXPECT_EQ(1, browser_->GetWebStateList()->active_index());
 }
 
 }  // namespace
