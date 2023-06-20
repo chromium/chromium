@@ -2943,7 +2943,8 @@ TEST_F(AutocorrectManagerTest,
        IsDisabledWhenMissingNewModelParametersButEn840Enabled) {
   feature_list_.Reset();
   feature_list_.InitWithFeatures({ash::features::kAutocorrectByDefault},
-                                 DisabledFeatures());
+                                 {ash::features::kImeFstDecoderParamsUpdate,
+                                  ash::features::kImeRuleConfig});
 
   manager_.OnActivate(kUsEnglishEngineId);
   manager_.OnFocus(kContextId);
