@@ -63,12 +63,16 @@ class BiquadDSPKernel final : public AudioDSPKernel {
   bool RequiresTailProcessing() const final;
   double TailTime() const override;
   double LatencyTime() const override;
-  // Update the biquad cofficients with the given parameters
+  // Update the biquad coefficients with the given parameters
   void UpdateCoefficients(int number_of_frames,
                           const float* frequency,
                           const float* q,
                           const float* gain,
                           const float* detune);
+
+  // Expose HasConstantValues for unit testing
+  MODULES_EXPORT static bool HasConstantValuesForTesting(float* values,
+                                                         int frames_to_process);
 
  protected:
   Biquad biquad_;

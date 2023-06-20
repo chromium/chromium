@@ -52,6 +52,11 @@ bool HasConstantValues(float* values, int frames_to_process) {
 
 }  // namespace
 
+bool BiquadDSPKernel::HasConstantValuesForTesting(float* values,
+                                                  int frames_to_process) {
+  return HasConstantValues(values, frames_to_process);
+}
+
 void BiquadDSPKernel::UpdateCoefficientsIfNecessary(int frames_to_process) {
   if (GetBiquadProcessor()->FilterCoefficientsDirty()) {
     float cutoff_frequency[RenderQuantumFrames()];
