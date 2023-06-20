@@ -19,6 +19,7 @@
 #include "ash/test/ash_test_base.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/views/controls/image_view.h"
 
@@ -38,7 +39,8 @@ class ToggleEffectsViewTest : public AshTestBase {
 
   // AshTestBase:
   void SetUp() override {
-    scoped_feature_list_.InitAndEnableFeature(features::kVideoConference);
+    scoped_feature_list_.InitWithFeatures(
+        {features::kVideoConference, chromeos::features::kJelly}, {});
     base::CommandLine::ForCurrentProcess()->AppendSwitch(
         switches::kCameraEffectsSupportedByHardware);
 

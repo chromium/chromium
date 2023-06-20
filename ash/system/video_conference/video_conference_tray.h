@@ -153,6 +153,8 @@ class ASH_EXPORT VideoConferenceTray
   // to the state in `VideoConferenceTrayController`.
   void UpdateTrayAndIconsState();
 
+  IconButton* GetToggleBubbleButtonForTest();
+
  private:
   friend class video_conference::BubbleViewTest;
   friend class video_conference::ReturnToAppPanelTest;

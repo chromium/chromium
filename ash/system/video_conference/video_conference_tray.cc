@@ -369,6 +369,10 @@ void VideoConferenceTray::UpdateTrayAndIconsState() {
   screen_share_icon_->SetIsCapturing(is_capturing_screen);
 }
 
+IconButton* VideoConferenceTray::GetToggleBubbleButtonForTest() {
+  return toggle_bubble_button_;
+}
+
 void VideoConferenceTray::OnSessionStateChanged(
     session_manager::SessionState state) {
   SetVisiblePreferred(VideoConferenceTrayController::Get()->ShouldShowTray());

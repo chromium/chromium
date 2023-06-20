@@ -31,6 +31,7 @@
 #include "ui/gfx/geometry/size.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/button/button.h"
+#include "ui/views/controls/highlight_path_generator.h"
 #include "ui/views/controls/image_view.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/layout/flex_layout.h"
@@ -84,6 +85,17 @@ class ButtonContainer : public views::Button {
                                  views::MaximumFlexSizeRule::kUnbounded));
 
     SetPreferredSize(gfx::Size(GetPreferredSize().width(), kButtonHeight));
+
+    views::InstallRoundRectHighlightPathGenerator(this, gfx::Insets(),
+                                                  kButtonCornerRadius);
+
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetColorId(cros_tokens::kCrosSysFocusRing);
+    // The focus ring appears slightly outside the tile bounds.
+    focus_ring->SetHaloInset(-3);
+    // Since the focus ring doesn't set a LayoutManager it won't get drawn
+    // unless excluded by the tile's LayoutManager.
+    layout->SetChildViewIgnoredByLayout(focus_ring, true);
 
     auto icon = std::make_unique<views::ImageView>();
     icon->SetID(video_conference::BubbleViewID::kToggleEffectIcon);
