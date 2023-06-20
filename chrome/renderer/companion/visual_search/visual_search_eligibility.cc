@@ -15,6 +15,7 @@
 namespace companion::visual_search {
 namespace {
 constexpr char kNormalizedPrefix[] = "normalized_";
+constexpr char kNormalizeByPrefix[] = "normalize_by_";
 constexpr int kMaxNumStored = 200;
 
 // Return true if p1 should be sorted before p2.
@@ -124,7 +125,7 @@ EligibilityModule::GetDebugFeatureValuesForImage(const std::string& image_id) {
 // Private methods.
 void EligibilityModule::Clear() {
   image_level_features_.clear();
-  page_level_features_.clear();
+  max_value_features_.clear();
   eligible_after_first_pass_.clear();
   eligible_after_second_pass_.clear();
   have_run_first_pass_ = false;
@@ -135,30 +136,30 @@ void EligibilityModule::ComputeNormalizingFeatures(
   const bool second_pass_only = false;
   for (const auto& eligibility_rule : spec_.cheap_pruning_rules()) {
     for (const auto& thresholding_rule : eligibility_rule.rules()) {
-      if (thresholding_rule.has_normalizing_feature_name()) {
-        ComputeAndGetPageLevelFeatureValue(
-            thresholding_rule.normalizing_feature_name(), images,
-            second_pass_only);
+      if (thresholding_rule.has_normalizing_op()) {
+        ComputeAndGetNormalizingFeatureValue(thresholding_rule.feature_name(),
+                                             thresholding_rule.normalizing_op(),
+                                             images, second_pass_only);
       }
     }
   }
 
   for (const auto& second_pass_rule : spec_.classifier_score_rules()) {
     for (const auto& thresholding_rule : second_pass_rule.rules()) {
-      if (thresholding_rule.has_normalizing_feature_name()) {
-        ComputeAndGetPageLevelFeatureValue(
-            thresholding_rule.normalizing_feature_name(), images,
-            second_pass_only);
+      if (thresholding_rule.has_normalizing_op()) {
+        ComputeAndGetNormalizingFeatureValue(thresholding_rule.feature_name(),
+                                             thresholding_rule.normalizing_op(),
+                                             images, second_pass_only);
       }
     }
   }
 
   for (const auto& third_pass_rule : spec_.post_renormalization_rules()) {
     for (const auto& thresholding_rule : third_pass_rule.rules()) {
-      if (thresholding_rule.has_normalizing_feature_name()) {
-        ComputeAndGetPageLevelFeatureValue(
-            thresholding_rule.normalizing_feature_name(), images,
-            second_pass_only);
+      if (thresholding_rule.has_normalizing_op()) {
+        ComputeAndGetNormalizingFeatureValue(thresholding_rule.feature_name(),
+                                             thresholding_rule.normalizing_op(),
+                                             images, second_pass_only);
       }
     }
   }
@@ -192,18 +193,18 @@ bool EligibilityModule::EvaluateThresholdingRule(
     const std::string& image_id) {
   double feature_value =
       RetrieveImageFeatureOrDie(thresholding_rule.feature_name(), image_id);
-  if (thresholding_rule.has_normalizing_feature_name()) {
-    const double normalizing_feature = RetrievePageLevelFeatureOrDie(
-        thresholding_rule.normalizing_feature_name());
+  if (thresholding_rule.has_normalizing_op()) {
+    const double normalizing_feature = RetrieveNormalizingFeatureOrDie(
+        thresholding_rule.feature_name(), thresholding_rule.normalizing_op());
     if (normalizing_feature != 0) {
       feature_value = feature_value / normalizing_feature;
     } else {
       feature_value = 0;
     }
   }
-  if (thresholding_rule.op() == FeatureLibrary::GT) {
+  if (thresholding_rule.thresholding_op() == FeatureLibrary::GT) {
     return feature_value > thresholding_rule.threshold();
-  } else if (thresholding_rule.op() == FeatureLibrary::LT) {
+  } else if (thresholding_rule.thresholding_op() == FeatureLibrary::LT) {
     return feature_value < thresholding_rule.threshold();
   } else {
     NOTREACHED();
@@ -226,11 +227,10 @@ void EligibilityModule::ComputeFeaturesForOrOfThresholdingRules(
 }
 
 double EligibilityModule::GetMaxFeatureValue(
-    FeatureLibrary::PageLevelFeatureName page_level_feature_name,
-    FeatureLibrary::ImageLevelFeatureName corresponding_image_feature_name,
+    FeatureLibrary::ImageLevelFeatureName feature_name,
     const std::vector<SingleImageGeometryFeatures>& images) {
-  if (const auto it = page_level_features_.find(page_level_feature_name);
-      it != page_level_features_.end()) {
+  if (const auto it = max_value_features_.find(feature_name);
+      it != max_value_features_.end()) {
     return it->second;
   }
   double max_value = 0.0;
@@ -240,14 +240,13 @@ double EligibilityModule::GetMaxFeatureValue(
     if (count++ > kMaxNumStored) {
       break;
     }
-    const double value =
-        GetImageFeatureValue(corresponding_image_feature_name, image);
+    const double value = GetImageFeatureValue(feature_name, image);
     if (value > max_value) {
       max_value = value;
     }
   }
-  if (page_level_features_.size() < kMaxNumStored) {
-    page_level_features_[page_level_feature_name] = max_value;
+  if (max_value_features_.size() < kMaxNumStored) {
+    max_value_features_[feature_name] = max_value;
   }
   return max_value;
 }
@@ -367,58 +366,40 @@ double EligibilityModule::RetrieveImageFeatureOrDie(
   return feature_opt.value();
 }
 
-double EligibilityModule::RetrievePageLevelFeatureOrDie(
-    FeatureLibrary::PageLevelFeatureName feature_name) {
-  if (const auto it = page_level_features_.find(feature_name);
-      it != page_level_features_.end()) {
-    return it->second;
+double EligibilityModule::RetrieveNormalizingFeatureOrDie(
+    FeatureLibrary::ImageLevelFeatureName feature_name,
+    FeatureLibrary::NormalizingOp normalizing_op) {
+  if (normalizing_op == FeatureLibrary::BY_VIEWPORT_AREA) {
+    return viewport_width_ * viewport_height_;
   }
-  CHECK(false) << "Did not find page-level feature.";
+  if (normalizing_op == FeatureLibrary::BY_MAX_VALUE) {
+    if (const auto it = max_value_features_.find(feature_name);
+        it != max_value_features_.end()) {
+      return it->second;
+    }
+    CHECK(false) << "Did not find normalizing feature.";
+  }
+  NOTREACHED();
   return 1;
 }
 
-double EligibilityModule::ComputeAndGetPageLevelFeatureValue(
-    FeatureLibrary::PageLevelFeatureName feature_name,
+double EligibilityModule::ComputeAndGetNormalizingFeatureValue(
+    FeatureLibrary::ImageLevelFeatureName feature_name,
+    FeatureLibrary::NormalizingOp normalizing_op,
     const std::vector<SingleImageGeometryFeatures>& images,
     bool limit_to_second_pass_eligible) {
-  const base::flat_map<FeatureLibrary::PageLevelFeatureName,
-                       FeatureLibrary::ImageLevelFeatureName>
-      features_map = {{FeatureLibrary::MAX_IMAGE_ORIGINAL_AREA,
-                       FeatureLibrary::IMAGE_ORIGINAL_AREA},
-                      {FeatureLibrary::MAX_IMAGE_ORIGINAL_ASPECT_RATIO,
-                       FeatureLibrary::IMAGE_ORIGINAL_ASPECT_RATIO},
-                      {FeatureLibrary::MAX_IMAGE_ONPAGE_AREA,
-                       FeatureLibrary::IMAGE_ONPAGE_AREA},
-                      {FeatureLibrary::MAX_IMAGE_ONPAGE_ASPECT_RATIO,
-                       FeatureLibrary::IMAGE_ONPAGE_ASPECT_RATIO},
-                      {FeatureLibrary::MAX_IMAGE_VISIBLE_AREA,
-                       FeatureLibrary::IMAGE_VISIBLE_AREA},
-                      {FeatureLibrary::MAX_IMAGE_FRACTION_VISIBLE,
-                       FeatureLibrary::IMAGE_FRACTION_VISIBLE}};
-  double viewport_area = 0;
-  switch (feature_name) {
-    case FeatureLibrary::VIEWPORT_AREA:
-      viewport_area = viewport_width_ * viewport_height_;
-      if (page_level_features_.size() < kMaxNumStored) {
-        page_level_features_[FeatureLibrary::VIEWPORT_AREA] = viewport_area;
-      }
-      return viewport_area;
-    case FeatureLibrary::MAX_IMAGE_ORIGINAL_AREA:
-    case FeatureLibrary::MAX_IMAGE_ORIGINAL_ASPECT_RATIO:
-    case FeatureLibrary::MAX_IMAGE_ONPAGE_AREA:
-    case FeatureLibrary::MAX_IMAGE_ONPAGE_ASPECT_RATIO:
-    case FeatureLibrary::MAX_IMAGE_VISIBLE_AREA:
-    case FeatureLibrary::MAX_IMAGE_FRACTION_VISIBLE:
-      if (!limit_to_second_pass_eligible) {
-        return GetMaxFeatureValue(feature_name, features_map.at(feature_name),
-                                  images);
-      } else {
-        return MaxFeatureValueAfterSecondPass(features_map.at(feature_name));
-      }
-    case FeatureLibrary::PAGE_LEVEL_UNSPECIFIED:
-      NOTREACHED();
-      return 1.0;
+  if (normalizing_op == FeatureLibrary::BY_VIEWPORT_AREA) {
+    return viewport_width_ * viewport_height_;
   }
+  if (normalizing_op == FeatureLibrary::BY_MAX_VALUE) {
+    if (!limit_to_second_pass_eligible) {
+      return GetMaxFeatureValue(feature_name, images);
+    } else {
+      return MaxFeatureValueAfterSecondPass(feature_name);
+    }
+  }
+  NOTREACHED();
+  return 1;
 }
 
 void EligibilityModule::GetDebugFeatureValuesForRules(
@@ -437,13 +418,19 @@ void EligibilityModule::GetDebugFeatureValuesForRules(
           RetrieveImageFeatureOrDie(feature_name, image_id);
       output_map[FeatureLibrary::ImageLevelFeatureName_Name(feature_name)] =
           feature_value;
-      if (ored_rule.has_normalizing_feature_name()) {
-        const FeatureLibrary::PageLevelFeatureName normalizing_name =
-            ored_rule.normalizing_feature_name();
+      if (ored_rule.has_normalizing_op()) {
+        const auto normalizing_op = ored_rule.normalizing_op();
         const double normalizing_value =
-            RetrievePageLevelFeatureOrDie(normalizing_name);
-        output_map[FeatureLibrary::PageLevelFeatureName_Name(
-            normalizing_name)] = normalizing_value;
+            RetrieveNormalizingFeatureOrDie(feature_name, normalizing_op);
+        if (normalizing_op == FeatureLibrary::BY_MAX_VALUE) {
+          output_map[kNormalizeByPrefix +
+                     FeatureLibrary::ImageLevelFeatureName_Name(feature_name)] =
+              normalizing_value;
+        } else {
+          output_map[kNormalizeByPrefix +
+                     FeatureLibrary::NormalizingOp_Name(normalizing_op)] =
+              normalizing_value;
+        }
         if (normalizing_value != 0) {
           output_map[kNormalizedPrefix +
                      FeatureLibrary::ImageLevelFeatureName_Name(feature_name)] =
@@ -457,14 +444,14 @@ void EligibilityModule::GetDebugFeatureValuesForRules(
 void EligibilityModule::RenormalizeForThirdPass() {
   for (const auto& third_pass_rule : spec_.post_renormalization_rules()) {
     for (const auto& thresholding_rule : third_pass_rule.rules()) {
-      if (thresholding_rule.has_normalizing_feature_name() &&
-          thresholding_rule.normalizing_feature_name() !=
-              FeatureLibrary::VIEWPORT_AREA) {
-        const auto page_feature_name =
-            thresholding_rule.normalizing_feature_name();
-        if (page_level_features_.size() < kMaxNumStored) {
-          page_level_features_[page_feature_name] =
-              ComputeAndGetPageLevelFeatureValue(page_feature_name, {}, true);
+      if (thresholding_rule.has_normalizing_op() &&
+          thresholding_rule.normalizing_op() == FeatureLibrary::BY_MAX_VALUE) {
+        const auto feature_name = thresholding_rule.feature_name();
+        if (max_value_features_.size() < kMaxNumStored ||
+            max_value_features_.contains(feature_name)) {
+          max_value_features_[feature_name] =
+              ComputeAndGetNormalizingFeatureValue(
+                  feature_name, FeatureLibrary::BY_MAX_VALUE, {}, true);
         }
       }
     }

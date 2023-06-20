@@ -42,32 +42,31 @@ EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
     // This is the default configuration if a config is not provided.
     auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
     new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
-    new_rule->set_normalizing_feature_name(FeatureLibrary::VIEWPORT_AREA);
-    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_normalizing_op(FeatureLibrary::BY_VIEWPORT_AREA);
+    new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(0.01);
     new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
     new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_WIDTH);
-    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(100);
     new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
     new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_HEIGHT);
-    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(100);
     new_rule = eligibility_spec.add_post_renormalization_rules()->add_rules();
     new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
-    new_rule->set_normalizing_feature_name(
-        FeatureLibrary::MAX_IMAGE_VISIBLE_AREA);
-    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+    new_rule->set_thresholding_op(FeatureLibrary::GT);
     new_rule->set_threshold(0.01);
     auto* shopping_rule =
         eligibility_spec.add_classifier_score_rules()->add_rules();
     shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-    shopping_rule->set_op(FeatureLibrary::GT);
+    shopping_rule->set_thresholding_op(FeatureLibrary::GT);
     shopping_rule->set_threshold(0.5);
     auto* sensitivity_rule =
         eligibility_spec.add_classifier_score_rules()->add_rules();
     sensitivity_rule->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
-    sensitivity_rule->set_op(FeatureLibrary::LT);
+    sensitivity_rule->set_thresholding_op(FeatureLibrary::LT);
     sensitivity_rule->set_threshold(0.5);
   }
 
