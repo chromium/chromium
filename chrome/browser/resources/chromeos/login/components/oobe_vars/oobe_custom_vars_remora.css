@@ -45,7 +45,12 @@
       --oobe-select-font-size: 18px;
       --oobe-select-line-height: 24px;
 
+      --oobe-welcome-header-font-size: 36px;
       --oobe-welcome-header-font-weight: 400; /* regular */
+      --oobe-welcome-header-line-height: 44px;
+
+      --oobe-welcome-subheader-font-size: 24px;
+      --oobe-welcome-subheader-line-height: 32px;
 
       --oobe-content-dialog-font-family: var(--oobe-default-font-family);
       --oobe-content-dialog-font-size: var(--oobe-default-font-size);

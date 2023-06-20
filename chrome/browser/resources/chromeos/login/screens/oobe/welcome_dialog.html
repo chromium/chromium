@@ -120,8 +120,8 @@ found in the LICENSE file.
   #title {
     color: var(--oobe-header-text-color);
     font-family: var(--oobe-header-font-family);
-    font-size: 36px;
-    line-height: 44px;
+    font-size: var(--oobe-welcome-header-font-size);
+    line-height: var(--oobe-welcome-header-line-height);
     margin-bottom: 0;
   }
   :host-context([orientation='horizontal']) #title {
@@ -131,8 +131,8 @@ found in the LICENSE file.
     margin-top: 40px;
   }
   :host-context(.simon-enabled) #title {
-    font-size: 52px;
-    line-height: 60px;
+    font-size: var(--oobe-welcome-header-font-size);
+    line-height: var(--oobe-welcome-header-line-height);
     margin-bottom: 48px;
     margin-top: auto;
   }
@@ -140,8 +140,8 @@ found in the LICENSE file.
   #subtitle {
     color: var(--oobe-subheader-text-color);
     font-family: var(--oobe-header-font-family);
-    font-size: 24px;
-    line-height: 32px;
+    font-size: var(--oobe-welcome-subheader-font-size);
+    line-height: var(--oobe-welcome-subheader-line-height);
     margin-top: 16px;
   }
 
@@ -150,6 +150,13 @@ found in the LICENSE file.
   }
   :host-context([orientation='vertical']) #subtitle {
     margin-bottom: 40px;
+  }
+
+  :host-context(.jelly-enabled) .welcome-left-buttons {
+    --oobe-button-font-family: var(--cros-body-0-font-family);
+    --oobe-button-font-size: var(--cros-body-0-font-size);
+    --oobe-button-font-weight: var(--cros-body-0-font-weight);
+    line-height: var(--cros-body-0-line-height);
   }
 
   .welcome-header-text {
@@ -177,7 +184,7 @@ found in the LICENSE file.
     </div>
   </template>
   <div id="content">
-    <div id="buttons" class="layout vertical">
+    <div id="buttons" class="layout vertical welcome-left-buttons">
       <oobe-icon-button
         id="languageSelectionButton"
         icon1x="oobe-20:welcome-language"
