@@ -224,7 +224,6 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
     _titleLabel.font =
         [UIFont preferredFontForTextStyle:UIFontTextStyleHeadline];
     _titleLabel.adjustsFontForContentSizeCategory = YES;
-    self.navigationItem.titleView = _titleLabel;
     self.usernamesWithMoveToAccountOfferRecorded = [[NSMutableSet alloc] init];
   }
   return self;
@@ -238,6 +237,13 @@ bool ShouldAllowToRestoreWarning(DetailsContext context, bool is_muted) {
   self.tableView.accessibilityIdentifier = kPasswordDetailsViewControllerId;
   self.tableView.allowsSelectionDuringEditing = YES;
   [self setOrExtendAuthValidityTimer];
+}
+
+- (void)viewWillAppear:(BOOL)animated {
+  [super viewWillAppear:animated];
+  // Title may change between the call to -init and -viewWillAppear, so we want
+  // to wait until the last moment possible before setting the titleView.
+  self.navigationItem.titleView = _titleLabel;
 }
 
 - (void)viewDidDisappear:(BOOL)animated {

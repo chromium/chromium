@@ -54,6 +54,10 @@ CGFloat const kTableViewWidthMultiplier = 0.65;
 
 // Scroll view's bottom anchor constant.
 CGFloat const kScrollViewBottomAnchorConstant = 10;
+
+// Initial height's extra bottom height padding so it does not crop the cell.
+CGFloat const kInitialHeightPadding = 5;
+
 }  // namespace
 
 @interface PasswordSuggestionBottomSheetViewController () <
@@ -499,7 +503,7 @@ CGFloat const kScrollViewBottomAnchorConstant = 10;
 - (CGFloat)initialHeight {
   CGFloat bottomSheetHeight = [self bottomSheetHeight];
   if (bottomSheetHeight > 0) {
-    return bottomSheetHeight;
+    return bottomSheetHeight + kInitialHeightPadding;
   }
   // Return an estimated height if we can't calculate the actual height.
   return kEstimatedBaseHeightForBottomSheet + kTableViewEstimatedRowHeight;
