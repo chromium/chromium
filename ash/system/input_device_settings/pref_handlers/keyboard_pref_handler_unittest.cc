@@ -14,6 +14,7 @@
 #include "ash/system/input_device_settings/input_device_tracker.h"
 #include "ash/test/ash_test_base.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/time/time.h"
@@ -866,7 +867,7 @@ class KeyboardSettingsPrefConversionTest
 
  protected:
   std::string device_key_;
-  const mojom::KeyboardSettings* settings_;
+  raw_ptr<const mojom::KeyboardSettings, ExperimentalAsh> settings_;
 };
 
 INSTANTIATE_TEST_SUITE_P(

@@ -122,7 +122,7 @@ class NetworkSmsHandlerTest : public testing::Test {
   std::unique_ptr<TestObserver> test_observer_;
 
  private:
-  FakeSMSClient* fake_sms_client_;
+  raw_ptr<FakeSMSClient, ExperimentalAsh> fake_sms_client_;
 };
 
 TEST_F(NetworkSmsHandlerTest, DbusStub) {

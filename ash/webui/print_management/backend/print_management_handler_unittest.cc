@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/webui/print_management/backend/print_management_delegate.h"
+#include "base/memory/raw_ptr.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::printing::printing_manager {
@@ -44,7 +45,7 @@ class PrintManagementHandlerTest : public testing::Test {
   PrintManagementHandler* handler() { return handler_.get(); }
 
  private:
-  FakePrintManagementDelegate* delegate_;
+  raw_ptr<FakePrintManagementDelegate, ExperimentalAsh> delegate_;
   std::unique_ptr<PrintManagementHandler> handler_;
 };
 

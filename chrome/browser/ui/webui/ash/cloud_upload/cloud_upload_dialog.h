@@ -205,7 +205,7 @@ class CloudOpenTask : public BrowserListObserver,
   gfx::NativeWindow modal_parent_;
   std::vector<::file_manager::file_tasks::TaskDescriptor> local_tasks_;
   size_t pending_uploads_ = 0;
-  CloudUploadDialog* pending_dialog_ = nullptr;
+  raw_ptr<CloudUploadDialog, ExperimentalAsh> pending_dialog_ = nullptr;
   base::ElapsedTimer upload_timer_;
   int64_t upload_total_size_ = 0;
   OfficeFilesTransferRequired transfer_required_ =

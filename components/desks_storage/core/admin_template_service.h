@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_DESKS_STORAGE_CORE_ADMIN_TEMPLATE_SERVICE_H_
 #define COMPONENTS_DESKS_STORAGE_CORE_ADMIN_TEMPLATE_SERVICE_H_
 
+#include "base/memory/raw_ptr.h"
 #include "components/desks_storage/core/desk_model_observer.h"
 #include "components/desks_storage/core/local_desk_data_manager.h"
 #include "components/keyed_service/core/keyed_service.h"
@@ -52,7 +53,7 @@ class AdminTemplateService : public KeyedService,
 
   // Pref service used to monitor preference updates when new policies are
   // uploaded to the user.
-  PrefService* pref_service_ = nullptr;
+  raw_ptr<PrefService, ExperimentalAsh> pref_service_ = nullptr;
 
   // Preference Change Registrar updates the storage backend when a new policy
   // has been downloaded.

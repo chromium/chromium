@@ -6,6 +6,7 @@
 
 #include <string>
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/login/test/js_checker.h"
 #include "chrome/browser/ash/login/test/test_predicate_waiter.h"
@@ -83,7 +84,7 @@ class KerberosInBrowserDialogButtonTest : public InProcessBrowserTest {
     }))->Wait();
   }
 
-  content::WebUI* webui_;
+  raw_ptr<content::WebUI, ExperimentalAsh> webui_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;

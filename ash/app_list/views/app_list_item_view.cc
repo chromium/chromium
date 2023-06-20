@@ -146,7 +146,7 @@ class IconBackgroundLayer : public ui::LayerOwner {
   }
 
  private:
-  views::View* const icon_view_;
+  const raw_ptr<views::View, ExperimentalAsh> icon_view_;
 };
 
 // The class clips the provided folder icon image.

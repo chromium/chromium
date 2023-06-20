@@ -7,6 +7,7 @@
 
 #include "ash/quick_pair/common/quick_pair_browser_delegate.h"
 #include "base/component_export.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/scoped_refptr.h"
 #include "components/image_fetcher/core/image_fetcher.h"
 #include "components/prefs/testing_pref_service.h"
@@ -42,7 +43,7 @@ class FakeQuickPairBrowserDelegate : public QuickPairBrowserDelegate {
 
  private:
   TestingPrefServiceSimple pref_service_;
-  signin::IdentityManager* identity_manager_ = nullptr;
+  raw_ptr<signin::IdentityManager, ExperimentalAsh> identity_manager_ = nullptr;
 };
 
 }  // namespace ash::quick_pair

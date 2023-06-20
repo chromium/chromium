@@ -14,6 +14,7 @@
 #include "ash/shell.h"
 #include "ash/system/toast/anchored_nudge.h"
 #include "base/containers/contains.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/strings/strcat.h"
 #include "ui/aura/window.h"
@@ -103,7 +104,8 @@ class AnchoredNudgeManagerImpl::NudgeHoverObserver : public ui::EventObserver {
   // This is run whenever the mouse enters or exits the observed window with a
   // parameter to indicate whether the window is being hovered.
   HoverStateChangeCallback hover_state_change_callback_;
-  AnchoredNudgeManagerImpl* const anchored_nudge_manager_;
+  const raw_ptr<AnchoredNudgeManagerImpl, ExperimentalAsh>
+      anchored_nudge_manager_;
 };
 
 // A view observer that is used to close the nudge's widget whenever its

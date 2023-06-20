@@ -8,6 +8,7 @@
 #include <string>
 
 #include "base/command_line.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -103,7 +104,8 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
  protected:
   base::test::SingleThreadTaskEnvironment task_environment_;
-  FakeTargetDeviceConnectionBroker* fake_target_device_connection_broker_;
+  raw_ptr<FakeTargetDeviceConnectionBroker, ExperimentalAsh>
+      fake_target_device_connection_broker_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;

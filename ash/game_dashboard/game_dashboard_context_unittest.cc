@@ -14,6 +14,7 @@
 #include "ash/public/cpp/window_properties.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/check.h"
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ui/base/window_properties.h"
 #include "chromeos/ui/frame/frame_header.h"
 #include "chromeos/ui/wm/window_util.h"
@@ -72,7 +73,8 @@ class GameDashboardContextTest : public GameDashboardTestBase {
 
  protected:
   std::unique_ptr<aura::Window> game_window_;
-  const GameDashboardContext* game_context_;
+  raw_ptr<const GameDashboardContext, ExperimentalAsh> game_context_;
+  const gfx::Rect game_window_bounds_ = gfx::Rect(0, 0, 400, 200);
 };
 
 // Tests

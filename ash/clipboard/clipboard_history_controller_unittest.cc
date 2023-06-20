@@ -21,6 +21,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/location.h"
+#include "base/memory/raw_ptr.h"
 #include "base/notreached.h"
 #include "base/run_loop.h"
 #include "base/scoped_observation.h"
@@ -676,7 +677,7 @@ class ClipboardHistoryControllerWithTextfieldTest
   }
 
   std::unique_ptr<views::Widget> textfield_widget_;
-  views::Textfield* textfield_;
+  raw_ptr<views::Textfield, ExperimentalAsh> textfield_;
 };
 
 TEST_F(ClipboardHistoryControllerWithTextfieldTest, PasteClipboardItemById) {

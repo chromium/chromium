@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_ASH_BOREALIS_BOREALIS_INSTALL_URL_HANDLER_H_
 #define CHROME_BROWSER_ASH_BOREALIS_BOREALIS_INSTALL_URL_HANDLER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/profiles/profile.h"
 
 namespace borealis {
@@ -17,7 +18,7 @@ class BorealisInstallUrlHandler {
  private:
   void RegisterHandler();
 
-  Profile* profile_;
+  raw_ptr<Profile, ExperimentalAsh> profile_;
 };
 
 }  // namespace borealis

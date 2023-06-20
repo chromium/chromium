@@ -5,6 +5,7 @@
 #include "chromeos/ash/components/nearby/presence/credentials/nearby_presence_credential_manager_impl.h"
 
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/test/gmock_callback_support.h"
 #include "base/test/gtest_util.h"
@@ -191,7 +192,8 @@ class NearbyPresenceCredentialManagerImplTest : public testing::Test {
   base::test::TaskEnvironment task_environment_{
       base::test::TaskEnvironment::TimeSource::MOCK_TIME};
   FakeNearbyPresence fake_nearby_presence_;
-  FakeLocalDeviceDataProvider* fake_local_device_data_provider_ = nullptr;
+  raw_ptr<FakeLocalDeviceDataProvider, ExperimentalAsh>
+      fake_local_device_data_provider_ = nullptr;
   TestingPrefServiceSimple pref_service_;
   signin::IdentityTestEnvironment identity_test_env_;
   scoped_refptr<network::SharedURLLoaderFactory> shared_factory_;

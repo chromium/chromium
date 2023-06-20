@@ -5,6 +5,7 @@
 #ifndef ASH_TEST_RASTER_SCALE_CHANGE_TRACKER_H_
 #define ASH_TEST_RASTER_SCALE_CHANGE_TRACKER_H_
 
+#include "base/memory/raw_ptr.h"
 #include "ui/aura/window.h"
 #include "ui/aura/window_observer.h"
 
@@ -27,7 +28,7 @@ class RasterScaleChangeTracker : public aura::WindowObserver {
   std::vector<float> TakeRasterScaleChanges();
 
  private:
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
   std::vector<float> raster_scales_;
 
   void Shutdown();

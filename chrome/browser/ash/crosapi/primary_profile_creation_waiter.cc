@@ -21,7 +21,7 @@ PrimaryProfileCreationWaiter::PrimaryProfileCreationWaiter(
     ProfileManager* profile_manager,
     base::OnceClosure callback)
     : profile_manager_(profile_manager), callback_(std::move(callback)) {
-  profile_manager_observation_.Observe(profile_manager_);
+  profile_manager_observation_.Observe(profile_manager_.get());
 }
 
 PrimaryProfileCreationWaiter::~PrimaryProfileCreationWaiter() = default;

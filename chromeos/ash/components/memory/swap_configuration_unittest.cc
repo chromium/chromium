@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/memory/swap_configuration.h"
 
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/components/dbus/resourced/fake_resourced_client.h"
@@ -25,7 +26,7 @@ class SwapConfigurationPressureThreshold : public testing::Test {
  protected:
   base::test::TaskEnvironment task_environment_;
   base::test::ScopedFeatureList feature_list_;
-  FakeResourcedClient* resourced_client_ = nullptr;
+  raw_ptr<FakeResourcedClient, ExperimentalAsh> resourced_client_ = nullptr;
 };
 
 }  // namespace

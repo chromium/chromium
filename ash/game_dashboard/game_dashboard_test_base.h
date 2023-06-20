@@ -7,6 +7,7 @@
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 #include "ash/test/ash_test_base.h"
+#include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "ui/aura/window_observer.h"
 
@@ -60,7 +61,7 @@ class IsGameWindowPropertyObserver : public aura::WindowObserver {
 
  private:
   bool received_on_property_change_ = false;
-  aura::Window* window_;
+  raw_ptr<aura::Window, ExperimentalAsh> window_;
 };
 
 }  // namespace ash

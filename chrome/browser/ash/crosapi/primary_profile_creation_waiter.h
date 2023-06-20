@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/profiles/profile_manager_observer.h"
 
@@ -41,7 +42,7 @@ class PrimaryProfileCreationWaiter : public ProfileManagerObserver {
   PrimaryProfileCreationWaiter(ProfileManager* profile_manager,
                                base::OnceClosure callback);
 
-  ProfileManager* profile_manager_;
+  raw_ptr<ProfileManager, ExperimentalAsh> profile_manager_;
   base::ScopedObservation<ProfileManager, ProfileManagerObserver>
       profile_manager_observation_{this};
   base::OnceClosure callback_;

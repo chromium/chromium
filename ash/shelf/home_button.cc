@@ -31,6 +31,7 @@
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/check_op.h"
 #include "base/i18n/rtl.h"
+#include "base/memory/raw_ptr.h"
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "base/time/time.h"
@@ -253,7 +254,7 @@ class HomeButton::ButtonImageView : public views::View {
                     : cros_tokens::kCrosSysSystemOnBase;
   }
 
-  HomeButtonController* const button_controller_;
+  const raw_ptr<HomeButtonController, ExperimentalAsh> button_controller_;
 
   bool toggled_ = false;
 };

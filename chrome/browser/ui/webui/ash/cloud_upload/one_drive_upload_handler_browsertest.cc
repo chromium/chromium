@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/cloud_upload/one_drive_upload_handler.h"
 
 #include "base/files/file_util.h"
+#include "base/memory/raw_ptr.h"
 #include "base/path_service.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
@@ -195,7 +196,7 @@ class OneDriveUploadHandlerTest : public InProcessBrowserTest {
   base::FilePath read_only_dir_;
 
  private:
-  file_system_provider::FakeProvidedFileSystem*
+  raw_ptr<file_system_provider::FakeProvidedFileSystem, ExperimentalAsh>
       provided_file_system_;  // Owned by Service.
   base::test::ScopedFeatureList feature_list_;
   base::ScopedTempDir temp_dir_;

@@ -4,6 +4,7 @@
 
 #include "chromeos/ash/components/dbus/swap_management/swap_management_client.h"
 
+#include "base/memory/raw_ptr.h"
 #include "chromeos/ash/components/dbus/swap_management/fake_swap_management_client.h"
 #include "dbus/bus.h"
 #include "dbus/message.h"
@@ -101,7 +102,7 @@ class SwapManagementClientImpl : public SwapManagementClient {
     std::move(callback).Run(response != nullptr);
   }
 
-  dbus::ObjectProxy* swap_management_proxy_ = nullptr;
+  raw_ptr<dbus::ObjectProxy, ExperimentalAsh> swap_management_proxy_ = nullptr;
   base::WeakPtrFactory<SwapManagementClientImpl> weak_ptr_factory_{this};
 };
 

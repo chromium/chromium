@@ -248,7 +248,7 @@ class TestFloatingWorkSpaceService : public FloatingWorkspaceService {
   const sync_sessions::SyncedSession* restored_session_ = nullptr;
   raw_ptr<const DeskTemplate, ExperimentalAsh>
       restored_floating_workspace_template_ = nullptr;
-  DeskTemplate* uploaded_desk_template_ = nullptr;
+  raw_ptr<DeskTemplate, ExperimentalAsh> uploaded_desk_template_ = nullptr;
   std::unique_ptr<MockOpenTabsUIDelegate> mock_open_tabs_;
   std::unique_ptr<MockDesksClient> mock_desks_client_;
 };
