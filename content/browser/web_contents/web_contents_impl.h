@@ -103,10 +103,6 @@ class WakeLock;
 }
 }  // namespace device
 
-namespace power_scheduler {
-class PowerModeVoter;
-}
-
 namespace service_manager {
 class InterfaceProvider;
 }  // namespace service_manager
@@ -2325,8 +2321,6 @@ class CONTENT_EXPORT WebContentsImpl : public WebContents,
   // example, we may get multiple hints due to imprecise mouse movement while
   // the user is trying to move the mouse to the back button.
   base::TimeTicks last_back_navigation_hint_time_ = base::TimeTicks::Min();
-
-  std::unique_ptr<power_scheduler::PowerModeVoter> audible_power_mode_voter_;
 
   viz::FrameSinkId xr_render_target_;
 

@@ -11,7 +11,6 @@
 #include "base/sequence_checker.h"
 #include "base/synchronization/lock.h"
 #include "base/thread_annotations.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "content/common/content_export.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
@@ -53,7 +52,6 @@ class CONTENT_EXPORT ProcessVisibilityTracker {
   scoped_refptr<base::ObserverListThreadSafe<ProcessVisibilityObserver>>
       observers_ GUARDED_BY(lock_);
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_visibility_voter_;
   SEQUENCE_CHECKER(main_thread_);
 };
 

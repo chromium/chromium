@@ -201,7 +201,6 @@ source_set("common") {
     "//build:chromeos_buildflags",
     "//build/util:chromium_git_revision",
     "//components/discardable_memory/common",
-    "//components/power_scheduler",
     "//components/services/filesystem/public/mojom",
     "//components/tracing:startup_tracing",
     "//content:content_resources",

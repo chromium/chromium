@@ -30,7 +30,6 @@
 #include "base/timer/timer.h"
 #include "build/build_config.h"
 #include "cc/mojom/render_frame_metadata.mojom.h"
-#include "components/power_scheduler/power_mode_voter.h"
 #include "components/viz/common/surfaces/frame_sink_id.h"
 #include "content/browser/renderer_host/agent_scheduling_group_host.h"
 #include "content/browser/renderer_host/event_with_latency_info.h"
@@ -1493,8 +1492,6 @@ class CONTENT_EXPORT RenderWidgetHostImpl
 
   mojo::Remote<blink::mojom::WidgetCompositor> widget_compositor_;
 
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_input_voter_;
-  std::unique_ptr<power_scheduler::PowerModeVoter> power_mode_loading_voter_;
   absl::optional<BrowserUIThreadScheduler::UserInputActiveHandle>
       user_input_active_handle_;
 

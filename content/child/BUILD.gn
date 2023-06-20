@@ -71,7 +71,6 @@ target(link_target_type, "child") {
     "//components/autofill/core/common:features",
     "//components/discardable_memory/client",
     "//components/discardable_memory/public/mojom",
-    "//components/power_scheduler",
     "//components/tracing:startup_tracing",
     "//components/variations",
     "//components/webcrypto",

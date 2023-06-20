@@ -97,7 +97,6 @@ source_set("browser") {
     "//components/payments/content/icon",
     "//components/payments/mojom",
     "//components/power_monitor",
-    "//components/power_scheduler",
     "//components/services/filesystem:lib",
     "//components/services/quarantine:quarantine",
     "//components/services/screen_ai/buildflags",

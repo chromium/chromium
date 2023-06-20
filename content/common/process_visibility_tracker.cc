@@ -5,7 +5,6 @@
 #include "content/common/process_visibility_tracker.h"
 
 #include "base/no_destructor.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 
 namespace content {
 
@@ -17,10 +16,7 @@ ProcessVisibilityTracker* ProcessVisibilityTracker::GetInstance() {
 
 ProcessVisibilityTracker::ProcessVisibilityTracker()
     : observers_(base::MakeRefCounted<
-                 base::ObserverListThreadSafe<ProcessVisibilityObserver>>()),
-      power_mode_visibility_voter_(
-          power_scheduler::PowerModeArbiter::GetInstance()->NewVoter(
-              "PowerModeVoter.Visibility")) {}
+                 base::ObserverListThreadSafe<ProcessVisibilityObserver>>()) {}
 
 ProcessVisibilityTracker::~ProcessVisibilityTracker() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(main_thread_);
@@ -62,10 +58,6 @@ void ProcessVisibilityTracker::OnProcessVisibilityChanged(bool visible) {
     observers_->Notify(
         FROM_HERE, &ProcessVisibilityObserver::OnVisibilityChanged, visible);
   }
-
-  power_mode_visibility_voter_->VoteFor(
-      visible ? power_scheduler::PowerMode::kIdle
-              : power_scheduler::PowerMode::kBackground);
 }
 
 }  // namespace content

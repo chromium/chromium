@@ -41,7 +41,6 @@
 #include "base/trace_event/memory_dump_manager.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "content/child/browser_exposed_child_interfaces.h"
 #include "content/child/child_process.h"
 #include "content/common/child_process.mojom.h"
@@ -687,9 +686,6 @@ void ChildThreadImpl::Init(const Options& options) {
     BindHostReceiver(remote_power_monitor.InitWithNewPipeAndPassReceiver());
     source_ptr->Init(std::move(remote_power_monitor));
   }
-
-  // Requires base::PowerMonitor to be initialized first.
-  power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
 #if BUILDFLAG(IS_POSIX)
   // Check that --process-type is specified so we don't do this in unit tests

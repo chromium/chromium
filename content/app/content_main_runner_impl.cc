@@ -54,7 +54,6 @@
 #include "components/download/public/common/download_task_runner.h"
 #include "components/optimization_guide/machine_learning_tflite_buildflags.h"
 #include "components/power_monitor/make_power_monitor_device_source.h"
-#include "components/power_scheduler/power_mode_arbiter.h"
 #include "components/variations/variations_ids_provider.h"
 #include "content/app/mojo_ipc_support.h"
 #include "content/browser/browser_main.h"
@@ -1232,9 +1231,6 @@ int ContentMainRunnerImpl::RunBrowser(MainFunctionParams main_params,
 
     discardable_shared_memory_manager_ =
         std::make_unique<discardable_memory::DiscardableSharedMemoryManager>();
-
-    // Requires base::PowerMonitor to be initialized first.
-    power_scheduler::PowerModeArbiter::GetInstance()->OnThreadPoolAvailable();
 
     mojo_ipc_support_ =
         std::make_unique<MojoIpcSupport>(BrowserTaskExecutor::CreateIOThread());
