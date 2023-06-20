@@ -8,6 +8,7 @@ import 'chrome://resources/js/ios/web_ui.js';
 
 import 'chrome://resources/js/jstemplate_compiled.js';
 import './strings.m.js';
+import './experiment.js';
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 import {sendWithPromise} from 'chrome://resources/js/cr.js';
@@ -15,7 +16,9 @@ import {FocusOutlineManager} from 'chrome://resources/js/focus_outline_manager.j
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {isIOS} from 'chrome://resources/js/platform.js';
 import {PromiseResolver} from 'chrome://resources/js/promise_resolver.js';
-import {$, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+import {$, getDeepActiveElement, getRequiredElement} from 'chrome://resources/js/util_ts.js';
+
+import {FlagsExperimentElement} from './experiment.js';
 
 let lastChanged: HTMLElement|null = null;
 let lastFocused: HTMLElement|null = null;
@@ -29,12 +32,6 @@ const experimentalFeaturesResolver: PromiseResolver<void> =
 Object.assign(
     window,
     {experimentalFeaturesReadyForTest: experimentalFeaturesResolver.promise});
-
-// Declare properties that are augmented on some HTMLElement instances by
-// jstemplate.
-interface WithExtras {
-  internal_name: string;
-}
 
 interface Tab {
   tabEl: HTMLElement;
@@ -109,38 +106,31 @@ function renderTemplate(experimentalFeaturesData: ExperimentalFeaturesData) {
   showRestartToast(experimentalFeaturesData.needsRestart);
 
   // Add handlers to dynamically created HTML elements.
-  let selectElements =
-      document.body.querySelectorAll<HTMLSelectElement&WithExtras>(
-          '.experiment-select');
-  for (const element of selectElements) {
-    element.onchange = function() {
-      handleSelectExperimentalFeatureChoice(element, element.selectedIndex);
-      lastChanged = element;
-      return false;
-    };
-    registerFocusEvents(element);
-  }
-
-  selectElements = document.body.querySelectorAll<HTMLSelectElement&WithExtras>(
-      '.experiment-enable-disable');
-  for (const element of selectElements) {
-    element.onchange = function() {
-      handleEnableExperimentalFeature(
-          element, element.options[element.selectedIndex]!.value == 'enabled');
-      lastChanged = element;
-      return false;
-    };
-    registerFocusEvents(element);
-  }
-
-  const textAreaElements =
-      document.body.querySelectorAll<HTMLTextAreaElement&WithExtras>(
-          '.experiment-origin-list-value');
-  for (const element of textAreaElements) {
-    element.onchange = function() {
-      handleSetOriginListFlag(element, element.value);
-      return false;
-    };
+  const experiments = document.body.querySelectorAll('flags-experiment');
+  for (const experiment of experiments) {
+    const select =
+        experiment.shadowRoot!.querySelector<HTMLSelectElement>('select');
+    if (select) {
+      select.onchange = function() {
+        if (select.classList.contains('experiment-select')) {
+          handleSelectExperimentalFeatureChoice(select, select.selectedIndex);
+        } else {
+          handleEnableExperimentalFeature(
+              select, select.options[select.selectedIndex]!.value == 'enabled');
+        }
+        lastChanged = select;
+        return false;
+      };
+      registerFocusEvents(select);
+    }
+    const textarea =
+        experiment.shadowRoot!.querySelector<HTMLTextAreaElement>('textarea');
+    if (textarea) {
+      textarea.onchange = function() {
+        handleSetOriginListFlag(textarea, textarea.value);
+        return false;
+      };
+    }
   }
 
   assert(restartButton || isIOS);
@@ -213,14 +203,18 @@ function registerFocusEvents(el: HTMLElement) {
 function highlightReferencedFlag() {
   if (window.location.hash) {
     const el = document.body.querySelector(window.location.hash);
-    if (el && !el.classList.contains('referenced')) {
+    if (!el) {
+      return;
+    }
+    const experiment = el.querySelector('flags-experiment');
+    if (experiment && !experiment.classList.contains('referenced')) {
       // Unhighlight whatever's highlighted.
       if (document.body.querySelector('.referenced')) {
         document.body.querySelector('.referenced')!.classList.remove(
             'referenced');
       }
       // Highlight the referenced element.
-      el.classList.add('referenced');
+      experiment.classList.add('referenced');
 
       // <if expr="not is_ios">
       // Switch to unavailable tab if the flag is in this section.
@@ -290,16 +284,17 @@ function showRestartToast(show: boolean) {
  * `enabled` and `is_default` are only set if the feature is single valued.
  * `enabled` is true if the feature is currently enabled.
  * `is_default` is true if the feature is in its default state.
- * `choices` is only set if the entry has multiple values.
+ * `options` is only set if the entry has multiple values.
  */
-interface Feature {
+export interface Feature {
   internal_name: string;
   name: string;
   description: string;
   enabled: boolean;
   is_default: boolean;
   supported_platforms: string[];
-  choices?: Array<{
+  origin_list_value?: string;
+  options?: Array<{
     internal_name: string,
     description: string,
     selected: boolean,
@@ -356,11 +351,16 @@ function returnExperimentalFeatures(
  * @param node The select node for the experiment being changed.
  * @param index The selected option index.
  */
-function experimentChangesUiUpdates(
-    node: HTMLSelectElement&WithExtras, index: number) {
+function experimentChangesUiUpdates(node: HTMLSelectElement, index: number) {
   const selected = node.options[index]!;
+  const internalName = node.dataset['internalName'];
+  if (!internalName) {
+    return;
+  }
   const experimentContainerEl =
-      getRequiredElement(node.internal_name).firstElementChild!;
+      getRequiredElement(internalName)
+          .firstElementChild!.shadowRoot!.querySelector(
+              '.experiment-default, .experiment-switched')!;
   const isDefault =
       ('default' in selected.dataset && selected.dataset['default'] === '1') ||
       (!('default' in selected.dataset) && index === 0);
@@ -376,25 +376,26 @@ function experimentChangesUiUpdates(
  * @param enable Whether to enable or disable the experiment.
  */
 function handleEnableExperimentalFeature(
-    node: HTMLSelectElement&WithExtras, enable: boolean) {
+    node: HTMLSelectElement, enable: boolean) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
-  if (!node.internal_name) {
+  const internalName = node.dataset['internalName'];
+  if (!internalName) {
     return;
   }
   chrome.send(
-      'enableExperimentalFeature',
-      [String(node.internal_name), String(enable)]);
+      'enableExperimentalFeature', [String(internalName), String(enable)]);
   experimentChangesUiUpdates(node, enable ? 1 : 0);
 }
 
-function handleSetOriginListFlag(node: HTMLElement&WithExtras, value: string) {
+function handleSetOriginListFlag(node: HTMLElement, value: string) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
-  if (!node.internal_name) {
+  const internalName = node.dataset['internalName'];
+  if (!internalName) {
     return;
   }
-  chrome.send('setOriginListFlag', [String(node.internal_name), value]);
+  chrome.send('setOriginListFlag', [String(internalName), value]);
   showRestartToast(true);
 }
 
@@ -405,29 +406,30 @@ function handleSetOriginListFlag(node: HTMLElement&WithExtras, value: string) {
  * @param index The index of the option that was selected.
  */
 function handleSelectExperimentalFeatureChoice(
-    node: HTMLSelectElement&WithExtras, index: number) {
+    node: HTMLSelectElement, index: number) {
   /* This function is an onchange handler, which can be invoked during page
    * restore - see https://crbug.com/1038638. */
-  if (!node.internal_name) {
+  const internalName = node.dataset['internalName'];
+  if (!internalName) {
     return;
   }
   chrome.send(
       'enableExperimentalFeature',
-      [String(node.internal_name) + '@' + index, 'true']);
+      [String(internalName) + '@' + index, 'true']);
   experimentChangesUiUpdates(node, index);
 }
 
 /** Type for storing the elements which are searched on. */
 interface SearchContent {
-  link: NodeListOf<HTMLElement>|null;
-  title: NodeListOf<HTMLElement>|null;
-  description: NodeListOf<HTMLElement>|null;
+  link: HTMLElement[];
+  title: HTMLElement[];
+  description: HTMLElement[];
 }
 
 const emptySearchContent: SearchContent = Object.freeze({
-  link: null,
-  title: null,
-  description: null,
+  link: [],
+  title: [],
+  description: [],
 });
 
 // Delay in ms following a keypress, before a search is made.
@@ -438,8 +440,10 @@ const SEARCH_DEBOUNCE_TIME_MS: number = 150;
  */
 class FlagSearch {
   private experiments_: SearchContent = Object.assign({}, emptySearchContent);
+  // <if expr="not is_ios">
   private unavailableExperiments_: SearchContent =
       Object.assign({}, emptySearchContent);
+  // </if>
   private searchIntervalId_: number|null = null;
 
   private searchBox_: HTMLInputElement;
@@ -457,19 +461,11 @@ class FlagSearch {
    * collates the text elements used for string matching.
    */
   init() {
-    this.experiments_.link =
-        document.body.querySelectorAll('#tab-content-available .permalink');
-    this.experiments_.title = document.body.querySelectorAll(
-        '#tab-content-available .experiment-name');
-    this.experiments_.description =
-        document.body.querySelectorAll('#tab-content-available p');
-
-    this.unavailableExperiments_.link =
-        document.body.querySelectorAll('#tab-content-unavailable .permalink');
-    this.unavailableExperiments_.title = document.body.querySelectorAll(
-        '#tab-content-unavailable .experiment-name');
-    this.unavailableExperiments_.description =
-        document.body.querySelectorAll('#tab-content-unavailable p');
+    this.experiments_ = this.getSearchableElements('tab-content-available');
+    // <if expr="not is_ios">
+    this.unavailableExperiments_ =
+        this.getSearchableElements('tab-content-unavailable');
+    // </if>
 
     if (!this.initialized) {
       this.searchBox_.addEventListener('input', this.debounceSearch.bind(this));
@@ -478,7 +474,8 @@ class FlagSearch {
           'click', this.clearSearch.bind(this));
 
       window.addEventListener('keyup', e => {
-        if (document.activeElement!.nodeName === 'TEXTAREA') {
+        // Check for an active textarea inside a <flags-experiment>.
+        if (getDeepActiveElement()!.nodeName === 'TEXTAREA') {
           return;
         }
         switch (e.key) {
@@ -494,6 +491,23 @@ class FlagSearch {
       this.searchBox_.focus();
       this.initialized = true;
     }
+  }
+
+  getSearchableElements(tabId: string): SearchContent {
+    const content = Object.assign({}, emptySearchContent);
+    const experiments = document.body.querySelectorAll<FlagsExperimentElement>(
+        `#${tabId} flags-experiment`);
+    for (const experiment of experiments) {
+      const link = experiment.getRequiredElement('.permalink');
+      const title = experiment.getRequiredElement('.experiment-name');
+      const description = experiment.getRequiredElement('p');
+
+      content.link.push(link);
+      content.title.push(title);
+      content.description.push(description);
+    }
+
+    return content;
   }
 
   /**
@@ -572,9 +586,6 @@ class FlagSearch {
   highlightAllMatches(searchContent: SearchContent, searchTerm: string):
       number {
     let matches = 0;
-    assert(searchContent.description);
-    assert(searchContent.link);
-    assert(searchContent.title);
     for (let i = 0, j = searchContent.link.length; i < j; i++) {
       if (this.highlightMatchInElement(searchTerm, searchContent.title[i]!)) {
         this.resetHighlights(

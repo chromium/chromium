@@ -12,6 +12,9 @@ build_webui("build") {
     "flags.html",
   ]
 
+  web_component_files = [ "experiment.ts" ]
+  html_to_wrapper_template = "native"
+
   non_web_component_files = [ "flags.ts" ]
 
   ts_definitions = [ "//tools/typescript/definitions/chrome_send.d.ts" ]

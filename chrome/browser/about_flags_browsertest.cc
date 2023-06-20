@@ -76,13 +76,14 @@ void ToggleEnableDropdown(content::WebContents* contents,
                           bool enable) {
   EXPECT_TRUE(content::ExecJs(
       contents,
-      base::StringPrintf(
-          "var k = document.getElementById('%s');"
-          "var s = k.getElementsByClassName('experiment-enable-disable')[0];"
-          "s.focus();"
-          "s.selectedIndex = %d;"
-          "s.onchange();",
-          experiment_id, enable ? 1 : 0)));
+      base::StringPrintf("var k = document.getElementById('%s');"
+                         "var s = "
+                         "k.querySelector('flags-experiment').shadowRoot."
+                         "querySelector('.experiment-enable-disable');"
+                         "s.focus();"
+                         "s.selectedIndex = %d;"
+                         "s.onchange();",
+                         experiment_id, enable ? 1 : 0)));
 }
 
 std::string GetOriginListText(content::WebContents* contents,
@@ -380,14 +381,15 @@ IN_PROC_BROWSER_TEST_P(AboutFlagsBrowserTest, FormRestore) {
   // See https://crbug.com/1038638 for more details.
   EXPECT_TRUE(content::ExecJs(
       contents,
-      base::StringPrintf(
-          "var k = document.getElementById('%s');"
-          "var s = k.getElementsByClassName('experiment-enable-disable')[0];"
-          "delete s.internal_name;"
-          "const e = document.createEvent('HTMLEvents');"
-          "e.initEvent('change', true, true);"
-          "s.dispatchEvent(e);",
-          kFlagWithOptionSelectorName),
+      base::StringPrintf("var k = document.getElementById('%s');"
+                         "var s = "
+                         "k.querySelector('flags-experiment').shadowRoot."
+                         "querySelector('.experiment-enable-disable');"
+                         "delete s.internal_name;"
+                         "const e = document.createEvent('HTMLEvents');"
+                         "e.initEvent('change', true, true);"
+                         "s.dispatchEvent(e);",
+                         kFlagWithOptionSelectorName),
       // Execute script in an isolated world to avoid causing a Trusted Types
       // violation due to eval.
       content::EXECUTE_SCRIPT_DEFAULT_OPTIONS, /*world_id=*/1));
