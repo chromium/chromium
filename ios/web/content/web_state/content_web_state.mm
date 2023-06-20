@@ -25,6 +25,7 @@
 #import "net/cert/x509_util.h"
 #import "net/cert/x509_util_apple.h"
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"
+#import "skia/ext/skia_utils_ios.h"
 #import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -413,6 +414,14 @@ id<CRWFindInteraction> ContentWebState::GetFindInteraction() {
 }
 
 id ContentWebState::GetActivityItem() {
+  return nil;
+}
+
+UIColor* ContentWebState::GetThemeColor() {
+  auto color = web_contents_->GetThemeColor();
+  if (color) {
+    return skia::UIColorFromSkColor(*color);
+  }
   return nil;
 }
 
