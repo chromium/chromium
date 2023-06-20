@@ -5613,7 +5613,7 @@
           'rust_build_tests',
         ],
         'mixins': [
-          'linux-bionic'
+          'linux-jammy'
         ],
         'test_suites': {
           'gtest_tests': 'rust_host_gtests',
