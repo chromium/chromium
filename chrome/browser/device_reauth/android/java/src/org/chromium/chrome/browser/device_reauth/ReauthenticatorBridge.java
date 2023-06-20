@@ -52,10 +52,11 @@ public class ReauthenticatorBridge {
      *         validated auth for passing the current authentication request.
      */
     public void reauthenticate(Callback<Boolean> callback, boolean useLastValidAuth) {
-        assert mAuthResultCallback == null;
-        mAuthResultCallback = callback;
-        ReauthenticatorBridgeJni.get().reauthenticate(
-                mNativeReauthenticatorBridge, useLastValidAuth);
+        if (mAuthResultCallback == null) {
+            mAuthResultCallback = callback;
+            ReauthenticatorBridgeJni.get().reauthenticate(
+                    mNativeReauthenticatorBridge, useLastValidAuth);
+        }
     }
 
     /**
