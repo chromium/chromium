@@ -8,8 +8,7 @@ import com.google.common.util.concurrent.Futures;
 import com.google.common.util.concurrent.ListenableFuture;
 
 /**
- *  This interface provides top-level ReadAloud operations: checking page readability and creating
- *  audio.
+ *  This interface allows creating ReadAloud audio playback for a page.
  */
 public interface ReadAloud {
     /**
@@ -18,15 +17,6 @@ public interface ReadAloud {
      * @return ListenableFuture returning the playback controller.
      */
     default ListenableFuture<Playback> createPlayback(byte[] readaloudAudioLoadArgs) {
-        return Futures.immediateFuture(null);
-    }
-
-    /**
-     * Check whether a page is readable.
-     * @param checkSupportedRequest Serialized CheckSupportedRequest proto message.
-     * @return ListenableFuture returning a serialized CheckSupportedResult proto message.
-     */
-    default ListenableFuture<byte[]> checkSupported(byte[] checkSupportedRequest) {
         return Futures.immediateFuture(null);
     }
 }
