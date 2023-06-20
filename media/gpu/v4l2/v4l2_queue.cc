@@ -995,11 +995,8 @@ V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
   // Check if this queue support requests.
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = 0;
-  reqbufs.type = type;
-  reqbufs.memory = V4L2_MEMORY_MMAP;
+  struct v4l2_requestbuffers reqbufs = {
+      .count = 0, .type = type_, .memory = V4L2_MEMORY_MMAP};
   if (ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs) != 0) {
     VPLOGF(1) << "Request support checks's VIDIOC_REQBUFS ioctl failed.";
     return;
@@ -1014,21 +1011,14 @@ V4L2Queue::V4L2Queue(const IoctlAsCallback& ioctl_cb,
 V4L2Queue::~V4L2Queue() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (is_streaming_) {
-    VQLOGF(1) << "Queue is still streaming, trying to stop it...";
-    if (!Streamoff()) {
-      VQLOGF(1) << "Failed to stop queue";
-    }
+  if (is_streaming_ && !Streamoff()) {
+    VQLOGF(1) << "Failed to stop queue";
   }
 
   DCHECK(queued_buffers_.empty());
-  DCHECK(!free_buffers_);
 
-  if (!buffers_.empty()) {
-    VQLOGF(1) << "Buffers are still allocated, trying to deallocate them...";
-    if (!DeallocateBuffers()) {
-      VQLOGF(1) << "Failed to deallocate queue buffers";
-    }
+  if (!buffers_.empty() && !DeallocateBuffers()) {
+    VQLOGF(1) << "Failed to deallocate queue buffers";
   }
 
   std::move(destroy_cb_).Run();
@@ -1155,21 +1145,21 @@ size_t V4L2Queue::AllocateBuffers(size_t count,
   planes_count_ = format->fmt.pix_mp.num_planes;
   DCHECK_LE(planes_count_, static_cast<size_t>(VIDEO_MAX_PLANES));
 
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = count;
-  reqbufs.type = type_;
-  reqbufs.memory = memory;
-  reqbufs.flags = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
-  DVQLOGF(3) << "Requesting " << count << " buffers.";
-  DVQLOGF(3) << "Incoherent flag is " << incoherent << ".";
+  const __u8 coherency = incoherent ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  struct v4l2_requestbuffers reqbufs = {
+      .count = base::checked_cast<decltype(v4l2_requestbuffers::count)>(count),
+      .type = type_,
+      .memory = memory,
+      .flags = coherency};
+  DVQLOGF(3) << "Requesting " << count << " buffers ("
+             << (incoherent ? "incoherent" : "coherent") << ")";
 
   int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
     VPQLOGF(1) << "VIDIOC_REQBUFS failed";
     return 0;
   }
-  DVQLOGF(3) << "queue " << type_ << ": got " << reqbufs.count << " buffers.";
+  DVQLOGF(3) << "Allocated " << reqbufs.count << " buffers.";
 
   memory_ = memory;
 
@@ -1217,12 +1207,9 @@ bool V4L2Queue::DeallocateBuffers() {
   free_buffers_ = nullptr;
 
   // Free all buffers.
-  struct v4l2_requestbuffers reqbufs;
-  memset(&reqbufs, 0, sizeof(reqbufs));
-  reqbufs.count = 0;
-  reqbufs.type = type_;
-  reqbufs.memory = memory_;
-  reqbufs.flags = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  const __u8 coherency = incoherent_ ? V4L2_MEMORY_FLAG_NON_COHERENT : 0;
+  struct v4l2_requestbuffers reqbufs = {
+      .count = 0, .type = type_, .memory = memory_, .flags = coherency};
 
   int ret = ioctl_cb_.Run(VIDIOC_REQBUFS, &reqbufs);
   if (ret) {
