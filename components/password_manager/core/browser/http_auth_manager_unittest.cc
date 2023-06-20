@@ -144,37 +144,32 @@ class HttpAuthManagerTest : public testing::Test {
 };
 
 TEST_F(HttpAuthManagerTest, HttpAuthFilling) {
-  for (bool filling_enabled : {false, true}) {
-    SCOPED_TRACE(testing::Message("filling_enabled=") << filling_enabled);
-    EXPECT_CALL(client_, IsFillingEnabled(_))
-        .WillRepeatedly(Return(filling_enabled));
+  EXPECT_CALL(client_, IsFillingEnabled(_)).WillRepeatedly(Return(true));
 
-    PasswordForm observed_form;
-    observed_form.scheme = PasswordForm::Scheme::kBasic;
-    observed_form.url = GURL("http://proxy.com/");
-    observed_form.signon_realm = "proxy.com/realm";
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
 
-    PasswordForm stored_form = observed_form;
-    stored_form.username_value = u"user";
-    stored_form.password_value = u"1234";
+  PasswordForm stored_form = observed_form;
+  stored_form.username_value = u"user";
+  stored_form.password_value = u"1234";
 
-    MockHttpAuthObserver observer;
+  MockHttpAuthObserver observer;
 
-    base::WeakPtr<PasswordStoreConsumer> consumer;
-    EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&consumer));
-    httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
-                                                         observed_form);
-    EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string(u"user"),
-                                                  std::u16string(u"1234")))
-        .Times(filling_enabled);
-    ASSERT_TRUE(consumer);
-    std::vector<std::unique_ptr<PasswordForm>> result;
-    result.push_back(std::make_unique<PasswordForm>(stored_form));
-    consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
-                                                   std::move(result));
-    testing::Mock::VerifyAndClearExpectations(&store_);
-    httpauth_manager()->DetachObserver(&observer);
-  }
+  base::WeakPtr<PasswordStoreConsumer> consumer;
+  EXPECT_CALL(*store_, GetLogins(_, _)).WillOnce(SaveArg<1>(&consumer));
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+  EXPECT_CALL(observer, OnAutofillDataAvailable(std::u16string(u"user"),
+                                                std::u16string(u"1234")));
+  ASSERT_TRUE(consumer);
+  std::vector<std::unique_ptr<PasswordForm>> result;
+  result.push_back(std::make_unique<PasswordForm>(stored_form));
+  consumer->OnGetPasswordStoreResultsOrErrorFrom(store_.get(),
+                                                 std::move(result));
+  testing::Mock::VerifyAndClearExpectations(&store_);
+  httpauth_manager()->DetachObserver(&observer);
 }
 
 TEST_F(HttpAuthManagerTest, HttpAuthSaving) {
@@ -183,6 +178,8 @@ TEST_F(HttpAuthManagerTest, HttpAuthSaving) {
                  << filling_and_saving_enabled);
 
     EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
+        .WillRepeatedly(Return(filling_and_saving_enabled));
+    EXPECT_CALL(client_, IsFillingEnabled)
         .WillRepeatedly(Return(filling_and_saving_enabled));
     PasswordForm observed_form;
     observed_form.scheme = PasswordForm::Scheme::kBasic;
@@ -214,6 +211,7 @@ TEST_F(HttpAuthManagerTest, HttpAuthSaving) {
 
 TEST_F(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
 
   PasswordForm observed_form;
   observed_form.scheme = PasswordForm::Scheme::kBasic;
@@ -253,6 +251,7 @@ TEST_F(HttpAuthManagerTest, UpdateLastUsedTimeWhenSubmittingSavedCredentials) {
 
 TEST_F(HttpAuthManagerTest, DontSaveEmptyPasswords) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm observed_form;
   observed_form.scheme = PasswordForm::Scheme::kBasic;
   observed_form.url = GURL("http://proxy.com/");
@@ -282,6 +281,7 @@ TEST_F(HttpAuthManagerTest, DontSaveEmptyPasswords) {
 TEST_F(HttpAuthManagerTest, NavigationWithoutSubmission) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled(_))
       .WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm observed_form;
   observed_form.scheme = PasswordForm::Scheme::kBasic;
   observed_form.url = GURL("http://proxy.com/");
@@ -303,6 +303,7 @@ TEST_F(HttpAuthManagerTest, NavigationWithoutSubmission) {
 
 TEST_F(HttpAuthManagerTest, NavigationWhenMatchingNotReady) {
   EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(true));
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(true));
   PasswordForm observed_form;
   observed_form.scheme = PasswordForm::Scheme::kBasic;
   observed_form.url = GURL("http://proxy.com/");
@@ -322,6 +323,33 @@ TEST_F(HttpAuthManagerTest, NavigationWhenMatchingNotReady) {
   httpauth_manager()->OnPasswordFormDismissed();
 
   // Expect no prompt as the password store didn't reply.
+  EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr()).Times(0);
+  httpauth_manager()->OnDidFinishMainFrameNavigation();
+  httpauth_manager()->DetachObserver(&observer);
+}
+
+TEST_F(HttpAuthManagerTest, FillingDisabled) {
+  EXPECT_CALL(client_, IsSavingAndFillingEnabled).WillRepeatedly(Return(false));
+  EXPECT_CALL(client_, IsFillingEnabled).WillRepeatedly(Return(false));
+  PasswordForm observed_form;
+  observed_form.scheme = PasswordForm::Scheme::kBasic;
+  observed_form.url = GURL("http://proxy.com/");
+  observed_form.signon_realm = "proxy.com/realm";
+
+  MockHttpAuthObserver observer;
+  // The password store is not queried as the password manager is disabled.
+  EXPECT_CALL(*store_, GetLogins).Times(0);
+  // Initiate creating a form manager.
+  httpauth_manager()->SetObserverAndDeliverCredentials(&observer,
+                                                       observed_form);
+
+  PasswordForm submitted_form = observed_form;
+  submitted_form.username_value = u"user";
+  submitted_form.password_value = u"1234";
+  httpauth_manager()->OnPasswordFormSubmitted(submitted_form);
+  httpauth_manager()->OnPasswordFormDismissed();
+
+  // Expect no prompt.
   EXPECT_CALL(client_, PromptUserToSaveOrUpdatePasswordPtr()).Times(0);
   httpauth_manager()->OnDidFinishMainFrameNavigation();
   httpauth_manager()->DetachObserver(&observer);
