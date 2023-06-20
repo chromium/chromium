@@ -125,6 +125,8 @@ _OS_SPECIFIC_FILTER['win'] = [
     'SupportIPv4AndIPv6.testSupportIPv4AndIPv6',
     # Flaky on Win7 bots: crbug.com/1132559
     'ChromeDriverTest.testTakeElementScreenshotInIframe',
+    # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+    'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
 ]
 _OS_SPECIFIC_FILTER['linux'] = [
 ]
@@ -260,6 +262,8 @@ _ANDROID_NEGATIVE_FILTER['chrome'] = (
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=3560
         'ChromeDriverTest.testTakeLargeElementViewportScreenshot',
         'ChromeDriverTest.testTakeLargeElementFullPageScreenshot'
+        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
 _ANDROID_NEGATIVE_FILTER['chrome_stable'] = (
@@ -273,6 +277,8 @@ _ANDROID_NEGATIVE_FILTER['chrome_stable'] = (
         'ChromeDriverTest.testSwitchToWindow',
         # Feature not yet supported in this version
         'ChromeDriverTest.testGenerateTestReport',
+        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
 _ANDROID_NEGATIVE_FILTER['chrome_beta'] = (
@@ -284,6 +290,8 @@ _ANDROID_NEGATIVE_FILTER['chrome_beta'] = (
         'ChromeDriverTest.testSwitchToWindow',
         # Feature not yet supported in this version
         'ChromeDriverTest.testGenerateTestReport',
+        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
 _ANDROID_NEGATIVE_FILTER['chromium'] = (
@@ -323,6 +331,8 @@ _ANDROID_NEGATIVE_FILTER['chromedriver_webview_shell'] = (
         'ChromeDriverTest.testUnexpectedAlertOpenExceptionMessage',
         # https://bugs.chromium.org/p/chromedriver/issues/detail?id=2332
         'ChromeDriverTestLegacy.testTouchScrollElement',
+        # Pipe are supported only on Posix platforms crbug.com/chromedriver/3480
+        'ChromeSwitchesCapabilityTest.testRemoteDebuggingPipe',
     ]
 )
 
@@ -4738,6 +4748,16 @@ class ChromeSwitchesCapabilityTest(ChromeDriverBaseTest):
     else:  # Else clause gets invoked if "break" never happens.
       raise  # This re-raises the most recent exception.
 
+  def testRemoteDebuggingPipe(self):
+    """Tests that passing --remote-debugging-pipe through capabilities works.
+    """
+    pipe_flag = 'remote-debugging-pipe'
+    driver = self.CreateDriver(chrome_switches=[pipe_flag])
+    driver.Load('chrome:version')
+    command_line = driver.FindElement('css selector',
+                                      '#command_line').GetText()
+    self.assertIn(pipe_flag, command_line)
+
 
 class ChromeDesiredCapabilityTest(ChromeDriverBaseTest):
   """Tests that chromedriver properly processes desired capabilities."""
@@ -5488,7 +5508,8 @@ class LaunchDesktopTest(ChromeDriverBaseTest):
       with open(dev_tools_port_file, 'w') as fd:
         fd.write('34\n/devtools/browser/2dab5fb1-5571-40d8-a6ad-98823bc5ff84')
       driver = self.CreateDriver(
-          chrome_switches=['user-data-dir=' + user_data_dir])
+          chrome_switches=['user-data-dir=' + user_data_dir,
+                           '--remote-debugging-port=0'])
       with open(dev_tools_port_file, 'r') as fd:
         port = int(fd.readlines()[0])
       # Ephemeral ports are always high numbers.
