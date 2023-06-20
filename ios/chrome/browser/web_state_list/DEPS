@@ -1,0 +1,6 @@
+include_rules = [
+  "+ios/chrome/browser/shared/ui/util",
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/crash_report",
+  "+ios/chrome/browser/ntp/new_tab_page_tab_helper.h",
+]

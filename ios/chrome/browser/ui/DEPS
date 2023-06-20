@@ -1,4 +1,6 @@
 include_rules = [
+  "+ios/chrome/browser",
+
   # Subfolders have to explicitly declare their dependences.
   # Avoid adding top-level deps, prefer to use ios/c/b/shared if needed.
   "-ios/chrome/browser/ui",

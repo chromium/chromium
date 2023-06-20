@@ -160,6 +160,10 @@ include_rules = [
   "-components/metrics/gpu",
   "-components/sessions/content",
 
+  # Shared dependencies.
+  "+ios/chrome/browser/shared/model",
+  "+ios/chrome/browser/shared/public",
+
   # ios/chrome/browser should not depend on ios/chrome/browser/ui except
   # on commands.
   "-ios/chrome/browser/ui",
@@ -182,5 +186,7 @@ specific_include_rules = {
     # TODO(crbug.com/1294160): browser should not depend on UI, this is a
     # blanket exception for tests.
     "+ios/chrome/browser/ui",
+    # Blanket exception for tests to be allowed to depend on everything.
+    "+ios/chrome/browser",
   ],
 }

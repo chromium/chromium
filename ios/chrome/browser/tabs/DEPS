@@ -1,8 +1,15 @@
+include_rules = [
+  "+ios/chrome/browser/sessions",
+  "+ios/chrome/browser/sync",
+  "+ios/chrome/browser/snapshots",
+  "+ios/chrome/browser/download/download_manager_tab_helper.h",
+  "+ios/chrome/browser/ntp/new_tab_page_util.h",
+  "+ios/chrome/browser/main/browser_util.h",
+]
+
 specific_include_rules = {
-  # TODO(crbug.com/1294160): Remove this dependency.
+  # The TabHelperUtil can depend on everything.
   "^tab_helper_util.mm": [
-    "+ios/chrome/browser/ui/download/features.h",
-    "+ios/chrome/browser/ui/ui_feature_flags.h",
+    "+ios/chrome/browser",
   ],
 }
-
