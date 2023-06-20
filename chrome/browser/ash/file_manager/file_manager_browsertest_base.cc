@@ -2001,7 +2001,8 @@ static bool ShouldInspect(content::DevToolsAgentHost* host) {
   // TODO(crbug.com/v8/10820): Add background_page back in once
   // coverage can be collected when a background_page and app
   // share the same v8 isolate.
-  if (host->GetTitle() == "Files" && host->GetType() == "app") {
+  if (host->GetURL().host() == ash::file_manager::kChromeUIFileManagerHost &&
+      host->GetType() == "page") {
     return true;
   }
 
@@ -2023,16 +2024,7 @@ void FileManagerBrowserTestBase::DevToolsAgentHostCreated(
 }
 
 void FileManagerBrowserTestBase::DevToolsAgentHostAttached(
-    content::DevToolsAgentHost* host) {
-  if (auto* content = host->GetWebContents()) {
-    auto* manager = extensions::ProcessManager::Get(profile());
-    if (auto* extension = manager->GetExtensionForWebContents(content)) {
-      LOG(INFO) << "DevToolsAgentHostAttached: " << extension->name();
-      manager->IncrementLazyKeepaliveCount(
-          extension, extensions::Activity::Type::DEV_TOOLS, "");
-    }
-  }
-}
+    content::DevToolsAgentHost* host) {}
 
 void FileManagerBrowserTestBase::DevToolsAgentHostNavigated(
     content::DevToolsAgentHost* host) {
@@ -2467,7 +2459,7 @@ void FileManagerBrowserTestBase::StartTest() {
   base::ScopedAllowBlockingForTesting allow_blocking;
 
   base::FilePath store =
-      devtools_code_coverage_dir_.AppendASCII("devtools_code_coverage");
+      devtools_code_coverage_dir_.AppendASCII("webui_javascript_code_coverage");
   coverage::DevToolsListener::SetupCoverageStore(store);
 
   for (auto& agent : devtools_agent_) {
