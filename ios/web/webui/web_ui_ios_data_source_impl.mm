@@ -12,6 +12,7 @@
 #import "base/strings/utf_string_conversions.h"
 #import "ios/web/public/web_client.h"
 #import "ui/base/webui/jstemplate_builder.h"
+#import "ui/base/webui/resource_path.h"
 #import "ui/base/webui/web_ui_util.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -126,6 +127,13 @@ bool WebUIIOSDataSourceImpl::ShouldReplaceI18nInJS() const {
 void WebUIIOSDataSourceImpl::AddResourcePath(const std::string& path,
                                              int resource_id) {
   path_to_idr_map_[path] = resource_id;
+}
+
+void WebUIIOSDataSourceImpl::AddResourcePaths(
+    base::span<const webui::ResourcePath> paths) {
+  for (const auto& path : paths) {
+    AddResourcePath(path.path, path.id);
+  }
 }
 
 void WebUIIOSDataSourceImpl::SetDefaultResource(int resource_id) {

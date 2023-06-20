@@ -9,6 +9,7 @@
 
 #import "base/json/json_writer.h"
 #import "components/grit/policy_resources.h"
+#import "components/grit/policy_resources_map.h"
 #import "components/policy/core/common/policy_logger.h"
 #import "components/strings/grit/components_chromium_strings.h"
 #import "components/strings/grit/components_google_chrome_strings.h"
@@ -127,23 +128,8 @@ web::WebUIIOSDataSource* CreatePolicyUIHtmlSource() {
 
   source->AddBoolean("hideExportButton", true);
 
-  source->AddResourcePath("policy.css", IDR_POLICY_POLICY_CSS);
-  source->AddResourcePath("policy_base.js", IDR_POLICY_POLICY_BASE_JS);
-  source->AddResourcePath("policy.js", IDR_POLICY_POLICY_JS);
-  source->AddResourcePath("policy_conflict.html.js",
-                          IDR_POLICY_POLICY_CONFLICT_HTML_JS);
-  source->AddResourcePath("policy_conflict.js", IDR_POLICY_POLICY_CONFLICT_JS);
-  source->AddResourcePath("policy_row.html.js", IDR_POLICY_POLICY_ROW_HTML_JS);
-  source->AddResourcePath("policy_row.js", IDR_POLICY_POLICY_ROW_JS);
-  source->AddResourcePath("policy_precedence_row.html.js",
-                          IDR_POLICY_POLICY_PRECEDENCE_ROW_HTML_JS);
-  source->AddResourcePath("policy_precedence_row.js",
-                          IDR_POLICY_POLICY_PRECEDENCE_ROW_JS);
-  source->AddResourcePath("policy_table.html.js",
-                          IDR_POLICY_POLICY_TABLE_HTML_JS);
-  source->AddResourcePath("policy_table.js", IDR_POLICY_POLICY_TABLE_JS);
-  source->AddResourcePath("status_box.html.js", IDR_POLICY_STATUS_BOX_HTML_JS);
-  source->AddResourcePath("status_box.js", IDR_POLICY_STATUS_BOX_JS);
+  source->AddResourcePaths(
+      base::make_span(kPolicyResources, kPolicyResourcesSize));
 
   source->AddBoolean(
       "loggingEnabled",

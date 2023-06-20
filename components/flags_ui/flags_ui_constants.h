@@ -9,14 +9,6 @@
 
 namespace flags_ui {
 
-// Resource paths.
-// Must match the resource file names.
-extern const char kFlagsJS[];
-extern const char kFlagsCSS[];
-#if BUILDFLAG(IS_CHROMEOS)
-extern const char kFlagsSVG[];
-#endif
-
 // Message handlers.
 // Must match the constants used in the resource files.
 extern const char kEnableExperimentalFeature[];

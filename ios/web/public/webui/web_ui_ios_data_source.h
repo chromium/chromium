@@ -14,6 +14,7 @@
 
 namespace webui {
 struct LocalizedString;
+struct ResourcePath;
 }
 
 namespace web {
@@ -60,6 +61,11 @@ class WebUIIOSDataSource : public base::SupportsUserData {
 
   // Adds a mapping between a path name and a resource to return.
   virtual void AddResourcePath(const std::string& path, int resource_id) = 0;
+
+  // Calls AddResourcePath() in a for-loop for `paths`. Reduces code size vs.
+  // reimplementing the same for-loop.
+  virtual void AddResourcePaths(
+      base::span<const webui::ResourcePath> paths) = 0;
 
   // Sets the resource to returned when no other paths match.
   virtual void SetDefaultResource(int resource_id) = 0;

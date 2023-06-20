@@ -10,14 +10,6 @@
 
 namespace version_ui {
 
-// Resource paths.
-// Must match the resource file names.
-extern const char kAboutVersionCSS[];
-#if BUILDFLAG(IS_IOS) || BUILDFLAG(IS_ANDROID)
-extern const char kAboutVersionMobileCSS[];
-#endif
-extern const char kVersionJS[];
-
 // Message handlers.
 // Must match the constants used in the resource files.
 extern const char kRequestVersionInfo[];
