@@ -14,20 +14,18 @@
 #include <unordered_map>
 #include <vector>
 
+#include "base/containers/id_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
-#include "base/memory/ref_counted.h"
+#include "base/memory/scoped_refptr.h"
 #include "components/services/filesystem/public/mojom/types.mojom.h"
 #include "content/common/content_export.h"
-#include "content/public/browser/browser_message_filter.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/bindings/receiver_set.h"
 #include "mojo/public/cpp/bindings/unique_receiver_set.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_operation_runner.h"
-#include "storage/browser/file_system/file_system_url.h"
-#include "storage/common/file_system/file_system_types.h"
 #include "third_party/blink/public/common/storage_key/storage_key.h"
 #include "third_party/blink/public/mojom/filesystem/file_system.mojom.h"
 
@@ -39,7 +37,6 @@ class FilePath;
 
 namespace storage {
 class FileSystemURL;
-class FileSystemOperationRunner;
 struct FileSystemInfo;
 class ShareableFileReference;
 }  // namespace storage
