@@ -223,6 +223,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -235,6 +236,8 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_AddNewAccount) {
       identity_manager()->FindExtendedAccountInfoByAccountId(account_id);
   EXPECT_EQ(account_info.account_id, account_id);
   EXPECT_EQ(account_info.email, kTestEmail);
+  EXPECT_EQ(account_info.access_point,
+            signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   EXPECT_EQ(identity_manager()->GetAccountsWithRefreshTokens().size(), 1U);
 }
 
@@ -254,6 +257,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -288,6 +292,7 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, maybe_updated_email, kRefreshToken,
       /*is_under_advanced_protection=*/true,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop2.Run();
 
@@ -303,6 +308,9 @@ TEST_F(AccountsMutatorTest, AddOrUpdateAccount_UpdateExistingAccount) {
   EXPECT_EQ(account_info.account_id, updated_account_info.account_id);
   EXPECT_EQ(account_info.gaia, updated_account_info.gaia);
   EXPECT_EQ(updated_account_info.email, maybe_updated_email);
+  // The access point was not updated to `ACCESS_POINT_UNKNOWN`.
+  EXPECT_EQ(account_info.access_point,
+            signin_metrics::AccessPoint::ACCESS_POINT_SETTINGS);
   if (use_gaia_as_account_id) {
     EXPECT_NE(updated_account_info.email, account_info.email);
     EXPECT_EQ(updated_account_info.email, kTestEmail2);
@@ -368,6 +376,7 @@ TEST_F(
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -472,6 +481,7 @@ TEST_F(AccountsMutatorTest, RemoveAccount_ExistingAccount) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -516,6 +526,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, kRefreshToken,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop.Run();
 
@@ -533,6 +544,7 @@ TEST_F(AccountsMutatorTest, RemoveAllAccounts) {
   CoreAccountId account_id2 = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId2, kTestEmail2, kRefreshToken2,
       /*is_under_advanced_protection=*/false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   run_loop2.Run();
 
@@ -562,6 +574,7 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_EQ(
       account_id,
@@ -574,6 +587,7 @@ TEST_F(AccountsMutatorTest, UpdateAccessTokenFromSource) {
   // Update the default account with different source.
   accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token2", true,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
   EXPECT_EQ(
       account_id,
@@ -592,6 +606,7 @@ TEST_F(AccountsMutatorTest, RemoveRefreshTokenFromSource) {
   // Add a default account.
   CoreAccountId account_id = accounts_mutator()->AddOrUpdateAccount(
       kTestGaiaId, kTestEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kSettings_Signout);
 
   // Remove the default account.

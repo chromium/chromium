@@ -64,6 +64,7 @@
 #include "components/prefs/pref_service.h"
 #include "components/signin/core/browser/account_reconcilor.h"
 #include "components/signin/public/base/list_accounts_test_utils.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/base/signin_pref_names.h"
 #include "components/signin/public/base/signin_switches.h"
 #include "components/signin/public/identity_manager/accounts_mutator.h"
@@ -451,6 +452,7 @@ class FakeGetAuthTokenFunction : public IdentityGetAuthTokenFunction {
         identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
             account_info.gaia, account_info.email, "token",
             account_info.is_under_advanced_protection,
+            signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
             signin_metrics::SourceForRefreshTokenOperation::kUnknown);
         fixed_auth_error = true;
       }

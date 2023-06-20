@@ -67,6 +67,8 @@ class ProcessDiceHeaderDelegate {
   virtual void HandleTokenExchangeFailure(
       const std::string& email,
       const GoogleServiceAuthError& error) = 0;
+
+  virtual signin_metrics::AccessPoint GetAccessPoint() = 0;
 };
 
 // Processes the Dice responses from Gaia.

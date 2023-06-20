@@ -811,11 +811,14 @@ CoreAccountId AccountTrackerService::PickAccountIdForAccount(
 #endif
 }
 
-CoreAccountId AccountTrackerService::SeedAccountInfo(const std::string& gaia,
-                                                     const std::string& email) {
+CoreAccountId AccountTrackerService::SeedAccountInfo(
+    const std::string& gaia,
+    const std::string& email,
+    signin_metrics::AccessPoint access_point) {
   AccountInfo account_info;
   account_info.gaia = gaia;
   account_info.email = email;
+  account_info.access_point = access_point;
   CoreAccountId account_id = SeedAccountInfo(account_info);
 
   DVLOG(1) << "AccountTrackerService::SeedAccountInfo"

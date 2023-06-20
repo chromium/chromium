@@ -32,8 +32,9 @@ void RedirectToNtp(content::WebContents* contents) {
 // Helper function similar to DiceTabHelper::FromWebContents(), but also handles
 // the case where |contents| is nullptr.
 DiceTabHelper* GetDiceTabHelperFromWebContents(content::WebContents* contents) {
-  if (!contents)
+  if (!contents) {
     return nullptr;
+  }
   return DiceTabHelper::FromWebContents(contents);
 }
 
@@ -123,8 +124,9 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
     const CoreAccountId& account_id) {
   DiceTabHelper* tab_helper =
       GetDiceTabHelperFromWebContents(web_contents_.get());
-  if (tab_helper)
+  if (tab_helper) {
     tab_helper->OnSyncSigninFlowComplete();
+  }
 
   if (!ShouldEnableSync()) {
     // No special treatment is needed if the user is not enabling sync.
@@ -137,8 +139,9 @@ void ProcessDiceHeaderDelegateImpl::EnableSync(
       .Run(&profile_.get(), access_point_, promo_action_, reason_, web_contents,
            account_id);
 
-  if (!web_contents)
+  if (!web_contents) {
     return;
+  }
 
   // After signing in to Chrome, the user should be redirected to the NTP,
   // unless specified otherwise.
@@ -159,18 +162,24 @@ void ProcessDiceHeaderDelegateImpl::HandleTokenExchangeFailure(
   DCHECK_NE(GoogleServiceAuthError::NONE, error.state());
   DiceTabHelper* tab_helper =
       GetDiceTabHelperFromWebContents(web_contents_.get());
-  if (tab_helper)
+  if (tab_helper) {
     tab_helper->OnSyncSigninFlowComplete();
+  }
 
   bool should_enable_sync = ShouldEnableSync();
 
   content::WebContents* web_contents = web_contents_.get();
-  if (should_enable_sync && web_contents)
+  if (should_enable_sync && web_contents) {
     RedirectToNtp(web_contents);
+  }
 
   // Show the error even if the WebContents was closed, because the user may be
   // signed out of the web.
   std::move(show_signin_error_callback_)
       .Run(&profile_.get(), web_contents,
            SigninUIError::FromGoogleServiceAuthError(email, error));
+}
+
+signin_metrics::AccessPoint ProcessDiceHeaderDelegateImpl::GetAccessPoint() {
+  return access_point_;
 }

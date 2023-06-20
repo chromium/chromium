@@ -516,8 +516,11 @@ void DiceResponseHandler::OnTokenExchangeSuccess(
       identity_manager_->PickAccountIdForAccount(gaia_id, email);
   bool is_new_account =
       !identity_manager_->HasAccountWithRefreshToken(account_id);
+  // If this is a reauth, do not update the access point.
   identity_manager_->GetAccountsMutator()->AddOrUpdateAccount(
       gaia_id, email, refresh_token, is_under_advanced_protection,
+      is_new_account ? token_fetcher->delegate()->GetAccessPoint()
+                     : signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::
           kDiceResponseHandler_Signin
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)

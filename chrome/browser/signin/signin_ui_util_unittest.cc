@@ -253,6 +253,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithExistingAccount) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   for (bool is_default_promo_account : {true, false}) {
@@ -286,6 +287,7 @@ TEST_F(SigninUiUtilTest, EnableSyncWithAccountThatNeedsReauth) {
   CoreAccountId account_id =
       GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
           kMainGaiaID, kMainEmail, "refresh_token", false,
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
           signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   // Add an account and then put its refresh token into an error state to
@@ -358,6 +360,7 @@ TEST_F(SigninUiUtilTest, EnableSyncForNewAccountWithNoTabWithExisting) {
 
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   ExpectNoSigninStartedHistograms(histogram_tester);
@@ -490,9 +493,11 @@ TEST_F(SigninUiUtilTest,
        ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsTrueForMultiSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
@@ -510,6 +515,7 @@ TEST_F(
     ShouldShowAnimatedIdentityOnOpeningWindow_ReturnsFalseForSingleProfileSingleSignin) {
   GetIdentityManager()->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
 
   EXPECT_FALSE(ShouldShowAnimatedIdentityOnOpeningWindow(
@@ -767,9 +773,11 @@ TEST(ShouldShowAnimatedIdentityOnOpeningWindow, ReturnsFalseForNewWindow) {
       IdentityManagerFactory::GetForProfile(profile);
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
       kMainGaiaID, kMainEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   identity_manager->GetAccountsMutator()->AddOrUpdateAccount(
       kSecondaryGaiaID, kSecondaryEmail, "refresh_token", false,
+      signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN,
       signin_metrics::SourceForRefreshTokenOperation::kUnknown);
   EXPECT_TRUE(ShouldShowAnimatedIdentityOnOpeningWindow(
       *profile_manager.profile_attributes_storage(), profile));

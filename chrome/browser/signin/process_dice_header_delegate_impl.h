@@ -5,14 +5,13 @@
 #ifndef CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_
 #define CHROME_BROWSER_SIGNIN_PROCESS_DICE_HEADER_DELEGATE_IMPL_H_
 
-#include "base/memory/raw_ptr.h"
-#include "chrome/browser/signin/dice_response_handler.h"
-
 #include <memory>
 #include <string>
 
 #include "base/functional/callback_forward.h"
+#include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/browser/signin/dice_response_handler.h"
 #include "components/signin/public/base/signin_metrics.h"
 
 namespace content {
@@ -68,6 +67,7 @@ class ProcessDiceHeaderDelegateImpl : public ProcessDiceHeaderDelegate {
   void EnableSync(const CoreAccountId& account_id) override;
   void HandleTokenExchangeFailure(const std::string& email,
                                   const GoogleServiceAuthError& error) override;
+  signin_metrics::AccessPoint GetAccessPoint() override;
 
  private:
   // Returns true if sync should be enabled after the user signs in.

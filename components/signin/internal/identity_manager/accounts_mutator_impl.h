@@ -44,6 +44,7 @@ class AccountsMutatorImpl : public AccountsMutator {
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
+      signin_metrics::AccessPoint access_point,
       signin_metrics::SourceForRefreshTokenOperation source
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       ,

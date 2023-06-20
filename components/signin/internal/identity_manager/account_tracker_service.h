@@ -19,6 +19,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/signin/public/base/signin_metrics.h"
 #include "components/signin/public/identity_manager/account_info.h"
 #include "google_apis/gaia/core_account_id.h"
 #include "google_apis/gaia/gaia_auth_util.h"
@@ -101,8 +102,11 @@ class AccountTrackerService {
   // Seeds the account whose account_id is given by PickAccountIdForAccount()
   // with its corresponding gaia id and email address.  Returns the same
   // value PickAccountIdForAccount() when given the same arguments.
-  CoreAccountId SeedAccountInfo(const std::string& gaia,
-                                const std::string& email);
+  CoreAccountId SeedAccountInfo(
+      const std::string& gaia,
+      const std::string& email,
+      signin_metrics::AccessPoint access_point =
+          signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN);
 
   // Seeds the account represented by |info|. If the account is already tracked
   // and compatible, the empty fields will be updated with values from |info|.

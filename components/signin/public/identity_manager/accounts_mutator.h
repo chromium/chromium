@@ -10,6 +10,7 @@
 
 #include "build/chromeos_buildflags.h"
 #include "components/signin/public/base/signin_buildflags.h"
+#include "components/signin/public/base/signin_metrics.h"
 
 namespace signin_metrics {
 enum class SourceForRefreshTokenOperation;
@@ -34,11 +35,14 @@ class AccountsMutator {
 
   // Updates the information of the account associated with |gaia_id|, first
   // adding that account to the system if it is not known.
+  // Passing `signin_metrics::AccessPoint::ACCESS_POINT_UNKNOWN` preserves the
+  // current access point if it's already set.
   virtual CoreAccountId AddOrUpdateAccount(
       const std::string& gaia_id,
       const std::string& email,
       const std::string& refresh_token,
       bool is_under_advanced_protection,
+      signin_metrics::AccessPoint access_point,
       signin_metrics::SourceForRefreshTokenOperation source
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
       ,

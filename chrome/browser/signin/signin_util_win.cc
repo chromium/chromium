@@ -43,6 +43,9 @@ namespace signin_util {
 
 namespace {
 
+constexpr signin_metrics::AccessPoint kCredentialsProviderAccessPointWin =
+    signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON;
+
 std::unique_ptr<TurnSyncOnHelper::Delegate>*
 GetTurnSyncOnHelperDelegateForTestingStorage() {
   static base::NoDestructor<std::unique_ptr<TurnSyncOnHelper::Delegate>>
@@ -84,19 +87,18 @@ void FinishImportCredentialsFromProvider(const CoreAccountId& account_id,
   // TurnSyncOnHelper deletes itself once done.
   if (GetTurnSyncOnHelperDelegateForTestingStorage()->get()) {
     new TurnSyncOnHelper(
-        profile, signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
+        profile, kCredentialsProviderAccessPointWin,
         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
         signin_metrics::Reason::kSigninPrimaryAccount, account_id,
         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT,
         std::move(*GetTurnSyncOnHelperDelegateForTestingStorage()),
         base::DoNothing());
   } else {
-    new TurnSyncOnHelper(
-        profile, browser,
-        signin_metrics::AccessPoint::ACCESS_POINT_MACHINE_LOGON,
-        signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
-        signin_metrics::Reason::kSigninPrimaryAccount, account_id,
-        TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
+    new TurnSyncOnHelper(profile, browser, kCredentialsProviderAccessPointWin,
+                         signin_metrics::PromoAction::PROMO_ACTION_WITH_DEFAULT,
+                         signin_metrics::Reason::kSigninPrimaryAccount,
+                         account_id,
+                         TurnSyncOnHelper::SigninAbortedMode::KEEP_ACCOUNT);
   }
 }
 
@@ -123,6 +125,7 @@ void ImportCredentialsFromProvider(Profile* profile,
           ->AddOrUpdateAccount(base::WideToUTF8(gaia_id),
                                base::WideToUTF8(email), refresh_token,
                                /*is_under_advanced_protection=*/false,
+                               kCredentialsProviderAccessPointWin,
                                signin_metrics::SourceForRefreshTokenOperation::
                                    kMachineLogon_CredentialProvider);
 

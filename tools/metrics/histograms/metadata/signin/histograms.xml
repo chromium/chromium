@@ -1192,6 +1192,17 @@ OAuth Multilogin call. -->
   </summary>
 </histogram>
 
+<histogram name="Signin.SigninManager.SigninAccessPoint"
+    enum="SigninAccessPoint" expires_after="2024-06-14">
+  <owner>droger@chromium.org</owner>
+  <owner>chrome-signin-team@google.com</owner>
+  <summary>
+    Records the access point used by the `SigninManager` when setting the
+    primary account. This is a subset of the histogram Signin.Signin.Completed,
+    exclusively for the case when the primary account is set by `SigninManager`.
+  </summary>
+</histogram>
+
 <histogram name="Signin.SigninReason" enum="SigninReason"
     expires_after="2023-12-10">
   <owner>msarda@chromium.org</owner>
