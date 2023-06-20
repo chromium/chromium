@@ -38,8 +38,9 @@
 # for maintaining the policy and can help answer questions or solve issues with
 # the policy. The entries can be either emails of committers or file://
 # references to OWNERS files in the Chromium repository.
-# There should be at least 2 owners per policies, and ideally a file://
-# references to an OWNERS files.
+# There should be at least 2 owners per policies. At least one entry must be an
+# email of the individual person or the team responsible for the policy.
+# Additionally a file:// reference to an OWNERS file can also be specified.
 owners:
 - your-ldap@chromium.org
 - file://components/policy/OWNERS
