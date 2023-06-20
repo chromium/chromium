@@ -6,7 +6,6 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
 #include "components/browsing_topics/common/common_types.h"
-#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/memory/raw_ptr.h"
@@ -82,11 +81,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   void AddObserver(Observer* observer) override;
   void RemoveObserver(Observer* observer) override;
   void SetDelegateForTesting(std::unique_ptr<Delegate> delegate) override;
-  void SetPrivacySandboxAttestationsMapForTesting(
-      const PrivacySandboxAttestationsMap& attestations_map) override;
-  void AddPrivacySandboxAttestationOverride(const GURL& url) override;
-  const std::vector<net::SchemefulSite> GetAttestationOverridesForTesting()
-      const override;
 
  private:
   friend class PrivacySandboxSettingsTest;
@@ -166,11 +160,6 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
   // Which topics are disabled by Finch; This is set and read by
   // GetFinchDisabledTopics.
   std::vector<browsing_topics::Topic> finch_disabled_topics_;
-
-  // A data structure for storing and checking Privacy Sandbox attestations,
-  // i.e. whether particular sites have opted in to using particular Privacy
-  // Sandbox APIs.
-  PrivacySandboxAttestations attestations_;
 };
 
 }  // namespace privacy_sandbox

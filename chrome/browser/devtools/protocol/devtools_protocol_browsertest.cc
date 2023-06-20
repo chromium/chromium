@@ -28,7 +28,6 @@
 #include "chrome/browser/extensions/extension_util.h"
 #include "chrome/browser/extensions/unpacked_installer.h"
 #include "chrome/browser/prefetch/prefetch_prefs.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/common/chrome_paths.h"
@@ -38,7 +37,8 @@
 #include "components/infobars/content/content_infobar_manager.h"
 #include "components/infobars/core/infobar.h"
 #include "components/infobars/core/infobar_delegate.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "content/public/browser/navigation_entry.h"
 #include "content/public/browser/ssl_status.h"
 #include "content/public/browser/web_contents.h"
@@ -920,25 +920,33 @@ IN_PROC_BROWSER_TEST_F(PrerenderDataSaverProtocolTest,
       /*PrerenderFinalStatus::kDataSaverEnabled=*/38, 1);
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest, PrivacySandboxEnrollmentOverride) {
+class PrivacySandboxAttestationsOverrideTest : public DevToolsProtocolTest {
+ public:
+  PrivacySandboxAttestationsOverrideTest()
+      : scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {}
+
+ private:
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
+                       PrivacySandboxEnrollmentOverride) {
   Attach();
 
   base::Value::Dict paramsDIPS;
   const std::string attestation_url = "https://google.com";
   paramsDIPS.Set("url", attestation_url);
-  const net::SchemefulSite expected_site =
-      net::SchemefulSite(GURL(attestation_url));
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
               std::move(paramsDIPS));
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
 
-  EXPECT_THAT(settings->GetAttestationOverridesForTesting(),
-              testing::ElementsAre(expected_site));
+  EXPECT_TRUE(
+      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
+          net::SchemefulSite(GURL(attestation_url))));
 }
 
-IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
+IN_PROC_BROWSER_TEST_F(PrivacySandboxAttestationsOverrideTest,
                        PrivacySandboxEnrollmentOverrideInvalidUrl) {
   Attach();
 
@@ -948,12 +956,11 @@ IN_PROC_BROWSER_TEST_F(DevToolsProtocolTest,
 
   SendCommand("Browser.addPrivacySandboxEnrollmentOverride",
               std::move(paramsDIPS));
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
 
   EXPECT_TRUE(error());
-  EXPECT_THAT(settings->GetAttestationOverridesForTesting(),
-              testing::IsEmpty());
+  EXPECT_FALSE(
+      privacy_sandbox::PrivacySandboxAttestations::GetInstance()->IsOverridden(
+          net::SchemefulSite(GURL(attestation_url))));
 }
 
 }  // namespace

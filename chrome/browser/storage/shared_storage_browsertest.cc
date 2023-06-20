@@ -25,6 +25,8 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/metrics/content/subprocess_metrics_provider.h"
 #include "components/prefs/pref_service.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_test_util.h"
@@ -221,7 +223,9 @@ MakeSharedStoragePrivacySandboxAttestationsMap(
 
 class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
  public:
-  SharedStorageChromeBrowserTestBase() {
+  SharedStorageChromeBrowserTestBase()
+      : scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
     base::test::TaskEnvironment task_environment;
 
     scoped_feature_list_.InitWithFeatures(
@@ -308,8 +312,8 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
 
   void SetAttestationsMap(
       const privacy_sandbox::PrivacySandboxAttestationsMap& attestations_map) {
-    GetPrivacySandboxSettings()->SetPrivacySandboxAttestationsMapForTesting(
-        attestations_map);
+    privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+        ->SetAttestationsForTesting(attestations_map);
   }
 
   void MaybeEnrollMainHost(const GURL& main_url) {
@@ -472,6 +476,7 @@ class SharedStorageChromeBrowserTestBase : public PlatformBrowserTest {
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
   net::EmbeddedTestServer https_server_{net::EmbeddedTestServer::TYPE_HTTPS};
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 };
 
 class SharedStorageChromeBrowserTest

@@ -24,10 +24,12 @@
 #include "components/content_settings/core/common/pref_names.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "content/public/common/content_features.h"
 #include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "net/base/schemeful_site.h"
 #include "net/cookies/site_for_cookies.h"
 #include "third_party/blink/public/common/features.h"
 #include "url/gurl.h"
@@ -104,8 +106,7 @@ PrivacySandboxSettingsImpl::PrivacySandboxSettingsImpl(
     : delegate_(std::move(delegate)),
       host_content_settings_map_(host_content_settings_map),
       cookie_settings_(cookie_settings),
-      pref_service_(pref_service),
-      attestations_({}) {
+      pref_service_(pref_service) {
   DCHECK(pref_service_);
   DCHECK(host_content_settings_map_);
   DCHECK(cookie_settings_);
@@ -193,7 +194,7 @@ bool PrivacySandboxSettingsImpl::IsTopicsAllowedForContext(
     const url::Origin& top_frame_origin,
     const GURL& url) const {
   // Check for attestation on the calling context's site.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(url),
           PrivacySandboxAttestationsGatedAPI::kTopics)) {
     JoinHistogram(kIsTopicsAllowedForContextHistogram,
@@ -326,7 +327,7 @@ bool PrivacySandboxSettingsImpl::IsAttributionReportingAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   // Check for attestation on the reporting origin.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
           PrivacySandboxAttestationsGatedAPI::kAttributionReporting)) {
     JoinHistogram(kIsAttributionReportingAllowedHistogram,
@@ -351,7 +352,7 @@ bool PrivacySandboxSettingsImpl::MaySendAttributionReport(
     const url::Origin& destination_origin,
     const url::Origin& reporting_origin) const {
   // Check for attestation on the reporting origin.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
           PrivacySandboxAttestationsGatedAPI::kAttributionReporting)) {
     JoinHistogram(kMaySendAttributionReportHistogram,
@@ -491,7 +492,7 @@ bool PrivacySandboxSettingsImpl::IsFledgeAllowed(
     const url::Origin& auction_party) const {
   // Check for attestation on the auction party's site. The auction party is a
   // variety of entities during the auction, all of which need to be attested.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(auction_party),
           PrivacySandboxAttestationsGatedAPI::kProtectedAudience)) {
     JoinHistogram(kIsFledgeAllowedHistogram, Status::kAttestationFailed);
@@ -512,7 +513,7 @@ bool PrivacySandboxSettingsImpl::IsSharedStorageAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& accessing_origin) const {
   // Check for attestation on the caller's site.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(accessing_origin),
           PrivacySandboxAttestationsGatedAPI::kSharedStorage)) {
     JoinHistogram(kIsSharedStorageAllowedHistogram, Status::kAttestationFailed);
@@ -552,7 +553,7 @@ bool PrivacySandboxSettingsImpl::IsPrivateAggregationAllowed(
     const url::Origin& top_frame_origin,
     const url::Origin& reporting_origin) const {
   // Check for attestation on the worklet's site.
-  if (!attestations_.IsSiteAttested(
+  if (!PrivacySandboxAttestations::GetInstance()->IsSiteAttested(
           net::SchemefulSite(reporting_origin),
           PrivacySandboxAttestationsGatedAPI::kPrivateAggregation)) {
     JoinHistogram(kIsPrivateAggregationAllowedHistogram,
@@ -655,21 +656,6 @@ void PrivacySandboxSettingsImpl::RemoveObserver(Observer* observer) {
 void PrivacySandboxSettingsImpl::SetDelegateForTesting(
     std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
-}
-
-void PrivacySandboxSettingsImpl::SetPrivacySandboxAttestationsMapForTesting(
-    const PrivacySandboxAttestationsMap& attestations_map) {
-  attestations_ = PrivacySandboxAttestations(attestations_map);
-}
-
-void PrivacySandboxSettingsImpl::AddPrivacySandboxAttestationOverride(
-    const GURL& url) {
-  attestations_.AddOverride(net::SchemefulSite(url));
-}
-
-const std::vector<net::SchemefulSite>
-PrivacySandboxSettingsImpl::GetAttestationOverridesForTesting() const {
-  return attestations_.GetOverridesForTesting();  // IN-TEST
 }
 
 bool PrivacySandboxSettingsImpl::IsPrivacySandboxEnabledForContext(

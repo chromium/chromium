@@ -12,7 +12,6 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/devtools/chrome_devtools_manager_delegate.h"
 #include "chrome/browser/devtools/devtools_dock_tile.h"
-#include "chrome/browser/privacy_sandbox/privacy_sandbox_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/browser_commands.h"
@@ -20,7 +19,7 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "chrome/browser/ui/exclusive_access/exclusive_access_context.h"
 #include "chrome/browser/ui/tabs/tab_strip_model.h"
-#include "components/privacy_sandbox/privacy_sandbox_settings.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -219,24 +218,13 @@ protocol::Response BrowserHandler::AddPrivacySandboxEnrollmentOverride(
     return Response::ServerError("No host found");
   }
 
-  Profile* profile = static_cast<Profile*>(host->GetBrowserContext());
-  if (!profile) {
-    return Response::ServerError(
-        "Method is currently only supported on page targets");
-  }
-
-  privacy_sandbox::PrivacySandboxSettings* settings =
-      PrivacySandboxSettingsFactory::GetForProfile(profile);
-  if (!settings) {
-    return Response::ServerError("No settings found");
-  }
-
   GURL url_to_add = GURL(in_url);
 
   if (!url_to_add.is_valid()) {
     return Response::InvalidParams("Invalid URL");
   }
 
-  settings->AddPrivacySandboxAttestationOverride(url_to_add);
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()->AddOverride(
+      net::SchemefulSite(url_to_add));
   return Response::Success();
 }

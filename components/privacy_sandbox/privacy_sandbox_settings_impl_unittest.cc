@@ -15,6 +15,8 @@
 #include "components/content_settings/core/test/content_settings_mock_provider.h"
 #include "components/content_settings/core/test/content_settings_test_utils.h"
 #include "components/privacy_sandbox/canonical_topic.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_prefs.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
@@ -130,7 +132,9 @@ class PrivacySandboxSettingsTest : public testing::Test {
  public:
   PrivacySandboxSettingsTest()
       : browser_task_environment_(
-            base::test::TaskEnvironment::TimeSource::MOCK_TIME) {
+            base::test::TaskEnvironment::TimeSource::MOCK_TIME),
+        scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
     content_settings::CookieSettings::RegisterProfilePrefs(prefs()->registry());
     HostContentSettingsMap::RegisterProfilePrefs(prefs()->registry());
     privacy_sandbox::RegisterProfilePrefs(prefs()->registry());
@@ -213,6 +217,7 @@ class PrivacySandboxSettingsTest : public testing::Test {
   browsing_topics::MockBrowsingTopicsService mock_browsing_topics_service_;
   scoped_refptr<HostContentSettingsMap> host_content_settings_map_;
   scoped_refptr<content_settings::CookieSettings> cookie_settings_;
+  ScopedPrivacySandboxAttestations scoped_attestations_;
 
   std::unique_ptr<PrivacySandboxSettings> privacy_sandbox_settings_;
 };
@@ -2034,8 +2039,8 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
       url::Origin::Create(top_level_url), caller_url));
 
   // With an override of the site from a devtools call, Topics is allowed.
-  privacy_sandbox_settings()->AddPrivacySandboxAttestationOverride(
-      GURL("https://embedded.com"));
+  PrivacySandboxAttestations::GetInstance()->AddOverride(
+      net::SchemefulSite(GURL("https://embedded.com")));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
       url::Origin::Create(top_level_url), caller_url));
 }

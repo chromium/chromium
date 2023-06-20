@@ -31,6 +31,7 @@
 #include "components/optimization_guide/core/test_optimization_guide_model_provider.h"
 #include "components/optimization_guide/proto/page_topics_model_metadata.pb.h"
 #include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/scoped_privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_features.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 #include "components/ukm/test_ukm_recorder.h"
@@ -2347,7 +2348,9 @@ IN_PROC_BROWSER_TEST_F(BrowsingTopicsBrowserTest,
 // Tests that the Topics API abides by the Privacy Sandbox Enrollment framework.
 class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
  public:
-  AttestationBrowsingTopicsBrowserTest() {
+  AttestationBrowsingTopicsBrowserTest()
+      : scoped_attestations_(
+            privacy_sandbox::PrivacySandboxAttestations::CreateForTesting()) {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/
         {blink::features::kBrowsingTopics, blink::features::kBrowsingTopicsXHR,
@@ -2361,6 +2364,7 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
 
  protected:
   base::test::ScopedFeatureList scoped_feature_list_;
+  privacy_sandbox::ScopedPrivacySandboxAttestations scoped_attestations_;
 };
 
 // Site a.test is attested for Topics, so it should receive a valid response.
@@ -2371,7 +2375,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
       net::SchemefulSite(GURL("https://a.test")),
       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
-  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
 
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
@@ -2393,7 +2398,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
       net::SchemefulSite(GURL("https://a.test")),
       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
-  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
 
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/one_iframe_page.html");
@@ -2411,7 +2417,8 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
                        privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
                            privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
                                kProtectedAudience});
-  privacy_sandbox_settings()->SetPrivacySandboxAttestationsMapForTesting(map);
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
 
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
