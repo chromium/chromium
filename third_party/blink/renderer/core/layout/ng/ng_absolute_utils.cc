@@ -633,10 +633,7 @@ void AdjustOffsetForSplitInline(const NGBlockNode& node,
   // container, #anonymous2. This is why the code below adjusts the legacy
   // offset from being wrt #container to being wrt #anonymous2.
   const LayoutObject* container = node.GetLayoutBox()->Container();
-
-  // The container_builder for LayoutViewTransitionRoot does not have any
-  // children.
-  if (container->IsAnonymousBlock() && !container->IsViewTransitionRoot()) {
+  if (container->IsAnonymousBlock()) {
     LogicalOffset container_offset =
         container_builder->GetChildOffset(container);
     offset -= container_offset;

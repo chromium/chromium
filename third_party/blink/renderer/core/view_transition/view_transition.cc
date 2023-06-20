@@ -28,7 +28,6 @@
 #include "third_party/blink/renderer/core/frame/local_frame_view.h"
 #include "third_party/blink/renderer/core/layout/layout_box_model_object.h"
 #include "third_party/blink/renderer/core/layout/layout_view.h"
-#include "third_party/blink/renderer/core/layout/layout_view_transition_root.h"
 #include "third_party/blink/renderer/core/page/chrome_client.h"
 #include "third_party/blink/renderer/core/page/page.h"
 #include "third_party/blink/renderer/core/paint/paint_layer.h"
@@ -157,13 +156,6 @@ ViewTransition::ScopedPauseRendering::~ScopedPauseRendering() = default;
 
 bool ViewTransition::ScopedPauseRendering::ShouldThrottleRendering() const {
   return !cc_paused_;
-}
-
-void ViewTransition::UpdateSnapshotContainingBlockStyle() {
-  LayoutViewTransitionRoot* transition_root =
-      document_->GetLayoutView()->GetViewTransitionRoot();
-  CHECK(transition_root);
-  transition_root->UpdateSnapshotStyle(*style_tracker_);
 }
 
 // static

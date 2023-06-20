@@ -558,6 +558,34 @@ NGOutOfFlowLayoutPart::GetContainingBlockInfo(
          container_builder_->FragmentBlockSize()});
   }
 
+  // The ::view-transition element is special in that its containing block is
+  // the "snapshot root" rect, rather than a viewport or parent box:
+  // https://drafts.csswg.org/css-view-transitions-1/#selectordef-view-transition.
+  DCHECK(candidate.box);
+  if (ViewTransitionUtils::IsViewTransitionRoot(*candidate.box)) {
+    DCHECK(container_object->IsLayoutView());
+    const ViewTransition* transition =
+        ViewTransitionUtils::GetActiveTransition(candidate.box->GetDocument());
+    DCHECK(transition);
+
+    PhysicalRect physical_snapshot_root_in_frame(
+        PhysicalOffset(transition->GetFrameToSnapshotRootOffset()),
+        PhysicalSize(transition->GetSnapshotRootSize()));
+
+    WritingDirectionMode writing_direction =
+        ConstraintSpace().GetWritingDirection();
+    LogicalSize outer_size = container_builder_->Size();
+    WritingModeConverter converter(writing_direction, outer_size);
+
+    NGOutOfFlowLayoutPart::ContainingBlockInfo containing_block_for_snapshot;
+    containing_block_for_snapshot.rect =
+        converter.ToLogical(physical_snapshot_root_in_frame);
+
+    containing_block_for_snapshot.writing_direction = writing_direction;
+
+    return containing_block_for_snapshot;
+  }
+
   return node_style.GetPosition() == EPosition::kAbsolute
              ? default_containing_block_info_for_absolute_
              : default_containing_block_info_for_fixed_;

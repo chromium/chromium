@@ -67,12 +67,6 @@ ContainerNode* LayoutTreeBuilderTraversal::LayoutParent(const Node& node) {
 }
 
 LayoutObject* LayoutTreeBuilderTraversal::ParentLayoutObject(const Node& node) {
-  if (node.GetPseudoId() == kPseudoIdViewTransition) {
-    // The view-transition pseudo is wrapped by the anonymous
-    // LayoutViewTransitionRoot but that's created by adding the
-    // view-transition to the LayoutView.
-    return node.GetDocument().GetLayoutView();
-  }
   ContainerNode* parent = LayoutTreeBuilderTraversal::LayoutParent(node);
   return parent ? parent->GetLayoutObject() : nullptr;
 }
