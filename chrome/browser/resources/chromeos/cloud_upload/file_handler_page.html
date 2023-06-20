@@ -14,6 +14,8 @@
   #title {
     color: var(--cros-text-color-primary);
     font: var(--cros-headline-1-font);
+    /* override the default margin for H1. */
+    margin: 0;
     padding-block-end: 8px;
     padding-block-start: 24px;
     padding-inline: 24px;
@@ -118,7 +120,7 @@
 <!-- autofocus for screen reader to read header on dialog open-->
 <div id="dialog" role="dialog" autofocus tabindex="-1" aria-labelledby="title">
   <div id="header">
-    <div id="title"></div>
+    <h1 id="title"></h1>
   </div>
   <div id="content" role="listbox" aria-multiselectable="false" tabindex="-1"
     aria-label="Application options"></div>
