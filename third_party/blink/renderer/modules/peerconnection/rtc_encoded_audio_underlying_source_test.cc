@@ -48,11 +48,9 @@ class FakeTransformableFrame : public webrtc::TransformableAudioFrameInterface {
 
 class RTCEncodedAudioUnderlyingSourceTest : public testing::Test {
  public:
-  RTCEncodedAudioUnderlyingSource* CreateSource(ScriptState* script_state,
-                                                bool is_receiver = false) {
+  RTCEncodedAudioUnderlyingSource* CreateSource(ScriptState* script_state) {
     return MakeGarbageCollected<RTCEncodedAudioUnderlyingSource>(
-        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()),
-        is_receiver);
+        script_state, WTF::CrossThreadBindOnce(disconnect_callback_.Get()));
   }
 
  protected:

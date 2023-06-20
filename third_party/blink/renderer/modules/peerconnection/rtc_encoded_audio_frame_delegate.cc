@@ -96,7 +96,7 @@ absl::optional<uint64_t> RTCEncodedAudioFrameDelegate::AbsCaptureTime() const {
   return absl::nullopt;
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrameDelegate::PassWebRtcFrame() {
   base::AutoLock lock(lock_);
   return std::move(webrtc_frame_);

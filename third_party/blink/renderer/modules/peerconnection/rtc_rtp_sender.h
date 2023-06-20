@@ -103,7 +103,7 @@ class RTCRtpSender final : public ScriptWrappable,
   void UnregisterEncodedAudioStreamCallback();
   void InitializeEncodedAudioStreams(ScriptState*);
   void OnAudioFrameFromEncoder(
-      std::unique_ptr<webrtc::TransformableFrameInterface> frame);
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();

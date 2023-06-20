@@ -92,7 +92,8 @@ class RTCRtpReceiver final : public ScriptWrappable,
   void UnregisterEncodedAudioStreamCallback();
   void InitializeEncodedAudioStreams(ScriptState*);
   void OnAudioFrameFromDepacketizer(
-      std::unique_ptr<webrtc::TransformableFrameInterface> encoded_audio_frame);
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>
+          encoded_audio_frame);
   void RegisterEncodedVideoStreamCallback();
   void UnregisterEncodedVideoStreamCallback();
   void InitializeEncodedVideoStreams(ScriptState*);

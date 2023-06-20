@@ -17,7 +17,6 @@
 
 namespace webrtc {
 class TransformableAudioFrameInterface;
-class TransformableFrameInterface;
 }  // namespace webrtc
 
 namespace blink {
@@ -51,7 +50,7 @@ class MODULES_EXPORT RTCEncodedAudioFrame final : public ScriptWrappable {
   // Returns and transfers ownership of the internal WebRTC frame
   // backing this RTCEncodedAudioFrame, neutering all RTCEncodedAudioFrames
   // backed by that internal WebRTC frame.
-  std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();
 
   void Trace(Visitor*) const override;
 

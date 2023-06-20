@@ -38,7 +38,7 @@ class RTCEncodedAudioFrameDelegate
   absl::optional<uint16_t> SequenceNumber() const;
   Vector<uint32_t> ContributingSources() const;
   absl::optional<uint64_t> AbsCaptureTime() const;
-  std::unique_ptr<webrtc::TransformableFrameInterface> PassWebRtcFrame();
+  std::unique_ptr<webrtc::TransformableAudioFrameInterface> PassWebRtcFrame();
   std::unique_ptr<webrtc::TransformableAudioFrameInterface> CloneWebRtcFrame();
 
  private:

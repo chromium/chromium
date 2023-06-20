@@ -1069,8 +1069,7 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
             script_state,
             WTF::CrossThreadBindOnce(
                 &RTCRtpSender::UnregisterEncodedAudioStreamCallback,
-                WrapCrossThreadWeakPersistent(this)),
-            /*is_receiver=*/false);
+                WrapCrossThreadWeakPersistent(this)));
 
     auto set_underlying_source =
         WTF::CrossThreadBindRepeating(&RTCRtpSender::SetAudioUnderlyingSource,
@@ -1118,7 +1117,7 @@ void RTCRtpSender::InitializeEncodedAudioStreams(ScriptState* script_state) {
 }
 
 void RTCRtpSender::OnAudioFrameFromEncoder(
-    std::unique_ptr<webrtc::TransformableFrameInterface> frame) {
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame) {
   base::AutoLock locker(audio_underlying_source_lock_);
   if (audio_from_encoder_underlying_source_) {
     audio_from_encoder_underlying_source_->OnFrameFromSource(std::move(frame));

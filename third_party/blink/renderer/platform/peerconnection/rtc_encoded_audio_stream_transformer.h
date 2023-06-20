@@ -26,13 +26,13 @@ class SingleThreadTaskRunner;
 namespace webrtc {
 class FrameTransformerInterface;
 class TransformedFrameCallback;
-class TransformableFrameInterface;
+class TransformableAudioFrameInterface;
 }  // namespace webrtc
 
 namespace blink {
 
 using TransformerCallback = WTF::CrossThreadRepeatingFunction<void(
-    std::unique_ptr<webrtc::TransformableFrameInterface>)>;
+    std::unique_ptr<webrtc::TransformableAudioFrameInterface>)>;
 
 class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
  public:
@@ -49,7 +49,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
     void UnregisterTransformedFrameCallback();
 
     void TransformFrameOnSourceTaskRunner(
-        std::unique_ptr<webrtc::TransformableFrameInterface> frame);
+        std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
     void SetTransformerCallback(TransformerCallback callback);
 
@@ -59,7 +59,7 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
         scoped_refptr<base::SingleThreadTaskRunner> task_runner);
 
     void SendFrameToSink(
-        std::unique_ptr<webrtc::TransformableFrameInterface> frame);
+        std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
    private:
     explicit Broker(RTCEncodedAudioStreamTransformer* transformer_);
@@ -90,11 +90,12 @@ class PLATFORM_EXPORT RTCEncodedAudioStreamTransformer {
   // Called by WebRTC to notify of new untransformed frames from the WebRTC
   // stack. Runs on the most recently set source task_runner - ie changes when
   // the stream is transferred.
-  void TransformFrame(std::unique_ptr<webrtc::TransformableFrameInterface>);
+  void TransformFrame(
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface>);
 
   // Send a transformed frame to the WebRTC sink. Threadsafe.
   void SendFrameToSink(
-      std::unique_ptr<webrtc::TransformableFrameInterface> frame);
+      std::unique_ptr<webrtc::TransformableAudioFrameInterface> frame);
 
   // Set a callback to be invoked on every untransformed frame. Is threadsafe.
   void SetTransformerCallback(TransformerCallback);

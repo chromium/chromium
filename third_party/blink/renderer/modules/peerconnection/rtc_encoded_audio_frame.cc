@@ -93,7 +93,7 @@ scoped_refptr<RTCEncodedAudioFrameDelegate> RTCEncodedAudioFrame::Delegate()
   return delegate_;
 }
 
-std::unique_ptr<webrtc::TransformableFrameInterface>
+std::unique_ptr<webrtc::TransformableAudioFrameInterface>
 RTCEncodedAudioFrame::PassWebRtcFrame() {
   SyncDelegate();
   return delegate_->PassWebRtcFrame();
