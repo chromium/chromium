@@ -3891,6 +3891,7 @@ if (!is_android) {
         "../browser/ash/arc/intent_helper/custom_tab_session_impl_browsertest.cc",
         "../browser/ash/arc/session/arc_session_manager_browsertest.cc",
         "../browser/ash/arc/user_session/arc_user_session_service_browsertest.cc",
+        "../browser/ash/arc/vmm/arc_vmm_manager_browsertest.cc",
         "../browser/ash/base/locale_util_browsertest.cc",
         "../browser/ash/bluetooth/hats_bluetooth_revamp_trigger_impl_browsertest.cc",
         "../browser/ash/bruschetta/bruschetta_download_browsertest.cc",

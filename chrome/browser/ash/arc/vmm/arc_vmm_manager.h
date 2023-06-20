@@ -88,6 +88,7 @@ class ArcVmmManager : public KeyedService,
 
  private:
   friend class ArcVmmManagerTest;
+  friend class ArcVmmManagerBrowserTest;
   // Accelerator target for experimental usage. Ctrl + Alt + Shift + O / P for
   // enable or disable vmm swap.
   class AcceleratorTarget;
