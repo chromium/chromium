@@ -137,13 +137,25 @@ void MandatoryReauthBubbleControllerImpl::OnBubbleClosed(
     switch (closed_reason) {
       case PaymentsBubbleClosedReason::kAccepted:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kAccepted;
-        std::move(accept_mandatory_reauth_callback_).Run();
+        // We must set the `current_bubble_type_` before running the callback,
+        // as the callback is not always asynchronous (for example, in the case
+        // where the user is automatically authenticated due to being within a
+        // certain grace period of time from the previous authentication). In
+        // these cases, we might re-show the opt-in bubble again if we don't set
+        // the `current_bubble_type_` first.
         current_bubble_type_ = MandatoryReauthBubbleType::kConfirmation;
+        std::move(accept_mandatory_reauth_callback_).Run();
         break;
       case PaymentsBubbleClosedReason::kCancelled:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kCancelled;
-        std::move(cancel_mandatory_reauth_callback_).Run();
+        // We must set the `current_bubble_type_` before running the callback,
+        // as the callback is not always asynchronous (for example, in the case
+        // where the user is automatically authenticated due to being within a
+        // certain grace period of time from the previous authentication). In
+        // these cases, we might re-show the opt-in bubble again if we don't set
+        // the `current_bubble_type_` first.
         current_bubble_type_ = MandatoryReauthBubbleType::kInactive;
+        std::move(cancel_mandatory_reauth_callback_).Run();
         break;
       case PaymentsBubbleClosedReason::kClosed:
         metric = autofill_metrics::MandatoryReauthOptInBubbleResult::kClosed;
