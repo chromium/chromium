@@ -4,6 +4,7 @@
 
 #include "base/process/memory.h"
 #include "base/test/test_discardable_memory_allocator.h"
+#include "testing/libfuzzer/libfuzzer_exports.h"
 
 namespace {
 base::TestDiscardableMemoryAllocator g_discardable_memory_allocator;
