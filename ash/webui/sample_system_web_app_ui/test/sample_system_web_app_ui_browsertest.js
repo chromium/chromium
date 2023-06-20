@@ -1,4 +1,4 @@
-// Copyright 2019 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
@@ -7,6 +7,7 @@
  */
 
 GEN('#include "content/public/test/browser_test.h"');
+GEN('#include "build/config/coverage/buildflags.h"');
 
 const HOST_ORIGIN = 'chrome://sample-system-web-app';
 const UNTRUSTED_HOST_ORIGIN = 'chrome-untrusted://sample-system-web-app';
@@ -29,7 +30,13 @@ var SampleSystemWebAppUIBrowserTest = class extends testing.Test {
 
 // Tests that chrome://sample-system-web-app runs js file and that it goes
 // somewhere instead of 404ing or crashing.
-TEST_F('SampleSystemWebAppUIBrowserTest', 'HasChromeSchemeURL', () => {
+// TODO(b/280457934): Skip as shared workers crash for JS coverage builds.
+GEN('#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)');
+GEN('#define MAYBE_HasChromeSchemeURL DISABLED_HasChromeSchemeURL');
+GEN('#else');
+GEN('#define MAYBE_HasChromeSchemeURL HasChromeSchemeURL');
+GEN('#endif');
+TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_HasChromeSchemeURL', () => {
   const header = document.querySelector('header');
 
   assertEquals(header.innerText, 'Sample System Web App');
@@ -38,14 +45,28 @@ TEST_F('SampleSystemWebAppUIBrowserTest', 'HasChromeSchemeURL', () => {
 });
 
 // Test the ability to get information from the page handler.
-TEST_F('SampleSystemWebAppUIBrowserTest', 'FetchPreferences', async () => {
-  const {preferences} = await window.pageHandler.getPreferences();
-  assertDeepEquals({background: '#ffffff', foreground: '#000000'}, preferences);
-  testDone();
-});
+// TODO(b/280457934): Skip as shared workers crash for JS coverage builds.
+GEN('#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)');
+GEN('#define MAYBE_FetchPreferences DISABLED_FetchPreferences');
+GEN('#else');
+GEN('#define MAYBE_FetchPreferences FetchPreferences');
+GEN('#endif');
+TEST_F(
+    'SampleSystemWebAppUIBrowserTest', 'MAYBE_FetchPreferences', async () => {
+      const {preferences} = await window.pageHandler.getPreferences();
+      assertDeepEquals(
+          {background: '#ffffff', foreground: '#000000'}, preferences);
+      testDone();
+    });
 
 // Test the ability to trigger work in the page handler.
-TEST_F('SampleSystemWebAppUIBrowserTest', 'DoSomething', async () => {
+// TODO(b/280457934): Skip as shared workers crash for JS coverage builds.
+GEN('#if BUILDFLAG(USE_JAVASCRIPT_COVERAGE)');
+GEN('#define MAYBE_DoSomething DISABLED_DoSomething');
+GEN('#else');
+GEN('#define MAYBE_DoSomething DoSomething');
+GEN('#endif');
+TEST_F('SampleSystemWebAppUIBrowserTest', 'MAYBE_DoSomething', async () => {
   const pageHandler = window.pageHandler;
   const callbackRouter = window.callbackRouter;
 
