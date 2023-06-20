@@ -200,7 +200,10 @@ bool ServiceWorkerSubresourceLoader::MaybeStartRaceNetworkRequest() {
           kRaceNetworkRequest) {
     return false;
   }
+  return ServiceWorkerSubresourceLoader::StartRaceNetworkRequest();
+}
 
+bool ServiceWorkerSubresourceLoader::StartRaceNetworkRequest() {
   // If the fetch event is restarted for some reason, stop dispatching
   // RaceNetworkRequest to avoid making the race condition complex.
   if (fetch_request_restarted_) {

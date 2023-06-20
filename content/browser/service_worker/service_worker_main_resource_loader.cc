@@ -305,6 +305,22 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
     return false;
   }
 
+  bool status = StartRaceNetworkRequest(context, version);
+  if (is_enabled_by_origin_trial) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial);
+  } else if (is_enabled_by_feature_flag) {
+    version->CountFeature(
+        blink::mojom::WebFeature::
+            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
+  }
+  return status;
+}
+
+bool ServiceWorkerMainResourceLoader::StartRaceNetworkRequest(
+    scoped_refptr<ServiceWorkerContextWrapper> context,
+    scoped_refptr<ServiceWorkerVersion> version) {
   // Set fetch_handler_bypass_option to tell the renderer that
   // RaceNetworkRequest is enabled.
   version->set_fetch_handler_bypass_option(
@@ -376,16 +392,6 @@ bool ServiceWorkerMainResourceLoader::MaybeStartRaceNetworkRequest(
   race_network_request_url_loader_ = std::move(url_loader);
   race_network_request_loader_client_ =
       std::move(race_network_request_url_loader_client);
-
-  if (is_enabled_by_origin_trial) {
-    version->CountFeature(
-        blink::mojom::WebFeature::
-            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequestByOriginTrial);
-  } else if (is_enabled_by_feature_flag) {
-    version->CountFeature(
-        blink::mojom::WebFeature::
-            kServiceWorkerBypassFetchHandlerForAllWithRaceNetworkRequest);
-  }
 
   return true;
 }

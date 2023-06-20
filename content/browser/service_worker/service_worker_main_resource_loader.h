@@ -246,6 +246,12 @@ class CONTENT_EXPORT ServiceWorkerMainResourceLoader
       scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
       scoped_refptr<ServiceWorkerVersion> version);
 
+  // Returns false if fails to start the race network request.
+  // The caller should run the regular path instead.
+  bool StartRaceNetworkRequest(
+      scoped_refptr<ServiceWorkerContextWrapper> context_wrapper,
+      scoped_refptr<ServiceWorkerVersion> version);
+
   NavigationLoaderInterceptor::FallbackCallback fallback_callback_;
 
   network::ResourceRequest resource_request_;

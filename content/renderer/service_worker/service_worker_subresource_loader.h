@@ -213,6 +213,10 @@ class CONTENT_EXPORT ServiceWorkerSubresourceLoader
   // fetch handler.
   bool MaybeStartRaceNetworkRequest();
 
+  // Returns false if fails to start race network request.
+  // A caller should handle the case.
+  bool StartRaceNetworkRequest();
+
   network::mojom::URLResponseHeadPtr response_head_;
   absl::optional<net::RedirectInfo> redirect_info_;
   int redirect_limit_;
