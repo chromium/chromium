@@ -178,7 +178,7 @@ void PrivateAggregationManagerImpl::OnConsumeBudgetReturned(
             report_request.payload_contents(),
             report_request.shared_info().Clone(),
             std::move(immediate_debug_reporting_path),
-            report_request.debug_key());
+            report_request.debug_key(), report_request.additional_fields());
     DCHECK(debug_request.has_value());
 
     aggregation_service->AssembleAndSendReport(

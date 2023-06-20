@@ -375,6 +375,67 @@ TEST_F(PrivateAggregationManagerImplTest,
       PrivateAggregationBudgeter::RequestResult::kApproved, 1);
 }
 
+TEST_F(PrivateAggregationManagerImplTest,
+       DebugRequestWithContextId_ImmediatelySentAfterBudgetRequest) {
+  base::HistogramTester histogram;
+
+  AggregatableReportRequest example_request =
+      aggregation_service::CreateExampleRequest();
+  AggregatableReportSharedInfo shared_info =
+      example_request.shared_info().Clone();
+  shared_info.debug_mode = AggregatableReportSharedInfo::DebugMode::kEnabled;
+
+  PrivateAggregationBudgetKey example_key =
+      PrivateAggregationBudgetKey::Create(
+          example_request.shared_info().reporting_origin, kExampleTime,
+          PrivateAggregationBudgetKey::Api::kProtectedAudience)
+          .value();
+
+  absl::optional<AggregatableReportRequest> standard_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), shared_info.Clone(),
+          /*reporting_path=*/"/example-reporting-path",
+          /*debug_key=*/absl::nullopt,
+          /*additional_fields=*/{{"context_id", "example_context_id"}});
+  absl::optional<AggregatableReportRequest> expected_debug_request =
+      AggregatableReportRequest::Create(
+          example_request.payload_contents(), std::move(shared_info),
+          /*reporting_path=*/
+          "/.well-known/private-aggregation/debug/report-protected-audience",
+          /*debug_key=*/absl::nullopt,
+          /*additional_fields=*/{{"context_id", "example_context_id"}});
+  ASSERT_TRUE(standard_request.has_value());
+  ASSERT_TRUE(expected_debug_request.has_value());
+
+  EXPECT_CALL(
+      *budgeter_,
+      ConsumeBudget(standard_request->payload_contents().contributions[0].value,
+                    example_key, _))
+      .WillOnce(base::test::RunOnceCallback<2>(
+          PrivateAggregationBudgeter::RequestResult::kApproved));
+  EXPECT_CALL(*aggregation_service_, AssembleAndSendReport)
+      .WillOnce(Invoke([&](AggregatableReportRequest report_request) {
+        EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+            report_request, expected_debug_request.value()));
+      }));
+
+  // Still triggers the standard (non-debug) report.
+  EXPECT_CALL(*aggregation_service_, ScheduleReport)
+      .WillOnce(
+          Invoke([&standard_request](AggregatableReportRequest report_request) {
+            EXPECT_TRUE(aggregation_service::ReportRequestsEqual(
+                report_request, standard_request.value()));
+          }));
+
+  manager_.OnReportRequestReceivedFromHost(
+      aggregation_service::CloneReportRequest(standard_request.value()),
+      example_key);
+
+  histogram.ExpectUniqueSample(
+      "PrivacySandbox.PrivateAggregation.Budgeter.RequestResult2",
+      PrivateAggregationBudgeter::RequestResult::kApproved, 1);
+}
+
 TEST_F(PrivateAggregationManagerImplTest, DebugReportingPath) {
   base::HistogramTester histogram;
 
