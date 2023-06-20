@@ -161,13 +161,13 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
 
 void WaylandWindow::SetWindowScale(float new_scale) {
   DCHECK_GE(new_scale, 0.f);
-  if (applied_state_.window_scale == new_scale) {
+  auto state = in_flight_requests_.empty() ? applied_state_
+                                           : in_flight_requests_.back().state;
+  if (state.window_scale == new_scale) {
     return;
   }
 
-  auto state = applied_state_;
   state.window_scale = new_scale;
-
   RequestStateFromClient(state);
 }
 
@@ -404,6 +404,8 @@ gfx::Rect WaylandWindow::GetBoundsInPixels() const {
 }
 
 void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
+  // TODO(crbug.com/1456338): Requesting state from the |applied_state_| needs
+  // to be reviewed, there could be throttled |in_flight_requests_|.
   auto state = applied_state_;
   state.bounds_dip = bounds_dip;
   RequestStateFromClient(state);

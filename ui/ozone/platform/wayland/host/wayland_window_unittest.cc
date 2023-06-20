@@ -4702,6 +4702,41 @@ TEST_P(WaylandWindowTest, NoRoundingErrorInDIP) {
   VerifyAndClearExpectations();
 }
 
+// Make sure that the window scale change is applied on the latest
+// in_flight_requests.
+TEST_P(WaylandWindowTest, ScaleChangeWhenStateRequestThrottoled) {
+  VerifyAndClearExpectations();
+
+  gfx::Rect bounds_dip;
+  auto* toplevel = static_cast<WaylandToplevelWindow*>(window_.get());
+  for (int i = 300; i <= 600; i++) {
+    bounds_dip = {0, 0, i, 900 - i};
+    toplevel->HandleToplevelConfigure(bounds_dip.width(), bounds_dip.height(),
+                                      {});
+    toplevel->HandleSurfaceConfigure(i);
+  }
+  // latest bounds_dip is throttled, and not applied, scale factor is 1.
+  EXPECT_NE(bounds_dip.size(), toplevel->applied_state().bounds_dip.size());
+  EXPECT_EQ(bounds_dip.size(),
+            delegate_.ConvertRectToPixels(bounds_dip).size());
+
+  // Update to delegate to use the correct scale;
+  constexpr float kScale = display::kDsf_1_777;
+  auto* primary_output =
+      connection_->wayland_output_manager()->GetPrimaryOutput();
+  primary_output->SetScaleFactorForTesting(kScale);
+  toplevel->UpdateWindowScale(true);
+  AdvanceFrameToCurrent(window_.get(), delegate_);
+
+  // bounds_dip advances to be applied, and scaled correctly.
+  EXPECT_EQ(bounds_dip.size(), toplevel->applied_state().bounds_dip.size());
+  EXPECT_NE(bounds_dip.size(),
+            delegate_.ConvertRectToPixels(bounds_dip).size());
+  EXPECT_EQ(window_->applied_state().size_px,
+            delegate_.ConvertRectToPixels(bounds_dip).size());
+  VerifyAndClearExpectations();
+}
+
 // Asserts the server receives the correct region when SetShape() is called for
 // toplevel windows.
 TEST_P(WaylandWindowTest, SetShape) {
