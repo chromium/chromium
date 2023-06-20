@@ -291,7 +291,7 @@ TEST_F(SharedPasswordControllerTest, NoFormsArePropagatedOnNonHTMLPageLoad) {
   [[form_helper_ reject] findPasswordFormsInFrame:frame
                                 completionHandler:[OCMArg any]];
   OCMExpect([driver_helper_ PasswordManagerDriver:frame]);
-  OCMExpect([suggestion_helper_ processWithNoSavedCredentials]);
+  OCMExpect([suggestion_helper_ processWithNoSavedCredentialsWithFrame:frame]);
   EXPECT_CALL(password_manager_, OnPasswordFormsRendered);
   web_state_.OnPageLoaded(web::PageLoadCompletionStatus::SUCCESS);
 

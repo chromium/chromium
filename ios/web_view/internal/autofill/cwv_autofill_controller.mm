@@ -732,6 +732,10 @@ using UserDecision =
   // No op.
 }
 
+- (void)detachListenersForBottomSheet:(web::WebFrame*)frame {
+  // No op.
+}
+
 - (void)sharedPasswordController:(SharedPasswordController*)controller
              didAcceptSuggestion:(FormSuggestion*)suggestion {
   // No op.

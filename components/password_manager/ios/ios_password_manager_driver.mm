@@ -59,7 +59,7 @@ void IOSPasswordManagerDriver::SetPasswordFillData(
 
 void IOSPasswordManagerDriver::InformNoSavedCredentials(
     bool should_show_popup_without_passwords) {
-  [bridge_ onNoSavedCredentials];
+  [bridge_ onNoSavedCredentialsWithFrame:web_frame_];
 }
 
 void IOSPasswordManagerDriver::FormEligibleForGenerationFound(

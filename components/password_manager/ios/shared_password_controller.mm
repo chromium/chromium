@@ -614,8 +614,9 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
                                        forSecurityOrigin:origin];
 }
 
-- (void)onNoSavedCredentials {
-  [self.suggestionHelper processWithNoSavedCredentials];
+- (void)onNoSavedCredentialsWithFrame:(web::WebFrame*)frame {
+  [self.suggestionHelper processWithNoSavedCredentialsWithFrame:frame];
+  [self detachListenersForBottomSheet:frame];
 }
 
 - (void)formEligibleForGenerationFound:(const PasswordFormGenerationData&)form {
@@ -655,6 +656,10 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
   [self.delegate attachListenersForBottomSheet:rendererIds inFrame:frame];
 }
 
+- (void)detachListenersForBottomSheet:(web::WebFrame*)frame {
+  [self.delegate detachListenersForBottomSheet:frame];
+}
+
 #pragma mark - Private methods
 
 - (void)didFinishPasswordFormExtraction:(const std::vector<FormData>&)forms
@@ -679,7 +684,7 @@ NSString* const kPasswordFormSuggestionSuffix = @" ••••••••";
     // on the loaded page.
     _passwordManager->OnPasswordFormsParsed(driver, forms);
   } else {
-    [self onNoSavedCredentials];
+    [self onNoSavedCredentialsWithFrame:frame];
   }
   // Invoke the password manager callback to check if password was
   // accepted or rejected. If accepted, infobar is presented. If

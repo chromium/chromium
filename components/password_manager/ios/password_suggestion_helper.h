@@ -113,7 +113,9 @@ class WebState;
 // Triggers callback for -checkIfSuggestionsAvailableForForm... if needed.
 // This method should be called in password controller's
 // -onNoSavedCredentials.
-- (void)processWithNoSavedCredentials;
+// The frame is used to get the AccountSelectFillData and reset the credentials
+// cache.
+- (void)processWithNoSavedCredentialsWithFrame:(web::WebFrame*)frame;
 
 // Updates the state for password form extraction state.
 // This method should be called in password controller's
