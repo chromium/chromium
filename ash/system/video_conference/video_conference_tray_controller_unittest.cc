@@ -37,11 +37,17 @@ constexpr int kSpeakOnMuteOptInNudgeMaxShownCount = 3;
 constexpr char kVideoConferenceTraySpeakOnMuteDetectedNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_detected";
 
-constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
-    "video_conference_tray_nudge_ids.use_while_disabled";
-
 constexpr char kVideoConferenceTraySpeakOnMuteOptInNudgeId[] =
     "video_conference_tray_nudge_ids.speak_on_mute_opt_in";
+
+constexpr char kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_hw_disabled";
+constexpr char kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_sw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_hw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_sw_disabled";
 
 constexpr char kRepeatedShowsHistogramName[] =
     "Ash.VideoConference.NumberOfRepeatedShows";
@@ -232,7 +238,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -253,6 +259,11 @@ TEST_F(VideoConferenceTrayControllerTest,
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
                 app_name, camera_device_name));
+
+  // Unmute camera through SW. Nudge should be dismissed.
+  controller()->OnCameraSWPrivacySwitchStateChanged(
+      cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -260,7 +271,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -281,6 +292,11 @@ TEST_F(VideoConferenceTrayControllerTest,
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED,
                 app_name, microphone_device_name));
+
+  // Unmute microphone through SW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -288,7 +304,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto camera_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayCameraUseWhileHWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -309,6 +325,11 @@ TEST_F(VideoConferenceTrayControllerTest,
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
                 app_name, camera_device_name));
+
+  // Unmute camera through HW. Nudge should be dismissed.
+  controller()->OnCameraHWPrivacySwitchStateChanged(
+      /*device_id=*/"device_id", cros::mojom::CameraPrivacySwitchState::OFF);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest,
@@ -316,7 +337,7 @@ TEST_F(VideoConferenceTrayControllerTest,
   auto* app_name = u"app_name";
   auto microphone_device_name =
       l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME);
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* nudge_id = kVideoConferenceTrayMicrophoneUseWhileHWDisabledNudgeId;
 
   SetTrayAndButtonsVisible();
 
@@ -338,6 +359,12 @@ TEST_F(VideoConferenceTrayControllerTest,
             l10n_util::GetStringFUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_HARDWARE_DISABLED,
                 app_name, microphone_device_name));
+
+  // Unmute microphone through HW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
@@ -356,7 +383,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
             l10n_util::GetStringUTF16(
                 IDS_ASH_VIDEO_CONFERENCE_TOAST_SPEAK_ON_MUTE_DETECTED));
 
-  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
 
   // Nudge should not be displayed as there is a cool down period for the nudge.
   controller()->OnSpeakOnMuteDetected();
@@ -373,6 +400,23 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudge) {
   // cool down timer.
   controller()->OnSpeakOnMuteDetected();
   EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  // Unmute microphone through HW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false,
+      CrasAudioHandler::InputMuteChangeMethod::kPhysicalShutter);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
+
+  // Mute microphone through SW and show nudge again.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/true, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  controller()->OnSpeakOnMuteDetected();
+  EXPECT_TRUE(IsNudgeShown(nudge_id));
+
+  // Unmute microphone through SW. Nudge should be dismissed.
+  controller()->OnInputMuteChanged(
+      /*mute_on=*/false, CrasAudioHandler::InputMuteChangeMethod::kOther);
+  EXPECT_FALSE(IsNudgeShown(nudge_id));
 }
 
 TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeClick) {
@@ -402,7 +446,7 @@ TEST_F(VideoConferenceTrayControllerTest, SpeakOnMuteNudgeTimeFrame) {
 
   // Wait for 20 seconds to simulate that the nudge has disappeared.
   task_environment()->AdvanceClock(base::Seconds(20));
-  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
+  AnchoredNudgeManager::Get()->Cancel(nudge_id);
 
   // Nudge should not be displayed at 20 seconds as there is a cool down period
   // for the nudge.

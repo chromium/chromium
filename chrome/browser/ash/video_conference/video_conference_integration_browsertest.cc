@@ -63,8 +63,10 @@ views::View* GetNudgeAnchorView(const std::string& id) {
 
 }  // namespace
 
-constexpr char kVideoConferenceTrayUseWhileDisabledNudgeId[] =
-    "video_conference_tray_nudge_ids.use_while_disabled";
+constexpr char kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.microphone_use_while_sw_disabled";
+constexpr char kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId[] =
+    "video_conference_tray_nudge_ids.camera_use_while_sw_disabled";
 const char16_t kTitle1[] = u"Title1";
 const char16_t kTitle2[] = u"Title2";
 
@@ -645,7 +647,8 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
                      /*use_microphone=*/true,
                      /*use_screen_sharing=*/false);
 
-  auto* nudge_id = kVideoConferenceTrayUseWhileDisabledNudgeId;
+  auto* microphone_nudge_id =
+      kVideoConferenceTrayMicrophoneUseWhileSWDisabledNudgeId;
 
   // Stop microphone and wait for is_capturing to populate.
   StopMicrophone(web_contents);
@@ -657,19 +660,21 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
 
   // Start accessing microphone should trigger UseWhileDisabled.
   StartMicrophone(web_contents);
-  WAIT_FOR_CONDITION(IsNudgeShown(nudge_id));
+  WAIT_FOR_CONDITION(IsNudgeShown(microphone_nudge_id));
 
   // Check the nudge message and anchor view is as expected.
   EXPECT_EQ(
-      GetNudgeText(nudge_id),
+      GetNudgeText(microphone_nudge_id),
       l10n_util::GetStringFUTF16(
           IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_MICROPHONE_NAME)));
-  EXPECT_EQ(GetNudgeAnchorView(nudge_id), GetVcTray()->audio_icon());
+  EXPECT_EQ(GetNudgeAnchorView(microphone_nudge_id), GetVcTray()->audio_icon());
 
   // Remove current nudge for the next step.
-  Shell::Get()->anchored_nudge_manager()->Cancel(nudge_id);
-  WAIT_FOR_CONDITION(!IsNudgeShown(nudge_id));
+  Shell::Get()->anchored_nudge_manager()->Cancel(microphone_nudge_id);
+  WAIT_FOR_CONDITION(!IsNudgeShown(microphone_nudge_id));
+
+  auto* camera_nudge_id = kVideoConferenceTrayCameraUseWhileSWDisabledNudgeId;
 
   // Clicking on the camera icon should mute it.
   ClickButton(camera_bt_);
@@ -677,15 +682,15 @@ IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest, UseWhileDisabled) {
 
   // Start accessing camera should trigger UseWhileDisabled.
   StartCamera(web_contents);
-  WAIT_FOR_CONDITION(IsNudgeShown(nudge_id));
+  WAIT_FOR_CONDITION(IsNudgeShown(camera_nudge_id));
 
   // Check the nudge message and anchor view is as expected.
   EXPECT_EQ(
-      GetNudgeText(nudge_id),
+      GetNudgeText(camera_nudge_id),
       l10n_util::GetStringFUTF16(
           IDS_ASH_VIDEO_CONFERENCE_TOAST_USE_WHILE_SOFTWARE_DISABLED, kTitle1,
           l10n_util::GetStringUTF16(IDS_ASH_VIDEO_CONFERENCE_CAMERA_NAME)));
-  EXPECT_EQ(GetNudgeAnchorView(nudge_id), GetVcTray()->camera_icon());
+  EXPECT_EQ(GetNudgeAnchorView(camera_nudge_id), GetVcTray()->camera_icon());
 }
 
 IN_PROC_BROWSER_TEST_P(VideoConferenceIntegrationTest,
