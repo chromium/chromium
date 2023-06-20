@@ -15,24 +15,18 @@ namespace gpu {
 unsigned int ToMTLPixelFormat(viz::SharedImageFormat format, int plane_index) {
   MTLPixelFormat mtl_pixel_format = MTLPixelFormatInvalid;
   if (format.is_single_plane()) {
-    switch (format.resource_format()) {
-      case viz::ResourceFormat::RED_8:
-      case viz::ResourceFormat::ALPHA_8:
-      case viz::ResourceFormat::LUMINANCE_8:
-        mtl_pixel_format = MTLPixelFormatR8Unorm;
-        break;
-      case viz::ResourceFormat::RG_88:
-        mtl_pixel_format = MTLPixelFormatRG8Unorm;
-        break;
-      case viz::ResourceFormat::RGBA_8888:
-        mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
-        break;
-      case viz::ResourceFormat::BGRA_8888:
-        mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
-        break;
-      default:
-        DLOG(ERROR) << "Invalid Metal pixel format:" << format.ToString();
-        break;
+    if (format == viz::SinglePlaneFormat::kR_8 ||
+        format == viz::SinglePlaneFormat::kALPHA_8 ||
+        format == viz::SinglePlaneFormat::kLUMINANCE_8) {
+      mtl_pixel_format = MTLPixelFormatR8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kRG_88) {
+      mtl_pixel_format = MTLPixelFormatRG8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kRGBA_8888) {
+      mtl_pixel_format = MTLPixelFormatRGBA8Unorm;
+    } else if (format == viz::SinglePlaneFormat::kBGRA_8888) {
+      mtl_pixel_format = MTLPixelFormatBGRA8Unorm;
+    } else {
+      DLOG(ERROR) << "Invalid Metal pixel format:" << format.ToString();
     }
     return static_cast<unsigned int>(mtl_pixel_format);
   }
