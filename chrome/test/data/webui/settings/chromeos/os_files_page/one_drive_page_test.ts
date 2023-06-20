@@ -4,7 +4,7 @@
 
 import 'chrome://os-settings/lazy_load.js';
 
-import {SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
+import {OneDriveConnectionState, SettingsOneDriveSubpageElement} from 'chrome://os-settings/lazy_load.js';
 import {OneDriveBrowserProxy} from 'chrome://os-settings/os_settings.js';
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
@@ -14,8 +14,8 @@ import {assertAsync} from '../utils.js';
 
 import {OneDriveTestBrowserProxy, ProxyOptions} from './one_drive_test_browser_proxy.js';
 
-suite('<one-google-drive-subpage>', function() {
-  /* The <one-google-drive-subpage> page. */
+suite('<one-drive-subpage>', function() {
+  /* The <one-drive-subpage> page. */
   let oneDrivePage: SettingsOneDriveSubpageElement;
   /* The BrowserProxy element to make assertions on when mojo methods are
      called. */
@@ -48,7 +48,8 @@ suite('<one-google-drive-subpage>', function() {
             '#openOneDriveFolder')!;
     assertEquals('Signed in as ' + email, signedInAsLabelElement.innerText);
     assertEquals('Disconnect', connectDisconnectButton.textContent!.trim());
-    assertTrue(!!openOneDriveFolderButton);
+    assertFalse(connectDisconnectButton.hasAttribute('disabled'));
+    assertTrue(openOneDriveFolderButton.checkVisibility());
   });
 
   test('Signed out page content', async () => {
@@ -67,7 +68,33 @@ suite('<one-google-drive-subpage>', function() {
     assertEquals('Disconnected', signedInAsLabelElement.innerText);
     assertEquals(
         'Connect account', connectDisconnectButton.textContent!.trim());
+    assertFalse(connectDisconnectButton.hasAttribute('disabled'));
     assertFalse(!!openOneDriveFolderButton);
+  });
+
+  test('Loading state content', async () => {
+    // Load the page with a signed in state (connection state "CONNECTED").
+    await setupOneDrivePage({
+      email: 'email@gmail.com',
+    });
+    const signedInAsLabelElement =
+        oneDrivePage.shadowRoot!.querySelector<HTMLDivElement>(
+            '#signedInAsLabel')!;
+    const connectDisconnectButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#oneDriveConnectDisconnect')!;
+    const openOneDriveFolderButton =
+        oneDrivePage.shadowRoot!.querySelector<CrButtonElement>(
+            '#openOneDriveFolder')!;
+    // Change connection statue to "LOADING".
+    oneDrivePage.updateConnectionStateForTesting(
+        OneDriveConnectionState.LOADING);
+    flush();
+    assertEquals('', signedInAsLabelElement.innerText);
+    assertEquals(
+        'Connect account', connectDisconnectButton.textContent!.trim());
+    assertTrue(connectDisconnectButton.hasAttribute('disabled'));
+    assertFalse(openOneDriveFolderButton.checkVisibility());
   });
 
   test('Update page to signed in state on OneDrive mount', async () => {

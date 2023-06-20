@@ -180,7 +180,7 @@ export {AppManagementSupportedLinksItemElement} from './os_apps_page/app_managem
 export {AppManagementSupportedLinksOverlappingAppsDialogElement} from './os_apps_page/app_management_page/supported_links_overlapping_apps_dialog.js';
 export {SettingsGoogleDriveSubpageElement} from './os_files_page/google_drive_subpage.js';
 export {SettingsOfficePageElement} from './os_files_page/office_page.js';
-export {SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';
+export {OneDriveConnectionState, SettingsOneDriveSubpageElement} from './os_files_page/one_drive_subpage.js';
 export {OsSettingsFilesPageElement} from './os_files_page/os_files_page.js';
 export {SettingsSmbSharesPageElement} from './os_files_page/smb_shares_page.js';
 export {SettingsInputMethodOptionsPageElement} from './os_languages_page/input_method_options_page.js';

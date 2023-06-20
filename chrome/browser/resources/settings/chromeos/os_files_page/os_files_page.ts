@@ -27,6 +27,7 @@ import {RouteObserverMixin} from '../route_observer_mixin.js';
 import {Route, Router, routes} from '../router.js';
 
 import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
+import {OneDriveConnectionState} from './one_drive_subpage.js';
 import {getTemplate} from './os_files_page.html.js';
 
 const OsSettingsFilesPageElementBase =
@@ -99,10 +100,10 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
       /**
          @private Indicates whether the user is connected to OneDrive or not.
        */
-      isOneDriveConnected_: {
-        type: Boolean,
+      oneDriveConnectionState_: {
+        type: String,
         value() {
-          return false;
+          return OneDriveConnectionState.LOADING;
         },
       },
     };
@@ -121,7 +122,7 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   private driveDisabled_: boolean;
   private showOfficeSettings_: boolean;
   private focusConfig_: Map<string, string>;
-  private isOneDriveConnected_: boolean;
+  private oneDriveConnectionState_: string;
   private oneDriveEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
   private section_: Section;
@@ -185,21 +186,24 @@ export class OsSettingsFilesPageElement extends OsSettingsFilesPageElementBase {
   }
 
   private async updateOneDriveEmail_() {
+    this.oneDriveConnectionState_ = OneDriveConnectionState.LOADING;
     const {email} = await this.oneDrivePageHandler.getUserEmailAddress();
     this.oneDriveEmailAddress_ = email;
-    if (email == null) {
-      this.isOneDriveConnected_ = false;
-    } else {
-      this.isOneDriveConnected_ = true;
-    }
+    this.oneDriveConnectionState_ = email === null ?
+        OneDriveConnectionState.DISCONNECTED :
+        OneDriveConnectionState.CONNECTED;
   }
 
-  private oneDriveSignedInLabel_(connected: boolean) {
-    if (connected) {
-      assert(this.oneDriveEmailAddress_);
-      return this.i18n('oneDriveSignedInAs', this.oneDriveEmailAddress_);
+  private oneDriveSignedInLabel_(oneDriveConnectionState: string) {
+    switch (oneDriveConnectionState) {
+      case OneDriveConnectionState.CONNECTED:
+        assert(this.oneDriveEmailAddress_);
+        return this.i18n('oneDriveSignedInAs', this.oneDriveEmailAddress_);
+      case OneDriveConnectionState.DISCONNECTED:
+        return this.i18n('oneDriveDisconnected');
+      default:
+        return '';
     }
-    return this.i18n('oneDriveDisconnected');
   }
 }
 

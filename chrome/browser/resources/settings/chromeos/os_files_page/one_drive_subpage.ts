@@ -2,7 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import 'chrome://resources/cr_elements/cr_link_row/cr_link_row.js';
 
 import {I18nMixin} from 'chrome://resources/cr_elements/i18n_mixin.js';
@@ -13,6 +12,12 @@ import {OneDriveBrowserProxy} from './one_drive_browser_proxy.js';
 import {getTemplate} from './one_drive_subpage.html.js';
 
 const SettingsOneDriveSubpageElementBase = I18nMixin(PolymerElement);
+
+export const enum OneDriveConnectionState {
+  LOADING = 'loading',
+  CONNECTED = 'connected',
+  DISCONNECTED = 'disconnected',
+}
 
 export class SettingsOneDriveSubpageElement extends
     SettingsOneDriveSubpageElementBase {
@@ -29,10 +34,10 @@ export class SettingsOneDriveSubpageElement extends
       /**
          @private Indicates whether the user is connected to OneDrive or not.
         */
-      connected_: {
-        type: Boolean,
+      connectionState_: {
+        type: String,
         value() {
-          return false;
+          return OneDriveConnectionState.LOADING;
         },
       },
     };
@@ -49,7 +54,7 @@ export class SettingsOneDriveSubpageElement extends
     this.initPromise = this.updateUserEmailAddress_();
   }
 
-  private connected_: boolean;
+  private connectionState_: string;
   private userEmailAddress_: string|null;
   private oneDriveProxy_: OneDriveBrowserProxy;
 
@@ -59,39 +64,68 @@ export class SettingsOneDriveSubpageElement extends
         this.updateUserEmailAddress_.bind(this));
   }
 
+  updateConnectionStateForTesting(connectionState: string) {
+    this.connectionState_ = connectionState;
+  }
+
   private async updateUserEmailAddress_() {
+    this.connectionState_ = OneDriveConnectionState.LOADING;
     const {email} = await this.oneDriveProxy_.handler.getUserEmailAddress();
     this.userEmailAddress_ = email;
-    this.connected_ = email !== null;
+    this.connectionState_ = email === null ?
+        OneDriveConnectionState.DISCONNECTED :
+        OneDriveConnectionState.CONNECTED;
   }
 
-  private signedInAsLabel_(connected: boolean) {
-    if (connected) {
-      assert(this.userEmailAddress_);
-      return this.i18nAdvanced(
-          'oneDriveSignedInAs',
-          {tags: ['strong'], substitutions: [this.userEmailAddress_]});
+  private isConnected_(connectionState: string) {
+    return connectionState === OneDriveConnectionState.CONNECTED;
+  }
+
+  private isLoading_(connectionState: string) {
+    return connectionState === OneDriveConnectionState.LOADING;
+  }
+
+  private signedInAsLabel_(connectionState: string) {
+    switch (connectionState) {
+      case OneDriveConnectionState.CONNECTED:
+        assert(this.userEmailAddress_);
+        return this.i18nAdvanced(
+            'oneDriveSignedInAs',
+            {tags: ['strong'], substitutions: [this.userEmailAddress_]});
+      case OneDriveConnectionState.DISCONNECTED:
+        return this.i18n('oneDriveDisconnected');
+      default:
+        return '';
     }
-    return this.i18n('oneDriveDisconnected');
   }
 
-  private connectDisconnectButtonLabel_(connected: boolean) {
-    return this.i18n(connected ? 'oneDriveDisconnect' : 'oneDriveConnect');
+  private connectDisconnectButtonLabel_(connectionState: string) {
+    return this.i18n(
+        connectionState === OneDriveConnectionState.CONNECTED ?
+            'oneDriveDisconnect' :
+            'oneDriveConnect');
   }
 
   private async onConnectDisconnectButtonClick_(): Promise<void> {
-    if (this.connected_) {
-      const {success}: {success: boolean} =
-          await this.oneDriveProxy_.handler.disconnectFromOneDrive();
-      if (!success) {
-        console.error('Disconnecting from OneDrive failed');
+    switch (this.connectionState_) {
+      case OneDriveConnectionState.CONNECTED: {
+        const {success}: {success: boolean} =
+            await this.oneDriveProxy_.handler.disconnectFromOneDrive();
+        if (!success) {
+          console.error('Disconnecting from OneDrive failed');
+        }
+        break;
       }
-    } else {
-      const {success}: {success: boolean} =
-          await this.oneDriveProxy_.handler.connectToOneDrive();
-      if (!success) {
-        console.error('Connecting to OneDrive failed');
+      case OneDriveConnectionState.DISCONNECTED: {
+        const {success}: {success: boolean} =
+            await this.oneDriveProxy_.handler.connectToOneDrive();
+        if (!success) {
+          console.error('Connecting to OneDrive failed');
+        }
+        break;
       }
+      default:
+        console.warn('Connect button clicked when connection state is loading');
     }
     // The UI is updated by listening to `onODFSMountOrUnmount`.
   }

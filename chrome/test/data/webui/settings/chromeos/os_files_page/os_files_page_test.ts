@@ -166,7 +166,7 @@ suite('<os-settings-files-page>', () => {
     });
 
     test('Navigates to OFFICE route on click', async () => {
-      await setupFilesPage({});
+      await setupFilesPage({email: null});
       const officeRow =
           filesPage.shadowRoot!.querySelector<HTMLElement>('#office');
       assert(officeRow);
