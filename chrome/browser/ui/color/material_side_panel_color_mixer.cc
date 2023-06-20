@@ -14,12 +14,16 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
                                     const ui::ColorProviderManager::Key& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
-  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};
   mixer[kColorSidePanelCardBackground] = {ui::kColorSysBaseContainerElevated};
   mixer[kColorSidePanelCardPrimaryForeground] = {ui::kColorSysOnSurface};
   mixer[kColorSidePanelCardSecondaryForeground] = {
       ui::kColorSysOnSurfaceSubtle};
   mixer[kColorSidePanelDivider] = {ui::kColorSysDivider};
+  mixer[kColorSidePanelHeaderControlButton] = BlendForMinContrast(
+      ui::kColorSysOnSurfaceSubtle, kColorSidePanelBackground);
+  mixer[kColorSidePanelHeaderControlButtonDisabled] =
+      ui::SetAlpha(kColorSidePanelHeaderControlButton, 0x60);
+  mixer[kColorSidePanelScrollbarThumb] = {ui::kColorSysPrimary};
 
   /* Dialogs within the side panel. */
   mixer[kColorSidePanelDialogBackground] = {ui::kColorSysSurface};

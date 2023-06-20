@@ -98,13 +98,13 @@ std::unique_ptr<views::ToggleImageButton> CreatePinToggleButton(
 
   int dip_size = ChromeLayoutProvider::Get()->GetDistanceMetric(
       ChromeDistanceMetric::DISTANCE_SIDE_PANEL_HEADER_VECTOR_ICON_SIZE);
-  views::SetImageFromVectorIconWithColorId(button.get(), views::kPinIcon,
-                                           ui::kColorIcon,
-                                           ui::kColorIconDisabled, dip_size);
+  views::SetImageFromVectorIconWithColorId(
+      button.get(), views::kPinIcon, kColorSidePanelHeaderControlButton,
+      kColorSidePanelHeaderControlButtonDisabled, dip_size);
   const ui::ImageModel& normal_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, ui::kColorIcon, dip_size);
+      views::kUnpinIcon, kColorSidePanelHeaderControlButton, dip_size);
   const ui::ImageModel& disabled_image = ui::ImageModel::FromVectorIcon(
-      views::kUnpinIcon, ui::kColorIconDisabled, dip_size);
+      views::kUnpinIcon, kColorSidePanelHeaderControlButtonDisabled, dip_size);
   button->SetToggledImageModel(views::Button::STATE_NORMAL, normal_image);
   button->SetToggledImageModel(views::Button::STATE_DISABLED, disabled_image);
   return button;
@@ -117,8 +117,10 @@ std::unique_ptr<views::ImageButton> CreateControlButton(
     const std::u16string& tooltip_text,
     ui::ElementIdentifier view_id,
     int dip_size) {
-  auto button = views::CreateVectorImageButtonWithNativeTheme(pressed_callback,
-                                                              icon, dip_size);
+  auto button = views::CreateVectorImageButton(pressed_callback);
+  views::SetImageFromVectorIconWithColorId(
+      button.get(), icon, kColorSidePanelHeaderControlButton,
+      kColorSidePanelHeaderControlButtonDisabled, dip_size);
   button->SetTooltipText(tooltip_text);
   ConfigureControlButton(button.get());
   button->SetProperty(views::kElementIdentifierKey, view_id);

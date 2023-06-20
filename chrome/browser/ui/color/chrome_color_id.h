@@ -402,6 +402,8 @@
   E_CPONLY(kColorSidePanelFilterChipIconSelected) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundHover) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
+  E_CPONLY(kColorSidePanelHeaderControlButton) \
+  E_CPONLY(kColorSidePanelHeaderControlButtonDisabled) \
   E_CPONLY(kColorSidePanelMenuBackground) \
   E_CPONLY(kColorSidePanelMenuDisabled) \
   E_CPONLY(kColorSidePanelMenuDivider) \
