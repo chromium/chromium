@@ -26,6 +26,7 @@ include_rules = [
   "+components/guest_view/renderer",
   "+components/history_clusters/core/config.h",
   "+components/heap_profiling/in_process/heap_profiler_controller.h",
+  "+components/language/core/common",
   "+components/lens/lens_metadata.mojom.h",
   "+components/metrics/call_stack_profile_builder.h",
   "+components/nacl/common",

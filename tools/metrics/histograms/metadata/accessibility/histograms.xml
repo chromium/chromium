@@ -1840,6 +1840,16 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.ReadAnything.Language" enum="LocaleCodeISO639"
+    expires_after="2023-11-30">
+  <owner>abigailbklein@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the language of the web page shown in Read Anything after the
+    corresponding AXTree is distilled.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ReadAnything.LetterSpacing"
     enum="ReadAnythingLetterSpacing" expires_after="2023-11-30">
   <owner>abigailbklein@google.com</owner>
