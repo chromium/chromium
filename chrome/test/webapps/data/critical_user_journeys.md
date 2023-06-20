@@ -285,6 +285,7 @@ These mac specializations are required due to launching from platform shortcut a
 | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- | --- |
 | WMLC | switch_incognito_profile | navigate_browser(Standalone) | check_create_shortcut_not_shown |
 | WMLC | switch_incognito_profile | navigate_browser(NotPromotable) | check_create_shortcut_not_shown |
+| WMLC | switch_incognito_profile | navigate_app_home | check_browser_not_at_app_home |
 | WMLC | navigate_crashed_url | check_create_shortcut_not_shown |
 | WMLC | navigate_crashed_url | check_install_icon_not_shown |
 | WMLC | navigate_notfound_url | check_create_shortcut_not_shown |
