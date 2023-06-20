@@ -232,7 +232,7 @@ class TrustTokenRequestIssuanceHelper : public TrustTokenRequestHelper {
   // operation's execution.
   absl::optional<SuitableTrustTokenOrigin> issuer_;
   const SuitableTrustTokenOrigin top_level_origin_;
-  const raw_ptr<TrustTokenStore, DanglingUntriaged> token_store_;
+  const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
   const absl::optional<std::string> custom_key_commitment_;
   const absl::optional<url::Origin> custom_issuer_;

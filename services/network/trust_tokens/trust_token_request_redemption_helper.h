@@ -199,7 +199,7 @@ class TrustTokenRequestRedemptionHelper : public TrustTokenRequestHelper {
   // alongside the RR if redemption succeeds.
   std::string token_verification_key_;
 
-  const raw_ptr<TrustTokenStore, DanglingUntriaged> token_store_;
+  const raw_ptr<TrustTokenStore> token_store_;
   const raw_ptr<const TrustTokenKeyCommitmentGetter> key_commitment_getter_;
   const absl::optional<std::string> custom_key_commitment_;
   const absl::optional<url::Origin> custom_issuer_;
