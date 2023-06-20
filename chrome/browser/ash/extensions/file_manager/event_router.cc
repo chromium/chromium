@@ -1315,16 +1315,19 @@ void EventRouter::OnIOTaskStatus(const io_task::ProgressStatus& status) {
   if (GetIOTaskState(status.state) ==
       file_manager_private::IO_TASK_STATE_PAUSED) {
     file_manager_private::PauseParams pause_params;
-    pause_params.conflict_params->conflict_name =
-        status.pause_params.conflict_params->conflict_name;
-    pause_params.conflict_params->conflict_multiple =
-        status.pause_params.conflict_params->conflict_multiple;
-    pause_params.conflict_params->conflict_is_directory =
-        status.pause_params.conflict_params->conflict_is_directory;
-    pause_params.conflict_params->conflict_target_url =
-        status.pause_params.conflict_params->conflict_target_url;
+    if (pause_params.conflict_params) {
+      pause_params.conflict_params->conflict_name =
+          status.pause_params.conflict_params->conflict_name;
+      pause_params.conflict_params->conflict_multiple =
+          status.pause_params.conflict_params->conflict_multiple;
+      pause_params.conflict_params->conflict_is_directory =
+          status.pause_params.conflict_params->conflict_is_directory;
+      pause_params.conflict_params->conflict_target_url =
+          status.pause_params.conflict_params->conflict_target_url;
+    }
     pause_params.policy_params->type =
         GetPolicyErrorType(status.pause_params.policy_params->type);
+
     event_status.pause_params = std::move(pause_params);
   }
 
