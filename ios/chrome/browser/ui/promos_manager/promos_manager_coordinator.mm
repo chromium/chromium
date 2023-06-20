@@ -134,7 +134,7 @@
 #pragma mark - Public
 
 - (void)start {
-  [self displayPromoIfAvailable];
+  [self displayPromoIfAvailable:YES];
 }
 
 - (void)stop {
@@ -143,6 +143,12 @@
 }
 
 - (void)displayPromoIfAvailable {
+  [self displayPromoIfAvailable:NO];
+}
+
+// Display a promo if one is available, with special behavior if this is the
+// first time this coordinator has shown a promo.
+- (void)displayPromoIfAvailable:(BOOL)isFirstShownPromo {
   if (ShouldPromosManagerUseFET()) {
     // Wait to present a promo until the feature engagement tracker database
     // is fully initialized.
@@ -151,7 +157,7 @@
       if (!successfullyLoaded) {
         return;
       }
-      [weakSelf displayPromoCallback];
+      [weakSelf displayPromoCallback:isFirstShownPromo];
     };
 
     feature_engagement::Tracker* tracker =
@@ -159,13 +165,13 @@
             self.browser->GetBrowserState());
     tracker->AddOnInitializedCallback(base::BindOnce(onInitializedBlock));
   } else {
-    [self displayPromoCallback];
+    [self displayPromoCallback:isFirstShownPromo];
   }
 }
 
-- (void)displayPromoCallback {
+- (void)displayPromoCallback:(BOOL)isFirstShownPromo {
   absl::optional<promos_manager::Promo> nextPromoForDisplay =
-      [self.mediator nextPromoForDisplay];
+      [self.mediator nextPromoForDisplay:isFirstShownPromo];
 
   if (nextPromoForDisplay.has_value()) {
     [self displayPromo:nextPromoForDisplay.value()];

@@ -31,8 +31,10 @@
 - (void)recordImpression:(promos_manager::Promo)promo;
 
 // Queries the PromosManager for the next promo (promos_manager::Promo) to
-// display, if any.
-- (absl::optional<promos_manager::Promo>)nextPromoForDisplay;
+// display, if any. Allows for special behavior if this is the first promo
+// shown.
+- (absl::optional<promos_manager::Promo>)nextPromoForDisplay:
+    (BOOL)isFirstShownPromo;
 
 // The Promos Manager used for deciding which promo should be displayed, if any.
 @property(nonatomic, assign) PromosManager* promosManager;

@@ -39,14 +39,17 @@
   _promosManager->RecordImpression(promo);
 }
 
-- (absl::optional<promos_manager::Promo>)nextPromoForDisplay {
+- (absl::optional<promos_manager::Promo>)nextPromoForDisplay:
+    (BOOL)isFirstShownPromo {
   DCHECK_NE(_promosManager, nullptr);
-  NSString* forcedPromoName = [self forcedPromoToDisplay];
-  if ([forcedPromoName length] > 0) {
+  // Only check for a forced promo the first time around, to prevent infinite
+  // forced promos.
+  if (isFirstShownPromo) {
     absl::optional<promos_manager::Promo> forcedPromo =
-        promos_manager::PromoForName(base::SysNSStringToUTF8(forcedPromoName));
-    DCHECK(forcedPromo);
-    return forcedPromo;
+        [self forcedPromoToDisplay];
+    if (forcedPromo) {
+      return forcedPromo;
+    }
   }
   return self.promosManager->NextPromoForDisplay();
 }
@@ -54,8 +57,15 @@
 // Returns the promo selected in the Force Promo experimental setting.
 // If none are selected, returns empty string. If user is in beta/stable,
 // this method always returns nil.
-- (NSString*)forcedPromoToDisplay {
-  return experimental_flags::GetForcedPromoToDisplay();
+- (absl::optional<promos_manager::Promo>)forcedPromoToDisplay {
+  NSString* forcedPromoName = experimental_flags::GetForcedPromoToDisplay();
+  if ([forcedPromoName length] > 0) {
+    absl::optional<promos_manager::Promo> forcedPromo =
+        promos_manager::PromoForName(base::SysNSStringToUTF8(forcedPromoName));
+    DCHECK(forcedPromo);
+    return forcedPromo;
+  }
+  return absl::nullopt;
 }
 
 @end
