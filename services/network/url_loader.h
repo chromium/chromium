@@ -546,10 +546,11 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) URLLoader
   mojo::ScopedDataPipeConsumerHandle consumer_handle_;
 
   // Sniffing state and CORB state.
-  std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
   bool is_more_corb_sniffing_needed_ = false;
   bool is_more_mime_sniffing_needed_ = false;
   const raw_ref<corb::PerFactoryState> per_factory_corb_state_;
+  // `corb_analyzer_` must be destructed before `per_factory_corb_state_`.
+  std::unique_ptr<corb::ResponseAnalyzer> corb_analyzer_;
 
   std::unique_ptr<ResourceScheduler::ScheduledResourceRequest>
       resource_scheduler_request_handle_;
