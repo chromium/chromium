@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/system/holding_space/holding_space_animation_registry.h"
 #include "ash/system/holding_space/holding_space_item_view.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
 
@@ -62,13 +63,27 @@ class ASH_EXPORT HoldingSpaceItemChipView : public HoldingSpaceItemView {
   void UpdateSecondaryAction();
 
   // Owned by view hierarchy.
-  RoundedImageView* image_ = nullptr;
-  views::Label* primary_label_ = nullptr;
-  views::Label* secondary_label_ = nullptr;
-  views::View* secondary_action_container_ = nullptr;
-  views::ImageButton* secondary_action_pause_ = nullptr;
-  views::ImageButton* secondary_action_resume_ = nullptr;
-  ProgressIndicator* progress_indicator_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION RoundedImageView* image_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Label* primary_label_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Label* secondary_label_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::View* secondary_action_container_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageButton* secondary_action_pause_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageButton* secondary_action_resume_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION ProgressIndicator* progress_indicator_ = nullptr;
 
   base::CallbackListSubscription image_skia_changed_subscription_;
   base::CallbackListSubscription progress_ring_animation_changed_subscription_;

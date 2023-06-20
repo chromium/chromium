@@ -20,6 +20,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/scoped_refptr.h"
 #include "base/run_loop.h"
 #include "base/strings/stringprintf.h"
@@ -262,8 +263,12 @@ class TestWindowDelegate : public ArcInputMethodManagerService::WindowDelegate {
   void SetActiveWindow(aura::Window* window) { active_ = window; }
 
  private:
-  aura::Window* focused_ = nullptr;
-  aura::Window* active_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION aura::Window* focused_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION aura::Window* active_ = nullptr;
 };
 
 class ArcInputMethodManagerServiceTest : public testing::Test {

@@ -9,6 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/time/time.h"
 #include "components/exo/test/exo_test_base.h"
@@ -73,7 +74,9 @@ class TestRecorder : public ShellSurfacePresentationTimeRecorder {
 
  private:
   gfx::PresentationFeedback fake_feedback_;
-  base::RunLoop* run_loop_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION base::RunLoop* run_loop_ = nullptr;
   std::vector<uint32_t> presented_serials_;
 };
 

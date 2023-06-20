@@ -6,6 +6,7 @@
 #define ASH_SYSTEM_UNIFIED_DEFERRED_UPDATE_DIALOG_H_
 
 #include "base/functional/callback.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/models/dialog_model.h"
 
 namespace ash {
@@ -48,7 +49,9 @@ class DeferredUpdateDialog {
   DECLARE_CLASS_ELEMENT_IDENTIFIER_VALUE(kAutoUpdateCheckboxId);
   static DeferredUpdateDialog* dialog_;
 
-  ui::DialogModel* dialog_model_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ui::DialogModel* dialog_model_ = nullptr;
   DialogResult dialog_result_ = kClose;
 };
 

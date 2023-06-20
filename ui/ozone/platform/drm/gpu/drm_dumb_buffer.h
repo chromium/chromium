@@ -8,6 +8,7 @@
 #include <stddef.h>
 #include <stdint.h>
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/ozone/platform/drm/gpu/drm_framebuffer.h"
 
@@ -65,7 +66,9 @@ class DrmDumbBuffer {
   HandleCloser handle_closer_ = HandleCloser::DESTROY_DUMB;
 
   // Base address for memory mapping.
-  void* mmap_base_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION void* mmap_base_ = nullptr;
 
   // Size for memory mapping.
   size_t mmap_size_ = 0;

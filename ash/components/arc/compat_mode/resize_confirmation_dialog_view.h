@@ -7,6 +7,7 @@
 
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/views/layout/box_layout_view.h"
 
 namespace aura {
@@ -70,10 +71,16 @@ class ResizeConfirmationDialogView : public views::BoxLayoutView {
 
   ResizeConfirmationCallback callback_;
 
-  views::Checkbox* do_not_ask_checkbox_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Checkbox* do_not_ask_checkbox_{nullptr};
   ash::Checkbox* do_not_ask_checkbox_jelly_{nullptr};
-  views::LabelButton* accept_button_{nullptr};
-  views::LabelButton* cancel_button_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::LabelButton* accept_button_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::LabelButton* cancel_button_{nullptr};
 };
 
 }  // namespace arc

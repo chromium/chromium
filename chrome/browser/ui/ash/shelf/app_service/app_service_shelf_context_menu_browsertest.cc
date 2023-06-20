@@ -6,6 +6,7 @@
 #include "ash/public/cpp/shelf_item_delegate.h"
 #include "ash/public/cpp/shelf_model.h"
 #include "base/functional/callback_helpers.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
 #include "base/test/metrics/user_action_tester.h"
@@ -44,7 +45,9 @@ class AppServiceShelfContextMenuBrowserTest : public InProcessBrowserTest {
 
   struct MenuSection {
     std::unique_ptr<ui::SimpleMenuModel> menu_model;
-    ui::MenuModel* sub_model = nullptr;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #addr-of, #union
+    RAW_PTR_EXCLUSION ui::MenuModel* sub_model = nullptr;
     size_t command_index = 0;
   };
 

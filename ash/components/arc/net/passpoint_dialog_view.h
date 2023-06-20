@@ -10,6 +10,7 @@
 #include "ash/components/arc/mojom/net.mojom.h"
 #include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/memory/weak_ptr.h"
 #include "base/strings/string_piece.h"
 #include "ui/views/controls/button/md_text_button.h"
@@ -83,10 +84,18 @@ class PasspointDialogView : public views::BoxLayoutView {
   PasspointDialogCallback callback_;
 
   // Added for testing.
-  views::StyledLabel* body_text_{nullptr};
-  views::StyledLabel* body_subscription_text_{nullptr};
-  views::MdTextButton* allow_button_{nullptr};
-  views::MdTextButton* dont_allow_button_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::StyledLabel* body_text_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::StyledLabel* body_subscription_text_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::MdTextButton* allow_button_{nullptr};
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::MdTextButton* dont_allow_button_{nullptr};
 
   base::WeakPtrFactory<PasspointDialogView> weak_factory_{this};
 };

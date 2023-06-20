@@ -5,6 +5,7 @@
 #ifndef CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_
 #define CHROME_BROWSER_UI_WEBUI_ASH_ADD_SUPERVISION_ADD_SUPERVISION_METRICS_RECORDER_H_
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/time/time.h"
 
 namespace base {
@@ -56,7 +57,9 @@ class AddSupervisionMetricsRecorder {
   void RecordUserTime(const char* metric_name) const;
 
   // Points to the base::DefaultTickClock by default.
-  const base::TickClock* clock_;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #global-scope
+  RAW_PTR_EXCLUSION const base::TickClock* clock_;
 
   // Records when the user initiates the Add Supervision process.
   base::TimeTicks start_time_;

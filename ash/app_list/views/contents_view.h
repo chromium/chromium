@@ -15,6 +15,7 @@
 #include "ash/public/cpp/pagination/pagination_model.h"
 #include "ash/public/cpp/pagination/pagination_model_observer.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/views/view.h"
 
 namespace gfx {
@@ -63,7 +64,9 @@ class ASH_EXPORT ContentsView : public views::View,
     }
 
    private:
-    ContentsView* const contents_view_;
+    // This field is not a raw_ptr<> because it was filtered by the rewriter
+    // for: #union
+    RAW_PTR_EXCLUSION ContentsView* const contents_view_;
   };
 
   explicit ContentsView(AppListView* app_list_view);

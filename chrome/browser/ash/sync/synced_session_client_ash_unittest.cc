@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/sync/synced_session_client_ash.h"
 
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/test/bind.h"
 #include "base/test/task_environment.h"
 #include "base/test/test_future.h"
@@ -103,7 +104,9 @@ class FakeCrosapiSessionSyncFaviconDelegate
  private:
   mojo::Receiver<crosapi::mojom::SyncedSessionClientFaviconDelegate> receiver_{
       this};
-  gfx::ImageSkia* result_image_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION gfx::ImageSkia* result_image_ = nullptr;
 };
 
 gfx::ImageSkia GetTestImage() {

@@ -12,6 +12,7 @@
 #include "ash/public/cpp/holding_space/holding_space_model_observer.h"
 #include "base/callback_list.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/metadata/view_factory.h"
@@ -112,10 +113,18 @@ class ASH_EXPORT HoldingSpaceItemView : public views::View,
   const std::string item_id_;
 
   // Owned by view hierarchy.
-  views::ImageView* checkmark_ = nullptr;
-  views::View* primary_action_container_ = nullptr;
-  views::ImageButton* primary_action_cancel_ = nullptr;
-  views::ToggleImageButton* primary_action_pin_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageView* checkmark_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::View* primary_action_container_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageButton* primary_action_cancel_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ToggleImageButton* primary_action_pin_ = nullptr;
 
   // Owners for the layers used to paint focused and selected states.
   std::unique_ptr<ui::LayerOwner> selected_layer_owner_;

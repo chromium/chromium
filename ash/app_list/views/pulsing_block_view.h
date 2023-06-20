@@ -6,6 +6,7 @@
 #define ASH_APP_LIST_VIEWS_PULSING_BLOCK_VIEW_H_
 
 #include "base/compiler_specific.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/timer/timer.h"
 #include "ui/views/view.h"
 
@@ -44,7 +45,9 @@ class PulsingBlockView : public views::View {
 
   base::OneShotTimer start_delay_timer_;
 
-  views::View* background_color_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::View* background_color_view_ = nullptr;
   const gfx::Size block_size_;
 };
 

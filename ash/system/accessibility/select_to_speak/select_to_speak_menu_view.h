@@ -8,6 +8,7 @@
 #include "ash/ash_export.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/events/event.h"
 #include "ui/views/controls/button/button.h"
@@ -70,13 +71,27 @@ class SelectToSpeakMenuView : public views::BoxLayoutView {
   void OnKeyEvent(ui::KeyEvent* key_event) override;
 
   // Owned by views hierarchy.
-  FloatingMenuButton* prev_paragraph_button_ = nullptr;
-  FloatingMenuButton* prev_sentence_button_ = nullptr;
-  FloatingMenuButton* pause_button_ = nullptr;
-  FloatingMenuButton* next_sentence_button_ = nullptr;
-  FloatingMenuButton* next_paragraph_button_ = nullptr;
-  FloatingMenuButton* stop_button_ = nullptr;
-  FloatingMenuButton* speed_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* prev_paragraph_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* prev_sentence_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* pause_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* next_sentence_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* next_paragraph_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* stop_button_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION FloatingMenuButton* speed_button_ = nullptr;
 
   raw_ptr<Delegate, ExperimentalAsh> delegate_;
   bool is_paused_ = false;

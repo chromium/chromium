@@ -20,6 +20,7 @@
 #include "ash/system/tray/tray_utils.h"
 #include "ash/system/tray/tri_view.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/services/bluetooth_config/public/mojom/cros_bluetooth_config.mojom.h"
 #include "chromeos/services/network_config/public/mojom/cros_network_config.mojom.h"
@@ -206,29 +207,49 @@ class ASH_EXPORT NetworkListViewControllerImpl
   bluetooth_config::mojom::BluetoothSystemState bluetooth_system_state_ =
       bluetooth_config::mojom::BluetoothSystemState::kUnavailable;
 
-  TrayInfoLabel* mobile_status_message_ = nullptr;
-  NetworkListMobileHeaderView* mobile_header_view_ = nullptr;
-  views::Separator* mobile_separator_view_ = nullptr;
-  TriView* connection_warning_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TrayInfoLabel* mobile_status_message_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION NetworkListMobileHeaderView* mobile_header_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Separator* mobile_separator_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TriView* connection_warning_ = nullptr;
 
   // Pointer to the icon displayed next to the connection warning message when
   // a proxy or a VPN is active. Owned by `connection_warning_`. If the network
   // is monitored by the admin, via policy, it displays the managed icon,
   // otherwise the system icon.
-  views::ImageView* connection_warning_icon_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageView* connection_warning_icon_ = nullptr;
   // Owned by `connection_warning_`.
   raw_ptr<views::Label, DanglingUntriaged | ExperimentalAsh>
       connection_warning_label_ = nullptr;
 
   raw_ptr<NetworkListWifiHeaderView, ExperimentalAsh> wifi_header_view_ =
       nullptr;
-  views::Separator* wifi_separator_view_ = nullptr;
-  TrayInfoLabel* wifi_status_message_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Separator* wifi_separator_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TrayInfoLabel* wifi_status_message_ = nullptr;
 
   // Owned by views hierarchy.
-  views::Label* known_header_ = nullptr;
-  views::Label* unknown_header_ = nullptr;
-  HoverHighlightView* join_wifi_entry_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Label* known_header_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Label* unknown_header_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION HoverHighlightView* join_wifi_entry_ = nullptr;
 
   bool has_mobile_networks_;
   bool has_wifi_networks_;

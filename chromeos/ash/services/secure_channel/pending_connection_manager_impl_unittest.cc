@@ -11,6 +11,7 @@
 #include "base/containers/flat_map.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/ranges/algorithm.h"
 #include "base/test/task_environment.h"
 #include "chromeos/ash/services/secure_channel/ble_initiator_connection_attempt.h"
@@ -324,10 +325,15 @@ class FakePendingBleInitiatorConnectionRequestFactory
     return instance;
   }
 
-  ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ClientConnectionParameters*
+      expected_client_connection_parameters_ = nullptr;
   absl::optional<ConnectionPriority> expected_connection_priority_;
 
-  FakePendingConnectionRequest<BleInitiatorFailureType>*
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakePendingConnectionRequest<BleInitiatorFailureType>*
       last_created_instance_ = nullptr;
 };
 
@@ -378,8 +384,10 @@ class FakePendingBleListenerConnectionRequestFactory
   ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
   absl::optional<ConnectionPriority> expected_connection_priority_;
 
-  FakePendingConnectionRequest<BleListenerFailureType>* last_created_instance_ =
-      nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakePendingConnectionRequest<BleListenerFailureType>*
+      last_created_instance_ = nullptr;
 };
 
 class FakePendingNearbyInitiatorConnectionRequestFactory
@@ -426,10 +434,15 @@ class FakePendingNearbyInitiatorConnectionRequestFactory
     return instance;
   }
 
-  ClientConnectionParameters* expected_client_connection_parameters_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION ClientConnectionParameters*
+      expected_client_connection_parameters_ = nullptr;
   absl::optional<ConnectionPriority> expected_connection_priority_;
 
-  FakePendingConnectionRequest<NearbyInitiatorFailureType>*
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION FakePendingConnectionRequest<NearbyInitiatorFailureType>*
       last_created_instance_ = nullptr;
 };
 

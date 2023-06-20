@@ -12,6 +12,7 @@
 #include "ash/public/cpp/test/app_list_test_api.h"
 #include "ash/public/cpp/test/shell_test_api.h"
 #include "ash/shell.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
@@ -355,8 +356,12 @@ class SpokenFeedbackAppListSearchTest
   // Whether the test runs in tablet mode.
   const bool tablet_mode_;
 
-  TestSearchProvider* apps_provider_ = nullptr;
-  TestSearchProvider* web_provider_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TestSearchProvider* apps_provider_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION TestSearchProvider* web_provider_ = nullptr;
 };
 
 // Instantiate test by user variant and tablet mode state.

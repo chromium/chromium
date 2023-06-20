@@ -12,6 +12,7 @@
 #include "ash/wallpaper/wallpaper_constants.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "ui/compositor/layer_animation_observer.h"
 
 namespace ui {
@@ -101,7 +102,9 @@ class ASH_EXPORT WallpaperWidgetController
   std::unique_ptr<ui::LayerTreeOwner> old_layer_tree_owner_;
 
   // Pointer to the wallpaper view owned by |widget_|.
-  WallpaperView* wallpaper_view_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION WallpaperView* wallpaper_view_ = nullptr;
 
   // Callbacks to be run when the |animating_widget_| stops animating and gets
   // set as the active widget.

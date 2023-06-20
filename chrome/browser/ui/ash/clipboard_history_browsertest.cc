@@ -18,6 +18,7 @@
 #include "ash/test/ash_test_util.h"
 #include "ash/test/view_drawn_waiter.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/scoped_observation.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -113,7 +114,9 @@ class ClipboardDataWaiter : public ui::ClipboardObserver {
     return clipboard_data == nullptr || *clipboard_data == *clipboard_data_;
   }
 
-  const ui::ClipboardData* clipboard_data_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of, #constexpr-ctor-field-initializer
+  RAW_PTR_EXCLUSION const ui::ClipboardData* clipboard_data_ = nullptr;
   std::unique_ptr<base::RunLoop> run_loop_;
 };
 

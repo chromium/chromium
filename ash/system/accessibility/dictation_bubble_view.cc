@@ -16,6 +16,7 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "cc/paint/skottie_wrapper.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "ui/accessibility/ax_enums.mojom.h"
@@ -171,19 +172,29 @@ class ASH_EXPORT TopRowView : public views::View {
 
   // Owned by the views hierarchy.
   // An animation that is shown when Dictation is standing by.
-  views::AnimatedImageView* standby_animation_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::AnimatedImageView* standby_animation_ = nullptr;
   // An image that is shown when Dictation is standing by. Only used if the
   // above AnimatedImageView fails to initialize.
-  views::ImageView* standby_image_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageView* standby_image_ = nullptr;
   // If true, this view will use `standby_animation_`. Otherwise, will use
   // `standby_image_`.
   bool use_standby_animation_ = false;
   // An image that is shown when a macro is successfully run.
-  views::ImageView* macro_succeeded_image_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageView* macro_succeeded_image_ = nullptr;
   // An image that is shown when a macro fails to run.
-  views::ImageView* macro_failed_image_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::ImageView* macro_failed_image_ = nullptr;
   // A label that displays non-final speech results.
-  views::Label* label_ = nullptr;
+  // This field is not a raw_ptr<> because it was filtered by the rewriter
+  // for: #addr-of
+  RAW_PTR_EXCLUSION views::Label* label_ = nullptr;
 };
 
 // View responsible for showing hints for Dictation commands.
