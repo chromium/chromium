@@ -50,6 +50,7 @@ using ::testing::Field;
 using ::testing::Matches;
 using ::testing::Pair;
 using ::testing::StrictMock;
+using ::user_education::HelpBubbleArrow;
 using ::user_education::TutorialDescription;
 
 using ContextMode = TutorialDescription::ContextMode;
@@ -85,11 +86,12 @@ MATCHER_P(ElementSpecifierEq, element_specifier, "") {
                      element_specifier);
 }
 
-MATCHER_P5(BubbleStep,
+MATCHER_P6(BubbleStep,
            element_specifier,
            context_mode,
            help_bubble_id,
            body_text_id,
+           arrow,
            has_next_button,
            "") {
   namespace util = user_education_util;
@@ -97,7 +99,7 @@ MATCHER_P5(BubbleStep,
          Matches(ElementSpecifierEq(element_specifier))(arg) &&
          arg.context_mode() == context_mode &&
          util::GetHelpBubbleId(arg.extended_properties()) == help_bubble_id &&
-         arg.body_text_id() == body_text_id &&
+         arg.body_text_id() == body_text_id && arg.arrow() == arrow &&
          arg.next_button_callback().is_null() != has_next_button;
 }
 
@@ -154,6 +156,7 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ContextMode::kInitial,
                              HelpBubbleId::kWelcomeTourShelf,
                              IDS_ASH_WELCOME_TOUR_SHELF_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kShelfViewElementId),
                             ContextMode::kFromPreviousStep,
@@ -162,6 +165,7 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ContextMode::kAny,
                              HelpBubbleId::kWelcomeTourStatusArea,
                              IDS_ASH_WELCOME_TOUR_STATUS_AREA_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kUnifiedSystemTrayElementName),
                             ContextMode::kFromPreviousStep,
@@ -170,11 +174,13 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ContextMode::kAny,
                              HelpBubbleId::kWelcomeTourHomeButton,
                              IDS_ASH_WELCOME_TOUR_HOME_BUTTON_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/true),
                   BubbleStep(ElementSpecifier(kSearchBoxViewElementId),
                              ContextMode::kAny,
                              HelpBubbleId::kWelcomeTourSearchBox,
                              IDS_ASH_WELCOME_TOUR_SEARCH_BOX_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kSearchBoxViewElementId),
                             ContextMode::kFromPreviousStep,
@@ -183,6 +189,7 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ContextMode::kFromPreviousStep,
                              HelpBubbleId::kWelcomeTourSettingsApp,
                              IDS_ASH_WELCOME_TOUR_SETTINGS_APP_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/true),
                   EventStep(ElementSpecifier(kSettingsAppElementId),
                             ContextMode::kFromPreviousStep,
@@ -191,6 +198,7 @@ TEST_F(WelcomeTourControllerTest, GetTutorialDescriptions) {
                              ContextMode::kFromPreviousStep,
                              HelpBubbleId::kWelcomeTourExploreApp,
                              IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT,
+                             HelpBubbleArrow::kTopRight,
                              /*has_next_button=*/false))))));
 }
 
