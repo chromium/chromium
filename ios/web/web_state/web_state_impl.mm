@@ -713,6 +713,13 @@ id WebStateImpl::GetActivityItem() API_AVAILABLE(ios(16.4)) {
   return [GetWebController() activityItem];
 }
 
+UIColor* WebStateImpl::GetThemeColor() {
+  if (UNLIKELY(!IsRealized())) {
+    return nil;
+  }
+  return [GetWebController() themeColor];
+}
+
 #pragma mark - WebStateImpl private methods
 
 WebStateImpl::RealizedWebState* WebStateImpl::RealizedState() {

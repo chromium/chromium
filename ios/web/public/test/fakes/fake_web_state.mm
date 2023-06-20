@@ -575,6 +575,10 @@ id FakeWebState::GetActivityItem() API_AVAILABLE(ios(16.4)) {
   return nil;
 }
 
+UIColor* FakeWebState::GetThemeColor() {
+  return nil;
+}
+
 FakeWebStateWithPolicyCache::FakeWebStateWithPolicyCache(
     BrowserState* browser_state)
     : FakeWebState(),

@@ -59,7 +59,10 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 @property(nonatomic, assign) CGFloat previousFullscreenProgress;
 @end
 
-@implementation AdaptiveToolbarViewController
+@implementation AdaptiveToolbarViewController {
+  // The page's theme color.
+  UIColor* _themeColor;
+}
 
 @dynamic view;
 @synthesize buttonFactory = _buttonFactory;
@@ -303,6 +306,11 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
   _isNTP = isNTP;
 }
 
+- (void)setPageThemeColor:(UIColor*)themeColor {
+  _themeColor = themeColor;
+  [self updateForFullscreenProgress:self.previousFullscreenProgress];
+}
+
 #pragma mark - NewTabPageControllerDelegate
 
 - (void)setScrollProgressForTabletOmnibox:(CGFloat)progress {
@@ -318,8 +326,9 @@ const CGFloat kFullscreenProgressFullyExpanded = 1.0;
 
   [self updateLocationBarHeightForFullscreenProgress:progress];
   self.view.locationBarContainer.backgroundColor =
-      [self.buttonFactory.toolbarConfiguration
-          locationBarBackgroundColorWithVisibility:alphaValue];
+      _themeColor ? _themeColor
+                  : [self.buttonFactory.toolbarConfiguration
+                        locationBarBackgroundColorWithVisibility:alphaValue];
 
   self.view.collapsedToolbarButton.hidden = progress > 0.05;
 }

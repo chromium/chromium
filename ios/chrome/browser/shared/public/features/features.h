@@ -208,4 +208,7 @@ BASE_DECLARE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment);
 // launch by default.
 extern const char kDefaultBrowserTriggerOnOmniboxCopyPaste[];
 
+// Feature flag to try using the page theme color in the toolbar
+BASE_DECLARE_FEATURE(kThemeColorInToolbar);
+
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_FEATURES_FEATURES_H_

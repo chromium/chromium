@@ -342,6 +342,9 @@
         setLoadingProgressFraction:self.webState->GetLoadingProgress()];
   }
   [self updateShareMenuForWebState:self.webState];
+  if (base::FeatureList::IsEnabled(kThemeColorInToolbar)) {
+    [self.consumer setPageThemeColor:self.webState->GetThemeColor()];
+  }
 }
 
 /// Updates the consumer with the new forward and back states.

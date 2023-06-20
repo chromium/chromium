@@ -269,3 +269,7 @@ BASE_FEATURE(kDefaultBrowserTriggerCriteriaExperiment,
 
 const char kDefaultBrowserTriggerOnOmniboxCopyPaste[] =
     "trigger_on_omnibox_copy_paste";
+
+BASE_FEATURE(kThemeColorInToolbar,
+             "ThemeColorInToolbar",
+             base::FEATURE_DISABLED_BY_DEFAULT);

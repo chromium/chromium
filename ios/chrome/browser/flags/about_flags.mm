@@ -1624,7 +1624,11 @@ const flags_ui::FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kReplaceSyncPromosWithSignInPromosName,
      flag_descriptions::kReplaceSyncPromosWithSignInPromosDescription,
      flags_ui::kOsIos,
-     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)}};
+     MULTI_VALUE_TYPE(kReplaceSyncPromosWithSignInPromosChoices)},
+    {"toolbar-theme-color", flag_descriptions::kThemeColorInToolbarName,
+     flag_descriptions::kThemeColorInToolbarDescription, flags_ui::kOsIos,
+     FEATURE_VALUE_TYPE(kThemeColorInToolbar)},
+};
 
 bool SkipConditionalFeatureEntry(const flags_ui::FeatureEntry& entry) {
   return false;

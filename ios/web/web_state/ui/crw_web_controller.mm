@@ -1003,6 +1003,10 @@ typedef void (^ViewportStateCompletion)(const web::PageViewportState*);
   return self.webView;
 }
 
+- (UIColor*)themeColor {
+  return self.webView.themeColor;
+}
+
 #pragma mark - JavaScript
 
 - (void)retrieveExistingFramesInContentWorld:(WKContentWorld*)contentWorld {

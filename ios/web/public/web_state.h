@@ -5,7 +5,7 @@
 #ifndef IOS_WEB_PUBLIC_WEB_STATE_H_
 #define IOS_WEB_PUBLIC_WEB_STATE_H_
 
-#import <Foundation/Foundation.h>
+#import <UIKit/UIKit.h>
 
 #include <stdint.h>
 
@@ -496,6 +496,9 @@ class WebState : public base::SupportsUserData {
   // Get an opaque activity item that can be passed to a
   // UIActivityViewController to share the current URL.
   virtual id GetActivityItem() API_AVAILABLE(ios(16.4)) = 0;
+
+  // Returns the page theme color.
+  virtual UIColor* GetThemeColor() = 0;
 
  protected:
   friend class WebStatePolicyDecider;
