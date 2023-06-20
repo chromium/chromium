@@ -43,7 +43,7 @@ class CryptohomeCoreImpl : public CryptohomeCore {
   base::flat_set<base::raw_ptr<Client>> clients_;
   base::flat_set<base::raw_ptr<Client>> clients_being_removed_;
 
-  bool was_authenticated_ = false;
+  bool is_authorized_ = false;
   std::unique_ptr<UserContext> context_;
   base::raw_ptr<UserDataAuthClient> dbus_client_;
   std::unique_ptr<AuthPerformer> performer_;

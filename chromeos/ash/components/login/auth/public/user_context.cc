@@ -346,10 +346,6 @@ const std::string& UserContext::GetAuthSessionId() const {
   return authsession_id_;
 }
 
-AuthSessionIntents UserContext::GetAuthorizedIntents() const {
-  return authorized_for_;
-}
-
 void UserContext::AddAuthorizedIntent(const AuthSessionIntent auth_intent) {
   authorized_for_.Put(auth_intent);
 }
