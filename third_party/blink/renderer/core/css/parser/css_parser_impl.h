@@ -79,8 +79,10 @@ class CORE_EXPORT CSSParserImpl {
     kKeyframeRules,
     kFontFeatureRules,
     kTryRules,
-    kNoRules,                // For parsing at-rules inside declaration lists
-    kConditionalGroupRules,  // @media etc., see [css-conditional-3]
+    // For parsing at-rules inside declaration lists.
+    kNoRules,
+    // https://drafts.csswg.org/css-nesting/#nested-group-rules
+    kNestedGroupRules,
   };
 
   // Represents the start and end offsets of a CSSParserTokenRange.
@@ -227,7 +229,9 @@ class CORE_EXPORT CSSParserImpl {
   StyleRuleContainer* ConsumeContainerRule(CSSParserTokenStream& stream,
                                            CSSNestingType,
                                            StyleRule* parent_rule_for_nesting);
-  StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&);
+  StyleRuleBase* ConsumeLayerRule(CSSParserTokenStream&,
+                                  CSSNestingType,
+                                  StyleRule* parent_rule_for_nesting);
   StyleRulePositionFallback* ConsumePositionFallbackRule(CSSParserTokenStream&);
   StyleRuleTry* ConsumeTryRule(CSSParserTokenStream&);
 

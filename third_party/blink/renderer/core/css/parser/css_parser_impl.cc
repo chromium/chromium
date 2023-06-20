@@ -693,10 +693,11 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
     AllowedRulesType allowed_rules,
     CSSNestingType nesting_type,
     StyleRule* parent_rule_for_nesting) {
-  if (allowed_rules == kConditionalGroupRules) {
+  if (allowed_rules == kNestedGroupRules) {
     if (id != CSSAtRuleID::kCSSAtRuleMedia &&      // [css-conditional-3]
         id != CSSAtRuleID::kCSSAtRuleSupports &&   // [css-conditional-3]
         id != CSSAtRuleID::kCSSAtRuleContainer &&  // [css-contain-3]
+        id != CSSAtRuleID::kCSSAtRuleLayer &&      // [css-cascade-5]
         id != CSSAtRuleID::kCSSAtRuleStartingStyle) {
       ConsumeErroneousAtRule(stream, id);
       return nullptr;
@@ -777,7 +778,7 @@ StyleRuleBase* CSSParserImpl::ConsumeAtRuleContents(
       case CSSAtRuleID::kCSSAtRuleKeyframes:
         return ConsumeKeyframesRule(false, stream);
       case CSSAtRuleID::kCSSAtRuleLayer:
-        return ConsumeLayerRule(stream);
+        return ConsumeLayerRule(stream, nesting_type, parent_rule_for_nesting);
       case CSSAtRuleID::kCSSAtRulePage:
         return ConsumePageRule(stream);
       case CSSAtRuleID::kCSSAtRuleProperty:
@@ -1692,7 +1693,10 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
                                                   std::move(rules));
 }
 
-StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
+StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
+    CSSParserTokenStream& stream,
+    CSSNestingType nesting_type,
+    StyleRule* parent_rule_for_nesting) {
   wtf_size_t prelude_offset_start = stream.LookAheadOffset();
   CSSParserTokenRange prelude = ConsumeAtRulePrelude(stream);
   wtf_size_t prelude_offset_end = stream.LookAheadOffset();
@@ -1700,6 +1704,10 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
   // @layer statement rule without style declarations.
   if (stream.AtEnd() || stream.UncheckedPeek().GetType() == kSemicolonToken) {
     if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(stream)) {
+      return nullptr;
+    }
+    if (nesting_type != CSSNestingType::kNone) {
+      // @layer statement rules cannot be nested.
       return nullptr;
     }
 
@@ -1754,11 +1762,27 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(CSSParserTokenStream& stream) {
     observer_->StartRuleBody(stream.Offset());
   }
 
-  HeapVector<Member<StyleRuleBase>> rules;
-  ConsumeRuleList(
-      stream, kRegularRuleList, CSSNestingType::kNone,
-      /*parent_rule_for_nesting=*/nullptr,
-      [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
+  HeapVector<Member<StyleRuleBase>, 4> rules;
+  if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
+      parent_rule_for_nesting != nullptr) {
+    // Parse the interior as if it were a style rule.
+    if (observer_) {
+      // Observe an empty rule header to ensure the observer has a new rule data
+      // on the stack for the following ConsumeDeclarationList.
+      observer_->StartRuleHeader(StyleRule::kStyle, stream.Offset());
+      observer_->EndRuleHeader(stream.Offset());
+    }
+    ConsumeDeclarationList(stream, StyleRule::kStyle, nesting_type,
+                           parent_rule_for_nesting, &rules);
+    if (!parsed_properties_.empty()) {
+      rules.push_front(CreateImplicitNestedRule(parent_rule_for_nesting));
+    }
+  } else {
+    ConsumeRuleList(
+        stream, kRegularRuleList, CSSNestingType::kNone,
+        parent_rule_for_nesting,
+        [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
+  }
 
   if (observer_) {
     observer_->EndRuleBody(stream.Offset());
@@ -2172,8 +2196,8 @@ StyleRuleBase* CSSParserImpl::ConsumeNestedRule(
                                                      true);
     child = ConsumeStyleRule(stream, nesting_type, parent_rule_for_nesting);
   } else {
-    child = ConsumeAtRuleContents(*id, stream, kConditionalGroupRules,
-                                  nesting_type, parent_rule_for_nesting);
+    child = ConsumeAtRuleContents(*id, stream, kNestedGroupRules, nesting_type,
+                                  parent_rule_for_nesting);
   }
   parsed_properties_ = std::move(outer_parsed_properties);
   context_->Count(WebFeature::kCSSNesting);

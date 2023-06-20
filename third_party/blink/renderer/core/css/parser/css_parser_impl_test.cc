@@ -430,6 +430,31 @@ TEST(CSSParserImplTest, ObserveNestedMediaQuery) {
   EXPECT_EQ(test_css_parser_observer.rule_body_end_, 101u);
 }
 
+TEST(CSSParserImplTest, ObserveNestedLayer) {
+  ScopedCSSNestingForTest enabled(true);
+  String sheet_text = R"CSS(
+    .element {
+      color: green;
+      @layer foo {
+        color: navy;
+      }
+    }
+    )CSS";
+
+  auto* context = MakeGarbageCollected<CSSParserContext>(
+      kHTMLStandardMode, SecureContextMode::kInsecureContext);
+  auto* sheet = MakeGarbageCollected<StyleSheetContents>(context);
+  TestCSSParserObserver test_css_parser_observer;
+  CSSParserImpl::ParseStyleSheetForInspector(sheet_text, context, sheet,
+                                             test_css_parser_observer);
+
+  EXPECT_EQ(test_css_parser_observer.rule_type_, StyleRule::RuleType::kStyle);
+  EXPECT_EQ(test_css_parser_observer.rule_header_start_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_header_end_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_start_, 54u);
+  EXPECT_EQ(test_css_parser_observer.rule_body_end_, 88u);
+}
+
 TEST(CSSParserImplTest, RemoveImportantAnnotationIfPresent) {
   struct TestCase {
     String input;
