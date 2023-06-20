@@ -52,15 +52,10 @@ class CascadeExpansionTest : public PageTestBase {
   struct ExpansionResult : public GarbageCollected<ExpansionResult> {
     CascadePriority priority;
     CSSPropertyRef ref;
-    Member<const CSSValue> css_value;
-    uint16_t tree_order;
 
     explicit ExpansionResult(const CSSProperty& property) : ref(property) {}
 
-    void Trace(Visitor* visitor) const {
-      visitor->Trace(ref);
-      visitor->Trace(css_value);
-    }
+    void Trace(Visitor* visitor) const { visitor->Trace(ref); }
   };
 
   HeapVector<Member<ExpansionResult>> ExpansionAt(const MatchResult& result,
@@ -69,14 +64,11 @@ class CascadeExpansionTest : public PageTestBase {
     ExpandCascade(
         result.GetMatchedProperties()[i], GetDocument(), i,
         [&ret](CascadePriority cascade_priority,
-               const CSSProperty& css_property, const CSSPropertyName& name,
-               const CSSValue& css_value, uint16_t tree_order) {
+               const CSSProperty& css_property, const CSSPropertyName& name) {
           ExpansionResult* er =
               MakeGarbageCollected<ExpansionResult>(css_property);
           EXPECT_EQ(name, css_property.GetCSSPropertyName());
           er->priority = cascade_priority;
-          er->css_value = &css_value;
-          er->tree_order = tree_order;
 
           ret.push_back(er);
         });
@@ -103,17 +95,15 @@ class CascadeExpansionTest : public PageTestBase {
       wtf_size_t i) {
     Vector<CSSPropertyID> visited;
 
-    ExpandCascade(
-        matched_properties, GetDocument(), i,
-        [&visited](CascadePriority cascade_priority [[maybe_unused]],
-                   const CSSProperty& css_property, const CSSPropertyName& name,
-                   const CSSValue& css_value [[maybe_unused]],
-                   uint16_t tree_order [[maybe_unused]]) {
-          EXPECT_EQ(name, css_property.GetCSSPropertyName());
-          if (css_property.IsVisited()) {
-            visited.push_back(css_property.PropertyID());
-          }
-        });
+    ExpandCascade(matched_properties, GetDocument(), i,
+                  [&visited](CascadePriority cascade_priority [[maybe_unused]],
+                             const CSSProperty& css_property,
+                             const CSSPropertyName& name) {
+                    EXPECT_EQ(name, css_property.GetCSSPropertyName());
+                    if (css_property.IsVisited()) {
+                      visited.push_back(css_property.PropertyID());
+                    }
+                  });
 
     return visited;
   }
@@ -279,27 +269,6 @@ TEST_F(CascadeExpansionTest, Name) {
               e[0]->ref.GetProperty().GetCSSPropertyName());
     EXPECT_EQ(CSSPropertyID::kFloat, e[0]->ref.GetProperty().PropertyID());
   }
-}
-
-TEST_F(CascadeExpansionTest, Value) {
-  MatchResult result;
-  result.AddMatchedProperties(ParseDeclarationBlock("background-color:red"));
-  result.FinishAddingUARules();
-  result.FinishAddingUserRules();
-  result.FinishAddingPresentationalHints();
-  result.BeginAddingAuthorRulesForTreeScope(GetDocument());
-  result.FinishAddingAuthorRulesForTreeScope();
-
-  ASSERT_EQ(1u, result.GetMatchedProperties().size());
-
-  auto e = ExpansionAt(result, 0);
-  ASSERT_EQ(2u, e.size());
-  EXPECT_EQ(CSSPropertyID::kBackgroundColor,
-            e[0]->ref.GetProperty().PropertyID());
-  EXPECT_EQ("red", e[0]->css_value->CssText());
-  EXPECT_EQ(CSSPropertyID::kInternalVisitedBackgroundColor,
-            e[1]->ref.GetProperty().PropertyID());
-  EXPECT_EQ("red", e[1]->css_value->CssText());
 }
 
 TEST_F(CascadeExpansionTest, LinkOmitted) {

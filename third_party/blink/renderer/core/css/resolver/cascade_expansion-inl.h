@@ -48,8 +48,7 @@ void ExpandCascade(const MatchedProperties& matched_properties,
       CustomProperty custom(reference.Name().ToAtomicString(), document);
       if (!filter.Rejects(custom)) {
         callback(priority, custom,
-                 CSSPropertyName(reference.Name().ToAtomicString()),
-                 reference.Value(), matched_properties.types_.tree_order);
+                 CSSPropertyName(reference.Name().ToAtomicString()));
       }
       // Custom properties never have visited counterparts,
       // so no need to check for expand_visited here.
@@ -61,22 +60,19 @@ void ExpandCascade(const MatchedProperties& matched_properties,
         }
         const CSSProperty& property = CSSProperty::Get(expanded_id);
         if (!filter.Rejects(property)) {
-          callback(priority, property, CSSPropertyName(expanded_id),
-                   reference.Value(), matched_properties.types_.tree_order);
+          callback(priority, property, CSSPropertyName(expanded_id));
         }
       }
     } else {
       const CSSProperty& property = CSSProperty::Get(id);
       if (!filter.Rejects(property)) {
-        callback(priority, property, CSSPropertyName(id), reference.Value(),
-                 matched_properties.types_.tree_order);
+        callback(priority, property, CSSPropertyName(id));
       }
       if (expand_visited && kPropertiesWithVisited.Has(id)) {
         const CSSProperty* visited_property = property.GetVisitedProperty();
         if (visited_property && !filter.Rejects(*visited_property)) {
           callback(priority, *visited_property,
-                   visited_property->GetCSSPropertyName(), reference.Value(),
-                   matched_properties.types_.tree_order);
+                   visited_property->GetCSSPropertyName());
         }
       }
     }

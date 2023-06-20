@@ -377,9 +377,7 @@ void StyleCascade::AnalyzeMatchResult() {
     ExpandCascade(
         properties, GetDocument(), index++,
         [this](CascadePriority cascade_priority,
-               const CSSProperty& css_property, const CSSPropertyName& name,
-               const CSSValue& css_value [[maybe_unused]],
-               uint16_t tree_order [[maybe_unused]]) {
+               const CSSProperty& css_property, const CSSPropertyName& name) {
           if (css_property.IsSurrogate()) {
             const CSSProperty& property = ResolveSurrogate(css_property);
             map_.Add(property.GetCSSPropertyName(), cascade_priority);

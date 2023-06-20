@@ -73,9 +73,7 @@ constexpr wtf_size_t kMaxMatchedPropertiesIndex =
 //
 //   ExpandCascade(..., [](CascadePriority cascade_priority,
 //                         const CSSProperty& css_property,
-//                         const CSSPropertyName& name,
-//                         const CSSValue&
-//                         css_value, uint16_t tree_order) {
+//                         const CSSPropertyName& name) {
 //                           DoStuff(...)
 //                         }
 //
