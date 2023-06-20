@@ -30,7 +30,7 @@ chromium-metrics-reviews@google.com.
 </variants>
 
 <histogram name="FederatedService.ServiceEvent" enum="FederatedServiceEvent"
-    expires_after="2023-07-01">
+    expires_after="2024-02-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -40,7 +40,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.StorageEvent" enum="FederatedStorageEvent"
-    expires_after="2023-09-10">
+    expires_after="2024-02-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -51,7 +51,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.{Population}.CpuTimeMicrosec"
-    units="microseconds" expires_after="2023-07-01">
+    units="microseconds" expires_after="2024-02-01">
   <owner>amoylan@chromium.org</owner>
   <owner>alanlxl@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
@@ -64,7 +64,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="FederatedService.{Population}.Event"
-    enum="FederatedClientEvent" expires_after="2023-07-01">
+    enum="FederatedClientEvent" expires_after="2024-02-01">
   <owner>alanlxl@chromium.org</owner>
   <owner>amoylan@chromium.org</owner>
   <owner>cros-federated-team@google.com</owner>
