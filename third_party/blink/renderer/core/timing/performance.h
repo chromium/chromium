@@ -346,8 +346,6 @@ class CORE_EXPORT Performance : public EventTargetWithInlineData {
       const AtomicString& maybe_name = g_null_atom,
       bool include_triggered_by_soft_navigation = false);
 
-  void MeasureMemoryExperimentTimerFired(TimerBase*);
-
   // Get performance entries of the current frame, with an optional name filter.
   PerformanceEntryVector GetEntriesForCurrentFrame(
       const AtomicString& maybe_name = g_null_atom);
