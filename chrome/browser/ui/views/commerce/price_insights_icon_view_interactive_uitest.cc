@@ -14,6 +14,7 @@
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/commerce/core/commerce_feature_list.h"
 #include "components/commerce/core/mock_shopping_service.h"
+#include "components/commerce/core/test_utils.h"
 #include "content/public/test/browser_test.h"
 #include "net/dns/mock_host_resolver.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -21,7 +22,9 @@
 
 namespace {
 DEFINE_LOCAL_ELEMENT_IDENTIFIER_VALUE(kShoppingTab);
+
 const char kShoppingURL[] = "/shopping.html";
+const char kProductClusterTitle[] = "Product Cluster Title";
 
 std::unique_ptr<net::test_server::HttpResponse> BasicResponse(
     const net::test_server::HttpRequest& request) {
@@ -51,6 +54,10 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     SetUpTabHelperAndShoppingService();
   }
 
+ protected:
+  raw_ptr<commerce::MockShoppingService, DanglingUntriaged>
+      mock_shopping_service_;
+
  private:
   base::test::ScopedFeatureList test_features_{commerce::kPriceInsights};
 
@@ -63,7 +70,7 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     browser()->tab_strip_model()->GetActiveWebContents()->RemoveUserData(
         commerce::ShoppingListUiTabHelper::UserDataKey());
 
-    auto* mock_shopping_service = static_cast<commerce::MockShoppingService*>(
+    mock_shopping_service_ = static_cast<commerce::MockShoppingService*>(
         commerce::ShoppingServiceFactory::GetInstance()
             ->SetTestingFactoryAndUse(
                 browser()->profile(),
@@ -82,23 +89,38 @@ class PriceInsightsIconViewInteractiveTest : public InteractiveBrowserTest {
     ON_CALL(*mock_tab_helper, ShouldShowPriceInsightsIconView)
         .WillByDefault(testing::Return(true));
 
-    mock_tab_helper->SetShoppingServiceForTesting(mock_shopping_service);
+    mock_tab_helper->SetShoppingServiceForTesting(mock_shopping_service_);
+    mock_shopping_service_->SetIsPriceInsightsEligible(true);
 
-    EXPECT_CALL(*mock_shopping_service, GetProductInfoForUrl)
-        .Times(testing::AnyNumber());
+    MockGetProductInfoForUrlResponse();
+    MockGetPriceInsightsInfoForUrlResponse();
+  }
 
+  void MockGetProductInfoForUrlResponse() {
     commerce::ProductInfo info;
-    info.product_cluster_id.emplace(12345L);
-    mock_shopping_service->SetResponseForGetProductInfoForUrl(info);
+    info.product_cluster_title = kProductClusterTitle;
+    mock_shopping_service_->SetResponseForGetProductInfoForUrl(info);
+  }
+
+  void MockGetPriceInsightsInfoForUrlResponse() {
+    absl::optional<commerce::PriceInsightsInfo> price_insights_info =
+        commerce::CreateValidPriceInsightsInfo(
+            true, true, commerce::PriceBucket::kLowPrice);
+    mock_shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+        price_insights_info);
   }
 };
 
 IN_PROC_BROWSER_TEST_F(PriceInsightsIconViewInteractiveTest,
                        SidePanelShownOnPress) {
+  EXPECT_CALL(*mock_shopping_service_, GetProductInfoForUrl);
+  EXPECT_CALL(*mock_shopping_service_, GetPriceInsightsInfoForUrl);
+
   RunTestSequence(
       InstrumentTab(kShoppingTab),
       NavigateWebContents(kShoppingTab,
                           embedded_test_server()->GetURL(kShoppingURL)),
+      FlushEvents(),
       // Ensure the side panel isn't open
       EnsureNotPresent(kSidePanelElementId),
       // Click on the action chip to open the side panel

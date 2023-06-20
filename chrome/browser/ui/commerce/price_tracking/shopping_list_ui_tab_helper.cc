@@ -128,6 +128,7 @@ void ShoppingListUiTabHelper::DidFinishNavigation(
   cluster_id_for_page_.reset();
   pending_tracking_state_.reset();
   is_first_load_for_nav_finished_ = false;
+  price_insights_info_.reset();
 
   MakeShoppingInsightsSidePanelUnavailable();
 
@@ -231,17 +232,18 @@ bool ShoppingListUiTabHelper::ShouldShowPriceTrackingIconView() {
 
 bool ShoppingListUiTabHelper::ShouldShowPriceInsightsIconView() {
   return shopping_service_ && shopping_service_->IsPriceInsightsEligible() &&
-         has_price_insights_info_;
+         price_insights_info_.has_value();
 }
 
 void ShoppingListUiTabHelper::HandleProductInfoResponse(
     const GURL& url,
     const absl::optional<ProductInfo>& info) {
-  if (url != web_contents()->GetLastCommittedURL())
+  if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
     return;
+  }
 
   if (shopping_service_->IsShoppingListEligible() && CanTrackPrice(info) &&
-      info.has_value() && !info->image_url.is_empty()) {
+      !info->image_url.is_empty()) {
     cluster_id_for_page_.emplace(info->product_cluster_id.value());
     UpdatePriceTrackingStateFromSubscriptions();
 
@@ -255,11 +257,25 @@ void ShoppingListUiTabHelper::HandleProductInfoResponse(
                                           kImageFetcherUmaClient));
   }
 
-  if (shopping_service_->IsPriceInsightsEligible() && info.has_value()) {
-    // TODO(zhiyuancai): Also check whether we have price insights info for
-    // current url. And set the |has_price_insights_info_|.
-    MakeShoppingInsightsSidePanelAvailable();
+  if (shopping_service_->IsPriceInsightsEligible() &&
+      !info->product_cluster_title.empty()) {
+    shopping_service_->GetPriceInsightsInfoForUrl(
+        url, base::BindOnce(
+                 &ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse,
+                 weak_ptr_factory_.GetWeakPtr()));
   }
+}
+
+void ShoppingListUiTabHelper::HandlePriceInsightsInfoResponse(
+    const GURL& url,
+    const absl::optional<PriceInsightsInfo>& info) {
+  if (url != web_contents()->GetLastCommittedURL() || !info.has_value()) {
+    return;
+  }
+
+  price_insights_info_.emplace(info.value());
+  MakeShoppingInsightsSidePanelAvailable();
+  // TODO(meiliang): call TriggerUpdateForIconView();
 }
 
 void ShoppingListUiTabHelper::SetPriceTrackingState(

@@ -34,6 +34,10 @@ class MockShoppingService : public commerce::ShoppingService {
               (const GURL& url, commerce::ProductInfoCallback callback),
               (override));
   MOCK_METHOD(void,
+              GetPriceInsightsInfoForUrl,
+              (const GURL& url, commerce::PriceInsightsInfoCallback callback),
+              (override));
+  MOCK_METHOD(void,
               GetUpdatedProductInfoForBookmarks,
               (const std::vector<int64_t>& bookmark_ids,
                BookmarkProductInfoUpdatedCallback info_updated_callback),
@@ -96,6 +100,8 @@ class MockShoppingService : public commerce::ShoppingService {
 
   void SetResponseForGetProductInfoForUrl(
       absl::optional<commerce::ProductInfo> product_info);
+  void SetResponseForGetPriceInsightsInfoForUrl(
+      absl::optional<commerce::PriceInsightsInfo> price_insights_info);
   void SetResponsesForGetUpdatedProductInfoForBookmarks(
       std::map<int64_t, ProductInfo> bookmark_updates);
   void SetResponseForGetMerchantInfoForUrl(

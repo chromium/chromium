@@ -62,6 +62,18 @@ void MockShoppingService::SetResponseForGetProductInfoForUrl(
       .WillByDefault(testing::Return(product_info));
 }
 
+void MockShoppingService::SetResponseForGetPriceInsightsInfoForUrl(
+    absl::optional<commerce::PriceInsightsInfo> price_insights_info) {
+  ON_CALL(*this, GetPriceInsightsInfoForUrl)
+      .WillByDefault(
+          [price_insights_info](const GURL& url,
+                                commerce::PriceInsightsInfoCallback callback) {
+            base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+                FROM_HERE,
+                base::BindOnce(std::move(callback), url, price_insights_info));
+          });
+}
+
 void MockShoppingService::SetResponsesForGetUpdatedProductInfoForBookmarks(
     std::map<int64_t, ProductInfo> bookmark_updates) {
   ON_CALL(*this, GetUpdatedProductInfoForBookmarks)

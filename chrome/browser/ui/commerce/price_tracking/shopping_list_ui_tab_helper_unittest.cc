@@ -41,16 +41,25 @@ namespace {
 const char kProductUrl[] = "http://example.com";
 const char kProductImageUrl[] = "http://example.com/image.png";
 const uint64_t kClusterId = 12345L;
+const char kProductClusterTitle[] = "Product Cluster Title";
 
-// Build a ProductInfo with the specified cluster ID and image URL. If the image
-// URL is not specified, it is left empty in the info object.
-absl::optional<ProductInfo> CreateProductInfo(uint64_t cluster_id,
-                                              const GURL& url = GURL()) {
+// Build a ProductInfo with the specified cluster ID, image URL and cluster
+// title.
+//   * If the image URL is not specified, it is left empty in the info object.
+//   * If the cluster_title is not specified, it is left empty in the info
+//   object.
+absl::optional<ProductInfo> CreateProductInfo(
+    uint64_t cluster_id,
+    const GURL& url = GURL(),
+    const std::string cluster_title = std::string()) {
   absl::optional<ProductInfo> info;
   info.emplace();
   info->product_cluster_id = cluster_id;
   if (!url.is_empty()) {
     info->image_url = url;
+  }
+  if (!cluster_title.empty()) {
+    info->product_cluster_title = cluster_title;
   }
   return info;
 }
@@ -362,16 +371,22 @@ TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelAvailable) {
                    ->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kShoppingInsights)));
 
-  absl::optional<ProductInfo> info =
-      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
-  shopping_service_->SetResponseForGetProductInfoForUrl(info);
   shopping_service_->SetIsPriceInsightsEligible(true);
+
+  absl::optional<ProductInfo> product_info = CreateProductInfo(
+      kClusterId, GURL(kProductImageUrl), kProductClusterTitle);
+  shopping_service_->SetResponseForGetProductInfoForUrl(product_info);
+
+  absl::optional<PriceInsightsInfo> price_insights_info =
+      CreateValidPriceInsightsInfo(true, true, PriceBucket::kLowPrice);
+  shopping_service_->SetResponseForGetPriceInsightsInfoForUrl(
+      price_insights_info);
 
   SimulateNavigationCommitted(GURL(kProductUrl));
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_TRUE(SidePanelRegistry::Get(web_contents_.get())
+  EXPECT_TRUE(SidePanelRegistry::Get(web_contents_.get())
                   ->GetEntryForKey(SidePanelEntry::Key(
                       SidePanelEntry::Id::kShoppingInsights)));
 }
@@ -388,9 +403,34 @@ TEST_F(ShoppingListUiTabHelperTest, TestShoppingInsightsSidePanelUnavailable) {
 
   base::RunLoop().RunUntilIdle();
 
-  ASSERT_FALSE(SidePanelRegistry::Get(web_contents_.get())
+  EXPECT_FALSE(SidePanelRegistry::Get(web_contents_.get())
                    ->GetEntryForKey(SidePanelEntry::Key(
                        SidePanelEntry::Id::kShoppingInsights)));
+}
+
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceInsightsIconNotAvailableIfEmptyProductInfo) {
+  shopping_service_->SetIsPriceInsightsEligible(true);
+  shopping_service_->SetResponseForGetProductInfoForUrl(absl::nullopt);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
+}
+
+TEST_F(ShoppingListUiTabHelperTest,
+       TestPriceInsightsIconNotAvailableIfNoProductClusterTitle) {
+  shopping_service_->SetIsPriceInsightsEligible(true);
+
+  absl::optional<ProductInfo> info =
+      CreateProductInfo(kClusterId, GURL(kProductImageUrl));
+  shopping_service_->SetResponseForGetProductInfoForUrl(info);
+
+  SimulateNavigationCommitted(GURL(kProductUrl));
+  base::RunLoop().RunUntilIdle();
+
+  EXPECT_FALSE(tab_helper_->ShouldShowPriceInsightsIconView());
 }
 
 }  // namespace commerce

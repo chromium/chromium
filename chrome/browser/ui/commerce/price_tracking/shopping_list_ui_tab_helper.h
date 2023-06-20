@@ -109,6 +109,10 @@ class ShoppingListUiTabHelper
   void HandleProductInfoResponse(const GURL& url,
                                  const absl::optional<ProductInfo>& info);
 
+  void HandlePriceInsightsInfoResponse(
+      const GURL& url,
+      const absl::optional<PriceInsightsInfo>& info);
+
   void HandleImageFetcherResponse(
       const GURL image_url,
       const gfx::Image& image,
@@ -176,10 +180,8 @@ class ShoppingListUiTabHelper
   // empty if this is the first navigation for this tab or post-restart.
   GURL previous_main_frame_url_;
 
-  // TODO(b/286291891): Cache the insight info instead of a bool variable, so so
-  // we know the price low/high/typical information. Whether the committed url
-  // has price insights info.
-  bool has_price_insights_info_{false};
+  // The PriceInsightsInfo associated with the last committed URL.
+  absl::optional<PriceInsightsInfo> price_insights_info_;
 
   // Automatically remove this observer from its host when destroyed.
   base::ScopedObservation<ShoppingService, SubscriptionsObserver>
