@@ -5,6 +5,7 @@
 #include "chrome/browser/hid/hid_pinned_notification.h"
 #include <string>
 
+#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_system_tray_icon_unittest.h"
@@ -83,12 +84,20 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
         total_connection_count += connection_count;
       }
 
+      auto* hid_pinned_notification = static_cast<HidPinnedNotification*>(
+          g_browser_process->hid_system_tray_icon());
+
+      auto* device_pinned_notification_renderer =
+          static_cast<DevicePinnedNotificationRenderer*>(
+              hid_pinned_notification->GetIconRendererForTesting());
+
       auto* hid_connection_tracker = static_cast<MockHidConnectionTracker*>(
           HidConnectionTrackerFactory::GetForProfile(profile,
                                                      /*create=*/false));
+
       EXPECT_TRUE(hid_connection_tracker);
       auto maybe_notification = display_service_->GetNotification(
-          HidPinnedNotification::GetNotificationId(profile));
+          device_pinned_notification_renderer->GetNotificationId(profile));
       ASSERT_TRUE(maybe_notification);
       EXPECT_EQ(maybe_notification->title(),
                 GetExpectedTitle(origin_items.size(), total_connection_count));
@@ -115,9 +124,16 @@ class HidPinnedNotificationTest : public HidSystemTrayIconTestBase {
 
  private:
   void SimulateButtonClick(Profile* profile) {
+    auto* hid_pinned_notification = static_cast<HidPinnedNotification*>(
+        g_browser_process->hid_system_tray_icon());
+
+    auto* device_pinned_notification_renderer =
+        static_cast<DevicePinnedNotificationRenderer*>(
+            hid_pinned_notification->GetIconRendererForTesting());
+
     display_service_->SimulateClick(
         NotificationHandler::Type::TRANSIENT,
-        HidPinnedNotification::GetNotificationId(profile),
+        device_pinned_notification_renderer->GetNotificationId(profile),
         /*action_index=*/0, /*reply=*/absl::nullopt);
   }
 

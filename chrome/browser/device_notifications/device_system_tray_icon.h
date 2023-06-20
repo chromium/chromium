@@ -8,12 +8,15 @@
 #include "base/containers/flat_map.h"
 #include "base/memory/weak_ptr.h"
 #include "base/time/time.h"
+#include "chrome/browser/device_notifications/device_connection_tracker.h"
+#include "ui/gfx/image/image_skia.h"
 
 class Profile;
-
+class DeviceSystemTrayIconRenderer;
 class DeviceSystemTrayIcon {
  public:
-  DeviceSystemTrayIcon();
+  explicit DeviceSystemTrayIcon(
+      std::unique_ptr<DeviceSystemTrayIconRenderer> icon_renderer);
   DeviceSystemTrayIcon(const DeviceSystemTrayIcon&) = delete;
   DeviceSystemTrayIcon& operator=(const DeviceSystemTrayIcon&) = delete;
   virtual ~DeviceSystemTrayIcon();
@@ -29,7 +32,17 @@ class DeviceSystemTrayIcon {
 
   // Notify the system tray icon the connection count of the `profile` has
   // changed.
-  virtual void NotifyConnectionCountUpdated(Profile* profile) = 0;
+  virtual void NotifyConnectionCountUpdated(Profile* profile);
+
+  // Get the image for the status tray icon.
+  virtual gfx::ImageSkia GetIcon() = 0;
+
+  // Get the label of the title of the device system tray icon.
+  virtual std::u16string GetTitleLabel(size_t num_origins,
+                                       size_t num_connections) = 0;
+
+  // Returns a label for the content setting button
+  virtual std::u16string GetContentSettingsLabel() = 0;
 
   // The time period that a profile is shown in the system tray icon while it is
   // unstaging.
@@ -39,21 +52,31 @@ class DeviceSystemTrayIcon {
     return profiles_;
   }
 
+  DeviceSystemTrayIconRenderer* GetIconRendererForTesting() {
+    return icon_renderer_.get();
+  }
+
+  virtual DeviceConnectionTracker* GetConnectionTracker(
+      base::WeakPtr<Profile> profile) = 0;
+
+  const base::flat_map<Profile*, bool>& profiles() const { return profiles_; }
+
  protected:
+  std::unique_ptr<DeviceSystemTrayIconRenderer> icon_renderer_;
+
+ private:
   // This function is called after the `profile` object is added to the
   // `profiles_`.
-  virtual void ProfileAdded(Profile* profile) = 0;
+  virtual void ProfileAdded(Profile* profile);
 
   // This function is called after the `profile` object is removed from the
   // `profiles_`.
-  virtual void ProfileRemoved(Profile* profile) = 0;
+  virtual void ProfileRemoved(Profile* profile);
 
-  // This map stores profiles being tracked, along with their staging status.
-  base::flat_map<Profile*, bool> profiles_;
-
- private:
   // Remove |profile| from the system tray icon if it is still unstaging.
   void CleanUpProfile(base::WeakPtr<Profile> profile);
+
+  base::flat_map<Profile*, bool> profiles_;
 
   base::WeakPtrFactory<DeviceSystemTrayIcon> weak_factory_{this};
 };

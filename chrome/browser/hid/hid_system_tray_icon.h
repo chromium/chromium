@@ -11,21 +11,20 @@
 
 class HidSystemTrayIcon : public DeviceSystemTrayIcon {
  public:
-  HidSystemTrayIcon();
+  explicit HidSystemTrayIcon(
+      std::unique_ptr<DeviceSystemTrayIconRenderer> icon_renderer);
   HidSystemTrayIcon(const HidSystemTrayIcon&) = delete;
   HidSystemTrayIcon& operator=(const HidSystemTrayIcon&) = delete;
   ~HidSystemTrayIcon() override;
 
- protected:
-  // Get the image for the status tray icon.
-  static gfx::ImageSkia GetStatusTrayIcon();
+  gfx::ImageSkia GetIcon() override;
+  std::u16string GetTitleLabel(size_t num_origins,
+                               size_t num_connections) override;
+  std::u16string GetContentSettingsLabel() override;
 
-  // Get the label of the title of the HID system tray icon.
-  static std::u16string GetTitleLabel(size_t num_origins,
-                                      size_t num_connections);
-
-  // Returns a label for HID settings button.
-  static std::u16string GetContentSettingsLabel();
+ private:
+  DeviceConnectionTracker* GetConnectionTracker(
+      base::WeakPtr<Profile> profile) override;
 };
 
 #endif  // CHROME_BROWSER_HID_HID_SYSTEM_TRAY_ICON_H_

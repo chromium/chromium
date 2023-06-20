@@ -6,10 +6,11 @@
 #define CHROME_BROWSER_DEVICE_NOTIFICATIONS_DEVICE_CONNECTION_TRACKER_H_
 
 #include "base/containers/flat_map.h"
-#include "chrome/browser/device_notifications/device_system_tray_icon.h"
 #include "chrome/browser/profiles/profile.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "url/origin.h"
+
+class DeviceSystemTrayIcon;
 
 // Manages the opened device connection count by the profile.
 class DeviceConnectionTracker : public KeyedService {

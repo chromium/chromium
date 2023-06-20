@@ -3566,6 +3566,7 @@ static_library("browser") {
       "device_notifications/device_connection_tracker.h",
       "device_notifications/device_system_tray_icon.cc",
       "device_notifications/device_system_tray_icon.h",
+      "device_notifications/device_system_tray_icon_renderer.h",
       "diagnostics/diagnostics_controller.cc",
       "diagnostics/diagnostics_controller.h",
       "diagnostics/diagnostics_metrics.cc",
@@ -4498,6 +4499,8 @@ static_library("browser") {
     ]
     if (!is_android && !is_chromeos) {
       sources += [
+        "device_notifications/device_status_icon_renderer.cc",
+        "device_notifications/device_status_icon_renderer.h",
         "hid/hid_status_icon.cc",
         "hid/hid_status_icon.h",
       ]
@@ -5564,6 +5567,8 @@ static_library("browser") {
       "certificate_provider/sign_requests.h",
       "certificate_provider/thread_safe_certificate_map.cc",
       "certificate_provider/thread_safe_certificate_map.h",
+      "device_notifications/device_pinned_notification_renderer.cc",
+      "device_notifications/device_pinned_notification_renderer.h",
       "device_reauth/chromeos/authenticator_chromeos.cc",
       "device_reauth/chromeos/authenticator_chromeos.h",
       "device_reauth/chromeos/device_authenticator_chromeos.cc",

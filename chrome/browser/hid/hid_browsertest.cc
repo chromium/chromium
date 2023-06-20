@@ -12,6 +12,8 @@
 #include "chrome/app/chrome_command_ids.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/chrome_content_browser_client.h"
+#include "chrome/browser/device_notifications/device_pinned_notification_renderer.h"
+#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 #include "chrome/browser/hid/chrome_hid_delegate.h"
 #include "chrome/browser/hid/hid_chooser_context.h"
 #include "chrome/browser/hid/hid_chooser_context_factory.h"
@@ -195,8 +197,16 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
   void SimulateClickOnSystemTrayIconButton(Browser* browser,
                                            const Extension* extension) {
 #if BUILDFLAG(IS_CHROMEOS)
+    auto* hid_pinned_notification = static_cast<HidPinnedNotification*>(
+        g_browser_process->hid_system_tray_icon());
+
+    auto* device_pinned_notification_renderer =
+        static_cast<DevicePinnedNotificationRenderer*>(
+            hid_pinned_notification->GetIconRendererForTesting());
+
     auto expected_pinned_notification_id =
-        HidPinnedNotification::GetNotificationId(browser->profile());
+        device_pinned_notification_renderer->GetNotificationId(
+            browser->profile());
     auto maybe_indicator_notification =
         display_service_for_system_notification_->GetNotification(
             expected_pinned_notification_id);
@@ -214,15 +224,21 @@ class WebHidExtensionBrowserTest : public extensions::ExtensionBrowserTest {
     auto* hid_status_icon =
         static_cast<HidStatusIcon*>(g_browser_process->hid_system_tray_icon());
 
-    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
+    auto* status_icon_renderer = static_cast<DeviceStatusIconRenderer*>(
+        hid_status_icon->GetIconRendererForTesting());
+
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST, 0);
     EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
               "https://support.google.com/chrome?p=webhid");
 
-    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 1, 0);
     EXPECT_EQ(browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
               "chrome://settings/content/hidDevices");
 
-    hid_status_icon->ExecuteCommand(IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
+    status_icon_renderer->ExecuteCommandForTesting(
+        IDC_DEVICE_SYSTEM_TRAY_ICON_FIRST + 2, 0);
     EXPECT_EQ(
         browser->tab_strip_model()->GetActiveWebContents()->GetURL(),
         "chrome://settings/content/siteDetails?site=chrome-extension%3A%2F%2F" +

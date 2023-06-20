@@ -13,6 +13,7 @@
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "chrome/browser/device_notifications/device_status_icon_renderer.h"
 #include "chrome/browser/hid/hid_connection_tracker.h"
 #include "chrome/browser/hid/hid_connection_tracker_factory.h"
 #include "chrome/browser/hid/hid_system_tray_icon.h"
@@ -409,6 +410,8 @@ void HidSystemTrayIconTestBase::TestExtensionRemoval() {
 
 class MockHidSystemTrayIcon : public HidSystemTrayIcon {
  public:
+  MockHidSystemTrayIcon() : HidSystemTrayIcon(nullptr) {}
+
   MOCK_METHOD(void, ProfileAdded, (Profile*), (override));
   MOCK_METHOD(void, ProfileRemoved, (Profile*), (override));
   MOCK_METHOD(void, NotifyConnectionCountUpdated, (Profile*), (override));
