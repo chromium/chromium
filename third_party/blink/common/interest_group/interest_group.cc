@@ -27,6 +27,8 @@ namespace blink {
 
 namespace {
 
+const size_t kMaxAdRenderIdSize = 12;
+
 // Check if `url` can be used as an interest group's ad render URL. Ad URLs can
 // be cross origin, unlike other interest group URLs, but are still restricted
 // to HTTPS with no embedded credentials.
@@ -213,6 +215,11 @@ bool InterestGroup::IsValid() const {
           return false;
         }
       }
+      if (ad.ad_render_id) {
+        if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
+          return false;
+        }
+      }
     }
   }
 
@@ -224,6 +231,11 @@ bool InterestGroup::IsValid() const {
       if (ad.size_group) {
         if (ad.size_group->empty() || !size_groups ||
             !size_groups->contains(ad.size_group.value())) {
+          return false;
+        }
+      }
+      if (ad.ad_render_id) {
+        if (ad.ad_render_id->size() > kMaxAdRenderIdSize) {
           return false;
         }
       }

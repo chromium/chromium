@@ -15,6 +15,8 @@ namespace blink {
 
 namespace {
 
+const size_t kMaxAdRenderIdSize = 12;
+
 // Check if `url` can be used as an interest group's ad render URL. Ad URLs can
 // be cross origin, unlike other interest group URLs, but are still restricted
 // to HTTPS with no embedded credentials.
@@ -251,6 +253,12 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           return false;
         }
       }
+      if (group.ads.value()[i]->ad_render_id.length() > kMaxAdRenderIdSize) {
+        error_field_name = String::Format("ads[%u].adRenderId", i);
+        error_field_value = group.ads.value()[i]->ad_render_id;
+        error = "The adRenderId is too long.";
+        return false;
+      }
     }
   }
 
@@ -279,6 +287,13 @@ bool ValidateBlinkInterestGroup(const mojom::blink::InterestGroup& group,
           error = "The assigned size group does not exist in sizeGroups map.";
           return false;
         }
+      }
+      if (group.ad_components.value()[i]->ad_render_id.length() >
+          kMaxAdRenderIdSize) {
+        error_field_name = String::Format("adComponents[%u].adRenderId", i);
+        error_field_value = group.ad_components.value()[i]->ad_render_id;
+        error = "The adRenderId is too long.";
+        return false;
       }
     }
   }

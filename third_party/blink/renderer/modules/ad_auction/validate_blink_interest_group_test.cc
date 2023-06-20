@@ -131,8 +131,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/foo?bar#baz"));
     mojo_ad1->metadata =
         String::FromUTF8("\"This field isn't actually validated\"");
-    mojo_ad1->ad_render_id =
-        String::FromUTF8("\"This field isn't actually validated\"");
+    mojo_ad1->ad_render_id = String::FromUTF8("\"NotTooLong\"");
     blink_interest_group->ads->push_back(std::move(mojo_ad1));
     auto mojo_ad2 = mojom::blink::InterestGroupAd::New();
     mojo_ad2->render_url =
@@ -146,8 +145,7 @@ class ValidateBlinkInterestGroupTest : public testing::Test {
         KURL(String::FromUTF8("https://origin.test/components?bar#baz"));
     mojo_ad_component1->metadata =
         String::FromUTF8("\"This field isn't actually validated\"");
-    mojo_ad_component1->ad_render_id =
-        String::FromUTF8("\"This field isn't actually validated\"");
+    mojo_ad_component1->ad_render_id = String::FromUTF8("\"NotTooLong\"");
     blink_interest_group->ad_components->push_back(
         std::move(mojo_ad_component1));
     auto mojo_ad_component2 = mojom::blink::InterestGroupAd::New();
@@ -1000,6 +998,37 @@ TEST_F(ValidateBlinkInterestGroupTest,
         /*expected_error_field_name=*/"adComponents[0].sizeGroup",
         test_case.expected_error_field_value, test_case.expected_error);
   }
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AdRenderIdTooLong) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ads.emplace();
+  auto ad = mojom::blink::InterestGroupAd::New();
+  ad->render_url = KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  ad->ad_render_id = String::FromUTF8("ThisIsTooLong");
+  blink_interest_group->ads->emplace_back(std::move(ad));
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group, /*expected_error_field_name=*/"ads[0].adRenderId",
+      /*expected_error_field_value=*/"ThisIsTooLong",
+      /*expected_error=*/"The adRenderId is too long.");
+}
+
+TEST_F(ValidateBlinkInterestGroupTest, AdComponentRenderIdTooLong) {
+  mojom::blink::InterestGroupPtr blink_interest_group =
+      CreateMinimalInterestGroup();
+  blink_interest_group->ad_components.emplace();
+  auto mojo_ad_component = mojom::blink::InterestGroupAd::New();
+  mojo_ad_component->render_url =
+      KURL(String::FromUTF8("https://origin.test/foo?bar"));
+  mojo_ad_component->ad_render_id = String::FromUTF8("ThisIsTooLong");
+  blink_interest_group->ad_components->emplace_back(
+      std::move(mojo_ad_component));
+  ExpectInterestGroupIsNotValid(
+      blink_interest_group,
+      /*expected_error_field_name=*/"adComponents[0].adRenderId",
+      /*expected_error_field_value=*/"ThisIsTooLong",
+      /*expected_error=*/"The adRenderId is too long.");
 }
 
 }  // namespace blink
