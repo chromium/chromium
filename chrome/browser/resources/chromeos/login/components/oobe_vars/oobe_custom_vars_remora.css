@@ -71,6 +71,25 @@
       --oobe-sync-consent-card-subtitle-font: var(--cros-body-1-font);
       --oobe-sync-consent-tooltip-text-font: var(--cros-body-2-font);
 
+      --oobe-hw-data-collection-usage-line-height: 18px;
+
+      --oobe-smart-privacy-item-title-font-size: 14px;
+      --oobe-smart-privacy-item-title-font-weight: 500; /* roboto-medium */
+      --oobe-smart-privacy-item-title-line-height: 24px;
+
+      --oobe-enable-debugging-font-size: 12px;
+
+      --oobe-demo-preferences-selection-title-font-size: 13px;
+      --oobe-demo-preferences-number-input-font-size: 10px;
+
+      --oobe-gesture-navigation-list-item-font-size: 15px;
+
+      --oobe-encryption-migration-warning-line-height: 22px;
+
+      --oobe-offline-ad-login-select-title-font-size: 13px;
+
+      --oobe-reset-firmware-update-line-height: 20px;
+
       /* Select */
       --oobe-select-height: 44px;
 
