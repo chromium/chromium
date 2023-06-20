@@ -58,11 +58,11 @@ void OverviewTestBase::DispatchLongPress(OverviewItem* item) {
   GetEventGenerator()->Dispatch(&long_press);
 }
 
-std::vector<std::unique_ptr<aura::Window>> OverviewTestBase::CreateTestWindows(
+std::vector<std::unique_ptr<aura::Window>> OverviewTestBase::CreateAppWindows(
     int n) {
   std::vector<std::unique_ptr<aura::Window>> windows(n);
   for (int i = n - 1; i >= 0; --i) {
-    windows[i] = CreateTestWindow();
+    windows[i] = CreateAppWindow();
   }
   return windows;
 }

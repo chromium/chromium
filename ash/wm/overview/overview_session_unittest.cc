@@ -3685,7 +3685,7 @@ class TabletModeOverviewSessionTest : public OverviewTestBase {
 
 // Tests that windows are in proper positions in the new overview layout.
 TEST_F(TabletModeOverviewSessionTest, CheckNewLayoutWindowPositions) {
-  auto windows = CreateTestWindows(6);
+  auto windows = CreateAppWindows(6);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3717,7 +3717,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNewLayoutWindowPositions) {
 
 // Tests that with the tablet mode layout, some of the windows are offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOffscreenWindows) {
-  auto windows = CreateTestWindows(10);
+  auto windows = CreateAppWindows(10);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3746,7 +3746,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOffscreenWindows) {
 // Tests to see if windows are not shifted if all already available windows
 // fit on screen.
 TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
-  auto windows = CreateTestWindows(4);
+  auto windows = CreateAppWindows(4);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3760,7 +3760,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckNoOverviewItemShift) {
 // Tests to see if windows are shifted if at least one window is
 // partially/completely positioned offscreen.
 TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
-  auto windows = CreateTestWindows(7);
+  auto windows = CreateAppWindows(7);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3773,7 +3773,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemShift) {
 
 // Tests to see if windows remain in bounds after scrolling extremely far.
 TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemScrollingBounds) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3806,7 +3806,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckOverviewItemScrollingBounds) {
 // Tests that destroying a window does not cause a crash while scrolling the
 // overview grid. Regression test for https://crbug.com/1200605.
 TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3845,6 +3845,37 @@ TEST_F(TabletModeOverviewSessionTest, WindowDestroyWhileScrolling) {
   ui::TouchEvent release(ui::ET_TOUCH_RELEASED, gfx::Point(x, y), timestamp,
                          ui::PointerDetails());
   event_generator->Dispatch(&release);
+}
+
+// Tests that removing a desk does not cause a crash while scrolling the
+// overview grid. Regression test for https://crbug.com/1455360.
+TEST_F(TabletModeOverviewSessionTest, DeskRemovalWhileScrolling) {
+  // The crash happened when closing a desk (which would add its app windows as
+  // items in overview) midway through a scroll. Create two desks with windows;
+  // the first desk has enough windows so that overview is scrollable.
+  auto desk1_windows = CreateAppWindows(15);
+
+  auto* controller = DesksController::Get();
+  controller->NewDesk(DesksCreationRemovalSource::kKeyboard);
+  ActivateDesk(controller->desks()[1].get());
+  auto desk2_windows = CreateAppWindows(2);
+
+  // Activate the desk with 15 windows. There may be more than the windows we
+  // created (i.e. backdrop, nudges), so we assert greater than.
+  ActivateDesk(controller->desks()[0].get());
+  ASSERT_GT(controller->desks()[0]->windows().size(), 15u);
+  ASSERT_GT(controller->desks()[1]->windows().size(), 2u);
+
+  ToggleOverview();
+  ASSERT_TRUE(InOverviewSession());
+
+  // Start scrolling the overview grid.
+  GetEventGenerator()->PressTouch(gfx::Point(400, 300));
+  GetEventGenerator()->MoveTouchBy(-50, 0);
+
+  // Remove the desk and continue scrolling. There should be no crash.
+  RemoveDesk(controller->desks()[1].get(), DeskCloseType::kCombineDesks);
+  GetEventGenerator()->MoveTouchBy(-50, 0);
 }
 
 // Tests the windows are stacked correctly when entering or exiting splitview
@@ -3923,7 +3954,7 @@ TEST_F(TabletModeOverviewSessionTest, StackingOrderAfterGestureEvent) {
 // Test that scrolling occurs if started on top of a window using the window's
 // center-point as a start.
 TEST_F(TabletModeOverviewSessionTest, HorizontalScrollingOnOverviewItem) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -3986,7 +4017,7 @@ class ClamshellScrollOverviewSessionTest : public OverviewTestBase {
 // Tests that when 10 windows are open, the scrolling layout for
 // overview mode in clamshell has some of the windows offscreen.
 TEST_F(ClamshellScrollOverviewSessionTest, CheckManyWindowsOffScreen) {
-  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4023,7 +4054,7 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckManyWindowsOffScreen) {
 // Tests that when 4 windows are open, the scrolling layout for
 // overview mode in clamshell has all of the windows onscreen.
 TEST_F(ClamshellScrollOverviewSessionTest, CheckFewWindowsOnScreen) {
-  auto windows = CreateTestWindows(4);
+  auto windows = CreateAppWindows(4);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4047,7 +4078,7 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckFewWindowsOnScreen) {
 
 // Tests that windows cannot be scrolled if all windows fit on screen.
 TEST_F(ClamshellScrollOverviewSessionTest, CheckNoOverviewItemShift) {
-  auto windows = CreateTestWindows(4);
+  auto windows = CreateAppWindows(4);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4064,7 +4095,7 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckNoOverviewItemShift) {
 // Tests to see that windows can be scrolled if at least one window is
 // partially/completely positioned offscreen.
 TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemShift) {
-  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4080,7 +4111,7 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemShift) {
 
 // Tests to see if windows remain in bounds after scrolling extremely far.
 TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemScrollingBounds) {
-  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4113,7 +4144,7 @@ TEST_F(ClamshellScrollOverviewSessionTest, CheckOverviewItemScrollingBounds) {
 // when scrolling vertically in overview mode.
 TEST_F(ClamshellScrollOverviewSessionTest,
        OverviewWidgetsAreStackedUnderDeskBar) {
-  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
   ToggleOverview();
   auto* desk_bar_view =
       GetOverviewGridForRoot(Shell::Get()->GetPrimaryRootWindow())
@@ -4144,7 +4175,7 @@ TEST_F(ClamshellScrollOverviewSessionTest,
 // Test scrolling behavior when floated and minimized windows are present.
 TEST_F(ClamshellScrollOverviewSessionTest,
        CheckOverviewScrollWithFloatedWindow) {
-  auto windows = CreateTestWindows(kMinimumItemsForNewLayoutInClamshell);
+  auto windows = CreateAppWindows(kMinimumItemsForNewLayoutInClamshell);
 
   // Create a floated, non-floated active, and minimized window.
   auto active_window = CreateAppWindow();
@@ -4299,7 +4330,7 @@ TEST_F(TabletModeOverviewSessionTest, VerticalScrollingOnOverviewItem) {
 
 // Test that scrolling occurs if we hit the associated keyboard shortcut.
 TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   ToggleOverview();
   ASSERT_TRUE(InOverviewSession());
 
@@ -4313,7 +4344,7 @@ TEST_F(TabletModeOverviewSessionTest, CheckScrollingWithKeyboardShortcut) {
 // Test that tapping a window in overview closes overview mode.
 TEST_F(TabletModeOverviewSessionTest, CheckWindowActivateOnTap) {
   base::UserActionTester user_action_tester;
-  auto windows = CreateTestWindows(8);
+  auto windows = CreateAppWindows(8);
   wm::ActivateWindow(windows[1].get());
 
   ToggleOverview();
@@ -4338,7 +4369,7 @@ TEST_F(TabletModeOverviewSessionTest, LayoutValidAfterRotation) {
   display::test::ScopedSetInternalDisplayId set_internal(
       Shell::Get()->display_manager(),
       display::Screen::GetScreen()->GetPrimaryDisplay().id());
-  auto windows = CreateTestWindows(7);
+  auto windows = CreateAppWindows(7);
 
   // Helper to determine whether a grid layout is valid. It is considered valid
   // if the left edge of the first item is close enough to the left edge of the

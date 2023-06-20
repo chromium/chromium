@@ -48,9 +48,9 @@ class OverviewTestBase : public AshTestBase {
 
   void DispatchLongPress(OverviewItem* item);
 
-  // Creates `n` test windows. They are created in reverse order, so that the
+  // Creates `n` app windows. They are created in reverse order, so that the
   // first window in the vector is the MRU window.
-  std::vector<std::unique_ptr<aura::Window>> CreateTestWindows(int n);
+  std::vector<std::unique_ptr<aura::Window>> CreateAppWindows(int n);
 
   bool WindowsOverlapping(aura::Window* window1, aura::Window* window2);
 

@@ -1618,7 +1618,11 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
   for (const auto& item : window_list_) {
     absl::optional<gfx::RectF> scrolling_bounds_optional =
         item->scrolling_bounds();
-    DCHECK(scrolling_bounds_optional);
+    // Scrolling bounds may not be set if the item was added after scrolling
+    // started (i.e. another desk was combined into the active desk).
+    if (!scrolling_bounds_optional) {
+      continue;
+    }
     const gfx::RectF previous_bounds = scrolling_bounds_optional.value();
     gfx::RectF new_bounds = previous_bounds;
     // Apply the offset to the axis we are scrolling on.
@@ -1639,7 +1643,7 @@ bool OverviewGrid::UpdateScrollOffset(float delta) {
 
   scroll_offset_ = new_scroll_offset;
 
-  CHECK(presentation_time_recorder_);
+  DCHECK(presentation_time_recorder_);
   presentation_time_recorder_->RequestNext();
   return in_range;
 }
