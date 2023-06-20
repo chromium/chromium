@@ -423,37 +423,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="BackForwardCache.ReloadsAfterHistoryNavigation"
-    enum="BackForwardCacheReloadsAfterHistoryNavigation"
-    expires_after="2022-06-26">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Records the number of reloads after a history navigation both for the cases
-    when page is served and not served from back-forward cache.
-
-    This is recorded when navigation is committed, only for the domains which
-    are in the scope of back-forward cache experiment and they are of same
-    NavigationEntry (e.g. back and reload in different tab do not count).
-  </summary>
-</histogram>
-
-<histogram name="BackForwardCache.ReloadsAndHistoryNavigations"
-    enum="BackForwardCacheReloadsAndHistoryNavigations"
-    expires_after="2022-06-26">
-  <owner>sreejakshetty@chromium.org</owner>
-  <owner>altimin@chromium.org</owner>
-  <owner>bfcache-dev@chromium.org</owner>
-  <summary>
-    Records the total number of history navigations along with the number of
-    reloads if the previous navigation was a history one.
-
-    This is recorded when navigation is committed, only for the domains which
-    are in the scope of back-forward cache experiment.
-  </summary>
-</histogram>
-
 <histogram name="BackForwardCache.Restore.NavigationToFirstPaint" units="ms"
     expires_after="2023-11-12">
   <owner>sreejakshetty@chromium.org</owner>

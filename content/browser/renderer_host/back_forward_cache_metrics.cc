@@ -129,11 +129,6 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   if (!navigation->IsInPrimaryMainFrame() || navigation->IsSameDocument())
     return;
 
-  // Record metrics for reloads after history navigation, if applicable.
-  RecordHistogramForReloadsAfterHistoryNavigations(
-      navigation->GetReloadType() != ReloadType::NONE,
-      back_forward_cache_allowed);
-
   // Record metrics for history navigation, if applicable.
   if (IsCrossDocumentMainFrameHistoryNavigation(navigation)) {
     // We have to update not restored reasons even though we already did in
@@ -223,10 +218,6 @@ void BackForwardCacheMetrics::DidCommitNavigation(
   }
   // Save the information about the last cross-document main frame navigation
   // that uses this metrics object.
-  previous_navigation_is_served_from_bfcache_ =
-      navigation->IsServedFromBackForwardCache();
-  previous_navigation_is_history_ =
-      IsCrossDocumentMainFrameHistoryNavigation(navigation);
   last_committed_cross_document_main_frame_navigation_id_ =
       navigation->GetNavigationId();
 
@@ -489,11 +480,6 @@ void BackForwardCacheMetrics::RecordHistoryNavigationUMA(
   if (back_forward_cache_allowed) {
     UMA_HISTOGRAM_ENUMERATION("BackForwardCache.HistoryNavigationOutcome",
                               outcome);
-
-    // Record total number of history navigations for all websites allowed by
-    // back-forward cache.
-    UMA_HISTOGRAM_ENUMERATION("BackForwardCache.ReloadsAndHistoryNavigations",
-                              ReloadsAndHistoryNavigations::kHistoryNavigation);
   }
 
   UMA_HISTOGRAM_ENUMERATION(
@@ -598,28 +584,6 @@ void BackForwardCacheMetrics::RecordEvictedAfterDocumentRestored(
       "BackForwardCache.EvictedAfterDocumentRestoredReason", reason);
   UMA_HISTOGRAM_ENUMERATION(
       "BackForwardCache.AllSites.EvictedAfterDocumentRestoredReason", reason);
-}
-
-void BackForwardCacheMetrics::RecordHistogramForReloadsAfterHistoryNavigations(
-    bool is_reload,
-    bool back_forward_cache_allowed) const {
-  if (!is_reload || !previous_navigation_is_history_ ||
-      !back_forward_cache_allowed) {
-    return;
-  }
-
-  // Record the total number of reloads after a history navigation.
-  UMA_HISTOGRAM_ENUMERATION(
-      "BackForwardCache.ReloadsAndHistoryNavigations",
-      ReloadsAndHistoryNavigations::kReloadAfterHistoryNavigation);
-
-  // Record separate buckets for cases served and not served from
-  // back-forward cache.
-  UMA_HISTOGRAM_ENUMERATION(
-      "BackForwardCache.ReloadsAfterHistoryNavigation",
-      previous_navigation_is_served_from_bfcache_
-          ? ReloadsAfterHistoryNavigation::kServedFromBackForwardCache
-          : ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache);
 }
 
 // static

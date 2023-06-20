@@ -10524,16 +10524,6 @@ others/histograms.xml -->
   <int value="1" label="PageStored"/>
 </enum>
 
-<enum name="BackForwardCacheReloadsAfterHistoryNavigation">
-  <int value="0" label="NotServedFromBackForwardCache"/>
-  <int value="1" label="ServedFromBackForwardCache"/>
-</enum>
-
-<enum name="BackForwardCacheReloadsAndHistoryNavigations">
-  <int value="0" label="HistoryNavigation"/>
-  <int value="1" label="ReloadAfterHistoryNavigation"/>
-</enum>
-
 <enum name="BackForwardCacheRendererEvictionReason">
   <int value="0" label="JavaScript"/>
   <int value="1" label="NetworkRequestDatapipeDrained"/>

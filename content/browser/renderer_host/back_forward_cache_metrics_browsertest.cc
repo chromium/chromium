@@ -659,22 +659,6 @@ class RecordBackForwardCacheMetricsWithoutEnabling
 IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
                        ReloadsAndHistoryNavigations) {
   base::HistogramTester histogram_tester;
-  using ReloadsAndHistoryNavigations =
-      BackForwardCacheMetrics::ReloadsAndHistoryNavigations;
-  using ReloadsAfterHistoryNavigation =
-      BackForwardCacheMetrics::ReloadsAfterHistoryNavigation;
-
-  const char kReloadsAndHistoryNavigationsHistogram[] =
-      "BackForwardCache.ReloadsAndHistoryNavigations";
-  const char kReloadsAfterHistoryNavigationHistogram[] =
-      "BackForwardCache.ReloadsAfterHistoryNavigation";
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      testing::IsEmpty());
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      testing::IsEmpty());
 
   GURL url1(embedded_test_server()->GetURL(
       "a.allowed", "/back_forward_cache/allowed_path.html"));
@@ -691,56 +675,11 @@ IN_PROC_BROWSER_TEST_F(RecordBackForwardCacheMetricsWithoutEnabling,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // Bucket count both "kHistoryNavigation" and
-  // "kReloadAfterHistoryNavigation" should be 1 after one history
-  // navigation and one reload.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(
-                     ReloadsAndHistoryNavigations::kHistoryNavigation),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAndHistoryNavigations::kReloadAfterHistoryNavigation),
-              1)));
-
-  // BackForwardCache is disabled here, the navigation is not served from
-  // back/forward cache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache),
-          1)));
-
   // 4) Go forward to url2 and reload.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket count both "kHistoryNavigation" and
-  // "kReloadAfterHistoryNavigation" should still be 1 since the url2 is
-  // not in the list of allowed_websties by
-  // "kRecordBackForwardCacheMetricsWithoutEnabling" feature.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAndHistoryNavigationsHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(
-                     ReloadsAndHistoryNavigations::kHistoryNavigation),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAndHistoryNavigations::kReloadAfterHistoryNavigation),
-              1)));
-
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kNotServedFromBackForwardCache),
-          1)));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
@@ -748,10 +687,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   if (!IsBackForwardCacheEnabled())
     return;
   base::HistogramTester histogram_tester;
-  using ReloadsAfterHistoryNavigation =
-      BackForwardCacheMetrics::ReloadsAfterHistoryNavigation;
-  const char kReloadsAfterHistoryNavigationHistogram[] =
-      "BackForwardCache.ReloadsAfterHistoryNavigation";
 
   GURL url1(embedded_test_server()->GetURL("a.com", "/title1.html"));
   GURL url2(embedded_test_server()->GetURL("b.com", "/title2.html"));
@@ -762,11 +697,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // No reloads should be recorded since it is not a history navigation.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      testing::IsEmpty());
-
   // 2) Navigate to url2.
   EXPECT_TRUE(NavigateToURL(shell(), url2));
 
@@ -775,15 +705,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
 
-  // Bucket with "kServedFromBackForwardCache" should be 1 as url1 is served
-  // from cache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-          1)));
-
   // 4) Go forward to url2 and reload twice.
   web_contents()->GetController().GoForward();
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
@@ -791,15 +712,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket with "kServedFromBackForwardCache" should be 2 as only the first
-  // reload after history navigation is recorded.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(Bucket(
-          static_cast<int>(
-              ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-          2)));
 
   // 5) Go back and navigate to url3.
   ASSERT_TRUE(HistoryGoBack(web_contents()));
@@ -816,19 +728,6 @@ IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,
   ASSERT_TRUE(HistoryGoBack(web_contents()));
   web_contents()->GetController().Reload(content::ReloadType::NORMAL, false);
   EXPECT_TRUE(WaitForLoadStop(web_contents()));
-
-  // Bucket with "kNotServedFromBackForwardCache" should be 1 as url3 is not
-  // served from BackForwardCache.
-  EXPECT_THAT(
-      histogram_tester.GetAllSamples(kReloadsAfterHistoryNavigationHistogram),
-      ElementsAre(
-          Bucket(static_cast<int>(ReloadsAfterHistoryNavigation::
-                                      kNotServedFromBackForwardCache),
-                 1),
-          Bucket(
-              static_cast<int>(
-                  ReloadsAfterHistoryNavigation::kServedFromBackForwardCache),
-              2)));
 }
 
 IN_PROC_BROWSER_TEST_P(BackForwardCacheMetricsBrowserTest,

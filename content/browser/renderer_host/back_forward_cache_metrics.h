@@ -146,24 +146,6 @@ class BackForwardCacheMetrics
     kMaxValue = kByJavaScript,
   };
 
-  // Please keep in sync with BackForwardCacheReloadsAndHistoryNavigations
-  // in tools/metrics/histograms/enums.xml. These values should not be
-  // renumbered.
-  enum class ReloadsAndHistoryNavigations {
-    kHistoryNavigation = 0,
-    kReloadAfterHistoryNavigation = 1,
-    kMaxValue = kReloadAfterHistoryNavigation,
-  };
-
-  // Please keep in sync with BackForwardCacheReloadsAfterHistoryNavigation
-  // in tools/metrics/histograms/enums.xml. These values should not be
-  // renumbered.
-  enum class ReloadsAfterHistoryNavigation {
-    kNotServedFromBackForwardCache = 0,
-    kServedFromBackForwardCache = 1,
-    kMaxValue = kServedFromBackForwardCache,
-  };
-
   // Please keep in sync with BackForwardCachePageWithFormStorable
   // in tools/metrics/histograms/enums.xml. These values should not be
   // renumbered.
@@ -358,10 +340,6 @@ class BackForwardCacheMetrics
   // Should not be confused with NavigationEntryId.
   int64_t last_committed_cross_document_main_frame_navigation_id_ = -1;
 
-  // These values are updated only for cross-document main frame navigations.
-  bool previous_navigation_is_history_ = false;
-  bool previous_navigation_is_served_from_bfcache_ = false;
-
   // Whether any document within the page that this BackForwardCacheMetrics
   // associated with has any form data. This state is not persisted and only
   // set in Android Custom tabs for now.
@@ -406,7 +384,7 @@ class BackForwardCacheMetrics
   // by another document in a different page, i.e. if there are any documents
   // using the same SiteInstance as any document in the page. See also
   // `SetRelatedActiveContentsInfo()`.
-  // Please keep in sync with BackForwardCacheReloadsAfterHistoryNavigation
+  // Please keep in sync with RelatedActiveContentsSyncAccessInfo
   // in tools/metrics/histograms/enums.xml. These values should not be
   // renumbered.
   enum class RelatedActiveContentsSyncAccessInfo {
