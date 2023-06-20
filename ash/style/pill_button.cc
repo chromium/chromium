@@ -250,6 +250,12 @@ void PillButton::UpdateBackgroundColor() {
       background_color_id_.value_or(default_color_id.value()), height / 2.f));
 }
 
+views::PropertyEffects PillButton::UpdateStyleToIndicateDefaultStatus() {
+  // Override the method defined in LabelButton to avoid style changes when the
+  // `is_default_` flag is updated.
+  return views::kPropertyEffectsNone;
+}
+
 void PillButton::SetBackgroundColor(const SkColor background_color) {
   if (background_color_ && background_color_.value() == background_color) {
     return;
