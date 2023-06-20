@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.1.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="8.1.0-alpha01">
+<issues format="6" by="lint 8.2.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha08">
 
     <issue
         id="MissingClass"
@@ -8,7 +8,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="187"
+            line="185"
             column="29"/>
     </issue>
 
@@ -19,7 +19,7 @@
         errorLine2="                                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="750"
+            line="723"
             column="51"/>
     </issue>
 
@@ -30,7 +30,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="771"
+            line="744"
             column="13"/>
     </issue>
 
@@ -41,7 +41,7 @@
         errorLine2="            ^">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="776"
+            line="749"
             column="13"/>
     </issue>
 
@@ -52,7 +52,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/tools/system_webview_shell/apk/src/org/chromium/webview_shell/WebViewBrowserActivity.java"
-            line="781"
+            line="754"
             column="13"/>
     </issue>
 
@@ -107,7 +107,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/LocaleUtils.java"
-            line="267"
+            line="269"
             column="13"/>
     </issue>
 
@@ -123,13 +123,24 @@
     </issue>
 
     <issue
+        id="UnspecifiedRegisterReceiverFlag"
+        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
+        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
+            line="307"
+            column="20"/>
+    </issue>
+
+    <issue
         id="UseCompatLoadingForDrawables"
         message="Use `ResourcesCompat.getDrawable()`"
         errorLine1="                return res.getDrawable(id, null);"
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="214"
+            line="221"
             column="24"/>
     </issue>
 
@@ -140,19 +151,8 @@
         errorLine2="                                                                                                                                                                                                                               ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="gen/android_webview/tools/system_webview_shell/system_webview_shell_apk__lint/gen/android_webview/system_webview_shell_apk/AndroidManifest.xml"
-            line="69"
+            line="67"
             column="224"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="307"
-            column="20"/>
     </issue>
 
     <issue

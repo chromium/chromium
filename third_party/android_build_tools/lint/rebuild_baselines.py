@@ -186,6 +186,19 @@ def main():
                                            verbose=args.verbose,
                                            built_targets=built_targets)
 
+    out_dir = _OUTPUT_DIR_ROOT / 'Lint-Cronet'
+    gn_args = [
+        'use_goma=true',
+        'target_os="android"',
+        'treat_warnings_as_errors=false',
+        'is_component_build=false',
+        'is_cronet_build = true',
+    ]
+    built_targets = build_all_lint_targets(out_dir,
+                                           gn_args,
+                                           verbose=args.verbose,
+                                           built_targets=built_targets)
+
     logging.info('Cleaning up new lint-baseline.xml files.')
     for git_root, repo_path in repo_file_paths:
         path = git_root / repo_path

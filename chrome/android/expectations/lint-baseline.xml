@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.1.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="8.1.0-alpha01">
+<issues format="6" by="lint 8.2.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha08">
 
     <issue
         id="ResourceType"
@@ -19,7 +19,7 @@
         errorLine2="                                                                                        ~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/status/StatusMediator.java"
-            line="495"
+            line="490"
             column="89"/>
     </issue>
 
@@ -74,7 +74,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/features/partialcustomtab/PartialCustomTabVersionCompat.java"
-            line="214"
+            line="241"
             column="21"/>
     </issue>
 
@@ -85,7 +85,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tab/TabUtils.java"
-            line="113"
+            line="114"
             column="27"/>
     </issue>
 
@@ -129,7 +129,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1164"
+            line="1169"
             column="56"/>
     </issue>
 
@@ -140,7 +140,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1173"
+            line="1178"
             column="21"/>
     </issue>
 
@@ -151,7 +151,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1188"
+            line="1193"
             column="52"/>
     </issue>
 
@@ -162,7 +162,7 @@
         errorLine2="                                                       ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="1254"
+            line="1259"
             column="56"/>
     </issue>
 
@@ -184,7 +184,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="155"
+            line="158"
             column="50"/>
     </issue>
 
@@ -195,7 +195,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/site_settings/ChromeSiteSettingsDelegate.java"
-            line="155"
+            line="158"
             column="36"/>
     </issue>
 
@@ -206,7 +206,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1586"
+            line="1662"
             column="25"/>
     </issue>
 
@@ -217,7 +217,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1626"
+            line="1702"
             column="29"/>
     </issue>
 
@@ -228,7 +228,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2143"
+            line="2235"
             column="13"/>
     </issue>
 
@@ -239,7 +239,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="2157"
+            line="2250"
             column="17"/>
     </issue>
 
@@ -641,23 +641,12 @@
 
     <issue
         id="NewApi"
-        message="Call requires API level 26 (current min is 24): `setPasteAsPlainTextMenuItemTitle`"
-        errorLine1="            SelectionPopupControllerImpl.setPasteAsPlainTextMenuItemTitle(menu);"
-        errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/FloatingPastePopupMenu.java"
-            line="90"
-            column="42"/>
-    </issue>
-
-    <issue
-        id="NewApi"
         message="Call requires API level 31 (current min is 26): `setAutoEnterEnabled`"
         errorLine1="            ApiHelperForS.setAutoEnterEnabled(builder, true);"
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="436"
+            line="446"
             column="27"/>
     </issue>
 
@@ -668,7 +657,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/media/FullscreenVideoPictureInPictureController.java"
-            line="438"
+            line="448"
             column="27"/>
     </issue>
 
@@ -723,7 +712,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="416"
+            line="413"
             column="55"/>
     </issue>
 
@@ -734,7 +723,7 @@
         errorLine2="                                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/notifications/NotificationPlatformBridge.java"
-            line="419"
+            line="416"
             column="36"/>
     </issue>
 
@@ -789,7 +778,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="174"
+            line="271"
             column="35"/>
     </issue>
 
@@ -800,7 +789,7 @@
         errorLine2="                              ~~~~~~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/display/PhysicalDisplayAndroid.java"
-            line="178"
+            line="280"
             column="31"/>
     </issue>
 
@@ -811,7 +800,7 @@
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/PriceMessageService.java"
-            line="242"
+            line="245"
             column="38"/>
     </issue>
 
@@ -910,7 +899,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/init/ProcessInitializationHandler.java"
-            line="256"
+            line="252"
             column="56"/>
     </issue>
 
@@ -943,7 +932,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="997"
+            line="1044"
             column="34"/>
     </issue>
 
@@ -954,7 +943,7 @@
         errorLine2="                                 ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1012"
+            line="1059"
             column="34"/>
     </issue>
 
@@ -965,7 +954,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/RootUiCoordinator.java"
-            line="1465"
+            line="1564"
             column="36"/>
     </issue>
 
@@ -976,7 +965,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="445"
+            line="464"
             column="55"/>
     </issue>
 
@@ -987,7 +976,7 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="449"
+            line="468"
             column="55"/>
     </issue>
 
@@ -998,30 +987,8 @@
         errorLine2="                                                      ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="456"
+            line="475"
             column="55"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 26 (current min is 24): `setPasteAsPlainTextMenuItemTitle`"
-        errorLine1="        setPasteAsPlainTextMenuItemTitle(menu);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="792"
-            column="9"/>
-    </issue>
-
-    <issue
-        id="NewApi"
-        message="Call requires API level 28 (current min is 24): `onSelectionAction`"
-        errorLine1="            mSmartSelectionEventProcessor.onSelectionAction(mLastSelectedText, mLastSelectionOffset,"
-        errorLine2="                                          ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="919"
-            column="43"/>
     </issue>
 
     <issue
@@ -1031,7 +998,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1445"
+            line="1450"
             column="47"/>
     </issue>
 
@@ -1042,7 +1009,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SelectionPopupControllerImpl.java"
-            line="1591"
+            line="1606"
             column="47"/>
     </issue>
 
@@ -1295,7 +1262,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
-            line="82"
+            line="86"
             column="9"/>
     </issue>
 
@@ -1306,7 +1273,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/browser/selection/SmartSelectionProvider.java"
-            line="86"
+            line="90"
             column="9"/>
     </issue>
 
@@ -1317,7 +1284,7 @@
         errorLine2="                            ~~~~~~~~~~~~~">
         <location
             file="../../content/public/android/java/src/org/chromium/content/common/SurfaceWrapper.java"
-            line="85"
+            line="83"
             column="29"/>
     </issue>
 
@@ -1328,7 +1295,7 @@
         errorLine2="                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="382"
+            line="411"
             column="27"/>
     </issue>
 
@@ -1339,7 +1306,7 @@
         errorLine2="                          ~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="387"
+            line="416"
             column="27"/>
     </issue>
 
@@ -1350,7 +1317,7 @@
         errorLine2="                              ~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="434"
+            line="463"
             column="31"/>
     </issue>
 
@@ -1361,7 +1328,7 @@
         errorLine2="                              ~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/TabImpl.java"
-            line="1040"
+            line="1069"
             column="31"/>
     </issue>
 
@@ -1372,7 +1339,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabbed_mode/TabbedRootUiCoordinator.java"
-            line="652"
+            line="645"
             column="36"/>
     </issue>
 
@@ -1559,7 +1526,7 @@
         errorLine2="                                     ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/WebLayerImpl.java"
-            line="329"
+            line="323"
             column="38"/>
     </issue>
 
@@ -1592,7 +1559,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/webapps/browser/android/java/src/org/chromium/components/webapps/WebappsUtils.java"
-            line="70"
+            line="71"
             column="13"/>
     </issue>
 
@@ -1603,23 +1570,23 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="113"
+            line="82"
             column="13"/>
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="112"
+            line="81"
             column="9"
             message="Previous statement here"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: AdaptiveToolbarRadioButtonState.UNKNOWN, AdaptiveToolbarRadioButtonState.AUTO_WITH_NEW_TAB, AdaptiveToolbarRadioButtonState.AUTO_WITH_SHARE, AdaptiveToolbarRadioButtonState.AUTO_WITH_VOICE, AdaptiveToolbarRadioButtonState.NEW_TAB, AdaptiveToolbarRadioButtonState.SHARE, AdaptiveToolbarRadioButtonState.VOICE"
+        message="Must be one of: AdaptiveToolbarRadioButtonState.UNKNOWN, AdaptiveToolbarRadioButtonState.AUTO_WITH_NEW_TAB, AdaptiveToolbarRadioButtonState.AUTO_WITH_SHARE, AdaptiveToolbarRadioButtonState.AUTO_WITH_VOICE, AdaptiveToolbarRadioButtonState.NEW_TAB, AdaptiveToolbarRadioButtonState.SHARE, AdaptiveToolbarRadioButtonState.VOICE, AdaptiveToolbarRadioButtonState.TRANSLATE, AdaptiveToolbarRadioButtonState.AUTO_WITH_TRANSLATE, AdaptiveToolbarRadioButtonState.ADD_TO_BOOKMARKS, AdaptiveToolbarRadioButtonState.AUTO_WITH_ADD_TO_BOOKMARKS"
         errorLine1="                    AdaptiveToolbarRadioButtonState.NUM_ENTRIES);"
         errorLine2="                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/adaptive/AdaptiveToolbarStats.java"
-            line="49"
+            line="56"
             column="53"/>
     </issue>
 
@@ -1685,7 +1652,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
-            line="618"
+            line="639"
             column="85"/>
     </issue>
 
@@ -1696,30 +1663,8 @@
         errorLine2="                                               ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/AppLaunchDrawBlocker.java"
-            line="323"
+            line="342"
             column="48"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ConsentOutcome.ACCEPTED_VIA_UI, ConsentOutcome.ACCEPTED_VIA_SETTINGS, ConsentOutcome.REJECTED_VIA_UI, ConsentOutcome.REJECTED_VIA_SETTINGS, ConsentOutcome.REJECTED_VIA_DISMISS, ConsentOutcome.CANCELED_VIA_UI, ConsentOutcome.MAX_VALUE"
-        errorLine1="                ConsentOutcome.NON_USER_CANCEL, ConsentOutcome.MAX_VALUE);"
-        errorLine2="                               ~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchConsentController.java"
-            line="198"
-            column="32"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: EligibilityFailureReason.AGSA_CANT_HANDLE_INTENT, EligibilityFailureReason.AGSA_VERSION_BELOW_MINIMUM, EligibilityFailureReason.CHROME_NOT_GOOGLE_SIGNED, EligibilityFailureReason.AGSA_NOT_GOOGLE_SIGNED, EligibilityFailureReason.NON_GOOGLE_SEARCH_ENGINE, EligibilityFailureReason.NO_CHROME_ACCOUNT, EligibilityFailureReason.LOW_END_DEVICE, EligibilityFailureReason.MULTIPLE_ACCOUNTS_ON_DEVICE, EligibilityFailureReason.AGSA_NOT_INSTALLED"
-        errorLine1="                    EligibilityFailureReason.NUM_ENTRIES);"
-        errorLine2="                                             ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/AssistantVoiceSearchService.java"
-            line="414"
-            column="46"/>
     </issue>
 
     <issue
@@ -1762,18 +1707,18 @@
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="100"
+            line="99"
             column="62"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE"
+        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY"
         errorLine1="                                NotificationUmaTracker.ActionType.AUTO_FETCH_CANCEL)"
         errorLine2="                                                                  ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="174"
+            line="167"
             column="67"/>
     </issue>
 
@@ -1784,7 +1729,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="206"
+            line="198"
             column="36"/>
     </issue>
 
@@ -1795,7 +1740,7 @@
         errorLine2="                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="207"
+            line="199"
             column="49"/>
     </issue>
 
@@ -1806,7 +1751,7 @@
         errorLine2="                                          ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="223"
+            line="214"
             column="43"/>
     </issue>
 
@@ -1817,7 +1762,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="224"
+            line="215"
             column="39"/>
     </issue>
 
@@ -1828,7 +1773,7 @@
         errorLine2="                                                             ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="236"
+            line="227"
             column="62"/>
     </issue>
 
@@ -1839,7 +1784,7 @@
         errorLine2="                                             ~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="237"
+            line="228"
             column="46"/>
     </issue>
 
@@ -1850,7 +1795,7 @@
         errorLine2="                                             ~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="242"
+            line="231"
             column="46"/>
     </issue>
 
@@ -1861,7 +1806,7 @@
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="290"
+            line="279"
             column="42"/>
     </issue>
 
@@ -1872,7 +1817,7 @@
         errorLine2="                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="292"
+            line="281"
             column="42"/>
     </issue>
 
@@ -1883,30 +1828,8 @@
         errorLine2="                                                              ~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="294"
+            line="283"
             column="63"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: NotificationAction.SHOWN, NotificationAction.COMPLETE, NotificationAction.CANCEL_PRESSED, NotificationAction.DISMISSED"
-        errorLine1="                NotificationAction.NUM_ENTRIES);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="347"
-            column="36"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: NotificationAction.SHOWN, NotificationAction.COMPLETE, NotificationAction.CANCEL_PRESSED, NotificationAction.DISMISSED"
-        errorLine1="                NotificationAction.NUM_ENTRIES);"
-        errorLine2="                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/AutoFetchNotifier.java"
-            line="353"
-            column="36"/>
     </issue>
 
     <issue
@@ -1916,7 +1839,7 @@
         errorLine2="                                   ~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwBrowserProcess.java"
-            line="380"
+            line="403"
             column="36"/>
     </issue>
 
@@ -1927,7 +1850,7 @@
         errorLine2="                                                                 ~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2058"
+            line="2116"
             column="66"/>
     </issue>
 
@@ -1955,23 +1878,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: CustomTabsUiType.DEFAULT, CustomTabsUiType.MEDIA_VIEWER, CustomTabsUiType.INFO_PAGE, CustomTabsUiType.READER_MODE, CustomTabsUiType.MINIMAL_UI_WEBAPP, CustomTabsUiType.OFFLINE_PAGE"
-        errorLine1="        intent.putExtra(CustomTabIntentDataProvider.EXTRA_UI_TYPE, CustomTabsUiType.READ_LATER);"
-        errorLine2="                                                                                    ~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkUtils.java"
-            line="668"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: Behavior.UNKNOWN, Behavior.NOT_ENGAGED_BELOW_THRESHOLD, Behavior.ENGAGED_WITH_SAFE_VALUES, Behavior.ENGAGED_IGNORING_OUTDATED_SAFE_VALUES, Behavior.ENGAGED_WITHOUT_SAFE_VALUES"
         errorLine1="                        &quot;Variations.SafeModeCachedFlags.Engaged&quot;, behavior, Behavior.NUM_ENTRIES);"
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="93"
+            line="100"
             column="86"/>
     </issue>
 
@@ -1982,7 +1894,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="97"
+            line="104"
             column="72"/>
     </issue>
 
@@ -1993,7 +1905,7 @@
         errorLine2="                                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="120"
+            line="127"
             column="87"/>
     </issue>
 
@@ -2004,7 +1916,7 @@
         errorLine2="                                                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="139"
+            line="146"
             column="83"/>
     </issue>
 
@@ -2015,7 +1927,7 @@
         errorLine2="                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/flags/android/java/src/org/chromium/chrome/browser/flags/CachedFlagsSafeMode.java"
-            line="186"
+            line="193"
             column="51"/>
     </issue>
 
@@ -2026,7 +1938,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="544"
+            line="561"
             column="35"/>
     </issue>
 
@@ -2037,7 +1949,7 @@
         errorLine2="                                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="545"
+            line="562"
             column="35"/>
     </issue>
 
@@ -2059,7 +1971,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java"
-            line="458"
+            line="457"
             column="84"/>
     </issue>
 
@@ -2070,7 +1982,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java"
-            line="183"
+            line="184"
             column="40"/>
     </issue>
 
@@ -2081,41 +1993,8 @@
         errorLine2="                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuItem.java"
-            line="194"
+            line="195"
             column="42"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Action.OPEN_IN_NEW_TAB, Action.OPEN_IN_INCOGNITO_TAB, Action.COPY_LINK_ADDRESS, Action.COPY_EMAIL_ADDRESS, Action.COPY_LINK_TEXT, Action.SAVE_LINK, Action.SAVE_IMAGE, Action.OPEN_IMAGE, Action.OPEN_IMAGE_IN_NEW_TAB, Action.SEARCH_BY_IMAGE, Action.LOAD_ORIGINAL_IMAGE, Action.SAVE_VIDEO, Action.SHARE_IMAGE, Action.OPEN_IN_OTHER_WINDOW, Action.OPEN_IN_NEW_WINDOW, Action.SEND_EMAIL, Action.ADD_TO_CONTACTS, Action.CALL, Action.SEND_TEXT_MESSAGE, Action.COPY_PHONE_NUMBER, Action.OPEN_IN_NEW_CHROME_TAB, Action.OPEN_IN_CHROME_INCOGNITO_TAB, Action.OPEN_IN_BROWSER, Action.OPEN_IN_CHROME, Action.SHARE_LINK, Action.OPEN_IN_EPHEMERAL_TAB, Action.OPEN_IMAGE_IN_EPHEMERAL_TAB, Action.DIRECT_SHARE_LINK, Action.DIRECT_SHARE_IMAGE, Action.SEARCH_WITH_GOOGLE_LENS, Action.COPY_IMAGE, Action.SHOP_IMAGE_WITH_GOOGLE_LENS, Action.READ_LATER, Action.SHOP_WITH_GOOGLE_LENS_CHIP, Action.TRANSLATE_WITH_GOOGLE_LENS_CHIP, Action.SHARE_HIGHLIGHT, Action.REMOVE_HIGHLIGHT, Action.LEARN_MORE, Action.OPEN_IN_NEW_TAB_IN_GROUP"
-        errorLine1="            RecordHistogram.recordEnumeratedHistogram(histogramName, action, Action.NUM_ENTRIES);"
-        errorLine2="                                                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java"
-            line="255"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB, SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP, SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB, SelectedNewTabCreationEnum.OPEN_IN_NEW_TAB_IN_GROUP_FIRST_SELECTED_OPEN_IN_NEW_TAB_IN_GROUP"
-        errorLine1="                    selectedNewTabCreationEnum, SelectedNewTabCreationEnum.NUM_ENTRIES);"
-        errorLine2="                                                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java"
-            line="292"
-            column="76"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TypeSaveImage.LOADED, TypeSaveImage.NOT_DOWNLOADABLE, TypeSaveImage.DISABLED_AND_IS_NOT_IMAGE_PARAM, TypeSaveImage.DISABLED_AND_IS_IMAGE_PARAM, TypeSaveImage.SHOWN"
-        errorLine1="                    &quot;MobileDownload.ContextMenu.SaveImage&quot;, type, TypeSaveImage.NUM_ENTRIES);"
-        errorLine2="                                                                                ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/contextmenu/ChromeContextMenuPopulator.java"
-            line="301"
-            column="81"/>
     </issue>
 
     <issue
@@ -2180,18 +2059,7 @@
         errorLine2="                                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tabmodel/ChromeTabCreator.java"
-            line="223"
-            column="53"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ExternalAppId.OTHER, ExternalAppId.GMAIL, ExternalAppId.FACEBOOK, ExternalAppId.PLUS, ExternalAppId.TWITTER, ExternalAppId.CHROME, ExternalAppId.HANGOUTS, ExternalAppId.MESSENGER, ExternalAppId.NEWS, ExternalAppId.LINE, ExternalAppId.WHATSAPP, ExternalAppId.GSA, ExternalAppId.WEBAPK, ExternalAppId.YAHOO_MAIL, ExternalAppId.VIBER, ExternalAppId.YOUTUBE"
-        errorLine1="                        IntentHandler.ExternalAppId.NUM_ENTRIES);"
-        errorLine2="                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="535"
+            line="299"
             column="53"/>
     </issue>
 
@@ -2202,7 +2070,7 @@
         errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1562"
+            line="1638"
             column="49"/>
     </issue>
 
@@ -2213,7 +2081,7 @@
         errorLine2="                                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1571"
+            line="1647"
             column="65"/>
     </issue>
 
@@ -2224,7 +2092,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragment.java"
-            line="249"
+            line="252"
             column="81"/>
     </issue>
 
@@ -2235,7 +2103,7 @@
         errorLine2="                                                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragmentBasic.java"
-            line="209"
+            line="211"
             column="83"/>
     </issue>
 
@@ -2246,7 +2114,7 @@
         errorLine2="                                             ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/browsing_data/ClearBrowsingDataFragmentBasic.java"
-            line="214"
+            line="216"
             column="46"/>
     </issue>
 
@@ -2257,7 +2125,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="460"
+            line="480"
             column="74"/>
     </issue>
 
@@ -2268,7 +2136,7 @@
         errorLine2="                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="471"
+            line="491"
             column="55"/>
     </issue>
 
@@ -2279,7 +2147,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/ClientManager.java"
-            line="479"
+            line="499"
             column="72"/>
     </issue>
 
@@ -2598,7 +2466,7 @@
         errorLine2="                                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="356"
+            line="371"
             column="76"/>
     </issue>
 
@@ -2609,7 +2477,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/content/CustomTabActivityTabController.java"
-            line="383"
+            line="398"
             column="60"/>
     </issue>
 
@@ -2620,7 +2488,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnection.java"
-            line="973"
+            line="974"
             column="39"/>
     </issue>
 
@@ -2631,7 +2499,7 @@
         errorLine2="                                                                 ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsOpenTimeRecorder.java"
-            line="83"
+            line="91"
             column="66"/>
     </issue>
 
@@ -2714,7 +2582,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE"
+        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY"
         errorLine1="                        NotificationUmaTracker.ActionType.TWA_NOTIFICATION_ACCEPTANCE)"
         errorLine2="                                                          ~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
@@ -2774,7 +2642,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1381"
+            line="1342"
             column="21"/>
     </issue>
 
@@ -2785,7 +2653,7 @@
         errorLine2="                ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1382"
+            line="1343"
             column="17"/>
     </issue>
 
@@ -2796,19 +2664,8 @@
         errorLine2="                   ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadManagerService.java"
-            line="1383"
+            line="1344"
             column="20"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: DownloadLocationDirectoryType.DEFAULT, DownloadLocationDirectoryType.ADDITIONAL, DownloadLocationDirectoryType.ERROR"
-        errorLine1="                                    DirectoryOption.DownloadLocationDirectoryType.NUM_ENTRIES);"
-        errorLine2="                                                                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadMetrics.java"
-            line="106"
-            column="83"/>
     </issue>
 
     <issue
@@ -2818,7 +2675,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="115"
+            line="84"
             column="36"/>
     </issue>
 
@@ -2829,41 +2686,8 @@
         errorLine2="                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="127"
+            line="96"
             column="37"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StateAtCancel.DOWNLOADING, StateAtCancel.PAUSED, StateAtCancel.PENDING_NETWORK, StateAtCancel.PENDING_ANOTHER_DOWNLOAD"
-        errorLine1="                    StateAtCancel.NUM_ENTRIES);"
-        errorLine2="                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="141"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StateAtCancel.DOWNLOADING, StateAtCancel.PAUSED, StateAtCancel.PENDING_NETWORK, StateAtCancel.PENDING_ANOTHER_DOWNLOAD"
-        errorLine1="                    StateAtCancel.NUM_ENTRIES);"
-        errorLine2="                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="145"
-            column="35"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: UmaDownloadResumption.MANUAL_PAUSE, UmaDownloadResumption.BROWSER_KILLED, UmaDownloadResumption.CLICKED, UmaDownloadResumption.FAILED, UmaDownloadResumption.AUTO_STARTED, UmaDownloadResumption.BROWSER_RUNNING, UmaDownloadResumption.BROWSER_NOT_RUNNING"
-        errorLine1="                &quot;MobileDownload.DownloadResumption&quot;, type, UmaDownloadResumption.NUM_ENTRIES);"
-        errorLine2="                                                                                 ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadNotificationUmaHelper.java"
-            line="155"
-            column="82"/>
     </issue>
 
     <issue
@@ -2873,7 +2697,7 @@
         errorLine2="                                                    ~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DuplicateDownloadDialog.java"
-            line="188"
+            line="189"
             column="53"/>
     </issue>
 
@@ -2906,19 +2730,8 @@
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/FilePersistedTabDataStorage.java"
-            line="607"
+            line="608"
             column="80"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: Type.ALL, Type.PAGE, Type.VIDEO, Type.AUDIO, Type.IMAGE, Type.DOCUMENT, Type.OTHER"
-        errorLine1="                &quot;Android.DownloadManager.Filter&quot;, selectedTab, DownloadFilter.Type.NUM_ENTRIES);"
-        errorLine2="                                                                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/FilterChangeLogger.java"
-            line="24"
-            column="84"/>
     </issue>
 
     <issue
@@ -2950,7 +2763,7 @@
         errorLine2="                                                                             ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/services/gcm/GcmUma.java"
-            line="51"
+            line="33"
             column="78"/>
     </issue>
 
@@ -2989,50 +2802,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: HomepageLocationType.POLICY_NTP, HomepageLocationType.POLICY_OTHER, HomepageLocationType.PARTNER_PROVIDED_NTP, HomepageLocationType.PARTNER_PROVIDED_OTHER, HomepageLocationType.USER_CUSTOMIZED_NTP, HomepageLocationType.USER_CUSTOMIZED_OTHER, HomepageLocationType.DEFAULT_NTP"
-        errorLine1="                homepageLocationType, HomepageLocationType.NUM_ENTRIES);"
-        errorLine2="                                                           ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/homepage/HomepageManager.java"
-            line="308"
-            column="60"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: IdentityDiscState.NONE, IdentityDiscState.SMALL, IdentityDiscState.LARGE"
-        errorLine1="    private ProfileDataCache mProfileDataCache[] = new ProfileDataCache[IdentityDiscState.MAX];"
-        errorLine2="                                                                                          ~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java"
-            line="83"
-            column="91"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: IdentityDiscState.NONE, IdentityDiscState.SMALL, IdentityDiscState.LARGE"
-        errorLine1="        for (int i = 0; i &lt; IdentityDiscState.MAX; i++) {"
-        errorLine2="                                              ~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java"
-            line="229"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: IdentityDiscState.NONE, IdentityDiscState.SMALL, IdentityDiscState.LARGE"
-        errorLine1="        for (int i = 0; i &lt; IdentityDiscState.MAX; i++) {"
-        errorLine2="                                              ~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/identity_disc/IdentityDiscController.java"
-            line="295"
-            column="47"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ImageDescriptionsDialogAction.ENABLED, ImageDescriptionsDialogAction.ENABLED_ONLY_ON_WIFI, ImageDescriptionsDialogAction.JUST_ONCE, ImageDescriptionsDialogAction.JUST_ONCE_DONT_ASK_AGAIN, ImageDescriptionsDialogAction.CANCEL"
         errorLine1="                action, ImageDescriptionsDialogAction.NUM_ENTRIES);"
         errorLine2="                                                      ~~~~~~~~~~~">
@@ -3060,7 +2829,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java"
-            line="523"
+            line="519"
             column="84"/>
     </issue>
 
@@ -3071,7 +2840,7 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/IntentHandler.java"
-            line="1164"
+            line="1179"
             column="37"/>
     </issue>
 
@@ -3143,23 +2912,23 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS, LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED, LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT, LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU, LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION, LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, LaunchCause.HOME_SCREEN_SHORTCUT"
+        message="Must be one of: LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS, LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED, LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT, LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU, LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION, LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, LaunchCause.HOME_SCREEN_SHORTCUT, LaunchCause.SHARE_INTENT"
         errorLine1="                    LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);"
         errorLine2="                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/metrics/LaunchCauseMetrics.java"
-            line="198"
+            line="199"
             column="64"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS, LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED, LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT, LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU, LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION, LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, LaunchCause.HOME_SCREEN_SHORTCUT"
+        message="Must be one of: LaunchCause.OTHER, LaunchCause.CUSTOM_TAB, LaunchCause.TWA, LaunchCause.RECENTS, LaunchCause.RECENTS_OR_BACK, LaunchCause.FOREGROUND_WHEN_LOCKED, LaunchCause.MAIN_LAUNCHER_ICON, LaunchCause.MAIN_LAUNCHER_ICON_SHORTCUT, LaunchCause.HOME_SCREEN_WIDGET, LaunchCause.OPEN_IN_BROWSER_FROM_MENU, LaunchCause.EXTERNAL_SEARCH_ACTION_INTENT, LaunchCause.NOTIFICATION, LaunchCause.EXTERNAL_VIEW_INTENT, LaunchCause.OTHER_CHROME, LaunchCause.WEBAPK_CHROME_DISTRIBUTOR, LaunchCause.WEBAPK_OTHER_DISTRIBUTOR, LaunchCause.HOME_SCREEN_SHORTCUT, LaunchCause.SHARE_INTENT"
         errorLine1="                        LAUNCH_CAUSE_HISTOGRAM, cause, LaunchCause.NUM_ENTRIES);"
         errorLine2="                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/metrics/LaunchCauseMetrics.java"
-            line="207"
+            line="208"
             column="68"/>
     </issue>
 
@@ -3170,41 +2939,19 @@
         errorLine2="                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/lens/java/src/org/chromium/chrome/browser/lens/LensMetrics.java"
-            line="55"
+            line="125"
             column="58"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: OmniboxFocusReason.OMNIBOX_TAP, OmniboxFocusReason.OMNIBOX_LONG_PRESS, OmniboxFocusReason.FAKE_BOX_TAP, OmniboxFocusReason.FAKE_BOX_LONG_PRESS, OmniboxFocusReason.ACCELERATOR_TAP, OmniboxFocusReason.TAB_SWITCHER_OMNIBOX_TAP, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS, OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD, OmniboxFocusReason.SEARCH_QUERY, OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION, OmniboxFocusReason.UNFOCUS, OmniboxFocusReason.QUERY_TILES_NTP_TAP"
+        message="Must be one of: OmniboxFocusReason.OMNIBOX_TAP, OmniboxFocusReason.OMNIBOX_LONG_PRESS, OmniboxFocusReason.FAKE_BOX_TAP, OmniboxFocusReason.FAKE_BOX_LONG_PRESS, OmniboxFocusReason.ACCELERATOR_TAP, OmniboxFocusReason.TAB_SWITCHER_OMNIBOX_TAP, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_TAP, OmniboxFocusReason.TASKS_SURFACE_FAKE_BOX_LONG_PRESS, OmniboxFocusReason.DEFAULT_WITH_HARDWARE_KEYBOARD, OmniboxFocusReason.SEARCH_QUERY, OmniboxFocusReason.LAUNCH_NEW_INCOGNITO_TAB, OmniboxFocusReason.MENU_OR_KEYBOARD_ACTION, OmniboxFocusReason.UNFOCUS, OmniboxFocusReason.QUERY_TILES_NTP_TAP, OmniboxFocusReason.FOLD_TRANSITION_RESTORATION"
         errorLine1="                &quot;Android.OmniboxFocusReason&quot;, reason, OmniboxFocusReason.NUM_ENTRIES);"
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/LocationBarMediator.java"
-            line="1010"
+            line="981"
             column="74"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: LongScreenshotsEvent.DIALOG_OPEN, LongScreenshotsEvent.DIALOG_CANCEL, LongScreenshotsEvent.DIALOG_OK, LongScreenshotsEvent.GENERATOR_CAPTURE_GENERATION_ERROR, LongScreenshotsEvent.GENERATOR_CAPTURE_INSUFFICIENT_MEMORY, LongScreenshotsEvent.GENERATOR_COMPOSITOR_CAPTURE_COMPLETE, LongScreenshotsEvent.GENERATOR_COMPOSITOR_MEMORY_PRESSURE, LongScreenshotsEvent.GENERATOR_COMPOSITOR_GENERATION_ERROR"
-        errorLine1="                &quot;Sharing.LongScreenshots.Event&quot;, action, LongScreenshotsEvent.COUNT);"
-        errorLine2="                                                                              ~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMetrics.java"
-            line="80"
-            column="79"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: BitmapGenerationStatus.UNKNOWN, BitmapGenerationStatus.OK, BitmapGenerationStatus.DIRECTORY_CREATION_FAILED, BitmapGenerationStatus.CAPTURE_FAILED, BitmapGenerationStatus.PROTO_SERIALIZATION_FAILED, BitmapGenerationStatus.WEB_CONTENTS_GONE, BitmapGenerationStatus.NATIVE_SERVICE_UNINITIALIZED, BitmapGenerationStatus.LOW_MEMORY_DETECTED, BitmapGenerationStatus.PROTO_DESERIALIZATION_FAILED, BitmapGenerationStatus.NATIVE_SERVICE_NOT_INITIALIZED"
-        errorLine1="                status, BitmapGenerationStatus.COUNT);"
-        errorLine2="                                               ~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/LongScreenshotsMetrics.java"
-            line="89"
-            column="48"/>
     </issue>
 
     <issue
@@ -3231,39 +2978,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: StateProperty.BAR, StateProperty.VISIBLE_SHEET, StateProperty.HIDDEN_SHEET"
-        errorLine1="        return (state &amp; StateProperty.FLOATING) != 0;"
-        errorLine2="                                      ~~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingMediator.java"
-            line="768"
-            column="39"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StateProperty.BAR, StateProperty.VISIBLE_SHEET, StateProperty.HIDDEN_SHEET"
-        errorLine1="        int FLOATING_BAR = BAR | HIDDEN_SHEET | FLOATING; // == 13"
-        errorLine2="                                                ~~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingProperties.java"
-            line="72"
-            column="49"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: StateProperty.BAR, StateProperty.VISIBLE_SHEET, StateProperty.HIDDEN_SHEET"
-        errorLine1="        int FLOATING_SHEET = BAR | VISIBLE_SHEET | FLOATING; // == 11"
-        errorLine2="                                                   ~~~~~~~~">
-        <location
-            file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/ManualFillingProperties.java"
-            line="73"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: ViewCompat.LAYOUT_DIRECTION_LTR, ViewCompat.LAYOUT_DIRECTION_RTL"
         errorLine1="        if (ViewCompat.getLayoutDirection(this) == View.LAYOUT_DIRECTION_RTL) {"
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~">
@@ -3280,13 +2994,13 @@
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
             file="../../media/base/android/java/src/org/chromium/media/MediaCodecUtil.java"
-            line="603"
+            line="622"
             column="82"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO"
+        message="Must be one of: MediaType.AUDIO, MediaType.IMAGE, MediaType.VIDEO, MediaType.UNKNOWN"
         errorLine1="                &quot;MediaLauncherActivity.MediaType&quot;, mediaType, MediaType.NUM_ENTRIES);"
         errorLine2="                                                                        ~~~~~~~~~~~">
         <location
@@ -3385,17 +3099,6 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        return direction != ScrollDirection.UNKNOWN &amp;&amp; mCurrentState == State.IDLE"
-        errorLine2="                                            ~~~~~~~">
-        <location
-            file="../../components/messages/android/internal/java/src/org/chromium/components/messages/MessageBannerMediator.java"
-            line="268"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: MessageDisableReason.UNKNOWN, MessageDisableReason.MESSAGE_ACCEPTED, MessageDisableReason.MESSAGE_DISMISSED, MessageDisableReason.MESSAGE_IGNORED"
         errorLine1="                MessageDisableReason.MAX_VALUE + 1);"
         errorLine2="                                     ~~~~~~~~~">
@@ -3452,12 +3155,12 @@
     <issue
         id="WrongConstant"
         message="Must be one of: SecurityFilteredTouchResult.BLOCKED, SecurityFilteredTouchResult.HANDLED"
-        errorLine1="                            SecurityFilteredTouchResult.NUM_ENTRIES);"
-        errorLine2="                                                        ~~~~~~~~~~~">
+        errorLine1="                        SecurityFilteredTouchResult.NUM_ENTRIES);"
+        errorLine2="                                                    ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="240"
-            column="57"/>
+            line="264"
+            column="53"/>
     </issue>
 
     <issue
@@ -3467,7 +3170,7 @@
         errorLine2="                                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/NewTabPageUma.java"
-            line="296"
+            line="246"
             column="57"/>
     </issue>
 
@@ -3489,7 +3192,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java"
-            line="86"
+            line="85"
             column="72"/>
     </issue>
 
@@ -3500,7 +3203,7 @@
         errorLine2="                                                                                  ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/NightModeMetrics.java"
-            line="116"
+            line="115"
             column="83"/>
     </issue>
 
@@ -3511,7 +3214,7 @@
         errorLine2="                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMetrics.java"
-            line="119"
+            line="116"
             column="38"/>
     </issue>
 
@@ -3522,7 +3225,7 @@
         errorLine2="                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMetrics.java"
-            line="159"
+            line="156"
             column="49"/>
     </issue>
 
@@ -3533,30 +3236,8 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationMetrics.java"
-            line="163"
+            line="160"
             column="72"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one or more of: PendingIntent.FLAG_ONE_SHOT, PendingIntent.FLAG_NO_CREATE, PendingIntent.FLAG_CANCEL_CURRENT, PendingIntent.FLAG_UPDATE_CURRENT, PendingIntent.FLAG_IMMUTABLE, PendingIntent.FLAG_MUTABLE, Intent.FILL_IN_ACTION, Intent.FILL_IN_DATA, Intent.FILL_IN_CATEGORIES, Intent.FILL_IN_COMPONENT, Intent.FILL_IN_PACKAGE, Intent.FILL_IN_SOURCE_BOUNDS, Intent.FILL_IN_SELECTOR, Intent.FILL_IN_CLIP_DATA"
-        errorLine1="                ? PendingIntent.getBroadcast(applicationContext, requestCode, intent, flags)"
-        errorLine2="                                                                                      ~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptor.java"
-            line="174"
-            column="87"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one or more of: PendingIntent.FLAG_ONE_SHOT, PendingIntent.FLAG_NO_CREATE, PendingIntent.FLAG_CANCEL_CURRENT, PendingIntent.FLAG_UPDATE_CURRENT, PendingIntent.FLAG_IMMUTABLE, PendingIntent.FLAG_MUTABLE, Intent.FILL_IN_ACTION, Intent.FILL_IN_DATA, Intent.FILL_IN_CATEGORIES, Intent.FILL_IN_COMPONENT, Intent.FILL_IN_PACKAGE, Intent.FILL_IN_SOURCE_BOUNDS, Intent.FILL_IN_SELECTOR, Intent.FILL_IN_CLIP_DATA"
-        errorLine1="                : PendingIntent.getActivity(applicationContext, requestCode, intent, flags);"
-        errorLine2="                                                                                     ~~~~~">
-        <location
-            file="../../chrome/browser/notifications/android/java/src/org/chromium/chrome/browser/notifications/NotificationIntentInterceptor.java"
-            line="175"
-            column="86"/>
     </issue>
 
     <issue
@@ -3583,7 +3264,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE"
+        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY"
         errorLine1="                &quot;Mobile.SystemNotification.Action.Click&quot;, actionType, ActionType.NUM_ENTRIES);"
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
@@ -3610,30 +3291,8 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="268"
+            line="270"
             column="39"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: FilterType.NONE, FilterType.SITES, FilterType.VIDEOS, FilterType.MUSIC, FilterType.IMAGES, FilterType.DOCUMENT, FilterType.OTHER, FilterType.PREFETCHED"
-        errorLine1="        for (int i = 0; i &lt; Filters.FilterType.NUM_ENTRIES; i++) {"
-        errorLine2="                                               ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/OfflineItemStartupLogger.java"
-            line="62"
-            column="48"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: TabRestoreType.WHILE_ONLINE, TabRestoreType.WHILE_ONLINE_CANT_SAVE_FOR_OFFLINE_USAGE, TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE, TabRestoreType.WHILE_ONLINE_TO_OFFLINE_PAGE_FROM_LAST_N, TabRestoreType.WHILE_OFFLINE, TabRestoreType.WHILE_OFFLINE_CANT_SAVE_FOR_OFFLINE_USAGE, TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE, TabRestoreType.WHILE_OFFLINE_TO_OFFLINE_PAGE_FROM_LAST_N, TabRestoreType.FAILED, TabRestoreType.CRASHED"
-        errorLine1="                &quot;OfflinePages.TabRestore&quot;, tabRestoreType, TabRestoreType.NUM_ENTRIES);"
-        errorLine2="                                                                          ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="949"
-            column="75"/>
     </issue>
 
     <issue
@@ -3687,7 +3346,7 @@
         errorLine2="                                                                              ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelBase.java"
-            line="783"
+            line="780"
             column="79"/>
     </issue>
 
@@ -3698,7 +3357,7 @@
         errorLine2="                                                                              ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/bottombar/OverlayPanelBase.java"
-            line="899"
+            line="896"
             column="79"/>
     </issue>
 
@@ -3951,7 +3610,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="215"
+            line="227"
             column="60"/>
     </issue>
 
@@ -3962,7 +3621,7 @@
         errorLine2="                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="229"
+            line="241"
             column="50"/>
     </issue>
 
@@ -3973,7 +3632,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="258"
+            line="270"
             column="16"/>
     </issue>
 
@@ -3984,7 +3643,7 @@
         errorLine2="               ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/query_tiles/QueryTileUtils.java"
-            line="258"
+            line="270"
             column="16"/>
     </issue>
 
@@ -4105,7 +3764,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="763"
+            line="762"
             column="77"/>
     </issue>
 
@@ -4116,7 +3775,7 @@
         errorLine2="                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="887"
+            line="884"
             column="26"/>
     </issue>
 
@@ -4127,7 +3786,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="909"
+            line="906"
             column="85"/>
     </issue>
 
@@ -4138,7 +3797,7 @@
         errorLine2="                         ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ntp/RecentTabsRowAdapter.java"
-            line="949"
+            line="946"
             column="26"/>
     </issue>
 
@@ -4171,30 +3830,8 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="303"
+            line="361"
             column="33"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ShowChromeStartSegmentationResult.UNINITIALIZED, ShowChromeStartSegmentationResult.DONT_SHOW, ShowChromeStartSegmentationResult.SHOW"
-        errorLine1="                ShowChromeStartSegmentationResult.NUM_ENTRIES);"
-        errorLine2="                                                  ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="732"
-            column="51"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ShowChromeStartSegmentationResultComparison.UNINITIALIZED, ShowChromeStartSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_ENABLED, ShowChromeStartSegmentationResultComparison.SEGMENTATION_ENABLED_LOGIC_DISABLED, ShowChromeStartSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_ENABLED, ShowChromeStartSegmentationResultComparison.SEGMENTATION_DISABLED_LOGIC_DISABLED"
-        errorLine1="                ShowChromeStartSegmentationResultComparison.NUM_ENTRIES);"
-        errorLine2="                                                            ~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/tasks/ReturnToChromeUtil.java"
-            line="792"
-            column="61"/>
     </issue>
 
     <issue
@@ -4204,7 +3841,7 @@
         errorLine2="                                  ~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/ScreenshotShareSheetMediator.java"
-            line="91"
+            line="93"
             column="35"/>
     </issue>
 
@@ -4248,7 +3885,7 @@
         errorLine2="                                                                   ~~~">
         <location
             file="../../chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java"
-            line="64"
+            line="65"
             column="68"/>
     </issue>
 
@@ -4259,7 +3896,7 @@
         errorLine2="                                                                       ~~~">
         <location
             file="../../chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/SearchEngineChoiceMetrics.java"
-            line="74"
+            line="75"
             column="72"/>
     </issue>
 
@@ -4270,7 +3907,7 @@
         errorLine2="                                                                ~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/SearchEngineLogoUtils.java"
-            line="342"
+            line="344"
             column="65"/>
     </issue>
 
@@ -4281,7 +3918,7 @@
         errorLine2="                                                                                      ~~~~~">
         <location
             file="../../ui/android/java/src/org/chromium/ui/base/SelectFileDialog.java"
-            line="1241"
+            line="1323"
             column="87"/>
     </issue>
 
@@ -4325,13 +3962,13 @@
         errorLine2="                                                                     ~~~~~">
         <location
             file="../../components/browser_ui/share/android/java/src/org/chromium/components/browser_ui/share/ShareHelper.java"
-            line="441"
+            line="113"
             column="70"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE"
+        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY"
         errorLine1="                    confirmIntent, NotificationUmaTracker.ActionType.SHARING_CONFIRM);"
         errorLine2="                                                                     ~~~~~~~~~~~~~~~">
         <location
@@ -4342,7 +3979,7 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE"
+        message="Must be one of: ActionType.UNKNOWN, ActionType.DOWNLOAD_PAUSE, ActionType.DOWNLOAD_RESUME, ActionType.DOWNLOAD_CANCEL, ActionType.DOWNLOAD_PAGE_PAUSE, ActionType.DOWNLOAD_PAGE_RESUME, ActionType.DOWNLOAD_PAGE_CANCEL, ActionType.CONTENT_SUGGESTION_SETTINGS, ActionType.WEB_APP_ACTION_SHARE, ActionType.WEB_APP_ACTION_OPEN_IN_CHROME, ActionType.OFFLINE_CONTENT_SUGGESTION_SETTINGS, ActionType.SHARING_TRY_AGAIN, ActionType.SETTINGS, ActionType.ANNOUNCEMENT_ACK, ActionType.ANNOUNCEMENT_OPEN, ActionType.PRICE_DROP_VISIT_SITE, ActionType.PRICE_DROP_TURN_OFF_ALERT, ActionType.WEB_APK_ACTION_BACK_TO_SITE, ActionType.WEB_APK_ACTION_RETRY"
         errorLine1="                    cancelIntent, NotificationUmaTracker.ActionType.SHARING_CANCEL);"
         errorLine2="                                                                    ~~~~~~~~~~~~~~">
         <location
@@ -4353,23 +3990,12 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: FoundBuyableProductAnnotation.NOT_FOUND, FoundBuyableProductAnnotation.FOUND, FoundBuyableProductAnnotation.FOUND_WITH_PRICE_UPDATE"
-        errorLine1="                foundBuyableProductAnnotation, FoundBuyableProductAnnotation.NUM_ENTRIES);"
-        errorLine2="                                                                             ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java"
-            line="681"
-            column="78"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: FoundBuyableProduct.NOT_FOUND, FoundBuyableProduct.FOUND, FoundBuyableProduct.FOUND_WITH_PRICE_UPDATE"
         errorLine1="                FoundBuyableProduct.NUM_ENTRIES);"
         errorLine2="                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/tab/java/src/org/chromium/chrome/browser/tab/state/ShoppingPersistedTabData.java"
-            line="727"
+            line="639"
             column="37"/>
     </issue>
 
@@ -4380,7 +4006,7 @@
         errorLine2="                                                 ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="530"
+            line="540"
             column="50"/>
     </issue>
 
@@ -4391,7 +4017,7 @@
         errorLine2="                                                 ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="532"
+            line="542"
             column="50"/>
     </issue>
 
@@ -4402,7 +4028,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleCategorySettings.java"
-            line="1502"
+            line="1536"
             column="74"/>
     </issue>
 
@@ -4413,7 +4039,7 @@
         errorLine2="                                         ~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1225"
+            line="1220"
             column="42"/>
     </issue>
 
@@ -4424,7 +4050,7 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/site_settings/android/java/src/org/chromium/components/browser_ui/site_settings/SingleWebsiteSettings.java"
-            line="1227"
+            line="1222"
             column="60"/>
     </issue>
 
@@ -4435,7 +4061,7 @@
         errorLine2="                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/search_engines/android/java/src/org/chromium/chrome/browser/search_engines/SogouPromoDialog.java"
-            line="139"
+            line="138"
             column="70"/>
     </issue>
 
@@ -4452,243 +4078,23 @@
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="    private int mDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="111"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="    private int mDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="111"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                    &amp;&amp; mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="                       ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="160"
-            column="24"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                    &amp;&amp; mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="                                                     ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="160"
-            column="54"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                mDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="162"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                mDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                             ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="162"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                mDirection = ScrollDirection.UNKNOWN;"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="162"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection == ScrollDirection.UNKNOWN &amp;&amp; shouldRecognizeSwipe(e1, e2)) {"
-        errorLine2="            ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="193"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection == ScrollDirection.UNKNOWN &amp;&amp; shouldRecognizeSwipe(e1, e2)) {"
-        errorLine2="                                          ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="193"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            int direction = ScrollDirection.UNKNOWN;"
-        errorLine2="                            ~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="198"
-            column="29"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            int direction = ScrollDirection.UNKNOWN;"
-        errorLine2="                                            ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="198"
-            column="45"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                direction = tx > 0.f ? ScrollDirection.RIGHT : ScrollDirection.LEFT;"
-        errorLine2="                ~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="205"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            if (direction != ScrollDirection.UNKNOWN &amp;&amp; mHandler.isSwipeEnabled(direction)) {"
-        errorLine2="                                             ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="210"
-            column="46"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="                mDirection = direction;"
-        errorLine2="                ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="211"
-            column="17"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="            ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="217"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="                                          ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="217"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="            ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="230"
-            column="13"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="        if (mDirection != ScrollDirection.UNKNOWN) {"
-        errorLine2="                                          ~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="230"
-            column="43"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            mHandler.onFling(mDirection, e2, e2.getRawX() - mMotionStartPoint.x,"
-        errorLine2="                             ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="231"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ScrollDirection.LEFT, ScrollDirection.RIGHT, ScrollDirection.UP, ScrollDirection.DOWN"
-        errorLine1="            mHandler.onFling(mDirection, e2, e2.getRawX() - mMotionStartPoint.x,"
-        errorLine2="                             ~~~~~~~~~~">
-        <location
-            file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/gesture/SwipeGestureListener.java"
-            line="231"
-            column="30"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
         message="Must be one of: State.NONE, State.INVALID_GAIA_CREDENTIALS, State.USER_NOT_SIGNED_UP, State.CONNECTION_FAILED, State.SERVICE_UNAVAILABLE, State.REQUEST_CANCELED, State.UNEXPECTED_SERVICE_RESPONSE, State.SERVICE_ERROR"
         errorLine1="        if (authErrorCode &lt; 0 || authErrorCode >= GoogleServiceAuthError.State.NUM_ENTRIES) {"
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../components/sync/android/java/src/org/chromium/components/sync/SyncServiceImpl.java"
-            line="85"
+            line="92"
             column="80"/>
     </issue>
 
     <issue
         id="WrongConstant"
-        message="Must be one of: ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1, ThumbnailFetchingResult.GOT_NOTHING, ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG"
+        message="Must be one of: ThumbnailFetchingResult.GOT_JPEG, ThumbnailFetchingResult.GOT_ETC1, ThumbnailFetchingResult.GOT_NOTHING, ThumbnailFetchingResult.GOT_DIFFERENT_ASPECT_RATIO_JPEG, ThumbnailFetchingResult.GOT_JPEG_ON_REFETCH"
         errorLine1="                UMA_THUMBNAIL_FETCHING_RESULT, result, ThumbnailFetchingResult.NUM_ENTRIES);"
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/content/TabContentManager.java"
-            line="484"
+            line="565"
             column="80"/>
     </issue>
 
@@ -4699,7 +4105,7 @@
         errorLine2="                                                    ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetrics.java"
-            line="143"
+            line="147"
             column="53"/>
     </issue>
 
@@ -4710,7 +4116,7 @@
         errorLine2="                                                 ~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/metrics/TabbedActivityLaunchCauseMetrics.java"
-            line="146"
+            line="150"
             column="50"/>
     </issue>
 
@@ -4743,7 +4149,7 @@
         errorLine2="                    ~~~~~~~~~~~">
         <location
             file="../../components/translate/content/android/java/src/org/chromium/components/translate/TranslateOptions.java"
-            line="105"
+            line="104"
             column="21"/>
     </issue>
 
@@ -4754,7 +4160,7 @@
         errorLine2="                                    ~~~~~~~~~~~">
         <location
             file="../../components/translate/content/android/java/src/org/chromium/components/translate/TranslateOptions.java"
-            line="106"
+            line="105"
             column="37"/>
     </issue>
 
@@ -4787,7 +4193,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="159"
+            line="158"
             column="56"/>
     </issue>
 
@@ -4798,7 +4204,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="191"
+            line="190"
             column="85"/>
     </issue>
 
@@ -4809,7 +4215,7 @@
         errorLine2="                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/TrustedWebActivityUmaRecorder.java"
-            line="228"
+            line="227"
             column="39"/>
     </issue>
 
@@ -4820,19 +4226,8 @@
         errorLine2="                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java"
-            line="133"
+            line="132"
             column="38"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ViewAction.OPEN, ViewAction.RESUME, ViewAction.PAUSE, ViewAction.CANCEL, ViewAction.MENU_SHARE, ViewAction.MENU_DELETE, ViewAction.RETRY, ViewAction.MENU_RENAME, ViewAction.MENU_CHANGE"
-        errorLine1="                &quot;Android.DownloadManager.List.View.Action&quot;, action, ViewAction.NUM_ENTRIES);"
-        errorLine2="                                                                               ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/UmaUtils.java"
-            line="119"
-            column="80"/>
     </issue>
 
     <issue
@@ -4842,41 +4237,8 @@
         errorLine2="                                                                          ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/UmaUtils.java"
-            line="152"
+            line="70"
             column="75"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: FilterType.NONE, FilterType.SITES, FilterType.VIDEOS, FilterType.MUSIC, FilterType.IMAGES, FilterType.DOCUMENT, FilterType.OTHER, FilterType.PREFETCHED"
-        errorLine1="                    filterType, Filters.FilterType.NUM_ENTRIES);"
-        errorLine2="                                                   ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/UmaUtils.java"
-            line="189"
-            column="52"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: RenameDialogAction.RENAME_DIALOG_CONFIRM, RenameDialogAction.RENAME_DIALOG_CANCEL, RenameDialogAction.RENAME_DIALOG_OTHER, RenameDialogAction.RENAME_EXTENSION_DIALOG_CONFIRM, RenameDialogAction.RENAME_EXTENSION_DIALOG_CANCEL, RenameDialogAction.RENAME_EXTENSION_DIALOG_OTHER"
-        errorLine1="                &quot;Android.Download.Rename.Dialog.Action&quot;, action, RenameDialogAction.NUM_ENTRIES);"
-        errorLine2="                                                                                    ~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/download/internal/android/java/src/org/chromium/chrome/browser/download/home/metrics/UmaUtils.java"
-            line="248"
-            column="85"/>
-    </issue>
-
-    <issue
-        id="WrongConstant"
-        message="Must be one of: ImageFormat.UNKNOWN, ImageFormat.RGB_565, ImageFormat.YV12, ImageFormat.Y8, ImageFormat.NV16, ImageFormat.NV21, ImageFormat.YUY2, ImageFormat.JPEG, ImageFormat.DEPTH_JPEG, ImageFormat.YUV_420_888, ImageFormat.YUV_422_888, ImageFormat.YUV_444_888, ImageFormat.FLEX_RGB_888, ImageFormat.FLEX_RGBA_8888, ImageFormat.RAW_SENSOR, ImageFormat.RAW_PRIVATE, ImageFormat.RAW10, ImageFormat.RAW12, ImageFormat.DEPTH16, ImageFormat.DEPTH_POINT_CLOUD, ImageFormat.PRIVATE, ImageFormat.HEIC"
-        errorLine1="                    mCaptureFormat.getHeight(), mCaptureFormat.getPixelFormat(), 2 /* maxImages */);"
-        errorLine2="                                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../media/capture/video/android/java/src/org/chromium/media/VideoCaptureCamera2.java"
-            line="1072"
-            column="49"/>
     </issue>
 
     <issue
@@ -4886,7 +4248,7 @@
         errorLine2="                                                                                    ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="962"
+            line="677"
             column="85"/>
     </issue>
 
@@ -4897,7 +4259,7 @@
         errorLine2="                                                                               ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="964"
+            line="679"
             column="80"/>
     </issue>
 
@@ -4908,7 +4270,7 @@
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="978"
+            line="693"
             column="86"/>
     </issue>
 
@@ -4919,7 +4281,7 @@
         errorLine2="                                                                                ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="980"
+            line="695"
             column="81"/>
     </issue>
 
@@ -4930,7 +4292,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="994"
+            line="709"
             column="40"/>
     </issue>
 
@@ -4941,7 +4303,7 @@
         errorLine2="                                                                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="996"
+            line="711"
             column="84"/>
     </issue>
 
@@ -4952,7 +4314,7 @@
         errorLine2="                                                                                      ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="1010"
+            line="725"
             column="87"/>
     </issue>
 
@@ -4963,7 +4325,7 @@
         errorLine2="                                                                                 ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="1012"
+            line="727"
             column="82"/>
     </issue>
 
@@ -4974,7 +4336,7 @@
         errorLine2="                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="1026"
+            line="741"
             column="40"/>
     </issue>
 
@@ -4985,7 +4347,7 @@
         errorLine2="                                                                                     ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="1028"
+            line="743"
             column="86"/>
     </issue>
 
@@ -4996,7 +4358,7 @@
         errorLine2="                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/omnibox/java/src/org/chromium/chrome/browser/omnibox/voice/VoiceRecognitionHandler.java"
-            line="1110"
+            line="818"
             column="56"/>
     </issue>
 
@@ -5007,7 +4369,7 @@
         errorLine2="                                                                       ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="114"
+            line="113"
             column="72"/>
     </issue>
 
@@ -5018,7 +4380,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="124"
+            line="123"
             column="77"/>
     </issue>
 
@@ -5029,7 +4391,7 @@
         errorLine2="                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="164"
+            line="163"
             column="41"/>
     </issue>
 
@@ -5040,7 +4402,7 @@
         errorLine2="                                        ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/android/browserservices/metrics/java/src/org/chromium/chrome/browser/browserservices/metrics/WebApkUmaRecorder.java"
-            line="181"
+            line="180"
             column="41"/>
     </issue>
 
@@ -5051,7 +4413,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/night_mode/java/src/org/chromium/chrome/browser/night_mode/WebContentsDarkModeMessageController.java"
-            line="323"
+            line="322"
             column="36"/>
     </issue>
 
@@ -5073,8 +4435,30 @@
         errorLine2="                                                                                             ~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="437"
+            line="441"
             column="94"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedRegisterReceiverFlag"
+        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
+        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
+            line="307"
+            column="20"/>
+    </issue>
+
+    <issue
+        id="UnspecifiedRegisterReceiverFlag"
+        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
+        errorLine1="            return super.registerReceiver(receiver, filter, permission, handler);"
+        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        <location
+            file="../../content/public/android/java/src/org/chromium/content/browser/sms/Wrappers.java"
+            line="100"
+            column="20"/>
     </issue>
 
     <issue
@@ -5117,7 +4501,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/AddressAccessorySheetCoordinator.java"
-            line="39"
+            line="38"
             column="30"/>
     </issue>
 
@@ -5139,7 +4523,7 @@
         errorLine2="                 ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/appmenu/internal/java/src/org/chromium/chrome/browser/ui/appmenu/AppMenu.java"
-            line="389"
+            line="391"
             column="18"/>
     </issue>
 
@@ -5150,7 +4534,7 @@
         errorLine2="                                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwBrowserProcess.java"
-            line="154"
+            line="177"
             column="63"/>
     </issue>
 
@@ -5161,7 +4545,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="1496"
+            line="1550"
             column="17"/>
     </issue>
 
@@ -5172,7 +4556,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="2029"
+            line="2087"
             column="46"/>
     </issue>
 
@@ -5183,7 +4567,7 @@
         errorLine2="                     ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContents.java"
-            line="3032"
+            line="3111"
             column="22"/>
     </issue>
 
@@ -5194,7 +4578,7 @@
         errorLine2="                           ~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwContentsStatics.java"
-            line="173"
+            line="178"
             column="28"/>
     </issue>
 
@@ -5216,7 +4600,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="187"
+            line="188"
             column="33"/>
     </issue>
 
@@ -5227,7 +4611,7 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="191"
+            line="192"
             column="37"/>
     </issue>
 
@@ -5238,7 +4622,7 @@
         errorLine2="                                    ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="195"
+            line="196"
             column="37"/>
     </issue>
 
@@ -5249,7 +4633,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="226"
+            line="227"
             column="52"/>
     </issue>
 
@@ -5260,7 +4644,7 @@
         errorLine2="                                           ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsDelegateAdapter.java"
-            line="362"
+            line="363"
             column="44"/>
     </issue>
 
@@ -5271,7 +4655,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/java/src/org/chromium/android_webview/AwWebContentsObserver.java"
-            line="155"
+            line="156"
             column="36"/>
     </issue>
 
@@ -5326,7 +4710,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="348"
+            line="210"
             column="47"/>
     </issue>
 
@@ -5337,7 +4721,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/BottomSheetManager.java"
-            line="349"
+            line="211"
             column="40"/>
     </issue>
 
@@ -5348,7 +4732,7 @@
         errorLine2="                                                        ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="155"
+            line="174"
             column="57"/>
     </issue>
 
@@ -5359,7 +4743,7 @@
         errorLine2="                                                                            ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/BrowserImpl.java"
-            line="248"
+            line="267"
             column="77"/>
     </issue>
 
@@ -5480,7 +4864,7 @@
         errorLine2="                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/app/ChromeActivity.java"
-            line="946"
+            line="944"
             column="23"/>
     </issue>
 
@@ -5502,7 +4886,7 @@
         errorLine2="                                                                      ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/ChromeTabbedActivity.java"
-            line="1038"
+            line="1047"
             column="71"/>
     </issue>
 
@@ -5513,7 +4897,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/CreditCardAccessorySheetCoordinator.java"
-            line="37"
+            line="35"
             column="30"/>
     </issue>
 
@@ -5524,7 +4908,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/customtabs/CustomTabsConnectionServiceImpl.java"
-            line="104"
+            line="106"
             column="21"/>
     </issue>
 
@@ -5535,7 +4919,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
-            line="139"
+            line="136"
             column="50"/>
     </issue>
 
@@ -5546,7 +4930,7 @@
         errorLine2="                                                 ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/download/DownloadBroadcastManagerImpl.java"
-            line="153"
+            line="150"
             column="50"/>
     </issue>
 
@@ -5564,23 +4948,23 @@
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="    private static final Api.ClientKey&lt;FidoClient> APP_CLIENT_KEY = new Api.ClientKey&lt;>();"
-        errorLine2="                                                                    ~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    private static final Api.ClientKey&lt;FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey&lt;>();"
+        errorLine2="                                                                        ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="94"
-            column="69"/>
+            line="93"
+            column="73"/>
     </issue>
 
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="    private static final Api.ClientKey&lt;FidoClient> BROWSER_CLIENT_KEY = new Api.ClientKey&lt;>();"
-        errorLine2="                                                                        ~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="    private static final Api.ClientKey&lt;FidoClient> FIRSTPARTY_CLIENT_KEY = new Api.ClientKey&lt;>();"
+        errorLine2="                                                                           ~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="106"
-            column="73"/>
+            line="100"
+            column="76"/>
     </issue>
 
     <issue
@@ -5590,7 +4974,7 @@
         errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/webauthn/android/java/src/org/chromium/components/webauthn/Fido2ApiCall.java"
-            line="344"
+            line="375"
             column="25"/>
     </issue>
 
@@ -5601,7 +4985,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="75"
+            line="86"
             column="31"/>
     </issue>
 
@@ -5612,7 +4996,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="76"
+            line="87"
             column="40"/>
     </issue>
 
@@ -5623,7 +5007,7 @@
         errorLine2="                                       ~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="77"
+            line="88"
             column="40"/>
     </issue>
 
@@ -5634,7 +5018,7 @@
         errorLine2="                                       ~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="78"
+            line="89"
             column="40"/>
     </issue>
 
@@ -5645,7 +5029,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="146"
+            line="157"
             column="29"/>
     </issue>
 
@@ -5656,7 +5040,7 @@
         errorLine2="                                                            ~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="146"
+            line="157"
             column="61"/>
     </issue>
 
@@ -5667,7 +5051,7 @@
         errorLine2="                                   ~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="147"
+            line="158"
             column="36"/>
     </issue>
 
@@ -5678,7 +5062,7 @@
         errorLine2="                                                                  ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="147"
+            line="158"
             column="67"/>
     </issue>
 
@@ -5689,7 +5073,7 @@
         errorLine2="                                                                   ~~~~~~~~~~~~~~~">
         <location
             file="../../components/media_router/browser/android/java/src/org/chromium/components/media_router/caf/remoting/FlingingControllerAdapter.java"
-            line="153"
+            line="164"
             column="68"/>
     </issue>
 
@@ -5733,19 +5117,8 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/external_intents/android/java/src/org/chromium/components/external_intents/InterceptNavigationDelegateImpl.java"
-            line="446"
+            line="479"
             column="41"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        } else if (animationsEnabled() &amp;&amp; !hasExplicitNextLayout()) {"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="112"
-            column="20"/>
     </issue>
 
     <issue
@@ -5755,7 +5128,7 @@
         errorLine2="                                         ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="132"
+            line="105"
             column="42"/>
     </issue>
 
@@ -5766,7 +5139,7 @@
         errorLine2="                   ~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/layouts/LayoutManagerChromePhone.java"
-            line="147"
+            line="120"
             column="20"/>
     </issue>
 
@@ -5942,7 +5315,7 @@
         errorLine2="                                                      ~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/multiwindow/MultiInstanceManager.java"
-            line="429"
+            line="432"
             column="55"/>
     </issue>
 
@@ -5953,7 +5326,7 @@
         errorLine2="                                                                              ~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/NavigationControllerImpl.java"
-            line="42"
+            line="43"
             column="79"/>
     </issue>
 
@@ -5986,7 +5359,7 @@
         errorLine2="                                   ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
-            line="319"
+            line="313"
             column="36"/>
     </issue>
 
@@ -5997,7 +5370,7 @@
         errorLine2="                                                 ~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/OmahaBase.java"
-            line="347"
+            line="337"
             column="50"/>
     </issue>
 
@@ -6019,7 +5392,7 @@
         errorLine2="                             ~~~~~~~">
         <location
             file="../../chrome/android/features/keyboard_accessory/internal/java/src/org/chromium/chrome/browser/keyboard_accessory/sheet_tabs/PasswordAccessorySheetCoordinator.java"
-            line="43"
+            line="41"
             column="30"/>
     </issue>
 
@@ -6041,7 +5414,7 @@
         errorLine2="                                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/dom_distiller/ReaderModeManager.java"
-            line="663"
+            line="653"
             column="52"/>
     </issue>
 
@@ -6052,7 +5425,7 @@
         errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/RequestGenerator.java"
-            line="39"
+            line="37"
             column="17"/>
     </issue>
 
@@ -6074,30 +5447,8 @@
         errorLine2="                   ~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/searchwidget/SearchActivity.java"
-            line="435"
+            line="480"
             column="20"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="        Intent intent = getShareLinkIntent(params);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/share/ShareHelper.java"
-            line="63"
-            column="25"/>
-    </issue>
-
-    <issue
-        id="VisibleForTests"
-        message="This method should only be accessed from tests or within private scope"
-        errorLine1="            ShareHelper.setLastShareComponentName(mProfile, component);"
-        errorLine2="                        ~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/src/org/chromium/chrome/browser/share/share_sheet/ShareSheetPropertyModelBuilder.java"
-            line="233"
-            column="25"/>
     </issue>
 
     <issue
@@ -6129,19 +5480,19 @@
         errorLine2="                              ~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/overlays/strip/StripLayoutHelper.java"
-            line="1152"
+            line="1320"
             column="31"/>
     </issue>
 
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="                requestId, new AwContents.VisualStateCallback() {"
-        errorLine2="                               ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                    requestId, new AwContents.VisualStateCallback() {"
+        errorLine2="                                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/support_library/java/src/org/chromium/support_lib_glue/SupportLibWebViewChromium.java"
-            line="50"
-            column="32"/>
+            line="53"
+            column="36"/>
     </issue>
 
     <issue
@@ -6217,7 +5568,7 @@
         errorLine2="                                                                         ~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="1593"
+            line="1625"
             column="74"/>
     </issue>
 
@@ -6228,7 +5579,7 @@
         errorLine2="                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/TopToolbarCoordinator.java"
-            line="706"
+            line="695"
             column="31"/>
     </issue>
 
@@ -6239,19 +5590,19 @@
         errorLine2="                                                           ~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/omaha/UpdateStatusProvider.java"
-            line="291"
+            line="289"
             column="60"/>
     </issue>
 
     <issue
         id="VisibleForTests"
         message="This method should only be accessed from tests or within private scope"
-        errorLine1="                requestId, callback == null ? null : new AwContents.VisualStateCallback() {"
-        errorLine2="                                                         ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="                    requestId, callback == null ? null : new AwContents.VisualStateCallback() {"
+        errorLine2="                                                             ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="1170"
-            column="58"/>
+            line="1265"
+            column="62"/>
     </issue>
 
     <issue
@@ -6261,7 +5612,7 @@
         errorLine2="                            ~~~~~~~~~~~~~~">
         <location
             file="../../android_webview/glue/java/src/com/android/webview/chromium/WebViewChromium.java"
-            line="2030"
+            line="2244"
             column="29"/>
     </issue>
 
@@ -6301,12 +5652,12 @@
     <issue
         id="UseAppTint"
         message="Must use `app:tint` instead of `android:tint`"
-        errorLine1="            android:tint=&quot;@macro/drag_handlebar_color&quot; />"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="        android:tint=&quot;@macro/drag_handlebar_color&quot; />"
+        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/res/layout/custom_tabs_handle_view.xml"
-            line="27"
-            column="13"/>
+            line="35"
+            column="9"/>
     </issue>
 
     <issue
@@ -6349,19 +5700,8 @@
         errorLine2="                       ~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../base/android/java/src/org/chromium/base/ApiCompatibilityUtils.java"
-            line="214"
+            line="221"
             column="24"/>
-    </issue>
-
-    <issue
-        id="UseCompatLoadingForDrawables"
-        message="Use `AppCompatResources.getDrawable()`"
-        errorLine1="                cardIconView.setImageDrawable(context.getDrawable(cardIconId));"
-        errorLine2="                                              ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/autofill/CardUnmaskPrompt.java"
-            line="168"
-            column="47"/>
     </issue>
 
     <issue
@@ -6393,7 +5733,7 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="138"
+            line="140"
             column="41"/>
     </issue>
 
@@ -6404,7 +5744,7 @@
         errorLine2="                                        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/indicator/OfflineIndicatorControllerV2.java"
-            line="159"
+            line="161"
             column="41"/>
     </issue>
 
@@ -6415,7 +5755,7 @@
         errorLine2="                                ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/features/tab_ui/java/src/org/chromium/chrome/browser/tasks/tab_management/TabListRecyclerView.java"
-            line="234"
+            line="305"
             column="33"/>
     </issue>
 
@@ -6426,7 +5766,7 @@
         errorLine2="                                                       ^">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="377"
+            line="374"
             column="56"/>
     </issue>
 
@@ -6437,7 +5777,7 @@
         errorLine2="                  ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="2604"
+            line="2639"
             column="19"/>
     </issue>
 
@@ -6503,7 +5843,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
-            line="29"
+            line="25"
             column="9"/>
     </issue>
 
@@ -6514,7 +5854,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="52"
+            line="51"
             column="21"/>
     </issue>
 
@@ -6525,7 +5865,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="53"
+            line="52"
             column="21"/>
     </issue>
 
@@ -6536,7 +5876,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="63"
+            line="62"
             column="21"/>
     </issue>
 
@@ -6547,7 +5887,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="64"
+            line="63"
             column="21"/>
     </issue>
 
@@ -6558,7 +5898,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="74"
+            line="73"
             column="21"/>
     </issue>
 
@@ -6569,7 +5909,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="75"
+            line="74"
             column="21"/>
     </issue>
 
@@ -6580,7 +5920,7 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="85"
+            line="84"
             column="21"/>
     </issue>
 
@@ -6591,52 +5931,19 @@
         errorLine2="                    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/share/android/java/res/layout/screenshot_share_sheet.xml"
-            line="86"
+            line="85"
             column="21"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="            return context.registerReceiver(receiver, filter, permission, scheduler);"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../base/android/java/src/org/chromium/base/ContextUtils.java"
-            line="307"
-            column="20"/>
-    </issue>
-
-    <issue
-        id="UnspecifiedRegisterReceiverFlag"
-        message="`receiver` \&#xA;is missing `RECEIVER_EXPORTED` or `RECEIVER_NOT_EXPORTED` flag for unprotected \&#xA;broadcasts registered for an IntentFilter that cannot be inspected by lint"
-        errorLine1="            return super.registerReceiver(receiver, filter, permission, handler);"
-        errorLine2="                   ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../content/public/android/java/src/org/chromium/content/browser/sms/Wrappers.java"
-            line="100"
-            column="20"/>
     </issue>
 
     <issue
         id="DataExtractionRules"
         message="The attribute `android:allowBackup` is deprecated from Android 12 and higher and may be removed in future versions. Consider adding the attribute `android:dataExtractionRules` specifying an `@xml` resource which configures cloud backups and device transfers on Android 12 and higher."
-        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot; android:use32bitAbi=&quot;true&quot;>"
-        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                ~~~~~">
+        errorLine1="  &lt;application android:name=&quot;org.chromium.chrome.browser.base.SplitMonochromeApplication&quot; android:icon=&quot;@drawable/ic_launcher&quot; android:roundIcon=&quot;@drawable/ic_launcher_round&quot; android:label=&quot;@string/app_name&quot; android:memtagMode=&quot;async&quot; android:largeHeap=&quot;false&quot; android:manageSpaceActivity=&quot;@string/manage_space_activity&quot; android:supportsRtl=&quot;true&quot; android:zygotePreloadName=&quot;org.chromium.content_public.app.ZygotePreload&quot; android:allowBackup=&quot;false&quot; android:networkSecurityConfig=&quot;@xml/network_security_config&quot; android:allowAudioPlaybackCapture=&quot;false&quot; android:appComponentFactory=&quot;org.chromium.chrome.browser.base.SplitCompatAppComponentFactory&quot; android:enableOnBackInvokedCallback=&quot;true&quot; android:multiArch=&quot;true&quot; android:extractNativeLibs=&quot;false&quot;>"
+        errorLine2="                                                                                                                                                                                                                                                                                                                                                                                                                                                           ~~~~~">
         <location
             file="gen/chrome/android/monochrome_public_bundle__lint/gen/chrome/android/monochrome_public_bundle__base_bundle_module/AndroidManifest.xml"
-            line="232"
-            column="417"/>
-    </issue>
-
-    <issue
-        id="NotifyDataSetChanged"
-        message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="            notifyDataSetChanged();"
-        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/AppLanguagePromoDialog.java"
-            line="217"
-            column="13"/>
+            line="253"
+            column="444"/>
     </issue>
 
     <issue
@@ -6723,7 +6030,7 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/firstrun/FirstRunActivity.java"
-            line="201"
+            line="168"
             column="13"/>
     </issue>
 
@@ -6745,19 +6052,19 @@
         errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/LanguageAskPrompt.java"
-            line="209"
+            line="199"
             column="13"/>
     </issue>
 
     <issue
         id="NotifyDataSetChanged"
         message="It will always be more efficient to use more specific change events if you can. Rely on `notifyDataSetChanged` as a last resort."
-        errorLine1="                notifyDataSetChanged();"
-        errorLine2="                ~~~~~~~~~~~~~~~~~~~~~~">
+        errorLine1="            notifyDataSetChanged();"
+        errorLine2="            ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="136"
-            column="17"/>
+            line="144"
+            column="13"/>
     </issue>
 
     <issue
@@ -6767,7 +6074,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="204"
+            line="191"
             column="9"/>
     </issue>
 
@@ -6778,7 +6085,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="215"
+            line="202"
             column="9"/>
     </issue>
 
@@ -6789,7 +6096,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/content_creation/notes/internal/android/java/src/org/chromium/chrome/browser/content_creation/notes/NoteCreationDialog.java"
-            line="129"
+            line="113"
             column="9"/>
     </issue>
 
@@ -6904,17 +6211,6 @@
     </issue>
 
     <issue
-        id="UseCompoundDrawables"
-        message="This tag and its children can be replaced by one `&lt;TextView/>` and a compound drawable"
-        errorLine1="  &lt;LinearLayout"
-        errorLine2="   ~~~~~~~~~~~~">
-        <location
-            file="../../chrome/browser/share/android/java/res/layout/qrcode_camera_error_layout.xml"
-            line="13"
-            column="4"/>
-    </issue>
-
-    <issue
         id="AssertionSideEffect"
         message="Assertion condition has a side effect: f.setAccessible(true)"
         errorLine1="                    assert reachesWindowCallback(activity.getWindow().getCallback());"
@@ -6938,23 +6234,12 @@
 
     <issue
         id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sSyncService = SyncServiceImpl.create()"
-        errorLine1="        assert SyncService.get() != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/signin/LegacySyncPromoView.java"
-            line="63"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
         message="Assertion condition has a side effect: sRemotingNotificationId = WebLayerImpl.getRemotePlaybackApiNotificationId()"
         errorLine1="            assert mNotificationId == getRemotingNotificationIdFromClient();"
         errorLine2="                                      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../weblayer/browser/java/org/chromium/weblayer_private/media/MediaRouterClientImpl.java"
-            line="152"
+            line="157"
             column="39"/>
     </issue>
 
@@ -6967,39 +6252,6 @@
             file="../../weblayer/browser/java/org/chromium/weblayer_private/media/MediaSessionManager.java"
             line="60"
             column="47"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sSyncService = SyncServiceImpl.create()"
-        errorLine1="        assert SyncService.get() != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/sync/ui/PassphraseActivity.java"
-            line="46"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sSyncService = SyncServiceImpl.create()"
-        errorLine1="        assert SyncService.get() != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/sync/ui/PassphraseDialogFragment.java"
-            line="82"
-            column="16"/>
-    </issue>
-
-    <issue
-        id="AssertionSideEffect"
-        message="Assertion condition has a side effect: sSyncService = SyncServiceImpl.create()"
-        errorLine1="        assert SyncService.get() != null;"
-        errorLine2="               ~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/password_manager/settings/PasswordSettings.java"
-            line="658"
-            column="16"/>
     </issue>
 
     <issue
@@ -7097,7 +6349,7 @@
         errorLine2="                                              ~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/offlinepages/OfflinePageUtils.java"
-            line="240"
+            line="235"
             column="47"/>
     </issue>
 
@@ -7141,7 +6393,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/bookmarks/BookmarkRow.java"
-            line="330"
+            line="378"
             column="9"/>
     </issue>
 
@@ -7152,7 +6404,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/bottomsheet/android/internal/java/src/org/chromium/components/browser_ui/bottomsheet/BottomSheet.java"
-            line="287"
+            line="282"
             column="20"/>
     </issue>
 
@@ -7185,7 +6437,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/android/java/src/org/chromium/chrome/browser/compositor/CompositorViewHolder.java"
-            line="746"
+            line="712"
             column="20"/>
     </issue>
 
@@ -7196,19 +6448,8 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/embedder_support/android/java/src/org/chromium/components/embedder_support/view/ContentView.java"
-            line="392"
+            line="394"
             column="20"/>
-    </issue>
-
-    <issue
-        id="ClickableViewAccessibility"
-        message="Custom view ``ImageButton`` has `setOnTouchListener` called on it but does not override `performClick`"
-        errorLine1="        menuBtn.setOnTouchListener(menuPopupButtonHelper);"
-        errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
-        <location
-            file="../../chrome/android/java/src/org/chromium/chrome/browser/ui/tablet/emptybackground/EmptyBackgroundViewTablet.java"
-            line="98"
-            column="9"/>
     </issue>
 
     <issue
@@ -7273,7 +6514,7 @@
         errorLine2="        ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="177"
+            line="164"
             column="9"/>
     </issue>
 
@@ -7284,7 +6525,7 @@
         errorLine2="                                             ^">
         <location
             file="../../chrome/browser/language/android/java/src/org/chromium/chrome/browser/language/settings/LanguageListBaseAdapter.java"
-            line="177"
+            line="164"
             column="46"/>
     </issue>
 
@@ -7295,7 +6536,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/menu_button/MenuButton.java"
-            line="80"
+            line="79"
             column="9"/>
     </issue>
 
@@ -7306,7 +6547,7 @@
         errorLine2="                                               ^">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="227"
+            line="254"
             column="48"/>
     </issue>
 
@@ -7317,7 +6558,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="253"
+            line="274"
             column="9"/>
     </issue>
 
@@ -7328,7 +6569,7 @@
         errorLine2="        ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/modaldialog/android/java/src/org/chromium/components/browser_ui/modaldialog/ModalDialogView.java"
-            line="255"
+            line="276"
             column="9"/>
     </issue>
 
@@ -7361,7 +6602,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../components/paint_preview/player/android/java/src/org/chromium/components/paintpreview/player/frame/PlayerFrameView.java"
-            line="131"
+            line="130"
             column="20"/>
     </issue>
 
@@ -7383,7 +6624,7 @@
         errorLine2="                                             ~~~~~~~~~~~~~~~~~~">
         <location
             file="../../components/browser_ui/widget/android/java/src/org/chromium/components/browser_ui/widget/selectable_list/SelectableListLayout.java"
-            line="238"
+            line="242"
             column="46"/>
     </issue>
 
@@ -7394,7 +6635,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarControlContainer.java"
-            line="450"
+            line="545"
             column="20"/>
     </issue>
 
@@ -7405,7 +6646,7 @@
         errorLine2="                   ~~~~~~~~~~~~">
         <location
             file="../../chrome/browser/ui/android/toolbar/java/src/org/chromium/chrome/browser/toolbar/top/ToolbarPhone.java"
-            line="534"
+            line="533"
             column="20"/>
     </issue>
 

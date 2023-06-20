@@ -1,27 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<issues format="6" by="lint 8.1.0-alpha01" type="baseline" client="" dependencies="true" name="" variant="all" version="8.1.0-alpha01">
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionCode` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
-
-    <issue
-        id="MissingVersion"
-        message="Should set `android:versionName` to specify the application version"
-        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
-        errorLine2=" ~~~~~~~~">
-        <location
-            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
-            line="2"
-            column="2"/>
-    </issue>
+<issues format="6" by="lint 8.2.0-alpha08" type="baseline" client="" dependencies="true" name="" variant="all" version="8.2.0-alpha08">
 
     <issue
         id="UnspecifiedRegisterReceiverFlag"
@@ -32,6 +10,28 @@
             file="../../chromecast/browser/android/apk/src/org/chromium/chromecast/shell/BroadcastReceiverScope.java"
             line="37"
             column="9"/>
+    </issue>
+
+    <issue
+        id="MissingVersion"
+        message="Should set `android:versionCode` to specify the application version"
+        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
+        errorLine2=" ~~~~~~~~">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"
+            column="2"/>
+    </issue>
+
+    <issue
+        id="MissingVersion"
+        message="Should set `android:versionName` to specify the application version"
+        errorLine1="&lt;manifest xmlns:android=&quot;http://schemas.android.com/apk/res/android&quot; xmlns:tools=&quot;http://schemas.android.com/tools&quot; package=&quot;org.chromium.chromecast.shell&quot;>"
+        errorLine2=" ~~~~~~~~">
+        <location
+            file="gen/chromecast/cast_shell_apk__lint/gen/cast_shell_manifest/AndroidManifest.xml"
+            line="2"
+            column="2"/>
     </issue>
 
     <issue
