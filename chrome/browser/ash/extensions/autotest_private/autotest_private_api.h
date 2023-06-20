@@ -1546,6 +1546,20 @@ class AutotestPrivateWaitForAmbientPhotoAnimationFunction
   void Timeout();
 };
 
+class AutotestPrivateWaitForAmbientVideoFunction : public ExtensionFunction {
+ public:
+  AutotestPrivateWaitForAmbientVideoFunction();
+  DECLARE_EXTENSION_FUNCTION("autotestPrivate.waitForAmbientVideo",
+                             AUTOTESTPRIVATE_WAITFORAMBIENTVIDEO)
+
+ private:
+  ~AutotestPrivateWaitForAmbientVideoFunction() override;
+  ResponseAction Run() override;
+
+  void RespondWithSuccess();
+  void RespondWithError(std::string error_message);
+};
+
 class AutotestPrivateDisableSwitchAccessDialogFunction
     : public ExtensionFunction {
  public:

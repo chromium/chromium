@@ -5983,6 +5983,45 @@ void AutotestPrivateWaitForAmbientPhotoAnimationFunction::Timeout() {
 }
 
 ///////////////////////////////////////////////////////////////////////////////
+// AutotestPrivateWaitForAmbientVideoFunction
+//////////////////////////////////////////////////////////////////////////////
+
+AutotestPrivateWaitForAmbientVideoFunction::
+    AutotestPrivateWaitForAmbientVideoFunction() = default;
+
+AutotestPrivateWaitForAmbientVideoFunction::
+    ~AutotestPrivateWaitForAmbientVideoFunction() = default;
+
+ExtensionFunction::ResponseAction
+AutotestPrivateWaitForAmbientVideoFunction::Run() {
+  absl::optional<api::autotest_private::WaitForAmbientVideo::Params> params =
+      api::autotest_private::WaitForAmbientVideo::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  // Wait for video playback to start in ambient mode.
+  ash::AutotestAmbientApi().WaitForVideoToStart(
+      base::Seconds(params->timeout),
+      /*on_complete=*/
+      base::BindOnce(
+          &AutotestPrivateWaitForAmbientVideoFunction::RespondWithSuccess,
+          this),
+      /*on_error=*/
+      base::BindOnce(
+          &AutotestPrivateWaitForAmbientVideoFunction::RespondWithError, this));
+
+  return did_respond() ? AlreadyResponded() : RespondLater();
+}
+
+void AutotestPrivateWaitForAmbientVideoFunction::RespondWithSuccess() {
+  Respond(NoArguments());
+}
+
+void AutotestPrivateWaitForAmbientVideoFunction::RespondWithError(
+    std::string error_message) {
+  Respond(Error(std::move(error_message)));
+}
+
+///////////////////////////////////////////////////////////////////////////////
 // AutotestPrivateDisableSwitchAccessDialogFunction
 //////////////////////////////////////////////////////////////////////////////
 

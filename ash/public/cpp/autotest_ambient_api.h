@@ -5,9 +5,15 @@
 #ifndef ASH_PUBLIC_CPP_AUTOTEST_AMBIENT_API_H_
 #define ASH_PUBLIC_CPP_AUTOTEST_AMBIENT_API_H_
 
+#include <string>
+
 #include "ash/ash_export.h"
 #include "base/functional/callback_forward.h"
 #include "base/time/time.h"
+
+namespace base {
+class TickClock;
+}  // namespace base
 
 namespace ash {
 
@@ -27,6 +33,15 @@ class ASH_EXPORT AutotestAmbientApi {
                                                 base::TimeDelta timeout,
                                                 base::OnceClosure on_complete,
                                                 base::OnceClosure on_timeout);
+
+  // Wait |timeout| for the ambient video to successfully start playback. Calls
+  // |on_complete| if successful and |on_error| if video playback failed
+  // (including if |timeout| elapses before video playback starts). |on_error|
+  // is invoked with an error message describing the failure.
+  void WaitForVideoToStart(base::TimeDelta timeout,
+                           base::OnceClosure on_complete,
+                           base::OnceCallback<void(std::string)> on_error,
+                           const base::TickClock* tick_clock = nullptr);
 };
 
 }  // namespace ash

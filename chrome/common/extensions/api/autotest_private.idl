@@ -1482,6 +1482,13 @@ namespace autotestPrivate {
         long timeout,
         VoidCallback callback);
 
+    // Waits for ambient video to successfully start playback.
+    // |timeout|: the timeout in seconds.
+    // |callback|: Called when the operation has completed.
+    [supportsPromises] static void waitForAmbientVideo(
+        long timeout,
+        VoidCallback callback);
+
     // Disables the automation feature. Note that the event handlers and caches
     // of automation nodes still remain in the test extension and so the next
     // automation.getDesktop will miss initialization. The caller should ensure

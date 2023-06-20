@@ -37107,6 +37107,7 @@ Called by update_extension_histograms.py.-->
   <int value="1793" label="AUTOTESTPRIVATE_ISFEATUREENABLED"/>
   <int value="1794" label="PASSWORDSPRIVATE_CHANGECREDENTIAL"/>
   <int value="1795" label="SMARTCARDPROVIDERPRIVATE_REPORTSTATUSRESULT"/>
+  <int value="1796" label="AUTOTESTPRIVATE_WAITFORAMBIENTVIDEO"/>
 </enum>
 
 <enum name="ExtensionIconState">
