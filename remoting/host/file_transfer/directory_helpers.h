@@ -10,10 +10,11 @@
 
 namespace remoting {
 
-// Retrieves the path to the user's desktop folder. This should be run in the
-// context of the user, which on Windows means it must be run on the same
-// dedicated thread on which EnsureUser was called.
-protocol::FileTransferResult<base::FilePath> GetDesktopDirectory();
+// Retrieves the exact path to the user's upload folder which is platform
+// dependent. This should be run in the context of the user, which on Windows
+// means it must be run on the same dedicated thread on which EnsureUser was
+// called.
+protocol::FileTransferResult<base::FilePath> GetFileUploadDirectory();
 
 }  // namespace remoting
 

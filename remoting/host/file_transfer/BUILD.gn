@@ -47,6 +47,7 @@ source_set("file_transfer") {
     ]
   } else {
     sources += [ "directory_helpers.cc" ]
+    deps += [ "//chrome/common:constants" ]
   }
 
   if (is_chromeos_ash) {
@@ -115,6 +116,7 @@ source_set("test_support") {
   deps = [
     ":common",
     "//base:base",
+    "//chrome/common:constants",
     "//remoting/protocol",
   ]
   public_deps = []

@@ -6,6 +6,7 @@
 
 #include <cstdint>
 
+#include "base/files/file_path.h"
 #include "base/files/file_proxy.h"
 #include "base/files/file_util.h"
 #include "base/functional/bind.h"
@@ -311,7 +312,7 @@ void LocalFileWriter::Open(const base::FilePath& filename, Callback callback) {
   file_task_runner_->PostTaskAndReplyWithResult(
       FROM_HERE, base::BindOnce([] {
         return EnsureUserContext().AndThen(
-            [](absl::monostate) { return GetDesktopDirectory(); });
+            [](absl::monostate) { return GetFileUploadDirectory(); });
       }),
       base::BindOnce(&LocalFileWriter::OnGetTargetDirectoryResult,
                      weak_ptr_factory_.GetWeakPtr(), filename,

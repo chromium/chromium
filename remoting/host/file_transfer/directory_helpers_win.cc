@@ -17,7 +17,7 @@ namespace remoting {
 // itself does process-wide caching that can cause trouble on an impersonating
 // thread. As such, we have to call the relevant API directly and be explicit
 // about wanting impersonation handling.
-protocol::FileTransferResult<base::FilePath> GetDesktopDirectory() {
+protocol::FileTransferResult<base::FilePath> GetFileUploadDirectory() {
   // SHGetFolderPath on Windows 7 doesn't seem to like the pseudo handle
   // returned by GetCurrentThreadToken(), so call OpenThreadToken to get a real
   // handle.
