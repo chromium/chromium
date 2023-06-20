@@ -87,18 +87,7 @@ export class PowerBookmarksContextMenuElement extends PolymerElement {
     this.bookmarks_ = bookmarks;
     this.priceTracked_ = priceTracked;
     this.priceTrackingEligible_ = priceTrackingEligible;
-    const menuMargin = 20;
-    const doc = document.scrollingElement!;
-    const minX = doc.scrollLeft + menuMargin;
-    const maxX = doc.scrollLeft + doc.clientWidth - menuMargin;
-    afterNextRender(this, () => {
-      this.$.menu.showAtPosition({
-        top: event.clientY,
-        left: event.clientX,
-        minX: minX,
-        maxX: maxX,
-      });
-    });
+    this.$.menu.showAtPosition({top: event.clientY, left: event.clientX});
   }
 
   isOpen(): boolean {
