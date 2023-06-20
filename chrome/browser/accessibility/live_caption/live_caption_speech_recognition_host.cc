@@ -10,6 +10,7 @@
 
 #include "base/feature_list.h"
 #include "base/functional/callback_forward.h"
+#include "base/metrics/histogram_functions.h"
 #include "build/build_config.h"
 #include "chrome/browser/accessibility/caption_bubble_context_browser.h"
 #include "chrome/browser/accessibility/live_caption/live_caption_controller_factory.h"
@@ -62,6 +63,12 @@ LiveCaptionSpeechRecognitionHost::~LiveCaptionSpeechRecognitionHost() {
   LiveCaptionController* live_caption_controller = GetLiveCaptionController();
   if (live_caption_controller)
     live_caption_controller->OnAudioStreamEnd(context_.get());
+  if (base::FeatureList::IsEnabled(media::kLiveTranslate) &&
+      characters_translated_ > 0) {
+    base::UmaHistogramCounts10M(
+        "Accessibility.LiveTranslate.CharactersTranslated",
+        characters_translated_);
+  }
 }
 
 void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
@@ -78,6 +85,7 @@ void LiveCaptionSpeechRecognitionHost::OnSpeechRecognitionRecognitionEvent(
       l10n_util::GetLanguage(
           prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode)) !=
           l10n_util::GetLanguage(source_language_)) {
+    characters_translated_ += result.transcription.size();
     GetLiveTranslateController()->GetTranslation(
         result, source_language_,
         prefs_->GetString(prefs::kLiveTranslateTargetLanguageCode),

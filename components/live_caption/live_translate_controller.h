@@ -84,9 +84,6 @@ class LiveTranslateController : public KeyedService {
 
   const std::unique_ptr<PrefChangeRegistrar> pref_change_registrar_;
 
-  // The number of characters sent to the translation service.
-  int characters_translated_ = 0;
-
   base::WeakPtrFactory<LiveTranslateController> weak_factory_{this};
 };
 

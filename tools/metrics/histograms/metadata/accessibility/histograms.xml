@@ -1532,7 +1532,7 @@ chromium-metrics-reviews@google.com.
   <owner>chrome-a11y-core@google.com</owner>
   <summary>
     Records the number of characters sent to the translate service. Records once
-    per session upon the destruction of the Live Translate Controller.
+    per session upon the destruction of the LiveCaptionSpeechRecognitionHost.
   </summary>
 </histogram>
 

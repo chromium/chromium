@@ -99,6 +99,9 @@ class LiveCaptionSpeechRecognitionHost
   // The user preferences containing the target and source language codes.
   raw_ptr<PrefService> prefs_;
 
+  // The number of characters sent to the translation service.
+  int characters_translated_ = 0;
+
   base::WeakPtrFactory<LiveCaptionSpeechRecognitionHost> weak_factory_{this};
 };
 
