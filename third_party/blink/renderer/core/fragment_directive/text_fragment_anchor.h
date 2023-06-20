@@ -7,7 +7,6 @@
 
 #include "third_party/blink/public/mojom/loader/same_document_navigation_type.mojom-blink.h"
 #include "third_party/blink/public/web/web_frame_load_type.h"
-#include "third_party/blink/renderer/core/annotation/annotation_agent_container_impl.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/editing/forward.h"
 #include "third_party/blink/renderer/core/fragment_directive/selector_fragment_anchor.h"
@@ -51,11 +50,6 @@ class TextDirective;
 // TextFragmentAnchor then turns the directive into AnnotationAgents to perform
 // the text search.
 //
-// Each directive is initially searched automatically after creating its
-// corresponding AnnotationAgentImpl. However, as pages often load content
-// dynamically, this class may schedule up to two additional search attempts.
-// One at document load completion and another a short delay after load.
-//
 // The anchor performs its operations via the InvokeSelector method which is
 // invoked repeatedly, each time layout finishes in the document. Thus, the
 // anchor is guaranteed that layout is clean in InvokeSelector; however,
@@ -87,15 +81,10 @@ class TextDirective;
 //               └─────────────┬─────────────┘       │
 //                             │                     │
 //               ┌─────────────▼─────────────┐       │
-//               │        kFinalized         │◄──────┘
+//               │           kDone           │◄──────┘
 //               └───────────────────────────┘
-class CORE_EXPORT TextFragmentAnchor final
-    : public SelectorFragmentAnchor,
-      public AnnotationAgentContainerImpl::Observer {
+class CORE_EXPORT TextFragmentAnchor final : public SelectorFragmentAnchor {
  public:
-  static base::TimeDelta PostLoadTaskDelay();
-  static base::TimeDelta PostLoadTaskTimeout();
-
   // When a document is loaded, this method will be called to see if it meets
   // the criteria to generate a new permission token (at a high level it means:
   // did the user initiate the navigation?). This token can then be used to
@@ -123,24 +112,17 @@ class CORE_EXPORT TextFragmentAnchor final
   TextFragmentAnchor& operator=(const TextFragmentAnchor&) = delete;
   ~TextFragmentAnchor() override = default;
 
-  // SelectorFragmentAnchor implementation
   bool InvokeSelector() override;
 
-  // FragmentAnchor implementation
   void Installed() override;
-  bool IsTextFragmentAnchor() override { return true; }
-  void NewContentMayBeAvailable() override;
 
   void SetTickClockForTesting(const base::TickClock* tick_clock);
 
   void Trace(Visitor*) const override;
 
-  // AnnotationAgentContainerImpl::Observer implementation
-  void WillPerformAttach() override;
+  bool IsTextFragmentAnchor() override { return true; }
 
  private:
-  friend class TextFragmentAnchorTestBase;
-
   // Called after annotation agents attempt attachment to check each
   // agent's state and update this class' state machine.
   void UpdateCurrentState();
@@ -167,13 +149,7 @@ class CORE_EXPORT TextFragmentAnchor final
 
   bool HasSearchEngineSource();
 
-  // Calls SetNeedsAttachment on any annotations that haven't previously
-  // matched. Returns true if any such annotations were found.
-  bool MarkFailedAttachmentsForRetry();
-
-  // The post load task scheduled to cause a final search for unmatched
-  // directives. Called from a timer.
-  void PostLoadTask(TimerBase*);
+  bool ShouldKeepSearching();
 
   // This keeps track of each TextDirective and its associated
   // AnnotationAgentImpl. The directive is the DOM object exposed to JS that's
@@ -196,27 +172,8 @@ class CORE_EXPORT TextFragmentAnchor final
   // find a match, we fall back to the element anchor if it is present.
   Member<ElementFragmentAnchor> element_fragment_anchor_;
 
-  // Timers to call the post load task. `post_load_timer_` is scheduled shortly
-  // after load but can be rescheduled each time a DOM mutation occurs.
-  // However, if DOM mutations keep pushing the post load task out, eventually
-  // the timeout timer will run and clear both timers. These timers are mutually
-  // exclusive, if either is run it will stop the other.
-  HeapTaskRunnerTimer<TextFragmentAnchor> post_load_timer_;
-  HeapTaskRunnerTimer<TextFragmentAnchor> post_load_timeout_timer_;
-
-  // Tracks which search attempt the anchor is currently on.
-  enum SearchIteration {
-    // The initial search occurs when parsing completes.
-    kParsing,
-    // If parsing completed before the document was loaded, a second search is
-    // is being performed at load completion time.
-    kLoad,
-    // A final "post-load" search has been scheduled.
-    kPostLoad,
-    // All directives have been matched or all the above search iterations have
-    // been exhausted. No further searches will occur.
-    kDone
-  } iteration_ = kParsing;
+  // Set to true once InvokeSelector has been called after IsLoadCompleted.
+  bool did_perform_post_load_attachment_ = false;
 
   bool finalize_pending_ = false;
 
@@ -240,8 +197,8 @@ class CORE_EXPORT TextFragmentAnchor final
     // are matched. All that's done during this state is to keep the match
     // centered in the viewport in spite of layout shifts.
     kKeepInView,
-    // Script-running actions have completed - nothing left to do.
-    kFinalized
+    // All actions completed - the anchor can be disposed.
+    kDone
   } state_ = kSearching;
 
   Member<TextFragmentAnchorMetrics> metrics_;

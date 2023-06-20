@@ -40,14 +40,6 @@ const char* ToString(mojom::blink::AnnotationType type) {
 const char AnnotationAgentContainerImpl::kSupplementName[] =
     "AnnotationAgentContainerImpl";
 
-void AnnotationAgentContainerImpl::AddObserver(Observer* observer) {
-  observers_.insert(observer);
-}
-
-void AnnotationAgentContainerImpl::RemoveObserver(Observer* observer) {
-  observers_.erase(observer);
-}
-
 // static
 AnnotationAgentContainerImpl* AnnotationAgentContainerImpl::CreateIfNeeded(
     Document& document) {
@@ -107,7 +99,6 @@ void AnnotationAgentContainerImpl::Trace(Visitor* visitor) const {
   visitor->Trace(receivers_);
   visitor->Trace(agents_);
   visitor->Trace(annotation_agent_generator_);
-  visitor->Trace(observers_);
   Supplement<Document>::Trace(visitor);
 }
 
@@ -119,10 +110,6 @@ void AnnotationAgentContainerImpl::PerformInitialAttachments() {
 
   if (GetFrame().GetPage()->IsPageVisible()) {
     page_has_been_visible_ = true;
-  }
-
-  for (Observer* observer : observers_) {
-    observer->WillPerformAttach();
   }
 
   for (auto& agent : agents_) {
