@@ -630,13 +630,20 @@ using signin_metrics::PromoAction;
 #pragma mark - NSObject
 
 - (NSString*)description {
-  return [NSString stringWithFormat:@"<%@: %p, addAccountSigninCoordinator: "
-                                    @"%p, advancedSettingsSigninCoordinator: "
-                                    @"%p, signinIntent: %lu, accessPoint %d>",
-                                    self.class.description, self,
-                                    self.addAccountSigninCoordinator,
-                                    self.advancedSettingsSigninCoordinator,
-                                    self.signinIntent, self.logger.accessPoint];
+  return [NSString
+      stringWithFormat:@"<%@: %p, addAccountSigninCoordinator: "
+                       @"%p, advancedSettingsSigninCoordinator: "
+                       @"%p, signinIntent: %lu, accessPoint: %d, "
+                       @"viewController: %p, beingPresented: %d, "
+                       @"baseViewController: %@, window: %p>",
+                       self.class.description, self,
+                       self.addAccountSigninCoordinator,
+                       self.advancedSettingsSigninCoordinator,
+                       self.signinIntent, self.logger.accessPoint,
+                       self.viewController,
+                       self.viewController.isBeingPresented,
+                       NSStringFromClass([self.baseViewController class]),
+                       self.baseViewController.view.window];
 }
 
 #pragma mark - Methods for unittests
