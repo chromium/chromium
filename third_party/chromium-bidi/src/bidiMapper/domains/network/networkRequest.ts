@@ -172,12 +172,13 @@ export class NetworkRequest {
 
   #getNavigationId(): BrowsingContext.Navigation | null {
     if (
-      !this.#requestWillBeSentEvent?.loaderId ||
+      !this.#requestWillBeSentEvent ||
+      !this.#requestWillBeSentEvent.loaderId ||
       // When we navigate all CDP network events have `loaderId`
       // CDP's `loaderId` and `requestId` match when
       // that request triggered the loading
-      this.#requestWillBeSentEvent?.loaderId !==
-        this.#requestWillBeSentEvent?.requestId
+      this.#requestWillBeSentEvent.loaderId !==
+        this.#requestWillBeSentEvent.requestId
     ) {
       return null;
     }

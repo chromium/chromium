@@ -80,6 +80,9 @@ export class BrowsingContextProcessor {
     cdpClient.on('Target.detachedFromTarget', (params) => {
       this.#handleDetachedFromTargetEvent(params);
     });
+    cdpClient.on('Target.targetInfoChanged', (params) => {
+      this.#handleTargetInfoChangedEvent(params);
+    });
 
     cdpClient.on(
       'Page.frameAttached',
@@ -191,6 +194,15 @@ export class BrowsingContextProcessor {
     this.#preloadScriptStorage
       .findPreloadScripts({targetId: contextId})
       .map((preloadScript) => preloadScript.cdpTargetIsGone(contextId));
+  }
+
+  #handleTargetInfoChangedEvent(
+    params: Protocol.Target.TargetInfoChangedEvent
+  ) {
+    const contextId = params.targetInfo.targetId;
+    this.#browsingContextStorage
+      .findContext(contextId)
+      ?.onTargetInfoChanged(params);
   }
 
   async #getRealm(target: Script.Target): Promise<Realm> {

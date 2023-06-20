@@ -291,17 +291,11 @@ export class BrowsingContextImpl {
     };
   }
 
-  #initListeners() {
-    this.#cdpTarget.cdpClient.on(
-      'Target.targetInfoChanged',
-      (params: Protocol.Target.TargetInfoChangedEvent) => {
-        if (this.id !== params.targetInfo.targetId) {
-          return;
-        }
-        this.#url = params.targetInfo.url;
-      }
-    );
+  onTargetInfoChanged(params: Protocol.Target.TargetInfoChangedEvent) {
+    this.#url = params.targetInfo.url;
+  }
 
+  #initListeners() {
     this.#cdpTarget.cdpClient.on(
       'Page.frameNavigated',
       (params: Protocol.Page.FrameNavigatedEvent) => {
