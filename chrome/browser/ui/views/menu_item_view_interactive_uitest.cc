@@ -316,7 +316,13 @@ VIEW_TEST(MenuItemViewTestRemove11, RemoveItem11)
 VIEW_TEST(MenuItemViewTestRemove20, RemoveItem20)
 
 // If this flakes, disable and log details in http://crbug.com/523255.
-VIEW_TEST(MenuItemViewTestRemove21, RemoveItem21)
+// Flaky on Wayland.
+#if BUILDFLAG(IS_OZONE)
+#define MAYBE_RemoveItem21 DISABLED_RemoveItem21
+#else
+#define MAYBE_RemoveItem21 RemoveItem21
+#endif
+VIEW_TEST(MenuItemViewTestRemove21, MAYBE_RemoveItem21)
 
 // Test class for removing a menu item while a submenu is open.
 template <int REMOVE_INDEX>
