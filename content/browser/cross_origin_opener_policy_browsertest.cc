@@ -24,6 +24,7 @@
 #include "content/public/test/content_browser_test_content_browser_client.h"
 #include "content/public/test/content_browser_test_utils.h"
 #include "content/public/test/content_mock_cert_verifier.h"
+#include "content/public/test/prerender_test_util.h"
 #include "content/public/test/test_navigation_observer.h"
 #include "content/public/test/url_loader_interceptor.h"
 #include "content/shell/browser/shell.h"
@@ -236,7 +237,10 @@ class CrossOriginOpenerPolicyBrowserTest
       public ::testing::WithParamInterface<std::tuple<std::string, bool>> {
  public:
   CrossOriginOpenerPolicyBrowserTest()
-      : https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
+      : prerender_helper_(base::BindRepeating(
+            &CrossOriginOpenerPolicyBrowserTest::prerender_web_contents,
+            base::Unretained(this))),
+        https_server_(net::EmbeddedTestServer::TYPE_HTTPS) {
     // Enable COOP/COEP:
     feature_list_.InitAndEnableFeature(
         network::features::kCrossOriginOpenerPolicy);
@@ -269,6 +273,8 @@ class CrossOriginOpenerPolicyBrowserTest
   bool IsBackForwardCacheEnabled() { return std::get<1>(GetParam()); }
 
   net::EmbeddedTestServer* https_server() { return &https_server_; }
+
+  test::PrerenderTestHelper& prerender_helper() { return prerender_helper_; }
 
  protected:
   WebContentsImpl* web_contents() const {
@@ -315,6 +321,8 @@ class CrossOriginOpenerPolicyBrowserTest
         base::BindRepeating(&ServeDifferentCoopOnSecondNavigation,
                             base::OwnedRef(navigation_counter))));
 
+    prerender_helper().SetUp(&https_server_);
+
     ASSERT_TRUE(https_server()->Start());
   }
 
@@ -334,7 +342,17 @@ class CrossOriginOpenerPolicyBrowserTest
     mock_cert_verifier_.TearDownInProcessBrowserTestFixture();
   }
 
+  // Variation of web_contents(), that returns a WebContents* instead of a
+  // WebContentsImpl*, required to bind the prerender_helper_ in the
+  // constructor.
+  WebContents* prerender_web_contents() { return shell()->web_contents(); }
+
   content::ContentMockCertVerifier mock_cert_verifier_;
+
+  // This needs to be before ScopedFeatureLists, because it contains one
+  // internally and the destruction order matters.
+  test::PrerenderTestHelper prerender_helper_;
+
   base::test::ScopedFeatureList feature_list_;
   base::test::ScopedFeatureList feature_list_for_render_document_;
   base::test::ScopedFeatureList feature_list_for_back_forward_cache_;
@@ -9724,6 +9742,116 @@ IN_PROC_BROWSER_TEST_P(
   // Always-allowed properties should still be accessible.
   EXPECT_EQ(true, EvalJs(current_frame_host(), "window.w.closed == false"));
   EXPECT_EQ(true, EvalJs(popup_rfh, "opener.closed == false"));
+}
+
+IN_PROC_BROWSER_TEST_P(CoopRestrictPropertiesAccessBrowserTest, Prerender) {
+  GURL regular_page(https_server()->GetURL("a.test", "/title1.html"));
+  GURL coop_rp_page(https_server()->GetURL(
+      "a.test",
+      "/set-header"
+      "?cross-origin-opener-policy: restrict-properties"));
+  GURL regular_page_2(https_server()->GetURL("b.test", "/title1.html"));
+  GURL regular_page_2_with_fragment(
+      https_server()->GetURL("b.test", "/title1.html#fragment"));
+
+  // Start on a regular page.
+  ASSERT_TRUE(NavigateToURL(shell(), regular_page));
+  scoped_refptr<SiteInstanceImpl> initial_si =
+      current_frame_host()->GetSiteInstance();
+  base::UnguessableToken initial_bi_token =
+      initial_si->browsing_instance_token();
+  base::UnguessableToken initial_coop_token =
+      initial_si->coop_related_group_token();
+
+  // Now prerender a COOP: restrict-properties page and activate it. Prerender
+  // does not support staying in the same CoopRelatedGroup, so it will use a
+  // completely new CoopRelatedGroup. During activation we should get new
+  // BrowsingContextGroupInfo tokens.
+  // TODO(https://crbug.com/1455344): This is an undesired consequence of
+  // always starting the prerendering in another BrowsingInstance. See if this
+  // should be fixed.
+  int host_id = prerender_helper().AddPrerender(coop_rp_page);
+  RenderFrameHostImpl* prerender_frame_host = static_cast<RenderFrameHostImpl*>(
+      prerender_helper().GetPrerenderedMainFrameHost(host_id));
+  ASSERT_TRUE(prerender_frame_host);
+  ASSERT_FALSE(
+      prerender_frame_host->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          initial_si.get()));
+  prerender_helper().NavigatePrimaryPage(coop_rp_page);
+  RenderFrameHostImpl* activated_rfh = current_frame_host();
+  ASSERT_EQ(prerender_frame_host, current_frame_host());
+  EXPECT_NE(initial_bi_token,
+            activated_rfh->GetSiteInstance()->browsing_instance_token());
+  EXPECT_NE(initial_coop_token,
+            activated_rfh->GetSiteInstance()->coop_related_group_token());
+
+  // Now open a popup to another regular page.
+  ShellAddedObserver shell_observer;
+  ASSERT_TRUE(
+      ExecJs(current_frame_host(),
+             JsReplace("window.w = window.open($1, '');", regular_page_2)));
+  WebContentsImpl* popup_window =
+      static_cast<WebContentsImpl*>(shell_observer.GetShell()->web_contents());
+  ASSERT_TRUE(WaitForLoadStop(popup_window));
+  RenderFrameHostImpl* popup_rfh = popup_window->GetPrimaryMainFrame();
+  ASSERT_FALSE(current_frame_host()->GetSiteInstance()->IsRelatedSiteInstance(
+      popup_rfh->GetSiteInstance()));
+  ASSERT_TRUE(
+      current_frame_host()->GetSiteInstance()->IsCoopRelatedSiteInstance(
+          popup_rfh->GetSiteInstance()));
+
+  // Verify the visible effects of the appropriate tokens being passed down the
+  // renderer during the prerender activation. Restricted cross-origin
+  // properties access should be blocked.
+  std::string opener_to_openee_access =
+      EvalJs(current_frame_host(),
+             "try { window.w.blur() } catch (e) { e.toString(); }")
+          .ExtractString();
+  EXPECT_THAT(opener_to_openee_access,
+              ::testing::MatchesRegex(kCoopRpErrorMessageRegex));
+
+  std::string openee_to_opener_access =
+      EvalJs(popup_rfh, "try { opener.blur() } catch (e) { e.toString(); }")
+          .ExtractString();
+  EXPECT_THAT(openee_to_opener_access,
+              ::testing::MatchesRegex(kCoopRpErrorMessageRegex));
+
+  // Always-allowed properties should still be accessible.
+  EXPECT_EQ(true, EvalJs(current_frame_host(), "window.w.closed == false"));
+  EXPECT_EQ(true, EvalJs(popup_rfh, "opener.closed == false"));
+
+  // Finally go back in history. We end up in the original SiteInstance.
+  web_contents()->GetController().GoBack();
+  ASSERT_TRUE(WaitForLoadStop(web_contents()));
+  SiteInstanceImpl* back_si = current_frame_host()->GetSiteInstance();
+  ASSERT_EQ(back_si, initial_si.get());
+  EXPECT_EQ(initial_bi_token, back_si->browsing_instance_token());
+  EXPECT_EQ(initial_coop_token, back_si->coop_related_group_token());
+
+  // Do a quick same-document navigation on the popup to make sure
+  // BrowsingContextGroupInfo updates are propagated to the renderer. This works
+  // because the interfaces are associated.
+  ASSERT_TRUE(NavigateToURL(popup_window, regular_page_2_with_fragment));
+
+  // TODO(https://crbug.com/1455344, https://crbug.com/1456277):
+  // This hits multiple bugs. Current end behavior is:
+  // - Without BFCache, we end up with a page in another BrowsingInstance, with
+  //   proxies still around. No restriction is enforced in the renderer, because
+  //   the tokens for the CoopRelatedGroup do not match, but all browser
+  //   mitigated APIs will be blocked (postMessage, navigations).
+  // - With BFCache, we end up with a page that has the wrong tokens, so the
+  //   accesses are restricted on the renderer. On top of that, since they
+  //   belong to different CoopRelatedGroup, postMessage will be ignored by the
+  //   browser.
+  if (IsBackForwardCacheEnabled()) {
+    std::string post_bf_cache_openee_to_opener_access =
+        EvalJs(popup_rfh, "try { opener.blur() } catch (e) { e.toString(); }")
+            .ExtractString();
+    EXPECT_THAT(post_bf_cache_openee_to_opener_access,
+                ::testing::MatchesRegex(kCoopRpErrorMessageRegex));
+  } else {
+    EXPECT_TRUE(ExecJs(popup_rfh, "opener.blur()"));
+  }
 }
 
 }  // namespace content
