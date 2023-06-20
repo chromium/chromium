@@ -397,6 +397,22 @@ TEST(SessionCommandsTest, MatchCapabilitiesVirtualAuthenticatorsLargeBlob) {
   EXPECT_FALSE(MatchCapabilities(merged));
 }
 
+TEST(SessionCommandsTest, MatchCapabilitiesFedCm) {
+  // Match fedcm:accounts.
+  base::Value::Dict merged;
+  merged.SetByDottedPath("fedcm:accounts", true);
+  EXPECT_TRUE(MatchCapabilities(merged));
+
+  // Don't match false.
+  merged.SetByDottedPath("fedcm:accounts", false);
+  EXPECT_FALSE(MatchCapabilities(merged));
+
+  // Don't match values other than bools.
+  merged.clear();
+  merged.Set("fedcm:accounts", "not a bool");
+  EXPECT_FALSE(MatchCapabilities(merged));
+}
+
 TEST(SessionCommandsTest, Quit) {
   DetachChrome* chrome = new DetachChrome();
   Session session("id", std::unique_ptr<Chrome>(chrome));

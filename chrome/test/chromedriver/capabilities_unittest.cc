@@ -786,6 +786,23 @@ TEST(ParseCapabilities, VirtualAuthenticatorsLargeBlobNotBool) {
   EXPECT_FALSE(capabilities.Parse(caps).IsOk());
 }
 
+TEST(ParseCapabilities, FedcmAccountsBool) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps.Set("fedcm:accounts", true);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+
+  caps.Set("fedcm:accounts", false);
+  EXPECT_TRUE(capabilities.Parse(caps).IsOk());
+}
+
+TEST(ParseCapabilities, FedcmAccountsNotBool) {
+  Capabilities capabilities;
+  base::Value::Dict caps;
+  caps.Set("fedcm:accounts", "not a bool");
+  EXPECT_FALSE(capabilities.Parse(caps).IsOk());
+}
+
 namespace {
 
 base::Value::Dict CreateCapabilitiesDict(const std::string& mobile_emulation) {

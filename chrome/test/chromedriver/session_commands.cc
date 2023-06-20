@@ -207,6 +207,9 @@ base::Value::Dict CreateCapabilities(Session* session,
   caps.Set("webauthn:extension:credBlob", !capabilities.IsAndroid());
   caps.Set("webauthn:extension:prf", !capabilities.IsAndroid());
 
+  // See https://github.com/fedidcg/FedCM/pull/478
+  caps.Set("fedcm:accounts", true);
+
   // Chrome-specific extensions.
   const std::string chrome_driver_version_key = base::StringPrintf(
       "%s.%sVersion", base::ToLowerASCII(kBrowserShortName).c_str(),
@@ -516,8 +519,8 @@ bool MergeCapabilities(const base::Value::Dict& always_match,
 // Implementation of "matching capabilities", as defined in W3C spec at
 // https://www.w3.org/TR/webdriver/#dfn-matching-capabilities.
 // It checks some requested capabilities and make sure they are supported.
-// Currently, we only check "browserName", "platformName", and webauthn
-// capabilities but more can be added as necessary.
+// Currently, we only check "browserName", "platformName", "fedcm:accounts"
+// and webauthn capabilities but more can be added as necessary.
 bool MatchCapabilities(const base::Value::Dict& capabilities) {
   const base::Value* name = capabilities.Find("browserName");
   if (name && !name->is_none()) {
@@ -580,6 +583,13 @@ bool MatchCapabilities(const base::Value::Dict& capabilities) {
   if (large_blob_value) {
     if (!large_blob_value->is_bool() ||
         (large_blob_value->GetBool() && is_android)) {
+      return false;
+    }
+  }
+
+  const base::Value* fedcm_accounts_value = capabilities.Find("fedcm:accounts");
+  if (fedcm_accounts_value) {
+    if (!fedcm_accounts_value->is_bool() || !fedcm_accounts_value->GetBool()) {
       return false;
     }
   }
