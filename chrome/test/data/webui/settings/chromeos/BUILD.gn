@@ -125,6 +125,7 @@ build_webui_tests("build") {
     "device_page/fake_cros_audio_config_test.ts",
     "device_page/fake_input_device_settings_provider_test.ts",
     "device_page/input_device_mojo_interface_provider_test.ts",
+    "device_page/keyboard_six_pack_key_row_test.ts",
     "device_page/per_device_keyboard_remap_keys_test.ts",
     "device_page/per_device_keyboard_subsection_test.ts",
     "device_page/per_device_keyboard_test.ts",

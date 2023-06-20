@@ -219,6 +219,11 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],
  [
+   'DevicePageKeyboardSixPackKeyRow',
+   'device_page/keyboard_six_pack_key_row_test.js',
+   {enabled: ['ash::features::kInputDeviceSettingsSplit']}
+ ],
+ [
    'DevicePagePerDeviceKeyboard', 'device_page/per_device_keyboard_test.js',
    {enabled: ['ash::features::kInputDeviceSettingsSplit']}
  ],

@@ -99,6 +99,7 @@ build_webui("build") {
     "device_page/pointers.ts",
     "device_page/power.ts",
     "device_page/keyboard_remap_modifier_key_row.ts",
+    "device_page/keyboard_six_pack_key_row.ts",
     "device_page/storage.ts",
     "device_page/storage_external.ts",
     "device_page/storage_external_entry.ts",

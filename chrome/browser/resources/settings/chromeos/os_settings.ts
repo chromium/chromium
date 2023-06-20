@@ -25,6 +25,7 @@ import './device_page/input_device_mojo_interface_provider.js';
 import './device_page/input_device_settings_types.js';
 import './device_page/graphics_tablet_subpage.js';
 import './device_page/keyboard.js';
+import './device_page/keyboard_six_pack_key_row.js';
 import './device_page/per_device_keyboard.js';
 import './device_page/per_device_keyboard_remap_keys.js';
 import './device_page/per_device_keyboard_subsection.js';
@@ -107,6 +108,7 @@ export {SettingsGraphicsTabletSubpageElement} from './device_page/graphics_table
 export {getInputDeviceSettingsProvider, setInputDeviceSettingsProviderForTesting, setupFakeInputDeviceSettingsProvider} from './device_page/input_device_mojo_interface_provider.js';
 export {InputDeviceSettingsPolicy, Keyboard, MetaKey, ModifierKey, Mouse, PolicyStatus, SimulateRightClickModifier} from './device_page/input_device_settings_types.js';
 export {KeyboardRemapModifierKeyRowElement} from './device_page/keyboard_remap_modifier_key_row.js';
+export {KeyboardSixPackKeyRowElement} from './device_page/keyboard_six_pack_key_row.js';
 export {SettingsPerDeviceKeyboardElement} from './device_page/per_device_keyboard.js';
 export {SettingsPerDeviceKeyboardRemapKeysElement} from './device_page/per_device_keyboard_remap_keys.js';
 export {SettingsPerDeviceKeyboardSubsectionElement} from './device_page/per_device_keyboard_subsection.js';
