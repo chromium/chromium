@@ -62,11 +62,10 @@ class OneDriveUploadHandler
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
-  // End upload with error and run Upload callback. Show correct error
-  // notification via |OnGetActionsResult|.
-  void ShowReauthenticationOrMoveUploadError(
-      OfficeFilesUploadResult generic_upload_result,
-      std::string generic_move_error_message);
+  // Find the base::File::Error error returned by the IO Task and convert it to
+  // an appropriate error notification.
+  void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
+
   // OnGetActions callback which checks the |result| to see if reauthentication
   // is required. If reauthentication is required, show the reauthentication
   // required error. Otherwise show a generic move upload error.

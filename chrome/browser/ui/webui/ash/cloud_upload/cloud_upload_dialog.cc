@@ -231,11 +231,14 @@ void OpenFileFromODFS(
             if (!profile) {
               return;
             }
+            // TODO(b/288022200 b/275911611): Distinguish between
+            // reauthentication required and generic error.
             if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
               ShowUnableToOpenNotification(profile);
               return;
             }
             if (result != base::File::Error::FILE_OK) {
+              // TODO(b/275911611): Add generic "failed to open" notification.
               return;
             }
             for (const file_system_provider::Action& action : actions) {
@@ -665,6 +668,7 @@ void CloudOpenTask::OpenAndroidOneDriveUrlsIfAccountMatchedODFS() {
     LOG(ERROR) << "Android OneDrive Url cannot be converted to ODFS";
     return;
   }
+  // TODO(b/288022200): Query '/' instead to get user email.
   fs_and_path->file_system->GetActions(
       {fs_and_path->file_path_within_odfs},
       base::BindOnce(&CloudOpenTask::CheckEmailAndOpenURLs, this,
