@@ -176,6 +176,8 @@ crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/get_element_pro
 crbug.com/1430078 [ Linux ] external/wpt/webdriver/tests/classic/execute_script/properties.py>>test_content_attribute [ Failure Pass ]
 
 # ====== New tests from wpt-importer added here ======
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_element_from_shadow_root/find.py>>test_find_element_in_nested_shadow_root[closed] [ Failure ]
+crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/find_elements_from_shadow_root/find.py>>test_find_elements_in_nested_shadow_root[closed] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-http] [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-https* [ Failure ]
 crbug.com/626703 [ Linux ] external/wpt/webdriver/tests/classic/back/back.py>>test_seen_nodes[capabilities0-https] [ Failure ]
