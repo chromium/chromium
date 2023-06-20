@@ -26,6 +26,9 @@ found in the LICENSE file.
     font-size: var(--oobe-button-font-size);
     font-weight: var(--oobe-button-font-weight);
   }
+  :host(.bg-transparent) cr-button {
+    background-color: transparent !important;
+  }
 </style>
 <cr-button id="button" disabled="[[disabled]]"
     aria-label$="[[labelForAriaText_]]">
