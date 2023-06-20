@@ -1,0 +1,7 @@
+raw_ptr_fields_macro.cpp:8:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  int* ptr0;     // Error.
+       ^
+raw_ptr_fields_macro.cpp:9:8: error: [chromium-rawptr] Use raw_ptr<T> instead of a raw pointer.
+  INT* ptr1;     // Error: typeLoc is macro but identifier is written here.
+       ^
+2 errors generated.

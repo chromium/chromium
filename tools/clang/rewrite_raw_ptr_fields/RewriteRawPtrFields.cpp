@@ -1186,6 +1186,10 @@ int main(int argc, const char* argv[]) {
       llvm::cl::desc("Exclude pointers/references to `STACK_ALLOCATED` objects "
                      "from the rewrite"));
 
+  llvm::cl::opt<bool> raw_ptr_fix_crbug_1449812(
+      "raw_ptr_fix_crbug_1449812", llvm::cl::init(true),
+      llvm::cl::desc("Apply a fix for crbug.com/1449812"));
+
   llvm::Expected<clang::tooling::CommonOptionsParser> options =
       clang::tooling::CommonOptionsParser::create(argc, argv, category);
   assert(static_cast<bool>(options));  // Should not return an error.
@@ -1217,7 +1221,7 @@ int main(int argc, const char* argv[]) {
   chrome_checker::StackAllocatedPredicate stack_allocated_checker;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &fields_to_exclude, paths_to_exclude.get(), exclude_stack_allocated,
-      &stack_allocated_checker};
+      &stack_allocated_checker, raw_ptr_fix_crbug_1449812};
 
   RawPtrRewriter raw_ptr_rewriter(&output_helper, match_finder,
                                   exclusion_options);

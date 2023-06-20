@@ -112,22 +112,52 @@ clang::ast_matchers::internal::Matcher<clang::QualType> StackAllocatedQualType(
 // is part of chromium git repo.
 clang::ast_matchers::internal::Matcher<clang::NamedDecl> PtrAndRefExclusions(
     const RawPtrAndRefExclusionsOptions& options) {
-  if (!options.should_exclude_stack_allocated_records) {
-    return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-                 isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                 isInGeneratedLocation(),
-                 isInLocationListedInFilterFile(options.paths_to_exclude),
-                 isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                 ImplicitFieldDeclaration(), isObjCSynthesize());
+  if (!options.fix_crbug_1449812) {
+    // Before fix for crbug.com/1449812
+    // - File exclusion is performed based on the `SourceLocation` obtained
+    //   via `getBeginLoc()`.
+    // - System header check is based on expansion location.
+    if (!options.should_exclude_stack_allocated_records) {
+      return anyOf(
+          isExpansionInSystemHeader(), isInExternCContext(),
+          isRawPtrExclusionAnnotated(), isBeginInThirdPartyLocation(),
+          isBeginInGeneratedLocation(),
+          isBeginInLocationListedInFilterFile(options.paths_to_exclude),
+          isFieldDeclListedInFilterFile(options.fields_to_exclude),
+          ImplicitFieldDeclaration(), isObjCSynthesize());
+    } else {
+      return anyOf(
+          isExpansionInSystemHeader(), isInExternCContext(),
+          isRawPtrExclusionAnnotated(), isBeginInThirdPartyLocation(),
+          isBeginInGeneratedLocation(),
+          isBeginInLocationListedInFilterFile(options.paths_to_exclude),
+          isFieldDeclListedInFilterFile(options.fields_to_exclude),
+          ImplicitFieldDeclaration(), isObjCSynthesize(),
+          hasDescendant(
+              StackAllocatedQualType(options.stack_allocated_predicate)));
+    }
   } else {
-    return anyOf(isExpansionInSystemHeader(), isInExternCContext(),
-                 isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
-                 isInGeneratedLocation(),
-                 isInLocationListedInFilterFile(options.paths_to_exclude),
-                 isFieldDeclListedInFilterFile(options.fields_to_exclude),
-                 ImplicitFieldDeclaration(), isObjCSynthesize(),
-                 hasDescendant(StackAllocatedQualType(
-                     options.stack_allocated_predicate)));
+    // After fix for crbug.com/1449812
+    // - File exclusion is performed based on the `SourceLocation` obtained
+    //   via `getLocation()`.
+    // - System header check is based on spelling location.
+    if (!options.should_exclude_stack_allocated_records) {
+      return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
+                   isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+                   isInGeneratedLocation(),
+                   isInLocationListedInFilterFile(options.paths_to_exclude),
+                   isFieldDeclListedInFilterFile(options.fields_to_exclude),
+                   ImplicitFieldDeclaration(), isObjCSynthesize());
+    } else {
+      return anyOf(isSpellingInSystemHeader(), isInExternCContext(),
+                   isRawPtrExclusionAnnotated(), isInThirdPartyLocation(),
+                   isInGeneratedLocation(),
+                   isInLocationListedInFilterFile(options.paths_to_exclude),
+                   isFieldDeclListedInFilterFile(options.fields_to_exclude),
+                   ImplicitFieldDeclaration(), isObjCSynthesize(),
+                   hasDescendant(StackAllocatedQualType(
+                       options.stack_allocated_predicate)));
+    }
   }
 }
 

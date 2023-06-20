@@ -1,0 +1,1 @@
+-Xclang -plugin-arg-find-bad-constructs -Xclang check-raw-ptr-fields -Xclang -plugin-arg-find-bad-constructs -Xclang raw-ptr-fix-crbug-1449812

@@ -285,7 +285,7 @@ void FindBadRawPtrPatterns(Options options,
   StackAllocatedPredicate stack_allocated_predicate;
   RawPtrAndRefExclusionsOptions exclusion_options{
       &exclude_fields, &exclude_lines, options.check_raw_ptr_to_stack_allocated,
-      &stack_allocated_predicate};
+      &stack_allocated_predicate, options.raw_ptr_fix_crbug_1449812};
 
   RawPtrFieldMatcher field_matcher(compiler, exclusion_options);
   if (options.check_raw_ptr_fields) {
