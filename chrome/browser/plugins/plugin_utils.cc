@@ -38,10 +38,8 @@ void PluginUtils::GetPluginContentSetting(
   GURL main_frame_url = main_frame_origin.GetURL();
   content_settings::SettingInfo info;
   bool uses_plugin_specific_setting = false;
-  const base::Value value = host_content_settings_map->GetWebsiteSetting(
+  *setting = host_content_settings_map->GetContentSetting(
       main_frame_url, main_frame_url, ContentSettingsType::JAVASCRIPT, &info);
-
-  *setting = content_settings::ValueToContentSetting(value);
 
   bool uses_default_content_setting =
       !uses_plugin_specific_setting &&

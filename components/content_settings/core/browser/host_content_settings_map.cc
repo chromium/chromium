@@ -398,11 +398,12 @@ ContentSetting HostContentSettingsMap::GetDefaultContentSetting(
 ContentSetting HostContentSettingsMap::GetContentSetting(
     const GURL& primary_url,
     const GURL& secondary_url,
-    ContentSettingsType content_type) const {
+    ContentSettingsType content_type,
+    content_settings::SettingInfo* info) const {
   DCHECK(content_settings::ContentSettingsRegistry::GetInstance()->Get(
       content_type));
   const base::Value value =
-      GetWebsiteSetting(primary_url, secondary_url, content_type, nullptr);
+      GetWebsiteSetting(primary_url, secondary_url, content_type, info);
   return content_settings::ValueToContentSetting(value);
 }
 

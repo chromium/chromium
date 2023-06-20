@@ -853,13 +853,12 @@ ContentSetting GetContentSettingForOrigin(Profile* profile,
   // content settings, not just the permissions, plus all the possible sources,
   // and the calls to HostContentSettingsMap should be removed.
   content_settings::SettingInfo info;
-  const base::Value value =
-      map->GetWebsiteSetting(origin, origin, content_type, &info);
+  ContentSetting setting =
+      map->GetContentSetting(origin, origin, content_type, &info);
 
   // Retrieve the content setting.
   permissions::PermissionResult result(
-      content_settings::ValueToContentSetting(value),
-      permissions::PermissionStatusSource::UNSPECIFIED);
+      setting, permissions::PermissionStatusSource::UNSPECIFIED);
   if (permissions::PermissionDecisionAutoBlocker::IsEnabledForContentSetting(
           content_type)) {
     if (permissions::PermissionUtil::IsPermission(content_type)) {

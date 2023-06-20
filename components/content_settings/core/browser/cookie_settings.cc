@@ -111,15 +111,13 @@ void CookieSettings::SetCookieSettingForUserBypass(
 bool CookieSettings::IsStoragePartitioningBypassEnabled(
     const GURL& first_party_url) {
   SettingInfo info;
-  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
       GURL(), first_party_url, ContentSettingsType::COOKIES, &info);
 
   bool is_default = info.primary_pattern.MatchesAllHosts() &&
                     info.secondary_pattern.MatchesAllHosts();
 
-  DCHECK(value.is_int());
-
-  return is_default ? false : IsAllowed(ValueToContentSetting(value));
+  return is_default ? false : IsAllowed(setting);
 }
 
 void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
@@ -217,7 +215,7 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
 
   // First get any host-specific settings.
   SettingInfo info;
-  const base::Value value = host_content_settings_map_->GetWebsiteSetting(
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
       url, first_party_url, ContentSettingsType::COOKIES, &info);
   if (source) {
     *source = info.source;
@@ -230,9 +228,6 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
                      ShouldBlockThirdPartyCookies() &&
                      !first_party_url.SchemeIs(extension_scheme_);
 
-  // We should always have a value, at least from the default provider.
-  DCHECK(value.is_int());
-  ContentSetting setting = ValueToContentSetting(value);
   bool block = block_third && is_third_party_request;
 
   if (!block) {

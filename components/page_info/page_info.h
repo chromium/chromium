@@ -364,7 +364,7 @@ class PageInfo : private content_settings::OldCookieControlsObserver {
   void PopulatePermissionInfo(PermissionInfo& permission_info,
                               HostContentSettingsMap* content_settings,
                               const content_settings::SettingInfo& info,
-                              const base::Value& value) const;
+                              ContentSetting setting) const;
 
   // Returns whether |info| should be displayed in the UI.
   bool ShouldShowPermission(const PageInfo::PermissionInfo& info) const;

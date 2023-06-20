@@ -70,10 +70,9 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
                               ->GetLastCommittedURL()
                         : navigation_handle->GetURL();
   content_settings::SettingInfo setting_info;
-  const base::Value setting = host_content_settings_map_->GetWebsiteSetting(
+  ContentSetting setting = host_content_settings_map_->GetContentSetting(
       url, url, ContentSettingsType::REQUEST_DESKTOP_SITE, &setting_info);
-  bool use_rds =
-      content_settings::ValueToContentSetting(setting) == CONTENT_SETTING_ALLOW;
+  bool use_rds = setting == CONTENT_SETTING_ALLOW;
   // For --request-desktop-sites, always override the user agent.
   use_rds |= base::CommandLine::ForCurrentProcess()->HasSwitch(
       switches::kRequestDesktopSites);

@@ -136,8 +136,7 @@ bool GetSettingManagedByUser(const GURL& url,
         url, url, net::CookieSettingOverrides(), &source);
   } else {
     SettingInfo info;
-    const base::Value value = map->GetWebsiteSetting(url, url, type, &info);
-    setting = content_settings::ValueToContentSetting(value);
+    setting = map->GetContentSetting(url, url, type, &info);
     source = info.source;
   }
 

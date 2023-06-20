@@ -117,12 +117,15 @@ class HostContentSettingsMap : public content_settings::Observer,
   // that certain internal schemes are allowlisted. For |CONTENT_TYPE_COOKIES|,
   // |CookieSettings| should be used instead. For content types that can't be
   // converted to a |ContentSetting|, |GetContentSettingValue| should be called.
-  // If there is no content setting, returns CONTENT_SETTING_DEFAULT.
+  // If there is no content setting, returns CONTENT_SETTING_DEFAULT. |info| is
+  // populated as explained in |GetWebsiteSetting()|.
   //
   // May be called on any thread.
-  ContentSetting GetContentSetting(const GURL& primary_url,
-                                   const GURL& secondary_url,
-                                   ContentSettingsType content_type) const;
+  ContentSetting GetContentSetting(
+      const GURL& primary_url,
+      const GURL& secondary_url,
+      ContentSettingsType content_type,
+      content_settings::SettingInfo* info = nullptr) const;
 
   // This is the same as GetContentSetting() but ignores providers which are not
   // user-controllable (e.g. policy and extensions).
