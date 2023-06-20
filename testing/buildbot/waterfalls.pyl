@@ -1184,7 +1184,7 @@
           'has_native_resultdb_integration',
           'pie-x86-emulator',
           'emulator-8-cores',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'test_suites': {
