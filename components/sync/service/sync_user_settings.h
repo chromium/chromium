@@ -49,6 +49,10 @@ class SyncUserSettings {
   virtual UserSelectableTypeSet GetSelectedTypes() const = 0;
   virtual bool IsTypeManagedByPolicy(UserSelectableType type) const = 0;
 
+  // TODO(crbug.com/1455963): Either merge or clearly distinguish
+  // SetSelectedTypes() (used for syncing users) from SetSelectedType() (used
+  // for signed-in, non-syncing users).
+
   // Setting selected types for Sync-the-feature users.
   // Sets user's selected types. Must only be called if Sync-the-feature is
   // active, or in the process of being configured.

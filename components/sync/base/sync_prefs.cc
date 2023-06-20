@@ -166,6 +166,10 @@ UserSelectableTypeSet SyncPrefs::GetSelectedTypes(
       for (UserSelectableType type : UserSelectableTypeSet::All()) {
         const char* pref_name = GetPrefNameForType(type);
         DCHECK(pref_name);
+        // TODO(crbug.com/1455963): Find a better solution than manually
+        // overriding the prefs' default values.
+        // TODO(crbug.com/1455963): This should return true by default only if
+        // a given type can actually run in transport mode.
         if (pref_service_->GetBoolean(pref_name) ||
             pref_service_->FindPreference(pref_name)->IsDefaultValue()) {
           // In transport-mode, individual types are considered enabled by
