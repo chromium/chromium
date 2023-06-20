@@ -18,62 +18,9 @@
 
 namespace base::test {
 
-// Related class to `base::test::TestFuture`, which allows its callback and
-// AddValue() method to be called multiple times.
+// DEPRECATED!
 //
-// Each call to Take() will return one element in FIFO fashion.
-// If no element is available, Take() will wait until an element becomes
-// available.
-//
-// Just like `base::test::TestFuture`, `base::test::RepeatingTestFuture` also
-// supports callbacks which take multiple values. If this is the case Take()
-// will return a tuple containing all values passed to the callback.
-//
-// Example usage:
-//
-//   TEST_F(MyTestFixture, MyTest) {
-//     RepeatingTestFuture<ResultType> future;
-//
-//     InvokeCallbackAsyncTwice(future.GetCallback());
-//
-//     ResultType first_result = future.Take();
-//     ResultType second_result = future.Take();
-//
-//     // When you come here, InvokeCallbackAsyncTwice has finished,
-//     // `first_result` contains the value passed to the first invocation
-//     // of the callback, and `second_result` has the result of the second
-//     // invocation.
-//   }
-//
-// Example without using a callback but using AddValue() instead:
-//
-//   TEST_F(MyTestFixture, MyTest) {
-//     RepeatingTestFuture<std::string> future;
-//
-//     // AddValue() can be used to add an element to the future.
-//     future.AddValue("first-value");
-//     future.AddValue("second-value");
-//
-//     EXPECT_EQ("first-value", future.Take());
-//     EXPECT_EQ("second-value", future.Take());
-//   }
-//
-// Or an example using RepeatingTestFuture::Wait():
-//
-//   TEST_F(MyTestFixture, MyWaitTest) {
-//     RepeatingTestFuture<ResultType> future;
-//
-//     object_under_test.DoSomethingAsync(future.GetCallback());
-//
-//     // Optional. The Take() call below will also wait until the value
-//     // arrives, but this explicit call to Wait() can be useful if you want to
-//     // add extra information.
-//     ASSERT_TRUE(future.Wait()) << "Detailed error message";
-//
-//     ResultType actual_result = future.Take();
-//   }
-//
-// All access to this class must be made from the same sequence.
+// Please use `TestFuture` with `TestFuture::GetRepeatingCallback()` instead.
 template <typename... Types>
 class RepeatingTestFuture {
  public:
@@ -107,8 +54,9 @@ class RepeatingTestFuture {
   [[nodiscard]] bool Wait() {
     DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-    if (IsEmpty())
+    if (IsEmpty()) {
       WaitForANewElement();
+    }
 
     return !IsEmpty();
   }
@@ -135,8 +83,9 @@ class RepeatingTestFuture {
     return base::BindRepeating(
         [](WeakPtr<RepeatingTestFuture<Types...>> future,
            CallbackArgumentsTypes... values) {
-          if (future)
+          if (future) {
             future->AddValue(std::forward<CallbackArgumentsTypes>(values)...);
+          }
         },
         weak_ptr_factory_.GetWeakPtr());
   }
@@ -193,8 +142,9 @@ class RepeatingTestFuture {
   }
 
   void SignalElementIsAvailable() VALID_CONTEXT_REQUIRED(sequence_checker_) {
-    if (run_loop_.has_value())
+    if (run_loop_.has_value()) {
       run_loop_->Quit();
+    }
   }
 
   TupleType TakeTuple() {

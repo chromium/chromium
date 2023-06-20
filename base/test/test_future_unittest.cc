@@ -153,12 +153,12 @@ TEST_F(TestFutureTest, IsReadyShouldBeTrueWhenValueIsSet) {
   EXPECT_TRUE(future.IsReady());
 }
 
-TEST_F(TestFutureTest, ResetShouldRemoveStoredValue) {
+TEST_F(TestFutureTest, ClearShouldRemoveStoredValue) {
   TestFuture<AnyType> future;
 
   future.SetValue(kAnyValue);
 
-  future.Reset();
+  future.Clear();
 
   EXPECT_FALSE(future.IsReady());
 }
