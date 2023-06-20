@@ -2321,32 +2321,11 @@
         'args': [
           '--disable-field-trial-config',
         ],
+        'ci_only': True,
         'test': 'android_browsertests',
         'swarming': {
           'shards': 3,
         },
-      },
-      'webview_cts_tests_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'swarming': {
-          'shards': 2,
-          'cipd_packages': [
-            {
-              "cipd_package": 'chromium/android_webview/tools/cts_archive',
-              'location': 'android_webview/tools/cts_archive',
-              'revision': 'D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C',
-            }
-          ]
-        },
-        'test': 'webview_cts_tests',
-      },
-      'webview_ui_test_app_test_apk_no_field_trial': {
-        'args': [
-          '--disable-field-trial-config',
-        ],
-        'test': 'webview_ui_test_app_test_apk',
       },
     },
     'fieldtrial_browser_tests': {
@@ -2382,7 +2361,32 @@
         'test': 'sync_integration_tests',
       },
     },
-
+    'fieldtrial_webview_tests': {
+      'webview_cts_tests_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'ci_only': True,
+        'swarming': {
+          'shards': 2,
+          'cipd_packages': [
+            {
+              "cipd_package": 'chromium/android_webview/tools/cts_archive',
+              'location': 'android_webview/tools/cts_archive',
+              'revision': 'D9ziv4Z61qHwterMTFEoPeCZzFNyUfMnWAlYuxEKlM8C',
+            }
+          ]
+        },
+        'test': 'webview_cts_tests',
+      },
+      'webview_ui_test_app_test_apk_no_field_trial': {
+        'args': [
+          '--disable-field-trial-config',
+        ],
+        'ci_only': True,
+        'test': 'webview_ui_test_app_test_apk',
+      },
+    },
     'finch_smoke_tests': {
       # TODO(crbug.com/1227222): Change this to the actual finch smoke test
       # once it exists.
@@ -5863,7 +5867,10 @@
     'android_12_dbg_emulator_gtests': [
       'android_trichrome_smoke_tests',
     ],
-
+    'android_finch_fieldtrial_tests': [
+      'fieldtrial_android_tests',
+      'fieldtrial_webview_tests',
+    ],
     'android_marshmallow_gtests': [
       'android_smoke_tests',
       'android_specific_chromium_gtests',  # Already includes gl_gtests.
@@ -6866,6 +6873,7 @@
       'android_specific_chromium_gtests': {},  # Already includes gl_gtests.
       'chromium_gtests': {},
       'chromium_gtests_for_devices_with_graphical_output': {},
+      'fieldtrial_android_tests': {},
       'linux_flavor_specific_chromium_gtests': {},
       'system_webview_shell_instrumentation_tests': {}, # Not an experimental test
       'webengine_android_gtests': {},

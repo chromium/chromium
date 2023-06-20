@@ -147,6 +147,11 @@
       },
     },
   },
+  'android_browsertests_no_fieldtrial': {
+    'remove_from': [
+      'android-12l-x64-fyi-dbg',
+    ],
+  },
   'android_sync_integration_tests': {
    'modifications': {
       'android-12-x64-rel': {
