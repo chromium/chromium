@@ -501,6 +501,8 @@
     "android_arm64_dbg_recipe": "Ubuntu-22.04",
     "android_blink_rel": "Ubuntu-22.04",
     "android_compile_dbg": "Ubuntu-22.04",
+    "android_compile_x64_dbg": "Ubuntu-22.04",
+    "android_compile_x86_dbg": "Ubuntu-22.04",
     "android_cronet": "Ubuntu-22.04",
     "android_optional_gpu_tests_rel": "Ubuntu-22.04",
     "android_unswarmed_pixel_aosp": "Ubuntu-22.04",
