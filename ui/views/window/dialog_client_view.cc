@@ -251,6 +251,10 @@ void DialogClientView::ResetViewShownTimeStampForTesting() {
   input_protector_->ResetForTesting();  // IN-TEST
 }
 
+bool DialogClientView::IsPossiblyUnintendedInteraction(const ui::Event& event) {
+  return input_protector_->IsPossiblyUnintendedInteraction(event);
+}
+
 DialogDelegate* DialogClientView::GetDialogDelegate() const {
   return GetWidget()->widget_delegate()->AsDialogDelegate();
 }
