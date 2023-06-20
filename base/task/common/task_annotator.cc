@@ -327,7 +327,7 @@ TaskAnnotator::LongTaskTracker::~LongTaskTracker() {
     TRACE_EVENT_BEGIN("scheduler.long_tasks", "LongTaskTracker",
                       perfetto::Track::ThreadScoped(task_annotator_),
                       task_start_time_, [&](perfetto::EventContext& ctx) {
-                        TaskAnnotator::EmitTaskLocation(ctx, *pending_task_);
+                        TaskAnnotator::EmitTaskLocation(ctx, pending_task_);
                         EmitReceivedIPCDetails(ctx);
                       });
     TRACE_EVENT_END("scheduler.long_tasks",
@@ -386,9 +386,9 @@ void TaskAnnotator::LongTaskTracker::MaybeTraceInterestingTaskDetails() {
     // start of the flow between task queue time and task execution start time.
     TRACE_EVENT_INSTANT("scheduler.long_tasks", "InterestingTask_QueueingTime",
                         perfetto::Track::ThreadScoped(task_annotator_),
-                        pending_task_->queue_time,
+                        pending_task_.queue_time,
                         perfetto::Flow::ProcessScoped(
-                            task_annotator_->GetTaskTraceID(*pending_task_)));
+                            task_annotator_->GetTaskTraceID(pending_task_)));
 
     // Record the equivalent of a top-level event with enough IPC information
     // to calculate the input to browser interval. This event will be the
@@ -398,7 +398,7 @@ void TaskAnnotator::LongTaskTracker::MaybeTraceInterestingTaskDetails() {
         perfetto::Track::ThreadScoped(task_annotator_), task_start_time_,
         [&](perfetto::EventContext& ctx) {
           perfetto::TerminatingFlow::ProcessScoped(
-              task_annotator_->GetTaskTraceID(*pending_task_))(ctx);
+              task_annotator_->GetTaskTraceID(pending_task_))(ctx);
           auto* info = ctx.event()->set_chrome_mojo_event_info();
           info->set_mojo_interface_tag(ipc_interface_name_);
         });

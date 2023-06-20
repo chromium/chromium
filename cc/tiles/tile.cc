@@ -25,7 +25,7 @@ Tile::Tile(TileManager* tile_manager,
            int source_frame_number,
            int flags)
     : tile_manager_(tile_manager),
-      tiling_(info.tiling.get()),
+      tiling_(info.tiling),
       content_rect_(info.content_rect),
       enclosing_layer_rect_(info.enclosing_layer_rect),
       raster_transform_(info.raster_transform),

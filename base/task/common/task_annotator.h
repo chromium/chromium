@@ -9,8 +9,7 @@
 
 #include "base/auto_reset.h"
 #include "base/base_export.h"
-#include "base/memory/raw_ptr.h"
-#include "base/memory/raw_ref.h"
+#include "base/memory/raw_ptr_exclusion.h"
 #include "base/pending_task.h"
 #include "base/strings/string_piece.h"
 #include "base/time/tick_clock.h"
@@ -170,8 +169,11 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
 
   const AutoReset<LongTaskTracker*> resetter_;
 
-  // For tracking task duration
-  raw_ptr<const TickClock> tick_clock_;  // Not owned.
+  // For tracking task duration.
+  //
+  // Not a raw_ptr<...> for performance reasons: based on analysis of sampling
+  // profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
+  RAW_PTR_EXCLUSION const TickClock* tick_clock_;  // Not owned.
   TimeTicks task_start_time_;
   TimeTicks task_end_time_;
 
@@ -187,8 +189,10 @@ class BASE_EXPORT [[maybe_unused, nodiscard]] TaskAnnotator::LongTaskTracker {
   // known. Note that this will not compile in the Native client.
   uint32_t (*ipc_method_info_)();
   bool is_response_ = false;
-  [[maybe_unused]] const raw_ref<PendingTask> pending_task_;
-  [[maybe_unused]] raw_ptr<TaskAnnotator> task_annotator_;
+  // Not a raw_ptr/raw_ref<...> for performance reasons: based on analysis of
+  // sampling profiler data (TaskAnnotator::LongTaskTracker::~LongTaskTracker).
+  [[maybe_unused]] RAW_PTR_EXCLUSION PendingTask& pending_task_;
+  [[maybe_unused]] RAW_PTR_EXCLUSION TaskAnnotator* task_annotator_;
 };
 
 }  // namespace base
