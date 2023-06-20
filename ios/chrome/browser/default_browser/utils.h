@@ -201,6 +201,10 @@ bool IsTailoredPromoEligibleUser(bool is_signed_in);
 // general promo.
 bool IsGeneralPromoEligibleUser(bool is_signed_in);
 
+// Returns true if it was determined that the user is eligible for the
+// post restore default browser promo.
+bool IsPostRestoreDefaultBrowserEligibleUser();
+
 // Return true if it was determined that the user is eligible for the
 // video promo.
 bool IsVideoPromoEligibleUser(feature_engagement::Tracker* tracker);

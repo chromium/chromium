@@ -21,6 +21,7 @@ source_set("utils") {
     "//ios/chrome/browser/settings/sync/utils:identity_error_util",
     "//ios/chrome/browser/shared/model/application_context",
     "//ios/chrome/browser/shared/public/features",
+    "//ios/chrome/browser/signin:signin_util",
   ]
   public_deps = [ "//base" ]
   frameworks = [ "Foundation.framework" ]

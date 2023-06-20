@@ -17,6 +17,7 @@
 #import "ios/chrome/browser/signin/authentication_service.h"
 #import "ios/chrome/browser/signin/authentication_service_factory.h"
 #import "ios/chrome/browser/ui/default_promo/default_browser_promo_non_modal_commands.h"
+#import "ios/chrome/browser/ui/default_promo/post_restore/features.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -36,6 +37,19 @@
 
 - (void)sceneState:(SceneState*)sceneState
     transitionedToActivationLevel:(SceneActivationLevel)level {
+  // Post Restore promo takes priority over other default browser promos.
+  if (IsPostRestoreDefaultBrowserEligibleUser()) {
+    if (level == SceneActivationLevelForegroundActive) {
+      // TODO(crbug.com/1453786): register other variations.
+      if (GetPostRestoreDefaultBrowserPromoType() ==
+          PostRestoreDefaultBrowserPromoType::kAlert) {
+        self.promosManager->RegisterPromoForSingleDisplay(
+            promos_manager::Promo::PostRestoreDefaultBrowserAlert);
+      }
+    }
+    return;
+  }
+
   // Register default browser promo manager to the promo manager.
   if (IsDefaultBrowserInPromoManagerEnabled()) {
     if (level == SceneActivationLevelForegroundActive) {

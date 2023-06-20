@@ -24,6 +24,7 @@ source_set("default_browser_scene_agent") {
     "//ios/chrome/browser/shared/public/features",
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/ui/default_promo",
+    "//ios/chrome/browser/ui/default_promo/post_restore:features",
   ]
   frameworks = [ "UIKit.framework" ]
 }

@@ -34,7 +34,9 @@ enum class Promo {
   PostRestoreSignInAlert = 5,  // Post Restore Sign-In (native iOS alert)
   WhatsNew = 6,                // What's New Promo
   Choice = 7,                  // Offer a choice
-  kMaxValue = Choice,
+  PostRestoreDefaultBrowserAlert =
+      8,  // Post Restore Default Browser (native iOS alert)
+  kMaxValue = PostRestoreDefaultBrowserAlert,
 };
 
 // Enum for IOS.PromosManager.Promo.ImpressionLimitEvaluation histogram.

@@ -79,6 +79,8 @@ source_set("promos_manager") {
     "//ios/chrome/browser/ui/app_store_rating",
     "//ios/chrome/browser/ui/app_store_rating:features",
     "//ios/chrome/browser/ui/credential_provider_promo",
+    "//ios/chrome/browser/ui/default_promo/post_restore:features",
+    "//ios/chrome/browser/ui/default_promo/post_restore:post_restore_default_browser",
     "//ios/chrome/browser/ui/default_promo/promo_handler",
     "//ios/chrome/browser/ui/post_restore_signin",
     "//ios/chrome/browser/ui/whats_new:util",
