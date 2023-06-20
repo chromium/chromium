@@ -14,7 +14,7 @@
   }
 
   #addAcceleratorContainer {
-    padding-top: 12px;
+    padding-top: 16px;
   }
 
   #pendingAccelerator {
@@ -22,23 +22,38 @@
   }
 
   [slot='button-container'] {
-    --cr-dialog-button-container-padding-bottom: 20px;
-    --cr-dialog-button-container-padding-end: 24px;
-    --cr-dialog-button-container-padding-start: 24px;
-    --cr-dialog-button-container-padding-top: 20px;
+    --cr-dialog-button-container-padding-bottom: 28px;
+    --cr-dialog-button-container-padding-horizontal: 32px;
     display: flex;
     justify-content: space-between;
+    padding-top: 32px;
+  }
+
+  cr-button {
+    /*
+     * Specifying a large single value for border-radius ensures perfectly
+     * circular rounded corners.
+     */
+    border-radius: 999px;
   }
 
   [slot='body'] {
+    background-color: var(--cros-sys-app_base_shaded);
+    border-radius: 16px;
+    display: flex;
+    flex-direction: column;
     height: 216px;
+    justify-content: space-between;
+    margin-left: 32px;
+    margin-right: 32px;
+    padding: 8px;
   }
 
   #dialogTitle {
-    --cr-dialog-title-slot-padding-bottom: 24px;
-    --cr-dialog-title-slot-padding-end: 24px;
-    --cr-dialog-title-slot-padding-start: 24px;
-    --cr-dialog-title-slot-padding-top: 24px;
+    --cr-dialog-title-slot-padding-bottom: 32px;
+    --cr-dialog-title-slot-padding-end: 32px;
+    --cr-dialog-title-slot-padding-start: 32px;
+    --cr-dialog-title-slot-padding-top: 32px;
   }
 
   [slot='button-container'] {
@@ -77,7 +92,6 @@
         [[i18n('addShortcut')]]
       </cr-button>
     </div>
-
   </div>
   <div slot="button-container">
     <div>
