@@ -13,6 +13,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "cc/raster/raster_buffer_provider.h"
+#include "cc/trees/raster_capabilities.h"
 
 namespace base {
 class WaitableEvent;
@@ -32,7 +33,7 @@ class CC_EXPORT ZeroCopyRasterBufferProvider : public RasterBufferProvider {
   ZeroCopyRasterBufferProvider(
       gpu::GpuMemoryBufferManager* gpu_memory_buffer_manager,
       viz::RasterContextProvider* compositor_context_provider,
-      viz::SharedImageFormat tile_format);
+      const RasterCapabilities& raster_caps);
   ZeroCopyRasterBufferProvider(const ZeroCopyRasterBufferProvider&) = delete;
   ~ZeroCopyRasterBufferProvider() override;
 

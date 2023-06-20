@@ -356,28 +356,33 @@ class RasterBufferProviderPerfTest
     pending_raster_queries_ =
         std::make_unique<RasterQueryQueue>(worker_context_provider_.get());
 
+    RasterCapabilities raster_caps;
+    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 &gpu_memory_buffer_manager_, compositor_context_provider_.get(),
-                viz::SinglePlaneFormat::kRGBA_8888);
+                raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             task_runner_.get(), compositor_context_provider_.get(),
             worker_context_provider_.get(), &gpu_memory_buffer_manager_,
             std::numeric_limits<int>::max(), false, false,
-            std::numeric_limits<int>::max(),
-            viz::SinglePlaneFormat::kRGBA_8888);
+            std::numeric_limits<int>::max(), raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             compositor_context_provider_.get(), worker_context_provider_.get(),
-            false, viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(), true,
+            false, raster_caps, gfx::Size(), true,
             pending_raster_queries_.get());
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:

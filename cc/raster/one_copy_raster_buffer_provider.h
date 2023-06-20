@@ -14,6 +14,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/staging_buffer_pool.h"
+#include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
@@ -44,7 +45,7 @@ class CC_EXPORT OneCopyRasterBufferProvider : public RasterBufferProvider {
       bool use_partial_raster,
       bool use_gpu_memory_buffer_resources,
       int max_staging_buffer_usage_in_bytes,
-      viz::SharedImageFormat tile_format);
+      const RasterCapabilities& raster_caps);
   OneCopyRasterBufferProvider(const OneCopyRasterBufferProvider&) = delete;
   ~OneCopyRasterBufferProvider() override;
 

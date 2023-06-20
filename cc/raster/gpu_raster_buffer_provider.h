@@ -14,6 +14,7 @@
 #include "base/time/time.h"
 #include "cc/raster/raster_buffer_provider.h"
 #include "cc/raster/raster_query_queue.h"
+#include "cc/trees/raster_capabilities.h"
 #include "components/viz/common/resources/shared_image_format.h"
 #include "gpu/command_buffer/common/sync_token.h"
 
@@ -36,7 +37,7 @@ class CC_EXPORT GpuRasterBufferProvider : public RasterBufferProvider {
       viz::RasterContextProvider* compositor_context_provider,
       viz::RasterContextProvider* worker_context_provider,
       bool use_gpu_memory_buffer_resources,
-      viz::SharedImageFormat tile_format,
+      const RasterCapabilities& raster_caps,
       const gfx::Size& max_tile_size,
       bool unpremultiply_and_dither_low_bit_depth_tiles,
       RasterQueryQueue* const pending_raster_queries,

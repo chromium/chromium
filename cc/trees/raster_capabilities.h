@@ -6,6 +6,7 @@
 #define CC_TREES_RASTER_CAPABILITIES_H_
 
 #include "cc/cc_export.h"
+#include "components/viz/common/resources/shared_image_format.h"
 
 namespace cc {
 
@@ -22,7 +23,14 @@ struct CC_EXPORT RasterCapabilities {
   // The maximum size (either width or height) that any texture can be. Also
   // holds a reasonable value for software compositing bitmaps.
   int max_texture_size = 0;
+
+  // Format used to allocate tiles.
+  viz::SharedImageFormat tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+
+  // Format used to allocate RGBA8 UI resources.
+  viz::SharedImageFormat ui_rgba_format = viz::SinglePlaneFormat::kRGBA_8888;
 };
+
 }  // namespace cc
 
 #endif  // CC_TREES_RASTER_CAPABILITIES_H_

@@ -160,30 +160,6 @@ bool IsMobileOptimized(LayerTreeImpl* active_tree) {
                                  active_tree->viewport_mobile_optimized());
 }
 
-viz::SharedImageFormat TileRasterBufferFormat(
-    const LayerTreeSettings& settings,
-    viz::RasterContextProvider* context_provider,
-    bool use_gpu_rasterization) {
-  // Software compositing always uses the native skia RGBA N32 format, but we
-  // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
-  // because we don't need to communicate the actual ordering as the code all
-  // assumes the native skia format.
-  if (!context_provider)
-    return viz::SinglePlaneFormat::kRGBA_8888;
-
-  // RGBA4444 overrides the defaults if specified, but only for gpu compositing.
-  // It is always supported on platforms where it is specified.
-  if (settings.use_rgba_4444)
-    return viz::SinglePlaneFormat::kRGBA_4444;
-  // Otherwise we use BGRA textures if we can but it depends on the context
-  // capabilities, and we have different preferences when rastering to textures
-  // vs uploading textures.
-  const gpu::Capabilities& caps = context_provider->ContextCapabilities();
-  if (use_gpu_rasterization)
-    return viz::PlatformColor::BestSupportedRenderBufferFormat(caps);
-  return viz::PlatformColor::BestSupportedTextureFormat(caps);
-}
-
 void DidVisibilityChange(LayerTreeHostImpl* id, bool visible) {
   if (visible) {
     TRACE_EVENT_NESTABLE_ASYNC_BEGIN1(
@@ -237,12 +213,11 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
                          bool gpu_compositing,
                          scoped_refptr<RasterContextProviderWrapper>
                              worker_context_provider_wrapper,
-                         viz::SharedImageFormat tile_format,
                          size_t decoded_image_working_set_budget_bytes,
                          RasterDarkModeFilter* dark_mode_filter) {
     if (raster_caps.use_gpu_rasterization) {
       auto color_type = viz::ToClosestSkColorType(
-          /*gpu_compositing=*/true, tile_format);
+          /*gpu_compositing=*/true, raster_caps.tile_format);
       if (enable_shared_image_cache_for_gpu) {
         image_decode_cache_ptr_ =
             &worker_context_provider_wrapper->GetGpuImageDecodeCache(
@@ -256,7 +231,7 @@ class LayerTreeHostImpl::ImageDecodeCacheHolder {
       }
     } else {
       image_decode_cache_ = std::make_unique<SoftwareImageDecodeCache>(
-          viz::ToClosestSkColorType(gpu_compositing, tile_format),
+          viz::ToClosestSkColorType(gpu_compositing, raster_caps.tile_format),
           decoded_image_working_set_budget_bytes);
     }
 
@@ -2664,8 +2639,8 @@ viz::CompositorFrame LayerTreeHostImpl::GenerateCompositorFrame(
   if (active_tree_->hud_layer()) {
     TRACE_EVENT0("cc", "DrawLayers.UpdateHudTexture");
     active_tree_->hud_layer()->UpdateHudTexture(
-        draw_mode, layer_tree_frame_sink_, &resource_provider_,
-        raster_caps().use_gpu_rasterization, frame->render_passes);
+        draw_mode, layer_tree_frame_sink_, &resource_provider_, raster_caps(),
+        frame->render_passes);
   }
 
   viz::CompositorFrameMetadata metadata = MakeCompositorFrameMetadata();
@@ -2867,6 +2842,13 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
     // No context provider means software raster + compositing.
     CHECK(!worker_context_provider);
     raster_caps_.max_texture_size = settings_.max_render_buffer_bounds_for_sw;
+
+    // Software compositing always uses the native skia RGBA N32 format, but we
+    // just call it RGBA_8888 everywhere even though it can be BGRA ordering,
+    // because we don't need to communicate the actual ordering as the code all
+    // assumes the native skia format.
+    raster_caps_.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+    raster_caps_.ui_rgba_format = viz::SinglePlaneFormat::kRGBA_8888;
     return;
   }
 
@@ -2883,17 +2865,33 @@ void LayerTreeHostImpl::UpdateRasterCapabilities() {
   const auto& context_caps = worker_context_provider->ContextCapabilities();
 
   raster_caps_.max_texture_size = context_caps.max_texture_size;
+  raster_caps_.ui_rgba_format =
+      viz::PlatformColor::BestSupportedTextureFormat(context_caps);
 
   if (settings_.gpu_rasterization_disabled || !context_caps.gpu_rasterization) {
+    // This is the GPU compositing but software rasterization path. Pick the
+    // best format for GPU textures to be uploaded to.
+    raster_caps_.tile_format =
+        settings_.use_rgba_4444
+            ? viz::SinglePlaneFormat::kRGBA_4444
+            : viz::PlatformColor::BestSupportedTextureFormat(context_caps);
     return;
   }
 
-  // GPU rasterization is enabled if we get this far.
+  // GPU compositing + rasterization is enabled if we get this far.
   CHECK(context_caps.supports_oop_raster);
   raster_caps_.use_gpu_rasterization = true;
 
   raster_caps_.can_use_msaa =
       !context_caps.msaa_is_slow && !context_caps.avoid_stencil_buffers;
+
+  // Note this uses compositor context capabilities instead of worker since
+  // relevant capabilities are not set by raster decoder.
+  raster_caps_.tile_format =
+      settings_.use_rgba_4444
+          ? viz::SinglePlaneFormat::kRGBA_4444
+          : viz::PlatformColor::BestSupportedRenderBufferFormat(
+                context_provider->ContextCapabilities());
 }
 
 ImageDecodeCache* LayerTreeHostImpl::GetImageDecodeCache() const {
@@ -3557,22 +3555,20 @@ void LayerTreeHostImpl::ReleaseTileResources() {
 
 void LayerTreeHostImpl::RecreateTileResources() {
   active_tree_->RecreateTileResources();
-  if (pending_tree_)
+  if (pending_tree_) {
     pending_tree_->RecreateTileResources();
-  if (recycle_tree_)
+  }
+  if (recycle_tree_) {
     recycle_tree_->RecreateTileResources();
+  }
 }
 
 void LayerTreeHostImpl::CreateTileManagerResources() {
-  viz::SharedImageFormat tile_format = TileRasterBufferFormat(
-      settings_, layer_tree_frame_sink_->context_provider(),
-      raster_caps().use_gpu_rasterization);
-
   const bool gpu_compositing = !!layer_tree_frame_sink_->context_provider();
   image_decode_cache_holder_ = std::make_unique<ImageDecodeCacheHolder>(
       settings_.enable_shared_image_cache_for_gpu, raster_caps(),
       gpu_compositing,
-      layer_tree_frame_sink_->worker_context_provider_wrapper(), tile_format,
+      layer_tree_frame_sink_->worker_context_provider_wrapper(),
       settings_.decoded_image_working_set_budget_bytes, dark_mode_filter_);
 
   if (raster_caps().use_gpu_rasterization) {
@@ -3605,20 +3601,17 @@ void LayerTreeHostImpl::CreateTileManagerResources() {
 std::unique_ptr<RasterBufferProvider>
 LayerTreeHostImpl::CreateRasterBufferProvider() {
   DCHECK(GetTaskRunner());
-
   viz::RasterContextProvider* compositor_context_provider =
       layer_tree_frame_sink_->context_provider();
-  if (!compositor_context_provider)
+
+  if (!compositor_context_provider) {
     return std::make_unique<BitmapRasterBufferProvider>(layer_tree_frame_sink_);
+  }
 
   const gpu::Capabilities& caps =
       compositor_context_provider->ContextCapabilities();
   viz::RasterContextProvider* worker_context_provider =
       layer_tree_frame_sink_->worker_context_provider();
-
-  viz::SharedImageFormat tile_format =
-      TileRasterBufferFormat(settings_, compositor_context_provider,
-                             raster_caps().use_gpu_rasterization);
 
   if (raster_caps().use_gpu_rasterization) {
     DCHECK(worker_context_provider);
@@ -3626,7 +3619,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
     return std::make_unique<GpuRasterBufferProvider>(
         compositor_context_provider, worker_context_provider,
         settings_.resource_settings.use_gpu_memory_buffer_resources,
-        tile_format, settings_.max_gpu_raster_tile_size,
+        raster_caps_, settings_.max_gpu_raster_tile_size,
         settings_.unpremultiply_and_dither_low_bit_depth_tiles,
         pending_raster_queries_.get());
   }
@@ -3643,7 +3636,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
   if (use_zero_copy) {
     return std::make_unique<ZeroCopyRasterBufferProvider>(
         layer_tree_frame_sink_->gpu_memory_buffer_manager(),
-        compositor_context_provider, tile_format);
+        compositor_context_provider, raster_caps_);
   }
 
   const int max_copy_texture_chromium_size =
@@ -3653,7 +3646,7 @@ LayerTreeHostImpl::CreateRasterBufferProvider() {
       layer_tree_frame_sink_->gpu_memory_buffer_manager(),
       max_copy_texture_chromium_size, settings_.use_partial_raster,
       settings_.resource_settings.use_gpu_memory_buffer_resources,
-      settings_.max_staging_buffer_usage_in_bytes, tile_format);
+      settings_.max_staging_buffer_usage_in_bytes, raster_caps_);
 }
 
 void LayerTreeHostImpl::SetLayerTreeMutator(
@@ -4525,13 +4518,7 @@ void LayerTreeHostImpl::CreateUIResource(UIResourceId uid,
   viz::SharedImageFormat format;
   switch (bitmap.GetFormat()) {
     case UIResourceBitmap::RGBA8:
-      if (layer_tree_frame_sink_->context_provider()) {
-        const gpu::Capabilities& caps =
-            layer_tree_frame_sink_->context_provider()->ContextCapabilities();
-        format = viz::PlatformColor::BestSupportedTextureFormat(caps);
-      } else {
-        format = viz::SinglePlaneFormat::kRGBA_8888;
-      }
+      format = raster_caps_.ui_rgba_format;
       break;
     case UIResourceBitmap::ALPHA_8:
       format = viz::SinglePlaneFormat::kALPHA_8;

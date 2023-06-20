@@ -42,6 +42,7 @@
 #include "cc/test/fake_layer_tree_frame_sink.h"
 #include "cc/test/fake_raster_source.h"
 #include "cc/tiles/tile_task_manager.h"
+#include "cc/trees/raster_capabilities.h"
 #include "components/viz/client/client_resource_provider.h"
 #include "components/viz/common/resources/platform_color.h"
 #include "components/viz/test/test_context_provider.h"
@@ -173,28 +174,33 @@ class RasterBufferProviderTest
 
   // Overridden from testing::Test:
   void SetUp() override {
+    RasterCapabilities raster_caps;
+    raster_caps.tile_format = viz::SinglePlaneFormat::kRGBA_8888;
+
     switch (GetParam()) {
       case RASTER_BUFFER_PROVIDER_TYPE_ZERO_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ =
             std::make_unique<ZeroCopyRasterBufferProvider>(
                 &gpu_memory_buffer_manager_, context_provider_.get(),
-                viz::SinglePlaneFormat::kRGBA_8888);
+                raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_ONE_COPY:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = false;
         raster_buffer_provider_ = std::make_unique<OneCopyRasterBufferProvider>(
             base::SingleThreadTaskRunner::GetCurrentDefault().get(),
             context_provider_.get(), worker_context_provider_.get(),
             &gpu_memory_buffer_manager_, kMaxBytesPerCopyOperation, false,
-            false, kMaxStagingBuffers, viz::SinglePlaneFormat::kRGBA_8888);
+            false, kMaxStagingBuffers, raster_caps);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_GPU:
         Create3dResourceProvider();
+        raster_caps.use_gpu_rasterization = true;
         raster_buffer_provider_ = std::make_unique<GpuRasterBufferProvider>(
             context_provider_.get(), worker_context_provider_.get(), false,
-            viz::SinglePlaneFormat::kRGBA_8888, gfx::Size(), true,
-            pending_raster_queries_.get(), 1);
+            raster_caps, gfx::Size(), true, pending_raster_queries_.get(), 1);
         break;
       case RASTER_BUFFER_PROVIDER_TYPE_BITMAP:
         CreateSoftwareResourceProvider();
