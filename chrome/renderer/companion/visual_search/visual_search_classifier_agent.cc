@@ -8,10 +8,15 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/metrics/histogram_macros_local.h"
 #include "base/no_destructor.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/task/task_traits.h"
 #include "base/task/thread_pool.h"
+#include "chrome/common/companion/eligibility_spec.pb.h"
+#include "chrome/common/companion/visual_search.mojom.h"
+#include "chrome/renderer/companion/visual_search/visual_search_classification_and_eligibility.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "third_party/blink/public/common/associated_interfaces/associated_interface_registry.h"
 #include "third_party/blink/public/web/web_element.h"
 #include "third_party/blink/public/web/web_local_frame.h"
 #include "third_party/blink/public/web/web_view.h"
@@ -21,10 +26,53 @@ namespace companion::visual_search {
 
 namespace {
 
-// Representation of list of images found in DOM.
-// The string type will eventually be replaced with a struct containing
-// image features (i.e. SingleImageGeometryFeature).
-typedef std::vector<std::pair<std::string, SkBitmap>> DOMImageList;
+using DOMImageList = base::flat_map<ImageId, SingleImageFeaturesAndBytes>;
+
+// We concurrently on send back up to 4 results of visual classifications.
+// The results are not ordered in any way, we simply return the first 4
+// items that we get from the classifier.
+const int kMaxNumberResults = 4;
+
+EligibilitySpec CreateEligibilitySpec(std::string config_proto) {
+  EligibilitySpec eligibility_spec;
+
+  if (!config_proto.empty()) {
+    eligibility_spec.ParseFromString(config_proto);
+  } else {
+    // This is the default configuration if a config is not provided.
+    auto* new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+    new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+    new_rule->set_normalizing_feature_name(FeatureLibrary::VIEWPORT_AREA);
+    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_threshold(0.01);
+    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+    new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_WIDTH);
+    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_threshold(100);
+    new_rule = eligibility_spec.add_cheap_pruning_rules()->add_rules();
+    new_rule->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_HEIGHT);
+    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_threshold(100);
+    new_rule = eligibility_spec.add_post_renormalization_rules()->add_rules();
+    new_rule->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
+    new_rule->set_normalizing_feature_name(
+        FeatureLibrary::MAX_IMAGE_VISIBLE_AREA);
+    new_rule->set_op(FeatureLibrary::GT);
+    new_rule->set_threshold(0.01);
+    auto* shopping_rule =
+        eligibility_spec.add_classifier_score_rules()->add_rules();
+    shopping_rule->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
+    shopping_rule->set_op(FeatureLibrary::GT);
+    shopping_rule->set_threshold(0.5);
+    auto* sensitivity_rule =
+        eligibility_spec.add_classifier_score_rules()->add_rules();
+    sensitivity_rule->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
+    sensitivity_rule->set_op(FeatureLibrary::LT);
+    sensitivity_rule->set_threshold(0.5);
+  }
+
+  return eligibility_spec;
+}
 
 // Depth-first search for recursively traversing DOM elements and pulling out
 // references for images (SkBitmap).
@@ -54,24 +102,42 @@ DOMImageList FindImagesOnPage(content::RenderFrame* render_frame) {
   }
   FindImageElements(doc.Body(), image_elements);
 
-  // TODO (b/277771722): Convert list of images to DOMImageList structure.
-  // This requires calling ClassificationAndEligibility module to generate
-  // SingleImageGeometryFeatures.
+  int image_counter = 0;
+  for (auto& element : image_elements) {
+    ImageId id = base::NumberToString(image_counter++);
+    images[id] = {
+        VisualClassificationAndEligibility::ExtractFeaturesForEligibility(
+            id, element),
+        element.ImageContents()};
+  }
 
   return images;
 }
 
 std::vector<SkBitmap> ClassifyImagesOnBackground(DOMImageList images,
                                                  std::string model_data,
-                                                 std::string config_proto) {
+                                                 std::string config_proto,
+                                                 gfx::SizeF viewport_size) {
   std::vector<SkBitmap> results;
+  const auto classifier = VisualClassificationAndEligibility::Create(
+      model_data, CreateEligibilitySpec(config_proto));
 
-  // TODO(b/277771722) - call classifier with the following steps:
-  // 1) init classifier with model_data and config_proto.
-  // 2) run classifier and eligibility on imagelist.
-  // 3) Return list of bitmaps once complete or empty list.
-  // 4) Limit the number of images that we send to the top N.
+  if (classifier == nullptr) {
+    LOCAL_HISTOGRAM_BOOLEAN(
+        "Companion.VisualSearch.Agent.ClassifierCreationFailure", true);
+    return results;
+  }
 
+  auto classifier_results =
+      classifier->RunClassificationAndEligibility(images, viewport_size);
+
+  int result_counter = 0;
+  for (const auto& result : classifier_results) {
+    results.emplace_back(images[result].image_contents);
+    if (++result_counter >= kMaxNumberResults) {
+      break;
+    }
+  }
   return results;
 }
 
@@ -82,6 +148,11 @@ VisualSearchClassifierAgent::VisualSearchClassifierAgent(
     : content::RenderFrameObserver(render_frame) {
   if (render_frame) {
     render_frame_ = render_frame;
+    render_frame->GetAssociatedInterfaceRegistry()
+        ->AddInterface<mojom::VisualSuggestionsRequestHandler>(
+            base::BindRepeating(
+                &VisualSearchClassifierAgent::OnRendererAssociatedRequest,
+                base::Unretained(this)));
   }
 }
 
@@ -95,8 +166,11 @@ VisualSearchClassifierAgent* VisualSearchClassifierAgent::Create(
 
 void VisualSearchClassifierAgent::StartVisualClassification(
     base::File visual_model,
-    const std::string config_proto,
-    ClassifierResultCallback callback) {
+    const std::string& config_proto,
+    mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler) {
+  result_handler_.reset();
+  result_handler_.Bind(std::move(result_handler));
+
   if (is_classifying_) {
     LOCAL_HISTOGRAM_BOOLEAN(
         "Companion.VisualSearch.Agent.OngoingClassificationFailure",
@@ -106,7 +180,7 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 
   if (!visual_model.IsValid()) {
     LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.InvalidModelFailure",
-                            visual_model.IsValid());
+                            !visual_model.IsValid());
     return;
   }
 
@@ -116,25 +190,21 @@ void VisualSearchClassifierAgent::StartVisualClassification(
     return;
   }
 
-  if (callback.is_null()) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.NoCallbackFailure",
-                            callback.is_null());
-    return;
-  }
-
   is_classifying_ = true;
-  result_callback_ = std::move(callback);
   std::string model_data =
-      std::string(reinterpret_cast<const char*>(visual_model_.data()));
-  std::vector<std::pair<std::string, SkBitmap>> dom_images =
-      FindImagesOnPage(render_frame_);
+      std::string(reinterpret_cast<const char*>(visual_model_.data()),
+                  visual_model_.length());
+  DOMImageList dom_images = FindImagesOnPage(render_frame_);
   LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.Agent.DomImageCount",
                              dom_images.size());
 
+  blink::WebLocalFrame* frame = render_frame_->GetWebFrame();
+  gfx::SizeF viewport_size = frame->View()->VisualViewportSize();
   base::ThreadPool::PostTaskAndReplyWithResult(
       FROM_HERE, {base::MayBlock(), base::TaskPriority::BEST_EFFORT},
       base::BindOnce(&ClassifyImagesOnBackground, std::move(dom_images),
-                     std::move(model_data), std::move(config_proto)),
+                     std::move(model_data), std::move(config_proto),
+                     viewport_size),
       base::BindOnce(&VisualSearchClassifierAgent::OnClassificationDone,
                      weak_ptr_factory_.GetWeakPtr()));
 }
@@ -142,18 +212,27 @@ void VisualSearchClassifierAgent::StartVisualClassification(
 void VisualSearchClassifierAgent::OnClassificationDone(
     const std::vector<SkBitmap> results) {
   is_classifying_ = false;
-  if (result_callback_.is_null()) {
-    LOCAL_HISTOGRAM_BOOLEAN("Companion.VisualSearch.Agent.NoCallbackFailure",
-                            result_callback_.is_null());
-    return;
+  std::vector<mojom::VisualSearchSuggestionPtr> final_results;
+  for (const auto& result : results) {
+    final_results.emplace_back(mojom::VisualSearchSuggestion::New(result));
   }
-  std::move(result_callback_).Run(results);
-  // We only use a callback once and require caller to allow provide it per
-  // call.
-  result_callback_.Reset();
+  result_handler_->HandleClassification(std::move(final_results));
+  LOCAL_HISTOGRAM_COUNTS_100("Companion.VisualSearch.Agent.ClassificationDone",
+                             results.size());
+}
+
+void VisualSearchClassifierAgent::OnRendererAssociatedRequest(
+    mojo::PendingAssociatedReceiver<mojom::VisualSuggestionsRequestHandler>
+        receiver) {
+  receiver_.reset();
+  receiver_.Bind(std::move(receiver));
 }
 
 void VisualSearchClassifierAgent::OnDestruct() {
+  if (render_frame_) {
+    render_frame_->GetAssociatedInterfaceRegistry()->RemoveInterface(
+        mojom::VisualSuggestionsRequestHandler::Name_);
+  }
   delete this;
 }
 

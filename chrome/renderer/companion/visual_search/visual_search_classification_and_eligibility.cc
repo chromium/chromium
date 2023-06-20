@@ -192,7 +192,7 @@ double GetScoreOfFirstClassThatDoesNotHaveName(
 
 SingleImageGeometryFeatures
 VisualClassificationAndEligibility::ExtractFeaturesForEligibility(
-    const std::string& image_identifier,
+    const ImageId& image_identifier,
     blink::WebElement& element) {
   SingleImageGeometryFeatures geometry_features;
   geometry_features.image_identifier = image_identifier;

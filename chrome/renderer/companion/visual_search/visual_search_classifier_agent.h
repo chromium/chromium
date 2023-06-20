@@ -9,13 +9,18 @@
 #include "base/files/memory_mapped_file.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
+#include "chrome/common/companion/visual_search.mojom-forward.h"
+#include "chrome/common/companion/visual_search.mojom.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/renderer/render_frame_observer.h"
+#include "mojo/public/cpp/bindings/associated_receiver.h"
+#include "mojo/public/cpp/bindings/remote.h"
 #include "third_party/skia/include/core/SkBitmap.h"
 
 namespace companion::visual_search {
 
-class VisualSearchClassifierAgent : public content::RenderFrameObserver {
+class VisualSearchClassifierAgent : public content::RenderFrameObserver,
+                                    mojom::VisualSuggestionsRequestHandler {
  public:
   using ClassifierResultCallback =
       base::OnceCallback<void(std::vector<SkBitmap>)>;
@@ -32,12 +37,19 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver {
   // RenderFrameObserver implementation:
   void OnDestruct() override;
 
+  // VisualSuggestionsRequestHandler implementation:
   // This method is the main entrypoint which triggers visual classification.
   // This is ultimately going to be called via Mojom IPC from the browser
   // process.
-  void StartVisualClassification(base::File visual_model,
-                                 const std::string config_proto,
-                                 ClassifierResultCallback callback);
+  void StartVisualClassification(
+      base::File visual_model,
+      const std::string& config_proto,
+      mojo::PendingRemote<mojom::VisualSuggestionsResultHandler> result_handler)
+      override;
+
+  void OnRendererAssociatedRequest(
+      mojo::PendingAssociatedReceiver<mojom::VisualSuggestionsRequestHandler>
+          receiver);
 
  private:
   explicit VisualSearchClassifierAgent(content::RenderFrame* render_frame);
@@ -57,9 +69,12 @@ class VisualSearchClassifierAgent : public content::RenderFrameObserver {
   // Using a memory-mapped file to reduce memory consumption of model bytes.
   base::MemoryMappedFile visual_model_;
 
-  // The result callback is used to give us a path back to results. It
+  mojo::AssociatedReceiver<mojom::VisualSuggestionsRequestHandler> receiver_{
+      this};
+
+  // The result handler is used to give us a path back to results. It
   // typically will lead to a Mojom IPC call back to the browser process.
-  ClassifierResultCallback result_callback_;
+  mojo::Remote<mojom::VisualSuggestionsResultHandler> result_handler_;
 
   // Pointer factory necessary for scheduling tasks on different threads.
   base::WeakPtrFactory<VisualSearchClassifierAgent> weak_ptr_factory_{this};

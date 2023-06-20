@@ -28,7 +28,7 @@ class VisualClassificationAndEligibility {
   // module.
   // TODO: move this function outside of this class.
   static SingleImageGeometryFeatures ExtractFeaturesForEligibility(
-      const std::string& image_identifier,
+      const ImageId& image_identifier,
       blink::WebElement& element);
 
   // Create a VisualClassificationAndEligibility Object that can then be

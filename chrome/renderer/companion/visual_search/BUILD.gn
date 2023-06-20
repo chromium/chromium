@@ -6,6 +6,8 @@ import("//build/buildflag_header.gni")
 
 source_set("visual_search") {
   sources = [
+    "visual_search_classification_and_eligibility.cc",
+    "visual_search_classification_and_eligibility.h",
     "visual_search_classifier_agent.cc",
     "visual_search_classifier_agent.h",
     "visual_search_eligibility.cc",
@@ -13,27 +15,44 @@ source_set("visual_search") {
   ]
   deps = [
     "//base",
+    "//chrome/common/companion:mojo_bindings",
     "//chrome/common/companion:proto",
     "//content/public/renderer",
+    "//skia",
     "//third_party/blink/public:blink_headers",
     "//third_party/blink/public/common:headers",
     "//third_party/tflite",
     "//third_party/tflite:tflite_public_headers",
     "//third_party/tflite_support",
     "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//ui/gfx/geometry:geometry",
+    "//v8",
   ]
 }
 
 source_set("unit_tests") {
   testonly = true
-  sources = [ "visual_search_eligibility_unittest.cc" ]
+  sources = [
+    "visual_search_classification_and_eligibility_unittest.cc",
+    "visual_search_eligibility_unittest.cc",
+  ]
   deps = [
     ":visual_search",
     "//base",
     "//base/test:test_support",
+    "//chrome/common/companion:mojo_bindings",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
-    "//ui/gfx/geometry:geometry",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//v8",
   ]
 }
 
@@ -45,8 +64,18 @@ source_set("browser_tests") {
     "//base",
     "//base/test:test_support",
     "//chrome/common",
+    "//chrome/common/companion:mojo_bindings",
     "//chrome/test:test_support",
+    "//skia",
     "//testing/gmock",
     "//testing/gtest",
+    "//third_party/blink/public:blink_headers",
+    "//third_party/blink/public/common:headers",
+    "//third_party/tflite",
+    "//third_party/tflite:tflite_public_headers",
+    "//third_party/tflite_support",
+    "//third_party/tflite_support:tflite_support_proto",
+    "//ui/base",
+    "//v8",
   ]
 }
