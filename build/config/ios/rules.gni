@@ -1417,6 +1417,8 @@ template("ios_xctest_bundle") {
     forward_variables_from(invoker,
                            "*",
                            [
+                             "bundle_deps",
+                             "bundle_deps_filter",
                              "host_target",
                              "output_dir",
                              "output_extension",
@@ -1428,7 +1430,6 @@ template("ios_xctest_bundle") {
                              "xcode_test_application_name",
                              "xcode_test_application_output_name",
                              "xctest_bundle_principal_class",
-                             "bundle_deps_filter",
                            ])
 
     testonly = true
@@ -1482,9 +1483,10 @@ template("ios_xctest_bundle") {
   create_signed_bundle(_target_name) {
     forward_variables_from(invoker,
                            [
+                             "bundle_deps",
+                             "bundle_deps_filter",
                              "bundle_id",
                              "data_deps",
-                             "bundle_deps_filter",
                              "enable_code_signing",
                              "product_type",
                              "xcode_test_application_name",
@@ -1831,16 +1833,16 @@ template("ios_xcuitest_test") {
   ios_xctest_bundle(_xcuitest_module_target) {
     forward_variables_from(invoker,
                            [
+                             "bundle_deps",
+                             "data_deps",
+                             "deps",
                              "xcode_test_application_name",
                              "xctest_bundle_principal_class",
-                             "data_deps",
                            ])
 
     product_type = _ios_xcode_xcuitest_bundle_id
     host_target = _xcuitest_runner_target
     output_name = _xcuitest_module_output
-
-    deps = invoker.deps
 
     if (defined(invoker.runner_only_bundle_deps)) {
       bundle_deps_filter = invoker.runner_only_bundle_deps
@@ -1851,7 +1853,6 @@ template("ios_xcuitest_test") {
   ios_xcuitest_test_runner_bundle(_xcuitest_runner_target) {
     output_name = _xcuitest_runner_output
     xctest_bundle = _xcuitest_module_target + "_bundle"
-    forward_variables_from(invoker, [ "bundle_deps" ])
 
     if (defined(invoker.runner_only_bundle_deps)) {
       if (!defined(bundle_deps)) {
