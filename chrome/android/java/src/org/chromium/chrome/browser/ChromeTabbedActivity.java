@@ -634,36 +634,6 @@ public class ChromeTabbedActivity extends ChromeActivity<ChromeActivityComponent
                                     NewTabPageUma.NTP_IMPESSION_POTENTIAL_NOTAB);
                         }
                     }
-
-                    // Incognito tabs can't be restored, so don't finish the Activity if there are
-                    // still Incognito tabs existing.
-                    if (mTabModelSelector.getModel(true).getCount() > 0) {
-                        return;
-                    }
-
-                    boolean gridTabSwitcherEnabled = TabUiFeatureUtilities.isGridTabSwitcherEnabled(
-                            ChromeTabbedActivity.this);
-                    boolean overviewVisible = isLayoutManagerCreated()
-                            && (mLayoutManager.isLayoutVisible(LayoutType.TAB_SWITCHER)
-                                    || mLayoutManager.isLayoutVisible(LayoutType.START_SURFACE));
-                    boolean hasNextTab = !(getTabModelSelector().getTotalTabCount() == 0
-                            || (!getTabModelSelector().isIncognitoSelected()
-                                    && getTabModelSelector().getModel(false).getCount() == 0));
-                    boolean multiWindowActive =
-                            MultiWindowUtils.getInstance().areMultipleChromeInstancesRunning(
-                                    ChromeTabbedActivity.this)
-                            && MultiWindowUtils.getVisibleTabbedTaskCount() > 1;
-
-                    // TODO(crbug.com/1046541) : Remove this when the associated bug is fixed. This
-                    //  is a band-aid fix for TabGrid and closing tabs with TabGroupUi.
-                    //  If one of the following is true, then exit Chrome when TabGroupsAndroid is
-                    //  enabled, and tab switcher is not shown:
-                    //   1. If the very last tab is closed.
-                    //   2. If normal tab model is selected and no normal tabs.
-                    if (gridTabSwitcherEnabled && !overviewVisible && !hasNextTab && !isTablet()
-                            && !multiWindowActive) {
-                        finish();
-                    }
                 }
 
                 @Override
