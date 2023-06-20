@@ -116,7 +116,7 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
   descriptor.requiredFeatures = features.data();
   descriptor.requiredFeaturesCount = features.size();
 
-  std::vector<dawn::native::Adapter> adapters = instance_.GetAdapters();
+  std::vector<dawn::native::Adapter> adapters = instance_.EnumerateAdapters();
   for (dawn::native::Adapter adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
