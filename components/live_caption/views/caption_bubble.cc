@@ -831,6 +831,7 @@ void CaptionBubble::OnLiveTranslateEnabledChanged() {
 }
 
 void CaptionBubble::OnLiveCaptionLanguageChanged() {
+  auto_detected_source_language_ = false;
   source_language_code_ =
       profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode);
   source_language_text_ = speech::GetLanguageDisplayName(source_language_code_,
@@ -967,13 +968,10 @@ void CaptionBubble::OnAutoDetectedLanguageChanged() {
   source_language_text_ = speech::GetLanguageDisplayName(source_language_code_,
                                                          application_locale_);
 
-  if (l10n_util::GetLanguage(
+  auto_detected_source_language_ =
+      l10n_util::GetLanguage(
           profile_prefs_->GetString(prefs::kLiveCaptionLanguageCode)) !=
-      l10n_util::GetLanguage(source_language_code_)) {
-    // Append `(auto-detected)` to the end of the source language text.
-    source_language_text_ = l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_AUTODETECTED_SOURCE_LANGUAGE, source_language_text_);
-  }
+      l10n_util::GetLanguage(source_language_code_);
 
   UpdateLanguageLabelText();
   SetTextColor();
@@ -1285,16 +1283,18 @@ void CaptionBubble::SetBackgroundColor() {
 void CaptionBubble::UpdateLiveTranslateLabelStyle(
     views::StyledLabel::RangeStyleInfo label_style,
     views::StyledLabel::RangeStyleInfo languages_style) {
-  // Update the style of the label and source language.
-  language_label_->AddStyleRange(gfx::Range(0, language_label_offsets_[0]),
-                                 label_style);
-  language_label_->AddStyleRange(
-      gfx::Range(language_label_offsets_[0],
-                 language_label_offsets_[0] + source_language_text_.length()),
-      languages_style);
+  if (profile_prefs_->GetBoolean(prefs::kLiveTranslateEnabled) &&
+      l10n_util::GetLanguage(source_language_code_) !=
+          l10n_util::GetLanguage(target_language_code_)) {
+    // Update the style of the label and source language.
+    language_label_->AddStyleRange(gfx::Range(0, language_label_offsets_[0]),
+                                   label_style);
+    language_label_->AddStyleRange(
+        gfx::Range(language_label_offsets_[0],
+                   language_label_offsets_[0] + source_language_text_.length()),
+        languages_style);
 
-  // Update the style of the target language if applicable.
-  if (language_label_offsets_.size() > 1) {
+    // Update the style of the target language.
     language_label_->AddStyleRange(
         gfx::Range(language_label_offsets_[0] + source_language_text_.length(),
                    language_label_offsets_[1]),
@@ -1303,6 +1303,15 @@ void CaptionBubble::UpdateLiveTranslateLabelStyle(
         gfx::Range(language_label_offsets_[1],
                    language_label_offsets_[1] + target_language_text_.length()),
         languages_style);
+  } else {
+    language_label_->AddStyleRange(
+        gfx::Range(0, source_language_text_.length()), languages_style);
+    if (auto_detected_source_language_) {
+      language_label_->AddStyleRange(
+          gfx::Range(source_language_text_.length(),
+                     language_label_->GetText().length()),
+          label_style);
+    }
   }
 }
 
@@ -1313,13 +1322,21 @@ void CaptionBubble::UpdateLanguageLabelText() {
       l10n_util::GetLanguage(source_language_code_) !=
           l10n_util::GetLanguage(target_language_code_)) {
     language_label_->SetText(l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_TRANSLATED_CAPTION_LANGUAGE, source_language_text_,
-        target_language_text_, &language_label_offsets_));
+        auto_detected_source_language_
+            ? IDS_LIVE_CAPTION_TRANSLATED_CAPTION_LANGUAGE_AUTODETECTED
+            : IDS_LIVE_CAPTION_TRANSLATED_CAPTION_LANGUAGE,
+        source_language_text_, target_language_text_,
+        &language_label_offsets_));
   } else {
-    size_t offset;
-    language_label_->SetText(l10n_util::GetStringFUTF16(
-        IDS_LIVE_CAPTION_CAPTION_LANGUAGE, source_language_text_, &offset));
-    language_label_offsets_.push_back(offset);
+    if (auto_detected_source_language_) {
+      size_t offset;
+      language_label_->SetText(l10n_util::GetStringFUTF16(
+          IDS_LIVE_CAPTION_CAPTION_LANGUAGE_AUTODETECTED, source_language_text_,
+          &offset));
+      language_label_offsets_.push_back(offset);
+    } else {
+      language_label_->SetText(source_language_text_);
+    }
   }
 }
 

@@ -261,7 +261,7 @@ class CaptionBubble : public views::BubbleDialogDelegateView,
 
   // Flag indicating whether the current source language does not match the user
   // preference source language.
-  bool auto_detected_language_switched_ = false;
+  bool auto_detected_source_language_ = false;
 
 #if BUILDFLAG(IS_WIN)
   raw_ptr<views::StyledLabel> media_foundation_renderer_error_text_;

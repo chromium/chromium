@@ -1331,15 +1331,15 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
                    .left());
   EXPECT_EQ(464, left_header_container->GetPreferredSize().width());
 
-  EXPECT_EQ(u"Captioning English",
+  EXPECT_EQ(u"English",
             static_cast<views::StyledLabel*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("fr-FR");
-  EXPECT_EQ(u"Captioning French (auto-detected)",
+  EXPECT_EQ(u"French (auto-detected)",
             static_cast<views::StyledLabel*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("en-GB");
-  EXPECT_EQ(u"Captioning English",
+  EXPECT_EQ(u"English",
             static_cast<views::StyledLabel*>(language_label)->GetText());
 
   // Enable Live Translate.
@@ -1364,7 +1364,7 @@ IN_PROC_BROWSER_TEST_F(CaptionBubbleControllerViewsTest, HeaderView) {
             static_cast<views::StyledLabel*>(language_label)->GetText());
 
   OnLanguageIdentificationEvent("en-US");
-  EXPECT_EQ(u"Captioning English (auto-detected)",
+  EXPECT_EQ(u"English (auto-detected)",
             static_cast<views::StyledLabel*>(language_label)->GetText());
 }
 
