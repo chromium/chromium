@@ -4667,27 +4667,6 @@
             ]
         }
     ],
-    "DisableResourceScheduler": [
-        {
-            "platforms": [
-                "android",
-                "chromeos",
-                "chromeos_lacros",
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20220725",
-                    "enable_features": [
-                        "DisableResourceScheduler"
-                    ]
-                }
-            ]
-        }
-    ],
     "DisableSHA1ServerSignature": [
         {
             "platforms": [
