@@ -162,12 +162,6 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
-const char kGaiaIdCacheInAccountManagerFacadeName[] =
-    "Gaia Id In AccountManagerFacade (AMF)";
-const char kGaiaIdCacheInAccountManagerFacadeDescription[] =
-    "If enabled, starts fetching gaia id from android accounts in "
-    "AccountManagerFacade (AMF)";
-
 const char kGainmapHdrImagesName[] = "Gainmap HDR image rendering";
 const char kGainmapHdrImagesDescription[] =
     "If enabled, renders images that include an gainmap in HDR";

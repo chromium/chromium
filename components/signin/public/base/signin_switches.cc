@@ -10,11 +10,6 @@ namespace switches {
 // All switches in alphabetical order.
 
 #if BUILDFLAG(IS_ANDROID)
-// If enabled, starts gaia id fetching process from android accounts in
-// AccountManagerFacade (AMF). Thus clients can get gaia id from AMF directly.
-BASE_FEATURE(kGaiaIdCacheInAccountManagerFacade,
-             "GaiaIdCacheInAccountManagerFacade",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 // Feature to add a signed-out avatar on the NTP.
 BASE_FEATURE(kIdentityStatusConsistency,
              "IdentityStatusConsistency",

@@ -5851,21 +5851,6 @@
             ]
         }
     ],
-    "GaiaIdCacheInAccountManagerFacade": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled_20230112",
-                    "enable_features": [
-                        "GaiaIdCacheInAccountManagerFacade"
-                    ]
-                }
-            ]
-        }
-    ],
     "GalleryAppPdfEditNotification": [
         {
             "platforms": [

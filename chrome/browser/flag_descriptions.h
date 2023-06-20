@@ -136,9 +136,6 @@ extern const char kEnableBenchmarkingDescription[];
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 
-extern const char kGaiaIdCacheInAccountManagerFacadeName[];
-extern const char kGaiaIdCacheInAccountManagerFacadeDescription[];
-
 extern const char kGainmapHdrImagesName[];
 extern const char kGainmapHdrImagesDescription[];
 

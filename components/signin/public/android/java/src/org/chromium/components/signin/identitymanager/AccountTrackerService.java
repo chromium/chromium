@@ -4,29 +4,22 @@
 
 package org.chromium.components.signin.identitymanager;
 
-import android.os.SystemClock;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.MainThread;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
-import org.chromium.base.Log;
 import org.chromium.base.ObserverList;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
-import org.chromium.base.metrics.RecordHistogram;
-import org.chromium.base.task.AsyncTask;
 import org.chromium.components.signin.AccountManagerFacade;
 import org.chromium.components.signin.AccountManagerFacadeProvider;
-import org.chromium.components.signin.AccountUtils;
 import org.chromium.components.signin.AccountsChangeObserver;
 import org.chromium.components.signin.base.CoreAccountInfo;
 
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedDeque;
@@ -74,6 +67,7 @@ public class AccountTrackerService implements AccountsChangeObserver {
     private @AccountsSeedingStatus int mAccountsSeedingStatus;
     private final ObserverList<Observer> mObservers = new ObserverList<>();
     private boolean mAccountsChangeObserverAdded;
+    // TODO(crbug.com/1455941): Remove this field.
     private boolean mExistsPendingSeedAccountsTask;
 
     @VisibleForTesting
@@ -123,18 +117,12 @@ public class AccountTrackerService implements AccountsChangeObserver {
 
     /** Implements {@link AccountsChangeObserver}. */
     @Override
-    public void onAccountsChanged() {
-        if (!AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
-            onAccountsChangedInternal();
-        }
-    }
+    public void onAccountsChanged() {}
 
     /** Implements {@link AccountsChangeObserver}. */
     @Override
     public void onCoreAccountInfosChanged() {
-        if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
-            onAccountsChangedInternal();
-        }
+        onAccountsChangedInternal();
     }
 
     @MainThread
@@ -185,55 +173,8 @@ public class AccountTrackerService implements AccountsChangeObserver {
             accountManagerFacade.addObserver(this);
         }
 
-        if (AccountTrackerServiceJni.get().isGaiaIdInAMFEnabled()) {
-            accountManagerFacade.getCoreAccountInfos().then(coreAccountInfos -> {
-                finishSeedingAccounts(coreAccountInfos, accountsChanged);
-            });
-            return;
-        }
-
-        accountManagerFacade.getAccounts().then(accounts -> {
-            final List<String> emails = AccountUtils.toAccountNames(accounts);
-            new AsyncTask<List<String>>() {
-                @Override
-                public List<String> doInBackground() {
-                    Log.d(TAG, "Getting id/email mapping");
-                    final long seedingStartTime = SystemClock.elapsedRealtime();
-                    final List<String> gaiaIds = new java.util.ArrayList<>();
-                    for (String email : emails) {
-                        final String gaiaId = accountManagerFacade.getAccountGaiaId(email);
-                        if (gaiaId == null) {
-                            return gaiaIds;
-                        }
-                        gaiaIds.add(gaiaId);
-                    }
-                    RecordHistogram.recordTimesHistogram("Signin.AndroidGetAccountIdsTime",
-                            SystemClock.elapsedRealtime() - seedingStartTime);
-                    return gaiaIds;
-                }
-                @Override
-                public void onPostExecute(List<String> gaiaIds) {
-                    if (gaiaIds.size() == emails.size()) {
-                        finishSeedingAccounts(
-                                createCoreAccountInfosFromEmailsAndGaiaIds(emails, gaiaIds),
-                                accountsChanged);
-                    } else {
-                        mAccountsSeedingStatus = AccountsSeedingStatus.NOT_STARTED;
-                        seedAccounts(/*accountsChanged=*/accountsChanged);
-                    }
-                }
-            }.executeOnExecutor(AsyncTask.THREAD_POOL_EXECUTOR);
-        });
-    }
-
-    private List<CoreAccountInfo> createCoreAccountInfosFromEmailsAndGaiaIds(
-            List<String> emails, List<String> gaiaIds) {
-        List<CoreAccountInfo> coreAccountInfos = new ArrayList<>();
-        for (int index = 0; index < gaiaIds.size(); index++) {
-            coreAccountInfos.add(CoreAccountInfo.createFromEmailAndGaiaId(
-                    emails.get(index), gaiaIds.get(index)));
-        }
-        return coreAccountInfos;
+        accountManagerFacade.getCoreAccountInfos().then(
+                coreAccountInfos -> { finishSeedingAccounts(coreAccountInfos, accountsChanged); });
     }
 
     private void finishSeedingAccounts(
@@ -264,12 +205,5 @@ public class AccountTrackerService implements AccountsChangeObserver {
     @NativeMethods
     interface Natives {
         void seedAccountsInfo(long nativeAccountTrackerService, CoreAccountInfo[] coreAccountInfos);
-
-        /**
-         * Returns whether GaiaIdCacheInAccountManagerFacade feature is enabled in native code.
-         * We call native to get feature state due to limitation of adding chrome dependency in
-         * components code.
-         */
-        boolean isGaiaIdInAMFEnabled();
     }
 }

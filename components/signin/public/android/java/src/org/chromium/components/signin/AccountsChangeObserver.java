@@ -14,6 +14,7 @@ public interface AccountsChangeObserver {
     /**
      * Called on every change to the accounts or to the error condition that occurred while getting
      * accounts.
+     * TODO(crbug.com/1450614): Replace this method with onCoreAccountInfosChanged().
      */
     @MainThread
     void onAccountsChanged();

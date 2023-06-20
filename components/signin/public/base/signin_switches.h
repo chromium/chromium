@@ -20,7 +20,6 @@ namespace switches {
 // alongside the definition of their values in the .cc file.
 
 #if BUILDFLAG(IS_ANDROID)
-BASE_DECLARE_FEATURE(kGaiaIdCacheInAccountManagerFacade);
 BASE_DECLARE_FEATURE(kIdentityStatusConsistency);
 #endif
 
