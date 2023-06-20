@@ -21,7 +21,9 @@ class WebStateListChange {
     // Used when the status of a WebState is updated by the activation or the
     // pinned state update. It does not update the layout of WebStateList.
     kSelectionOnly,
-    // Used when a WebState at the specified index is detached.
+    // Used when a WebState at the specified index is detached. The detached
+    // WebState is still valid when observer is called but it is no longer in
+    // WebStateList.
     kDetach,
     // Used when a WebState at the specified index is moved to a new index.
     kMove,
@@ -48,6 +50,29 @@ class WebStateListChange {
 
  protected:
   WebStateListChange() = default;
+};
+
+// Represents a change that corresponds to detaching one WebState from
+// WebStateList.
+class WebStateListChangeDetach final : public WebStateListChange {
+ public:
+  static constexpr Type kType = Type::kDetach;
+
+  explicit WebStateListChangeDetach(raw_ptr<web::WebState> detached_web_state);
+  ~WebStateListChangeDetach() final = default;
+
+  Type type() const final;
+
+  // The WebState that is detached from WebStateList. The detached WebState is
+  // still valid when observer is called but it is no longer in WebStateList at
+  // the index position.
+  raw_ptr<web::WebState> detached_web_state() const {
+    CHECK(detached_web_state_);
+    return detached_web_state_;
+  }
+
+ private:
+  raw_ptr<web::WebState> detached_web_state_;
 };
 
 // Represents a change that corresponds to moving one WebState to a new index in
@@ -131,13 +156,14 @@ class WebStateListChangeInsert final : public WebStateListChange {
 };
 
 struct WebStateSelection {
-  // The index to be changed.
+  // The index to be changed. A WebState is no longer in WebStateList at the
+  // `index` position when a WebState is detached.
   const int index;
   // True when the WebState at `index` is being activated.
-  // TODO(crbug.com/1442546): Rename this flag to `activated` once
-  // WebStateActivatedAt() is merged into WebStateListChange() because
-  // WebStateListChange() will be able to handle an operation with the
-  // activation at the same time.
+  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`,
+  // the index of the currently active WebState, once WebStateActivatedAt() is
+  // merged into WebStateListChange() because WebStateListChange() will be able
+  // to handle an operation with the activation at the same time.
   const bool activating;
 };
 
@@ -179,12 +205,6 @@ class WebStateListObserver : public base::CheckedObserver {
   virtual void WillDetachWebStateAt(WebStateList* web_state_list,
                                     web::WebState* web_state,
                                     int index);
-
-  // Invoked after the WebState at the specified index has been detached. The
-  // WebState is still valid but is no longer in the WebStateList.
-  virtual void WebStateDetachedAt(WebStateList* web_state_list,
-                                  web::WebState* web_state,
-                                  int index);
 
   // Invoked before the specified WebState is destroyed via the WebStateList.
   // The WebState is still valid but is no longer in the WebStateList. If the

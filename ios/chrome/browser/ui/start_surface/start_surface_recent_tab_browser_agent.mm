@@ -68,22 +68,41 @@ void StartSurfaceRecentTabBrowserAgent::BrowserDestroyed(Browser* browser) {
 
 #pragma mark - WebStateListObserver
 
-void StartSurfaceRecentTabBrowserAgent::WebStateDetachedAt(
+void StartSurfaceRecentTabBrowserAgent::WebStateListChanged(
     WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (!most_recent_tab_) {
-    return;
-  }
+    const WebStateListChange& change,
+    const WebStateSelection& selection) {
+  switch (change.type()) {
+    case WebStateListChange::Type::kSelectionOnly:
+      // Do nothing when a WebState is selected and its status is updated.
+      break;
+    case WebStateListChange::Type::kDetach: {
+      if (!most_recent_tab_) {
+        return;
+      }
 
-  if (most_recent_tab_ == web_state) {
-    for (auto& observer : observers_) {
-      observer.MostRecentTabRemoved(most_recent_tab_);
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      if (most_recent_tab_ == detach_change.detached_web_state()) {
+        for (auto& observer : observers_) {
+          observer.MostRecentTabRemoved(most_recent_tab_);
+        }
+        favicon_driver_observer_.Reset();
+        web_state_observation_.Reset();
+        most_recent_tab_ = nullptr;
+        return;
+      }
+      break;
     }
-    favicon_driver_observer_.Reset();
-    web_state_observation_.Reset();
-    most_recent_tab_ = nullptr;
-    return;
+    case WebStateListChange::Type::kMove:
+      // Do nothing when a WebState is moved.
+      break;
+    case WebStateListChange::Type::kReplace:
+      // Do nothing when a WebState is replaced.
+      break;
+    case WebStateListChange::Type::kInsert:
+      // Do nothing when a WebState is inserted.
+      break;
   }
 }
 

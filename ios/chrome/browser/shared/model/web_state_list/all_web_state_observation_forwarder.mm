@@ -36,10 +36,13 @@ void AllWebStateObservationForwarder::WebStateListChanged(
     case WebStateListChange::Type::kSelectionOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateDetachedAt() to here.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      web_state_observations_.RemoveObservation(
+          detach_change.detached_web_state());
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -60,11 +63,4 @@ void AllWebStateObservationForwarder::WebStateListChanged(
       break;
     }
   }
-}
-
-void AllWebStateObservationForwarder::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  web_state_observations_.RemoveObservation(web_state);
 }

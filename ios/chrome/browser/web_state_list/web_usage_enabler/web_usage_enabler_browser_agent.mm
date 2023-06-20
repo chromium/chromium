@@ -79,10 +79,15 @@ void WebUsageEnablerBrowserAgent::WebStateListChanged(
     case WebStateListChange::Type::kSelectionOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateDetachedAt() to here.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      web::WebState* detached_web_state = detach_change.detached_web_state();
+      if (web_state_observations_.IsObservingSource(detached_web_state)) {
+        web_state_observations_.RemoveObservation(detached_web_state);
+      }
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -106,15 +111,6 @@ void WebUsageEnablerBrowserAgent::WebStateListChanged(
           /*triggers_initial_load=*/selection.activating);
       break;
     }
-  }
-}
-
-void WebUsageEnablerBrowserAgent::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (web_state_observations_.IsObservingSource(web_state)) {
-    web_state_observations_.RemoveObservation(web_state);
   }
 }
 

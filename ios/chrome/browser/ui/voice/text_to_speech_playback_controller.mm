@@ -72,10 +72,14 @@ void TextToSpeechPlaybackController::WebStateListChanged(
       // WebStateActivatedAt() to here. Note that here is reachable only when
       // `reason` == ActiveWebStateChangeReason::Activated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateDetachedAt() to here.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      if (web_state_ == detach_change.detached_web_state()) {
+        SetWebState(nullptr);
+      }
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -106,14 +110,6 @@ void TextToSpeechPlaybackController::WebStateActivatedAt(
     int active_index,
     ActiveWebStateChangeReason reason) {
   SetWebState(new_web_state);
-}
-
-void TextToSpeechPlaybackController::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  if (web_state_ == web_state)
-    SetWebState(nullptr);
 }
 
 void TextToSpeechPlaybackController::WillCloseWebStateAt(

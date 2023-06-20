@@ -45,9 +45,6 @@ class FullscreenWebStateListObserver : public WebStateListObserver {
                            web::WebState* new_web_state,
                            int active_index,
                            ActiveWebStateChangeReason reason) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,
                            int index,

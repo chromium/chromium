@@ -114,9 +114,6 @@ class SessionRestorationBrowserAgent
   void WillDetachWebStateAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
 
   // web::WebStateObserver methods.
   void DidFinishNavigation(web::WebState* web_state,

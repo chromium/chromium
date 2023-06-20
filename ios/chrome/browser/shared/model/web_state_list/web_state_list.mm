@@ -467,8 +467,12 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   // Check that the active element (if there is one) is valid.
   DCHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
 
+  const WebStateListChangeDetach detach_change(web_state);
+  // TODO(crbug.com/1442546): Remove `activating` and introduce `active_index`
+  // which is the index of the currently active WebState.
+  const WebStateSelection selection = {.index = index, .activating = false};
   for (auto& observer : observers_) {
-    observer.WebStateDetachedAt(this, web_state, index);
+    observer.WebStateListChanged(this, detach_change, selection);
   }
 
   if (active_web_state_was_closed) {

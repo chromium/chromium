@@ -43,9 +43,6 @@ class WebStateDependencyInstallationObserver : public WebStateListObserver,
   void WebStateListChanged(WebStateList* web_state_list,
                            const WebStateListChange& change,
                            const WebStateSelection& selection) override;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) override;
   void WebStateListDestroyed(WebStateList* web_state_list) override;
 
   WebStateDependencyInstallationObserver(

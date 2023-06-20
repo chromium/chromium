@@ -93,9 +93,6 @@ class WebStateListObserverBridge final : public WebStateListObserver {
   void WillDetachWebStateAt(WebStateList* web_state_list,
                             web::WebState* web_state,
                             int index) final;
-  void WebStateDetachedAt(WebStateList* web_state_list,
-                          web::WebState* web_state,
-                          int index) final;
   void WillCloseWebStateAt(WebStateList* web_state_list,
                            web::WebState* web_state,
                            int index,

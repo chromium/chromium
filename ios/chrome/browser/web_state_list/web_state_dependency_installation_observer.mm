@@ -41,10 +41,12 @@ void WebStateDependencyInstallationObserver::WebStateListChanged(
     case WebStateListChange::Type::kSelectionOnly:
       // Do nothing when a WebState is selected and its status is updated.
       break;
-    case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // webStateList:didDetachWebState:atIndex: to here.
+    case WebStateListChange::Type::kDetach: {
+      const WebStateListChangeDetach& detach_change =
+          change.As<WebStateListChangeDetach>();
+      OnWebStateRemoved(detach_change.detached_web_state());
       break;
+    }
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
       break;
@@ -62,13 +64,6 @@ void WebStateDependencyInstallationObserver::WebStateListChanged(
       break;
     }
   }
-}
-
-void WebStateDependencyInstallationObserver::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  OnWebStateRemoved(web_state);
 }
 
 void WebStateDependencyInstallationObserver::WebStateListDestroyed(

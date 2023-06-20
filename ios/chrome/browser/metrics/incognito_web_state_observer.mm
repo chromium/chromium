@@ -50,8 +50,7 @@ void IncognitoWebStateObserver::Observer::WebStateListChanged(
       // Do nothing when a WebState is selected and its status is updated.
       break;
     case WebStateListChange::Type::kDetach:
-      // TODO(crbug.com/1442546): Move the implementation from
-      // WebStateDetachedAt() to here.
+      incognito_tracker_->OnIncognitoWebStateRemoved();
       break;
     case WebStateListChange::Type::kMove:
       // Do nothing when a WebState is moved.
@@ -65,11 +64,4 @@ void IncognitoWebStateObserver::Observer::WebStateListChanged(
       incognito_tracker_->OnIncognitoWebStateAdded();
       break;
   }
-}
-
-void IncognitoWebStateObserver::Observer::WebStateDetachedAt(
-    WebStateList* web_state_list,
-    web::WebState* web_state,
-    int index) {
-  incognito_tracker_->OnIncognitoWebStateRemoved();
 }
