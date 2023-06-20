@@ -17,6 +17,9 @@
 #include "chrome/browser/ui/views/side_panel/side_panel_web_ui_view.h"
 #include "chrome/browser/ui/webui/side_panel/companion/companion_side_panel_untrusted_ui.h"
 #include "chrome/common/webui_url_constants.h"
+#include "components/google/core/common/google_util.h"
+#include "net/base/registry_controlled_domains/registry_controlled_domain.h"
+#include "third_party/blink/public/mojom/frame/user_activation_notification_type.mojom.h"
 
 namespace companion {
 
@@ -112,8 +115,28 @@ GURL CompanionSidePanelController::GetOpenInNewTabUrl() {
   return open_in_new_tab_url_;
 }
 
+bool CompanionSidePanelController::IsSiteTrusted(const GURL& url) {
+  if (google_util::IsGoogleDomainUrl(
+          url, google_util::ALLOW_SUBDOMAIN,
+          google_util::DISALLOW_NON_STANDARD_PORTS)) {
+    return true;
+  }
+
+  // This is a workaround for local development where the URL may be a
+  // non-Google domain like *.proxy.googlers.com. If the Finch flag for
+  // Companion homepage is not set to a Google domain, make sure the request is
+  // coming from the CSC homepage.
+  if (net::registry_controlled_domains::SameDomainOrHost(
+          url, GURL(companion::GetHomepageURLForCompanion()),
+          net::registry_controlled_domains::INCLUDE_PRIVATE_REGISTRIES)) {
+    return true;
+  }
+
+  return false;
+}
+
 // This method is called when the WebContents wants to open a link in a new
-// tab. This delegate does not override AddNewContents(), so the webcontents
+// tab. This delegate does not override AddNewContents(), so the WebContents
 // is not actually created. Instead it forwards the parameters to the real
 // browser.
 void CompanionSidePanelController::DidOpenRequestedURL(
@@ -125,14 +148,31 @@ void CompanionSidePanelController::DidOpenRequestedURL(
     ui::PageTransition transition,
     bool started_from_context_menu,
     bool renderer_initiated) {
-  content::OpenURLParams params(url, referrer, disposition, transition,
-                                renderer_initiated);
+  // Ensure that the navigation is coming from a page we trust before
+  // redirecting to main browser.
+  if (!IsSiteTrusted(source_render_frame_host->GetLastCommittedURL())) {
+    return;
+  };
 
-  // If the navigation is initiated by the renderer process, we must set an
-  // initiator origin.
-  if (renderer_initiated) {
-    params.initiator_origin = url::Origin::Create(url);
-  }
+  // The window.open from the Search Companion is caught here and ignored.
+  // Instead we create another navigation toward the same URL targeting a frame
+  // outside of the side panel.
+  //
+  // This navigation is created from this component, so we consider it to be
+  // browser initiated. In particular, we do not plumb all the parameters from
+  // the original navigation. For instance we do not populate the
+  // `initiator_frame_token`. This means some security properties like sandbox
+  // flags are lost along the way.
+  //
+  // This is not problematic because we trust the original navigation was
+  // initiated from the expected origin.
+  //
+  // Specifically, we need the navigation to be considered browser-initiated, as
+  // renderer-initiated navigation history entries may be skipped if the
+  // document does not receive any user interaction (like in our case). See
+  // https://issuetracker.google.com/285038653
+  content::OpenURLParams params(url, referrer, disposition, transition,
+                                /*is_renderer_initiated=*/false);
 
   bool open_in_current_tab = companion::ShouldOpenLinksInCurrentTab();
   params.disposition = open_in_current_tab
