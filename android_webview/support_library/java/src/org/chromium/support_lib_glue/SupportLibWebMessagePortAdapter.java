@@ -61,30 +61,32 @@ class SupportLibWebMessagePortAdapter implements WebMessagePortBoundaryInterface
         try (TraceEvent event = TraceEvent.scoped(
                      "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_SET_CALLBACK")) {
             recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK);
-            setWebMessageCallback(callback, null);
+            setWebMessageCallbackInternal(callback, null);
         }
     }
 
     @Override
     public void setWebMessageCallback(InvocationHandler callback, Handler handler) {
-        if (handler != null) {
-            try (TraceEvent event = TraceEvent.scoped(
-                         "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER")) {
-                recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER);
-
-                SupportLibWebMessageCallbackAdapter callbackAdapter =
-                        new SupportLibWebMessageCallbackAdapter(
-                                BoundaryInterfaceReflectionUtil.castToSuppLibClass(
-                                        WebMessageCallbackBoundaryInterface.class, callback));
-                mPort.setMessageCallback(new MessagePort.MessageCallback() {
-                    @Override
-                    public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
-                        callbackAdapter.onMessage(SupportLibWebMessagePortAdapter.this,
-                                new SupportLibWebMessageAdapter(messagePayload, ports));
-                    }
-                }, handler);
-            }
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.AndroidX.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER")) {
+            recordApiCall(ApiCall.WEB_MESSAGE_PORT_SET_CALLBACK_WITH_HANDLER);
+            setWebMessageCallbackInternal(callback, handler);
         }
+    }
+
+    private void setWebMessageCallbackInternal(
+            /* WebMessageCallback */ InvocationHandler callback, Handler handler) {
+        SupportLibWebMessageCallbackAdapter callbackAdapter =
+                new SupportLibWebMessageCallbackAdapter(
+                        BoundaryInterfaceReflectionUtil.castToSuppLibClass(
+                                WebMessageCallbackBoundaryInterface.class, callback));
+        mPort.setMessageCallback(new MessagePort.MessageCallback() {
+            @Override
+            public void onMessage(MessagePayload messagePayload, MessagePort[] ports) {
+                callbackAdapter.onMessage(SupportLibWebMessagePortAdapter.this,
+                        new SupportLibWebMessageAdapter(messagePayload, ports));
+            }
+        }, handler);
     }
 
     public static /* WebMessagePort */ InvocationHandler[] fromMessagePorts(
