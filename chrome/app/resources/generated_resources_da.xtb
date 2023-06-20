@@ -618,6 +618,7 @@ De tilladelser, du har givet til apps, gælder muligvis for denne konto. Du kan 
 <translation id="1515163294334130951">Start</translation>
 <translation id="1517467582299994451">Aktivér indstillingerne for synkronisering af Chrome-browseren for at caste med en kode</translation>
 <translation id="1521442365706402292">Administrer certifikater</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">Aktiv i dag</translation>
 <translation id="152234381334907219">Gemmes aldrig</translation>
 <translation id="1523279371236772909">Set inden for den seneste måned</translation>
@@ -1437,6 +1438,7 @@ Du kan administrere indstillingerne for denne konto ved at installere Family Lin
 <translation id="2175927920773552910">QR-kode</translation>
 <translation id="2177306523871626993">Downloader filer til tekstgenkendelse… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Inkognitofane: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Du er ved at aktivere ChromeOS Flex-fejlretningsfunktioner, som konfigurerer sshd daemon og aktiverer systemgenstart via USB-drev.</translation>
 <translation id="2178614541317717477">Sammensat nøglecenter</translation>
 <translation id="2179416702468739594">Søger efter tilgængelige profiler. Dette kan afbryde forbindelsen til dit mobilnetværk i et par minutter.</translation>
@@ -4352,6 +4354,7 @@ Vil du starte <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4675828034887792601">Opret genveje til søgning på websites, og administrer din søgemaskine</translation>
 <translation id="4676595058027112862">Telefonstyring – Få flere oplysninger</translation>
 <translation id="4677772697204437347">GPU-hukommelse</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Betalingskort</translation>
 <translation id="4680105648806843642">Lyden blev slået fra på denne side</translation>
 <translation id="4680112532510845139">Træk et billede hertil</translation>
@@ -5263,6 +5266,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="5494362494988149300">Åbn når &amp;færdigt</translation>
 <translation id="5495466433285976480">Dette vil fjerne alle lokale brugere, filer, data og andre indstillinger, når du genstarter næste gang. Alle brugere skal logge ind igen.</translation>
 <translation id="5495597166260341369">Hold skærmen tændt</translation>
+<translation id="549602578321198708">Ord</translation>
 <translation id="5496587651328244253">Organiser</translation>
 <translation id="5496730470963166430">Har ikke tilladelse til at sende pop op-vinduer eller bruge omdirigeringer</translation>
 <translation id="5497251278400702716">Denne fil</translation>
@@ -5428,7 +5432,6 @@ Du kan sende den til Google for at tjekke, om den er usikker. Det tager normalt 
 <translation id="5633149627228920745">Få flere oplysninger om systemkrav</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Se minder fra dine seneste rejser og meget mere</translation>
-<translation id="5635091213277904818">Chrome sletter automatisk websites, der er mere end 30 dage gamle. Et website, du besøger igen, kan komme tilbage på listen. Du kan også blokere et website, så det ikke kan foreslå annoncer til dig.</translation>
 <translation id="5635312199252507107">Tillad på bestemte websites</translation>
 <translation id="5636012309446422">Vil du fjerne <ph name="DEVICE" /> fra <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Hvis du vil bruge <ph name="NETWORK_ID" />, skal du først <ph name="LINK_START" />gå til netværkets loginside<ph name="LINK_END" />, som åbner automatisk om et par sekunder. Hvis ikke, kan netværket ikke bruges.</translation>
@@ -8089,6 +8092,7 @@ Tryk på en kontakt eller tast, der er tildelt en handling, for at fjerne tildel
 <translation id="7926423016278357561">Det var ikke mig.</translation>
 <translation id="7926975587469166629">Kortets kaldenavn</translation>
 <translation id="7928175190925744466">Har du allerede ændret denne adgangskode?</translation>
+<translation id="7929962904089429003">Åbn menuen</translation>
 <translation id="7930294771522048157">Her kan du se dine gemte betalingsmetoder</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> deler din skærm og lyd.</translation>
 <translation id="793293630927785390">Dialogboks for nyt Wi-Fi-netværk</translation>
@@ -9558,6 +9562,7 @@ De tilladelser, du har givet til websites og apps, gælder muligvis for denne ko
 <translation id="9180380851667544951">Websitet kan dele din skærm</translation>
 <translation id="9180847522826713506">Du kan se din adgangskode eller tilføje en note om den ved at klikke på nøgleikonet</translation>
 <translation id="9182556968660520230">Tillad ikke, at websites afspiller beskyttet indhold</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}one{# app}other{# apps}}</translation>
 <translation id="9186963452600581158">Log ind med et barns Google-konto</translation>
 <translation id="9187967020623675250">Tasterne stemmer ikke overens. Tryk på en vilkårlig tast for at <ph name="RESPONSE" />.</translation>

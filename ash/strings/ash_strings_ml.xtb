@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">ഉപകരണങ്ങൾ ലഭ്യമാണ്</translation>
 <translation id="1550523713251050646">കൂടുതൽ ഓപ്‌ഷനുകൾക്ക് ക്ലിക്ക് ചെയ്യുക</translation>
 <translation id="1555130319947370107">നീല</translation>
+<translation id="1557622599341396706">ഡെസ്‌ക്കിന്റെ പേര് കാണിക്കുക</translation>
 <translation id="1576511610858879060">Bluetooth-ന്റെ പഴയ പതിപ്പാണ് നിങ്ങളുടെ Chromebook അല്ലെങ്കിൽ Bluetooth ഉപകരണം ഉപയോഗിക്കുന്നത്. മികച്ച ഓഡിയോ നിലവാരത്തിനായി മറ്റൊരു ഇൻപുട്ട് ഉറവിടം ഉപയോഗിക്കൂ.</translation>
 <translation id="1576623706766186887">മാഗ്നിഫയർ ഓണായിരിക്കുമ്പോൾ സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="1586324912145647027">1 മുതൽ 8 വരെയുള്ള ഡെസ്ക്കുകളിലേക്ക് പോകുക</translation>
@@ -982,10 +983,12 @@
 <translation id="5308380583665731573">കണക്‌റ്റ് ചെയ്യുക</translation>
 <translation id="5313326810920013265">Bluetooth ക്രമീകരണങ്ങൾ</translation>
 <translation id="5314219114274263156">സ്ക്രീൻ റെക്കോർഡിംഗ് എടുത്തു</translation>
+<translation id="5314489738835854379">ഒരോരോ വിൻഡോയിലൂടെയും പിന്നോട്ട് പോകുക</translation>
 <translation id="5316716239522500219">മോണിറ്ററുകൾ മിറർ ചെയ്യുക</translation>
 <translation id="5317780077021120954">സംരക്ഷിക്കുക</translation>
 <translation id="5319712128756744240">പുതിയ ഉപകരണവുമായി ജോടിയാക്കുക</translation>
 <translation id="5322611492012084517">നിങ്ങളുടെ ഫോൺ കണ്ടെത്താനാകുന്നില്ല</translation>
+<translation id="5323994101633366939">ഡെസ്‌ക്കിന്റെ പേര് മറയ്ക്കുക</translation>
 <translation id="5327248766486351172">പേര്</translation>
 <translation id="5329548388331921293">കണക്‌റ്റ് ചെയ്യുന്നു...</translation>
 <translation id="5331975486040154427">USB-C ഉപകരണം (പുറകിൽ ഇടതുവശത്തെ പോർട്ട്)</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">മേൽനോട്ടത്തിലുള്ള ഉപയോക്താവ്</translation>
 <translation id="5961960957587052807">ലൈറ്റ്</translation>
 <translation id="5965524703725988602">ഡാർക്ക് തീം മാറ്റുക. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">ഒരോരോ വിൻഡോയിലൂടെയും മുന്നോട്ട് പോകുക</translation>
 <translation id="5976112937189445008">വിൻഡോ റെക്കോർഡ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="5978382165065462689">നിങ്ങളുടെ വിദൂര സഹായി മുഖേന സ്‌ക്രീനിന്റെ നിയന്ത്രണം പങ്കിടുക.</translation>
 <translation id="5980301590375426705">ഗസ്റ്റ് എക്സിറ്റ്</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6103838137565245112">സിസ്റ്റം</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> സംഭാഷണ ഫയലുകൾ ഡൗൺലോഡ് ചെയ്‌തു</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">നിറം ശരിയാക്കൽ</translation>
 <translation id="6121838516699723042">ഡൗൺലോഡ് സ്ഥിരീകരിക്കുക <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">അതിഥി സെഷനിൽ Google അസി‌സ്‌റ്റന്റ് ലഭ്യമല്ല.</translation>
 <translation id="6129953537138746214">സ്പെയ്സ്</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6891721121089053234"><ph name="DEVICE_TYPE" /> ഉപകരണത്തിൽ നിങ്ങളുടെ ഫോണിലെ പുതിയ ഫോട്ടോകളും മീഡിയയും ആപ്പുകളും കാണുക</translation>
 <translation id="6896758677409633944">പകര്‍ത്തുക</translation>
 <translation id="6901883536534621389">നാവിഗേറ്റ് ചെയ്യാൻ ജെസ്ച്ചറുകളുടെ ഉപയോഗിക്കുക</translation>
+<translation id="6912841030378044227">വിലാസ ബാറിൽ ഫോക്കസ് ചെയ്യുക</translation>
 <translation id="6919251195245069855">നിങ്ങളുടെ സ്‌മാർട്ട് കാർഡ് തിരിച്ചറിയാൻ കഴിഞ്ഞില്ല. വീണ്ടും ശ്രമിക്കൂ.</translation>
 <translation id="6920245099716267363">ഹോട്ട്സ്‌പോട്ട് മാറ്റുക. ഹോട്ട്സ്‌പോട്ട് ഓണാണ്, ഒരു ഉപകരണം കണക്റ്റ് ചെയ്തിരിക്കുന്നു.</translation>
 <translation id="6931576957638141829">ഇനിപ്പറയുന്നതിലേക്ക് സംരക്ഷിക്കുക</translation>
@@ -1634,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, ആപ്പ്</translation>
 <translation id="8255234195843591763">അപ്ഡേറ്റ് ചെയ്യാൻ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="8261506727792406068">ഇല്ലാതാക്കുക</translation>
+<translation id="8262312463845990408">പ്ലേബാക്ക് മാറ്റുക</translation>
 <translation id="8270450402312105425">{0,plural, =1{ഒരു മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}other{# മണിക്കൂറിനുള്ളിൽ മുമ്പത്തെ പതിപ്പിലേക്ക് ഉപകരണം മാറ്റുക}}</translation>
 <translation id="8277261673056602147">നിങ്ങളുടെ സ്ക്രീനിലെ ടെക്സ്റ്റ് ഹൈലൈറ്റ് ചെയ്യുക</translation>
 <translation id="8284362522226889623">മുമ്പത്തെ ഡെസ്‌ക്കിലേക്ക് മാറാൻ, നാല് വിരലുകൾ ഉപയോഗിച്ച് ഇടത്തേക്ക് സ്വൈപ്പ് ചെയ്യുക</translation>

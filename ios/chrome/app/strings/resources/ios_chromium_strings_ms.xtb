@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Data daripada penyegerakan Chromium</translation>
 <translation id="1722370509450468186">Kata laluan anda akan disimpan dalam Account anda (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Data Chromium dikosongkan</translation>
+<translation id="1758508597843173586">Kunci tab inkognito anda semasa anda keluar daripada Chromium atau beralih kepada apl lain.</translation>
 <translation id="1838412507805038478">Chromium mengesahkan bahawa <ph name="ISSUER" /> telah mengeluarkan sijil laman web ini.</translation>
 <translation id="1843424232666537147">Chromium mempunyai ciri yang membantu anda mengurus data Internet dan kepantasan anda memuatkan halaman web.
 <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
@@ -57,6 +58,7 @@
 <translation id="452436063477828504">Pastikan anda dapat menggunakan data Chromium pada bila-bila masa dalam Google Account anda</translation>
 <translation id="4555020257205549924">Apabila ciri ini dihidupkan, Chromium akan menawarkan untuk menterjemah halaman yang ditulis dalam bahasa lain menggunakan Terjemahan Google. <ph name="BEGIN_LINK" />Ketahui lebih lanjut<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Kini, anda boleh menggunakan Chromium pada bila-bila masa anda mengetik pautan dalam mesej, dokumen dan apl lain.</translation>
+<translation id="4625550158881452646">Buat Acara Kalendar pada Chromium</translation>
 <translation id="4633738821577273991">Dapatkan juga Penyemakan Imbas Selamat Dipertingkat untuk profil Chromium ini</translation>
 <translation id="4654936625574199632">Untuk membantu dalam usaha meningkatkan apl, Chromium menghantar data penggunaan dan ranap sistem kepada Google. <ph name="BEGIN_LINK" />Urus<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Hidupkan pengimbas Chromium</translation>
@@ -76,6 +78,7 @@
 <translation id="5573014823074921752">Petua Chromium. Untuk melihat lebih banyak pilihan tab, sentuh &amp; tahan butang Tunjukkan Tab dalam bar alat, yang terletak di bahagian bawah atau atas skrin anda.</translation>
 <translation id="5700709190537129682">Chromium tidak dapat menyemak kata laluan anda</translation>
 <translation id="5777187867430702742">Halaman Chromium</translation>
+<translation id="5925698807555796756">Hidupkan “Kunci Tab Inkognito Apabila Anda Menutup Chromium”.</translation>
 <translation id="5945387852661427312">Anda mengelog masuk dengan akaun yang diurus oleh <ph name="DOMAIN" /> dan memberi kawalan terhadap data Chromium anda kepada pentadbirnya. Data anda akan terikat secara kekal kepada akaun ini. Tindakan mengelog keluar daripada Chromium akan memadamkan data anda daripada peranti ini, tetapi data itu akan kekal disimpan dalam Akaun Google anda.</translation>
 <translation id="5983312940147103417">Jadikan Chromium Lebih Baik</translation>
 <translation id="6062449165341879460">Organisasi <ph name="DOMAIN" /> anda akan mempunyai akses kepada data Chromium, penanda halaman, sejarah, kata laluan dan tetapan lain yang anda simpan dalam akaun ini. Apabila anda log keluar, data anda akan dikosongkan daripada peranti ini.  Namun begitu, data anda akan terus disimpan dalam Google Account terurus anda dan akan tersedia di organisasi anda. Organisasi anda juga boleh menetapkan dasar pengguna khusus untuk akaun tersebut yang boleh mengubah gelagat Chromium.</translation>
@@ -120,6 +123,7 @@
 <translation id="7980860476903281594">Chromium berkongsi lokasi anda dengan laman yang anda benarkan.</translation>
 <translation id="8013573822802650211">Untuk melihat tab anda daripada mana-mana tempat anda menggunakan Chromium, log masuk ke semua peranti anda</translation>
 <translation id="8073677936375100957">Kosongkan data Chromium anda daripada peranti ini?</translation>
+<translation id="8164086860209325020">Akses Tetapan Chromium</translation>
 <translation id="8240981428553046115">Chromium tidak dapat menyemak kemaskinian. Cuba lagi nanti.</translation>
 <translation id="8409374867500149834">Anda mempunyai keselamatan terkuat Chromium terhadap laman web berbahaya</translation>
 <translation id="858114650497379505">Anda boleh menggunakan kata laluan yang anda simpan pada Pengurus Kata Laluan dalam apl lain pada iPhone anda.</translation>

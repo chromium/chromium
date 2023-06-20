@@ -372,6 +372,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="3393920035788932672">Povolené okná</translation>
 <translation id="3399930248910934354">Otvoriť nastavenia Chromu</translation>
 <translation id="3404744938087714423">Po odhlásení sa vypne synchronizácia.</translation>
+<translation id="3409785640040772790">Mapy</translation>
 <translation id="3425644765244388016">Prezývka karty</translation>
 <translation id="3433057996795775706">Odstránením tohto hesla nevymažete svoj účet na webe <ph name="WEBSITE" />. Ak chcete svoj účet chrániť pred ostatnými, zmeňte svoje heslo na webe <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">Karta bola prijatá.</translation>
@@ -468,6 +469,7 @@ Prečítajte si pokyny vyhľadávača, ako odstrániť históriu vyhľadávania 
 <translation id="4045648459118332842">Získajte svoje uložené heslá v ľubovoľnej aplikácii jedným klepnutím</translation>
 <translation id="4049507953662678203">Uistite sa, že máte pripojenie k sieti, a skúste to znova.</translation>
 <translation id="4063300985191096908">Prejsť na feed</translation>
+<translation id="4066639687323968621">Ak chcete synchronizovať záložky, históriu a ďalší obsah, prihláste sa účtom Google.</translation>
 <translation id="408404951701638773">Vyhľadávací panel je teraz dostupnejší</translation>
 <translation id="4092655288299341041">Zobraziť pomocníka</translation>
 <translation id="4105841739161771091">{count,plural, =1{Odstrániť adresu}few{Odstrániť adresy}many{Odstrániť adresy}other{Odstrániť adresy}}</translation>
@@ -1278,6 +1280,7 @@ Vaše údaje boli zašifrované pomocou prístupovej frázy <ph name="TIME" />. 
 <translation id="9157836665414082580">Obmedziť dialógové okná</translation>
 <translation id="9162432979321511934">Zapnite automatické dopĺňanie hesiel</translation>
 <translation id="9165320910061267720">Ak chcete dostávať upozornenia na poklesy cien, musíte ich zapnúť v nastaveniach systému iOS.</translation>
+<translation id="9172603439892261948">Synchronizujte si záložky, históriu a ďalší obsah.</translation>
 <translation id="9177438225260810839">Hľadať otvorené karty</translation>
 <translation id="9187853111759024059">Chcete zavrieť viac ako 99 neaktívnych kariet?</translation>
 <translation id="9188680907066685419">Odhlásenie zo spravovaného účtu</translation>

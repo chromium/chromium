@@ -372,6 +372,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="3393920035788932672">Ventanas permitidas</translation>
 <translation id="3399930248910934354">Abrir la configuración de Chrome</translation>
 <translation id="3404744938087714423">Si sales de tu cuenta, se desactivará la sincronización.</translation>
+<translation id="3409785640040772790">Maps</translation>
 <translation id="3425644765244388016">Sobrenombre de la tarjeta</translation>
 <translation id="3433057996795775706">Si borras esta contraseña, no se quitará tu cuenta de <ph name="WEBSITE" />. Cambia la contraseña de <ph name="WEBSITE" /> para proteger la cuenta.</translation>
 <translation id="3443810440409579745">Se recibió una pestaña.</translation>
@@ -468,6 +469,7 @@ Consulta las instrucciones de tu motor de búsqueda para borrar el historial de 
 <translation id="4045648459118332842">Obtén tus contraseñas guardadas en cualquier app con solo presionar una vez</translation>
 <translation id="4049507953662678203">Asegúrate de tener una conexión de red y vuelve a intentarlo.</translation>
 <translation id="4063300985191096908">Ir al feed</translation>
+<translation id="4066639687323968621">Accede con tu Cuenta de Google para sincronizar tus favoritos, historial y más.</translation>
 <translation id="408404951701638773">La barra de búsqueda ahora está al alcance de la mano</translation>
 <translation id="4092655288299341041">Mostrar ayuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Borrar dirección}other{Borrar direcciones}}</translation>
@@ -1278,6 +1280,7 @@ Tus datos se encriptaron con tu frase de contraseña el <ph name="TIME" />. Ingr
 <translation id="9157836665414082580">Suprimir diálogos</translation>
 <translation id="9162432979321511934">Activa la función Autocompletar contraseñas.</translation>
 <translation id="9165320910061267720">Para recibir notificaciones sobre alertas de descuentos, debes activarlas en la configuración de iOS.</translation>
+<translation id="9172603439892261948">Sincroniza tus favoritos, historial y más.</translation>
 <translation id="9177438225260810839">Buscar pestañas abiertas</translation>
 <translation id="9187853111759024059">¿Quieres cerrar más de 99 pestañas inactivas?</translation>
 <translation id="9188680907066685419">Salir de la cuenta administrada</translation>

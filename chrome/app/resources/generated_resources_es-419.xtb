@@ -611,6 +611,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1515163294334130951">Iniciar</translation>
 <translation id="1517467582299994451">Para transmitir con un código, activa la configuración de sincronización del navegador Chrome</translation>
 <translation id="1521442365706402292">Administrar certificados</translation>
+<translation id="1521655867290435174">Hojas de cálculo de Google</translation>
 <translation id="1521774566618522728">Activo hoy</translation>
 <translation id="152234381334907219">Contraseñas que nunca se guardan</translation>
 <translation id="1523279371236772909">Visto durante el mes pasado</translation>
@@ -1421,6 +1422,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="2175927920773552910">Código QR</translation>
 <translation id="2177306523871626993">Descargando archivos de reconocimiento de texto… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Pestaña de incógnito: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Estás habilitando las funciones de depuración de Chrome OS Flex que configurarán el daemon sshd y habilitarán el inicio desde unidades USB.</translation>
 <translation id="2178614541317717477">Compromiso de entidad de certificación</translation>
 <translation id="2179416702468739594">Se están buscando perfiles disponibles. Es posible que se desconecte tu red móvil por unos minutos.</translation>
@@ -4332,6 +4334,7 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="4675828034887792601">Crea atajos para realizar búsquedas en sitios y administra tu motor de búsqueda.</translation>
 <translation id="4676595058027112862">Phone Hub, más información</translation>
 <translation id="4677772697204437347">Memoria de la GPU</translation>
+<translation id="467809019005607715">Presentaciones de Google</translation>
 <translation id="4678848110205818817">Tarjeta de crédito o débito</translation>
 <translation id="4680105648806843642">El sonido está silenciado en esta página</translation>
 <translation id="4680112532510845139">Arrastra una imagen hasta aquí</translation>
@@ -5243,6 +5246,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="5494362494988149300">Abrir cuan&amp;do esté listo</translation>
 <translation id="5495466433285976480">Esta acción eliminará todos los archivos, los datos y los usuarios locales, entre otros parámetros de configuración, la próxima vez que reinicies. Todos los usuarios deberán volver a acceder.</translation>
 <translation id="5495597166260341369">Pantalla encendida</translation>
+<translation id="549602578321198708">Palabra</translation>
 <translation id="5496587651328244253">Organizar</translation>
 <translation id="5496730470963166430">No puede enviar ventanas emergentes ni usar redireccionamientos</translation>
 <translation id="5497251278400702716">Este archivo</translation>
@@ -5408,7 +5412,6 @@ Puedes enviarlo a Google para comprobar que sea seguro. Los análisis suelen tar
 <translation id="5633149627228920745">Más información sobre los requisitos del sistema</translation>
 <translation id="563371367637259496">Móvil</translation>
 <translation id="5634446357546764049">Ver recuerdos de tus viajes recientes y más</translation>
-<translation id="5635091213277904818">Chrome borra los sitios que tienen más de 30 días de forma automática. Es posible que, si vuelves a visitar un sitio, aparezca en la lista otra vez. También puedes bloquear un sitio para que no te sugiera anuncios.</translation>
 <translation id="5635312199252507107">Permitir en sitios específicos</translation>
 <translation id="5636012309446422">¿Deseas quitar tu <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Para utilizar la red <ph name="NETWORK_ID" />, es posible que primero debas <ph name="LINK_START" />ingresar a la página de acceso a la red<ph name="LINK_END" />, que se abrirá de forma automática en unos segundos. Si no se abre, no podrás utilizar la red.</translation>
@@ -8068,6 +8071,7 @@ Presiona un interruptor o tecla que ya esté asignado para quitar la asignación
 <translation id="7926423016278357561">No era yo.</translation>
 <translation id="7926975587469166629">Sobrenombre de la tarjeta</translation>
 <translation id="7928175190925744466">¿Ya cambiaste esta contraseña?</translation>
+<translation id="7929962904089429003">Abrir el menú</translation>
 <translation id="7930294771522048157">Las formas de pago guardadas se mostrarán aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> comparte tu pantalla y audio.</translation>
 <translation id="793293630927785390">Cuadro de diálogo de nueva red Wi-Fi</translation>
@@ -9535,6 +9539,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a sitios web
 <translation id="9180380851667544951">El sitio puede compartir la pantalla</translation>
 <translation id="9180847522826713506">Para ver tu contraseña o agregar una nota al respecto, haz clic en el ícono de llave.</translation>
 <translation id="9182556968660520230">No permitir que los sitios reproduzcan contenido protegido</translation>
+<translation id="9183302530794969518">Documentos de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{App}other{# apps}}</translation>
 <translation id="9186963452600581158">Acceder con la Cuenta de Google de un niño</translation>
 <translation id="9187967020623675250">Las teclas no coinciden. Presiona cualquier tecla para <ph name="RESPONSE" />.</translation>

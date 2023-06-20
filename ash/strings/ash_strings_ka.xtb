@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">ხელმისაწვდომი მოწყობილობები</translation>
 <translation id="1550523713251050646">დააწკაპუნეთ დამატებითი ვარიანტების სანახავად</translation>
 <translation id="1555130319947370107">ლურჯი</translation>
+<translation id="1557622599341396706">სამუშაო მაგიდის სახელის ჩვენება</translation>
 <translation id="1576511610858879060">თქვენი Chromebook ან Bluetooth მოწყობილობა Bluetooth-ის მოძველებულ ვერსიას იყენებს. აუდიოს ხარისხის გასაუმჯობესებლად გამოიყენეთ შეყვანის სხვა წყარო.</translation>
 <translation id="1576623706766186887">მასშტაბის შემცირება, როცა ლუპა ჩართულია</translation>
 <translation id="1586324912145647027">1-ლიდან მე-8 სამუშაო მაგიდებს შორის გადასვლა</translation>
@@ -982,10 +983,12 @@
 <translation id="5308380583665731573">დაკავშირება</translation>
 <translation id="5313326810920013265">Bluetooth-ის პარამეტრები</translation>
 <translation id="5314219114274263156">ეკრანის ჩანაწერი გაკეთებულია</translation>
+<translation id="5314489738835854379">უკან გადაადგილება ფანჯრებს შორის</translation>
 <translation id="5316716239522500219">მონიტორების არეკვლა</translation>
 <translation id="5317780077021120954">შენახვა</translation>
 <translation id="5319712128756744240">ახალი მოწყობილობის დაწყვილება</translation>
 <translation id="5322611492012084517">თქვენი ტელეფონი ვერ მოიძებნა</translation>
+<translation id="5323994101633366939">სამუშაო მაგიდის სახელის დამალვა</translation>
 <translation id="5327248766486351172">სახელი</translation>
 <translation id="5329548388331921293">მიმდინარეობს დაკავშირება...</translation>
 <translation id="5331975486040154427">USB-C მოწყობილობა (მარცხენა უკანა პორტი)</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">კონტროლის ქვეშ მყოფი მომხმარებელი</translation>
 <translation id="5961960957587052807">ღია</translation>
 <translation id="5965524703725988602">მუქი თემის გადართვა. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">წინ გადაადგილება ფანჯრებს შორის</translation>
 <translation id="5976112937189445008">ფანჯრის ჩასაწერად დააჭირეთ Enter-ს</translation>
 <translation id="5978382165065462689">დისტანციური დამხმარეს მეშვეობით თვენი ეკრანის გაზიარების მართვა.</translation>
 <translation id="5980301590375426705">სტუმრის რეჟიმიდან გამოსვლა</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6103838137565245112">სისტემა</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> მეტყველების ფაილები ჩამოიტვირთა</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">ფერთა კორექცია</translation>
 <translation id="6121838516699723042">დაადასტურეთ ჩამოტვირთვა <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google ასისტენტი მიუწვდომელია სტუმრის სესიაში.</translation>
 <translation id="6129953537138746214">ინტერვალი</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6891721121089053234">ნახეთ თქვენი ტელეფონის ბოლოდროინდელი ფოტოები, მედიაფაილები და აპები თქვენს <ph name="DEVICE_TYPE" />-ზე</translation>
 <translation id="6896758677409633944">კოპირება</translation>
 <translation id="6901883536534621389">ცადეთ ჟესტები ნავიგაციისთვის</translation>
+<translation id="6912841030378044227">მისამართთა ზოლის ფოკუსში მოქცევა</translation>
 <translation id="6919251195245069855">თქვენი სმარტ-ბარათის ამოცნობა ვერ მოხერხდა. ცადეთ ხელახლა.</translation>
 <translation id="6920245099716267363">უსადენო ქსელზე გადართვა. უსადენო ქსელი ჩართულია, 1 მოწყობილობა დაკავშირებულია.</translation>
 <translation id="6931576957638141829">შენახვა აქ:</translation>
@@ -1634,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, აპი</translation>
 <translation id="8255234195843591763">გასაახლებლად საჭიროა გადაყენება</translation>
 <translation id="8261506727792406068">წაშლა</translation>
+<translation id="8262312463845990408">დაკვრის გადართვა</translation>
 <translation id="8270450402312105425">{0,plural, =1{დააბრუნეთ მოწყობილობა წინა ვერსიაზე ერთი საათის განმავლობაში}other{დააბრუნეთ მოწყობილობა წინა ვერსიაზე # საათის განმავლობაში}}</translation>
 <translation id="8277261673056602147">ტექსტის გამოყოფა თქვენს ეკრანზე</translation>
 <translation id="8284362522226889623">წინა სამუშაო მაგიდაზე გადასართველად გადაფურცლეთ მარცხნივ ოთხი თითით</translation>

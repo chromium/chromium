@@ -980,6 +980,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5308380583665731573">Connecter</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement de l'écran effectué</translation>
+<translation id="5314489738835854379">Faire défiler les fenêtres par l'arrière</translation>
 <translation id="5316716239522500219">Mise en miroir des moniteurs</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319712128756744240">Associer un appareil</translation>
@@ -1124,6 +1125,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
 <translation id="5961960957587052807">Léger</translation>
 <translation id="5965524703725988602">Activer/désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Faire défiler les fenêtres par l'avant</translation>
 <translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5978382165065462689">Partage du contrôle de votre écran au moyen de l’assistance à distance.</translation>
 <translation id="5980301590375426705">Fermer sess. invité</translation>
@@ -1334,6 +1336,7 @@ Nouvelle installation</translation>
 <translation id="6891721121089053234">Affichez les photos, les applications et les fichiers multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6901883536534621389">Essayez les gestes pour naviguer</translation>
+<translation id="6912841030378044227">Mettre la barre d'adresse en évidence</translation>
 <translation id="6919251195245069855">Votre carte à puce n'a pas été reconnue. Réessayez.</translation>
 <translation id="6920245099716267363">Désactiver le point d'accès sans fil. Point d'accès sans fil activé, 1 appareil connecté.</translation>
 <translation id="6931576957638141829">Enregistrer dans</translation>

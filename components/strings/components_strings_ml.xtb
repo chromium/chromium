@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> എന്നതിൽ നിന്ന്</translation>
 <translation id="1871208020102129563">സ്ഥിരമായ പ്രോക്‌സി സെർവറുകൾ ഉപയോഗിക്കുന്നതിനായി പ്രോക്‌സി സജ്ജീകരിച്ചിരിക്കുന്നു, ഒരു .pac സ്‌ക്രിപ്റ്റ് URL ഉപയോഗിക്കുന്നതിനല്ല.</translation>
 <translation id="1871284979644508959">ഇത് പൂരിപ്പിക്കേണ്ടതുണ്ട്</translation>
+<translation id="1871739799120352748">ഉയർന്ന നിരക്ക്</translation>
 <translation id="1873899211667975540">റോക്ക് സംഗീതം</translation>
 <translation id="1874224422119691492">പാസ്‌വേഡുകൾ പൂരിപ്പിക്കാൻ സ്ക്രീൻ ലോക്ക് ഉപയോഗിക്കണോ എന്നത് <ph name="SETTINGS" /> എന്നതിൽ നിങ്ങൾക്ക് മാറ്റാം</translation>
 <translation id="1875025161375567525">ഫോട്ടോ ട്രേ</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">നിങ്ങളുടെ ലോക്കൽ കമ്പ്യൂട്ടറിൽ ശാശ്വതമായി വലിയ ഡാറ്റ സംഭരിക്കാൻ <ph name="URL" />ആഗ്രഹിക്കുന്നു</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{കൂടാതെ 1 കൂടി}other{എന്നിവയും # എണ്ണവും കൂടി}}</translation>
+<translation id="2001469757375372617">എന്തോ പിശകുണ്ടായി. നിങ്ങൾ വരുത്തിയ മാറ്റം സംരക്ഷിച്ചില്ല.</translation>
 <translation id="2003709556000175978">നിങ്ങളുടെ പാസ്‌വേഡ് ഇപ്പോൾ തന്നെ റീസെറ്റ് ചെയ്യുക</translation>
 <translation id="2003775180883135320">മുകളിൽ നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2009942480257059311">'ഇവന്റ് സൃഷ്ടിക്കുക' ബട്ടൺ, Google Calendar-ൽ പുതിയൊരു ഇവന്റ് വേഗത്തിൽ സൃഷ്ടിക്കാൻ സജീവമാക്കുക</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">Envelope C5</translation>
 <translation id="2119505898009119320">ഇതിന് നല്‍‌കി: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">താഴെ വലതുവശത്ത് പഞ്ച് ചെയ്യുക</translation>
+<translation id="2122214041802369259">ഉയർന്ന നിരക്ക്</translation>
 <translation id="2122719317867821810">ഈ നയം ഉദ്ദേശിച്ചത് പോലെ പ്രവർത്തിക്കുന്നുണ്ട്, എന്നാൽ മറ്റൊരു ഉറവിടത്തിൽ വൈരുദ്ധ്യമുള്ള മൂല്യം സജ്ജീകരിച്ചതിനെ തുടർന്ന് ഈ നയം അസാധുവാക്കി.</translation>
 <translation id="2126374524350484896">PDF പ്രൊഡ്യൂസർ:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode നയം സജ്ജീകരിക്കാത്തതിനാൽ നിങ്ങൾ വ്യക്തമാക്കിയ ടെംപ്ലേറ്റുകൾ ബാധകമാക്കാനായേക്കില്ല.</translation>
@@ -535,6 +538,7 @@
 <translation id="2202020181578195191">കാലഹരണപ്പെടുന്ന ശരിയായ വർഷം നല്‍കുക</translation>
 <translation id="2202627062836089804">നിങ്ങളുടെ കാർഡിന്റെ പുറകിൽ</translation>
 <translation id="2204482073374652408">അപ്‌ഡേറ്റ് ചെയ്യൽ പൂർത്തിയായി!</translation>
+<translation id="2208053750671792556">നിങ്ങളുടെ കോഡ് ലഭിച്ചില്ലേ? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ട്രേ 3</translation>
 <translation id="2210794033760923560">റിപ്പോർട്ട് അപ്‌ലോഡ് ചെയ്യുക</translation>
 <translation id="2212735316055980242">നയം കണ്ടെത്തിയില്ല</translation>
@@ -857,6 +861,7 @@
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> എന്നതിന് <ph name="PRICE_DROP" /> വിലക്കുറവ്</translation>
 <translation id="3061707000357573562">പാച്ച് സേവനം</translation>
 <translation id="306573536155379004">ഗെയിം ആരംഭിച്ചു.</translation>
+<translation id="3067505415088964188">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="3068991664510324412">കമ്പ്യൂട്ടറും വീഡിയോ ഗെയിമുകളും</translation>
 <translation id="3080254622891793721">ഗ്രാഫിക്</translation>
 <translation id="3081538120861307764">ഒരു പരസ്യത്തിന്റെ പ്രകടനം അളക്കാൻ, ഏത് സമയത്താണ് നിങ്ങളെ പരസ്യങ്ങൾ കാണിച്ചത് എന്നത് പോലുള്ള, പരിമിത തരങ്ങളിലുള്ള ഡാറ്റ സൈറ്റുകൾക്കിടയിൽ പങ്കിടുന്നു.</translation>
@@ -947,6 +952,7 @@
 <translation id="3270847123878663523">&amp;പുനഃക്രമീകരിക്കുന്നത് പഴയപടിയാക്കുക</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> കണക്‌റ്റുചെയ്യാൻ താൽപ്പര്യപ്പെടുന്നു</translation>
 <translation id="3272091146646336650">സൂപ്പർ B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> അക്ക പരിശോധിച്ചുറപ്പിക്കൽ കോഡ് നൽകുക</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയൽ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}other{<ph name="DESTINATION_NAME" /> എന്നതിൽ ഈ ഫയലുകൾ തുറക്കുന്നത് അഡ്‌മിൻ നയം ശുപാർശ ചെയ്യുന്നില്ല}}</translation>
 <translation id="3282085321714087552">നിങ്ങളുടെ സ്ഥാപനം, <ph name="ENROLLMENT_DOMAIN" />, ക്രമീകരണമോ നയങ്ങളോ പോലുള്ള ചില വിവരങ്ങൾ ഇനിപ്പറയുന്ന വെബ്‌സൈറ്റുകളിലേക്ക് അയച്ചു.</translation>
 <translation id="3286372614333682499">പോർട്രെയ്‌റ്റ്</translation>
@@ -2070,6 +2076,7 @@
 <translation id="5967592137238574583">കോൺടാക്‌റ്റ് വിവരം എഡിറ്റുചെയ്യുക</translation>
 <translation id="5967867314010545767">ചരിത്രത്തിൽ നിന്നും നീക്കംചെയ്യുക</translation>
 <translation id="5968022600320704045">തിരയൽ ഫലങ്ങളൊന്നുമില്ല</translation>
+<translation id="5969199813874624822">സംരക്ഷിച്ച് നിരക്ക് ട്രാക്ക് ചെയ്യുക</translation>
 <translation id="5974052231147553524">ആറാമത്തെ റോൾ</translation>
 <translation id="5975083100439434680">സൂം ഔട്ട് ചെയ്യുക</translation>
 <translation id="5979084224081478209">പാസ്‌വേഡ് പരിശോധിക്കൂ</translation>
@@ -2593,6 +2600,7 @@
 <translation id="7219179957768738017">കണക്ഷന്‍ <ph name="SSL_VERSION" /> ഉപയോഗിക്കുന്നു.</translation>
 <translation id="7220786058474068424">പ്രോസസ്സുചെയ്യുന്നു</translation>
 <translation id="7221855153210829124">അറിയിപ്പുകൾ കാണിക്കുക</translation>
+<translation id="7221857374443660083">ഇത് നിങ്ങൾ തന്നെയാണെന്ന് ബാങ്കിന് ഉറപ്പാക്കേണ്ടതുണ്ട്</translation>
 <translation id="722454870747268814">പുതിയ ആൾമാറാട്ട ടാബ്</translation>
 <translation id="7227293336683593977">നിരക്ക് ചരിത്രം</translation>
 <translation id="7233592378249864828">സ്ഥിരീകരണ ഷീറ്റ് പ്രിന്റ് ചെയ്യുക</translation>
@@ -2941,7 +2949,6 @@
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, സിസ്റ്റത്തിന്റെ ഡിഫോൾട്ട് ബ്രൗസറായി Chrome സജ്ജീകരിക്കാൻ, tab അമർത്തിയ ശേഷം Enter അമർത്തുക</translation>
 <translation id="8025119109950072390">ഈ സൈറ്റിലെ ആക്രമണകാരികൾ സോഫ്‌റ്റ്‌വെയർ ഇൻസ്റ്റാൾ ചെയ്യുന്നതോ വ്യക്തിപരമായ വിവരങ്ങൾ വെളിപ്പെടുത്തുന്നതോ (ഉദാഹരണത്തിന്, പാസ്‌വേഡുകൾ, ഫോൺ നമ്പറുകൾ, ക്രെഡിറ്റ് കാർഡുകൾ എന്നീ വിവരങ്ങൾ) പോലുള്ള അപകടകരമായ കാര്യങ്ങൾ ചെയ്യിപ്പിക്കുന്ന തരത്തിൽ നിങ്ങളെ കബളിപ്പിച്ചേക്കാം.</translation>
-<translation id="8026126421313327427">4 ആഴ്‌ചയിലധികം പഴക്കമുള്ള വിഷയങ്ങൾ Chrome സ്വയമേവ ഇല്ലാതാക്കുന്നു. നിങ്ങൾ തുടർന്നും ബ്രൗസ് ചെയ്യുന്നതനുസരിച്ച്, ഒരു വിഷയം ലിസ്റ്റിൽ വീണ്ടും ദൃശ്യമാകാം. അല്ലെങ്കിൽ, Chrome സൈറ്റുകളുമായി പങ്കിടരുതെന്ന് ആഗ്രഹിക്കുന്ന വിഷയങ്ങൾ നിങ്ങൾക്ക് ബ്ലോക്ക് ചെയ്യാം.</translation>
 <translation id="8026334261755873520">ബ്രൌസിംഗ് ഡാറ്റ മായ്‌ക്കുക</translation>
 <translation id="8027077570865220386">ട്രേ 15</translation>
 <translation id="8027585818882015174">'Chrome സുരക്ഷാ പരിശോധന റൺ ചെയ്യുക' ബട്ടൺ, Chrome ക്രമീകരണത്തിൽ സുരക്ഷാ പരിശോധന റൺ ചെയ്യാൻ സജീവമാക്കുക</translation>
@@ -3393,6 +3400,7 @@
 <translation id="9141013498910525015">വിലാസങ്ങൾ മാനേജ് ചെയ്യുക</translation>
 <translation id="9144951720726881238">കാലഹരണപ്പെടല്‍‌ തീയതി:</translation>
 <translation id="9148507642005240123">&amp;എഡിറ്റുചെയ്യുന്നത് പഴയപടിയാക്കുക</translation>
+<translation id="9148599396704355100">കുറഞ്ഞ നിരക്ക്</translation>
 <translation id="9150045010208374699">നിങ്ങളുടെ ക്യാമറ ഉപയോഗിക്കുക</translation>
 <translation id="9150685862434908345">നിങ്ങളുടെ അഡ്‌മിന് വിദൂരമായി ബ്രൗസർ സജ്ജീകരണം മാറ്റാനാകും. ഈ ഉപകരണത്തിലെ ആക്‌റ്റിവിറ്റി Chrome-ന് പുറത്തും മാനേജ് ചെയ്തേക്കാം. <ph name="BEGIN_LINK" />കൂടുതലറിയുക<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">അപ്‌ഡേറ്റ് ചെയ്‌തു</translation>

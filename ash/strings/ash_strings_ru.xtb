@@ -140,7 +140,7 @@
 <translation id="1550406609415860283">Доступные устройства</translation>
 <translation id="1550523713251050646">Чтобы изменить источник питания, нажмите здесь.</translation>
 <translation id="1555130319947370107">Синий</translation>
-<translation id="1576511610858879060">На устройстве Chromebook или Bluetooth установлена устаревшая версия Bluetooth. Используйте другой источник сигнала, чтобы повысить качество звука.</translation>
+<translation id="1576511610858879060">На вашем устройстве устаревшая версия Bluetooth. Воспользуйтесь другим источником сигнала для более высокого качества звука.</translation>
 <translation id="1576623706766186887">Уменьшить, когда включена лупа</translation>
 <translation id="1586324912145647027">Перейти к рабочим столам (от 1 до 8)</translation>
 <translation id="1589090746204042747">Получать доступ к данным о ваших действиях во время этого сеанса.</translation>
@@ -356,6 +356,7 @@
 <translation id="256712445991462162">Закрепленная лупа</translation>
 <translation id="2573588302192866788">Не удалось подключить устройство "<ph name="NAME" />"</translation>
 <translation id="2575685495496069081">Множественный вход отключен</translation>
+<translation id="2579264398927991698">Обновления встроенного ПО</translation>
 <translation id="2582112259361606227">Перезагрузить и обновить</translation>
 <translation id="2586561057878260610">Нажмите Ctrl + W, чтобы объединить с рабочим столом <ph name="DESK_NAME" />. Нажмите Ctrl + Shift + W, чтобы закрыть рабочий стол и окна.</translation>
 <translation id="2595239820337756193">5 миль в км</translation>
@@ -687,6 +688,7 @@
 <translation id="4028481283645788203">В качестве дополнительной меры безопасности введите пароль.</translation>
 <translation id="4032485810211612751"><ph name="HOURS" />:<ph name="MINUTES" />:<ph name="SECONDS" /></translation>
 <translation id="4042660782729322247">Вы открыли доступ к своему экрану</translation>
+<translation id="404437169852192935">Обновления больше не будут выпускаться</translation>
 <translation id="4049230407053723315">Быстрые настройки</translation>
 <translation id="4057003836560082631">Вкладка <ph name="INDEX" /> из <ph name="TOTAL_COUNT" />. <ph name="SITE_TITLE" />, <ph name="SITE_URL" /></translation>
 <translation id="4065525899979931964">{NUM_APPS,plural, =1{Откл. 1 прил.}one{Откл. # прил.}few{Откл. # прил.}many{Откл. # прил.}other{Откл. # прил.}}</translation>
@@ -1018,11 +1020,13 @@
 <translation id="5482205457807971887"><ph name="MODIFIER_ONE" /><ph name="KEY_ONE" /> или <ph name="MODIFIER_TWO" /><ph name="MODIFIER_THREE" /><ph name="KEY_TWO" /></translation>
 <translation id="5491186829646618080">Доступны обновления</translation>
 <translation id="5503884284981862082">Открыть или закрыть Google Ассистента</translation>
+<translation id="550391772491508736">Возобновить трансляцию</translation>
 <translation id="5506975627792768506">Включить или отключить лупу</translation>
 <translation id="5512042095225963688">Удалить предыдущее слово</translation>
 <translation id="5519195206574732858">LTE</translation>
 <translation id="5520229639206813572">Ваш администратор удалил все профили eSIM. Обратитесь к нему за подробной информацией.</translation>
 <translation id="5523434445161341166">Функция "<ph name="FEATURE_NAME" />" выполняет подключение.</translation>
+<translation id="5529587891732734495">Приостановить трансляцию</translation>
 <translation id="5532994612895037630">Нажмите в любом месте, чтобы включить запись видео со всего экрана.</translation>
 <translation id="5536723544185013515">Недавние приложения. Чтобы листать список, нажимайте клавиши со стрелками вправо и влево.</translation>
 <translation id="553675580533261935">Завершение сеанса</translation>

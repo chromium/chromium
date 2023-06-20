@@ -618,6 +618,7 @@
 <translation id="1515163294334130951">Стартувај</translation>
 <translation id="1517467582299994451">За да емитувате со код, вклучете ги поставките за синхронизација на прелистувачот Chrome</translation>
 <translation id="1521442365706402292">Управување со сертификати</translation>
+<translation id="1521655867290435174">Табели на Google</translation>
 <translation id="1521774566618522728">Активен денес</translation>
 <translation id="152234381334907219">Никогаш не зачувувај лозинки</translation>
 <translation id="1523279371236772909">Прегледано во изминатиот месец</translation>
@@ -1437,6 +1438,7 @@
 <translation id="2175927920773552910">QR-код</translation>
 <translation id="2177306523871626993">Се преземаат датотеки за препознавање текст… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Инкогнито картичка: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Овозможувате функции за отстранување грешки на ChromeOS Flex коишто ќе постават sshd-демон и ќе овозможат подигање од USB-дискови.</translation>
 <translation id="2178614541317717477">ЦА е изложен на ризик</translation>
 <translation id="2179416702468739594">Се бараат достапни профили. Ова може да предизвика неколкуминутен прекин на врската на вашата мобилна мрежа.</translation>
@@ -4352,6 +4354,7 @@
 <translation id="4675828034887792601">Создајте кратенки за пребарување сајтови и управувајте со вашиот пребарувач</translation>
 <translation id="4676595058027112862">Phone Hub, Дознајте повеќе</translation>
 <translation id="4677772697204437347">ГПУ-меморија</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Кредитна/дебитна картичка</translation>
 <translation id="4680105648806843642">Звукот е исклучен на страницава</translation>
 <translation id="4680112532510845139">Спуштете слика овде</translation>
@@ -5263,6 +5266,7 @@
 <translation id="5494362494988149300">Отвори кога е &amp;готово</translation>
 <translation id="5495466433285976480">Ова ќе ги отстрани сите локални корисници, датотеки, податоци и други поставки по вашето следно рестартирање. Сите корисници ќе треба да се пријават повторно.</translation>
 <translation id="5495597166260341369">Држи го екранот вклучен</translation>
+<translation id="549602578321198708">Збор</translation>
 <translation id="5496587651328244253">Организирај</translation>
 <translation id="5496730470963166430">Не им е дозволено да испраќаат скокачки програми, ниту да користат пренасочувања</translation>
 <translation id="5497251278400702716">Оваа датотека</translation>
@@ -5428,7 +5432,6 @@
 <translation id="5633149627228920745">Дознајте повеќе за барањата на системот</translation>
 <translation id="563371367637259496">Мобилна</translation>
 <translation id="5634446357546764049">Погледнете спомени за вашите неодамнешни патувања и друго</translation>
-<translation id="5635091213277904818">Chrome автоматски ги брише сајтовите што се постари од 30 дена. Сајт што ќе го отворите повторно може одново да се појави на списокот. Или може да блокирате сајт да ви прикажува реклами.</translation>
 <translation id="5635312199252507107">Дозволи на конкретни сајтови</translation>
 <translation id="5636012309446422">Да се отстрани <ph name="DEVICE" /> од <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">За да го користите <ph name="NETWORK_ID" />, можеби прво ќе треба да ја <ph name="LINK_START" />посетите страницата за пријавување преку мрежа<ph name="LINK_END" />, која автоматски ќе се отвори за неколку секунди. Доколку тоа не се случи, мрежата не може да се користи.</translation>
@@ -8090,6 +8093,7 @@
 <translation id="7926423016278357561">Не бев јас.</translation>
 <translation id="7926975587469166629">Прекар на картичката</translation>
 <translation id="7928175190925744466">Веќе ја променивте лозинкава?</translation>
+<translation id="7929962904089429003">Отворете го менито</translation>
 <translation id="7930294771522048157">Зачуваните начини за плаќање ќе се појават тука</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> ги споделува вашиот екран и аудио.</translation>
 <translation id="793293630927785390">Нов дијалог за Wi-Fi мрежа</translation>
@@ -9560,6 +9564,7 @@
 <translation id="9180380851667544951">Сајтот може да го споделува вашиот екран</translation>
 <translation id="9180847522826713506">За да ја прегледате вашата лозинка или да додадете белешка за неа, кликнете на иконата со клуч</translation>
 <translation id="9182556968660520230">Не им дозволувај на сајтовите да пуштаат заштитени содржини</translation>
+<translation id="9183302530794969518">Документи на Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Апликација}one{# апликација}other{# апликации}}</translation>
 <translation id="9186963452600581158">Најавете се со сметка на Google на дете</translation>
 <translation id="9187967020623675250">Клучевите не се совпаѓаат. Притиснете на кое било копче за да <ph name="RESPONSE" />.</translation>

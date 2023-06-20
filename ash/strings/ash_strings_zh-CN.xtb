@@ -982,6 +982,7 @@
 <translation id="5308380583665731573">连接</translation>
 <translation id="5313326810920013265">蓝牙设置</translation>
 <translation id="5314219114274263156">已录制屏幕</translation>
+<translation id="5314489738835854379">反向浏览各个窗口</translation>
 <translation id="5316716239522500219">镜像显示器</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">为新设备配对</translation>
@@ -1128,6 +1129,7 @@
 <translation id="5958529069007801266">受监管用户</translation>
 <translation id="5961960957587052807">轻微</translation>
 <translation id="5965524703725988602">开启/关闭深色主题。<ph name="STATE_TEXT" />。</translation>
+<translation id="5975235751479998104">正向浏览各个窗口</translation>
 <translation id="5976112937189445008">按 Enter 键即可录制窗口</translation>
 <translation id="5978382165065462689">正在通过远程协助共享您屏幕的控制权限。</translation>
 <translation id="5980301590375426705">退出访客模式</translation>
@@ -1338,6 +1340,7 @@
 <translation id="6891721121089053234">在 <ph name="DEVICE_TYPE" /> 上查看手机中的近期照片、媒体和应用</translation>
 <translation id="6896758677409633944">复制</translation>
 <translation id="6901883536534621389">尝试使用手势导航</translation>
+<translation id="6912841030378044227">聚焦于地址栏</translation>
 <translation id="6919251195245069855">无法识别您的智能卡，请重试。</translation>
 <translation id="6920245099716267363">开启/关闭热点。热点已开启，且已连接 1 部设备。</translation>
 <translation id="6931576957638141829">保存到</translation>

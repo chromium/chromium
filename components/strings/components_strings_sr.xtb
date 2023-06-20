@@ -538,6 +538,7 @@
 <translation id="2202020181578195191">Унесите важећу годину истека</translation>
 <translation id="2202627062836089804">полеђини картице</translation>
 <translation id="2204482073374652408">Ажурирање је завршено!</translation>
+<translation id="2208053750671792556">Нисте добили кôд? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3. фиока</translation>
 <translation id="2210794033760923560">Отпреми извештај</translation>
 <translation id="2212735316055980242">Смернице нису пронађене</translation>
@@ -952,6 +953,7 @@
 <translation id="3270847123878663523">&amp;Опозови промену редоследа</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> жели да се повеже</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Унесите <ph name="NUMBER_OF_DIGITS" />-цифрени верификациони кôд</translation>
 <translation id="3281350579597955952">{0,plural, =1{Смернице администратора не препоручују отварање овог фајла у: <ph name="DESTINATION_NAME" />}one{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}few{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}other{Смернице администратора не препоручују отварање ових фајлова у: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша организација, <ph name="ENROLLMENT_DOMAIN" />, послала је одређене податке следећим веб-сајтовима, попут подешавања или смерница.</translation>
 <translation id="3286372614333682499">усправно</translation>
@@ -2598,6 +2600,7 @@
 <translation id="7219179957768738017">Веза користи <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обрада</translation>
 <translation id="7221855153210829124">приказује обавештења</translation>
+<translation id="7221857374443660083">Банка жели да се увери да сте то ви</translation>
 <translation id="722454870747268814">Нова картица без архивирањa</translation>
 <translation id="7227293336683593977">Историја цена</translation>
 <translation id="7233592378249864828">Лист потврде штампања</translation>
@@ -2948,7 +2951,6 @@
 <translation id="8019861005170389898"><ph name="TRADITIONAL_TEXT" /> (<ph name="ADDITIONAL_TEXT" />)</translation>
 <translation id="8023231537967344568"><ph name="SET_CHROME_AS_DEFAULT_BROWSER_FOCUSED_FRIENDLY_MATCH_TEXT" />, притисните Tab, па Enter да бисте подесили Chrome као подразумевани прегледач система</translation>
 <translation id="8025119109950072390">Нападачи на овом сајту могу да вас преваре да бисте урадили нешто опасно, на пример, да инсталирате софтвер или откријете личне податке (попут лозинки, бројева телефона или бројева кредитних картица).</translation>
-<translation id="8026126421313327427">Chrome аутоматски брише теме старије од 4 недеље. Када наставите да прегледате, тема ће се можда поново појавити на листи. Можете и да блокирате теме које не желите да Chrome дели са сајтовима.</translation>
 <translation id="8026334261755873520">Обришите податке прегледања</translation>
 <translation id="8027077570865220386">15. фиока</translation>
 <translation id="8027585818882015174">Дугме Покрени Chrome проверу безбедности, активирајте га да бисте покренули проверу безбедности у подешавањима Chrome-а</translation>

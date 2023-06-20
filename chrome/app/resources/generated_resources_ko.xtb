@@ -617,6 +617,7 @@
 <translation id="1515163294334130951">실행</translation>
 <translation id="1517467582299994451">코드로 전송하려면 Chrome 브라우저 동기화 설정을 사용 설정하세요.</translation>
 <translation id="1521442365706402292">인증서 관리</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">오늘 사용</translation>
 <translation id="152234381334907219">저장하지 않음</translation>
 <translation id="1523279371236772909">지난달에 확인함</translation>
@@ -1072,7 +1073,7 @@
 <translation id="1871098866036088250">Chrome 브라우저에서 열기</translation>
 <translation id="187145082678092583">앱 간략히 보기</translation>
 <translation id="1871534214638631766">콘텐츠를 마우스 오른쪽 버튼으로 클릭하거나 길게 누르면 관련 정보가 표시됩니다.</translation>
-<translation id="1871615898038944731"><ph name="DEVICE_TYPE" />이(가) 최신 버전</translation>
+<translation id="1871615898038944731"><ph name="DEVICE_TYPE" />이(가) 최신 버전임</translation>
 <translation id="1873920700418191231"><ph name="WEBSITE" />에 대한 권한 다시 허용</translation>
 <translation id="1874248162548993294">모든 광고 표시가 허용됨</translation>
 <translation id="1874972853365565008">{NUM_TABS,plural, =1{탭을 다른 창으로 이동}other{탭을 다른 창으로 이동}}</translation>
@@ -1437,6 +1438,7 @@
 <translation id="2175927920773552910">QR 코드</translation>
 <translation id="2177306523871626993">텍스트 인식 파일 다운로드 중… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">시크릿 탭: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">sshd 데몬을 설정하고 USB 드라이브에서 부팅할 수 있도록 하는 ChromeOS Flex 디버깅 기능을 사용 설정합니다.</translation>
 <translation id="2178614541317717477">CA 손상</translation>
 <translation id="2179416702468739594">사용 가능한 프로필을 찾는 중입니다. 이로 인해 모바일 네트워크의 연결이 몇 분간 해제될 수 있습니다.</translation>
@@ -4351,6 +4353,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="4675828034887792601">검색 사이트 바로가기를 만들고 검색엔진을 관리합니다.</translation>
 <translation id="4676595058027112862">휴대전화 허브, 자세히 알아보기</translation>
 <translation id="4677772697204437347">GPU 메모리</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">신용카드/체크카드</translation>
 <translation id="4680105648806843642">이 페이지가 음소거됨</translation>
 <translation id="4680112532510845139">이미지를 여기에 드롭하세요.</translation>
@@ -5262,6 +5265,7 @@ https://support.google.com/chromebook/?p=tpm</translation>
 <translation id="5494362494988149300">완료되면 열기(&amp;D)</translation>
 <translation id="5495466433285976480">다음에 다시 시작할 때 모든 로컬 사용자, 파일, 데이터 및 기타 설정이 삭제됩니다. 모든 사용자는 다시 로그인해야 합니다.</translation>
 <translation id="5495597166260341369">디스플레이를 켜진 상태로 유지</translation>
+<translation id="549602578321198708">단어</translation>
 <translation id="5496587651328244253">정리</translation>
 <translation id="5496730470963166430">팝업 전송 또는 리디렉션 사용이 허용되지 않음</translation>
 <translation id="5497251278400702716">이 파일</translation>
@@ -5427,7 +5431,6 @@ Google에 전송하여 안전한 파일인지 확인할 수 있습니다. 스캔
 <translation id="5633149627228920745">시스템 요구사항 자세히 알아보기</translation>
 <translation id="563371367637259496">모바일</translation>
 <translation id="5634446357546764049">최근 여행에서 남긴 추억 등 보기</translation>
-<translation id="5635091213277904818">Chrome에서는 30일이 지난 사이트를 자동 삭제합니다. 재방문한 사이트는 목록에 다시 표시될 수 있습니다. 또는 사이트에서 광고를 추천하지 못하도록 차단할 수도 있습니다.</translation>
 <translation id="5635312199252507107">특정 사이트에서 허용</translation>
 <translation id="5636012309446422"><ph name="PRIMARY_EMAIL" />에서 <ph name="DEVICE" /> 기기를 삭제하시겠습니까?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" />을(를) 사용하려면 먼저 몇 초 뒤에 자동으로 열리는 <ph name="LINK_START" />네트워크 로그인 페이지로 이동<ph name="LINK_END" />해야 합니다. 네트워크 로그인 페이지가 자동으로 열리지 않으면 네트워크를 사용할 수 없습니다.</translation>
@@ -8087,6 +8090,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="7926423016278357561">본인이 아닙니다.</translation>
 <translation id="7926975587469166629">카드 닉네임</translation>
 <translation id="7928175190925744466">이 비밀번호를 이미 변경하셨나요?</translation>
+<translation id="7929962904089429003">메뉴 열기</translation>
 <translation id="7930294771522048157">저장한 결제 수단이 여기에 표시됩니다.</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" />에서 내 화면과 오디오를 공유하는 중입니다.</translation>
 <translation id="793293630927785390">새 Wi-Fi 네트워크 대화상자</translation>
@@ -9554,6 +9558,7 @@ https://support.google.com/chromebook/?p=sm</translation>
 <translation id="9180380851667544951">사이트에서 화면을 공유할 수 있습니다.</translation>
 <translation id="9180847522826713506">비밀번호를 보거나 비밀번호 메모를 추가하려면 열쇠 아이콘을 클릭하세요.</translation>
 <translation id="9182556968660520230">사이트에서 보호된 콘텐츠를 재생하도록 허용하지 않음</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{앱}other{앱 #개}}</translation>
 <translation id="9186963452600581158">자녀의 Google 계정으로 로그인</translation>
 <translation id="9187967020623675250">키가 일치하지 않습니다. <ph name="RESPONSE" />하려면 아무 키나 누르세요.</translation>

@@ -615,6 +615,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1515163294334130951">Lansați</translation>
 <translation id="1517467582299994451">Ca să proiectezi folosind un cod, activează setările de sincronizare a browserului Chrome</translation>
 <translation id="1521442365706402292">Gestionează certificatele</translation>
+<translation id="1521655867290435174">Foi de calcul Google</translation>
 <translation id="1521774566618522728">Activ astăzi</translation>
 <translation id="152234381334907219">Nu se salvează niciodată</translation>
 <translation id="1523279371236772909">Afișat în ultima lună</translation>
@@ -1426,6 +1427,7 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="2175927920773552910">Cod QR</translation>
 <translation id="2177306523871626993">Se descarcă fișierele de recunoaștere a textului… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Fila Incognito: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Activezi funcțiile de remediere a erorilor în sistemul de operare Chrome Flex, care vor configura SSH daemon și vor activa pornirea de pe unități USB.</translation>
 <translation id="2178614541317717477">Compromitere CA</translation>
 <translation id="2179416702468739594">Se caută profiluri disponibile. Din acest motiv, rețeaua mobilă se poate deconecta timp de câteva minute.</translation>
@@ -4340,6 +4342,7 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="4675828034887792601">Creează comenzi rapide pentru a căuta site-uri și a gestiona motorul de căutare</translation>
 <translation id="4676595058027112862">Phone Hub, Află mai multe</translation>
 <translation id="4677772697204437347">Memorie GPU</translation>
+<translation id="467809019005607715">Prezentări Google</translation>
 <translation id="4678848110205818817">Card de credit / debit</translation>
 <translation id="4680105648806843642">Sunetul a fost dezactivat pe această pagină</translation>
 <translation id="4680112532510845139">Plasează o imagine aici</translation>
@@ -5252,6 +5255,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="5494362494988149300">Deschide când s-a &amp;descărcat</translation>
 <translation id="5495466433285976480">Această acțiune va elimina utilizatorii, fișierele, datele și alte setări locale după următoarea repornire. Va fi necesar ca toți utilizatorii să se conecteze din nou.</translation>
 <translation id="5495597166260341369">Ecranul rămâne activ</translation>
+<translation id="549602578321198708">Cuvânt</translation>
 <translation id="5496587651328244253">Organizați</translation>
 <translation id="5496730470963166430">Nu au permisiunea de a afișa ferestre pop-up sau de a folosi redirecționări</translation>
 <translation id="5497251278400702716">Acest fișier</translation>
@@ -5419,7 +5423,6 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="5633149627228920745">Află mai multe despre cerințele de sistem</translation>
 <translation id="563371367637259496">Mobilă</translation>
 <translation id="5634446357546764049">Vezi amintiri cu călătoriile recente și altele</translation>
-<translation id="5635091213277904818">Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri.</translation>
 <translation id="5635312199252507107">Permite pe anumite site-uri</translation>
 <translation id="5636012309446422">Elimini <ph name="DEVICE" /> din <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Pentru a utiliza <ph name="NETWORK_ID" /> ar putea fi necesar să <ph name="LINK_START" />accesați mai întâi pagina de conectare a rețelei<ph name="LINK_END" />, care se va deschide automat în câteva secunde. Dacă acest lucru nu se întâmplă, rețeaua nu poate fi utilizată.</translation>
@@ -8091,6 +8094,7 @@ Apasă un comutator sau o tastă atribuită pentru a elimina atribuirea</transla
 <translation id="7926423016278357561">Nu am fost eu.</translation>
 <translation id="7926975587469166629">Pseudonimul cardului</translation>
 <translation id="7928175190925744466">Ai schimbat deja parola?</translation>
+<translation id="7929962904089429003">Deschide meniul</translation>
 <translation id="7930294771522048157">Metodele de plată salvate vor fi afișate aici</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> trimite conținutul de pe ecran și conținutul audio.</translation>
 <translation id="793293630927785390">Caseta de dialog Rețea Wi-Fi nouă</translation>
@@ -9562,6 +9566,7 @@ Permisiunile pe care le-ai acordat deja site-urilor și aplicațiilor se pot apl
 <translation id="9180380851667544951">Site-ul poate permite accesul la ecranul tău</translation>
 <translation id="9180847522826713506">Pentru a vedea parola sau pentru a adăuga o notă despre ea, dă clic pe pictograma cheie</translation>
 <translation id="9182556968660520230">Nu permite site-urilor să redea conținut protejat</translation>
+<translation id="9183302530794969518">Documente Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicație}few{# aplicații}other{# de aplicații}}</translation>
 <translation id="9186963452600581158">Conectează-te cu Contul Google al unui copil</translation>
 <translation id="9187967020623675250">Tastele nu corespund. Apasă pe orice tastă pentru <ph name="RESPONSE" />.</translation>

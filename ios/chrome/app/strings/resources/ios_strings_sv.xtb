@@ -69,6 +69,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1358214951266274152">Besök den kopierade länken</translation>
 <translation id="1360432990279830238">Logga ut och inaktivera synkronisering?</translation>
 <translation id="1363028406613469049">Spår</translation>
+<translation id="1365106417372288489">Din iPhone återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
 <translation id="1375321115329958930">Sparade lösenord</translation>
 <translation id="1377255359165588604">Synkronisering har slutat fungera.</translation>
 <translation id="1377321085342047638">Kortnummer</translation>
@@ -143,6 +144,7 @@ Om du vill ändra den här inställningen <ph name="BEGIN_LINK" />rensar du Chro
 <translation id="1872096359983322073">Ficklampa</translation>
 <translation id="1883255238294161206">Komprimera lista</translation>
 <translation id="1894023287452300670">Bevaka pris här</translation>
+<translation id="189531189292803889">Din iPad återställdes nyligen. Detta kan ha ändrat standardwebbläsaren.</translation>
 <translation id="1910975740091000991">Chrome för iOS</translation>
 <translation id="1911619930368729126">Ladda upp till Google Drive</translation>
 <translation id="1923342640370224680">Senaste timmen</translation>
@@ -372,6 +374,7 @@ Läs sökmotorns anvisningar för att radera sökhistoriken om tillämpligt.</tr
 <translation id="3393920035788932672">Popup tillåts</translation>
 <translation id="3399930248910934354">Öppna inställningarna för Chrome</translation>
 <translation id="3404744938087714423">Om du loggar ut inaktiveras synkronisering.</translation>
+<translation id="3409785640040772790">Maps</translation>
 <translation id="3425644765244388016">Kortets namn</translation>
 <translation id="3433057996795775706">Att ta bort det här lösenordet innebär inte att ditt konto på <ph name="WEBSITE" /> raderas. Skydda kontot genom att ändra lösenordet på <ph name="WEBSITE" />.</translation>
 <translation id="3443810440409579745">En flik har tagits emot.</translation>
@@ -1016,6 +1019,7 @@ I inkognitoläget får inte webbplatser se din webbaktivitet på olika webbplats
 <translation id="750493650310597496">0 valda</translation>
 <translation id="7508728395076009983">Konfigurera Touch ID, Face ID eller ett lösenord om du vill låsa flikar i inkognitoläget.</translation>
 <translation id="7514365320538308">Ladda ned</translation>
+<translation id="7524055474074101597">Få tillgång till dina lösenord m.m. i appar.</translation>
 <translation id="7531345132340165516">Nuvarande webbplats</translation>
 <translation id="7537586195939242955">Det går tyvärr inte att installera det här objektet i Passbook just nu.</translation>
 <translation id="754655535278952384">Kontrollerades <ph name="TIME" /></translation>

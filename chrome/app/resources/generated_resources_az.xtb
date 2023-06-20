@@ -612,6 +612,7 @@ Hazırda tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna bilər. And
 <translation id="1515163294334130951">İşə salın</translation>
 <translation id="1517467582299994451">Kodla yayımlamaq üçün Chrome brauzer sinxronizasiya ayarlarını aktiv edin</translation>
 <translation id="1521442365706402292">Sertifikatları idarə edin</translation>
+<translation id="1521655867290435174">Google Cədvəl</translation>
 <translation id="1521774566618522728">Bu gün aktivdir</translation>
 <translation id="152234381334907219">Heç vaxt Saxlanılmır</translation>
 <translation id="1523279371236772909">Keçən ay baxılıb</translation>
@@ -1421,6 +1422,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="2175927920773552910">QR Kod</translation>
 <translation id="2177306523871626993">Mətn tanıma faylları endirilir… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">İnkoqnito rejimi paneli: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ChromeOS Flex debaq funksiyalarını aktivləşdirirsiniz, bu da sshd daemon quraşdırır və USB cihazlarından yüklənməyə imkan verir.</translation>
 <translation id="2178614541317717477">Sertifikat Doğrulaması Kompromisi</translation>
 <translation id="2179416702468739594">Əlçatan profillər axtarılır. Bu, mobil şəbəkənizin bir neçə dəqiqəlik kəsilməsinə səbəb ola bilər.</translation>
@@ -4336,6 +4338,7 @@ Cihazda Family Link tətbiqini quraşdırmaqla bu hesabın ayarlarını idarə e
 <translation id="4675828034887792601">Saytları axtarmaq üçün qısayollar yaradın və axtarış sisteminizi idarə edin</translation>
 <translation id="4676595058027112862">Telefon Mərkəzi, Ətraflı Məlumat</translation>
 <translation id="4677772697204437347">GPU yaddaş</translation>
+<translation id="467809019005607715">Google Slayd</translation>
 <translation id="4678848110205818817">Kredit/Debet kart</translation>
 <translation id="4680105648806843642">Bu səhifə səssiz rejimdədir</translation>
 <translation id="4680112532510845139">Şəkli buraya əlavə edin</translation>
@@ -5248,6 +5251,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="5494362494988149300">Nə zaman və Tamam bölməsini açın</translation>
 <translation id="5495466433285976480">Növbəti başlatmanızdan sonra bu bütün yerli istifadəçilər, data və digər ayarlar silinəcək. Bütün istifadəçilər yenidən daxil olmalıdır.</translation>
 <translation id="5495597166260341369">Ekranı aktiv saxlayın</translation>
+<translation id="549602578321198708">Söz</translation>
 <translation id="5496587651328244253">Təşkil etmək</translation>
 <translation id="5496730470963166430">Anidən görünən bildirişlər göndərmək və ya yönləndirmələrdən istifadə etməyə icazə verilmir</translation>
 <translation id="5497251278400702716">Bu fayl</translation>
@@ -5415,7 +5419,6 @@ Təhlükəli olub-olmadığını yoxlamaq üçün onu Google-a göndərə bilər
 <translation id="5633149627228920745">Sistem tələbləri haqqında ətraflı məlumat</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Son səfərləriniz barədə xatirələrə və digər məlumatlara baxın</translation>
-<translation id="5635091213277904818">Chrome 30 gündən əvvələ aid saytları avtomatik silir. Yenidən daxil olduğunuz sayt siyahıda təkrar görünə bilər. Saytın reklam təklif etməsini bloklaya bilərsiniz.</translation>
 <translation id="5635312199252507107">Müəyyən saytlarda icazə verin</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> <ph name="PRIMARY_EMAIL" /> hesabından silinsin?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> istifadə etmək üçün ilk öncə <ph name="LINK_START" />şəbəkənin hesaba giriş səhifəsinə daxil olun<ph name="LINK_END" />.</translation>
@@ -8083,6 +8086,7 @@ Təyinatı silmək üçün təyin edilmiş keçirici və ya düyməni basın.</t
 <translation id="7926423016278357561">Mən deyildim.</translation>
 <translation id="7926975587469166629">Kart ləqəbi</translation>
 <translation id="7928175190925744466">Artıq bu parolu dəyişmisiniz?</translation>
+<translation id="7929962904089429003">Menyunu açın</translation>
 <translation id="7930294771522048157">Yadda saxlanmış ödəniş üsulları burada görünəcək</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> ekran və audionuzu paylaşır.</translation>
 <translation id="793293630927785390">Yeni Wi-Fi Şəbəkəsi Dialoqu</translation>
@@ -9550,6 +9554,7 @@ Artıq veb-sayt və tətbiqlərə verdiyiniz icazələr bu hesaba tətbiq oluna 
 <translation id="9180380851667544951">Sayt ekranınızı paylaşa bilər</translation>
 <translation id="9180847522826713506">Parola baxmaq və ya haqqında qeyd əlavə etmək üçün açar ikonasına klikləyin</translation>
 <translation id="9182556968660520230">Saytlara qorunan məzmunu göstərmək icazəsi verməyin</translation>
+<translation id="9183302530794969518">Google Sənəd</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Tətbiq}other{# tətbiq}}</translation>
 <translation id="9186963452600581158">Uşağın Google Hesabı ilə daxil olun</translation>
 <translation id="9187967020623675250">Düymələr uyğun gəlmir. <ph name="RESPONSE" /> üçün istənilən düyməyə basın.</translation>

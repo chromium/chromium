@@ -616,6 +616,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1515163294334130951">Spustit</translation>
 <translation id="1517467582299994451">Pokud chcete odesílat pomocí kódu, zapněte v prohlížeči Chrome nastavení synchronizace</translation>
 <translation id="1521442365706402292">Správa certifikátů</translation>
+<translation id="1521655867290435174">Tabulky Google</translation>
 <translation id="1521774566618522728">Aktivní dnes</translation>
 <translation id="152234381334907219">Neuloženo</translation>
 <translation id="1523279371236772909">Zobrazeno minulý měsíc</translation>
@@ -1426,6 +1427,7 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="2175927920773552910">QR kód</translation>
 <translation id="2177306523871626993">Stahování souborů k rozpoznávání textu… <ph name="PERCENT" /> %</translation>
 <translation id="2177950615300672361">Anonymní karta: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Aktivujete funkce ladění systému ChromeOS Flex, které nastaví démona sshd a umožní spouštění z jednotek USB.</translation>
 <translation id="2178614541317717477">Ohrožení bezpečnosti certifikační autority</translation>
 <translation id="2179416702468739594">Probíhá vyhledávání dostupných profilů. V důsledku této akce můžete být na několik minut odpojeni od mobilní sítě.</translation>
@@ -4336,6 +4338,7 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="4675828034887792601">Vytvořte zkratky pro vyhledávání na webech a správu vyhledávače</translation>
 <translation id="4676595058027112862">Telefonní centrum, další informace</translation>
 <translation id="4677772697204437347">Paměť GPU</translation>
+<translation id="467809019005607715">Prezentace Google</translation>
 <translation id="4678848110205818817">Kreditní/debetní karta</translation>
 <translation id="4680105648806843642">Na této stránce byl ztlumen zvuk</translation>
 <translation id="4680112532510845139">Přetáhněte sem obrázek</translation>
@@ -5247,6 +5250,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili webů
 <translation id="5494362494988149300">Po &amp;dokončení otevřít</translation>
 <translation id="5495466433285976480">Pokud provedete tuto akci, budou po příštím restartu odebráni všichni místní uživatelé, soubory, údaje a další nastavení. Všichni uživatelé se budou muset znovu přihlásit.</translation>
 <translation id="5495597166260341369">Ponechat displej zapnutý</translation>
+<translation id="549602578321198708">Slovo</translation>
 <translation id="5496587651328244253">Uspořádat</translation>
 <translation id="5496730470963166430">Zákaz zobrazovat vyskakovací okna a používat přesměrování</translation>
 <translation id="5497251278400702716">Tento soubor</translation>
@@ -5410,7 +5414,6 @@ Můžete ho odeslat do Googlu ke kontrole, zda je bezpečný. Kontrola obvykle t
 <translation id="5633149627228920745">Další informace o systémových požadavcích</translation>
 <translation id="563371367637259496">Mobilní</translation>
 <translation id="5634446357546764049">Zobrazit vzpomínky na nedávné cesty atd.</translation>
-<translation id="5635091213277904818">Weby, které jsou starší než 30 dní, Chrome automaticky maže. Web, který navštívíte znovu, se na seznamu může opět objevit. Navrhování reklam můžete webu také zablokovat.</translation>
 <translation id="5635312199252507107">Povolit na konkrétních webech</translation>
 <translation id="5636012309446422">Odebrat zařízení <ph name="DEVICE" /> z účtu <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Chcete-li používat síť <ph name="NETWORK_ID" />, je třeba nejdříve <ph name="LINK_START" />přejít na přihlašovací stránku sítě<ph name="LINK_END" />, která se za několik sekund automaticky otevře. Pokud se tak nestane, nelze síť použít.</translation>
@@ -8072,6 +8075,7 @@ Pokud přiřazení chcete odstranit, stiskněte přiřazený přepínač nebo kl
 <translation id="7926423016278357561">To jsem nebyl(a) já.</translation>
 <translation id="7926975587469166629">Přezdívka karty</translation>
 <translation id="7928175190925744466">Už jste toto heslo změnili?</translation>
+<translation id="7929962904089429003">Otevřít nabídku</translation>
 <translation id="7930294771522048157">Zde se budou zobrazovat uložené platební metody</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> sdílí vaši obrazovku a zvuk.</translation>
 <translation id="793293630927785390">Dialogové okno nové sítě Wi-Fi</translation>
@@ -9540,6 +9544,7 @@ Informace o tom, jaká data Google shromažďuje a proč je shromažďuje, naj
 <translation id="9180380851667544951">Web může sdílet vaši obrazovku</translation>
 <translation id="9180847522826713506">Pokud chcete zobrazit heslo nebo k němu přidat poznámku, klikněte na ikonu klíče</translation>
 <translation id="9182556968660520230">Nepovolovat webům přehrávání chráněného obsahu</translation>
+<translation id="9183302530794969518">Dokumenty Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplikace}few{# aplikace}many{# aplikace}other{# aplikací}}</translation>
 <translation id="9186963452600581158">Přihlásit se pomocí účtu Google dítěte</translation>
 <translation id="9187967020623675250">Klávesy se neshodují. Pokud chcete <ph name="RESPONSE" />, stiskněte libovolnou klávesu.</translation>

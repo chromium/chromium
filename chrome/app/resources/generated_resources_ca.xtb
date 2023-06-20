@@ -614,6 +614,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1515163294334130951">Inicia</translation>
 <translation id="1517467582299994451">Per emetre contingut amb un codi, activa la configuració de sincronització del navegador Chrome</translation>
 <translation id="1521442365706402292">Administra certificats</translation>
+<translation id="1521655867290435174">Fulls de càlcul de Google</translation>
 <translation id="1521774566618522728">Actiu avui</translation>
 <translation id="152234381334907219">No es desen mai</translation>
 <translation id="1523279371236772909">S'ha vist el darrer mes</translation>
@@ -1424,6 +1425,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="2175927920773552910">Codi QR</translation>
 <translation id="2177306523871626993">S'estan baixant els fitxers de reconeixement de text… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Pestanya d'incògnit: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Estàs activant les funcions de depuració de ChromeOS Flex, de manera que es configurarà el dimoni SSHD i es permetrà iniciar el sistema des d'unitats USB.</translation>
 <translation id="2178614541317717477">Compromís de CA</translation>
 <translation id="2179416702468739594">S'estan cercant perfils disponibles. Això pot fer que la xarxa mòbil es desconnecti durant uns minuts.</translation>
@@ -4332,6 +4334,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="4675828034887792601">Crea dreceres per cercar llocs web i gestionar el teu motor de cerca</translation>
 <translation id="4676595058027112862">El meu telèfon, Més informació</translation>
 <translation id="4677772697204437347">Memòria de la GPU</translation>
+<translation id="467809019005607715">Presentacions de Google</translation>
 <translation id="4678848110205818817">Targeta de crèdit/dèbit</translation>
 <translation id="4680105648806843642">El so s'ha silenciat en aquesta pàgina</translation>
 <translation id="4680112532510845139">Arrossega una imatge aquí</translation>
@@ -5243,6 +5246,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5494362494988149300">Obre quan &amp;acabi</translation>
 <translation id="5495466433285976480">Això suprimirà tots els usuaris, els fitxers i les dades locals, així com qualsevol altra configuració la pròxima vegada que reiniciïs. Tots els usuaris hauran de tornar a iniciar la sessió.</translation>
 <translation id="5495597166260341369">Mantén la pantalla activa</translation>
+<translation id="549602578321198708">Paraula</translation>
 <translation id="5496587651328244253">Organitza</translation>
 <translation id="5496730470963166430">Sense permís per enviar finestres emergents o utilitzar redireccions</translation>
 <translation id="5497251278400702716">Aquest fitxer</translation>
@@ -5406,7 +5410,6 @@ Assegureu-vos que no es pugui accedir a informació sensible.</translation>
 <translation id="5633149627228920745">Més informació sobre els requisits del sistema</translation>
 <translation id="563371367637259496">Mòbil</translation>
 <translation id="5634446357546764049">Consulta els records dels teus viatges recents i més</translation>
-<translation id="5635091213277904818">Chrome suprimeix automàticament els llocs web que tenen més de 30 dies. És possible que un lloc web que tornis a visitar reaparegui a la llista. També pots bloquejar un lloc web per impedir que et suggereixi anuncis.</translation>
 <translation id="5635312199252507107">Permet en llocs web concrets</translation>
 <translation id="5636012309446422">Vols suprimir <ph name="DEVICE" /> de <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">Per utilitzar <ph name="NETWORK_ID" />, és possible que abans calgui que <ph name="LINK_START" />visiteu la pàgina d'inici de sessió de la xarxa<ph name="LINK_END" />, que s'obrirà automàticament d'aquí a pocs segons. Si no s'obre, no podreu utilitzar la xarxa.</translation>
@@ -8065,6 +8068,7 @@ Prem un interruptor o una tecla assignats per suprimir una assignació.</transla
 <translation id="7926423016278357561">No era jo.</translation>
 <translation id="7926975587469166629">Àlies de la targeta</translation>
 <translation id="7928175190925744466">Ja has canviat aquesta contrasenya?</translation>
+<translation id="7929962904089429003">Obre el menú</translation>
 <translation id="7930294771522048157">Les formes de pagament desades es mostraran aquí</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> està compartint la pantalla i l'àudio.</translation>
 <translation id="793293630927785390">Diàleg per afegir una xarxa Wi-Fi</translation>
@@ -9533,6 +9537,7 @@ Obtén informació sobre les dades que Google recull i sobre el motiu pel qual h
 <translation id="9180380851667544951">El lloc web pot compartir la pantalla</translation>
 <translation id="9180847522826713506">Per veure la contrasenya o afegir-hi una nota, fes clic a la icona de la clau</translation>
 <translation id="9182556968660520230">No permetis que els llocs web reprodueixin contingut protegit</translation>
+<translation id="9183302530794969518">Documents de Google</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Aplicació}other{# aplicacions}}</translation>
 <translation id="9186963452600581158">Inicia la sessió amb el Compte de Google d'un nen</translation>
 <translation id="9187967020623675250">Les tecles no coincideixen. Prem qualsevol tecla per <ph name="RESPONSE" />.</translation>

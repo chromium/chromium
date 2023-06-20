@@ -611,6 +611,7 @@
 <translation id="1515163294334130951">Іске қосу</translation>
 <translation id="1517467582299994451">Код арқылы трансляциялау үшін Chrome браузерін синхрондау параметрлерін іске қосыңыз.</translation>
 <translation id="1521442365706402292">Сертификаттар басқару</translation>
+<translation id="1521655867290435174">Google Sheets</translation>
 <translation id="1521774566618522728">Бүгін белсенді болды</translation>
 <translation id="152234381334907219">Ешқашан сақталмайды</translation>
 <translation id="1523279371236772909">Соңғы айда көрілген.</translation>
@@ -1421,6 +1422,7 @@
 <translation id="2175927920773552910">QR коды</translation>
 <translation id="2177306523871626993">Мәтінді тану файлдары жүктеп алынуда… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Инкогнито қойындысы: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">ChromeOS Flex операциялық жүйесінің ақау түзету функцияларын қосқалы жатырсыз. Олар SSHD демонын орнатып, USB дискілерінен жүктеуге мүмкіндік береді.</translation>
 <translation id="2178614541317717477">CA келісімі</translation>
 <translation id="2179416702468739594">Қолжетімді профильдер ізделуде. Осыған байланысты мобильдік желі бірнеше минут өшуі мүмкін.</translation>
@@ -4332,6 +4334,7 @@
 <translation id="4675828034887792601">Сайттар іздеуге және іздеу жүйесін басқаруға арналған таңбашалар жасауға болады.</translation>
 <translation id="4676595058027112862">Phone Hub, толығырақ</translation>
 <translation id="4677772697204437347">GPU жады</translation>
+<translation id="467809019005607715">Google Slides</translation>
 <translation id="4678848110205818817">Несиелік/дебеттік карта</translation>
 <translation id="4680105648806843642">Бұл бетте дыбыс өшірілген</translation>
 <translation id="4680112532510845139">Суретті осы жерге әкеліңіз.</translation>
@@ -5243,6 +5246,7 @@
 <translation id="5494362494988149300">&amp;Дайын болғанда ашу</translation>
 <translation id="5495466433285976480">Келесі жолы қайта іске қосқаннан кейін, барлық жергілікті пайдаланушылар, файлдар, деректер және басқа параметрлер жойылады. Барлық пайдаланушылар жүйеге қайта кіруі керек болады.</translation>
 <translation id="5495597166260341369">Дисплейді қосулы қалдыру</translation>
+<translation id="549602578321198708">Сөз</translation>
 <translation id="5496587651328244253">Ұйымдастыру</translation>
 <translation id="5496730470963166430">Қалқымалы терезелерді жіберу мен бағытты ауыстыру функцияларын пайдалануға рұқсаты жоқтар</translation>
 <translation id="5497251278400702716">Осы файл</translation>
@@ -5406,7 +5410,6 @@
 <translation id="5633149627228920745">Жүйе талаптары туралы толық ақпарат алыңыз</translation>
 <translation id="563371367637259496">Мобильдік</translation>
 <translation id="5634446357546764049">Соңғы сапарларыңызды және басқа да естеліктеріңізді қараңыз</translation>
-<translation id="5635091213277904818">Chrome браузері 30 күннен асқан сайттарды автоматты жояды. Сіз қайта кірген сайт тізімде қайта пайда болуы мүмкін. Немесе сайттың сізге жарнама ұсынуын бөгей аласыз.</translation>
 <translation id="5635312199252507107">Арнайы сайттарда рұқсат ету</translation>
 <translation id="5636012309446422"><ph name="DEVICE" /> құрылғысы <ph name="PRIMARY_EMAIL" /> электрондық мекенжайынан өшірілсін бе?</translation>
 <translation id="5636996382092289526"><ph name="NETWORK_ID" /> пайдалану үшін алдымен бірнеше секундта автоматты түрде ашылатын <ph name="LINK_START" />желінің кіру бетіне кіріңіз<ph name="LINK_END" />. Олай болмаса, желіні пайдалану мүмкін емес.</translation>
@@ -8064,6 +8067,7 @@
 <translation id="7926423016278357561">Бұл мен емес едім.</translation>
 <translation id="7926975587469166629">Картаның қысқа аты</translation>
 <translation id="7928175190925744466">Бұл құпия сөзді әлдеқашан өзгертіп қойдыңыз ба?</translation>
+<translation id="7929962904089429003">Мәзірді ашу</translation>
 <translation id="7930294771522048157">Сақталған төлеу әдістері осы жерде көрсетіледі</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> қолданбасы экран мен аудионы бөлісуде.</translation>
 <translation id="793293630927785390">Жаңа Wi-Fi желісінің диалогтік терезесі</translation>
@@ -9530,6 +9534,7 @@
 <translation id="9180380851667544951">Сайт экраныңызды бөлісе алады</translation>
 <translation id="9180847522826713506">Құпия сөзді көру немесе ол туралы ескертпе қосу үшін перне белгішесін басыңыз</translation>
 <translation id="9182556968660520230">Сайттардың қорғалған контентті ойнатуына рұқсат бермеу</translation>
+<translation id="9183302530794969518">Google Docs</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Қолданба}other{# қолданба}}</translation>
 <translation id="9186963452600581158">Баланың Google аккаунтымен кіру</translation>
 <translation id="9187967020623675250">Пернелер сәйкес келмейді. <ph name="RESPONSE" /> үшін кез келген пернені басыңыз.</translation>

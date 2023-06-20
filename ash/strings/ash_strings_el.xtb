@@ -982,6 +982,7 @@
 <translation id="5308380583665731573">Σύνδεση</translation>
 <translation id="5313326810920013265">Ρυθμίσεις Bluetooth</translation>
 <translation id="5314219114274263156">Λήψη εγγραφής οθόνης</translation>
+<translation id="5314489738835854379">Μετακίνηση προς τα πίσω μέσω παραθύρων</translation>
 <translation id="5316716239522500219">Κατοπτρισμός οθονών</translation>
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
@@ -1128,6 +1129,7 @@
 <translation id="5958529069007801266">Εποπτευόμενος χρήστης</translation>
 <translation id="5961960957587052807">Ελαφρύ</translation>
 <translation id="5965524703725988602">Εναλλαγή Σκούρου θέματος. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Μετακίνηση προς τα εμπρός μέσω παραθύρων</translation>
 <translation id="5976112937189445008">Πατήστε Enter για εγγραφή παραθύρου</translation>
 <translation id="5978382165065462689">Κοινόχρηστος έλεγχος της οθόνης σας μέσω της απομακρυσμένης βοήθειας.</translation>
 <translation id="5980301590375426705">Έξοδος επισκέπτη</translation>
@@ -1338,6 +1340,7 @@
 <translation id="6891721121089053234">Δείτε τις πρόσφατες φωτογραφίες, τα μέσα και τις εφαρμογές του τηλεφώνου σας στη συσκευή <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6896758677409633944">Αντιγραφή</translation>
 <translation id="6901883536534621389">Δοκιμάστε τις κινήσεις για πλοήγηση</translation>
+<translation id="6912841030378044227">Εστίαση στη γραμμή διευθύνσεων</translation>
 <translation id="6919251195245069855">Δεν ήταν δυνατή η αναγνώριση της έξυπνης κάρτας σας. Επανάληψη.</translation>
 <translation id="6920245099716267363">Εναλλαγή σημείου πρόσβασης Wi-Fi. Το σημείο πρόσβασης Wi-Fi είναι ενεργό. 1 συνδεδεμένη συσκευή.</translation>
 <translation id="6931576957638141829">Αποθήκευση σε</translation>

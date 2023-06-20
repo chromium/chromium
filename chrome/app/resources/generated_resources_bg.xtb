@@ -614,6 +614,7 @@
 <translation id="1515163294334130951">Стартиране</translation>
 <translation id="1517467582299994451">За да предавате посредством код, включете настройките за синхронизиране на браузъра Chrome</translation>
 <translation id="1521442365706402292">Управление на сертификати</translation>
+<translation id="1521655867290435174">Google Таблици</translation>
 <translation id="1521774566618522728">Активно днес</translation>
 <translation id="152234381334907219">Незапазвани никога</translation>
 <translation id="1523279371236772909">Прегледано през миналия месец</translation>
@@ -1432,6 +1433,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="2175927920773552910">Код за бърза реакция</translation>
 <translation id="2177306523871626993">Файловете за разпознаване на текст се изтеглят… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Раздел в режим „инкогнито“: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Активирате функциите за отстраняване на грешки в ChromeOS Flex, които ще настроят sshd daemon и ще позволят стартирането от USB устройства.</translation>
 <translation id="2178614541317717477">Компрометиране на сертифициращия орган</translation>
 <translation id="2179416702468739594">Търсят се налични профили за мобилна мрежа. Това може да доведе до прекъсване на връзката с мобилната ви мрежа за няколко минути.</translation>
@@ -4348,6 +4350,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="4675828034887792601">Създавайте преки пътища, с чиято помощ да търсите в сайтовете и да управлявате търсещите си машини</translation>
 <translation id="4676595058027112862">Phone Hub. Научете повече</translation>
 <translation id="4677772697204437347">Памет на графичния процесор</translation>
+<translation id="467809019005607715">Google Презентации</translation>
 <translation id="4678848110205818817">Кредитна/дебитна карта</translation>
 <translation id="4680105648806843642">Звукът бе заглушен на тази страница</translation>
 <translation id="4680112532510845139">Преместете изображение тук</translation>
@@ -5259,6 +5262,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5494362494988149300">Отваряне &amp;след изтегляне</translation>
 <translation id="5495466433285976480">По този начин при следващото рестартиране ще се премахнат всички локални потребители, файлове, данни и други настройки. Всички потребители ще трябва да влязат отново.</translation>
 <translation id="5495597166260341369">Без изключване на екрана</translation>
+<translation id="549602578321198708">Дума</translation>
 <translation id="5496587651328244253">Организиране</translation>
 <translation id="5496730470963166430">Сайтове без разрешение за изпращане на изскачащи прозорци или използване на пренасочвания</translation>
 <translation id="5497251278400702716">Този файл</translation>
@@ -5425,7 +5429,6 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="5633149627228920745">Научете повече за системните изисквания</translation>
 <translation id="563371367637259496">Мобилна мрежа</translation>
 <translation id="5634446357546764049">Виждайте спомени за скорошните си пътувания и др.</translation>
-<translation id="5635091213277904818">Chrome автоматично изтрива сайтовете, посетени преди повече от 30 дни. Ако отново посетите даден сайт, той може пак да се покаже в списъка. Също така имате възможност да блокирате даден сайт, така че да не ви предлага реклами.</translation>
 <translation id="5635312199252507107">Разрешаване за конкретни сайтове</translation>
 <translation id="5636012309446422">Искате ли да премахнете <ph name="DEVICE" /> от <ph name="PRIMARY_EMAIL" />?</translation>
 <translation id="5636996382092289526">За да използвате „<ph name="NETWORK_ID" />“, може да се наложи първо <ph name="LINK_START" />да посетите страницата за вход в мрежата<ph name="LINK_END" />, която ще се отвори автоматично след няколко секунди. Ако това не се случи, мрежата не може да се ползва.</translation>
@@ -8085,6 +8088,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="7926423016278357561">Това не бях аз.</translation>
 <translation id="7926975587469166629">Псевдоним на картата</translation>
 <translation id="7928175190925744466">Променихте ли вече тази парола?</translation>
+<translation id="7929962904089429003">Отваряне на менюто</translation>
 <translation id="7930294771522048157">Тук ще се покажат запазените начини на плащане</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> споделя екрана и звука ви.</translation>
 <translation id="793293630927785390">Диалогов прозорец за нова Wi-Fi мрежа</translation>
@@ -9552,6 +9556,7 @@ https://www.chromium.org/chromium-os/how-tos-and-troubleshooting/debugging-featu
 <translation id="9180380851667544951">Сайтът може да споделя екрана ви</translation>
 <translation id="9180847522826713506">За да видите паролата си или да добавите бележка за нея, кликнете върху иконата на ключ</translation>
 <translation id="9182556968660520230">Да не се разрешава на сайтовете да възпроизвеждат защитено съдържание</translation>
+<translation id="9183302530794969518">Google Документи</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Приложение}other{# приложения}}</translation>
 <translation id="9186963452600581158">Влизане с профил в Google на дете</translation>
 <translation id="9187967020623675250">Клавишите не съвпадат. Натиснете произволен клавиш за <ph name="RESPONSE" />.</translation>

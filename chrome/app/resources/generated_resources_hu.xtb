@@ -617,6 +617,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1515163294334130951">Indítás</translation>
 <translation id="1517467582299994451">A kóddal való átküldéshez kapcsolja be a Chrome böngésző szinkronizálási beállításait</translation>
 <translation id="1521442365706402292">Tanúsítványok beállítása</translation>
+<translation id="1521655867290435174">Google Táblázatok</translation>
 <translation id="1521774566618522728">Ma volt aktív</translation>
 <translation id="152234381334907219">Soha nem került mentésre</translation>
 <translation id="1523279371236772909">A múlt hónapban tekintette meg</translation>
@@ -1435,6 +1436,7 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="2175927920773552910">QR-kód</translation>
 <translation id="2177306523871626993">Szövegfelismerő fájlok letöltése… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">Inkognitó lap: <ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">Ön engedélyezi a ChromeOS Flex hibakeresési funkcióit, melyek be fogják állítani az sshd daemon szolgáltatást, és engedélyezni fogják az USB-meghajtókról való indítást.</translation>
 <translation id="2178614541317717477">A tanúsítványkibocsátó veszélyeztetve</translation>
 <translation id="2179416702468739594">Rendelkezésre álló profilok keresése. Ennek következtében előfordulhat, hogy eszköze néhány percre leválik a mobilhálózatról.</translation>
@@ -4349,6 +4351,7 @@ Elindítja a következőt: <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation
 <translation id="4675828034887792601">Gyorsparancsok létrehozása webhelyeken történő kereséshez és a keresőmotor kezeléséhez</translation>
 <translation id="4676595058027112862">Telefonközpont, további információ</translation>
 <translation id="4677772697204437347">GPU memóriája</translation>
+<translation id="467809019005607715">Google Diák</translation>
 <translation id="4678848110205818817">Hitel-/bankkártya</translation>
 <translation id="4680105648806843642">A hang némítva van ezen az oldalon</translation>
 <translation id="4680112532510845139">Húzza ide a kívánt képet</translation>
@@ -5261,6 +5264,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="5494362494988149300">Megnyitás, amikor &amp;kész</translation>
 <translation id="5495466433285976480">Ezzel a következő újraindítás után eltávolítja az összes helyi felhasználót, valamint minden fájlt, adatot és egyéb beállítást. Az összes felhasználónak újra be kell jelentkeznie.</translation>
 <translation id="5495597166260341369">A kijelző bekapcsolva marad</translation>
+<translation id="549602578321198708">Szó</translation>
 <translation id="5496587651328244253">Rendezés</translation>
 <translation id="5496730470963166430">Nem jeleníthetnek meg előugró ablakokat, és nem használhatnak átirányításokat</translation>
 <translation id="5497251278400702716">Ez a fájl</translation>
@@ -5427,7 +5431,6 @@ Győződjön meg arról, hogy nem ad ki bizalmas adatokat.</translation>
 <translation id="5633149627228920745">További információ a rendszerkövetelményekről</translation>
 <translation id="563371367637259496">Mobil</translation>
 <translation id="5634446357546764049">Megtekintheti legutóbbi utazásaihoz és egyebekhez fűződő emlékeit</translation>
-<translation id="5635091213277904818">A Chrome automatikusan törli a 30 napnál régebbi webhelyeket. Előfordulhat, hogy egy újból felkeresett webhely ismét megjelenik a listán. Emellett lehetősége van arra is, hogy letiltsa az egyes webhelyek számára, hogy hirdetéseket javasoljanak Önnek.</translation>
 <translation id="5635312199252507107">Engedélyezés bizonyos webhelyeken</translation>
 <translation id="5636012309446422">Eltávolítja a következőt a(z) <ph name="PRIMARY_EMAIL" /> fiókból: <ph name="DEVICE" />?</translation>
 <translation id="5636996382092289526">A(z) <ph name="NETWORK_ID" /> használatához először <ph name="LINK_START" />fel kell keresnie a hálózat bejelentkezési oldalát<ph name="LINK_END" />, amely automatikusan megnyílik néhány másodpercen belül. Ha ez nem történik meg, akkor a hálózat nem használható.</translation>
@@ -8086,6 +8089,7 @@ Nyomja meg valamelyik hozzárendelt kapcsolót vagy billentyűt a hozzárendelé
 <translation id="7926423016278357561">Nem én voltam.</translation>
 <translation id="7926975587469166629">Egyéni kártyanév</translation>
 <translation id="7928175190925744466">Módosította már ezt a jelszót?</translation>
+<translation id="7929962904089429003">A menü megnyitása</translation>
 <translation id="7930294771522048157">Az elmentett fizetési módok itt jelennek meg</translation>
 <translation id="79312157130859720">A(z) <ph name="APP_NAME" /> megosztja a képernyőt és a hangot.</translation>
 <translation id="793293630927785390">Új Wi-Fi-hálózat párbeszédpanele</translation>
@@ -9553,6 +9557,7 @@ A webhelyek és alkalmazások számára már megadott engedélyek erre a fiókra
 <translation id="9180380851667544951">A webhely megoszthatja a képernyőjét</translation>
 <translation id="9180847522826713506">Jelszava megtekintéséhez vagy hozzá tartozó megjegyzés hozzáadásához kattintson a kulcs ikonra.</translation>
 <translation id="9182556968660520230">A webhelyek nem játszhatnak le védett tartalmakat</translation>
+<translation id="9183302530794969518">Google Dokumentumok</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{Alkalmazás}other{# alkalmazás}}</translation>
 <translation id="9186963452600581158">Bejelentkezés gyermek Google-fiókjával</translation>
 <translation id="9187967020623675250">A billentyűk nem egyeznek. Nyomja le bármelyik billentyűt a következőhöz: <ph name="RESPONSE" />.</translation>

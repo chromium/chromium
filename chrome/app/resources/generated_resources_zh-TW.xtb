@@ -618,6 +618,7 @@
 <translation id="1515163294334130951">啟動</translation>
 <translation id="1517467582299994451">如要使用代碼建立投放連線，請開啟 Chrome 瀏覽器同步處理設定</translation>
 <translation id="1521442365706402292">管理憑證</translation>
+<translation id="1521655867290435174">Google 試算表</translation>
 <translation id="1521774566618522728">上次使用時間：今天</translation>
 <translation id="152234381334907219">一律不儲存</translation>
 <translation id="1523279371236772909">過去一個月看過</translation>
@@ -1428,6 +1429,7 @@
 <translation id="2175927920773552910">QR 圖碼</translation>
 <translation id="2177306523871626993">正在下載文字辨識檔案… <ph name="PERCENT" />%</translation>
 <translation id="2177950615300672361">無痕式分頁：<ph name="TAB_NAME" /></translation>
+<translation id="2178056538281447670">Microsoft 365</translation>
 <translation id="2178585470774851578">你即將啟用 ChromeOS Flex 偵錯功能，這會一併設定 sshd Daemon，並允許從 USB 隨身碟執行啟動作業。</translation>
 <translation id="2178614541317717477">CA 洩露</translation>
 <translation id="2179416702468739594">正在尋找可用的設定檔。這可能會導致你的行動網路中斷幾分鐘。</translation>
@@ -4345,6 +4347,7 @@
 <translation id="4675828034887792601">建立捷徑以搜尋網站和管理搜尋引擎</translation>
 <translation id="4676595058027112862">Phone Hub，瞭解詳情</translation>
 <translation id="4677772697204437347">GPU 記憶體</translation>
+<translation id="467809019005607715">Google 簡報</translation>
 <translation id="4678848110205818817">信用卡/簽帳金融卡</translation>
 <translation id="4680105648806843642">已將這個網頁設為靜音</translation>
 <translation id="4680112532510845139">將圖片拖放到這裡</translation>
@@ -5258,6 +5261,7 @@
 <translation id="5494362494988149300">下載完成時自動開啟檔案(&amp;D)</translation>
 <translation id="5495466433285976480">這樣會在下次重新啟動時移除所有本機使用者、檔案、資料和其他設定。所有使用者都必須重新登入。</translation>
 <translation id="5495597166260341369">保持開啟螢幕</translation>
+<translation id="549602578321198708">單字</translation>
 <translation id="5496587651328244253">整理</translation>
 <translation id="5496730470963166430">不得傳送彈出式視窗或使用重新導向</translation>
 <translation id="5497251278400702716">這個檔案</translation>
@@ -5419,7 +5423,6 @@
 <translation id="5633149627228920745">進一步瞭解系統需求</translation>
 <translation id="563371367637259496">行動網路</translation>
 <translation id="5634446357546764049">瀏覽近期旅行等活動的回憶集錦</translation>
-<translation id="5635091213277904818">Chrome 會自動刪除 30 天前的網站，你再次造訪的網站可能會重新顯示在清單中。你也可以封鎖網站，讓該網站無法為你提供建議廣告。</translation>
 <translation id="5635312199252507107">允許在特定網站上執行</translation>
 <translation id="5636012309446422">要將「<ph name="DEVICE" />」從 <ph name="PRIMARY_EMAIL" /> 中移除嗎？</translation>
 <translation id="5636996382092289526">如要使用 <ph name="NETWORK_ID" />，你必須先<ph name="LINK_START" />造訪網路的登入頁面<ph name="LINK_END" />，系統隨即會自動開啟登入頁面；如果沒有，你就無法使用這個網路。</translation>
@@ -8087,6 +8090,7 @@
 <translation id="7926423016278357561">這不是我。</translation>
 <translation id="7926975587469166629">卡片暱稱</translation>
 <translation id="7928175190925744466">你變更了這個密碼嗎？</translation>
+<translation id="7929962904089429003">開啟選單</translation>
 <translation id="7930294771522048157">已儲存的付款方式會顯示在這裡</translation>
 <translation id="79312157130859720"><ph name="APP_NAME" /> 正在共用您的畫面和音訊。</translation>
 <translation id="793293630927785390">新的 Wi-Fi 網路對話方塊</translation>
@@ -9560,6 +9564,7 @@
 <translation id="9180380851667544951">網站可以分享你的螢幕畫面</translation>
 <translation id="9180847522826713506">如要查看密碼或新增密碼相關附註，請點選鑰匙圖示</translation>
 <translation id="9182556968660520230">禁止網站播放受保護內容</translation>
+<translation id="9183302530794969518">Google 文件</translation>
 <translation id="918352324374649435">{COUNT,plural, =1{應用程式}other{# 個應用程式}}</translation>
 <translation id="9186963452600581158">使用孩子的 Google 帳戶登入</translation>
 <translation id="9187967020623675250">按鍵不符。按下任意鍵即可<ph name="RESPONSE" />。</translation>

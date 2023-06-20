@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">Доступні пристрої</translation>
 <translation id="1550523713251050646">Натисніть, щоб побачити більше опцій</translation>
 <translation id="1555130319947370107">Синій</translation>
+<translation id="1557622599341396706">Показувати назву робочого столу</translation>
 <translation id="1576511610858879060">На вашому ноутбуку Chromebook або пристрої з Bluetooth використовується застаріла версія Bluetooth. Щоб покращити якість звуку, використовуйте інше джерело сигналу.</translation>
 <translation id="1576623706766186887">Віддалити, коли лупу ввімкнено</translation>
 <translation id="1586324912145647027">Перейти до 1 з 8 робочих столів</translation>
@@ -982,10 +983,12 @@
 <translation id="5308380583665731573">Під’єднатися</translation>
 <translation id="5313326810920013265">Налаштування Bluetooth</translation>
 <translation id="5314219114274263156">Запис екрана зроблено</translation>
+<translation id="5314489738835854379">Переходити назад між вікнами</translation>
 <translation id="5316716239522500219">Дбулювати зображення на моніторах</translation>
 <translation id="5317780077021120954">Зберегти</translation>
 <translation id="5319712128756744240">Підключити новий пристрій</translation>
 <translation id="5322611492012084517">Не вдається знайти телефон</translation>
+<translation id="5323994101633366939">Сховати назву робочого столу</translation>
 <translation id="5327248766486351172">Ім’я</translation>
 <translation id="5329548388331921293">З'єднання…</translation>
 <translation id="5331975486040154427">Пристрій, під’єднаний до порту USB-C (ліворуч на задній панелі)</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">Контрольований користувач</translation>
 <translation id="5961960957587052807">Легке</translation>
 <translation id="5965524703725988602">Увімкнути або вимкнути темну тему. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Переходити вперед між вікнами</translation>
 <translation id="5976112937189445008">Щоб записати вікно, натисніть клавішу Enter</translation>
 <translation id="5978382165065462689">Спільний доступ до екрана через віддалену допомогу.</translation>
 <translation id="5980301590375426705">Закрити сеанс гостя</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6103838137565245112">система</translation>
 <translation id="6114505516289286752">Файли живих субтитрів завантажено (<ph name="LANGUAGE" />)</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Корекція кольору</translation>
 <translation id="6121838516699723042">Підтвердити завантаження файлу <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Google Асистент недоступний під час сеансу в режимі "Гість".</translation>
 <translation id="6129953537138746214">Пробіл</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6891721121089053234">Переглядайте нещодавно додані на телефон фотографії, медіафайли й додатки на пристрої <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Копіювати</translation>
 <translation id="6901883536534621389">Спробуйте навігацію за допомогою жестів</translation>
+<translation id="6912841030378044227">Виділити адресний рядок</translation>
 <translation id="6919251195245069855">Не вдається розпізнати розумну картку. Повторіть спробу.</translation>
 <translation id="6920245099716267363">Увімкнути/вимкнути точку доступу. Точку доступу ввімкнено. До неї підключено 1 пристрій.</translation>
 <translation id="6931576957638141829">Зберегти в</translation>
@@ -1634,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, додаток</translation>
 <translation id="8255234195843591763">Щоб оновити, скиньте налаштування</translation>
 <translation id="8261506727792406068">Видалити</translation>
+<translation id="8262312463845990408">Увімкнути або вимкнути відтворення</translation>
 <translation id="8270450402312105425">{0,plural, =1{Поверніться до попередньої версії на пристрої протягом години}one{Поверніться до попередньої версії на пристрої протягом # години}few{Поверніться до попередньої версії на пристрої протягом # годин}many{Поверніться до попередньої версії на пристрої протягом # годин}other{Поверніться до попередньої версії на пристрої протягом # години}}</translation>
 <translation id="8277261673056602147">Виділити текст на екрані</translation>
 <translation id="8284362522226889623">Проведіть чотирма пальцями ліворуч, щоб перейти на попередній робочий стіл</translation>
