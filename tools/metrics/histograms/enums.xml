@@ -34467,19 +34467,6 @@ Called by update_document_policy_enum.py.-->
   <int value="1" label="Apple Calendar"/>
 </enum>
 
-<!-- This must be kept current with explore_sites.h's
-     ExploreSitesCatalogError. -->
-
-<enum name="ExploreSitesCatalogError">
-  <int value="0" label="Parse Failed"/>
-  <int value="1" label="Category with no title"/>
-  <int value="2" label="Categoy with unknown type"/>
-  <int value="3" label="Category with no sites"/>
-  <int value="4" label="Site with bad URL"/>
-  <int value="5" label="Site with missing title"/>
-  <int value="6" label="Site with missing icon"/>
-</enum>
-
 <!-- This must be kept current with explore_sites_types.h's
      ExploreSitesCatalogUpdateRequestResult -->
 

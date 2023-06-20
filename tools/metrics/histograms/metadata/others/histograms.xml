@@ -5550,15 +5550,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="ExploreSites.CatalogError" enum="ExploreSitesCatalogError"
-    expires_after="M82">
-  <owner>dewittj@chromium.org</owner>
-  <owner>petewil@chromium.org</owner>
-  <summary>
-    If we find a bad catalog from the network, report which problems it had.
-  </summary>
-</histogram>
-
 <histogram name="ExploreSites.CatalogRequestResult"
     enum="ExploreSitesCatalogUpdateRequestResult" expires_after="2022-12-11">
   <owner>dewittj@chromium.org</owner>
