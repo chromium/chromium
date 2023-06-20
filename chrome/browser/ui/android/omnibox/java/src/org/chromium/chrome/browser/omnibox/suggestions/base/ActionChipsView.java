@@ -37,6 +37,7 @@ public class ActionChipsView extends RecyclerView {
         super(context);
 
         setItemAnimator(null);
+        setId(R.id.omnibox_actions_carousel);
         setLayoutManager(new LinearLayoutManager(context, LinearLayoutManager.HORIZONTAL, false));
         setMinimumHeight(getResources().getDimensionPixelSize(
                 R.dimen.omnibox_action_chips_container_height));

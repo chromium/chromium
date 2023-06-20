@@ -215,6 +215,7 @@ public class OmniboxSuggestionsDropdown extends RecyclerView {
         setFocusable(true);
         setFocusableInTouchMode(true);
         setRecycledViewPool(recycledViewPool);
+        setId(R.id.omnibox_suggestions_dropdown);
 
         // By default RecyclerViews come with item animators.
         setItemAnimator(null);
