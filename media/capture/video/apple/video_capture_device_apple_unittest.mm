@@ -160,22 +160,22 @@ class VideoCaptureDeviceMacWithImageCaptureTest : public ::testing::Test {
   VideoCaptureDeviceMacWithImageCaptureTest()
       : image_capture_client_(new MockImageCaptureClient()) {}
 
-  VideoCaptureDeviceMac* GetFirstAvailableDevice() {
-    VideoCaptureDeviceFactoryMac video_capture_device_factory;
+  VideoCaptureDeviceApple* GetFirstAvailableDevice() {
+    VideoCaptureDeviceFactoryApple video_capture_device_factory;
     std::vector<VideoCaptureDeviceInfo> devices_info =
         GetDevicesInfo(&video_capture_device_factory);
     if (devices_info.empty()) {
       return nullptr;
     }
     const auto& info = devices_info[0];
-    auto* device = new VideoCaptureDeviceMac(info.descriptor);
+    auto* device = new VideoCaptureDeviceApple(info.descriptor);
     if (!device->Init(info.descriptor.capture_api)) {
       return nullptr;
     }
     return device;
   }
 
-  mojom::PhotoState* GetPhotoState(VideoCaptureDeviceMac* device) {
+  mojom::PhotoState* GetPhotoState(VideoCaptureDeviceApple* device) {
     VideoCaptureDevice::GetPhotoStateCallback get_photo_state_callback =
         base::BindOnce(&MockImageCaptureClient::DoOnGetPhotoState,
                        image_capture_client_);

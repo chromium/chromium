@@ -619,7 +619,7 @@ std::string UvcControl::GetDeviceModelId(
 VideoCaptureControlSupport UvcControl::GetControlSupport(
     const std::string& device_model) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceMac::GetControlSupport");
+               "VideoCaptureDeviceApple::GetControlSupport");
   VideoCaptureControlSupport control_support;
 
   UvcControl uvc(device_model, uvc::kVcInputTerminal);

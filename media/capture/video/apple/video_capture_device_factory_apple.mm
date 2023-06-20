@@ -101,11 +101,11 @@ static bool IsDeviceBlocked(const VideoCaptureDeviceDescriptor& descriptor) {
   return is_device_blocked;
 }
 
-VideoCaptureDeviceFactoryMac::VideoCaptureDeviceFactoryMac() {
+VideoCaptureDeviceFactoryApple::VideoCaptureDeviceFactoryApple() {
   thread_checker_.DetachFromThread();
 }
 
-VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
+VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryApple::CreateDevice(
     const VideoCaptureDeviceDescriptor& descriptor) {
   DCHECK(thread_checker_.CalledOnValidThread());
   DCHECK_NE(descriptor.capture_api, VideoCaptureApi::UNKNOWN);
@@ -113,7 +113,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
 
   std::unique_ptr<VideoCaptureDevice> capture_device;
   if (descriptor.capture_api != VideoCaptureApi::MACOSX_DECKLINK) {
-    VideoCaptureDeviceMac* device = new VideoCaptureDeviceMac(descriptor);
+    VideoCaptureDeviceApple* device = new VideoCaptureDeviceApple(descriptor);
     capture_device.reset(device);
     if (!device->Init(descriptor.capture_api)) {
       LOG(ERROR) << "Could not initialize VideoCaptureDevice.";
@@ -136,7 +136,7 @@ VideoCaptureErrorOrDevice VideoCaptureDeviceFactoryMac::CreateDevice(
                               VideoCaptureError::kMacSetCaptureDeviceFailed);
 }
 
-void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
+void VideoCaptureDeviceFactoryApple::GetDevicesInfo(
     GetDevicesInfoCallback callback) {
   DCHECK(thread_checker_.CalledOnValidThread());
   EnsureRunsOnCFRunLoopEnabledThread();
@@ -153,10 +153,10 @@ void VideoCaptureDeviceFactoryMac::GetDevicesInfo(
     const VideoCaptureApi capture_api = VideoCaptureApi::MACOSX_AVFOUNDATION;
     VideoCaptureTransportType device_transport_type =
         [capture_devices[key] deviceTransportType];
-    const std::string model_id = VideoCaptureDeviceMac::GetDeviceModelId(
+    const std::string model_id = VideoCaptureDeviceApple::GetDeviceModelId(
         device_id, capture_api, device_transport_type);
     const VideoCaptureControlSupport control_support =
-        VideoCaptureDeviceMac::GetControlSupport(model_id);
+        VideoCaptureDeviceApple::GetControlSupport(model_id);
     VideoCaptureDeviceDescriptor descriptor(
         base::SysNSStringToUTF8([capture_devices[key] deviceName]), device_id,
         model_id, capture_api, control_support, device_transport_type);

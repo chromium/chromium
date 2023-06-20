@@ -47,17 +47,17 @@ namespace media {
 
 // Called by VideoCaptureManager to open, close and start, stop Mac video
 // capture devices.
-class CAPTURE_EXPORT VideoCaptureDeviceMac
+class CAPTURE_EXPORT VideoCaptureDeviceApple
     : public VideoCaptureDevice,
       public VideoCaptureDeviceAVFoundationFrameReceiver {
  public:
-  explicit VideoCaptureDeviceMac(
+  explicit VideoCaptureDeviceApple(
       const VideoCaptureDeviceDescriptor& device_descriptor);
 
-  VideoCaptureDeviceMac(const VideoCaptureDeviceMac&) = delete;
-  VideoCaptureDeviceMac& operator=(const VideoCaptureDeviceMac&) = delete;
+  VideoCaptureDeviceApple(const VideoCaptureDeviceApple&) = delete;
+  VideoCaptureDeviceApple& operator=(const VideoCaptureDeviceApple&) = delete;
 
-  ~VideoCaptureDeviceMac() override;
+  ~VideoCaptureDeviceApple() override;
 
   // VideoCaptureDevice implementation.
   void AllocateAndStart(
@@ -127,9 +127,9 @@ class CAPTURE_EXPORT VideoCaptureDeviceMac
   TakePhotoCallback photo_callback_;
 
   // Used with Bind and PostTask to ensure that methods aren't called after the
-  // VideoCaptureDeviceMac is destroyed.
+  // VideoCaptureDeviceApple is destroyed.
   // NOTE: Weak pointers must be invalidated before all other member variables.
-  base::WeakPtrFactory<VideoCaptureDeviceMac> weak_factory_;
+  base::WeakPtrFactory<VideoCaptureDeviceApple> weak_factory_;
 };
 
 }  // namespace media

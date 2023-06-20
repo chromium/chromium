@@ -39,7 +39,7 @@ void RunTestCase(base::OnceClosure test_case) {
 }
 
 std::vector<VideoCaptureDeviceInfo> GetDevicesInfo(
-    VideoCaptureDeviceFactoryMac* video_capture_device_factory) {
+    VideoCaptureDeviceFactoryApple* video_capture_device_factory) {
   std::vector<VideoCaptureDeviceInfo> descriptors;
   base::RunLoop run_loop;
   video_capture_device_factory->GetDevicesInfo(base::BindLambdaForTesting(
@@ -52,7 +52,7 @@ std::vector<VideoCaptureDeviceInfo> GetDevicesInfo(
 }
 
 NSString* GetFirstDeviceId() {
-  VideoCaptureDeviceFactoryMac video_capture_device_factory;
+  VideoCaptureDeviceFactoryApple video_capture_device_factory;
   std::vector<VideoCaptureDeviceInfo> devices_info =
       GetDevicesInfo(&video_capture_device_factory);
   if (devices_info.empty()) {

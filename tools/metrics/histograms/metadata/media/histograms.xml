@@ -5303,7 +5303,7 @@ chromium-metrics-reviews@google.com.
     purposes. In case of a unknown/invalid USB ID, 0 is logged. This is done
     when the CreateDevice method is called on the corresponding
     VideoCaptureDeviceFactory class based on the operating system. For example,
-    on MacOS, this happens when VideoCaptureDeviceFactoryMac::CreateDevice is
+    on MacOS, this happens when VideoCaptureDeviceFactoryApple::CreateDevice is
     called.
   </summary>
 </histogram>

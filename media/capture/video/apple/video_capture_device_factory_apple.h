@@ -13,14 +13,15 @@ namespace media {
 
 // Extension of VideoCaptureDeviceFactory to create and manipulate Mac
 // devices.
-class CAPTURE_EXPORT VideoCaptureDeviceFactoryMac
+class CAPTURE_EXPORT VideoCaptureDeviceFactoryApple
     : public VideoCaptureDeviceFactory {
  public:
-  VideoCaptureDeviceFactoryMac();
+  VideoCaptureDeviceFactoryApple();
 
-  VideoCaptureDeviceFactoryMac(const VideoCaptureDeviceFactoryMac&) = delete;
-  VideoCaptureDeviceFactoryMac& operator=(const VideoCaptureDeviceFactoryMac&) =
+  VideoCaptureDeviceFactoryApple(const VideoCaptureDeviceFactoryApple&) =
       delete;
+  VideoCaptureDeviceFactoryApple& operator=(
+      const VideoCaptureDeviceFactoryApple&) = delete;
 
   VideoCaptureErrorOrDevice CreateDevice(
       const VideoCaptureDeviceDescriptor& device_descriptor) override;

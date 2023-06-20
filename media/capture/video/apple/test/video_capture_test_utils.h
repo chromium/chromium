@@ -23,7 +23,7 @@ namespace media {
 void RunTestCase(base::OnceClosure test_case);
 
 std::vector<VideoCaptureDeviceInfo> GetDevicesInfo(
-    VideoCaptureDeviceFactoryMac* video_capture_device_factory);
+    VideoCaptureDeviceFactoryApple* video_capture_device_factory);
 // If there are no devices, nil is returned.
 NSString* GetFirstDeviceId();
 

@@ -21,7 +21,7 @@ namespace media {
 
 TEST(VideoCaptureDeviceFactoryMacTest, ListDevicesAVFoundation) {
   RunTestCase(base::BindOnce([]() {
-    VideoCaptureDeviceFactoryMac video_capture_device_factory;
+    VideoCaptureDeviceFactoryApple video_capture_device_factory;
 
     std::vector<VideoCaptureDeviceInfo> devices_info =
         GetDevicesInfo(&video_capture_device_factory);

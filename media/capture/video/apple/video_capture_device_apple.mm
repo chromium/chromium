@@ -66,7 +66,7 @@ const float kMinFrameRate = 1.0f;
 const float kMaxFrameRate = 60.0f;
 }  // namespace
 
-VideoCaptureDeviceMac::VideoCaptureDeviceMac(
+VideoCaptureDeviceApple::VideoCaptureDeviceApple(
     const VideoCaptureDeviceDescriptor& device_descriptor)
     : device_descriptor_(device_descriptor),
       task_runner_(base::SingleThreadTaskRunner::GetCurrentDefault()),
@@ -74,16 +74,16 @@ VideoCaptureDeviceMac::VideoCaptureDeviceMac(
       capture_device_(nil),
       weak_factory_(this) {}
 
-VideoCaptureDeviceMac::~VideoCaptureDeviceMac() {
+VideoCaptureDeviceApple::~VideoCaptureDeviceApple() {
   DCHECK(task_runner_->BelongsToCurrentThread());
 }
 
-void VideoCaptureDeviceMac::AllocateAndStart(
+void VideoCaptureDeviceApple::AllocateAndStart(
     const VideoCaptureParams& params,
     std::unique_ptr<VideoCaptureDevice::Client> client) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceMac::AllocateAndStart");
+               "VideoCaptureDeviceApple::AllocateAndStart");
   if (state_ != kIdle) {
     return;
   }
@@ -141,7 +141,7 @@ void VideoCaptureDeviceMac::AllocateAndStart(
   state_ = kCapturing;
 }
 
-void VideoCaptureDeviceMac::StopAndDeAllocate() {
+void VideoCaptureDeviceApple::StopAndDeAllocate() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(state_ == kCapturing || state_ == kError) << state_;
 
@@ -155,7 +155,7 @@ void VideoCaptureDeviceMac::StopAndDeAllocate() {
   state_ = kIdle;
 }
 
-void VideoCaptureDeviceMac::TakePhoto(TakePhotoCallback callback) {
+void VideoCaptureDeviceApple::TakePhoto(TakePhotoCallback callback) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK(state_ == kCapturing) << state_;
 
@@ -167,9 +167,9 @@ void VideoCaptureDeviceMac::TakePhoto(TakePhotoCallback callback) {
   [capture_device_ takePhoto];
 }
 
-void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
+void VideoCaptureDeviceApple::GetPhotoState(GetPhotoStateCallback callback) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceMac::GetPhotoState");
+               "VideoCaptureDeviceApple::GetPhotoState");
   DCHECK(task_runner_->BelongsToCurrentThread());
 
   auto photo_state = mojo::CreateEmptyPhotoState();
@@ -197,10 +197,11 @@ void VideoCaptureDeviceMac::GetPhotoState(GetPhotoStateCallback callback) {
   std::move(callback).Run(std::move(photo_state));
 }
 
-void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
-                                            SetPhotoOptionsCallback callback) {
+void VideoCaptureDeviceApple::SetPhotoOptions(
+    mojom::PhotoSettingsPtr settings,
+    SetPhotoOptionsCallback callback) {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceMac::SetPhotoOptions");
+               "VideoCaptureDeviceApple::SetPhotoOptions");
   DCHECK(task_runner_->BelongsToCurrentThread());
   // Drop |callback| and return if there are any unsupported |settings|.
   // TODO(mcasas): centralise checks elsewhere, https://crbug.com/724285.
@@ -227,7 +228,7 @@ void VideoCaptureDeviceMac::SetPhotoOptions(mojom::PhotoSettingsPtr settings,
   std::move(callback).Run(true);
 }
 
-bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
+bool VideoCaptureDeviceApple::Init(VideoCaptureApi capture_api_type) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   DCHECK_EQ(state_, kNotInitialized);
 
@@ -246,13 +247,14 @@ bool VideoCaptureDeviceMac::Init(VideoCaptureApi capture_api_type) {
   return true;
 }
 
-void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
-                                         int video_frame_length,
-                                         const VideoCaptureFormat& frame_format,
-                                         const gfx::ColorSpace color_space,
-                                         int aspect_numerator,
-                                         int aspect_denominator,
-                                         base::TimeDelta timestamp) {
+void VideoCaptureDeviceApple::ReceiveFrame(
+    const uint8_t* video_frame,
+    int video_frame_length,
+    const VideoCaptureFormat& frame_format,
+    const gfx::ColorSpace color_space,
+    int aspect_numerator,
+    int aspect_denominator,
+    base::TimeDelta timestamp) {
   if (capture_format_.frame_size != frame_format.frame_size) {
     ReceiveError(VideoCaptureError::kMacReceivedFrameWithUnexpectedResolution,
                  FROM_HERE,
@@ -267,7 +269,7 @@ void VideoCaptureDeviceMac::ReceiveFrame(const uint8_t* video_frame,
                                   timestamp);
 }
 
-void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
+void VideoCaptureDeviceApple::ReceiveExternalGpuMemoryBufferFrame(
     CapturedExternalVideoBuffer frame,
     base::TimeDelta timestamp) {
   if (capture_format_.frame_size != frame.format.frame_size) {
@@ -284,9 +286,9 @@ void VideoCaptureDeviceMac::ReceiveExternalGpuMemoryBufferFrame(
       base::TimeTicks::Now(), timestamp, gfx::Rect(capture_format_.frame_size));
 }
 
-void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,
-                                         size_t image_length,
-                                         const std::string& mime_type) {
+void VideoCaptureDeviceApple::OnPhotoTaken(const uint8_t* image_data,
+                                           size_t image_length,
+                                           const std::string& mime_type) {
   DCHECK(photo_callback_);
   if (!image_data || !image_length) {
     OnPhotoError();
@@ -299,54 +301,54 @@ void VideoCaptureDeviceMac::OnPhotoTaken(const uint8_t* image_data,
   std::move(photo_callback_).Run(std::move(blob));
 }
 
-void VideoCaptureDeviceMac::OnPhotoError() {
+void VideoCaptureDeviceApple::OnPhotoError() {
   VLOG(1) << __func__ << " error taking picture";
   photo_callback_.Reset();
 }
 
-void VideoCaptureDeviceMac::ReceiveError(VideoCaptureError error,
-                                         const base::Location& from_here,
-                                         const std::string& reason) {
+void VideoCaptureDeviceApple::ReceiveError(VideoCaptureError error,
+                                           const base::Location& from_here,
+                                           const std::string& reason) {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&VideoCaptureDeviceMac::SetErrorState,
+      base::BindOnce(&VideoCaptureDeviceApple::SetErrorState,
                      weak_factory_.GetWeakPtr(), error, from_here, reason));
 }
 
-void VideoCaptureDeviceMac::LogMessage(const std::string& message) {
+void VideoCaptureDeviceApple::LogMessage(const std::string& message) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (client_) {
     client_->OnLog(message);
   }
 }
 
-void VideoCaptureDeviceMac::ReceiveCaptureConfigurationChanged() {
+void VideoCaptureDeviceApple::ReceiveCaptureConfigurationChanged() {
   task_runner_->PostTask(
       FROM_HERE,
-      base::BindOnce(&VideoCaptureDeviceMac::OnCaptureConfigurationChanged,
+      base::BindOnce(&VideoCaptureDeviceApple::OnCaptureConfigurationChanged,
                      weak_factory_.GetWeakPtr()));
 }
 
-void VideoCaptureDeviceMac::OnCaptureConfigurationChanged() {
+void VideoCaptureDeviceApple::OnCaptureConfigurationChanged() {
   DCHECK(task_runner_->BelongsToCurrentThread());
   if (client_) {
     client_->OnCaptureConfigurationChanged();
   }
 }
 
-void VideoCaptureDeviceMac::SetIsPortraitEffectSupportedForTesting(
+void VideoCaptureDeviceApple::SetIsPortraitEffectSupportedForTesting(
     bool isPortraitEffectSupported) {
   [capture_device_
       setIsPortraitEffectSupportedForTesting:isPortraitEffectSupported];
 }
 
-void VideoCaptureDeviceMac::SetIsPortraitEffectActiveForTesting(
+void VideoCaptureDeviceApple::SetIsPortraitEffectActiveForTesting(
     bool isPortraitEffectActive) {
   [capture_device_ setIsPortraitEffectActiveForTesting:isPortraitEffectActive];
 }
 
 // static
-std::string VideoCaptureDeviceMac::GetDeviceModelId(
+std::string VideoCaptureDeviceApple::GetDeviceModelId(
     const std::string& device_id,
     VideoCaptureApi capture_api,
     VideoCaptureTransportType transport_type) {
@@ -359,7 +361,7 @@ std::string VideoCaptureDeviceMac::GetDeviceModelId(
 
 // Check if the video capture device supports pan, tilt and zoom controls.
 // static
-VideoCaptureControlSupport VideoCaptureDeviceMac::GetControlSupport(
+VideoCaptureControlSupport VideoCaptureDeviceApple::GetControlSupport(
     const std::string& device_model) {
   VideoCaptureControlSupport control_support;
 #if BUILDFLAG(IS_MAC)
@@ -368,17 +370,17 @@ VideoCaptureControlSupport VideoCaptureDeviceMac::GetControlSupport(
   return control_support;
 }
 
-void VideoCaptureDeviceMac::SetErrorState(VideoCaptureError error,
-                                          const base::Location& from_here,
-                                          const std::string& reason) {
+void VideoCaptureDeviceApple::SetErrorState(VideoCaptureError error,
+                                            const base::Location& from_here,
+                                            const std::string& reason) {
   DCHECK(task_runner_->BelongsToCurrentThread());
   state_ = kError;
   client_->OnError(error, from_here, reason);
 }
 
-bool VideoCaptureDeviceMac::UpdateCaptureResolution() {
+bool VideoCaptureDeviceApple::UpdateCaptureResolution() {
   TRACE_EVENT0(TRACE_DISABLED_BY_DEFAULT("video_and_image_capture"),
-               "VideoCaptureDeviceMac::UpdateCaptureResolution");
+               "VideoCaptureDeviceApple::UpdateCaptureResolution");
   if (![capture_device_ setCaptureHeight:capture_format_.frame_size.height()
                                    width:capture_format_.frame_size.width()
                                frameRate:capture_format_.frame_rate]) {
