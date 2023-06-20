@@ -38,6 +38,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.OfflineMeasurements.IsRoaming",
                 "Chrome.OfflineMeasurements.TimeBetweenChecksMillisList",
                 "Chrome.OfflineMeasurements.UserStateList",
+                "Chrome.Querytiles.RecentMvClicks",
+                "Chrome.Querytiles.RecentQueryTileClicks",
                 "Chrome.PriceTracking.PriceDropAlerts",
                 "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",

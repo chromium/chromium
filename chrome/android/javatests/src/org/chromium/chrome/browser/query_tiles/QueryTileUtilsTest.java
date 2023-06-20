@@ -16,7 +16,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.CommandLineFlags;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.flags.ChromeSwitches;
@@ -40,7 +39,6 @@ public class QueryTileUtilsTest {
 
     @Before
     public void setUp() {
-        QueryTileUtils.setCountryCodeForTesting("ZZ");
         mActivityTestRule.startMainActivityOnBlankPage();
         QueryTileUtils.setSegmentationResultsForTesting(0 /*UNINITIALIZED*/);
         SharedPreferencesManager.getInstance().removeKey(
@@ -58,158 +56,9 @@ public class QueryTileUtilsTest {
     @Test
     @SmallTest
     @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:mv_tile_click_threshold/0"})
-    public void
-    testShouldShowQueryTilesWithLowerThreshold() {
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-
-        nextDecisionTimeStampInDays(QueryTileUtils.DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD);
-
-        // Existing decision will be used before the next decision time.
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, true);
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-
-        // A new decision will be made if the next decision time expires.
-        nextDecisionTimeReached();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        // Query tiles will continue to be shown for a period of time.
-        queryTilesWillBeShownFromNowOn();
-
-        // Clicking on MV tiles will hide query tiles for a while.
-        nextDecisionTimeReached();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        queryTilesWillBeHiddenFromNowOn();
-
-        // Clicking on MV tiles will continue hiding query tiles.
-        nextDecisionTimeReached();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        queryTilesWillBeHiddenFromNowOn();
-
-        // Not clicking on MV tiles will allow query tiles to be shown.
-        nextDecisionTimeReached();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        queryTilesWillBeShownFromNowOn();
-
-        // Clicking on more query tiles than MV tiles will continue showing query tiles.
-        nextDecisionTimeReached();
-        QueryTileUtils.onQueryTileClicked();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        queryTilesWillBeShownFromNowOn();
-    }
-
-    /**
-     * Query tiles should be shown if increasing MV tile click threshold to 1.
-     */
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
             ChromeFeatureList.QUERY_TILES_SEGMENTATION})
-    public void
-    testShouldShowQueryTilesWithDefaultThreshold() {
-        nextDecisionTimeReached();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        queryTilesWillBeShownFromNowOn();
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:num_days_keep_showing_query_tiles/10/"
-                    + "num_days_mv_clicks_below_threshold/2/mv_tile_click_threshold/0"})
-    public void
-    testShouldShowQueryTilesWithShorterDisplayDurations() {
-        nextDecisionTimeReached();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        nextDecisionTimeStampInDays(2);
-
-        nextDecisionTimeReached();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        nextDecisionTimeStampInDays(10);
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:behavioural_targeting/model_comparison/"
-                    + "mv_tile_click_threshold/0"})
-    public void
-    testShowQueryTilesSegmentationResultComparison() {
-        QueryTileUtils.setSegmentationResultsForTesting(1 /*DONT_SHOW*/);
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
-
-        nextDecisionTimeReached();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-        Assert.assertEquals(2,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
-                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
-                                .SEGMENTATION_DISABLED_LOGIC_ENABLED));
-
-        nextDecisionTimeReached();
-        QueryTileUtils.onMostVisitedTileClicked();
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-        Assert.assertEquals(3,
-                RecordHistogram.getHistogramTotalCountForTesting(
-                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison"));
-        Assert.assertEquals(1,
-                RecordHistogram.getHistogramValueCountForTesting(
-                        "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison",
-                        QueryTileUtils.ShowQueryTilesSegmentationResultComparison
-                                .SEGMENTATION_DISABLED_LOGIC_DISABLED));
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES_SEGMENTATION + "<Study"})
-    @CommandLineFlags.Add({"force-fieldtrials=Study/Group",
-            "force-fieldtrial-params=Study.Group:behavioural_targeting/model"})
     public void
     testShouldUseSegmentationModel() {
-        // Set segmentation model to show query tiles.
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
-        QueryTileUtils.setSegmentationResultsForTesting(2 /*SHOW*/);
-
-        // Verify that query tiles is shown via segmentation model when no previous history.
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-
-        // Verify that query tiles is shown via segmentation model when previous decision time
-        // expired.
-        nextDecisionTimeReached();
-        Assert.assertTrue(QueryTileUtils.shouldShowQueryTiles());
-
-        // Verify that segmentation is not used when previous decision time did not expire.
-        SharedPreferencesManager.getInstance().writeLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
-                System.currentTimeMillis() + QueryTileUtils.MILLISECONDS_PER_DAY);
-        Assert.assertFalse(QueryTileUtils.shouldShowQueryTiles());
-    }
-
-    @Test
-    @SmallTest
-    @EnableFeatures({ChromeFeatureList.QUERY_TILES, ChromeFeatureList.QUERY_TILES_IN_NTP,
-            ChromeFeatureList.QUERY_TILES_SEGMENTATION})
-    public void
-    testShouldUseSegmentationModelInIN() {
-        QueryTileUtils.setCountryCodeForTesting("IN");
         // Set segmentation model to show query tiles.
         SharedPreferencesManager.getInstance().writeBoolean(
                 ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);

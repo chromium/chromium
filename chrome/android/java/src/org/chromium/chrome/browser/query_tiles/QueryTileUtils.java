@@ -4,8 +4,6 @@
 
 package org.chromium.chrome.browser.query_tiles;
 
-import android.text.TextUtils;
-
 import androidx.annotation.IntDef;
 import androidx.annotation.VisibleForTesting;
 
@@ -31,17 +29,9 @@ import java.lang.annotation.RetentionPolicy;
 public class QueryTileUtils {
     private static Boolean sShowQueryTilesOnNTP;
     private static Boolean sShowQueryTilesOnStartSurface;
-    private static final String BEHAVIOURAL_TARGETING_KEY = "behavioural_targeting";
-    private static final String NUM_DAYS_KEEP_SHOWING_QUERY_TILES_KEY =
-            "num_days_keep_showing_query_tiles";
-    private static final String NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD_KEY =
-            "num_days_mv_clicks_below_threshold";
-    private static final String MV_TILE_CLICKS_THRESHOLD_KEY = "mv_tile_click_threshold";
-    private static final int DEFAULT_MV_TILE_CLICKS_THRESHOLD = 1;
     private static final long INVALID_DECISION_TIMESTAMP = -1L;
     private static final String QUERY_TILES_SEGMENTATION_PLATFORM_KEY = "query_tiles";
     private static int sSegmentationResultsForTesting = -1;
-    private static String sCountryCode;
 
     @VisibleForTesting
     static final long MILLISECONDS_PER_DAY = TimeUtils.SECONDS_PER_DAY * 1000;
@@ -122,29 +112,6 @@ public class QueryTileUtils {
             return true;
         }
 
-        String countryCode = sCountryCode;
-        if (countryCode == null) {
-            countryCode = QueryTileUtilsJni.get().getCountryCode();
-        }
-        boolean shouldUseModelResult;
-        boolean shouldCompareModelResult;
-        if (countryCode.equalsIgnoreCase("IN") || countryCode.equalsIgnoreCase("NG")) {
-            shouldUseModelResult = true;
-            shouldCompareModelResult = false;
-        } else {
-            // Check if segmentation model should be used.
-            // When behavioural targeting key is "model", the segmentation model result will be
-            // used. When behavioural targeting key is "model_comparison", the segmentation model
-            // result will be recorded for comparison in histogram.
-            final String behavioralTarget = ChromeFeatureList.getFieldTrialParamByFeature(
-                    ChromeFeatureList.QUERY_TILES_SEGMENTATION, BEHAVIOURAL_TARGETING_KEY);
-
-            shouldUseModelResult = !TextUtils.isEmpty(behavioralTarget)
-                    && TextUtils.equals(behavioralTarget, "model");
-            shouldCompareModelResult = !TextUtils.isEmpty(behavioralTarget)
-                    && TextUtils.equals(behavioralTarget, "model_comparison");
-        }
-
         long nextDecisionTimestamp = SharedPreferencesManager.getInstance().readLong(
                 ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
                 INVALID_DECISION_TIMESTAMP);
@@ -157,74 +124,14 @@ public class QueryTileUtils {
         // unavailable. If nextDecisionTimestamp is available and hasn't been reached, continue
         // using code algorithm.
         boolean lastDecisionExpired = noPreviousHistory || nextDecisionTimestampReached;
-        if (shouldUseModelResult && lastDecisionExpired) {
+        if (lastDecisionExpired) {
             SharedPreferencesManager.getInstance().removeKey(
                     ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS);
             return getBehaviourResultFromSegmentation(getSegmentationResult(), false);
         }
 
-        boolean resultFromCode;
-        if (noPreviousHistory) {
-            // If this is the first time we make a decision, don't show query tiles.
-            resultFromCode = false;
-            updateDisplayStatusAndNextDecisionTime(resultFromCode);
-        } else if (nextDecisionTimestampReached) {
-            int recentMVClicks = SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS, 0);
-            int recentQueryTileClicks = SharedPreferencesManager.getInstance().readInt(
-                    ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS, 0);
-
-            int mvTileClickThreshold = getFieldTrialParamValue(
-                    MV_TILE_CLICKS_THRESHOLD_KEY, DEFAULT_MV_TILE_CLICKS_THRESHOLD);
-
-            // If MV tiles is clicked recently, hide query tiles for a while.
-            // Otherwise, show it for a period of time.
-            resultFromCode = (recentMVClicks <= mvTileClickThreshold
-                    || recentMVClicks <= recentQueryTileClicks);
-            updateDisplayStatusAndNextDecisionTime(resultFromCode);
-        } else {
-            resultFromCode = SharedPreferencesManager.getInstance().readBoolean(
-                    ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
-        }
-
-        // Used for measuring consistency of segmentation model result. This is recorded for
-        // every request.
-        if (shouldCompareModelResult) {
-            recordSegmentationResultComparison(getSegmentationResult(), resultFromCode);
-        }
-
-        return resultFromCode;
-    }
-
-    /**
-     * Records UMA to compare the result of segmentation platform with hard coded logics.
-     * @param segmentationResult The result from segmentation model.
-     * @param existingResult The result from code logics.
-     */
-    private static void recordSegmentationResultComparison(
-            @ShowQueryTilesSegmentationResult int segmentationResult, boolean existingResult) {
-        @ShowQueryTilesSegmentationResultComparison
-        int comparison = ShowQueryTilesSegmentationResultComparison.UNINITIALIZED;
-        switch (segmentationResult) {
-            case ShowQueryTilesSegmentationResult.UNINITIALIZED:
-                comparison = ShowQueryTilesSegmentationResultComparison.UNINITIALIZED;
-                break;
-            case ShowQueryTilesSegmentationResult.SHOW:
-                comparison = existingResult ? ShowQueryTilesSegmentationResultComparison
-                                                      .SEGMENTATION_ENABLED_LOGIC_ENABLED
-                                            : ShowQueryTilesSegmentationResultComparison
-                                                      .SEGMENTATION_ENABLED_LOGIC_DISABLED;
-                break;
-            case ShowQueryTilesSegmentationResult.DONT_SHOW:
-                comparison = existingResult ? ShowQueryTilesSegmentationResultComparison
-                                                      .SEGMENTATION_DISABLED_LOGIC_ENABLED
-                                            : ShowQueryTilesSegmentationResultComparison
-                                                      .SEGMENTATION_DISABLED_LOGIC_DISABLED;
-                break;
-        }
-        RecordHistogram.recordEnumeratedHistogram(
-                "Search.QueryTiles.ShowQueryTilesSegmentationResultComparison", comparison,
-                ShowQueryTilesSegmentationResultComparison.NUM_ENTRIES);
+        return SharedPreferencesManager.getInstance().readBoolean(
+                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, false);
     }
 
     /**
@@ -296,99 +203,14 @@ public class QueryTileUtils {
                 });
     }
 
-    /**
-     * Updates the display status for query tiles and set the next decision time.
-     * @param showQueryTiles Whether query tiles should be displayed.
-     */
-    private static void updateDisplayStatusAndNextDecisionTime(boolean showQueryTiles) {
-        long nextDecisionTime = System.currentTimeMillis();
-
-        if (showQueryTiles) {
-            nextDecisionTime += MILLISECONDS_PER_DAY
-                    * getFieldTrialParamValue(NUM_DAYS_KEEP_SHOWING_QUERY_TILES_KEY,
-                            DEFAULT_NUM_DAYS_KEEP_SHOWING_QUERY_TILES);
-        } else {
-            nextDecisionTime += MILLISECONDS_PER_DAY
-                    * getFieldTrialParamValue(NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD_KEY,
-                            DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD);
-        }
-        SharedPreferencesManager.getInstance().writeBoolean(
-                ChromePreferenceKeys.QUERY_TILES_SHOW_ON_NTP, showQueryTiles);
-        SharedPreferencesManager.getInstance().writeLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS, nextDecisionTime);
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS);
-        SharedPreferencesManager.getInstance().removeKey(
-                ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS);
-    }
-
-    /**
-     * Called when most visited tile is clicked.
-     */
-    public static void onMostVisitedTileClicked() {
-        incrementClickCountIfCloseToNextDecisionTime(
-                ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS);
-    }
-
-    /**
-     * Called when query tile is clicked.
-     */
-    public static void onQueryTileClicked() {
-        incrementClickCountIfCloseToNextDecisionTime(
-                ChromePreferenceKeys.QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS);
-    }
-
-    /**
-     * Helper method to increment the click count if the click is close to the next decision date.
-     * @param key The shared preference key to increment.
-     */
-    private static void incrementClickCountIfCloseToNextDecisionTime(String key) {
-        if (!ChromeFeatureList.isEnabled(ChromeFeatureList.QUERY_TILES_SEGMENTATION)) return;
-
-        long now = System.currentTimeMillis();
-        long nextDecisionTimestamp = SharedPreferencesManager.getInstance().readLong(
-                ChromePreferenceKeys.QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
-                INVALID_DECISION_TIMESTAMP);
-        if (nextDecisionTimestamp < now
-                        + MILLISECONDS_PER_DAY
-                                * getFieldTrialParamValue(NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD_KEY,
-                                        DEFAULT_NUM_DAYS_MV_CLICKS_BELOW_THRESHOLD)) {
-            SharedPreferencesManager.getInstance().incrementInt(key);
-        }
-    }
-
-    /**
-     * Getting the value for a field trial param.
-     * @param key Key of the field trial param.
-     * @param defaultValue Default value to use, if the param is missing.
-     * @return The value for the field trial param, or default value if not specified.
-     */
-    private static int getFieldTrialParamValue(String key, int defaultValue) {
-        String val = ChromeFeatureList.getFieldTrialParamByFeature(
-                ChromeFeatureList.QUERY_TILES_SEGMENTATION, key);
-        if (TextUtils.isEmpty(val)) return defaultValue;
-        try {
-            return Integer.parseInt(val);
-        } catch (NumberFormatException e) {
-            return defaultValue;
-        }
-    }
-
     /** For testing only. */
     @VisibleForTesting
     public static void setSegmentationResultsForTesting(int result) {
         sSegmentationResultsForTesting = result;
     }
 
-    /** For testing only. */
-    @VisibleForTesting
-    public static void setCountryCodeForTesting(String coutryCode) {
-        sCountryCode = coutryCode;
-    }
-
     @NativeMethods
     interface Natives {
         boolean isQueryTilesEnabled();
-        String getCountryCode();
     }
 }

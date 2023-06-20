@@ -706,18 +706,6 @@ public final class ChromePreferenceKeys {
             "Chrome.Querytiles.NextDecisionTime";
 
     /**
-     * Recent number of MV tile clicks, before the decision time.
-     */
-    public static final String QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS =
-            "Chrome.Querytiles.RecentMvClicks";
-
-    /**
-     * Recent number of query tile clicks, before the decision time.
-     */
-    public static final String QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS =
-            "Chrome.Querytiles.RecentQueryTileClicks";
-
-    /**
      * Whether query tiles should be shown on NTP. Default value is false.
      */
     public static final String QUERY_TILES_SHOW_ON_NTP = "Chrome.Querytiles.ShowOnNTP";
@@ -1098,8 +1086,6 @@ public final class ChromePreferenceKeys {
                 PROMO_IS_DISMISSED.pattern(),
                 PROMO_TIMES_SEEN.pattern(),
                 QUERY_TILES_NEXT_DISPLAY_DECISION_TIME_MS,
-                QUERY_TILES_NUM_RECENT_MV_TILE_CLICKS,
-                QUERY_TILES_NUM_RECENT_QUERY_TILE_CLICKS,
                 QUERY_TILES_SHOW_ON_NTP,
                 QUERY_TILES_SHOW_SEGMENTATION_RESULT,
                 QUERY_TILES_SHOWN_ON_START_SURFACE,
