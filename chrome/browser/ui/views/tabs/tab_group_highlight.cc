@@ -12,6 +12,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/background.h"
 #include "ui/views/view.h"
+#include "ui/views/widget/widget.h"
 
 TabGroupHighlight::TabGroupHighlight(TabGroupViews* tab_group_views,
                                      const tab_groups::TabGroupId& group,
@@ -34,15 +35,9 @@ void TabGroupHighlight::OnPaint(gfx::Canvas* canvas) {
   cc::PaintFlags flags;
   flags.setAntiAlias(true);
   flags.setStyle(cc::PaintFlags::kFill_Style);
-
-  // Draw two layers to simulate the color of other non-active selected tabs,
-  // which use a similar drawing strategy (see GM2TabStyle::PaintTab()).
-  // This is needed because the group background color alone would be slightly
-  // transparent, so instead it's drawn over the inactive background color.
-  flags.setColor(tab_group_views_->GetTabBackgroundColor());
-  canvas->DrawPath(path, flags);
-
-  flags.setColor(tab_group_views_->GetGroupBackgroundColor());
+  flags.setColor(TabStyle::Get()->GetTabBackgroundColor(
+      TabStyle::TabSelectionState::kSelected,
+      GetWidget()->ShouldPaintAsActive(), *GetColorProvider()));
   canvas->DrawPath(path, flags);
 }
 

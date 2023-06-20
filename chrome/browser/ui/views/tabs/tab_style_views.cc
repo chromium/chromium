@@ -772,10 +772,20 @@ SkColor GM2TabStyleViews::GetTabSeparatorColor() const {
 }
 
 SkColor GM2TabStyleViews::GetTabBackgroundColor(TabActive active) const {
-  SkColor color = tab_->controller()->GetTabBackgroundColor(
-      active, BrowserFrameActiveState::kUseCurrent);
+  // TODO(https://crbug.com/1399942): Switch TabActive to TabSelectionState.
+  const TabStyle::TabSelectionState tab_active =
+      active == TabActive::kActive ? TabStyle::TabSelectionState::kActive
+                                   : TabStyle::TabSelectionState::kInactive;
 
-  return color;
+  // Tests may not have a color provider or a widget.
+  const bool active_widget =
+      tab_->GetWidget() ? tab_->GetWidget()->ShouldPaintAsActive() : true;
+  if (!tab_->GetColorProvider()) {
+    return gfx::kPlaceholderColor;
+  }
+
+  return TabStyle::Get()->GetTabBackgroundColor(tab_active, active_widget,
+                                                *tab_->GetColorProvider());
 }
 
 ShapeModifier GM2TabStyleViews::GetShapeModifier(

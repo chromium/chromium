@@ -83,13 +83,6 @@ SkColor FakeTabSlotController::GetTabSeparatorColor() const {
   return SK_ColorBLACK;
 }
 
-SkColor FakeTabSlotController::GetTabBackgroundColor(
-    TabActive active,
-    BrowserFrameActiveState active_state) const {
-  return active == TabActive::kActive ? tab_bg_color_active_
-                                      : tab_bg_color_inactive_;
-}
-
 SkColor FakeTabSlotController::GetTabForegroundColor(TabActive active) const {
   return active == TabActive::kActive ? tab_fg_color_active_
                                       : tab_fg_color_inactive_;

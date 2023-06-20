@@ -50,7 +50,7 @@ class TabTest : public ChromeViewsTestBase {
     // Prevent the fake clock from starting at 0 which is the null time.
     fake_clock_.Advance(base::Milliseconds(2000));
   }
-  ~TabTest() override {}
+  ~TabTest() override = default;
 
   static TabIcon* GetTabIcon(Tab* tab) { return tab->icon_; }
 
@@ -638,14 +638,23 @@ TEST_F(TabTest, TitleTextHasSufficientContrast) {
   Tab* tab = widget->SetContentsView(std::make_unique<Tab>(controller.get()));
 
   for (const auto& colors : color_schemes) {
-    controller->SetTabColors(colors.bg_active, colors.fg_active,
-                             colors.bg_inactive, colors.fg_inactive);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundActiveFrameActive, colors.bg_active);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundActiveFrameInactive, colors.bg_active);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundInactiveFrameActive, colors.bg_inactive);
+    tab->GetColorProvider()->SetColorForTesting(
+        kColorTabBackgroundInactiveFrameInactive, colors.bg_inactive);
+    controller->SetTabColors(colors.fg_active, colors.fg_inactive);
     for (TabActive active : {TabActive::kInactive, TabActive::kActive}) {
       controller->set_active_tab(active == TabActive::kActive ? tab : nullptr);
       tab->UpdateForegroundColors();
       const SkColor fg_color = tab->title_->GetEnabledColor();
-      const SkColor bg_color = controller->GetTabBackgroundColor(
-          active, BrowserFrameActiveState::kUseCurrent);
+      const SkColor bg_color = TabStyle::Get()->GetTabBackgroundColor(
+          active == TabActive::kActive ? TabStyle::TabSelectionState::kActive
+                                       : TabStyle::TabSelectionState::kInactive,
+          tab->GetWidget()->ShouldPaintAsActive(), *tab->GetColorProvider());
       const float contrast = color_utils::GetContrastRatio(fg_color, bg_color);
       EXPECT_GE(contrast, color_utils::kMinimumReadableContrastRatio);
     }
