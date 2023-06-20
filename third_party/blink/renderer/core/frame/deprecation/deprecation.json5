@@ -161,8 +161,8 @@
     },
     {
       name: "DataUrlInSvgUse",
-      message: "Support for data: URLs in SVG <use> element is deprecated and it will be removed in the future.",
-      translation_note: "Warning displayed to developers when a data: URL is assigned to SVG <use> to let them know that the support is deprecated.",
+      message: "Support for data: URLs in SVGUseElement is deprecated and it will be removed in the future.",
+      translation_note: "Warning displayed to developers when a data: URL is assigned to SVGUseElement to let them know that the support is deprecated.",
       web_features: [
         "kDataUrlInSvgUse",
       ],
