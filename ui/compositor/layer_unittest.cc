@@ -799,7 +799,7 @@ TEST_F(LayerWithDelegateTest, Cloning) {
   layer->SetRoundedCornerRadius({1, 2, 4, 5});
   layer->SetGradientMask(gradient_mask);
   layer->SetIsFastRoundedCorner(true);
-  layer->SetSubtreeCaptureId(viz::SubtreeCaptureId(1));
+  layer->SetSubtreeCaptureId(viz::SubtreeCaptureId(base::Token(0u, 1u)));
 
   auto clone = layer->Clone();
 
@@ -1097,7 +1097,7 @@ TEST_F(LayerWithNullDelegateTest, SwitchLayerPreservesCCLayerState) {
   constexpr gfx::RoundedCornersF kCornerRadii(1, 2, 3, 4);
   l1->SetRoundedCornerRadius(kCornerRadii);
   l1->SetIsFastRoundedCorner(true);
-  constexpr viz::SubtreeCaptureId kSubtreeCaptureId(22);
+  constexpr viz::SubtreeCaptureId kSubtreeCaptureId(base::Token(0u, 22u));
   l1->SetSubtreeCaptureId(kSubtreeCaptureId);
   gfx::LinearGradient gradient_mask(45);
   gradient_mask.AddStep(.5, 50);

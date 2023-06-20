@@ -4,7 +4,9 @@
 
 module viz.mojom;
 
+import "mojo/public/mojom/base/token.mojom";
+
 // See SubtreeCaptureId in components/viz/common/surfaces/subtree_capture_id.h.
 struct SubtreeCaptureId {
-  uint32 subtree_id;
+  mojo_base.mojom.Token subtree_id;
 };

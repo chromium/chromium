@@ -2347,7 +2347,7 @@ TEST_F(PropertyTreeBuilderTest,
 }
 
 TEST_F(PropertyTreeBuilderTest, SubtreeSize) {
-  constexpr viz::SubtreeCaptureId kCaptureId{42};
+  constexpr viz::SubtreeCaptureId kCaptureId(base::Token(0u, 42u));
 
   auto parent = Layer::Create();
   host()->SetRootLayer(parent);

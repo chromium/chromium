@@ -12,6 +12,7 @@
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_tick_clock.h"
 #include "base/time/time.h"
+#include "base/token.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 #include "components/viz/common/frame_sinks/copy_output_request.h"
@@ -973,8 +974,8 @@ void CopyRequestTestCallback(bool* called,
 TEST_F(CompositorFrameSinkSupportTest, CopyRequestOnSubtree) {
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
 
-  constexpr SubtreeCaptureId kSubtreeId1(22);
-  constexpr SubtreeCaptureId kSubtreeId2(44);
+  constexpr SubtreeCaptureId kSubtreeId1(base::Token(0, 22u));
+  constexpr SubtreeCaptureId kSubtreeId2(base::Token(0, 44u));
 
   {
     auto frame = CompositorFrameBuilder()
@@ -1969,7 +1970,7 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
 
   // Render pass with subtree size.
   const SurfaceId surface_id(support_->frame_sink_id(), local_surface_id_);
-  constexpr SubtreeCaptureId kSubtreeId1(22);
+  constexpr SubtreeCaptureId kSubtreeId1(base::Token(0, 22u));
 
   auto frame = CompositorFrameBuilder()
                    .AddDefaultRenderPass()
@@ -1984,7 +1985,7 @@ TEST_F(CompositorFrameSinkSupportTest, GetCopyOutputRequestRegion) {
             support_->GetCopyOutputRequestRegion(kSubtreeId1));
 
   // Render pass but no subtree size, just a frame size in pixels.
-  constexpr SubtreeCaptureId kSubtreeId2(7);
+  constexpr SubtreeCaptureId kSubtreeId2(base::Token(0, 7u));
   auto frame_with_output_size =
       CompositorFrameBuilder()
           .AddDefaultRenderPass()
