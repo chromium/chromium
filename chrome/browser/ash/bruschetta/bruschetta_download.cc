@@ -14,6 +14,7 @@
 #include "content/public/browser/storage_partition.h"
 #include "crypto/secure_hash.h"
 #include "crypto/sha2.h"
+#include "net/base/net_errors.h"
 #include "services/network/public/cpp/resource_request.h"
 #include "services/network/public/cpp/simple_url_loader.h"
 
@@ -140,7 +141,8 @@ void SimpleURLLoaderDownload::Download(
 
 void SimpleURLLoaderDownload::Finished(base::FilePath path) {
   if (path.empty()) {
-    LOG(ERROR) << "Download failed";
+    LOG(ERROR) << "Download failed: " << net::ErrorToString(loader_->NetError())
+               << " (" << loader_->NetError() << ")";
     std::move(callback_).Run(path, "");
     return;
   }
