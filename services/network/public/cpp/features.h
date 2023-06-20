@@ -103,8 +103,6 @@ extern const base::FeatureParam<base::TimeDelta>
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kReduceAcceptLanguageOriginTrial);
 
-COMPONENT_EXPORT(NETWORK_CPP) BASE_DECLARE_FEATURE(kDisableResourceScheduler);
-
 COMPONENT_EXPORT(NETWORK_CPP)
 BASE_DECLARE_FEATURE(kPrivateNetworkAccessPreflightShortTimeout);
 
