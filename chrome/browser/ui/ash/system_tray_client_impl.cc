@@ -181,12 +181,9 @@ void OpenInBrowser(const GURL& event_url) {
   }
 
   // Lacros is not the primary browser, so use this workaround.
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  NavigateParams params(
-      GetSingletonTabNavigateParams(displayer.browser(), event_url));
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(displayer.browser(), &params);
+  ShowSingletonTabOverwritingNTP(ProfileManager::GetActiveUserProfile(),
+                                 event_url,
+                                 NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
 ash::ManagementDeviceMode GetManagementDeviceMode(
@@ -550,9 +547,8 @@ void SystemTrayClientImpl::ShowPaletteHelp() {
     return;
   }
 
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  ShowSingletonTab(displayer.browser(), GURL(chrome::kChromePaletteHelpURL));
+  ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
+                   GURL(chrome::kChromePaletteHelpURL));
 }
 
 void SystemTrayClientImpl::ShowPaletteSettings() {

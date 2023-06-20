@@ -92,9 +92,8 @@ void FocusWebContents(Browser* browser) {
 // ignoring the URL path, then that tab becomes selected. Overwrites the new tab
 // page if it is open.
 void ShowSingletonTabIgnorePathOverwriteNTP(Browser* browser, const GURL& url) {
-  NavigateParams params(GetSingletonTabNavigateParams(browser, url));
-  params.path_behavior = NavigateParams::IGNORE_AND_NAVIGATE;
-  ShowSingletonTabOverwritingNTP(browser, &params);
+  ShowSingletonTabOverwritingNTP(browser, url,
+                                 NavigateParams::IGNORE_AND_NAVIGATE);
 }
 
 void OpenBookmarkManagerForNode(Browser* browser, int64_t node_id) {
@@ -172,12 +171,11 @@ void ShowHelpImpl(Browser* browser, Profile* profile, HelpSource source) {
       NOTREACHED() << "Unhandled help source " << source;
   }
 #endif  // BUILDFLAG_IS_CHROMEOS_LACROS)
-  std::unique_ptr<ScopedTabbedBrowserDisplayer> displayer;
-  if (!browser) {
-    displayer = std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
-    browser = displayer->browser();
+  if (browser) {
+    ShowSingletonTab(browser, url);
+  } else {
+    ShowSingletonTab(profile, url);
   }
-  ShowSingletonTab(browser, url);
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 }
 
@@ -244,9 +242,7 @@ void ShowSystemAppInternal(Profile* profile, const ash::SystemWebAppType type) {
 }
 #elif BUILDFLAG(IS_CHROMEOS_LACROS)
 void ShowSystemAppInternal(Profile* profile, const GURL& url) {
-  std::unique_ptr<ScopedTabbedBrowserDisplayer> displayer =
-      std::make_unique<ScopedTabbedBrowserDisplayer>(profile);
-  ShowSingletonTab(displayer->browser(), url);
+  ShowSingletonTab(profile, url);
 }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
@@ -292,10 +288,7 @@ void ShowDownloads(Browser* browser) {
   base::RecordAction(UserMetricsAction("ShowDownloads"));
   if (browser->window() && browser->window()->IsDownloadShelfVisible())
     browser->window()->GetDownloadShelf()->Close();
-
-  NavigateParams params(
-      GetSingletonTabNavigateParams(browser, GURL(kChromeUIDownloadsURL)));
-  ShowSingletonTabOverwritingNTP(browser, &params);
+  ShowSingletonTabOverwritingNTP(browser, GURL(kChromeUIDownloadsURL));
 }
 
 void ShowExtensions(Browser* browser,
@@ -339,10 +332,6 @@ void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source) {
 
 void ShowBetaForum(Browser* browser) {
   ShowSingletonTab(browser, GURL(kChromeBetaForumURL));
-}
-
-void ShowPolicy(Browser* browser) {
-  ShowSingletonTab(browser, GURL(kChromeUIPolicyURL));
 }
 
 void ShowSlow(Browser* browser) {

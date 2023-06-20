@@ -63,7 +63,6 @@
 #include "chrome/browser/profiles/profile_manager.h"
 #include "chrome/browser/ui/ash/keyboard/chrome_keyboard_controller_client.h"
 #include "chrome/browser/ui/ash/multi_user/multi_user_util.h"
-#include "chrome/browser/ui/scoped_tabbed_browser_displayer.h"
 #include "chrome/browser/ui/singleton_tabs.h"
 #include "chrome/common/chrome_paths.h"
 #include "chrome/common/extensions/api/accessibility_private.h"
@@ -389,9 +388,7 @@ void AccessibilityManager::ShowAccessibilityHelp() {
     return;
   }
 
-  chrome::ScopedTabbedBrowserDisplayer displayer(
-      ProfileManager::GetActiveUserProfile());
-  ShowSingletonTab(displayer.browser(),
+  ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
                    GURL(chrome::kChromeAccessibilityHelpURL));
 }
 

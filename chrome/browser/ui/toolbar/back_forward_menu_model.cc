@@ -202,9 +202,7 @@ void BackForwardMenuModel::ActivatedAt(size_t index, int event_flags) {
   if (ShouldShowFullHistoryBeVisible() && index == GetItemCount() - 1) {
     base::RecordComputedAction(
         BuildActionName("ShowFullHistory", absl::nullopt));
-    NavigateParams params(GetSingletonTabNavigateParams(
-        browser_, GURL(chrome::kChromeUIHistoryURL)));
-    ShowSingletonTabOverwritingNTP(browser_, &params);
+    ShowSingletonTabOverwritingNTP(browser_, GURL(chrome::kChromeUIHistoryURL));
     return;
   }
 

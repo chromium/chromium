@@ -77,7 +77,6 @@ class NetworkPortalSigninController : public NetworkPortalWebDialog::Delegate {
   // May be overridden in tests.
   virtual void ShowDialog(Profile* profile, const GURL& url);
   virtual void ShowTab(Profile* profile, const GURL& url);
-  virtual void ShowSingletonTab(Profile* profile, const GURL& url);
 
   SigninMode GetSigninMode() const;
 

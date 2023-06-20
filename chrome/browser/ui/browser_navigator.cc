@@ -679,7 +679,7 @@ base::WeakPtr<content::NavigationHandle> Navigate(NavigateParams* params) {
     // preserve. Fallback to the behavior used for singletons: overwrite the
     // current tab if it's the NTP, otherwise open a new tab.
     params->disposition = WindowOpenDisposition::SINGLETON_TAB;
-    ShowSingletonTabOverwritingNTP(params->browser, params);
+    ShowSingletonTabOverwritingNTP(params);
     return nullptr;
   }
   if (params->force_open_pwa_window) {

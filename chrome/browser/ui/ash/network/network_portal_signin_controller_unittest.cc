@@ -53,10 +53,6 @@ class TestSigninController : public NetworkPortalSigninController {
     profile_ = profile;
     dialog_url_ = url.spec();
   }
-  void ShowSingletonTab(Profile* profile, const GURL& url) override {
-    profile_ = profile;
-    singleton_tab_url_ = url.spec();
-  }
   void ShowTab(Profile* profile, const GURL& url) override {
     profile_ = profile;
     tab_url_ = url.spec();
@@ -64,13 +60,11 @@ class TestSigninController : public NetworkPortalSigninController {
 
   Profile* profile() const { return profile_; }
   const std::string& dialog_url() const { return dialog_url_; }
-  const std::string& singleton_tab_url() const { return singleton_tab_url_; }
   const std::string& tab_url() const { return tab_url_; }
 
  private:
   raw_ptr<Profile, ExperimentalAsh> profile_ = nullptr;
   std::string dialog_url_;
-  std::string singleton_tab_url_;
   std::string tab_url_;
 };
 

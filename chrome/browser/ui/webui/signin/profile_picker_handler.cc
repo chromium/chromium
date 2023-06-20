@@ -176,10 +176,7 @@ void OpenOnSelectProfileTargetUrl(Browser* browser) {
   } else if (target_page_url.spec() == ProfilePicker::kTaskManagerUrl) {
     chrome::OpenTaskManager(browser);
   } else {
-    NavigateParams params(
-        GetSingletonTabNavigateParams(browser, target_page_url));
-    params.path_behavior = NavigateParams::RESPECT;
-    ShowSingletonTabOverwritingNTP(browser, &params);
+    ShowSingletonTabOverwritingNTP(browser, target_page_url);
   }
 }
 

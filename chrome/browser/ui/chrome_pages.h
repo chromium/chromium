@@ -157,7 +157,6 @@ void ShowChromeWhatsNew(Browser* browser);
 #endif
 void LaunchReleaseNotes(Profile* profile, apps::LaunchSource source);
 void ShowBetaForum(Browser* browser);
-void ShowPolicy(Browser* browser);
 void ShowSlow(Browser* browser);
 
 // Constructs a settings GURL for the specified |sub_page|.
