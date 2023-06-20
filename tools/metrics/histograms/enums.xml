@@ -43440,6 +43440,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4586" label="WebGPUQueueSubmit"/>
   <int value="4587" label="WebGPUCanvasContextGetCurrentTexture"/>
   <int value="4588" label="EditContext"/>
+  <int value="4589" label="ClientHintsUAFormFactor"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
@@ -43570,6 +43571,7 @@ Called by update_permissions_policy_enum.py.-->
   <int value="108" label="SharedStorageSelectUrl"/>
   <int value="109" label="PrivateAggregation"/>
   <int value="110" label="PrivateStateTokenIssuance"/>
+  <int value="111" label="ClientHintUAFormFactor"/>
 </enum>
 
 <enum name="FeaturePolicyImageCompressionFormat">

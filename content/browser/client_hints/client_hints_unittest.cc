@@ -221,8 +221,10 @@ TEST_F(ClientHintsTest, DownlinkRandomized) {
 
 TEST_F(ClientHintsTest, IntegrationTestsOnParseLookUp) {
   base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitWithFeatures({blink::features::kUserAgentClientHint},
-                                       {});
+  scoped_feature_list.InitWithFeatures(
+      {blink::features::kUserAgentClientHint,
+       blink::features::kClientHintsFormFactor},
+      {});
 
   GURL url = GURL(ClientHintsTest::kOriginUrl);
   contents()->NavigateAndCommit(url);

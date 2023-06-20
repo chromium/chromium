@@ -7321,6 +7321,7 @@ domain Page
       ch-ua-platform
       ch-ua-model
       ch-ua-mobile
+      ch-ua-form-factor
       ch-ua-full-version
       ch-ua-full-version-list
       ch-ua-platform-version

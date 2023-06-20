@@ -759,6 +759,10 @@ void UpdateNavigationRequestClientUaHeadersImpl(
       AddUAHeader(headers, WebClientHintsType::kUAFullVersionList,
                   ua_metadata->SerializeBrandFullVersionList());
     }
+    if (ShouldAddClientHint(data, WebClientHintsType::kUAFormFactor)) {
+      AddUAHeader(headers, WebClientHintsType::kUAFormFactor,
+                  SerializeHeaderString(ua_metadata->form_factor));
+    }
   } else if (call_type == ClientUaHeaderCallType::kAfterCreated) {
     RemoveClientHintHeader(WebClientHintsType::kUA, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAMobile, headers);
@@ -770,6 +774,7 @@ void UpdateNavigationRequestClientUaHeadersImpl(
     RemoveClientHintHeader(WebClientHintsType::kUABitness, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAFullVersionList, headers);
     RemoveClientHintHeader(WebClientHintsType::kUAWoW64, headers);
+    RemoveClientHintHeader(WebClientHintsType::kUAFormFactor, headers);
   }
 }
 
@@ -901,7 +906,7 @@ void AddRequestClientHintsHeaders(
   // If possible, logic should be added above so that the request headers for
   // the newly added client hint can be added to the request.
   static_assert(
-      network::mojom::WebClientHintsType::kPrefersReducedMotion ==
+      network::mojom::WebClientHintsType::kUAFormFactor ==
           network::mojom::WebClientHintsType::kMaxValue,
       "Consider adding client hint request headers from the browser process");
 

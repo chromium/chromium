@@ -57,6 +57,8 @@ enum WebClientHintsType {
   // Indicates the client wants to minimize the amount of animation or motion
   // it uses if set to 'reduce'.
   kPrefersReducedMotion = 28,
+  // The form factor of the user-agent device.
+  kUAFormFactor = 29,
 
   // Warning: Before adding a new client hint, read the warning at the top.
 };
