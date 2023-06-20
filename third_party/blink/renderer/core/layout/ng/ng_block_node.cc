@@ -262,9 +262,11 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
     return false;
   }
 
-  if (node.HasAspectRatio() && (style.LogicalMinHeight().IsPercentOrCalc() ||
-                                style.LogicalMaxHeight().IsPercentOrCalc()))
+  if (node.HasAspectRatio() &&
+      (style.LogicalMinHeight().IsPercentOrCalcOrStretch() ||
+       style.LogicalMaxHeight().IsPercentOrCalcOrStretch())) {
     return false;
+  }
 
   if (node.IsNGTableCell() && To<LayoutNGTableCell>(node.GetLayoutBox())
                                       ->IntrinsicLogicalWidthsBorderSizes() !=
@@ -275,9 +277,10 @@ bool CanUseCachedIntrinsicInlineSizes(const NGConstraintSpace& constraint_space,
   // "grid-template-columns: repeat(auto-fill, 50px); min-width: 50%;"
   // In this specific case our min/max sizes are now dependent on what
   // "min-width" resolves to - which is unique to grid.
-  if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalc() ||
-                        style.LogicalMaxWidth().IsPercentOrCalc()))
+  if (node.IsGrid() && (style.LogicalMinWidth().IsPercentOrCalcOrStretch() ||
+                        style.LogicalMaxWidth().IsPercentOrCalcOrStretch())) {
     return false;
+  }
 
   if (constraint_space.IsInFlexIntrinsicSizing() !=
       node.GetLayoutBox()->IntrinsicLogicalWidthsInFlexIntrinsicSizing()) {
@@ -948,14 +951,19 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     sizes = NGFragment({container_writing_mode, TextDirection::kLtr},
                        layout_result->PhysicalFragment())
                 .InlineSize();
-    return MinMaxSizesResult(sizes, /* depends_on_block_constraints */ false);
+    const bool depends_on_block_constraints =
+        Style().LogicalWidth().IsAuto() ||
+        Style().LogicalWidth().IsPercentOrCalcOrStretch() ||
+        Style().LogicalMinWidth().IsPercentOrCalcOrStretch() ||
+        Style().LogicalMaxWidth().IsPercentOrCalcOrStretch();
+    return MinMaxSizesResult(sizes, depends_on_block_constraints);
   }
 
   // Returns if we are (directly) dependent on any block constraints.
   auto DependsOnBlockConstraints = [&]() -> bool {
-    return Style().LogicalHeight().IsPercentOrCalc() ||
-           Style().LogicalMinHeight().IsPercentOrCalc() ||
-           Style().LogicalMaxHeight().IsPercentOrCalc() ||
+    return Style().LogicalHeight().IsPercentOrCalcOrStretch() ||
+           Style().LogicalMinHeight().IsPercentOrCalcOrStretch() ||
+           Style().LogicalMaxHeight().IsPercentOrCalcOrStretch() ||
            (Style().LogicalHeight().IsAuto() &&
             constraint_space.IsBlockAutoBehaviorStretch());
   };
@@ -1040,8 +1048,8 @@ MinMaxSizesResult NGBlockNode::ComputeMinMaxSizes(
     result.sizes.max_size = min_max.ClampSizeToMinAndMax(result.sizes.max_size);
     depends_on_block_constraints =
         depends_on_block_constraints ||
-        Style().LogicalMinHeight().IsPercentOrCalc() ||
-        Style().LogicalMaxHeight().IsPercentOrCalc();
+        Style().LogicalMinHeight().IsPercentOrCalcOrStretch() ||
+        Style().LogicalMaxHeight().IsPercentOrCalcOrStretch();
   }
 
   box_->SetIntrinsicLogicalWidthsFromNG(
