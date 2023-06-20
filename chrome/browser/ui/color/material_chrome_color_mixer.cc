@@ -71,6 +71,8 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorTabSearchSecondaryForeground] = {ui::kColorSysOnSurfaceSubtle};
   mixer[kColorTabSearchScrollbarThumb] = {ui::kColorSysPrimary};
 
+  mixer[kColorSidePanelBackground] = {ui::kColorSysBaseContainer};
+
   if (!ShouldApplyChromeMaterialOverrides(key)) {
     return;
   }

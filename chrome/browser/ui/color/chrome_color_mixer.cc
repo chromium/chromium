@@ -407,8 +407,9 @@ void AddChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorShareThisTabSourceViewBorder] = {ui::kColorMidground};
   mixer[kColorSidePanelBackground] = {kColorToolbar};
   mixer[kColorSidePanelContentAreaSeparator] = {ui::kColorSeparator};
-  mixer[kColorSidePanelHeaderControlButton] = {ui::kColorIcon};
-  mixer[kColorSidePanelHeaderControlButtonDisabled] = {ui::kColorIconDisabled};
+  mixer[kColorSidePanelHeaderButtonIcon] = {ui::kColorIcon};
+  mixer[kColorSidePanelHeaderButtonIconDisabled] = {ui::kColorIconDisabled};
+  mixer[kColorSidePanelResizeAreaHandle] = {kColorToolbarContentAreaSeparator};
   mixer[kColorStatusBubbleBackgroundFrameActive] = {
       kColorTabBackgroundInactiveFrameActive};
   mixer[kColorStatusBubbleBackgroundFrameInactive] = {

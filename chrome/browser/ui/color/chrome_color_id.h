@@ -395,6 +395,8 @@
   E_CPONLY(kColorSidePanelDialogSecondaryForeground) \
   E_CPONLY(kColorSidePanelDivider) \
   E_CPONLY(kColorSidePanelEditFooterBorder) \
+  E_CPONLY(kColorSidePanelEntryIcon) \
+  E_CPONLY(kColorSidePanelEntryTitle) \
   E_CPONLY(kColorSidePanelFilterChipBorder) \
   E_CPONLY(kColorSidePanelFilterChipForeground) \
   E_CPONLY(kColorSidePanelFilterChipForegroundSelected) \
@@ -402,13 +404,14 @@
   E_CPONLY(kColorSidePanelFilterChipIconSelected) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundHover) \
   E_CPONLY(kColorSidePanelFilterChipBackgroundSelected) \
-  E_CPONLY(kColorSidePanelHeaderControlButton) \
-  E_CPONLY(kColorSidePanelHeaderControlButtonDisabled) \
+  E_CPONLY(kColorSidePanelHeaderButtonIcon) \
+  E_CPONLY(kColorSidePanelHeaderButtonIconDisabled) \
   E_CPONLY(kColorSidePanelMenuBackground) \
   E_CPONLY(kColorSidePanelMenuDisabled) \
   E_CPONLY(kColorSidePanelMenuDivider) \
   E_CPONLY(kColorSidePanelMenuForeground) \
   E_CPONLY(kColorSidePanelMenuIcon) \
+  E_CPONLY(kColorSidePanelResizeAreaHandle) \
   E_CPONLY(kColorSidePanelScrollbarThumb) \
   E_CPONLY(kColorSidePanelTextfieldBorder) \
   /* Status bubble colors. */ \

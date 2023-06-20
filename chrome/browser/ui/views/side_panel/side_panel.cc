@@ -282,6 +282,12 @@ void SidePanel::OnChildViewAdded(View* observed_view, View* child) {
   // Reorder `resize_area_` to be last so that it gets painted on top of
   // `border_view_`, for displaying the resize handle.
   ReorderChildView(resize_area_, children().size());
+
+  if (header_view_) {
+    // The header view should come before all other side panel children except
+    // the resize area in focus order.
+    header_view_->InsertBeforeInFocusList(GetChildrenFocusList().front());
+  }
   // The resize area should come before all other side panel children in focus
   // order.
   resize_area_->InsertBeforeInFocusList(GetChildrenFocusList().front());

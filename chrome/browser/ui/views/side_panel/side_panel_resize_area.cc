@@ -30,7 +30,7 @@ SidePanelResizeHandle::SidePanelResizeHandle(SidePanel* side_panel)
 
   constexpr int kIconSize = 16;
   SetImage(ui::ImageModel::FromVectorIcon(
-      kDragHandleIcon, kColorToolbarContentAreaSeparator, kIconSize));
+      kDragHandleIcon, kColorSidePanelResizeAreaHandle, kIconSize));
 }
 
 void SidePanelResizeHandle::GetAccessibleNodeData(ui::AXNodeData* node_data) {

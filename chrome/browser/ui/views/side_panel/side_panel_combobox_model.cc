@@ -7,6 +7,7 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/utf_string_conversions.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/side_panel/companion/companion_utils.h"
 #include "chrome/browser/ui/views/frame/browser_view.h"
 #include "chrome/browser/ui/views/side_panel/side_panel_entry.h"
@@ -36,7 +37,14 @@ void SidePanelComboboxModel::AddItem(SidePanelEntry* entry) {
     return;
   }
 
-  entries_.emplace_back(entry->key(), entry->name(), entry->icon());
+  // Update the icon color if possible.
+  ui::ImageModel icon = entry->icon();
+  if (entry->icon().IsVectorIcon()) {
+    icon = ui::ImageModel::FromVectorIcon(
+        *entry->icon().GetVectorIcon().vector_icon(), kColorSidePanelEntryIcon,
+        /*icon_size=*/16);
+  }
+  entries_.emplace_back(entry->key(), entry->name(), icon);
   std::sort(entries_.begin(), entries_.end(), [](const auto& a, const auto& b) {
     return a.key.id() < b.key.id();
   });
@@ -61,7 +69,16 @@ void SidePanelComboboxModel::AddItems(
   for (auto const& entry : entries) {
     if (!HasKey(entry->key())) {
       items_added = true;
-      entries_.emplace_back(entry->key(), entry->name(), entry->icon());
+
+      // Update the icon color if possible.
+      ui::ImageModel icon = entry->icon();
+      if (entry->icon().IsVectorIcon()) {
+        icon = ui::ImageModel::FromVectorIcon(
+            *entry->icon().GetVectorIcon().vector_icon(),
+            kColorSidePanelEntryIcon,
+            /*icon_size=*/16);
+      }
+      entries_.emplace_back(entry->key(), entry->name(), icon);
     }
   }
 
