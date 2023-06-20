@@ -11,12 +11,15 @@
 
 namespace overflow_menu {
 enum class Destination;
+enum class ActionType;
 }
+@class OverflowMenuAction;
 @class OverflowMenuDestination;
 class PrefService;
 
 @protocol OverflowMenuDestinationProvider <NSObject>
 
+// The default base ranking of destinations currently supported.
 - (DestinationRanking)baseDestinations;
 
 // Returns the correct `OverflowMenuDestination` for the corresponding
@@ -24,6 +27,20 @@ class PrefService;
 // page does not support the given `destinationType`.
 - (OverflowMenuDestination*)destinationForDestinationType:
     (overflow_menu::Destination)destinationType;
+
+@end
+
+@protocol OverflowMenuActionProvider <NSObject>
+
+// The default base ranking of page actions (those that act on the current page
+// state) currently supported.
+- (ActionRanking)basePageActions;
+
+// Returns the correct `OverflowMenuAction` for the corresponding
+// `overflow_menu::ActionType` on the current page. Returns nil if the current
+// page does not support the given `actionType`.
+- (OverflowMenuAction*)actionForActionType:
+    (overflow_menu::ActionType)actionType;
 
 @end
 
@@ -44,14 +61,19 @@ class PrefService;
 @property(nonatomic, weak) id<OverflowMenuDestinationProvider>
     destinationProvider;
 
+@property(nonatomic, weak) id<OverflowMenuActionProvider> actionProvider;
+
 // Release any C++ objects that can't be reference counted.
 - (void)disconnect;
 
 // Records a `destination` click from the overflow menu carousel.
 - (void)recordClickForDestination:(overflow_menu::Destination)destination;
 
-// Returns a new, sorted list of destinations given the initial list.
+// Returns the current sorted list of active destinations.
 - (NSArray<OverflowMenuDestination*>*)sortedDestinations;
+
+// Returns the current ordering of active page actions.
+- (NSArray<OverflowMenuAction*>*)pageActions;
 
 @end
 

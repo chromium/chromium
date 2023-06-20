@@ -177,6 +177,23 @@ using DestinationLookup =
   return sortedDestinations;
 }
 
+- (NSArray<OverflowMenuAction*>*)pageActions {
+  ActionRanking availableActions = [self.actionProvider basePageActions];
+
+  // Convert back to Objective-C array for returning. This step also filters out
+  // any actions that are not supported on the current page.
+  NSMutableArray<OverflowMenuAction*>* sortedActions =
+      [[NSMutableArray alloc] init];
+  for (overflow_menu::ActionType action : availableActions) {
+    if (OverflowMenuAction* overflowMenuAction =
+            [self.actionProvider actionForActionType:action]) {
+      [sortedActions addObject:overflowMenuAction];
+    }
+  }
+
+  return sortedActions;
+}
+
 #pragma mark - Private
 
 - (void)loadDataFromPrefs {
