@@ -204,7 +204,10 @@ static inline bool FeatureWithValidLength(const String& media_feature,
 
 static inline bool FeatureWithValidDensity(const String& media_feature,
                                            const CSSPrimitiveValue* value) {
-  if (!value->IsResolution()) {
+  // NOTE: The allowed range of <resolution> values always excludes negative
+  // values, in addition to any explicit ranges that might be specified.
+  // https://drafts.csswg.org/css-values/#resolution
+  if (!value->IsResolution() || value->GetDoubleValue() < 0) {
     return false;
   }
 
