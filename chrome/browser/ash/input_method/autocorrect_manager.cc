@@ -1051,7 +1051,7 @@ void AutocorrectManager::UndoAutocorrect() {
 
     if (base::FeatureList::IsEnabled(
             features::kAutocorrectUseReplaceSurroundingText) &&
-        !crosapi::browser_util::IsLacrosEnabled()) {
+        !base::FeatureList::IsEnabled(features::kLacrosSupport)) {
       input_context->ReplaceSurroundingText(
           before, after, pending_autocorrect_->original_text);
     } else {
