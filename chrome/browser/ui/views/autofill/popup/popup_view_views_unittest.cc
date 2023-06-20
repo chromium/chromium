@@ -360,7 +360,7 @@ TEST_F(PopupViewViewsTest, CursorUpDownForSelectableCells) {
             absl::make_optional<CellIndex>(1u, CellType::kContent));
 }
 
-TEST_F(PopupViewViewsTest, CursorLeftRightForAutocompleteEntries) {
+TEST_F(PopupViewViewsTest, CursorLeftRightDownForAutocompleteEntries) {
   base::test::ScopedFeatureList feature_list{
       features::kAutofillShowAutocompleteDeleteButton};
 
@@ -370,29 +370,19 @@ TEST_F(PopupViewViewsTest, CursorLeftRightForAutocompleteEntries) {
 
   view().SetSelectedCell(CellIndex{0, CellType::kContent});
 
-  // Pressing left does nothing because the left-most cell is already selected.
+  // Pressing left or right does nothing because the autocomplete cell is
+  // handling it itself.
   SimulateKeyPress(ui::VKEY_LEFT);
   EXPECT_EQ(view().GetSelectedCell(),
             absl::make_optional<CellIndex>(0u, CellType::kContent));
-
-  // Pressing right selects the control area.
   SimulateKeyPress(ui::VKEY_RIGHT);
   EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kControl));
-
-  // Going down respects the currently selected column.
-  SimulateKeyPress(ui::VKEY_DOWN);
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(1u, CellType::kControl));
-
-  // Wrapping respects the currently selected column.
-  SimulateKeyPress(ui::VKEY_DOWN);
-  EXPECT_EQ(view().GetSelectedCell(),
-            absl::make_optional<CellIndex>(0u, CellType::kControl));
-
-  SimulateKeyPress(ui::VKEY_LEFT);
-  EXPECT_EQ(view().GetSelectedCell(),
             absl::make_optional<CellIndex>(0u, CellType::kContent));
+
+  // Going down selects the next cell.
+  SimulateKeyPress(ui::VKEY_DOWN);
+  EXPECT_EQ(view().GetSelectedCell(),
+            absl::make_optional<CellIndex>(1u, CellType::kContent));
 }
 
 TEST_F(PopupViewViewsTest, PageUpDownForSelectableCells) {

@@ -18,6 +18,10 @@
 #include "ui/views/metadata/view_factory.h"
 #include "ui/views/view.h"
 
+namespace content {
+struct NativeWebKeyboardEvent;
+}  // namespace content
+
 namespace views {
 class Label;
 }  // namespace views
@@ -51,7 +55,7 @@ class PopupCellView : public views::View {
 
   // Gets and sets the selected state of the cell.
   bool GetSelected() const { return selected_; }
-  void SetSelected(bool selected);
+  virtual void SetSelected(bool selected);
 
   // Gets and sets the tooltip of the cell.
   const std::u16string& GetTooltipText() const { return tooltip_text_; }
@@ -98,6 +102,11 @@ class PopupCellView : public views::View {
   // labels contained in it based on the selection status of the view.
   void RefreshStyle();
 
+  // Attempts to process a key press `event`. Returns true if it did (and the
+  // parent no longer needs to handle it).
+  virtual bool HandleKeyPressEvent(
+      const content::NativeWebKeyboardEvent& event);
+
   // views::View:
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
@@ -111,6 +120,12 @@ class PopupCellView : public views::View {
 
   void OnPaint(gfx::Canvas* canvas) override;
 
+ protected:
+  // The selection state.
+  bool selected_ = false;
+  base::RepeatingClosure on_selected_callback_;
+  base::RepeatingClosure on_unselected_callback_;
+
  private:
   // Returns true if the mouse is within the bounds of this item. This is not
   // affected by whether or not the item is overlaid by another popup.
@@ -119,8 +134,6 @@ class PopupCellView : public views::View {
   // views::View:
   std::u16string GetTooltipText(const gfx::Point& p) const override;
 
-  // The selection state.
-  bool selected_ = false;
   // The tooltip text for this cell.
   std::u16string tooltip_text_;
   // The accessibility delegate.
@@ -129,8 +142,6 @@ class PopupCellView : public views::View {
   base::RepeatingClosure on_entered_callback_;
   base::RepeatingClosure on_exited_callback_;
   base::RepeatingClosure on_accepted_callback_;
-  base::RepeatingClosure on_selected_callback_;
-  base::RepeatingClosure on_unselected_callback_;
 
   // The labels whose style is updated when the cell's selection status changes.
   std::vector<raw_ptr<views::Label>> tracked_labels_;

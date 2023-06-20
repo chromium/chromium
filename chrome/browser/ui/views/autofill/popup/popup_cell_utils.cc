@@ -104,6 +104,13 @@ std::u16string GetIconAccessibleName(const std::string& icon_text) {
   return std::u16string();
 }
 
+std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
+    const gfx::VectorIcon& vector_icon,
+    int icon_size = kIconSize) {
+  return std::make_unique<views::ImageView>(
+      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
+}
+
 std::unique_ptr<views::ImageView> ImageViewFromImageSkia(
     const gfx::ImageSkia& image_skia) {
   if (image_skia.isNull()) {
@@ -187,13 +194,6 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
 }
 
 }  // namespace
-
-std::unique_ptr<views::ImageView> ImageViewFromVectorIcon(
-    const gfx::VectorIcon& vector_icon,
-    int icon_size = kIconSize) {
-  return std::make_unique<views::ImageView>(
-      ui::ImageModel::FromVectorIcon(vector_icon, ui::kColorIcon, icon_size));
-}
 
 std::u16string GetVoiceOverStringFromSuggestion(const Suggestion& suggestion) {
   if (suggestion.voice_over) {

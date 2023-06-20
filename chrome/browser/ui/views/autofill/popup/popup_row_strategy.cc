@@ -7,6 +7,7 @@
 #include "base/feature_list.h"
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ui/autofill/autofill_popup_controller.h"
+#include "chrome/browser/ui/views/autofill/popup/popup_autocomplete_cell_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_base_view.h"
 #include "chrome/browser/ui/views/autofill/popup/popup_cell_utils.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
@@ -22,14 +23,9 @@ namespace autofill {
 
 namespace {
 
-// The default icon size used in the suggestion drop down.
-constexpr int kTrashCanLightIconSize = 12;
-
 // Max width for the username and masked password.
 constexpr int kAutofillPopupUsernameMaxWidth = 272;
 constexpr int kAutofillPopupPasswordMaxWidth = 108;
-
-constexpr int kAutocompleteDeleteIconHorizontalPadding = 8;
 
 // Popup items that use a leading icon instead of a trailing one.
 constexpr PopupItemId kItemTypesUsingLeadingIcons[] = {
@@ -167,6 +163,12 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   if (!GetController()) {
     return nullptr;
   }
+  if (base::FeatureList::IsEnabled(
+          features::kAutofillShowAutocompleteDeleteButton) &&
+      GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
+          PopupItemId::kAutocompleteEntry) {
+    return CreateDeleteAutocompleteRow();
+  }
   const Suggestion& kSuggestion =
       GetController()->GetSuggestionAt(GetLineNumber());
   std::unique_ptr<PopupCellView> view =
@@ -197,48 +199,23 @@ std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateContent() {
   return view;
 }
 
-std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
+std::unique_ptr<PopupCellView>
+PopupSuggestionStrategy::CreateDeleteAutocompleteRow() {
   if (!GetController()) {
     return nullptr;
   }
+  std::unique_ptr<PopupAutocompleteCellView> view =
+      std::make_unique<PopupAutocompleteCellView>(GetController(),
+                                                  GetLineNumber());
+  view->SetAccessibilityDelegate(
+      std::make_unique<ContentItemAccessibilityDelegate>(GetController(),
+                                                         GetLineNumber()));
+  return view;
+}
 
-  // If the feature is enabled, autocomplete entries have a delete button.
-  if (GetController()->GetSuggestionAt(GetLineNumber()).popup_item_id ==
-          PopupItemId::kAutocompleteEntry &&
-      base::FeatureList::IsEnabled(
-          features::kAutofillShowAutocompleteDeleteButton)) {
-    std::unique_ptr<PopupCellView> view =
-        views::Builder<PopupCellView>()
-            .SetAccessibilityDelegate(
-                std::make_unique<DeleteButtonAccessibilityDelegate>(
-                    GetController(), GetLineNumber()))
-            .Build();
-
-    view->SetLayoutManager(std::make_unique<views::BoxLayout>(
-        views::BoxLayout::Orientation::kHorizontal,
-        gfx::Insets::VH(0, kAutocompleteDeleteIconHorizontalPadding)));
-    views::ImageView* delete_icon =
-        view->AddChildView(popup_cell_utils::ImageViewFromVectorIcon(
-            kTrashCanLightIcon, kTrashCanLightIconSize));
-    // The tooltip is set for both the cell and the image to ensure that it is
-    // also shown over the padding area.
-    delete_icon->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
-    view->SetTooltipText(l10n_util::GetStringUTF16(
-        IDS_AUTOFILL_DELETE_AUTOCOMPLETE_SUGGESTION_TOOLTIP));
-    view->SetOnAcceptedCallback(base::BindRepeating(
-        [](base::WeakPtr<AutofillPopupController> controller, int line_number) {
-          if (controller && controller->RemoveSuggestion(line_number)) {
-            AutofillMetrics::OnAutocompleteSuggestionDeleted(
-                AutofillMetrics::AutocompleteSingleEntryRemovalMethod::
-                    kDeleteButtonClicked);
-          }
-        },
-        GetController(), GetLineNumber()));
-
-    return view;
-  }
-
+// This method is currently not implemented but we will re-evaluate it (probably
+// implement it) when granular filling starts its implementation phase.
+std::unique_ptr<PopupCellView> PopupSuggestionStrategy::CreateControl() {
   return nullptr;
 }
 

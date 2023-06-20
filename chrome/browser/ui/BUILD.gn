@@ -4615,6 +4615,8 @@ static_library("ui") {
       "views/autofill/payments/virtual_card_manual_fallback_bubble_views.h",
       "views/autofill/payments/virtual_card_manual_fallback_icon_view.cc",
       "views/autofill/payments/virtual_card_manual_fallback_icon_view.h",
+      "views/autofill/popup/popup_autocomplete_cell_view.cc",
+      "views/autofill/popup/popup_autocomplete_cell_view.h",
       "views/autofill/popup/popup_base_view.cc",
       "views/autofill/popup/popup_base_view.h",
       "views/autofill/popup/popup_cell_utils.cc",

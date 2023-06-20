@@ -82,6 +82,7 @@ class PopupSuggestionStrategy : public PopupRowBaseStrategy {
   // PopupRowStrategy:
   std::unique_ptr<PopupCellView> CreateContent() override;
   std::unique_ptr<PopupCellView> CreateControl() override;
+  std::unique_ptr<PopupCellView> CreateDeleteAutocompleteRow();
 
  private:
   // Returns the type of the popup that this row belongs to.

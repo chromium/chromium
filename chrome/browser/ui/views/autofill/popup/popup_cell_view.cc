@@ -18,6 +18,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/color/color_id.h"
 #include "ui/events/event.h"
+#include "ui/events/keycodes/keyboard_codes.h"
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/style/typography.h"
@@ -32,6 +33,12 @@ PopupCellView::PopupCellView() {
 }
 
 PopupCellView::~PopupCellView() = default;
+
+bool PopupCellView::HandleKeyPressEvent(
+    const content::NativeWebKeyboardEvent& event) {
+  // By default let the parent handle.
+  return false;
+}
 
 void PopupCellView::SetSelected(bool selected) {
   if (selected_ == selected) {

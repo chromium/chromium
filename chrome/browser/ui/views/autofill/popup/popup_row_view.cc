@@ -34,7 +34,7 @@ namespace autofill {
 std::unique_ptr<PopupRowView> PopupRowView::Create(PopupViewViews& popup_view,
                                                    int line_number) {
   base::WeakPtr<AutofillPopupController> controller = popup_view.controller();
-  DCHECK(controller);
+  CHECK(controller);
 
   PopupItemId popup_item_id =
       controller->GetSuggestionAt(line_number).popup_item_id;
@@ -76,7 +76,7 @@ PopupRowView::PopupRowView(
     : a11y_selection_delegate_(a11y_selection_delegate),
       controller_(controller),
       strategy_(std::move(strategy)) {
-  DCHECK(strategy_);
+  CHECK(strategy_);
   const int kHorizontalPadding =
       base::FeatureList::IsEnabled(
           features::kAutofillShowAutocompleteDeleteButton)
@@ -147,6 +147,16 @@ void PopupRowView::SetSelectedCell(absl::optional<CellType> cell) {
 
 bool PopupRowView::HandleKeyPressEvent(
     const content::NativeWebKeyboardEvent& event) {
+  // Some cells may want to define their own behavior.
+  CHECK(GetSelectedCell());
+  if (*GetSelectedCell() == CellType::kControl &&
+      control_view_->HandleKeyPressEvent(event)) {
+    return true;
+  }
+  if (*GetSelectedCell() == CellType::kContent &&
+      content_view_->HandleKeyPressEvent(event)) {
+    return true;
+  }
   switch (event.windows_key_code) {
     case ui::VKEY_RETURN:
       if (*GetSelectedCell() == CellType::kControl &&
@@ -182,14 +192,14 @@ bool PopupRowView::HandleKeyPressEvent(
 }
 
 void PopupRowView::SelectNextCell() {
-  DCHECK(GetSelectedCell());
+  CHECK(GetSelectedCell());
   if (*GetSelectedCell() == CellType::kContent && GetControlView()) {
     SetSelectedCell(CellType::kControl);
   }
 }
 
 void PopupRowView::SelectPreviousCell() {
-  DCHECK(GetSelectedCell());
+  CHECK(GetSelectedCell());
   if (*GetSelectedCell() == CellType::kControl) {
     SetSelectedCell(CellType::kContent);
   }
