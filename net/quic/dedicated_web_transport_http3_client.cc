@@ -310,6 +310,7 @@ DedicatedWebTransportHttp3Client::DedicatedWebTransportHttp3Client(
       crypto_config_(
           CreateProofVerifier(anonymization_key_, context, parameters),
           /* session_cache */ nullptr) {
+  ConfigureQuicCryptoClientConfig(crypto_config_);
   net_log_.BeginEvent(
       NetLogEventType::QUIC_SESSION_WEBTRANSPORT_CLIENT_ALIVE, [&] {
         base::Value::Dict dict;

@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "net/base/features.h"
 #include "net/base/host_port_pair.h"
+#include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_crypto_client_config.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_connection.h"
 
 namespace net {
@@ -234,6 +235,10 @@ class NET_EXPORT_PRIVATE QuicContext {
 
 // Initializes QuicConfig based on the specified parameters.
 quic::QuicConfig InitializeQuicConfig(const QuicParams& params);
+
+// Configures QuicCryptoClientConfig with Chromium-specific settings.
+void ConfigureQuicCryptoClientConfig(
+    quic::QuicCryptoClientConfig& crypto_config);
 
 }  // namespace net
 

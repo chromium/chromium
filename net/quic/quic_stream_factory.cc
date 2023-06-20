@@ -60,8 +60,6 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/socket/socket_performance_watcher_factory.h"
 #include "net/socket/udp_client_socket.h"
-#include "net/ssl/cert_compression.h"
-#include "net/ssl/ssl_key_logger.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/null_decrypter.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/proof_verifier.h"
 #include "net/third_party/quiche/src/quiche/quic/core/crypto/quic_client_session_cache.h"
@@ -2376,12 +2374,8 @@ QuicStreamFactory::CreateCryptoConfigHandle(
   crypto_config->AddCanonicalSuffix(".googlevideo.com");
   crypto_config->AddCanonicalSuffix(".googleusercontent.com");
   crypto_config->AddCanonicalSuffix(".gvt1.com");
-  if (SSLKeyLoggerManager::IsActive()) {
-    SSL_CTX_set_keylog_callback(crypto_config->ssl_ctx(),
-                                SSLKeyLoggerManager::KeyLogCallback);
-  }
 
-  ConfigureCertificateCompression(crypto_config->ssl_ctx());
+  ConfigureQuicCryptoClientConfig(*crypto_config);
 
   if (!prefer_aes_gcm_recorded_) {
     bool prefer_aes_gcm =
