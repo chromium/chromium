@@ -405,4 +405,25 @@ TEST(MultiGPUsTest, IdentifyActiveGPUAvoidFalseMatch) {
   EXPECT_FALSE(gpu_info.secondary_gpus[0].active);
 }
 
+#if BUILDFLAG(IS_WIN)
+TEST(GpuInfoCollectorWinARMTest, PostProcessForWinARM) {
+  GPUInfo gpu_info;
+  gpu_info.gpu.vendor_id = 0x4d4f4351;
+  gpu_info.gpu.device_id = 0x41333430;
+  gpu_info.gl_vendor = "Google Inc. (Unknown)";
+  gpu_info.gl_renderer =
+      "ANGLE (Unknown, Qualcomm(R) Adreno(TM) 680 GPU Direct3D11 "
+      "vs_5_0 ps_5_0, D3D11-27.20.1720.0)";
+  PostProcessForWinARM(&gpu_info);
+
+  constexpr uint32_t kQualcommVendorId = 0x5143;
+  EXPECT_EQ(kQualcommVendorId, gpu_info.gpu.vendor_id);
+  EXPECT_STREQ("Google Inc. (Qualcomm)", gpu_info.gl_vendor.c_str());
+  EXPECT_STREQ(
+      "ANGLE (Qualcomm, Qualcomm(R) Adreno(TM) 680 GPU Direct3D11 "
+      "vs_5_0 ps_5_0, D3D11-27.20.1720.0)",
+      gpu_info.gl_renderer.c_str());
+}
+#endif  // BUILDFLAG(IS_WIN)
+
 }  // namespace gpu
