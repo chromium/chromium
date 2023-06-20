@@ -264,6 +264,31 @@ may sacrifice a little bit of correctness in favor of simplicity.
     combinations that don't make sense (street-address followed by
     address-line1).
 
+Predicted types are represented as [ServerFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/field_types.h;l=125;drc=bce2963801691db93bc7f05b5d320cef32effa24)
+and types derived from the autocomplete attribute are represented as [HtmlFieldTypes](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/common/mojom/autofill_types.mojom;l=24;drc=f330bdbafa2714f8a6431a9dee412fdb38d5adbe).
+
+## Field type terminology
+
+Several important subsets of ServerFieldTypes exist:
+* Supported types of a [form group](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/form_group.h):
+  Every form group defines which ServerFieldTypes it maintains. For example:
+  * The supported type of [EmailInfo](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.h;l=87;drc=10009f6ff9f3b626979c9422321686f360df7cee) is [EMAIL_ADDRESS](https://source.chromium.org/chromium/chromium/src/+/refs/heads/main:components/autofill/core/browser/data_model/contact_info.cc;l=184;drc=59b1cf76cc21ae34bc99073e963f7d268b0a5c17).
+  * The supported types of AutofillProfile are all name, address, phone number, etc. types.
+* Stored types of AutofillProfile: The set of types stored in AutofillTable, defined by [AutofillTable::GetStoredTypesForAutofillProfile()](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/webdata/autofill_table.h;l=565;drc=d9e2cfc408da9805b9e711c33081eabe2fca299b).
+  * Conceptually, the stored types are a subset of the supported types of AutofillProfile. In practice,
+    this is not always true, since types might not be fully implemented yet and are still behind feature flags.
+    An example of a stored type that is not supported by AutofillProfile is NAME_HONORIFIC_PREFIX.
+  * Not all supported types of AutofillProfile are stored, since types following a standard format can unambiguously be derived from
+    another type. See derived types below.
+  * Since parsing and formatting are not necessarily inverse operations, most supported types of AutofillProfile are stored.
+* Derived types of AutofillProfile: The relative complement of stored types in the supported types of AutofillProfile. Every derived type is derived directly from a stored type. Examples include:
+  * PHONE_HOME_COUNTRY_CODE is parsed from the PHONE_HOME_WHOLE_NUMBER.
+  * ADDRESS_HOME_LINE{1,2,3} is parsed from the different lines of ADDRESS_HOME_STREET_ADDRESS.
+  * ADDRESS_HOME_ADDRESS is a special case: Since it is not stored, it is considered derived. It only exists as an artificial
+    [root node in the address tree](https://source.chromium.org/chromium/chromium/src/+/main:components/autofill/core/browser/data_model/autofill_structured_address.h;l=244;drc=ecd18b587cccb10ed916e80c8cd352960dd075a1)
+    and is unused for filling.
+* Setting-visible types of AutofillProfiles: The types shown in the "Addresses and more" settings UI. They correspond to the top-level types of the hierarchy: NAME_FULL, ADDRESS_HOME_COUNTRY, etc.
+
 ## How is data represented internally?
 * See `components/autofill/core/browser/data_model/`
   * For addresses, see
