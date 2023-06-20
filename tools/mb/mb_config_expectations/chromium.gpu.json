@@ -30,12 +30,14 @@
   },
   "GPU Linux Builder (dbg)": {
     "gn_args": {
+      "concurrent_links": 30,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
       "proprietary_codecs": true,
       "symbol_level": 1,
-      "use_remoteexec": true
+      "use_remoteexec": true,
+      "use_remoteexec_links": true
     }
   },
   "GPU Mac Builder": {

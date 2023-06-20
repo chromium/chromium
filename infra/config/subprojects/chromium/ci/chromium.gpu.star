@@ -116,6 +116,9 @@ ci.gpu.linux_builder(
     console_view_entry = consoles.console_view_entry(
         category = "Linux",
     ),
+    reclient_bootstrap_env = {
+        "RBE_clang_depscan_archive": "true",
+    },
 )
 
 ci.gpu.mac_builder(
