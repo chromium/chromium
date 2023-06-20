@@ -137,24 +137,22 @@ static inline void UpdateObjectBoundingBox(
 }
 
 static bool HasValidBoundingBoxForContainer(const LayoutObject& object) {
-  if (object.IsSVGShape())
-    return !To<LayoutSVGShape>(object).IsShapeEmpty();
-
-  if (const auto* ng_text = DynamicTo<LayoutNGSVGText>(object))
+  if (auto* svg_shape = DynamicTo<LayoutSVGShape>(object)) {
+    return !svg_shape->IsShapeEmpty();
+  }
+  if (auto* ng_text = DynamicTo<LayoutNGSVGText>(object)) {
     return ng_text->IsObjectBoundingBoxValid();
-
+  }
   if (auto* svg_container = DynamicTo<LayoutSVGContainer>(object)) {
     return svg_container->IsObjectBoundingBoxValid() &&
            !svg_container->IsSVGHiddenContainer();
   }
-
   if (auto* foreign_object = DynamicTo<LayoutNGSVGForeignObject>(object)) {
     return foreign_object->IsObjectBoundingBoxValid();
   }
-
-  if (object.IsSVGImage())
-    return To<LayoutSVGImage>(object).IsObjectBoundingBoxValid();
-
+  if (auto* svg_image = DynamicTo<LayoutSVGImage>(object)) {
+    return svg_image->IsObjectBoundingBoxValid();
+  }
   return false;
 }
 
