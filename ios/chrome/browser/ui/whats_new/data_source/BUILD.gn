@@ -2,15 +2,24 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+source_set("whats_new_item") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "whats_new_item.h",
+    "whats_new_item.mm",
+  ]
+  deps = [ "//url" ]
+  frameworks = [ "UIKit.framework" ]
+}
+
 source_set("data_source") {
   configs += [ "//build/config/compiler:enable_arc" ]
   sources = [
     "whats_new_data_source.h",
     "whats_new_data_source.mm",
-    "whats_new_item.h",
-    "whats_new_item.mm",
   ]
   deps = [
+    ":whats_new_item",
     "resources:add_passwords_manually_banner",
     "resources:autofill_banner",
     "resources:autofill_hero_banner",
@@ -42,6 +51,7 @@ source_set("unit_tests") {
 
   deps = [
     ":data_source",
+    ":whats_new_item",
     "resources:unit_tests_resources",
     "//base",
     "//base/test:test_support",

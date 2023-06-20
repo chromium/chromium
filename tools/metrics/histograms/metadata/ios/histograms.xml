@@ -2776,6 +2776,25 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="IOS.WhatsNew.InstructionsShown" enum="WhatsNewType"
+    expires_after="2023-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>
+    The action taken by the user in response to seeing the instructions of a
+    What's New feature.
+  </summary>
+</histogram>
+
+<histogram name="IOS.WhatsNew.Shown" enum="WhatsNewType"
+    expires_after="2023-12-01">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>
+    The action taken by the user in response to seeing a What's New feature.
+  </summary>
+</histogram>
+
 <histogram name="IOS.WhatsNew.TableViewDidScroll" enum="Boolean"
     expires_after="2023-12-10">
   <owner>cheickcisse@google.com</owner>
@@ -2789,6 +2808,21 @@ chromium-metrics-reviews@google.com.
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@google.com</owner>
   <summary>Logs the time a user spent on What's New.</summary>
+</histogram>
+
+<histogram name="IOS.WhatsNew.{Type}.TimeSpent" units="ms"
+    expires_after="2023-12-10">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@google.com</owner>
+  <summary>Logs the time a user spent on each feature of What's New.</summary>
+  <token key="Type">
+    <variant name="CalendarEvent" summary="Calendar Event"/>
+    <variant name="ChromeActions" summary="Chrome Actions"/>
+    <variant name="IncognitoLock" summary="Incognito Lock"/>
+    <variant name="IncognitoTabsFromOtherApps"
+        summary="Incognito Tabs From Other Apps"/>
+    <variant name="MiniMaps" summary="Mini Maps"/>
+  </token>
 </histogram>
 
 <histogram name="IOS.WidgetKit.Action" enum="IOSWidgetKitAction"

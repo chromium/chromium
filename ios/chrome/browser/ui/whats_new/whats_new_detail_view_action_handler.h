@@ -21,6 +21,10 @@ class GURL;
 // `WhatsNewEntryId`, which will open a new tab with the learn more url loaded.
 - (void)didTapLearnMoreButton:(const GURL&)learnMoreURL type:(WhatsNewType)type;
 
+// Invoked when a user interacts with the instructions button for a specific
+// `WhatsNewEntryId`.
+- (void)didTapInstructions:(WhatsNewType)type;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_WHATS_NEW_WHATS_NEW_DETAIL_VIEW_ACTION_HANDLER_H_

@@ -37425,10 +37425,152 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="WhatsNew.CalendarEvent">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Calendar Event in What's New.</description>
+</action>
+
+<action name="WhatsNew.CalendarEvent.InstructionsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the instruction button of Calendar Event in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.CalendarEvent.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Calendar Event in What's
+    New.
+  </description>
+</action>
+
+<action name="WhatsNew.ChromeActions">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Chrome Actions in What's New.</description>
+</action>
+
+<action name="WhatsNew.ChromeActions.InstructionsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the instruction button of Chrome Actions in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.ChromeActions.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Chrome Actions in What's
+    New.
+  </description>
+</action>
+
+<action name="WhatsNew.ChromeActions.PrimaryActionTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Chrome Actions in What's New.
+  </description>
+</action>
+
 <action name="WhatsNew.Dismissed">
   <owner>cheickcisse@google.com</owner>
   <owner>sebsg@chromium.org</owner>
   <description>The user dismissed What's New.</description>
+</action>
+
+<action name="WhatsNew.IncognitoLock">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Incognito Lock in What's New.</description>
+</action>
+
+<action name="WhatsNew.IncognitoLock.InstructionsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the instruction button of Incognito Lock in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoLock.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Incognito Lock in What's
+    New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoLock.PrimaryActionTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Incognito Lock in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoTabsFromOtherApps">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user opened Incognito Tabs From Other Apps in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoTabsFromOtherApps.InstructionsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the instruction button of Incognito Tabs From Other Apps
+    in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoTabsFromOtherApps.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Incognito Tabs From Other
+    Apps in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.IncognitoTabsFromOtherApps.PrimaryActionTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the primary action of Incognito Tabs From Other Apps in
+    What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.MiniMaps">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>The user opened Mini Maps in What's New.</description>
+</action>
+
+<action name="WhatsNew.MiniMaps.InstructionsTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on the instruction button of Mini Maps in What's New.
+  </description>
+</action>
+
+<action name="WhatsNew.MiniMaps.LearnMoreTapped">
+  <owner>cheickcisse@google.com</owner>
+  <owner>sebsg@chromium.org</owner>
+  <description>
+    The user tapped on learn more to know more about Mini Maps in What's New.
+  </description>
 </action>
 
 <action name="WhatsNew.NewOverflowMenu">

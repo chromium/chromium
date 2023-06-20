@@ -6,6 +6,9 @@
 
 #import "base/check_op.h"
 #import "base/mac/foundation_util.h"
+#import "base/metrics/histogram_functions.h"
+#import "base/strings/strcat.h"
+#import "base/time/time.h"
 #import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/shared/public/commands/browser_coordinator_commands.h"
 #import "ios/chrome/browser/shared/public/commands/command_dispatcher.h"
@@ -39,6 +42,8 @@
 @property(nonatomic, strong) WhatsNewItem* item;
 // The delegate object that manages interactions with the primary action.
 @property(nonatomic, weak) id<WhatsNewDetailViewActionHandler> actionHandler;
+// The starting time of the detail view.
+@property(nonatomic, assign) base::TimeTicks startTime;
 
 @end
 
@@ -92,6 +97,7 @@
     [self.baseNavigationController
         pushViewController:self.whatsNewScreenshotViewController
                   animated:YES];
+    self.startTime = base::TimeTicks::Now();
   } else {
     [self.baseNavigationController
         pushViewController:self.whatsNewDetailViewController
@@ -109,6 +115,7 @@
           popToViewController:self.whatsNewScreenshotViewController
                      animated:NO];
       [self.baseNavigationController popViewControllerAnimated:NO];
+      [self logTimeSpentOnDetailView];
     }
   } else {
     if ([self.baseNavigationController.viewControllers
@@ -156,6 +163,7 @@
 }
 
 - (void)confirmationAlertSecondaryAction {
+  [self.actionHandler didTapInstructions:self.item.type];
   self.whatsNewInstructionsCoordinator =
       [[WhatsNewInstructionsCoordinator alloc]
           initWithBaseViewController:self.whatsNewScreenshotViewController
@@ -179,6 +187,19 @@
   DCHECK(handler);
 
   [handler dismissWhatsNew];
+}
+
+#pragma mark Private
+
+- (void)logTimeSpentOnDetailView {
+  const char* type = WhatsNewTypeToStringM116(self.item.type);
+  if (!type) {
+    return;
+  }
+
+  std::string metric = base::StrCat({"IOS.WhatsNew.", type, ".TimeSpent"});
+  UmaHistogramMediumTimes(metric.c_str(),
+                          base::TimeTicks::Now() - self.startTime);
 }
 
 @end

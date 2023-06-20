@@ -113795,6 +113795,22 @@ Called by update_scheduler_enums.py.-->
   <int value="6" label="Page is overridden by a different first run page"/>
 </enum>
 
+<enum name="WhatsNewType">
+  <int value="-1" label="Error"/>
+  <int value="0" label="Search Tabs"/>
+  <int value="1" label="New Overflow Menu"/>
+  <int value="2" label="Shared Highlighting"/>
+  <int value="3" label="Add Password Manually"/>
+  <int value="4" label="Use Chrome By Default"/>
+  <int value="5" label="Passwords In Ither Apps"/>
+  <int value="6" label="Autofill"/>
+  <int value="7" label="Incognito Tabs From Other Apps"/>
+  <int value="8" label="Incognito Lock"/>
+  <int value="9" label="Calendar Event"/>
+  <int value="10" label="Chrome Actions"/>
+  <int value="11" label="Mini Maps"/>
+</enum>
+
 <enum name="WhitelistedDownloadType">
   <int value="0" label="Does not match any whitelists"/>
   <int value="1" label="URL whitelist"/>

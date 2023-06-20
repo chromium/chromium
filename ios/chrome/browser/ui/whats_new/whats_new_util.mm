@@ -113,3 +113,51 @@ bool ShouldRegisterWhatsNewPromo() {
 bool IsWhatsNewM116Enabled() {
   return base::FeatureList::IsEnabled(kWhatsNewIOSM116);
 }
+
+const char* WhatsNewTypeToString(WhatsNewType type) {
+  switch (type) {
+    case WhatsNewType::kSearchTabs:
+      return "SearchTabs";
+    case WhatsNewType::kNewOverflowMenu:
+      return "NewOverflowMenu";
+    case WhatsNewType::kSharedHighlighting:
+      return "SharedHighlighting";
+    case WhatsNewType::kAddPasswordManually:
+      return "AddPasswordManually";
+    case WhatsNewType::kUseChromeByDefault:
+      return "UseChromeByDefault";
+    case WhatsNewType::kPasswordsInOtherApps:
+      return "PasswordsInOtherApps";
+    case WhatsNewType::kAutofill:
+      return "Autofill";
+    case WhatsNewType::kIncognitoTabsFromOtherApps:
+      return "IncognitoTabsFromOtherApps";
+    case WhatsNewType::kIncognitoLock:
+      return "IncognitoLock";
+    case WhatsNewType::kCalendarEvent:
+      return "CalendarEvent";
+    case WhatsNewType::kChromeActions:
+      return "ChromeActions";
+    case WhatsNewType::kMiniMaps:
+      return "MiniMaps";
+    default:
+      return nil;
+  };
+}
+
+const char* WhatsNewTypeToStringM116(WhatsNewType type) {
+  switch (type) {
+    case WhatsNewType::kIncognitoTabsFromOtherApps:
+      return "IncognitoTabsFromOtherApps";
+    case WhatsNewType::kIncognitoLock:
+      return "IncognitoLock";
+    case WhatsNewType::kCalendarEvent:
+      return "CalendarEvent";
+    case WhatsNewType::kChromeActions:
+      return "ChromeActions";
+    case WhatsNewType::kMiniMaps:
+      return "MiniMaps";
+    default:
+      return nil;
+  };
+}
