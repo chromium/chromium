@@ -276,6 +276,13 @@ GuestViewImpl.prototype.destroyImpl = function(callback) {
     return;
   }
 
+  if (this.state == GuestViewImpl.GuestState.GUEST_STATE_CREATED) {
+    // If we destroy a guest before attaching it, inform the browser so it can
+    // clear its associated state. This is only needed for unattached guests,
+    // since after attachment, the browser knows when to clear the state.
+    GuestViewInternal.destroyUnattachedGuest(this.id);
+  }
+
   // Reset the state of the destroyed guest;
   this.contentWindow = null;
   this.id = 0;

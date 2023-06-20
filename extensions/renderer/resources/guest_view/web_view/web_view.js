@@ -64,7 +64,6 @@ WebViewImpl.prototype.onElementAttached = function() {
 
 // Resets some state upon detaching <webview> element from the DOM.
 WebViewImpl.prototype.onElementDetached = function() {
-  this.guest.destroy();
   for (var i in this.attributes) {
     this.attributes[i].dirty = false;
   }

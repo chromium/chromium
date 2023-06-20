@@ -4432,6 +4432,15 @@ IN_PROC_BROWSER_TEST_F(WebViewTest,
              "web_view/shim", NEEDS_TEST_SERVER);
 }
 
+IN_PROC_BROWSER_TEST_F(WebViewTest, Shim_TestRemoveBeforeAttach) {
+  TestHelper("testRemoveBeforeAttach", "web_view/shim", NO_TEST_SERVER);
+
+  // Ensure browser side state for the immediately destroyed guest is cleared
+  // without having to wait for the embedder to be closed.
+  // If it's not cleared then this will timeout.
+  GetGuestViewManager()->WaitForAllGuestsDeleted();
+}
+
 // Tests that the embedder can create a blob URL and navigate a WebView to it.
 // See https://crbug.com/652077.
 // Also tests that the embedder can't navigate to a blob URL created by a

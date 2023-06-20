@@ -74,6 +74,16 @@
         }
       },
       {
+        "name": "destroyUnattachedGuest",
+        "type": "function",
+        "parameters": [
+          {
+            "type": "integer",
+            "name": "instanceId"
+          }
+        ]
+      },
+      {
         "name": "setSize",
         "type": "function",
         "parameters": [

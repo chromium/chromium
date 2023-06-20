@@ -74,6 +74,28 @@ void GuestViewInternalCreateGuestFunction::CreateGuestCallback(
   Respond(WithArguments(std::move(return_params)));
 }
 
+GuestViewInternalDestroyUnattachedGuestFunction::
+    GuestViewInternalDestroyUnattachedGuestFunction() = default;
+GuestViewInternalDestroyUnattachedGuestFunction::
+    ~GuestViewInternalDestroyUnattachedGuestFunction() = default;
+
+ExtensionFunction::ResponseAction
+GuestViewInternalDestroyUnattachedGuestFunction::Run() {
+  absl::optional<guest_view_internal::DestroyUnattachedGuest::Params> params =
+      guest_view_internal::DestroyUnattachedGuest::Params::Create(args());
+  EXTENSION_FUNCTION_VALIDATE(params);
+
+  GuestViewBase* guest =
+      GuestViewBase::FromInstanceID(source_process_id(), params->instance_id);
+  if (guest) {
+    std::unique_ptr<GuestViewBase> owned_guest =
+        guest->GetGuestViewManager()->TransferOwnership(guest);
+    owned_guest.reset();
+  }
+
+  return RespondNow(NoArguments());
+}
+
 GuestViewInternalSetSizeFunction::GuestViewInternalSetSizeFunction() = default;
 
 GuestViewInternalSetSizeFunction::~GuestViewInternalSetSizeFunction() = default;

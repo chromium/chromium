@@ -3346,6 +3346,18 @@ function testRendererNavigationRedirectWhileUnattached() {
   webview.src = 'about:blank';
 };
 
+function testRemoveBeforeAttach() {
+  // Create a guest and immediately remove it. So once the browser acknowledges
+  // creation, the guest will be destroyed on the renderer side and no
+  // attachment request will occur.
+  let webview = document.createElement('webview');
+  webview.src = 'about:blank';
+  document.body.appendChild(webview);
+  webview.remove();
+
+  embedder.test.succeed();
+};
+
 function runNewWindowCrossWindowAttachTest(noopener) {
   let firstWebviewUrl = noopener ? embedder.windowOpenNoopenerGuestURL :
                                    embedder.windowOpenGuestURL;
@@ -3676,6 +3688,7 @@ embedder.test.testList = {
   'testMailtoLink': testMailtoLink,
   'testRendererNavigationRedirectWhileUnattached':
       testRendererNavigationRedirectWhileUnattached,
+  'testRemoveBeforeAttach': testRemoveBeforeAttach,
   'testBlobURL': testBlobURL,
   'testWebViewAndEmbedderInNewWindow': testWebViewAndEmbedderInNewWindow,
   'testWebViewAndEmbedderInNewWindow_Noopener':

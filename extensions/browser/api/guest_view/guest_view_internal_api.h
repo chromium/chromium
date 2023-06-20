@@ -34,6 +34,25 @@ class GuestViewInternalCreateGuestFunction : public ExtensionFunction {
   void CreateGuestCallback(guest_view::GuestViewBase* guest);
 };
 
+class GuestViewInternalDestroyUnattachedGuestFunction
+    : public ExtensionFunction {
+ public:
+  DECLARE_EXTENSION_FUNCTION("guestViewInternal.destroyUnattachedGuest",
+                             GUESTVIEWINTERNAL_DESTROYUNATTACHEDGUEST)
+  GuestViewInternalDestroyUnattachedGuestFunction();
+
+  GuestViewInternalDestroyUnattachedGuestFunction(
+      const GuestViewInternalDestroyUnattachedGuestFunction&) = delete;
+  GuestViewInternalDestroyUnattachedGuestFunction& operator=(
+      const GuestViewInternalDestroyUnattachedGuestFunction&) = delete;
+
+ protected:
+  ~GuestViewInternalDestroyUnattachedGuestFunction() override;
+
+  // ExtensionFunction:
+  ResponseAction Run() final;
+};
+
 class GuestViewInternalSetSizeFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("guestViewInternal.setSize",
