@@ -265,7 +265,11 @@ fast/css/inline-outline-with-border-radius-big-neg-offset.html
 fast/css/inline-outline-with-border-radius-dashed.html
 fast/css/inline-outline-with-border-radius-dotted.html
 fast/css/inline-outline-with-border-radius-double.html
+fast/css/inline-outline-with-border-radius-groove.html
 fast/css/inline-outline-with-border-radius-inset.html
+fast/css/inline-outline-with-border-radius-outset.html
+fast/css/inline-outline-with-border-radius-ridge.html
+fast/css/inline-outline-with-border-radius-solid.html
 fast/css/invalidation/rule-change.html
 fast/css/logical-box-border-color-visited-link-001.html
 fast/css/logical-box-border-color-visited-link-002.html
