@@ -8,6 +8,7 @@
 #include <utility>
 
 #include "ash/constants/ash_switches.h"
+#include "base/check_deref.h"
 #include "base/command_line.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -36,41 +37,20 @@ namespace ash {
 
 void OfflineSigninLimiter::SignedIn(UserContext::AuthFlow auth_flow) {
   PrefService* prefs = profile_->GetPrefs();
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (!user) {
-    NOTREACHED();
-    return;
-  }
-  const AccountId account_id = user->GetAccountId();
-  if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
-    // The user went through online authentication and GAIA did not redirect to
-    // a SAML IdP. Update the time of last login without SAML. Clear the flag
-    // enforcing online login, the flag will be set again when the limit
-    // expires. If the limit already expired (e.g. because it was set to zero),
-    // the flag will be set again immediately.
+  const user_manager::User& user = GetUser();
+
+  const AccountId account_id = user.GetAccountId();
+  if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML ||
+      auth_flow == UserContext::AUTH_FLOW_GAIA_WITHOUT_SAML) {
+    // The user went through online authentication. Update the time of last
+    // online sign-in and clear the flag enforcing it. The flag will be set
+    // again when the limit expires. If the limit already expired (e.g. because
+    // it was set to zero), the flag will be set again immediately.
     user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id, false);
-    prefs->SetTime(prefs::kGaiaLastOnlineSignInTime, clock_->Now());
-
-    UpdateOnlineSigninData(clock_->Now(), GetGaiaNoSamlTimeLimit());
-
-    // Clear the time of last login with SAML.
-    prefs->ClearPref(prefs::kSAMLLastGAIASignInTime);
-  }
-
-  if (auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML) {
-    // The user went through online authentication and GAIA did redirect to a
-    // SAML IdP. Update the time of last login with SAML and clear the flag
-    // enforcing online login. The flag will be set again when the limit
-    // expires. If the limit already expired (e.g. because it was set to zero),
-    // the flag will be set again immediately.
-    user_manager::UserManager::Get()->SaveForceOnlineSignin(account_id, false);
-    prefs->SetTime(prefs::kSAMLLastGAIASignInTime, clock_->Now());
-
-    UpdateOnlineSigninData(clock_->Now(), GetGaiaSamlTimeLimit());
-
-    // Clear the time of last Gaia login without SAML.
-    prefs->ClearPref(prefs::kGaiaLastOnlineSignInTime);
+    bool using_saml = auth_flow == UserContext::AUTH_FLOW_GAIA_WITH_SAML;
+    UpdateOnlineSigninData(clock_->Now(), using_saml
+                                              ? GetGaiaSamlTimeLimit()
+                                              : GetGaiaNoSamlTimeLimit());
   }
 
   // Start listening for pref changes.
@@ -148,46 +128,43 @@ void OfflineSigninLimiter::UpdateLimit() {
   // Stop the `offline_signin_limit_timer_`.
   offline_signin_limit_timer_->Stop();
 
-  PrefService* prefs = pref_change_registrar_.prefs();
-
-  bool using_saml =
-      ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
+  const user_manager::User& user = GetUser();
+  bool using_saml = user.using_saml();
 
   const absl::optional<base::TimeDelta> offline_signin_time_limit =
       using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
-  base::Time last_gaia_signin_time =
-      prefs->GetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
-                                : prefs::kGaiaLastOnlineSignInTime);
+  base::Time last_online_signin_time = GetLastOnlineSigninTime();
 
   if (!offline_signin_time_limit.has_value()) {
-    UpdateOnlineSigninData(last_gaia_signin_time, absl::nullopt);
+    UpdateOnlineSigninData(last_online_signin_time, absl::nullopt);
     // If no limit is in force, return.
     return;
   }
 
-  if (last_gaia_signin_time.is_null()) {
-    // If the time of last login is not set, enforce online signin in the next
-    // login.
+  if (last_online_signin_time.is_null()) {
+    // last_online_signin_time should not be null since it gets initialized at
+    // the initial user signin. Even in the unlikely case that happens, the way
+    // to handle the situation nicely is to enforce online signin next time so
+    // the value gets re-initialized. We should not crash here as it may lead to
+    // rolling reboot.
+    LOG(DFATAL) << "Last signin time is null: forcing reauth.";
     ForceOnlineLogin();
     return;
   }
 
   const base::Time now = clock_->Now();
-  if (last_gaia_signin_time > now) {
+  if (last_online_signin_time > now) {
     // If the time of last login lies in the future, set it to the
-    // current time.
-    NOTREACHED();
-    last_gaia_signin_time = now;
-    prefs->SetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
-                              : prefs::kGaiaLastOnlineSignInTime,
-                   now);
+    // current time and log error.
+    LOG(DFATAL) << "Last signin time in the future.";
+    last_online_signin_time = now;
   }
 
-  UpdateOnlineSigninData(last_gaia_signin_time, offline_signin_time_limit);
-  const base::TimeDelta time_since_last_gaia_signin =
-      now - last_gaia_signin_time;
+  UpdateOnlineSigninData(last_online_signin_time, offline_signin_time_limit);
+  const base::TimeDelta time_since_last_online_signin =
+      now - last_online_signin_time;
   const base::TimeDelta time_limit_left =
-      offline_signin_time_limit.value() - time_since_last_gaia_signin;
+      offline_signin_time_limit.value() - time_since_last_online_signin;
 
   if (time_limit_left <= base::TimeDelta()) {
     // If the limit already expired, set the flag enforcing online login
@@ -209,46 +186,49 @@ void OfflineSigninLimiter::UpdateLockScreenLimit() {
   // Stop the `offline_lock_screen_signin_limit_timer_`.
   offline_lock_screen_signin_limit_timer_->Stop();
 
-  PrefService* prefs = pref_change_registrar_.prefs();
-
-  bool using_saml =
-      ProfileHelper::Get()->GetUserByProfile(profile_)->using_saml();
+  const user_manager::User& user = GetUser();
+  bool using_saml = user.using_saml();
 
   const absl::optional<base::TimeDelta> offline_lock_screen_signin_time_limit =
       using_saml ? GetGaiaSamlLockScreenTimeLimit()
                  : GetGaiaNoSamlLockScreenTimeLimit();
-  base::Time last_gaia_signin_time =
-      prefs->GetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
-                                : prefs::kGaiaLastOnlineSignInTime);
+
+  // This is needed to update the Local State data for the login screen.
+  const absl::optional<base::TimeDelta> offline_signin_time_limit =
+      using_saml ? GetGaiaSamlTimeLimit() : GetGaiaNoSamlTimeLimit();
+
+  base::Time last_online_signin_time = GetLastOnlineSigninTime();
 
   if (!offline_lock_screen_signin_time_limit.has_value()) {
     // If no limit is in force, return.
     return;
   }
 
-  if (last_gaia_signin_time.is_null()) {
-    // If the time of last login is not set, enforce online signin in the next
-    // login.
+  if (last_online_signin_time.is_null()) {
+    // last_online_signin_time should not be null since it gets initialized at
+    // the initial user signin. Even in the unlikely case that happens, the way
+    // to handle the situation nicely is to enforce online signin next time so
+    // the value gets re-initialized. We should not crash here as it may lead to
+    // rolling reboot.
+    LOG(DFATAL) << "Last signin time is null: forcing reauth.";
     ForceOnlineLockScreenReauth();
     return;
   }
 
   const base::Time now = clock_->Now();
-  if (last_gaia_signin_time > now) {
+  if (last_online_signin_time > now) {
     // If the time of last login lies in the future, set it to the
-    // current time.
-    NOTREACHED();
-    last_gaia_signin_time = now;
-    prefs->SetTime(using_saml ? prefs::kSAMLLastGAIASignInTime
-                              : prefs::kGaiaLastOnlineSignInTime,
-                   now);
+    // current time and log error.
+    LOG(DFATAL) << "Last online nlock time in the future";
+    last_online_signin_time = now;
   }
 
-  const base::TimeDelta time_since_last_gaia_signin =
-      now - last_gaia_signin_time;
+  UpdateOnlineSigninData(last_online_signin_time, offline_signin_time_limit);
+  const base::TimeDelta time_since_last_online_signin =
+      now - last_online_signin_time;
   const base::TimeDelta time_limit_left =
       offline_lock_screen_signin_time_limit.value() -
-      time_since_last_gaia_signin;
+      time_since_last_online_signin;
 
   if (time_limit_left <= base::TimeDelta()) {
     // If the limit already expired, set the flag enforcing online login
@@ -327,23 +307,20 @@ OfflineSigninLimiter::GetGaiaSamlLockScreenTimeLimit() {
 }
 
 void OfflineSigninLimiter::ForceOnlineLogin() {
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  const user_manager::User& user = GetUser();
 
-  user_manager::UserManager::Get()->SaveForceOnlineSignin(user->GetAccountId(),
+  user_manager::UserManager::Get()->SaveForceOnlineSignin(user.GetAccountId(),
                                                           true);
-  if (user->using_saml())
-    RecordReauthReason(user->GetAccountId(), ReauthReason::kSamlReauthPolicy);
-  else
-    RecordReauthReason(user->GetAccountId(), ReauthReason::kGaiaReauthPolicy);
+  if (user.using_saml()) {
+    RecordReauthReason(user.GetAccountId(), ReauthReason::kSamlReauthPolicy);
+  } else {
+    RecordReauthReason(user.GetAccountId(), ReauthReason::kGaiaReauthPolicy);
+  }
   offline_signin_limit_timer_->Stop();
 }
 
 void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  DCHECK(user);
+  const user_manager::User& user = GetUser();
 
   // Re-auth on lock - enabled only for the primary user.
   proximity_auth::ScreenlockBridge* screenlock_bridge_ =
@@ -353,15 +330,15 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
   if (screenlock_bridge_->IsLocked()) {
     // On the lock screen: need to update the UI.
     screenlock_bridge_->lock_handler()->SetAuthType(
-        user->GetAccountId(), proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
+        user.GetAccountId(), proximity_auth::mojom::AuthType::ONLINE_SIGN_IN,
         std::u16string());
   }
 
-  if (user->using_saml()) {
-    RecordReauthReason(user->GetAccountId(),
+  if (user.using_saml()) {
+    RecordReauthReason(user.GetAccountId(),
                        ReauthReason::kSamlLockScreenReauthPolicy);
   } else {
-    RecordReauthReason(user->GetAccountId(),
+    RecordReauthReason(user.GetAccountId(),
                        ReauthReason::kGaiaLockScreenReauthPolicy);
   }
   offline_lock_screen_signin_limit_timer_->Stop();
@@ -370,16 +347,22 @@ void OfflineSigninLimiter::ForceOnlineLockScreenReauth() {
 void OfflineSigninLimiter::UpdateOnlineSigninData(
     base::Time time,
     absl::optional<base::TimeDelta> limit) {
-  const user_manager::User* user =
-      ProfileHelper::Get()->GetUserByProfile(profile_);
-  if (!user) {
-    NOTREACHED();
-    return;
-  }
+  const user_manager::User& user = GetUser();
 
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  known_user.SetLastOnlineSignin(user->GetAccountId(), time);
-  known_user.SetOfflineSigninLimit(user->GetAccountId(), limit);
+  known_user.SetLastOnlineSignin(user.GetAccountId(), time);
+  known_user.SetOfflineSigninLimit(user.GetAccountId(), limit);
+}
+
+base::Time OfflineSigninLimiter::GetLastOnlineSigninTime() {
+  const user_manager::User& user = GetUser();
+
+  user_manager::KnownUser known_user(g_browser_process->local_state());
+  return known_user.GetLastOnlineSignin(user.GetAccountId());
+}
+
+const user_manager::User& OfflineSigninLimiter::GetUser() {
+  return CHECK_DEREF(ProfileHelper::Get()->GetUserByProfile(profile_));
 }
 
 }  // namespace ash

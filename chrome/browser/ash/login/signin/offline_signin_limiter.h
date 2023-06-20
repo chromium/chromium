@@ -70,6 +70,10 @@ class OfflineSigninLimiter : public KeyedService,
   // immediately.
   void UpdateLockScreenLimit();
 
+  // Reads the timestamp of the last online signin of the user from the Local
+  // State.
+  base::Time GetLastOnlineSigninTime();
+
   // Convenience method to get the time limit for SAML and no-SAML flows.
   // Returns nullopt if it is an invalid time.
   absl::optional<base::TimeDelta> GetGaiaNoSamlTimeLimit();
@@ -87,6 +91,9 @@ class OfflineSigninLimiter : public KeyedService,
   // Stores the last online login time and offline login time limit
   void UpdateOnlineSigninData(base::Time time,
                               absl::optional<base::TimeDelta> limit);
+
+  // Helper function to get user for the given profile_.
+  const user_manager::User& GetUser();
 
   raw_ptr<Profile, ExperimentalAsh> profile_;
   raw_ptr<const base::Clock, ExperimentalAsh> clock_;
