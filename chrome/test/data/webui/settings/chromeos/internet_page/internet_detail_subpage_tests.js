@@ -813,6 +813,34 @@ suite('InternetDetailPage', function() {
                   '#passpointProviderRow'));
         });
 
+    test('WiFi network with Passpoint has no configure button', async () => {
+      loadTimeData.overrideValues({
+        isPasspointEnabled: true,
+        isPasspointSettingsEnabled: true,
+      });
+      init();
+
+      const subId = 'a_passpoint_id';
+      setSubscriptionForTest({
+        id: subId,
+        friendlyName: 'My Passpoint provider',
+      });
+      mojoApi_.resetForTest();
+      mojoApi_.setNetworkTypeEnabledState(NetworkType.kWiFi, true);
+      const wifiNetwork =
+          getManagedProperties(NetworkType.kWiFi, 'wifi_passpoint');
+      wifiNetwork.source = OncSource.kUser;
+      wifiNetwork.connectable = true;
+      wifiNetwork.typeProperties.wifi.passpointId = subId;
+      wifiNetwork.typeProperties.wifi.passpointMatchType = MatchType.kHome;
+      mojoApi_.setManagedPropertiesForTest(wifiNetwork);
+
+      internetDetailPage.init('wifi_passpoint_guid', 'WiFi', 'wifi_passpoint');
+      await flushAsync();
+
+      const configureButton = getButton('configureButton');
+      assertTrue(configureButton.hidden);
+    });
   });
 
   suite('DetailsPageVPN', function() {

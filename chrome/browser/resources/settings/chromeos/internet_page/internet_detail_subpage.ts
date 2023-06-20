@@ -1338,6 +1338,13 @@ class SettingsInternetDetailPageElement extends
          ConnectionStateType.kNotConnected)) {
       return false;
     }
+    if (this.isPasspointSettingsEnabled_ &&
+        this.isPasspointWifi_(managedProperties)) {
+      // Passpoint networks are automatically configured using Passpoint
+      // subscriptions. We don't want the user to change the configuration
+      // (b/282114074).
+      return false;
+    }
     if (this.isArcVpn_(managedProperties) &&
         !this.isConnectedState_(managedProperties)) {
       return false;
