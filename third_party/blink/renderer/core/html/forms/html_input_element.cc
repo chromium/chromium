@@ -1915,7 +1915,7 @@ int HTMLInputElement::scrollWidth() {
   LayoutUnit adjustment = box->ClientWidth() - editor_box->ClientWidth();
   int snapped_scroll_width =
       SnapSizeToPixel(editor_box->ScrollWidth() + adjustment,
-                      box->Location().X() + box->ClientLeft());
+                      box->PhysicalLocation().left + box->ClientLeft());
   return AdjustForAbsoluteZoom::AdjustLayoutUnit(
              LayoutUnit(snapped_scroll_width), box->StyleRef())
       .Round();
