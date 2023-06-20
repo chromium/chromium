@@ -4504,8 +4504,6 @@ TEST_F(PrefetchServiceAllowRedirectsAndAlwaysBlockUntilHeadTest,
           [](base::WeakPtr<PrefetchContainer>* serveable_prefetch_container,
              base::RunLoop* get_prefetch_run_loop,
              base::WeakPtr<PrefetchContainer> prefetch_to_serve) {
-            VLOG(0) << "prefetch_to_serve == nullptr = "
-                    << (prefetch_to_serve == nullptr ? "true" : "false");
             *serveable_prefetch_container = prefetch_to_serve;
             get_prefetch_run_loop->Quit();
           },

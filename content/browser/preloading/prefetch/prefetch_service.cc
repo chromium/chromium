@@ -261,8 +261,6 @@ void OnIsolatedCookieCopyComplete(
 
 void BlockUntilHeadTimeoutHelper(
     base::WeakPtr<PrefetchContainer> prefetch_container) {
-  VLOG(0) << "PS::BlockUntilHeadTimeoutHelper";
-
   if (!prefetch_container || !prefetch_container->GetLastStreamingURLLoader()) {
     return;
   }
@@ -1504,8 +1502,6 @@ void PrefetchService::GetPrefetchToServe(
 
     base::TimeDelta block_until_head_timeout = PrefetchBlockUntilHeadTimeout(
         prefetch_container->GetPrefetchType().GetEagerness());
-    VLOG(0) << "PS::GetPrefetchToServe; block_until_head_timeout = "
-            << block_until_head_timeout;
     if (block_until_head_timeout.is_positive()) {
       std::unique_ptr<base::OneShotTimer> block_until_head_timer =
           std::make_unique<base::OneShotTimer>();
