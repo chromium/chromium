@@ -120,6 +120,27 @@ function getFakePrefs() {
   }];
 }
 
+function setDefaultLoadTimeData() {
+  loadTimeData.overrideValues({
+    // Assume by default that an admin has not disabled autocorrect.
+    isPhysicalKeyboardAutocorrectAllowed: true,
+    // Assume by default that the predictive writing feature is disabled.
+    isPhysicalKeyboardPredictiveWritingAllowed: false,
+  });
+}
+
+function setAutocorrectAllowed(value: boolean) {
+  loadTimeData.overrideValues({
+    isPhysicalKeyboardAutocorrectAllowed: value,
+  });
+}
+
+function setPredictiveWritingAllowed(value: boolean) {
+  loadTimeData.overrideValues({
+    isPhysicalKeyboardPredictiveWritingAllowed: value,
+  });
+}
+
 suite('<settings-input-method-options-page>', () => {
   let optionsPage: SettingsInputMethodOptionsPageElement;
   let settingsPrivate: FakeSettingsPrivate;
@@ -151,7 +172,7 @@ suite('<settings-input-method-options-page>', () => {
   }
 
   test('US English page', async () => {
-    loadTimeData.overrideValues({allowPredictiveWriting: false});
+    setDefaultLoadTimeData();
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot!.querySelectorAll('h2');
@@ -161,7 +182,7 @@ suite('<settings-input-method-options-page>', () => {
   });
 
   test('US English page from current input method', async () => {
-    loadTimeData.overrideValues({allowPredictiveWriting: false});
+    setDefaultLoadTimeData();
     createOptionsPage('');
     await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot!.querySelectorAll('h2');
@@ -171,7 +192,8 @@ suite('<settings-input-method-options-page>', () => {
   });
 
   test('US English page with predictive writing', async () => {
-    loadTimeData.overrideValues({allowPredictiveWriting: true});
+    setDefaultLoadTimeData();
+    setPredictiveWritingAllowed(true);
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot!.querySelectorAll('h2');
@@ -181,7 +203,21 @@ suite('<settings-input-method-options-page>', () => {
     assertEquals('Suggestions', titles[2]!.textContent);
   });
 
+  test('US English page with autocorrect disallowed', async () => {
+    setDefaultLoadTimeData();
+    setAutocorrectAllowed(false);
+    createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
+    await waitAfterNextRender(optionsPage);
+    const titles = optionsPage.shadowRoot!.querySelectorAll('h2');
+    assertEquals(1, titles.length);
+    // Note that the physical keyboard section is completely omitted if the
+    // autocorrect toggle is removed. This is because the autocorrect toggle is
+    // the only setting allowed for latin languages on the physical keyboard.
+    assertEquals('On-screen keyboard', titles[0]!.textContent);
+  });
+
   test('Pinyin page', async () => {
+    setDefaultLoadTimeData();
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'zh-t-i0-pinyin');
     await waitAfterNextRender(optionsPage);
     const titles = optionsPage.shadowRoot!.querySelectorAll('h2');
@@ -191,10 +227,11 @@ suite('<settings-input-method-options-page>', () => {
   });
 
   test('updates options in prefs', async () => {
+    setDefaultLoadTimeData();
     createOptionsPage(FIRST_PARTY_INPUT_METHOD_ID_PREFIX + 'xkb:us::eng');
     await waitAfterNextRender(optionsPage);
     const options = optionsPage.shadowRoot!.querySelectorAll('.list-item');
-    assertEquals(8, options.length);
+    assertEquals(7, options.length);
     const autoCorrection = options[0]!.querySelector('.start');
     assertTrue(!!autoCorrection);
     assertEquals('Auto-correction', autoCorrection.textContent!.trim());

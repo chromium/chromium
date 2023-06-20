@@ -1,0 +1,30 @@
+caption: Control the predictive writing feature on the physical keyboard
+desc: |-
+  Enable or disable the predictive writing feature on the physical keyboard.
+
+  If this policy is set to Enabled or left unset, it will allow the predictive writing feature on the physical keyboard.
+
+  If this policy is set to Disabled, it will disallow the predictive writing feature on the physical keyboard.
+
+example_value: false
+features:
+  dynamic_refresh: true
+  per_profile: true
+owners:
+- curtismcmullan@chromium.org
+- dvallet@chromium.org
+- mehrab@chromium.org
+- shend@chromium.org
+- essential-inputs-team@google.com
+items:
+- caption: Enable physical keyboard predictive writing when users type
+  value: true
+- caption: Disable physical keyboard predictive writing when users type
+  value: false
+schema:
+  type: boolean
+supported_on:
+- chrome_os:116-
+tags: []
+type: main
+

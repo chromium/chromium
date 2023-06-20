@@ -660,5 +660,22 @@ bool IsAutocorrectSupported(const std::string& engine_id) {
   return enabledInputMethods->find(engine_id) != enabledInputMethods->end();
 }
 
+bool IsPhysicalKeyboardAutocorrectAllowed(const PrefService& prefs) {
+  if (!prefs.FindPreference(
+          prefs::kManagedPhysicalKeyboardAutocorrectAllowed)) {
+    return true;
+  }
+  return prefs.GetBoolean(prefs::kManagedPhysicalKeyboardAutocorrectAllowed);
+}
+
+bool IsPhysicalKeyboardPredictiveWritingAllowed(const PrefService& prefs) {
+  if (!prefs.FindPreference(
+          prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed)) {
+    return true;
+  }
+  return prefs.GetBoolean(
+      prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed);
+}
+
 }  // namespace input_method
 }  // namespace ash

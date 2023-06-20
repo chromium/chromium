@@ -1116,6 +1116,8 @@ policies:
   1115: DeviceLoginScreenWebHidAllowDevicesForUrls
   1116: SafeBrowsingProxiedRealTimeChecksAllowed
   1117: PostQuantumKeyAgreementEnabled
+  1118: PhysicalKeyboardAutocorrect
+  1119: PhysicalKeyboardPredictiveWriting
 atomic_groups:
   1: Homepage
   2: RemoteAccess

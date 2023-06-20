@@ -33765,6 +33765,8 @@ Called by update_document_policy_enum.py.-->
   <int value="1115" label="DeviceLoginScreenWebHidAllowDevicesForUrls"/>
   <int value="1116" label="SafeBrowsingProxiedRealTimeChecksAllowed"/>
   <int value="1117" label="PostQuantumKeyAgreementEnabled"/>
+  <int value="1118" label="PhysicalKeyboardAutocorrect"/>
+  <int value="1119" label="PhysicalKeyboardPredictiveWriting"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

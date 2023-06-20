@@ -28,6 +28,10 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kEmojiSuggestionEnterpriseAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kManagedPhysicalKeyboardAutocorrectAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kManagedPhysicalKeyboardPredictiveWritingAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChargingSoundsEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLowBatterySoundEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioDevicesMute[];

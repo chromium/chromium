@@ -5273,6 +5273,7 @@ source_set("unit_tests") {
     "hats/hats_finch_helper_unittest.cc",
     "hats/hats_notification_controller_unittest.cc",
     "input_method/assistive_input_denylist_unittest.cc",
+    "input_method/assistive_prefs_unittest.cc",
     "input_method/assistive_suggester_client_filter_unittest.cc",
     "input_method/assistive_suggester_unittest.cc",
     "input_method/assistive_window_controller_unittest.cc",

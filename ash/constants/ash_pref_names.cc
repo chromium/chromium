@@ -32,6 +32,18 @@ const char kEmojiSuggestionEnabled[] =
 const char kEmojiSuggestionEnterpriseAllowed[] =
     "assistive_input.emoji_suggestion.enterprise_allowed";
 
+// A boolean pref used by an admin policy to enable/disable particular
+// features on the physical keyboard. See the policy at
+// PhysicalKeyboardAutocorrect.yml.
+const char kManagedPhysicalKeyboardAutocorrectAllowed[] =
+    "settings.ime.managed.physical_keyboard.autocorrect_enabled";
+
+// A boolean pref used by an admin policy to enable/disable particular
+// features on the physical keyboard. See the policy at
+// PhysicalKeyboardPredictiveWriting.yml.
+const char kManagedPhysicalKeyboardPredictiveWritingAllowed[] =
+    "settings.ime.managed.physical_keyboard.predictive_writing_enabled";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.

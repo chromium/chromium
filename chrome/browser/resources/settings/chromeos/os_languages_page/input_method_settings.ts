@@ -3,6 +3,16 @@
 // found in the LICENSE file.
 
 /**
+ * Specifies the parameters that can be used to alter the settings returned via
+ * the getInputMethodSettings function.
+ */
+export interface SettingsContext {
+  isPhysicalKeyboardAutocorrectAllowed: boolean;
+  isPhysicalKeyboardPredictiveWritingAllowed: boolean;
+  isJapaneseSettingsAllowed: boolean;
+}
+
+/**
  * Type of settings to use for an input method.
  */
 export enum SettingsType {
@@ -15,17 +25,23 @@ export enum SettingsType {
   ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS = 6,
   SUGGESTION_SETTINGS = 7,
   JAPANESE_SETTINGS = 9,
+  LATIN_PHYSICAL_KEYBOARD_SETTINGS = 10,
 }
 
 type SettingsMap = Partial<Record<string, SettingsType[]>>;
 
-export function getInputMethodSettings(
-    predictiveWritingEnabled: boolean,
-    isJapaneseSettingsEnabled: boolean): SettingsMap {
-  const usEnglishSettings = [SettingsType.LATIN_SETTINGS];
-  if (predictiveWritingEnabled) {
-    usEnglishSettings.push(SettingsType.SUGGESTION_SETTINGS);
-  }
+export function getInputMethodSettings(context: SettingsContext): SettingsMap {
+  const latinSettings = context.isPhysicalKeyboardAutocorrectAllowed ?
+      [
+        SettingsType.LATIN_PHYSICAL_KEYBOARD_SETTINGS,
+        SettingsType.LATIN_SETTINGS,
+      ] :
+      [
+        SettingsType.LATIN_SETTINGS,
+      ];
+  const usEnglishSettings = context.isPhysicalKeyboardPredictiveWritingAllowed ?
+      [...latinSettings, SettingsType.SUGGESTION_SETTINGS] :
+      [...latinSettings];
   const settingsMap: SettingsMap = {
     // NOTE: Please group by SettingsType, and keep entries sorted
     // alphabetically by ID within each group, just for readability.
@@ -33,36 +49,36 @@ export function getInputMethodSettings(
     // The values here should be kept in sync with IsAutocorrectSupported in
     // chrome/browser/ash/input_method/input_method_settings.cc
     // LATIN_SETTINGS
-    'xkb:be::fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:be::ger': [SettingsType.LATIN_SETTINGS],
-    'xkb:be::nld': [SettingsType.LATIN_SETTINGS],
-    'xkb:br::por': [SettingsType.LATIN_SETTINGS],
-    'xkb:ca::fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:ca:eng:eng': [SettingsType.LATIN_SETTINGS],
-    'xkb:ca:multix:fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:ch::ger': [SettingsType.LATIN_SETTINGS],
-    'xkb:ch:fr:fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:de::ger': [SettingsType.LATIN_SETTINGS],
-    'xkb:de:neo:ger': [SettingsType.LATIN_SETTINGS],
-    'xkb:dk::dan': [SettingsType.LATIN_SETTINGS],
-    'xkb:es::spa': [SettingsType.LATIN_SETTINGS],
-    'xkb:fi::fin': [SettingsType.LATIN_SETTINGS],
-    'xkb:fr::fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:fr:bepo:fra': [SettingsType.LATIN_SETTINGS],
-    'xkb:gb:dvorak:eng': [SettingsType.LATIN_SETTINGS],
-    'xkb:gb:extd:eng': [SettingsType.LATIN_SETTINGS],
-    'xkb:it::ita': [SettingsType.LATIN_SETTINGS],
-    'xkb:latam::spa': [SettingsType.LATIN_SETTINGS],
-    'xkb:no::nob': [SettingsType.LATIN_SETTINGS],
-    'xkb:pl::pol': [SettingsType.LATIN_SETTINGS],
-    'xkb:pt::por': [SettingsType.LATIN_SETTINGS],
-    'xkb:se::swe': [SettingsType.LATIN_SETTINGS],
-    'xkb:tr::tur': [SettingsType.LATIN_SETTINGS],
-    'xkb:tr:f:tur': [SettingsType.LATIN_SETTINGS],
-    'xkb:us:intl:nld': [SettingsType.LATIN_SETTINGS],
-    'xkb:us:intl:por': [SettingsType.LATIN_SETTINGS],
-    'xkb:us:intl_pc:nld': [SettingsType.LATIN_SETTINGS],
-    'xkb:us:intl_pc:por': [SettingsType.LATIN_SETTINGS],
+    'xkb:be::fra': latinSettings,
+    'xkb:be::ger': latinSettings,
+    'xkb:be::nld': latinSettings,
+    'xkb:br::por': latinSettings,
+    'xkb:ca::fra': latinSettings,
+    'xkb:ca:eng:eng': latinSettings,
+    'xkb:ca:multix:fra': latinSettings,
+    'xkb:ch::ger': latinSettings,
+    'xkb:ch:fr:fra': latinSettings,
+    'xkb:de::ger': latinSettings,
+    'xkb:de:neo:ger': latinSettings,
+    'xkb:dk::dan': latinSettings,
+    'xkb:es::spa': latinSettings,
+    'xkb:fi::fin': latinSettings,
+    'xkb:fr::fra': latinSettings,
+    'xkb:fr:bepo:fra': latinSettings,
+    'xkb:gb:dvorak:eng': latinSettings,
+    'xkb:gb:extd:eng': latinSettings,
+    'xkb:it::ita': latinSettings,
+    'xkb:latam::spa': latinSettings,
+    'xkb:no::nob': latinSettings,
+    'xkb:pl::pol': latinSettings,
+    'xkb:pt::por': latinSettings,
+    'xkb:se::swe': latinSettings,
+    'xkb:tr::tur': latinSettings,
+    'xkb:tr:f:tur': latinSettings,
+    'xkb:us:intl:nld': latinSettings,
+    'xkb:us:intl:por': latinSettings,
+    'xkb:us:intl_pc:nld': latinSettings,
+    'xkb:us:intl_pc:por': latinSettings,
 
     // US English variant settings
     'xkb:us::eng': usEnglishSettings,
@@ -131,7 +147,7 @@ export function getInputMethodSettings(
     'xkb:za:gb:eng': [SettingsType.ENGLISH_BASIC_WITH_AUTOSHIFT_SETTINGS],
   };
   // MOZC settings
-  if (isJapaneseSettingsEnabled) {
+  if (context.isJapaneseSettingsAllowed) {
     settingsMap['nacl_mozc_jp'] = [SettingsType.JAPANESE_SETTINGS];
     settingsMap['nacl_mozc_us'] = [SettingsType.JAPANESE_SETTINGS];
   }

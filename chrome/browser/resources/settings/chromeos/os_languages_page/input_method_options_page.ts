@@ -253,11 +253,16 @@ export class SettingsInputMethodOptionsPageElement extends
    * Generate the sections of options according to the engine ID and Prefs.
    */
   private populateOptionSections_(): void {
-    const options = generateOptions(
-        this.engineId_, loadTimeData.getBoolean('allowPredictiveWriting'),
-        loadTimeData.getBoolean('systemJapanesePhysicalTyping'));
     const inputMethodSpecificSettings =
         this.getPref<PrefsObjectType>(PREFS_PATH).value;
+    const options = generateOptions(this.engineId_, {
+      isPhysicalKeyboardAutocorrectAllowed:
+          loadTimeData.getBoolean('isPhysicalKeyboardAutocorrectAllowed'),
+      isPhysicalKeyboardPredictiveWritingAllowed:
+          loadTimeData.getBoolean('isPhysicalKeyboardPredictiveWritingAllowed'),
+      isJapaneseSettingsAllowed:
+          loadTimeData.getBoolean('systemJapanesePhysicalTyping'),
+    });
     // The settings for Japanese for both engine nacl_mozc_us and nacl_mozc_jp
     // types will be stored in nacl_mozc_us. See:
     // https://crsrc.org/c/chrome/browser/ash/input_method/input_method_settings.cc;drc=5b784205e8043fb7d1c11e3d80521e80704947ca;l=25
