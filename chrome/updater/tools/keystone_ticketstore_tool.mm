@@ -113,7 +113,8 @@ NSDictionary<NSString*, KSTicket*>* ReadPlistTicketStore(
           dictionaryWithContentsOfURL:base::mac::FilePathToNSURL(input)
                                 error:&error];
   if (error) {
-    std::cerr << "Error read store: " << error << "\n";
+    std::cerr << "Error read store: "
+              << base::SysNSStringToUTF8(error.description) << std::endl;
     return nil;
   }
 
@@ -150,17 +151,21 @@ int ConvertTicketStore(const base::FilePath& input,
       return 1;
     }
 
-    NSData* storeData = [NSKeyedArchiver archivedDataWithRootObject:store];
+    NSError* error;
+    NSData* storeData = [NSKeyedArchiver archivedDataWithRootObject:store
+                                              requiringSecureCoding:YES
+                                                              error:&error];
     if (!storeData) {
-      std::cerr << "Input ticket store data is invalid." << std::endl;
+      std::cerr << "Input ticket store data is invalid: "
+                << base::SysNSStringToUTF8(error.description) << std::endl;
       return 1;
     }
 
-    NSError* error = nil;
     if (![storeData writeToFile:base::mac::FilePathToNSString(output)
-                        options:NSAtomicWrite
+                        options:NSDataWritingAtomic
                           error:&error]) {
-      std::cerr << "Failed to write output: " << error << std::endl;
+      std::cerr << "Failed to write output: "
+                << base::SysNSStringToUTF8(error.description) << std::endl;
       return 1;
     }
     return 0;
