@@ -27,7 +27,7 @@ RTCEncodedAudioFrame::RTCEncodedAudioFrame(
 
 RTCEncodedAudioFrame::RTCEncodedAudioFrame(
     scoped_refptr<RTCEncodedAudioFrameDelegate> delegate)
-    : delegate_(std::move(delegate)) {}
+    : RTCEncodedAudioFrame(delegate->CloneWebRtcFrame()) {}
 
 uint32_t RTCEncodedAudioFrame::timestamp() const {
   return delegate_->Timestamp();
