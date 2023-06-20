@@ -7,12 +7,11 @@
 
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
+#include "chrome/browser/vr/skia_surface_provider.h"
 #include "chrome/browser/vr/vr_ui_export.h"
 #include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "ui/gfx/geometry/size.h"
-
-class SkSurface;
 
 namespace vr {
 
@@ -58,11 +57,11 @@ class VR_UI_EXPORT TexturedElement : public UiElement {
   virtual gfx::Size MeasureTextureSize() = 0;
 
   gfx::Size texture_size_;
-  GLuint texture_handle_ = 0;
   bool initialized_ = false;
 
-  sk_sp<SkSurface> surface_;
   raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
+
+  std::unique_ptr<SkiaSurfaceProvider::Texture> skia_texture_;
 };
 
 }  // namespace vr

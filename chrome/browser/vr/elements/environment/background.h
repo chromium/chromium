@@ -8,11 +8,11 @@
 #include "base/memory/raw_ptr.h"
 #include "chrome/browser/vr/elements/ui_element.h"
 #include "chrome/browser/vr/renderers/base_quad_renderer.h"
+#include "chrome/browser/vr/skia_surface_provider.h"
 #include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 
 class SkBitmap;
-class SkSurface;
 
 namespace vr {
 
@@ -86,15 +86,12 @@ class Background : public UiElement {
   std::unique_ptr<SkBitmap> initialization_normal_gradient_bitmap_;
   std::unique_ptr<SkBitmap> initialization_incognito_gradient_bitmap_;
   std::unique_ptr<SkBitmap> initialization_fullscreen_gradient_bitmap_;
-  GLuint texture_handle_ = 0;
-  GLuint normal_gradient_texture_handle_ = 0;
-  GLuint incognito_gradient_texture_handle_ = 0;
-  GLuint fullscreen_gradient_texture_handle_ = 0;
-  sk_sp<SkSurface> surface_;
-  sk_sp<SkSurface> normal_gradient_surface_;
-  sk_sp<SkSurface> incognito_gradient_surface_;
-  sk_sp<SkSurface> fullscreen_gradient_surface_;
   raw_ptr<SkiaSurfaceProvider, DanglingUntriaged> provider_ = nullptr;
+
+  std::unique_ptr<SkiaSurfaceProvider::Texture> texture_;
+  std::unique_ptr<SkiaSurfaceProvider::Texture> normal_gradient_texture_;
+  std::unique_ptr<SkiaSurfaceProvider::Texture> incognito_gradient_texture_;
+  std::unique_ptr<SkiaSurfaceProvider::Texture> fullscreen_gradient_texture_;
 
   float normal_factor_ = 1.0f;
   float incognito_factor_ = 0.0f;

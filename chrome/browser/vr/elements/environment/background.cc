@@ -107,27 +107,20 @@ constexpr char const* kFragmentShader = SHADER(
 /* clang-format on */
 
 // The passed bitmap data is thrown away after the texture is generated.
-GLuint UploadImage(std::unique_ptr<SkBitmap> bitmap,
-                   SkiaSurfaceProvider* provider,
-                   sk_sp<SkSurface>* surface) {
-  if (bitmap) {
-    *surface = provider->MakeSurface({bitmap->width(), bitmap->height()});
-  } else {
-    *surface = provider->MakeSurface({1, 1});
-  }
-
-  // TODO(tiborg): proper error handling.
-  DCHECK(surface->get());
-  SkCanvas* canvas = (*surface)->getCanvas();
-  if (bitmap) {
-    canvas->drawImage(bitmap->asImage(), 0, 0);
-  } else {
-    // If we are missing a gradient image, blending with channels at .5 will
-    // have no effect -- it will be as if there is no gradient image.
-    canvas->clear(0xFF808080);
-  }
-
-  return provider->FlushSurface(surface->get(), 0);
+std::unique_ptr<SkiaSurfaceProvider::Texture> UploadImage(
+    std::unique_ptr<SkBitmap> bitmap,
+    SkiaSurfaceProvider* provider) {
+  gfx::Size size =
+      bitmap ? gfx::Size(bitmap->width(), bitmap->height()) : gfx::Size(1, 1);
+  return provider->CreateTextureWithSkia(size, [&](SkCanvas* canvas) {
+    if (bitmap) {
+      canvas->drawImage(bitmap->asImage(), 0, 0);
+    } else {
+      // If we are missing a gradient image, blending with channels at .5 will
+      // have no effect -- it will be as if there is no gradient image.
+      canvas->clear(0xFF808080);
+    }
+  });
 }
 
 // Remaps 0..1 to 0..1 such that there is a concentration of values around 0.5.
@@ -149,12 +142,13 @@ Background::~Background() = default;
 
 void Background::Render(UiElementRenderer* renderer,
                         const CameraModel& model) const {
-  if (texture_handle_ != 0) {
+  if (texture_) {
     renderer->DrawBackground(
-        model.view_proj_matrix * world_space_transform(), texture_handle_,
-        normal_gradient_texture_handle_, incognito_gradient_texture_handle_,
-        fullscreen_gradient_texture_handle_, normal_factor_, incognito_factor_,
-        fullscreen_factor_);
+        model.view_proj_matrix * world_space_transform(),
+        texture_->texture_id(), normal_gradient_texture_->texture_id(),
+        incognito_gradient_texture_->texture_id(),
+        fullscreen_gradient_texture_->texture_id(), normal_factor_,
+        incognito_factor_, fullscreen_factor_);
   }
 }
 
@@ -204,21 +198,17 @@ void Background::SetFullscreenFactor(float factor) {
 void Background::CreateBackgroundTexture() {
   DCHECK(provider_);
   DCHECK(initialization_bitmap_);
-  texture_handle_ =
-      UploadImage(std::move(initialization_bitmap_), provider_, &surface_);
+  texture_ = UploadImage(std::move(initialization_bitmap_), provider_);
 }
 
 void Background::CreateGradientTextures() {
   DCHECK(provider_);
-  normal_gradient_texture_handle_ =
-      UploadImage(std::move(initialization_normal_gradient_bitmap_), provider_,
-                  &normal_gradient_surface_);
-  incognito_gradient_texture_handle_ =
-      UploadImage(std::move(initialization_incognito_gradient_bitmap_),
-                  provider_, &incognito_gradient_surface_);
-  fullscreen_gradient_texture_handle_ =
-      UploadImage(std::move(initialization_fullscreen_gradient_bitmap_),
-                  provider_, &fullscreen_gradient_surface_);
+  normal_gradient_texture_ =
+      UploadImage(std::move(initialization_normal_gradient_bitmap_), provider_);
+  incognito_gradient_texture_ = UploadImage(
+      std::move(initialization_incognito_gradient_bitmap_), provider_);
+  fullscreen_gradient_texture_ = UploadImage(
+      std::move(initialization_fullscreen_gradient_bitmap_), provider_);
 }
 
 void Background::OnFloatAnimated(const float& value,

@@ -59,14 +59,14 @@ void TexturedElement::UpdateTexture() {
   }
 
   if (!texture_size_.IsEmpty()) {
-    surface_ = provider_->MakeSurface(texture_size_);
-    DCHECK(surface_.get());
-    GetTexture()->DrawTexture(surface_->getCanvas(), texture_size_);
-    texture_handle_ = provider_->FlushSurface(surface_.get(), texture_handle_);
+    skia_texture_ = provider_->CreateTextureWithSkia(
+        texture_size_, [this](SkCanvas* canvas) {
+          GetTexture()->DrawTexture(canvas, texture_size_);
+        });
+    DCHECK(skia_texture_);
   } else {
-    surface_.reset();
+    skia_texture_.reset();
     GetTexture()->DrawEmptyTexture();
-    texture_handle_ = 0;
   }
 }
 
@@ -83,13 +83,14 @@ void TexturedElement::Render(UiElementRenderer* renderer,
   DCHECK(initialized_);
 
   // Zero-size elements, such as empty text, don't allocate textures.
-  if (texture_handle_ <= 0)
+  if (!skia_texture_) {
     return;
+  }
 
-  renderer->DrawTexturedQuad(texture_handle_, 0, kGlTextureLocationLocal,
-                             model.view_proj_matrix * world_space_transform(),
-                             GetClipRect(), computed_opacity(), size(),
-                             corner_radius(), true /* blend */);
+  renderer->DrawTexturedQuad(
+      skia_texture_->texture_id(), 0, kGlTextureLocationLocal,
+      model.view_proj_matrix * world_space_transform(), GetClipRect(),
+      computed_opacity(), size(), corner_radius(), true /* blend */);
 }
 
 }  // namespace vr

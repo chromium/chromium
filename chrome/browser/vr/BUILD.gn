@@ -135,6 +135,7 @@ component("vr_ui") {
     "renderers/transparent_quad_renderer.h",
     "sequence.cc",
     "sequence.h",
+    "skia_surface_provider.cc",
     "skia_surface_provider.h",
     "skia_surface_provider_factory.h",
     "target_property.cc",

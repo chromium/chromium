@@ -5,11 +5,13 @@
 #ifndef CHROME_BROWSER_VR_SKIA_SURFACE_PROVIDER_H_
 #define CHROME_BROWSER_VR_SKIA_SURFACE_PROVIDER_H_
 
+#include "base/functional/function_ref.h"
 #include "device/vr/gl_bindings.h"
 #include "third_party/skia/include/core/SkRefCnt.h"
 #include "third_party/skia/include/gpu/GrDirectContext.h"
 
 class SkSurface;
+class SkCanvas;
 
 namespace gfx {
 class Size;
@@ -20,14 +22,30 @@ namespace vr {
 // Provides a Skia surface to draw textures of UI elements into.
 class SkiaSurfaceProvider {
  public:
+  class Texture {
+   public:
+    explicit Texture(sk_sp<SkSurface> surface);
+    ~Texture();
+    GLuint texture_id() { return texture_id_; }
+
+   private:
+    const GLuint texture_id_;
+    sk_sp<SkSurface> surface_;
+  };
+
   virtual ~SkiaSurfaceProvider() = default;
 
-  // Creates a surface with the specified size.
-  virtual sk_sp<SkSurface> MakeSurface(const gfx::Size& size) = 0;
-  // Applies all drawing commands and returns the ID of the texture containing
-  // the rendered image. If possible, it uses the texture passed
-  // by |reuse_texture_id| to draw into.
-  virtual GLuint FlushSurface(SkSurface* surface, GLuint reuse_texture_id) = 0;
+  // Creates Texture and initializes it by provided `paint` function using Skia.
+  // SkiaSurfaceProvider must outlive returned Texture.
+  virtual std::unique_ptr<Texture> CreateTextureWithSkia(
+      const gfx::Size& size,
+      base::FunctionRef<void(SkCanvas*)> paint) = 0;
+
+ protected:
+  std::unique_ptr<Texture> CreateTextureWithSkiaImpl(
+      GrDirectContext* gr_context,
+      const gfx::Size& size,
+      base::FunctionRef<void(SkCanvas*)> paint);
 };
 
 }  // namespace vr
