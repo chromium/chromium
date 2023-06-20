@@ -3731,6 +3731,18 @@
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
     ],
+    'modifications': {
+      'linux-ubsan-vptr': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              # TODO(crbug.com/1456464): Move this test to jammy.
+              'os': 'Ubuntu-18.04',
+            },
+          ],
+        },
+      },
+    },
   },
   'screenshot_sync_passthrough_tests': {
     'modifications': {
