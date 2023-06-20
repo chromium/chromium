@@ -102,6 +102,11 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
         readOnly: true,
       },
 
+      isOobeLoaded_: {
+        type: Boolean,
+        value: false,
+      },
+
       isQuickStartEnabled: Boolean,
     };
   }
@@ -150,6 +155,7 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
       'oobe-screens-loaded', this.enableButtonsWhenLoaded.bind(this));
     this.$.getStarted.disabled = false;
     this.$.enableDebuggingButton.disabled = false;
+    this.isOobeLoaded_ = true;
   }
 
   onLanguageClicked_(e) {
@@ -260,6 +266,16 @@ export class OobeWelcomeDialog extends OobeWelcomeDialogBase {
    * @suppress {missingProperties}
    */
   setVideoPlay_(play) {
+    // Postpone the call until OOBE is loaded, if necessary.
+    if (!this.isOobeLoaded_) {
+      document.addEventListener(
+        'oobe-screens-loaded', () => {
+          this.isOobeLoaded_ = true;
+          this.setVideoPlay_(play);
+        }, { once: true });
+      return;
+    }
+
     if (this.$$('#welcomeAnimation')) {
       this.$$('#welcomeAnimation').playing = play;
     }

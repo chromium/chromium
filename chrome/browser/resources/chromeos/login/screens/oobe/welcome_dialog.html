@@ -111,6 +111,17 @@ found in the LICENSE file.
     grid-row: 1 / span 2;
   }
 
+  #welcomeAnimationSlot {
+    position: relative;
+  }
+
+  .stacked-animations {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+  }
+
   #accessibilitySettingsButton,
   #timezoneSettingsButton,
   #enableDebuggingButton {
@@ -243,9 +254,13 @@ found in the LICENSE file.
     <template is="dom-if" if="[[showAnimationSlot()]]">
       <div id="welcomeAnimationSlot">
         <template is="dom-if" if="[[!isMeet_]]">
+          <!-- TODO(b/288071884) - Replace SVG with one that supports dynamic colors -->
+          <img id="welcomeAnimationFirstFrame" src="images/welcome_animation_first_frame.svg"
+            class="oobe-illustration stacked-animations" aria-hidden="true" hidden="[[isOobeLoaded_]]">
           <oobe-cr-lottie
-            id="welcomeAnimation"
+            id="welcomeAnimation" preload
             animation-url="animations/welcome_screen_animation.json"
+            class="stacked-animations"
           >
           </oobe-cr-lottie>
         </template>

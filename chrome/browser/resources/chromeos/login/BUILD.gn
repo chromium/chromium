@@ -158,6 +158,7 @@ generate_grd("build_oobe_grd") {
     "images/update-charge.svg",
     "images/updating.svg",
     "images/google-accounts.svg",
+    "images/welcome_animation_first_frame.svg",
     "images/cfm/enrollment.svg",
     "images/cfm/welcome.svg",
     "images/os-install-success.svg",
