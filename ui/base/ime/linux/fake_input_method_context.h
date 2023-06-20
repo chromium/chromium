@@ -25,7 +25,7 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
   void Reset() override;
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type,
+                   const TextInputClientAttributes& new_client_attributes,
                    TextInputClient::FocusReason reason) override;
   void SetCursorLocation(const gfx::Rect& rect) override;
   void SetSurroundingText(
@@ -34,11 +34,6 @@ class COMPONENT_EXPORT(UI_BASE_IME_LINUX) FakeInputMethodContext
       const gfx::Range& selection_range,
       const absl::optional<GrammarFragment>& fragment,
       const absl::optional<AutocorrectInfo>& autocorrect) override;
-  void SetContentType(TextInputType type,
-                      TextInputMode mode,
-                      uint32_t flags,
-                      bool should_do_learning,
-                      bool can_compose_inline) override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
 };
 

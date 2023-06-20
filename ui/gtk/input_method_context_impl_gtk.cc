@@ -195,15 +195,16 @@ void InputMethodContextImplGtk::Reset() {
 void InputMethodContextImplGtk::UpdateFocus(
     bool has_client,
     ui::TextInputType old_type,
-    ui::TextInputType new_type,
+    const TextInputClientAttributes& new_client_attributes,
     ui::TextInputClient::FocusReason reason) {
-  type_ = new_type;
+  type_ = new_client_attributes.input_type;
 
   // We only focus when the focus is in a textfield.
   if (old_type != ui::TEXT_INPUT_TYPE_NONE)
     gtk_im_context_focus_out(gtk_context_);
-  if (new_type != ui::TEXT_INPUT_TYPE_NONE)
+  if (new_client_attributes.input_type != ui::TEXT_INPUT_TYPE_NONE) {
     gtk_im_context_focus_in(gtk_context_);
+  }
 
   // simple context can be used in any textfield, including password box, and
   // even if the focused text input client's text input type is
@@ -212,6 +213,13 @@ void InputMethodContextImplGtk::UpdateFocus(
     gtk_im_context_focus_in(gtk_simple_context_);
   else
     gtk_im_context_focus_out(gtk_simple_context_);
+
+  if (new_client_attributes.flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
+    g_object_set(gtk_context_, "input-hints", GTK_INPUT_HINT_VERTICAL_WRITING,
+                 nullptr);
+    g_object_set(gtk_simple_context_, "input-hints",
+                 GTK_INPUT_HINT_VERTICAL_WRITING, nullptr);
+  }
 }
 
 void InputMethodContextImplGtk::SetCursorLocation(const gfx::Rect& rect) {
@@ -289,19 +297,6 @@ void InputMethodContextImplGtk::SetContextClientWindow(
   if (gdk_last_set_client_window)
     g_object_unref(gdk_last_set_client_window);
   gdk_last_set_client_window = window;
-}
-
-void InputMethodContextImplGtk::SetContentType(ui::TextInputType type,
-                                               ui::TextInputMode mode,
-                                               uint32_t flags,
-                                               bool should_do_learning,
-                                               bool can_compose_inline) {
-  if (flags & ui::TEXT_INPUT_FLAG_VERTICAL) {
-    g_object_set(gtk_context_, "input-hints", GTK_INPUT_HINT_VERTICAL_WRITING,
-                 nullptr);
-    g_object_set(gtk_simple_context_, "input-hints",
-                 GTK_INPUT_HINT_VERTICAL_WRITING, nullptr);
-  }
 }
 
 ui::VirtualKeyboardController*

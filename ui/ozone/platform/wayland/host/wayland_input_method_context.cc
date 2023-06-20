@@ -359,9 +359,12 @@ void WaylandInputMethodContext::WillUpdateFocus(TextInputClient* old_client,
 void WaylandInputMethodContext::UpdateFocus(
     bool has_client,
     TextInputType old_type,
-    TextInputType new_type,
+    const TextInputClientAttributes& new_client_attributes,
     TextInputClient::FocusReason reason) {
+  attributes_ = new_client_attributes;
+
   // This prevents unnecessarily hiding/showing the virtual keyboard.
+  TextInputType new_type = new_client_attributes.input_type;
   bool skip_vk_update =
       old_type != TEXT_INPUT_TYPE_NONE && new_type != TEXT_INPUT_TYPE_NONE;
 
@@ -486,17 +489,6 @@ void WaylandInputMethodContext::SetSurroundingText(
       selection_range_utf8.start() - surrounding_text_offset_,
       selection_range_utf8.end() - surrounding_text_offset_);
   text_input_->SetSurroundingText(text_utf8, relocated_selection_range);
-}
-
-void WaylandInputMethodContext::SetContentType(TextInputType type,
-                                               TextInputMode mode,
-                                               uint32_t flags,
-                                               bool should_do_learning,
-                                               bool can_compose_inline) {
-  if (!text_input_)
-    return;
-  text_input_->SetContentType(type, mode, flags, should_do_learning,
-                              can_compose_inline);
 }
 
 VirtualKeyboardController*
@@ -910,6 +902,9 @@ void WaylandInputMethodContext::MaybeUpdateActivated(
   activated_ = activated;
   if (activated) {
     text_input_->Activate(window, reason);
+    text_input_->SetContentType(
+        attributes_.input_type, attributes_.input_mode, attributes_.flags,
+        attributes_.should_do_learning, attributes_.can_compose_inline);
     if (!skip_virtual_keyboard_update)
       DisplayVirtualKeyboard();
   } else {

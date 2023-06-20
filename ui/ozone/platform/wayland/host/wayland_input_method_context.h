@@ -56,16 +56,11 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
       const gfx::Range& selection_range,
       const absl::optional<GrammarFragment>& fragment,
       const absl::optional<AutocorrectInfo>& autocorrect) override;
-  void SetContentType(TextInputType type,
-                      TextInputMode mode,
-                      uint32_t flags,
-                      bool should_do_learning,
-                      bool can_compose_inline) override;
   void WillUpdateFocus(TextInputClient* old_client,
                        TextInputClient* new_client) override;
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type,
+                   const TextInputClientAttributes& new_client_attributes,
                    TextInputClient::FocusReason reason) override;
   void Reset() override;
   VirtualKeyboardController* GetVirtualKeyboardController() override;
@@ -133,6 +128,9 @@ class WaylandInputMethodContext : public LinuxInputMethodContext,
   // Tracks whether a request to activate InputMethod is sent to wayland
   // compositor.
   bool activated_ = false;
+
+  // Cache of current TextInputClient's attributes.
+  TextInputClientAttributes attributes_;
 
   // An object to compose a character from a sequence of key presses
   // including dead key etc.

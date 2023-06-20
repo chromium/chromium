@@ -94,11 +94,11 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
     return &virtual_keyboard_controller_;
   }
 
-  TextInputType input_type() const { return input_type_; }
-  TextInputMode input_mode() const { return input_mode_; }
-  uint32_t input_flags() const { return input_flags_; }
-  bool should_do_learning() const { return should_do_learning_; }
-  bool can_compose_inline() const { return can_compose_inline_; }
+  TextInputType input_type() const { return attributes_.input_type; }
+  TextInputMode input_mode() const { return attributes_.input_mode; }
+  uint32_t input_flags() const { return attributes_.flags; }
+  bool should_do_learning() const { return attributes_.should_do_learning; }
+  bool can_compose_inline() const { return attributes_.can_compose_inline; }
   TextInputClient* old_client() { return old_client_; }
   TextInputClient* new_client() { return new_client_; }
   void DropClients() {
@@ -152,8 +152,10 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
 
   void UpdateFocus(bool has_client,
                    TextInputType old_type,
-                   TextInputType new_type,
-                   ui::TextInputClient::FocusReason reason) override {}
+                   const TextInputClientAttributes& new_client_attributes,
+                   ui::TextInputClient::FocusReason reason) override {
+    attributes_ = new_client_attributes;
+  }
 
   void SetCursorLocation(const gfx::Rect& rect) override {
     cursor_position_ = rect;
@@ -177,18 +179,6 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
         base::StringPrintf("selectionrangeend:%zu", selection_range.end())));
   }
 
-  void SetContentType(TextInputType type,
-                      TextInputMode mode,
-                      uint32_t flags,
-                      bool should_do_learning,
-                      bool can_compose_inline) override {
-    input_type_ = type;
-    input_mode_ = mode;
-    input_flags_ = flags;
-    should_do_learning_ = should_do_learning;
-    can_compose_inline_ = can_compose_inline;
-  }
-
  private:
   raw_ptr<LinuxInputMethodContextDelegate> delegate_;
   VirtualKeyboardControllerStub virtual_keyboard_controller_;
@@ -196,11 +186,7 @@ class LinuxInputMethodContextForTesting : public LinuxInputMethodContext {
   bool is_sync_mode_;
   bool eat_key_;
   gfx::Rect cursor_position_;
-  TextInputType input_type_;
-  TextInputMode input_mode_;
-  uint32_t input_flags_;
-  bool should_do_learning_;
-  bool can_compose_inline_;
+  TextInputClientAttributes attributes_;
   raw_ptr<TextInputClient, DanglingUntriaged> old_client_ = nullptr;
   raw_ptr<TextInputClient, DanglingUntriaged> new_client_ = nullptr;
 };

@@ -351,28 +351,21 @@ void InputMethodAuraLinux::UpdateContextFocusState() {
   auto* client = GetTextInputClient();
   bool has_client = client != nullptr;
   TextInputClient::FocusReason reason;
+  LinuxInputMethodContext::TextInputClientAttributes attributes;
+  attributes.input_type = text_input_type_;
   if (client) {
     reason = client->GetFocusReason();
+    attributes.input_mode = client->GetTextInputMode();
+    attributes.flags = client->GetTextInputFlags();
+    attributes.should_do_learning = client->ShouldDoLearning();
+    attributes.can_compose_inline = client->CanComposeInline();
   } else {
     reason = text_input_type_ == TEXT_INPUT_TYPE_NONE
                  ? TextInputClient::FocusReason::FOCUS_REASON_NONE
                  : TextInputClient::FocusReason::FOCUS_REASON_OTHER;
   }
-  context_->UpdateFocus(has_client, old_text_input_type, text_input_type_,
-                        reason);
 
-  TextInputMode mode = TEXT_INPUT_MODE_DEFAULT;
-  int flags = TEXT_INPUT_FLAG_NONE;
-  bool should_do_learning = false;
-  bool can_compose_inline = true;
-  if (client) {
-    mode = client->GetTextInputMode();
-    flags = client->GetTextInputFlags();
-    should_do_learning = client->ShouldDoLearning();
-    can_compose_inline = client->CanComposeInline();
-  }
-  context_->SetContentType(text_input_type_, mode, flags, should_do_learning,
-                           can_compose_inline);
+  context_->UpdateFocus(has_client, old_text_input_type, attributes, reason);
 }
 
 void InputMethodAuraLinux::OnTextInputTypeChanged(TextInputClient* client) {
