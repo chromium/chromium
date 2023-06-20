@@ -10,8 +10,6 @@ source_set("favicon") {
     "favicon_attributes_with_payload.mm",
   ]
   deps = [
-    "resources:default_world_favicon_incognito",
-    "resources:default_world_favicon_regular",
     "//base",
     "//components/favicon/core",
     "//components/favicon_base",

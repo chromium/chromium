@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_view.h"
 
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/ui/content_suggestions/cells/content_suggestions_return_to_recent_tab_item.h"
 #import "ios/chrome/browser/ui/content_suggestions/content_suggestions_feature.h"
 #import "ios/chrome/browser/ui/content_suggestions/ntp_home_constant.h"
@@ -61,7 +62,9 @@ const CGFloat kIconWidth = 32.0f;
     [self addSubview:textStackView];
 
     _iconImageView = [[UIImageView alloc]
-        initWithImage:[UIImage imageNamed:@"default_world_favicon_regular"]];
+        initWithImage:DefaultSymbolWithPointSize(kGlobeAmericasSymbol,
+                                                 kIconWidth)];
+    _iconImageView.tintColor = [UIColor colorNamed:kGrey400Color];
     _iconImageView.layer.cornerRadius = kIconCornerRadius;
     _iconImageView.layer.masksToBounds = YES;
     [self addSubview:_iconImageView];

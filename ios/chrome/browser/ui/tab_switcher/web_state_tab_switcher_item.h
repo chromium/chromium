@@ -22,14 +22,8 @@ class WebState;
 #pragma mark - Favicons
 
 // Default favicon to use if the tab has no favicon available yet. Default is
-// `default_world_favicon_regular`.
-// Subclasses can override this method to customize it.
-- (UIImage*)regularDefaultFavicon;
-
-// Default favicon to use if the tab has no favicon available yet and is an
-// incognito tab. Default is `default_world_favicon_incognito`.
-// Subclasses can override this method to customize it.
-- (UIImage*)incognitoDefaultFavicon;
+// `kGlobeAmericasSymbol`.
+- (UIImage*)defaultFavicon;
 
 // Favicon to use for NTP. Default is nil.
 // Subclasses can override this method to customize it.

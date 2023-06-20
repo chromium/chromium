@@ -8,6 +8,7 @@
 #import "components/favicon/ios/web_favicon_driver.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
+#import "ios/chrome/browser/shared/ui/symbols/symbols.h"
 #import "ios/chrome/browser/snapshots/snapshot_tab_helper.h"
 #import "ios/chrome/browser/tabs/tab_title_util.h"
 #import "ios/web/public/web_state.h"
@@ -15,6 +16,10 @@
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
 #endif
+
+namespace {
+const CGFloat kSymbolSize = 16;
+}
 
 @implementation WebStateTabSwitcherItem {
   // The web state represented by this item.
@@ -73,10 +78,7 @@
   }
 
   // Otherwise, set a default favicon.
-  UIImage* defaultFavicon = webState->GetBrowserState()->IsOffTheRecord()
-                                ? [self incognitoDefaultFavicon]
-                                : [self regularDefaultFavicon];
-  completion(self, defaultFavicon);
+  completion(self, [self defaultFavicon]);
 }
 
 - (void)fetchSnapshot:(TabSwitcherImageFetchingCompletionBlock)completion {
@@ -102,12 +104,12 @@
 
 #pragma mark - Favicons
 
-- (UIImage*)regularDefaultFavicon {
-  return [UIImage imageNamed:@"default_world_favicon_regular"];
-}
-
-- (UIImage*)incognitoDefaultFavicon {
-  return [UIImage imageNamed:@"default_world_favicon_incognito"];
+- (UIImage*)defaultFavicon {
+  UIImageConfiguration* configuration = [UIImageSymbolConfiguration
+      configurationWithPointSize:kSymbolSize
+                          weight:UIImageSymbolWeightBold
+                           scale:UIImageSymbolScaleMedium];
+  return DefaultSymbolWithConfiguration(kGlobeAmericasSymbol, configuration);
 }
 
 - (UIImage*)NTPFavicon {

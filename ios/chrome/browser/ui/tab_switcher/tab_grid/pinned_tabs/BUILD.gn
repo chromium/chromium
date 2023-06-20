@@ -6,8 +6,6 @@ source_set("pinned_tabs") {
   sources = [
     "pinned_tabs_mediator.h",
     "pinned_tabs_mediator.mm",
-    "pinned_web_state_tab_switcher_item.h",
-    "pinned_web_state_tab_switcher_item.mm",
   ]
 
   configs += [ "//build/config/compiler:enable_arc" ]
