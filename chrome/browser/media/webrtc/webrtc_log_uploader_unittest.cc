@@ -269,10 +269,8 @@ TEST_F(WebRtcLogUploaderTest, AddRtpDumpsToPostedData) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader(
-      new WebRtcLogUploader());
-
   std::string post_data;
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
   webrtc_log_uploader->OverrideUploadWithBufferForTesting(&post_data);
 
   // Create the fake dump files.
@@ -316,10 +314,8 @@ TEST_F(WebRtcLogUploaderTest, DisableUploadOfMultipartData) {
   base::ScopedTempDir temp_dir;
   ASSERT_TRUE(temp_dir.CreateUniqueTempDir());
 
-  std::unique_ptr<WebRtcLogUploader> webrtc_log_uploader(
-      new WebRtcLogUploader());
-
   std::string post_data;
+  auto webrtc_log_uploader = std::make_unique<WebRtcLogUploader>();
   webrtc_log_uploader->OverrideUploadWithBufferForTesting(&post_data);
 
   // Create the fake dump files.
