@@ -49,6 +49,8 @@ class ArcSystemStateObservation : public ash::ThrottleService,
   void OnAppStatesChanged(const std::string& id,
                           const ArcAppListPrefs::AppInfo& app_info) override;
 
+  void OnArcAppListPrefsDestroyed() override;
+
  private:
   bool arc_running_ = false;
 

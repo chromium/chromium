@@ -72,6 +72,10 @@ void ArcSystemStateObservation::OnAppStatesChanged(
   }
 }
 
+void ArcSystemStateObservation::OnArcAppListPrefsDestroyed() {
+  app_prefs_observation_.Reset();
+}
+
 absl::optional<base::TimeDelta> ArcSystemStateObservation::GetPeaceDuration() {
   if (!last_peace_timestamp_.has_value()) {
     return absl::nullopt;
