@@ -68,8 +68,8 @@ using save_address_profile_infobar_modal_responses::NoThanksViewAction;
     kUpdateModalDescriptionKey :
         base::SysUTF16ToNSString(config->update_modal_description()),
     kIsMigrationToAccountKey : @(config->is_migration_to_account()),
-    kSyncingUserEmailKey : config->syncing_user_email()
-        ? base::SysUTF16ToNSString(config->syncing_user_email().value())
+    kUserEmailKey : config->user_email()
+        ? base::SysUTF16ToNSString(config->user_email().value())
         : @"",
     kIsProfileAnAccountProfileKey : @(config->is_profile_an_account_profile()),
     kProfileDescriptionForMigrationPromptKey : base::SysUTF16ToNSString(

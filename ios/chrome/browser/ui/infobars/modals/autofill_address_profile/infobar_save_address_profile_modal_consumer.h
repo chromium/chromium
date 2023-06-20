@@ -15,7 +15,7 @@ extern NSString* const kCurrentAddressProfileSavedPrefKey;
 extern NSString* const kIsUpdateModalPrefKey;
 extern NSString* const kProfileDataDiffKey;
 extern NSString* const kUpdateModalDescriptionKey;
-extern NSString* const kSyncingUserEmailKey;
+extern NSString* const kUserEmailKey;
 extern NSString* const kIsMigrationToAccountKey;
 extern NSString* const kIsProfileAnAccountProfileKey;
 extern NSString* const kProfileDescriptionForMigrationPromptKey;

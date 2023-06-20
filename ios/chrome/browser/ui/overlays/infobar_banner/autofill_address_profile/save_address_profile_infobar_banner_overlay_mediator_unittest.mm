@@ -50,7 +50,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest, SetUpConsumer) {
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*syncing_user_email=*/absl::nullopt,
+          /*user_email=*/absl::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());
@@ -90,7 +90,7 @@ TEST_F(SaveAddressProfileInfobarBannerOverlayMediatorTest,
       passed_delegate = std::make_unique<
           autofill::AutofillSaveUpdateAddressProfileDelegateIOS>(
           profile, /*original_profile=*/nullptr,
-          /*syncing_user_email=*/absl::nullopt,
+          /*user_email=*/absl::nullopt,
           /*locale=*/"en-US",
           autofill::AutofillClient::SaveAddressProfilePromptOptions{},
           base::DoNothing());

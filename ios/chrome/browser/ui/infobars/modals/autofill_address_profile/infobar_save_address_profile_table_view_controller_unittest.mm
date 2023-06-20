@@ -54,7 +54,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kIsUpdateModalPrefKey : @(false),
       kProfileDataDiffKey : @{},
       kUpdateModalDescriptionKey : @"",
-      kSyncingUserEmailKey : @"test@gmail.com",
+      kUserEmailKey : @"test@gmail.com",
       kIsProfileAnAccountProfileKey : @(true)
     };
     return prefs;
@@ -69,7 +69,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
       kIsUpdateModalPrefKey : @(false),
       kProfileDataDiffKey : @{},
       kUpdateModalDescriptionKey : @"",
-      kSyncingUserEmailKey : @"test@gmail.com",
+      kUserEmailKey : @"test@gmail.com",
       kIsMigrationToAccountKey : @(true),
       kProfileDescriptionForMigrationPromptKey : @"Test"
     };
@@ -104,7 +104,7 @@ class InfobarSaveAddressProfileTableViewControllerTest
             @[ @"John Doe", @"John H. Doe" ]
       },
       kUpdateModalDescriptionKey : @"For John Doe, 345 Spear Street",
-      kSyncingUserEmailKey : @"test@gmail.com",
+      kUserEmailKey : @"test@gmail.com",
       kIsProfileAnAccountProfileKey : @(true)
     };
     return prefs;

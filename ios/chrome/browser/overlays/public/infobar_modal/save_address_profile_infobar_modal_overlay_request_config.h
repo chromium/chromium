@@ -63,9 +63,7 @@ class SaveAddressProfileModalRequestConfig
 
   bool is_migration_to_account() const { return is_migration_to_account_; }
 
-  absl::optional<std::u16string> syncing_user_email() const {
-    return syncing_user_email_;
-  }
+  absl::optional<std::u16string> user_email() const { return user_email_; }
 
   bool is_profile_an_account_profile() const {
     return is_profile_an_account_profile_;
@@ -109,8 +107,8 @@ class SaveAddressProfileModalRequestConfig
   // Denotes that the profile is an account profile.
   bool is_profile_an_account_profile_ = false;
 
-  // Denotes the email address of the syncing account.
-  absl::optional<std::u16string> syncing_user_email_;
+  // Denotes the email address of the signed-in account.
+  absl::optional<std::u16string> user_email_;
 
   // Denotes the profile description shown in the migration prompt.
   std::u16string profile_description_for_migration_prompt_;

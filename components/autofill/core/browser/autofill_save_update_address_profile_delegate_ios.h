@@ -97,7 +97,7 @@ class AutofillSaveUpdateAddressProfileDelegateIOS
 
   bool IsMigrationToAccount() const { return is_migration_to_account_; }
 
-  absl::optional<std::u16string> SyncingUserEmail() const {
+  absl::optional<std::u16string> UserAccountEmail() const {
     return user_email_;
   }
 
