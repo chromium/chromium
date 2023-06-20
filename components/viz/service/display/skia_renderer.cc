@@ -1952,6 +1952,7 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
                              std::size(params->draw_region->points));
   }
 
+  absl::optional<gfx::RectF> bypassed_quad_clip_rect;
   if (rpdq_params->bypass_geometry) {
     // If BypassGeometry is already populated then this is part of a chain of
     // bypassed render passes. This merges any additional transform and clip
@@ -1974,6 +1975,14 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
         bypass_transform.MapRect(params->visible_rect);
     bypass_geometry.clip_rect.Intersect(bypass_visible_rect);
 
+    if (bypass_quad->shared_quad_state->clip_rect) {
+      // The bypass_quad clip_rect needs to be transformed from current bypassed
+      // render pass coordinate space into the first bypassed render pass
+      // coordinate space.
+      bypassed_quad_clip_rect = bypass_transform.MapRect(
+          gfx::RectF(*bypass_quad->shared_quad_state->clip_rect));
+    }
+
     // Update transform so it maps from `bypass_quad` to the first bypassed
     // render pass coordinate space.
     bypass_geometry.transform.preConcat(bypass_to_rpdq);
@@ -1983,15 +1992,20 @@ SkiaRenderer::BypassMode SkiaRenderer::CalculateBypassParams(
     // `bypass_quad` to bypassed render pass coordinate space.
     rpdq_params->bypass_geometry =
         DrawRPDQParams::BypassGeometry{bypass_to_rpdq, params->visible_rect};
+
+    if (bypass_quad->shared_quad_state->clip_rect) {
+      // The bypass_quad clip_rect is in the same coordinate space as the RPDQ +
+      // bypassed render pass aka the same as bypass_geometry.
+      bypassed_quad_clip_rect =
+          gfx::RectF(*bypass_quad->shared_quad_state->clip_rect);
+    }
   }
 
-  if (bypass_quad->shared_quad_state->clip_rect) {
-    // If bypass_quad->clip_rect isn't empty then normally it would be added to
-    // scissor_rect in SetScissorStateForQuad(). That never happens when the
-    // render pass is bypassed. The clip_rect is in the same coordinate space as
-    // the RPDQ + bypassed render pass aka the same as bypass_geometry.
-    rpdq_params->bypass_geometry->clip_rect.Intersect(
-        gfx::RectF(*bypass_quad->shared_quad_state->clip_rect));
+  if (bypassed_quad_clip_rect) {
+    // If bypassed_quad clip_rect isn't empty then normally it would be added
+    // to scissor_rect in SetScissorStateForQuad(). That never happens when the
+    // render pass is bypassed so add it here.
+    rpdq_params->bypass_geometry->clip_rect.Intersect(*bypassed_quad_clip_rect);
   }
 
   // Compute draw params for `bypass_quad` to update some of the original draw
