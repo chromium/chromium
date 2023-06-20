@@ -552,7 +552,8 @@ bool IsProfileMigrationAvailable() {
 
 bool IsLacrosSupportFlagAllowed() {
   return IsLacrosAllowedToBeEnabled() &&
-         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
+         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice) &&
+         !base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove);
 }
 
 bool IsAshWebBrowserEnabled() {
@@ -599,7 +600,8 @@ bool IsLacrosPrimaryBrowserAllowedForMigration(
 
 bool IsLacrosPrimaryFlagAllowed() {
   return IsLacrosPrimaryBrowserAllowed() &&
-         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice);
+         (GetCachedLacrosAvailability() == LacrosAvailability::kUserChoice) &&
+         !base::FeatureList::IsEnabled(ash::features::kLacrosSxSPrimaryRemove);
 }
 
 bool IsLacrosOnlyBrowserAllowed() {
