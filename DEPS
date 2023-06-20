@@ -1766,7 +1766,7 @@ deps = {
       'packages': [
           {
               'package': 'chromium/third_party/r8',
-              'version': 'ZX7cPoz9LnLgpZfPPVDoXWcwHqATDC43bmIOinCWAxwC',
+              'version': 'rByCj9NgDDYIIW97qHizKUoC4pyBnIbr-mHt_DcskjYC',
           },
       ],
       'condition': 'checkout_android',
