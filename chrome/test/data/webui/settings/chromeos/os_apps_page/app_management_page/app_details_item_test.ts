@@ -119,6 +119,9 @@ suite('<app-management-app-details-item>', () => {
     assertEquals(
         'Chrome App installed from <a href="#">Chrome Web Store</a>',
         typeAndSource.textContent!.trim());
+
+    const launchIcon = appDetailsItem.shadowRoot!.querySelector('#launchIcon');
+    assertTrue(!!launchIcon);
   });
 
   test('Android App from play store', async () => {
@@ -133,6 +136,9 @@ suite('<app-management-app-details-item>', () => {
     assertEquals(
         'Android App installed from <a href="#">Google Play Store</a>',
         typeAndSource.textContent!.trim());
+
+    const launchIcon = appDetailsItem.shadowRoot!.querySelector('#launchIcon');
+    assertTrue(!!launchIcon);
   });
 
   test('System type', async () => {

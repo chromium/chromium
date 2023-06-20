@@ -101,7 +101,8 @@ export class AppManagementAppDetailsItem extends
    * Store and Google Play Store.
    */
   private shouldShowLaunchIcon_(app: App): boolean {
-    return Boolean(app.dataSize);
+    return app.installSource === InstallSource.kChromeWebStore ||
+        app.installSource === InstallSource.kPlayStore;
   }
 
   private getTypeString_(app: App): string {
@@ -177,8 +178,10 @@ export class AppManagementAppDetailsItem extends
   private onStoreLinkClicked_(e: CustomEvent<{event: Event}>) {
     // A place holder href with the value "#" is used to have a compliant link.
     // This prevents the browser from navigating the window to "#"
-    e.detail.event.preventDefault();
-    e.stopPropagation();
+    if (e.detail.event) {  // When the store link is clicked
+      e.detail.event.preventDefault();
+      e.stopPropagation();
+    }
 
     if (this.app !== null) {
       AppManagementBrowserProxy.getInstance().handler.openStorePage(

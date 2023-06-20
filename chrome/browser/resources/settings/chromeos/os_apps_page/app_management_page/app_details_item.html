@@ -10,6 +10,15 @@
     width: var(--help-icon-size);
   }
 
+  #launchIcon {
+    --cr-icon-image: url(chrome://resources/images/open_in_new.svg);
+    --cr-icon-button-fill-color: var(--cr-link-color);
+    border-radius: 0;
+    height: var(--help-icon-size);
+    margin-inline-start: 3px;
+    width: var(--help-icon-size);
+  }
+
   #tooltipText {
     font-size: 10px;
     line-height: 12px;
@@ -24,20 +33,18 @@
   <localized-link id="heading" class="header-text"
     localized-string="$i18n{appManagementAppDetailsTitle}">
   </localized-link>
-  </div>
 </div>
 <div class="indented-app-details" id="typeAndSource">
   <localized-link
     id="typeAndSourceText"
     on-link-clicked="onStoreLinkClicked_"
     localized-string="[[getTypeAndSourceString_(app)]]">
-    [[getTypeAndSourceString_(app)]]
-    <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]" restamp>
-      <iron-icon id="launchIcon" icon="app-management:launch"
-        onclick="onStoreLinkCLicked">
-      </iron-icon>
-    </template>
+    [[getTypeAndSourceString_(app)]] <!-- Do not delete for testing purposes -->
   </localized-link>
+  <template is="dom-if" if="[[shouldShowLaunchIcon_(app)]]">
+    <cr-icon-button id="launchIcon" on-click="onStoreLinkClicked_">
+    </cr-icon-button>
+  </template>
   <template is="dom-if" if="[[shouldShowInfoIcon_(app)]]" restamp>
     <div id="browserLinkInfo">
       <iron-icon id="infoIcon"
