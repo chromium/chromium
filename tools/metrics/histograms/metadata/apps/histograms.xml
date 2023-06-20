@@ -178,7 +178,7 @@ chromium-metrics-reviews@google.com.
     expires_after="2024-03-01">
 <!-- Name completed by histogram_suffixes name="AppType" -->
 
-  <owner>jshikaram@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <owner>desktop-pwas-team@google.com</owner>
   <summary>
@@ -191,13 +191,13 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="AppManagement.EntryPoints" enum="AppManagementEntryPoint"
     expires_after="2024-03-01">
-  <owner>jshikaram@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
   <summary>The ways the user opens up the App Management interface.</summary>
 </histogram>
 
 <histogram name="AppPreloadService.FirstLoginFlowTime.{Status}" units="ms"
-    expires_after="2023-08-01">
+    expires_after="2024-06-20">
   <owner>melzhang@chromium.org</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
@@ -215,7 +215,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.ServerResponseCodes"
-    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2023-10-15">
+    enum="CombinedHttpResponseAndNetErrorCode" expires_after="2024-06-20">
   <owner>melzhang@chromium.org</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
@@ -226,7 +226,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.ServerRoundTripTimeForFirstLogin" units="ms"
-    expires_after="2023-10-15">
+    expires_after="2024-06-20">
   <owner>melzhang@chromium.org</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
@@ -238,7 +238,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.WebAppInstall.CommandResultCode"
-    enum="WebAppInstallResultCode" expires_after="2023-12-04">
+    enum="WebAppInstallResultCode" expires_after="2024-06-20">
   <owner>melzhang@chromium.org</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
@@ -251,7 +251,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="AppPreloadService.WebAppInstall.InstallResult"
-    enum="AppPreloadServiceWebAppInstallResult" expires_after="2023-12-04">
+    enum="AppPreloadServiceWebAppInstallResult" expires_after="2024-06-20">
   <owner>melzhang@chromium.org</owner>
   <owner>tsergeant@chromium.org</owner>
   <owner>chromeos-apps-foundation-team@google.com</owner>
