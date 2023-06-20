@@ -178,7 +178,7 @@ void CopyOrMoveIOTaskPolicyImpl::Resume(ResumeParams params) {
   }
 
   if (params.policy_params->type == policy::Policy::kDlp) {
-    files_policy_manager->ResumeIOTask(progress_->task_id);
+    files_policy_manager->OnIOTaskResumed(progress_->task_id);
   }
 
   if (params.policy_params->type == policy::Policy::kEnterpriseConnectors) {

@@ -339,7 +339,7 @@ bool FilesPolicyNotificationManager::HasIOTask(
   return base::Contains(io_tasks_, task_id);
 }
 
-void FilesPolicyNotificationManager::ResumeIOTask(
+void FilesPolicyNotificationManager::OnIOTaskResumed(
     file_manager::io_task::IOTaskId task_id) {
   if (!HasIOTask(task_id)) {
     // Task is already completed or timed out.

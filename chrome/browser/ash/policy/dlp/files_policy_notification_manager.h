@@ -92,7 +92,7 @@ class FilesPolicyNotificationManager
 
   // Runs warning callback for the corresponding IOTask with should_proceed set
   // to true.
-  void ResumeIOTask(file_manager::io_task::IOTaskId task_id);
+  void OnIOTaskResumed(file_manager::io_task::IOTaskId task_id);
 
   std::map<DlpConfidentialFile, Policy> GetIOTaskBlockedFilesForTesting(
       file_manager::io_task::IOTaskId task_id) const;

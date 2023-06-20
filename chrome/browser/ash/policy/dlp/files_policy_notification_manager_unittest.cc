@@ -458,7 +458,7 @@ TEST_F(FilesPolicyNotificationManagerTest, WarningResumed) {
   // Warning callback is run with should_proceed set to true when the task is
   // resumed.
   EXPECT_CALL(mock_cb, Run(/*should_proceed=*/true)).Times(1);
-  fpnm_->ResumeIOTask(task_id);
+  fpnm_->OnIOTaskResumed(task_id);
 }
 
 class FPNMPausedStatusNotification
