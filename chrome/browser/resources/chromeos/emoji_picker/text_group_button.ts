@@ -50,6 +50,10 @@ export class TextGroupButton extends PolymerElement {
   private toUpperCase(text: string) {
     return text.toUpperCase();
   }
+
+  private getAriaPressedState(active: boolean): string {
+    return active ? 'true' : 'false';
+  }
 }
 
 customElements.define(TextGroupButton.is, TextGroupButton);

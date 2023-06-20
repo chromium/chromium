@@ -30,6 +30,7 @@
     id="group-button"
     class$="[[calculateClassName(active)]]"
     on-click="handleClick"
-    custom-tab-index="[[customTabIndex]]">
+    custom-tab-index="[[customTabIndex]]"
+    aria-pressed$="[[getAriaPressedState(active)]]">
   [[toUpperCase(name)]]
 </cr-button>
