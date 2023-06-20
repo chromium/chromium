@@ -49,18 +49,8 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            let percentage = null;
-            try {
-              percentage = parseInt(value, 10);
-            } catch (e) {
-              return null;
-            }
-            if (util.isNullOrUndefined(percentage) ||
-                Number.isNaN(percentage) || percentage < 0 ||
-                percentage > 100) {
-              return null;
-            }
-            return percentage;
+            const percentage = parseInt(value, 10);
+            return percentage >= 0 && percentage <= 100 ? percentage : null;
           },
       toAttribute: (value: number) => String(value),
     },
@@ -76,15 +66,14 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            try {
-              const seconds = parseInt(value, 10);
-              return util.isNullOrUndefined(seconds) || Number.isNaN(seconds) ||
-                      seconds < 0 ?
-                  null :
-                  seconds;
-            } catch (e) {
+            if (!value) {
               return null;
             }
+            if (value.toUpperCase() in CloudPanelType) {
+              return value as CloudPanelType;
+            }
+            console.warn(`Failed to convert ${value} to CloudPanelType`);
+            return null;
           },
       toAttribute: (key: keyof CloudPanelType) => key,
     },
@@ -97,17 +86,8 @@ export class XfCloudPanel extends XfBase {
     converter: {
       fromAttribute:
           (value: string) => {
-            let seconds = null;
-            try {
-              seconds = parseInt(value, 10);
-            } catch (e) {
-              return null;
-            }
-            if (util.isNullOrUndefined(seconds) || Number.isNaN(seconds) ||
-                seconds < 0) {
-              return null;
-            }
-            return seconds;
+            const seconds = parseInt(value, 10);
+            return seconds >= 0 ? seconds : null;
           },
       toAttribute: (value: number) => String(value),
     },
