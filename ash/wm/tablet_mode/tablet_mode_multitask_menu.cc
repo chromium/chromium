@@ -299,11 +299,13 @@ void TabletModeMultitaskMenu::BeginDrag(float initial_y, bool down) {
 }
 
 void TabletModeMultitaskMenu::UpdateDrag(float current_y, bool down) {
-  const float translation_y = current_y - initial_y_;
   // Stop translating the menu if the drag moves out of bounds.
-  if ((down && translation_y >= 0.f) || (!down && current_y <= 0.f)) {
+  if (current_y <= 0.f ||
+      current_y >=
+          kVerticalPosition + menu_view_->GetPreferredSize().height()) {
     return;
   }
+  const float translation_y = current_y - initial_y_;
   menu_view_->layer()->SetTransform(
       gfx::Transform::MakeTranslation(0, translation_y));
 
