@@ -47,18 +47,18 @@ class AccountSelectionInProgressHandleInternal
 };
 }  // namespace
 
-SigninManager::SigninManager(PrefService* prefs,
-                             signin::IdentityManager* identity_manager,
-                             SigninClient* client)
+SigninManager::SigninManager(PrefService& prefs,
+                             signin::IdentityManager& identity_manager,
+                             SigninClient& client)
     : prefs_(prefs),
       signin_client_(client),
       identity_manager_(identity_manager) {
   signin_allowed_.Init(
-      prefs::kSigninAllowed, prefs_,
+      prefs::kSigninAllowed, &prefs_.get(),
       base::BindRepeating(&SigninManager::OnSigninAllowedPrefChanged,
                           base::Unretained(this)));
   UpdateUnconsentedPrimaryAccount();
-  identity_manager_observation_.Observe(identity_manager_);
+  identity_manager_observation_.Observe(&identity_manager_.get());
 }
 
 SigninManager::~SigninManager() = default;
@@ -74,7 +74,7 @@ void SigninManager::StartLacrosSigninFlow(
   signin_helper_lacros_.reset();
 
   signin_helper_lacros_ = std::make_unique<SigninHelperLacros>(
-      profile_path, account_profile_mapper, identity_manager_,
+      profile_path, account_profile_mapper, &identity_manager_.get(),
       consistency_cookie_manager, source,
       // Using `base::Unretained()` is fine because this owns the helper.
       base::BindOnce(&SigninManager::OnSigninHelperLacrosComplete,
@@ -244,7 +244,6 @@ void SigninManager::Shutdown() {
   // Unsubscribe to all notifications to stop calling the identity manager.
   signin_allowed_.Destroy();
   identity_manager_observation_.Reset();
-  identity_manager_ = nullptr;
 }
 
 // Lacros does not use cookies to compute the unconsented primary account.

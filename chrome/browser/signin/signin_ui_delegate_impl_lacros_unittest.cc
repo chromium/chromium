@@ -82,8 +82,8 @@ std::unique_ptr<KeyedService> BuildSigninManager(
     content::BrowserContext* context) {
   Profile* profile = Profile::FromBrowserContext(context);
   return std::make_unique<SigninManager>(
-      profile->GetPrefs(), IdentityManagerFactory::GetForProfile(profile),
-      ChromeSigninClientFactory::GetForProfile(profile));
+      *profile->GetPrefs(), *IdentityManagerFactory::GetForProfile(profile),
+      *ChromeSigninClientFactory::GetForProfile(profile));
 }
 
 void ExpectOneSigninStartedHistograms(

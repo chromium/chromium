@@ -80,7 +80,7 @@ class SigninManagerTest : public testing::Test,
 
   void RecreateSigninManager() {
     signin_manager_ =
-        std::make_unique<SigninManager>(&prefs_, identity_manager(), &client_);
+        std::make_unique<SigninManager>(prefs_, *identity_manager(), client_);
   }
 
   void InitializeSignoutDecision() {

@@ -323,9 +323,9 @@ class MockSigninManager : public SigninManager {
   };
 
   explicit MockSigninManager(Profile* profile)
-      : SigninManager(profile->GetPrefs(),
-                      IdentityManagerFactory::GetForProfile(profile),
-                      ChromeSigninClientFactory::GetForProfile(profile)) {}
+      : SigninManager(*profile->GetPrefs(),
+                      *IdentityManagerFactory::GetForProfile(profile),
+                      *ChromeSigninClientFactory::GetForProfile(profile)) {}
   ~MockSigninManager() override = default;
 
   static std::unique_ptr<KeyedService> Build(content::BrowserContext* context) {
