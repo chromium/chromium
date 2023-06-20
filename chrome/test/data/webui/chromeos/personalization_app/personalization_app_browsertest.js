@@ -252,9 +252,10 @@ TEST_F(
 
       suite('ambient mode disallowed', () => {
         test('does not show ambient preview', () => {
-          const preview = getRouter()
-                              .shadowRoot.querySelector('personalization-main')
-                              .shadowRoot.querySelector('ambient-preview');
+          const preview =
+              getRouter()
+                  .shadowRoot.querySelector('personalization-main')
+                  .shadowRoot.querySelector('ambient-preview-large');
           assertFalse(!!preview);
         });
 
@@ -269,6 +270,68 @@ TEST_F(
 
       mocha.run();
     });
+
+class PersonalizationAppAmbientModeDisallowedJellyBrowserTest extends
+    PersonalizationAppBrowserTest {
+  /** @override */
+  get testGenPreamble() {
+    return () => {
+      GEN('ash::AmbientClient::Get()->SetAmbientModeAllowedForTesting(false);');
+    };
+  }
+
+  /** @override */
+  get featureList() {
+    return {
+      enabled: ['chromeos::features::kJelly'],
+    };
+  }
+}
+
+this[PersonalizationAppAmbientModeDisallowedJellyBrowserTest.name] =
+    PersonalizationAppAmbientModeDisallowedJellyBrowserTest;
+
+TEST_F(
+    PersonalizationAppAmbientModeDisallowedJellyBrowserTest.name, 'All',
+    async () => {
+      await import('chrome://webui-test/mojo_webui_test_support.js');
+
+      suite('ambient mode disallowed', () => {
+        test('shows ambient preview', () => {
+          const preview =
+              getRouter()
+                  .shadowRoot.querySelector('personalization-main')
+                  .shadowRoot.querySelector('ambient-preview-large');
+
+          assertTrue(!!preview);
+        });
+
+        test('shows disabled ambient subpage link', () => {
+          const ambientSubpageLink =
+              getRouter()
+                  .shadowRoot.querySelector('personalization-main')
+                  .shadowRoot.querySelector('ambient-preview-large')
+                  .shadowRoot.querySelector('cr-icon-button');
+
+          assertTrue(!!ambientSubpageLink);
+          assertTrue(ambientSubpageLink.disabled);
+        });
+
+        test('shows help link', () => {
+          const helpLink =
+              getRouter()
+                  .shadowRoot.querySelector('personalization-main')
+                  .shadowRoot.querySelector('ambient-preview-large')
+                  .shadowRoot.querySelector('cr-button')
+                  .firstElementChild.href;
+          assertTrue(!!helpLink);
+          assertTrue(helpLink.includes('support.google.com'));
+        });
+      });
+
+      mocha.run();
+    });
+
 
 class PersonalizationAppWallpaperSubpageBrowserTest extends
     PersonalizationAppBrowserTest {}
