@@ -242,6 +242,7 @@ crbug.com/1400927 [ Linux Release ] external/wpt/speculation-rules/prerender/csp
 
 # These tests are flaky with BFCache, which is enabled by default.
 crbug.com/1311546 http/tests/test-runner/back-forward.html [ Failure Pass ]
+crbug.com/1456489 [ Linux ] fast/events/touch/gesture/gesture-tap-click-common-ancestor.html [ Failure Pass ]
 
 crbug.com/1225630 fast/multicol/infinite-height-causing-fractional-row-height-crash.html [ Skip Timeout ]
 crbug.com/1225630 fast/multicol/infinitely-tall-content-in-outer-crash.html [ Skip Timeout ]
