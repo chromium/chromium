@@ -579,6 +579,11 @@ gfx::Insets ScrollableShelfView::CalculateMirroredEdgePadding(
   return padding_insets;
 }
 
+bool ScrollableShelfView::CalculateShelfOverflowForAvailableLength(
+    int available_length) const {
+  return available_length < CalculateShelfIconsPreferredLength();
+}
+
 views::View* ScrollableShelfView::GetShelfContainerViewForTest() {
   return shelf_container_view_;
 }

@@ -10002,7 +10002,21 @@ TEST_P(DeskButtonTest, OverviewDeskSwitch) {
   EXPECT_TRUE(GetDeskButtonWidget()->GetLayer()->GetTargetVisibility());
 }
 
-// TODO(b/272383056): Add test that switches between different shelf alignments.
+// Tests that switching the shelf alignment correctly repositions the desk
+// button.
+TEST_P(DeskButtonTest, UpdateShelfAlignmentDuringTest) {
+  NewDesk();
+  DesksController::Get()->desks()[0]->SetName(u"school", /*set_by_user=*/true);
+
+  const bool bottom_at_start = GetParam().alignment == ShelfAlignment::kBottom;
+  auto* desk_button = GetDeskButton();
+  ASSERT_TRUE(desk_button);
+  ASSERT_EQ(bottom_at_start ? u"school" : u"S", desk_button->GetTextForTest());
+
+  GetPrimaryShelf()->SetAlignment(bottom_at_start ? ShelfAlignment::kLeft
+                                                  : ShelfAlignment::kBottom);
+  EXPECT_EQ(bottom_at_start ? u"S" : u"school", desk_button->GetTextForTest());
+}
 
 // TODO(afakhry): Add more tests:
 // - Always on top windows are not tracked by any desk.

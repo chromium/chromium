@@ -8,8 +8,10 @@
 #include "ash/app_list/app_list_presenter_impl.h"
 #include "ash/app_list/views/app_list_view.h"
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_switches.h"
 #include "ash/drag_drop/drag_image_view.h"
 #include "ash/public/cpp/shelf_config.h"
+#include "ash/public/cpp/shelf_prefs.h"
 #include "ash/root_window_controller.h"
 #include "ash/shelf/scrollable_shelf_constants.h"
 #include "ash/shelf/shelf_app_button.h"
@@ -28,6 +30,7 @@
 #include "base/test/icu_test_util.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/compositor/presentation_time_recorder.h"
 #include "ui/compositor/scoped_animation_duration_scale_mode.h"
 #include "ui/display/manager/display_manager.h"
@@ -1490,6 +1493,77 @@ TEST_P(ScrollableShelfViewRTLTest, ActivateAppScrollShelfToMakeAppVisible) {
       visible_space_in_screen.Contains(first_button->GetBoundsInScreen()));
   EXPECT_FALSE(
       visible_space_in_screen.Contains(last_button->GetBoundsInScreen()));
+}
+
+namespace {
+
+class ScrollableShelfViewDeskButtonTest : public ScrollableShelfViewTest {
+ public:
+  ScrollableShelfViewDeskButtonTest() = default;
+  ScrollableShelfViewDeskButtonTest(const ScrollableShelfViewDeskButtonTest&) =
+      delete;
+  ScrollableShelfViewDeskButtonTest& operator=(
+      const ScrollableShelfViewDeskButtonTest&) = delete;
+  ~ScrollableShelfViewDeskButtonTest() override = default;
+
+  // ScrollableShelfViewTest:
+  void SetUp() override {
+    scoped_feature_list_.InitWithFeatures(
+        /*enabled_features=*/{features::kDeskButton,
+                              chromeos::features::kJellyroll},
+        /*disabled_features=*/{});
+
+    // Shelf overflow can be influenced by system time (i.e. if the date is
+    // slightly longer or the clock has four digits instead of three, this can
+    // cause overflow). We set the timer to be a consistent time so that the
+    // time cannot impact the test's success.
+    base::CommandLine::ForCurrentProcess()->AppendSwitch(
+        switches::kStabilizeTimeDependentViewForTests);
+
+    ScrollableShelfViewTest::SetUp();
+    SetShowDeskButtonInShelfPref(
+        Shell::Get()->session_controller()->GetPrimaryUserPrefService(), true);
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+}  // namespace
+
+// Verify that adding an app to overflow the shelf will cause the desk button to
+// shrink.
+TEST_F(ScrollableShelfViewDeskButtonTest, ButtonRespondsToOverflowStateChange) {
+  SetShelfAnimationDuration(base::Milliseconds(1));
+  GetPrimaryShelf()->SetAlignment(ShelfAlignment::kBottom);
+
+  auto* scrollable_shelf_view =
+      GetPrimaryShelf()->hotseat_widget()->scrollable_shelf_view();
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
+            scrollable_shelf_view->layout_strategy_for_test());
+  auto* desk_button_widget = GetPrimaryShelf()->desk_button_widget();
+  EXPECT_TRUE(desk_button_widget->is_expanded());
+  EXPECT_EQ(96, desk_button_widget->GetTargetBounds().width());
+
+  // Keep adding apps until the desk button shrinks, and track the ID of the
+  // last added app so that we can remove it later.
+  ShelfID last_app_id;
+  while (desk_button_widget->is_expanded()) {
+    last_app_id = AddAppShortcut();
+    WaitForShelfAnimation();
+  }
+
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
+            scrollable_shelf_view->layout_strategy_for_test());
+  EXPECT_EQ(36, desk_button_widget->GetTargetBounds().width());
+
+  auto* shelf_model = ShelfModel::Get();
+  shelf_model->RemoveItemAt(shelf_model->ItemIndexByID(last_app_id));
+  WaitForShelfAnimation();
+  EXPECT_EQ(ScrollableShelfView::LayoutStrategy::kNotShowArrowButtons,
+            scrollable_shelf_view->layout_strategy_for_test());
+  EXPECT_TRUE(desk_button_widget->is_expanded());
+  EXPECT_EQ(96, desk_button_widget->GetTargetBounds().width());
 }
 
 }  // namespace ash

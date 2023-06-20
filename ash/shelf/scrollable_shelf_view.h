@@ -126,6 +126,10 @@ class ASH_EXPORT ScrollableShelfView : public views::AccessiblePaneView,
   // that the returned value is mirrored for the horizontal shelf under RTL.
   gfx::Insets CalculateMirroredEdgePadding(bool use_target_bounds) const;
 
+  // Returns whether the shelf will be overflown (i.e. it will show one or both
+  // arrow buttons) if it is given the input length.
+  bool CalculateShelfOverflowForAvailableLength(int available_length) const;
+
   views::View* GetShelfContainerViewForTest();
   bool ShouldAdjustForTest() const;
 
