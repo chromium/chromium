@@ -205,8 +205,8 @@ static void AppendServerMapMousePosition(StringBuilder& url, Event* event) {
 
 void HTMLAnchorElement::DefaultEventHandler(Event& event) {
   if (IsLink()) {
-    if (base::FeatureList::IsEnabled(
-            features::kSpeculativeServiceWorkerWarmUp)) {
+    if (isConnected() && base::FeatureList::IsEnabled(
+                             features::kSpeculativeServiceWorkerWarmUp)) {
       Document& top_document = GetDocument().TopDocument();
       if (auto* observer =
               AnchorElementObserverForServiceWorker::From(top_document)) {
@@ -666,7 +666,8 @@ Node::InsertionNotificationRequest HTMLAnchorElement::InsertedInto(
     AnchorElementMetricsSender::From(top_document)->AddAnchorElement(*this);
   }
 
-  if (base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp) &&
+  if (isConnected() && IsLink() &&
+      base::FeatureList::IsEnabled(features::kSpeculativeServiceWorkerWarmUp) &&
       features::kSpeculativeServiceWorkerWarmUpOnVisible.Get()) {
     if (auto* observer =
             AnchorElementObserverForServiceWorker::From(top_document)) {
