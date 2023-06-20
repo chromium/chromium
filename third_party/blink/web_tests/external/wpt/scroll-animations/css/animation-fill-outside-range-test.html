@@ -4,7 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/">
-<link rel="match" href="animation-inactive-outside-range-ref.html">
+<link rel="match" href="animation-fill-outside-range-ref.html">
 <script src="/common/reftest-wait.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
@@ -39,9 +39,15 @@
   .contain {
     top: 250px;
   }
-  @keyframes active-opacity {
+  @keyframes opaque-before {
     0% { opacity: 1; }
-    100% { opacity: 1; }
+    0.01% { opacity : 0; }
+    100% { opacity : 0; }
+  }
+  @keyframes opaque-after {
+    0% { opacity: 0; }
+    99.9% { opacity : 0; }
+    100% { opacity : 1; }
   }
   .indicator {
     position: fixed;
@@ -77,8 +83,17 @@
     border-radius: 100%;
     background: green;
     opacity: 0;
-    animation: active-opacity;
+    animation-fill-mode: both;
     animation-timeline: --view;
+  }
+
+  .after .indicator > div > div,
+  .contain .indicator > div > div {
+    animation-name: opaque-after;
+  }
+  .before .indicator > div > div,
+  .contain .indicator:nth-child(2) > div > div {
+    animation-name: opaque-before;
   }
 
   .contain .indicator > div > div {
@@ -92,7 +107,7 @@
 </style>
 </head>
 <body>
-  <p>None of the activity indicators should be active all of the animations are outside of their active range.</p>
+  <p>All of the activity indicators should be active as the animations should be filling.</p>
   <div class="scroller">
     <div class="anim after"><div class="indicator">After cover phase: <div><div></div></div></div></div>
     <div class="anim before"><div class="indicator">Before cover phase: <div><div></div></div></div></div>
@@ -107,7 +122,7 @@
   async function run() {
     let scroller = document.querySelector('.scroller');
     // Scroll such that each animation becomes active.
-    scroller.scrollTo({top: 0});
+    scroller.scrollTo(0, 0);
     await waitForCompositorReady();
     scroller.scrollTo({top: 400});
     await waitForNextFrame();

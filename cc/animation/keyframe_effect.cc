@@ -1038,7 +1038,10 @@ void KeyframeEffect::MarkFinishedKeyframeModels(
 
   bool keyframe_model_finished = false;
   for (auto& keyframe_model : keyframe_models()) {
-    if (!keyframe_model->is_finished() &&
+    // Scroll driven animations are never finished as the user may scroll back
+    // into the active range.
+    if (!animation_->IsScrollLinkedAnimation() &&
+        !keyframe_model->is_finished() &&
         keyframe_model->IsFinishedAt(monotonic_time)) {
       keyframe_model->SetRunState(gfx::KeyframeModel::FINISHED, monotonic_time);
       keyframe_model_finished = true;

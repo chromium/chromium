@@ -1,11 +1,9 @@
 <!DOCTYPE html>
-<html class="reftest-wait">
+<html>
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <link rel="help" src="https://drafts.csswg.org/scroll-animations-1/">
-<link rel="match" href="animation-inactive-outside-range-ref.html">
-<script src="/common/reftest-wait.js"></script>
 <script src="/web-animations/testcommon.js"></script>
 <style>
   .scroller {
@@ -21,7 +19,6 @@
     width: 100px;
     height: 100px;
     background: darkred;
-    view-timeline: --view;
   }
   .anim.contain {
     background: green;
@@ -38,10 +35,6 @@
   }
   .contain {
     top: 250px;
-  }
-  @keyframes active-opacity {
-    0% { opacity: 1; }
-    100% { opacity: 1; }
   }
   .indicator {
     position: fixed;
@@ -76,23 +69,14 @@
     height: 100%;
     border-radius: 100%;
     background: green;
-    opacity: 0;
-    animation: active-opacity;
-    animation-timeline: --view;
-  }
-
-  .contain .indicator > div > div {
-    animation-range: entry;
-  }
-
-  .contain .indicator:nth-child(2) > div > div {
-    animation-range: exit;
+    opacity: 1;
+    will-change: opacity;
   }
 
 </style>
 </head>
 <body>
-  <p>None of the activity indicators should be active all of the animations are outside of their active range.</p>
+  <p>All of the activity indicators should be active as the animations should be filling.</p>
   <div class="scroller">
     <div class="anim after"><div class="indicator">After cover phase: <div><div></div></div></div></div>
     <div class="anim before"><div class="indicator">Before cover phase: <div><div></div></div></div></div>
@@ -104,18 +88,9 @@
   </div>
 </body>
 <script>
-  async function run() {
+  function run() {
     let scroller = document.querySelector('.scroller');
-    // Scroll such that each animation becomes active.
-    scroller.scrollTo({top: 0});
-    await waitForCompositorReady();
-    scroller.scrollTo({top: 400});
-    await waitForNextFrame();
-
-    // Then scroll between them so that we are before one and after the other.
     scroller.scrollTo({top: 200});
-    await waitForNextFrame();
-    takeScreenshot();
   }
   run();
 </script>
