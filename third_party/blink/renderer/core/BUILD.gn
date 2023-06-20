@@ -1267,6 +1267,7 @@ target(core_generated_target_type, "core_generated") {
 
   # Dependencies required to compile the sources.
   public_deps += [
+    ":element_locator_proto",
     ":prerequisites",
     "//gin",
     "//skia",
@@ -1427,6 +1428,7 @@ source_set("unit_tests") {
 
   deps = [
     ":core",
+    ":element_locator_proto",
     ":unit_test_support",
     "//build:chromeos_buildflags",
     "//cc",
@@ -1675,6 +1677,11 @@ proto_library("css_proto") {
   sources = [ "$blink_core_output_dir/css/parser/css.proto" ]
   proto_out_dir = "third_party/blink/renderer/core/css/parser"
   deps = [ ":make_css_proto" ]
+}
+
+proto_library("element_locator_proto") {
+  sources = [ "lcp_critical_path_predictor/element_locator.proto" ]
+  proto_out_dir = "third_party/blink/renderer/core/lcp_critical_path_predictor"
 }
 
 fuzzer_test("blink_html_tokenizer_fuzzer") {

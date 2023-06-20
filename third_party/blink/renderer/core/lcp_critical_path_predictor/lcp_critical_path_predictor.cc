@@ -23,7 +23,7 @@ LCPCriticalPathPredictor::~LCPCriticalPathPredictor() = default;
 
 void LCPCriticalPathPredictor::OnLargestContentfulPaintUpdated(
     Element* lcp_element) {
-  String locator = ToElementLocatorString(lcp_element);
+  auto locator = element_locator::OfElement(lcp_element);
 
   // TODO(crbug.com/1419756): Send `locator` to the
   // `LCPCriticalPathPredictorHost`.

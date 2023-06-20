@@ -7,6 +7,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/renderer/core/dom/element_traversal.h"
 #include "third_party/blink/renderer/core/editing/testing/editing_test_base.h"
+#include "third_party/blink/renderer/core/lcp_critical_path_predictor/element_locator.pb.h"
+#include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
 #include "third_party/googletest/src/googletest/include/gtest/gtest.h"
 
 namespace blink {
@@ -18,7 +20,7 @@ bool HasDataLocateMe(Element& element) {
   return element.hasAttribute(kDataLocateMe);
 }
 
-TEST_F(ElementLocatorTest, ToElementLocatorString) {
+TEST_F(ElementLocatorTest, OfElement) {
   struct TestCase {
     const char* body_html;
     const char* expected_locator_string;
@@ -29,18 +31,18 @@ TEST_F(ElementLocatorTest, ToElementLocatorString) {
 
       // No id on the element, so use relative position.
       {"<div id='container'><div data-locate-me></div></div>",
-       "/DIV[0]/#container"},
+       "/div[0]/#container"},
 
       // No id on the document, so stop at BODY.
-      {"<div data-locate-me></div>", "/DIV[0]/BODY[0]"},
+      {"<div data-locate-me></div>", "/div[0]/body[0]"},
 
       // Siblings
       {"<div id='container'><p><p><p><p data-locate-me><p></div>",
-       "/P[3]/#container"},
+       "/p[3]/#container"},
 
       // Siblings with different tag names
       {"<div id='container'><h1></h1><p><p data-locate-me><p><a></a></div>",
-       "/P[1]/#container"},
+       "/p[1]/#container"},
 
       // Misc complicated cases
       {"<section id='container'>"
@@ -52,7 +54,7 @@ TEST_F(ElementLocatorTest, ToElementLocatorString) {
        "</article>"
        "<article></article>"
        "</section>",
-       "/IMG[1]/ARTICLE[2]/#container"},
+       "/img[1]/article[2]/#container"},
   };
 
   for (const auto& test_case : test_cases) {
@@ -64,8 +66,14 @@ TEST_F(ElementLocatorTest, ToElementLocatorString) {
         Traversal<Element>::FirstWithin(GetDocument(), HasDataLocateMe);
     ASSERT_TRUE(target);
 
-    EXPECT_EQ(String(test_case.expected_locator_string),
-              ToElementLocatorString(target));
+    auto maybe_locator = element_locator::OfElement(target);
+
+    if (test_case.expected_locator_string) {
+      ASSERT_TRUE(maybe_locator.has_value());
+
+      String locator_string = element_locator::ToString(maybe_locator.value());
+      EXPECT_EQ(String(test_case.expected_locator_string), locator_string);
+    }
   }
 }
 

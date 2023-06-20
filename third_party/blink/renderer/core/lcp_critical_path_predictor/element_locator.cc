@@ -8,10 +8,10 @@
 #include "third_party/blink/renderer/core/dom/element.h"
 #include "third_party/blink/renderer/platform/wtf/text/string_builder.h"
 
-namespace blink {
+namespace blink::element_locator {
 
-String ToElementLocatorString(Element* element) {
-  StringBuilder builder;
+absl::optional<ElementLocator> OfElement(Element* element) {
+  ElementLocator locator;
 
   while (element) {
     Element* parent = element->parentElement();
@@ -19,29 +19,28 @@ String ToElementLocatorString(Element* element) {
     if (element->HasID()) {
       // Peg on element id if that exists
 
-      builder.Append("/#");
-      builder.Append(element->GetIdAttribute());
+      ElementLocator_Component_Id* id_comp =
+          locator.add_components()->mutable_id();
+      id_comp->set_id_attr(element->GetIdAttribute().Utf8());
       break;
     } else if (parent) {
-      // Last resort: n-th element that has tagName.
+      // Last resort: n-th element that has the `tag_name`.
 
-      String tag_name = element->tagName();
+      AtomicString tag_name = element->localName();
 
       int nth = 0;
       for (Node* sibling = parent->firstChild(); sibling;
            sibling = sibling->nextSibling()) {
         Element* sibling_el = DynamicTo<Element>(sibling);
-        if (!sibling_el || sibling_el->tagName() != tag_name) {
+        if (!sibling_el || sibling_el->localName() != tag_name) {
           continue;
         }
 
         if (sibling_el == element) {
-          builder.Append('/');
-          builder.Append(tag_name);
-          builder.Append('[');
-          builder.AppendNumber(nth);
-          builder.Append(']');
-
+          ElementLocator_Component_NthTagName* nth_comp =
+              locator.add_components()->mutable_nth();
+          nth_comp->set_tag_name(tag_name.Utf8());
+          nth_comp->set_index(nth);
           break;
         }
 
@@ -52,7 +51,28 @@ String ToElementLocatorString(Element* element) {
     element = parent;
   }
 
+  return locator;
+}
+
+String ToString(const ElementLocator& locator) {
+  StringBuilder builder;
+
+  for (const auto& c : locator.components()) {
+    builder.Append('/');
+    if (c.has_id()) {
+      builder.Append('#');
+      builder.Append(c.id().id_attr().c_str());
+    } else if (c.has_nth()) {
+      builder.Append(c.nth().tag_name().c_str());
+      builder.Append('[');
+      builder.AppendNumber(c.nth().index());
+      builder.Append(']');
+    } else {
+      builder.Append("unknown_type");
+    }
+  }
+
   return builder.ReleaseString();
 }
 
-}  // namespace blink
+}  // namespace blink::element_locator

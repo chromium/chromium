@@ -543,6 +543,7 @@ _CONFIG = [
             'css_parsing_utils::.+',
             'css_toggle_key_handling::.+',
             'cssvalue::.+',
+            'element_locator::.+',
             'encoding::.+',
             'encoding_enum::.+',
             'event_handling_util::.+',
