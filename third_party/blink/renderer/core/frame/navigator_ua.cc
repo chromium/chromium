@@ -26,7 +26,6 @@ NavigatorUAData* NavigatorUA::userAgentData() {
   ua_data->SetBitness(String::FromUTF8(metadata.bitness));
   ua_data->SetFullVersionList(metadata.brand_full_version_list);
   ua_data->SetWoW64(metadata.wow64);
-  ua_data->SetFormFactor(String::FromUTF8(metadata.form_factor));
 
   return ua_data;
 }

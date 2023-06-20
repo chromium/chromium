@@ -78,7 +78,6 @@ absl::optional<std::string> UserAgentMetadata::Marshal(
   out.WriteBool(in->mobile);
   out.WriteString(in->bitness);
   out.WriteBool(in->wow64);
-  out.WriteString(in->form_factor);
   return std::string(reinterpret_cast<const char*>(out.data()), out.size());
 }
 
@@ -136,9 +135,6 @@ absl::optional<UserAgentMetadata> UserAgentMetadata::Demarshal(
     return absl::nullopt;
   if (!in.ReadBool(&out.wow64))
     return absl::nullopt;
-  if (!in.ReadString(&out.form_factor)) {
-    return absl::nullopt;
-  }
   return absl::make_optional(std::move(out));
 }
 
@@ -152,8 +148,7 @@ bool operator==(const UserAgentMetadata& a, const UserAgentMetadata& b) {
          a.full_version == b.full_version && a.platform == b.platform &&
          a.platform_version == b.platform_version &&
          a.architecture == b.architecture && a.model == b.model &&
-         a.mobile == b.mobile && a.bitness == b.bitness && a.wow64 == b.wow64 &&
-         a.form_factor == b.form_factor;
+         a.mobile == b.mobile && a.bitness == b.bitness && a.wow64 == b.wow64;
 }
 
 // static

@@ -356,9 +356,6 @@ bool IsCorsSafelistedHeader(const std::string& name, const std::string& value) {
       // although there may be internal UI in the future.
       // https://wicg.github.io/user-preference-media-features-headers/#sec-ch-prefers-reduced-motion
       "sec-ch-prefers-reduced-motion",
-      // The `Sec-CH-UA-Form-Factor` header field provides information on the
-      // form factor of the user agent device.
-      "sec-ch-ua-form-factor",
   });
 
   // Check if the name of the header to send is safe.

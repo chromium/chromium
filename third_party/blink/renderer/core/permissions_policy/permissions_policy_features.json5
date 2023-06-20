@@ -140,10 +140,6 @@
       permissions_policy_name: "ch-ua-bitness",
     },
     {
-      name: "ClientHintUAFormFactor",
-      permissions_policy_name: "ch-ua-form-factor",
-    },
-    {
       name: "ClientHintUAPlatform",
       permissions_policy_name: "ch-ua-platform",
       feature_default: "EnableForAll",

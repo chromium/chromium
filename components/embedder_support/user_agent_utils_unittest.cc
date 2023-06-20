@@ -916,7 +916,6 @@ TEST_F(UserAgentUtilsTest, UserAgentMetadata) {
   EXPECT_EQ(metadata.model, content::BuildModelInfo());
   EXPECT_EQ(metadata.bitness, content::GetCpuBitness());
   EXPECT_EQ(metadata.wow64, content::IsWoW64());
-  EXPECT_EQ(metadata.form_factor, metadata.mobile ? "Mobile" : "");
 }
 
 TEST_F(UserAgentUtilsTest, GenerateBrandVersionListUnbranded) {

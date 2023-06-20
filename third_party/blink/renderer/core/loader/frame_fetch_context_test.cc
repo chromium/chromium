@@ -837,9 +837,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorViewportWidthHints) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactor);
-
   // `Sec-CH-UA` is always sent for secure requests
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA", true, "");
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA", false, "");
@@ -852,11 +849,7 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
   ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-               "");
-  ExpectHeader("http://www.example.com/0.gif", "Sec-CH-UA-Model", false, "");
-  ExpectHeader("http://www.example.com/0.gif", "Sec-CH-UA-Form-Factor", false,
-               "");
+  ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
 
   {
     ClientHintsPreferences preferences;
@@ -868,15 +861,11 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor",
-                 false, "");
 
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-                 "");
   }
 
   {
@@ -889,15 +878,11 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor",
-                 false, "");
 
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-                 "");
   }
 
   {
@@ -910,15 +895,11 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  true, EmptyString());
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor",
-                 false, "");
 
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-                 "");
   }
 
   {
@@ -931,36 +912,11 @@ TEST_P(FrameFetchContextHintsTest, MonitorUAHints) {
                  false, "");
     ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true,
                  EmptyString());
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor",
-                 false, "");
 
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                  false, "");
     ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-                 "");
-  }
-
-  {
-    ClientHintsPreferences preferences;
-    preferences.SetShouldSend(
-        network::mojom::WebClientHintsType::kUAFormFactor);
-    document->GetFrame()->GetClientHintsPreferences().UpdateFrom(preferences);
-
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
-                 false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", true,
-                 EmptyString());
-
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Arch", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
-                 false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-    ExpectHeader("http://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-                 "");
   }
 }
 
@@ -1012,9 +968,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorPrefersReducedMotionHint) {
 }
 
 TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
-  base::test::ScopedFeatureList scoped_feature_list;
-  scoped_feature_list.InitAndEnableFeature(features::kClientHintsFormFactor);
-
   ExpectHeader("https://www.example.com/1.gif", "Device-Memory", false, "");
   ExpectHeader("https://www.example.com/1.gif", "DPR", false, "");
   ExpectHeader("https://www.example.com/1.gif", "Viewport-Width", false, "");
@@ -1026,8 +979,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", false, "");
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", false,
-               "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
                false, "");
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Reduced-Motion",
@@ -1060,7 +1011,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kUAPlatformVersion);
   preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAModel);
-  preferences.SetShouldSend(network::mojom::WebClientHintsType::kUAFormFactor);
   preferences.SetShouldSend(
       network::mojom::WebClientHintsType::kPrefersColorScheme);
   preferences.SetShouldSend(
@@ -1087,8 +1037,6 @@ TEST_P(FrameFetchContextHintsTest, MonitorAllHints) {
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Platform-Version",
                true, EmptyString());
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Model", true,
-               EmptyString());
-  ExpectHeader("https://www.example.com/1.gif", "Sec-CH-UA-Form-Factor", true,
                EmptyString());
   ExpectHeader("https://www.example.com/1.gif", "Sec-CH-Prefers-Color-Scheme",
                true, "light");

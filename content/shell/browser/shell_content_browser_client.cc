@@ -318,7 +318,6 @@ blink::UserAgentMetadata GetShellUserAgentMetadata() {
 
   metadata.bitness = GetCpuBitness();
   metadata.wow64 = content::IsWoW64();
-  metadata.form_factor = "";  // Empty value signifies desktop.
 
   return metadata;
 }

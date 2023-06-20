@@ -15,5 +15,4 @@ dictionary UADataValues {
   DOMString bitness;
   sequence<NavigatorUABrandVersion> fullVersionList;
   boolean wow64;
-  DOMString formFactor;
 };
