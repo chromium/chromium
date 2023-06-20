@@ -69,7 +69,7 @@ namespace {
 // Controls whether InitializeVideoToolboxInternal() does preload or not.
 BASE_FEATURE(kSkipVideoToolboxPreload,
              "SkipVideoToolboxPreload",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Parameter sets vector contain all PPSs/SPSs(/VPSs)
 using ParameterSets = std::vector<base::span<const uint8_t>>;

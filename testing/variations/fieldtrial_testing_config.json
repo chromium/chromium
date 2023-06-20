@@ -12572,21 +12572,6 @@
             ]
         }
     ],
-    "SkipVideoToolboxPreload": [
-        {
-            "platforms": [
-                "mac"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "SkipVideoToolboxPreload"
-                    ]
-                }
-            ]
-        }
-    ],
     "SlimCompositor": [
         {
             "platforms": [
