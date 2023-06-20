@@ -362,10 +362,6 @@ source_set("ozone_unittests_filters") {
   ]
 }
 
-source_set("sandbox_linux_unittests_filters") {
-  data = [ "//testing/buildbot/filters/android.emulator.sandbox_linux_unittests.filter" ]
-}
-
 source_set("unit_tests_filters") {
   testonly = true
 

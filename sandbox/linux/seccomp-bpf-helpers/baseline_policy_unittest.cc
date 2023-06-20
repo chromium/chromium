@@ -151,7 +151,16 @@ BPF_TEST_C(BaselinePolicy, ForkArmEperm, BaselinePolicy) {
   BPF_ASSERT_EQ(EPERM, fork_errno);
 }
 
-BPF_TEST_C(BaselinePolicy, SystemEperm, BaselinePolicy) {
+// system() calls into vfork() on old Android builds and returns when vfork is
+// blocked. This causes undefined behavior on x86 Android builds on versions
+// prior to Q, which causes the stack to get corrupted, so this test cannot be
+// made to pass.
+#if BUILDFLAG(IS_ANDROID) && defined(__i386__)
+#define MAYBE_SystemEperm DISABLED_SystemEperm
+#else
+#define MAYBE_SystemEperm SystemEperm
+#endif
+BPF_TEST_C(BaselinePolicy, MAYBE_SystemEperm, BaselinePolicy) {
   errno = 0;
   int ret_val = system("echo SHOULD NEVER RUN");
   // glibc >= 2.33 changed the ret code: 127 is now expected on bits 15-8
