@@ -25,14 +25,6 @@ from pylib.base import test_run
 from pylib.constants import host_paths
 from pylib.results import json_results
 
-
-# These Test classes are used for running tests and are excluded in the test
-# runner. See:
-# https://android.googlesource.com/platform/frameworks/testing/+/android-support-test/runner/src/main/java/android/support/test/internal/runner/TestRequestBuilder.java
-# base/test/android/javatests/src/org/chromium/base/test/BaseChromiumAndroidJUnitRunner.java # pylint: disable=line-too-long
-_EXCLUDED_CLASSES_PREFIXES = ('android', 'junit', 'org/bouncycastle/util',
-                              'org/hamcrest', 'org/junit', 'org/mockito')
-
 # Suites we shouldn't shard, usually because they don't contain enough test
 # cases.
 _EXCLUDED_SUITES = {
@@ -51,6 +43,10 @@ _SHARD_TIMEOUT = 30 * 60
 
 # RegExp to detect logcat lines, e.g., 'I/AssetManager: not found'.
 _LOGCAT_RE = re.compile(r'(:?\d+\| )?[A-Z]/[\w\d_-]+:')
+
+# Regex that matches a test name, and optionally matches the sdk version e.g.:
+# org.chromium.default_browser_promo.PromoUtilsTest#testNoPromo[28]'
+_TEST_SDK_VERSION = re.compile(r'(.*\.\w+)#\w+(?:\[(\d+)\])?')
 
 
 class LocalMachineJunitTestRun(test_run.TestRun):
@@ -156,7 +152,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
   # override
   def RunTests(self, results, raw_logs_fh=None):
     # This avoids searching through the classparth jars for tests classes,
-    # which takes about 1-2 seconds.
+    # which takes about 2-3 seconds.
     if (self._test_instance.shards == 1
         # TODO(crbug.com/1383650): remove this
         or self._test_instance.has_literal_filters or
@@ -164,7 +160,7 @@ class LocalMachineJunitTestRun(test_run.TestRun):
       test_classes = []
       shards = 1
     else:
-      test_classes = _GetTestClasses(self._wrapper_path)
+      test_classes = _GetTestClasses(self.GetTestsForListing())
       shards = ChooseNumOfShards(test_classes, self._test_instance.shards)
 
     grouped_tests = GroupTestsForShard(shards, test_classes)
@@ -317,7 +313,7 @@ def GroupTestsForShard(num_of_shards, test_classes):
   # Round robin test distribiution to reduce chance that a sequential group of
   # classes all have an unusually high number of tests.
   for count, test_cls in enumerate(test_classes):
-    test_cls = test_cls.replace('.class', '*')
+    test_cls = test_cls + '*'
     test_cls = test_cls.replace('/', '.')
     ret[count % num_of_shards].append(test_cls)
 
@@ -449,43 +445,19 @@ def _StreamFirstShardOutput(shard_proc, deadline):
       yield f'0| {line}'
 
 
-def _GetTestClasses(file_path):
-  test_jar_paths = subprocess.check_output([file_path,
-                                            '--print-classpath']).decode()
-  test_jar_paths = test_jar_paths.split(':')
+def _GetTestClasses(test_list):
+  test_classes = set()
+  unmatched_tests = []
+  for test in test_list:
+    match = _TEST_SDK_VERSION.match(test)
+    if match:
+      test_classes.add(match.group(1))
+    else:
+      unmatched_tests.append(test)
 
-  test_classes = []
-  for test_jar_path in test_jar_paths:
-    # Avoid searching through jars that are for the test runner.
-    # TODO(crbug.com/1144077): Use robolectric buildconfig file arg.
-    if 'third_party/robolectric/' in test_jar_path:
-      continue
+  logging.info('Found %d test classes.', len(test_classes))
+  if unmatched_tests:
+    logging.warning('Could not parse the class from test(s): %s',
+                    unmatched_tests)
 
-    test_classes += _GetTestClassesFromJar(test_jar_path)
-
-  logging.info('Found %d test classes in class_path jars.', len(test_classes))
-  return test_classes
-
-
-def _GetTestClassesFromJar(test_jar_path):
-  """Returns a list of test classes from a jar.
-
-  Test files end in Test, this is enforced:
-  //tools/android/errorprone_plugin/src/org/chromium/tools/errorprone
-  /plugin/TestClassNameCheck.java
-
-  Args:
-    test_jar_path: Path to the jar.
-
-  Return:
-    Returns a list of test classes that were in the jar.
-  """
-  class_list = []
-  with zipfile.ZipFile(test_jar_path, 'r') as zip_f:
-    for test_class in zip_f.namelist():
-      if test_class.startswith(_EXCLUDED_CLASSES_PREFIXES):
-        continue
-      if test_class.endswith('Test.class') and '$' not in test_class:
-        class_list.append(test_class)
-
-  return class_list
+  return list(test_classes)

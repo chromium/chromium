@@ -46,13 +46,7 @@ parser.add_argument('--jar-args')
 parser.add_argument('--jvm-args')
 parser.add_argument('--classpath')
 # Test_runner parses the classpath for sharding junit tests.
-parser.add_argument('--print-classpath', action='store_true',
-                    help='Prints the classpass. Used by test_runner.')
 known_args, unknown_args = parser.parse_known_args(sys.argv[1:])
-
-if known_args.print_classpath:
-  sys.stdout.write(':'.join(classpath))
-  sys.exit(0)
 
 if known_args.jvm_args:
   jvm_arguments = known_args.jvm_args.strip('"').split()
