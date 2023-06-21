@@ -607,7 +607,7 @@
 <translation id="2413155254802890957">പഴയവ</translation>
 <translation id="2413528052993050574">ഈ സെർവറിന് അത് <ph name="DOMAIN" /> ആണെന്ന് തെളിയിക്കാനായില്ല; സെർവറിന്റെ സുരക്ഷാ സർട്ടിഫിക്കറ്റ് റദ്ദാക്കിയിരിക്കാം. തെറ്റായ കോൺഫിഗറേഷൻ കാരണമോ ഒരു അക്രമണകാരി നിങ്ങളുടെ കണക്ഷനെ തടസ്സപ്പെടുത്തുന്നത് കൊണ്ടോ ആയിരിക്കാം ഇത് സംഭവിച്ചത്.</translation>
 <translation id="2414886740292270097">ഇരുണ്ടത്</translation>
-<translation id="2430968933669123598">Google അക്കൗണ്ട് മാനേജ് ചെയ്യുക, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
+<translation id="2430968933669123598">Google Account മാനേജ് ചെയ്യുക, നിങ്ങളുടെ Google അക്കൗണ്ടിലെ വിവരങ്ങളും സ്വകാര്യതയും സുരക്ഷയും മാനേജ് ചെയ്യാൻ Enter അമർത്തുക</translation>
 <translation id="2436186046335138073">എല്ലാ <ph name="PROTOCOL" /> ലിങ്കുകളും തുറക്കാൻ <ph name="HANDLER_HOSTNAME" /> എന്നതിനെ അനുവദിക്കണോ?</translation>
 <translation id="2438874542388153331">വലതുവശത്ത് നാല് തവണ പഞ്ച് ചെയ്യുക</translation>
 <translation id="2441854154602066476">ടച്ച് ചെയ്യുമ്പോൾ പൂരിപ്പിക്കാൻ ലഭ്യമായ പേയ്‌മെന്റ് രീതികൾ. കീബോർഡ് മറച്ചിരിക്കുന്നു.</translation>
@@ -1224,7 +1224,7 @@
 <translation id="401170183602135785">Envelope C6</translation>
 <translation id="4014128326099193693">{COUNT,plural, =1{{COUNT} പേജുള്ള PDF ഡോക്യുമെന്റ്}other{{COUNT} പേജുകളുള്ള PDF ഡോക്യുമെന്റ്}}</translation>
 <translation id="4023431997072828269">സുരക്ഷിതമല്ലാത്ത ഒരു കണക്ഷൻ ഉപയോഗിച്ച് ഈ ഫോം സമർപ്പിക്കുന്നതിനാൽ, നിങ്ങളുടെ വിവരങ്ങൾ മറ്റുള്ളവർക്ക് കാണാനാകും.</translation>
-<translation id="4025913568718019429">Google സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, നിങ്ങളുടെ Google അക്കൗണ്ട് സ്വകാര്യതാ ക്രമീകരണം സന്ദർശിക്കാൻ Enter അമർത്തുക</translation>
+<translation id="4025913568718019429">Google സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക ബട്ടൺ, നിങ്ങളുടെ Google Account സ്വകാര്യതാ ക്രമീകരണം സന്ദർശിക്കാൻ Enter അമർത്തുക</translation>
 <translation id="4030383055268325496">&amp;ചേർത്തത് പഴയപടിയാക്കുക</translation>
 <translation id="4030545038933060179">ഓണായിരിക്കുമ്പോൾ, നിങ്ങളുടെ സമീപകാല ബ്രൗസിംഗ് ചരിത്രത്തെ അടിസ്ഥാനമാക്കി വിഷയങ്ങളുടെ ലിസ്‌റ്റ് ഇവിടെ ദൃശ്യമാകും</translation>
 <translation id="4031179711345676612">മൈക്രോഫോൺ അനുവദനീയം</translation>
@@ -1431,7 +1431,7 @@
 <translation id="4482953324121162758">ഈ സൈറ്റ് വിവർത്തനം ചെയ്യപ്പെടില്ല.</translation>
 <translation id="4489023393592172404">Envelope Kaku 4</translation>
 <translation id="4490717597759821841">A7</translation>
-<translation id="449126573531210296">സമന്വയിപ്പിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google അക്കൗണ്ട് ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
+<translation id="449126573531210296">സമന്വയിപ്പിച്ച പാസ്‌വേഡുകൾ നിങ്ങളുടെ Google Account ഉപയോഗിച്ച് എൻക്രിപ്റ്റ് ചെയ്യുക</translation>
 <translation id="4492519888999857993">ഈ ഫീച്ചറുകൾ ഡിഫോൾട്ടായി പ്രവർത്തനരഹിതമാക്കിയിരിക്കുന്നു. Chrome-ന്റെ ഭാവി പതിപ്പുകളിൽ അവ ലഭ്യമാകില്ല.</translation>
 <translation id="4493480324863638523">URL അസാധുവാണ്. സ്‌റ്റാൻഡേർഡ് സ്‌കീം ഉള്ള URL ആയിരിക്കണം, ഉദാ. http://example.com അല്ലെങ്കിൽ https://example.com.</translation>
 <translation id="4494323206460475851">നിങ്ങൾക്ക് ക്രമീകരണത്തിൽ പരസ്യ വിഷയങ്ങൾ കാണാനും സൈറ്റുകളുമായി പങ്കിടാൻ താൽപ്പര്യമില്ലാത്തവ ബ്ലോക്ക് ചെയ്യാനുമാകും. 4 ആഴ്ചയിലധികം പഴക്കമുള്ള പരസ്യ വിഷയങ്ങൾ Chrome-ഉം സ്വയമേവ ഇല്ലാതാക്കുന്നു.</translation>
@@ -1552,7 +1552,7 @@
 <translation id="4771973620359291008">ഒരു അജ്ഞാത പിശക് സംഭവിച്ചു.</translation>
 <translation id="477945296921629067">{NUM_POPUPS,plural, =1{പോപ്പ്-അപ്പ് തടഞ്ഞു}other{# പോപ്പ്-അപ്പുകൾ തടഞ്ഞു}}</translation>
 <translation id="4780366598804516005">മെയിൽബോക്സ് 1</translation>
-<translation id="4785376858512657294">Google അക്കൗണ്ട് മാനേജ് ചെയ്യുക</translation>
+<translation id="4785376858512657294">Google Account മാനേജ് ചെയ്യുക</translation>
 <translation id="4785689107224900852">ഈ ടാബിലേക്ക് സ്വിച്ച് ചെയ്യുക</translation>
 <translation id="4786804728079074733">വോളിബോൾ</translation>
 <translation id="4789704664580239421">നിങ്ങളുടെ തുറന്നിരിക്കുന്ന ടാബുകളിൽ വിലക്കുറവുമായി ബന്ധപ്പെട്ട അറിയിപ്പുകൾ ദൃശ്യമാകും</translation>
@@ -2206,7 +2206,7 @@
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" />-ന്‍റെ കാലാവധി തീരുന്ന തീയതിയും CVC-യും നൽകുക</translation>
 <translation id="6411107829285739505">A4x8</translation>
 <translation id="6414888972213066896">ഈ സൈറ്റ് സന്ദർശിക്കുന്നതിന് നിങ്ങൾ രക്ഷിതാവിനോട് അനുമതി ആവശ്യപ്പെട്ടു</translation>
-<translation id="6415778972515849510">നിങ്ങളുടെ Google അക്കൗണ്ട് പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
+<translation id="6415778972515849510">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chromium സഹായിക്കും.</translation>
 <translation id="6416877227920300343">EDP</translation>
 <translation id="6425092077175753609">മെറ്റീരിയൽ</translation>
 <translation id="6427730057873428458">ഗേറ്റ് മടക്ക്</translation>
@@ -2449,7 +2449,7 @@
 <translation id="7029809446516969842">പാസ്‌വേഡുകള്‍</translation>
 <translation id="7030436163253143341">സർട്ടിഫിക്കറ്റ് അസാധുവാണ്</translation>
 <translation id="7031646650991750659">ഏതൊക്കെ Google Play ആപ്പുകൾ നിങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്‍തിട്ടുണ്ട് എന്നത്</translation>
-<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ട് സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="7038063300915481831"><ph name="MANAGE_GOOGLE_PRIVACY_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="7048095965575426564">യൂറോപ്യൻ ഫാൻഫോൾഡ്</translation>
 <translation id="7050187094878475250">നിങ്ങൾ <ph name="DOMAIN" /> എന്നതിലെത്താൻ ശ്രമിച്ചു, എന്നാൽ തീരെ വിശ്വാസയോഗ്യമല്ലാത്ത ഒരു കാലാവധിയുള്ള സർട്ടിഫിക്കറ്റാണ് സെർവർ കാണിക്കുന്നത്.</translation>
 <translation id="705310974202322020">{NUM_CARDS,plural, =1{ഈ കാർഡ് ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}other{ഈ കാർഡുകൾ ഇപ്പോൾ സംരക്ഷിക്കാനാവില്ല}}</translation>
@@ -2552,13 +2552,13 @@
 <translation id="7265608370113700582">വിലാസം ഈ ഉപകരണത്തിൽ മാത്രമേ ലഭ്യമാകൂ</translation>
 <translation id="7275334191706090484">നിയന്ത്രിത ബുക്ക്‌മാർക്കുകൾ</translation>
 <translation id="7277998515889183784">മേക്കപ്പും സൗന്ദര്യവർദ്ധക വസ്‌തുക്കളും</translation>
-<translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google അക്കൗണ്ട് പാസ്‌വേഡ് മാറ്റാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
+<translation id="7285654172857511148"><ph name="CHANGE_GOOGLE_PASSWORD_FOCUSED_FRIENDLY_MATCH_TEXT" />, നിങ്ങളുടെ Google Account പാസ്‌വേഡ് മാറ്റാൻ Tab അമർത്തുക, തുടർന്ന് Enter അമർത്തുക</translation>
 <translation id="7292031607255951991">സ്വീകർത്താവിന്റെ പേര്</translation>
 <translation id="7298195798382681320">ശുപാർശചെയ്യുന്നത്</translation>
 <translation id="7299471494012161875">അറ്റാച്ച് ചെയ്ത ഡിസ്പ്ലേ പെരിഫറലുകൾ</translation>
 <translation id="7300012071106347854">കൊബാൾട്ട് നീല</translation>
 <translation id="7304030187361489308">ഉയർന്നത്</translation>
-<translation id="7304562222803846232">Google അക്കൗണ്ട് സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
+<translation id="7304562222803846232">Google Account സ്വകാര്യതാ ക്രമീകരണം മാനേജ് ചെയ്യുക</translation>
 <translation id="7305756307268530424">കുറഞ്ഞ വേഗതയിൽ ആരംഭിക്കുക</translation>
 <translation id="7308436126008021607">പശ്ചാത്തലം സമന്വയിപ്പിക്കൽ</translation>
 <translation id="7310392214323165548">ഉപകരണം ഉടൻ റീസ്റ്റാർട്ട് ചെയ്യും</translation>
@@ -3080,7 +3080,7 @@
 <translation id="851353418319061866">കൃത്യതാ പരിശോധന</translation>
 <translation id="8513580896341796021">ഡൗൺലോഡ് ആരംഭിച്ചു. അത് കാണാൻ, |<ph name="ACCELERATOR" />| അമർത്തുക.</translation>
 <translation id="8519753333133776369">നിങ്ങളുടെ അഡ്‌മിൻ അനുവദിച്ചിരിക്കുന്ന HID ഉപകരണം</translation>
-<translation id="8522552481199248698">നിങ്ങളുടെ Google അക്കൗണ്ട് പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chrome സഹായിക്കും.</translation>
+<translation id="8522552481199248698">നിങ്ങളുടെ Google Account പരിരക്ഷിക്കാനും പാസ്‌വേഡ് മാറ്റാനും Chrome സഹായിക്കും.</translation>
 <translation id="8530813470445476232">Chrome ക്രമീകരണത്തിൽ നിങ്ങളുടെ ബ്രൗസിംഗ് ചരിത്രവും കുക്കികളും കാഷെയും മറ്റും മായ്‌ക്കുക</translation>
 <translation id="853332391023689529">പിക്കപ്പ് ട്രക്കുകൾ</translation>
 <translation id="8533619373899488139">ബ്ലോക്ക് ചെയ്ത URL-കളുടെ ലിസ്റ്റും നിങ്ങളുടെ സിസ്റ്റം അഡ്‌മിൻ നടപ്പിലാക്കിയ മറ്റ് നയങ്ങളും കാണുന്നതിന് &lt;strong&gt;chrome://policy&lt;/strong&gt; സന്ദർശിക്കുക.</translation>

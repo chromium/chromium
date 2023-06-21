@@ -412,7 +412,7 @@
 <translation id="4410695710508688828">एक्सट्रैक्ट नहीं किया जा सका. <ph name="ERROR_MESSAGE" /></translation>
 <translation id="4414834425328380570">"<ph name="FILE_NAME" />" को मिटा दिया जाएगा और इसे वापस नहीं लाया जा सकेगा.</translation>
 <translation id="4418686080762064601">अपनी फ़ाइलों के लिए एक शॉर्टकट बनाएं</translation>
-<translation id="4425149324548788773">मेरी डिस्क</translation>
+<translation id="4425149324548788773">मेरी ड्राइव</translation>
 <translation id="4432921877815220091"><ph name="NETWORK_COUNT" /> में से नेटवर्क <ph name="NETWORK_INDEX" />, <ph name="NETWORK_NAME" /> को डिवाइस सेटअप होने के बाद चालू करें. सेटअप आपका एडमिन मैनेज करता है</translation>
 <translation id="4439427728133035643"><ph name="NETWORK_COUNT" /> में से <ph name="NETWORK_INDEX" /> नेटवर्क, <ph name="NETWORK_NAME" />, सिग्नल क्षमता <ph name="SIGNAL_STRENGTH" />%, कनेक्ट करें</translation>
 <translation id="4442424173763614572">DNS लुकअप विफल</translation>
@@ -871,7 +871,7 @@
 <translation id="7857117644404132472">अपवाद जोड़ें</translation>
 <translation id="7868774406711971383">पोलिश</translation>
 <translation id="7874321682039004450">फ़िलिपीनो</translation>
-<translation id="78946041517601018">शेयर की गईं डिस्क</translation>
+<translation id="78946041517601018">शेयर की गई ड्राइव</translation>
 <translation id="7903984238293908205">काताकाना</translation>
 <translation id="7908793776359722643">किसी पार्टीशन को फ़ॉर्मैट करने से उस पर सेव किया गया पूरा डेटा मिट जाएगा. मिटने के बाद यह सब वापस नहीं पाया जा सकता.</translation>
 <translation id="7911118814695487383">Linux</translation>
