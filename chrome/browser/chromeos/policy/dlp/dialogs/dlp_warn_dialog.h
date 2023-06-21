@@ -70,12 +70,15 @@ class DlpWarnDialog : public PolicyDialogBase {
 
  private:
   // PolicyDialogBase overrides:
-  void AddGeneralInformation() override;
+  views::Label* AddTitle(const std::u16string& title) override;
+  views::Label* AddMessage(const std::u16string& message) override;
   void MaybeAddConfidentialRows() override;
   std::u16string GetOkButton() override;
   std::u16string GetCancelButton() override;
   std::u16string GetTitle() override;
   std::u16string GetMessage() override;
+  void AddConfidentialRow(const gfx::ImageSkia& icon,
+                          const std::u16string& title) override;
 
   Restriction restriction_;
   absl::optional<std::u16string> application_title_;

@@ -37,6 +37,10 @@ class FilesPolicyErrorDialog : public FilesPolicyDialog {
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;
 
+  // Adds a row with blocked reason message based on `policy`. Should only be
+  // called after `SetupUpperPanel()`.
+  void AddPolicyRow(Policy policy);
+
   // Called from the dialog's "Cancel" button.
   // Opens the help page for policy/-ies that blocked the file action.
   void OpenHelpPage();

@@ -6,6 +6,7 @@
 
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
+#include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
@@ -33,10 +34,25 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
   }
 
   SetupScrollView();
+  std::map<Policy, std::vector<DlpConfidentialFile>> policy_to_blocked_files;
   for (const auto& file : files_) {
-    // TODO(aidazolic): Add errors.
-    AddConfidentialRow(file.first.icon, file.first.title);
+    if (!base::Contains(policy_to_blocked_files, file.second)) {
+      policy_to_blocked_files.emplace(
+          file.second, std::vector<DlpConfidentialFile>({file.first}));
+    } else {
+      policy_to_blocked_files.at(file.second).push_back(file.first);
+    }
   }
+  for (const auto& reason : policy_to_blocked_files) {
+    AddPolicyRow(reason.first);
+    for (const auto& file : reason.second) {
+      AddConfidentialRow(file.icon, file.title);
+    }
+  }
+}
+
+void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
+  // TODO(b/280780100): Implementation.
 }
 
 void FilesPolicyErrorDialog::OpenHelpPage() {
