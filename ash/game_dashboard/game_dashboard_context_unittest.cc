@@ -8,6 +8,7 @@
 
 #include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
+#include "ash/constants/ash_features.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
@@ -173,6 +174,21 @@ TEST_F(GameDashboardContextTest, MainMenuDialogWidget_NonARCGame) {
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_HELP_BUTTON));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_GENERAL_SETTINGS_BUTTON));
+}
+
+// Verifies the main menu doesn't show the record game tile, when the feature is
+// disabled.
+TEST_F(GameDashboardContextTest, MainMenuDialogWidget_RecordGameDisabled) {
+  base::test::ScopedFeatureList scoped_feature_list;
+  scoped_feature_list.InitAndDisableFeature(
+      {features::kFeatureManagementGameDashboardRecordGame});
+
+  // Open the main menu.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  ASSERT_TRUE(GetMainMenuDialogWidget());
+
+  // Verify that the record game tile is unavailable in the main menu.
+  EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
 }
 
 TEST_F(GameDashboardContextTest, TakeScreenshot) {

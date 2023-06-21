@@ -7,6 +7,7 @@
 #include <memory>
 
 #include "ash/capture_mode/capture_mode_controller.h"
+#include "ash/constants/ash_features.h"
 #include "ash/public/cpp/app_types_util.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/strings/grit/ash_strings.h"
@@ -140,14 +141,18 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       VIEW_ID_GD_TOOLBAR_TILE, vector_icons::kVideogameAssetOutlineIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_TOOLBAR_TILE_BUTTON_TITLE)));
-  // TODO(b/273641132): Filter out record game button based on device info.
-  container->AddChildView(CreateTile(
-      base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
-                          base::Unretained(this)),
-      /*is_togglable=*/false, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_RECORD_GAME_TILE, vector_icons::kVideocamIcon,
-      l10n_util::GetStringUTF16(
-          IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE)));
+
+  if (base::FeatureList::IsEnabled(
+          features::kFeatureManagementGameDashboardRecordGame)) {
+    container->AddChildView(CreateTile(
+        base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
+                            base::Unretained(this)),
+        /*is_togglable=*/false, FeatureTile::TileType::kCompact,
+        VIEW_ID_GD_RECORD_GAME_TILE, vector_icons::kVideocamIcon,
+        l10n_util::GetStringUTF16(
+            IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE)));
+  }
+
   container->AddChildView(CreateTile(
       base::BindRepeating(&GameDashboardMainMenuView::OnScreenshotTilePressed,
                           base::Unretained(this)),

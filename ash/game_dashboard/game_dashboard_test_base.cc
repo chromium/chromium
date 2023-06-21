@@ -22,7 +22,10 @@ void GameDashboardTestBase::SetUp() {
   base::SysInfo::SetChromeOSVersionInfoForTest(
       "CHROMEOS_RELEASE_TRACK=testimage-channel",
       base::SysInfo::GetLsbReleaseTime());
-  scoped_feature_list_.InitAndEnableFeature({features::kGameDashboard});
+  scoped_feature_list_.InitWithFeatures(
+      {features::kGameDashboard,
+       features::kFeatureManagementGameDashboardRecordGame},
+      {});
   AshTestBase::SetUp();
   EXPECT_TRUE(features::IsGameDashboardEnabled());
 }
