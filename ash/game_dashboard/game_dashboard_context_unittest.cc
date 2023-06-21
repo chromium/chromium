@@ -6,12 +6,15 @@
 
 #include "ash/game_dashboard/game_dashboard_context.h"
 
+#include "ash/capture_mode/capture_mode_controller.h"
 #include "ash/capture_mode/capture_mode_test_util.h"
 #include "ash/game_dashboard/game_dashboard_controller.h"
 #include "ash/game_dashboard/game_dashboard_test_base.h"
 #include "ash/game_dashboard/test_game_dashboard_delegate.h"
 #include "ash/public/cpp/ash_view_ids.h"
+#include "ash/public/cpp/capture_mode/capture_mode_test_api.h"
 #include "ash/public/cpp/window_properties.h"
+#include "ash/style/pill_button.h"
 #include "ash/system/unified/feature_tile.h"
 #include "base/check.h"
 #include "base/memory/raw_ptr.h"
@@ -143,7 +146,7 @@ TEST_F(GameDashboardContextTest, MainMenuDialogWidget_ARCGame) {
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
   // TODO(b/273641402): Update Game Controls visibility once implemented.
   EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_TILE));
+  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
@@ -164,7 +167,7 @@ TEST_F(GameDashboardContextTest, MainMenuDialogWidget_NonARCGame) {
   // expected.
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_TOOLBAR_TILE));
   EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_CONTROLS_TILE));
-  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_TILE));
+  EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_SCREENSHOT_TILE));
   EXPECT_FALSE(GetMainMenuViewById(VIEW_ID_GD_SCREEN_SIZE_TILE));
   EXPECT_TRUE(GetMainMenuViewById(VIEW_ID_GD_FEEDBACK_BUTTON));
@@ -187,4 +190,26 @@ TEST_F(GameDashboardContextTest, TakeScreenshot) {
   EXPECT_EQ(image.Size(), game_window_->bounds().size());
 }
 
+// Verifies the main menu record game tile can video record the game window.
+TEST_F(GameDashboardContextTest, ScreenCaptureFromMainMenu) {
+  // Retrieve the video record tile and verify the initial state.
+  LeftClickOn(GetMainMenuButtonWidget()->GetContentsView());
+  FeatureTile* record_game_tile = static_cast<FeatureTile*>(
+      GetMainMenuViewById(VIEW_ID_GD_RECORD_GAME_TILE));
+  ASSERT_TRUE(record_game_tile);
+
+  LeftClickOn(record_game_tile);
+
+  // Start video recording from `CaptureModeBarView`
+  auto* recording_button = GetStartRecordingButton();
+  ASSERT_TRUE(recording_button);
+  LeftClickOn(recording_button);
+  WaitForRecordingToStart();
+  EXPECT_TRUE(CaptureModeController::Get()->is_recording_in_progress());
+
+  // Stop video recording.
+  // TODO(b/286889385): Stop video recording using `GameDashboardMainMenuView`.
+  CaptureModeTestApi().StopVideoRecording();
+  EXPECT_FALSE(CaptureModeController::Get()->is_recording_in_progress());
+}
 }  // namespace ash

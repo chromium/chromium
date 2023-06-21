@@ -100,12 +100,15 @@ void GameDashboardMainMenuView::OnToolbarTilePressed() {
 }
 
 void GameDashboardMainMenuView::OnRecordGameTilePressed() {
-  // TODO(b/273641250): Add support when record game tile is pressed.
+  GetWidget()->Close();
+  CaptureModeController::Get()->StartForGameDashboard(game_window_);
+  // TODO(b/286889385): Add support to stop game recording using
+  // `GameDashboardMainMenuView` and the `GameDashboardMainMenuButton`.
 }
 
 void GameDashboardMainMenuView::OnScreenshotTilePressed() {
-  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
   GetWidget()->Close();
+  CaptureModeController::Get()->CaptureScreenshotOfGivenWindow(game_window_);
 }
 
 void GameDashboardMainMenuView::OnScreenSizeSettingsButtonPressed() {
@@ -142,7 +145,7 @@ void GameDashboardMainMenuView::AddShortcutTilesRow() {
       base::BindRepeating(&GameDashboardMainMenuView::OnRecordGameTilePressed,
                           base::Unretained(this)),
       /*is_togglable=*/false, FeatureTile::TileType::kCompact,
-      VIEW_ID_GD_RECORD_TILE, vector_icons::kVideocamIcon,
+      VIEW_ID_GD_RECORD_GAME_TILE, vector_icons::kVideocamIcon,
       l10n_util::GetStringUTF16(
           IDS_ASH_GAME_DASHBOARD_RECORD_GAME_TILE_BUTTON_TITLE)));
   container->AddChildView(CreateTile(
