@@ -1266,7 +1266,7 @@ TEST_F(IntegrationTest, CrashUsageStatsEnabled) {
   // complain at TearDown.
   absl::optional<base::FilePath> database_path(
       GetCrashDatabasePath(GetTestScope()));
-  if (database_path || base::PathExists(*database_path)) {
+  if (database_path && base::PathExists(*database_path)) {
     base::FileEnumerator it(*database_path, true, base::FileEnumerator::FILES,
                             FILE_PATH_LITERAL("*.dmp"),
                             base::FileEnumerator::FolderSearchPolicy::ALL);
