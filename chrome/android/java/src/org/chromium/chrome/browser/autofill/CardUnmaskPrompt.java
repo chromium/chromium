@@ -198,6 +198,9 @@ public class CardUnmaskPrompt implements EmptyTextWatcher, OnClickListener,
         mInstructions.setText(instructions);
         mNoRetryErrorMessage = (TextView) mMainView.findViewById(R.id.no_retry_error_message);
         mCardUnmaskInput = (EditText) mMainView.findViewById(R.id.card_unmask_input);
+        if (isVirtualCard) {
+            mCardUnmaskInput.setHint("");
+        }
         mMonthInput = (EditText) mMainView.findViewById(R.id.expiration_month);
         mYearInput = (EditText) mMainView.findViewById(R.id.expiration_year);
         mExpirationContainer = mMainView.findViewById(R.id.expiration_container);
