@@ -996,8 +996,7 @@ const ui::ThemeProvider* Widget::GetThemeProvider() const {
                                               : nullptr;
 }
 
-ui::ColorProviderManager::ThemeInitializerSupplier* Widget::GetCustomTheme()
-    const {
+ui::ColorProviderKey::ThemeInitializerSupplier* Widget::GetCustomTheme() const {
   return nullptr;
 }
 
@@ -1973,20 +1972,20 @@ void Widget::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
 }
 
 void Widget::SetColorModeOverride(
-    absl::optional<ui::ColorProviderManager::ColorMode> color_mode) {
+    absl::optional<ui::ColorProviderKey::ColorMode> color_mode) {
   color_mode_override_ = color_mode;
 }
 
 ////////////////////////////////////////////////////////////////////////////////
 // Widget, ui::ColorProviderSource:
 
-ui::ColorProviderManager::Key Widget::GetColorProviderKey() const {
+ui::ColorProviderKey Widget::GetColorProviderKey() const {
   // Generally all Widgets should inherit the key of their parent, falling back
   // to the key set by the NativeTheme otherwise.
   // TODO(crbug.com/1455535): `parent_` does not always resolve to the logical
   // parent as expected here (e.g. bubbles). This should be addressed and the
   // use of parent_ below replaced with something like GetLogicalParent().
-  ui::ColorProviderManager::Key key =
+  ui::ColorProviderKey key =
       parent_ ? parent_->GetColorProviderKey()
               : GetNativeTheme()->GetColorProviderKey(GetCustomTheme());
 
