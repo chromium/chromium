@@ -9,6 +9,7 @@
 #include <set>
 #include <vector>
 
+#include "base/containers/flat_set.h"
 #include "base/files/file.h"
 #include "base/files/file_path.h"
 #include "base/files/file_path_watcher.h"
@@ -112,6 +113,8 @@ class ImageAnnotationWorker {
   const bool use_ica_;
   const bool use_ocr_;
   bool ica_dlc_initialized_ = false;
+  base::flat_set<base::FilePath> ica_being_processed_images;
+  base::flat_set<base::FilePath> ocr_being_processed_images;
 
   // Owned by this class.
   const scoped_refptr<base::SequencedTaskRunner> task_runner_;

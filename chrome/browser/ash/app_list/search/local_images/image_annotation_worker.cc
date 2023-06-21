@@ -233,7 +233,9 @@ void ImageAnnotationWorker::OnFileChange(const base::FilePath& path,
                                          bool error) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (DirectoryExists(path) || !IsImage(path) || error) {
+  if (DirectoryExists(path) || !IsImage(path) ||
+      ica_being_processed_images.contains(path) ||
+      ocr_being_processed_images.contains(path) || error) {
     return;
   }
 
@@ -288,7 +290,14 @@ void ImageAnnotationWorker::ProcessImage(
   ImageInfo image_info({}, image_path, file_info->last_modified,
                        /*is_ignored=*/0);
 
-  auto callback =
+  if (use_ica_) {
+    ica_being_processed_images.insert(image_path);
+  }
+  if (use_ocr_) {
+    ocr_being_processed_images.insert(image_path);
+  }
+
+  auto run_image_annotator =
       use_ica_ || use_ocr_
           ? base::BindOnce(&ImageAnnotationWorker::RunImageAnnotator,
                            weak_ptr_factory_.GetWeakPtr(),
@@ -315,7 +324,7 @@ void ImageAnnotationWorker::ProcessImage(
             return mapped_region;
           },
           image_path),
-      std::move(callback));
+      std::move(run_image_annotator));
 }
 
 void ImageAnnotationWorker::RunImageAnnotator(
@@ -361,6 +370,7 @@ void ImageAnnotationWorker::OnPerformIca(
   }
   if (!image_info.annotations.empty()) {
     annotation_storage_->Insert(image_info);
+    ica_being_processed_images.erase(image_info.path);
   }
 }
 
@@ -405,6 +415,7 @@ void ImageAnnotationWorker::OnPerformOcr(
   }
   if (!image_info.annotations.empty()) {
     annotation_storage_->Insert(image_info);
+    ocr_being_processed_images.erase(image_info.path);
   }
 }
 
