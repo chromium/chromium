@@ -30,6 +30,7 @@
 #include "media/base/media_switches.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -167,6 +168,10 @@ ShareThisTabDialogView::ShareThisTabDialogView(
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
   SetButtonEnabled(ui::DIALOG_BUTTON_OK, false);
+  if (features::IsChromeRefresh2023()) {
+    SetButtonStyle(ui::DIALOG_BUTTON_OK, ui::ButtonStyle::kTonal);
+    SetButtonStyle(ui::DIALOG_BUTTON_CANCEL, ui::ButtonStyle::kTonal);
+  }
 
   // Simply pressing ENTER without tab-key navigating to the button
   // must not accept the dialog, or else that'd be a security issue.
