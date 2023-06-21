@@ -325,7 +325,6 @@
       'ASan Debug (32-bit x86 with V8-ARM)': 'asan_v8_heap_debug_bot_hybrid_reclient',
       'ASan Release (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_release_bot_hybrid_reclient',
       'ASan Release Media (32-bit x86 with V8-ARM)': 'asan_fuzzer_v8_heap_chromeos_codecs_release_bot_hybrid_reclient',
-      'Afl Upload Linux ASan': 'afl_asan_shared_release_bot_reclient',
       'Centipede Upload Linux ASan': 'centipede_asan_shared_release_bot_reclient',
       'ChromiumOS ASAN Release': 'chromeos_asan_lsan_fuzzer_v8_heap_release_bot_reclient',
       'Libfuzzer Local Chrome OS ASan': 'libfuzzer_chromeos_asan_local',
@@ -1465,11 +1464,6 @@
   'configs': {
     'afl_asan_release_trybot_reclient': [
       'afl', 'asan', 'shared_release_trybot_reclient', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl', 'optimize_for_fuzzing', 'mojo_fuzzer', 'skip_generate_fuzzer_owners',
-    ],
-
-    'afl_asan_shared_release_bot_reclient': [
-      'afl', 'asan', 'chromeos_codecs', 'pdf_xfa', 'disable_nacl',
-      'optimize_for_fuzzing', 'shared_release_bot_reclient', 'disable_seed_corpus',
     ],
 
     'android_binary_size_reclient': [

@@ -4,7 +4,6 @@ ci/ASAN Release Media
 ci/ASan Debug (32-bit x86 with V8-ARM)
 ci/ASan Release (32-bit x86 with V8-ARM)
 ci/ASan Release Media (32-bit x86 with V8-ARM)
-ci/Afl Upload Linux ASan
 ci/Cast Audio Linux
 ci/Cast Linux
 ci/Cast Linux ARM64

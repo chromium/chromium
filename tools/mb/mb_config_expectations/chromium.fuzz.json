@@ -77,22 +77,6 @@
       "v8_target_cpu": "arm"
     }
   },
-  "Afl Upload Linux ASan": {
-    "gn_args": {
-      "archive_seed_corpus": false,
-      "dcheck_always_on": false,
-      "enable_nacl": false,
-      "ffmpeg_branding": "ChromeOS",
-      "is_asan": true,
-      "is_component_build": true,
-      "is_debug": false,
-      "optimize_for_fuzzing": true,
-      "pdf_enable_xfa": true,
-      "proprietary_codecs": true,
-      "use_afl": true,
-      "use_remoteexec": true
-    }
-  },
   "Centipede Upload Linux ASan": {
     "gn_args": {
       "archive_seed_corpus": false,
