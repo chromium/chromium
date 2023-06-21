@@ -70,9 +70,7 @@ bool UserEligibleForAndroidSwitcherPrompt() {
 }
 
 // Returns true if the user is segmented as an Android switcher, either by
-// the segmentation platform or by using the forced device switcher flag. If the
-// user is NOT enrolled in sync or not identified as an Android switcher, this
-// method logs so on histogram.
+// the segmentation platform or by using the forced device switcher flag.
 bool UserIsAndroidSwitcher(
     segmentation_platform::DeviceSwitcherResultDispatcher* dispatcher) {
   bool device_switcher_forced =
@@ -84,29 +82,12 @@ bool UserIsAndroidSwitcher(
 
   segmentation_platform::ClassificationResult result =
       dispatcher->GetCachedClassificationResult();
-  if (result.status != segmentation_platform::PredictionStatus::kSucceeded) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kSegmentationIncomplete);
-    return false;
-  }
-
-  if (base::Contains(
-          result.ordered_labels,
-          segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel)) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kNotAndroidSwitcher);
-    return false;
-  }
-
-  if (result.ordered_labels[0] ==
-      segmentation_platform::DeviceSwitcherModel::kNotSyncedLabel) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kSyncDisabled);
-  }
-
-  if (result.ordered_labels[0] !=
-      segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kNotAndroidSwitcher);
-    return false;
-  }
-  return true;
+  return result.status == segmentation_platform::PredictionStatus::kSucceeded &&
+         result.ordered_labels[0] ==
+             segmentation_platform::DeviceSwitcherModel::kAndroidPhoneLabel &&
+         !base::Contains(
+             result.ordered_labels,
+             segmentation_platform::DeviceSwitcherModel::kIosPhoneChromeLabel);
 }
 
 }  // namespace
@@ -130,42 +111,46 @@ BringAndroidTabsToIOSService::~BringAndroidTabsToIOSService() {}
 
 void BringAndroidTabsToIOSService::LoadTabs() {
   load_tabs_invoked_ = true;
-  // Early return for users who should never see the prompt in the current
-  // session. In case the user is previously eligible for the prompt but not
-  // anymore, clear the tabs.
+  // Early returns for users who should NOT be enrolled in the feature
+  // experiment. This includes current iPad users and those who aren't recent
+  // Android switchers.
   if (!UserEligibleForAndroidSwitcherPrompt() ||
-      PromptShownAndShouldNotShowAgain()) {
+      !UserIsAndroidSwitcher(device_switcher_result_dispatcher_)) {
+    return;
+  }
+
+  // Checks feature flag and starts the experiment; early returns if the prompt
+  // should NOT be shown.
+  if (GetBringYourOwnTabsPromptType() ==
+      BringYourOwnTabsPromptType::kDisabled) {
+    return;
+  }
+
+  // In case the user is previously eligible for the prompt but not
+  // anymore, clear the tabs so that future calls to `GetNumberOfAndroidTabs()`
+  // will return 0 and the caller won't show the prompt.
+  if (PromptShownAndShouldNotShowAgain()) {
+    RecordPromptAttemptStatus(PromptAttemptStatus::kPromptShownAndDismissed);
     synced_sessions_.reset();
     position_of_tabs_in_synced_sessions_.clear();
     return;
   }
-  // Tabs already loaded. In this case, the user is guaranteed to be an Android
-  // switcher, so we can skip the check to `UserIsAndroidSwitcher` and return
-  // early.
-  if (!position_of_tabs_in_synced_sessions_.empty()) {
-    return;
-  }
-  // If the feature is enabled and the user is an android switcher BUT the tabs
-  // are empty, it's possible that the tabs aren't loaded because the last
-  // invocation to `LoadTabs()` happens before the user enrolls in sync. Try
-  // again.
-  // The feature check is called right before
-  // `UserIsAndroidSwitcher()` to avoid collecting unnecessary/noisy data.
-  if (GetBringYourOwnTabsPromptType() !=
-          BringYourOwnTabsPromptType::kDisabled &&
-      UserIsAndroidSwitcher(device_switcher_result_dispatcher_)) {
-    LoadSyncedSessionsAndComputeTabPositions();
+
+  // Load the tabs if they aren't loaded.
+  if (position_of_tabs_in_synced_sessions_.empty()) {
+    PromptAttemptStatus status = LoadSyncedSessionsAndComputeTabPositions();
+    RecordPromptAttemptStatus(status);
   }
 }
 
 size_t BringAndroidTabsToIOSService::GetNumberOfAndroidTabs() const {
-  DCHECK(load_tabs_invoked_);
+  CHECK(load_tabs_invoked_);
   return position_of_tabs_in_synced_sessions_.size();
 }
 
 synced_sessions::DistantTab* BringAndroidTabsToIOSService::GetTabAtIndex(
     size_t index) const {
-  DCHECK_LT(index, position_of_tabs_in_synced_sessions_.size());
+  CHECK_LT(index, position_of_tabs_in_synced_sessions_.size());
   std::tuple<size_t, size_t> indices =
       position_of_tabs_in_synced_sessions_[index];
   size_t session_idx = std::get<0>(indices);
@@ -188,20 +173,17 @@ bool BringAndroidTabsToIOSService::PromptShownAndShouldNotShowAgain() const {
       prefs::kIosBringAndroidTabsPromptDisplayed);
   bool should_not_show_again =
       prompt_interacted_ || (shown_before && !prompt_shown_current_session_);
-  if (should_not_show_again) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kPromptShownAndDismissed);
-  }
   return should_not_show_again;
 }
 
-void BringAndroidTabsToIOSService::LoadSyncedSessionsAndComputeTabPositions() {
+PromptAttemptStatus
+BringAndroidTabsToIOSService::LoadSyncedSessionsAndComputeTabPositions() {
   bool tab_sync_disabled =
       !sync_service_ ||
       !sync_service_->GetUserSettings()->GetSelectedTypes().Has(
           syncer::UserSelectableType::kTabs);
   if (tab_sync_disabled) {
-    RecordPromptAttemptStatus(PromptAttemptStatus::kTabSyncDisabled);
-    return;
+    return PromptAttemptStatus::kTabSyncDisabled;
   }
 
   synced_sessions_ =
@@ -222,8 +204,7 @@ void BringAndroidTabsToIOSService::LoadSyncedSessionsAndComputeTabPositions() {
       position_of_tabs_in_synced_sessions_.push_back(indices);
     }
   }
-  PromptAttemptStatus status = position_of_tabs_in_synced_sessions_.empty()
-                                   ? PromptAttemptStatus::kNoActiveTabs
-                                   : PromptAttemptStatus::kSuccess;
-  RecordPromptAttemptStatus(status);
+  return position_of_tabs_in_synced_sessions_.empty()
+             ? PromptAttemptStatus::kNoActiveTabs
+             : PromptAttemptStatus::kSuccess;
 }

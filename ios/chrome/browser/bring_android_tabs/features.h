@@ -25,7 +25,7 @@ enum class BringYourOwnTabsPromptType {
 extern const char kBringYourOwnTabsIOSParam[];
 
 // Returns the current BringYourOwnTabsPromptType according to the feature flag
-// and experiment "BringYourOwnTabsIOS".
+// "BringYourOwnTabsIOS", and start the experiment.
 BringYourOwnTabsPromptType GetBringYourOwnTabsPromptType();
 
 #endif  // IOS_CHROME_BROWSER_BRING_ANDROID_TABS_FEATURES_H_
