@@ -5655,6 +5655,7 @@ source_set("unit_tests") {
     "printing/print_management/printing_manager_factory_unittest.cc",
     "printing/print_management/printing_manager_unittest.cc",
     "printing/print_servers_manager_unittest.cc",
+    "printing/print_servers_policy_provider_unittest.cc",
     "printing/print_servers_provider_unittest.cc",
     "printing/printer_authenticator_unittest.cc",
     "printing/printer_event_tracker_unittest.cc",
