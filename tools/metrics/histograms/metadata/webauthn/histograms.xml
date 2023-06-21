@@ -115,40 +115,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledDuration"
-    units="ms" expires_after="2022-08-31">
-  <owner>martinkr@google.com</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>The duration of a u2fd IsU2fEnabled request.</summary>
-</histogram>
-
-<histogram name="WebAuthentication.ChromeOS.U2FClient.IsU2fEnabledStatus"
-    enum="WebAuthenticationU2FClientStatus" expires_after="2023-05-14">
-  <owner>martinkr@google.com</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>
-    Records whether a u2fd IsU2fEnabled DBus call completed successfully or
-    encountered an error.
-  </summary>
-</histogram>
-
-<histogram name="WebAuthentication.ChromeOS.U2FClient.IsUvpaaDuration"
-    units="ms" expires_after="2022-08-31">
-  <owner>martinkr@google.com</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>The duration of a u2fd IsUvpaa request.</summary>
-</histogram>
-
-<histogram name="WebAuthentication.ChromeOS.U2FClient.IsUvpaaStatus"
-    enum="WebAuthenticationU2FClientStatus" expires_after="2022-12-31">
-  <owner>martinkr@google.com</owner>
-  <owner>chrome-webauthn@google.com</owner>
-  <summary>
-    Records whether a u2fd IsUvpaa DBus call completed successfully or
-    encountered an error.
-  </summary>
-</histogram>
-
 <histogram name="WebAuthentication.ConditionalUiPasskeyCount" units="passkeys"
     expires_after="2023-11-12">
   <owner>kenrb@chromium.org</owner>

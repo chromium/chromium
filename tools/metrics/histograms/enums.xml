@@ -111545,15 +111545,6 @@ others/histograms.xml -->
   <int value="2" label="Blocked"/>
 </enum>
 
-<enum name="WebAuthenticationU2FClientStatus">
-  <summary>Outcome of a DBus method call to u2fd.</summary>
-  <int value="0" label="OK"/>
-  <int value="1" label="Unknown Error">
-    Method call failed, e.g. because the service was unavailable or the request
-    timed out.
-  </int>
-</enum>
-
 <enum name="WebauthnOptInPromoNotOfferedReason">
   <int value="0" label="Unknown"/>
   <int value="1"
