@@ -150,10 +150,6 @@ declare_args() {
   # The gold linker by default has text section splitting enabled.
   use_text_section_splitting = false
 
-  # Turn off the --call-graph-profile-sort flag for lld by default. Enable
-  # selectively for targets where it's beneficial.
-  enable_call_graph_profile_sort = chrome_pgo_phase == 2
-
   # Enable DWARF v5.
   use_dwarf5 = false
 
@@ -207,6 +203,8 @@ declare_args() {
                                                        current_cpu == "x64"))))
 }
 
+# TODO(b/287316830): remove this option from ChromeOS once they've migrated away
+# from using orderfiles.
 if (is_android || (is_chromeos_ash && is_chromeos_device)) {
   # Set the path to use orderfile for linking Chrome
   # Note that this is for using only one orderfile for linking
@@ -218,15 +216,17 @@ if (is_android || (is_chromeos_ash && is_chromeos_device)) {
       # Allow downstream tools to set orderfile path with
       # another variable.
       chrome_orderfile_path = default_chrome_orderfile
-    } else if (is_chromeos_ash && is_chromeos_device) {
-      if (chromeos_afdo_platform == "arm" ||
-          chromeos_afdo_platform == "arm-exp") {
-        chrome_orderfile_path = "//chromeos/profiles/chromeos.arm.orderfile.txt"
-      } else {
-        chrome_orderfile_path = "//chromeos/profiles/chromeos.orderfile.txt"
-      }
     }
   }
+}
+
+declare_args() {
+  # Turn off the --call-graph-profile-sort flag for lld by default. Enable
+  # selectively for targets where it's beneficial.
+  enable_call_graph_profile_sort =
+      chrome_pgo_phase == 2 ||
+      (is_chromeos &&
+       (clang_use_default_sample_profile || clang_sample_profile_path != ""))
 }
 
 assert(!(llvm_force_head_revision && use_goma),
