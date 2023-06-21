@@ -1641,10 +1641,7 @@ crbug.com/1357623 external/wpt/css/css-color-adjust/rendering/dark-color-scheme/
 # @supports
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-001.html [ Failure ]
 crbug.com/1269580 external/wpt/css/css-conditional/at-supports-namespace-002.html [ Failure ]
-crbug.com/1158554 external/wpt/css/css-conditional/css-supports-040.xht [ Failure ]
-crbug.com/1158554 external/wpt/css/css-conditional/css-supports-041.xht [ Failure ]
 crbug.com/1158554 external/wpt/css/css-conditional/css-supports-042.xht [ Failure ]
-crbug.com/1158554 external/wpt/css/css-conditional/at-supports-046.html [ Failure ]
 
 # CSS Scrollbars
 crbug.com/891944 external/wpt/css/css-scrollbars/transparent-on-root.html [ Failure ]
