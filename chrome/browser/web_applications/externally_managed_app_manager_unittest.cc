@@ -16,7 +16,6 @@
 #include "base/ranges/algorithm.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
-#include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/web_applications/external_install_options.h"
@@ -40,6 +39,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/common/chrome_features.h"
 #include "components/webapps/browser/install_result_code.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -365,8 +365,33 @@ class ExternallyAppManagerTest : public WebAppTest {
         provider().web_contents_manager());
   }
 
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
+  AppId PopulateBasicInstallPageWithManifest(GURL install_url,
+                                             GURL manifest_url,
+                                             GURL start_url) {
+    auto& install_page_state =
+        web_contents_manager().GetOrCreatePageState(install_url);
+    install_page_state.url_load_result = WebAppUrlLoaderResult::kUrlLoaded;
+    install_page_state.redirection_url = absl::nullopt;
+
+    install_page_state.opt_metadata =
+        FakeWebContentsManager::CreateMetadataWithTitle(u"Basic app title");
+    install_page_state.title = u"Basic app title";
+
+    install_page_state.manifest_url = manifest_url;
+    install_page_state.valid_manifest_for_web_app = true;
+
+    install_page_state.opt_manifest = blink::mojom::Manifest::New();
+    install_page_state.opt_manifest->scope =
+        url::Origin::Create(start_url).GetURL();
+    install_page_state.opt_manifest->start_url = start_url;
+    install_page_state.opt_manifest->id =
+        GenerateManifestIdFromStartUrlOnly(start_url);
+    install_page_state.opt_manifest->display =
+        blink::mojom::DisplayMode::kStandalone;
+    install_page_state.opt_manifest->short_name = u"Basic app name";
+
+    return GenerateAppId(/*manifest_id=*/absl::nullopt, start_url);
+  }
 };
 
 TEST_F(ExternallyAppManagerTest, NoNetworkNoPlaceholder) {

@@ -19,8 +19,7 @@ SharedWebContentsLock::SharedWebContentsLock(
     base::WeakPtr<WebAppLockManager> lock_manager,
     std::unique_ptr<content::PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents)
-    : Lock(std::move(holder)),
-      WithSharedWebContentsResources(std::move(lock_manager),
-                                     shared_web_contents) {}
+    : Lock(std::move(holder), lock_manager),
+      WithSharedWebContentsResources(lock_manager, shared_web_contents) {}
 SharedWebContentsLock::~SharedWebContentsLock() = default;
 }  // namespace web_app

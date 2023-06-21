@@ -19,6 +19,9 @@ struct PartitionedLockHolder;
 
 namespace web_app {
 
+class WebAppLockManager;
+class WebContentsManager;
+
 // Represents a lock in the WebAppProvider system. Locks can be acquired by
 // creating one of the subclasses of this class, and using the
 // `WebAppLockManager` to acquire the lock.
@@ -79,12 +82,17 @@ class Lock {
   Lock() = delete;
   ~Lock();
 
+  // Resources that are available on all locks:
+  WebContentsManager& web_contents_manager();
+
  protected:
-  explicit Lock(std::unique_ptr<content::PartitionedLockHolder> holder);
+  explicit Lock(std::unique_ptr<content::PartitionedLockHolder> holder,
+                base::WeakPtr<WebAppLockManager> lock_manager);
 
  private:
   friend class WebAppLockManager;
   std::unique_ptr<content::PartitionedLockHolder> holder_;
+  base::WeakPtr<WebAppLockManager> lock_manager_;
 };
 
 }  // namespace web_app

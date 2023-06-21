@@ -39,6 +39,7 @@
 #include "components/services/app_service/public/cpp/instance.h"
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -143,9 +144,9 @@ class WebKioskAppServiceLauncherTest : public BrowserWithTestWindowTest {
         web_app::WebAppUrlLoaderResult::kUrlLoaded;
     install_page_state.redirection_url = absl::nullopt;
 
-    install_page_state.page_install_info = std::make_unique<WebAppInstallInfo>(
-        web_app::GenerateManifestIdFromStartUrlOnly(install_url));
-    install_page_state.page_install_info->title = u"Basic app title";
+    install_page_state.opt_metadata =
+        web_app::FakeWebContentsManager::CreateMetadataWithTitle(
+            u"Basic app title");
 
     install_page_state.manifest_url = manifest_url;
     install_page_state.valid_manifest_for_web_app = true;

@@ -30,6 +30,7 @@
 #include "components/webapps/browser/install_result_code.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
+#include "components/webapps/common/web_page_metadata.mojom.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/web_contents_tester.h"
 #include "net/http/http_status_code.h"
@@ -158,9 +159,6 @@ class FetchManifestAndInstallCommandTest : public WebAppTest {
       blink::mojom::ManifestPtr opt_manifest = blink::mojom::ManifestPtr()) {
     auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
 
-    page_state.page_install_info = std::make_unique<WebAppInstallInfo>(
-        GenerateManifestIdFromStartUrlOnly(kWebAppUrl));
-    page_state.page_install_info->start_url = kWebAppUrl;
     page_state.has_service_worker = true;
     page_state.opt_manifest =
         opt_manifest ? std::move(opt_manifest) : CreateValidManifest();
@@ -234,17 +232,12 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithManifest) {
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
 }
 
-TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
-  auto web_app_info = std::make_unique<WebAppInstallInfo>(
-      GenerateManifestIdFromStartUrlOnly(kWebAppUrl));
-  web_app_info->start_url = kWebAppUrl;
-  web_app_info->title = u"test app";
-  web_app_info->scope = kWebAppUrl;
-  web_app_info->user_display_mode = mojom::UserDisplayMode::kBrowser;
-
+TEST_F(FetchManifestAndInstallCommandTest,
+       SuccessWithFallbackInstallWithManifest) {
   SetupPageState();
   auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
-  page_state.page_install_info = std::move(web_app_info);
+  page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithTitle(u"test app");
 
   EXPECT_EQ(InstallAndWait(
                 kWebAppId, webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
@@ -252,6 +245,26 @@ TEST_F(FetchManifestAndInstallCommandTest, SuccessWithFallbackInstall) {
                 /*use_fallback=*/true),
             webapps::InstallResultCode::kSuccessNewInstall);
   EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId), "foo");
+  EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
+}
+
+TEST_F(FetchManifestAndInstallCommandTest,
+       SuccessWithFallbackInstallNoManifest) {
+  SetupPageState();
+  auto& page_state = web_contents_manager().GetOrCreatePageState(kWebAppUrl);
+  page_state.opt_manifest = nullptr;
+  page_state.opt_metadata =
+      FakeWebContentsManager::CreateMetadataWithTitle(u"test app");
+
+  EXPECT_EQ(InstallAndWait(
+                kWebAppId, webapps::WebappInstallSource::MENU_CREATE_SHORTCUT,
+                CreateDialogCallback(true, mojom::UserDisplayMode::kStandalone),
+                /*use_fallback=*/true),
+            webapps::InstallResultCode::kSuccessNewInstall);
+  EXPECT_TRUE(provider()->registrar_unsafe().IsLocallyInstalled(kWebAppId));
+  EXPECT_EQ(provider()->registrar_unsafe().GetAppShortName(kWebAppId),
+            "test app");
   EXPECT_EQ(1, fake_ui_manager()->num_reparent_tab_calls());
 }
 

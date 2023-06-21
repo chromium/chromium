@@ -10,6 +10,7 @@
 #include <vector>
 
 #include "base/functional/callback.h"
+#include "base/functional/callback_forward.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/values.h"
@@ -19,6 +20,7 @@
 #include "chrome/browser/web_applications/web_app_constants.h"
 #include "chrome/browser/web_applications/web_app_install_params.h"
 #include "chrome/browser/web_applications/web_app_logging.h"
+#include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "components/webapps/browser/installable/installable_logging.h"
 #include "third_party/skia/include/core/SkColor.h"
 #include "url/gurl.h"
@@ -61,12 +63,9 @@ class InstallFromSyncCommand
   using DataRetrieverFactory =
       base::RepeatingCallback<std::unique_ptr<WebAppDataRetriever>()>;
 
-  InstallFromSyncCommand(
-      WebAppUrlLoader* url_loader,
-      Profile* profile,
-      std::unique_ptr<WebAppDataRetriever> web_app_data_retriever,
-      const Params& params,
-      OnceInstallCallback install_callback);
+  InstallFromSyncCommand(Profile* profile,
+                         const Params& params,
+                         OnceInstallCallback install_callback);
   ~InstallFromSyncCommand() override;
 
   // WebAppCommandTemplate<SharedWebContentsWithAppLock>:
@@ -110,11 +109,12 @@ class InstallFromSyncCommand
   std::unique_ptr<SharedWebContentsWithAppLockDescription> lock_description_;
   std::unique_ptr<SharedWebContentsWithAppLock> lock_;
 
-  const raw_ptr<WebAppUrlLoader, DanglingUntriaged> url_loader_;
   const raw_ptr<Profile> profile_;
-  const std::unique_ptr<WebAppDataRetriever> data_retriever_;
   const Params params_;
   OnceInstallCallback install_callback_;
+
+  std::unique_ptr<WebAppUrlLoader> url_loader_;
+  std::unique_ptr<WebAppDataRetriever> data_retriever_;
 
   std::unique_ptr<WebAppInstallInfo> install_info_;
   std::unique_ptr<WebAppInstallInfo> fallback_install_info_;

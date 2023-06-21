@@ -51,7 +51,6 @@ class WebApp;
 class WebAppDataRetriever;
 class WebAppProvider;
 class WebAppUrlLoader;
-class WebContentsManager;
 enum class ApiApprovalState;
 struct IsolationData;
 struct SynchronizeOsOptions;
@@ -352,9 +351,6 @@ class WebAppCommandScheduler {
   const raw_ptr<WebAppProvider> provider_;
 
   bool is_in_shutdown_ = false;
-  // TODO(http://b/262606416): Remove this when fully transitioned to
-  // WebContentsManager.
-  std::unique_ptr<WebAppUrlLoader> url_loader_;
 
   // Track how many times ScheduleDedupeInstallUrls() is invoked for metrics to
   // check that it's not happening excessively.

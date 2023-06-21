@@ -149,7 +149,8 @@ void WebAppLockManager::AcquireLock(
   CHECK(lock_description.type() == LockDescription::Type::kNoOp);
 
   auto lock = base::WrapUnique(
-      new NoopLock(std::make_unique<content::PartitionedLockHolder>()));
+      new NoopLock(std::make_unique<content::PartitionedLockHolder>(),
+                   weak_factory_.GetWeakPtr()));
   base::WeakPtr<content::PartitionedLockHolder> holder =
       lock->holder_->AsWeakPtr();
   AcquireLock(holder, lock_description,

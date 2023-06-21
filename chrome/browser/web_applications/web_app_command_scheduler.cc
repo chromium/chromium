@@ -427,16 +427,9 @@ void WebAppCommandScheduler::InstallFromSync(const WebApp& web_app,
       web_app.sync_fallback_data().name, web_app.sync_fallback_data().scope,
       web_app.sync_fallback_data().theme_color, web_app.user_display_mode(),
       web_app.sync_fallback_data().icon_infos);
-  // TODO(http://b/262606416): Remove this when fully transitioned to
-  // WebContentsManager.
-  if (!url_loader_) {
-    url_loader_ = provider_->web_contents_manager().CreateUrlLoader();
-  }
   provider_->command_manager().ScheduleCommand(
-      std::make_unique<InstallFromSyncCommand>(
-          url_loader_.get(), &profile_.get(),
-          provider_->web_contents_manager().CreateDataRetriever(), params,
-          std::move(callback)),
+      std::make_unique<InstallFromSyncCommand>(&profile_.get(), params,
+                                               std::move(callback)),
       location);
 }
 

@@ -7,6 +7,7 @@
 
 #include <map>
 #include <memory>
+#include <string>
 
 #include "base/memory/weak_ptr.h"
 #include "chrome/browser/web_applications/web_app_install_info.h"
@@ -15,6 +16,7 @@
 #include "chrome/browser/web_applications/web_contents/web_app_url_loader.h"
 #include "chrome/browser/web_applications/web_contents/web_contents_manager.h"
 #include "components/webapps/browser/installable/installable_logging.h"
+#include "components/webapps/common/web_page_metadata.mojom-forward.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/mojom/manifest/manifest.mojom.h"
@@ -35,6 +37,14 @@ namespace web_app {
 // http://b/262606416.
 class FakeWebContentsManager : public WebContentsManager {
  public:
+  // Some helper methods.
+  static webapps::mojom::WebPageMetadataPtr CreateMetadataWithTitle(
+      std::u16string title);
+  static webapps::mojom::WebPageMetadataPtr CreateMetadataWithIconAndTitle(
+      std::u16string title,
+      GURL document_icon_url,
+      int32_t icon_size);
+
   // State used to represent a page at a url, which is retrieved through
   // `LoadUrl`, `GetWebAppInstallInfo`, and
   // `CheckInstallabilityAndRetrieveManifest`.
@@ -57,9 +67,13 @@ class FakeWebContentsManager : public WebContentsManager {
         WebAppUrlLoaderResult::kFailedErrorPageLoaded;
 
     // `WebAppDataRetriever::GetWebAppInstallInfo`:
-    std::unique_ptr<WebAppInstallInfo> page_install_info;
+    bool return_null_info = false;
+    absl::optional<std::u16string> title;
+    webapps::mojom::WebPageMetadataPtr opt_metadata;
 
     // `WebAppDataRetriever::CheckInstallabilityAndRetrieveManifest`:
+    // Called when this call is executed.
+    base::OnceClosure on_manifest_fetch;
     bool has_service_worker = false;
     // An empty url is considered an absent url.
     GURL manifest_url;
@@ -68,8 +82,6 @@ class FakeWebContentsManager : public WebContentsManager {
     webapps::InstallableStatusCode error_code;
     GURL favicon_url;
     std::vector<SkBitmap> favicon;
-
-    base::OnceClosure on_manifest_fetch;
   };
 
   // State used to represent an icon at a url, which is retrieved through

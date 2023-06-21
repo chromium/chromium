@@ -36,6 +36,44 @@
 
 namespace web_app {
 
+// static
+void WebAppDataRetriever::PopulateWebAppInfoFromMetadata(
+    WebAppInstallInfo* info,
+    const webapps::mojom::WebPageMetadata& metadata) {
+  CHECK(info);
+  if (!metadata.application_name.empty()) {
+    info->title = metadata.application_name;
+  }
+  if (!metadata.description.empty()) {
+    info->description = metadata.description;
+  }
+  if (metadata.application_url.is_valid()) {
+    info->start_url = metadata.application_url;
+    info->manifest_id =
+        web_app::GenerateManifestIdFromStartUrlOnly(info->start_url);
+  }
+
+  for (const auto& icon : metadata.icons) {
+    apps::IconInfo icon_info;
+    icon_info.url = icon->url;
+    if (icon->square_size_px > 0) {
+      icon_info.square_size_px = icon->square_size_px;
+    }
+    info->manifest_icons.push_back(icon_info);
+  }
+  switch (metadata.mobile_capable) {
+    case webapps::mojom::WebPageMobileCapable::UNSPECIFIED:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED;
+      break;
+    case webapps::mojom::WebPageMobileCapable::ENABLED:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE;
+      break;
+    case webapps::mojom::WebPageMobileCapable::ENABLED_APPLE:
+      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_APPLE;
+      break;
+  }
+}
+
 WebAppDataRetriever::WebAppDataRetriever() = default;
 
 WebAppDataRetriever::~WebAppDataRetriever() = default;
@@ -197,38 +235,7 @@ void WebAppDataRetriever::OnGetWebPageMetadata(
   CHECK(metadata);
 
   std::unique_ptr<WebAppInstallInfo> info = std::move(fallback_install_info_);
-  if (!metadata->application_name.empty()) {
-    info->title = metadata->application_name;
-  }
-  if (!metadata->description.empty()) {
-    info->description = metadata->description;
-  }
-  if (metadata->application_url.is_valid()) {
-    info->start_url = metadata->application_url;
-    info->manifest_id =
-        web_app::GenerateManifestIdFromStartUrlOnly(info->start_url);
-  }
-
-  for (const auto& icon : metadata->icons) {
-    apps::IconInfo icon_info;
-    icon_info.url = icon->url;
-    if (icon->square_size_px > 0) {
-      icon_info.square_size_px = icon->square_size_px;
-    }
-    info->manifest_icons.push_back(icon_info);
-  }
-  switch (metadata->mobile_capable) {
-    case webapps::mojom::WebPageMobileCapable::UNSPECIFIED:
-      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_UNSPECIFIED;
-      break;
-    case webapps::mojom::WebPageMobileCapable::ENABLED:
-      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE;
-      break;
-    case webapps::mojom::WebPageMobileCapable::ENABLED_APPLE:
-      info->mobile_capable = WebAppInstallInfo::MOBILE_CAPABLE_APPLE;
-      break;
-  }
-
+  PopulateWebAppInfoFromMetadata(info.get(), *metadata);
   std::move(get_web_app_info_callback_).Run(std::move(info));
 }
 

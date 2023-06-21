@@ -60,6 +60,10 @@ class WebAppDataRetriever : content::WebContentsObserver {
 
   using GetIconsCallback = WebAppIconDownloader::WebAppIconDownloaderCallback;
 
+  static void PopulateWebAppInfoFromMetadata(
+      WebAppInstallInfo* install_info,
+      const webapps::mojom::WebPageMetadata& metadata);
+
   WebAppDataRetriever();
   WebAppDataRetriever(const WebAppDataRetriever&) = delete;
   WebAppDataRetriever& operator=(const WebAppDataRetriever&) = delete;

@@ -24,7 +24,7 @@ SharedWebContentsWithAppLock::SharedWebContentsWithAppLock(
     base::WeakPtr<WebAppLockManager> lock_manager,
     std::unique_ptr<content::PartitionedLockHolder> holder,
     content::WebContents& shared_web_contents)
-    : Lock(std::move(holder)),
+    : Lock(std::move(holder), lock_manager),
       WithSharedWebContentsResources(lock_manager, shared_web_contents),
       WithAppResources(lock_manager) {}
 

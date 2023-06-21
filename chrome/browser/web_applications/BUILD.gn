@@ -574,7 +574,7 @@ source_set("web_applications_test_support") {
     "test/with_crosapi_param.cc",
     "test/with_crosapi_param.h",
   ]
-
+  public_deps = [ "//components/webapps/common:mojo_bindings" ]
   deps = [
     ":web_applications",
     "//base/test:test_support",
@@ -596,7 +596,6 @@ source_set("web_applications_test_support") {
     "//testing/gtest",
     "//ui/webui",
   ]
-
   if (is_chromeos_ash) {
     deps += [
       "//ash/constants",
