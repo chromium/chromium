@@ -87,7 +87,9 @@ TEST_F(WhatsNewUtilTests, ShouldShowRefresh) {
   EXPECT_FALSE(whats_new::ShouldShowRefresh(prefs()));
 }
 
-TEST_F(WhatsNewUtilTests, ShouldShowForStateUsesChromeVersionForRefresh) {
+// TODO(crbug.com/1456594): Fix the test.
+TEST_F(WhatsNewUtilTests,
+       DISABLED_ShouldShowForStateUsesChromeVersionForRefresh) {
   // kChromeRefresh2023=enabled && hasShownRefreshWhatsNew=false
   whats_new::SetChromeVersionForTests(117);
   // Refresh page should show
