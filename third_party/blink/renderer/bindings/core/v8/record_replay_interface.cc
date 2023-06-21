@@ -22,6 +22,7 @@
 #include "third_party/blink/renderer/bindings/core/v8/v8_node.h"
 #include "third_party/blink/renderer/core/css/css_style_declaration.h"
 #include "third_party/blink/renderer/core/dom/dom_node_ids.h"
+#include "third_party/blink/renderer/core/frame/settings.h"
 #include "third_party/blink/renderer/core/inspector/inspected_frames.h"
 #include "third_party/blink/renderer/core/inspector/inspector_css_agent.h"
 #include "third_party/blink/renderer/core/inspector/inspector_dom_agent.h"
@@ -4942,6 +4943,12 @@ void SetupRecordReplayCommands(v8::Isolate* isolate, LocalFrame* localFrame) {
   if (recordreplay::FeatureEnabled("collect-source-maps") &&
       !TestEnv("RECORD_REPLAY_DISABLE_SOURCEMAP_COLLECTION")) {
     RunScript(isolate, context, gSourceMapScript, InternalScriptURL);
+  }
+
+  if (recordreplay::FeatureEnabled("force-main-world-initialization")) {
+    // Call this here to avoid divergence later.
+    // https://linear.app/replay/issue/RUN-2195#comment-e0b6c75b
+    localFrame->GetSettings()->SetForceMainWorldInitialization(true);
   }
 
   if (recordreplay::IsReplaying()) {
