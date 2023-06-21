@@ -594,6 +594,9 @@ void RecordSigninAccountType(signin::ConsentLevel consent_level,
 // Records corresponding sign in user action for an access point.
 void RecordSigninUserActionForAccessPoint(AccessPoint access_point);
 
+// Records corresponding sign out user action.
+void RecordSignoutUserAction(bool force_clear_data);
+
 // Records |Signin_Impression_From*| user action.
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point);
 

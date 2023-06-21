@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/notreached.h"
 #import "components/google/core/common/google_util.h"
+#import "components/signin/public/base/signin_metrics.h"
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_service_utils.h"
 #import "components/sync/service/sync_user_settings.h"
@@ -270,6 +271,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 
   self.signOutFlowInProgress = YES;
   [self.viewController preventUserInteraction];
+  signin_metrics::RecordSignoutUserAction(/*force_clear_data=*/false);
   __weak ManageSyncSettingsCoordinator* weakSelf = self;
   ProceduralBlock signOutCompletion = ^() {
     __strong ManageSyncSettingsCoordinator* strongSelf = weakSelf;
@@ -278,7 +280,7 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
     }
     [strongSelf.viewController allowUserInteraction];
     strongSelf.signOutFlowInProgress = NO;
-    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
+    [self.delegate showSignOutToast];
     [strongSelf closeManageSyncSettings];
   };
   self.authService->SignOut(

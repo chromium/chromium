@@ -485,6 +485,14 @@ void RecordSigninUserActionForAccessPoint(AccessPoint access_point) {
   }
 }
 
+void RecordSignoutUserAction(bool force_clear_data) {
+  if (force_clear_data) {
+    base::RecordAction(base::UserMetricsAction("Signin_SignoutClearData"));
+  } else {
+    base::RecordAction(base::UserMetricsAction("Signin_Signout"));
+  }
+}
+
 void RecordSigninImpressionUserActionForAccessPoint(AccessPoint access_point) {
   switch (access_point) {
     case AccessPoint::ACCESS_POINT_START_PAGE:
