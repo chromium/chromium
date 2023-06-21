@@ -544,15 +544,36 @@ class PreflightController::PreflightLoader final {
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceId);
     absl::optional<std::string> name =
         GetHeaderString(head.headers, header_names::kPrivateNetworkDeviceName);
-    if (!url_loader_network_service_observer_ || !id.has_value() ||
-        !name.has_value() ||
+
+    // TODO(https://crbug.com/1455395): `target_ip_address_space` should be
+    // checked in `CorsURLLoaderFactory`. Remove the following bit after that.
+    if (!url_loader_network_service_observer_ ||
         original_request_.target_ip_address_space ==
             mojom::IPAddressSpace::kUnknown ||
         original_request_.target_ip_address_space ==
             mojom::IPAddressSpace::kPublic) {
       FinishHandleResponseHeader(
           net::ERR_FAILED,
-          CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork),
+          CorsErrorStatus(
+              mojom::CorsError::kPrivateNetworkAccessPermissionUnavailable),
+          std::move(result));
+      return;
+    }
+
+    if (!id.has_value()) {
+      FinishHandleResponseHeader(
+          net::ERR_FAILED,
+          CorsErrorStatus(
+              mojom::CorsError::kPreflightMissingPrivateNetworkAccessId),
+          std::move(result));
+      return;
+    }
+
+    if (!name.has_value()) {
+      FinishHandleResponseHeader(
+          net::ERR_FAILED,
+          CorsErrorStatus(
+              mojom::CorsError::kPreflightMissingPrivateNetworkAccessName),
           std::move(result));
       return;
     }
@@ -579,8 +600,8 @@ class PreflightController::PreflightLoader final {
       bool permission_granted) {
     if (!permission_granted) {
       net_error = net::ERR_FAILED;
-      detected_error_status =
-          CorsErrorStatus(mojom::CorsError::kInsecurePrivateNetwork);
+      detected_error_status = CorsErrorStatus(
+          mojom::CorsError::kPrivateNetworkAccessPermissionDenied);
     }
     FinishHandleResponseHeader(std::move(net_error),
                                std::move(detected_error_status),

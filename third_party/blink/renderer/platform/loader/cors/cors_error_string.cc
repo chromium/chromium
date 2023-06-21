@@ -238,6 +238,32 @@ String GetErrorString(const network::CorsErrorStatus& status,
       Append(builder, {"Request had no target IP address space, yet the "
                        "resource is in address space `",
                        ShortAddressSpace(status.resource_address_space), "`."});
+      break;
+    case CorsError::kPreflightMissingPrivateNetworkAccessId:
+      Append(
+          builder,
+          {"No 'Private-Network-Access-Id' header was present in the "
+           "preflight response for this private network request targeting "
+           "the `",
+           ShortAddressSpace(status.target_address_space), "` address space."});
+      break;
+    case CorsError::kPreflightMissingPrivateNetworkAccessName:
+      Append(
+          builder,
+          {"No 'Private-Network-Access-Name' header was present in the "
+           "preflight response for this private network request targeting "
+           "the `",
+           ShortAddressSpace(status.target_address_space), "` address space."});
+      break;
+    case CorsError::kPrivateNetworkAccessPermissionUnavailable:
+      Append(builder, {"Unable to ask for permission to access the `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` IP address space."});
+      break;
+    case CorsError::kPrivateNetworkAccessPermissionDenied:
+      Append(builder, {"Permission was denied for this request to access the `",
+                       ShortAddressSpace(status.target_address_space),
+                       "` address space."});
   }
   return builder.ToString();
 }

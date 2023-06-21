@@ -20539,6 +20539,10 @@ Called by update_net_error_codes.py.-->
   <int value="24" label="kInsecurePrivateNetwork"/>
   <int value="25" label="kInvalidPrivateNetworkAccess"/>
   <int value="26" label="kUnexpectedPrivateNetworkAccess"/>
+  <int value="27" label="kPreflightMissingPrivateNetworkAccessId"/>
+  <int value="28" label="kPreflightMissingPrivateNetworkAccessName"/>
+  <int value="29" label="kPrivateNetworkAccessPermissionUnavailable"/>
+  <int value="30" label="kPrivateNetworkAccessPermissionDenied"/>
 </enum>
 
 <enum name="CorsAccessCheckResult">
