@@ -338,6 +338,14 @@ void MaybeRegisterChromeFeaturePromos(
           .SetCustomActionIsDefault(true)
           .SetCustomActionDismissText(IDS_PROMO_SNOOZE_BUTTON)));
 
+  // kIPHExtensionsMenuFeature:
+  registry.RegisterFeature(std::move(
+      user_education::FeaturePromoSpecification::CreateForSnoozePromo(
+          feature_engagement::kIPHExtensionsMenuFeature,
+          kExtensionsMenuButtonElementId,
+          IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY)
+          .SetBubbleTitleText(IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_TITLE)));
+
   // kIPHLiveCaptionFeature:
   registry.RegisterFeature(FeaturePromoSpecification::CreateForToastPromo(
       feature_engagement::kIPHLiveCaptionFeature, kMediaButtonElementId,

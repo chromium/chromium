@@ -8,6 +8,7 @@
 #include "base/metrics/user_metrics.h"
 #include "base/metrics/user_metrics_action.h"
 #include "chrome/browser/ui/browser.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
@@ -65,6 +66,9 @@ ExtensionsToolbarButton::ExtensionsToolbarButton(
   SetVectorIcon(GetIcon(state_));
 
   GetViewAccessibility().OverrideHasPopup(ax::mojom::HasPopup::kMenu);
+
+  // Set button for IPH.
+  SetProperty(views::kElementIdentifierKey, kExtensionsMenuButtonElementId);
 }
 
 ExtensionsToolbarButton::~ExtensionsToolbarButton() {
@@ -135,6 +139,10 @@ void ExtensionsToolbarButton::OnWidgetDestroying(views::Widget* widget) {
   widget->RemoveObserver(this);
   pressed_lock_.reset();
   extensions_container_->OnMenuClosed();
+}
+
+bool ExtensionsToolbarButton::ShouldShowInkdropAfterIphInteraction() {
+  return false;
 }
 
 void ExtensionsToolbarButton::ToggleExtensionsMenu() {

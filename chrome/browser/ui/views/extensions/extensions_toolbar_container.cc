@@ -32,6 +32,8 @@
 #include "chrome/browser/ui/views/frame/toolbar_button_provider.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_action_hover_card_controller.h"
 #include "chrome/browser/ui/views/toolbar/toolbar_actions_bar_bubble_views.h"
+#include "components/feature_engagement/public/event_constants.h"
+#include "components/feature_engagement/public/feature_constants.h"
 #include "content/public/browser/web_contents.h"
 #include "extensions/common/extension_features.h"
 #include "ui/base/dragdrop/drag_drop_types.h"
@@ -213,6 +215,15 @@ ExtensionsToolbarContainer::~ExtensionsToolbarContainer() {
 }
 
 void ExtensionsToolbarContainer::UpdateAllIcons() {
+  // Display Extensions menu IPH. Toolbar view needs to be initialized, thus we
+  // show IPH once the extensions container is updating its icons.
+  if (browser_->window() && GetVisible() &&
+      GetExtensionsButton()->state() ==
+          ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+    browser_->window()->MaybeShowFeaturePromo(
+        feature_engagement::kIPHExtensionsMenuFeature);
+  }
+
   UpdateControlsVisibility();
 
   for (const auto& action : actions_)
@@ -901,6 +912,18 @@ void ExtensionsToolbarContainer::UpdateContainerVisibilityAfterAnimation() {
 }
 
 void ExtensionsToolbarContainer::OnMenuOpening() {
+  // Close Extensions menu IPH if it is open.
+  browser_->window()->CloseFeaturePromo(
+      feature_engagement::kIPHExtensionsMenuFeature);
+
+  // Record IPH usage, which should only be shown when any extension has access.
+  if (GetExtensionsButton()->state() ==
+      ExtensionsToolbarButton::State::kAnyExtensionHasAccess) {
+    browser_->window()->NotifyFeatureEngagementEvent(
+        feature_engagement::events::
+            kExtensionsMenuOpenedWhileExtensionHasAccess);
+  }
+
   UpdateContainerVisibility();
 }
 

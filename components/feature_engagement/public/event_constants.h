@@ -80,6 +80,9 @@ extern const char kHighEfficiencyDialogShown[];
 // The user clicked on the performance menu item
 extern const char kPerformanceMenuItemActivated[];
 
+// Extensions menu is opened when any extension has access to the current site.
+extern const char kExtensionsMenuOpenedWhileExtensionHasAccess[];
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

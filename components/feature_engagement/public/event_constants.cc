@@ -51,6 +51,9 @@ const char kHighEfficiencyDialogShown[] = "high_efficiency_info_shown";
 
 const char kPerformanceMenuItemActivated[] = "performance_activated";
 
+const char kExtensionsMenuOpenedWhileExtensionHasAccess[] =
+    "extensions_menu_opened_while_extension_has_access";
+
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS) || BUILDFLAG(IS_FUCHSIA)
 

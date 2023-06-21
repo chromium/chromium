@@ -97,7 +97,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
     manager->AddUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+    EXPECT_EQ(extensions_button()->state(),
               ExtensionsToolbarButton::State::kAllExtensionsBlocked);
   }
 
@@ -109,7 +109,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
     manager->RemoveUserRestrictedSite(url_origin);
     manager_waiter.WaitForUserPermissionsSettingsChange();
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+    EXPECT_EQ(extensions_button()->state(),
               ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
   }
 
@@ -120,7 +120,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
     // installed.
     WithholdHostPermissions(extension.get());
     WaitForAnimation();
-    EXPECT_EQ(extensions_button()->GetStateForTesting(),
+    EXPECT_EQ(extensions_button()->state(),
               ExtensionsToolbarButton::State::kDefault);
   }
 }
@@ -134,7 +134,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Extensions button has "all extensions blocked" icon type for chrome
   // restricted sites.
-  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+  EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kAllExtensionsBlocked);
 }
 
@@ -449,7 +449,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Extension menu button has default state since extensions are not blocked,
   // and there is no extension with access to the site.
-  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+  EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kDefault);
 
   ClickButton(request_access_button());
@@ -466,7 +466,7 @@ TEST_F(ExtensionsToolbarControlsUnitTest,
 
   // Verify extensions menu button has "any extension  has access" state, since
   // the extension executed its action.
-  EXPECT_EQ(extensions_button()->GetStateForTesting(),
+  EXPECT_EQ(extensions_button()->state(),
             ExtensionsToolbarButton::State::kAnyExtensionHasAccess);
 }
 

@@ -251,6 +251,22 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
     return config;
   }
 
+  if (kIPHExtensionsMenuFeature.name == feature->name) {
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(LESS_THAN, 1);
+
+    // Show promo up to three times a year or until the extensions menu is
+    // opened while any extension has access to the current site.
+    config->trigger = EventConfig("extensions_menu_trigger",
+                                  Comparator(LESS_THAN, 3), 360, 360);
+    config->used =
+        EventConfig("extensions_menu_opened_while_extension_has_access",
+                    Comparator(EQUAL, 0), 360, 360);
+    return config;
+  }
+
   if (kIPHCompanionSidePanelFeature.name == feature->name) {
     absl::optional<FeatureConfig> config = FeatureConfig();
     config->valid = true;

@@ -8552,6 +8552,12 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_CHROME_TIP" desc="Accessible name used by a screen reader for the in-product-help or tutorial bubble icon." is_accessibility_with_no_ui="true">
         Chrome tip
       </message>
+      <message name="IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_TITLE" desc="">
+        See what extensions can read or change a site
+      </message>
+      <message name="IDS_EXTENSIONS_MENU_IPH_ENTRY_POINT_BODY" desc="">
+        From here, you can see and manage extension permissions for the site you're on
+      </message>
       <message name="IDS_GLOBAL_MEDIA_CONTROLS_PROMO" desc="Text shown on promotional UI appearing next to the global media controls toolbar button.">
         New! Control your music, videos, and more.
       </message>
