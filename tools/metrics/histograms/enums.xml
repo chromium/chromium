@@ -34394,7 +34394,10 @@ Called by update_document_policy_enum.py.-->
 </enum>
 
 <enum name="ExpandedApRoVerificationStatus">
-  <int value="536870912" label="Success"/>
+  <int value="-4096" label="Success"/>
+  <int value="20135176" label="SignedWithTestRootKey"/>
+  <int value="268435456" label="SettingNotProvisioned"/>
+  <int value="285212672" label="NonZeroGbbFlags"/>
 </enum>
 
 <enum name="ExpectCTHeaderResult">
@@ -105153,13 +105156,6 @@ would be helpful to identify which type is being sent.
   <int value="398" label="TPM_CC_EC_Ephemeral"/>
   <int value="399" label="TPM_CC_PolicyNvWritten"/>
   <int value="536903681" label="TPM_CCE_PolicyFidoSigned"/>
-</enum>
-
-<enum name="TPMExpandedApRoVerificationStatus">
-  <int value="-4096" label="Success"/>
-  <int value="20135176" label="SignedWithTestRootKey"/>
-  <int value="268435456" label="SettingNotProvisioned"/>
-  <int value="285212672" label="NonZeroGbbFlags"/>
 </enum>
 
 <enum name="TPMFirmwareUpdateResult">
