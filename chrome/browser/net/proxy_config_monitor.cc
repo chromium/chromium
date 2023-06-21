@@ -15,7 +15,6 @@
 #include "components/proxy_config/pref_proxy_config_tracker_impl.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
-#include "services/network/public/cpp/features.h"
 #include "services/network/public/mojom/network_context.mojom.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -86,9 +85,7 @@ void ProxyConfigMonitor::AddToNetworkContextParams(
       proxy_config_client.InitWithNewPipeAndPassReceiver();
   proxy_config_client_set_.Add(std::move(proxy_config_client));
 
-  if (!base::FeatureList::IsEnabled(
-          network::features::kLessChattyNetworkService) ||
-      proxy_config_service_->UsesPolling()) {
+  if (proxy_config_service_->UsesPolling()) {
     poller_receiver_set_.Add(this,
                              network_context_params->proxy_config_poller_client
                                  .InitWithNewPipeAndPassReceiver());

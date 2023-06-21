@@ -1110,8 +1110,7 @@ URLLoader::~URLLoader() {
         *factory_params_->top_frame_id, keepalive_request_size_);
   }
 
-  if (base::FeatureList::IsEnabled(features::kLessChattyNetworkService) &&
-      !cookie_access_details_.empty()) {
+  if (!cookie_access_details_.empty()) {
     // In case the response wasn't received successfully sent the call now.
     // Note `cookie_observer_` is guaranteed non-null since
     // `cookie_access_details_` is only appended to when it is valid.
@@ -2099,20 +2098,16 @@ void URLLoader::NotifyCompleted(int error_code) {
 
   auto total_received = url_request_->GetTotalReceivedBytes();
   auto total_sent = url_request_->GetTotalSentBytes();
-  if (base::FeatureList::IsEnabled(features::kLessChattyNetworkService)) {
-    if (total_received > 0) {
-      base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
-                                     total_received, 50, 10 * 1000 * 1000, 50);
-    }
+  if (total_received > 0) {
+    base::UmaHistogramCustomCounts("DataUse.BytesReceived3.Delegate",
+                                   total_received, 50, 10 * 1000 * 1000, 50);
+  }
 
-    if (total_sent > 0) {
-      UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
-    }
+  if (total_sent > 0) {
+    UMA_HISTOGRAM_COUNTS_1M("DataUse.BytesSent3.Delegate", total_sent);
   }
   if ((total_received > 0 || total_sent > 0)) {
-    if (url_loader_network_observer_ &&
-        (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService) ||
-         provide_data_use_updates_)) {
+    if (url_loader_network_observer_ && provide_data_use_updates_) {
       url_loader_network_observer_->OnDataUseUpdate(
           url_request_->traffic_annotation().unique_id_hash_code,
           total_received, total_sent);
@@ -2277,9 +2272,6 @@ void URLLoader::SetRawRequestHeadersAndNotify(
           mojom::CookieAccessDetails::Type::kRead, url_request_->url(),
           url_request_->site_for_cookies(), std::move(reported_cookies),
           devtools_request_id()));
-      if (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService)) {
-        cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
-      }
     }
   }
 }
@@ -2625,8 +2617,7 @@ void URLLoader::ReportFlaggedResponseCookies(bool call_cookie_observer) {
         mojom::CookieAccessDetails::Type::kChange, url_request_->url(),
         url_request_->site_for_cookies(), std::move(reported_cookies),
         devtools_request_id()));
-    if (!base::FeatureList::IsEnabled(features::kLessChattyNetworkService) ||
-        call_cookie_observer) {
+    if (call_cookie_observer) {
       cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
     }
   }

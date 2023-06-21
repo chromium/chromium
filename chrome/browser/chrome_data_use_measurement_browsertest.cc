@@ -2,8 +2,6 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
-
 #include "base/run_loop.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
 #include "build/build_config.h"
@@ -35,11 +33,8 @@ class ChromeDataUseMeasurementBrowserTest : public InProcessBrowserTest {
     do {
       base::ThreadPoolInstance::Get()->FlushForTesting();
       base::RunLoop().RunUntilIdle();
-      if (base::FeatureList::IsEnabled(
-              network::features::kLessChattyNetworkService)) {
-        content::FetchHistogramsFromChildProcesses();
-        metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
-      }
+      content::FetchHistogramsFromChildProcesses();
+      metrics::SubprocessMetricsProvider::MergeHistogramDeltasForTesting();
     } while (GetTotalDataUse() == 0);
   }
 

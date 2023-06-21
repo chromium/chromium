@@ -915,12 +915,8 @@ net::CookieSettingOverrides RestrictedCookieManager::GetCookieSettingOverrides(
 void RestrictedCookieManager::OnCookiesAccessed(
     mojom::CookieAccessDetailsPtr details) {
   cookie_access_details_.push_back(std::move(details));
-  if (base::FeatureList::IsEnabled(features::kLessChattyNetworkService)) {
-    if (!cookies_access_timer_.IsRunning()) {
-      cookies_access_timer_.Reset();
-    }
-  } else {
-    cookie_observer_->OnCookiesAccessed(std::move(cookie_access_details_));
+  if (!cookies_access_timer_.IsRunning()) {
+    cookies_access_timer_.Reset();
   }
 }
 

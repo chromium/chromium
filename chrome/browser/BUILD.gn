@@ -371,8 +371,6 @@ static_library("browser") {
     "custom_handlers/protocol_handler_registry_factory.h",
     "data_saver/data_saver.cc",
     "data_saver/data_saver.h",
-    "data_use_measurement/chrome_data_use_measurement.cc",
-    "data_use_measurement/chrome_data_use_measurement.h",
     "defaults.cc",
     "defaults.h",
     "dips/cookie_access_filter.cc",

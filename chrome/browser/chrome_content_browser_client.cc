@@ -59,7 +59,6 @@
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/custom_handlers/protocol_handler_registry_factory.h"
 #include "chrome/browser/data_saver/data_saver.h"
-#include "chrome/browser/data_use_measurement/chrome_data_use_measurement.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/device_api/device_service_impl.h"
 #include "chrome/browser/device_api/managed_configuration_service.h"
@@ -2149,11 +2148,8 @@ void ChromeContentBrowserClient::OverrideURLLoaderFactoryParams(
     bool is_for_isolated_world,
     network::mojom::URLLoaderFactoryParams* factory_params) {
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(
-          network::features::kLessChattyNetworkService)) {
-    // Loading state text isn't used on Android, only in desktop UI.
-    factory_params->provide_loading_state_updates = false;
-  }
+  // Loading state text isn't used on Android, only in desktop UI.
+  factory_params->provide_loading_state_updates = false;
 #endif
 
 #if BUILDFLAG(ENABLE_EXTENSIONS)
@@ -6871,12 +6867,6 @@ void ChromeContentBrowserClient::OnNetworkServiceDataUseUpdate(
   task_manager::TaskManagerInterface::UpdateAccumulatedStatsNetworkForRoute(
       render_frame_host_id, recv_bytes, sent_bytes);
 #endif
-
-  if (!base::FeatureList::IsEnabled(
-          network::features::kLessChattyNetworkService)) {
-    ChromeDataUseMeasurement::GetInstance().ReportNetworkServiceDataUse(
-        network_traffic_annotation_id_hash, recv_bytes, sent_bytes);
-  }
 }
 
 base::FilePath
