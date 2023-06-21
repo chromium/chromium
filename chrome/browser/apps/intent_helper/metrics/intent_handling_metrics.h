@@ -149,11 +149,6 @@ class IntentHandlingMetrics {
                                        LinkCapturingEvent event);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  // TODO(crbug.com/1275075): Support metrices in Lacros.
-  static void RecordExternalProtocolMetrics(arc::Scheme scheme,
-                                            apps::PickerEntryType entry_type,
-                                            bool accepted,
-                                            bool persisted);
 
   static void RecordExternalProtocolUserInteractionMetrics(
       content::BrowserContext* context,

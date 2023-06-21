@@ -270,17 +270,6 @@ TEST_F(IntentHandlingMetricsTestWithMetricsService,
   }
 }
 
-TEST(IntentHandlingMetricsTest, TestRecordExternalProtocolMetrics) {
-  base::HistogramTester histogram_tester;
-
-  IntentHandlingMetrics test = IntentHandlingMetrics();
-  test.RecordExternalProtocolMetrics(arc::Scheme::IRC, PickerEntryType::kArc,
-                                     /*accepted=*/false, /*persisted=*/true);
-
-  histogram_tester.ExpectBucketCount(
-      "ChromeOS.Apps.ExternalProtocolDialog.Rejected",
-      arc::ProtocolAction::IRC_REJECTED, 1);
-}
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 }  // namespace apps

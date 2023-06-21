@@ -4305,58 +4305,6 @@ Unknown properties are collapsed to zero. -->
   <int value="6" label="Not allowed"/>
 </enum>
 
-<enum name="ArcExternalProtocolAction">
-  <int value="0" label="other App accepted and persisted"/>
-  <int value="1" label="other App accepted and not persisted"/>
-  <int value="2" label="other App rejected"/>
-  <int value="3" label="bitcoin:// App accepted and persisted"/>
-  <int value="4" label="bitcoin:// App accepted and not persisted"/>
-  <int value="5" label="bitcoin:// App rejected"/>
-  <int value="6" label="geo:// App accepted and persisted"/>
-  <int value="7" label="geo:// App accepted and not persisted"/>
-  <int value="8" label="geo:// App rejected"/>
-  <int value="9" label="im:// App accepted and persisted"/>
-  <int value="10" label="im:// App accepted and not persisted"/>
-  <int value="11" label="im:// App rejected"/>
-  <int value="12" label="irc:// App accepted and persisted"/>
-  <int value="13" label="irc:// App accepted and not persisted"/>
-  <int value="14" label="irc:// App rejected"/>
-  <int value="15" label="magnet:// App accepted and persisted"/>
-  <int value="16" label="magnet:// App accepted and not persisted"/>
-  <int value="17" label="magnet:// App rejected"/>
-  <int value="18" label="mailto:// App accepted and persisted"/>
-  <int value="19" label="mailto:// App accepted and not persisted"/>
-  <int value="20" label="mailto:// App rejected"/>
-  <int value="21" label="mms:// App accepted and persisted"/>
-  <int value="22" label="mms:// App accepted and not persisted"/>
-  <int value="23" label="mms:// App rejected"/>
-  <int value="24" label="sip:// App accepted and persisted"/>
-  <int value="25" label="sip:// App accepted and not persisted"/>
-  <int value="26" label="sip:// App rejected"/>
-  <int value="27" label="skype:// App accepted and persisted"/>
-  <int value="28" label="skype:// App accepted and not persisted"/>
-  <int value="29" label="skype:// App rejected"/>
-  <int value="30" label="sms:// App accepted and persisted"/>
-  <int value="31" label="sms:// App accepted and not persisted"/>
-  <int value="32" label="sms:// App rejected"/>
-  <int value="33" label="spotify:// App accepted and persisted"/>
-  <int value="34" label="spotify:// App accepted and not persisted"/>
-  <int value="35" label="spotify:// App rejected"/>
-  <int value="36" label="ssh:// App accepted and persisted"/>
-  <int value="37" label="ssh:// App accepted and not persisted"/>
-  <int value="38" label="ssh:// App rejected"/>
-  <int value="39" label="tel:// App accepted and persisted"/>
-  <int value="40" label="tel:// App accepted and not persisted"/>
-  <int value="41" label="tel:// App rejected"/>
-  <int value="42" label="telnet:// App accepted and persisted"/>
-  <int value="43" label="telnet:// App accepted and not persisted"/>
-  <int value="44" label="telnet:// App rejected"/>
-  <int value="45" label="webcal:// App accepted and persisted"/>
-  <int value="46" label="webcal:// App accepted and not persisted"/>
-  <int value="47" label="webcal:// App rejected"/>
-  <int value="48" label="tel:// Device selected"/>
-</enum>
-
 <enum name="ArcFileSystemWatcherExceedLimitState">
   <int value="0"
       label="inotify exceeds its limit when ArcFileSystemWatcher is started"/>

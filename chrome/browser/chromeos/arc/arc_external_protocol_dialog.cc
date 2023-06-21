@@ -499,8 +499,6 @@ void OnIntentPickerClosed(
     HandleDeviceSelection(web_contents.get(), devices, selected_app_package,
                           url);
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
-        Scheme::TEL, entry_type, /*accepted=*/true, should_persist);
     if (context) {
       apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
           context, entry_type, reason, should_persist);
@@ -566,28 +564,6 @@ void OnIntentPickerClosed(
   }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-  const std::map<base::StringPiece, Scheme> string_to_scheme = {
-      {"bitcoin", Scheme::BITCOIN}, {"geo", Scheme::GEO},
-      {"im", Scheme::IM},           {"irc", Scheme::IRC},
-      {"magnet", Scheme::MAGNET},   {"mailto", Scheme::MAILTO},
-      {"mms", Scheme::MMS},         {"sip", Scheme::SIP},
-      {"skype", Scheme::SKYPE},     {"sms", Scheme::SMS},
-      {"spotify", Scheme::SPOTIFY}, {"ssh", Scheme::SSH},
-      {"tel", Scheme::TEL},         {"telnet", Scheme::TELNET},
-      {"webcal", Scheme::WEBCAL}};
-
-  bool protocol_accepted =
-      (reason == apps::IntentPickerCloseReason::OPEN_APP) ? true : false;
-
-  Scheme url_scheme = Scheme::OTHER;
-  base::StringPiece scheme = url.scheme_piece();
-  auto scheme_it = string_to_scheme.find(scheme);
-  if (scheme_it != string_to_scheme.end())
-    url_scheme = scheme_it->second;
-  // TODO(crbug.com/1275075): Support ARC metrics in Lacros.
-  apps::IntentHandlingMetrics::RecordExternalProtocolMetrics(
-      url_scheme, entry_type, protocol_accepted, should_persist);
-
   if (context) {
     apps::IntentHandlingMetrics::RecordExternalProtocolUserInteractionMetrics(
         context, entry_type, reason, should_persist);
@@ -832,118 +808,6 @@ void OnIntentPickerClosedForTesting(
       std::move(mojo_delegate), std::move(devices),
       apps::IntentPickerBubbleType::kExternalProtocol, selected_app_package,
       entry_type, reason, should_persist);
-}
-
-ProtocolAction GetProtocolAction(Scheme scheme,
-                                 apps::PickerEntryType entry_type,
-                                 bool accepted,
-                                 bool persisted) {
-  if (entry_type == apps::PickerEntryType::kDevice) {
-    DCHECK_EQ(Scheme::TEL, scheme);
-    DCHECK(accepted);
-    DCHECK(!persisted);
-    return ProtocolAction::TEL_DEVICE_SELECTED;
-  }
-  switch (scheme) {
-    case Scheme::OTHER:
-      if (!accepted)
-        return ProtocolAction::OTHER_REJECTED;
-      if (persisted)
-        return ProtocolAction::OTHER_ACCEPTED_PERSISTED;
-      return ProtocolAction::OTHER_ACCEPTED_NOT_PERSISTED;
-    case Scheme::BITCOIN:
-      if (!accepted)
-        return ProtocolAction::BITCOIN_REJECTED;
-      if (persisted)
-        return ProtocolAction::BITCOIN_ACCEPTED_PERSISTED;
-      return ProtocolAction::BITCOIN_ACCEPTED_NOT_PERSISTED;
-    case Scheme::GEO:
-      if (!accepted)
-        return ProtocolAction::GEO_REJECTED;
-      if (persisted)
-        return ProtocolAction::GEO_ACCEPTED_PERSISTED;
-      return ProtocolAction::GEO_ACCEPTED_NOT_PERSISTED;
-    case Scheme::IM:
-      if (!accepted)
-        return ProtocolAction::IM_REJECTED;
-      if (persisted)
-        return ProtocolAction::IM_ACCEPTED_PERSISTED;
-      return ProtocolAction::IM_ACCEPTED_NOT_PERSISTED;
-    case Scheme::IRC:
-      if (!accepted)
-        return ProtocolAction::IRC_REJECTED;
-      if (persisted)
-        return ProtocolAction::IRC_ACCEPTED_PERSISTED;
-      return ProtocolAction::IRC_ACCEPTED_NOT_PERSISTED;
-    case Scheme::MAGNET:
-      if (!accepted)
-        return ProtocolAction::MAGNET_REJECTED;
-      if (persisted)
-        return ProtocolAction::MAGNET_ACCEPTED_PERSISTED;
-      return ProtocolAction::MAGNET_ACCEPTED_NOT_PERSISTED;
-    case Scheme::MAILTO:
-      if (!accepted)
-        return ProtocolAction::MAILTO_REJECTED;
-      if (persisted)
-        return ProtocolAction::MAILTO_ACCEPTED_PERSISTED;
-      return ProtocolAction::MAILTO_ACCEPTED_NOT_PERSISTED;
-    case Scheme::MMS:
-      if (!accepted)
-        return ProtocolAction::MMS_REJECTED;
-      if (persisted)
-        return ProtocolAction::MMS_ACCEPTED_PERSISTED;
-      return ProtocolAction::MMS_ACCEPTED_NOT_PERSISTED;
-    case Scheme::SIP:
-      if (!accepted)
-        return ProtocolAction::SIP_REJECTED;
-      if (persisted)
-        return ProtocolAction::SIP_ACCEPTED_PERSISTED;
-      return ProtocolAction::SIP_ACCEPTED_NOT_PERSISTED;
-    case Scheme::SKYPE:
-      if (!accepted)
-        return ProtocolAction::SKYPE_REJECTED;
-      if (persisted)
-        return ProtocolAction::SKYPE_ACCEPTED_PERSISTED;
-      return ProtocolAction::SKYPE_ACCEPTED_NOT_PERSISTED;
-    case Scheme::SMS:
-      if (!accepted)
-        return ProtocolAction::SMS_REJECTED;
-      if (persisted)
-        return ProtocolAction::SMS_ACCEPTED_PERSISTED;
-      return ProtocolAction::SMS_ACCEPTED_NOT_PERSISTED;
-    case Scheme::SPOTIFY:
-      if (!accepted)
-        return ProtocolAction::SPOTIFY_REJECTED;
-      if (persisted)
-        return ProtocolAction::SPOTIFY_ACCEPTED_PERSISTED;
-      return ProtocolAction::SPOTIFY_ACCEPTED_NOT_PERSISTED;
-    case Scheme::SSH:
-      if (!accepted)
-        return ProtocolAction::SSH_REJECTED;
-      if (persisted)
-        return ProtocolAction::SSH_ACCEPTED_PERSISTED;
-      return ProtocolAction::SSH_ACCEPTED_NOT_PERSISTED;
-    case Scheme::TEL:
-      if (!accepted)
-        return ProtocolAction::TEL_REJECTED;
-      if (persisted)
-        return ProtocolAction::TEL_ACCEPTED_PERSISTED;
-      return ProtocolAction::TEL_ACCEPTED_NOT_PERSISTED;
-    case Scheme::TELNET:
-      if (!accepted)
-        return ProtocolAction::TELNET_REJECTED;
-      if (persisted)
-        return ProtocolAction::TELNET_ACCEPTED_PERSISTED;
-      return ProtocolAction::TELNET_ACCEPTED_NOT_PERSISTED;
-    case Scheme::WEBCAL:
-      if (!accepted)
-        return ProtocolAction::WEBCAL_REJECTED;
-      if (persisted)
-        return ProtocolAction::WEBCAL_ACCEPTED_PERSISTED;
-      return ProtocolAction::WEBCAL_ACCEPTED_NOT_PERSISTED;
-  }
-  NOTREACHED();
-  return ProtocolAction::OTHER_REJECTED;
 }
 
 }  // namespace arc
