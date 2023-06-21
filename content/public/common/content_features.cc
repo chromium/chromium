@@ -445,17 +445,18 @@ BASE_FEATURE(kFedCmLoginHint,
              "FedCmLoginHint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Field trial boolean parameter which indicates whether IdpSigninStatus API is
-// used in FedCM API.
-const char kFedCmIdpSigninStatusFieldTrialParamName[] = "IdpSigninStatus";
+// Enables metrics collection for signin status mismatches. Also enables
+// parsing the signin status HTTP headers.
+// kFedCmIdpSigninStatusEnabled takes precedence over this feature flag.
+BASE_FEATURE(kFedCmIdpSigninStatusMetrics,
+             "FedCmIdpSigninStatusMetrics",
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Alternative to `kFedCmIdpSigninStatusFieldTrialParamName` which runs
-// IdpSigninStatus API in a metrics-only mode. This field trial is default-on
-// and is intended as a kill switch.
-// `kFedCmIdpSigninStatusFieldTrialParamName` takes precedence over
-// `kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName`.
-const char kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[] =
-    "IdpSigninStatusMetricsOnly";
+// Enables the IDP signin status API for use with FedCM, including avoiding
+// network requests when not signed in and mismatch handling.
+BASE_FEATURE(kFedCmIdpSigninStatusEnabled,
+             "FedCmIdpSigninStatusEnabled",
+             base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Enables the MDocs API in the IdentityCredential.
 BASE_FEATURE(kWebIdentityMDocs,

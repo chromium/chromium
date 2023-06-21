@@ -3039,9 +3039,7 @@ TEST_F(FederatedAuthRequestImplTest, ReorderMultipleAccounts) {
 // IdpSigninStatus bit.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   EXPECT_CALL(*test_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), true))
@@ -3061,9 +3059,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestFirstTimeFetchSuccess) {
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusTestFirstTimeFetchNoFailureUi) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   EXPECT_CALL(*test_permission_delegate_,
               SetIdpSigninStatus(OriginFromString(kProviderUrlFull), false))
@@ -3086,9 +3082,7 @@ TEST_F(FederatedAuthRequestImplTest,
 // the IdpSigninStatus claims that the user is signed in.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;
@@ -3113,9 +3107,7 @@ TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusTestShowFailureUi) {
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusTestApiFailedIfUserNotSignedInWithIdp) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -3192,9 +3184,7 @@ class ParseStatusOverrideIdpNetworkRequestManager
 // 3) User selects "Continue" in account chooser dialog.
 TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSignin) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
@@ -3236,9 +3226,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSignin) {
 // 3) User signs into IdP in different tab
 TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSigninButHidden) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
@@ -3279,9 +3267,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenSuccessfulSigninButHidden) {
 // 2) In a different tab, user signs into different IdP
 TEST_F(FederatedAuthRequestImplTest, FailureUiSigninFromDifferentIdp) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
@@ -3321,9 +3307,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiSigninFromDifferentIdp) {
 // update.
 TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   url::Origin kIdpOrigin = OriginFromString(kProviderUrlFull);
 
@@ -3363,9 +3347,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiAccountEndpointKeepsFailing) {
 // That user is shown IdP-sign-in-failure dialog.
 TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
@@ -3421,9 +3403,7 @@ TEST_F(FederatedAuthRequestImplTest, FailureUiThenFailDifferentEndpoint) {
 TEST_F(FederatedAuthRequestImplTest,
        FailAfterAccountSelectionHideDialogDoesNotShowIdpSigninFailureDialog) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   // Setup dialog controller to fail FedCM request after the user has selected
   // an account.
@@ -3477,9 +3457,7 @@ TEST_F(FederatedAuthRequestImplTest,
 TEST_F(FederatedAuthRequestImplTest,
        FailureUiAbortDoesNotShowIdpSigninFailureDialog) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusFieldTrialParamName, "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusEnabled);
 
   SetNetworkRequestManager(
       std::make_unique<ParseStatusOverrideIdpNetworkRequestManager>());
@@ -3516,10 +3494,7 @@ TEST_F(FederatedAuthRequestImplTest,
 // accounts endpoint.
 TEST_F(FederatedAuthRequestImplTest, IdpSigninStatusMetricsModeStaysSignedout) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
-        "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = false;
@@ -3536,10 +3511,7 @@ TEST_F(
     FederatedAuthRequestImplTest,
     IdpSigninStatusMetricsModeUndefinedTransitionsToSignedinWhenHaveAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
-        "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] =
@@ -3557,10 +3529,7 @@ TEST_F(
 TEST_F(FederatedAuthRequestImplTest,
        IdpSigninStatusMetricsModeTransitionsToSignedoutWhenNoAccounts) {
   base::test::ScopedFeatureList list;
-  list.InitAndEnableFeatureWithParameters(
-      features::kFedCm,
-      {{features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
-        "true"}});
+  list.InitAndEnableFeature(features::kFedCmIdpSigninStatusMetrics);
 
   test_permission_delegate_
       ->idp_signin_statuses_[OriginFromString(kProviderUrlFull)] = true;

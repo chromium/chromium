@@ -1632,6 +1632,11 @@ const char kFedCmRpContextDescription[] =
     "Allows relying parties to describe which context (e.g. sign-up vs "
     "sign-in) the FedCM is executing on.";
 
+const char kFedCmIdpSigninStatusName[] = "FedCmIdpSigninStatus";
+const char kFedCmIdpSigninStatusDescription[] =
+    "Enables the FedCM IDP sign-in status API that allows IDPs to notify the "
+    "browser about the user's sign-in status.";
+
 const char kWebIdentityMDocsName[] = "MDocs";
 const char kWebIdentityMDocsDescription[] =
     "Allows relying parties to request the presentation of ISO mdocs.";

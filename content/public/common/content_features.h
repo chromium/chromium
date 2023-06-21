@@ -84,9 +84,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kExtraSafelistedRequestHeadersForOutOfBlinkCors);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCm);
 CONTENT_EXPORT extern const char kFedCmIdpSignoutFieldTrialParamName[];
-CONTENT_EXPORT extern const char kFedCmIdpSigninStatusFieldTrialParamName[];
-CONTENT_EXPORT extern const char
-    kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName[];
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmAuthz);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmAutoReauthn);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdPRegistration);
@@ -97,6 +94,8 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmRpContext);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmUserInfo);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmSelectiveDisclosure);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmLoginHint);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdpSigninStatusMetrics);
+CONTENT_EXPORT BASE_DECLARE_FEATURE(kFedCmIdpSigninStatusEnabled);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kWebIdentityMDocs);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFirstPartySets);
 CONTENT_EXPORT extern const base::FeatureParam<bool>

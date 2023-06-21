@@ -911,6 +911,9 @@ extern const char kFedCmRpContextDescription[];
 extern const char kFedCmUserInfoName[];
 extern const char kFedCmUserInfoDescription[];
 
+extern const char kFedCmIdpSigninStatusName[];
+extern const char kFedCmIdpSigninStatusDescription[];
+
 extern const char kFedCmWithoutThirdPartyCookiesName[];
 extern const char kFedCmWithoutThirdPartyCookiesDescription[];
 
