@@ -16,7 +16,7 @@
 namespace ui {
 
 void AddNativeCoreColorMixer(ColorProvider* provider,
-                             const ColorProviderManager::Key& key) {
+                             const ColorProviderKey& key) {
   ColorMixer& mixer = provider->AddMixer();
   mixer[kColorAshSystemUIMenuBackground] = {kColorMenuBackground};
   mixer[kColorAshSystemUIMenuIcon] = {kColorMenuIcon};
@@ -25,7 +25,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
   mixer[kColorAshSystemUIMenuSeparator] = {kColorMenuSeparator};
   mixer[kColorMultitaskMenuNudgePulse] = {kColorEndpointForeground};
 
-  bool dark_mode = key.color_mode == ColorProviderManager::ColorMode::kDark;
+  bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
   // Add color initializations for highlight border.
   {
@@ -52,7 +52,7 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
   if (dark_mode) {
     const bool high_elevation =
-        key.elevation_mode == ColorProviderManager::ElevationMode::kHigh;
+        key.elevation_mode == ColorProviderKey::ElevationMode::kHigh;
     const SkColor base_color =
         high_elevation
             ? color_utils::AlphaBlend(SK_ColorWHITE, gfx::kGoogleGrey900, 0.08f)

@@ -8,7 +8,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 
@@ -18,9 +18,8 @@ namespace {
 
 // Sys token overrides for the non-baseline themed case.
 void AddThemedSysColorOverrides(ColorMixer& mixer,
-                                const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+                                const ColorProviderKey& key) {
+  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
   // Surfaces.
   mixer[kColorSysSurface] = {dark_mode ? kColorRefNeutral10
@@ -95,9 +94,8 @@ void AddThemedSysColorOverrides(ColorMixer& mixer,
 // TODO(tluk): This can probably be migrated to the kMonochrome SchemeVariant
 // when available.
 void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
-                                   const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+                                   const ColorProviderKey& key) {
+  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
 
   // Chrome surfaces.
   mixer[kColorSysOnBaseDivider] = {dark_mode ? kColorRefNeutral40
@@ -124,10 +122,8 @@ void AddGrayscaleSysColorOverrides(ColorMixer& mixer,
 
 }  // namespace
 
-void AddSysColorMixer(ColorProvider* provider,
-                      const ColorProviderManager::Key& key) {
-  const bool dark_mode =
-      key.color_mode == ColorProviderManager::ColorMode::kDark;
+void AddSysColorMixer(ColorProvider* provider, const ColorProviderKey& key) {
+  const bool dark_mode = key.color_mode == ColorProviderKey::ColorMode::kDark;
   ColorMixer& mixer = provider->AddMixer();
 
   // TODO(tluk): Current sys token recipes are still in flux. Audit and update

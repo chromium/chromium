@@ -9,7 +9,7 @@
 
 #include "base/component_export.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette.h"
 
 namespace ui {
@@ -19,7 +19,7 @@ namespace ui {
 COMPONENT_EXPORT(DYNAMIC_COLOR)
 std::unique_ptr<Palette> GeneratePalette(
     SkColor seed_color,
-    ColorProviderManager::SchemeVariant variant);
+    ColorProviderKey::SchemeVariant variant);
 
 }  // namespace ui
 
