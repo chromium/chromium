@@ -116,7 +116,7 @@ function start_ash_chrome {
   build_args
 
   check_chrome_dir "$ASH_CHROME_BUILD_DIR" ash-chrome-build-dir
-  if [ $LACROS_ENABLED ]; then
+  if $LACROS_ENABLED ; then
     check_chrome_dir "$LACROS_BUILD_DIR" lacros-build-dir
   fi
   ensure_user_dir ${USER_DATA_DIR} "ash-chrome"
@@ -124,7 +124,7 @@ function start_ash_chrome {
   cat <<EOF
 tip: Once you finished OOBE, you can login using any string (e.g. 'x').
 EOF
-  if [ $LACROS_ENABLED ]; then
+  if $LACROS_ENABLED ; then
     cat <<EOF
 
 tip: Lacros log file ${LACROS_LOG_FILE}
