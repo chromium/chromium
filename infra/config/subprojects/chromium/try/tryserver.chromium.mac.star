@@ -239,24 +239,6 @@ try_.builder(
 # they are built, hence no additional dimension is specified.
 # The 10.xx version translates to which bots will run isolated tests.
 try_.builder(
-    name = "mac_chromium_10.13_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.13 Tests",
-    ],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
-    name = "mac_chromium_10.14_rel_ng",
-    mirrors = [
-        "ci/Mac Builder",
-        "ci/Mac10.14 Tests",
-    ],
-    reclient_jobs = reclient.jobs.LOW_JOBS_FOR_CQ,
-)
-
-try_.builder(
     name = "mac_chromium_10.15_rel_ng",
     mirrors = [
         "ci/Mac Builder",
