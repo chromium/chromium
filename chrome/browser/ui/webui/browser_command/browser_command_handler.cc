@@ -206,11 +206,6 @@ bool BrowserCommandHandler::BrowserSupportsTabGroups() {
   return browser->tab_strip_model()->SupportsTabGroups();
 }
 
-bool BrowserCommandHandler::BrowserHasTabGroups() {
-  Browser* browser = chrome::FindBrowserWithProfile(profile_);
-  return !browser->tab_strip_model()->group_model()->ListTabGroups().empty();
-}
-
 void BrowserCommandHandler::StartTabGroupTutorial() {
   user_education::TutorialService* tutorial_service = GetTutorialService();
 
@@ -227,9 +222,7 @@ void BrowserCommandHandler::StartTabGroupTutorial() {
     return;
   }
 
-  user_education::TutorialIdentifier tutorial_id =
-      BrowserHasTabGroups() ? kTabGroupWithExistingGroupTutorialId
-                            : kTabGroupTutorialId;
+  user_education::TutorialIdentifier tutorial_id = kTabGroupTutorialId;
 
   tutorial_service->StartTutorial(tutorial_id, context);
   tutorial_service->LogStartedFromWhatsNewPage(

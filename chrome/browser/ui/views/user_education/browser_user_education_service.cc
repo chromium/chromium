@@ -8,6 +8,7 @@
 #include <iterator>
 #include <vector>
 
+#include "base/functional/bind.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 #include "chrome/app/chrome_command_ids.h"
@@ -21,6 +22,7 @@
 #include "chrome/browser/ui/chrome_pages.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/performance_controls/performance_controls_metrics.h"
+#include "chrome/browser/ui/tabs/tab_group_model.h"
 #include "chrome/browser/ui/toolbar/app_menu_model.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/chrome_typography.h"
@@ -72,7 +74,6 @@
 namespace {
 
 const char kTabGroupTutorialMetricPrefix[] = "TabGroup";
-const char kTabGroupWithGroupTutorialMetricPrefix[] = "TabGroupWithGroup";
 const char kSidePanelReadingListTutorialMetricPrefix[] = "SidePanelReadingList";
 const char kCustomizeChromeTutorialMetricPrefix[] = "CustomizeChromeSidePanel";
 const char kSideSearchTutorialMetricPrefix[] = "SideSearch";
@@ -181,13 +182,34 @@ class FloatingWebUIHelpBubbleFactoryBrowser
 
 DEFINE_FRAMEWORK_SPECIFIC_METADATA(FloatingWebUIHelpBubbleFactoryBrowser)
 
+class IfView : public user_education::TutorialDescription::If {
+ public:
+  template <typename V>
+  IfView(user_education::TutorialDescription::ElementSpecifier element,
+         base::RepeatingCallback<bool(const V*)> if_condition)
+      : If(element,
+           base::BindRepeating(
+               [](base::RepeatingCallback<bool(const V*)> if_condition,
+                  const ui::TrackedElement* el) {
+                 return if_condition.Run(views::AsViewClass<V>(
+                     el->AsA<views::TrackedElementViews>()->view()));
+               },
+               std::move(if_condition))) {}
+};
+
+bool HasTabGroups(const BrowserView* browser_view) {
+  return !browser_view->browser()
+              ->tab_strip_model()
+              ->group_model()
+              ->ListTabGroups()
+              .empty();
+}
+
 }  // namespace
 
 const char kSidePanelCustomizeChromeTutorialId[] =
     "Side Panel Customize Chrome Tutorial";
 const char kTabGroupTutorialId[] = "Tab Group Tutorial";
-const char kTabGroupWithExistingGroupTutorialId[] =
-    "Tab Group With Existing Group Tutorial";
 const char kSidePanelReadingListTutorialId[] =
     "Side Panel Reading List Tutorial";
 const char kSideSearchTutorialId[] = "Side Search Tutorial";
@@ -550,58 +572,50 @@ void MaybeRegisterChromeTutorials(
                                   std::move(test_description));
   }
 
-  {  // Tab Group Tutorials
+  // Tab Group tutorial.
+  tutorial_registry.AddTutorial(
+      kTabGroupTutorialId,
+      TutorialDescription::Create<kTabGroupTutorialMetricPrefix>(
+          // The initial step. This is the only step that differs depending on
+          // whether there is an existing group.
+          IfView(kBrowserViewElementId, base::BindRepeating(&HasTabGroups))
+              .Then(
+                  BubbleStep(kTabStripRegionElementId)
+                      .SetBubbleBodyText(
+                          IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP))
+              .Else(BubbleStep(kTabStripRegionElementId)
+                        .SetBubbleBodyText(
+                            IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP)),
 
-    // All but the first step is are same.
-    auto common_steps = TutorialDescription::Steps(
-        // Getting the new tab group (hidden step).
-        HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)
-            .NameElement(kTabGroupHeaderElementName),
+          // Getting the new tab group (hidden step).
+          HiddenStep::WaitForShowEvent(kTabGroupHeaderElementId)
+              .NameElement(kTabGroupHeaderElementName),
 
-        // The menu step.
-        BubbleStep(kTabGroupEditorBubbleId)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE)
-            .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
-            .AbortIfVisibilityLost(false),
+          // The menu step.
+          BubbleStep(kTabGroupEditorBubbleId)
+              .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_EDIT_BUBBLE)
+              .SetBubbleArrow(HelpBubbleArrow::kLeftCenter)
+              .AbortIfVisibilityLost(false),
 
-        HiddenStep::WaitForHidden(kTabGroupEditorBubbleId),
+          HiddenStep::WaitForHidden(kTabGroupEditorBubbleId),
 
-        // Drag tab into the group.
-        BubbleStep(kTabStripRegionElementId)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_DRAG_TAB),
+          // Drag tab into the group.
+          BubbleStep(kTabStripRegionElementId)
+              .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_DRAG_TAB),
 
-        EventStep(kTabGroupedCustomEventId).AbortIfVisibilityLost(true),
+          EventStep(kTabGroupedCustomEventId).AbortIfVisibilityLost(true),
 
-        // Click to collapse the tab group.
-        BubbleStep(kTabGroupHeaderElementName)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_COLLAPSE)
-            .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
+          // Click to collapse the tab group.
+          BubbleStep(kTabGroupHeaderElementName)
+              .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_COLLAPSE)
+              .SetBubbleArrow(HelpBubbleArrow::kTopCenter),
 
-        HiddenStep::WaitForActivated(kTabGroupHeaderElementId),
+          HiddenStep::WaitForActivated(kTabGroupHeaderElementId),
 
-        // Completion of the tutorial.
-        BubbleStep(kTabStripRegionElementId)
-            .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
-            .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION));
-
-    // The initial step is the only step that differs between
-    // kTabGroupTutorialId and kTabGroupWithExistingGroupTutorialId.
-
-    tutorial_registry.AddTutorial(
-        kTabGroupTutorialId,
-        TutorialDescription::Create<kTabGroupTutorialMetricPrefix>(
-            BubbleStep(kTabStripRegionElementId)
-                .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_ADD_TAB_TO_GROUP),
-            common_steps));
-
-    tutorial_registry.AddTutorial(
-        kTabGroupWithExistingGroupTutorialId,
-        TutorialDescription::Create<kTabGroupWithGroupTutorialMetricPrefix>(
-            BubbleStep(kTabStripRegionElementId)
-                .SetBubbleBodyText(
-                    IDS_TUTORIAL_ADD_TAB_TO_GROUP_WITH_EXISTING_GROUP_IN_TAB_STRIP),
-            common_steps));
-  }
+          // Completion of the tutorial.
+          BubbleStep(kTabStripRegionElementId)
+              .SetBubbleTitleText(IDS_TUTORIAL_GENERIC_SUCCESS_TITLE)
+              .SetBubbleBodyText(IDS_TUTORIAL_TAB_GROUP_SUCCESS_DESCRIPTION)));
 
   // Side panel customize chrome
   tutorial_registry.AddTutorial(

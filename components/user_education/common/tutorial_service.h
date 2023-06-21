@@ -27,6 +27,10 @@ class HelpBubble;
 class HelpBubbleFactoryRegistry;
 class TutorialRegistry;
 
+namespace internal {
+class TutorialStepBuilder;
+}
+
 // A profile based service which provides the current running tutorial. A
 // TutorialService should be constructed by a factory which fills in the correct
 // tutorials based on the platform the tutorial targets.
@@ -83,6 +87,7 @@ class TutorialService {
 
  private:
   friend class Tutorial;
+  friend class internal::TutorialStepBuilder;
   friend TutorialInteractiveUitest;
 
   // Struct used to reconstruct a tutorial from the params initially used to

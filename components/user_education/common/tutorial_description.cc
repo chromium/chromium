@@ -50,9 +50,9 @@ TutorialDescription::Step& TutorialDescription::Step::NameElement(
 
 bool TutorialDescription::Step::ShouldShowBubble() const {
   // Hide steps and steps with no body text are "hidden" steps.
-
   return body_text_id_ &&
-         step_type_ != ui::InteractionSequence::StepType::kHidden;
+         step_type_ != ui::InteractionSequence::StepType::kHidden &&
+         step_type_ != ui::InteractionSequence::StepType::kSubsequence;
 }
 
 TutorialDescription::BubbleStep&

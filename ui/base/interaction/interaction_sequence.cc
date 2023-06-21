@@ -126,9 +126,7 @@ InteractionSequence::Builder::Builder()
 InteractionSequence::Builder::Builder(Builder&& other) = default;
 InteractionSequence::Builder& InteractionSequence::Builder::operator=(
     Builder&& other) = default;
-InteractionSequence::Builder::~Builder() {
-  DCHECK(!configuration_);
-}
+InteractionSequence::Builder::~Builder() = default;
 
 InteractionSequence::Builder& InteractionSequence::Builder::SetAbortedCallback(
     AbortedCallback callback) {

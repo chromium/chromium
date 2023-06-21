@@ -5,6 +5,7 @@
 #ifndef COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_H_
 
+#include "base/gtest_prod_util.h"
 #include "components/user_education/common/help_bubble_factory.h"
 #include "components/user_education/common/help_bubble_params.h"
 #include "components/user_education/common/tutorial_description.h"
@@ -43,50 +44,6 @@ class Tutorial {
  public:
   ~Tutorial();
 
-  // Step Builder provides an interface for constructing an
-  // InteractionSequence::Step from a TutorialDescription::Step.
-  // TutorialDescription is used as the basis for the StepBuilder since all
-  // parameters of the Description will be needed to create the bubble or build
-  // the interaction sequence step. In order to use the The StepBuilder should
-  // only be used by Tutorial::Builder to construct the steps in the tutorial.
-  class StepBuilder {
-   public:
-    StepBuilder();
-    StepBuilder(const StepBuilder&) = delete;
-    StepBuilder& operator=(const StepBuilder&) = delete;
-    ~StepBuilder();
-
-    // Constructs the InteractionSequenceStepDirectly from the
-    // TutorialDescriptionStep. This method is used by
-    // Tutorial::Builder::BuildFromDescription to create tutorials.
-    static std::unique_ptr<ui::InteractionSequence::Step>
-    BuildFromDescriptionStep(const TutorialDescription::Step& step,
-                             absl::optional<std::pair<int, int>> progress,
-                             bool is_last_step,
-                             bool can_be_restarted,
-                             TutorialService* tutorial_service);
-
-   private:
-    explicit StepBuilder(const TutorialDescription::Step& step);
-
-    std::unique_ptr<ui::InteractionSequence::Step> Build(
-        TutorialService* tutorial_service);
-
-    absl::optional<std::pair<int, int>> progress_;
-    bool is_last_step_ = false;
-    bool can_be_restarted_ = false;
-
-    ui::InteractionSequence::StepStartCallback BuildStartCallback(
-        TutorialService* tutorial_service);
-
-    ui::InteractionSequence::StepStartCallback BuildMaybeShowBubbleCallback(
-        TutorialService* tutorial_service);
-
-    ui::InteractionSequence::StepEndCallback BuildHideBubbleCallback(
-        TutorialService* tutorial_service);
-    TutorialDescription::Step step_;
-  };
-
   class Builder {
    public:
     Builder();
@@ -96,6 +53,22 @@ class Tutorial {
         const TutorialDescription& description,
         TutorialService* tutorial_service,
         ui::ElementContext context);
+
+    // Constructs the InteractionSequenceStepDirectly from the
+    // TutorialDescriptionStep. This method is used by
+    // Tutorial::Builder::BuildFromDescription to create tutorials.
+    //
+    // Because tutorials can branch, this step may represent one or more
+    // conditional subsequences. `current_progress` will be updated based on all
+    // steps added as a result of adding this step, including in subsequences.
+    // Also,
+    static std::unique_ptr<ui::InteractionSequence::Step>
+    BuildFromDescriptionStep(const TutorialDescription::Step& step,
+                             int max_progress,
+                             int& current_progress,
+                             bool is_terminal,
+                             bool can_be_restarted,
+                             TutorialService* tutorial_service);
 
     Builder(const Builder& other) = delete;
     void operator=(Builder& other) = delete;

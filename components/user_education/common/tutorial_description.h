@@ -6,6 +6,7 @@
 #define COMPONENTS_USER_EDUCATION_COMMON_TUTORIAL_DESCRIPTION_H_
 
 #include <string>
+#include <utility>
 #include <vector>
 
 #include "base/metrics/histogram_macros.h"
@@ -136,6 +137,8 @@ struct TutorialDescription {
 
   using ContextMode = ui::InteractionSequence::ContextMode;
   using ElementSpecifier = absl::variant<ui::ElementIdentifier, std::string>;
+  using ConditionalCallback =
+      base::RepeatingCallback<bool(const ui::TrackedElement*)>;
 
   class Step {
    public:
@@ -197,6 +200,9 @@ struct TutorialDescription {
     const HelpBubbleParams::ExtendedProperties& extended_properties() const {
       return extended_properties_;
     }
+    const ConditionalCallback& if_condition() const { return if_condition_; }
+    const std::vector<Step>& then_branch() const { return then_branch_; }
+    const std::vector<Step>& else_branch() const { return else_branch_; }
 
    protected:
     Step(ElementSpecifier element,
@@ -268,6 +274,11 @@ struct TutorialDescription {
     // extended property evolves to warrant cross-platform support, it should be
     // promoted out of extended properties.
     HelpBubbleParams::ExtendedProperties extended_properties_;
+
+    // Used for if-then-else conditionals.
+    ConditionalCallback if_condition_;
+    std::vector<Step> then_branch_;
+    std::vector<Step> else_branch_;
 
    private:
     friend class Tutorial;
@@ -392,9 +403,9 @@ struct TutorialDescription {
   // Create a tutorial description with the given steps
   // This will also generate the histograms with the given prefix
   template <const char histogram_name[], typename... Args>
-  static TutorialDescription Create(Args&&... steps) {
+  static TutorialDescription Create(Args... steps) {
     TutorialDescription description;
-    description.steps = Steps(steps...);
+    description.steps = Steps(std::move(steps)...);
     description.histograms =
         user_education::MakeTutorialHistograms<histogram_name>(
             description.steps.size());
@@ -405,11 +416,42 @@ struct TutorialDescription {
   //
   // Turn steps and step vectors into a flattened vector of steps
   template <typename... Args>
-  static std::vector<TutorialDescription::Step> Steps(Args&&... steps) {
-    std::vector<TutorialDescription::Step> flat_steps = {};
-    (AddStep(flat_steps, std::forward<Args>(steps)), ...);
+  static std::vector<Step> Steps(Args... steps) {
+    std::vector<Step> flat_steps;
+    (AddStep(flat_steps, std::move(steps)), ...);
     return flat_steps;
   }
+
+  // Creates a conditional step. Syntax is:
+  //   If(element, condition).Then(steps...)[.Else(steps...)]
+  class If : public Step {
+   public:
+    If(ElementSpecifier element, ConditionalCallback if_condition)
+        : Step(element, ui::InteractionSequence::StepType::kSubsequence) {
+      if_condition_ = std::move(if_condition);
+    }
+
+    template <typename... Args>
+    If& Then(Args... args) {
+      then_branch_ = Steps(std::move(args)...);
+      return *this;
+    }
+
+    template <typename... Args>
+    If& Else(Args... args) {
+      else_branch_ = Steps(std::move(args)...);
+      return *this;
+    }
+
+    // Prevent const versions from being hidden by the methods below.
+    using Step::else_branch;
+    using Step::then_branch;
+
+    // These provide mutable access to the branches in case steps need to be
+    // added individually.
+    std::vector<Step>& then_branch() { return then_branch_; }
+    std::vector<Step>& else_branch() { return else_branch_; }
+  };
 
   // the list of TutorialDescription steps
   std::vector<Step> steps;
@@ -426,7 +468,7 @@ struct TutorialDescription {
 
  private:
   static void AddStep(std::vector<Step>& dest, Step step) {
-    dest.emplace_back(step);
+    dest.emplace_back(std::move(step));
   }
   static void AddStep(std::vector<Step>& dest, const std::vector<Step>& src) {
     for (auto& step : src) {

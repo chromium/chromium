@@ -75,7 +75,6 @@ class BrowserCommandHandler : public CommandUpdaterDelegate,
   virtual bool BrowserSupportsCustomizeChromeSidePanel();
   virtual bool DefaultSearchProviderIsGoogle();
 
-  virtual bool BrowserHasTabGroups();
   virtual bool BrowserSupportsNewPasswordManager();
 
  private:

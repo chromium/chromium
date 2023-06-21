@@ -15,7 +15,6 @@ class HelpBubbleDelegate;
 }  // namespace user_education
 
 extern const char kTabGroupTutorialId[];
-extern const char kTabGroupWithExistingGroupTutorialId[];
 extern const char kSidePanelCustomizeChromeTutorialId[];
 extern const char kPasswordManagerTutorialId[];
 
