@@ -70,7 +70,7 @@ namespace {
 
 // Helpers --------------------------------------------------------------------
 
-constexpr int kMenuWidth = 288;
+constexpr int kMenuWidth = 290;
 constexpr int kMaxImageSize = ProfileMenuViewBase::kIdentityImageSize;
 constexpr int kDefaultMargin = 8;
 constexpr int kBadgeSize = 16;
@@ -963,6 +963,8 @@ void ProfileMenuViewBase::AddProfileManagementFeatureButton(
     profile_mgmt_features_container_->SetLayoutManager(
         std::make_unique<views::BoxLayout>(
             views::BoxLayout::Orientation::kVertical));
+    profile_mgmt_features_container_->SetBorder(
+        views::CreateEmptyBorder(gfx::Insets::TLBR(0, 0, kDefaultMargin, 0)));
   }
 
   profile_mgmt_features_container_->AddChildView(
