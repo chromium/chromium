@@ -140,8 +140,10 @@ std::unique_ptr<Browser> CreateBrowserWithFullscreenTestWindowForParams(
 }
 
 void EmulateDeviceReboot() {
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine::ForCurrentProcess()->AppendSwitch(
       ash::switches::kFirstExecAfterBoot);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 struct KioskSessionRestartTestCase {
@@ -415,6 +417,7 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
 
     base::Value::Dict value;
     value.Set(kKioskSessionLastDayList, std::move(session_list));
+    // Emulates previous session crashes.
     value.Set(kKioskSessionStartTime,
               base::TimeToValue(base::Time::Now() -
                                 2 * kKioskSessionDurationHistogramLimit));
@@ -422,17 +425,21 @@ TEST_F(AppSessionTest, WebKioskLastDaySessions) {
     local_state()->SetDict(prefs::kKioskMetrics, std::move(value));
   }
 
+#if BUILDFLAG(IS_CHROMEOS_ASH)
   base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
       ash::switches::kLoginUser, "fake-user");
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   base::FilePath crash_file;
   ASSERT_TRUE(base::CreateTemporaryFileInDir(crash_path(), &crash_file));
 
   StartWebKioskSession();
-  // We set |kKioskSessionStartTime| for previous session and did not clear them
-  // up, so it emulates previous session crashes.
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  // `kRestored` is only reported for Ash.
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kRestored, 1);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
   histogram()->ExpectBucketCount(kKioskSessionStateHistogram,
                                  KioskSessionState::kCrashed, 1);
   histogram()->ExpectTotalCount(kKioskSessionDurationCrashedHistogram, 1);
@@ -573,7 +580,7 @@ TEST_F(AppSessionTest, DoNotExitWebKioskSessionWhenSecondBrowserIsOpened) {
   EXPECT_FALSE(IsSessionShuttingDown());
 
   second_browser.reset();
-  // Exit kioks session when the last browser is closed.
+  // Exit kiosk session when the last browser is closed.
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
@@ -589,7 +596,7 @@ TEST_F(AppSessionTest, InitialBrowserShouldBeHandledAsRegularBrowser) {
   EXPECT_FALSE(IsSessionShuttingDown());
 
   CloseMainBrowser();
-  // Exit kioks session when the last browser is closed.
+  // Exit kiosk session when the last browser is closed.
   EXPECT_TRUE(IsSessionShuttingDown());
 }
 
@@ -707,12 +714,15 @@ TEST_P(AppSessionRestartReasonTest, PluginHungMetric) {
 }
 #endif  // BUILDFLAG(ENABLE_PLUGINS)
 
+// Reboot-related restart reasons are only reported in Ash.
 INSTANTIATE_TEST_SUITE_P(
     AppSessionRestartReasons,
     AppSessionRestartReasonTest,
     testing::ValuesIn<KioskSessionRestartTestCase>({
-        {/*test_name=*/"WithReboot", /*run_with_reboot=*/false},
-        {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/true},
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+      {/*test_name=*/"WithReboot", /*run_with_reboot=*/true},
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+          {/*test_name=*/"WithoutReboot", /*run_with_reboot=*/false},
     }),
     [](const testing::TestParamInfo<AppSessionRestartReasonTest::ParamType>&
            info) { return info.param.test_name; });

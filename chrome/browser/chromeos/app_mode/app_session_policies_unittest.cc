@@ -12,14 +12,14 @@
 
 namespace chromeos {
 
-class AppSessionPolociesTest : public testing::Test {
+class AppSessionPoliciesTest : public testing::Test {
  public:
-  AppSessionPolociesTest() {
+  AppSessionPoliciesTest() {
     app_session_policies_ = std::make_unique<AppSessionPolicies>(GetPrefs());
   }
 
-  AppSessionPolociesTest(const AppSessionPolociesTest&) = delete;
-  AppSessionPolociesTest& operator=(const AppSessionPolociesTest&) = delete;
+  AppSessionPoliciesTest(const AppSessionPoliciesTest&) = delete;
+  AppSessionPoliciesTest& operator=(const AppSessionPoliciesTest&) = delete;
 
   void TearDown() override {
     // Clean up all preferenses that we use in tests.
@@ -39,16 +39,16 @@ class AppSessionPolociesTest : public testing::Test {
   std::unique_ptr<AppSessionPolicies> app_session_policies_;
 };
 
-TEST_F(AppSessionPolociesTest, kNewWindowsInKioskAllowedNotSet) {
+TEST_F(AppSessionPoliciesTest, kNewWindowsInKioskAllowedNotSet) {
   EXPECT_FALSE(IsWindowCreationAllowed());
 }
 
-TEST_F(AppSessionPolociesTest, kNewWindowsInKioskAllowedSetFalse) {
+TEST_F(AppSessionPoliciesTest, kNewWindowsInKioskAllowedSetFalse) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, false);
   EXPECT_FALSE(IsWindowCreationAllowed());
 }
 
-TEST_F(AppSessionPolociesTest, kNewWindowsInKioskAllowedSetTrue) {
+TEST_F(AppSessionPoliciesTest, kNewWindowsInKioskAllowedSetTrue) {
   GetPrefs()->SetBoolean(prefs::kNewWindowsInKioskAllowed, true);
   EXPECT_TRUE(IsWindowCreationAllowed());
 }
