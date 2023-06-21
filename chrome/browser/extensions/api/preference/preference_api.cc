@@ -624,7 +624,11 @@ ExtensionFunction::ResponseAction GetPreferenceFunction::Run() {
   crosapi::mojom::PrefPath pref_path =
       PrefMapping::GetInstance()->GetPrefPathForPrefName(cached_browser_pref_);
   if (pref_path != crosapi::mojom::PrefPath::kUnknown) {
-    if (!profile->IsMainProfile()) {
+    // Exclude chrome.privacy.website.protectedContentID (mapped to
+    // kProtectedContentDefault) from secondary profile access
+    // (crbug.com/1450718).
+    if (!profile->IsMainProfile() &&
+        pref_path == crosapi::mojom::PrefPath::kProtectedContentDefault) {
       return RespondNow(Error(kPrimaryProfileOnlyErrorMessage, pref_key));
     }
     // This pref should be read from ash.
