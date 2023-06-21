@@ -31,6 +31,7 @@ chromium-metrics-reviews@google.com.
   <variant name=".QueryBackgroundFeed" summary="QueryBackgroundFeed"/>
   <variant name=".QueryInteractiveFeed" summary="QueryInteractiveFeed"/>
   <variant name=".QueryNextPage" summary="QueryNextPage"/>
+  <variant name=".QueryWebFeed" summary="QueryWebFeed"/>
   <variant name=".SingleWebFeedListContents"
       summary="SingleWebFeedListContents"/>
   <variant name=".UnfollowWebFeed" summary="UnfollowWebFeed"/>
