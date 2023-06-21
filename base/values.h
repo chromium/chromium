@@ -576,10 +576,6 @@ class BASE_EXPORT GSL_OWNER Value {
     BASE_EXPORT friend bool operator<=(const Dict& lhs, const Dict& rhs);
     BASE_EXPORT friend bool operator>=(const Dict& lhs, const Dict& rhs);
 
-    // For legacy access to the internal storage type. DEPRECATED; remove when
-    // no longer used.
-    friend Value;
-
     explicit Dict(const flat_map<std::string, std::unique_ptr<Value>>& storage);
 
     // TODO(dcheng): Replace with `flat_map<std::string, Value>` once no caller
