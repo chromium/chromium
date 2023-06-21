@@ -601,6 +601,12 @@ class ChannelAssociatedGroupController
       DCHECK(controller_->proxy_task_runner_->BelongsToCurrentThread());
 
       EnsureSyncWatcherExists();
+      {
+        base::AutoLock locker(controller_->lock_);
+        if (peer_closed_) {
+          SignalSyncMessageEvent();
+        }
+      }
       return sync_watcher_->SyncWatch(&should_stop);
     }
 
