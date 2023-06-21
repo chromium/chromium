@@ -62,7 +62,7 @@ class FakePrintServersProvider : public PrintServersProvider {
   ~FakePrintServersProvider() override = default;
 
   void AddObserver(Observer* observer) override { observer_ = observer; }
-  void RemoveObserver(Observer* observer) override {}
+  void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
   void SetData(std::unique_ptr<std::string> data) override {}
   void SetAllowlistPref(PrefService* prefs,
                         const std::string& allowlist_pref) override {}
@@ -82,7 +82,7 @@ class FakePrintServersProvider : public PrintServersProvider {
 
  private:
   absl::optional<std::vector<PrintServer>> print_servers_;
-  raw_ptr<PrintServersProvider::Observer, ExperimentalAsh> observer_;
+  raw_ptr<PrintServersProvider::Observer, ExperimentalAsh> observer_ = nullptr;
 };
 
 class PrintServersManagerTest : public testing::Test,
