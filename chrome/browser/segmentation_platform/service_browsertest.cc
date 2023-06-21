@@ -18,6 +18,7 @@
 #include "components/prefs/pref_observer.h"
 #include "components/prefs/pref_service.h"
 #include "components/segmentation_platform/internal/constants.h"
+#include "components/segmentation_platform/internal/database/client_result_prefs.h"
 #include "components/segmentation_platform/internal/execution/mock_model_provider.h"
 #include "components/segmentation_platform/public/config.h"
 #include "components/segmentation_platform/public/features.h"
@@ -43,6 +44,8 @@ constexpr char kSqlFeatureQuery[] = "SELECT COUNT(*) from metrics";
 class SegmentationPlatformTest : public InProcessBrowserTest {
  public:
   SegmentationPlatformTest() {
+    // Low Engagement Segment is used to test segmentation service without multi
+    // output. Search User Segment supports  multi output path.
     feature_list_.InitWithFeaturesAndParameters(
         {base::test::FeatureRefAndParams(features::kSegmentationPlatformFeature,
                                          {}),
@@ -50,6 +53,9 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
              features::kSegmentationPlatformUkmEngine, {}),
          base::test::FeatureRefAndParams(
              features::kSegmentationPlatformLowEngagementFeature,
+             {{"enable_default_model", "true"}}),
+         base::test::FeatureRefAndParams(
+             features::kSegmentationPlatformSearchUser,
              {{"enable_default_model", "true"}})},
         {});
   }
@@ -87,6 +93,39 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
     pref_registrar_.RemoveAll();
   }
 
+  bool HasClientResultPref(const std::string& segmentation_key) {
+    PrefService* pref_service = browser()->profile()->GetPrefs();
+    std::unique_ptr<ClientResultPrefs> result_prefs_ =
+        std::make_unique<ClientResultPrefs>(pref_service);
+    return result_prefs_->ReadClientResultFromPrefs(segmentation_key)
+        .has_value();
+  }
+
+  void OnClientResultPrefUpdated() {
+    if (!wait_for_pref_callback_.is_null() &&
+        HasClientResultPref(kSearchUserKey)) {
+      std::move(wait_for_pref_callback_).Run();
+    }
+  }
+
+  void WaitForClientResultPrefUpdate() {
+    if (HasClientResultPref(kSearchUserKey)) {
+      return;
+    }
+
+    base::RunLoop wait_for_pref;
+    wait_for_pref_callback_ = wait_for_pref.QuitClosure();
+    pref_registrar_.Init(browser()->profile()->GetPrefs());
+    pref_registrar_.Add(
+        kSegmentationClientResultPrefs,
+        base::BindRepeating(
+            &SegmentationPlatformTest::OnClientResultPrefUpdated,
+            weak_ptr_factory_.GetWeakPtr()));
+    wait_for_pref.Run();
+
+    pref_registrar_.RemoveAll();
+  }
+
   void WaitForPlatformInit() {
     base::RunLoop wait_for_init;
     SegmentationPlatformService* service = segmentation_platform::
@@ -112,6 +151,30 @@ class SegmentationPlatformTest : public InProcessBrowserTest {
     wait_for_segment.Run();
   }
 
+  void ExpectClassificationResult(const std::string& segmentation_key,
+                                  PredictionStatus expected_prediction_status) {
+    SegmentationPlatformService* service = segmentation_platform::
+        SegmentationPlatformServiceFactory::GetForProfile(browser()->profile());
+    PredictionOptions options;
+    options.on_demand_execution = true;
+    base::RunLoop wait_for_segment;
+    service->GetClassificationResult(
+        segmentation_key, options, nullptr,
+        base::BindOnce(&SegmentationPlatformTest::OnGetClassificationResult,
+                       weak_ptr_factory_.GetWeakPtr(),
+                       wait_for_segment.QuitClosure(),
+                       expected_prediction_status));
+    wait_for_segment.Run();
+  }
+
+  void OnGetClassificationResult(base::RepeatingClosure closure,
+                                 PredictionStatus expected_prediction_status,
+                                 const ClassificationResult& actual) {
+    EXPECT_EQ(expected_prediction_status, actual.status);
+    EXPECT_TRUE(actual.ordered_labels.size() > 0);
+    std::move(closure).Run();
+  }
+
  protected:
   base::test::ScopedFeatureList feature_list_;
   PrefChangeRegistrar pref_registrar_;
@@ -129,6 +192,21 @@ IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest, RunDefaultModel) {
 
   // This session runs default model and updates again.
   WaitForPrefUpdate();
+}
+
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest,
+                       PRE_OnDemandFlowForClassificationModel) {
+  WaitForPlatformInit();
+  WaitForClientResultPrefUpdate();
+}
+
+IN_PROC_BROWSER_TEST_F(SegmentationPlatformTest,
+                       OnDemandFlowForClassificationModel) {
+  WaitForPlatformInit();
+  // Result is available from previous session's prefs.
+  ExpectClassificationResult(
+      kSearchUserKey,
+      /*expected_prediction_status=*/PredictionStatus::kSucceeded);
 }
 
 class SegmentationPlatformUkmModelTest : public SegmentationPlatformTest {

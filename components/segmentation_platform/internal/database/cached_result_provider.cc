@@ -32,17 +32,17 @@ CachedResultProvider::CachedResultProvider(
     bool has_valid_result = client_result.has_value() &&
                             client_result->client_result().result_size() > 0 &&
                             client_result->client_result().has_output_config();
-    proto::PredictionResult pred_result = has_valid_result
-                                              ? client_result->client_result()
-                                              : proto::PredictionResult();
     stats::RecordSegmentSelectionFailure(
         *config, has_valid_result ? stats::SegmentationSelectionFailureReason::
                                         kSelectionAvailableInProtoPrefs
                                   : stats::SegmentationSelectionFailureReason::
                                         kInvalidSelectionResultInProtoPrefs);
-
-    client_result_from_last_session_map_.insert(
-        {config->segmentation_key, pred_result});
+    if (has_valid_result) {
+      client_result_from_last_session_map_.insert(
+          {config->segmentation_key, client_result->client_result()});
+    } else {
+      client_result_from_last_session_map_.erase(config->segmentation_key);
+    }
   }
 }
 
