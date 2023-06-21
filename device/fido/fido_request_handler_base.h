@@ -136,6 +136,10 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     ResidentKeyRequirement resident_key_requirement =
         ResidentKeyRequirement::kDiscouraged;
 
+    // Indicates the UserVerificationRequirement of the current request.
+    UserVerificationRequirement user_verification_requirement =
+        UserVerificationRequirement::kDiscouraged;
+
     // transport_list_did_include_internal is set to true during a getAssertion
     // request if at least one element of the allowList included the "internal"
     // transport, or didn't have any transports.
