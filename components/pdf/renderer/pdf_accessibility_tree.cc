@@ -1669,10 +1669,12 @@ void PdfAccessibilityTree::DoSetAccessibilityPageInfo(
 
   CHECK_LT(page_index, page_count_);
   ++next_page_index_;
+  // Update `did_get_a_text_run_` before calling `AddPageContent()` as this
+  // variable will be used inside of `AddPageContent()`.
+  did_get_a_text_run_ |= !text_runs.empty();
 
   AddPageContent(page_info, page_index, text_runs, chars, page_objects);
 
-  did_get_a_text_run_ |= !text_runs.empty();
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   // TODO(crbug.com/1443346): Use a more explicit flag indicating whether any
   // image was sent to the OCR model in `AddRemainingAnnotations()`.
@@ -1753,17 +1755,15 @@ void PdfAccessibilityTree::UnserializeNodes() {
   tree_data_.focus_id = doc_node_->id;
   update.root_id = doc_node_->id;
 #if BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
-  // Remove the status node if it doesn't have any message. The status message
-  // will be empty if PDF already has accessible text and thus doesn't need OCR.
-  if (features::IsPdfOcrEnabled()) {
-    if (ocr_status_node_->GetStringAttribute(ax::mojom::StringAttribute::kName)
-            .empty()) {
-      size_t num_erased =
-          base::Erase(doc_node_->child_ids, ocr_status_node_wrapper_->id);
-      CHECK_EQ(num_erased, 1u);
-      ocr_status_node_.reset();
-      ocr_status_node_wrapper_.reset();
-    }
+  // Remove the status node if PDF already has accessible text.
+  // `did_get_a_text_run_` will be true if the PDF already has accessible text
+  // and thus doesn't need OCR.
+  if (features::IsPdfOcrEnabled() && did_get_a_text_run_) {
+    size_t num_erased =
+        base::Erase(doc_node_->child_ids, ocr_status_node_wrapper_->id);
+    CHECK_EQ(num_erased, 1u);
+    ocr_status_node_.reset();
+    ocr_status_node_wrapper_.reset();
   }
 #endif  // BUILDFLAG(ENABLE_SCREEN_AI_SERVICE)
   update.nodes.push_back(*doc_node_);
