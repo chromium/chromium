@@ -26,6 +26,7 @@ import android.view.textclassifier.SelectionEvent;
 import android.view.textclassifier.TextClassifier;
 
 import androidx.annotation.IdRes;
+import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -60,6 +61,7 @@ import org.chromium.content_public.browser.SelectionMenuGroup;
 import org.chromium.content_public.browser.SelectionMenuItem;
 import org.chromium.content_public.browser.SelectionPopupController;
 import org.chromium.content_public.browser.WebContents;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.Clipboard;
 import org.chromium.ui.base.DeviceFormFactor;
 import org.chromium.ui.base.MenuSourceType;
@@ -179,6 +181,11 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
     // editable region or from tapping the insertion handle.
     private PastePopupMenu mPastePopupMenu;
     private boolean mWasPastePopupShowingOnInsertionDragStart;
+
+    // Dropdown menu delegate that handles showing a dropdown style text selection menu.
+    // This must be set by the embedders that want to use this functionality.
+    @Nullable
+    private SelectionDropdownMenuDelegate mDropdownMenuDelegate;
 
     /**
      * The {@link SelectionClient} that processes textual selection, or {@code null} if none
@@ -1256,6 +1263,12 @@ public class SelectionPopupControllerImpl extends ActionModeCallbackHelper
             destroyActionModeAndKeepSelection();
             getPopupController().hideAllPopups();
         }
+    }
+
+    @Override
+    public void setDropdownMenuDelegate(
+            @NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate) {
+        mDropdownMenuDelegate = dropdownMenuDelegate;
     }
 
     private void setTextHandlesTemporarilyHidden(boolean hide) {

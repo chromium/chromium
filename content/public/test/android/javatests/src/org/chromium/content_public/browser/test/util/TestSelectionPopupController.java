@@ -8,12 +8,15 @@ import android.content.Intent;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.content_public.browser.ActionModeCallbackHelper;
 import org.chromium.content_public.browser.AdditionalSelectionMenuItemProvider;
 import org.chromium.content_public.browser.SelectionClient;
 import org.chromium.content_public.browser.SelectionPopupController;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 
 /**
  * A dummy {@link SelectionPopupController} implementation that can be overriden by tests
@@ -94,4 +97,8 @@ public class TestSelectionPopupController implements SelectionPopupController {
 
     @Override
     public void updateTextSelectionUI(boolean focused) {}
+
+    @Override
+    public void setDropdownMenuDelegate(
+            @NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate) {}
 }

@@ -8,8 +8,11 @@ import android.content.Intent;
 import android.view.ActionMode;
 import android.view.textclassifier.TextClassifier;
 
+import androidx.annotation.NonNull;
+
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.content.browser.selection.SelectionPopupControllerImpl;
+import org.chromium.content_public.browser.selection.SelectionDropdownMenuDelegate;
 import org.chromium.ui.base.WindowAndroid;
 
 /**
@@ -170,4 +173,9 @@ public interface SelectionPopupController {
      * @param focused If the WebContents currently has focus.
      */
     void updateTextSelectionUI(boolean focused);
+
+    /**
+     * Set the dropdown menu delegate that handles showing a dropdown style text selection menu.
+     */
+    void setDropdownMenuDelegate(@NonNull SelectionDropdownMenuDelegate dropdownMenuDelegate);
 }
