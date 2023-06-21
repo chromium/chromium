@@ -22,6 +22,15 @@
 // Signs out.
 - (void)signOut;
 
+// Shows a view displaying all Google Accounts present on the current device.
+// The view allows adding and removing accounts.
+- (void)showAccountsPage;
+
+// Shows https://myaccount.google.com/ for the account currently signed-in
+// to Chrome. The content is displayed in a new view in the stack, i.e.
+// it doesn't close the current view.
+- (void)showManageYourGoogleAccount;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_UI_SETTINGS_GOOGLE_SERVICES_MANAGE_SYNC_SETTINGS_COMMAND_HANDLER_H_

@@ -607,8 +607,22 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
                              atIndex:advancedSettingsSectionIndex + 1];
 
   // Creates items in the manage accounts and sign-out section.
+  // Manage Google Account item.
   TableViewTextItem* item =
-      [[TableViewTextItem alloc] initWithType:SignOutItemType];
+      [[TableViewTextItem alloc] initWithType:ManageGoogleAccountItemType];
+  item.text =
+      GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_GOOGLE_ACCOUNT_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+
+  // Manage accounts on this device item.
+  item = [[TableViewTextItem alloc] initWithType:ManageAccountsItemType];
+  item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_MANAGE_ACCOUNTS_ITEM);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
+
+  // Sign out item.
+  item = [[TableViewTextItem alloc] initWithType:SignOutItemType];
   item.text = GetNSString(IDS_IOS_GOOGLE_ACCOUNT_SETTINGS_SIGN_OUT_ITEM);
   item.textColor = [UIColor colorNamed:kBlueColor];
   [model addItem:item toSectionWithIdentifier:SignOutSectionIdentifier];
@@ -759,6 +773,12 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 - (void)manageSyncSettingsTableViewControllerLoadModel:
     (id<ManageSyncSettingsConsumer>)controller {
   DCHECK_EQ(self.consumer, controller);
+  if (!_authenticationService->GetPrimaryIdentity(
+          signin::ConsentLevel::kSignin)) {
+    // If the user signed out from this view or a child controller the view is
+    // closing and should not re-load the model.
+    return;
+  }
   [self loadIdentityAccountSection];
   [self loadSyncErrorsSection];
   [self loadSyncDataTypeSection];
@@ -885,6 +905,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
         _autocompleteWalletPreference.value = value;
         break;
       case SignOutAndTurnOffSyncItemType:
+      case ManageGoogleAccountItemType:
+      case ManageAccountsItemType:
       case SignOutItemType:
       case EncryptionItemType:
       case GoogleActivityControlsItemType:
@@ -948,6 +970,12 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       break;
     case SignOutAndTurnOffSyncItemType:
       [self.commandHandler showTurnOffSyncOptionsFromTargetRect:cellRect];
+      break;
+    case ManageGoogleAccountItemType:
+      [self.commandHandler showManageYourGoogleAccount];
+      break;
+    case ManageAccountsItemType:
+      [self.commandHandler showAccountsPage];
       break;
     case SignOutItemType:
       [self.commandHandler signOut];

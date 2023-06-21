@@ -35,6 +35,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/sync/sync_setup_service_factory.h"
 #import "ios/chrome/browser/ui/authentication/signout_action_sheet_coordinator.h"
+#import "ios/chrome/browser/ui/settings/google_services/accounts_table_view_controller.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_mediator.h"
@@ -81,6 +82,8 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
 @implementation ManageSyncSettingsCoordinator {
   // Dismiss callback for Web and app setting details view.
   DismissViewCallback _dismissWebAndAppSettingDetailsController;
+  // Dismiss callback for account details view.
+  DismissViewCallback _dismissAccountDetailsController;
   // The account sync state.
   SyncSettingsAccountState _accountState;
 }
@@ -193,6 +196,9 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
       std::move(_dismissWebAndAppSettingDetailsController)
           .Run(/*animated*/ false);
     }
+    if (!_dismissAccountDetailsController.is_null()) {
+      std::move(_dismissAccountDetailsController).Run(/*animated=*/false);
+    }
     [self.baseNavigationController popToViewController:self.viewController
                                               animated:NO];
     [self.baseNavigationController popViewControllerAnimated:YES];
@@ -278,6 +284,28 @@ using DismissViewCallback = SystemIdentityManager::DismissViewCallback;
   self.authService->SignOut(
       signin_metrics::ProfileSignout::kUserClickedSignoutSettings,
       /*force_clear_browsing_data=*/NO, signOutCompletion);
+}
+
+- (void)showAccountsPage {
+  AccountsTableViewController* accountsTableViewController =
+      [[AccountsTableViewController alloc] initWithBrowser:self.browser
+                                 closeSettingsOnAddAccount:NO];
+
+  accountsTableViewController.applicationCommandsHandler = HandlerForProtocol(
+      self.browser->GetCommandDispatcher(), ApplicationCommands);
+  [self.baseNavigationController pushViewController:accountsTableViewController
+                                           animated:YES];
+}
+
+- (void)showManageYourGoogleAccount {
+  _dismissAccountDetailsController =
+      GetApplicationContext()
+          ->GetSystemIdentityManager()
+          ->PresentAccountDetailsController(
+              self.authService->GetPrimaryIdentity(
+                  signin::ConsentLevel::kSignin),
+              self.viewController,
+              /*animated=*/YES);
 }
 
 #pragma mark - SignoutActionSheetCoordinatorDelegate

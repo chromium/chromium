@@ -64,10 +64,14 @@ typedef NS_ENUM(NSInteger, SyncSettingsItemType) {
   SettingsDataTypeItemType,
   // Item for kAutofillWalletImportEnabled.
   AutocompleteWalletItemType,
-  // Sign out and turn off sync item,
+  // Sign out and turn off sync item.
   SignOutAndTurnOffSyncItemType,
-  // Sign out item,
+  // Sign out item.
   SignOutItemType,
+  // Manage Google Account item.
+  ManageGoogleAccountItemType,
+  // Manage accounts on this device item.
+  ManageAccountsItemType,
   // AdvancedSettingsSectionIdentifier section.
   // Encryption item.
   EncryptionItemType,
