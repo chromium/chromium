@@ -79,7 +79,6 @@ const char* kDisallowedFeatures[] = {
     extensions::manifest_keys::kOptionalPermissions,
     extensions::manifest_keys::kPageAction,
     extensions::manifest_keys::kPermissions,
-    extensions::manifest_keys::kReplacementAndroidApp,
     extensions::manifest_keys::kReplacementWebApp,
     extensions::manifest_keys::kSockets,
     extensions::manifest_keys::kSystemIndicator,

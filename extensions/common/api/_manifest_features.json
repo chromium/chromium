@@ -342,10 +342,6 @@
       "chromeos_system_extension"
     ]
   },
-  "replacement_android_app": {
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
-  },
   "replacement_web_app": {
     "channel": "stable",
     "extension_types": ["extension", "platform_app"]

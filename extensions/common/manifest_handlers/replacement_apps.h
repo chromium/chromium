@@ -15,8 +15,7 @@ class GURL;
 namespace extensions {
 
 // A structure to hold replacement apps that may be specified in the
-// manifest of an extension using the "replacement_web_app"  or
-// "replacement_android_app" keys.
+// manifest of an extension using the "replacement_web_app" key.
 struct ReplacementAppsInfo : public Extension::ManifestData {
  public:
   ReplacementAppsInfo();
@@ -32,27 +31,16 @@ struct ReplacementAppsInfo : public Extension::ManifestData {
   // Returns the replacement web app for |extension|.
   static GURL GetReplacementWebApp(const Extension* extension);
 
-  // Returns true if the |extension| has a replacement android app.
-  static bool HasReplacementAndroidApp(const Extension* extension);
-
-  // Returns the replacement android app package name for |extension|.
-  static const std::string& GetReplacementAndroidApp(
-      const Extension* extension);
-
   bool Parse(const Extension* extension, std::u16string* error);
 
  private:
   bool LoadWebApp(const Extension* extension, std::u16string* error);
-  bool LoadAndroidApp(const Extension* extension, std::u16string* error);
 
   // Optional URL of a Web app.
   GURL replacement_web_app;
-
-  // Optional package name of an Android app.
-  std::string replacement_android_app;
 };
 
-// Parses the "replacement_web_app" and "replacement_android_app" manifest keys.
+// Parses the "replacement_web_app" manifest key.
 class ReplacementAppsHandler : public ManifestHandler {
  public:
   ReplacementAppsHandler();

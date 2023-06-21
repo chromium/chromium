@@ -114,7 +114,6 @@ const char kPlatformAppBackgroundScripts[] = "app.background.scripts";
 const char kPlatformAppContentSecurityPolicy[] = "app.content_security_policy";
 const char kPublicKey[] = "key";
 const char kRemoveButton[] = "remove_button";
-const char kReplacementAndroidApp[] = "replacement_android_app";
 const char kReplacementWebApp[] = "replacement_web_app";
 const char kSandboxedPages[] = "sandbox.pages";
 const char kSandboxedPagesCSP[] = "sandbox.content_security_policy";
@@ -526,8 +525,6 @@ const char kInvalidPermission[] =
 const char kInvalidPermissions[] =
     "Invalid value for 'permissions'.";
 const char kInvalidPermissionScheme[] = "Invalid scheme for '*[*]'.";
-const char16_t kInvalidReplacementAndroidApp[] =
-    u"Invalid value for 'replacement_android_app'";
 const char16_t kInvalidReplacementWebApp[] =
     u"Invalid value for 'replacement_web_app'.";
 const char kInvalidRulesetID[] =
