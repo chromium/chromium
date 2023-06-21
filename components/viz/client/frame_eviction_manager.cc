@@ -13,7 +13,9 @@
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
 #include "base/system/sys_info.h"
+#include "base/task/sequenced_task_runner.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/trace_event/memory_dump_manager.h"
 #include "build/build_config.h"
 #include "components/viz/common/features.h"
 
@@ -133,6 +135,13 @@ FrameEvictionManager::FrameEvictionManager()
 #else
       std::min(5, 2 + (base::SysInfo::AmountOfPhysicalMemoryMB() / 256));
 #endif
+
+  // For WebView, we may not have a default task runner.
+  if (base::SingleThreadTaskRunner::HasCurrentDefault()) {
+    base::trace_event::MemoryDumpManager::GetInstance()->RegisterDumpProvider(
+        this, "FrameEvictionManager",
+        base::SingleThreadTaskRunner::GetCurrentDefault());
+  }
 }
 
 void FrameEvictionManager::CullUnlockedFrames(size_t saved_frame_limit) {
@@ -232,6 +241,16 @@ void FrameEvictionManager::Unpause() {
     CullUnlockedFrames(pending_unlocked_frame_limit_.value());
     pending_unlocked_frame_limit_.reset();
   }
+}
+
+bool FrameEvictionManager::OnMemoryDump(
+    const base::trace_event::MemoryDumpArgs& args,
+    base::trace_event::ProcessMemoryDump* pmd) {
+  auto* dump = pmd->CreateAllocatorDump("frame_evictor");
+  dump->AddScalar("locked_frames", "count", locked_frames_.size());
+  dump->AddScalar("unlocked_frames", "count", unlocked_frames_.size());
+
+  return true;
 }
 
 }  // namespace viz
