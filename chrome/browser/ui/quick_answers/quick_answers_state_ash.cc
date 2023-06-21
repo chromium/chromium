@@ -162,6 +162,16 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   auto* prefs = pref_change_registrar_->prefs();
 
   auto settings_enabled = prefs->GetBoolean(kQuickAnswersEnabled);
+
+  // If the feature is enforced off by the administrator policy, set the
+  // consented status to rejected. This must be put before the same value return
+  // below as the default value is `false` and we cannot observe
+  // unmanaged-disabled to managed-disabled change.
+  if (!settings_enabled &&
+      prefs->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled)) {
+    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
+  }
+
   if (settings_enabled_ == settings_enabled) {
     return;
   }
@@ -171,13 +181,6 @@ void QuickAnswersStateAsh::UpdateSettingsEnabled() {
   // to true.
   if (settings_enabled_) {
     prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kAccepted);
-  }
-
-  // If the feature is enforced off by the administrator policy, set the
-  // consented status to rejected.
-  if (!settings_enabled_ &&
-      prefs->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled)) {
-    prefs->SetInteger(kQuickAnswersConsentStatus, ConsentStatus::kRejected);
   }
 
   for (auto& observer : observers_)

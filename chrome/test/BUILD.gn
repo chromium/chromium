@@ -7973,6 +7973,7 @@ test("unit_tests") {
       "//chromeos/components/onc",
       "//chromeos/components/quick_answers:quick_answers",
       "//chromeos/components/quick_answers/public/cpp:cpp",
+      "//chromeos/components/quick_answers/public/cpp:prefs",
       "//chromeos/constants",
       "//chromeos/dbus/permission_broker",
       "//chromeos/dbus/u2f",
