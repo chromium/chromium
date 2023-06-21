@@ -895,6 +895,12 @@ const char kShouldShowSidePanelBookmarkTab[] =
     "should_show_side_panel_bookmark_tab";
 #endif  // !BUILDFLAG(IS_ANDROID)
 
+// Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+const char kGaiaLastOnlineSignInTime[] = "gaia.last_online_sign_in_time";
+const char kSAMLLastGAIASignInTime[] = "saml.last_gaia_sign_in_time";
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
+
 #if BUILDFLAG(ENABLE_FEED_V2)
 const char kVideoPreviewsType[] = "ntp_snippets.video_previews_type";
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
@@ -1286,6 +1292,12 @@ void RegisterProfilePrefsForMigration(
 #if BUILDFLAG(ENABLE_FEED_V2)
   registry->RegisterIntegerPref(kVideoPreviewsType, 1);
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
+
+// Deprecated 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  registry->RegisterTimePref(kGaiaLastOnlineSignInTime, base::Time());
+  registry->RegisterTimePref(kSAMLLastGAIASignInTime, base::Time());
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 }
 
 }  // namespace
@@ -2406,6 +2418,12 @@ void MigrateObsoleteProfilePrefs(Profile* profile) {
 #if BUILDFLAG(ENABLE_FEED_V2)
   profile_prefs->ClearPref(kVideoPreviewsType);
 #endif  // BUILDFLAG(ENABLE_FEED_V2)
+
+  // Added 06/2023.
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+  profile_prefs->ClearPref(kGaiaLastOnlineSignInTime);
+  profile_prefs->ClearPref(kSAMLLastGAIASignInTime);
+#endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   // Please don't delete the following line. It is used by PRESUBMIT.py.
   // END_MIGRATE_OBSOLETE_PROFILE_PREFS

@@ -118,14 +118,10 @@ void InSessionPasswordSyncManager::OnSessionStateChanged() {
 }
 
 void InSessionPasswordSyncManager::UpdateOnlineAuth() {
-  PrefService* prefs = primary_profile_->GetPrefs();
-  const base::Time now = clock_->Now();
-  prefs->SetTime(prefs::kSAMLLastGAIASignInTime, now);
-
   user_manager::UserManager::Get()->SaveForceOnlineSignin(
       primary_user_->GetAccountId(), false);
   user_manager::KnownUser known_user(g_browser_process->local_state());
-  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), now);
+  known_user.SetLastOnlineSignin(primary_user_->GetAccountId(), clock_->Now());
 }
 
 void InSessionPasswordSyncManager::CreateTokenAsync() {

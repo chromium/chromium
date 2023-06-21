@@ -18,11 +18,9 @@ void RegisterSamlProfilePrefs(PrefRegistrySimple* registry) {
   registry->RegisterIntegerPref(
       prefs::kGaiaOfflineSigninTimeLimitDays,
       constants::kDefaultGaiaOfflineSigninTimeLimitDays);
-  registry->RegisterTimePref(prefs::kGaiaLastOnlineSignInTime, base::Time());
 
   registry->RegisterIntegerPref(prefs::kSAMLOfflineSigninTimeLimit,
                                 constants::kDefaultSAMLOfflineSigninTimeLimit);
-  registry->RegisterTimePref(prefs::kSAMLLastGAIASignInTime, base::Time());
 
   registry->RegisterIntegerPref(
       prefs::kGaiaLockScreenOfflineSigninTimeLimitDays,
