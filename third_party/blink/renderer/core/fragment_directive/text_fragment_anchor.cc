@@ -96,6 +96,21 @@ bool CheckSecurityRestrictions(LocalFrame& frame) {
 }  // namespace
 
 // static
+base::TimeDelta TextFragmentAnchor::PostLoadTaskDelay() {
+  // The amount of time to wait after load without a DOM mutation before
+  // invoking the text search. Each time a DOM mutation occurs the text search
+  // is pushed back by this delta. Experimentally determined.
+  return base::Milliseconds(500);
+}
+
+// static
+base::TimeDelta TextFragmentAnchor::PostLoadTaskTimeout() {
+  // The maximum amount of time to wait after load before performing the text
+  // search. Experimentally determined.
+  return base::Milliseconds(3000);
+}
+
+// static
 bool TextFragmentAnchor::GenerateNewToken(const DocumentLoader& loader) {
   // Avoid invoking the text fragment for history, reload as they'll be
   // clobbered by scroll restoration anyway. In particular, history navigation
@@ -197,6 +212,13 @@ TextFragmentAnchor::TextFragmentAnchor(
     LocalFrame& frame,
     bool should_scroll)
     : SelectorFragmentAnchor(frame, should_scroll),
+      post_load_timer_(frame.GetTaskRunner(TaskType::kInternalFindInPage),
+                       this,
+                       &TextFragmentAnchor::PostLoadTask),
+      post_load_timeout_timer_(
+          frame.GetTaskRunner(TaskType::kInternalFindInPage),
+          this,
+          &TextFragmentAnchor::PostLoadTask),
       metrics_(MakeGarbageCollected<TextFragmentAnchorMetrics>(
           frame_->GetDocument())) {
   TRACE_EVENT("blink", "TextFragmentAnchor::TextFragmentAnchor");
@@ -228,42 +250,11 @@ TextFragmentAnchor::TextFragmentAnchor(
 }
 
 bool TextFragmentAnchor::InvokeSelector() {
-  AnnotationAgentContainerImpl* container =
-      AnnotationAgentContainerImpl::FromIfExists(*frame_->GetDocument());
-  CHECK(container);
-
-  // InvokeSelector is called repeatedly as part of the Blink lifecycle, after
-  // AnnotationAgents have attempted attachment in
-  // Document::ApplyScrollRestorationLogic. After the Document is loaded, this
-  // call will attempt a second attachment for any agents that failed their
-  // initial attachment in case more content was loaded.
-  if (!did_perform_post_load_attachment_ &&
-      frame_->GetDocument()->IsLoadCompleted()) {
-    did_perform_post_load_attachment_ = true;
-
-    for (auto& directive_annotation_pair : directive_annotation_pairs_) {
-      AnnotationAgentImpl* annotation = directive_annotation_pair.second;
-      if (!annotation->IsAttached() && !annotation->IsAttachmentPending()) {
-        annotation->SetNeedsAttachment();
-      }
-    }
-
-    // TODO(bokan): Instead of doing this here, it'd be better for the
-    // post-load attachment to be scheduled x ms after load to maximize the
-    // chance of matching content added in the load event. e.g. Wikipedia adds
-    // `hidden=until-found` during/after load. We could also just schedule a
-    // new BeginMainFrame rather than manually calling
-    // PerformInitialAttachments.
-    if (container->IsLifecycleCleanForAttachment()) {
-      container->PerformInitialAttachments();
-    }
-  }
-
   UpdateCurrentState();
 
   switch (state_) {
     case kSearching:
-      if (!ShouldKeepSearching()) {
+      if (iteration_ == kDone) {
         DidFinishSearch();
       }
       break;
@@ -289,23 +280,41 @@ bool TextFragmentAnchor::InvokeSelector() {
       // Until the load event ensure the matched text is kept in view in the
       // face of layout changes.
       EnsureFirstMatchInViewIfNeeded();
-      if (!ShouldKeepSearching()) {
+      if (iteration_ == kDone) {
         DidFinishSearch();
       }
       break;
-    case kDone:
+    case kFinalized:
       break;
   }
 
   // We return true to keep this anchor alive as long as we need another invoke
   // or have to finish up at the next rAF.
-  return state_ != kDone;
+  return !(state_ == kFinalized && iteration_ == kDone);
 }
 
-void TextFragmentAnchor::Installed() {}
+void TextFragmentAnchor::Installed() {
+  AnnotationAgentContainerImpl* container =
+      Supplement<Document>::From<AnnotationAgentContainerImpl>(
+          frame_->GetDocument());
+  CHECK(container);
+  container->AddObserver(this);
+}
+
+void TextFragmentAnchor::NewContentMayBeAvailable() {
+  // The post load task will only be invoked once so don't restart an inactive
+  // timer (if it's inactive it's because it's already been invoked).
+  if (iteration_ != kPostLoad || !post_load_timer_.IsActive()) {
+    return;
+  }
+
+  // Restart the timer.
+  post_load_timer_.StartOneShot(PostLoadTaskDelay(), FROM_HERE);
+}
 
 void TextFragmentAnchor::FinalizeAnchor() {
-  DCHECK(frame_->GetDocument()->IsLoadCompleted());
+  CHECK_EQ(iteration_, kDone);
+  CHECK_LT(state_, kFinalized);
 
   if (element_fragment_anchor_) {
     element_fragment_anchor_->Installed();
@@ -323,8 +332,7 @@ void TextFragmentAnchor::FinalizeAnchor() {
         annotation->IsAttached() ? &annotation->GetAttachedRange() : nullptr;
     text_directive->DidFinishMatching(attached_range);
   }
-
-  state_ = kDone;
+  state_ = kFinalized;
 }
 
 void TextFragmentAnchor::Trace(Visitor* visitor) const {
@@ -333,24 +341,44 @@ void TextFragmentAnchor::Trace(Visitor* visitor) const {
   visitor->Trace(directive_annotation_pairs_);
   visitor->Trace(first_match_);
   visitor->Trace(matched_annotations_);
+  visitor->Trace(post_load_timer_);
+  visitor->Trace(post_load_timeout_timer_);
   SelectorFragmentAnchor::Trace(visitor);
 }
 
+void TextFragmentAnchor::WillPerformAttach() {
+  if (iteration_ == kParsing && frame_->GetDocument()->IsLoadCompleted()) {
+    iteration_ = kLoad;
+    MarkFailedAttachmentsForRetry();
+  }
+}
+
 void TextFragmentAnchor::UpdateCurrentState() {
+  bool all_found = true;
+  bool any_needs_attachment = false;
   for (auto& directive_annotation_pair : directive_annotation_pairs_) {
     AnnotationAgentImpl* annotation = directive_annotation_pair.second;
+
+    // This method is called right after AnnotationAgentContainerImpl calls
+    // PerformInitialAttachments. However, it may have avoided attachment if
+    // the page is hidden. If that's the case, avoid moving to kPostLoad so
+    // that we don't finish the search until the page becomes visible.
+    if (annotation->NeedsAttachment()) {
+      any_needs_attachment = true;
+    }
+
+    bool found_match =
+        annotation->IsAttachmentPending() || annotation->IsAttached();
+    if (!found_match) {
+      all_found = false;
+      continue;
+    }
 
     // Text fragments apply effects (scroll, focus) only to the first
     // *matching* directive into view so that's the directive that reflects the
     // `state_`. The Attach() call matches synchronously (but may
     // ansynchronously perform DOMMutations) so the first such matching agent
     // will be set to first_match_.
-    bool found_match =
-        annotation->IsAttachmentPending() || annotation->IsAttached();
-    if (!found_match) {
-      continue;
-    }
-
     if (!first_match_) {
       CHECK_EQ(state_, kSearching);
       state_ = annotation->IsAttachmentPending() ? kWaitingForDOMMutations
@@ -367,6 +395,14 @@ void TextFragmentAnchor::UpdateCurrentState() {
         metrics_->DidFindAmbiguousMatch();
       }
     }
+  }
+
+  if (all_found) {
+    iteration_ = kDone;
+  } else if (iteration_ == kLoad && !any_needs_attachment) {
+    iteration_ = kPostLoad;
+    post_load_timer_.StartOneShot(PostLoadTaskDelay(), FROM_HERE);
+    post_load_timeout_timer_.StartOneShot(PostLoadTaskTimeout(), FROM_HERE);
   }
 }
 
@@ -411,8 +447,8 @@ void TextFragmentAnchor::ApplyEffectsToFirstMatch() {
 }
 
 bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
-  DCHECK(first_match_);
-  DCHECK_GE(state_, kApplyEffects);
+  CHECK_GE(state_, kApplyEffects);
+  CHECK(first_match_);
 
   if (!should_scroll_ || user_scrolled_)
     return false;
@@ -430,12 +466,18 @@ bool TextFragmentAnchor::EnsureFirstMatchInViewIfNeeded() {
 }
 
 void TextFragmentAnchor::DidFinishSearch() {
-  DCHECK(frame_->GetDocument()->IsLoadCompleted());
-  DCHECK_LE(state_, kKeepInView);
+  CHECK_EQ(iteration_, kDone);
+  CHECK_LT(state_, kFinalized);
 
   if (finalize_pending_) {
     return;
   }
+
+  AnnotationAgentContainerImpl* container =
+      Supplement<Document>::From<AnnotationAgentContainerImpl>(
+          frame_->GetDocument());
+  CHECK(container);
+  container->RemoveObserver(this);
 
   metrics_->SetSearchEngineSource(HasSearchEngineSource());
   metrics_->ReportMetrics();
@@ -497,24 +539,30 @@ bool TextFragmentAnchor::HasSearchEngineSource() {
       frame_->GetDocument()->Loader()->GetRequestorOrigin()->ToString());
 }
 
-bool TextFragmentAnchor::ShouldKeepSearching() {
-  // At load time, TextFragmentAnchor will try a second time to attach
-  // any unattached annotations.
-  if (!frame_->GetDocument()->IsLoadCompleted()) {
-    return true;
-  }
-
-  // Even after load, we should wait until each annotation has had a chance to
-  // try attachment. This may not happen immediately since we avoid attaching
-  // while the page hasn't yet become visible.
+bool TextFragmentAnchor::MarkFailedAttachmentsForRetry() {
+  bool did_mark = false;
   for (auto& directive_annotation_pair : directive_annotation_pairs_) {
     AnnotationAgentImpl* annotation = directive_annotation_pair.second;
-    if (annotation->NeedsAttachment()) {
-      return true;
+    if (!annotation->IsAttached() && !annotation->IsAttachmentPending()) {
+      annotation->SetNeedsAttachment();
+      did_mark = true;
     }
   }
 
-  return false;
+  return did_mark;
+}
+
+void TextFragmentAnchor::PostLoadTask(TimerBase*) {
+  CHECK_NE(iteration_, kDone);
+
+  // Stop both timers - the post load task is run just once.
+  post_load_timer_.Stop();
+  post_load_timeout_timer_.Stop();
+  if (!frame_->IsDetached() && MarkFailedAttachmentsForRetry()) {
+    frame_->GetPage()->GetChromeClient().ScheduleAnimation(frame_->View());
+  }
+
+  iteration_ = kDone;
 }
 
 }  // namespace blink

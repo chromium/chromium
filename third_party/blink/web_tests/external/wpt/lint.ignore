@@ -679,6 +679,10 @@ DUPLICATE-BASENAME-PATH: svg/struct/reftests/reference/green-100x100.svg
 
 SET TIMEOUT: mediacapture-insertable-streams/MediaStreamTrackProcessor-video.https.html
 
+# This is a subresource which cannot use step_timeout without becoming a test
+# itself. See https://github.com/web-platform-tests/wpt/issues/16933
+SET TIMEOUT: scroll-to-text-fragment/iframe-target.html
+
 # Ported crashtests from Mozilla
 SET TIMEOUT: editing/crashtests/backcolor-in-nested-editing-host-td-from-DOMAttrModified.html
 SET TIMEOUT: editing/crashtests/contenteditable-will-be-blurred-by-focus-event-listener.html
