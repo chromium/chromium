@@ -930,37 +930,6 @@ FOO_TEST_SUITE_WITH_REMOVE_BUILDER_MIXIN = """\
 }
 """
 
-FOO_TEST_SUITE_WITH_RELEASE_BLOCKER = """\
-{
-  'basic_suites': {
-    'foo_tests': {
-      'foo_test': {
-        'args': [
-          '--c_arg',
-        ],
-        'bug_component': 'foo>hoo',
-        'release_blocker': True,
-      },
-    },
-  },
-}
-"""
-
-FOO_TEST_SUITE_WITH_RELEASE_BLOCKER_EMPTY_COMPONENT = """\
-{
-  'basic_suites': {
-    'foo_tests': {
-      'foo_test': {
-        'args': [
-          '--c_arg',
-        ],
-        'release_blocker': True,
-      },
-    },
-  },
-}
-"""
-
 FOO_SCRIPT_SUITE = """\
 {
   'basic_suites': {
@@ -2331,20 +2300,6 @@ class UnitTest(TestCase):
       self.assertRegex(joined_lines, '.*\- suite_.*')
       fbb.printed_lines = []
       self.assertFalse(fbb.printed_lines)
-
-  def test_with_release_blocker(self):
-    fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL,
-                    FOO_TEST_SUITE_WITH_RELEASE_BLOCKER, LUCI_MILO_CFG)
-    fbb.check_input_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
-
-  def test_with_release_blocker_without_component(self):
-    fbb = FakeBBGen(self.args, FOO_GTESTS_WATERFALL,
-                    FOO_TEST_SUITE_WITH_RELEASE_BLOCKER_EMPTY_COMPONENT,
-                    LUCI_MILO_CFG)
-    with self.assertRaises(generate_buildbot_json.BBGenErr):
-      fbb.check_input_file_consistency(verbose=True)
-    self.assertFalse(fbb.printed_lines)
 
 
 FOO_GTESTS_WATERFALL_MIXIN_WATERFALL = """\
