@@ -6,6 +6,7 @@
 #define COMPONENTS_FEATURE_ENGAGEMENT_PUBLIC_FEATURE_CONSTANTS_H_
 
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 
 namespace feature_engagement {
@@ -214,6 +215,10 @@ BASE_DECLARE_FEATURE(kIPHAutofillVirtualCardSuggestionFeature);
 BASE_DECLARE_FEATURE(kIPHGoogleOneOfferNotificationFeature);
 BASE_DECLARE_FEATURE(kIPHLauncherSearchHelpUiFeature);
 #endif
+
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+BASE_DECLARE_FEATURE(kIPHiOSPasswordPromoDesktopFeature);
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
 
 }  // namespace feature_engagement
 

@@ -355,6 +355,30 @@ absl::optional<FeatureConfig> GetClientSideFeatureConfig(
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_APPLE) || BUILDFLAG(IS_LINUX) ||
         // BUILDFLAG(IS_CHROMEOS)
 
+#if !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (kIPHiOSPasswordPromoDesktopFeature.name == feature->name) {
+    // A config for allowing other IPH's to explicitly block the iOS password
+    // promo bubble on desktop if needed. By default it is non-blocking and
+    // non-blocked by other IPH due it being highly contextual, but this FET
+    // config and feature exist to allow some FET control over this promo if
+    // needed.
+
+    absl::optional<FeatureConfig> config = FeatureConfig();
+    config->valid = true;
+    config->availability = Comparator(ANY, 0);
+    config->session_rate = Comparator(ANY, 0);
+    config->session_rate_impact.type = SessionRateImpact::Type::NONE;
+    config->blocked_by.type = BlockedBy::Type::NONE;
+    config->blocking.type = Blocking::Type::NONE;
+    config->used =
+        EventConfig("ios_password_promo_bubble_on_desktop_interacted_with",
+                    Comparator(ANY, 0), 0, 0);
+    config->trigger = EventConfig("ios_password_promo_bubble_on_desktop_shown",
+                                  Comparator(ANY, 0), 0, 0);
+    return config;
+  }
+#endif  // !BUILDFLAG(IS_ANDROID) && BUILDFLAG(GOOGLE_CHROME_BRANDING)
+
 #if BUILDFLAG(IS_ANDROID)
 
   constexpr int k10YearsInDays = 365 * 10;
