@@ -9,11 +9,13 @@
 
 #include "base/test/scoped_mock_clock_override.h"
 #include "base/time/time.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
 namespace file_manager {
-
 namespace {
+
+using testing::IsNan;
 
 TEST(SpeedometerTest, RemainingTime) {
   base::ScopedMockClockOverride mock_clock;
@@ -22,11 +24,11 @@ TEST(SpeedometerTest, RemainingTime) {
 
   // Testing without setting the total bytes:
   EXPECT_EQ(0u, meter.GetSampleCount());
-  EXPECT_EQ(0, meter.GetRemainingSeconds());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 
   meter.SetTotalBytes(2000);
   EXPECT_EQ(0u, meter.GetSampleCount());
-  EXPECT_EQ(0, meter.GetRemainingSeconds());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 
   // 1st sample.
   // 1st sample, but not enough to calculate the remaining time.
@@ -34,14 +36,14 @@ TEST(SpeedometerTest, RemainingTime) {
 
   meter.Update(100);
   EXPECT_EQ(1u, meter.GetSampleCount());
-  EXPECT_EQ(0, meter.GetRemainingSeconds());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 
   // Sample received less than 1 second after the previous one should be
   // ignored.
   mock_clock.Advance(base::Milliseconds(999));
   meter.Update(300);
   EXPECT_EQ(1u, meter.GetSampleCount());
-  EXPECT_EQ(0, meter.GetRemainingSeconds());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 
   // 2nd sample, the remaining time can be computed.
   mock_clock.Advance(base::Milliseconds(1));

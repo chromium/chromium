@@ -16,11 +16,6 @@ size_t Speedometer::GetSampleCount() const {
 }
 
 double Speedometer::GetRemainingSeconds() const {
-  // Not interpolated yet or not enough samples.
-  if (end_time_ == 0) {
-    return 0;
-  }
-
   return end_time_ - (base::TimeTicks::Now() - start_time_).InSecondsF();
 }
 
@@ -34,12 +29,6 @@ void Speedometer::Update(const int64_t total_processed_bytes) {
 }
 
 void Speedometer::Interpolate() {
-  // Don't try to compute the linear interpolation unless we have enough
-  // samples.
-  if (GetSampleCount() < 2) {
-    return;
-  }
-
   double average_bytes = 0;
   double average_time = 0;
   for (auto it = samples_.Begin(); it; ++it) {

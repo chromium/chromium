@@ -5,6 +5,8 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_SPEEDOMETER_H_
 #define CHROMEOS_ASH_COMPONENTS_FILE_MANAGER_SPEEDOMETER_H_
 
+#include <limits>
+
 #include "base/component_export.h"
 #include "base/containers/ring_buffer.h"
 #include "base/time/time.h"
@@ -24,7 +26,8 @@ class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
   // Gets the number of samples currently maintained.
   size_t GetSampleCount() const;
 
-  // Projected remaining time, it can be negative or infinity.
+  // Gets the projected remaining time in seconds. It can be negative, or
+  // infinity, or NaN (not-a-number) if there aren't enough samples yet.
   double GetRemainingSeconds() const;
 
   // Adds a sample with the current timestamp and the given number of bytes.
@@ -53,7 +56,7 @@ class COMPONENT_EXPORT(FILE_MANAGER) Speedometer {
   int64_t total_bytes_ = 0;
 
   // The projected time to finish the operation, in seconds from `start_time_`.
-  double end_time_ = 0;
+  double end_time_ = std::numeric_limits<double>::quiet_NaN();
 
   // Maintains the 20 most recent samples.
   base::RingBuffer<Sample, 20> samples_;
