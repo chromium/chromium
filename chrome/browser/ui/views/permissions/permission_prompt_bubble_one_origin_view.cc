@@ -16,6 +16,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_tabstrip.h"
 #include "chrome/browser/ui/browser_window.h"
+#include "chrome/browser/ui/color/chrome_color_id.h"
 #include "chrome/browser/ui/url_identity.h"
 #include "chrome/browser/ui/views/bubble_anchor_util_views.h"
 #include "chrome/browser/ui/views/chrome_layout_provider.h"
@@ -36,6 +37,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/color/color_id.h"
 #include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -183,4 +185,9 @@ void PermissionPromptBubbleOneOriginView::AddRequestLine(
       std::make_unique<views::Label>(request->GetMessageTextFragment()));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetMultiLine(true);
+
+  if (features::IsChromeRefresh2023()) {
+    label->SetTextStyle(views::style::STYLE_BODY_3);
+    label->SetEnabledColorId(kColorPermissionPromptRequestText);
+  }
 }

@@ -299,6 +299,8 @@
   E_CPONLY(kColorPaymentsRequestBackArrowButtonIcon) \
   E_CPONLY(kColorPaymentsRequestBackArrowButtonIconDisabled) \
   E_CPONLY(kColorPaymentsRequestRowBackgroundHighlighted) \
+  /* Permission Prompt colors. */ \
+  E_CPONLY(kColorPermissionPromptRequestText) \
   /* Picture-in-Picture window colors. */ \
   E_CPONLY(kColorPipWindowBackToTabButtonBackground) \
   E_CPONLY(kColorPipWindowBackground) \

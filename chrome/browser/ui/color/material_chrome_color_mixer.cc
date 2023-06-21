@@ -50,6 +50,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   // Download bubble colors.
   mixer[kColorDownloadBubbleRowHover] = {ui::kColorSysStateHoverOnSubtle};
 
+  // Permission Prompt colors.
+  mixer[kColorPermissionPromptRequestText] = {ui::kColorSysOnSurfaceSubtle};
+
   // Profile Menu colors.
   mixer[kColorProfileMenuHeaderBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorProfileMenuHeaderLabel] = {ui::kColorSysOnTonalContainer};
