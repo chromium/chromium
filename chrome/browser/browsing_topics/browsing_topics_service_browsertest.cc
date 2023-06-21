@@ -1249,7 +1249,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BrowsingTopicsBrowserTest,
-    FetchSameOrigin_TopicsEligible_SendOneTopic_HasNoObserveResponse) {
+    FetchSameOrigin_TopicsEligible_SendTopics_HasNoObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -1446,7 +1446,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BrowsingTopicsBrowserTest,
-    FetchCrossOrigin_TopicsEligible_SendOneTopic_HasObserveResponse) {
+    FetchCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -1865,7 +1865,7 @@ IN_PROC_BROWSER_TEST_F(
 
 IN_PROC_BROWSER_TEST_F(
     BrowsingTopicsBrowserTest,
-    XhrCrossOrigin_TopicsEligible_SendOneTopic_HasObserveResponse) {
+    XhrCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse) {
   GURL main_frame_url =
       https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
@@ -2370,7 +2370,7 @@ class AttestationBrowsingTopicsBrowserTest : public BrowsingTopicsBrowserTest {
 
 // Site a.test is attested for Topics, so it should receive a valid response.
 IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       AttestedSiteCanGetBrowsingTopics) {
+                       AttestedSiteCanGetBrowsingTopicsViaDocumentAPI) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
       net::SchemefulSite(GURL("https://a.test")),
@@ -2388,22 +2388,22 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   EXPECT_EQ(result, kExpectedApiResult);
 }
 
-// Site b.test is not attested for Topics, so it should receive no topics. Note:
+// Site a.test is not attested for Topics, so it should receive no topics. Note:
 // Attestation failure works differently from other failure modes like operating
 // in an insecure context. In this case, the API is still exposed, but handling
 // will exit before any topics are filled.
 IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       UnattestedSiteCannotGetBrowsingTopics) {
+                       UnattestedSiteCannotGetBrowsingTopicsViaDocumentAPI) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(
-      net::SchemefulSite(GURL("https://a.test")),
+      net::SchemefulSite(GURL("https://b.test")),
       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
   privacy_sandbox::PrivacySandboxAttestations::GetInstance()
       ->SetAttestationsForTesting(map);
 
   GURL main_frame_url =
-      https_server_.GetURL("b.test", "/browsing_topics/one_iframe_page.html");
+      https_server_.GetURL("a.test", "/browsing_topics/one_iframe_page.html");
 
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
@@ -2411,8 +2411,9 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
 }
 
 // Site a.test is attested, but not for Topics, so no topics should be returned.
-IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
-                       AttestedSiteCannotGetBrowsingTopicsWithMismatchedMap) {
+IN_PROC_BROWSER_TEST_F(
+    AttestationBrowsingTopicsBrowserTest,
+    AttestedSiteCannotGetBrowsingTopicsViaDocumentAPIWithMismatchedMap) {
   privacy_sandbox::PrivacySandboxAttestationsMap map;
   map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
                        privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
@@ -2427,6 +2428,239 @@ IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
   ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
 
   EXPECT_EQ("[]", InvokeTopicsAPI(web_contents()));
+}
+
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       FetchSameOrigin_TopicsEligible_SendTopics_SiteAttested) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://a.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_TRUE(topics_header_value);
+  EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteA);
+}
+
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       FetchSameOrigin_TopicsEligible_SiteNotAttested) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://b.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_FALSE(topics_header_value);
+}
+
+IN_PROC_BROWSER_TEST_F(
+    AttestationBrowsingTopicsBrowserTest,
+    FetchSameOrigin_TopicsEligible_SiteAttested_MismatchedMap) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
+                       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+                           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                               kProtectedAudience});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("a.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_FALSE(topics_header_value);
+}
+
+// Site a.test is attested, so when an x-origin request is made to it from
+// site b.test, a.test should still include a topics header.
+IN_PROC_BROWSER_TEST_F(
+    AttestationBrowsingTopicsBrowserTest,
+    FetchCrossOrigin_TopicsEligible_SendTopics_HasObserveResponse_SiteAttested) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://a.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_TRUE(topics_header_value);
+  EXPECT_EQ(*topics_header_value, kExpectedHeaderValueForSiteB);
+
+  // A new observation should have been recorded in addition to the pre-existing
+  // one, as the response had the `Observe-Browsing-Topics: ?1` header and the
+  // request was eligible for topics.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 2u);
+  EXPECT_EQ(
+      api_usage_contexts[0].hashed_main_frame_host,
+      HashMainFrameHostForStorage(https_server_.GetURL("b.test", "/").host()));
+  EXPECT_EQ(api_usage_contexts[0].hashed_context_domain,
+            GetHashedDomain("a.test"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_main_frame_host,
+            HashMainFrameHostForStorage("foo1.com"));
+  EXPECT_EQ(api_usage_contexts[1].hashed_context_domain, HashedDomain(1));
+}
+
+// Site a.test is not attested, so this should not generate a Topics header in a
+// x-origin fetch to site a.test.
+IN_PROC_BROWSER_TEST_F(AttestationBrowsingTopicsBrowserTest,
+                       FetchCrossOrigin_TopicsEligible_SiteNotAttested) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(
+      net::SchemefulSite(GURL("https://b.test")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+          privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kTopics});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_FALSE(topics_header_value);
+
+  // Because a.test is not attested for Topics, we should not have any new
+  // observations of API usage.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
+}
+
+// Site a.test is attested, but not for Topics, so the fetch request to a.test
+// should not get a header.
+IN_PROC_BROWSER_TEST_F(
+    AttestationBrowsingTopicsBrowserTest,
+    FetchCrossOrigin_TopicsEligible_SiteNotAttested_MismatchedMap) {
+  privacy_sandbox::PrivacySandboxAttestationsMap map;
+  map.insert_or_assign(net::SchemefulSite(GURL("https://a.test")),
+                       privacy_sandbox::PrivacySandboxAttestationsGatedAPISet{
+                           privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                               kProtectedAudience});
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting(map);
+
+  GURL main_frame_url =
+      https_server_.GetURL("b.test", "/browsing_topics/empty_page.html");
+  ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), main_frame_url));
+
+  base::StringPairs replacement;
+  replacement.emplace_back(std::make_pair("{{STATUS}}", "200 OK"));
+  replacement.emplace_back(std::make_pair("{{OBSERVE_BROWSING_TOPICS_HEADER}}",
+                                          "Observe-Browsing-Topics: ?1"));
+  replacement.emplace_back(std::make_pair("{{REDIRECT_HEADER}}", ""));
+
+  GURL fetch_url = https_server_.GetURL(
+      "a.test", net::test_server::GetFilePathWithReplacements(
+                    "/browsing_topics/"
+                    "page_with_custom_topics_header.html",
+                    replacement));
+
+  EXPECT_TRUE(ExecJs(
+      web_contents()->GetPrimaryMainFrame(),
+      content::JsReplace("fetch($1, {browsingTopics: true})", fetch_url)));
+
+  absl::optional<std::string> topics_header_value =
+      GetTopicsHeaderForRequestPath(
+          "/browsing_topics/page_with_custom_topics_header.html");
+
+  EXPECT_FALSE(topics_header_value);
+
+  // Because a.test is not attested for Topics, we should not have any new
+  // observations of API usage.
+  std::vector<ApiUsageContext> api_usage_contexts =
+      content::GetBrowsingTopicsApiUsage(browsing_topics_site_data_manager());
+  EXPECT_EQ(api_usage_contexts.size(), 1u);
 }
 
 }  // namespace browsing_topics
