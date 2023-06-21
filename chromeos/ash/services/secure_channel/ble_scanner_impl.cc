@@ -91,6 +91,26 @@ void BleScannerImpl::HandleScanRequestChange() {
   UpdateDiscoveryStatus();
 }
 
+void BleScannerImpl::AdapterPoweredChanged(device::BluetoothAdapter* adapter,
+                                           bool powered) {
+  DCHECK_EQ(adapter_.get(), adapter);
+  if (!floss::features::IsFlossEnabled()) {
+    // No-op for BlueZ.
+    return;
+  }
+
+  if (powered) {
+    PA_LOG(INFO) << "Update LE scan session due to power on.";
+    UpdateDiscoveryStatus();
+  } else {
+    // The BluetoothLowEnergyScanSession callbacks may never be called due to
+    // Floss being powered off. Reset the session anyway.
+    PA_LOG(INFO) << "Reset LE scan session due to power off.";
+    is_initializing_discovery_session_ = false;
+    le_scan_session_.reset();
+  }
+}
+
 void BleScannerImpl::DeviceAdvertisementReceived(
     device::BluetoothAdapter* adapter,
     device::BluetoothDevice* bluetooth_device,
