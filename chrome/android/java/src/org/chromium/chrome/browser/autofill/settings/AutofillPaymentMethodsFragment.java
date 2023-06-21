@@ -144,23 +144,24 @@ public class AutofillPaymentMethodsFragment
                 mReauthenticatorBridge = ReauthenticatorBridge.create(
                         DeviceAuthRequester.PAYMENT_METHODS_REAUTH_IN_SETTINGS);
             }
-            // We don't show the Reauth toggle when Autofill credit card is disabled or the device
-            // doesn't have biometric auth.
-            if (PersonalDataManager.isAutofillCreditCardEnabled()
-                    && mReauthenticatorBridge.canUseAuthenticationWithBiometric()) {
-                ChromeSwitchPreference mandatoryReauthSwitch =
-                        new ChromeSwitchPreference(getStyledContext(), null);
-                mandatoryReauthSwitch.setTitle(
-                        R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label);
-                mandatoryReauthSwitch.setSummary(
-                        R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
-                mandatoryReauthSwitch.setChecked(
-                        PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
-                mandatoryReauthSwitch.setKey(PREF_MANDATORY_REAUTH);
-                mandatoryReauthSwitch.setOnPreferenceChangeListener(
-                        this::onMandatoryReauthSwitchToggled);
-                getPreferenceScreen().addPreference(mandatoryReauthSwitch);
-            }
+            ChromeSwitchPreference mandatoryReauthSwitch =
+                    new ChromeSwitchPreference(getStyledContext(), null);
+            mandatoryReauthSwitch.setTitle(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_label);
+            mandatoryReauthSwitch.setSummary(
+                    R.string.autofill_settings_page_enable_payment_method_mandatory_reauth_sublabel);
+            mandatoryReauthSwitch.setChecked(
+                    PersonalDataManager.isPaymentMethodsMandatoryReauthEnabled());
+            mandatoryReauthSwitch.setKey(PREF_MANDATORY_REAUTH);
+            // We always display the toggle, but the toggle is only enabled when Autofill credit
+            // card is enabled AND the device supports biometric auth or screen lock. If either of
+            // these is not met, we will grey out the toggle.
+            boolean enableReauthSwitch = PersonalDataManager.isAutofillCreditCardEnabled()
+                    && mReauthenticatorBridge.canUseAuthenticationWithBiometricOrScreenLock();
+            mandatoryReauthSwitch.setEnabled(enableReauthSwitch);
+            mandatoryReauthSwitch.setOnPreferenceChangeListener(
+                    this::onMandatoryReauthSwitchToggled);
+            getPreferenceScreen().addPreference(mandatoryReauthSwitch);
         }
 
         for (CreditCard card : PersonalDataManager.getInstance().getCreditCardsForSettings()) {
