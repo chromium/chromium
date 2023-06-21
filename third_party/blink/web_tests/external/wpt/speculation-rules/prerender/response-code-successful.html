@@ -10,10 +10,11 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
+<script src="../resources/utils.js"></script>
 <script src="resources/utils.js"></script>
+
 <body>
 <script>
-
 setup(() => assertSpeculationRulesIsSupported());
 
 const params = new URLSearchParams(window.location.search);
@@ -24,6 +25,4 @@ promise_test(async t => {
   const result = await tryToActivate();
   assert_equals(result, 'activated');
 },`Responses with code ${code} should be activated`);
-
 </script>
-</body>

@@ -9,10 +9,11 @@ https://html.spec.whatwg.org/C/#dom-navigator-plugins
 <script src="/resources/testharness.js"></script>
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/utils.js"></script>
-<script src="/speculation-rules/prerender/resources/utils.js"></script>
+<script src="../resources/utils.js"></script>
+<script src="resources/utils.js"></script>
+
 <body>
 <script>
-
 setup(() => {
   assertSpeculationRulesIsSupported();
   assert_implements_optional(
@@ -47,6 +48,4 @@ promise_test(async t => {
     }
   }
 }, 'prerendering page should be able to access the navigator.plugins');
-
 </script>
-</body>
