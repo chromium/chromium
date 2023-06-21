@@ -13,8 +13,9 @@ declare_args() {
   # where the memory which was invalidly accessed was allocated or freed.
   #
   # Although it should work on other platforms as well, for the above reasons,
-  # we currently enable it only for Android when compiling for Arm64.
-  build_allocation_stack_trace_recorder = current_cpu == "arm64" && is_android
+  # we currently support it only for Android when compiling for Arm64.
+  # TODO(keishi): Reenable once M116 branch is cut.
+  build_allocation_stack_trace_recorder = false
 }
 
 assert(!(build_allocation_stack_trace_recorder && is_fuchsia),
