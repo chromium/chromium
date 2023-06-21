@@ -48,6 +48,12 @@ TEST(ServiceWorkerRouterRulesTest, SimpleRoundTrip) {
       source.network_source.emplace();
       rule.sources.push_back(source);
     }
+    {
+      blink::ServiceWorkerRouterSource source;
+      source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      source.race_source.emplace();
+      rule.sources.push_back(source);
+    }
     rules.rules.push_back(rule);
   }
   TestRoundTrip(rules);

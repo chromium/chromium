@@ -14,6 +14,7 @@
 namespace blink {
 
 // TODO(crbug.com/1371756): implement other conditions in the proposal.
+// TODO(crbug.com/1456599): migrate to absl::variant if possible.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterCondition {
   // Type of conditions.
   enum class ConditionType {
@@ -37,6 +38,13 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterNetworkSource {
   }
 };
 
+// Race network and fetch handler source.
+struct BLINK_COMMON_EXPORT ServiceWorkerRouterRaceSource {
+  bool operator==(const ServiceWorkerRouterRaceSource& other) const {
+    return true;
+  }
+};
+
 // This represents a source of the router rule.
 // TODO(crbug.com/1371756): implement other sources in the proposal.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
@@ -44,10 +52,13 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
   enum class SourceType {
     // Network is used as a source.
     kNetwork,
+    // Race network and fetch handler.
+    kRace,
   };
   SourceType type;
 
   absl::optional<ServiceWorkerRouterNetworkSource> network_source;
+  absl::optional<ServiceWorkerRouterRaceSource> race_source;
 
   bool operator==(const ServiceWorkerRouterSource& other) const;
 };

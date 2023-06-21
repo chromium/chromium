@@ -42,6 +42,16 @@ struct BLINK_COMMON_EXPORT
 
 template <>
 struct BLINK_COMMON_EXPORT
+    StructTraits<blink::mojom::ServiceWorkerRouterRaceSourceDataView,
+                 blink::ServiceWorkerRouterRaceSource> {
+  static bool Read(blink::mojom::ServiceWorkerRouterRaceSourceDataView data,
+                   blink::ServiceWorkerRouterRaceSource* out) {
+    return true;
+  }
+};
+
+template <>
+struct BLINK_COMMON_EXPORT
     UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
                 blink::ServiceWorkerRouterSource> {
   static blink::mojom::ServiceWorkerRouterSourceDataView::Tag GetTag(
@@ -50,6 +60,11 @@ struct BLINK_COMMON_EXPORT
   static const blink::ServiceWorkerRouterNetworkSource& network_source(
       const blink::ServiceWorkerRouterSource& data) {
     return *data.network_source;
+  }
+
+  static const blink::ServiceWorkerRouterRaceSource& race_source(
+      const blink::ServiceWorkerRouterSource& data) {
+    return *data.race_source;
   }
 
   static bool Read(blink::mojom::ServiceWorkerRouterSourceDataView data,

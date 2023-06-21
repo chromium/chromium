@@ -2045,7 +2045,12 @@ ServiceWorkerDatabase::Status ServiceWorkerDatabase::ParseRegistrationData(
               kNetworkSource:
             source.type =
                 blink::ServiceWorkerRouterSource::SourceType::kNetwork;
-            source.network_source = blink::ServiceWorkerRouterNetworkSource{};
+            source.network_source.emplace();
+            break;
+          case ServiceWorkerRegistrationData::RouterRules::RuleV1::Source::
+              kRaceSource:
+            source.type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+            source.race_source.emplace();
             break;
         }
         router_rule.sources.emplace_back(source);
@@ -2311,6 +2316,9 @@ void ServiceWorkerDatabase::WriteRegistrationDataInBatch(
         switch (s.type) {
           case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
             source->mutable_network_source();
+            break;
+          case blink::ServiceWorkerRouterSource::SourceType::kRace:
+            source->mutable_race_source();
             break;
         }
       }

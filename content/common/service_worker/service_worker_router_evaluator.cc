@@ -60,10 +60,21 @@ bool IsValidSources(
   // TODO(crbug.com/1371756): support other sources in the future.
   // Currently, only network source is supported.
   for (const auto& s : sources) {
-    if (s.type != blink::ServiceWorkerRouterSource::SourceType::kNetwork ||
-        !s.network_source) {
-      RecordSetupError(ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
-      return false;
+    switch (s.type) {
+      case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+        if (!s.network_source) {
+          RecordSetupError(
+              ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
+          return false;
+        }
+        break;
+      case blink::ServiceWorkerRouterSource::SourceType::kRace:
+        if (!s.race_source) {
+          RecordSetupError(
+              ServiceWorkerRouterEvaluatorErrorEnums::kInvalidSource);
+          return false;
+        }
+        break;
     }
   }
   return true;

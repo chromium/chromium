@@ -10,6 +10,9 @@ namespace blink {
 
 bool ServiceWorkerRouterCondition::operator==(
     const ServiceWorkerRouterCondition& other) const {
+  if (type != other.type) {
+    return false;
+  }
   switch (type) {
     case ConditionType::kUrlPattern:
       return url_pattern == other.url_pattern;
@@ -18,9 +21,14 @@ bool ServiceWorkerRouterCondition::operator==(
 
 bool ServiceWorkerRouterSource::operator==(
     const ServiceWorkerRouterSource& other) const {
+  if (type != other.type) {
+    return false;
+  }
   switch (type) {
     case SourceType::kNetwork:
       return network_source == other.network_source;
+    case SourceType::kRace:
+      return race_source == other.race_source;
   }
 }
 

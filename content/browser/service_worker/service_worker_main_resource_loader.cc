@@ -224,6 +224,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   scoped_refptr<ServiceWorkerContextWrapper> context = core->wrapper();
   DCHECK(context);
 
+  bool force_race_network_request = false;
   // Check if registered static route rules match the request.
   if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter) &&
       active_worker->router_evaluator()) {
@@ -233,33 +234,36 @@ void ServiceWorkerMainResourceLoader::StartRequest(
     if (!sources.empty()) {  // matched the rule.
       // TODO(crbug.com/1371756): support other sources in the full form.
       // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
-      if (sources[0].type ==
-          blink::ServiceWorkerRouterSource::SourceType::kNetwork) {
-        // Network fallback is requested.
-        // URLLoader in |fallback_callback_|, in other words |url_loader_| which
-        // is referred in
-        // NavigationURLLoaderImpl::FallbackToNonInterceptedRequest() is not
-        // ready until ServiceWorkerMainResourceLoader::StartRequest() finishes,
-        // so calling the fallback at this point doesn't correctly handle the
-        // fallback process. Use PostTask to run the callback after finishing
-        // StartRequset(), also start the ServiceWorker manually since we don't
-        // instantiate ServiceWorkerFetchDispatcher, which involves the
-        // ServiceWorker startup.
-        base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
-            FROM_HERE,
-            base::BindOnce(
-                [](NavigationLoaderInterceptor::FallbackCallback
-                       fallback_callback,
-                   scoped_refptr<ServiceWorkerVersion> active_worker) {
-                  std::move(fallback_callback)
-                      .Run(false /* reset_subresource_loader_params */,
-                           net::LoadTimingInfo());
-                  active_worker->StartWorker(
-                      ServiceWorkerMetrics::EventType::STATIC_ROUTER,
-                      base::DoNothing());
-                },
-                std::move(fallback_callback_), active_worker));
-        return;
+      switch (sources[0].type) {
+        case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+          // Network fallback is requested.
+          // URLLoader in |fallback_callback_|, in other words |url_loader_|
+          // which is referred in
+          // NavigationURLLoaderImpl::FallbackToNonInterceptedRequest() is not
+          // ready until ServiceWorkerMainResourceLoader::StartRequest()
+          // finishes, so calling the fallback at this point doesn't correctly
+          // handle the fallback process. Use PostTask to run the callback after
+          // finishing StartRequset(), also start the ServiceWorker manually
+          // since we don't instantiate ServiceWorkerFetchDispatcher, which
+          // involves the ServiceWorker startup.
+          base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+              FROM_HERE,
+              base::BindOnce(
+                  [](NavigationLoaderInterceptor::FallbackCallback
+                         fallback_callback,
+                     scoped_refptr<ServiceWorkerVersion> active_worker) {
+                    std::move(fallback_callback)
+                        .Run(false /* reset_subresource_loader_params */,
+                             net::LoadTimingInfo());
+                    active_worker->StartWorker(
+                        ServiceWorkerMetrics::EventType::STATIC_ROUTER,
+                        base::DoNothing());
+                  },
+                  std::move(fallback_callback_), active_worker));
+          return;
+        case blink::ServiceWorkerRouterSource::SourceType::kRace:
+          force_race_network_request = true;
+          break;
       }
     }
   }
@@ -279,7 +283,11 @@ void ServiceWorkerMainResourceLoader::StartRequest(
   if (container_host_->IsContainerForWindowClient()) {
     // The RaceNetworkRequest mode doesn't support Navigation Preload. If
     // RaceNetworkRequest is triggered, Navigation Preload never happens.
-    if (MaybeStartRaceNetworkRequest(context, active_worker)) {
+    if (force_race_network_request) {
+      if (StartRaceNetworkRequest(context, active_worker)) {
+        dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
+      }
+    } else if (MaybeStartRaceNetworkRequest(context, active_worker)) {
       dispatched_preload_type_ = DispatchedPreloadType::kRaceNetworkRequest;
     } else if (fetch_dispatcher_->MaybeStartNavigationPreload(
                    resource_request_, context, frame_tree_node_id_)) {

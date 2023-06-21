@@ -22,6 +22,8 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterConditionDataView,
          blink::ServiceWorkerRouterCondition* out) {
   switch (data.tag()) {
     case blink::mojom::ServiceWorkerRouterCondition::Tag::kUrlPattern:
+      out->type =
+          blink::ServiceWorkerRouterCondition::ConditionType::kUrlPattern;
       if (!data.ReadUrlPattern(&out->url_pattern)) {
         return false;
       }
@@ -38,6 +40,8 @@ UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
   switch (data.type) {
     case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
       return blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource;
+    case blink::ServiceWorkerRouterSource::SourceType::kRace:
+      return blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource;
   }
 }
 
@@ -47,7 +51,12 @@ bool UnionTraits<blink::mojom::ServiceWorkerRouterSourceDataView,
          blink::ServiceWorkerRouterSource* out) {
   switch (data.tag()) {
     case blink::mojom::ServiceWorkerRouterSource::Tag::kNetworkSource:
+      out->type = blink::ServiceWorkerRouterSource::SourceType::kNetwork;
       out->network_source.emplace();
+      return true;
+    case blink::mojom::ServiceWorkerRouterSource::Tag::kRaceSource:
+      out->type = blink::ServiceWorkerRouterSource::SourceType::kRace;
+      out->race_source.emplace();
       return true;
   }
   return false;

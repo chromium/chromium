@@ -20,11 +20,20 @@ union ServiceWorkerRouterCondition {
 struct ServiceWorkerRouterNetworkSource {
 };
 
+// This source is used when the browser should allow a network source and
+// the fetch handler to race, allowing the first one to respond to service
+// the request.
+// https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
+// TODO(crbug.com/1371756): implement fields in the full picture.
+struct ServiceWorkerRouterRaceSource {
+};
+
 // This represents a source of the router rule.
 // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api
 // TODO(crbug.com/1371756): implement other sources in the full picture.
 union ServiceWorkerRouterSource {
   ServiceWorkerRouterNetworkSource network_source;
+  ServiceWorkerRouterRaceSource race_source;
 };
 
 // This represents a ServiceWorker static routing API's router rule.

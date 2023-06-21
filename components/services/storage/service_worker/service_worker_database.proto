@@ -122,8 +122,10 @@ message ServiceWorkerRegistrationData {
       }
       message Source {
         message NetworkSource {}
+        message RaceSource {}
         oneof source {
           NetworkSource network_source = 1;
+          RaceSource race_source = 2;
         }
       }
       repeated Condition condition = 1;
