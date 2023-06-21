@@ -219,8 +219,6 @@ source_set("filters") {
     sources += [
       "win/media_foundation_audio_decoder.cc",
       "win/media_foundation_audio_decoder.h",
-      "win/media_foundation_utils.cc",
-      "win/media_foundation_utils.h",
     ]
     deps += [ "//media/base/win:media_foundation_util" ]
     if (enable_platform_dts_audio) {

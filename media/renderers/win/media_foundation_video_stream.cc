@@ -14,7 +14,6 @@
 #include "media/base/video_codecs.h"
 #include "media/base/video_decoder_config.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/filters/win/media_foundation_utils.h"
 #include "media/media_buildflags.h"
 
 namespace media {

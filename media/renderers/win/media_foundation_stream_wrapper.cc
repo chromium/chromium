@@ -12,7 +12,6 @@
 #include "media/base/media_switches.h"
 #include "media/base/video_codecs.h"
 #include "media/base/win/mf_helpers.h"
-#include "media/filters/win/media_foundation_utils.h"
 #include "media/renderers/win/media_foundation_audio_stream.h"
 #include "media/renderers/win/media_foundation_source_wrapper.h"
 #include "media/renderers/win/media_foundation_video_stream.h"
