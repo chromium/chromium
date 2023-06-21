@@ -779,8 +779,8 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
   int64_t in_use_bytes = rounded_total_size - available_bytes;
   std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
   std::u16string total_size = ui::FormatBytes(rounded_total_size);
-  std::u16string result_title =
-      base::StrCat({in_use_size, u" in use / ", total_size});
+  std::u16string result_description = base::StrCat(
+      {u"Storage ", in_use_size, u" in use | ", total_size, u" total"});
 
   StartSearch(u"storage");
 
@@ -794,29 +794,22 @@ TEST_F(SystemInfoCardProviderTest, Storage) {
             ash::AppListSearchResultType::kSystemInfo);
   EXPECT_EQ(results()[0]->metrics_type(), ash::SYSTEM_INFO);
   EXPECT_EQ(results()[0]->system_info_answer_card_data()->display_type,
-            ash::SystemInfoAnswerCardDisplayType::kMultiElementBarChart);
-  auto storage_type_to_size =
-      results()[0]->system_info_answer_card_data()->storage_type_to_size;
-  EXPECT_EQ(
-      ui::FormatBytes(
-          storage_type_to_size[ash::SearchResultSystemInfoStorageType::kTotal]),
-      total_size);
-  EXPECT_EQ(
-      ui::FormatBytes(storage_type_to_size
-                          [ash::SearchResultSystemInfoStorageType::kMyFiles]),
-      ui::FormatBytes(kMountPathBytes + kAndroidPathBytes +
-                      kDownloadsPathBytes));
+            ash::SystemInfoAnswerCardDisplayType::kBarChart);
+  auto found_bar_chart_percentage =
+      results()[0]->system_info_answer_card_data()->bar_chart_percentage;
+  auto expected_bar_chart_percentage = in_use_bytes * 100 / rounded_total_size;
+  EXPECT_EQ(expected_bar_chart_percentage, found_bar_chart_percentage);
 
   ASSERT_EQ(results()[0]->title_text_vector().size(), 1u);
   const auto& title = results()[0]->title_text_vector()[0];
   ASSERT_EQ(title.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(title.GetText(), result_title);
+  EXPECT_EQ(title.GetText(), u"");
   EXPECT_TRUE(title.GetTextTags().empty());
 
   ASSERT_EQ(results()[0]->details_text_vector().size(), 1u);
   const auto& details = results()[0]->details_text_vector()[0];
   ASSERT_EQ(details.GetType(), ash::SearchResultTextItemType::kString);
-  EXPECT_EQ(details.GetText(), u"");
+  EXPECT_EQ(details.GetText(), result_description);
   EXPECT_TRUE(details.GetTextTags().empty());
 }
 

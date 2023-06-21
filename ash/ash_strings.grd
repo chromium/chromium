@@ -2005,8 +2005,8 @@ Style notes:
       <message name="IDS_ASH_BATTERY_STATUS_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the battery answer card, showing the battery health percentage and the cycle count.">
         Battery health <ph name="BATTERY_HEALTH_PERCENTAGE">$1<ex>97</ex></ph>% | Cycle count <ph name="CYCLE_COUNT">$2<ex>15</ex></ph>
       </message>
-      <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_TITLE" desc="Message content for the title of the storage answer card, showing the amount of storage currently in use and the total storage size.">
-        <ph name="STORAGE_IN_USE_SIZE">$1<ex>65 GB</ex></ph> in use / <ph name="STORAGE_TOTAL_SIZE">$2<ex>124 GB</ex></ph>
+      <message name="IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION" desc="Message content for the description of the storage answer card, showing the amount of storage currently in use and the total storage size.">
+        Storage <ph name="STORAGE_IN_USE_SIZE">$1<ex>65 GB</ex></ph> in use | <ph name="STORAGE_TOTAL_SIZE">$2<ex>124 GB</ex></ph> total
       </message>
       <message name="IDS_ASH_STORAGE_MANAGEMENT_KEYWORD_FOR_LAUNCHER" desc="Keyword of storage management in launcher search that should trigger a storage answer card result.">
         storage management

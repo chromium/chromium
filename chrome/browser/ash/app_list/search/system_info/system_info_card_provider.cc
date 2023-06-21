@@ -56,7 +56,7 @@ using ::chromeos::settings::mojom::kAboutChromeOsSectionPath;
 using ::chromeos::settings::mojom::kStorageSubpagePath;
 using AnswerCardInfo = ::ash::SystemInfoAnswerCardData;
 
-constexpr double kRelevanceThreshold = 0.64;
+constexpr double kRelevanceThreshold = 0.79;
 
 double ConvertKBtoBytes(uint32_t amount) {
   return static_cast<double>(amount) * 1024;
@@ -471,30 +471,6 @@ void SystemInfoCardProvider::OnStorageInfoUpdated() {
     NOTREACHED() << "Unable to retrieve total or available disk space";
     return;
   }
-
-  int64_t system_bytes = 0;
-  for (int i = 0; i < SizeCalculator::kCalculationTypeCount; ++i) {
-    const int64_t total_bytes_for_current_item =
-        std::max(storage_items_total_bytes_[i], static_cast<int64_t>(0));
-    // The total amount of disk space counts positively towards system's size.
-    if (i == static_cast<int>(SizeCalculator::CalculationType::kTotal)) {
-      if (total_bytes_for_current_item <= 0) {
-        return;
-      }
-      system_bytes += total_bytes_for_current_item;
-      continue;
-    }
-    // All other items are subtracted from the total amount of disk space.
-    if (i == static_cast<int>(SizeCalculator::CalculationType::kAvailable) &&
-        total_bytes_for_current_item < 0) {
-      return;
-    }
-    system_bytes -= total_bytes_for_current_item;
-  }
-  const int system_space_index =
-      static_cast<int>(SizeCalculator::CalculationType::kSystem);
-  storage_items_total_bytes_[system_space_index] = system_bytes;
-
   CreateStorageAnswerCard();
 }
 
@@ -508,39 +484,14 @@ void SystemInfoCardProvider::CreateStorageAnswerCard() {
   int64_t in_use_bytes = total_bytes - available_bytes;
   std::u16string in_use_size = ui::FormatBytes(in_use_bytes);
   std::u16string total_size = ui::FormatBytes(total_bytes);
-  std::u16string title = l10n_util::GetStringFUTF16(
-      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_TITLE, in_use_size, total_size);
-  std::map<ash::SearchResultSystemInfoStorageType, int64_t>
-      storage_type_to_size = {
-          {ash::SearchResultSystemInfoStorageType::kMyFiles,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kMyFiles)]},
-          {ash::SearchResultSystemInfoStorageType::kDriveOfflineFiles,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kDriveOfflineFiles)]},
-          {ash::SearchResultSystemInfoStorageType::kBrowsingData,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kBrowsingData)]},
-          {ash::SearchResultSystemInfoStorageType::kAppsExtensions,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kAppsExtensions)]},
-          {ash::SearchResultSystemInfoStorageType::kCrostini,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kCrostini)]},
-          {ash::SearchResultSystemInfoStorageType::kOtherUsers,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kOtherUsers)]},
-          {ash::SearchResultSystemInfoStorageType::kSystem,
-           storage_items_total_bytes_[static_cast<int>(
-               SizeCalculator::CalculationType::kSystem)]},
-          {ash::SearchResultSystemInfoStorageType::kTotal, total_bytes}};
+  std::u16string description = l10n_util::GetStringFUTF16(
+      IDS_ASH_STORAGE_STATUS_IN_LAUNCHER_DESCRIPTION, in_use_size, total_size);
 
-  AnswerCardInfo answer_card_info(storage_type_to_size);
+  AnswerCardInfo answer_card_info(in_use_bytes * 100 / total_bytes);
   SearchProvider::Results new_results;
   new_results.emplace_back(std::make_unique<SystemInfoAnswerResult>(
       profile_, last_query_, kStorageSubpagePath, os_settings_icon_, relevance_,
-      title,
-      /*description=*/u"",
+      /*title=*/u"", description,
       SystemInfoAnswerResult::SystemInfoCategory::kSettings, answer_card_info));
   SwapResults(&new_results);
 }
