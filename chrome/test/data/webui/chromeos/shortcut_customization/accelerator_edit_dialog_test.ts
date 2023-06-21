@@ -265,4 +265,89 @@ suite('acceleratorEditDialogTest', function() {
     // Expect acceleratorInfo1 and acceleratorInfo2 are filtered out.
     assertEquals(1, acceleratorElements.length);
   });
+
+  test('maxReachedHintHiddenWithFewAccels', async () => {
+    const acceleratorInfo: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+
+    const accelerators = [acceleratorInfo];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(1, acceleratorElements.length);
+
+    // Expect maxAccelsReachedHint is hidden and addButton is visible.
+    const maxAccelReachedHint =
+        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
+        HTMLDivElement;
+    const addButtonContainer =
+        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
+        HTMLDivElement;
+    assertTrue(maxAccelReachedHint.hidden);
+    assertFalse(addButtonContainer.hidden);
+  });
+
+  test('maxReachedHintVisibleWithMaxAccels', async () => {
+    const acceleratorInfo1: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo2: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo3: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.COMMAND,
+        /*key=*/ 71,
+        /*keyDisplay=*/ 'g');
+    const acceleratorInfo4: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL | Modifier.SHIFT,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+    const acceleratorInfo5: AcceleratorInfo = createUserAcceleratorInfo(
+        Modifier.CONTROL,
+        /*key=*/ 67,
+        /*keyDisplay=*/ 'c');
+
+    // Initialize with max accelerators.
+    const accelerators = [
+      acceleratorInfo1,
+      acceleratorInfo2,
+      acceleratorInfo3,
+      acceleratorInfo4,
+      acceleratorInfo5,
+    ];
+    const description = 'test shortcut';
+
+    viewElement!.acceleratorInfos = accelerators;
+    viewElement!.description = description;
+    await flush();
+
+    const dialog =
+        viewElement!.shadowRoot!.querySelector('cr-dialog') as CrDialogElement;
+    assertTrue(dialog.open);
+    const acceleratorElements =
+        dialog.querySelectorAll('accelerator-edit-view');
+    assertEquals(5, acceleratorElements.length);
+
+    // Expect maxAccelsReachedHint is visible and addButton is hidden.
+    const maxAccelReachedHint =
+        viewElement!.shadowRoot!.querySelector('#maxAcceleratorsReached') as
+        HTMLDivElement;
+    const addButtonContainer =
+        viewElement!.shadowRoot!.querySelector('#addAcceleratorContainer') as
+        HTMLDivElement;
+    assertFalse(maxAccelReachedHint.hidden);
+    assertTrue(addButtonContainer.hidden);
+  });
 });

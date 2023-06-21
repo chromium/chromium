@@ -4008,6 +4008,10 @@
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE" desc="The status message that displays when user clicks button to override an accelerator" translateable="false">
           Shortcut is used by <ph name="CONFLICT_ACCEL_NAME">$1<ex>BRIGHTNESS_UP</ex></ph>. Press a new shortcut or press the same one again to use it for this action instead.
         </message>
+        <!-- TODO(b/286268215): Translate this string -->
+        <message name="IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT" desc="The hint message that displays when there are five accelerators in the dialog" translateable="false">
+          You can only customize 5 shortcuts. Delete a shortcut to add a new one.
+        </message>
         <message name="IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS" desc="Text description of a search that has no results.">
           No search results found
         </message>

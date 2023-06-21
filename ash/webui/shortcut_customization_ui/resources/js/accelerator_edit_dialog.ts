@@ -33,6 +33,9 @@ declare global {
   }
 }
 
+// A maximum of 5 accelerators are allowed.
+const MAX_NUM_ACCELERATORS = 5;
+
 /**
  * @fileoverview
  * 'accelerator-edit-dialog' is a dialog that displays the accelerators for
@@ -166,9 +169,20 @@ export class AcceleratorEditDialogElement extends
     this.focusAcceleratorItemContainer();
   }
 
+  protected showNewAccelerator(): boolean {
+    // Show new pending accelerators when ViewState is not VIEW.
+    return this.pendingNewAcceleratorState != ViewState.VIEW &&
+        this.acceleratorLimitNotReached();
+  }
+
   protected showAddButton(): boolean {
     // If the state is VIEW, no new pending accelerators are being added.
-    return this.pendingNewAcceleratorState === ViewState.VIEW;
+    return this.pendingNewAcceleratorState === ViewState.VIEW &&
+        this.acceleratorLimitNotReached();
+  }
+
+  protected acceleratorLimitNotReached(): boolean {
+    return this.acceleratorInfos.length < MAX_NUM_ACCELERATORS;
   }
 
   protected onRestoreDefaultButtonClicked(): void {

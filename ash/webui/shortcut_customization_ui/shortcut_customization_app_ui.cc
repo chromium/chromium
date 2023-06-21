@@ -73,6 +73,8 @@ void AddLocalizedStrings(content::WebUIDataSource* source) {
        IDS_SHORTCUT_CUSTOMIZATION_SHORTCUT_WITH_CONFILICT_STATUS_MESSAGE},
       {"lockedShortcutStatusMessage",
        IDS_SHORTCUT_CUSTOMIZATION_LOCKED_SHORTCUT_STATUS_MESSAGE},
+      {"maxAcceleratorsReachedHint",
+       IDS_SHORTCUT_CUSTOMIZATION_MAX_ACCELERATORS_REACHED_HINT},
       {"searchNoResults", IDS_SHORTCUT_CUSTOMIZATION_SEARCH_NO_RESULTS},
       {"searchClearQueryLabel",
        IDS_SHORTCUT_CUSTOMIZATION_SEARCH_CLEAR_QUERY_LABEL},

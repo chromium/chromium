@@ -77,7 +77,8 @@
       </template>
     </div>
     <template id="newAccelerator" is="dom-if"
-        if="[[!showAddButton(pendingNewAcceleratorState)]]" restamp>
+        if="[[showNewAccelerator(pendingNewAcceleratorState, acceleratorInfos)]]"
+        restamp>
       <accelerator-edit-view id="pendingAccelerator"
           view-state="{{pendingNewAcceleratorState}}"
           action=[[action]]
@@ -85,12 +86,16 @@
       </accelerator-edit-view>
     </template>
     <div id="addAcceleratorContainer"
-        hidden="[[!showAddButton(pendingNewAcceleratorState)]]">
+        hidden="[[!showAddButton(pendingNewAcceleratorState, acceleratorInfos)]]">
       <cr-button id="addAcceleratorButton" on-click="onAddAcceleratorClicked">
         <iron-icon id="addIcon" icon="shortcut-customization:add">
         </iron-icon>
         [[i18n('addShortcut')]]
       </cr-button>
+    </div>
+    <div id="maxAcceleratorsReached"
+        hidden="[[acceleratorLimitNotReached(acceleratorInfos)]]">
+      [[i18n('maxAcceleratorsReachedHint')]]
     </div>
   </div>
   <div slot="button-container">
