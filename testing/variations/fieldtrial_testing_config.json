@@ -6211,10 +6211,8 @@
     "GwpAsanLinux": [
         {
             "platforms": [
-                "chromeos",
                 "chromeos_lacros",
-                "fuchsia",
-                "linux"
+                "fuchsia"
             ],
             "experiments": [
                 {
