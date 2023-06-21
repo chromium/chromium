@@ -125,8 +125,18 @@ void PersistedData::SetBrandPath(const std::string& id,
   SetString(id, kBP, bp.AsUTF8Unsafe());
 }
 
-std::string PersistedData::GetAP(const std::string& id) const {
+std::string PersistedData::GetAP(const std::string& id) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+
+#if BUILDFLAG(IS_WIN)
+  // For backwards compatibility, we read AP from ClientState first, since some
+  // applications write to it there.
+  if (const std::string ap(GetAppAPValue(scope_, id)); !ap.empty()) {
+    SetAP(id, ap);
+    return ap;
+  }
+#endif
+
   return GetString(id, kAP);
 }
 

@@ -212,6 +212,10 @@ std::wstring GetAppCohortKey(const std::wstring& app_id);
 std::wstring GetAppCommandKey(const std::wstring& app_id,
                               const std::wstring& command_id);
 
+// Returns the registry value
+// `{HKRoot}\Software\{CompanyName}\Update\ClientState\{app_id}\ap`.
+std::string GetAppAPValue(UpdaterScope scope, const std::string& app_id);
+
 // Returns the registry path for the Updater app id under the |Clients| subkey.
 // The path does not include the registry root hive prefix.
 std::wstring GetRegistryKeyClientsUpdater();

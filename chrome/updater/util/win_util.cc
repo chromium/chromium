@@ -369,6 +369,20 @@ std::wstring GetAppCommandKey(const std::wstring& app_id,
       {GetAppClientsKey(app_id), L"\\", kRegKeyCommands, L"\\", command_id});
 }
 
+std::string GetAppAPValue(UpdaterScope scope, const std::string& app_id) {
+  base::win::RegKey client_state_key;
+  if (client_state_key.Open(
+          UpdaterScopeToHKeyRoot(scope),
+          GetAppClientStateKey(base::ASCIIToWide(app_id)).c_str(),
+          Wow6432(KEY_READ)) == ERROR_SUCCESS) {
+    std::wstring ap;
+    if (client_state_key.ReadValue(kRegValueAP, &ap) == ERROR_SUCCESS) {
+      return base::WideToASCII(ap);
+    }
+  }
+  return {};
+}
+
 std::wstring GetRegistryKeyClientsUpdater() {
   return GetAppClientsKey(kUpdaterAppId);
 }

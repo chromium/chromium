@@ -50,6 +50,8 @@ namespace updater {
 
 namespace {
 
+constexpr char kTestAppID[] = "{D07D2B56-F583-4631-9E8E-9942F63765BE}";
+
 // Allows access to all authenticated users on the machine.
 CSecurityDesc GetEveryoneDaclSecurityDescriptor(ACCESS_MASK accessmask) {
   CSecurityDesc sd;
@@ -511,6 +513,20 @@ TEST(WinUtil, LogClsidEntries) {
   EXPECT_HRESULT_SUCCEEDED(
       ::CLSIDFromProgID(L"InternetExplorer.Application", &clsid));
   LogClsidEntries(clsid);
+}
+
+TEST(WinUtil, GetAppAPValue) {
+  std::string ap(GetAppAPValue(GetTestScope(), kTestAppID));
+  EXPECT_EQ(ap, "");
+
+  base::win::RegKey client_state_key(
+      CreateAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID)));
+  EXPECT_EQ(client_state_key.WriteValue(kRegValueAP, L"TestAP"), ERROR_SUCCESS);
+
+  ap = GetAppAPValue(GetTestScope(), kTestAppID);
+  EXPECT_EQ(ap, "TestAP");
+
+  DeleteAppClientStateKey(GetTestScope(), base::ASCIIToWide(kTestAppID));
 }
 
 }  // namespace updater

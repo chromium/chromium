@@ -66,7 +66,7 @@ class PersistedData : public base::RefCountedThreadSafe<PersistedData> {
   void SetBrandPath(const std::string& id, const base::FilePath& bp);
 
   // These functions access the AP for the specified id.
-  std::string GetAP(const std::string& id) const;
+  std::string GetAP(const std::string& id);
   void SetAP(const std::string& id, const std::string& ap);
 
   // These functions get/set the client-regulated-counting data for the

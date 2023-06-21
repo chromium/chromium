@@ -23,6 +23,13 @@ base::win::RegKey CreateAppClientKey(UpdaterScope scope,
 // `{HKLM\HKCU}` is determined by `scope`.
 void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id);
 
+// Creates `{HKRoot}\Software\{CompanyName}\Update\ClientState\{app_id}`.
+base::win::RegKey CreateAppClientStateKey(UpdaterScope scope,
+                                          const std::wstring& app_id);
+
+// Deletes `{HKRoot}\Software\{CompanyName}\Update\ClientState\{app_id}`.
+void DeleteAppClientStateKey(UpdaterScope scope, const std::wstring& app_id);
+
 // Creates the key
 // `HKLM\Software\{CompanyName}\Update\Clients\{app_id}`,
 // and adds the provided REG_SZ entries under it.

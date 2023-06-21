@@ -60,6 +60,21 @@ void DeleteAppClientKey(UpdaterScope scope, const std::wstring& app_id) {
       .DeleteKey(GetAppClientsKey(app_id).c_str());
 }
 
+base::win::RegKey CreateAppClientStateKey(UpdaterScope scope,
+                                          const std::wstring& app_id) {
+  base::win::RegKey client_state_key;
+  EXPECT_EQ(client_state_key.Create(UpdaterScopeToHKeyRoot(scope),
+                                    GetAppClientStateKey(app_id).c_str(),
+                                    Wow6432(KEY_WRITE)),
+            ERROR_SUCCESS);
+  return client_state_key;
+}
+
+void DeleteAppClientStateKey(UpdaterScope scope, const std::wstring& app_id) {
+  base::win::RegKey(UpdaterScopeToHKeyRoot(scope), L"", Wow6432(DELETE))
+      .DeleteKey(GetAppClientStateKey(app_id).c_str());
+}
+
 void CreateLaunchCmdElevatedRegistry(const std::wstring& app_id,
                                      const std::wstring& name,
                                      const std::wstring& pv,
