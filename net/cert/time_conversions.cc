@@ -14,48 +14,15 @@ namespace net {
 
 bool EncodeTimeAsGeneralizedTime(const base::Time& time,
                                  der::GeneralizedTime* generalized_time) {
-  base::Time::Exploded exploded;
-  time.UTCExplode(&exploded);
-  if (!exploded.HasValidValues()) {
-    return false;
-  }
-
-  generalized_time->year = exploded.year;
-  generalized_time->month = exploded.month;
-  generalized_time->day = exploded.day_of_month;
-  generalized_time->hours = exploded.hour;
-  generalized_time->minutes = exploded.minute;
-  generalized_time->seconds = exploded.second;
-  return true;
+  return der::EncodePosixTimeAsGeneralizedTime(
+      (time - base::Time::UnixEpoch()).InSeconds(), generalized_time);
 }
 
 bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
                            base::Time* result) {
-  base::Time::Exploded exploded = {0};
-  exploded.year = generalized.year;
-  exploded.month = generalized.month;
-  exploded.day_of_month = generalized.day;
-  exploded.hour = generalized.hours;
-  exploded.minute = generalized.minutes;
-  exploded.second = generalized.seconds;
-
-  if (base::Time::FromUTCExploded(exploded, result)) {
-    return true;
-  }
-
-  // Fail on obviously bad dates.
-  if (!exploded.HasValidValues()) {
-    return false;
-  }
-
-  // TODO(mattm): consider consolidating this with
-  // SaturatedTimeFromUTCExploded from cookie_util.cc
-  if (static_cast<int>(generalized.year) > base::Time::kExplodedMaxYear) {
-    *result = base::Time::Max();
-    return true;
-  }
-  if (static_cast<int>(generalized.year) < base::Time::kExplodedMinYear) {
-    *result = base::Time::Min();
+  int64_t posix_time;
+  if (der::GeneralizedTimeToPosixTime(generalized, &posix_time)) {
+    *result = base::Time::UnixEpoch() + base::Seconds(posix_time);
     return true;
   }
   return false;

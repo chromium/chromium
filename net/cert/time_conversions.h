@@ -20,14 +20,15 @@ namespace net {
 struct GeneralizedTime;
 
 // Encodes |time|, a UTC-based time, to DER |generalized_time|, for comparing
-// against other GeneralizedTime objects.
+// against other GeneralizedTime objects. Returns true on success or false if
+// the time is not representable as a Generalized time.The millisecond component
+// of |time| is discarded.
 NET_EXPORT bool EncodeTimeAsGeneralizedTime(
     const base::Time& time,
     der::GeneralizedTime* generalized_time);
 
 // Converts a GeneralizedTime struct to a base::Time, returning true on success
-// or false if |generalized| was invalid or cannot be represented by
-// base::Time.
+// or false if |generalized| was invalid.
 NET_EXPORT bool GeneralizedTimeToTime(const der::GeneralizedTime& generalized,
                                       base::Time* result);
 
