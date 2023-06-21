@@ -752,11 +752,7 @@ TypeConverter<IdentityProviderConfigPtr, blink::IdentityProviderConfig>::
   mojo_provider->config_url = blink::KURL(provider.configURL());
   mojo_provider->client_id = provider.clientId();
   mojo_provider->nonce = provider.getNonceOr("");
-  if (blink::RuntimeEnabledFeatures::FedCmLoginHintEnabled()) {
-    mojo_provider->login_hint = provider.getLoginHintOr("");
-  } else {
-    mojo_provider->login_hint = "";
-  }
+  mojo_provider->login_hint = provider.getLoginHintOr("");
 
   if (blink::RuntimeEnabledFeatures::FedCmAuthzEnabled()) {
     if (provider.hasScope()) {
@@ -821,7 +817,6 @@ TypeConverter<RpContext, blink::V8IdentityCredentialRequestOptionsContext>::
 IdentityUserInfoPtr
 TypeConverter<IdentityUserInfoPtr, blink::IdentityUserInfo>::Convert(
     const blink::IdentityUserInfo& user_info) {
-  DCHECK(blink::RuntimeEnabledFeatures::FedCmUserInfoEnabled());
   auto mojo_user_info = IdentityUserInfo::New();
 
   mojo_user_info->email = user_info.email();

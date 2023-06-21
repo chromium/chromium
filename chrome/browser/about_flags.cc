@@ -8776,21 +8776,9 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmAuthzDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmAuthz)},
 
-    {"fedcm-auto-re-authn", flag_descriptions::kFedCmAutoReauthnName,
-     flag_descriptions::kFedCmAutoReauthnDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmAutoReauthn)},
-
     {"fedcm-idp-registration", flag_descriptions::kFedCmIdPRegistrationName,
      flag_descriptions::kFedCmIdPRegistrationDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(features::kFedCmIdPRegistration)},
-
-    {"fedcm-iframe-support", flag_descriptions::kFedCmIframeSupportName,
-     flag_descriptions::kFedCmIframeSupportDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmIframeSupport)},
-
-    {"fedcm-login-hint", flag_descriptions::kFedCmLoginHintName,
-     flag_descriptions::kFedCmLoginHintDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmLoginHint)},
 
     {"fedcm-metrics-endpoint", flag_descriptions::kFedCmMetricsEndpointName,
      flag_descriptions::kFedCmMetricsEndpointDescription, kOsAll,
@@ -8804,14 +8792,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kFedCmSelectiveDisclosureName,
      flag_descriptions::kFedCmSelectiveDisclosureDescription, kOsAll,
      FEATURE_VALUE_TYPE(features::kFedCmSelectiveDisclosure)},
-
-    {"fedcm-rp-context", flag_descriptions::kFedCmRpContextName,
-     flag_descriptions::kFedCmRpContextDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmRpContext)},
-
-    {"fedcm-user-info", flag_descriptions::kFedCmUserInfoName,
-     flag_descriptions::kFedCmUserInfoDescription, kOsAll,
-     FEATURE_VALUE_TYPE(features::kFedCmUserInfo)},
 
     {"fedcm-idp-signin-status-api",
      flag_descriptions::kFedCmIdpSigninStatusName,

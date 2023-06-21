@@ -703,9 +703,7 @@ void FederatedAuthRequestImpl::RequestToken(
   for (auto& idp_get_params_ptr : idp_get_params_ptrs) {
     for (auto& idp_ptr : idp_get_params_ptr->providers) {
       idp_order_.push_back(idp_ptr->get_federated()->config_url);
-      blink::mojom::RpContext rp_context =
-          IsFedCmRpContextEnabled() ? idp_get_params_ptr->context
-                                    : blink::mojom::RpContext::kSignIn;
+      blink::mojom::RpContext rp_context = idp_get_params_ptr->context;
       const GURL& idp_config_url = idp_ptr->get_federated()->config_url;
       token_request_get_infos_.emplace(
           idp_config_url, IdentityProviderGetInfo(
@@ -719,12 +717,6 @@ void FederatedAuthRequestImpl::RequestToken(
 void FederatedAuthRequestImpl::RequestUserInfo(
     blink::mojom::IdentityProviderConfigPtr provider,
     RequestUserInfoCallback callback) {
-  if (!IsFedCmUserInfoEnabled()) {
-    // This could happen with a compromised renderer. Exit early such that we
-    // don't proceed when the flag is off or crash the browser.
-    std::move(callback).Run(RequestUserInfoStatus::kError, absl::nullopt);
-    return;
-  }
   if (!render_frame_host().GetPage().IsPrimary()) {
     mojo::ReportBadMessage(
         "FedCM should not be allowed in nested frame trees.");
@@ -1140,8 +1132,7 @@ void FederatedAuthRequestImpl::MaybeShowAccountsDialog() {
 
   // TODO(crbug.com/1383384): Handle auto_reauthn_ for multi IDP.
   bool auto_reauthn_enabled =
-      mediation_requirement_ != MediationRequirement::kRequired &&
-      IsFedCmAutoReauthnEnabled();
+      mediation_requirement_ != MediationRequirement::kRequired;
 
   auto_reauthn_ = auto_reauthn_enabled;
   bool is_auto_reauthn_setting_enabled = false;
@@ -1401,21 +1392,19 @@ void FederatedAuthRequestImpl::OnAccountsResponseReceived(
       return;
     }
     case IdpNetworkRequestManager::ParseStatus::kSuccess: {
-      if (IsFedCmLoginHintEnabled()) {
-        FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
-        if (accounts.empty()) {
-          render_frame_host().AddMessageToConsole(
-              blink::mojom::ConsoleMessageLevel::kError,
-              "Accounts were received, but none matched the loginHint.");
-          // If there are no accounts after filtering based on the login hint,
-          // treat this exactly the same as if we had received an empty accounts
-          // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
-          HandleAccountsFetchFailure(
-              std::move(idp_info), old_idp_signin_status,
-              FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
-              TokenStatus::kAccountsListEmpty);
-          return;
-        }
+      FilterAccountsWithLoginHint(idp_info->provider->login_hint, accounts);
+      if (accounts.empty()) {
+        render_frame_host().AddMessageToConsole(
+            blink::mojom::ConsoleMessageLevel::kError,
+            "Accounts were received, but none matched the loginHint.");
+        // If there are no accounts after filtering based on the login hint,
+        // treat this exactly the same as if we had received an empty accounts
+        // list, i.e. IdpNetworkRequestManager::ParseStatus::kEmptyListError.
+        HandleAccountsFetchFailure(
+            std::move(idp_info), old_idp_signin_status,
+            FederatedAuthRequestResult::kErrorFetchingAccountsListEmpty,
+            TokenStatus::kAccountsListEmpty);
+        return;
       }
       ComputeLoginStateAndReorderAccounts(idp_info->provider, accounts);
 
@@ -2104,8 +2093,7 @@ bool FederatedAuthRequestImpl::GetSingleReturningAccount(
 
 bool FederatedAuthRequestImpl::ShouldFailBeforeFetchingAccounts(
     const GURL& config_url) {
-  if (mediation_requirement_ != MediationRequirement::kSilent ||
-      !IsFedCmAutoReauthnEnabled()) {
+  if (mediation_requirement_ != MediationRequirement::kSilent) {
     return false;
   }
 

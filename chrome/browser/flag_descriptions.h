@@ -892,17 +892,8 @@ extern const char kFedCmDescription[];
 extern const char kFedCmAuthzName[];
 extern const char kFedCmAuthzDescription[];
 
-extern const char kFedCmAutoReauthnName[];
-extern const char kFedCmAutoReauthnDescription[];
-
 extern const char kFedCmIdPRegistrationName[];
 extern const char kFedCmIdPRegistrationDescription[];
-
-extern const char kFedCmIframeSupportName[];
-extern const char kFedCmIframeSupportDescription[];
-
-extern const char kFedCmLoginHintName[];
-extern const char kFedCmLoginHintDescription[];
 
 extern const char kFedCmMetricsEndpointName[];
 extern const char kFedCmMetricsEndpointDescription[];
@@ -912,12 +903,6 @@ extern const char kFedCmMultiIdpDescription[];
 
 extern const char kFedCmSelectiveDisclosureName[];
 extern const char kFedCmSelectiveDisclosureDescription[];
-
-extern const char kFedCmRpContextName[];
-extern const char kFedCmRpContextDescription[];
-
-extern const char kFedCmUserInfoName[];
-extern const char kFedCmUserInfoDescription[];
 
 extern const char kFedCmIdpSigninStatusName[];
 extern const char kFedCmIdpSigninStatusDescription[];

@@ -1599,24 +1599,9 @@ const char kFedCmAuthzName[] = "FedCmAuthz";
 const char kFedCmAuthzDescription[] =
     "Enables RPs to request authorization for custom IdP scopes.";
 
-const char kFedCmAutoReauthnName[] = "FedCmAutoReauthn";
-const char kFedCmAutoReauthnDescription[] =
-    "Enables auto re-authentication in the FedCM API. Requires FedCM to be "
-    "enabled.";
-
 const char kFedCmIdPRegistrationName[] = "FedCM with IdP Registration support";
 const char kFedCmIdPRegistrationDescription[] =
     "Enables RPs to get identity credentials from registered IdPs.";
-
-const char kFedCmIframeSupportName[] = "FedCM with iframe support";
-const char kFedCmIframeSupportDescription[] =
-    "Enables the 'identity-credentials-get' Permissions-Policy for the FedCM "
-    "API.";
-
-const char kFedCmLoginHintName[] = "FedCmLoginHint";
-const char kFedCmLoginHintDescription[] =
-    "Allows the FedCM API to be used with a login hint which specifies a "
-    "specific IDP account that needs to be displayed in the FedCM UI.";
 
 const char kFedCmMetricsEndpointName[] = "FedCmMetricsEndpoint";
 const char kFedCmMetricsEndpointDescription[] =
@@ -1633,20 +1618,10 @@ const char kFedCmSelectiveDisclosureDescription[] =
     "Allows a relying party to selectively request a set of identity "
     "attributes to be disclosed.";
 
-const char kFedCmUserInfoName[] = "FedCmUserInfo";
-const char kFedCmUserInfoDescription[] =
-    "Allows an identity provider to request user info instead of token from "
-    "its own iframe. Requires FedCM to be enabled.";
-
 const char kFedCmWithoutThirdPartyCookiesName[] =
     "FedCmWithoutThirdPartyCookies";
 const char kFedCmWithoutThirdPartyCookiesDescription[] =
     "Allows the FedCM API to be enabled when third party cookies are disabled.";
-
-const char kFedCmRpContextName[] = "FedCmRpContext";
-const char kFedCmRpContextDescription[] =
-    "Allows relying parties to describe which context (e.g. sign-up vs "
-    "sign-in) the FedCM is executing on.";
 
 const char kFedCmIdpSigninStatusName[] = "FedCmIdpSigninStatus";
 const char kFedCmIdpSigninStatusDescription[] =

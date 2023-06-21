@@ -393,24 +393,10 @@ const char kFedCmIdpSignoutFieldTrialParamName[] = "IdpSignout";
 // Enables usage of the FedCM Authz API.
 BASE_FEATURE(kFedCmAuthz, "FedCmAuthz", base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM API with auto re-authentication. Note that actual
-// exposure of FedCM's auto re-authentication feature to web content is
-// controlled by the flag in RuntimeEnabledFeatures on the blink side. See also
-// the use of kSetOnlyIfOverridden in content/child/runtime_features.cc.
-// We enable it here by default to support use in origin trials.
-BASE_FEATURE(kFedCmAutoReauthn,
-             "FedCmAutoReauthn",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM IdP Registration API.
 BASE_FEATURE(kFedCmIdPRegistration,
              "FedCmIdPregistration",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM API with iframe support.
-BASE_FEATURE(kFedCmIframeSupport,
-             "FedCmIframeSupport",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables usage of the FedCM API with metrics endpoint at the same time.
 BASE_FEATURE(kFedCmMetricsEndpoint,
@@ -423,27 +409,11 @@ BASE_FEATURE(kFedCmMultipleIdentityProviders,
              "FedCmMultipleIdentityProviders",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Enables usage of the FedCM Relying Party Context API.
-BASE_FEATURE(kFedCmRpContext,
-             "FedCmRpContext",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM API with the User Info API at the same time.
-// Note that actual exposure of the FedCM API to web content is controlled
-// by the flag in RuntimeEnabledFeatures on the blink side. See also
-// the use of kSetOnlyIfOverridden in content/child/runtime_features.cc.
-BASE_FEATURE(kFedCmUserInfo, "FedCmUserInfo", base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Enables usage of the FedCM API with the Selective Disclosure API at the same
 // time.
 BASE_FEATURE(kFedCmSelectiveDisclosure,
              "FedCmSelectiveDisclosure",
              base::FEATURE_DISABLED_BY_DEFAULT);
-
-// Enables usage of the FedCM API with the login hint parameter.
-BASE_FEATURE(kFedCmLoginHint,
-             "FedCmLoginHint",
-             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables metrics collection for signin status mismatches. Also enables
 // parsing the signin status HTTP headers.

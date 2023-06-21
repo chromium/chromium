@@ -152,13 +152,11 @@ absl::optional<content::IdentityRequestAccount> ParseAccount(
   auto* picture = account.FindString(kAccountPictureKey);
   auto* approved_clients = account.FindList(kAccountApprovedClientsKey);
   std::vector<std::string> account_hints;
-  if (IsFedCmLoginHintEnabled()) {
-    auto* hints = account.FindList(kHintsKey);
-    if (hints) {
-      for (const base::Value& entry : *hints) {
-        if (entry.is_string()) {
-          account_hints.emplace_back(entry.GetString());
-        }
+  auto* hints = account.FindList(kHintsKey);
+  if (hints) {
+    for (const base::Value& entry : *hints) {
+      if (entry.is_string()) {
+        account_hints.emplace_back(entry.GetString());
       }
     }
   }

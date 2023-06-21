@@ -9,10 +9,10 @@ dictionary IdentityProviderConfig {
   required USVString configURL;
   required USVString clientId;
   USVString nonce;
+  DOMString loginHint;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> scope;
   [RuntimeEnabled=FedCmAuthz] sequence<USVString> responseType;
   [RuntimeEnabled=FedCmAuthz] record<USVString, USVString> params;
-  [RuntimeEnabled=FedCmLoginHint] DOMString loginHint;
 };
 
 // extends the IdentityProviderConfig with mDoc-specific attributes

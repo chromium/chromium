@@ -260,7 +260,6 @@
     {
       name: "IdentityCredentialsGet",
       permissions_policy_name: "identity-credentials-get",
-      depends_on: ["FedCmIframeSupport"],
     },
     {
       name: "IdleDetection",
