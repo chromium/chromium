@@ -278,7 +278,7 @@ class NET_EXPORT_PRIVATE HttpNetworkTransaction
     kWrongVersionOnEarlyData = 10,
     kHttp2PingFailed = 11,
     kHttp2ServerRefusedStream = 12,
-    kHttp2PushedStreamNotAvailable = 13,
+    // Entry 13 is removed.
     kHttp2ClaimedPushedStreamResetByServer = 14,
     kHttp2PushedResponseDoesNotMatch = 15,
     kQuicHandshakeFailed = 16,

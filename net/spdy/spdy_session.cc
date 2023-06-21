@@ -327,14 +327,12 @@ base::Value::Dict NetLogSpdyPingParams(spdy::SpdyPingId unique_id,
 
 base::Value::Dict NetLogSpdyRecvGoAwayParams(spdy::SpdyStreamId last_stream_id,
                                              int active_streams,
-                                             int unclaimed_streams,
                                              spdy::SpdyErrorCode error_code,
                                              base::StringPiece debug_data,
                                              NetLogCaptureMode capture_mode) {
   base::Value::Dict dict;
   dict.Set("last_accepted_stream_id", static_cast<int>(last_stream_id));
   dict.Set("active_streams", active_streams);
-  dict.Set("unclaimed_streams", unclaimed_streams);
   dict.Set("error_code", base::StringPrintf("%u (%s)", error_code,
                                             ErrorCodeToString(error_code)));
   dict.Set("debug_data",
@@ -352,16 +350,6 @@ base::Value::Dict NetLogSpdyPushPromiseReceivedParams(
   dict.Set("headers", ElideHttp2HeaderBlockForNetLog(*headers, capture_mode));
   dict.Set("id", static_cast<int>(stream_id));
   dict.Set("promised_stream_id", static_cast<int>(promised_stream_id));
-  return dict;
-}
-
-// TODO(https://crbug.com/1426477): Remove.
-base::Value::Dict NetLogSpdyAdoptedPushStreamParams(
-    spdy::SpdyStreamId stream_id,
-    const GURL& url) {
-  base::Value::Dict dict;
-  dict.Set("stream_id", static_cast<int>(stream_id));
-  dict.Set("url", url.spec());
   return dict;
 }
 
@@ -428,10 +416,7 @@ class SpdyServerPushHelper : public ServerPushDelegate::ServerPushHelper {
                                 const GURL& url)
       : session_(session), request_url_(url) {}
 
-  void Cancel() override {
-    if (session_)
-      session_->CancelPush(request_url_);
-  }
+  void Cancel() override {}
 
   const GURL& GetURL() const override { return request_url_; }
 
@@ -933,55 +918,6 @@ SpdySession::~SpdySession() {
   RecordHistograms();
 
   net_log_.EndEvent(NetLogEventType::HTTP2_SESSION);
-}
-
-int SpdySession::GetPushedStream(const GURL& url,
-                                 spdy::SpdyStreamId pushed_stream_id,
-                                 RequestPriority priority,
-                                 raw_ptr<SpdyStream>* stream) {
-  CHECK(!in_io_loop_);
-  // |pushed_stream_id| must be valid.
-  DCHECK_NE(pushed_stream_id, kNoPushedStreamFound);
-  // |pushed_stream_id| must already have been claimed.
-  DCHECK_NE(pushed_stream_id,
-            pool_->push_promise_index()->FindStream(url, this));
-
-  if (availability_state_ == STATE_DRAINING) {
-    return ERR_CONNECTION_CLOSED;
-  }
-
-  auto active_it = active_streams_.find(pushed_stream_id);
-  if (active_it == active_streams_.end()) {
-    // A previously claimed pushed stream might not be available, for example,
-    // if the server has reset it in the meanwhile.
-    return ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE;
-  }
-
-  net_log_.AddEvent(NetLogEventType::HTTP2_STREAM_ADOPTED_PUSH_STREAM, [&] {
-    return NetLogSpdyAdoptedPushStreamParams(pushed_stream_id, url);
-  });
-
-  *stream = active_it->second;
-
-  DCHECK_LT(streams_pushed_and_claimed_count_, streams_pushed_count_);
-  streams_pushed_and_claimed_count_++;
-
-  // If the stream is still open, update its priority to that of the request.
-  if (!(*stream)->IsClosed()) {
-    (*stream)->SetPriority(priority);
-  }
-
-  return OK;
-}
-
-void SpdySession::CancelPush(const GURL& url) {
-  const spdy::SpdyStreamId stream_id =
-      pool_->push_promise_index()->FindStream(url, this);
-  if (stream_id == kNoPushedStreamFound)
-    return;
-
-  DCHECK(IsStreamActive(stream_id));
-  ResetStream(stream_id, ERR_ABORTED, "Cancelled push stream.");
 }
 
 void SpdySession::InitializeWithSocketHandle(
@@ -1518,10 +1454,6 @@ base::Value::Dict SpdySession::GetInfoAsValue() const {
 
   dict.Set("active_streams", static_cast<int>(active_streams_.size()));
 
-  dict.Set("unclaimed_pushed_streams",
-           static_cast<int>(
-               pool_->push_promise_index()->CountStreamsForSession(this)));
-
   dict.Set("negotiated_protocol",
            NextProtoToString(socket_->GetNegotiatedProtocol()));
 
@@ -1629,52 +1561,6 @@ bool SpdySession::CloseOneIdleConnection() {
   }
   // Return false as the socket wasn't immediately closed.
   return false;
-}
-
-bool SpdySession::ValidatePushedStream(spdy::SpdyStreamId stream_id,
-                                       const GURL& url,
-                                       const HttpRequestInfo& request_info,
-                                       const SpdySessionKey& key) const {
-  SpdySessionKey::CompareForAliasingResult compare_result =
-      key.CompareForAliasing(spdy_session_key_);
-  // Keys must be aliasable. This code does not support changing the tag of live
-  // sessions, so just fail on a socket tag mismatch.
-  if (!compare_result.is_potentially_aliasable ||
-      !compare_result.is_socket_tag_match) {
-    return false;
-  }
-  // Certificate must match for encrypted schemes only.
-  if (key != spdy_session_key_ && url.SchemeIsCryptographic() &&
-      !VerifyDomainAuthentication(key.host_port_pair().host())) {
-    return false;
-  }
-
-  auto stream_it = active_streams_.find(stream_id);
-  if (stream_it == active_streams_.end()) {
-    // Only active streams should be in Http2PushPromiseIndex.
-    NOTREACHED();
-    return false;
-  }
-  const spdy::Http2HeaderBlock& request_headers =
-      stream_it->second->request_headers();
-  spdy::Http2HeaderBlock::const_iterator method_it =
-      request_headers.find(spdy::kHttp2MethodHeader);
-  if (method_it == request_headers.end()) {
-    // TryCreatePushStream() would have reset the stream if it had no method.
-    NOTREACHED();
-    return false;
-  }
-
-  // Request method must match.
-  if (request_info.method != method_it->second) {
-    return false;
-  }
-
-  return true;
-}
-
-base::WeakPtr<SpdySession> SpdySession::GetWeakPtrToSession() {
-  return GetWeakPtr();
 }
 
 bool SpdySession::ChangeSocketTag(const SocketTag& new_tag) {
@@ -1927,11 +1813,8 @@ void SpdySession::CloseActiveStreamIterator(ActiveStreamMap::iterator it,
   // probably something that we still want to support, although server
   // push is hardly used. Write tests for this and fix this. (See
   // http://crbug.com/261712 .)
+  // TODO(https://crbug.com/1426477): Remove.
   if (owned_stream->type() == SPDY_PUSH_STREAM) {
-    if (pool_->push_promise_index()->UnregisterUnclaimedPushedStream(
-            owned_stream->url(), owned_stream->stream_id(), this)) {
-      bytes_pushed_and_unclaimed_count_ += owned_stream->recv_bytes();
-    }
     bytes_pushed_count_ += owned_stream->recv_bytes();
     num_pushed_streams_--;
     if (!owned_stream->IsReservedRemote())
@@ -2723,6 +2606,8 @@ void SpdySession::DeleteStream(std::unique_ptr<SpdyStream> stream, int status) {
 }
 
 void SpdySession::RecordHistograms() {
+  // TODO(https://crbug.com/1426477): Deprecate push-related histograms.
+
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.SpdyStreamsPerSession",
                               streams_initiated_count_, 1, 300, 50);
   UMA_HISTOGRAM_CUSTOM_COUNTS("Net.SpdyStreamsPushedPerSession",
@@ -2764,7 +2649,6 @@ void SpdySession::DcheckDraining() const {
   DcheckGoingAway();
   DCHECK_EQ(availability_state_, STATE_DRAINING);
   DCHECK(active_streams_.empty());
-  DCHECK_EQ(0u, pool_->push_promise_index()->CountStreamsForSession(this));
 }
 
 void SpdySession::DoDrainSession(Error err, const std::string& description) {
@@ -2967,14 +2851,12 @@ void SpdySession::OnGoAway(spdy::SpdyStreamId last_accepted_stream_id,
   // an unknown error code.
   base::UmaHistogramSparse("Net.SpdySession.GoAwayReceived", error_code);
 
-  net_log_.AddEvent(
-      NetLogEventType::HTTP2_SESSION_RECV_GOAWAY,
-      [&](NetLogCaptureMode capture_mode) {
-        return NetLogSpdyRecvGoAwayParams(
-            last_accepted_stream_id, active_streams_.size(),
-            pool_->push_promise_index()->CountStreamsForSession(this),
-            error_code, debug_data, capture_mode);
-      });
+  net_log_.AddEvent(NetLogEventType::HTTP2_SESSION_RECV_GOAWAY,
+                    [&](NetLogCaptureMode capture_mode) {
+                      return NetLogSpdyRecvGoAwayParams(
+                          last_accepted_stream_id, active_streams_.size(),
+                          error_code, debug_data, capture_mode);
+                    });
   MakeUnavailable();
   if (error_code == spdy::ERROR_CODE_HTTP_1_1_REQUIRED) {
     // TODO(bnc): Record histogram with number of open streams capped at 50.

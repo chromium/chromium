@@ -767,9 +767,8 @@ NET_ERROR(CONTENT_DECODING_INIT_FAILED, -371)
 // SpdyStream layer.
 NET_ERROR(HTTP2_RST_STREAM_NO_ERROR_RECEIVED, -372)
 
-// The pushed stream claimed by the request is no longer available.
-// TODO(https://crbug.com/1426477): Remove.
-NET_ERROR(HTTP2_PUSHED_STREAM_NOT_AVAILABLE, -373)
+// Obsolete. HTTP/2 push is removed.
+// NET_ERROR(HTTP2_PUSHED_STREAM_NOT_AVAILABLE, -373)
 
 // A pushed stream was claimed and later reset by the server. When this happens,
 // the request should be retried.

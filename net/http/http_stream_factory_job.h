@@ -465,13 +465,6 @@ class HttpStreamFactory::Job
   // Initialized when we have an existing SpdySession.
   base::WeakPtr<SpdySession> existing_spdy_session_;
 
-  // Once Job claims a pushed stream on a SpdySession, |pushed_stream_id_| is
-  // the ID of the claimed stream, and |existing_spdy_session_| points to that
-  // SpdySession.  Otherwise |pushed_stream_id_| is set to kNoPushedStreamFound
-  // (but |existing_spdy_session_| can still be non-null).
-  // TODO(https://crbug.com/1426477): Remove.
-  spdy::SpdyStreamId pushed_stream_id_;
-
   // Which SpdySessions in the pool to use. Note that, if requesting an HTTP URL
   // through an HTTPS proxy, this key matches the proxy, not the origin server.
   const SpdySessionKey spdy_session_key_;

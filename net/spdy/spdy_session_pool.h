@@ -28,7 +28,6 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/spdy/http2_push_promise_index.h"
 #include "net/spdy/server_push_delegate.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config_service.h"
@@ -291,8 +290,6 @@ class NET_EXPORT SpdySessionPool
     return http_server_properties_;
   }
 
-  Http2PushPromiseIndex* push_promise_index() { return &push_promise_index_; }
-
   void set_server_push_delegate(ServerPushDelegate* push_delegate) {
     push_delegate_ = push_delegate;
   }
@@ -437,9 +434,6 @@ class NET_EXPORT SpdySessionPool
 
   // A map of DNS alias vectors by session keys.
   DnsAliasesBySessionKeyMap dns_aliases_by_session_key_;
-
-  // The index of all unclaimed pushed streams of all SpdySessions in this pool.
-  Http2PushPromiseIndex push_promise_index_;
 
   const raw_ptr<SSLClientContext> ssl_client_context_;
   const raw_ptr<HostResolver> resolver_;

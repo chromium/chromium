@@ -88,13 +88,11 @@ bool ValidatePushedHeaders(
 const size_t SpdyHttpStream::kRequestBodyBufferSize = kMaxSpdyFrameChunkSize;
 
 SpdyHttpStream::SpdyHttpStream(const base::WeakPtr<SpdySession>& spdy_session,
-                               spdy::SpdyStreamId pushed_stream_id,
                                NetLogSource source_dependency,
                                std::set<std::string> dns_aliases)
     : MultiplexedHttpStream(
           std::make_unique<MultiplexedSessionHandle>(spdy_session)),
       spdy_session_(spdy_session),
-      pushed_stream_id_(pushed_stream_id),
       is_reused_(spdy_session_->IsReused()),
       source_dependency_(source_dependency),
       dns_aliases_(std::move(dns_aliases)) {
@@ -121,20 +119,6 @@ int SpdyHttpStream::InitializeStream(bool can_send_early,
   DCHECK(request_info_);
   if (!spdy_session_)
     return ERR_CONNECTION_CLOSED;
-
-  if (pushed_stream_id_ != kNoPushedStreamFound) {
-    int error = spdy_session_->GetPushedStream(
-        request_info_->url, pushed_stream_id_, priority, &stream_);
-    if (error != OK)
-      return error;
-
-    // |stream_| may be NULL even if OK was returned.
-    if (stream_) {
-      DCHECK_EQ(stream_->type(), SPDY_PUSH_STREAM);
-      InitializeStreamHelper();
-      return OK;
-    }
-  }
 
   int rv = stream_request_.StartRequest(
       SPDY_REQUEST_RESPONSE_STREAM, spdy_session_, request_info_->url,

@@ -1739,13 +1739,6 @@ EVENT_TYPE(HTTP2_SESSION_POOL_REMOVE_SESSION)
 // The begin and end of an HTTP/2 STREAM.
 EVENT_TYPE(HTTP2_STREAM)
 
-// A stream is attached to a pushed stream.
-//   {
-//     "stream_id":  <The stream id>,
-//     "url":        <The url of the pushed resource>,
-//   }
-EVENT_TYPE(HTTP2_STREAM_ADOPTED_PUSH_STREAM)
-
 // A stream is unstalled by flow control.
 EVENT_TYPE(HTTP2_STREAM_FLOW_CONTROL_UNSTALLED)
 

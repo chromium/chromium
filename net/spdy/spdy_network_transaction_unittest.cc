@@ -433,7 +433,6 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
             /* is_websocket = */ false, log_);
     ASSERT_TRUE(spdy_session);
     EXPECT_EQ(0u, num_active_streams(spdy_session));
-    EXPECT_EQ(0u, num_unclaimed_pushed_streams(spdy_session));
   }
 
   static void DeleteSessionCallback(NormalSpdyTransactionHelper* helper,
@@ -463,19 +462,6 @@ class SpdyNetworkTransactionTest : public TestWithTaskEnvironment {
 
   size_t num_active_streams(base::WeakPtr<SpdySession> session) {
     return session->active_streams_.size();
-  }
-
-  static size_t num_unclaimed_pushed_streams(
-      base::WeakPtr<SpdySession> session) {
-    return session->pool_->push_promise_index()->CountStreamsForSession(
-        session.get());
-  }
-
-  static bool has_unclaimed_pushed_stream_for_url(
-      base::WeakPtr<SpdySession> session,
-      const GURL& url) {
-    return session->pool_->push_promise_index()->FindStream(
-               url, session.get()) != kNoPushedStreamFound;
   }
 
   static spdy::SpdyStreamId spdy_stream_hi_water_mark(

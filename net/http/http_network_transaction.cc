@@ -1697,8 +1697,6 @@ HttpNetworkTransaction::GetRetryReasonForIOError(int error) {
       return RetryReason::kHttp2PingFailed;
     case ERR_HTTP2_SERVER_REFUSED_STREAM:
       return RetryReason::kHttp2ServerRefusedStream;
-    case ERR_HTTP2_PUSHED_STREAM_NOT_AVAILABLE:
-      return RetryReason::kHttp2PushedStreamNotAvailable;
     case ERR_HTTP2_CLAIMED_PUSHED_STREAM_RESET_BY_SERVER:
       return RetryReason::kHttp2ClaimedPushedStreamResetByServer;
     case ERR_HTTP2_PUSHED_RESPONSE_DOES_NOT_MATCH:
@@ -1770,7 +1768,6 @@ int HttpNetworkTransaction::HandleIOError(int error) {
       break;
     case RetryReason::kHttp2PingFailed:
     case RetryReason::kHttp2ServerRefusedStream:
-    case RetryReason::kHttp2PushedStreamNotAvailable:
     case RetryReason::kHttp2ClaimedPushedStreamResetByServer:
     case RetryReason::kHttp2PushedResponseDoesNotMatch:
     case RetryReason::kQuicHandshakeFailed:
