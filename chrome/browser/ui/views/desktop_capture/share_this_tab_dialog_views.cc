@@ -31,6 +31,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/ui_base_features.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/color_palette.h"
 #include "ui/views/background.h"
 #include "ui/views/border.h"
@@ -162,8 +163,11 @@ ShareThisTabDialogView::ShareThisTabDialogView(
     CreateDialogWidget(this, params.context, nullptr)->Show();
   }
 
-  source_view_->SetBorder(views::CreateThemedRoundedRectBorder(
-      1, 2, kColorShareThisTabSourceViewBorder));
+  source_view_->SetBorder(features::IsChromeRefresh2023()
+                              ? views::CreateThemedRoundedRectBorder(
+                                    1, 4, ui::kColorSysPrimaryContainer)
+                              : views::CreateThemedRoundedRectBorder(
+                                    1, 2, kColorShareThisTabSourceViewBorder));
 
   SetButtonLabel(ui::DIALOG_BUTTON_OK,
                  l10n_util::GetStringUTF16(IDS_SHARE_THIS_TAB_DIALOG_ALLOW));
@@ -256,8 +260,10 @@ void ShareThisTabDialogView::SetupAudioToggle() {
   audio_toggle_container->SetProperty(views::kMarginsKey,
                                       gfx::Insets::TLBR(8, 0, 0, 0));
   audio_toggle_container->SetBackground(
-      views::CreateThemedRoundedRectBackground(
-          kColorShareThisTabAudioToggleBackground, 4));
+      features::IsChromeRefresh2023()
+          ? views::CreateThemedRoundedRectBackground(ui::kColorSysSurface4, 8)
+          : views::CreateThemedRoundedRectBackground(
+                kColorShareThisTabAudioToggleBackground, 4));
 
   views::ImageView* audio_icon_view = audio_toggle_container->AddChildView(
       std::make_unique<views::ImageView>());
