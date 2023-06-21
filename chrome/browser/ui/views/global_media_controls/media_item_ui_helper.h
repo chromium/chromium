@@ -10,6 +10,7 @@
 
 #include "base/memory/weak_ptr.h"
 #include "components/global_media_controls/public/constants.h"
+#include "components/media_message_center/notification_theme.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 class MediaItemUIDeviceSelectorDelegate;
@@ -52,6 +53,8 @@ std::unique_ptr<MediaItemUIDeviceSelectorView> BuildDeviceSelector(
     global_media_controls::mojom::DeviceService* device_service,
     MediaItemUIDeviceSelectorDelegate* selector_delegate,
     Profile* profile,
-    global_media_controls::GlobalMediaControlsEntryPoint entry_point);
+    global_media_controls::GlobalMediaControlsEntryPoint entry_point,
+    absl::optional<media_message_center::MediaColorTheme> media_color_theme =
+        absl::nullopt);
 
 #endif  // CHROME_BROWSER_UI_VIEWS_GLOBAL_MEDIA_CONTROLS_MEDIA_ITEM_UI_HELPER_H_

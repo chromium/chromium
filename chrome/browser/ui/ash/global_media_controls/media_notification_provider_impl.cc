@@ -214,12 +214,18 @@ MediaNotificationProviderImpl::ShowMediaItem(
   if (!active_session_view_) {
     return nullptr;
   }
+
+  absl::optional<media_message_center::MediaColorTheme> media_color_theme;
+  if (base::FeatureList::IsEnabled(media::kGlobalMediaControlsCrOSUpdatedUI)) {
+    media_color_theme = GetCrosMediaColorTheme();
+  }
+
   auto item_ui = std::make_unique<global_media_controls::MediaItemUIView>(
       id, item, BuildFooterView(item, GetProfile(), entry_point_),
       BuildDeviceSelector(id, item, GetDeviceService(item),
                           &device_selector_delegate_, GetProfile(),
-                          entry_point_),
-      color_theme_, GetCrosMediaColorTheme(),
+                          entry_point_, media_color_theme),
+      color_theme_, media_color_theme,
       media_message_center::MediaDisplayPage::kQuickSettingsMediaDetailedView);
   auto* item_ui_ptr = item_ui.get();
   item_ui_observer_set_.Observe(id, item_ui_ptr);
