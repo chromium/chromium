@@ -27,7 +27,13 @@ class NearbyPresenceService {
   NearbyPresenceService();
   virtual ~NearbyPresenceService();
 
-  enum class IdentityType { kPrivate };
+  enum class IdentityType {
+    kUnspecified,
+    kPrivate,
+    kTrusted,
+    kPublic,
+    kProvisioned
+  };
 
   // TODO(b/276642472): Include real NearbyPresence ActionType.
   enum class ActionType {

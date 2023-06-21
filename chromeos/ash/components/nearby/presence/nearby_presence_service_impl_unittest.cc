@@ -84,6 +84,32 @@ class NearbyPresenceServiceImplTest : public testing::Test {
         pref_service_.get(), &nearby_process_manager_);
   }
 
+  void TestStartScan(ash::nearby::presence::NearbyPresenceService::IdentityType
+                         identity_type) {
+    NearbyPresenceService::ScanFilter filter(identity_type,
+                                             /*actions=*/{});
+    FakeScanDelegate scan_delegate;
+    auto run_loop = base::RunLoop();
+    // Call start scan and verify it calls the OnPresenceDeviceFound delegate
+    // function.
+    nearby_presence_service->StartScan(
+        filter, &scan_delegate,
+        base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
+                       weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+
+    // Allow StartScan() to finish before calling the callback.
+    base::RunLoop().RunUntilIdle();
+    nearby_presence_.RunStartScanCallback();
+    run_loop.Run();
+    nearby_presence_.ReturnScanObserver()->OnDeviceFound(
+        mojom::PresenceDevice::New(kEndpointId, kDeviceName,
+                                   mojom::PresenceDeviceType::kPhone,
+                                   kStableDeviceId));
+    base::RunLoop().RunUntilIdle();
+    EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceFoundCalled());
+    EXPECT_TRUE(IsScanSessionActive());
+  }
+
   void TestOnScanStarted(
       base::OnceClosure on_complete,
       std::unique_ptr<ash::nearby::presence::NearbyPresenceService::ScanSession>
@@ -111,30 +137,19 @@ class NearbyPresenceServiceImplTest : public testing::Test {
   base::WeakPtrFactory<NearbyPresenceServiceImplTest> weak_ptr_factory_{this};
 };
 
-TEST_F(NearbyPresenceServiceImplTest, StartScan) {
-  NearbyPresenceService::ScanFilter filter(
-      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate,
-      /*actions=*/{});
-  FakeScanDelegate scan_delegate;
-  auto run_loop = base::RunLoop();
-  // Call start scan and verify it calls the OnPresenceDeviceFound delegate
-  // function.
-  nearby_presence_service->StartScan(
-      filter, &scan_delegate,
-      base::BindOnce(&NearbyPresenceServiceImplTest::TestOnScanStarted,
-                     weak_ptr_factory_.GetWeakPtr(), run_loop.QuitClosure()));
+TEST_F(NearbyPresenceServiceImplTest, StartPrivateScan) {
+  TestStartScan(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPrivate);
+}
 
-  // Allow StartScan() to finish before calling the callback.
-  base::RunLoop().RunUntilIdle();
-  nearby_presence_.RunStartScanCallback();
-  run_loop.Run();
-  nearby_presence_.ReturnScanObserver()->OnDeviceFound(
-      mojom::PresenceDevice::New(kEndpointId, kDeviceName,
-                                 mojom::PresenceDeviceType::kPhone,
-                                 kStableDeviceId));
-  base::RunLoop().RunUntilIdle();
-  EXPECT_TRUE(scan_delegate.WasOnPresenceDeviceFoundCalled());
-  EXPECT_TRUE(IsScanSessionActive());
+TEST_F(NearbyPresenceServiceImplTest, StartPublicScan) {
+  TestStartScan(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kPublic);
+}
+
+TEST_F(NearbyPresenceServiceImplTest, StartTrustedScan) {
+  TestStartScan(
+      ash::nearby::presence::NearbyPresenceService::IdentityType::kTrusted);
 }
 
 TEST_F(NearbyPresenceServiceImplTest, StartScan_DeviceChanged) {

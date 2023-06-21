@@ -8,6 +8,7 @@
 
 #include "base/check.h"
 #include "base/logging.h"
+#include "chromeos/ash/components/nearby/presence/nearby_presence_service_enum_coversions.h"
 #include "chromeos/ash/components/nearby/presence/prefs/nearby_presence_prefs.h"
 #include "chromeos/ash/services/nearby/public/mojom/nearby_presence.mojom.h"
 #include "components/prefs/pref_service.h"
@@ -79,17 +80,16 @@ void NearbyPresenceServiceImpl::StartScan(
   }
 
   CHECK(scan_delegate);
-  std::vector<PresenceIdentityType> type_vector;
-  if (scan_filter.identity_type_ == IdentityType::kPrivate) {
-    type_vector.push_back(PresenceIdentityType::kIdentityTypePrivate);
-  }
-  std::vector<mojom::PresenceScanFilterPtr> filters_vector;
+  std::vector<PresenceIdentityType> identity_types;
+  identity_types.push_back(
+      ConvertToMojomIdentityType(scan_filter.identity_type_));
+  std::vector<mojom::PresenceScanFilterPtr> filters;
   auto filter = PresenceFilter::New(mojom::PresenceDeviceType::kChromeos);
-  filters_vector.push_back(std::move(filter));
+  filters.push_back(std::move(filter));
 
   process_reference_->GetNearbyPresence()->StartScan(
-      mojom::ScanRequest::New(/*account_name=*/std::string(), type_vector,
-                              std::move(filters_vector)),
+      mojom::ScanRequest::New(/*account_name=*/std::string(), identity_types,
+                              std::move(filters)),
       base::BindOnce(&NearbyPresenceServiceImpl::OnScanStarted,
                      weak_ptr_factory_.GetWeakPtr(), scan_delegate,
                      std::move(on_start_scan_callback)));

@@ -46,7 +46,7 @@ namespace ash::nearby::presence {
   return proto;
 }
 
-mojom::IdentityType IdentityTypeToMojom(
+mojom::IdentityType ConvertIdentityTypeToMojom(
     ::nearby::internal::IdentityType identity_type) {
   switch (identity_type) {
     case ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED:
@@ -61,6 +61,24 @@ mojom::IdentityType IdentityTypeToMojom(
       return mojom::IdentityType::kIdentityTypeProvisioned;
     default:
       return mojom::IdentityType::kIdentityTypeUnspecified;
+  }
+}
+
+::nearby::internal::IdentityType ConvertMojomIdentityType(
+    mojom::IdentityType identity_type) {
+  switch (identity_type) {
+    case mojom::IdentityType::kIdentityTypeUnspecified:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
+    case mojom::IdentityType::kIdentityTypePrivate:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PRIVATE;
+    case mojom::IdentityType::kIdentityTypeTrusted:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_TRUSTED;
+    case mojom::IdentityType::kIdentityTypePublic:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PUBLIC;
+    case mojom::IdentityType::kIdentityTypeProvisioned:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_PROVISIONED;
+    default:
+      return ::nearby::internal::IdentityType::IDENTITY_TYPE_UNSPECIFIED;
   }
 }
 
@@ -85,7 +103,7 @@ mojom::SharedCredentialPtr SharedCredentialToMojom(
       std::vector<uint8_t>(
           shared_credential.advertisement_signature_verification_key().begin(),
           shared_credential.advertisement_signature_verification_key().end()),
-      IdentityTypeToMojom(shared_credential.identity_type()),
+      ConvertIdentityTypeToMojom(shared_credential.identity_type()),
       std::vector<uint8_t>(shared_credential.version().begin(),
                            shared_credential.version().end()));
 }
