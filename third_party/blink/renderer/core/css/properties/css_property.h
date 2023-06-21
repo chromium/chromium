@@ -28,9 +28,20 @@ class CORE_EXPORT CSSProperty : public CSSUnresolvedProperty {
   using Flags = uint64_t;
 
   static const CSSProperty& Get(CSSPropertyID id) {
-    DCHECK(id != CSSPropertyID::kInvalid);
-    DCHECK(id <= kLastCSSProperty);  // last property id
-    return To<CSSProperty>(*GetPropertyInternal(id));
+    // Instead of using To<> here (which calls GetFlags()), we have
+    // a bounds check on the property ID.
+    //
+    // This is pretty much the same speed overall (as measured by the
+    // style perftest, June 2023), but should be a stronger security
+    // bound; it is unlikely that an attacker can corrupt an object
+    // in the read-only kProperties[] array but _not_ make it return
+    // the flags they want (which is what the To<> downcast checks),
+    // but it seems very likely that a bug could cause them to control
+    // the id to go out-of-bounds and hit an attacked-controlled vtable
+    // at some wild memory location.
+    SECURITY_CHECK(id > CSSPropertyID::kInvalid && id <= kLastCSSProperty);
+    DCHECK(IsA<CSSProperty>(GetPropertyInternal(id)));
+    return UnsafeTo<CSSProperty>(*GetPropertyInternal(id));
   }
 
   static bool IsShorthand(const CSSPropertyName&);
