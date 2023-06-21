@@ -3661,9 +3661,6 @@ extern const char kPhoneHubCallNotificationDescription[];
 extern const char kPhoneHubCameraRollName[];
 extern const char kPhoneHubCameraRollDescription[];
 
-extern const char kPhoneHubFeatureSetupErrorHandlingName[];
-extern const char kPhoneHubFeatureSetupErrorHandlingDescription[];
-
 extern const char kPhoneHubNudgeName[];
 extern const char kPhoneHubNudgeDescription[];
 
