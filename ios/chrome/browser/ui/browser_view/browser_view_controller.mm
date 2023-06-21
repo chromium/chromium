@@ -2313,10 +2313,6 @@ enum HeaderBehaviour {
                      height <= (expandedToolbarHeight + FLT_EPSILON));
 
   self.secondaryToolbarHeightConstraint.constant = height;
-  UIView* secondaryToolbarView =
-      self.toolbarCoordinator.secondaryToolbarViewController.view;
-  [secondaryToolbarView setNeedsLayout];
-  [secondaryToolbarView layoutIfNeeded];
 }
 
 // Updates the browser container view such that its viewport is the space
