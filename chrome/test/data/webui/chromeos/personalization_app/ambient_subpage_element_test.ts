@@ -176,6 +176,23 @@ suite('AmbientSubpageTest', function() {
     assertTrue(action.enabled);
   });
 
+  test('sets loading when there is no network', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    // Simulate going offline.
+    window.dispatchEvent(new CustomEvent('offline'));
+    await waitAfterNextRender(ambientSubpageElement);
+
+    // Shows placeholder for ambient mode toggle row while loading ambient mode
+    // status.
+    const toggleRowPlaceholder =
+        ambientSubpageElement.shadowRoot!.querySelector(
+            '#toggleRowPlaceholder');
+    assertTrue(!!toggleRowPlaceholder);
+  });
+
   test('sets ambient mode when pref value changed', async () => {
     // Make sure state starts as expected.
     assertDeepEquals(emptyState(), personalizationStore.data);

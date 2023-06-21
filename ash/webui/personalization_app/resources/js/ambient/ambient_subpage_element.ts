@@ -70,7 +70,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
       loading_: {
         type: Boolean,
         computed:
-            'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_)',
+            'computeLoading_(ambientModeEnabled_, albums_, temperatureUnit_, topicSource_, isOnline_)',
         observer: 'onLoadingChanged_',
       },
       isPersonalizationJellyEnabled_: {
@@ -86,6 +86,12 @@ export class AmbientSubpage extends WithPersonalizationStore {
           return isScreenSaverDurationEnabled();
         },
       },
+      isOnline_: {
+        type: Boolean,
+        value() {
+          return window.navigator.onLine;
+        },
+      },
     };
   }
 
@@ -99,6 +105,7 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private topicSource_: TopicSource|null;
   private isScreenSaverDurationEnabled_: boolean;
   private isPersonalizationJellyEnabled_: boolean;
+  private isOnline_: boolean;
 
   // Refetch albums if the user is currently viewing ambient subpage, focuses
   // another window, and then re-focuses personalization app.
@@ -115,6 +122,13 @@ export class AmbientSubpage extends WithPersonalizationStore {
         // state.
         elem.focus();
       }
+    });
+
+    window.addEventListener('online', () => {
+      this.isOnline_ = true;
+    });
+    window.addEventListener('offline', () => {
+      this.isOnline_ = false;
     });
   }
 
@@ -223,7 +237,8 @@ export class AmbientSubpage extends WithPersonalizationStore {
   private computeLoading_(): boolean {
     return this.ambientModeEnabled_ === null || this.albums_ === null ||
         this.topicSource_ === null || this.temperatureUnit_ === null ||
-        (this.isScreenSaverDurationEnabled_ && this.duration_ === null);
+        (this.isScreenSaverDurationEnabled_ && this.duration_ === null) ||
+        !this.isOnline_;
   }
 
   private getPlaceholders_(x: number): number[] {
