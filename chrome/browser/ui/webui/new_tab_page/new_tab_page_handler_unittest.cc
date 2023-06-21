@@ -120,8 +120,8 @@ class MockColorProviderSource : public ui::ColorProviderSource {
   }
 
  protected:
-  ui::ColorProviderManager::Key GetColorProviderKey() const override {
-    return ui::ColorProviderManager::Key();
+  ui::ColorProviderKey GetColorProviderKey() const override {
+    return ui::ColorProviderKey();
   }
 
  private:
