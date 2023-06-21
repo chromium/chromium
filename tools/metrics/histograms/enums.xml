@@ -28484,12 +28484,6 @@ located in chromeos/ash/components/device_activity/device_activity_client.h -->
   <int value="6" label="EnterprisePolicy"/>
 </enum>
 
-<enum name="DirectWriteFontFallbackResult">
-  <int value="0" label="Failed: no font matched"/>
-  <int value="1" label="Success: mapped from cache"/>
-  <int value="2" label="Success: mapped using IPC"/>
-</enum>
-
 <enum name="DirectWriteFontLoaderType">
   <int value="0" label="File: system font directory"/>
   <int value="1" label="File: outside sandbox whitelist"/>

@@ -67,24 +67,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="DirectWrite.Fonts.Proxy.Fallback.CacheSize" units="Count"
-    expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>Records how many font families are in the fallback cache.</summary>
-</histogram>
-
-<histogram name="DirectWrite.Fonts.Proxy.FallbackResult"
-    enum="DirectWriteFontFallbackResult" expires_after="2022-10-15">
-  <owner>drott@chromium.org</owner>
-  <owner>layout-dev@chromium.org</owner>
-  <summary>
-    Measures the effectiveness of the font fallback proxy. This tracks if we
-    were able to find a suitable font to render the character, and whether an
-    IPC was necessary.
-  </summary>
-</histogram>
-
 <histogram name="DirectWrite.Fonts.Proxy.FamilyCount" units="families"
     expires_after="2022-10-15">
   <owner>drott@chromium.org</owner>
