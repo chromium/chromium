@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+#import "base/apple/bundle_locations.h"
 #import "base/feature_list.h"
 #import "base/ios/ios_util.h"
 #import "base/mac/foundation_util.h"
@@ -27,6 +28,14 @@ using chrome_test_util::ButtonWithAccessibilityLabel;
 
 namespace {
 
+// Returns a localized string by looking the given key up in
+// Localizable.strings.
+NSString* LocalizedString(NSString* key) {
+  return [base::apple::FrameworkBundle() localizedStringForKey:key
+                                                         value:@""
+                                                         table:nil];
+}
+
 // Verifies that `message` is displayed.
 void AssertMessageOnPage(NSString* message) {
   id<GREYMatcher> messageMatcher =
@@ -47,7 +56,7 @@ void AssertMessageNotOnPage(NSString* message) {
 // Verifies that the button to reload chrome is displayed.
 void AssertTryAgainButtonOnPage() {
   id<GREYMatcher> tryAgainMatcher = ButtonWithAccessibilityLabel(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME", @""));
+      LocalizedString(@"IDS_IOS_SAFE_MODE_RELOAD_CHROME"));
   [[EarlGrey selectElementWithMatcher:tryAgainMatcher]
       assertWithMatcher:grey_notNil()];
 }
@@ -74,12 +83,11 @@ void AssertTryAgainButtonOnPage() {
   [SafeModeAppInterface presentSafeMode];
 
   // Verifies screen content that shows that crash report is being uploaded.
-  AssertMessageOnPage(NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @""));
-  AssertMessageOnPage(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE", @""));
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP"));
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_UNKNOWN_CAUSE"));
   AssertTryAgainButtonOnPage();
   AssertMessageOnPage(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT", @""));
+      LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
 // Tests that Safe Mode screen is displayed with a message that there are
@@ -99,12 +107,11 @@ void AssertTryAgainButtonOnPage() {
   [SafeModeAppInterface presentSafeMode];
   // Verifies screen content that does not show crash report being uploaded.
   // When devices are jailbroken, the crash reports are not very useful.
-  AssertMessageOnPage(NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @""));
-  AssertMessageOnPage(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_TWEAKS_FOUND", @""));
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP"));
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_TWEAKS_FOUND"));
   AssertTryAgainButtonOnPage();
   AssertMessageNotOnPage(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT", @""));
+      LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
 // Tests that Safe Mode screen is displayed with a message that there are
@@ -130,15 +137,14 @@ void AssertTryAgainButtonOnPage() {
   [SafeModeAppInterface presentSafeMode];
   // Verifies screen content that does not show crash report being uploaded.
   // When devices are jailbroken, the crash reports are not very useful.
-  AssertMessageOnPage(NSLocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP", @""));
+  AssertMessageOnPage(LocalizedString(@"IDS_IOS_SAFE_MODE_AW_SNAP"));
   // Constructs the list of bad mods based on `badModulesList` above.
-  NSString* message =
-      [NSLocalizedString(@"IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND", @"")
-          stringByAppendingString:@"\n\n    iAmBad\n    MJackson"];
+  NSString* message = [LocalizedString(@"IDS_IOS_SAFE_MODE_NAMED_TWEAKS_FOUND")
+      stringByAppendingString:@"\n\n    iAmBad\n    MJackson"];
   AssertMessageOnPage(message);
   AssertTryAgainButtonOnPage();
   AssertMessageNotOnPage(
-      NSLocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT", @""));
+      LocalizedString(@"IDS_IOS_SAFE_MODE_SENDING_CRASH_REPORT"));
 }
 
 // Tests that a start NTP is shown after 2 crashes.
