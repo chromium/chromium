@@ -257,20 +257,12 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
     SizeChanged();
   }
 
-  LayoutUnit LogicalLeft() const {
-    NOT_DESTROYED();
-    auto location = Location();
-    return StyleRef().IsHorizontalWritingMode() ? location.X() : location.Y();
-  }
+  LayoutUnit LogicalLeft() const;
   LayoutUnit LogicalRight() const {
     NOT_DESTROYED();
     return LogicalLeft() + LogicalWidth();
   }
-  LayoutUnit LogicalTop() const {
-    NOT_DESTROYED();
-    auto location = Location();
-    return StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
-  }
+  LayoutUnit LogicalTop() const;
   LayoutUnit LogicalBottom() const {
     NOT_DESTROYED();
     return LogicalTop() + LogicalHeight();

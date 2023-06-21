@@ -2066,6 +2066,64 @@ TEST_F(LayoutBoxTest, IsUserScrollableLayoutView) {
   EXPECT_FALSE(GetLayoutView().IsUserScrollable());
 }
 
+TEST_F(LayoutBoxTest, LogicalTopLogicalLeft) {
+  SetBodyInnerHTML(R"HTML("
+    <style>
+    .c { contain: layout; }
+    .t { width: 1px; height:1px; margin: 3px 5px 7px 11px; }
+    .htb { writing-mode: horizontal-tb; }
+    .vlr { writing-mode: vertical-lr; }
+    .vrl { writing-mode: vertical-rl; }
+    </style>
+    <div class="c htb"><div id="htb-htb" class="t htb"></div></div>
+    <div class="c htb"><div id="htb-vrl" class="t vrl"></div></div>
+    <div class="c htb"><div id="htb-vlr" class="t vlr"></div></div>
+    <div class="c vlr"><div id="vlr-htb" class="t htb"></div></div>
+    <div class="c vlr"><div id="vlr-vrl" class="t vrl"></div></div>
+    <div class="c vlr"><div id="vlr-vlr" class="t vlr"></div></div>
+    <div class="c vrl"><div id="vrl-htb" class="t htb"></div></div>
+    <div class="c vrl"><div id="vrl-vrl" class="t vrl"></div></div>
+    <div class="c vrl"><div id="vrl-vlr" class="t vlr"></div></div>
+  )HTML");
+  constexpr LayoutUnit kTopMargin(3);
+  constexpr LayoutUnit kRightMargin(5);
+  constexpr LayoutUnit kLeftMargin(11);
+
+  // Target DIVs are placed at (3, 11) from its container top-left.
+  LayoutBox* target = GetLayoutBoxByElementId("htb-htb");
+  EXPECT_EQ(kTopMargin, target->LogicalTop());
+  EXPECT_EQ(kLeftMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("htb-vrl");
+  EXPECT_EQ(kLeftMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("htb-vlr");
+  EXPECT_EQ(kLeftMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+
+  // Container's writing-mode doesn't matter if it is vertical-lr.
+  target = GetLayoutBoxByElementId("vlr-htb");
+  EXPECT_EQ(kTopMargin, target->LogicalTop());
+  EXPECT_EQ(kLeftMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("vlr-vrl");
+  EXPECT_EQ(kLeftMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("vlr-vlr");
+  EXPECT_EQ(kLeftMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+
+  // In a vertical-rl container, LogicalTop() and LogicalLeft() return
+  // flipped-block offsets.
+  target = GetLayoutBoxByElementId("vrl-htb");
+  EXPECT_EQ(kTopMargin, target->LogicalTop());
+  EXPECT_EQ(kRightMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("vrl-vrl");
+  EXPECT_EQ(kRightMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+  target = GetLayoutBoxByElementId("vrl-vlr");
+  EXPECT_EQ(kRightMargin, target->LogicalTop());
+  EXPECT_EQ(kTopMargin, target->LogicalLeft());
+}
+
 class LayoutBoxBackgroundPaintLocationTest : public RenderingTest,
                                              public PaintTestConfigurations {
  protected:

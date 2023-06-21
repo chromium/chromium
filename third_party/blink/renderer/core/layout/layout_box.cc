@@ -446,6 +446,17 @@ void RecalcFragmentLayoutOverflow(RecalcLayoutOverflowResult& result,
   }
 }
 
+// Returns the logical offset in the LocationContainer() coordination system,
+// and its WritingMode.
+std::tuple<LogicalOffset, WritingMode> LogicalLocation(const LayoutBox& box) {
+  LayoutBox* container = box.LocationContainer();
+  WritingMode writing_mode = container->StyleRef().GetWritingMode();
+  WritingModeConverter converter({writing_mode, TextDirection::kLtr},
+                                 PhysicalSize(container->Size()));
+  return {converter.ToLogical(box.PhysicalLocation(), PhysicalSize(box.Size())),
+          writing_mode};
+}
+
 }  // namespace
 
 BoxLayoutExtraInput::BoxLayoutExtraInput(LayoutBox& layout_box)
@@ -1378,6 +1389,40 @@ LayoutUnit LayoutBox::DefaultIntrinsicContentBlockSize() const {
   }
 
   return kIndefiniteSize;
+}
+
+LayoutUnit LayoutBox::LogicalLeft() const {
+  NOT_DESTROYED();
+  auto location = Location();
+  LayoutUnit logical_left =
+      StyleRef().IsHorizontalWritingMode() ? location.X() : location.Y();
+  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    auto [offset, container_writing_mode] = LogicalLocation(*this);
+    LayoutUnit left = IsParallelWritingMode(container_writing_mode,
+                                            StyleRef().GetWritingMode())
+                          ? offset.inline_offset
+                          : offset.block_offset;
+    DCHECK_EQ(logical_left, left);
+    return left;
+  }
+  return logical_left;
+}
+
+LayoutUnit LayoutBox::LogicalTop() const {
+  NOT_DESTROYED();
+  auto location = Location();
+  LayoutUnit logical_top =
+      StyleRef().IsHorizontalWritingMode() ? location.Y() : location.X();
+  if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    auto [offset, container_writing_mode] = LogicalLocation(*this);
+    LayoutUnit top = IsParallelWritingMode(container_writing_mode,
+                                           StyleRef().GetWritingMode())
+                         ? offset.block_offset
+                         : offset.inline_offset;
+    DCHECK_EQ(logical_top, top);
+    return top;
+  }
+  return logical_top;
 }
 
 LayoutUnit LayoutBox::LogicalHeightWithVisibleOverflow() const {
