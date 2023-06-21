@@ -125,7 +125,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthHubAttemptHandler
   base::raw_ptr<AuthFactorStatusConsumer> status_consumer_;
 
   base::flat_map<AshAuthFactor, FactorAttemptState> factor_state_;
+
   absl::optional<AshAuthFactor> ongoing_attempt_factor_;
+  bool authenticated_ = false;
 
   bool shutting_down_ = false;
 

@@ -240,7 +240,7 @@ void AuthHubImpl::OnIdle() {
     }
     AuthHubMode mode = *target_mode_;
     target_mode_.reset();
-    InitializeForMode(mode);
+    SwitchToModeImpl(mode);
     return;
   }
 

@@ -67,8 +67,10 @@ void CryptohomeBasedEngine::UpdateObserver(FactorEngineObserver* observer) {
 void CryptohomeBasedEngine::StopAuthFlow(ShutdownCallback callback) {
   CHECK(shutdown_callback_.is_null());
   shutdown_callback_ = std::move(callback);
-  core_->EndAuthSession(this);
   observer_ = nullptr;
+  // Note: With FakeUserDataAuthClient next call might result in
+  // shutdown callback being called synchronously (and `this` being deleted).
+  core_->EndAuthSession(this);
 }
 
 AuthProofToken CryptohomeBasedEngine::StoreAuthenticationContext() {

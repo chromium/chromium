@@ -201,6 +201,7 @@ void AuthHubVectorLifecycle::OnFactorFinished(AshAuthFactor factor) {
   CHECK_EQ(stage_, Stage::kFinishingAttempt);
   CHECK(engines_.contains(factor));
   engines_[factor].status = EngineAttemptStatus::kIdle;
+  engines_[factor].engine->UpdateObserver(nullptr);
   ProceedIfAllFactorsFinished();
 }
 
@@ -213,6 +214,7 @@ void AuthHubVectorLifecycle::OnAttemptFinishWatchdog() {
       state.second.status = EngineAttemptStatus::kFailed;
       LOG(ERROR) << "Factor " << state.first << " did not finish in time";
       state.second.engine->StopFlowTimedOut();
+      state.second.engine->UpdateObserver(nullptr);
     }
   }
   ProceedIfAllFactorsFinished();

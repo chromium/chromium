@@ -105,6 +105,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_LOGIN_AUTH_PUBLIC) UserContext {
       const;
   const absl::optional<SyncTrustedVaultKeys>& GetSyncTrustedVaultKeys() const;
   bool CanLockManagedGuestSession() const;
+  AuthSessionIntents GetAuthorizedIntents() const;
 
   bool HasCredentials() const;
   bool HasReplacementKey() const;

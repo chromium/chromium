@@ -31,7 +31,9 @@ AuthSessionIntent MapPurposeToIntent(AuthPurpose purpose) {
 }  // namespace
 
 CryptohomeCoreImpl::CryptohomeCoreImpl(UserDataAuthClient* client)
-    : dbus_client_(client) {}
+    : dbus_client_(client) {
+  performer_ = std::make_unique<AuthPerformer>(dbus_client_);
+}
 
 CryptohomeCoreImpl::~CryptohomeCoreImpl() = default;
 
@@ -53,7 +55,7 @@ void CryptohomeCoreImpl::StartAuthSession(const AuthAttemptVector& attempt,
         << "Cryptohome core does not support parallel attempts";
   } else {
     current_attempt_ = attempt;
-    is_authorized_ = false;
+    was_authenticated_ = false;
     performer_->InvalidateCurrentAttempts();
   }
   DCHECK(!clients_.contains(client));
@@ -119,7 +121,7 @@ void CryptohomeCoreImpl::EndAuthSession(Client* client) {
   }
   // We should have no context only when session is authorized and
   // one of the clients requested `StoreAuthenticatedContext`.
-  CHECK(is_authorized_);
+  CHECK(was_authenticated_);
   EndAuthSessionImpl();
 }
 
@@ -133,13 +135,20 @@ void CryptohomeCoreImpl::OnInvalidateAuthSession(
 }
 
 void CryptohomeCoreImpl::EndAuthSessionImpl() {
-  for (auto& client : clients_being_removed_) {
+  // Remove elements as we go, as calling
+  // `OnCryptohomeAuthSessionFinished` might result
+  // in engines being deleted and raw_ptr becoming
+  // dangling.
+  while (!clients_being_removed_.empty()) {
+    auto it = clients_being_removed_.begin();
+    Client* client = it->get();
+    clients_being_removed_.erase(it);
     client->OnCryptohomeAuthSessionFinished();
   }
-  clients_being_removed_.clear();
+  CHECK(clients_being_removed_.empty());
   CHECK(clients_.empty());
   current_attempt_ = absl::nullopt;
-  is_authorized_ = false;
+  was_authenticated_ = false;
 }
 
 AuthPerformer* CryptohomeCoreImpl::GetAuthPerformer() const {
@@ -154,6 +163,7 @@ UserContext* CryptohomeCoreImpl::GetCurrentContext() const {
 
 AuthProofToken CryptohomeCoreImpl::StoreAuthenticationContext() {
   CHECK(context_);
+  was_authenticated_ = true;
   return AuthSessionStorage::Get()->Store(std::move(context_));
 }
 
