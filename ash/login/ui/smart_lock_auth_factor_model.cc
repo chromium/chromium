@@ -165,11 +165,11 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
   if (auth_result_.has_value() && !auth_result_.value()) {
     if (has_permanent_error_display_timed_out_) {
       icon->SetIcon(kLockScreenSmartLockDisabledIcon,
-                    AuthIconView::Color::kDisabled);
+                    AuthIconView::Status::kDisabled);
     } else {
       // TODO(crbug.com/1233614): Get actual failure icon once asset is ready.
       icon->SetIcon(kLockScreenSmartCardFailureIcon,
-                    AuthIconView::Color::kError);
+                    AuthIconView::Status::kError);
     }
     icon->StopProgressAnimation();
     return;
@@ -178,7 +178,7 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
   switch (state_) {
     case SmartLockState::kPhoneNotFound:
       icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
-                    AuthIconView::Color::kPrimary);
+                    AuthIconView::Status::kPrimary);
       icon->RunErrorShakeAnimation();
       icon->StopProgressAnimation();
       return;
@@ -186,17 +186,17 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
       [[fallthrough]];
     case SmartLockState::kPhoneFoundUnlockedAndDistant:
       icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
-                    AuthIconView::Color::kPrimary);
+                    AuthIconView::Status::kPrimary);
       icon->StopProgressAnimation();
       return;
     case SmartLockState::kConnectingToPhone:
       icon->SetIcon(kLockScreenSmartLockBluetoothIcon,
-                    AuthIconView::Color::kPrimary);
+                    AuthIconView::Status::kPrimary);
       icon->StartProgressAnimation();
       return;
     case SmartLockState::kPhoneFoundLockedAndProximate:
       icon->SetIcon(kLockScreenSmartLockPhoneIcon,
-                    AuthIconView::Color::kPrimary);
+                    AuthIconView::Status::kPrimary);
       icon->StopProgressAnimation();
       return;
     case SmartLockState::kPrimaryUserAbsent:
@@ -207,7 +207,7 @@ void SmartLockAuthFactorModel::UpdateIcon(AuthIconView* icon) {
       [[fallthrough]];
     case SmartLockState::kBluetoothDisabled:
       icon->SetIcon(kLockScreenSmartLockDisabledIcon,
-                    AuthIconView::Color::kDisabled);
+                    AuthIconView::Status::kDisabled);
       icon->StopProgressAnimation();
       return;
     case SmartLockState::kPhoneAuthenticated:

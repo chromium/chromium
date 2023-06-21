@@ -20,7 +20,10 @@
 #include "base/functional/callback.h"
 #include "cc/paint/paint_flags.h"
 #include "cc/paint/paint_shader.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/color_analysis.h"
 #include "ui/gfx/color_utils.h"
@@ -134,8 +137,14 @@ ScrollableUsersListView::GradientParams::BuildForStyle(LoginDisplayStyle style,
           Shell::Get()->wallpaper_controller()->GetProminentColor(
               color_utils::ColorProfile(color_utils::LumaRange::DARK,
                                         color_utils::SaturationRange::MUTED));
+
+      ui::ColorId tint_color_id =
+          chromeos::features::IsJellyEnabled()
+              ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
+              : kColorAshShieldAndBase80;
+
       SkColor tint_color = color_utils::GetResultingPaintColor(
-          view->GetColorProvider()->GetColor(kColorAshShieldAndBase80),
+          view->GetColorProvider()->GetColor(tint_color_id),
           SkColorSetA(dark_muted_color, SK_AlphaOPAQUE));
 
       GradientParams params;
@@ -313,7 +322,12 @@ void ScrollableUsersListView::OnPaintBackground(gfx::Canvas* canvas) {
     cc::PaintFlags flags;
     flags.setAntiAlias(true);
     flags.setStyle(cc::PaintFlags::kFill_Style);
-    flags.setColor(GetColorProvider()->GetColor(kColorAshShieldAndBase80));
+
+    ui::ColorId background_color_id =
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
+            : kColorAshShieldAndBase80;
+    flags.setColor(GetColorProvider()->GetColor(background_color_id));
     canvas->DrawRoundRect(render_bounds,
                           login::kNonBlurredWallpaperBackgroundRadiusDp, flags);
   }

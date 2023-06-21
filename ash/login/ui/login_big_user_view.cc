@@ -10,7 +10,10 @@
 #include "ash/style/ash_color_id.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/logging.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/account_id/account_id.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/views/background.h"
 #include "ui/views/layout/fill_layout.h"
@@ -123,9 +126,12 @@ void LoginBigUserView::OnWallpaperBlurChanged() {
   } else {
     SetPaintToLayer();
     layer()->SetFillsBoundsOpaquely(false);
+    const ui::ColorId background_color_id =
+        chromeos::features::IsJellyEnabled()
+            ? static_cast<ui::ColorId>(cros_tokens::kCrosSysScrim2)
+            : kColorAshShieldAndBase80;
     SetBackground(views::CreateThemedRoundedRectBackground(
-        kColorAshShieldAndBase80, login::kNonBlurredWallpaperBackgroundRadiusDp,
-        0));
+        background_color_id, login::kNonBlurredWallpaperBackgroundRadiusDp, 0));
   }
 }
 

@@ -17,8 +17,12 @@
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
+#include "ui/color/color_id.h"
 #include "ui/compositor/layer.h"
 #include "ui/compositor/layer_animation_sequence.h"
 #include "ui/compositor/layer_animator.h"
@@ -230,8 +234,6 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   // TODO(crbug.com/1233614): Rename kLockScreenFingerprintSuccessIcon once the
   // feature flag is removed and FingerprintView no longer needs this.
   checkmark_icon_ = AddChildView(std::make_unique<AuthIconView>());
-  checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
-                           AuthIconView::Color::kPositive);
   checkmark_icon_->SetVisible(false);
 
   label_wrapper_ =
@@ -239,6 +241,9 @@ LoginAuthFactorsView::LoginAuthFactorsView(
   label_wrapper_->SetProperty(
       views::kMarginsKey,
       gfx::Insets::TLBR(kSpacingBetweenIconsAndLabelDp, 0, 0, 0));
+  if (chromeos::features::IsJellyEnabled()) {
+    label_wrapper_->label()->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  }
 }
 
 LoginAuthFactorsView::~LoginAuthFactorsView() = default;
@@ -422,7 +427,6 @@ void LoginAuthFactorsView::ShowReadyAndDisabledAuthFactors() {
 void LoginAuthFactorsView::ShowCheckmark() {
   const bool arrow_button_was_visible = arrow_button_->GetVisible();
   auth_factor_icon_row_->SetVisible(false);
-  checkmark_icon_->SetVisible(true);
   SetArrowVisibility(false);
   if (arrow_button_was_visible) {
     const auto& resource =
@@ -433,8 +437,9 @@ void LoginAuthFactorsView::ShowCheckmark() {
                                   kCheckmarkAnimationNumFrames);
   } else {
     checkmark_icon_->SetIcon(kLockScreenFingerprintSuccessIcon,
-                             AuthIconView::Color::kPositive);
+                             AuthIconView::Status::kPositive);
   }
+  checkmark_icon_->SetVisible(true);
 }
 
 int LoginAuthFactorsView::GetReadyLabelId() const {

@@ -13,12 +13,17 @@
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/ash_color_id.h"
 #include "ash/style/ash_color_provider.h"
+#include "ash/style/icon_button.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wallpaper/wallpaper_controller_impl.h"
 #include "base/functional/bind.h"
 #include "base/task/single_thread_task_runner.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/l10n/l10n_util.h"
+#include "ui/base/models/image_model.h"
+#include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/compositor/layer.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/paint_vector_icon.h"
@@ -26,6 +31,7 @@
 #include "ui/views/controls/button/label_button.h"
 #include "ui/views/controls/focus_ring.h"
 #include "ui/views/controls/label.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/vector_icons.h"
@@ -128,7 +134,7 @@ views::LabelButton* PinRequestView::TestApi::help_button() {
   return view_->help_button_;
 }
 
-ArrowButtonView* PinRequestView::TestApi::submit_button() {
+views::Button* PinRequestView::TestApi::submit_button() {
   return view_->submit_button_;
 }
 
@@ -169,6 +175,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   // consumes all the inputs from the user, so that they can only interact with
   // the pin request view while it is visible.
   SetModalType(ui::MODAL_TYPE_SYSTEM);
+  const bool is_jelly = chromeos::features::IsJellyEnabled();
 
   // Main view contains all other views aligned vertically and centered.
   auto layout = std::make_unique<views::BoxLayout>(
@@ -181,12 +188,22 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       views::BoxLayout::CrossAxisAlignment::kCenter);
   SetLayoutManager(std::move(layout));
 
-  SetPaintToLayer();
-  layer()->SetFillsBoundsOpaquely(false);
-  layer()->SetRoundedCornerRadius(
-      gfx::RoundedCornersF(kPinRequestViewRoundedCornerRadiusDp));
-  layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
-
+  if (is_jelly) {
+    SetBackground(views::CreateThemedRoundedRectBackground(
+        cros_tokens::kCrosSysSystemBaseElevated,
+        kPinRequestViewRoundedCornerRadiusDp));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kPinRequestViewRoundedCornerRadiusDp,
+        views::HighlightBorder::Type::kHighlightBorder1));
+    shadow_ = SystemShadow::CreateShadowOnNinePatchLayerForView(
+        this, SystemShadow::Type::kElevation12);
+  } else {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF(kPinRequestViewRoundedCornerRadiusDp));
+    layer()->SetBackgroundBlur(ShelfConfig::Get()->shelf_blur_radius());
+  }
   const int child_view_width =
       kPinRequestViewWidthDp - 2 * kPinRequestViewMainHorizontalInsetDp;
 
@@ -213,11 +230,13 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   header->AddChildView(icon_view);
 
   views::ImageView* icon = new views::ImageView();
-  icon->SetPreferredSize(gfx::Size(kLockIconSizeDp, kLockIconSizeDp));
-  icon->SetImage(gfx::CreateVectorIcon(
-      kPinRequestLockIcon,
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kIconColorPrimary)));
+
+  const ui::ColorId lock_icon_color_id =
+      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysOnSurface)
+               : kColorAshIconColorPrimary;
+
+  icon->SetImage(ui::ImageModel::FromVectorIcon(
+      kPinRequestLockIcon, lock_icon_color_id, kLockIconSizeDp));
   icon_view->AddChildView(icon);
 
   // Back button. Note that it should be the last view added to |header| in
@@ -281,6 +300,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   title_label_->SetFontList(gfx::FontList().Derive(
       kTitleFontSizeDeltaDp, gfx::Font::NORMAL, gfx::Font::Weight::MEDIUM));
   decorate_label(title_label_);
+  if (is_jelly) {
+    title_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  }
   AddChildView(title_label_.get());
 
   add_spacer(kTitleToDescriptionDistanceDp);
@@ -296,6 +318,9 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   description_label_->SetFontList(
       gfx::FontList().Derive(kDescriptionFontSizeDeltaDp, gfx::Font::NORMAL,
                              gfx::Font::Weight::NORMAL));
+  if (is_jelly) {
+    description_label_->SetEnabledColorId(cros_tokens::kCrosSysOnSurface);
+  }
   decorate_label(description_label_);
   AddChildView(description_label_.get());
 
@@ -358,9 +383,10 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   help_button_->SetPaintToLayer();
   help_button_->layer()->SetFillsBoundsOpaquely(false);
   help_button_->SetTextSubpixelRenderingEnabled(false);
-  help_button_->SetEnabledTextColors(
-      AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary));
+  const ui::ColorId help_button_color_id =
+      is_jelly ? static_cast<ui::ColorId>(cros_tokens::kCrosSysSecondary)
+               : kColorAshTextColorPrimary;
+  help_button_->SetEnabledTextColorIds(help_button_color_id);
   help_button_->SetVisible(request.help_button_enabled);
   footer->AddChildView(help_button_.get());
 
@@ -368,14 +394,24 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   footer->AddChildView(horizontal_spacer);
   bottom_layout->SetFlexForView(horizontal_spacer, 1);
 
-  submit_button_ = new ArrowButtonView(
-      base::BindRepeating(&PinRequestView::SubmitCode, base::Unretained(this)),
-      kArrowButtonSizeDp);
-  submit_button_->SetPreferredSize(
-      gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
+  if (is_jelly) {
+    submit_button_ =
+        new IconButton(base::BindRepeating(&PinRequestView::SubmitCode,
+                                           base::Unretained(this)),
+                       IconButton::Type::kMediumFloating, &kLockScreenArrowIcon,
+                       IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME, true);
+    static_cast<IconButton*>(submit_button_)->SetToggled(true);
+  } else {
+    submit_button_ =
+        new ArrowButtonView(base::BindRepeating(&PinRequestView::SubmitCode,
+                                                base::Unretained(this)),
+                            kArrowButtonSizeDp);
+    submit_button_->SetPreferredSize(
+        gfx::Size(kArrowButtonSizeDp, kArrowButtonSizeDp));
+    submit_button_->SetAccessibleName(
+        l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
+  }
   submit_button_->SetEnabled(false);
-  submit_button_->SetAccessibleName(
-      l10n_util::GetStringUTF16(IDS_ASH_LOGIN_SUBMIT_BUTTON_ACCESSIBLE_NAME));
   submit_button_->SetFocusBehavior(FocusBehavior::ALWAYS);
   footer->AddChildView(submit_button_.get());
   add_spacer(kSubmitButtonBottomMarginDp);

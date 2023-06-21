@@ -5,16 +5,19 @@
 #ifndef ASH_LOGIN_UI_PIN_REQUEST_VIEW_H_
 #define ASH_LOGIN_UI_PIN_REQUEST_VIEW_H_
 
+#include <memory>
 #include <string>
 
 #include "ash/ash_export.h"
 #include "ash/login/ui/access_code_input.h"
 #include "ash/public/cpp/login_types.h"
 #include "ash/public/cpp/tablet_mode_observer.h"
+#include "ash/style/system_shadow.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
 #include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/scoped_observation.h"
+#include "ui/views/controls/button/button.h"
 #include "ui/views/window/dialog_delegate.h"
 
 namespace views {
@@ -24,7 +27,6 @@ class Textfield;
 }  // namespace views
 
 namespace ash {
-class ArrowButtonView;
 class LoginButton;
 class LoginPinView;
 
@@ -104,7 +106,7 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
     views::Label* description_label();
     views::View* access_code_view();
     views::LabelButton* help_button();
-    ArrowButtonView* submit_button();
+    views::Button* submit_button();
     LoginPinView* pin_keyboard_view();
 
     views::Textfield* GetInputTextField(int index);
@@ -206,7 +208,9 @@ class ASH_EXPORT PinRequestView : public views::DialogDelegateView,
   raw_ptr<LoginPinView, ExperimentalAsh> pin_keyboard_view_ = nullptr;
   raw_ptr<LoginButton, ExperimentalAsh> back_button_ = nullptr;
   raw_ptr<FocusableLabelButton, ExperimentalAsh> help_button_ = nullptr;
-  raw_ptr<ArrowButtonView, ExperimentalAsh> submit_button_ = nullptr;
+  raw_ptr<views::Button, ExperimentalAsh> submit_button_ = nullptr;
+
+  std::unique_ptr<SystemShadow> shadow_;
 
   base::ScopedObservation<TabletModeController, TabletModeObserver>
       tablet_mode_observation_{this};

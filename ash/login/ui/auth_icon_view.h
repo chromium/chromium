@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "base/timer/timer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
+#include "ui/base/models/image_model.h"
 #include "ui/gfx/image/canvas_image_source.h"
 #include "ui/views/view.h"
 
@@ -28,7 +29,7 @@ class ASH_EXPORT AuthIconView : public views::View {
  public:
   METADATA_HEADER(AuthIconView);
 
-  enum class Color {
+  enum class Status {
     kPrimary,
     kDisabled,
     kError,
@@ -41,7 +42,9 @@ class ASH_EXPORT AuthIconView : public views::View {
   ~AuthIconView() override;
 
   // Show a static icon.
-  void SetIcon(const gfx::VectorIcon& icon, Color color = Color::kPrimary);
+  void SetIcon(const gfx::VectorIcon& icon, Status status = Status::kPrimary);
+  // Rasterize the icon.
+  void RasterizeIcon();
 
   // Show a circle icon.
   void SetCircleImage(int size, SkColor color);
@@ -76,6 +79,8 @@ class ASH_EXPORT AuthIconView : public views::View {
   }
 
   // views::View:
+  void AddedToWidget() override;
+  void OnThemeChanged() override;
   void OnPaint(gfx::Canvas* canvas) override;
   gfx::Size CalculatePreferredSize() const override;
   void OnGestureEvent(ui::GestureEvent* event) override;
@@ -99,6 +104,7 @@ class ASH_EXPORT AuthIconView : public views::View {
   base::RepeatingClosure on_tap_or_click_callback_;
 
   raw_ptr<AnimatedRoundedImageView, ExperimentalAsh> icon_;
+  ui::ImageModel icon_image_model_;
 
   // Time when the progress animation was enabled.
   base::TimeTicks progress_animation_start_time_;
