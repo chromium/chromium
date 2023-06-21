@@ -264,11 +264,7 @@ class PromotionalTabsEnabledPolicyWhatsNewTest
 };
 
 // This is disabled due to flakiness: https://crbug.com/1362518
-#if BUILDFLAG(IS_MAC)
 #define MAYBE_RunTest DISABLED_RunTest
-#else
-#define MAYBE_RunTest RunTest
-#endif
 IN_PROC_BROWSER_TEST_P(PromotionalTabsEnabledPolicyWhatsNewTest,
                        MAYBE_RunTest) {
   // Delay to allow the network request simulation to finish.
