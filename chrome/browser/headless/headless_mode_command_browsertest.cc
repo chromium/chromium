@@ -66,7 +66,8 @@ class HeadlessModeCommandBrowserTest : public HeadlessModeBrowserTest {
   bool test_complete() const { return test_complete_; }
 
  private:
-  void FinishTest() {
+  void FinishTest(HeadlessCommandHandler::Result result) {
+    ASSERT_EQ(result, HeadlessCommandHandler::Result::kSuccess);
     test_complete_ = true;
     if (run_loop_) {
       run_loop_->Quit();

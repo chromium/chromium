@@ -112,7 +112,10 @@ class HeadlessCommandBrowserTest : public HeadlessBrowserTest,
  private:
   virtual GURL GetTargetUrl() = 0;
 
-  void FinishTest() { FinishAsynchronousTest(); }
+  void FinishTest(HeadlessCommandHandler::Result result) {
+    ASSERT_EQ(result, HeadlessCommandHandler::Result::kSuccess);
+    FinishAsynchronousTest();
+  }
 
   bool aborted_ = false;
 };

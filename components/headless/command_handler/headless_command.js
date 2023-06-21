@@ -288,6 +288,11 @@ async function executeCommands(commands) {
   const targetPage = await TargetPage.create(browserSession);
   const dp = targetPage.session().protocol();
 
+  let domContentEventFired = false;
+  dp.Page.onceDomContentEventFired(() => {
+    domContentEventFired = true;
+  });
+
   const promises = [];
   let pageLoadTimedOut;
   if ('timeout' in commands) {
@@ -326,7 +331,8 @@ async function executeCommands(commands) {
 
   const result = await handleCommands(dp, commands);
 
-  if (pageLoadTimedOut) {
+  // Report timeouts only if we received no content at all.
+  if (pageLoadTimedOut && !domContentEventFired) {
     result.pageLoadTimedOut = true;
   }
 

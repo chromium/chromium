@@ -23,7 +23,13 @@ namespace headless {
 
 class HeadlessCommandHandler : public content::WebContentsObserver {
  public:
-  typedef base::OnceCallback<void()> DoneCallback;
+  enum class Result {
+    kSuccess,
+    kPageLoadTimeout,
+    kWriteFileError,
+  };
+
+  typedef base::OnceCallback<void(Result)> DoneCallback;
 
   HeadlessCommandHandler(const HeadlessCommandHandler&) = delete;
   HeadlessCommandHandler& operator=(const HeadlessCommandHandler&) = delete;
@@ -66,7 +72,7 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   void OnCommandsResult(base::Value::Dict result);
 
   void WriteFile(base::FilePath file_path, std::string base64_file_data);
-  void OnWriteFileDone();
+  void OnWriteFileDone(bool success);
 
   void Done();
 
@@ -80,6 +86,7 @@ class HeadlessCommandHandler : public content::WebContentsObserver {
   base::FilePath screenshot_file_path_;
 
   int write_file_tasks_in_flight_ = 0;
+  Result result_ = Result::kSuccess;
 };
 
 }  // namespace headless

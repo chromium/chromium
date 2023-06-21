@@ -332,16 +332,17 @@ Browser* StartupBrowserCreatorImpl::OpenTabsInBrowser(
     // just grab the actave tab assuming it's the target.
     content::WebContents* web_contents =
         browser->tab_strip_model()->GetActiveWebContents();
-    if (web_contents) {
-      headless::ProcessHeadlessCommands(profile_, web_contents->GetVisibleURL(),
-                                        base::BindOnce(
-                                            [](base::WeakPtr<Browser> browser) {
-                                              if (browser->window()) {
-                                                browser->window()->Close();
-                                              }
-                                            },
-                                            browser->AsWeakPtr()));
-    }
+    CHECK(web_contents);
+    headless::ProcessHeadlessCommands(
+        profile_, web_contents->GetVisibleURL(),
+        base::BindOnce(
+            [](base::WeakPtr<Browser> browser,
+               headless::HeadlessCommandHandler::Result result) {
+              if (browser && browser->window()) {
+                browser->window()->Close();
+              }
+            },
+            browser->AsWeakPtr()));
   }
 
   browser->window()->Show();
