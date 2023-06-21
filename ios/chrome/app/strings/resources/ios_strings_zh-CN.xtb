@@ -224,6 +224,7 @@
 <translation id="2476359652512522418">未选中</translation>
 <translation id="2479148705183875116">转到“设置”</translation>
 <translation id="2482878487686419369">通知</translation>
+<translation id="2484459871750294497">如何启用此功能？</translation>
 <translation id="2496626742194544812">转到第一个标签页</translation>
 <translation id="2500374554657206846">保存密码的选项</translation>
 <translation id="2523363575747517183">该网站屡次尝试打开其他应用。</translation>
@@ -302,8 +303,10 @@
 <translation id="2921219216347069551">无法分享网页</translation>
 <translation id="2923448633003185837">粘贴并转到</translation>
 <translation id="292639812446257861">标记为未读</translation>
+<translation id="2931440415625410757">显示说明</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2932765531295814441">手动添加密码</translation>
+<translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2958718410589002129">密码</translation>
 <translation id="2961210776189273067">称谓</translation>
@@ -526,7 +529,6 @@
 <translation id="448433063499977729">同步功能已关闭</translation>
 <translation id="4488754974567924717">如果您的密码已泄露，我们会通知您</translation>
 <translation id="4489536976005181779">{count,plural, =1{网页已添加到您的以下帐户的阅读清单中：{email}}other{网页已添加到您的以下帐户的阅读清单中：{email}}}</translation>
-<translation id="4496373720959965247">添加标签页并在网页之间切换</translation>
 <translation id="4502566650163919158">立即检查</translation>
 <translation id="4505980578794259603">上次检查时间：<ph name="TIME" />。</translation>
 <translation id="4508750114462689118">关闭登录推广元素</translation>

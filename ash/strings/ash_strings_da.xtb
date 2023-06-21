@@ -982,6 +982,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5308380583665731573">Opret forbindelse</translation>
 <translation id="5313326810920013265">Indstillinger for Bluetooth</translation>
 <translation id="5314219114274263156">Skærmen blev optaget</translation>
+<translation id="5314489738835854379">Skift til et af de foregående vinduer</translation>
 <translation id="5316716239522500219">Spejlvend skærmene</translation>
 <translation id="5317780077021120954">Gem</translation>
 <translation id="5319712128756744240">Par en ny enhed</translation>
@@ -1128,6 +1129,7 @@ Slut din enhed til en strømkilde.</translation>
 <translation id="5958529069007801266">Overvåget bruger</translation>
 <translation id="5961960957587052807">Let</translation>
 <translation id="5965524703725988602">Slå Mørkt tema til/fra. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Skift til et af de efterfølgende vinduer</translation>
 <translation id="5976112937189445008">Tryk på Enter for at optage vinduet</translation>
 <translation id="5978382165065462689">Skærmdeling via Fjernsupport.</translation>
 <translation id="5980301590375426705">Afslut gæst</translation>
@@ -1338,6 +1340,7 @@ Installeret for nylig</translation>
 <translation id="6891721121089053234">Se din telefons seneste billeder, medier og apps på din <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopiér</translation>
 <translation id="6901883536534621389">Prøv at navigere ved hjælp af bevægelser</translation>
+<translation id="6912841030378044227">Fokuser på adresselinjen</translation>
 <translation id="6919251195245069855">Dit chipkort blev ikke genkendt. Prøv igen.</translation>
 <translation id="6920245099716267363">Slå hotspot til/fra. Hotspot er aktiveret, og 1 enhed er tilsluttet.</translation>
 <translation id="6931576957638141829">Gem i</translation>
@@ -1755,7 +1758,6 @@ Du kan slukke enheden ved at holde afbryderknappen på enheden nede igen.</trans
 <translation id="8855885154700222542">Tast til fuld skærm</translation>
 <translation id="8858369206579825206">Privatlivsindstillinger</translation>
 <translation id="8860817004574502558">batteritid</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> i brug ud af <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Appen understøtter ikke opdelt skærm.</translation>
 <translation id="8874184842967597500">Ikke forbundet</translation>
 <translation id="8875021410787719674">Naviger mellem nederste højre hjørne, applisten, adresselinjen, bogmærkelinjen, det åbne website og downloads</translation>

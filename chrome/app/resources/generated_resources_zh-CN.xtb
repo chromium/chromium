@@ -5464,6 +5464,7 @@
 <translation id="5684661240348539843">资产标识符</translation>
 <translation id="5684950556880280580">您的密码已更新</translation>
 <translation id="5687326903064479980">时区</translation>
+<translation id="5687606994963670306">Chrome 会自动删除保留时长超过 30 天的网站。您再次访问的网站可能会重新出现在列表中。您还可禁止某个网站向您展示建议的广告。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="5687935527303996204">请确保已正确插入您的设备，且不要关闭它。整个安装流程最多可能需要 20 分钟的时间。待安装完毕后，您的设备将会自动关闭。</translation>
 <translation id="5689516760719285838">位置信息</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在另一部设备上为 Google 助理设置了 Voice Match。这些先前的语音录音被用来在此设备上创建语音模型。</translation>
@@ -7292,6 +7293,7 @@
 <translation id="7273110280511444812">上次连接日期：<ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - 还需 <ph name="TIME" />充满</translation>
 <translation id="727595954130325265">立即抢购</translation>
+<translation id="7276100255011548441">Chrome 会自动删除保留时长超过 4 周的主题。随着您继续浏览，某个主题可能会再次出现在列表中。您还可屏蔽不希望 Chrome 与网站分享的主题。详细了解如何<ph name="BEGIN_LINK" />在 Chrome 中管理广告隐私权设置<ph name="END_LINK" />。</translation>
 <translation id="727952162645687754">下载错误</translation>
 <translation id="7280649757394340890">文字转语音的语音设置</translation>
 <translation id="7280877790564589615">已请求权限</translation>
@@ -8784,6 +8786,7 @@
 <translation id="8534656636775144800">糟糕！尝试加入该网域时出错了。请重试。</translation>
 <translation id="8535005006684281994">Netscape 证书续订网址</translation>
 <translation id="8536713137312218707">快捷命令</translation>
+<translation id="8536810348276651776">会致使您从大多数网站退出帐号。但您的 Google 帐号仍会保持登录状态，所以 Chrome 中的 Family Link 设置依然有效。</translation>
 <translation id="8536956381488731905">按键音效</translation>
 <translation id="8539727552378197395">否（仅 Http）</translation>
 <translation id="8539766201049804895">升级</translation>

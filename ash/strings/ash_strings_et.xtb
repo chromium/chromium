@@ -983,6 +983,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5308380583665731573">Ühendamine</translation>
 <translation id="5313326810920013265">Bluetoothi seaded</translation>
 <translation id="5314219114274263156">Jäädvustati ekraanisalvestis</translation>
+<translation id="5314489738835854379">Kerige läbi akna tagasi</translation>
 <translation id="5316716239522500219">Kuvarite peegeldamine</translation>
 <translation id="5317780077021120954">Salvesta</translation>
 <translation id="5319712128756744240">Uue seadme sidumine</translation>
@@ -1129,6 +1130,7 @@ Jätkamiseks peavad kõik kasutajad välja logima.</translation>
 <translation id="5958529069007801266">Valvatav kasutaja</translation>
 <translation id="5961960957587052807">Hele</translation>
 <translation id="5965524703725988602">Tumeda teema oleku sisse-/väljalülitamine. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Kerige läbi akna edasi</translation>
 <translation id="5976112937189445008">Vajutage akna salvestamiseks sisestusklahvi</translation>
 <translation id="5978382165065462689">Ekraani juhtimise jagamine kaugabi kaudu.</translation>
 <translation id="5980301590375426705">Välju kül. seansist</translation>
@@ -1339,6 +1341,7 @@ Uus installimine</translation>
 <translation id="6891721121089053234">Vaadake seadmes <ph name="DEVICE_TYPE" /> oma telefoni hiljutisi fotosid, meediat ja rakendusi</translation>
 <translation id="6896758677409633944">Kopeeri</translation>
 <translation id="6901883536534621389">Proovige navigeerimiseks liigutusi</translation>
+<translation id="6912841030378044227">Keskenduge aadressiribale</translation>
 <translation id="6919251195245069855">Teie kiipkaarti ei õnnestunud tuvastada. Proovige uuesti.</translation>
 <translation id="6920245099716267363">Kuumkoha sisse-/väljalülitamine. Kuumkoht on sisse lülitatud, 1 seade on ühendatud.</translation>
 <translation id="6931576957638141829">Sihtkohta salvestamine</translation>
@@ -1756,7 +1759,6 @@ Seadme väljalülitamiseks vajutage uuesti pikalt seadme toitenuppu.</translatio
 <translation id="8855885154700222542">Täisekraani klahv</translation>
 <translation id="8858369206579825206">Privaatsuse seaded</translation>
 <translation id="8860817004574502558">aku tööiga</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> on kasutusel / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Rakendus ei toeta jagatud ekraani.</translation>
 <translation id="8874184842967597500">Ühendus puudub</translation>
 <translation id="8875021410787719674">Fookuse teisaldamine järgmises järjestuses: parem allnurk, käivitaja, aadressiriba, järjehoidjariba, avatud veebisait, allalaadimised</translation>

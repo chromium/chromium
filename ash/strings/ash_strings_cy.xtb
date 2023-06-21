@@ -982,6 +982,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5313326810920013265">Gosodiadau Bluetooth</translation>
 <translation id="5314219114274263156">Wedi recordio'r sgrîn</translation>
+<translation id="5314489738835854379">Seiclo yn ôl drwy'r ffenestri</translation>
 <translation id="5316716239522500219">Adlewyrchu monitorau</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5319712128756744240">Paru dyfais newydd</translation>
@@ -1128,6 +1129,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5958529069007801266">Defnyddiwr dan oruchwyliaeth</translation>
 <translation id="5961960957587052807">Golau</translation>
 <translation id="5965524703725988602">Toglo'r Thema dywyll <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Seiclo ymlaen drwy'r ffenestri</translation>
 <translation id="5976112937189445008">Pwyswch Enter i recordio'r ffenestr</translation>
 <translation id="5978382165065462689">Rhannu rheolaeth o'ch sgrîn drwy Gymorth o Bell.</translation>
 <translation id="5980301590375426705">Gadael gwestai</translation>
@@ -1338,6 +1340,7 @@ Gosodiad newydd</translation>
 <translation id="6891721121089053234">Gweld lluniau, cyfryngau ac apiau diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6901883536534621389">Rhowch gynnig ar ystumiau i lywio</translation>
+<translation id="6912841030378044227">Ffocysu ar y bar cyfeiriad</translation>
 <translation id="6919251195245069855">Methu ag adnabod eich cerdyn clyfar. Rhowch gynnig arall arni.</translation>
 <translation id="6920245099716267363">Toglo'r Boethfan. Mae'r boethfan ymlaen, mae 1 ddyfais wedi'i chysylltu.</translation>
 <translation id="6931576957638141829">Cadw yn</translation>
@@ -1755,7 +1758,6 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8855885154700222542">Bysell sgrîn lawn</translation>
 <translation id="8858369206579825206">Rheolyddion preifatrwydd</translation>
 <translation id="8860817004574502558">oes y batri</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> yn cael eu defnyddio / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Nid yw'r ap yn cefnogi sgrîn hollt.</translation>
 <translation id="8874184842967597500">Ni chysylltir</translation>
 <translation id="8875021410787719674">Symud rhwng y gornel dde isaf, y Lansiwr, y bar cyfeiriad, y bar nodau tudalen, y wefan sydd ar agor a'r lawrlwythiadau</translation>

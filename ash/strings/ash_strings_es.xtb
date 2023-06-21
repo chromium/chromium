@@ -983,6 +983,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
+<translation id="5314489738835854379">Desplazarse hacia atrás por las ventanas</translation>
 <translation id="5316716239522500219">Proyectar monitores</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Emparejar nuevo dispositivo</translation>
@@ -1129,6 +1130,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5958529069007801266">Usuario supervis.</translation>
 <translation id="5961960957587052807">Suave</translation>
 <translation id="5965524703725988602">Activar o desactivar tema oscuro. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Desplazarse hacia delante por las ventanas</translation>
 <translation id="5976112937189445008">Pulsa Intro para grabar la ventana</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
@@ -1339,6 +1341,7 @@ Nueva instalación</translation>
 <translation id="6891721121089053234">Consulta las fotos, el contenido multimedia y las aplicaciones recientes de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Prueba gestos para desplazarte</translation>
+<translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6920245099716267363">Activar o desactivar punto de acceso. Punto de acceso activado. 1 dispositivo conectado.</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -1756,7 +1759,6 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8855885154700222542">Tecla de pantalla completa</translation>
 <translation id="8858369206579825206">Controles de privacidad</translation>
 <translation id="8860817004574502558">duración de la batería</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> en uso de un total de <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">La aplicación no admite la pantalla dividida.</translation>
 <translation id="8874184842967597500">No conectado</translation>
 <translation id="8875021410787719674">Se desplaza entre la esquina inferior derecha, el menú de aplicaciones, la barra de direcciones, la barra de marcadores, el sitio web que está abierto y las descargas</translation>

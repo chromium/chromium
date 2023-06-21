@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">你已透過 <ph name="DOMAIN" /> 的受管理帳戶登入並正在同步資料，其系統管理員現在可以設定針對該帳戶且可變更 Chrome 行為的使用者政策。</translation>
 <translation id="1554731936187952550">Chrome 提供了最強大的安全防護機制，可避免你誤入有害網站</translation>
 <translation id="1682483655351012182">同步處理你的 Chrome 資料</translation>
+<translation id="1733654336159102143">在你離開 Chrome 或切換到其他應用程式時，鎖定無痕模式。</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">當你輕觸訊息、文件和其他應用程式中的連結時，自動使用 Chrome 開啟網頁。</translation>
 <translation id="1917964099031477364">系統會將這個帳戶和所有未儲存的資料從 Chrome 以及這部裝置上的其他 Google 應用程式中移除。</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome 無法檢查更新，請稍後再試。</translation>
 <translation id="2732745070297234559">Chrome 無法檢查所有密碼，請明天再試。</translation>
 <translation id="2736805085127235148">目前未在裝置設定中開啟 Chrome 通知。</translation>
+<translation id="2754286486056173475">在 Chrome 上建立日曆活動</translation>
 <translation id="2767464022270041271">尚未儲存任何密碼。你必須先儲存密碼，才能使用 Google 密碼管理工具的檢查功能。</translation>
 <translation id="2840432500933227975">在 iOS 中開啟 Chrome 設定，輕觸「瀏覽器預設應用程式」，然後選取「Chrome」。</translation>
 <translation id="2869959624320573933">登入 Chrome</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">要清除你在這個裝置上的 Chrome 資料嗎？</translation>
 <translation id="6709398533399187136">你的密碼因為資料侵害事件遭到外洩，Google 密碼管理工具建議你立即變更這組密碼。</translation>
 <translation id="6822673484890854830">Chrome 無法檢查所有密碼，請稍後再試。</translation>
+<translation id="6896070677477855330">開啟「關閉 Chrome 時鎖定無痕分頁」。</translation>
 <translation id="6964931465519938134">現在只要在訊息、文件和其他應用程式中輕觸連結，即可透過 Chrome 開啟。</translation>
 <translation id="6975725306479268850">選擇使用 Chrome 的自動填入功能</translation>
 <translation id="7059914902409643750">使用你專屬的 Chrome</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">在網址列或搜尋框中輸入時，Chrome 會將你輸入的內容傳送給預設搜尋引擎，提供更符合需求的搜尋建議。這項功能在無痕模式中為關閉狀態。</translation>
 <translation id="8772179140489533211">顯示登入 Chrome 的提示。</translation>
 <translation id="8788269841521769222">你不需要記住這組密碼，系統會將密碼儲存至 <ph name="EMAIL" /> 的 Google 密碼管理員中</translation>
+<translation id="880967149107462122">前往 Chrome 設定</translation>
 <translation id="8857676124663337448">Google 密碼管理工具無法檢查所有密碼，請明天再試。</translation>
 <translation id="8897749957032330183">密碼會儲存至這部裝置的 Google 密碼管理工具。</translation>
 <translation id="8969290730818637510">開啟時：

@@ -982,6 +982,7 @@
 <translation id="5308380583665731573">接続</translation>
 <translation id="5313326810920013265">Bluetooth 設定</translation>
 <translation id="5314219114274263156">画面を録画しました</translation>
+<translation id="5314489738835854379">ウィンドウ間を逆方向に移動する</translation>
 <translation id="5316716239522500219">モニターをミラーリングする</translation>
 <translation id="5317780077021120954">保存</translation>
 <translation id="5319712128756744240">新しいデバイスとペア設定</translation>
@@ -1128,6 +1129,7 @@
 <translation id="5958529069007801266">監視対象ユーザー</translation>
 <translation id="5961960957587052807">低</translation>
 <translation id="5965524703725988602">ダークモードのオンとオフを切り替えます。<ph name="STATE_TEXT" />。</translation>
+<translation id="5975235751479998104">ウィンドウ間を順方向に移動する</translation>
 <translation id="5976112937189445008">ウィンドウを録画するには Enter キーを押してください</translation>
 <translation id="5978382165065462689">リモート サポート経由で画面の制御を共有しています。</translation>
 <translation id="5980301590375426705">ゲストを終了</translation>
@@ -1338,6 +1340,7 @@
 <translation id="6891721121089053234"><ph name="DEVICE_TYPE" /> でスマートフォンの最近の写真、メディア、アプリを表示します</translation>
 <translation id="6896758677409633944">コピー</translation>
 <translation id="6901883536534621389">ジェスチャー操作をお試しください</translation>
+<translation id="6912841030378044227">アドレスバーにフォーカスする</translation>
 <translation id="6919251195245069855">スマートカードを認識できませんでした。もう一度お試しください。</translation>
 <translation id="6920245099716267363">アクセス ポイントを切り替えます。アクセス ポイントはオンです。1 台のデバイスが接続されています。</translation>
 <translation id="6931576957638141829">保存先</translation>
@@ -1755,7 +1758,6 @@
 <translation id="8855885154700222542">全画面表示キー</translation>
 <translation id="8858369206579825206">プライバシー管理</translation>
 <translation id="8860817004574502558">バッテリーの残り時間</translation>
-<translation id="8863602954531760927"><ph name="STORAGE_IN_USE_SIZE" /> 使用中 / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">アプリで分割画面がサポートされていません。</translation>
 <translation id="8874184842967597500">未接続</translation>
 <translation id="8875021410787719674">右下隅、ランチャー、アドレスバー、ブックマーク バー、開いているウェブサイト、ダウンロード ページ間を移動します</translation>

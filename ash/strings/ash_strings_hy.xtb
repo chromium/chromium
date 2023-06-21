@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">Հասանելի են սարքեր</translation>
 <translation id="1550523713251050646">Լրացուցիչ ընտրանքների համար սեղմեք</translation>
 <translation id="1555130319947370107">Կապույտ</translation>
+<translation id="1557622599341396706">Ցույց տալ աշխատասեղանի անվանումը</translation>
 <translation id="1576511610858879060">Ձեր Chromebook-ը կամ Bluetooth սարքն օգտագործում է Bluetooth-ի ավելի հին տարբերակ։ Օգտագործեք ազդանշանի այլ աղբյուր, որպեսզի ձայնի որակն ավելի լավը լինի։</translation>
 <translation id="1576623706766186887">Փոքրացնել, երբ խոշորացույցը միացված է</translation>
 <translation id="1586324912145647027">Անցնել 1–8 աշխատասեղաններին</translation>
@@ -985,6 +986,7 @@
 <translation id="5317780077021120954">Պահել</translation>
 <translation id="5319712128756744240">Նոր սարքի զուգակցում</translation>
 <translation id="5322611492012084517">Չհաջողվեց գտնել ձեր հեռախոսը</translation>
+<translation id="5323994101633366939">Թաքցնել աշխատասեղանի անվանումը</translation>
 <translation id="5327248766486351172">Անուն</translation>
 <translation id="5329548388331921293">Միանում է…</translation>
 <translation id="5331975486040154427">USB-C սարք (հետևի ձախակողմյան միացք)</translation>
@@ -1166,6 +1168,7 @@
 <translation id="6103838137565245112">համակարգ</translation>
 <translation id="6114505516289286752">Այս լեզվով (<ph name="LANGUAGE" />) խոսքի ճանաչման ֆայլերը ներբեռնվեցին</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />։ <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">Գունաշտկում</translation>
 <translation id="6121838516699723042">Հաստատեք <ph name="FILENAME" /> ֆայլի ներբեռնումը</translation>
 <translation id="612734058257491180">Google Օգնականը հասանելի չէ հյուրի աշխատաշրջանում:</translation>
 <translation id="6129953537138746214">Բացատ</translation>
@@ -1632,6 +1635,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, հավելված</translation>
 <translation id="8255234195843591763">Վերակայել և թարմացնել</translation>
 <translation id="8261506727792406068">Ջնջել</translation>
+<translation id="8262312463845990408">Միացնել/անջատել նվագարկումը</translation>
 <translation id="8270450402312105425">{0,plural, =1{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին մեկ ժամվա ընթացքում}one{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}other{Վերադարձեք սարքի օպերացիոն համակարգի նախորդ տարբերակին # ժամվա ընթացքում}}</translation>
 <translation id="8277261673056602147">Ընդգծեք տեքստը էկրանին</translation>
 <translation id="8284362522226889623">Նախորդ աշխատասեղանին անցնելու համար չորս մատով սահեցրեք ձախ</translation>
@@ -1753,7 +1757,6 @@
 <translation id="8855885154700222542">Լիաէկրան ռեժիմի ստեղն</translation>
 <translation id="8858369206579825206">Գաղտնիության կարգավորումներ</translation>
 <translation id="8860817004574502558">մարտկոցի աշխատաժամանակը</translation>
-<translation id="8863602954531760927">օգտագործվում է <ph name="STORAGE_IN_USE_SIZE" /> / <ph name="STORAGE_TOTAL_SIZE" /></translation>
 <translation id="8870509716567206129">Հավելվածը չի աջակցում էկրանի տրոհումը:</translation>
 <translation id="8874184842967597500">Կապ չկա</translation>
 <translation id="8875021410787719674">Տեղաշարժվել ներքևի աջ անկյունի, Գործարկիչի, հասցեագոտու, էջանիշների գոտու, բացված կայքի և ներբեռնումների միջև</translation>
