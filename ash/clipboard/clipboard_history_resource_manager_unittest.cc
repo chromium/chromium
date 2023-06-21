@@ -18,7 +18,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/run_loop.h"
 #include "base/task/sequenced_task_runner.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -321,11 +321,11 @@ TEST_F(ClipboardHistoryResourceManagerTest, PlaceholderDuringRender) {
   EXPECT_CALL(*mock_image_factory(), CancelRequest).Times(0);
   EXPECT_CALL(*mock_image_factory(), Render).Times(1);
 
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
   Shell::Get()
       ->clipboard_history_controller()
       ->set_confirmed_operation_callback_for_test(
-          operation_confirmed_future_.GetCallback());
+          operation_confirmed_future_.GetRepeatingCallback());
 
   {
     ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);

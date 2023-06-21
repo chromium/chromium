@@ -18,8 +18,8 @@
 #include "base/pickle.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "third_party/skia/include/core/SkBitmap.h"
@@ -73,11 +73,13 @@ class ClipboardHistoryTest : public AshTestBase {
         ui::ScopedClipboardWriter scw(ui::ClipboardBuffer::kCopyPaste);
         scw.WriteText(input_string);
       }
-      if (!in_same_sequence)
+      if (!in_same_sequence) {
         base::RunLoop().RunUntilIdle();
+      }
     }
-    if (in_same_sequence)
+    if (in_same_sequence) {
       base::RunLoop().RunUntilIdle();
+    }
     EnsureTextHistory(expected_strings);
   }
 
@@ -139,8 +141,9 @@ class ClipboardHistoryTest : public AshTestBase {
     const std::list<ClipboardHistoryItem> items = GetClipboardHistoryItems();
     EXPECT_EQ(expected_data.empty() ? 0u : 1u, items.size());
 
-    if (expected_data.empty())
+    if (expected_data.empty()) {
       return;
+    }
 
     std::unordered_map<std::u16string, std::u16string> actual_data;
     ui::ReadCustomDataIntoMap(items.front().data().custom_data_data().c_str(),
@@ -412,11 +415,11 @@ TEST_F(ClipboardHistoryTest, PauseHistoryResumeOutOfOrder) {
 
   // Verify that when all pauses are destroyed, clipboard history is modified as
   // usual.
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future;
+  base::test::TestFuture<bool> operation_confirmed_future;
   Shell::Get()
       ->clipboard_history_controller()
       ->set_confirmed_operation_callback_for_test(
-          operation_confirmed_future.GetCallback());
+          operation_confirmed_future.GetRepeatingCallback());
   scoped_pause_allow_reorders.reset();
   WriteAndEnsureTextHistory(input_string3, expected_strings_new_item);
   // Since clipboard history is not paused in any way, data being written to the

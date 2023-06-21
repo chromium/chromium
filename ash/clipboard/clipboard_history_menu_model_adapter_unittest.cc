@@ -8,7 +8,7 @@
 #include "ash/clipboard/clipboard_history_controller_impl.h"
 #include "ash/shell.h"
 #include "ash/test/ash_test_base.h"
-#include "base/test/repeating_test_future.h"
+#include "base/test/test_future.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
@@ -47,7 +47,7 @@ class ClipboardHistoryMenuModelAdapterShowSourceTest
   void SetUp() override {
     AshTestBase::SetUp();
     GetClipboardHistoryController()->set_confirmed_operation_callback_for_test(
-        operation_confirmed_future_.GetCallback());
+        operation_confirmed_future_.GetRepeatingCallback());
   }
 
   void WriteTextToClipboardAndConfirm(const std::u16string& str) {
@@ -61,7 +61,7 @@ class ClipboardHistoryMenuModelAdapterShowSourceTest
   ClipboardHistoryControllerShowSource GetSource() const { return GetParam(); }
 
  private:
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,

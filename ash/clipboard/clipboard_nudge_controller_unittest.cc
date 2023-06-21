@@ -20,10 +20,10 @@
 #include "base/memory/raw_ptr.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
-#include "base/test/repeating_test_future.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/simple_test_clock.h"
 #include "base/test/task_environment.h"
+#include "base/test/test_future.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -501,11 +501,11 @@ class ClipboardHistoryRefreshNudgeTest
     Shell::Get()
         ->clipboard_history_controller()
         ->set_confirmed_operation_callback_for_test(
-            operation_confirmed_future_.GetCallback());
+            operation_confirmed_future_.GetRepeatingCallback());
   }
 
   base::test::ScopedFeatureList scoped_feature_list_;
-  base::test::RepeatingTestFuture<bool> operation_confirmed_future_;
+  base::test::TestFuture<bool> operation_confirmed_future_;
 };
 
 INSTANTIATE_TEST_SUITE_P(All,
