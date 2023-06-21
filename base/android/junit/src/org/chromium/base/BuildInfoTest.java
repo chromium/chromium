@@ -89,6 +89,5 @@ public class BuildInfoTest {
         assertEquals("0", properties[IS_AT_LEAST_T]);
         assertEquals("0", properties[IS_AT_LEAST_U]);
         assertEquals("REL", properties[SDK_CODENAME]);
-        assertEquals("0", properties[TARGETS_AT_LEAST_U]);
     }
 }
