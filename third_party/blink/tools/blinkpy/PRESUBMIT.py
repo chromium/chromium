@@ -18,7 +18,7 @@ def CheckChangeOnUpload(input_api, output_api):
         os_path.join(
             os_path.dirname(
                 os_path.abspath(inspect.getfile(CheckChangeOnUpload))), '..'))
-    from blinkpy.web_tests.lint_test_expectations_presubmit import (
+    from blinkpy.presubmit.lint_test_expectations import (
         PresubmitCheckTestExpectations)
     results.extend(PresubmitCheckTestExpectations(input_api, output_api))
     return results

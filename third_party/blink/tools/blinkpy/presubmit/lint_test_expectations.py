@@ -32,23 +32,27 @@
 # issue since the command is using python and not vpython. An example bug with
 # more context is crbug.com/1103691.
 
+
 def PresubmitCheckTestExpectations(input_api, output_api):
     os_path = input_api.os_path
-    lint_path = os_path.join(
-        os_path.dirname(os_path.abspath(__file__)), '..', '..',
-        'lint_test_expectations.py')
-    _, errs = input_api.subprocess.Popen(
+    lint_path = os_path.join(os_path.dirname(os_path.abspath(__file__)),
+                             os_path.pardir, os_path.pardir,
+                             'lint_test_expectations.py')
+
+    subproc = input_api.subprocess.Popen(
         [input_api.python3_executable, lint_path],
         stdout=input_api.subprocess.PIPE,
-        stderr=input_api.subprocess.PIPE).communicate()
-    if not errs:
-        return [
-            output_api.PresubmitError("lint_test_expectations.py failed "
-                                      "to produce output; check by hand. ")
-        ]
-    errs = errs.decode('utf-8')
-    if errs.rstrip().endswith('Lint succeeded.'):
+        stderr=input_api.subprocess.PIPE)
+    errs = ''
+    try:
+        _, errs = subproc.communicate(timeout=30)
+        errs = errs.decode('utf-8')
+    finally:
+        subproc.kill()
+
+    if subproc.returncode == 0:  # Lint succeeded.
         return []
-    if errs.rstrip().endswith('Lint succeeded with warnings.'):
+    elif subproc.returncode == 2:  # Lint succeeded with warnings.
         return [output_api.PresubmitPromptWarning(errs)]
+    # Lint failed in some way.
     return [output_api.PresubmitError(errs)]
