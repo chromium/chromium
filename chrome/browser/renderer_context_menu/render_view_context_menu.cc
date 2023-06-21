@@ -288,6 +288,7 @@
 #include "chrome/browser/ash/system_web_apps/types/system_web_app_delegate.h"
 #include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/settings_window_manager_chromeos.h"
+#include "chrome/browser/ui/webui/ash/system_web_dialog_delegate.h"
 #include "chrome/browser/ui/webui/settings/chromeos/constants/routes.mojom.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/aura/window.h"
@@ -1552,6 +1553,9 @@ void RenderViewContextMenu::AppendLinkItems() {
     }
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
+    const bool in_system_web_dialog =
+        ash::SystemWebDialogDelegate::HasInstance(current_url_);
+
     Profile* profile = GetProfile();
     absl::optional<ash::SystemWebAppType> link_system_app_type =
         GetLinkSystemAppType(profile, params_.link_url);
@@ -1559,14 +1563,16 @@ void RenderViewContextMenu::AppendLinkItems() {
     // Links to system web app can't be opened in incognito / off-the-record.
     show_open_link_off_the_record = !link_system_app_type;
 
-    if (system_app_ && link_system_app_type) {
+    // Basically, we don't show "Open link in new tab" and "Open link in new
+    // window" items inside SWAs/SystemWebDialogs if that link is to SWAs
+    if ((system_app_ || in_system_web_dialog) && link_system_app_type) {
       // We don't show "Open in new tab" if the current app doesn't have a tab
       // strip.
       //
       // Even if the app has a tab strip, we don't show the item for
       // links to a different SWA, because two SWAs can't share the same browser
       // window.
-      if (!system_app_->ShouldHaveTabStrip() ||
+      if (in_system_web_dialog || !system_app_->ShouldHaveTabStrip() ||
           system_app_->GetType() != link_system_app_type) {
         show_open_in_new_tab = false;
       }
@@ -1574,6 +1580,20 @@ void RenderViewContextMenu::AppendLinkItems() {
       // Don't show "open in new window", this is instead handled below in
       // |AppendOpenInWebAppLinkItems| (which includes app's name and icon).
       show_open_in_new_window = false;
+    }
+
+    // If the current browser is a system app or a SystemWebDialog, hide "Open
+    // link in ..." items on button-like links i.e. links that have a href='#'.
+    // Since most of those links are used to do something in their JavaScript
+    // click handlers, opening '#' links in another browser tab/window makes
+    // little sense.
+    const bool button_like_link =
+        current_url_.EqualsIgnoringRef(params_.link_url) &&
+        params_.link_url.has_ref() && params_.link_url.ref().empty();
+    if ((system_app_ || in_system_web_dialog) && button_like_link) {
+      show_open_in_new_tab = false;
+      show_open_in_new_window = false;
+      show_open_link_off_the_record = false;
     }
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 

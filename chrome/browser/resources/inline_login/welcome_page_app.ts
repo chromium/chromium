@@ -110,7 +110,10 @@ export class WelcomePageAppElement extends PolymerElement {
     if (this.isArcAccountRestrictionsEnabled_) {
       const guestModeLink = this.shadowRoot!.querySelector('#guestModeLink');
       if (guestModeLink) {
-        guestModeLink.addEventListener('click', () => this.openGuestLink_());
+        guestModeLink.addEventListener('click', (event) => {
+          event.preventDefault();
+          this.openGuestLink_();
+        });
       }
     } else {
       const incognitoLink = this.shadowRoot!.querySelector('#incognitoLink');
