@@ -95,6 +95,8 @@ const CGFloat kTitleStackViewTrailingMargin = 16.0f;
         CreateDynamicFont(UIFontTextStyleFootnote, UIFontWeightSemibold);
     title.adjustsFontForContentSizeCategory = YES;
     title.textColor = [UIColor colorNamed:kTextPrimaryColor];
+    title.numberOfLines = 0;
+    title.lineBreakMode = NSLineBreakByWordWrapping;
     title.accessibilityTraits |= UIAccessibilityTraitHeader;
     title.accessibilityIdentifier =
         [MagicStackModuleContainer titleStringForModule:type];
