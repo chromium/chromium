@@ -56,6 +56,10 @@
 #include "third_party/blink/public/common/tokens/tokens.h"
 #include "third_party/blink/public/mojom/loader/fetch_client_settings_object.mojom.h"
 
+#if !BUILDFLAG(IS_ANDROID)
+#include "content/browser/direct_sockets/direct_sockets_service_impl.h"
+#endif
+
 namespace content {
 
 DedicatedWorkerHost::DedicatedWorkerHost(
@@ -616,6 +620,23 @@ bool DedicatedWorkerHost::CheckCrossOriginEmbedderPolicy() {
   // [spec]: 7. Return false.
   return false;
 }
+
+#if !BUILDFLAG(IS_ANDROID)
+void DedicatedWorkerHost::CreateDirectSocketsService(
+    mojo::PendingReceiver<blink::mojom::DirectSocketsService> receiver) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  RenderFrameHostImpl* ancestor_render_frame_host =
+      RenderFrameHostImpl::FromID(ancestor_render_frame_host_id_);
+  // The ancestor frame may have already been closed. In that case, the worker
+  // will soon be terminated too, so abort the connection.
+  if (!ancestor_render_frame_host) {
+    return;
+  }
+
+  DirectSocketsServiceImpl::CreateForFrame(ancestor_render_frame_host,
+                                           std::move(receiver));
+}
+#endif
 
 void DedicatedWorkerHost::CreateWebUsbService(
     mojo::PendingReceiver<blink::mojom::WebUsbService> receiver) {

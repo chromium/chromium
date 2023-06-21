@@ -5,7 +5,7 @@
 // https://github.com/WICG/direct-sockets/blob/main/docs/explainer.md#udp
 
 [
-    Exposed=(Window,Worker),
+    Exposed=(Window,DedicatedWorker),
     ActiveScriptWrappable,
     SecureContext,
     RuntimeEnabled=DirectSockets,

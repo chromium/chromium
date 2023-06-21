@@ -1284,6 +1284,11 @@ void PopulateDedicatedWorkerBinders(DedicatedWorkerHost* host,
       base::ThreadPool::CreateSequencedTaskRunner(
           {base::MayBlock(), base::TaskPriority::USER_VISIBLE}));
 
+#if !BUILDFLAG(IS_ANDROID)
+  map->Add<blink::mojom::DirectSocketsService>(
+      base::BindRepeating(&DedicatedWorkerHost::CreateDirectSocketsService,
+                          base::Unretained(host)));
+#endif
   map->Add<blink::mojom::WebUsbService>(base::BindRepeating(
       &DedicatedWorkerHost::CreateWebUsbService, base::Unretained(host)));
   map->Add<blink::mojom::WebSocketConnector>(base::BindRepeating(
