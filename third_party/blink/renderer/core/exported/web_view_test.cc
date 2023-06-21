@@ -5486,7 +5486,7 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
   gfx::Size page_size(300, 360);
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
 
   gfx::Size expected_size = PrintICBSizeFromPageSize(page_size);
 
@@ -5529,7 +5529,7 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
       Color::FromRGB(0, 128, 0),
       div->GetComputedStyle()->VisitedDependentColor(GetCSSPropertyColor()));
 
-  gfx::Size page_size(300, 360);
+  gfx::SizeF page_size(300, 360);
 
   WebPrintParams print_params;
   print_params.print_content_area.set_size(page_size);
@@ -5570,7 +5570,7 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   int expected_width = PrintICBSizeFromPageSize(page_size).width();
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
 
   frame->PrintBegin(print_params, WebNode());
 
@@ -5589,7 +5589,7 @@ TEST_F(WebViewTest, ResizeWithFixedPosCrash) {
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   gfx::Size page_size(300, 360);
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
   frame->PrintBegin(print_params, WebNode());
   web_view->MainFrameWidget()->Resize(page_size);
   frame->PrintEnd();

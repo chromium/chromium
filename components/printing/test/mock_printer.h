@@ -16,8 +16,8 @@
 #include "printing/image.h"
 #include "printing/mojom/print.mojom.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
-#include "ui/gfx/geometry/rect.h"
-#include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 // A class which represents an output page used in the MockPrinter class.
 // The MockPrinter class stores output pages in a vector, so, this class
@@ -83,7 +83,7 @@ class MockPrinter {
   void UpdateSettings(printing::mojom::PrintPagesParams* params,
                       const printing::PageRanges& page_range_array,
                       int margins_type,
-                      const gfx::Size& page_size,
+                      const gfx::SizeF& page_size,
                       int scale_factor);
   void PrintPage(printing::mojom::DidPrintDocumentParamsPtr params);
 
@@ -111,11 +111,11 @@ class MockPrinter {
   void SetPrintParams(printing::mojom::PrintParams* params);
 
   // In pixels according to dpi_x and dpi_y.
-  gfx::Size page_size_;
-  gfx::Size content_size_;
+  gfx::SizeF page_size_;
+  gfx::SizeF content_size_;
   int margin_left_;
   int margin_top_;
-  gfx::Rect printable_area_;
+  gfx::RectF printable_area_;
 
   // Specifies dots per inch.
   double dpi_;

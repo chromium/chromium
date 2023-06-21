@@ -32,6 +32,8 @@
 #include "third_party/blink/public/web/web_node.h"
 #include "third_party/blink/public/web/web_print_client.h"
 #include "third_party/blink/public/web/web_print_params.h"
+#include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_f.h"
 #include "ui/gfx/geometry/size.h"
 
 // RenderViewTest-based tests crash on Android
@@ -313,7 +315,7 @@ class PrintRenderFrameHelper
       base::ReadOnlySharedMemoryRegion preview_document_region);
 
   // Helper method to calculate the scale factor for fit-to-page.
-  int GetFitToPageScaleFactor(const gfx::Rect& printable_area_in_points);
+  int GetFitToPageScaleFactor(const gfx::RectF& printable_area_in_points);
 #endif  // BUILDFLAG(ENABLE_PRINT_PREVIEW)
 
   // Main printing code -------------------------------------------------------

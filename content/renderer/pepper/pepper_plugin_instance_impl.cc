@@ -113,6 +113,7 @@
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/image/image_skia.h"
 #include "ui/gfx/image/image_skia_rep.h"
 #include "ui/gfx/range/range.h"
@@ -1576,9 +1577,12 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
   }
 
   PP_PrintSettings_Dev print_settings;
-  print_settings.printable_area = PP_FromGfxRect(print_params.printable_area);
-  print_settings.content_area = PP_FromGfxRect(print_params.print_content_area);
-  print_settings.paper_size = PP_FromGfxSize(print_params.paper_size);
+  print_settings.printable_area =
+      PP_FromGfxRect(gfx::ToEnclosedRect(print_params.printable_area));
+  print_settings.content_area =
+      PP_FromGfxRect(gfx::ToEnclosedRect(print_params.print_content_area));
+  print_settings.paper_size =
+      PP_FromGfxSize(gfx::ToFlooredSize(print_params.paper_size));
   print_settings.dpi = print_params.printer_dpi;
   print_settings.orientation = PP_PRINTORIENTATION_NORMAL;
   print_settings.grayscale = PP_FALSE;

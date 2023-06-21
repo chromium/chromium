@@ -1986,7 +1986,7 @@ TEST_P(FrameThrottlingTest, PrintThrottledFrame) {
   auto* sub_frame = To<LocalFrame>(frame_element->ContentFrame());
   EXPECT_TRUE(sub_frame->View()->ShouldThrottleRenderingForTest());
   auto* web_frame = WebLocalFrameImpl::FromFrame(sub_frame);
-  WebPrintParams print_params(gfx::Size(500, 500));
+  WebPrintParams print_params(gfx::SizeF(500, 500));
   web_frame->PrintBegin(print_params, blink::WebNode());
   cc::PaintRecorder recorder;
   web_frame->PrintPage(0, recorder.beginRecording());

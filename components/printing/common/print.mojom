@@ -76,7 +76,7 @@ struct DidStartPreviewParams {
   // number of pages per sheet and should be greater or equal to 1.
   int32 pages_per_sheet;
   // Physical size of the page, including non-printable margins.
-  gfx.mojom.Size page_size;
+  gfx.mojom.SizeF page_size;
   // Scaling % to fit to page
   int32 fit_to_page_scaling;
 };
@@ -104,16 +104,16 @@ struct DidPreviewDocumentParams {
 // Parameters for a render request.
 struct PrintParams {
   // Physical size of the page, including non-printable margins,
-  // in pixels according to dpi.
-  gfx.mojom.Size page_size;
-  // In pixels according to dpi.
-  gfx.mojom.Size content_size;
-  // Physical printable area of the page in pixels according to dpi.
-  gfx.mojom.Rect printable_area;
-  // The y-offset of the printable area, in pixels according to dpi.
-  int32 margin_top = 0;
-  // The x-offset of the printable area, in pixels according to dpi.
-  int32 margin_left = 0;
+  // in device pixels.
+  gfx.mojom.SizeF page_size;
+  // In device pixels.
+  gfx.mojom.SizeF content_size;
+  // Physical printable area of the page in device pixels.
+  gfx.mojom.RectF printable_area;
+  // The y-offset of the printable area, in device pixels.
+  float margin_top = 0;
+  // The x-offset of the printable area, in device pixels.
+  float margin_left = 0;
   // Specifies the page orientation.
   PageOrientation page_orientation = kUpright;
   // Specifies dots per inch in the x and y direction.
@@ -270,7 +270,7 @@ interface PrintPreviewUI {
   // additionally has a custom orientation on ALL pages, otherwise false.
   [EnableIf=enable_print_preview]
   DidGetDefaultPageLayout(PageSizeMargins page_layout_in_points,
-      gfx.mojom.Rect printable_area_in_points,
+      gfx.mojom.RectF printable_area_in_points,
       bool all_pages_have_custom_size,
       bool all_pages_have_custom_orientation,
       int32 request_id);

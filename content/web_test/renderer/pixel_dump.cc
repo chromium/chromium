@@ -48,8 +48,8 @@ SkBitmap PrintFrameToBitmap(blink::WebLocalFrame* web_frame,
   auto* frame_widget = web_frame->LocalRoot()->FrameWidget();
   frame_widget->UpdateAllLifecyclePhases(blink::DocumentUpdateReason::kTest);
 
-  uint32_t page_count =
-      web_frame->PrintBegin(page_size_in_pixels, blink::WebNode());
+  uint32_t page_count = web_frame->PrintBegin(
+      blink::WebPrintParams(gfx::SizeF(page_size_in_pixels)), blink::WebNode());
 
   blink::WebVector<uint32_t> pages(
       printing::PageNumber::GetPages(page_ranges, page_count));

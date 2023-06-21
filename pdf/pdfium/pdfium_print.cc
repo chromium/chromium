@@ -23,7 +23,9 @@
 #include "ui/gfx/codec/jpeg_codec.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/geometry/rect.h"
+#include "ui/gfx/geometry/rect_conversions.h"
 #include "ui/gfx/geometry/size.h"
+#include "ui/gfx/geometry/size_conversions.h"
 #include "ui/gfx/geometry/size_f.h"
 
 using printing::ConvertUnit;
@@ -322,10 +324,13 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return nullptr;
   }
 
+  gfx::Size int_paper_size = ToFlooredSize(print_params.paper_size);
+  gfx::Rect int_printable_area = ToEnclosedRect(print_params.printable_area);
+
   float scale_factor = print_params.scale_factor / 100.0f;
-  FitContentsToPrintableAreaIfRequired(
-      output_doc.get(), scale_factor, print_params.print_scaling_option,
-      print_params.paper_size, print_params.printable_area);
+  FitContentsToPrintableAreaIfRequired(output_doc.get(), scale_factor,
+                                       print_params.print_scaling_option,
+                                       int_paper_size, int_printable_area);
   if (!FlattenPrintData(output_doc.get()))
     return nullptr;
 
@@ -334,13 +339,12 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return output_doc;
 
   gfx::Rect symmetrical_printable_area =
-      printing::PageSetup::GetSymmetricalPrintableArea(
-          print_params.paper_size, print_params.printable_area);
+      printing::PageSetup::GetSymmetricalPrintableArea(int_paper_size,
+                                                       int_printable_area);
   if (symmetrical_printable_area.IsEmpty())
     return nullptr;
   return CreateNupPdfDocument(std::move(output_doc), pages_per_sheet,
-                              print_params.paper_size,
-                              symmetrical_printable_area);
+                              int_paper_size, symmetrical_printable_area);
 }
 
 ScopedFPDFDocument PDFiumPrint::CreateRasterPdf(ScopedFPDFDocument doc,

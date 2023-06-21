@@ -9117,7 +9117,7 @@ TEST_F(WebFrameTest, PrintingBasic)
   WebLocalFrame* frame = web_view_helper.LocalMainFrame();
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(gfx::Size(500, 500));
+  print_params.print_content_area.set_size(gfx::SizeF(500, 500));
 
   uint32_t page_count = frame->PrintBegin(print_params, WebNode());
   EXPECT_EQ(1u, page_count);
@@ -13537,7 +13537,7 @@ TEST_F(WebFrameTest, AltTextOnAboutBlankPage) {
 static void TestFramePrinting(WebLocalFrameImpl* frame) {
   WebPrintParams print_params;
   gfx::Size page_size(500, 500);
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
   EXPECT_EQ(1u, frame->PrintBegin(print_params, WebNode()));
   cc::PaintRecorder recorder;
   frame->PrintPagesForTesting(recorder.beginRecording(), page_size, page_size);
@@ -13601,7 +13601,7 @@ std::vector<TextRunDOMNodeIdInfo> GetPrintedTextRunDOMNodeIds(
     const WebVector<uint32_t>* pages = nullptr) {
   WebPrintParams print_params;
   gfx::Size page_size(500, 500);
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
 
   frame->PrintBegin(print_params, WebNode());
   cc::PaintRecorder recorder;
@@ -13838,7 +13838,7 @@ TEST_F(WebFrameSimTest, PageOrientation) {
 
   auto* frame = WebView().MainFrame()->ToWebLocalFrame();
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area.set_size(gfx::SizeF(page_size));
   EXPECT_EQ(4u, frame->PrintBegin(print_params, WebNode()));
 
   WebPrintPageDescription description;

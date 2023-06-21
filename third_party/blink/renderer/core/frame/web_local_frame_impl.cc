@@ -341,6 +341,20 @@ class ChromePrintContext : public PrintContext {
 
   void BeginPrintMode(float width, float height) override {
     DCHECK(!printed_page_width_);
+
+    // Although layout itself can handle subpixels, we'll round down to the
+    // nearest integer. There are a couple of reasons for this. First of all,
+    // PrintContext sets page rectangles in integers, and if the input size is
+    // larger than that (by a fraction of a pixel), excess pages may be
+    // created. Furthermore, the printing code will also round down the sizes
+    // for the output canvas, so anything larger than that will end up getting
+    // clipped.
+    //
+    // TODO(mstensho): Refactor page rectangle calculation, and update the
+    // comment above.
+    width = floorf(width);
+    height = floorf(height);
+
     printed_page_width_ = width;
     PrintContext::BeginPrintMode(printed_page_width_, height);
   }
@@ -533,7 +547,7 @@ class ChromePluginPrintContext final : public ChromePrintContext {
 
   void BeginPrintMode(float width, float height) override {
     gfx::Rect rect(gfx::ToFlooredSize(gfx::SizeF(width, height)));
-    print_params_.print_content_area = rect;
+    print_params_.print_content_area = gfx::RectF(rect);
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
 

@@ -34,9 +34,9 @@ using ::testing::ElementsAre;
 
 namespace {
 
-constexpr gfx::Size kUSLetterSize = {612, 792};
-constexpr gfx::Rect kUSLetterRect = {{0, 0}, kUSLetterSize};
-constexpr gfx::Rect kPrintableAreaRect = {{18, 18}, {576, 733}};
+constexpr gfx::SizeF kUSLetterSize = {612, 792};
+constexpr gfx::RectF kUSLetterRect = {{0, 0}, kUSLetterSize};
+constexpr gfx::RectF kPrintableAreaRect = {{18, 18}, {576, 733}};
 
 using ExpectedDimensions = std::vector<gfx::SizeF>;
 

@@ -13,10 +13,10 @@ namespace blink {
 // Description of a specific page when printing. All sizes are in pixels.
 struct WebPrintPageDescription {
   gfx::SizeF size;
-  int margin_top = 0;
-  int margin_right = 0;
-  int margin_bottom = 0;
-  int margin_left = 0;
+  float margin_top = 0;
+  float margin_right = 0;
+  float margin_bottom = 0;
+  float margin_left = 0;
   PageOrientation orientation = PageOrientation::kUpright;
 };
 

@@ -37,6 +37,8 @@
 #include "printing/printing_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/gfx/geometry/rect_f.h"
+#include "ui/gfx/geometry/size_f.h"
 
 #if BUILDFLAG(ENABLE_OOP_PRINTING)
 #include "chrome/browser/printing/print_backend_service_manager.h"
@@ -64,16 +66,16 @@ namespace printing {
 namespace {
 
 #if !BUILDFLAG(IS_CHROMEOS)
-constexpr gfx::Size kLetterPhysicalSize = gfx::Size(612, 792);
-constexpr gfx::Rect kLetterPrintableArea = gfx::Rect(5, 5, 602, 782);
-constexpr gfx::Size kLegalPhysicalSize = gfx::Size(612, 1008);
-constexpr gfx::Rect kLegalPrintableArea = gfx::Rect(5, 5, 602, 998);
+constexpr gfx::SizeF kLetterPhysicalSize = gfx::SizeF(612, 792);
+constexpr gfx::RectF kLetterPrintableArea = gfx::RectF(5, 5, 602, 782);
+constexpr gfx::SizeF kLegalPhysicalSize = gfx::SizeF(612, 1008);
+constexpr gfx::RectF kLegalPrintableArea = gfx::RectF(5, 5, 602, 998);
 
 // The default margins are set to 1.0cm in //printing/print_settings.cc, which
 // is about 28 printer units. The resulting content size is 556 x 736 for
 // Letter, and similarly is 556 x 952 for Legal.
-constexpr gfx::Size kLetterExpectedContentSize = gfx::Size(556, 736);
-constexpr gfx::Size kLegalExpectedContentSize = gfx::Size(556, 952);
+constexpr gfx::SizeF kLetterExpectedContentSize = gfx::SizeF(556, 736);
+constexpr gfx::SizeF kLegalExpectedContentSize = gfx::SizeF(556, 952);
 #endif  // !BUILDFLAG(IS_CHROMEOS)
 
 #if BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
