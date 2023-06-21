@@ -15,6 +15,11 @@
 namespace {
 
 constexpr char kScreenAIDlcName[] = "screen-ai";
+constexpr int kMaxInstallRetries = 3;
+int install_retries = 0;
+
+// Retry delay will exponentially increase.
+base::TimeDelta retry_delay = base::Seconds(3);
 
 void RecordDlcStateChange(bool install, bool successful) {
   if (install) {
@@ -25,8 +30,20 @@ void RecordDlcStateChange(bool install, bool successful) {
                               successful);
   }
 }
+
 void OnInstallCompleted(
     const ash::DlcserviceClient::InstallResult& install_result) {
+  if (install_result.error == dlcservice::kErrorBusy &&
+      install_retries++ < kMaxInstallRetries) {
+    VLOG(1) << "ScreenAI installation failed as DLC service is busy, retrying.";
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(&screen_ai::chrome_os_installer::Install),
+        retry_delay);
+    retry_delay =
+        base::Seconds(retry_delay.InSeconds() * retry_delay.InSeconds());
+    return;
+  }
+
   RecordDlcStateChange(/*install=*/true, /*successful=*/install_result.error ==
                                              dlcservice::kErrorNone);
 
@@ -37,12 +54,15 @@ void OnInstallCompleted(
     return;
   }
 
-  VLOG(0) << "ScreenAI installation completed in path: "
+  VLOG(2) << "ScreenAI installation completed in path: "
           << install_result.root_path;
   if (!install_result.root_path.empty()) {
     screen_ai::ScreenAIInstallState::GetInstance()->SetComponentFolder(
         base::FilePath(install_result.root_path));
   }
+
+  base::UmaHistogramCounts100("Accessibility.ScreenAI.Component.InstallRetries",
+                              install_retries);
 }
 
 void OnUninstallCompleted(const std::string& err) {

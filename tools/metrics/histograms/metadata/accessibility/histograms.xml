@@ -1943,6 +1943,16 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.ScreenAI.Component.InstallRetries" units="count"
+    expires_after="2024-05-01">
+  <owner>rhalavati@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the number of times that the component installation has failed as
+    DLC service was busy and retried before successful install.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.ScreenAI.Component.{Action}"
     enum="BooleanSuccess" expires_after="2024-05-01">
   <owner>rhalavati@chromium.org</owner>
