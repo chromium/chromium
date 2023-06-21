@@ -32387,6 +32387,22 @@ should be able to be added at any place in this file.
   </description>
 </action>
 
+<action name="Signin_Signin_FromPasswordMigrationWarning">
+  <owner>ioanap@chromium.org</owner>
+  <owner>izuzic@google.com</owner>
+  <owner>chrome-signin-team@chromium.org</owner>
+  <description>
+    Recorded on sign in/sync consent flow start from access point
+    signin_metrics::AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING.
+    Android only.
+  </description>
+</action>
+
+<action name="Signin_Signin_FromPasswordMigrationWarningAndroid">
+  <owner>Please list the metric's owners. Add more owner tags as needed.</owner>
+  <description>Please enter the description of the metric.</description>
+</action>
+
 <action name="Signin_Signin_FromPostDeviceRestoreSigninPromo">
   <owner>scottyoder@google.com</owner>
   <owner>bling-get-set-up@google.com</owner>

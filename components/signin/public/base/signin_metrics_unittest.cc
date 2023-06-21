@@ -171,6 +171,8 @@ class SigninMetricsTest : public ::testing::Test {
         return "SearchCompanion";
       case AccessPoint::ACCESS_POINT_SET_UP_LIST:
         return "SetUpList";
+      case AccessPoint::ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID:
+        return "PasswordMigrationWarning";
       case AccessPoint::ACCESS_POINT_MAX:
         NOTREACHED();
         return "";

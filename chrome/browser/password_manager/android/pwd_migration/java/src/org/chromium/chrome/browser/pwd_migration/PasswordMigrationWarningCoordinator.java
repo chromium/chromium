@@ -11,22 +11,27 @@ import androidx.fragment.app.Fragment;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningMediator.MigrationWarningOptionsHandler;
 import org.chromium.chrome.browser.pwd_migration.PasswordMigrationWarningProperties.ScreenType;
+import org.chromium.chrome.browser.ui.signin.SyncConsentActivityLauncher;
 import org.chromium.components.browser_ui.bottomsheet.BottomSheetController;
 import org.chromium.components.browser_ui.settings.SettingsLauncher;
+import org.chromium.components.signin.metrics.SigninAccessPoint;
 import org.chromium.ui.modelutil.PropertyModel;
 import org.chromium.ui.modelutil.PropertyModelChangeProcessor;
 
 /** The coordinator of the password migration warning. */
 public class PasswordMigrationWarningCoordinator implements MigrationWarningOptionsHandler {
     private final PasswordMigrationWarningMediator mMediator;
+    private final SyncConsentActivityLauncher mSyncConsentActivityLauncher;
     private final SettingsLauncher mSettingsLauncher;
     private final Context mContext;
     private final Class<? extends Fragment> mSyncSettingsFragment;
 
     public PasswordMigrationWarningCoordinator(Context context, Profile profile,
-            BottomSheetController sheetController, SettingsLauncher settingsLauncher,
-            Class<? extends Fragment> syncSettingsFragment) {
+            BottomSheetController sheetController,
+            SyncConsentActivityLauncher syncConsentActivityLauncher,
+            SettingsLauncher settingsLauncher, Class<? extends Fragment> syncSettingsFragment) {
         mContext = context;
+        mSyncConsentActivityLauncher = syncConsentActivityLauncher;
         mSettingsLauncher = settingsLauncher;
         mSyncSettingsFragment = syncSettingsFragment;
         mMediator = new PasswordMigrationWarningMediator(profile, this);
@@ -48,7 +53,8 @@ public class PasswordMigrationWarningCoordinator implements MigrationWarningOpti
 
     @Override
     public void startSyncConsentFlow() {
-        // TODO(crbug.com/1454770): Launch the sync consent flow.
+        mSyncConsentActivityLauncher.launchActivityIfAllowed(
+                mContext, SigninAccessPoint.PASSWORD_MIGRATION_WARNING_ANDROID);
     }
 
     @Override

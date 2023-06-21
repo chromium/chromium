@@ -193,6 +193,8 @@ enum class AccessPoint : int {
   ACCESS_POINT_SEARCH_COMPANION = 50,
   // Access point for the IOS Set Up List on the NTP.
   ACCESS_POINT_SET_UP_LIST = 51,
+  // Access point for the local password migration warning on Android.
+  ACCESS_POINT_PASSWORD_MIGRATION_WARNING_ANDROID = 52,
 
   // Add values above this line with a corresponding label to the
   // "SigninAccessPoint" enum in tools/metrics/histograms/enums.xml
