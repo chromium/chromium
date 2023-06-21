@@ -468,6 +468,7 @@ Consulta les instruccions del teu motor de cerca per suprimir l'historial de cer
 <translation id="4045648459118332842">Obtén les contrasenyes desades en qualsevol aplicació amb un sol toc</translation>
 <translation id="4049507953662678203">Assegureu-vos que teniu una connexió a la xarxa i torneu-ho a provar.</translation>
 <translation id="4063300985191096908">Ves al feed</translation>
+<translation id="4066639687323968621">Inicia la sessió amb el teu Compte de Google per sincronitzar les adreces d'interès, l'historial i més.</translation>
 <translation id="408404951701638773">Ara és més fàcil accedir a la barra de cerca</translation>
 <translation id="4092655288299341041">Mostra l'ajuda</translation>
 <translation id="4105841739161771091">{count,plural, =1{Suprimeix l'adreça}other{Suprimeix les adreces}}</translation>
@@ -1275,6 +1276,7 @@ Les dades s'han encriptat amb la teva frase de contrasenya el dia <ph name="TIME
 <translation id="9157836665414082580">Suprimeix quadres de diàleg</translation>
 <translation id="9162432979321511934">Activa l'opció Emplena automàticament les contrasenyes</translation>
 <translation id="9165320910061267720">Per rebre notificacions d'alertes de baixada de preu, cal que activis les notificacions a la configuració d'iOS.</translation>
+<translation id="9172603439892261948">Sincronitza les adreces d'interès, l'historial i més.</translation>
 <translation id="9177438225260810839">Cerca a les pestanyes obertes</translation>
 <translation id="9187853111759024059">Vols tancar més de 99 pestanyes inactives?</translation>
 <translation id="9188680907066685419">Tanqueu la sessió del compte gestionat</translation>

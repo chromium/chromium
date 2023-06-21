@@ -468,6 +468,7 @@ Pogledajte uputstva pretraživača za brisanje istorije pretrage ako je to prime
 <translation id="4045648459118332842">Pristupajte sačuvanim lozinkama u bilo kojoj aplikaciji jednim dodirom</translation>
 <translation id="4049507953662678203">Proverite da li ste povezani na mrežu i pokušajte ponovo.</translation>
 <translation id="4063300985191096908">Idi na fid</translation>
+<translation id="4066639687323968621">Prijavite se pomoću Google naloga da biste sinhronizovali obeleživače, istoriju i drugo.</translation>
 <translation id="408404951701638773">Traka za pretragu je sada dostupnija</translation>
 <translation id="4092655288299341041">Prikazuje pomoć</translation>
 <translation id="4105841739161771091">{count,plural, =1{Izbriši adresu}one{Izbriši adrese}few{Izbriši adrese}other{Izbriši adrese}}</translation>
@@ -1275,6 +1276,7 @@ Podaci su šifrovani pomoću pristupne fraze <ph name="TIME" />. Unesite je da 
 <translation id="9157836665414082580">Spreči dijaloge</translation>
 <translation id="9162432979321511934">Uključite Automatsko popunjavanje lozinki</translation>
 <translation id="9165320910061267720">Da biste dobijali obaveštenja o sniženjima, treba da uključite obaveštenja u iOS podešavanjima.</translation>
+<translation id="9172603439892261948">Sinhronizujte obeleživače, istoriju i drugo.</translation>
 <translation id="9177438225260810839">Pretražite otvorene kartice</translation>
 <translation id="9187853111759024059">Želite da zatvorite više od 99 neaktivnih kartica?</translation>
 <translation id="9188680907066685419">Odjavite se sa naloga kojim se upravlja</translation>

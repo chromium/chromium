@@ -468,6 +468,7 @@ Tingnan ang mga tagubilin ng iyong search engine para sa pag-delete sa history n
 <translation id="4045648459118332842">Kunin ang iyong mga naka-save na password sa anumang app sa pamamagitan ng isang pag-tap</translation>
 <translation id="4049507953662678203">Tiyaking mayroon kang koneksyon sa network, at subukan ulit.</translation>
 <translation id="4063300985191096908">Pumunta Sa Feed</translation>
+<translation id="4066639687323968621">Mag-sign in sa Google Account mo para ma-sync ang iyong mga bookmark, history, at higit pa.</translation>
 <translation id="408404951701638773">Mas madali nang puntahan ang search bar</translation>
 <translation id="4092655288299341041">Ipakita ang Tulong</translation>
 <translation id="4105841739161771091">{count,plural, =1{I-delete ang Address}one{I-delete ang Mga Address}other{I-delete ang Mga Address}}</translation>
@@ -1275,6 +1276,7 @@ Na-encrypt ang iyong data gamit ang passphrase mo noong <ph name="TIME" />. Ilag
 <translation id="9157836665414082580">Pigilan ang Mga Dialog</translation>
 <translation id="9162432979321511934">I-on ang I-autofill ang Mga Password</translation>
 <translation id="9165320910061267720">Para makatanggap ng mga notification tungkol sa mga alerto sa pagbaba ng presyo, kakailanganin mong i-on ang mga notification sa mga setting ng iyong iOS.</translation>
+<translation id="9172603439892261948">I-sync ang iyong mga bookmark, history, at higit pa.</translation>
 <translation id="9177438225260810839">Maghanap sa Mga Bukas na Tab</translation>
 <translation id="9187853111759024059">Isara ang 99+ Hindi Aktibong Tab?</translation>
 <translation id="9188680907066685419">Mag-sign out sa pinamamahalaang account</translation>

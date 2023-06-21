@@ -2237,7 +2237,7 @@ Voice Match-ekin, Google-ren Laguntzailea zerbitzuak <ph name="SUPERVISED_USER_N
 <translation id="2873995907777332853">Erakutsi cookie guztiak blokeatzeari buruzko xehetasunak</translation>
 <translation id="2874939134665556319">Aurreko pista</translation>
 <translation id="2875698561019555027">(Chrome errore-orriak)</translation>
-<translation id="2876336351874743617">2. hatz-marka</translation>
+<translation id="2876336351874743617">2. hatza</translation>
 <translation id="2876369937070532032">Segurtasuna arriskuan dagoenean, ireki dituzun URLetako batzuk bidaltzen dizkio Google-ri</translation>
 <translation id="2876556152483133018">Webgune-bilaketa</translation>
 <translation id="2877467134191447552">Zure gainerako kontuak ere gehi ditzakezu webgune eta aplikazioak atzitu ahal izateko.</translation>
@@ -3259,7 +3259,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="3788331399335602504">fitxategiak</translation>
 <translation id="3788401245189148511">Hau egin dezake:</translation>
 <translation id="3789841737615482174">Instalatu</translation>
-<translation id="3790417903123637354">Arazo bat izan da. Saiatu berriro geroago</translation>
+<translation id="3790417903123637354">Arazoren bat izan da. Saiatu berriro geroago</translation>
 <translation id="379082410132524484">Iraungita dago txartela</translation>
 <translation id="3792973596468118484"><ph name="NUM_EXTENSIONS" /> luzapen</translation>
 <translation id="3794792524918736965">Aktibatu Windows Hello</translation>
@@ -4140,7 +4140,7 @@ Txartel adimenduna sartuta edukitzea eskatzen du <ph name="DOMAIN" /> domeinuak.
 <translation id="4562155214028662640">Gehitu hatz-marka</translation>
 <translation id="4563210852471260509">Hasierako idazteko hizkuntza txinera da</translation>
 <translation id="4563382028841851106">Kendu kontutik</translation>
-<translation id="4563880231729913339">3. hatz-marka</translation>
+<translation id="4563880231729913339">3. hatza</translation>
 <translation id="4564245002465020751">Amaitu telefonoa konfiguratzen</translation>
 <translation id="4565377596337484307">Ezkutatu pasahitza</translation>
 <translation id="4565917129334815774">Gorde sistemaren erregistroak</translation>
@@ -5606,7 +5606,7 @@ Segurua den ala ez egiaztatzeko, Google-ri bidal diezaiokezu. Segundo gutxi batz
 <translation id="5884447826201752041">Pertsonalizatu luzapen bakoitzerako</translation>
 <translation id="5884474295213649357">Fitxa USB bidezko gailu batera konektatuta dago.</translation>
 <translation id="5885314688092915589">Zure erakundeak kudeatuko du profila</translation>
-<translation id="5886009770935151472">1. hatz-marka</translation>
+<translation id="5886009770935151472">1. hatza</translation>
 <translation id="5886112770923972514">Konektatu eta konfiguratu bizkor Parekatze bizkorra darabilten inguruko gailuak</translation>
 <translation id="5886384907280980632">Desaktibatu</translation>
 <translation id="5888889603768021126">Honekin hasi da saioa:</translation>
@@ -7583,7 +7583,7 @@ Inoiz Voice Match erabiltzeari utzi nahi badiozu, ken ezazu Laguntzailea zerbitz
 <translation id="7633724038415831385">Hau da eguneratzeen zain egongo zaren aldi bakarra. Izan ere, atzeko planoan eguneratzen da softwarea Chromebook-etan.</translation>
 <translation id="7634280112532283638">Spama eta iruzurrak murriztea</translation>
 <translation id="7634337648687970851">Oraingoz ez da onartzen gailuko datuak berreskuratzea.</translation>
-<translation id="7634566076839829401">Arazo bat izan da. Saiatu berriro geroago.</translation>
+<translation id="7634566076839829401">Arazoren bat izan da. Saiatu berriro geroago.</translation>
 <translation id="763472884969134151"><ph name="LINK" /> tresnak egin du analisia</translation>
 <translation id="7635048370253485243">Administratzaileak ainguratu du</translation>
 <translation id="7635711411613274199">Arakatzen duzunean, hainbat faktorek zehazten dute ikusten dituzun iragarkiak pertsonalizatuta dauden ala ez: ezarpen hau, <ph name="BEGIN_LINK1" />Iragarkien gaiak<ph name="LINK_END1" /> ezarpena, <ph name="BEGIN_LINK2" />cookieen ezarpenak<ph name="LINK_END2" /> eta ikusten dituzun webguneek iragarkiak pertsonalizatzen dituzten ala ez</translation>

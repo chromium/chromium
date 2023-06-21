@@ -468,6 +468,7 @@ Consultez les instructions de votre moteur de recherche pour supprimer votre his
 <translation id="4045648459118332842">Utilisez vos mots de passe enregistrés dans n'importe quelle application en un seul clic</translation>
 <translation id="4049507953662678203">Assurez-vous d'avoir une connexion réseau et réessayez.</translation>
 <translation id="4063300985191096908">Accéder au flux</translation>
+<translation id="4066639687323968621">Connectez-vous avec votre compte Google pour synchroniser vos favoris, votre historique et bien plus encore.</translation>
 <translation id="408404951701638773">La barre de recherche est désormais plus facile à atteindre</translation>
 <translation id="4092655288299341041">Afficher l'aide</translation>
 <translation id="4105841739161771091">{count,plural, =1{Supprimer l'adresse}one{Supprimer les adresses}other{Supprimer les adresses}}</translation>
@@ -1275,6 +1276,7 @@ Vos données ont été chiffrées avec votre phrase de passe sur <ph name="TIME"
 <translation id="9157836665414082580">Supprimer les boîtes de dialogue</translation>
 <translation id="9162432979321511934">Activer l'option de remplissage automatique des mots de passe</translation>
 <translation id="9165320910061267720">Pour recevoir des notifications d'alertes relatives à une baisse de prix, vous devez activer les notifications dans vos paramètres iOS.</translation>
+<translation id="9172603439892261948">Synchronisez vos favoris, votre historique et bien plus encore.</translation>
 <translation id="9177438225260810839">Rechercher dans les onglets ouverts</translation>
 <translation id="9187853111759024059">Fermer plus de 99 onglets inactifs?</translation>
 <translation id="9188680907066685419">Se déconnecter du compte géré</translation>

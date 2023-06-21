@@ -778,7 +778,7 @@
 <translation id="1646982517418478057">برای رمزگذاری این گواهی، گذرواژه‌ای وارد کنید</translation>
 <translation id="1647408325348388858"><ph name="FILE_NAME" /> در این برنامهٔ وب باز و ویرایش شود؟</translation>
 <translation id="1648528859488547844">‏از Wi-Fi یا شبکه‌های تلفن همراه برای تعیین مکان استفاده شود</translation>
-<translation id="164936512206786300">لغو مرتبط‌سازی دستگاه بلوتوث</translation>
+<translation id="164936512206786300">لغو جفت کردن دستگاه بلوتوث</translation>
 <translation id="1651008383952180276">باید همان گذرعبارت را دو بار وارد کنید</translation>
 <translation id="1652326691684645429">فعال کردن «هم‌رسانی با اطراف»</translation>
 <translation id="1654580009054503925">مجاز به نمایش درخواست‌ها نیست</translation>
@@ -4170,7 +4170,7 @@
 <translation id="4572779512957829735">پین را برای کلید امنیتی وارد کنید</translation>
 <translation id="457386861538956877">بیشتر...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
-<translation id="4576541033847873020">مرتبط‌سازی دستگاه بلوتوث</translation>
+<translation id="4576541033847873020">جفت کردن دستگاه بلوتوث</translation>
 <translation id="4576763597586015380">‏برای ادامه ذخیره کردن گذرواژه‌ها در «حساب Google» خود، هویتتان را به‌تأیید برسانید</translation>
 <translation id="4579453506923101210">فراموش کردن تلفن متصل</translation>
 <translation id="4579581181964204535">ارسال محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست.</translation>
@@ -5044,7 +5044,7 @@
 <translation id="5375318608039113175">‏برای استفاده از «هم‌رسانی با اطراف» با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="5375577102295339548">سایت‌ها می‌توانند به تأیید اینکه شما روبات نیستید کمک کنند</translation>
 <translation id="5376094717770783089">درخواست دسترسی دارد</translation>
-<translation id="5376169624176189338">برای برگشت به عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
+<translation id="5376169624176189338">برای برگشتن به‌عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
 <translation id="5376931455988532197">فایل بسیار بزرگ است</translation>
 <translation id="5379140238605961210">ادامه مسدود کردن دسترسی به میکروفون</translation>
 <translation id="5380424552031517043"><ph name="PERMISSION" /> برداشته شد</translation>

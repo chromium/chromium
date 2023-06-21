@@ -468,6 +468,7 @@ Se eventuelt instruksjonene fra den aktuelle søkemotoren om hvordan du sletter 
 <translation id="4045648459118332842">Se de lagrede passordene dine i hvilken som helst app med ett trykk</translation>
 <translation id="4049507953662678203">Sørg for at du er koblet til et nettverk, og prøv igjen.</translation>
 <translation id="4063300985191096908">Gå til feeden</translation>
+<translation id="4066639687323968621">Logg på med Google-kontoen din for å synkronisere blant annet bokmerker og loggen.</translation>
 <translation id="408404951701638773">Søkefeltet er nå enklere å finne</translation>
 <translation id="4092655288299341041">Vis Hjelp</translation>
 <translation id="4105841739161771091">{count,plural, =1{Slett adresse}other{Slett adresser}}</translation>
@@ -1275,6 +1276,7 @@ Dataene dine ble kryptert med passordfrasen din <ph name="TIME" />. Skriv den in
 <translation id="9157836665414082580">Ignorer dialogbokser</translation>
 <translation id="9162432979321511934">Slå på Autofyll-passord.</translation>
 <translation id="9165320910061267720">For å få varsler om avslag må du slå på varsler i iOS-innstillingene.</translation>
+<translation id="9172603439892261948">Synkroniser blant annet bokmerker og loggen.</translation>
 <translation id="9177438225260810839">Søk i åpne faner</translation>
 <translation id="9187853111759024059">Vil du lukke 99 eller flere inaktive faner?</translation>
 <translation id="9188680907066685419">Logg av administrert konto</translation>
