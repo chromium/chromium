@@ -34,7 +34,7 @@ using chrome_test_util::Omnibox;
 using chrome_test_util::SettingsAccountButton;
 using chrome_test_util::SettingsCollectionView;
 using chrome_test_util::SettingsDoneButton;
-using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
+using chrome_test_util::SettingsSignInRowMatcher;
 using chrome_test_util::SignOutAccountsButton;
 
 namespace {
@@ -84,7 +84,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -108,8 +108,8 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [ChromeEarlGreyUI waitForAppToIdle];
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
 
-  [ChromeEarlGrey waitForSufficientlyVisibleElementWithMatcher:
-                      SettingsSignInAndEnableSyncRowMatcher()];
+  [ChromeEarlGrey
+      waitForSufficientlyVisibleElementWithMatcher:SettingsSignInRowMatcher()];
   [SigninEarlGrey verifySignedOut];
 
   [[EarlGrey selectElementWithMatcher:SettingsDoneButton()]
@@ -208,7 +208,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   [SigninEarlGreyUI tapRemoveAccountFromDeviceWithFakeIdentity:fakeIdentity];
 
   // Check that the user is signed out and the Main Settings screen is shown.
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
   [SigninEarlGrey verifySignedOut];
 
@@ -392,7 +392,7 @@ constexpr base::TimeDelta kSyncOperationTimeout = base::Seconds(10);
   // Remove the primary accounts.
   [SigninEarlGrey forgetFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI waitForAppToIdle];
-  [[EarlGrey selectElementWithMatcher:SettingsSignInAndEnableSyncRowMatcher()]
+  [[EarlGrey selectElementWithMatcher:SettingsSignInRowMatcher()]
       assertWithMatcher:grey_sufficientlyVisible()];
 
   // Closes the settings.

@@ -34,7 +34,7 @@ using chrome_test_util::NavigationBarCancelButton;
 using chrome_test_util::SettingsDoneButton;
 using chrome_test_util::SettingsLink;
 using chrome_test_util::SettingsMenuBackButton;
-using chrome_test_util::SettingsSignInAndEnableSyncRowMatcher;
+using chrome_test_util::SettingsSignInRowMatcher;
 
 namespace {
 NSString* const kPassphrase = @"hello";
@@ -123,8 +123,7 @@ NSString* const kPassphrase = @"hello";
   FakeSystemIdentity* fakeIdentity = [FakeSystemIdentity fakeIdentity1];
   [SigninEarlGrey addFakeIdentity:fakeIdentity];
   [ChromeEarlGreyUI openSettingsMenu];
-  [ChromeEarlGreyUI
-      tapSettingsMenuButton:SettingsSignInAndEnableSyncRowMatcher()];
+  [ChromeEarlGreyUI tapSettingsMenuButton:SettingsSignInRowMatcher()];
   [[EarlGrey selectElementWithMatcher:SettingsLink()] performAction:grey_tap()];
 
   // Scroll to bottom of Manage Sync Settings, if necessary.

@@ -37,7 +37,7 @@ id<GREYMatcher> UpgradeSigninPromoMatcher();
 
 // Matcher for the Settings row which, upon tap, leads the user to sign-in and
 // enable sync. The row is only shown to signed-out users.
-id<GREYMatcher> SettingsSignInAndEnableSyncRowMatcher();
+id<GREYMatcher> SettingsSignInRowMatcher();
 
 }  // namespace chrome_test_util
 
