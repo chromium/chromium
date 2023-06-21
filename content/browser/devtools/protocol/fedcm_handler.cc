@@ -44,7 +44,7 @@ DispatchResponse FedCmHandler::Enable(Maybe<bool> in_disableRejectionDelay) {
   // OnDialogShown should have been called previously if was_enabled is true.
   // This could happen if FedCmHandler::Enable was called to enable/disable the
   // rejection delay.
-  if (!was_enabled && auth_request && auth_request->GetDialogController()) {
+  if (!was_enabled && auth_request && GetIdentityProviderData(auth_request)) {
     OnDialogShown();
   }
 
