@@ -57,6 +57,10 @@ class TabGroupModel {
  private:
   std::map<tab_groups::TabGroupId, std::unique_ptr<TabGroup>> groups_;
 
+  // Used to maintain insertion order of TabGroupsIds added to the
+  // TabGroupModel.
+  std::vector<tab_groups::TabGroupId> group_ids_;
+
   raw_ptr<TabGroupController> controller_;
 
   // Returns the least-used color in the color set, breaking ties toward the

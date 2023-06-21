@@ -233,3 +233,24 @@ TEST_F(ExistingTabGroupSubMenuModelTest, ShouldShowExistingTabGroups) {
   new_browser.get()->tab_strip_model()->CloseAllTabs();
   new_browser.reset();
 }
+
+// Verify tab groups are display in the order they were created
+TEST_F(ExistingTabGroupSubMenuModelTest, ShowTabGroupsInTheOrderTheyWereAdded) {
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(browser(), GURL("chrome://newtab"));
+  AddTab(browser(), GURL("chrome://newtab"));
+
+  TabStripModel* model = browser()->tab_strip_model();
+  std::vector<tab_groups::TabGroupId> group_ids;
+
+  group_ids.emplace_back(model->AddToNewGroup({0}));
+  group_ids.emplace_back(model->AddToNewGroup({1}));
+  group_ids.emplace_back(model->AddToNewGroup({2}));
+  group_ids.emplace_back(model->AddToNewGroup({3}));
+
+  ASSERT_EQ(model->group_model()->ListTabGroups().size(), size_t(4u));
+
+  ASSERT_EQ(model->group_model()->ListTabGroups(), group_ids);
+}
