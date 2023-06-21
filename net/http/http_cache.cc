@@ -39,7 +39,6 @@
 #include "net/base/network_isolation_key.h"
 #include "net/base/upload_data_stream.h"
 #include "net/disk_cache/disk_cache.h"
-#include "net/http/http_cache_lookup_manager.h"
 #include "net/http/http_cache_transaction.h"
 #include "net/http/http_cache_writers.h"
 #include "net/http/http_network_layer.h"
@@ -243,9 +242,6 @@ HttpCache::HttpCache(std::unique_ptr<HttpTransactionFactory> network_layer,
     return;
 
   net_log_ = session->net_log();
-
-  session->SetServerPushDelegate(
-      std::make_unique<HttpCacheLookupManager>(this));
 }
 
 HttpCache::~HttpCache() {

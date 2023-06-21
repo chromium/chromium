@@ -28,7 +28,6 @@
 #include "net/proxy_resolution/proxy_config.h"
 #include "net/socket/connect_job.h"
 #include "net/socket/ssl_client_socket.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/spdy/spdy_session_key.h"
 #include "net/ssl/ssl_config_service.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_versions.h"
@@ -290,10 +289,6 @@ class NET_EXPORT SpdySessionPool
     return http_server_properties_;
   }
 
-  void set_server_push_delegate(ServerPushDelegate* push_delegate) {
-    push_delegate_ = push_delegate;
-  }
-
   // NetworkChangeNotifier::IPAddressObserver methods:
 
   // We flush all idle sessions and release references to the active ones so
@@ -493,7 +488,6 @@ class NET_EXPORT SpdySessionPool
   SpdySessionRequestMap spdy_session_request_map_;
 
   TimeFunc time_func_;
-  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
 
   raw_ptr<NetworkQualityEstimator> network_quality_estimator_;
 

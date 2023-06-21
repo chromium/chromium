@@ -500,22 +500,6 @@ namespace test {
 // Returns a SHA1 HashValue in which each byte has the value |label|.
 HashValue GetTestHashValue(uint8_t label);
 
-// A test implementation of ServerPushDelegate that caches all the pushed
-// request and provides a interface to cancel the push given url.
-class TestServerPushDelegate : public ServerPushDelegate {
- public:
-  TestServerPushDelegate();
-  ~TestServerPushDelegate() override;
-
-  void OnPush(std::unique_ptr<ServerPushHelper> push_helper,
-              const NetLogWithSource& session_net_log) override;
-
-  bool CancelPush(GURL url);
-
- private:
-  std::map<GURL, std::unique_ptr<ServerPushHelper>> push_helpers;
-};
-
 }  // namespace test
 }  // namespace net
 

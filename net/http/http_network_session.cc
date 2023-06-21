@@ -349,17 +349,6 @@ void HttpNetworkSession::CloseIdleConnections(const char* net_log_reason_utf8) {
   spdy_session_pool_.CloseCurrentIdleSessions(net_log_reason_utf8);
 }
 
-void HttpNetworkSession::SetServerPushDelegate(
-    std::unique_ptr<ServerPushDelegate> push_delegate) {
-  DCHECK(push_delegate);
-  if (!params_.enable_server_push_cancellation || push_delegate_)
-    return;
-
-  push_delegate_ = std::move(push_delegate);
-  spdy_session_pool_.set_server_push_delegate(push_delegate_.get());
-  quic_stream_factory_.set_server_push_delegate(push_delegate_.get());
-}
-
 bool HttpNetworkSession::IsQuicEnabled() const {
   return params_.enable_quic;
 }

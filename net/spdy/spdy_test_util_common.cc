@@ -1022,23 +1022,5 @@ HashValue GetTestHashValue(uint8_t label) {
   return hash_value;
 }
 
-TestServerPushDelegate::TestServerPushDelegate() = default;
-
-TestServerPushDelegate::~TestServerPushDelegate() = default;
-
-void TestServerPushDelegate::OnPush(
-    std::unique_ptr<ServerPushHelper> push_helper,
-    const NetLogWithSource& session_net_log) {
-  push_helpers[push_helper->GetURL()] = std::move(push_helper);
-}
-
-bool TestServerPushDelegate::CancelPush(GURL url) {
-  auto itr = push_helpers.find(url);
-  DCHECK(itr != push_helpers.end());
-  itr->second->Cancel();
-  push_helpers.erase(itr);
-  return true;
-}
-
 }  // namespace test
 }  // namespace net

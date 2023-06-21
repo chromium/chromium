@@ -409,29 +409,6 @@ size_t GetTotalSize(const T (&arr)[N]) {
 // the server permits more, we will never exceed this limit.
 const size_t kMaxConcurrentStreamLimit = 256;
 
-// TODO(https://crbug.com/1426477): Remove.
-class SpdyServerPushHelper : public ServerPushDelegate::ServerPushHelper {
- public:
-  explicit SpdyServerPushHelper(base::WeakPtr<SpdySession> session,
-                                const GURL& url)
-      : session_(session), request_url_(url) {}
-
-  void Cancel() override {}
-
-  const GURL& GetURL() const override { return request_url_; }
-
-  NetworkAnonymizationKey GetNetworkAnonymizationKey() const override {
-    if (session_) {
-      return session_->spdy_session_key().network_anonymization_key();
-    }
-    return NetworkAnonymizationKey();
-  }
-
- private:
-  base::WeakPtr<SpdySession> session_;
-  const GURL request_url_;
-};
-
 }  // namespace
 
 SpdyProtocolErrorDetails MapFramerErrorToProtocolError(
@@ -844,7 +821,6 @@ SpdySession::SpdySession(
     bool http2_end_stream_with_data_frame,
     bool enable_priority_update,
     TimeFunc time_func,
-    ServerPushDelegate* /*push_delegate*/,
     NetworkQualityEstimator* network_quality_estimator,
     NetLog* net_log)
     : spdy_session_key_(spdy_session_key),

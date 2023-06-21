@@ -292,9 +292,6 @@ class NET_EXPORT HttpNetworkSession {
   // Returns the original Context used to construct this session.
   const HttpNetworkSessionContext& context() const { return context_; }
 
-  // TODO(https://crbug.com/1426477): Remove.
-  void SetServerPushDelegate(std::unique_ptr<ServerPushDelegate> push_delegate);
-
   // Returns protocols to be used with ALPN.
   const NextProtoVector& GetAlpnProtos() const { return next_protos_; }
 
@@ -349,8 +346,6 @@ class NET_EXPORT HttpNetworkSession {
   WebSocketEndpointLockManager websocket_endpoint_lock_manager_;
   std::unique_ptr<ClientSocketPoolManager> normal_socket_pool_manager_;
   std::unique_ptr<ClientSocketPoolManager> websocket_socket_pool_manager_;
-  // TODO(https://crbug.com/1426477): Remove.
-  std::unique_ptr<ServerPushDelegate> push_delegate_;
   QuicStreamFactory quic_stream_factory_;
   SpdySessionPool spdy_session_pool_;
   std::unique_ptr<HttpStreamFactory> http_stream_factory_;

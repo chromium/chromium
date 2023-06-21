@@ -444,10 +444,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
 
   quic::QuicAlarmFactory* alarm_factory() { return alarm_factory_.get(); }
 
-  void set_server_push_delegate(ServerPushDelegate* push_delegate) {
-    push_delegate_ = push_delegate;
-  }
-
   handles::NetworkHandle default_network() const { return default_network_; }
 
   // Returns the stored DNS aliases for the session key.
@@ -633,7 +629,6 @@ class NET_EXPORT_PRIVATE QuicStreamFactory
   raw_ptr<HostResolver> host_resolver_;
   raw_ptr<ClientSocketFactory> client_socket_factory_;
   raw_ptr<HttpServerProperties> http_server_properties_;
-  raw_ptr<ServerPushDelegate> push_delegate_ = nullptr;
   const raw_ptr<CertVerifier> cert_verifier_;
   const raw_ptr<CTPolicyEnforcer> ct_policy_enforcer_;
   const raw_ptr<TransportSecurityState> transport_security_state_;

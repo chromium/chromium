@@ -41,7 +41,6 @@
 #include "net/spdy/buffered_spdy_framer.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/spdy/spdy_buffer.h"
 #include "net/spdy/spdy_session_pool.h"
 #include "net/spdy/spdy_stream.h"
@@ -340,7 +339,6 @@ class NET_EXPORT SpdySession
               bool http2_end_stream_with_data_frame,
               bool enable_priority_update,
               TimeFunc time_func,
-              ServerPushDelegate* push_delegate,
               NetworkQualityEstimator* network_quality_estimator,
               NetLog* net_log);
 
@@ -667,7 +665,6 @@ class NET_EXPORT SpdySession
   // |request->OnRequestComplete{Success,Failure}()| will be called
   // when the stream is created (unless it is cancelled). Otherwise,
   // no stream is created and the error is returned.
-  // TODO(https://crbug.com/1426477): Remove.
   int TryCreateStream(const base::WeakPtr<SpdyStreamRequest>& request,
                       base::WeakPtr<SpdyStream>* stream);
 

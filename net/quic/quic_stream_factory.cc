@@ -2039,9 +2039,9 @@ bool QuicStreamFactory::CreateSessionHelper(
       yield_after_packets_, yield_after_duration_, cert_verify_flags, config,
       std::move(crypto_config_handle), dns_resolution_start_time,
       dns_resolution_end_time,
-      std::make_unique<quic::QuicClientPushPromiseIndex>(), push_delegate_,
-      tick_clock_, task_runner_, std::move(socket_performance_watcher),
-      endpoint_result, net_log.net_log());
+      std::make_unique<quic::QuicClientPushPromiseIndex>(), tick_clock_,
+      task_runner_, std::move(socket_performance_watcher), endpoint_result,
+      net_log.net_log());
 
   all_sessions_[*session] = key;  // owning pointer
   writer->set_delegate(*session);

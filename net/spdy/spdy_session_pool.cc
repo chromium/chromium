@@ -699,7 +699,7 @@ std::unique_ptr<SpdySession> SpdySessionPool::CreateSession(
       session_max_queued_capped_frames_, initial_settings_,
       enable_http2_settings_grease_, greased_http2_frame_,
       http2_end_stream_with_data_frame_, enable_priority_update_, time_func_,
-      push_delegate_, network_quality_estimator_, net_log);
+      network_quality_estimator_, net_log);
 }
 
 base::WeakPtr<SpdySession> SpdySessionPool::InsertSession(

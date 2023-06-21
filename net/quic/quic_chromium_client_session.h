@@ -45,7 +45,6 @@
 #include "net/socket/socket_performance_watcher.h"
 #include "net/spdy/http2_priority_dependencies.h"
 #include "net/spdy/multiplexed_session.h"
-#include "net/spdy/server_push_delegate.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_client_push_promise_index.h"
 #include "net/third_party/quiche/src/quiche/quic/core/http/quic_spdy_client_session_base.h"
 #include "net/third_party/quiche/src/quiche/quic/core/quic_crypto_client_stream.h"
@@ -623,7 +622,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
       base::TimeTicks dns_resolution_start_time,
       base::TimeTicks dns_resolution_end_time,
       std::unique_ptr<quic::QuicClientPushPromiseIndex> push_promise_index,
-      ServerPushDelegate* push_delegate,
       const base::TickClock* tick_clock,
       base::SequencedTaskRunner* task_runner,
       std::unique_ptr<SocketPerformanceWatcher> socket_performance_watcher,
@@ -1143,9 +1141,6 @@ class NET_EXPORT_PRIVATE QuicChromiumClientSession
   bool port_migration_detected_ = false;
   bool quic_connection_migration_attempted_ = false;
   bool quic_connection_migration_successful_ = false;
-  // Not owned. |push_delegate_| outlives the session and handles server pushes
-  // received by session.
-  raw_ptr<ServerPushDelegate> push_delegate_;
   // UMA histogram counters for streams pushed to this session.
   int streams_pushed_count_ = 0;
   int streams_pushed_and_claimed_count_ = 0;

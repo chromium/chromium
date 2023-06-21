@@ -257,7 +257,7 @@ class QuicProxyClientSocketTest
         /*cert_verify_flags=*/0, quic::test::DefaultQuicConfig(),
         std::make_unique<TestQuicCryptoClientConfigHandle>(&crypto_config_),
         dns_start, dns_end,
-        std::make_unique<quic::QuicClientPushPromiseIndex>(), nullptr,
+        std::make_unique<quic::QuicClientPushPromiseIndex>(),
         base::DefaultTickClock::GetInstance(),
         base::SingleThreadTaskRunner::GetCurrentDefault().get(),
         /*socket_performance_watcher=*/nullptr, HostResolverEndpointResult(),
