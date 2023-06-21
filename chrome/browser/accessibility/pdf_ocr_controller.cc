@@ -6,9 +6,6 @@
 
 #include "base/check_is_test.h"
 #include "base/check_op.h"
-#include "base/metrics/histogram_functions.h"
-#include "base/metrics/metrics_hashes.h"
-#include "base/strings/string_split.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/screen_ai/screen_ai_service_router.h"
@@ -18,8 +15,6 @@
 #include "chrome/common/pdf_util.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
-#include "components/language/core/browser/pref_names.h"
-#include "components/language/core/common/language_util.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/render_view_host.h"
 #include "content/public/browser/render_widget_host.h"
@@ -91,19 +86,6 @@ void AnnounceToScreenReader(const int message_id) {
       l10n_util::GetStringUTF16(message_id));
 }
 
-void RecordAcceptLanguages(const std::string& accept_languages) {
-  for (std::string language :
-       base::SplitString(accept_languages, ",", base::TRIM_WHITESPACE,
-                         base::SPLIT_WANT_NONEMPTY)) {
-    // Convert to a Chrome language code synonym. This language synonym is then
-    // converted into a `LocaleCodeISO639` enum value for a UMA histogram.
-    language::ToChromeLanguageSynonym(&language);
-    // TODO(crbug.com/1443345): Add a browser test to validate this UMA metric.
-    base::UmaHistogramSparse("Accessibility.PdfOcr.UserAcceptLanguage",
-                             base::HashMetricName(language));
-  }
-}
-
 }  // namespace
 
 namespace screen_ai {
@@ -151,9 +133,6 @@ void PdfOcrController::RunPdfOcrOnlyOnce(content::WebContents* web_contents) {
   ui::AXMode ax_mode = web_contents->GetAccessibilityMode();
   ax_mode.set_mode(ui::AXMode::kPDFOcr, true);
   web_contents->SetAccessibilityMode(ax_mode);
-
-  RecordAcceptLanguages(
-      profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
 }
 
 bool PdfOcrController::IsEnabled() const {
@@ -168,8 +147,6 @@ void PdfOcrController::OnPdfOcrAlwaysActiveChanged() {
   VLOG(2) << "PDF OCR Always Active changed: " << is_always_active;
 
   if (is_always_active) {
-    RecordAcceptLanguages(
-        profile_->GetPrefs()->GetString(language::prefs::kAcceptLanguages));
     if (MaybeScheduleRequest(/*web_contents_for_only_once_request=*/nullptr)) {
       // The request will be handled when the library is ready or discarded if
       // it fails to load.
