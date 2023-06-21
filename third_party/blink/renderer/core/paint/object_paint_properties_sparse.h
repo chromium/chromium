@@ -8,6 +8,7 @@
 #include <array>
 #include <memory>
 #include <utility>
+#include <variant>
 
 #include "base/dcheck_is_on.h"
 #include "base/memory/ptr_util.h"
