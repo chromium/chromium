@@ -103,6 +103,7 @@ class MockTextInputDelegate : public TextInput::Delegate {
               (base::StringPiece16, const gfx::Range&),
               (override));
   MOCK_METHOD(bool, ConfirmComposition, (bool), (override));
+  MOCK_METHOD(bool, SupportsConfirmPreedit, (), (override));
 };
 
 class TestingInputMethodObserver : public ui::InputMethodObserver {

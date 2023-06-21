@@ -306,6 +306,13 @@ class COMPONENT_EXPORT(UI_BASE_IME) TextInputClient
   // is successful.
   virtual bool AddGrammarFragments(
       const std::vector<GrammarFragment>& fragments);
+
+  // Does the current text client support always confirming a composition, even
+  // if there isn't a composition currently set?
+  // TODO(b/265853952): This is required to resolve an incompatibility between
+  //   Crostini and Lacros text clients. Remove this method and its use once
+  //   both clients support the required behavior.
+  virtual bool SupportsAlwaysConfirmComposition();
 #endif
 
 #if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_CHROMEOS)

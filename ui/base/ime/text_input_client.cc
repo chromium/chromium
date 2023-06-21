@@ -36,6 +36,10 @@ bool TextInputClient::AddGrammarFragments(
     const std::vector<GrammarFragment>& fragments) {
   return false;
 }
+
+bool TextInputClient::SupportsAlwaysConfirmComposition() {
+  return true;
+}
 #endif
 
 #if BUILDFLAG(IS_WIN)

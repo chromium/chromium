@@ -422,6 +422,14 @@ class WaylandTextInputDelegate : public TextInput::Delegate {
     return true;
   }
 
+  bool SupportsConfirmPreedit() override {
+    // Note: until this is supported by crostini, crostini won't be able to add
+    // the new extension api.
+    return extended_text_input_ &&
+           wl_resource_get_version(extended_text_input_) >=
+               ZCR_EXTENDED_TEXT_INPUT_V1_CONFIRM_PREEDIT_SINCE_VERSION;
+  }
+
   raw_ptr<wl_resource, ExperimentalAsh> text_input_;
   raw_ptr<wl_resource, ExperimentalAsh> extended_text_input_ = nullptr;
   raw_ptr<wl_resource, ExperimentalAsh> surface_ = nullptr;
