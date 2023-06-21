@@ -46,7 +46,7 @@
   },
   "Deterministic Linux": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "is_component_build": false,
       "is_debug": false,
@@ -73,7 +73,7 @@
     },
     "reclient": {
       "gn_args": {
-        "concurrent_links": 30,
+        "concurrent_links": 50,
         "is_component_build": true,
         "is_debug": true,
         "symbol_level": 1,
@@ -92,7 +92,7 @@
   },
   "Linux Builder": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "devtools_skip_typecheck": false,
       "ffmpeg_branding": "Chrome",
@@ -105,7 +105,7 @@
   },
   "Linux Builder (Wayland)": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "dcheck_always_on": false,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -122,7 +122,7 @@
   },
   "Linux Builder (dbg)": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,

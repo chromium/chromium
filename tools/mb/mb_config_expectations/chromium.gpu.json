@@ -17,7 +17,7 @@
   },
   "GPU Linux Builder": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "dcheck_always_on": true,
       "ffmpeg_branding": "Chrome",
       "is_component_build": false,
@@ -30,7 +30,7 @@
   },
   "GPU Linux Builder (dbg)": {
     "gn_args": {
-      "concurrent_links": 30,
+      "concurrent_links": 50,
       "ffmpeg_branding": "Chrome",
       "is_component_build": true,
       "is_debug": true,
