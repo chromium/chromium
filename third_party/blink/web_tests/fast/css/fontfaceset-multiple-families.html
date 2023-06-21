@@ -20,6 +20,11 @@
 
 @font-face {
     font-family: TestFont4;
+    src: url(data:application/xml,) format("opentype");
+}
+
+@font-face {
+    font-family: TestFont5NotShown;
     src: url(data:application/xml,) format("svg");
 }
 </style>
@@ -67,6 +72,8 @@ function onLoadingError(e) {
     shouldBeEqualToString("event.fontfaces[1].status", "error");
     failedFonts = e.fontfaces.map(function(face){return face.family;}).sort();
     shouldBe('failedFonts', "['TestFont3', 'TestFont4']");
+    shouldBe("failedFonts.includes(\"TestFont4\")", "true");
+    shouldBe("failedFonts.includes(\"TestFont5NotShown\")", "false");
     shouldBeFalse("document.fonts.check('10px TestFont3')");
     shouldBeFalse("document.fonts.check('10px TestFont4')");
     shouldBeFalse("document.fonts.check('10px TestFont4, Times')");

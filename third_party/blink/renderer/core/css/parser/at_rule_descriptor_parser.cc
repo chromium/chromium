@@ -8,6 +8,7 @@
 #include "third_party/blink/renderer/core/css/css_font_face_src_value.h"
 #include "third_party/blink/renderer/core/css/css_string_value.h"
 #include "third_party/blink/renderer/core/css/css_unicode_range_value.h"
+#include "third_party/blink/renderer/core/css/css_unset_value.h"
 #include "third_party/blink/renderer/core/css/css_value.h"
 #include "third_party/blink/renderer/core/css/css_value_pair.h"
 #include "third_party/blink/renderer/core/css/parser/css_parser_context.h"
@@ -109,14 +110,8 @@ CSSFontFaceSrcValue::FontTechnology ValueIDToTechnology(CSSValueID valueID) {
   }
 }
 
-// Returns nullptr for hard parsing errors: CSSUnsetValue for unsupprted
-// formats. This distinction is needed as the caller of the function needs to
-// decide whether to continue parsing or not.
 CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
-                                const CSSParserContext& context,
-                                bool& tech_format_unsupported) {
-  tech_format_unsupported = false;
-
+                                const CSSParserContext& context) {
   String url =
       css_parsing_utils::ConsumeUrlAsStringView(range, context).ToString();
   if (url.IsNull()) {
@@ -142,7 +137,6 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
     CSSParserTokenRange format_args = css_parsing_utils::ConsumeFunction(range);
     CSSParserTokenType peek_type = format_args.Peek().GetType();
     if (peek_type != kIdentToken && peek_type != kStringToken) {
-      tech_format_unsupported = true;
       return nullptr;
     }
 
@@ -161,9 +155,10 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       sanitized_format = css_parsing_utils::ConsumeString(format_args)->Value();
     }
 
-    tech_format_unsupported |= !IsSupportedFontFormat(sanitized_format);
-    if (!tech_format_unsupported) {
+    if (IsSupportedFontFormat(sanitized_format)) {
       uri_value->SetFormat(sanitized_format);
+    } else {
+      return nullptr;
     }
 
     format_args.ConsumeWhitespace();
@@ -189,15 +184,16 @@ CSSValue* ConsumeFontFaceSrcURI(CSSParserTokenRange& range,
       if (!technology_value) {
         return nullptr;
       }
-      tech_format_unsupported |= !css_parsing_utils::IsSupportedKeywordTech(
-          technology_value->GetValueID());
       if (!tech_args.AtEnd() &&
           tech_args.Peek().GetType() != CSSParserTokenType::kCommaToken) {
         return nullptr;
       }
-      if (!tech_format_unsupported) {
+      if (css_parsing_utils::IsSupportedKeywordTech(
+              technology_value->GetValueID())) {
         uri_value->AppendTechnology(
             ValueIDToTechnology(technology_value->GetValueID()));
+      } else {
+        return nullptr;
       }
     } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(tech_args));
   }
@@ -234,6 +230,24 @@ CSSValue* ConsumeFontFaceSrcLocal(CSSParserTokenRange& range,
   return nullptr;
 }
 
+CSSValue* ConsumeFontFaceSrcSkipToComma(
+    CSSValue* parse_function(CSSParserTokenRange&, const CSSParserContext&),
+    CSSParserTokenRange& range,
+    const CSSParserContext& context) {
+  CSSValue* parse_result = parse_function(range, context);
+  range.ConsumeWhitespace();
+  if (parse_result && (range.AtEnd() || range.Peek().GetType() ==
+                                            CSSParserTokenType::kCommaToken)) {
+    return parse_result;
+  }
+
+  while (!range.AtEnd() &&
+         range.Peek().GetType() != CSSParserTokenType::kCommaToken) {
+    range.Consume();
+  }
+  return nullptr;
+}
+
 CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
                                  const CSSParserContext& context) {
   CSSValueList* values = CSSValueList::CreateCommaSeparated();
@@ -242,22 +256,19 @@ CSSValueList* ConsumeFontFaceSrc(CSSParserTokenRange& range,
   do {
     const CSSParserToken& token = range.Peek();
     CSSValue* parsed_value = nullptr;
-    bool tech_format_unsupported = false;
     if (token.FunctionId() == CSSValueID::kLocal) {
-      parsed_value = ConsumeFontFaceSrcLocal(range, context);
+      parsed_value = ConsumeFontFaceSrcSkipToComma(ConsumeFontFaceSrcLocal,
+                                                   range, context);
     } else {
       parsed_value =
-          ConsumeFontFaceSrcURI(range, context, tech_format_unsupported);
+          ConsumeFontFaceSrcSkipToComma(ConsumeFontFaceSrcURI, range, context);
     }
-    // Parsing error encountered, drop whole src: line.
-    if (!parsed_value) {
-      return nullptr;
-    }
-    if (!tech_format_unsupported) {
+    if (parsed_value) {
       values->Append(*parsed_value);
     }
   } while (css_parsing_utils::ConsumeCommaIncludingWhitespace(range));
-  return values;
+
+  return values->length() ? values : nullptr;
 }
 
 CSSValue* ConsumeDescriptor(StyleRule::RuleType rule_type,

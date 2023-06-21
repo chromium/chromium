@@ -50,6 +50,9 @@ namespace blink {
 namespace {
 
 String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
+  // According to
+  // https://drafts.csswg.org/cssom/#serialize-a-css-component-value these all
+  // need to be serialized as lowercase.
   switch (font_technology) {
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyVariations:
       return "variations";
@@ -60,11 +63,11 @@ String TechnologyToString(CSSFontFaceSrcValue::FontTechnology font_technology) {
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyPalettes:
       return "palettes";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv0:
-      return "color-COLRv0";
+      return "color-colrv0";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyCOLRv1:
-      return "color-COLRv1";
+      return "color-colrv1";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyCDBT:
-      return "color-CBDT";
+      return "color-cbdt";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologySBIX:
       return "color-sbix";
     case CSSFontFaceSrcValue::FontTechnology::kTechnologyUnknown:
