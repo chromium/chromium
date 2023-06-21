@@ -282,6 +282,9 @@ enum Setting {
   kSelectToSpeakWordHighlight = 1531,
   kSelectToSpeakBackgroundShading = 1532,
   kSelectToSpeakNavigationControls = 1533,
+  kColorCorrectionEnabled = 1534,
+  kColorCorrectionFilterType = 1535,
+  kColorCorrectionFilterAmount = 1536,
 
   // Reset section.
   kPowerwash = 1600,

@@ -373,6 +373,9 @@ export class SettingsManageA11ySubpageElement extends
           Setting.kStartupSound,
           Setting.kEnableSwitchAccess,
           Setting.kEnableCursorColor,
+          Setting.kColorCorrectionEnabled,
+          Setting.kColorCorrectionFilterType,
+          Setting.kColorCorrectionFilterAmount,
         ]),
       },
     };

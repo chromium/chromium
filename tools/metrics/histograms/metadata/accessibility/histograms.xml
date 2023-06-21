@@ -542,6 +542,40 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Accessibility.CrosColorCorrection" enum="BooleanEnabled"
+    expires_after="2024-06-14">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Whether the Chrome OS color correction settings are on (logged once 45 secs
+    after startup).
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosColorCorrection.FilterAmount" units="%"
+    expires_after="2024-06-14">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The color correction filter intensity chosen by the user. Logged once, 45
+    seconds after startup. For how users adjust the setting from settings, see
+    ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount, which logs
+    each time the setting changes.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.CrosColorCorrection.FilterType"
+    enum="ColorCorrectionFilterTypes" expires_after="2024-06-14">
+  <owner>katie@chromium.org</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    The color correction filter type chosen by the user. Logged once, 45 seconds
+    after startup. For how users adjust the setting from settings, see
+    ChromeOS.Settings.Accessibility.ColorCorrection.FilterType, which logs each
+    time the setting changes.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.CrosCursorColor" enum="BooleanEnabled"
     expires_after="2023-11-30">
   <owner>dtseng@chromium.org</owner>

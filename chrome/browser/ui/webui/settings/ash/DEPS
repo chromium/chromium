@@ -1,7 +1,8 @@
 include_rules = [
+  "+ash/color_enhancement/color_enhancement_controller.h",  # To use enum in accessibility_section.
   "+ash/quick_pair",
-  '+ash/shell.h',      # To use KeyboardCapability API in device_secion.
-  "+ash/system/power",  # To use AdaptiveChargingController API in device_secion
+  "+ash/shell.h",      # To use KeyboardCapability API in device_section.
+  "+ash/system/power",  # To use AdaptiveChargingController API in device_section.
   "+components/account_manager_core",
   "+chrome/services/local_search_service",
   "+device/udev_linux/fake_udev_loader.h",      # For keyboard unit test.

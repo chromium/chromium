@@ -125,6 +125,9 @@ export class SettingsDisplayAndMagnificationSubpageElement extends
       supportedSettingIds: {
         type: Object,
         value: () => new Set<Setting>([
+          Setting.kColorCorrectionEnabled,
+          Setting.kColorCorrectionFilterType,
+          Setting.kColorCorrectionFilterAmount,
           Setting.kFullscreenMagnifier,
           Setting.kFullscreenMagnifierMouseFollowingMode,
           Setting.kFullscreenMagnifierFocusFollowing,

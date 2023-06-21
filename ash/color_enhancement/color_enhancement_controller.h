@@ -15,11 +15,15 @@ class Window;
 
 namespace ash {
 
+// The types of color filters available in color correction settings.
+// Do not change these values, they are persisted to logs in
+// ColorCorrectionFilterTypes enum and mapped in os settings.
 enum ColorVisionDeficiencyType {
   kProtanomaly = 0,
   kDeuteranomaly = 1,
   kTritanomaly = 2,
   kGrayscale = 3,
+  kMaxValue = kGrayscale,
 };
 
 // Controls the color enhancement options on all displays. These options

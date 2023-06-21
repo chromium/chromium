@@ -11,6 +11,7 @@
 
 #include "ash/accessibility/autoclick/autoclick_controller.h"
 #include "ash/accessibility/sticky_keys/sticky_keys_controller.h"
+#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_constants.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/constants/ash_switches.h"
@@ -1699,6 +1700,19 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
     base::UmaHistogramBoolean(
         "Accessibility.CrosCursorColor",
         prefs->GetBoolean(prefs::kAccessibilityCursorColorEnabled));
+
+    if (::features::
+            AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
+      base::UmaHistogramBoolean("Accessibility.CrosColorCorrection",
+                                IsColorCorrectionEnabled());
+      base::UmaHistogramEnumeration(
+          "Accessibility.CrosColorCorrection.FilterType",
+          static_cast<ColorVisionDeficiencyType>(prefs->GetInteger(
+              prefs::kAccessibilityColorVisionDeficiencyType)));
+      base::UmaHistogramPercentage(
+          "Accessibility.CrosColorCorrection.FilterAmount",
+          prefs->GetInteger(prefs::kAccessibilityColorVisionCorrectionAmount));
+    }
   }
   base::UmaHistogramBoolean("Accessibility.CrosCaretHighlight",
                             IsCaretHighlightEnabled());

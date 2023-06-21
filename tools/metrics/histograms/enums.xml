@@ -17917,6 +17917,13 @@ In case of new special images, values 3 to 9 can be used. -->
   <int value="4" label="Not alone in coalition"/>
 </enum>
 
+<enum name="ColorCorrectionFilterTypes">
+  <int value="0" label="Protanomaly"/>
+  <int value="1" label="Deuteranomaly"/>
+  <int value="2" label="Tritanomaly"/>
+  <int value="3" label="Grayscale"/>
+</enum>
+
 <enum name="ColorGamut">
   <int value="0" label="sRGB"/>
   <int value="1" label="Wide Color Gamut"/>
@@ -79341,6 +79348,9 @@ Called by update_net_trust_anchors.py.-->
   <int value="1531" label="Select-to-Speak: Word Highlight"/>
   <int value="1532" label="Select-to-Speak: Background Shading"/>
   <int value="1533" label="Select-to-Speak: Navigation Controls"/>
+  <int value="1534" label="Color correction"/>
+  <int value="1535" label="Color correction: Filter type"/>
+  <int value="1536" label="Color correction: Filter amount"/>
   <int value="1600" label="Powerwash"/>
   <int value="1700" label="Change Chrome Channel"/>
   <int value="1701" label="Copy Detailed Build Info"/>

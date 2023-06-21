@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "ash/color_enhancement/color_enhancement_controller.h"
 #include "ash/constants/ash_features.h"
 #include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/accessibility_controller_enums.h"
@@ -1146,6 +1147,21 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
           "FullscreenMagnifierMouseFollowingMode",
           static_cast<MagnifierMouseFollowingMode>(value.GetInt()));
       return true;
+    case mojom::Setting::kColorCorrectionEnabled:
+      base::UmaHistogramBoolean(
+          "ChromeOS.Settings.Accessibility.ColorCorrection.Enabled",
+          value.GetBool());
+      return true;
+    case mojom::Setting::kColorCorrectionFilterType:
+      base::UmaHistogramEnumeration(
+          "ChromeOS.Settings.Accessibility.ColorCorrection.FilterType",
+          static_cast<ColorVisionDeficiencyType>(value.GetInt()));
+      return true;
+    case mojom::Setting::kColorCorrectionFilterAmount:
+      base::UmaHistogramPercentage(
+          "ChromeOS.Settings.Accessibility.ColorCorrection.FilterAmount",
+          value.GetInt());
+      return true;
 
     default:
       return false;
@@ -1239,6 +1255,9 @@ void AccessibilitySection::RegisterHierarchy(
       mojom::Setting::kMonoAudio,
       mojom::Setting::kStartupSound,
       mojom::Setting::kEnableCursorColor,
+      mojom::Setting::kColorCorrectionEnabled,
+      mojom::Setting::kColorCorrectionFilterType,
+      mojom::Setting::kColorCorrectionFilterAmount,
   };
   RegisterNestedSettingBulk(mojom::Subpage::kManageAccessibility,
                             kManageAccessibilitySettings, generator);

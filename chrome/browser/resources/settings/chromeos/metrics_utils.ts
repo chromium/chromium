@@ -42,6 +42,18 @@ const PREF_TO_SETTING_MAP: Record<string, SettingAndType> = {
     setting: Setting.kFullscreenMagnifierMouseFollowingMode,
     type: chrome.settingsPrivate.PrefType.NUMBER,
   },
+  'settings.a11y.color_filtering.enabled': {
+    setting: Setting.kColorCorrectionEnabled,
+    type: chrome.settingsPrivate.PrefType.BOOLEAN,
+  },
+  'settings.a11y.color_filtering.color_vision_deficiency_type': {
+    setting: Setting.kColorCorrectionFilterType,
+    type: chrome.settingsPrivate.PrefType.NUMBER,
+  },
+  'settings.a11y.color_filtering.color_vision_correction_amount': {
+    setting: Setting.kColorCorrectionFilterAmount,
+    type: chrome.settingsPrivate.PrefType.NUMBER,
+  },
   // os_privacy_page/os_privacy_page.js
   'cros.device.peripheral_data_access_enabled': {
     setting: Setting.kPeripheralDataAccessProtection,
