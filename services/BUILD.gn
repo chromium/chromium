@@ -53,6 +53,10 @@ test("services_unittests") {
       "//services/viz/public/cpp/hit_test:tests",
       "//services/webnn:tests",
     ]
+    if (is_ios) {
+      bundle_deps =
+          [ "//services/tracing:services_tracing_perfetto_bundle_data" ]
+    }
   }
 
   if (is_android && (current_cpu == "arm" || current_cpu == "arm64")) {
