@@ -92,6 +92,40 @@ IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
             GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
 }
 
+IN_PROC_BROWSER_TEST_F(UrlHandlerTest, ManagementURL) {
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Success: allow-listed non-SWA chrome page.
+  const GURL url(chrome::kChromeUIManagementURL);
+  content::TestNavigationObserver observer(url);
+  observer.StartWatchingNewWebContents();
+  EXPECT_EQ(0u,
+            GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
+  EXPECT_TRUE(ash::TryOpenUrl(url, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  observer.Wait();
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u,
+            GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
+}
+
+IN_PROC_BROWSER_TEST_F(UrlHandlerTest, OsCreditsURL) {
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Success: allow-listed non-SWA chrome page.
+  const GURL url(chrome::kChromeUIOSCreditsURL);
+  content::TestNavigationObserver observer(url);
+  observer.StartWatchingNewWebContents();
+  EXPECT_EQ(0u,
+            GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
+  EXPECT_TRUE(ash::TryOpenUrl(url, WindowOpenDisposition::NEW_FOREGROUND_TAB));
+  observer.Wait();
+  EXPECT_EQ(2u, BrowserList::GetInstance()->size());
+  EXPECT_EQ(1u,
+            GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
+}
+
 IN_PROC_BROWSER_TEST_F(UrlHandlerTest, SystemWebApp) {
   ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
   ASSERT_EQ(1u, BrowserList::GetInstance()->size());
