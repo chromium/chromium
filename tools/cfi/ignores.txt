@@ -242,6 +242,10 @@ fun:*GlobalHandles*PostGarbageCollectionProcessing*
 
 fun:*InvokeAccessorGetterCallback*
 
+# XNNPACK casts incorrect function signature to pthreadpool task type.
+src:*third_party/pthreadpool/src/src/fastpath.c
+src:*third_party/pthreadpool/src/src/portable-api.c
+
 ######### Uncategorized
 
 src:*native_client/*

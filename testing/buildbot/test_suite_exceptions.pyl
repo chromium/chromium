@@ -3708,6 +3708,14 @@
       'win-arm64-rel',  # Not available on arm64.
     ],
   },
+  'pthreadpool_unittests': {
+    'remove_from': [
+      # pthreadpool is not built for ChromeOS currently.
+      'linux-chromeos-dbg',
+      'linux-chromeos-rel',
+      'linux-lacros-tester-rel',
+    ],
+  },
   'sandbox_linux_unittests': {
     'remove_from': [
       'android-asan',  # https://crbug.com/962650
