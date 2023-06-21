@@ -942,6 +942,7 @@ class _AvdInstance:
             gpu_mode=_DEFAULT_GPU_MODE,
             wipe_data=False,
             debug_tags=None,
+            disk_size=None,
             require_fast_start=False):
     """Starts the emulator running an instance of the given AVD.
 
@@ -985,6 +986,8 @@ class _AvdInstance:
 
       if wipe_data:
         emulator_cmd.append('-wipe-data')
+      if disk_size:
+        emulator_cmd.extend(['-partition-size', str(disk_size)])
       if read_only:
         emulator_cmd.append('-read-only')
       if writable_system:

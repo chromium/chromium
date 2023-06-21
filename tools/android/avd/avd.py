@@ -174,6 +174,9 @@ def main(raw_args):
       'init,snapshot. See "emulator -help-debug-tags" '
       'for a full list of tags.')
   subparser.add_argument(
+      '--disk-size',
+      help='Override the default disk size for the emulator instance.')
+  subparser.add_argument(
       '--require-fast-start',
       action='store_true',
       help='Shortens the start-up timeout. Used by bots to avoid startup '
@@ -197,6 +200,7 @@ def main(raw_args):
                gpu_mode=args.gpu_mode,
                wipe_data=args.wipe_data,
                debug_tags=debug_tags,
+               disk_size=args.disk_size,
                require_fast_start=args.require_fast_start)
     print('%s started (pid: %d)' % (str(inst), inst._emulator_proc.pid))
     return 0
