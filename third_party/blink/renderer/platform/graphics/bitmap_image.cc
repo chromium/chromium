@@ -185,7 +185,9 @@ bool BitmapImage::ShouldReportByteSizeUMAs(bool data_now_completely_received) {
   if (!decoder_)
     return false;
   return !all_data_received_ && data_now_completely_received &&
-         decoder_->ByteSize() != 0 && IsSizeAvailable();
+         decoder_->ByteSize() != 0 && IsSizeAvailable() &&
+         decoder_->RepetitionCount() == kAnimationNone &&
+         !decoder_->ImageIsHighBitDepth();
 }
 
 Image::SizeAvailability BitmapImage::SetData(scoped_refptr<SharedBuffer> data,

@@ -84,6 +84,11 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
   DEFINE_THREAD_SAFE_STATIC_LOCAL(
       CustomCountHistogram, jpeg_density_histogram,
       ("Blink.DecodedImage.JpegDensity.KiBWeighted", 1, 1000, 100));
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+  DEFINE_THREAD_SAFE_STATIC_LOCAL(
+      CustomCountHistogram, avif_density_histogram,
+      ("Blink.DecodedImage.AvifDensity.KiBWeighted2", 1, 1000, 100));
+#endif
 
   CustomCountHistogram* density_histogram = nullptr;
   BitmapImageMetrics::DecodedImageType decoded_image_type =
@@ -92,6 +97,11 @@ void BitmapImageMetrics::CountDecodedImageDensity(const String& type,
     case BitmapImageMetrics::DecodedImageType::kJPEG:
       density_histogram = &jpeg_density_histogram;
       break;
+#if BUILDFLAG(ENABLE_AV1_DECODER)
+    case BitmapImageMetrics::DecodedImageType::kAVIF:
+      density_histogram = &avif_density_histogram;
+      break;
+#endif
     default:
       // All other formats are not reported.
       return;
