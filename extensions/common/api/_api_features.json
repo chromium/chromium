@@ -317,17 +317,6 @@
     "channel": "stable",
     "extension_types": ["extension", "legacy_packaged_app", "platform_app"]
   },
-  "management.canInstallReplacementAndroidApp": {
-    "dependencies": ["manifest:replacement_android_app"],
-    // TODO(jshikaram): add test coverage before trunk promotion.
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
-  },
-  "management.installReplacementAndroidApp": {
-    "dependencies": ["manifest:replacement_android_app"],
-    "channel": "trunk",
-    "extension_types": ["platform_app"]
-  },
   "management.installReplacementWebApp": {
     "dependencies": ["manifest:replacement_web_app"],
     "channel": "stable",

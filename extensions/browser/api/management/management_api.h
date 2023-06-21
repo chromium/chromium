@@ -225,40 +225,6 @@ class ManagementGenerateAppForLinkFunction : public ExtensionFunction {
   std::unique_ptr<AppForLinkDelegate> app_for_link_delegate_;
 };
 
-class ManagementCanInstallReplacementAndroidAppFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("management.canInstallReplacementAndroidApp",
-                             MANAGEMENT_CANINSTALLREPLACEMENTANDROIDAPP)
-
-  ManagementCanInstallReplacementAndroidAppFunction();
-
- protected:
-  ~ManagementCanInstallReplacementAndroidAppFunction() override;
-
-  ResponseAction Run() override;
-
- private:
-  void OnFinishedAndroidAppCheck(bool result);
-};
-
-class ManagementInstallReplacementAndroidAppFunction
-    : public ExtensionFunction {
- public:
-  DECLARE_EXTENSION_FUNCTION("management.installReplacementAndroidApp",
-                             MANAGEMENT_INSTALLREPLACEMENTANDROIDAPP)
-
-  ManagementInstallReplacementAndroidAppFunction();
-
- protected:
-  ~ManagementInstallReplacementAndroidAppFunction() override;
-
-  ResponseAction Run() override;
-
- private:
-  void OnAppInstallInitiated(bool installable);
-};
-
 class ManagementInstallReplacementWebAppFunction : public ExtensionFunction {
  public:
   DECLARE_EXTENSION_FUNCTION("management.installReplacementWebApp",
