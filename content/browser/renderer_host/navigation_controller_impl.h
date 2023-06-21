@@ -123,6 +123,7 @@ class CONTENT_EXPORT NavigationControllerImpl : public NavigationController {
   base::WeakPtr<NavigationHandle> LoadURLWithParams(
       const LoadURLParams& params) override;
   void LoadIfNecessary() override;
+  void LoadOriginalRequestURL() override;
   base::WeakPtr<NavigationHandle> LoadPostCommitErrorPage(
       RenderFrameHost* render_frame_host,
       const GURL& url,

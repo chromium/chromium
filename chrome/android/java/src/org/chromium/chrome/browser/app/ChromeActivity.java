@@ -2520,7 +2520,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
                     profile, currentTab.getUrl(), usingDesktopUserAgent);
             // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
-            // with ReloadType::ORIGINAL_REQUEST_URL. See http://crbug/1418587 for details.
+            // with LoadOriginalRequestURL. See http://crbug/1418587 for details.
             TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent,
                     /* forcedByUser */ false, UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
             // TODO(crbug.com/1456560): Remove this IPH when the usage is low.

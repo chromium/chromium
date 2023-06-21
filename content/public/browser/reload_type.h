@@ -16,13 +16,7 @@ enum class ReloadType {
   // Reloads the current entry validating only the main resource.
   NORMAL,
   // Reloads the current entry bypassing the cache (shift-reload).
-  BYPASSING_CACHE,
-  // Reloads the current entry using the original URL used to create it.  This
-  // is used for cases where the user wants to refresh a page using a different
-  // user agent after following a redirect. It is also used in the case of an
-  // intervention (i.e., preview) being served on the page and the user
-  // requesting the page without the intervention.
-  ORIGINAL_REQUEST_URL
+  BYPASSING_CACHE
 };
 
 }  // namespace content

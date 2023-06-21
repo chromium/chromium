@@ -340,8 +340,8 @@ IN_PROC_BROWSER_TEST_F(NavigationPolicyContainerBuilderBrowserTest,
 
   // Now reload to original url and ensure that history entry policies stored
   // earlier aren't applied to non-local URL (no DCHECK triggered).
-  TestNavigationObserver observer(tab, /*number_of_navigations=*/1);
-  tab->GetController().Reload(ReloadType::ORIGINAL_REQUEST_URL, false);
+  TestNavigationObserver observer(tab, /*expected_number_of_navigations=*/1);
+  tab->GetController().LoadOriginalRequestURL();
   observer.Wait();  // No DCHECK expected.
   EXPECT_EQ(PublicUrl(), tab->GetLastCommittedURL());
 }

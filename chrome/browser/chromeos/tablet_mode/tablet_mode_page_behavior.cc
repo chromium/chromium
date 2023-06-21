@@ -102,7 +102,7 @@ void TabletModePageBehavior::SetMobileLikeBehaviorEnabled(bool enabled) {
                 arc::ArcWebContentsData::ArcWebContentsData::
                     kArcTransitionFlag)) {
           entry->SetIsOverridingUserAgent(false);
-          controller.Reload(content::ReloadType::ORIGINAL_REQUEST_URL, true);
+          controller.LoadOriginalRequestURL();
         }
       }
     }

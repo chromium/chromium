@@ -471,7 +471,7 @@ void NavigationControllerAndroid::SetUseDesktopUserAgentInternal(
   if (reload_on_state_change) {
     // Reloading the page will send the override down as part of the
     // navigation IPC message.
-    navigation_controller_->Reload(ReloadType::ORIGINAL_REQUEST_URL, true);
+    navigation_controller_->LoadOriginalRequestURL();
   }
 }
 

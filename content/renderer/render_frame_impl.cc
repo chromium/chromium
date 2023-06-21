@@ -609,7 +609,6 @@ WebFrameLoadType NavigationTypeToLoadType(
     bool should_replace_current_entry) {
   switch (navigation_type) {
     case blink::mojom::NavigationType::RELOAD:
-    case blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
       return WebFrameLoadType::kReload;
 
     case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
@@ -854,9 +853,6 @@ std::unique_ptr<DocumentState> BuildDocumentStateFromParams(
 
   document_state->set_is_overriding_user_agent(
       commit_params.is_overriding_user_agent);
-  document_state->set_must_reset_scroll_and_scale_state(
-      common_params.navigation_type ==
-      blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL);
   document_state->set_request_id(request_id);
 
   // If this is a loadDataWithBaseURL request, save the commit URL so that we

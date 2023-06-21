@@ -360,8 +360,6 @@ blink::mojom::NavigationType GetNavigationType(
       return blink::mojom::NavigationType::RELOAD;
     case ReloadType::BYPASSING_CACHE:
       return blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE;
-    case ReloadType::ORIGINAL_REQUEST_URL:
-      return blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
     case ReloadType::NONE:
       break;  // Fall through to rest of function.
   }
@@ -1317,6 +1315,32 @@ base::WeakPtr<NavigationHandle> NavigationControllerImpl::LoadURLWithParams(
   needs_reload_ = false;
 
   return NavigateWithoutEntry(params);
+}
+
+void NavigationControllerImpl::LoadOriginalRequestURL() {
+  // If the original request URL is not valid, matches the current URL, or
+  // involves POST data, then simply reload. The POST check avoids issues with
+  // sending data to the wrong page.
+  const GURL& last_committed_url = GetLastCommittedEntry()->GetURL();
+  const GURL& original_request_url =
+      GetLastCommittedEntry()->GetOriginalRequestURL();
+  if (!original_request_url.is_valid() ||
+      original_request_url == last_committed_url ||
+      GetLastCommittedEntry()->GetHasPostData()) {
+    Reload(ReloadType::NORMAL, true);
+    return;
+  }
+
+  // Otherwise, attempt to load the original request URL without any of the
+  // other data from the current NavigationEntry, replacing the current entry.
+  // Loading the original URL is useful in cases such as modifying the user
+  // agent.
+  std::unique_ptr<NavigationController::LoadURLParams> load_params =
+      std::make_unique<NavigationController::LoadURLParams>(
+          original_request_url);
+  load_params->should_replace_current_entry = true;
+  load_params->transition_type = ui::PAGE_TRANSITION_RELOAD;
+  LoadURLWithParams(*load_params.get());
 }
 
 bool NavigationControllerImpl::PendingEntryMatchesRequest(
@@ -4029,15 +4053,6 @@ NavigationControllerImpl::CreateNavigationRequestFromEntry(
   DCHECK(!entry->IsInitialEntryNotForSynchronousAboutBlank());
 
   Referrer dest_referrer = frame_entry->referrer();
-  if (reload_type == ReloadType::ORIGINAL_REQUEST_URL &&
-      entry->GetOriginalRequestURL().is_valid() && !entry->GetHasPostData()) {
-    // We may have been redirected when navigating to the current URL.
-    // Use the URL the user originally intended to visit as signaled by the
-    // ReloadType, if it's valid and if a POST wasn't involved; the latter
-    // case avoids issues with sending data to the wrong page.
-    dest_url = entry->GetOriginalRequestURL();
-    dest_referrer = Referrer();
-  }
 
   if (frame_tree_node->render_manager()->is_attaching_inner_delegate()) {
     // Avoid starting any new navigations since this node is now preparing for

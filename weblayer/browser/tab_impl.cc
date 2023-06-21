@@ -792,8 +792,7 @@ void TabImpl::SetDesktopUserAgentEnabled(JNIEnv* env, jboolean enable) {
 
   entry->SetIsOverridingUserAgent(enable);
   web_contents_->NotifyPreferencesChanged();
-  web_contents_->GetController().Reload(
-      content::ReloadType::ORIGINAL_REQUEST_URL, true);
+  web_contents_->GetController().LoadOriginalRequestURL();
 }
 
 jboolean TabImpl::IsDesktopUserAgentEnabled(JNIEnv* env) {

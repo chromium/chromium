@@ -258,7 +258,6 @@ void UpdateLoadFlagsWithCacheFlags(int* load_flags,
                                    bool is_post) {
   switch (navigation_type) {
     case blink::mojom::NavigationType::RELOAD:
-    case blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
       *load_flags |= net::LOAD_VALIDATE_CACHE;
       break;
     case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
@@ -654,7 +653,6 @@ blink::mojom::NavigationType ConvertToCrossDocumentType(
       return blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT;
     case blink::mojom::NavigationType::RELOAD:
     case blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE:
-    case blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL:
     case blink::mojom::NavigationType::RESTORE:
     case blink::mojom::NavigationType::RESTORE_WITH_POST:
     case blink::mojom::NavigationType::HISTORY_DIFFERENT_DOCUMENT:
@@ -8061,8 +8059,6 @@ ReloadType NavigationRequest::NavigationTypeToReloadType(
     return ReloadType::NORMAL;
   if (type == blink::mojom::NavigationType::RELOAD_BYPASSING_CACHE)
     return ReloadType::BYPASSING_CACHE;
-  if (type == blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL)
-    return ReloadType::ORIGINAL_REQUEST_URL;
   return ReloadType::NONE;
 }
 

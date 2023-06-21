@@ -1561,8 +1561,7 @@ IN_PROC_BROWSER_TEST_P(RenderFrameHostManagerTest,
   shell()->web_contents()->SetWasDiscarded(true);
   // Reload the discarded page, but pretend that it's slow to commit.
   TestNavigationManager first_reload(shell()->web_contents(), discarded_url);
-  shell()->web_contents()->GetController().Reload(
-      ReloadType::ORIGINAL_REQUEST_URL, false);
+  shell()->web_contents()->GetController().LoadOriginalRequestURL();
   EXPECT_TRUE(first_reload.WaitForRequestStart());
   // Before the response is received, simulate user navigating to another URL.
   GURL second_url(embedded_test_server()->GetURL("b.com", "/title1.html"));
@@ -1732,8 +1731,7 @@ IN_PROC_BROWSER_TEST_P(
 
   // Now reload the original request, but redirect to yet another site.
   TestNavigationManager first_reload(shell()->web_contents(), kOriginalURL);
-  shell()->web_contents()->GetController().Reload(
-      ReloadType::ORIGINAL_REQUEST_URL, false);
+  shell()->web_contents()->GetController().LoadOriginalRequestURL();
   EXPECT_TRUE(first_reload.WaitForRequestStart());
   first_reload.ResumeNavigation();
 
@@ -1767,8 +1765,7 @@ IN_PROC_BROWSER_TEST_P(
   CommitNavigationPauser commit_pauser(first_speculative_rfh.get());
   first_reload.ResumeNavigation();
   commit_pauser.WaitForCommitAndPause();
-  shell()->web_contents()->GetController().Reload(
-      ReloadType::ORIGINAL_REQUEST_URL, false);
+  shell()->web_contents()->GetController().LoadOriginalRequestURL();
   EXPECT_TRUE(second_reload.WaitForRequestStart());
 
   RenderFrameHostImplWrapper second_speculative_rfh(

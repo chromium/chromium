@@ -1390,15 +1390,16 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_EQ(final_url, controller.GetVisibleEntry()->GetURL());
 
   // Reload using the original URL.
-  controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, false);
+  controller.LoadOriginalRequestURL();
   EXPECT_EQ(0U, navigation_entry_changed_counter_);
   EXPECT_EQ(0U, navigation_list_pruned_counter_);
 
-  // The reload is pending. The request should point to the original URL.
+  // The reload is pending as a new pending entry with replacement. The request
+  // should point to the original URL.
   EXPECT_EQ(original_url, navigated_url());
   EXPECT_EQ(controller.GetEntryCount(), 1);
   EXPECT_EQ(controller.GetLastCommittedEntryIndex(), 0);
-  EXPECT_EQ(controller.GetPendingEntryIndex(), 0);
+  EXPECT_EQ(controller.GetPendingEntryIndex(), -1);
   EXPECT_TRUE(controller.GetLastCommittedEntry());
   EXPECT_TRUE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
@@ -1420,7 +1421,7 @@ TEST_F(NavigationControllerTest, ReloadOriginalRequestURL) {
   EXPECT_FALSE(controller.GetPendingEntry());
   EXPECT_FALSE(controller.CanGoBack());
   EXPECT_FALSE(controller.CanGoForward());
-  EXPECT_EQ(ReloadType::ORIGINAL_REQUEST_URL, main_test_rfh()->reload_type());
+  EXPECT_EQ(ReloadType::NONE, main_test_rfh()->reload_type());
 }
 
 // Test that certain non-persisted NavigationEntryImpl values get reset after
@@ -1523,7 +1524,7 @@ TEST_F(NavigationControllerTest, GoBackWithUserAgentOverrideChange) {
   // Simulate the behavior of "Request Desktop Site" being checked in
   // NavigationControllerAndroid::SetUseDesktopUserAgent.
   controller.GetVisibleEntry()->SetIsOverridingUserAgent(true);
-  controller.Reload(ReloadType::ORIGINAL_REQUEST_URL, true);
+  controller.LoadOriginalRequestURL();
   auto reload =
       NavigationSimulator::CreateFromPending(contents()->GetController());
   reload->Commit();

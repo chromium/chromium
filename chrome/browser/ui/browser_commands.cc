@@ -1837,7 +1837,7 @@ void ToggleRequestTabletSite(Browser* browser) {
     entry->SetIsOverridingUserAgent(false);
   else
     SetAndroidOsForTabletSite(current_tab);
-  controller.Reload(content::ReloadType::ORIGINAL_REQUEST_URL, true);
+  controller.LoadOriginalRequestURL();
 }
 
 void SetAndroidOsForTabletSite(content::WebContents* current_tab) {

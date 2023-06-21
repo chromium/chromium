@@ -2723,8 +2723,7 @@ TEST_F(RenderViewImplTest, NavigationStartForReload) {
 
   auto common_params = blink::CreateCommonNavigationParams();
   common_params->url = GURL(url_string);
-  common_params->navigation_type =
-      blink::mojom::NavigationType::RELOAD_ORIGINAL_REQUEST_URL;
+  common_params->navigation_type = blink::mojom::NavigationType::RELOAD;
   common_params->transition = ui::PAGE_TRANSITION_RELOAD;
 
   // The browser navigation_start should not be used because beforeunload will
