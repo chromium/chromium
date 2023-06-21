@@ -81,21 +81,21 @@ bool ShouldPermissionBubbleExpand(
 }  // namespace
 
 PermissionPromptChipModel::PermissionPromptChipModel(
-    permissions::PermissionPrompt::Delegate* delegate)
+    base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate)
     : delegate_(delegate),
-      allowed_icon_(GetPermissionIconId(delegate)),
-      blocked_icon_(GetBlockedPermissionIconId(delegate)) {
+      allowed_icon_(GetPermissionIconId(delegate.get())),
+      blocked_icon_(GetBlockedPermissionIconId(delegate.get())) {
   DCHECK(delegate_);
 
-  if (delegate_.value()->ShouldCurrentRequestUseQuietUI()) {
+  if (delegate_->ShouldCurrentRequestUseQuietUI()) {
     prompt_style_ = PermissionPromptStyle::kQuietChip;
     should_bubble_start_open_ = false;
     should_expand_ =
-        ShouldPermissionBubbleExpand(delegate_.value(), prompt_style_) &&
+        ShouldPermissionBubbleExpand(delegate_.get(), prompt_style_) &&
         (should_bubble_start_open_ ||
-         (!delegate_.value()->WasCurrentRequestAlreadyDisplayed()));
+         (!delegate_->WasCurrentRequestAlreadyDisplayed()));
 
-    chip_text_ = GetQuietPermissionMessage(delegate_.value());
+    chip_text_ = GetQuietPermissionMessage(delegate_.get());
     chip_theme_ = OmniboxChipTheme::kLowVisibility;
   } else {
     prompt_style_ = PermissionPromptStyle::kChip;
@@ -103,12 +103,14 @@ PermissionPromptChipModel::PermissionPromptChipModel(
 
     should_expand_ = true;
 
-    chip_text_ = GetLoudPermissionMessage(delegate_.value());
+    chip_text_ = GetLoudPermissionMessage(delegate_.get());
     chip_theme_ = OmniboxChipTheme::kNormalVisibility;
   }
   accessibility_chip_text_ = l10n_util::GetStringUTF16(
       IDS_PERMISSIONS_REQUESTED_SCREENREADER_ANNOUNCEMENT);
 }
+
+PermissionPromptChipModel::~PermissionPromptChipModel() = default;
 
 void PermissionPromptChipModel::UpdateAutoCollapsePromptChipState(
     bool is_collapsed) {
@@ -117,14 +119,12 @@ void PermissionPromptChipModel::UpdateAutoCollapsePromptChipState(
 }
 
 bool PermissionPromptChipModel::IsExpandAnimationAllowed() {
-  return ShouldExpand() &&
-         (ShouldBubbleStartOpen() || !WasRequestAlreadyDisplayed());
+  return ShouldExpand() && (ShouldBubbleStartOpen() ||
+                            !delegate_->WasCurrentRequestAlreadyDisplayed());
 }
 
 void PermissionPromptChipModel::UpdateWithUserDecision(
     permissions::PermissionAction user_decision) {
-  DCHECK(delegate_.has_value());
-
   permissions::PermissionRequest::ChipTextType chip_text_type;
   permissions::PermissionRequest::ChipTextType accessibility_text_type;
   int cam_mic_combo_accessibility_text_id;
@@ -167,13 +167,11 @@ void PermissionPromptChipModel::UpdateWithUserDecision(
       NOTREACHED_NORETURN();
   }
 
-  chip_text_ = delegate_.value()
-                   ->Requests()[0]
+  chip_text_ = delegate_->Requests()[0]
                    ->GetRequestChipText(chip_text_type)
                    .value_or(u"");
-  if (delegate_.value()->Requests().size() == 1) {
-    accessibility_chip_text_ = delegate_.value()
-                                   ->Requests()[0]
+  if (delegate_->Requests().size() == 1) {
+    accessibility_chip_text_ = delegate_->Requests()[0]
                                    ->GetRequestChipText(accessibility_text_type)
                                    .value_or(u"");
   } else {
