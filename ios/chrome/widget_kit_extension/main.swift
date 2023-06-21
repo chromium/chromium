@@ -43,10 +43,10 @@ struct ChromeWidgets: WidgetBundle {
   var body: some Widget {
     QuickActionsWidget()
     SearchWidget()
-    DinoGameWidget()
     #if IOS_ENABLE_SHORTCUTS_WIDGET
       ShortcutsWidget()
     #endif
+    DinoGameWidget()
     #if IOS_ENABLE_LOCKSCREEN_WIDGET
       #if IOS_AVAILABLE_LOCKSCREEN_WIDGET
         LockscreenLauncherSearchWidget()
