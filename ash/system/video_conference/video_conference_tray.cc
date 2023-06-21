@@ -36,6 +36,7 @@
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/scoped_canvas.h"
+#include "ui/views/controls/highlight_path_generator.h"
 
 namespace ash {
 
@@ -65,7 +66,15 @@ class ToggleBubbleButton : public IconButton {
                    IDS_ASH_VIDEO_CONFERENCE_TOGGLE_BUBBLE_BUTTON_TOOLTIP,
                    /*is_togglable=*/true,
                    /*has_border=*/true),
-        tray_(tray) {}
+        tray_(tray) {
+    // Reduce the focus ring padding which is installed by default by
+    // `IconButton`. The default padding results in the focus ring being painted
+    // outside of the available bounds.
+    auto* focus_ring = views::FocusRing::Get(this);
+    focus_ring->SetPathGenerator(
+        std::make_unique<views::CircleHighlightPathGenerator>(
+            -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
+  }
   ToggleBubbleButton(const ToggleBubbleButton&) = delete;
   ToggleBubbleButton& operator=(const ToggleBubbleButton&) = delete;
   ~ToggleBubbleButton() override = default;
@@ -108,6 +117,14 @@ VideoConferenceTrayButton::VideoConferenceTrayButton(
   SetToggledVectorIcon(*toggled_icon);
 
   SetAccessibleRole(ax::mojom::Role::kToggleButton);
+
+  // Reduce the focus ring padding which is installed by default by
+  // `IconButton`. The default padding results in the focus ring being painted
+  // outside of the available bounds.
+  auto* focus_ring = views::FocusRing::Get(this);
+  focus_ring->SetPathGenerator(
+      std::make_unique<views::CircleHighlightPathGenerator>(
+          -gfx::Insets(focus_ring->GetHaloThickness() / 2)));
 
   UpdateTooltip();
 }
