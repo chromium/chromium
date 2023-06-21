@@ -403,12 +403,12 @@ template <typename PhysicalRectCollector>
 void LayoutInline::CollectLineBoxRects(
     const PhysicalRectCollector& yield) const {
   NOT_DESTROYED();
-#if DCHECK_IS_ON()
   if (!IsInLayoutNGInlineFormattingContext()) {
-    ShowLayoutTreeForThis();
-    DCHECK(IsInLayoutNGInlineFormattingContext());
+    // NGInlineCursor::MoveToIncludingCulledInline() below would fail DCHECKs in
+    // this situation, so just bail. This is most likely not a good situation to
+    // be in, though. See crbug.com/1448357
+    return;
   }
-#endif
   NGInlineCursor cursor;
   cursor.MoveToIncludingCulledInline(*this);
   for (; cursor; cursor.MoveToNextForSameLayoutObject()) {
