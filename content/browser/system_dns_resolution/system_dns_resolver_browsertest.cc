@@ -8,6 +8,7 @@
 #include "base/test/bind.h"
 #include "base/test/scoped_feature_list.h"
 #include "base/test/test_future.h"
+#include "base/threading/platform_thread.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/storage_partition.h"
@@ -26,9 +27,11 @@
 #include "net/dns/public/host_resolver_results.h"
 #include "net/dns/public/resolve_error_info.h"
 #include "net/dns/public/secure_dns_policy.h"
+#include "sandbox/policy/features.h"
 #include "services/network/public/cpp/features.h"
 #include "services/network/public/cpp/simple_host_resolver.h"
 #include "testing/gtest/include/gtest/gtest.h"
+#include "testing/perf/perf_result_reporter.h"
 
 namespace content {
 
@@ -205,6 +208,116 @@ IN_PROC_BROWSER_TEST_F(SystemDnsResolverBrowserTest,
   net::IPAddress address;
   EXPECT_TRUE(address.AssignFromIPLiteral("127.0.0.1"));
   EXPECT_EQ(addr_list[0].address(), address);
+}
+
+class SystemDnsResolverPerfTest : public content::ContentBrowserTest {
+ public:
+  SystemDnsResolverPerfTest() {
+    // If disabling kOutOfProcessSystemDnsResolution, also disable
+    // sandbox::policy::features::kNetworkServiceSandbox.
+    scoped_feature_list_.InitWithFeatures(
+        {network::features::kOutOfProcessSystemDnsResolution}, {});
+    SetAllowNetworkAccessToHostResolutions();
+  }
+
+  void SetUpOnMainThread() override {
+    ContentBrowserTest::SetUpOnMainThread();
+
+    resolver_ =
+        network::SimpleHostResolver::Create(shell()
+                                                ->web_contents()
+                                                ->GetBrowserContext()
+                                                ->GetDefaultStoragePartition()
+                                                ->GetNetworkContext());
+  }
+
+  void TearDownOnMainThread() override {
+    // Has to be torn down before its network context (which is a raw_ptr).
+    resolver_.reset();
+
+    ContentBrowserTest::TearDownOnMainThread();
+  }
+
+  void ResolveAHost(network::SimpleHostResolver::ResolveHostCallback callback) {
+    network::mojom::ResolveHostParametersPtr parameters =
+        network::mojom::ResolveHostParameters::New();
+    parameters->initial_priority = net::RequestPriority::HIGHEST;
+    // Use the SYSTEM resolver, and don't allow the cache or attempt DoH.
+    parameters->source = net::HostResolverSource::SYSTEM;
+    parameters->cache_usage =
+        network::mojom::ResolveHostParameters::CacheUsage::DISALLOWED;
+    parameters->secure_dns_policy = network::mojom::SecureDnsPolicy::DISABLE;
+
+    mojo::PendingReceiver<network::mojom::ResolveHostClient> receiver;
+    resolver_->ResolveHost(network::mojom::HostResolverHost::NewHostPortPair(
+                               net::HostPortPair("google.com", kHttpPort)),
+                           net::NetworkAnonymizationKey::CreateTransient(),
+                           std::move(parameters), std::move(callback));
+  }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<network::SimpleHostResolver> resolver_;
+};
+
+namespace {
+constexpr char kMetricPrefixSystemDnsResolver[] = "SystemDnsResolver.";
+constexpr char kMetricTimePerSystemDnsResolution[] = "time_per_resolution";
+
+const size_t kNumResolutions = 5000;
+std::atomic<bool> g_finished = false;
+
+void PostAnotherTask() {
+  base::PlatformThread::Sleep(base::Seconds(1));
+  if (!g_finished) {
+    base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+        FROM_HERE, base::BindOnce(&PostAnotherTask));
+  }
+}
+
+perf_test::PerfResultReporter SetUpReporter(const std::string& story_name) {
+  perf_test::PerfResultReporter reporter(kMetricPrefixSystemDnsResolver,
+                                         story_name);
+  reporter.RegisterImportantMetric(kMetricTimePerSystemDnsResolution, "ms");
+  return reporter;
+}
+}  // namespace
+
+// This benchmark just sends a bunch SYSTEM dns requests to the network service.
+// If out-of-process system DNS resolution is enabled, it will send those
+// requests back to the browser. So this benchmark adds some mild UI thread
+// contention.
+// TODO(crbug.com/1312224, crbug.com/1320192): this can probably be removed when
+// out-of-process system DNS resolution fully launches.
+IN_PROC_BROWSER_TEST_F(SystemDnsResolverPerfTest, MANUAL_ResolveManyHostnames) {
+  std::vector<ResolveHostFuture> futures(kNumResolutions);
+  std::vector<absl::optional<net::AddressList>> results(kNumResolutions);
+
+  // Simulate UI thread busyness:
+  base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
+      FROM_HERE, base::BindOnce(&PostAnotherTask));
+  base::TimeTicks start = base::TimeTicks::Now();
+  for (ResolveHostFuture& future : futures) {
+    ResolveAHost(future.GetCallback());
+  }
+  for (size_t i = 0; i < kNumResolutions; i++) {
+    results[i] = futures[i].Get<absl::optional<net::AddressList>>();
+  }
+  base::TimeDelta duration = base::TimeTicks::Now() - start;
+
+  auto reporter = SetUpReporter("SystemDnsResolution");
+  reporter.AddResult(
+      kMetricTimePerSystemDnsResolution,
+      duration.InMilliseconds() / static_cast<double>(kNumResolutions));
+
+  // Verify there are results.
+  for (const absl::optional<net::AddressList>& result : results) {
+    ASSERT_TRUE(result);
+    ASSERT_GT(result->size(), 0u);
+  }
+
+  g_finished = true;
 }
 
 }  // namespace content
