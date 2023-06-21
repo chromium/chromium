@@ -2729,9 +2729,6 @@ extern const char kNtpRealboxPedalsDescription[];
 extern const char kNtpRealboxWidthBehaviorName[];
 extern const char kNtpRealboxWidthBehaviorDescription[];
 
-extern const char kNtpRealboxRoundedCornersName[];
-extern const char kNtpRealboxRoundedCornersDescription[];
-
 extern const char kNtpRealboxUseGoogleGIconName[];
 extern const char kNtpRealboxUseGoogleGIconDescription[];
 

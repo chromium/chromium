@@ -6632,11 +6632,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kNtpRealboxPedalsDescription, kOsDesktop,
      FEATURE_VALUE_TYPE(omnibox::kNtpRealboxPedals)},
 
-    {"ntp-realbox-rounded-corners",
-     flag_descriptions::kNtpRealboxRoundedCornersName,
-     flag_descriptions::kNtpRealboxRoundedCornersDescription, kOsDesktop,
-     FEATURE_VALUE_TYPE(ntp_features::kRealboxRoundedCorners)},
-
     {"ntp-realbox-use-google-g-icon",
      flag_descriptions::kNtpRealboxUseGoogleGIconName,
      flag_descriptions::kNtpRealboxUseGoogleGIconDescription, kOsDesktop,

@@ -589,9 +589,6 @@ void RealboxHandler::SetupDropdownWebUIDataSource(
       {"hideSuggestions", IDS_TOOLTIP_HEADER_HIDE_SUGGESTIONS_BUTTON},
       {"showSuggestions", IDS_TOOLTIP_HEADER_SHOW_SUGGESTIONS_BUTTON}};
   source->AddLocalizedStrings(kStrings);
-
-  source->AddBoolean("roundCorners", base::FeatureList::IsEnabled(
-                                         ntp_features::kRealboxRoundedCorners));
 }
 
 // static
