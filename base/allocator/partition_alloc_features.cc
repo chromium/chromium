@@ -125,17 +125,10 @@ constexpr FeatureParam<BackupRefPtrEnabledProcesses>::Option
         {BackupRefPtrEnabledProcesses::kAllProcesses, "all-processes"}};
 
 const base::FeatureParam<BackupRefPtrEnabledProcesses>
-    kBackupRefPtrEnabledProcessesParam {
-  &kPartitionAllocBackupRefPtr, "enabled-processes",
-#if BUILDFLAG(IS_ANDROID) || BUILDFLAG(IS_WIN) ||    \
-    BUILDFLAG(ENABLE_BACKUP_REF_PTR_FEATURE_FLAG) || \
-    (BUILDFLAG(USE_ASAN_BACKUP_REF_PTR) && BUILDFLAG(IS_LINUX))
-      BackupRefPtrEnabledProcesses::kNonRenderer,
-#else
-      BackupRefPtrEnabledProcesses::kBrowserOnly,
-#endif
-      &kBackupRefPtrEnabledProcessesOptions
-};
+    kBackupRefPtrEnabledProcessesParam{
+        &kPartitionAllocBackupRefPtr, "enabled-processes",
+        BackupRefPtrEnabledProcesses::kNonRenderer,
+        &kBackupRefPtrEnabledProcessesOptions};
 
 constexpr FeatureParam<BackupRefPtrRefCountSize>::Option
     kBackupRefPtrRefCountSizeOptions[] = {
