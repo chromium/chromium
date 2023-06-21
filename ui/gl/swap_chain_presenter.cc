@@ -835,6 +835,20 @@ void SwapChainPresenter::AdjustTargetForFullScreenLetterboxing(
     return;
   }
 
+  if (params.clip_rect.has_value()) {
+    if (is_onscreen_rect_x_near_0 &&
+        !IsWithinMargin(overlay_onscreen_rect.width(), monitor_size.width())) {
+      // Not fullscreen letterboxing mode.
+      return;
+    }
+    if (is_onscreen_rect_y_near_0 &&
+        !IsWithinMargin(overlay_onscreen_rect.height(),
+                        monitor_size.height())) {
+      // Not fullscreen letterboxing mode.
+      return;
+    }
+  }
+
   //
   // Adjust the on-screen rect.
   //
