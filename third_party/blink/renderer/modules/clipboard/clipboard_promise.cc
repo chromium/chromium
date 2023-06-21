@@ -7,7 +7,6 @@
 #include <memory>
 #include <utility>
 
-#include "base/metrics/histogram_functions.h"
 #include "base/task/single_thread_task_runner.h"
 #include "mojo/public/cpp/base/big_buffer.h"
 #include "third_party/blink/public/common/features.h"
@@ -582,11 +581,6 @@ void ClipboardPromise::RequestPermission(
     return;
   }
 
-  bool has_transient_user_activation =
-      LocalFrame::HasTransientUserActivation(GetLocalFrame());
-  base::UmaHistogramBoolean("Blink.Clipboard.HasTransientUserActivation",
-                            has_transient_user_activation);
-
   if (!GetPermissionService()) {
     script_promise_resolver_->Reject(MakeGarbageCollected<DOMException>(
         DOMExceptionCode::kNotAllowedError,
@@ -594,6 +588,8 @@ void ClipboardPromise::RequestPermission(
     return;
   }
 
+  bool has_transient_user_activation =
+      LocalFrame::HasTransientUserActivation(GetLocalFrame());
   auto permission_descriptor = CreateClipboardPermissionDescriptor(
       permission, /*has_user_gesture=*/has_transient_user_activation,
       /*will_be_sanitized=*/will_be_sanitized);
