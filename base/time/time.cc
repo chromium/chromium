@@ -53,6 +53,16 @@ std::atomic<ThreadTicksNowFunction> g_thread_ticks_now_function{
 
 // TimeDelta ------------------------------------------------------------------
 
+int64_t TimeDelta::InSecondsFloored() const {
+  if (!is_inf()) {
+    const int64_t result = delta_ / Time::kMicrosecondsPerSecond;
+    // Convert |result| from truncating to flooring.
+    return (result * Time::kMicrosecondsPerSecond > delta_) ? (result - 1)
+                                                            : result;
+  }
+  return delta_;
+}
+
 int TimeDelta::InDays() const {
   if (!is_inf())
     return static_cast<int>(delta_ / Time::kMicrosecondsPerDay);

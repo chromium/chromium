@@ -232,6 +232,7 @@ class BASE_EXPORT TimeDelta {
   constexpr int InMinutes() const;
   constexpr double InSecondsF() const;
   constexpr int64_t InSeconds() const;
+  int64_t InSecondsFloored() const;
   double InMillisecondsF() const;
   int64_t InMilliseconds() const;
   int64_t InMillisecondsRoundedUp() const;

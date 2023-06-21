@@ -1687,6 +1687,21 @@ TEST(TimeDelta, InDaysFloored) {
   EXPECT_EQ(Hours(25).InDaysFloored(), 1);
 }
 
+TEST(TimeDelta, InSecondsFloored) {
+  EXPECT_EQ(Seconds(13.1).InSecondsFloored(), 13);
+  EXPECT_EQ(Seconds(13.9).InSecondsFloored(), 13);
+  EXPECT_EQ(Seconds(13).InSecondsFloored(), 13);
+
+  EXPECT_EQ(Milliseconds(1001).InSecondsFloored(), 1);
+  EXPECT_EQ(Milliseconds(1000).InSecondsFloored(), 1);
+  EXPECT_EQ(Milliseconds(999).InSecondsFloored(), 0);
+  EXPECT_EQ(Milliseconds(1).InSecondsFloored(), 0);
+  EXPECT_EQ(Milliseconds(0).InSecondsFloored(), 0);
+  EXPECT_EQ(Milliseconds(-1).InSecondsFloored(), -1);
+  EXPECT_EQ(Milliseconds(-1000).InSecondsFloored(), -1);
+  EXPECT_EQ(Milliseconds(-1001).InSecondsFloored(), -2);
+}
+
 TEST(TimeDelta, InMillisecondsRoundedUp) {
   EXPECT_EQ(Microseconds(-1001).InMillisecondsRoundedUp(), -1);
   EXPECT_EQ(Microseconds(-1000).InMillisecondsRoundedUp(), -1);
