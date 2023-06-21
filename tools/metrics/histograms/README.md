@@ -703,16 +703,22 @@ Delete the entry in the histograms.xml file.
 You can choose to add a message to the removed histogram entry which will
 provide relevant information to interested Chrome developers. Whether you
 choose to add an obsoletion message or not, the date and milestone when the
-entry became obsolete will be automatically recorded.
+entry became obsolete will be automatically recorded. You can skip this step
+if the histogram removed is already expired or obsolete.
 
 * Add the obsoletion message in the CL description in the format
   OBSOLETE_HISTOGRAM[histogram name]=obsoletion message (e.g. OBSOLETE_HISTOGRAM
-  [Tab.Count]=Replaced by Tab.Count2). The full tag should be put on a single
-  line, even if it is longer than the maximum CL description width.
-  * Note: currently, it is not possible to add the same obsoletion message
-    to multiple histograms in a single tag. But you can add multiple obsoletion
-    message tags in one changelist. The Chrome Metrics team is in the process
-    to enable CL-level obsoletion messages.
+  [Tab.Count]=Replaced by Tab.Count2).
+* If you want to add the same obsoletion message to all the histograms removed
+  in the CL, you can use OBSOLETE_HISTOGRAMS=message (e.g.
+  OBSOLETE_HISTOGRAMS=Patterned histogram Hist.{Token} is replaced by
+  Hist.{Token}.2).
+* **Notes:**
+  * The full tag should be put on a single line, even if it is longer than the
+    maximum CL description width.
+  * You can add multiple obsoletion message tags in one changelist.
+  * CL-level obsoletion message will be overwritten by histogram specific ones
+    if present.
 * You could also include information about why the histogram has become
   obsolete. For example, you might indicate how the histogram's summary did not
   accurately describe the collected data.
