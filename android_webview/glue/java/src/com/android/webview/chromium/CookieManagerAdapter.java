@@ -56,7 +56,7 @@ public class CookieManagerAdapter extends CookieManager {
     @Override
     public synchronized void setAcceptThirdPartyCookies(WebView webView, boolean accept) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES")) {
+                     "WebView.ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.COOKIE_MANAGER_SET_ACCEPT_THIRD_PARTY_COOKIES);
             webView.getSettings().setAcceptThirdPartyCookies(accept);

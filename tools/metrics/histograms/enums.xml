@@ -113453,6 +113453,9 @@ Called by update_scheduler_enums.py.-->
   <int value="184" label="WebSettings.setUserAgentString"/>
   <int value="185" label="WebSettings.supportMultipleWindows"/>
   <int value="186" label="WebSettings.supportZoom"/>
+  <int value="187" label="getRendererRequestedPriority"/>
+  <int value="188" label="getRendererPriorityWaivedWhenNotVisible"/>
+  <int value="189" label="setRendererPriorityPolicy"/>
 </enum>
 
 <enum name="WebViewAppProvidedMimeType">

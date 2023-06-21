@@ -244,7 +244,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
             ApiCall.WEB_SETTINGS_SET_SUPPORT_ZOOM, ApiCall.WEB_SETTINGS_SET_TEXT_SIZE,
             ApiCall.WEB_SETTINGS_SET_TEXT_ZOOM, ApiCall.WEB_SETTINGS_SET_USE_WIDE_VIEW_PORT,
             ApiCall.WEB_SETTINGS_SET_USER_AGENT_STRING,
-            ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM})
+            ApiCall.WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS, ApiCall.WEB_SETTINGS_SUPPORT_ZOOM,
+            ApiCall.GET_RENDERER_REQUESTED_PRIORITY,
+            ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE,
+            ApiCall.SET_RENDERER_PRIORITY_POLICY})
 
     @interface ApiCall {
         int ADD_JAVASCRIPT_INTERFACE = 0;
@@ -434,7 +437,10 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
         int WEB_SETTINGS_SET_USER_AGENT_STRING = 184;
         int WEB_SETTINGS_SUPPORT_MULTIPLE_WINDOWS = 185;
         int WEB_SETTINGS_SUPPORT_ZOOM = 186;
-        int COUNT = 187;
+        int GET_RENDERER_REQUESTED_PRIORITY = 187;
+        int GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE = 188;
+        int SET_RENDERER_PRIORITY_POLICY = 189;
+        int COUNT = 190;
     }
 
     public static void recordWebViewApiCall(@ApiCall int sample) {
@@ -2143,41 +2149,55 @@ class WebViewChromium implements WebViewProvider, WebViewProvider.ScrollDelegate
     @Override
     public void setRendererPriorityPolicy(
             int rendererRequestedPriority, boolean waivedWhenNotVisible) {
-        @RendererPriority
-        int awRendererRequestedPriority;
-        switch (rendererRequestedPriority) {
-            case WebView.RENDERER_PRIORITY_WAIVED:
-                awRendererRequestedPriority = RendererPriority.WAIVED;
-                break;
-            case WebView.RENDERER_PRIORITY_BOUND:
-                awRendererRequestedPriority = RendererPriority.LOW;
-                break;
-            default:
-            case WebView.RENDERER_PRIORITY_IMPORTANT:
-                awRendererRequestedPriority = RendererPriority.HIGH;
-                break;
+        try (TraceEvent event =
+                        TraceEvent.scoped("WebView.APICall.Framework.SET_RENDERER_PRIORITY_POLICY",
+                                rendererRequestedPriority)) {
+            recordWebViewApiCall(ApiCall.SET_RENDERER_PRIORITY_POLICY);
+            @RendererPriority
+            int awRendererRequestedPriority;
+            switch (rendererRequestedPriority) {
+                case WebView.RENDERER_PRIORITY_WAIVED:
+                    awRendererRequestedPriority = RendererPriority.WAIVED;
+                    break;
+                case WebView.RENDERER_PRIORITY_BOUND:
+                    awRendererRequestedPriority = RendererPriority.LOW;
+                    break;
+                default:
+                case WebView.RENDERER_PRIORITY_IMPORTANT:
+                    awRendererRequestedPriority = RendererPriority.HIGH;
+                    break;
+            }
+            mAwContents.setRendererPriorityPolicy(
+                    awRendererRequestedPriority, waivedWhenNotVisible);
         }
-        mAwContents.setRendererPriorityPolicy(awRendererRequestedPriority, waivedWhenNotVisible);
     }
 
     @Override
     public int getRendererRequestedPriority() {
-        @RendererPriority
-        final int awRendererRequestedPriority = mAwContents.getRendererRequestedPriority();
-        switch (awRendererRequestedPriority) {
-            case RendererPriority.WAIVED:
-                return WebView.RENDERER_PRIORITY_WAIVED;
-            case RendererPriority.LOW:
-                return WebView.RENDERER_PRIORITY_BOUND;
-            default:
-            case RendererPriority.HIGH:
-                return WebView.RENDERER_PRIORITY_IMPORTANT;
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_RENDERER_REQUESTED_PRIORITY")) {
+            recordWebViewApiCall(ApiCall.GET_RENDERER_REQUESTED_PRIORITY);
+            @RendererPriority
+            final int awRendererRequestedPriority = mAwContents.getRendererRequestedPriority();
+            switch (awRendererRequestedPriority) {
+                case RendererPriority.WAIVED:
+                    return WebView.RENDERER_PRIORITY_WAIVED;
+                case RendererPriority.LOW:
+                    return WebView.RENDERER_PRIORITY_BOUND;
+                default:
+                case RendererPriority.HIGH:
+                    return WebView.RENDERER_PRIORITY_IMPORTANT;
+            }
         }
     }
 
     @Override
     public boolean getRendererPriorityWaivedWhenNotVisible() {
-        return mAwContents.getRendererPriorityWaivedWhenNotVisible();
+        try (TraceEvent event = TraceEvent.scoped(
+                     "WebView.APICall.Framework.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE")) {
+            recordWebViewApiCall(ApiCall.GET_RENDERER_PRIORITY_WAIVED_WHEN_NOT_VISIBLE);
+            return mAwContents.getRendererPriorityWaivedWhenNotVisible();
+        }
     }
 
     @Override

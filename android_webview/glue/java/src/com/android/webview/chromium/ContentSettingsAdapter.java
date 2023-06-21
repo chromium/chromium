@@ -621,7 +621,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public void setAllowUniversalAccessFromFileURLs(boolean flag) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
             mAwSettings.setAllowUniversalAccessFromFileURLs(flag);
@@ -631,7 +631,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public void setAllowFileAccessFromFileURLs(boolean flag) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
             mAwSettings.setAllowFileAccessFromFileURLs(flag);
@@ -743,7 +743,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public boolean getAllowUniversalAccessFromFileURLs() {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_UNIVERSAL_ACCESS_FROM_FILE_URLS);
             return mAwSettings.getAllowUniversalAccessFromFileURLs();
@@ -753,7 +753,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public boolean getAllowFileAccessFromFileURLs() {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_ALLOW_FILE_ACCESS_FROM_FILE_URLS);
             return mAwSettings.getAllowFileAccessFromFileURLs();
@@ -777,7 +777,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public synchronized void setJavaScriptCanOpenWindowsAutomatically(boolean flag) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
+                     "WebView.ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY);
             mAwSettings.setJavaScriptCanOpenWindowsAutomatically(flag);
@@ -787,7 +787,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public synchronized boolean getJavaScriptCanOpenWindowsAutomatically() {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
+                     "WebView.ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_JAVA_SCRIPT_CAN_OPEN_WINDOWS_AUTOMATICALLY);
             return mAwSettings.getJavaScriptCanOpenWindowsAutomatically();
@@ -867,7 +867,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public void setMediaPlaybackRequiresUserGesture(boolean require) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
+                     "WebView.ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE);
             mAwSettings.setMediaPlaybackRequiresUserGesture(require);
@@ -877,7 +877,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public boolean getMediaPlaybackRequiresUserGesture() {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
+                     "WebView.ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_MEDIA_PLAYBACK_REQUIRES_USER_GESTURE);
             return mAwSettings.getMediaPlaybackRequiresUserGesture();
@@ -923,7 +923,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public void setDisabledActionModeMenuItems(int menuItems) {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_SET_DISABLED_ACTION_MODE_MENU_ITEMS);
             mAwSettings.setDisabledActionModeMenuItems(menuItems);
@@ -933,7 +933,7 @@ public class ContentSettingsAdapter extends android.webkit.WebSettings {
     @Override
     public int getDisabledActionModeMenuItems() {
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
+                     "WebView.ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEB_SETTINGS_GET_DISABLED_ACTION_MODE_MENU_ITEMS);
             return mAwSettings.getDisabledActionModeMenuItems();

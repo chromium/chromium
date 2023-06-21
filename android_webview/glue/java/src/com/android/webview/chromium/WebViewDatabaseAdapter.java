@@ -59,7 +59,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public Boolean call() {
                     try (TraceEvent event = TraceEvent.scoped(
-                                 "ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD")) {
+                                 "WebView.ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD")) {
                         WebViewChromium.recordWebViewApiCall(
                                 ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD);
                         return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
@@ -68,7 +68,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             });
         }
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD")) {
+                     "WebView.ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEBVIEW_DATABASE_HAS_HTTP_AUTH_USERNAME_PASSWORD);
             return mHttpAuthDatabase.hasHttpAuthUsernamePassword();
@@ -82,7 +82,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public void run() {
                     try (TraceEvent event = TraceEvent.scoped(
-                                 "ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD")) {
+                                 "WebView.ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD")) {
                         WebViewChromium.recordWebViewApiCall(
                                 ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD);
                         mHttpAuthDatabase.clearHttpAuthUsernamePassword();
@@ -93,7 +93,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             return;
         }
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD")) {
+                     "WebView.ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEBVIEW_DATABASE_CLEAR_HTTP_AUTH_USERNAME_PASSWORD);
             mHttpAuthDatabase.clearHttpAuthUsernamePassword();
@@ -108,7 +108,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public void run() {
                     try (TraceEvent event = TraceEvent.scoped(
-                                 "ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD")) {
+                                 "WebView.ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD")) {
                         WebViewChromium.recordWebViewApiCall(
                                 ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD);
                         mHttpAuthDatabase.setHttpAuthUsernamePassword(
@@ -120,7 +120,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
         }
 
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD")) {
+                     "WebView.ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEBVIEW_DATABASE_SET_HTTP_AUTH_USERNAME_PASSWORD);
             mHttpAuthDatabase.setHttpAuthUsernamePassword(host, realm, username, password);
@@ -134,7 +134,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
                 @Override
                 public String[] call() {
                     try (TraceEvent event = TraceEvent.scoped(
-                                 "ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD")) {
+                                 "WebView.ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD")) {
                         WebViewChromium.recordWebViewApiCall(
                                 ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD);
                         return mHttpAuthDatabase.getHttpAuthUsernamePassword(host, realm);
@@ -143,7 +143,7 @@ final class WebViewDatabaseAdapter extends WebViewDatabase {
             });
         }
         try (TraceEvent event = TraceEvent.scoped(
-                     "ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD")) {
+                     "WebView.ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD")) {
             WebViewChromium.recordWebViewApiCall(
                     ApiCall.WEBVIEW_DATABASE_GET_HTTP_AUTH_USERNAME_PASSWORD);
             return mHttpAuthDatabase.getHttpAuthUsernamePassword(host, realm);

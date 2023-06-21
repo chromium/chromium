@@ -265,6 +265,16 @@ static void JNI_TraceEvent_Begin(JNIEnv* env,
   }
 }
 
+static void JNI_TraceEvent_BeginWithIntArg(JNIEnv* env,
+                                           const JavaParamRef<jstring>& jname,
+                                           jint jarg) {
+  TraceEventDataConverter converter(env, jname, nullptr);
+  TRACE_EVENT_BEGIN(internal::kJavaTraceCategory, nullptr, "arg", jarg,
+                    [&](::perfetto::EventContext& ctx) {
+                      ctx.event()->set_name(converter.name());
+                    });
+}
+
 static void JNI_TraceEvent_End(JNIEnv* env,
                                const JavaParamRef<jstring>& jname,
                                const JavaParamRef<jstring>& jarg,

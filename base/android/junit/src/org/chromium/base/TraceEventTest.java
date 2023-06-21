@@ -4,20 +4,39 @@
 
 package org.chromium.base;
 
+import static org.mockito.Mockito.verify;
+
 import androidx.test.filters.SmallTest;
 
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
+import org.mockito.Mock;
+import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.Feature;
+import org.chromium.base.test.util.JniMocker;
 
 /**
  * Tests for {@link TraceEvent}.
  */
 @RunWith(BaseRobolectricTestRunner.class)
 public class TraceEventTest {
+    @Rule
+    public JniMocker mocker = new JniMocker();
+
+    @Mock
+    TraceEvent.Natives mNativeMock;
+
+    @Before
+    public void setUp() {
+        MockitoAnnotations.initMocks(this);
+        mocker.mock(TraceEventJni.TEST_HOOKS, mNativeMock);
+    }
+
     @Test
     @SmallTest
     @Feature({"Android-AppBase"})
@@ -65,5 +84,17 @@ public class TraceEventTest {
                 + "org.chromium.myClass.myMethod(org.chromium.myOtherClass.instance)";
         Assert.assertEquals(TraceEvent.BasicLooperMonitor.getTraceEventName(realEventName),
                 TraceEvent.BasicLooperMonitor.FILTERED_EVENT_NAME);
+    }
+
+    @Test
+    @SmallTest
+    @Feature({"Android-AppBase"})
+    public void testScopedTraceEventWithIntArg() {
+        TraceEvent.setEnabled(true);
+        // Only string literals are allowed in Java event names.
+        try (TraceEvent event = TraceEvent.scoped("TestEvent", 15)) {
+        }
+        verify(mNativeMock).beginWithIntArg("TestEvent", 15);
+        TraceEvent.setEnabled(false);
     }
 }
