@@ -1172,6 +1172,8 @@ constexpr auto DanglingUntriaged = base::RawPtrTraits::kMayDangle;
 //
 // These were found from CQ runs and analysed in this dashboard:
 // https://docs.google.com/spreadsheets/d/1k12PQOG4y1-UEV9xDfP1F8FSk4cVFywafEYHmzFubJ8/
+//
+// This is not meant to be added manually. You can ignore this flag.
 constexpr auto FlakyDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
 // The use of pointer arithmetic with raw_ptr is strongly discouraged and
@@ -1193,6 +1195,8 @@ constexpr auto ExperimentalAsh = base::RawPtrTraits::kExperimentalAsh;
 // detected that those raw_ptr's were never released (either by calling
 // raw_ptr's destructor or by resetting its value), which can ultimately put
 // pressure on the BRP quarantine.
+//
+// This is not meant to be added manually. You can ignore this flag.
 constexpr auto LeakedDanglingUntriaged = base::RawPtrTraits::kMayDangle;
 
 namespace std {
