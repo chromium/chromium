@@ -121,7 +121,9 @@ void V8CrowdsourcedCompileHintsProducer::ClearData() {
 namespace {
 
 void ClearDataTask(V8CrowdsourcedCompileHintsProducer* producer) {
-  producer->ClearData();
+  if (producer != nullptr) {
+    producer->ClearData();
+  }
 }
 
 }  // namespace
