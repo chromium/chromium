@@ -53,6 +53,7 @@ class OmniboxPopupViewWebUI : public OmniboxPopupViewViews {
   void UpdateChildViews() override;
   void OnPopupCreated() override;
   gfx::Rect GetTargetBounds() const override;
+  void OnSuggestionGroupVisibilityUpdate() override {}
 
  private:
   // The reference to the child suggestions WebView.
