@@ -2964,7 +2964,6 @@ crbug.com/626703 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media
 crbug.com/1232504 [ Mac10.14 ] external/wpt/html/semantics/embedded-content/media-elements/ready-states/autoplay-hidden.optional.html [ Crash Timeout ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-fromelement/capture.html [ Crash ]
 crbug.com/626703 [ Mac10.14 ] external/wpt/mediacapture-streams/MediaDevices-enumerateDevices-per-origin-ids.sub.https.html [ Crash ]
-crbug.com/626703 external/wpt/css/css-fonts/font-size-adjust-013.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-001.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-002.html [ Failure ]
 crbug.com/626703 external/wpt/css/css-text/white-space/pre-wrap-align-center-003.html [ Failure ]

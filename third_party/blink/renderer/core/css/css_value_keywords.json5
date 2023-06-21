@@ -161,6 +161,7 @@
     "cap-height",
     "ch-width",
     "ic-width",
+    // from-font
 
     //
     // font-family (<generic-family> in CSS 2.1)

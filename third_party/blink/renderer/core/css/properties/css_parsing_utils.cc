@@ -7582,8 +7582,12 @@ CSSValue* ConsumeFontSizeAdjust(CSSParserTokenRange& range,
       ConsumeIdent<CSSValueID::kExHeight, CSSValueID::kCapHeight,
                    CSSValueID::kChWidth, CSSValueID::kIcWidth>(range);
 
-  CSSPrimitiveValue* value = css_parsing_utils::ConsumeNumber(
+  CSSValue* value = css_parsing_utils::ConsumeNumber(
       range, context, CSSPrimitiveValue::ValueRange::kNonNegative);
+  if (!value) {
+    value = ConsumeIdent<CSSValueID::kFromFont>(range);
+  }
+
   if (!value || !font_metric ||
       font_metric->GetValueID() == CSSValueID::kExHeight) {
     return value;

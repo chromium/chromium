@@ -100,7 +100,8 @@ class StyleBuilderConverterBase {
       const CSSToLengthConversionData&,
       FontDescription::Size parent_size,
       const Document*);
-  static FontSizeAdjust ConvertFontSizeAdjust(const CSSValue&);
+  static FontSizeAdjust ConvertFontSizeAdjust(const StyleResolverState&,
+                                              const CSSValue&);
   static scoped_refptr<FontPalette> ConvertFontPalette(const CSSValue&);
   static scoped_refptr<FontPalette> ConvertPaletteMix(const CSSValue&);
 };

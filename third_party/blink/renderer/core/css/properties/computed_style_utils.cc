@@ -955,17 +955,25 @@ CSSValue* ComputedStyleUtils::ValueForFontSizeAdjust(
 
   FontSizeAdjust font_size_adjust = style.FontSizeAdjust();
   if (font_size_adjust.GetMetric() == FontSizeAdjust::Metric::kExHeight) {
+    if (font_size_adjust.IsFromFont()) {
+      return CSSIdentifierValue::Create(CSSValueID::kFromFont);
+    }
     return CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
                                           CSSPrimitiveValue::UnitType::kNumber);
   }
 
   CSSIdentifierValue* metric =
       CSSIdentifierValue::Create(font_size_adjust.GetMetric());
-  CSSPrimitiveValue* value = CSSNumericLiteralValue::Create(
-      style.FontSizeAdjust().Value(), CSSPrimitiveValue::UnitType::kNumber);
-
-  return MakeGarbageCollected<CSSValuePair>(metric, value,
-                                            CSSValuePair::kKeepIdenticalValues);
+  if (font_size_adjust.IsFromFont()) {
+    return MakeGarbageCollected<CSSValuePair>(
+        metric, CSSIdentifierValue::Create(CSSValueID::kFromFont),
+        CSSValuePair::kKeepIdenticalValues);
+  }
+  return MakeGarbageCollected<CSSValuePair>(
+      metric,
+      CSSNumericLiteralValue::Create(style.FontSizeAdjust().Value(),
+                                     CSSPrimitiveValue::UnitType::kNumber),
+      CSSValuePair::kKeepIdenticalValues);
 }
 
 CSSPrimitiveValue* ComputedStyleUtils::ValueForFontStretch(

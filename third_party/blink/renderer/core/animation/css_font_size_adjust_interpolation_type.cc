@@ -103,7 +103,7 @@ InterpolationValue CSSFontSizeAdjustInterpolationType::MaybeConvertValue(
     const StyleResolverState* state,
     ConversionCheckers& conversion_checkers) const {
   return CreateFontSizeAdjustValue(
-      StyleBuilderConverterBase::ConvertFontSizeAdjust(value));
+      StyleBuilderConverterBase::ConvertFontSizeAdjust(*state, value));
 }
 
 PairwiseInterpolationValue

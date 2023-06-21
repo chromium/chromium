@@ -26,6 +26,7 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/css_value_keywords.h"
+#include "third_party/blink/renderer/platform/fonts/font_size_adjust.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {
@@ -84,6 +85,17 @@ class CORE_EXPORT FontSizeFunctions {
                             int pixel_font_size,
                             bool is_monospace);
 
+  // Given font data, this function returns a normalized aspect value for the
+  // specified font metric, which is calculated using the size of the font
+  // metric divided by the font size.
+  // https://www.w3.org/TR/css-fonts-5/#font-size-adjust-aspect-value
+  static absl::optional<float> FontAspectValue(const SimpleFontData*,
+                                               FontSizeAdjust::Metric,
+                                               float computed_size);
+
+  // Given font data, this function returns a font size adjusted by
+  // font-size-adjust, scaling the font size to achieve the desired aspect
+  // value of font size to metric.
   static absl::optional<float> MetricsMultiplierAdjustedFontSize(
       const SimpleFontData*,
       const FontDescription&);

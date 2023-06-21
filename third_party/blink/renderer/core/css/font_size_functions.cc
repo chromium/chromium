@@ -199,22 +199,14 @@ int FontSizeFunctions::LegacyFontSize(const Document* document,
                                           medium_size);
 }
 
-absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
-    const SimpleFontData* font_data,
-    const FontDescription& font_description) {
-  DCHECK(font_data);
-  const float computed_size = font_description.ComputedSize();
-  if (!computed_size) {
-    return absl::nullopt;
-  }
-
-  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
-  const FontMetrics& font_metrics = font_data->GetFontMetrics();
-
+static float AspectValue(const FontMetrics& font_metrics,
+                         FontSizeAdjust::Metric metric,
+                         float computed_size) {
+  DCHECK(computed_size);
   // FIXME: The behavior for missing metrics has yet to be defined.
   // https://github.com/w3c/csswg-drafts/issues/6384
   float aspect_value = 1.0;
-  switch (size_adjust.GetMetric()) {
+  switch (metric) {
     case FontSizeAdjust::Metric::kCapHeight:
       if (font_metrics.CapHeight() > 0) {
         aspect_value = font_metrics.CapHeight() / computed_size;
@@ -237,7 +229,31 @@ absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
         aspect_value = font_metrics.XHeight() / computed_size;
       }
   }
+  return aspect_value;
+}
 
+absl::optional<float> FontSizeFunctions::FontAspectValue(
+    const SimpleFontData* font_data,
+    FontSizeAdjust::Metric metric,
+    float computed_size) {
+  if (!font_data || !computed_size) {
+    return absl::nullopt;
+  }
+  return AspectValue(font_data->GetFontMetrics(), metric, computed_size);
+}
+
+absl::optional<float> FontSizeFunctions::MetricsMultiplierAdjustedFontSize(
+    const SimpleFontData* font_data,
+    const FontDescription& font_description) {
+  DCHECK(font_data);
+  const float computed_size = font_description.ComputedSize();
+  if (!computed_size) {
+    return absl::nullopt;
+  }
+
+  const FontSizeAdjust size_adjust = font_description.SizeAdjust();
+  float aspect_value = AspectValue(font_data->GetFontMetrics(),
+                                   size_adjust.GetMetric(), computed_size);
   if (!aspect_value) {
     return absl::nullopt;
   }

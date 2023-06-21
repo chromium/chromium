@@ -700,6 +700,7 @@ FontDescription::Size StyleBuilderConverter::ConvertFontSize(
 }
 
 FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
+    const StyleResolverState& state,
     const CSSValue& value) {
   auto* identifier_value = DynamicTo<CSSIdentifierValue>(value);
   if (identifier_value && identifier_value->GetValueID() == CSSValueID::kNone) {
@@ -710,6 +711,21 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
     return FontBuilder::InitialSizeAdjust();
   }
 
+  float computed_font_size =
+      state.ParentStyle() ? state.ParentStyle()->ComputedFontSize() : 0;
+  const SimpleFontData* font_data =
+      state.ParentStyle() ? state.ParentStyle()->GetFont().PrimaryFont()
+                          : nullptr;
+  if (identifier_value &&
+      identifier_value->GetValueID() == CSSValueID::kFromFont) {
+    absl::optional<float> aspect_value = FontSizeFunctions::FontAspectValue(
+        font_data, FontSizeAdjust::Metric::kExHeight, computed_font_size);
+    return FontSizeAdjust(aspect_value.has_value()
+                              ? aspect_value.value()
+                              : FontSizeAdjust::kFontSizeAdjustNone,
+                          true);
+  }
+
   if (value.IsPrimitiveValue()) {
     const auto& primitive_value = To<CSSPrimitiveValue>(value);
     DCHECK(primitive_value.IsNumber());
@@ -718,15 +734,29 @@ FontSizeAdjust StyleBuilderConverterBase::ConvertFontSizeAdjust(
 
   DCHECK(value.IsValuePair());
   const auto& pair = To<CSSValuePair>(value);
-  return FontSizeAdjust(
-      To<CSSPrimitiveValue>(pair.Second()).GetFloatValue(),
-      To<CSSIdentifierValue>(pair.First()).ConvertTo<FontSizeAdjust::Metric>());
+  auto metric =
+      To<CSSIdentifierValue>(pair.First()).ConvertTo<FontSizeAdjust::Metric>();
+
+  if (pair.Second().IsPrimitiveValue()) {
+    const auto& primitive_value = To<CSSPrimitiveValue>(pair.Second());
+    DCHECK(primitive_value.IsNumber());
+    return FontSizeAdjust(primitive_value.GetFloatValue(), metric);
+  }
+
+  DCHECK(To<CSSIdentifierValue>(pair.Second()).GetValueID() ==
+         CSSValueID::kFromFont);
+  absl::optional<float> aspect_value =
+      FontSizeFunctions::FontAspectValue(font_data, metric, computed_font_size);
+  return FontSizeAdjust(aspect_value.has_value()
+                            ? aspect_value.value()
+                            : FontSizeAdjust::kFontSizeAdjustNone,
+                        metric, true);
 }
 
 FontSizeAdjust StyleBuilderConverter::ConvertFontSizeAdjust(
-    StyleResolverState&,
+    StyleResolverState& state,
     const CSSValue& value) {
-  return StyleBuilderConverterBase::ConvertFontSizeAdjust(value);
+  return StyleBuilderConverterBase::ConvertFontSizeAdjust(state, value);
 }
 
 FontSelectionValue StyleBuilderConverterBase::ConvertFontStretch(
