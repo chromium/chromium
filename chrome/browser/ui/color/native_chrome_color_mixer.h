@@ -5,7 +5,7 @@
 #ifndef CHROME_BROWSER_UI_COLOR_NATIVE_CHROME_COLOR_MIXER_H_
 #define CHROME_BROWSER_UI_COLOR_NATIVE_CHROME_COLOR_MIXER_H_
 
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 
 namespace ui {
 class ColorProvider;
@@ -15,6 +15,6 @@ class ColorProvider;
 // This function should be implemented on a per-platform basis in relevant
 // subdirectories.
 void AddNativeChromeColorMixer(ui::ColorProvider* provider,
-                               const ui::ColorProviderManager::Key& key);
+                               const ui::ColorProviderKey& key);
 
 #endif  // CHROME_BROWSER_UI_COLOR_NATIVE_CHROME_COLOR_MIXER_H_

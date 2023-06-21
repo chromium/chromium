@@ -54,7 +54,7 @@ bool ChromeColorProviderUtilsCallbacks::ColorIdName(
 }  // namespace
 
 void AddChromeColorMixers(ui::ColorProvider* provider,
-                          const ui::ColorProviderManager::Key& key) {
+                          const ui::ColorProviderKey& key) {
   static base::NoDestructor<ChromeColorProviderUtilsCallbacks>
       chrome_color_provider_utils_callbacks;
   ui::SetColorProviderUtilsCallbacks(

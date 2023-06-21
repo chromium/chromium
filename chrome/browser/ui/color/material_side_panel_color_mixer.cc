@@ -12,7 +12,7 @@
 #include "ui/color/color_recipe.h"
 
 void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
-                                    const ui::ColorProviderManager::Key& key) {
+                                    const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   mixer[kColorSidePanelContentBackground] = {ui::kColorSysBaseContainer};
   mixer[kColorSidePanelEntryIcon] = {ui::kColorSysPrimary};
