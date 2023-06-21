@@ -23,6 +23,8 @@ class CORE_EXPORT CSSScopeRule final : public CSSGroupingRule {
 
   String PreludeText() const;
   String cssText() const override;
+  String start() const;
+  String end() const;
 
   void SetPreludeText(const ExecutionContext*, String);
 

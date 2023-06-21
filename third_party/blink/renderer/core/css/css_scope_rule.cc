@@ -48,6 +48,19 @@ String CSSScopeRule::cssText() const {
   return result.ReleaseString();
 }
 
+String CSSScopeRule::start() const {
+  const StyleScope& scope =
+      To<StyleRuleScope>(*group_rule_.Get()).GetStyleScope();
+  return scope.From() ? CSSSelectorList::SelectorsText(scope.From())
+                      : g_null_atom;
+}
+
+String CSSScopeRule::end() const {
+  const StyleScope& scope =
+      To<StyleRuleScope>(*group_rule_.Get()).GetStyleScope();
+  return scope.To() ? CSSSelectorList::SelectorsText(scope.To()) : g_null_atom;
+}
+
 void CSSScopeRule::SetPreludeText(const ExecutionContext* execution_context,
                                   String value) {
   CSSStyleSheet::RuleMutationScope mutation_scope(this);

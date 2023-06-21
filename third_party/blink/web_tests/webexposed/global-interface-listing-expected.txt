@@ -929,6 +929,8 @@ interface CSSScale : CSSTransformComponent
     setter z
 interface CSSScopeRule : CSSConditionRule
     attribute @@toStringTag
+    getter end
+    getter start
     method constructor
 interface CSSSkew : CSSTransformComponent
     attribute @@toStringTag
