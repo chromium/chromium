@@ -128,9 +128,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
     iosurface_ = gfx::CreateIOSurface(size, gfx::BufferFormat::BGRA_8888);
   }
 
-  ~IOSurfaceGpuMemoryBuffer() override {
-    CFRelease(iosurface_);
-  }
+  ~IOSurfaceGpuMemoryBuffer() override = default;
 
   // Overridden from gfx::GpuMemoryBuffer:
   bool Map() override {
@@ -174,7 +172,7 @@ class IOSurfaceGpuMemoryBuffer : public gfx::GpuMemoryBuffer {
 
  private:
   bool mapped_;
-  IOSurfaceRef iosurface_;
+  base::ScopedCFTypeRef<IOSurfaceRef> iosurface_;
   const gfx::Size size_;
   gfx::BufferFormat format_;
 };

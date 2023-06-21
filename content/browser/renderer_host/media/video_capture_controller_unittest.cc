@@ -687,16 +687,16 @@ TEST_P(VideoCaptureControllerTest, CaptureWithScaledFrames) {
   gfx::GpuMemoryBufferHandle frame_handle;
   frame_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   frame_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
-  frame_handle.io_surface.reset(
-      gfx::CreateIOSurface(kFrameSize, gfx::BufferFormat::BGRA_8888));
+  frame_handle.io_surface =
+      gfx::CreateIOSurface(kFrameSize, gfx::BufferFormat::BGRA_8888);
   media::CapturedExternalVideoBuffer external_buffer(
       std::move(frame_handle), capture_format, gfx::ColorSpace());
 
   gfx::GpuMemoryBufferHandle scaled_frame_handle;
   scaled_frame_handle.type = gfx::GpuMemoryBufferType::IO_SURFACE_BUFFER;
   scaled_frame_handle.id = gfx::GpuMemoryBufferHandle::kInvalidId;
-  scaled_frame_handle.io_surface.reset(
-      gfx::CreateIOSurface(kScaledFrameSize, gfx::BufferFormat::BGRA_8888));
+  scaled_frame_handle.io_surface =
+      gfx::CreateIOSurface(kScaledFrameSize, gfx::BufferFormat::BGRA_8888);
   std::vector<media::CapturedExternalVideoBuffer> scaled_external_buffers;
   scaled_external_buffers.emplace_back(
       std::move(scaled_frame_handle), scaled_capture_format, gfx::ColorSpace());

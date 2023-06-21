@@ -1068,8 +1068,8 @@ TEST_P(IOSurfaceImageBackingFactoryGMBTest, Basic) {
   gfx::GpuMemoryBufferId kBufferId(1);
   handle.type = gfx::IO_SURFACE_BUFFER;
   handle.id = kBufferId;
-  handle.io_surface.reset(gfx::CreateIOSurface(
-      size, buffer_format, /*should_clear=*/true, override_rgba_to_bgra));
+  handle.io_surface = gfx::CreateIOSurface(
+      size, buffer_format, /*should_clear=*/true, override_rgba_to_bgra);
   DCHECK(handle.io_surface);
 
   auto backing = backing_factory_->CreateSharedImage(

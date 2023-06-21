@@ -237,7 +237,8 @@ class CARendererLayerTree::SolidColorContents
  private:
   friend class base::RefCounted<SolidColorContents>;
 
-  SolidColorContents(SkColor4f color, IOSurfaceRef io_surface);
+  SolidColorContents(SkColor4f color,
+                     base::ScopedCFTypeRef<IOSurfaceRef> io_surface);
   ~SolidColorContents();
 
   using Map = std::map<SkColor4f,
@@ -271,7 +272,8 @@ CARendererLayerTree::SolidColorContents::Get(SkColor4f color) {
     color_space = gfx::ColorSpace::CreateDisplayP3D65();
   }
 
-  IOSurfaceRef io_surface = CreateIOSurface(size, buffer_format);
+  base::ScopedCFTypeRef<IOSurfaceRef> io_surface =
+      CreateIOSurface(size, buffer_format);
   if (!io_surface)
     return nullptr;
   IOSurfaceSetColorSpace(io_surface, color_space);
@@ -302,8 +304,8 @@ IOSurfaceRef CARendererLayerTree::SolidColorContents::GetIOSurfaceRef() const {
 
 CARendererLayerTree::SolidColorContents::SolidColorContents(
     SkColor4f color,
-    IOSurfaceRef io_surface)
-    : color_(color), io_surface_(io_surface) {
+    base::ScopedCFTypeRef<IOSurfaceRef> io_surface)
+    : color_(color), io_surface_(std::move(io_surface)) {
   auto* map = GetMap();
   DCHECK(map->find(color_) == map->end());
   map->insert(std::make_pair(color_, this));

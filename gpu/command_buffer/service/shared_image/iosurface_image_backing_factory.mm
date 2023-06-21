@@ -312,8 +312,8 @@ IOSurfaceImageBackingFactory::CreateSharedImageInternal(
     const gfx::BufferFormat buffer_format = ToBufferFormat(format);
     const bool should_clear = false;
     const bool override_rgba_to_bgra = gr_context_type_ == GrContextType::kGL;
-    io_surface.reset(gfx::CreateIOSurface(size, buffer_format, should_clear,
-                                          override_rgba_to_bgra));
+    io_surface = gfx::CreateIOSurface(size, buffer_format, should_clear,
+                                      override_rgba_to_bgra);
     if (!io_surface) {
       LOG(ERROR) << "CreateSharedImage: Failed to create bindable image";
       return nullptr;

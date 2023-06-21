@@ -25,10 +25,9 @@ bool GpuMemoryBufferTrackerMac::Init(const gfx::Size& dimensions,
                  << VideoPixelFormatToString(format);
     return false;
   }
-  if (IOSurfaceRef io_surface =
-          CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
-                          /*should_clear=*/false)) {
-    io_surface_.reset(io_surface, base::scoped_policy::ASSUME);
+  if ((io_surface_ =
+           CreateIOSurface(dimensions, gfx::BufferFormat::YUV_420_BIPLANAR,
+                           /*should_clear=*/false))) {
     DVLOG(2) << __func__ << " id " << IOSurfaceGetID(io_surface_);
     return true;
   } else {

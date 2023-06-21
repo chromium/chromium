@@ -33,7 +33,7 @@ void AddIntegerValue(CFMutableDictionaryRef dictionary,
                      const CFStringRef key,
                      int32_t value) {
   base::ScopedCFTypeRef<CFNumberRef> number(
-      CFNumberCreate(NULL, kCFNumberSInt32Type, &value));
+      CFNumberCreate(nullptr, kCFNumberSInt32Type, &value));
   CFDictionaryAddValue(dictionary, key, number.get());
 }
 
@@ -228,10 +228,11 @@ bool IOSurfaceSetColorSpace(IOSurfaceRef io_surface,
 
 }  // namespace internal
 
-IOSurfaceRef CreateIOSurface(const gfx::Size& size,
-                             gfx::BufferFormat format,
-                             bool should_clear,
-                             bool override_rgba_to_bgra) {
+base::ScopedCFTypeRef<IOSurfaceRef> CreateIOSurface(
+    const gfx::Size& size,
+    gfx::BufferFormat format,
+    bool should_clear,
+    bool override_rgba_to_bgra) {
   TRACE_EVENT0("ui", "CreateIOSurface");
   base::TimeTicks start_time = base::TimeTicks::Now();
 
@@ -302,11 +303,11 @@ IOSurfaceRef CreateIOSurface(const gfx::Size& size,
     AddIntegerValue(properties, kIOSurfaceAllocSize, bytes_alloc);
   }
 
-  IOSurfaceRef surface = IOSurfaceCreate(properties);
+  base::ScopedCFTypeRef<IOSurfaceRef> surface(IOSurfaceCreate(properties));
   if (!surface) {
     LOG(ERROR) << "Failed to allocate IOSurface of size " << size.ToString()
                << ".";
-    return nullptr;
+    return base::ScopedCFTypeRef<IOSurfaceRef>();
   }
 
   if (should_clear) {
