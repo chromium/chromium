@@ -64,8 +64,8 @@ class AutofillImageFetcherImplNewCardArtTest
 
 TEST_F(AutofillImageFetcherImplNewCardArtTest, ResolveCardArtURL) {
   // With kAutofillEnableNewCardArtAndNetworkImages enabled, we fetch the image
-  // at its raw size, so ResolveCardArtURL should be a no-op.
-  EXPECT_EQ(GURL("https://www.example.com/fake_image1"),
+  // at height of 48.
+  EXPECT_EQ(GURL("https://www.example.com/fake_image1=h48-pa"),
             autofill_image_fetcher()->ResolveCardArtURL(
                 GURL("https://www.example.com/fake_image1")));
 

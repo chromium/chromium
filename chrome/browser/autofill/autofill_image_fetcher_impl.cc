@@ -67,8 +67,8 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   }
 
   // When kAutofillEnableNewCardArtAndNetworkImages is enabled, we take the
-  // image at its raw size and resize it to Size(40, 24) later.
-  return card_art_url;
+  // image at height 48 with its ratio width and resize to Size(40, 24) later
+  return GURL(card_art_url.spec() + "=h48-pa");
 }
 
 gfx::Image AutofillImageFetcherImpl::ResolveCardArtImage(
