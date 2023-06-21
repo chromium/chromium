@@ -1,6 +1,7 @@
 // Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
+
 #include <memory>
 #include <vector>
 
@@ -13,16 +14,12 @@
 #include "base/test/test_simple_task_runner.h"
 #include "chrome/browser/banners/app_banner_manager_desktop.h"
 #include "chrome/browser/banners/test_app_banner_manager_desktop.h"
+#include "chrome/browser/installable/ml_promotion_browsertest_base.h"
 #include "chrome/browser/ui/browser.h"
 #include "chrome/browser/ui/browser_commands.h"
 #include "chrome/browser/ui/web_applications/test/web_app_browsertest_util.h"
-#include "chrome/browser/ui/web_applications/web_app_controller_browsertest.h"
-#include "chrome/browser/web_applications/test/web_app_test_utils.h"
 #include "chrome/browser/web_applications/web_app_command_manager.h"
-#include "chrome/browser/web_applications/web_app_command_scheduler.h"
-#include "chrome/browser/web_applications/web_app_install_info.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
-#include "chrome/browser/web_applications/web_app_sync_bridge.h"
 #include "components/segmentation_platform/public/constants.h"
 #include "components/segmentation_platform/public/input_context.h"
 #include "components/segmentation_platform/public/testing/mock_segmentation_platform_service.h"
@@ -56,7 +53,7 @@
 #include "url/origin.h"
 #include "url/url_constants.h"
 
-namespace web_app {
+namespace webapps {
 namespace {
 using InstallUkmEntry = ukm::builders::Site_Install;
 using ManifestUkmEntry = ukm::builders::Site_Manifest;
@@ -155,7 +152,7 @@ class WebContentsObserverAdapter : public content::WebContentsObserver {
   base::RunLoop manifest_run_loop_;
 };
 
-class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
+class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
  public:
   MLPromotionBrowsertest() {
     task_runner_ = base::MakeRefCounted<base::TestSimpleTaskRunner>();
@@ -165,12 +162,16 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
   ~MLPromotionBrowsertest() override = default;
 
   void SetUpOnMainThread() override {
-    WebAppControllerBrowserTest::SetUpOnMainThread();
+    MLPromotionBrowserTestBase::SetUpOnMainThread();
     ml_promoter()->SetTaskRunnerForTesting(task_runner_);
     test_ukm_recorder_ = std::make_unique<ukm::TestAutoSetUkmRecorder>();
   }
 
  protected:
+  GURL GetInstallableAppURL() {
+    return https_server()->GetURL("/banners/manifest_test_page.html");
+  }
+
   GURL GetUrlWithNoManifest() {
     return https_server()->GetURL("/banners/no_manifest_test_page.html");
   }
@@ -202,18 +203,9 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
     return MLInstallabilityPromoter::FromWebContents(web_contents());
   }
 
-  content::WebContents* web_contents() {
-    return browser()->tab_strip_model()->GetActiveWebContents();
-  }
-
-  MockSegmentationPlatformService* GetMockSegmentation(
-      content::WebContents* custom_web_contents = nullptr) {
-    if (!custom_web_contents) {
-      custom_web_contents = web_contents();
-    }
-    return webapps::TestAppBannerManagerDesktop::FromWebContents(
-               custom_web_contents)
-        ->GetMockSegmentationPlatformService();
+  web_app::WebAppProvider& provider() {
+    // TODO(b/287255120) : Block this on Android.
+    return *web_app::WebAppProvider::GetForTest(profile());
   }
 
   const ukm::TestAutoSetUkmRecorder& test_ukm_recorder() {
@@ -246,13 +238,13 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
     base::test::TestFuture<void> delayed_task_future;
     ml_promoter()->SetAwaitTimeoutTaskPendingCallbackForTesting(
         delayed_task_future.GetCallback());
-    NavigateAndAwaitInstallabilityCheck(browser(), url);
+    NavigateAndAwaitInstallabilityCheck(url);
     EXPECT_TRUE(delayed_task_future.Wait());
   }
 
   void ExpectClasificationCallReturnResult(
       GURL site_url,
-      ManifestId manifest_id,
+      web_app::ManifestId manifest_id,
       std::string label_result,
       TrainingRequestId request_result,
       content::WebContents* custom_web_contents = nullptr) {
@@ -291,34 +283,10 @@ class MLPromotionBrowsertest : public WebAppControllerBrowserTest {
                     _));
   }
 
-  bool InstallApp(bool install_locally = true) {
-    WebAppProvider* provider = WebAppProvider::GetForTest(browser()->profile());
-    base::test::TestFuture<const AppId&, webapps::InstallResultCode>
-        install_future;
-
-    provider->scheduler().FetchManifestAndInstall(
-        webapps::WebappInstallSource::OMNIBOX_INSTALL_ICON,
-        web_contents()->GetWeakPtr(),
-        /*bypass_service_worker_check=*/false,
-        base::BindOnce(test::TestAcceptDialogCallback),
-        install_future.GetCallback(), /*use_fallback=*/false);
-
-    bool success = install_future.Wait();
-    if (!success) {
-      return success;
-    }
-
-    const AppId& app_id = install_future.Get<AppId>();
-    provider->sync_bridge_unsafe().SetAppIsLocallyInstalledForTesting(
-        app_id, /*is_locally_installed=*/install_locally);
-    return success;
-  }
-
   scoped_refptr<base::TestSimpleTaskRunner> task_runner_;
 
  private:
   base::test::ScopedFeatureList scoped_feature_list_;
-
   std::unique_ptr<ukm::TestAutoSetUkmRecorder> test_ukm_recorder_;
 };
 
@@ -463,10 +431,10 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, ManifestUpdateChangesUKM) {
 
 // SiteInstallMetrics tests.
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, FullyInstalledAppMeasurement) {
-  NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
-  EXPECT_TRUE(InstallApp());
+  NavigateAndAwaitInstallabilityCheck(GetInstallableAppURL());
+  EXPECT_TRUE(InstallAppForCurrentWebContents(/*install_locally=*/true));
 
-  NavigateAndAwaitInstallabilityCheck(browser(), GetUrlWithNoManifest());
+  NavigateAndAwaitInstallabilityCheck(GetUrlWithNoManifest());
 
   // A re-navigation should retrigger the ML pipeline.
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
@@ -486,10 +454,10 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, FullyInstalledAppMeasurement) {
 
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
                        PartiallyInstalledAppMeasurement) {
-  NavigateAndAwaitInstallabilityCheck(browser(), GetInstallableAppURL());
-  EXPECT_TRUE(InstallApp(/*install_locally=*/false));
+  NavigateAndAwaitInstallabilityCheck(GetInstallableAppURL());
+  EXPECT_TRUE(InstallAppForCurrentWebContents(/*install_locally=*/false));
 
-  NavigateAndAwaitInstallabilityCheck(browser(), GetUrlWithNoManifest());
+  NavigateAndAwaitInstallabilityCheck(GetUrlWithNoManifest());
   // A re-navigation should retrigger the ML pipeline.
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
   task_runner_->RunPendingTasks();
@@ -630,6 +598,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, PageLoadsWithOnly1Favicon) {
 // 1. Favicon URL updates.
 // 2. Cache storage sizes.
 
+// TODO(b/287255120) : Implement ways of measuring ML outputs on Android.
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallNotShown) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
@@ -688,7 +657,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
                        webapps::MlInstallUserResponse::kIgnored);
 
   views::test::WidgetDestroyedWaiter destroyed(widget);
-  NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
   destroyed.Wait();
 
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
@@ -743,7 +712,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
 
   EXPECT_FALSE(provider().registrar_unsafe().is_empty());
-  AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
+  web_app::AppId app_id = provider().registrar_unsafe().GetAppIds()[0];
   EXPECT_EQ("Manifest test app",
             provider().registrar_unsafe().GetAppShortName(app_id));
 }
@@ -751,7 +720,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlNotShownAlreadyInstalled) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  InstallApp();
+  InstallAppForCurrentWebContents(/*install_locally=*/true);
 
   EXPECT_CALL(*GetMockSegmentation(), GetClassificationResult(_, _, _, _))
       .Times(0);
@@ -824,7 +793,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
 
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  NavigateToURLAndWait(browser(), GURL("about:blank"));
+  web_app::NavigateToURLAndWait(browser(), GURL("about:blank"));
 
   // Test that guardrails now block the install.
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
@@ -842,4 +811,4 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
 }
 
 }  // namespace
-}  // namespace web_app
+}  // namespace webapps

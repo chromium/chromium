@@ -294,9 +294,11 @@ static_library("test_support") {
     "//components/reporting/util:test_callbacks_support",
     "//components/safe_browsing/content/renderer/phishing_classifier:unit_tests_support",
     "//components/security_interstitials/content:security_interstitial_page",
+    "//components/segmentation_platform/public:test_support",
     "//components/spellcheck/renderer",
     "//components/ukm:test_support",
     "//components/user_education/common",
+    "//components/webapps/browser:browser",
     "//ui/webui",
   ]
 
@@ -452,6 +454,12 @@ static_library("test_support") {
       "//chrome:chrome_android_core",
       "//components/feed/core/v2:feed_core_stubs",
     ]
+
+    sources += [
+      "../browser/installable/ml_promotion_browsertest_base.cc",
+      "../browser/installable/ml_promotion_browsertest_base.h",
+    ]
+
     if (enable_vr) {
       public_deps += [ "//chrome/browser/android/vr:test_support" ]
 
@@ -495,7 +503,6 @@ static_library("test_support") {
       "//components/performance_manager",
       "//components/performance_manager/test_support:test_support_common",
       "//components/segmentation_platform/public:public",
-      "//components/segmentation_platform/public:test_support",
     ]
 
     sources += [
@@ -505,6 +512,8 @@ static_library("test_support") {
       "../browser/banners/test_app_banner_manager_desktop.h",
       "../browser/download/download_browsertest_utils.cc",
       "../browser/download/download_browsertest_utils.h",
+      "../browser/installable/ml_promotion_browsertest_base.cc",
+      "../browser/installable/ml_promotion_browsertest_base.h",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.cc",
       "../browser/performance_manager/test_support/fake_frame_throttling_delegate.h",
       "../browser/performance_manager/test_support/fake_high_efficiency_mode_delegate.cc",
@@ -1568,6 +1577,9 @@ if (!is_android) {
       "//components/segmentation_platform/internal",
       "//components/segmentation_platform/internal:test_support",
       "//components/segmentation_platform/public",
+
+      # TODO(b/287255120) : Also add this as a dependency on Android for building test code.
+      "//components/segmentation_platform/public:test_support",
       "//components/services/app_service/public/cpp:protocol_handling",
       "//components/services/app_service/public/cpp:test_support",
       "//components/services/language_detection/public/cpp",
@@ -1940,6 +1952,7 @@ if (!is_android) {
       "../browser/infobars/infobar_observer.h",
       "../browser/infobars/infobars_browsertest.cc",
       "../browser/installable/installable_manager_browsertest.cc",
+      "../browser/installable/ml_promotion_browsertest.cc",
       "../browser/interest_group/interest_group_permissions_browsertest.cc",
       "../browser/invalidation/profile_invalidation_provider_factory_browsertest.cc",
       "../browser/l10n_util_browsertest.cc",
