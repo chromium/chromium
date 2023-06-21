@@ -6318,6 +6318,20 @@ TEST_F(CaptureModeSettingsTest, NudgeDoesNotShowForAllUserTypes) {
   }
 }
 
+// Tests that the capture mode settings menu is centered with respect to the
+// capture bar.
+TEST_F(CaptureModeSettingsTest, SettingsMenuCenteredWithCaptureBar) {
+  StartCaptureSession(CaptureModeSource::kFullscreen, CaptureModeType::kImage);
+  auto* bar_widget = GetCaptureModeBarWidget();
+  ASSERT_TRUE(bar_widget);
+  ClickOnView(GetSettingsButton(), GetEventGenerator());
+  auto* settings_widget = GetCaptureModeSettingsWidget();
+  ASSERT_TRUE(settings_widget);
+  EXPECT_NEAR(settings_widget->GetWindowBoundsInScreen().CenterPoint().x(),
+              bar_widget->GetWindowBoundsInScreen().CenterPoint().x(),
+              /*abs_error=*/1);
+}
+
 // Tests that it's possbile to take a screenshot using the keyboard shortcut at
 // the login screen without any crashes. https://crbug.com/1266728.
 TEST_F(CaptureModeSettingsTest, TakeScreenshotAtLoginScreen) {

@@ -45,15 +45,16 @@ constexpr int kCornerRadius = 10;
 constexpr gfx::RoundedCornersF kRoundedCorners{kCornerRadius};
 
 // Returns the bounds of the settings widget in screen coordinates relative to
-// the bounds of the |capture_mode_bar_view| based on its given preferred
-// |settings_view_size|.
+// the bounds of the `capture_mode_bar_view` based on its given preferred
+// `settings_view_size`, which should be centered with respect to the capture
+// bar.
 gfx::Rect GetWidgetBounds(CaptureModeBarView* capture_mode_bar_view,
                           const gfx::Size& settings_view_size) {
-  DCHECK(capture_mode_bar_view);
+  CHECK(capture_mode_bar_view);
 
   return gfx::Rect(
-      capture_mode_bar_view->settings_button()->GetBoundsInScreen().right() -
-          kSettingsSize.width(),
+      capture_mode_bar_view->GetBoundsInScreen().CenterPoint().x() -
+          kSettingsSize.width() / 2.f,
       capture_mode_bar_view->GetBoundsInScreen().y() -
           capture_mode::kSpaceBetweenCaptureBarAndSettingsMenu -
           settings_view_size.height(),
