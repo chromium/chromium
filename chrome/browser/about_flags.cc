@@ -2954,6 +2954,7 @@ const FeatureEntry::Choice kCrostiniContainerChoices[] = {
     {"Default", "", ""},
     {"Buster", crostini::kCrostiniContainerFlag, "buster"},
     {"Bullseye", crostini::kCrostiniContainerFlag, "bullseye"},
+    {"Bookworm", crostini::kCrostiniContainerFlag, "bookworm"},
 };
 
 const FeatureEntry::Choice kBruschettaInstallerDownloadStrategy[] = {
