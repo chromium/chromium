@@ -32,7 +32,7 @@ TEST_F(GLChromiumFramebufferMultisampleTest, CachedBindingsTest) {
   GLuint fbo = 0;
   glGenFramebuffers(1, &fbo);
   glBindFramebuffer(GL_DRAW_FRAMEBUFFER, fbo);
-  glBindFramebuffer(GL_FRAMEBUFFER, 0);
+  gl_.BindOffscreenFramebuffer(GL_FRAMEBUFFER);
 
   // If the caching is bad the second call to glBindFramebuffer will do nothing.
   // which means the draw buffer is bad and will not return

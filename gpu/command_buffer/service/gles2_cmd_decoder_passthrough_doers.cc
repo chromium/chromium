@@ -5176,7 +5176,7 @@ GLES2DecoderPassthroughImpl::DoFramebufferTexturePixelLocalStorageANGLE(
     GLint level,
     GLint layer) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   api()->glFramebufferTexturePixelLocalStorageANGLEFn(
@@ -5190,7 +5190,7 @@ GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValuefvANGLE(
     GLint plane,
     const volatile GLfloat* value) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   api()->glFramebufferPixelLocalClearValuefvANGLEFn(
@@ -5203,7 +5203,7 @@ GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValueivANGLE(
     GLint plane,
     const volatile GLint* value) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   api()->glFramebufferPixelLocalClearValueivANGLEFn(
@@ -5216,7 +5216,7 @@ GLES2DecoderPassthroughImpl::DoFramebufferPixelLocalClearValueuivANGLE(
     GLint plane,
     const volatile GLuint* value) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   api()->glFramebufferPixelLocalClearValueuivANGLEFn(
@@ -5228,7 +5228,7 @@ error::Error GLES2DecoderPassthroughImpl::DoBeginPixelLocalStorageANGLE(
     GLsizei n,
     const volatile GLenum* loadops) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   // Copy the loadops to avoid a TOCTOU race condition.
@@ -5252,7 +5252,7 @@ error::Error GLES2DecoderPassthroughImpl::DoEndPixelLocalStorageANGLE(
     GLsizei n,
     const volatile GLenum* storeops) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     return error::kNoError;
   }
   // Copy the storeops to avoid a TOCTOU race condition.
@@ -5306,7 +5306,7 @@ GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterfvANGLE(
     GLsizei* length,
     GLfloat* params) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     *length = 0;
     return error::kNoError;
   }
@@ -5332,7 +5332,7 @@ GLES2DecoderPassthroughImpl::DoGetFramebufferPixelLocalStorageParameterivANGLE(
     GLsizei* length,
     GLint* params) {
   if (IsEmulatedFramebufferBound(GL_DRAW_FRAMEBUFFER)) {
-    InsertError(GL_INVALID_OPERATION, kPLSDefaultFramebufferBound);
+    InsertError(GL_INVALID_FRAMEBUFFER_OPERATION, kPLSDefaultFramebufferBound);
     *length = 0;
     return error::kNoError;
   }
