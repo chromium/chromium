@@ -93,10 +93,10 @@ BASE_FEATURE(kWebAuthnICloudKeychain,
              "WebAuthenticationICloudKeychain",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Not yet enabled by default.
+// Enabled in M117. Remove in or after M120.
 BASE_FEATURE(kWebAuthnNewHybridUI,
              "WebAuthenticationNewHybridUI",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enabled in M116. Remove in or after M119.
 BASE_FEATURE(kWebAuthnPrelinkPlayServices,
