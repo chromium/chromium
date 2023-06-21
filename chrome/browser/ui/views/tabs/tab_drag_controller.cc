@@ -12,7 +12,6 @@
 #include "base/auto_reset.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
-#include "base/debug/dump_without_crashing.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/i18n/rtl.h"
@@ -83,6 +82,9 @@
 #endif
 
 #if BUILDFLAG(IS_MAC)
+#include "base/debug/dump_without_crashing.h"
+#include "base/strings/string_number_conversions.h"
+#include "components/crash/core/common/crash_key.h"
 #include "components/remote_cocoa/browser/window.h"
 #endif
 
@@ -2633,26 +2635,20 @@ bool TabDragController::CanAttachTo(gfx::NativeWindow window) {
     if (active_index == TabStripModel::kNoTab) {
       LOG(ERROR) << "TabStripModel of the browser tyring to attach to has no "
                     "active tab.";
-
-      // Avoid dumping too many times not to impact the performance as this may
-      // be called multiple times for each mouse drag.
-      static bool has_crash_reported_for_no_tab = false;
-      if (!has_crash_reported_for_no_tab) {
-        base::debug::DumpWithoutCrashing();
-        has_crash_reported_for_no_tab = true;
-      }
     } else {
       LOG(ERROR)
           << "TabStripModel of the browser trying to attach to has invalid "
           << "active index: " << active_index;
+    }
 
-      // Avoid dumping too many times not to impact the performance as this may
-      // be called multiple times for each mouse drag.
-      static bool has_crash_reported_for_invalid_index = false;
-      if (!has_crash_reported_for_invalid_index) {
-        base::debug::DumpWithoutCrashing();
-        has_crash_reported_for_invalid_index = true;
-      }
+    // Avoid dumping too many times not to impact the performance as this may
+    // be called multiple times for each mouse drag.
+    static bool has_crash_reported = false;
+    if (!has_crash_reported) {
+      static crash_reporter::CrashKeyString<20> key("active_tab");
+      key.Set(base::NumberToString(active_index));
+      base::debug::DumpWithoutCrashing();
+      has_crash_reported = true;
     }
     return false;
   }
