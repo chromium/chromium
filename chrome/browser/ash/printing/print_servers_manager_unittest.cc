@@ -62,7 +62,7 @@ class FakePrintServersProvider : public PrintServersProvider {
   ~FakePrintServersProvider() override = default;
 
   void AddObserver(Observer* observer) override { observer_ = observer; }
-  void RemoveObserver(Observer* observer) override { observer_ = nullptr; }
+  void RemoveObserver(Observer* observer) override {}
   void SetData(std::unique_ptr<std::string> data) override {}
   void SetAllowlistPref(PrefService* prefs,
                         const std::string& allowlist_pref) override {}
