@@ -11,6 +11,10 @@
 #include "content/public/browser/web_contents.h"
 #include "content/shell/browser/shell_web_contents_view_delegate_creator.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace content {
 
 std::unique_ptr<WebContentsViewDelegate> CreateShellWebContentsViewDelegate(
