@@ -958,7 +958,11 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
         'API.',
       ),
       True,
-      [_THIRD_PARTY_EXCEPT_BLINK],  # Don't warn in third_party folders.
+      [
+        # Needed to use QUICHE API.
+        r'chrome/browser/ip_protection/.*',
+        _THIRD_PARTY_EXCEPT_BLINK
+      ],  # Don't warn in third_party folders.
     ),
     BanRule(
       r'/\bstd::(u16)?string_view\b',
