@@ -4484,6 +4484,76 @@ LayoutRect LayoutBox::LocalCaretRect(
     int caret_offset,
     LayoutUnit* extra_width_to_end_of_line) const {
   NOT_DESTROYED();
+  if (!RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+    return FlippedLocalCaretRect(caret_offset, extra_width_to_end_of_line);
+  }
+  // VisiblePositions at offsets inside containers either a) refer to the
+  // positions before/after those containers (tables and select elements) or
+  // b) refer to the position inside an empty block.
+  // They never refer to children.
+  // FIXME: Paint the carets inside empty blocks differently than the carets
+  // before/after elements.
+  LayoutUnit caret_width = GetFrameView()->CaretWidth();
+  LogicalSize size(LogicalWidth(), LogicalHeight());
+  const bool is_horizontal = IsHorizontalWritingMode();
+  PhysicalOffset offset = PhysicalLocation();
+  PhysicalRect rect(offset, is_horizontal
+                                ? PhysicalSize(caret_width, size.block_size)
+                                : PhysicalSize(size.block_size, caret_width));
+  bool ltr = StyleRef().IsLeftToRightDirection();
+
+  if ((!caret_offset) ^ ltr) {
+    rect.Move(
+        is_horizontal
+            ? PhysicalOffset(size.inline_size - caret_width, LayoutUnit())
+            : PhysicalOffset(LayoutUnit(), size.inline_size - caret_width));
+  }
+
+  // If height of box is smaller than font height, use the latter one,
+  // otherwise the caret might become invisible.
+  //
+  // Also, if the box is not an atomic inline-level element, always use the font
+  // height. This prevents the "big caret" bug described in:
+  // <rdar://problem/3777804> Deleting all content in a document can result in
+  // giant tall-as-window insertion point
+  //
+  // FIXME: ignoring :first-line, missing good reason to take care of
+  const SimpleFontData* font_data = StyleRef().GetFont().PrimaryFont();
+  LayoutUnit font_height =
+      LayoutUnit(font_data ? font_data->GetFontMetrics().Height() : 0);
+  if (font_height > size.block_size || (!IsAtomicInlineLevel() && !IsTable())) {
+    if (is_horizontal) {
+      rect.SetHeight(font_height);
+    } else {
+      rect.SetWidth(font_height);
+    }
+  }
+
+  if (extra_width_to_end_of_line) {
+    *extra_width_to_end_of_line =
+        is_horizontal ? (offset.left + Size().Width() - rect.Right())
+                      : (offset.top + Size().Height() - rect.Bottom());
+  }
+
+  // Move to local coords
+  rect.Move(-offset);
+
+  // FIXME: Border/padding should be added for all elements but this workaround
+  // is needed because we use offsets inside an "atomic" element to represent
+  // positions before and after the element in deprecated editing offsets.
+  if (GetNode() &&
+      !(EditingIgnoresContent(*GetNode()) || IsDisplayInsideTable(GetNode()))) {
+    rect.SetX(rect.X() + BorderLeft() + PaddingLeft());
+    rect.SetY(rect.Y() + PaddingTop() + BorderTop());
+  }
+
+  return rect.ToLayoutRect();
+}
+
+LayoutRect LayoutBox::FlippedLocalCaretRect(
+    int caret_offset,
+    LayoutUnit* extra_width_to_end_of_line) const {
+  NOT_DESTROYED();
   // VisiblePositions at offsets inside containers either a) refer to the
   // positions before/after those containers (tables and select elements) or
   // b) refer to the position inside an empty block.

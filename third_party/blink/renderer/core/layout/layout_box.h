@@ -1900,6 +1900,10 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   // Clear LayoutObject fields of physical fragments.
   void DisassociatePhysicalFragments();
 
+  LayoutRect FlippedLocalCaretRect(
+      int caret_offset,
+      LayoutUnit* extra_width_to_end_of_line) const;
+
  protected:
   // The CSS border box rect for this box.
   //

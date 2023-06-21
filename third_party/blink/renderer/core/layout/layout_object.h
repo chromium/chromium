@@ -2796,6 +2796,8 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
    * of line -
    * useful for character range rect computations
    */
+  // TODO(crbug.com/1353190): Change the return type to PhysicalRect, and
+  // merge LocalCaretRect() and PhysicalLocalCaretRect().
   virtual LayoutRect LocalCaretRect(
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const;
@@ -2803,6 +2805,10 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
       int caret_offset,
       LayoutUnit* extra_width_to_end_of_line = nullptr) const {
     NOT_DESTROYED();
+    if (RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()) {
+      return PhysicalRect(
+          LocalCaretRect(caret_offset, extra_width_to_end_of_line));
+    }
     return FlipForWritingMode(
         LocalCaretRect(caret_offset, extra_width_to_end_of_line));
   }
