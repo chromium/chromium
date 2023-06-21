@@ -137,7 +137,8 @@ void PrefetchURLLoaderInterceptor::OnGetPrefetchComplete(
   scoped_refptr<network::SingleRequestURLLoaderFactory>
       single_request_url_loader_factory;
   if (prefetch_container->GetFirstStreamingURLLoader()
-          ->IsReadyToServeLastEvents()) {
+          ->GetResponseReader()
+          .IsReadyToServeLastEvents()) {
     std::unique_ptr<PrefetchStreamingURLLoader> prefetch_streaming_url_loader =
         prefetch_container->ReleaseFirstStreamingURLLoader();
     auto* raw_prefetch_streaming_url_loader =

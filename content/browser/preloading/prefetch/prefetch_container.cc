@@ -675,7 +675,7 @@ PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
 std::unique_ptr<PrefetchStreamingURLLoader>
 PrefetchContainer::ReleaseFirstStreamingURLLoader() {
   CHECK(!streaming_loaders_.empty() &&
-        streaming_loaders_[0]->IsReadyToServeLastEvents());
+        streaming_loaders_[0]->GetResponseReader().IsReadyToServeLastEvents());
 
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::move(streaming_loaders_[0]);

@@ -357,7 +357,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedAfterCompletion) {
   // Gets handler to serve prefetch from |streaming_loader|. After this
   // |streaming_loader| is self owned, so |weak_streaming_loader| should be used
   // after this point.
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler request_handler =
@@ -465,7 +465,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, SuccessfulServedBeforeCompletion) {
   // Gets handler to serve prefetch from |streaming_loader|. After this
   // |streaming_loader| is self owned, so |weak_streaming_loader| should be used
   // after this point.
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler request_handler =
@@ -833,7 +833,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, FailedNetErrorButServed) {
   // Gets handler to serve prefetch from |streaming_loader|. After this
   // |streaming_loader| is self owned, so |weak_streaming_loader| should be used
   // after this point.
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler request_handler =
@@ -969,7 +969,8 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   EXPECT_TRUE(streaming_loader->Servable(base::TimeDelta::Max()));
 
   // Simulates serving the redirect.
-  EXPECT_FALSE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_FALSE(
+      streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   PrefetchStreamingURLLoader::RequestHandler redirect_handler =
       streaming_loader->ServingRedirectHandler();
 
@@ -1001,7 +1002,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, EligibleRedirect) {
   ASSERT_TRUE(streaming_loader);
 
   // Simulates serving the final response.
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler final_response_handler =
@@ -1159,7 +1160,7 @@ TEST_P(PrefetchStreamingURLLoaderTest, RedirectSwitchInNetworkContext) {
   // redirect. The follow up streaming URL loader would then continue serving
   // the prefetch.
   EXPECT_FALSE(streaming_loader->Servable(base::TimeDelta::Max()));
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler redirect_handler =
@@ -1614,7 +1615,7 @@ TEST_F(PrefetchStreamingURLLoaderTest, TransferSizeUpdated) {
   // Gets handler to serve prefetch from |streaming_loader|. After this
   // |streaming_loader| is self owned, so |weak_streaming_loader| should be used
   // after this point.
-  EXPECT_TRUE(streaming_loader->IsReadyToServeLastEvents());
+  EXPECT_TRUE(streaming_loader->GetResponseReader().IsReadyToServeLastEvents());
   base::WeakPtr<PrefetchStreamingURLLoader> weak_streaming_loader =
       streaming_loader->GetWeakPtr();
   PrefetchStreamingURLLoader::RequestHandler request_handler =

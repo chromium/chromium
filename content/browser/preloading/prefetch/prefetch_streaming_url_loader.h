@@ -17,9 +17,96 @@
 
 namespace content {
 
+class PrefetchStreamingURLLoader;
+
+class CONTENT_EXPORT PrefetchResponseReader final
+    : public network::mojom::URLLoader {
+ public:
+  explicit PrefetchResponseReader(
+      base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
+  ~PrefetchResponseReader() override;
+
+  // Whether |this| is ready to serve its last set of events. This can either be
+  // the head and body of the overall prefetch, or a redirect that required a
+  // switch in network context and was followed in a separate
+  // |PrefetchStreamingURLLoader|.
+  bool IsReadyToServeLastEvents() const;
+
+  // Adds events (plumbing either directly to `serving_url_loader_client_` or
+  // via `AddEventToQueue()`) from the methods with the same names in
+  // `PrefetchStreamingURLLoader`.
+  void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints);
+  void OnReceiveResponse(network::mojom::URLResponseHeadPtr head,
+                         mojo::ScopedDataPipeConsumerHandle body);
+  void HandleRedirect(const net::RedirectInfo& redirect_info,
+                      network::mojom::URLResponseHeadPtr redirect_head,
+                      bool pause_after_event);
+  void OnTransferSizeUpdated(int32_t transfer_size_diff);
+  void OnComplete(network::URLLoaderCompletionStatus completion_status);
+
+  void BindAndStart(
+      mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> client);
+
+ private:
+  // Adds an event to the queue that will be run when serving the prefetch. If
+  // |pause_after_event| is true, then the event queue will pause after running
+  // the event.
+  void AddEventToQueue(base::OnceClosure closure, bool pause_after_event);
+
+  // Sends all stored events in |event_queue_| to |serving_url_loader_client_|.
+  void RunEventQueue();
+
+  // Helper functions to send the appropriate events to
+  // |serving_url_loader_client_|.
+  void ForwardCompletionStatus(
+      network::URLLoaderCompletionStatus completion_status);
+  void ForwardEarlyHints(network::mojom::EarlyHintsPtr early_hints);
+  void ForwardTransferSizeUpdate(int32_t transfer_size_diff);
+  void ForwardRedirect(const net::RedirectInfo& redirect_info,
+                       network::mojom::URLResponseHeadPtr);
+  void ForwardResponse(network::mojom::URLResponseHeadPtr head,
+                       mojo::ScopedDataPipeConsumerHandle body);
+
+  // network::mojom::URLLoader
+  void FollowRedirect(
+      const std::vector<std::string>& removed_headers,
+      const net::HttpRequestHeaders& modified_headers,
+      const net::HttpRequestHeaders& modified_cors_exempt_headers,
+      const absl::optional<GURL>& new_url) override;
+  void SetPriority(net::RequestPriority priority,
+                   int32_t intra_priority_value) override;
+  void PauseReadingBodyFromNet() override;
+  void ResumeReadingBodyFromNet() override;
+
+  void OnServingURLLoaderMojoDisconnect();
+
+  // The URL Loader events that occur before serving the prefetch are queued up
+  // until the prefetch is served. The first value is the closure to run the
+  // event, and the second value is whether or not the event queue should be
+  // paused after running the event.
+  std::vector<std::pair<base::OnceClosure, bool>> event_queue_;
+
+  // The status of the event queue.
+  enum class EventQueueStatus {
+    kNotStarted,
+    kRunning,
+    kPaused,
+    kFinished,
+  };
+  EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
+
+  // The URL loader client that will serve the prefetched data.
+  mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};
+  mojo::Remote<network::mojom::URLLoaderClient> serving_url_loader_client_;
+
+  base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader_;
+
+  base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
+};
+
 class CONTENT_EXPORT PrefetchStreamingURLLoader
-    : public network::mojom::URLLoader,
-      public network::mojom::URLLoaderClient {
+    : public network::mojom::URLLoaderClient {
  public:
   // This callback is used by the owner to determine if the prefetch is valid
   // based on |head|. If the prefetch should be servable based on |head|, then
@@ -85,12 +172,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
-  // Whether |this| is ready to serve its last set of events. This can either be
-  // the head and body of the overall prefetch, or a redirect that required a
-  // switch in network context and was followed in a separate
-  // |PrefetchStreamingURLLoader|.
-  bool IsReadyToServeLastEvents() const;
-
   using RequestHandler = base::OnceCallback<void(
       const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
@@ -110,6 +191,14 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void MakeSelfOwnedAndDeleteSoon(
       std::unique_ptr<PrefetchStreamingURLLoader> self);
 
+  PrefetchResponseReader& GetResponseReader() { return *response_reader_; }
+
+  // Called from PrefetchResponseReader.
+  void OnResponseReaderDisconnect();
+  void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
+  void PauseReadingBodyFromNet();
+  void ResumeReadingBodyFromNet();
+
   base::WeakPtr<PrefetchStreamingURLLoader> GetWeakPtr() {
     return weak_ptr_factory_.GetWeakPtr();
   }
@@ -121,25 +210,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
 
-  // Adds an event to the queue that will be run when serving the prefetch. If
-  // |pause_after_event| is true, then the event queue will pause after running
-  // the event.
-  void AddEventToQueue(base::OnceClosure closure, bool pause_after_event);
-
-  // Sends all stored events in |event_queue_| to |serving_url_loader_client_|.
-  void RunEventQueue();
-
-  // Helper functions to send the appropriate events to
-  // |serving_url_loader_client_|.
-  void ForwardCompletionStatus();
-  void ForwardEarlyHints(network::mojom::EarlyHintsPtr early_hints);
-  void ForwardTransferSizeUpdate(int32_t transfer_size_diff);
-  void ForwardRedirect(const net::RedirectInfo& redirect_info,
-                       network::mojom::URLResponseHeadPtr);
-  void ForwardResponse();
-
   void DisconnectPrefetchURLLoaderMojo();
-  void OnServingURLLoaderMojoDisconnect();
   void PostTaskToDeleteSelf();
 
   // network::mojom::URLLoaderClient
@@ -156,17 +227,6 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   void OnTransferSizeUpdated(int32_t transfer_size_diff) override;
   void OnComplete(
       const network::URLLoaderCompletionStatus& completion_status) override;
-
-  // network::mojom::URLLoader
-  void FollowRedirect(
-      const std::vector<std::string>& removed_headers,
-      const net::HttpRequestHeaders& modified_headers,
-      const net::HttpRequestHeaders& modified_cors_exempt_headers,
-      const absl::optional<GURL>& new_url) override;
-  void SetPriority(net::RequestPriority priority,
-                   int32_t intra_priority_value) override;
-  void PauseReadingBodyFromNet() override;
-  void ResumeReadingBodyFromNet() override;
 
   // Set when this manages its own lifetime.
   std::unique_ptr<PrefetchStreamingURLLoader> self_pointer_;
@@ -197,29 +257,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
 
   // The prefetched data and metadata.
   network::mojom::URLResponseHeadPtr head_;
-  mojo::ScopedDataPipeConsumerHandle body_;
   bool servable_{false};
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 
-  // The URL Loader events that occur before serving the prefetch are queued up
-  // until the prefetch is served. The first value is the closure to run the
-  // event, and the second value is whether or not the event queue should be
-  // paused after running the event.
-  std::vector<std::pair<base::OnceClosure, bool>> event_queue_;
-
-  // The status of the event queue.
-  enum class EventQueueStatus {
-    kNotStarted,
-    kRunning,
-    kPaused,
-    kFinished,
-  };
-  EventQueueStatus event_queue_status_{EventQueueStatus::kNotStarted};
-
-  // The URL loader client that will serve the prefetched data.
-  mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};
-  mojo::Remote<network::mojom::URLLoaderClient> serving_url_loader_client_;
+  std::unique_ptr<PrefetchResponseReader> response_reader_;
 
   base::WeakPtrFactory<PrefetchStreamingURLLoader> weak_ptr_factory_{this};
 };

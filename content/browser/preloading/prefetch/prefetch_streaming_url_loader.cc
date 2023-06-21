@@ -28,6 +28,9 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)) {
+  response_reader_ =
+      std::make_unique<PrefetchResponseReader>(weak_ptr_factory_.GetWeakPtr());
+
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
       network::mojom::kURLLoadOptionSendSSLInfoWithResponse |
@@ -114,11 +117,8 @@ void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   }
 }
 
-void PrefetchStreamingURLLoader::OnServingURLLoaderMojoDisconnect() {
-  serving_url_loader_receiver_.reset();
-  serving_url_loader_client_.reset();
+void PrefetchStreamingURLLoader::OnResponseReaderDisconnect() {
   serving_url_loader_disconnected_ = true;
-
   if (prefetch_url_loader_disconnected_) {
     PostTaskToDeleteSelf();
   }
@@ -142,16 +142,7 @@ void PrefetchStreamingURLLoader::PostTaskToDeleteSelf() {
 
 void PrefetchStreamingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardEarlyHints(std::move(early_hints));
-    return;
-  }
-
-  AddEventToQueue(
-      base::BindOnce(&PrefetchStreamingURLLoader::ForwardEarlyHints,
-                     base::Unretained(this), std::move(early_hints)),
-      /*pause_after_event=*/false);
+  GetResponseReader().OnReceiveEarlyHints(std::move(early_hints));
 }
 
 void PrefetchStreamingURLLoader::OnReceiveResponse(
@@ -209,16 +200,12 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
 
   head_->navigation_delivery_type =
       network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
-  body_ = std::move(body);
+
+  GetResponseReader().OnReceiveResponse(head_->Clone(), std::move(body));
 
   if (on_received_head_callback_) {
     std::move(on_received_head_callback_).Run();
   }
-
-  DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-  AddEventToQueue(base::BindOnce(&PrefetchStreamingURLLoader::ForwardResponse,
-                                 base::Unretained(this)),
-                  /*pause_after_event=*/false);
 }
 
 void PrefetchStreamingURLLoader::OnReceiveRedirect(
@@ -249,12 +236,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
           /*modified_cors_exempt_headers=*/net::HttpRequestHeaders(),
           /*new_url=*/absl::nullopt);
 
-      DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-      AddEventToQueue(
-          base::BindOnce(&PrefetchStreamingURLLoader::ForwardRedirect,
-                         base::Unretained(this), redirect_info,
-                         std::move(redirect_head)),
-          /*pause_after_event=*/true);
+      GetResponseReader().HandleRedirect(
+          redirect_info, std::move(redirect_head), /*pause_after_event=*/true);
       break;
     case PrefetchStreamingURLLoaderStatus::
         kStopSwitchInNetworkContextForRedirect:
@@ -266,12 +249,8 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       DisconnectPrefetchURLLoaderMojo();
       timeout_timer_.AbandonAndStop();
 
-      DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
-      AddEventToQueue(
-          base::BindOnce(&PrefetchStreamingURLLoader::ForwardRedirect,
-                         base::Unretained(this), redirect_info,
-                         std::move(redirect_head)),
-          /*pause_after_event=*/false);
+      GetResponseReader().HandleRedirect(
+          redirect_info, std::move(redirect_head), /*pause_after_event=*/false);
       break;
     case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
       servable_ = false;
@@ -311,16 +290,7 @@ void PrefetchStreamingURLLoader::OnUploadProgress(
 
 void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardTransferSizeUpdate(transfer_size_diff);
-    return;
-  }
-
-  AddEventToQueue(
-      base::BindOnce(&PrefetchStreamingURLLoader::ForwardTransferSizeUpdate,
-                     base::Unretained(this), transfer_size_diff),
-      /*pause_after_event=*/false);
+  GetResponseReader().OnTransferSizeUpdated(transfer_size_diff);
 }
 
 void PrefetchStreamingURLLoader::OnComplete(
@@ -353,30 +323,21 @@ void PrefetchStreamingURLLoader::OnComplete(
 
   std::move(on_prefetch_response_completed_callback_)
       .Run(completion_status_.value());
-
-  if (serving_url_loader_client_ &&
-      event_queue_status_ == EventQueueStatus::kFinished) {
-    ForwardCompletionStatus();
-    return;
-  }
-  AddEventToQueue(
-      base::BindOnce(&PrefetchStreamingURLLoader::ForwardCompletionStatus,
-                     base::Unretained(this)),
-      /*pause_after_event=*/false);
+  GetResponseReader().OnComplete(completion_status_.value());
 }
 
 PrefetchStreamingURLLoader::RequestHandler
 PrefetchStreamingURLLoader::ServingFinalResponseHandler(
     std::unique_ptr<PrefetchStreamingURLLoader> self) {
   DCHECK(self);
-  DCHECK(IsReadyToServeLastEvents());
+  DCHECK(GetResponseReader().IsReadyToServeLastEvents());
   return base::BindOnce(&PrefetchStreamingURLLoader::BindAndStart,
                         weak_ptr_factory_.GetWeakPtr(), std::move(self));
 }
 
 PrefetchStreamingURLLoader::RequestHandler
 PrefetchStreamingURLLoader::ServingRedirectHandler() {
-  DCHECK(!IsReadyToServeLastEvents());
+  DCHECK(!GetResponseReader().IsReadyToServeLastEvents());
   return base::BindOnce(&PrefetchStreamingURLLoader::BindAndStart,
                         weak_ptr_factory_.GetWeakPtr(), nullptr);
 }
@@ -386,7 +347,6 @@ void PrefetchStreamingURLLoader::BindAndStart(
     const network::ResourceRequest& request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(!serving_url_loader_receiver_.is_bound());
   DCHECK(!self || self.get() == this);
 
   // Once the prefetch is served, stop the timeout timer.
@@ -411,16 +371,57 @@ void PrefetchStreamingURLLoader::BindAndStart(
   }
 
   serving_url_loader_disconnected_ = false;
+  GetResponseReader().BindAndStart(std::move(receiver), std::move(client));
+}
+
+void PrefetchStreamingURLLoader::SetPriority(net::RequestPriority priority,
+                                             int32_t intra_priority_value) {
+  if (prefetch_url_loader_) {
+    prefetch_url_loader_->SetPriority(priority, intra_priority_value);
+  }
+}
+
+void PrefetchStreamingURLLoader::PauseReadingBodyFromNet() {
+  if (prefetch_url_loader_) {
+    prefetch_url_loader_->PauseReadingBodyFromNet();
+  }
+}
+
+void PrefetchStreamingURLLoader::ResumeReadingBodyFromNet() {
+  if (prefetch_url_loader_) {
+    prefetch_url_loader_->ResumeReadingBodyFromNet();
+  }
+}
+
+PrefetchResponseReader::PrefetchResponseReader(
+    base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader)
+    : streaming_url_loader_(streaming_url_loader) {}
+
+PrefetchResponseReader::~PrefetchResponseReader() = default;
+
+void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
+  serving_url_loader_receiver_.reset();
+  serving_url_loader_client_.reset();
+  if (streaming_url_loader_) {
+    streaming_url_loader_->OnResponseReaderDisconnect();
+  }
+}
+
+void PrefetchResponseReader::BindAndStart(
+    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
+    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  DCHECK(!serving_url_loader_receiver_.is_bound());
+
   serving_url_loader_receiver_.Bind(std::move(receiver));
-  serving_url_loader_receiver_.set_disconnect_handler(base::BindOnce(
-      &PrefetchStreamingURLLoader::OnServingURLLoaderMojoDisconnect,
-      weak_ptr_factory_.GetWeakPtr()));
+  serving_url_loader_receiver_.set_disconnect_handler(
+      base::BindOnce(&PrefetchResponseReader::OnServingURLLoaderMojoDisconnect,
+                     weak_ptr_factory_.GetWeakPtr()));
   serving_url_loader_client_.Bind(std::move(client));
 
   RunEventQueue();
 }
 
-bool PrefetchStreamingURLLoader::IsReadyToServeLastEvents() const {
+bool PrefetchResponseReader::IsReadyToServeLastEvents() const {
   for (const auto& event : event_queue_) {
     if (event.second) {
       return false;
@@ -429,14 +430,14 @@ bool PrefetchStreamingURLLoader::IsReadyToServeLastEvents() const {
   return true;
 }
 
-void PrefetchStreamingURLLoader::AddEventToQueue(base::OnceClosure closure,
-                                                 bool pause_after_event) {
+void PrefetchResponseReader::AddEventToQueue(base::OnceClosure closure,
+                                             bool pause_after_event) {
   DCHECK(event_queue_status_ != EventQueueStatus::kFinished);
 
   event_queue_.emplace_back(std::move(closure), pause_after_event);
 }
 
-void PrefetchStreamingURLLoader::RunEventQueue() {
+void PrefetchResponseReader::RunEventQueue() {
   DCHECK(serving_url_loader_client_);
   DCHECK(event_queue_.size() > 0);
   DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted ||
@@ -460,40 +461,103 @@ void PrefetchStreamingURLLoader::RunEventQueue() {
   event_queue_status_ = EventQueueStatus::kFinished;
 }
 
-void PrefetchStreamingURLLoader::ForwardCompletionStatus() {
-  DCHECK(serving_url_loader_client_);
-  DCHECK(completion_status_);
-  serving_url_loader_client_->OnComplete(completion_status_.value());
+void PrefetchResponseReader::OnComplete(
+    network::URLLoaderCompletionStatus completion_status) {
+  if (serving_url_loader_client_ &&
+      event_queue_status_ == EventQueueStatus::kFinished) {
+    ForwardCompletionStatus(completion_status);
+    return;
+  }
+  AddEventToQueue(
+      base::BindOnce(&PrefetchResponseReader::ForwardCompletionStatus,
+                     base::Unretained(this), completion_status),
+      /*pause_after_event=*/false);
 }
 
-void PrefetchStreamingURLLoader::ForwardEarlyHints(
+void PrefetchResponseReader::OnReceiveEarlyHints(
+    network::mojom::EarlyHintsPtr early_hints) {
+  if (serving_url_loader_client_ &&
+      event_queue_status_ == EventQueueStatus::kFinished) {
+    ForwardEarlyHints(std::move(early_hints));
+    return;
+  }
+
+  AddEventToQueue(
+      base::BindOnce(&PrefetchResponseReader::ForwardEarlyHints,
+                     base::Unretained(this), std::move(early_hints)),
+      /*pause_after_event=*/false);
+}
+
+void PrefetchResponseReader::OnTransferSizeUpdated(int32_t transfer_size_diff) {
+  if (serving_url_loader_client_ &&
+      event_queue_status_ == EventQueueStatus::kFinished) {
+    ForwardTransferSizeUpdate(transfer_size_diff);
+    return;
+  }
+
+  AddEventToQueue(
+      base::BindOnce(&PrefetchResponseReader::ForwardTransferSizeUpdate,
+                     base::Unretained(this), transfer_size_diff),
+      /*pause_after_event=*/false);
+}
+
+void PrefetchResponseReader::HandleRedirect(
+    const net::RedirectInfo& redirect_info,
+    network::mojom::URLResponseHeadPtr redirect_head,
+    bool pause_after_event) {
+  DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
+  AddEventToQueue(base::BindOnce(&PrefetchResponseReader::ForwardRedirect,
+                                 base::Unretained(this), redirect_info,
+                                 std::move(redirect_head)),
+                  pause_after_event);
+}
+
+void PrefetchResponseReader::OnReceiveResponse(
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
+  DCHECK(event_queue_status_ == EventQueueStatus::kNotStarted);
+  AddEventToQueue(
+      base::BindOnce(&PrefetchResponseReader::ForwardResponse,
+                     base::Unretained(this), std::move(head), std::move(body)),
+      /*pause_after_event=*/false);
+}
+
+void PrefetchResponseReader::ForwardCompletionStatus(
+    network::URLLoaderCompletionStatus completion_status) {
+  DCHECK(serving_url_loader_client_);
+  serving_url_loader_client_->OnComplete(completion_status);
+}
+
+void PrefetchResponseReader::ForwardEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
   DCHECK(serving_url_loader_client_);
   serving_url_loader_client_->OnReceiveEarlyHints(std::move(early_hints));
 }
 
-void PrefetchStreamingURLLoader::ForwardTransferSizeUpdate(
+void PrefetchResponseReader::ForwardTransferSizeUpdate(
     int32_t transfer_size_diff) {
   DCHECK(serving_url_loader_client_);
   serving_url_loader_client_->OnTransferSizeUpdated(transfer_size_diff);
 }
 
-void PrefetchStreamingURLLoader::ForwardRedirect(
+void PrefetchResponseReader::ForwardRedirect(
     const net::RedirectInfo& redirect_info,
     network::mojom::URLResponseHeadPtr head) {
   DCHECK(serving_url_loader_client_);
   serving_url_loader_client_->OnReceiveRedirect(redirect_info, std::move(head));
 }
 
-void PrefetchStreamingURLLoader::ForwardResponse() {
+void PrefetchResponseReader::ForwardResponse(
+    network::mojom::URLResponseHeadPtr head,
+    mojo::ScopedDataPipeConsumerHandle body) {
   DCHECK(serving_url_loader_client_);
-  DCHECK(head_);
-  DCHECK(body_);
-  serving_url_loader_client_->OnReceiveResponse(
-      head_->Clone(), std::move(body_), absl::nullopt);
+  DCHECK(head);
+  DCHECK(body);
+  serving_url_loader_client_->OnReceiveResponse(std::move(head),
+                                                std::move(body), absl::nullopt);
 }
 
-void PrefetchStreamingURLLoader::FollowRedirect(
+void PrefetchResponseReader::FollowRedirect(
     const std::vector<std::string>& removed_headers,
     const net::HttpRequestHeaders& modified_headers,
     const net::HttpRequestHeaders& modified_cors_exempt_headers,
@@ -505,25 +569,25 @@ void PrefetchStreamingURLLoader::FollowRedirect(
   NOTREACHED();
 }
 
-void PrefetchStreamingURLLoader::SetPriority(net::RequestPriority priority,
-                                             int32_t intra_priority_value) {
+void PrefetchResponseReader::SetPriority(net::RequestPriority priority,
+                                         int32_t intra_priority_value) {
   // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (prefetch_url_loader_) {
-    prefetch_url_loader_->SetPriority(priority, intra_priority_value);
+  if (streaming_url_loader_) {
+    streaming_url_loader_->SetPriority(priority, intra_priority_value);
   }
 }
 
-void PrefetchStreamingURLLoader::PauseReadingBodyFromNet() {
+void PrefetchResponseReader::PauseReadingBodyFromNet() {
   // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (prefetch_url_loader_) {
-    prefetch_url_loader_->PauseReadingBodyFromNet();
+  if (streaming_url_loader_) {
+    streaming_url_loader_->PauseReadingBodyFromNet();
   }
 }
 
-void PrefetchStreamingURLLoader::ResumeReadingBodyFromNet() {
+void PrefetchResponseReader::ResumeReadingBodyFromNet() {
   // Forward calls from the serving URL loader to the prefetch URL loader.
-  if (prefetch_url_loader_) {
-    prefetch_url_loader_->ResumeReadingBodyFromNet();
+  if (streaming_url_loader_) {
+    streaming_url_loader_->ResumeReadingBodyFromNet();
   }
 }
 
