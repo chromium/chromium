@@ -22548,6 +22548,13 @@ be describing additional metrics about the same event.
       Measured if the site matches the scope of any installed PWAs present in
       the profile.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="IsPartiallyInstalled" enum="Boolean">
     <summary>
@@ -22557,6 +22564,13 @@ be describing additional metrics about the same event.
       to be a strong signal that the user will want to install the app fully on
       this device, as they already have it installed elsewhere.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -22574,41 +22588,97 @@ be describing additional metrics about the same event.
       Records the display mode populated inside the manifest as per the manifest
       specifications. If it does not exist, this is measured as Undefined.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasBackgroundColor" enum="NullableBoolean">
     <summary>
       Records whether the manifest has the background_color field populated.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasIconsAny" enum="NullableBoolean">
     <summary>
       Records whether the manifest has icons of purpose ANY.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasIconsMaskable" enum="NullableBoolean">
     <summary>
       Records whether the manifest has maskable icons.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasName" enum="NullableBoolean">
     <summary>
       Records whether the manifest has the name field populated.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasScreenshots" enum="NullableBoolean">
     <summary>
       Records whether the manifest has valid screenshots specified.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasStartUrl" enum="ManifestUrlValidity">
     <summary>
       Records whether the manifest has a valid URL in the start_url field.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasThemeColor" enum="NullableBoolean">
     <summary>
       Records whether the manifest has the theme_color field populated.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
@@ -22625,22 +22695,50 @@ be describing additional metrics about the same event.
       Measures the service worker cache storage size as determined by the Quota
       system for a site in bytes.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasFavicons" enum="Boolean">
     <summary>
       Records whether the site has favicons or not.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="HasFetchHandler" enum="Boolean">
     <summary>
       Records if the service worker exists and has a valid fetch handler.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <enumeration/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
   <metric name="ServiceWorkerScriptSize">
     <summary>
       Measured the size of the service worker script in bytes. If the service
       worker does not exist, then a script size of 0 is measured.
     </summary>
+    <aggregation>
+      <history>
+        <statistics>
+          <quantiles type="std-percentiles"/>
+        </statistics>
+      </history>
+    </aggregation>
   </metric>
 </event>
 
