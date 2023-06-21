@@ -229,6 +229,8 @@ void OfflineAudioDestinationHandler::NotifySuspend(size_t frame) {
 void OfflineAudioDestinationHandler::NotifyComplete() {
   DCHECK(IsMainThread());
 
+  recordreplay::Assert("[RUN-2199] OfflineAudioDestinationHandler::NotifyComplete %d", !!render_thread_);
+
   render_thread_.reset();
 
   // If the execution context has been destroyed, there's nowhere to send the
