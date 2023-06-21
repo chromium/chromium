@@ -99,10 +99,10 @@
   }
 </style>
 <template is="dom-if" if="[[showBasicPage_(
-    currentRoute_, hasExpandedSection_)]]">
+    currentRoute_, isShowingSubpage_)]]">
   <div id="basicPage">
     <template is="dom-if" if="[[computeShowUpdateRequiredEolBanner_(
-        hasExpandedSection_, showUpdateRequiredEolBanner_,
+        isShowingSubpage_, showUpdateRequiredEolBanner_,
         showEOLIncentive_)]]">
       <div id="updateRequiredEolBanner"
           class="settings-box two-line banner">
@@ -118,7 +118,7 @@
         </cr-icon-button>
       </div>
     </template>
-    <template is="dom-if" if="[[computeShowEolIncentive_(hasExpandedSection_,
+    <template is="dom-if" if="[[computeShowEolIncentive_(isShowingSubpage_,
         showEolIncentive_)]]">
       <eol-offer-section should-show-offer-text="[[shouldShowOfferText_]]">
       </eol-offer-section>
@@ -241,7 +241,7 @@
 <settings-idle-load id="advancedPageTemplate">
   <template>
     <div id="advancedPage" hidden$="[[!showAdvancedPage_(
-        currentRoute_, hasExpandedSection_,
+        currentRoute_, isShowingSubpage_,
         advancedToggleExpanded)]]">
       <template is="dom-if"
           if="[[shouldStampPage_(pageAvailability, Section.kDateAndTime)]]"

@@ -32,6 +32,14 @@ interface MainPageVisibility {
   settings: boolean;
 }
 
+declare global {
+  interface HTMLElementEventMap {
+    'showing-main-page': CustomEvent;
+    'showing-subpage': CustomEvent;
+    'showing-section': CustomEvent<HTMLElement>;
+  }
+}
+
 export interface OsSettingsMainElement {
   $: {
     overscroll: HTMLDivElement,
@@ -80,7 +88,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
         },
       },
 
-      showingSubpage_: Boolean,
+      isShowingSubpage_: Boolean,
 
       toolbarSpinnerActive: {
         type: Boolean,
@@ -101,13 +109,21 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   pageAvailability: OsPageAvailability;
   private overscroll_: number;
   private showPages_: MainPageVisibility;
-  private showingSubpage_: boolean;
+  private isShowingSubpage_: boolean;
   private boundScroll_: (() => void)|null;
 
   constructor() {
     super();
 
     this.boundScroll_ = null;
+  }
+
+  override ready() {
+    super.ready();
+
+    this.addEventListener('showing-main-page', this.onShowingMainPage);
+    this.addEventListener('showing-subpage', this.onShowingSubpage);
+    this.addEventListener('showing-section', this.onShowingSection);
   }
 
   private overscrollChanged_() {
@@ -119,7 +135,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
       this.boundScroll_ = null;
     } else if (this.overscroll_ && !this.boundScroll_) {
       this.boundScroll_ = () => {
-        if (!this.showingSubpage_) {
+        if (!this.isShowingSubpage_) {
           this.setOverscroll_(0);
         }
       };
@@ -164,12 +180,12 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
     }
   }
 
-  private onShowingSubpage_() {
-    this.showingSubpage_ = true;
+  private onShowingMainPage(): void {
+    this.isShowingSubpage_ = false;
   }
 
-  private onShowingMainPage_() {
-    this.showingSubpage_ = false;
+  private onShowingSubpage(): void {
+    this.isShowingSubpage_ = true;
   }
 
   /**
@@ -177,7 +193,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
    * main-page-container, indicating that a section should be
    * scrolled into view as a result of a navigation.
    */
-  private onShowingSection_(e: CustomEvent<HTMLElement>) {
+  private onShowingSection(e: CustomEvent<HTMLElement>): void {
     const section = e.detail;
     // Calculate the height that the overscroll padding should be set to, so
     // that the given section is displayed at the top of the viewport.
@@ -193,7 +209,7 @@ export class OsSettingsMainElement extends OsSettingsMainElementBase {
   }
 
   private showManagedHeader_(): boolean {
-    return !this.showingSubpage_ && !this.showPages_.about;
+    return !this.isShowingSubpage_ && !this.showPages_.about;
   }
 }
 

@@ -99,7 +99,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
        * True if a section is fully expanded to hide other sections beneath it.
        * False otherwise (even while animating a section open/closed).
        */
-      hasExpandedSection_: {
+      isShowingSubpage_: {
         type: Boolean,
         value: false,
       },
@@ -110,7 +110,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
        */
       showSecondaryUserBanner_: {
         type: Boolean,
-        computed: 'computeShowSecondaryUserBanner_(hasExpandedSection_)',
+        computed: 'computeShowSecondaryUserBanner_(isShowingSubpage_)',
       },
 
       /**
@@ -145,7 +145,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       shouldShowAdvancedToggle_: {
         type: Boolean,
         computed: 'computeShouldShowAdvancedToggle_(' +
-            'isRevampWayfindingEnabled_, hasExpandedSection_)',
+            'isRevampWayfindingEnabled_, isShowingSubpage_)',
       },
     };
   }
@@ -153,7 +153,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   androidAppsInfo?: AndroidAppsInfo;
   pageAvailability: OsPageAvailability;
   advancedToggleExpanded: boolean;
-  private hasExpandedSection_: boolean;
+  private isShowingSubpage_: boolean;
   private showSecondaryUserBanner_: boolean;
   private showUpdateRequiredEolBanner_: boolean;
   private currentRoute_: Route;
@@ -175,7 +175,7 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     super.ready();
 
     this.setAttribute('role', 'main');
-    this.addEventListener('subpage-expand', this.onSubpageExpanded_);
+    this.addEventListener('showing-subpage', this.onShowingSubpage);
   }
 
   override connectedCallback() {
@@ -201,14 +201,14 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
       this.advancedToggleExpanded = true;
     }
 
-    if (oldRoute && oldRoute.isSubpage()) {
+    if (oldRoute?.isSubpage()) {
       // If the new route isn't the same expanded section, reset
-      // hasExpandedSection_ for the next transition.
+      // isShowingSubpage_ for the next transition.
       if (!newRoute.isSubpage() || newRoute.section !== oldRoute.section) {
-        this.hasExpandedSection_ = false;
+        this.isShowingSubpage_ = false;
       }
     } else {
-      assert(!this.hasExpandedSection_);
+      assert(!this.isShowingSubpage_);
     }
 
     // MainPageMixin#currentRouteChanged() should be the super class method
@@ -226,21 +226,21 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   }
 
   private computeShowSecondaryUserBanner_(): boolean {
-    return !this.hasExpandedSection_ &&
+    return !this.isShowingSubpage_ &&
         loadTimeData.getBoolean('isSecondaryUser');
   }
 
   private computeShowUpdateRequiredEolBanner_(): boolean {
-    return !this.hasExpandedSection_ && this.showUpdateRequiredEolBanner_ &&
+    return !this.isShowingSubpage_ && this.showUpdateRequiredEolBanner_ &&
         !this.showEolIncentive_;
   }
 
   private computeShowEolIncentive_(): boolean {
-    return !this.hasExpandedSection_ && this.showEolIncentive_;
+    return !this.isShowingSubpage_ && this.showEolIncentive_;
   }
 
   private computeShouldShowAdvancedToggle_(): boolean {
-    return !this.isRevampWayfindingEnabled_ && !this.hasExpandedSection_;
+    return !this.isRevampWayfindingEnabled_ && !this.isShowingSubpage_;
   }
 
   private androidAppsInfoUpdate_(info: AndroidAppsInfo) {
@@ -255,11 +255,8 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
     this.showUpdateRequiredEolBanner_ = false;
   }
 
-  /**
-   * Hides everything but the newly expanded subpage.
-   */
-  private onSubpageExpanded_() {
-    this.hasExpandedSection_ = true;
+  private onShowingSubpage(): void {
+    this.isShowingSubpage_ = true;
   }
 
   /**
@@ -320,11 +317,11 @@ export class MainPageContainerElement extends MainPageContainerElementBase {
   }
 
   private showBasicPage_(): boolean {
-    return !this.hasExpandedSection_ || isBasicRoute(this.currentRoute_);
+    return !this.isShowingSubpage_ || isBasicRoute(this.currentRoute_);
   }
 
   private showAdvancedPage_(): boolean {
-    if (this.hasExpandedSection_) {
+    if (this.isShowingSubpage_) {
       // Show the Advanced page only if the current route is an Advanced
       // subpage.
       return isAdvancedRoute(this.currentRoute_);

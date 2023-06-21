@@ -129,7 +129,7 @@ export const MainPageMixin = dedupingMixin(
           this.lastScrollTop_ = this.scroller_.scrollTop;
           this.scroller_.scrollTop = 0;
           this.classList.add('showing-subpage');
-          this.dispatchCustomEvent_('subpage-expand');
+          this.dispatchCustomEvent_('showing-subpage');
 
           // Explicitly load the lazy_load module, since all subpages reside in
           // the lazy loaded module.

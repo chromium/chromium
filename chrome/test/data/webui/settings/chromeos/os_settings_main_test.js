@@ -44,34 +44,32 @@ suite('MainPageTests', function() {
     settingsMain.remove();
   });
 
-  function showManagedHeader() {
-    return settingsMain.showManagedHeader_(
-        settingsMain.inSearchMode_, settingsMain.showingSubpage_,
-        settingsMain.showPages_.about);
+  function isShowingManagedHeader() {
+    return settingsMain.showManagedHeader_();
   }
 
   test('managed header hides when showing subpage', function() {
     flush();
 
-    assertTrue(showManagedHeader());
+    assertTrue(isShowingManagedHeader());
 
     const mainPageContainer =
         settingsMain.shadowRoot.querySelector('main-page-container');
 
-    const subpageExpandEvent =
-        new CustomEvent('subpage-expand', {'bubbles': true, composed: true});
-    mainPageContainer.dispatchEvent(subpageExpandEvent);
+    const showingSubpageEvent =
+        new CustomEvent('showing-subpage', {bubbles: true, composed: true});
+    mainPageContainer.dispatchEvent(showingSubpageEvent);
 
-    assertFalse(showManagedHeader());
+    assertFalse(isShowingManagedHeader());
   });
 
   test('managed header hides when showing about page', function() {
     flush();
 
-    assertTrue(showManagedHeader());
+    assertTrue(isShowingManagedHeader());
     Router.getInstance().navigateTo(routes.ABOUT);
 
-    assertFalse(showManagedHeader());
+    assertFalse(isShowingManagedHeader());
   });
 
   /** @return {!HTMLElement} */
