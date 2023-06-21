@@ -541,7 +541,6 @@ source_set("unit_tests") {
     "management/management_service_unittest.cc",
     "policy_bundle_unittest.cc",
     "policy_loader_command_line_unittest.cc",
-    "policy_loader_local_test_unittest.cc",
     "policy_logger_unittest.cc",
     "policy_map_unittest.cc",
     "policy_proto_decoders_unittest.cc",
