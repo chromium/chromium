@@ -108,12 +108,6 @@
       'mac_retina_amd_gpu_stable',
     ],
   },
-  'MAC_RETINA_NVIDIA_GPU_STABLE': {
-    'identifier': '10de:0fe9',
-    'mixins': [
-      'mac_retina_nvidia_gpu_stable',
-    ],
-  },
   'SIM_IPAD_AIR_2_15_5': {
     'args': [
       '--platform',

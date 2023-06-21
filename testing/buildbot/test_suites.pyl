@@ -7752,14 +7752,12 @@
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
       'gpu_mediapipe_passthrough_telemetry_tests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
       'gpu_passthrough_telemetry_tests': {
@@ -7772,7 +7770,6 @@
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
       'gpu_webgl2_conformance_gl_passthrough_telemetry_tests': {
@@ -7806,21 +7803,18 @@
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
       'gpu_fyi_mac_specific_gtests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
       'gpu_gles2_conform_gtests': {
         'variants': [
           'MAC_MINI_INTEL_GPU_STABLE',
           'MAC_RETINA_AMD_GPU_STABLE',
-          'MAC_RETINA_NVIDIA_GPU_STABLE',
         ],
       },
     },
