@@ -3715,7 +3715,7 @@
       },
       'linux-wpt-input-fyi-rel': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'wpt_web_tests_input',
