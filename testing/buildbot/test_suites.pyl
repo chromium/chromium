@@ -4396,7 +4396,7 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.beta.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
         ],
         'swarming': {
           'shards': 3,
@@ -4409,7 +4409,7 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.dev.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
         ],
         'swarming': {
           'shards': 3,
@@ -4422,7 +4422,7 @@
         'name': 'interactive_ui_tests',
         'test': 'interactive_ui_tests',
         'args': [
-          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.stable.filter',
+          '--test-launcher-filter-file=../../testing/buildbot/filters/linux-lacros.interactive_ui_tests.skew.filter',
         ],
         'swarming': {
           'shards': 3,
