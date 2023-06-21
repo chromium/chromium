@@ -79,7 +79,10 @@ TEST(PrintBackendMojomTraitsTest,
 }
 
 TEST(PrintBackendMojomTraitsTest, TestSerializeAndDeserializePaper) {
-  for (const auto& paper : kPapers) {
+  PrinterSemanticCapsAndDefaults::Papers test_papers = kPapers;
+  test_papers.push_back(kPaperCustom);
+
+  for (const auto& paper : test_papers) {
     PrinterSemanticCapsAndDefaults::Paper input = paper;
     PrinterSemanticCapsAndDefaults::Paper output;
     EXPECT_TRUE(
@@ -95,6 +98,20 @@ TEST(PrintBackendMojomTraitsTest, TestPaperEmpty) {
 
   EXPECT_TRUE(mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
   EXPECT_EQ(input, output);
+}
+
+TEST(PrintBackendMojomTraitsTest, TestPaperInvalidCustomSize) {
+  // The min height is larger than the max height, so it should be invalid.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(0, 0, 4000, 7000),
+      /*max_height_um=*/6000};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
 }
 
 TEST(PrintBackendMojomTraitsTest, TestPaperEmptyPrintableArea) {
@@ -116,6 +133,20 @@ TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanSize) {
       /*display_name=*/"display_name", /*vendor_id=*/"vendor_id",
       /*size_um=*/gfx::Size(4000, 7000),
       /*printable_area_um=*/gfx::Rect(0, 100, 4100, 7200)};
+  PrinterSemanticCapsAndDefaults::Paper output;
+
+  EXPECT_FALSE(
+      mojo::test::SerializeAndDeserialize<mojom::Paper>(input, output));
+}
+
+TEST(PrintBackendMojomTraitsTest, TestPaperPrintableAreaLargerThanCustomSize) {
+  // The printable area is larger than the custom size, so it should be invalid.
+  PrinterSemanticCapsAndDefaults::Paper input{
+      /*display_name=*/"display_name",
+      /*vendor_id=*/"vendor_id",
+      /*size_um=*/gfx::Size(4000, 7000),
+      /*printable_area_um=*/gfx::Rect(0, 100, 4100, 7200),
+      /*max_height_um=*/8000};
   PrinterSemanticCapsAndDefaults::Paper output;
 
   EXPECT_FALSE(

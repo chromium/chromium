@@ -118,6 +118,7 @@ bool StructTraits<printing::mojom::PaperDataView,
       !data.ReadPrintableAreaUm(&printable_area_um)) {
     return false;
   }
+  out->max_height_um = data.max_height_um();
 
   // For backwards compatibility, allow printable area to be missing. Set the
   // default printable area to be the page size.
@@ -126,12 +127,19 @@ bool StructTraits<printing::mojom::PaperDataView,
   // Allow empty Papers, since PrinterSemanticCapsAndDefaults can have empty
   // default Papers.
   if (out->display_name.empty() && out->vendor_id.empty() &&
-      out->size_um.IsEmpty() && out->printable_area_um.IsEmpty()) {
+      out->size_um.IsEmpty() && out->printable_area_um.IsEmpty() &&
+      out->max_height_um == 0) {
     return true;
   }
 
+  // If `max_height_um` is specified, ensure it's larger than size.
+  if (out->max_height_um > 0 && out->max_height_um < out->size_um.height()) {
+    return false;
+  }
+
   // Invalid if the printable area is empty or if the printable area is out of
-  // bounds of the paper size.
+  // bounds of the paper size.  `max_height_um` doesn't need to be checked here
+  // since `printable_area_um` is always relative to `size_um`.
   return !out->printable_area_um.IsEmpty() &&
          gfx::Rect(out->size_um).Contains(out->printable_area_um);
 }

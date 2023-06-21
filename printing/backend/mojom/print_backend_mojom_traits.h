@@ -64,6 +64,10 @@ struct StructTraits<printing::mojom::PaperDataView,
       const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
     return p.printable_area_um;
   }
+  static int max_height_um(
+      const printing::PrinterSemanticCapsAndDefaults::Paper& p) {
+    return p.max_height_um;
+  }
 
   static bool Read(printing::mojom::PaperDataView data,
                    printing::PrinterSemanticCapsAndDefaults::Paper* out);

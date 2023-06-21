@@ -158,7 +158,8 @@ bool PrinterSemanticCapsAndDefaults::Paper::operator==(
     const PrinterSemanticCapsAndDefaults::Paper& other) const {
   return display_name == other.display_name && vendor_id == other.vendor_id &&
          size_um == other.size_um &&
-         printable_area_um == other.printable_area_um;
+         printable_area_um == other.printable_area_um &&
+         max_height_um == other.max_height_um;
 }
 
 PrinterSemanticCapsAndDefaults::PrinterSemanticCapsAndDefaults() = default;

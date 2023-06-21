@@ -195,6 +195,13 @@ struct COMPONENT_EXPORT(PRINT_BACKEND) PrinterSemanticCapsAndDefaults {
     // Origin (x,y) is at the bottom-left.
     gfx::Rect printable_area_um;
 
+    // This is used to represent a printer that supports a variable height.
+    // This will either be equal to 0 (which indicates the height is not
+    // variable) or this will be larger than the height in `size_um` (which
+    // indicates the height can be anywhere in that range).  Note that
+    // `printable_area_um` is always based on `size_um`.
+    int max_height_um = 0;
+
     bool operator==(const Paper& other) const;
   };
   using Papers = std::vector<Paper>;
