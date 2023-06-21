@@ -1039,6 +1039,11 @@ IN_PROC_BROWSER_TEST_P(SystemWebAppManagerInstallAllAppsBrowserTest,
           type_and_info.second->GetInstallUrl(),
           type_and_info.second->GetWebAppInfo()->start_url));
     }
+
+    // Check app's web app shortcuts fields is self-consistent.
+    auto install_info = type_and_info.second->GetWebAppInfo();
+    EXPECT_EQ(install_info->shortcuts_menu_icon_bitmaps.size(),
+              install_info->shortcuts_menu_item_infos.size());
   }
 
   // Check each SWA app has their own unique origin (i.e. doesn't share origin

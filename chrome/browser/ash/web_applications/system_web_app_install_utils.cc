@@ -17,14 +17,42 @@ namespace web_app {
 void CreateIconInfoForSystemWebApp(
     const GURL& app_url,
     const std::initializer_list<IconResourceInfo>& manifest_icons,
-    WebAppInstallInfo& web_app) {
+    WebAppInstallInfo& web_app_info) {
   for (const auto& info : manifest_icons) {
-    web_app.manifest_icons.emplace_back(app_url.Resolve(info.icon_name),
-                                        info.size);
+    web_app_info.manifest_icons.emplace_back(app_url.Resolve(info.icon_name),
+                                             info.size);
     auto image =
         ui::ResourceBundle::GetSharedInstance().GetImageNamed(info.resource_id);
-    web_app.icon_bitmaps.any[info.size] = image.AsBitmap();
+    web_app_info.icon_bitmaps.any[info.size] = image.AsBitmap();
   }
+}
+
+void CreateShortcutsMenuItemForSystemWebApp(
+    const std::u16string& name,
+    const GURL& shortcut_url,
+    const std::initializer_list<IconResourceInfo>& shortcut_menu_item_icons,
+    WebAppInstallInfo& web_app_info) {
+  WebAppShortcutsMenuItemInfo shortcut_info;
+  shortcut_info.name = name;
+  shortcut_info.url = shortcut_url;
+
+  IconBitmaps bitmaps;
+  for (const auto& icon : shortcut_menu_item_icons) {
+    WebAppShortcutsMenuItemInfo::Icon shortcut_icon;
+    shortcut_icon.square_size_px = icon.size;
+    shortcut_icon.url = shortcut_url.Resolve(icon.icon_name);
+    shortcut_info.any.push_back(shortcut_icon);
+
+    bitmaps.any[icon.size] = ui::ResourceBundle::GetSharedInstance()
+                                 .GetImageNamed(icon.resource_id)
+                                 .AsBitmap();
+  }
+
+  web_app_info.shortcuts_menu_item_infos.push_back(shortcut_info);
+  web_app_info.shortcuts_menu_icon_bitmaps.push_back(bitmaps);
+
+  CHECK(web_app_info.shortcuts_menu_item_infos.size() ==
+        web_app_info.shortcuts_menu_icon_bitmaps.size());
 }
 
 SkColor GetDefaultBackgroundColor(const bool use_dark_mode) {
