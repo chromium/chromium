@@ -11,6 +11,7 @@
 #import "ios/web/public/web_state_user_data.h"
 
 namespace autofill {
+struct FormActivityParams;
 class FormStructure;
 }  // namespace autofill
 
@@ -85,6 +86,12 @@ class AutofillBottomSheetTabHelper
       std::set<autofill::FieldRendererId>& registered_renderer_ids,
       web::WebFrame* frame,
       bool must_be_empty);
+
+  // Send command to show the Password Bottom Sheet.
+  void ShowPasswordBottomSheet(const autofill::FormActivityParams params);
+
+  // Send command to show the Payments Bottom Sheet.
+  void ShowPaymentsBottomSheet(const autofill::FormActivityParams params);
 
   // Handler used to request showing the password bottom sheet.
   __weak id<AutofillBottomSheetCommands> commands_handler_;

@@ -15,6 +15,9 @@ struct FormActivityParams;
 // Shows the password suggestion view controller.
 - (void)showPasswordBottomSheet:(const autofill::FormActivityParams&)params;
 
+// Shows the payments suggestion view controller.
+- (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params;
+
 @end
 
 #endif  // IOS_CHROME_BROWSER_SHARED_PUBLIC_COMMANDS_AUTOFILL_BOTTOM_SHEET_COMMANDS_H_
