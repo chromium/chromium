@@ -63,6 +63,8 @@ class PlatformInfo:
             self.os_version = self._determine_win_version(
                 self._win_version_tuple())
         self.interactive = sys_module.stdin.isatty()
+        self._processor = platform_module.processor() or ""
+
         assert sys.platform != 'cygwin', 'Cygwin is not supported.'
 
     def is_mac(self):
@@ -76,6 +78,9 @@ class PlatformInfo:
 
     def is_freebsd(self):
         return self.os_name == 'freebsd'
+
+    def processor(self):
+        return self._processor
 
     @memoized
     def is_highdpi(self):

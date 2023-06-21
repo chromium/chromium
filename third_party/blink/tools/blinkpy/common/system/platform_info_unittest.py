@@ -68,6 +68,9 @@ def fake_platform(mac_version_string='12.3.1',
         def win32_ver(self):
             return tuple([None, win_version_string])
 
+        def processor(self):
+            return ''
+
     return FakePlatformModule()
 
 

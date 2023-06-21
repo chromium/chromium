@@ -66,7 +66,7 @@ class WinPortTest(port_testcase.PortTestCase):
 
     def test_versions(self):
         port = self.make_port()
-        self.assertIn(port.name(), ('win-win10.20h2', 'win-win11'))
+        self.assertIn(port.name(), ('win-win11'))
 
         self.assert_name(None, '10.20h2', 'win-win10.20h2')
         self.assert_name('win', '10.20h2', 'win-win10.20h2')
