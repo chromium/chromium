@@ -8,4 +8,5 @@ found in the LICENSE file.
 <resources>
     <!-- Chips default measures -->
     <dimen name="chip_icon_size">20dp</dimen>
+    <dimen name="keyboard_accessory_bar_item_icon_width">32dp</dimen>
 </resources>
