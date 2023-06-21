@@ -1430,14 +1430,14 @@ TEST_F(PersonalDataManagerMockTest, ProcessCardArtUrlChanges) {
   card.set_server_id("card_server_id");
   card.set_card_art_url(GURL("https://www.example.com/card1"));
   std::vector<GURL> updated_urls;
-  updated_urls.emplace_back(GURL("https://www.example.com/card1"));
+  updated_urls.emplace_back("https://www.example.com/card1");
 
   personal_data_->AddFullServerCreditCard(card);
   WaitForFetchImagesForUrls();
 
   card.set_card_art_url(GURL("https://www.example.com/card2"));
   updated_urls.clear();
-  updated_urls.emplace_back(GURL("https://www.example.com/card2"));
+  updated_urls.emplace_back("https://www.example.com/card2");
 
   personal_data_->AddFullServerCreditCard(card);
   WaitForFetchImagesForUrls();
@@ -2153,6 +2153,24 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions) {
             suggestions[0].main_text.value);
 }
 
+// Tests that special characters will be used while prefix matching the user's
+// field input with the available emails to suggest.
+TEST_F(PersonalDataManagerTest,
+       GetProfileSuggestions_UseSpecialCharactersInEmail) {
+  AutofillProfile profile_1, profile_2;
+  profile_1.SetRawInfo(EMAIL_ADDRESS, u"test@email.xyz");
+  profile_2.SetRawInfo(EMAIL_ADDRESS, u"test1@email.xyz");
+  AddProfileToPersonalDataManager(profile_1);
+  AddProfileToPersonalDataManager(profile_2);
+  ASSERT_EQ(personal_data_->GetProfilesToSuggest().size(), 2u);
+
+  std::vector<Suggestion> suggestions = personal_data_->GetProfileSuggestions(
+      AutofillType(EMAIL_ADDRESS), u"Test@", false, {});
+
+  ASSERT_EQ(suggestions.size(), 1u);
+  EXPECT_EQ(u"test@email.xyz", suggestions[0].main_text.value);
+}
+
 TEST_F(PersonalDataManagerTest,
        GetProfileSuggestions_PhoneSubstring_NoImprovedDisambiguation) {
   base::test::ScopedFeatureList scoped_features;
@@ -2385,7 +2403,7 @@ TEST_F(PersonalDataManagerTest, GetProfileSuggestions_NumberOfSuggestions) {
   EXPECT_EQ(3U, suggestions.size());
 }
 
-// Tests that disused profiles are suppressed when supression is enabled and
+// Tests that disused profiles are suppressed when suppression is enabled and
 // the input field is empty.
 TEST_F(PersonalDataManagerTest,
        GetProfileSuggestions_SuppressDisusedProfilesOnEmptyField) {
@@ -3673,10 +3691,10 @@ TEST_P(SaveImportedProfileTest, SaveImportedProfile) {
   // profiles to be the same.
   EXPECT_EQ(db_profiles.size(), saved_profiles.size());
   for (const auto& it : db_profiles) {
-    AutofillProfile* inmemory_profile =
+    AutofillProfile* in_memory_profile =
         personal_data_->GetProfileByGUID(it->guid());
-    ASSERT_TRUE(inmemory_profile != nullptr);
-    EXPECT_TRUE(it->EqualsIncludingUsageStatsForTesting(*inmemory_profile));
+    ASSERT_TRUE(in_memory_profile != nullptr);
+    EXPECT_TRUE(it->EqualsIncludingUsageStatsForTesting(*in_memory_profile));
   }
 
   // If there are no merge changes to verify, make sure that two profiles were
@@ -4141,8 +4159,8 @@ TEST_F(PersonalDataManagerTest,
 
   // Add a different server profile.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "", "Doe", "",
                        "ACME Corp", "500 Oak View", "Apt 8", "Houston", "TX",
                        "77401", "US", "");
@@ -4161,8 +4179,7 @@ TEST_F(PersonalDataManagerTest,
   personal_data_->AddCreditCard(local_card);
 
   std::vector<CreditCard> server_cards;
-  server_cards.push_back(
-      CreditCard(CreditCard::MASKED_SERVER_CARD, "server_card1"));
+  server_cards.emplace_back(CreditCard::MASKED_SERVER_CARD, "server_card1");
   test::SetCreditCardInfo(&server_cards.back(), "John Dillinger",
                           "1111" /* Visa */, "01", "2999", "1");
   server_cards.back().SetNetworkForMaskedCard(kVisaCard);
@@ -4322,8 +4339,8 @@ TEST_F(PersonalDataManagerTest,
 
   // Add a server profile that has already been converted.
   std::vector<AutofillProfile> server_profiles;
-  server_profiles.push_back(
-      AutofillProfile(AutofillProfile::SERVER_PROFILE, kServerAddressId));
+  server_profiles.emplace_back(AutofillProfile::SERVER_PROFILE,
+                               kServerAddressId);
   test::SetProfileInfo(&server_profiles.back(), "John", "Ray", "Doe",
                        "john@doe.com", "Fox", "1212 Center", "Bld. 5",
                        "Orlando", "FL", "32801", "US", "");
@@ -4463,7 +4480,7 @@ TEST_F(
             personal_data_->GetCreditCards()[1]->billing_address_id());
 }
 
-// Tests a new server card's billing address is updated propely even if the
+// Tests a new server card's billing address is updated properly even if the
 // address was already converted in the past.
 TEST_F(
     PersonalDataManagerTest,

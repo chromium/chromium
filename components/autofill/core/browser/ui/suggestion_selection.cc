@@ -15,6 +15,8 @@
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
+#include "components/autofill/core/browser/data_model/borrowed_transliterator.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/metrics/autofill_metrics.h"
 #include "components/autofill/core/browser/ui/suggestion.h"
@@ -26,8 +28,7 @@
 #include "third_party/libaddressinput/src/cpp/include/libaddressinput/address_formatter.h"
 #include "ui/base/l10n/l10n_util.h"
 
-namespace autofill {
-namespace suggestion_selection {
+namespace autofill::suggestion_selection {
 
 namespace {
 using ::i18n::addressinput::AddressField;
@@ -39,8 +40,6 @@ using ::i18n::addressinput::STREET_ADDRESS;
 std::u16string GetInfoInOneLine(const AutofillProfile* profile,
                                 const AutofillType& type,
                                 const std::string& app_locale) {
-  std::vector<std::u16string> results;
-
   AddressField address_field;
   if (i18n::FieldForType(type.GetStorableType(), &address_field) &&
       address_field == STREET_ADDRESS) {
@@ -63,6 +62,17 @@ constexpr size_t kMaxSuggestedProfilesCount = 50;
 // indices clicked by our users. The suggestions will also refine as they type.
 constexpr size_t kMaxUniqueSuggestionsCount = 10;
 
+std::u16string NormalizeForComparisonForType(const std::u16string& text,
+                                             ServerFieldType type) {
+  if (GroupTypeOfServerFieldType(type) == FieldTypeGroup::kEmail) {
+    // For emails, keep special characters so that if the user has two emails
+    // `test@foo.xyz` and `test1@foo.xyz` saved, only the first one is suggested
+    // upon entering `test@` into the email field.
+    return RemoveDiacriticsAndConvertToLowerCase(text);
+  }
+  return AutofillProfileComparator::NormalizeForComparison(text);
+}
+
 std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
@@ -78,11 +88,11 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
        i++) {
     AutofillProfile* profile = profiles[i];
 
-      // Don't offer to fill the exact same value again. If detailed suggestions
-      // with different secondary data is available, it would appear to offer
-      // refilling the whole form with something else. E.g. the same name with a
-      // work and a home address would appear twice but a click would be a noop.
-      // TODO(fhorschig): Consider refilling form instead (at on least Android).
+    // Don't offer to fill the exact same value again. If detailed suggestions
+    // with different secondary data is available, it would appear to offer
+    // refilling the whole form with something else. E.g. the same name with a
+    // work and a home address would appear twice but a click would be a noop.
+    // TODO(fhorschig): Consider refilling form instead (at least on Android).
 #if BUILDFLAG(IS_ANDROID)
     if (base::FeatureList::IsEnabled(features::kAutofillKeyboardAccessory) &&
         field_is_autofilled &&
@@ -97,7 +107,8 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
       continue;
 
     bool prefix_matched_suggestion;
-    std::u16string suggestion_canon = comparator.NormalizeForComparison(value);
+    std::u16string suggestion_canon =
+        NormalizeForComparisonForType(value, type.GetStorableType());
     if (IsValidSuggestionForFieldContents(
             suggestion_canon, field_contents_canon, type,
             /* is_masked_server_card= */ false, field_is_autofilled,
@@ -180,7 +191,7 @@ std::vector<Suggestion> GetUniqueSuggestions(
       // profiles are identical and only one should be included.
       // Prefer `kAccount` profiles over `kLocalOrSyncable` ones. In case the
       // profiles have the same source, prefer the earlier one (since the
-      // profiles are pre-sorted by their relevants).
+      // profiles are pre-sorted by their relevance).
       const bool prefer_a_over_b =
           profile_a->source() == profile_b->source()
               ? i < j
@@ -273,9 +284,9 @@ void RemoveProfilesNotUsedSinceTimestamp(
                               return m->use_date() > min_last_used;
                             }),
       profiles->end());
-  const size_t num_profiles_supressed = original_size - profiles->size();
+  const size_t num_profiles_suppressed = original_size - profiles->size();
   AutofillMetrics::LogNumberOfAddressesSuppressedForDisuse(
-      num_profiles_supressed);
+      num_profiles_suppressed);
 }
 
 void PrepareSuggestions(const std::vector<std::u16string>& labels,
@@ -335,5 +346,4 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
   }
 }
 
-}  // namespace suggestion_selection
-}  // namespace autofill
+}  // namespace autofill::suggestion_selection

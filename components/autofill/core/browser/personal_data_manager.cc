@@ -38,6 +38,7 @@
 #include "components/autofill/core/browser/data_model/autofill_profile_comparator.h"
 #include "components/autofill/core/browser/data_model/credit_card_art_image.h"
 #include "components/autofill/core/browser/data_model/phone_number.h"
+#include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/address_i18n.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -1120,7 +1121,7 @@ void PersonalDataManager::ClearAllServerData() {
   // off (meaning this class won't even query for the server data) so don't
   // check the server_credit_cards_/profiles_ before posting to the DB.
 
-  // TODO(crbug.com/864519): Move this nullcheck logic to the database helper.
+  // TODO(crbug.com/864519): Move this null check logic to the database helper.
   // The server database can be null for a limited amount of time before the
   // sync service gets initialized. Not clearing it does not matter in that case
   // since it will not have been created yet (nothing to clear).
@@ -1177,7 +1178,7 @@ void PersonalDataManager::
         const std::string& guid) {
   RemoveProfileFromDB(guid);
 
-  // Reset the billing_address_id of any card that refered to this profile.
+  // Reset the billing_address_id of any card that referred to this profile.
   for (CreditCard* credit_card : GetCreditCards()) {
     if (credit_card->billing_address_id() == guid) {
       credit_card->set_billing_address_id("");
@@ -1487,7 +1488,8 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
 
   const AutofillProfileComparator comparator(app_locale_);
   std::u16string field_contents_canon =
-      comparator.NormalizeForComparison(field_contents);
+      suggestion_selection::NormalizeForComparisonForType(
+          field_contents, type.GetStorableType());
 
   // Get the profiles to suggest, which are already sorted.
   std::vector<AutofillProfile*> sorted_profiles = GetProfilesToSuggest();
@@ -2564,8 +2566,8 @@ void PersonalDataManager::AddProfileToDB(const AutofillProfile& profile,
       return;
     }
   }
-  ongoing_profile_changes_[profile.guid()].push_back(
-      AutofillProfileDeepChange(AutofillProfileChange::ADD, profile));
+  ongoing_profile_changes_[profile.guid()].emplace_back(
+      AutofillProfileChange::ADD, profile);
   if (enforced)
     ongoing_profile_changes_[profile.guid()].back().set_enforced();
   HandleNextProfileChange(profile.guid());
@@ -2584,8 +2586,8 @@ void PersonalDataManager::UpdateProfileInDB(const AutofillProfile& profile,
     }
   }
 
-  ongoing_profile_changes_[profile.guid()].push_back(
-      AutofillProfileDeepChange(AutofillProfileChange::UPDATE, profile));
+  ongoing_profile_changes_[profile.guid()].emplace_back(
+      AutofillProfileChange::UPDATE, profile);
   if (enforced)
     ongoing_profile_changes_[profile.guid()].back().set_enforced();
   HandleNextProfileChange(profile.guid());

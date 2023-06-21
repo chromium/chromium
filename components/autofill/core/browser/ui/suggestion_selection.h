@@ -23,6 +23,11 @@ extern const size_t kMaxSuggestedProfilesCount;
 extern const size_t kMaxUniqueSuggestionsCount;
 extern const size_t kMaxPrunedUniqueSuggestionsCount;
 
+// Normalizes text for comparison based on the type of the field `text` was
+// entered into.
+std::u16string NormalizeForComparisonForType(const std::u16string& text,
+                                             ServerFieldType type);
+
 // Matches based on prefix search, and limits number of profiles.
 // Returns the top matching suggestions based on prefix search, and adds the
 // corresponding profiles to |matched_profiles|. At most
