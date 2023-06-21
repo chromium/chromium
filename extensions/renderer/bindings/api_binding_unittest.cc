@@ -2284,7 +2284,9 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
   v8::Local<v8::Context> context = MainContext();
   v8::Local<v8::Object> binding_object = binding()->CreateInstance(context);
 
-  // A normal call into the promised based API should return a promise.
+  // A normal call into the promised based API should return a promise. When the
+  // request is completed with a value, the promise will be resolved with that
+  // value.
   {
     constexpr char kFunctionCall[] =
         R"((function(api) {
@@ -2333,6 +2335,55 @@ TEST_F(APIBindingUnittest, PromiseBasedAPIs) {
 
     EXPECT_EQ(R"("bar")", GetStringPropertyFromObject(
                               context->Global(), context, "callbackResult"));
+  }
+  // If a request is completed with an error, the promise should be rejected.
+  {
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3) });");
+    v8::Local<v8::Value> args[] = {binding_object};
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
+
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    ASSERT_FALSE(api_result.IsEmpty());
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       base::Value::List(), "Error message");
+
+    EXPECT_EQ(v8::Promise::kRejected, promise->State());
+    ASSERT_TRUE(promise->Result()->IsObject());
+    EXPECT_EQ(R"("Error message")",
+              GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                          context, "message"));
+  }
+  // If a request is completed with a result and an error, the promise should be
+  // rejected and the result will not be returned. Note: ideally no APIs would
+  // do this but some legacy APIs do it through returning ErrorWithArguments as
+  // their ResponseValue. This testcase documents how this behaves with
+  // promises.
+  {
+    v8::Local<v8::Function> promise_api_call = FunctionFromString(
+        context, "(function(api) { return api.supportsPromises(3) });");
+    v8::Local<v8::Value> args[] = {binding_object};
+    v8::Local<v8::Value> api_result =
+        RunFunctionOnGlobal(promise_api_call, context, std::size(args), args);
+
+    v8::Local<v8::Promise> promise = api_result.As<v8::Promise>();
+    ASSERT_FALSE(api_result.IsEmpty());
+    EXPECT_EQ(v8::Promise::kPending, promise->State());
+
+    ASSERT_TRUE(last_request());
+    request_handler()->CompleteRequest(last_request()->request_id,
+                                       ListValueFromString(R"(["bar"])"),
+                                       "Error message");
+
+    EXPECT_EQ(v8::Promise::kRejected, promise->State());
+    ASSERT_TRUE(promise->Result()->IsObject());
+    EXPECT_EQ(R"("Error message")",
+              GetStringPropertyFromObject(promise->Result().As<v8::Object>(),
+                                          context, "message"));
   }
   // If the context doesn't support promises, there should be an error if a
   // required callback isn't supplied.
@@ -2474,8 +2525,9 @@ TEST_F(APIBindingUnittest, TestPromisesWithJSCustomCallback) {
     EXPECT_EQ(R"("bar")", V8ToString(promise->Result(), context));
   }
 
-  // Completing the request with an error should reject the promise with the
-  // error.
+  // Completing the request with an error should still call into the custom
+  // callback, which will reject the promise with the error when the callback
+  // passed to it is called.
   {
     v8::Local<v8::Function> promise_api_call = FunctionFromString(
         context, "(function(api) { return api.supportsPromises(3) });");
