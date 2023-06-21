@@ -48,18 +48,6 @@
 
 namespace blink {
 
-#if DCHECK_IS_ON()
-static base::Lock& ActiveIteratorCountLock() {
-  DEFINE_THREAD_SAFE_STATIC_LOCAL(base::Lock, lock, ());
-  return lock;
-}
-
-void EventListenerMap::CheckNoActiveIterators() {
-  base::AutoLock locker(ActiveIteratorCountLock());
-  DCHECK(!active_iterator_count_);
-}
-#endif
-
 EventListenerMap::EventListenerMap() = default;
 
 bool EventListenerMap::Contains(const AtomicString& event_type) const {
@@ -99,8 +87,6 @@ bool EventListenerMap::ContainsJSBasedEventListeners(
 }
 
 void EventListenerMap::Clear() {
-  CheckNoActiveIterators();
-
   entries_.clear();
 }
 
@@ -131,8 +117,6 @@ bool EventListenerMap::Add(const AtomicString& event_type,
                            EventListener* listener,
                            const AddEventListenerOptionsResolved* options,
                            RegisteredEventListener* registered_listener) {
-  CheckNoActiveIterators();
-
   for (const auto& entry : entries_) {
     if (entry.first == event_type) {
       // Report the size of event listener vector in case of hang-crash to see
@@ -188,8 +172,6 @@ bool EventListenerMap::Remove(const AtomicString& event_type,
                               const EventListenerOptions* options,
                               wtf_size_t* index_of_removed_listener,
                               RegisteredEventListener* registered_listener) {
-  CheckNoActiveIterators();
-
   for (unsigned i = 0; i < entries_.size(); ++i) {
     if (entries_[i].first == event_type) {
       bool was_removed = RemoveListenerFromVector(
@@ -205,8 +187,6 @@ bool EventListenerMap::Remove(const AtomicString& event_type,
 }
 
 EventListenerVector* EventListenerMap::Find(const AtomicString& event_type) {
-  CheckNoActiveIterators();
-
   for (const auto& entry : entries_) {
     if (entry.first == event_type)
       return entry.second.Get();
@@ -229,8 +209,6 @@ static void CopyListenersNotCreatedFromMarkupToTarget(
 
 void EventListenerMap::CopyEventListenersNotCreatedFromMarkupToTarget(
     EventTarget* target) {
-  CheckNoActiveIterators();
-
   for (const auto& event_listener : entries_) {
     CopyListenersNotCreatedFromMarkupToTarget(
         event_listener.first, event_listener.second.Get(), target);

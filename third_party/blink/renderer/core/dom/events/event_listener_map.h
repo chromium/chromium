@@ -33,7 +33,6 @@
 #ifndef THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 #define THIRD_PARTY_BLINK_RENDERER_CORE_DOM_EVENTS_EVENT_LISTENER_MAP_H_
 
-#include "base/dcheck_is_on.h"
 #include "third_party/blink/renderer/core/core_export.h"
 #include "third_party/blink/renderer/core/dom/events/registered_event_listener.h"
 #include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_map.h"
@@ -80,22 +79,12 @@ class CORE_EXPORT EventListenerMap final {
  private:
   friend class EventListenerIterator;
 
-  void CheckNoActiveIterators();
-
   // We use HeapVector instead of HeapHashMap because
   //  - HeapVector is much more space efficient than HeapHashMap.
   //  - An EventTarget rarely has event listeners for many event types, and
   //    HeapVector is faster in such cases.
   HeapVector<std::pair<AtomicString, Member<EventListenerVector>>, 2> entries_;
-
-#if DCHECK_IS_ON()
-  int active_iterator_count_ = 0;
-#endif
 };
-
-#if !DCHECK_IS_ON()
-inline void EventListenerMap::CheckNoActiveIterators() {}
-#endif
 
 }  // namespace blink
 
