@@ -12,6 +12,10 @@ TestSystemTrayClient::~TestSystemTrayClient() = default;
 
 void TestSystemTrayClient::ShowSettings(int64_t display_id) {}
 
+void TestSystemTrayClient::ShowAccountSettings() {
+  show_account_settings_count_++;
+}
+
 void TestSystemTrayClient::ShowBluetoothSettings() {
   show_bluetooth_settings_count_++;
 }

@@ -24,6 +24,9 @@ class ASH_PUBLIC_EXPORT SystemTrayClient {
   // Shows general settings UI.
   virtual void ShowSettings(int64_t display_id) = 0;
 
+  // Shows settings related to the user account.
+  virtual void ShowAccountSettings() = 0;
+
   // Shows settings related to Bluetooth devices (e.g. to add a device).
   virtual void ShowBluetoothSettings() = 0;
 

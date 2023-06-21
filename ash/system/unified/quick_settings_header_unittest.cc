@@ -291,6 +291,9 @@ TEST_F(QuickSettingsHeaderTest, ChildVisible) {
   EXPECT_EQ(GetSupervisedButton()->GetTooltipText({}),
             u"Account managed by parent@test.com");
   EXPECT_TRUE(header_->GetVisible());
+
+  LeftClickOn(GetSupervisedButton());
+  EXPECT_EQ(GetSystemTrayClient()->show_account_settings_count(), 1);
 }
 
 }  // namespace ash

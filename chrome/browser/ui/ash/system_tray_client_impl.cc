@@ -79,6 +79,7 @@
 #include "third_party/cros_system_api/dbus/shill/dbus-constants.h"
 #include "ui/events/event_constants.h"
 #include "url/gurl.h"
+
 using session_manager::SessionManager;
 using session_manager::SessionState;
 
@@ -376,6 +377,12 @@ void SystemTrayClientImpl::ShowSettings(int64_t display_id) {
   base::RecordAction(base::UserMetricsAction("ShowOptions"));
   chrome::SettingsWindowManager::GetInstance()->ShowOSSettings(
       ProfileManager::GetActiveUserProfile(), display_id);
+}
+
+void SystemTrayClientImpl::ShowAccountSettings() {
+  // The "Accounts" section is called "People" for historical reasons.
+  ShowSettingsSubPageForActiveUser(
+      chromeos::settings::mojom::kPeopleSectionPath);
 }
 
 void SystemTrayClientImpl::ShowBluetoothSettings() {
