@@ -539,7 +539,7 @@
           'blink_tests',
         ],
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'isolated_scripts': 'chromium_webkit_isolated_scripts',
