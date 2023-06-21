@@ -6,7 +6,6 @@ import 'chrome://resources/cr_elements/cr_tab_box/cr_tab_box.js';
 import './attribution_internals_table.js';
 
 import {assertNotReached} from 'chrome://resources/js/assert_ts.js';
-import {getTrustedHTML} from 'chrome://resources/js/static_types.js';
 import {Origin} from 'chrome://resources/mojo/url/mojom/origin.mojom-webui.js';
 
 import {AttributionSupport, TriggerVerification} from './attribution.mojom-webui.js';
@@ -1179,14 +1178,16 @@ class AttributionInternals implements ObserverInterface {
           response.enabled ? 'enabled' : 'disabled';
       featureStatusContent.classList.toggle('disabled', !response.enabled);
 
-      const debugModeContent =
-          document.querySelector<HTMLElement>('#debug-mode-content')!;
-      const html = getTrustedHTML`The #attribution-reporting-debug-mode flag is
- <strong>enabled</strong>, reports are sent immediately and never pending.`;
-      debugModeContent.innerHTML = html as unknown as string;
+      const reportDelaysContent =
+          document.querySelector<HTMLElement>('#report-delays')!;
+      const noiseContent = document.querySelector<HTMLElement>('#noise')!;
 
-      if (!response.debugMode) {
-        debugModeContent.innerText = '';
+      if (response.debugMode) {
+        reportDelaysContent.innerText = 'disabled';
+        noiseContent.innerText = 'disabled';
+      } else {
+        reportDelaysContent.innerText = 'enabled';
+        noiseContent.innerText = 'enabled';
       }
 
       const attributionSupport = document.querySelector<HTMLElement>('#attribution-support')!;

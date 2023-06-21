@@ -467,14 +467,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('debug-mode-content');
+    const reportDelays = document.getElementById('report-delays');
+    const noise = document.getElementById('noise');
     const obs = new MutationObserver((_, obs) => {
-      if (status.innerText.trim() === '') {
+      if (reportDelays.innerText === 'enabled' &&
+          noise.innerText === 'enabled') {
         obs.disconnect();
         document.title = $1;
       }
     });
-    obs.observe(status, {childList: true, subtree: true, characterData: true});
+    obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+    obs.observe(noise, {childList: true, subtree: true, characterData: true});
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
@@ -494,14 +497,17 @@ IN_PROC_BROWSER_TEST_F(AttributionInternalsWebUiBrowserTest,
   // Waiting on calls to `MockAttributionManager` is not sufficient because the
   // results are returned in promises.
   static constexpr char kScript[] = R"(
-    const status = document.getElementById('debug-mode-content');
+    const reportDelays = document.getElementById('report-delays');
+    const noise = document.getElementById('noise');
     const obs = new MutationObserver((_, obs) => {
-      if (status.innerText.trim() !== '') {
+      if (reportDelays.innerText === 'disabled' &&
+          noise.innerText === 'disabled') {
         obs.disconnect();
         document.title = $1;
       }
     });
-    obs.observe(status, {childList: true, subtree: true, characterData: true});
+    obs.observe(reportDelays, {childList: true, subtree: true, characterData: true});
+    obs.observe(noise, {childList: true, subtree: true, characterData: true});
   )";
   ASSERT_TRUE(ExecJsInWebUI(JsReplace(kScript, kCompleteTitle)));
 
