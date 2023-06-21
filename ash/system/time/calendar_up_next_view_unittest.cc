@@ -550,6 +550,36 @@ TEST_F(CalendarUpNextViewTest, ShouldFocusViewsInCorrectOrder_WhenPressingTab) {
                focus_manager->GetFocusedView()->GetClassName());
 }
 
+// Add unittest for the fix of this bug: b/286596205.
+TEST_F(CalendarUpNextViewTest, ShouldPreserveFocusAfterRefreshEvent) {
+  // Set time override.
+  base::subtle::ScopedTimeClockOverrides time_override(
+      []() { return base::subtle::TimeNowIgnoringOverride().LocalMidnight(); },
+      nullptr, nullptr);
+
+  // Create up next view with 2 upcoming google meet events.
+  CreateUpNextView(
+      CreateUpcomingEvents(2, false, GURL("https://meet.google.com/abc-123")));
+  EXPECT_EQ(GetContentsView()->children().size(), size_t(2));
+  auto* focus_manager = up_next_view()->GetFocusManager();
+
+  // First the event list item view should be focused.
+  PressTab();
+  auto* first_item = GetContentsView()->children()[0];
+  ASSERT_TRUE(first_item);
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+
+  up_next_view()->RefreshEvents();
+
+  // After refresh the events, the first event list item view should still be
+  // focused.
+  EXPECT_EQ(first_item, focus_manager->GetFocusedView());
+  EXPECT_STREQ("CalendarEventListItemViewJelly",
+               focus_manager->GetFocusedView()->GetClassName());
+}
+
 class CalendarUpNextViewAnimationTest : public CalendarUpNextViewTest {
  public:
   CalendarUpNextViewAnimationTest()
