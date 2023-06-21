@@ -16,10 +16,14 @@
 #import "components/segmentation_platform/embedder/default_model/device_switcher_result_dispatcher.h"
 #import "ios/chrome/browser/feature_engagement/tracker_factory.h"
 #import "ios/chrome/browser/iph_for_new_chrome_user/utils.h"
+#import "ios/chrome/browser/segmentation_platform/segmentation_platform_service_factory.h"
 #import "ios/chrome/browser/shared/model/browser_state/chrome_browser_state.h"
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/url/url_util.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer.h"
+#import "ios/chrome/browser/shared/model/web_state_list/web_state_list_observer_bridge.h"
+#import "ios/chrome/browser/shared/public/commands/toolbar_commands.h"
 #import "ios/chrome/browser/shared/public/features/system_flags.h"
 #import "ios/chrome/browser/shared/ui/util/named_guide.h"
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
@@ -64,6 +68,8 @@ const CGFloat kBubblePresentationDelay = 1;
 // dismissed, it remains allocated so that `userEngaged` remains accessible.
 @property(nonatomic, strong)
     BubbleViewControllerPresenter* openNewTabIPHBubblePresenter;
+@property(nonatomic, strong)
+    BubbleViewControllerPresenter* tabGridIPHBubblePresenter;
 @property(nonatomic, strong, readwrite)
     BubbleViewControllerPresenter* incognitoTabTipBubblePresenter;
 @property(nonatomic, strong)
@@ -182,6 +188,7 @@ const CGFloat kBubblePresentationDelay = 1;
 
 - (void)hideAllHelpBubbles {
   [self.openNewTabIPHBubblePresenter dismissAnimated:NO];
+  [self.tabGridIPHBubblePresenter dismissAnimated:NO];
   [self.incognitoTabTipBubblePresenter dismissAnimated:NO];
   [self.bottomToolbarTipBubblePresenter dismissAnimated:NO];
   [self.longPressToolbarTipBubblePresenter dismissAnimated:NO];
@@ -551,6 +558,53 @@ const CGFloat kBubblePresentationDelay = 1;
   self.openNewTabIPHBubblePresenter = presenter;
 }
 
+// Optionally presents a bubble associated with the tab grid iph. If the feature
+// engagement tracker determines it is valid to show the new tab tip, then it
+// initializes `tabGridIPHBubblePresenter` and presents the bubble. If it is
+// not valid to show the new tab tip, `tabGridIPHBubblePresenter` is set to
+// `nil` and no bubble is shown. This method requires that `self.browserState`
+// is not NULL.
+- (void)presentTabGridToolbarItemBubble {
+  if (!iph_for_new_chrome_user::IsUserEligible(
+          _deviceSwitcherResultDispatcher)) {
+    return;
+  }
+
+  if (![self canPresentBubble]) {
+    return;
+  }
+
+  // only present the IPH when tab count > 1.
+  if (self.webStateList->count() <= 1) {
+    return;
+  }
+
+  BubbleArrowDirection arrowDirection =
+      IsSplitToolbarMode(self.rootViewController) ? BubbleArrowDirectionDown
+                                                  : BubbleArrowDirectionUp;
+  NSString* text =
+      l10n_util::GetNSStringWithFixup(IDS_IOS_SEE_ALL_OPEN_TABS_IPH_TEXT);
+  CGPoint tabGridButtonAnchor = [self anchorPointToGuide:kTabSwitcherGuide
+                                               direction:arrowDirection];
+
+  // If the feature engagement tracker does not consider it valid to display
+  // the new tab tip, then end early to prevent the potential reassignment
+  // of the existing `tabGridIPHBubblePresenter` to nil.
+  BubbleViewControllerPresenter* presenter =
+      [self presentBubbleForFeature:feature_engagement::
+                                        kIPHiOSTabGridToolbarItemFeature
+                          direction:arrowDirection
+                          alignment:BubbleAlignmentTrailing
+                               text:text
+              voiceOverAnnouncement:nil
+                        anchorPoint:tabGridButtonAnchor];
+  if (!presenter) {
+    return;
+  }
+
+  self.tabGridIPHBubblePresenter = presenter;
+}
+
 // TODO(crbug.com/1448656): remove code.
 // Presents a bubble associated with the new incognito tab tip in-product help
 // promotion.
@@ -564,8 +618,8 @@ const CGFloat kBubblePresentationDelay = 1;
   NSString* text = l10n_util::GetNSStringWithFixup(
       IDS_IOS_NEW_INCOGNITO_TAB_IPH_PROMOTION_TEXT);
 
-  CGPoint toolsButtonAnchor =
-      [self anchorPointToGuide:kToolsMenuGuide direction:arrowDirection];
+  CGPoint toolsButtonAnchor = [self anchorPointToGuide:kToolsMenuGuide
+                                             direction:arrowDirection];
 
   // If the feature engagement tracker does not consider it valid to display
   // the incognito tab tip, then end early to prevent the potential reassignment
@@ -710,6 +764,12 @@ const CGFloat kBubblePresentationDelay = 1;
       ((transitionType & ui::PAGE_TRANSITION_FROM_ADDRESS_BAR) ||
        (transitionType & ui::PAGE_TRANSITION_FORWARD_BACK))) {
     [self presentNewTabToolbarItemBubble];
+  }
+}
+
+- (void)newTabWillLoadURL:(GURL)URL isUserInitiated:(BOOL)isUserInitiated {
+  if (isUserInitiated) {
+    [self presentTabGridToolbarItemBubble];
   }
 }
 @end
