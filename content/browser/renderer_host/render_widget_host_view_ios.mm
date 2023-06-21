@@ -588,8 +588,10 @@ RenderWidgetHostViewIOS::CollectSurfaceIdsForEviction() {
 }
 
 void RenderWidgetHostViewIOS::UpdateScreenInfo() {
-  browser_compositor_->UpdateSurfaceFromUIView(
-      gfx::Rect([ui_view_->view_ bounds]).size());
+  if (!IsTesting()) {
+    browser_compositor_->UpdateSurfaceFromUIView(
+        gfx::Rect([ui_view_->view_ bounds]).size());
+  }
   RenderWidgetHostViewBase::UpdateScreenInfo();
 }
 
