@@ -41,14 +41,7 @@ PasswordCredentialFillerImpl::PasswordCredentialFillerImpl(
       submission_readiness_(submission_readiness),
       trigger_submission_(CalculateTriggerSubmission(submission_readiness)) {}
 
-PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() {
-  CHECK(!IsReadyToFill()) << "If 'FillUsernameAndPassword' wasn't called, "
-                          << "make sure to call 'CleanUp'!";
-}
-
-bool PasswordCredentialFillerImpl::IsReadyToFill() {
-  return !!driver_;
-}
+PasswordCredentialFillerImpl::~PasswordCredentialFillerImpl() = default;
 
 void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     const std::u16string& username,
@@ -67,7 +60,6 @@ void PasswordCredentialFillerImpl::FillUsernameAndPassword(
     // all that for new launches, e.g. crbug.com/1393043.
     driver_->TriggerFormSubmission();
   }
-  driver_ = nullptr;
 }
 
 void PasswordCredentialFillerImpl::UpdateTriggerSubmission(bool new_value) {
@@ -88,9 +80,9 @@ const GURL& PasswordCredentialFillerImpl::GetFrameUrl() const {
   return driver_->GetLastCommittedURL();
 }
 
-void PasswordCredentialFillerImpl::CleanUp(ToShowVirtualKeyboard should_show) {
+void PasswordCredentialFillerImpl::Dismiss(ToShowVirtualKeyboard should_show) {
   // TODO(crbug/1434278): Avoid using KeyboardReplacingSurfaceClosed.
-  std::exchange(driver_, nullptr)->KeyboardReplacingSurfaceClosed(should_show);
+  driver_->KeyboardReplacingSurfaceClosed(should_show);
 }
 
 }  // namespace password_manager

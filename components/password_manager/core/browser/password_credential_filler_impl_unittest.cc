@@ -82,8 +82,6 @@ TEST_P(PasswordCredentialFillerTest, FillWithEmptyUsername) {
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
   filler.FillUsernameAndPassword(kEmptyUsername, kPassword);
-
-  ASSERT_FALSE(filler.IsReadyToFill());
 }
 
 TEST_P(PasswordCredentialFillerTest,
@@ -97,9 +95,6 @@ TEST_P(PasswordCredentialFillerTest,
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(1);
 
   filler.FillUsernameAndPassword(kUsername, kPassword);
-
-  // FillUsernameAndPassword can be called only once.
-  EXPECT_FALSE(filler.IsReadyToFill());
 }
 
 TEST_P(PasswordCredentialFillerTest,
@@ -113,25 +108,19 @@ TEST_P(PasswordCredentialFillerTest,
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
   filler.FillUsernameAndPassword(kUsername, kPassword);
-
-  // FillUsernameAndPassword can be called only once.
-  EXPECT_FALSE(filler.IsReadyToFill());
 }
 
-TEST_P(PasswordCredentialFillerTest, CleanUp) {
+TEST_P(PasswordCredentialFillerTest, Dismiss) {
   PasswordCredentialFillerImpl filler(driver().AsWeakPtr(), GetParam());
   EXPECT_CALL(driver(),
               KeyboardReplacingSurfaceClosed(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(driver(), TriggerFormSubmission).Times(0);
 
-  filler.CleanUp(ToShowVirtualKeyboard(false));
-
-  // FillUsernameAndPassword or CleanUp can be called only once.
-  EXPECT_FALSE(filler.IsReadyToFill());
+  filler.Dismiss(ToShowVirtualKeyboard(false));
 }
 
 INSTANTIATE_TEST_SUITE_P(
-    SubmissionReadinessVariation,
+    ,
     PasswordCredentialFillerTest,
     testing::Values(SubmissionReadinessState::kNoInformation,
                     SubmissionReadinessState::kError,

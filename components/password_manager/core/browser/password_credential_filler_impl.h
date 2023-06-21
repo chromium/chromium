@@ -22,8 +22,6 @@ class PasswordCredentialFillerImpl : public PasswordCredentialFiller {
       delete;
   ~PasswordCredentialFillerImpl() override;
 
-  bool IsReadyToFill() override;
-
   void FillUsernameAndPassword(const std::u16string& username,
                                const std::u16string& password) override;
 
@@ -35,11 +33,10 @@ class PasswordCredentialFillerImpl : public PasswordCredentialFiller {
 
   const GURL& GetFrameUrl() const override;
 
-  void CleanUp(ToShowVirtualKeyboard should_show) override;
+  void Dismiss(ToShowVirtualKeyboard should_show) override;
 
  private:
-  // Driver supplied by the client. Gets cleared when
-  // FillUsernameAndPassword() or CleanUp() gets called.
+  // Driver supplied by the client.
   base::WeakPtr<PasswordManagerDriver> driver_;
 
   // Readiness state supplied by the client, used to compute

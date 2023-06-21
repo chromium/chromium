@@ -27,7 +27,7 @@ bool CredManController::Show(
   if (!cred_man_delegate || !is_webauthn_form ||
       !webauthn::WebAuthnCredManDelegate::IsCredManEnabled() ||
       !cred_man_delegate->HasResults()) {
-    filler->CleanUp(PasswordManagerDriver::ToShowVirtualKeyboard(false));
+    filler->Dismiss(PasswordManagerDriver::ToShowVirtualKeyboard(false));
     return false;
   }
   filler_ = std::move(filler);
@@ -35,10 +35,10 @@ bool CredManController::Show(
   cred_man_delegate->SetRequestCompletionCallback(base::BindRepeating(
       [](base::WeakPtr<password_manager::PasswordCredentialFiller> filler,
          bool success) {
-        if (!filler || !filler->IsReadyToFill()) {
+        if (!filler) {
           return;
         }
-        filler->CleanUp(PasswordManagerDriver::ToShowVirtualKeyboard(!success));
+        filler->Dismiss(PasswordManagerDriver::ToShowVirtualKeyboard(!success));
       },
       filler_->AsWeakPtr()));
   cred_man_delegate->SetFillingCallback(

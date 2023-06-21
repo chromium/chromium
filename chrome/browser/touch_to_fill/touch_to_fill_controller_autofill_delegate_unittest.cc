@@ -96,7 +96,6 @@ struct MockTouchToFillView : TouchToFillView {
 
 struct MockPasswordCredentialFiller
     : public password_manager::PasswordCredentialFiller {
-  MOCK_METHOD(bool, IsReadyToFill, (), (override));
   MOCK_METHOD(void,
               FillUsernameAndPassword,
               (const std::u16string&, const std::u16string&),
@@ -112,7 +111,7 @@ struct MockPasswordCredentialFiller
               (),
               (const override));
   MOCK_METHOD(const GURL&, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, CleanUp, (ToShowVirtualKeyboard), (override));
+  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
 };
 
 struct MakeUiCredentialParams {
@@ -160,7 +159,6 @@ class TouchToFillControllerAutofillTest
     weak_filler_ = filler.get();
     ON_CALL(*filler, GetFrameUrl())
         .WillByDefault(ReturnRefOfCopy(GURL(kExampleCom)));
-    ON_CALL(*filler, IsReadyToFill()).WillByDefault(Return(true));
     return filler;
   }
 
@@ -658,7 +656,7 @@ TEST_F(TouchToFillControllerAutofillTest, Dismiss) {
           CreateMockFiller(),
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)));
 
-  EXPECT_CALL(*last_mock_filler(), CleanUp(ToShowVirtualKeyboard(true)));
+  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   auto entries = test_recorder().GetEntriesByName(UkmBuilder::kEntryName);
@@ -688,7 +686,7 @@ TEST_F(TouchToFillControllerAutofillTest, ManagePasswordsSelected) {
           CreateMockFiller(),
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)));
 
-  EXPECT_CALL(*last_mock_filler(), CleanUp(ToShowVirtualKeyboard(false)));
+  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(client(),
               NavigateToManagePasswordsPage(
                   password_manager::ManagePasswordsReferrer::kTouchToFill));
@@ -757,7 +755,7 @@ TEST_F(TouchToFillControllerAutofillTest, ShowWebAuthnCredential) {
 
   EXPECT_CALL(webauthn_credentials_delegate(),
               SelectPasskey(base::Base64Encode(credential.credential_id())));
-  EXPECT_CALL(*last_mock_filler(), CleanUp(ToShowVirtualKeyboard(false)));
+  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(false)));
   EXPECT_CALL(*last_mock_filler(), FillUsernameAndPassword(_, _)).Times(0);
   touch_to_fill_controller().OnPasskeyCredentialSelected(credentials[0]);
   histogram_tester().ExpectUniqueSample(
@@ -815,7 +813,7 @@ TEST_P(TouchToFillControllerAutofillTestWithSubmissionReadinessVariationTest,
           submission_readiness, CreateMockFiller(),
           TouchToFillControllerAutofillDelegate::ShowHybridOption(false)));
 
-  EXPECT_CALL(*last_mock_filler(), CleanUp(ToShowVirtualKeyboard(true)));
+  EXPECT_CALL(*last_mock_filler(), Dismiss(ToShowVirtualKeyboard(true)));
   touch_to_fill_controller().OnDismiss();
 
   uma_recorder.ExpectUniqueSample(

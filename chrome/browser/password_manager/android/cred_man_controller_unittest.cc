@@ -23,7 +23,6 @@ using webauthn::WebAuthnCredManDelegate;
 using ToShowVirtualKeyboard = PasswordManagerDriver::ToShowVirtualKeyboard;
 
 struct MockPasswordCredentialFiller : public PasswordCredentialFiller {
-  MOCK_METHOD(bool, IsReadyToFill, (), (override));
   MOCK_METHOD(void,
               FillUsernameAndPassword,
               (const std::u16string&, const std::u16string&),
@@ -39,7 +38,7 @@ struct MockPasswordCredentialFiller : public PasswordCredentialFiller {
               (),
               (const override));
   MOCK_METHOD(const GURL&, GetFrameUrl, (), (const override));
-  MOCK_METHOD(void, CleanUp, (ToShowVirtualKeyboard), (override));
+  MOCK_METHOD(void, Dismiss, (ToShowVirtualKeyboard), (override));
 };
 
 class CredManControllerTest : public testing::Test {
@@ -55,7 +54,6 @@ class CredManControllerTest : public testing::Test {
 
   std::unique_ptr<MockPasswordCredentialFiller> PrepareFiller() {
     auto filler = std::make_unique<MockPasswordCredentialFiller>();
-    ON_CALL(*filler, IsReadyToFill).WillByDefault(Return(true));
     last_filler_ = filler.get();
     return filler;
   }
@@ -80,7 +78,7 @@ class CredManControllerTest : public testing::Test {
 
 TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), CleanUp(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*is_webauthn_form=*/false));
@@ -88,7 +86,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfNonWebAuthnForm) {
 
 TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), CleanUp(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
   EXPECT_FALSE(controller().Show(web_authn_cred_man_delegate(),
                                  std::move(filler),
                                  /*is_webauthn_form=*/true));
@@ -97,7 +95,7 @@ TEST_F(CredManControllerTest, DoesNotShowIfFeatureDisabled) {
 TEST_F(CredManControllerTest, DoesNotShowIfNoResults) {
   base::test::ScopedFeatureList enable_feature(device::kWebAuthnAndroidCredMan);
   std::unique_ptr<MockPasswordCredentialFiller> filler = PrepareFiller();
-  EXPECT_CALL(last_filler(), CleanUp(ToShowVirtualKeyboard(false))).Times(1);
+  EXPECT_CALL(last_filler(), Dismiss(ToShowVirtualKeyboard(false))).Times(1);
 
   base::MockCallback<base::RepeatingCallback<void(bool)>>
       mock_full_assertion_request;
