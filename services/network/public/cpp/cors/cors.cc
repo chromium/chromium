@@ -132,6 +132,8 @@ const char kAccessControlRequestHeaders[] = "Access-Control-Request-Headers";
 const char kAccessControlRequestMethod[] = "Access-Control-Request-Method";
 const char kAccessControlRequestPrivateNetwork[] =
     "Access-Control-Request-Private-Network";
+const char kPrivateNetworkDeviceId[] = "Private-Network-Access-ID";
+const char kPrivateNetworkDeviceName[] = "Private-Network-Access-Name";
 
 }  // namespace header_names
 

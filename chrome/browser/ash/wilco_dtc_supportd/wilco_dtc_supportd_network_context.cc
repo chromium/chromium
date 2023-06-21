@@ -109,6 +109,16 @@ void WilcoDtcSupportdNetworkContextImpl::OnAuthRequired(
   auth_challenge_responder_remote->OnAuthCredentials(absl::nullopt);
 }
 
+void WilcoDtcSupportdNetworkContextImpl::
+    OnPrivateNetworkAccessPermissionRequired(
+        const GURL& url,
+        const net::IPAddress& ip_address,
+        const std::string& private_network_device_id,
+        const std::string& private_network_device_name,
+        OnPrivateNetworkAccessPermissionRequiredCallback callback) {
+  std::move(callback).Run(false);
+}
+
 void WilcoDtcSupportdNetworkContextImpl::OnClearSiteData(
     const GURL& url,
     const std::string& header_value,

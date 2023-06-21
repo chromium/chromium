@@ -51,6 +51,10 @@ COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestMethod[];
 COMPONENT_EXPORT(NETWORK_CPP)
 extern const char kAccessControlRequestPrivateNetwork[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrivateNetworkDeviceId[];
+COMPONENT_EXPORT(NETWORK_CPP)
+extern const char kPrivateNetworkDeviceName[];
 
 }  // namespace header_names
 

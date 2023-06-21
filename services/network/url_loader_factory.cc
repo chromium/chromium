@@ -85,8 +85,6 @@ URLLoaderFactory::URLLoaderFactory(
       cors_url_loader_factory_(cors_url_loader_factory),
       cookie_observer_(std::move(params_->cookie_observer)),
       trust_token_observer_(std::move(params_->trust_token_observer)),
-      url_loader_network_service_observer_(
-          std::move(params_->url_loader_network_observer)),
       devtools_observer_(std::move(params_->devtools_observer)) {
   DCHECK(context);
   DCHECK_NE(mojom::kInvalidProcessId, params_->process_id);
@@ -407,8 +405,9 @@ mojom::TrustTokenAccessObserver* URLLoaderFactory::GetTrustTokenAccessObserver()
 
 mojom::URLLoaderNetworkServiceObserver*
 URLLoaderFactory::GetURLLoaderNetworkServiceObserver() const {
-  if (url_loader_network_service_observer_)
-    return url_loader_network_service_observer_.get();
+  if (cors_url_loader_factory_->url_loader_network_service_observer()) {
+    return cors_url_loader_factory_->url_loader_network_service_observer();
+  }
   if (!context_->network_service())
     return nullptr;
   return context_->network_service()

@@ -11,28 +11,20 @@
 #include "base/observer_list_types.h"
 #include "base/scoped_observation.h"
 #include "chrome/browser/private_network_access/chrome_private_network_device_chooser.h"
+#include "content/public/browser/private_network_device_delegate.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/blink/public/mojom/private_network_device/private_network_device.mojom.h"
 
-namespace url {
-class Origin;
-}
-
 namespace content {
-class BrowserContext;
 class RenderFrameHost;
 }  // namespace content
 
 // Interface to support Private Network permission APIs.
-class ChromePrivateNetworkDeviceDelegate {
+class ChromePrivateNetworkDeviceDelegate
+    : public content::PrivateNetworkDeviceDelegate {
  public:
-  class Observer : public base::CheckedObserver {
-   public:
-    virtual void OnDeviceManagerConnectionError() = 0;
-    virtual void OnPermissionRevoked(const url::Origin& origin) = 0;
-  };
-
   ChromePrivateNetworkDeviceDelegate();
   ChromePrivateNetworkDeviceDelegate(ChromePrivateNetworkDeviceDelegate&) =
       delete;
@@ -42,26 +34,29 @@ class ChromePrivateNetworkDeviceDelegate {
       ChromePrivateNetworkDeviceDelegate&) = delete;
   ChromePrivateNetworkDeviceDelegate& operator=(
       ChromePrivateNetworkDeviceDelegate&&) = delete;
-  ~ChromePrivateNetworkDeviceDelegate();
+  ~ChromePrivateNetworkDeviceDelegate() override;
 
-  // Shows a chooser for the user. `callback` will be run when the prompt is
-  // closed. Deleting the returned object will cancel the prompt.
-  std::unique_ptr<ChromePrivateNetworkDeviceChooser> RunChooser(
+  // Request permission for Private Network Device.
+  // |callback| will be run when the prompt is closed.
+  void RequestPermission(
       content::RenderFrameHost& frame,
-      std::unique_ptr<blink::mojom::PrivateNetworkDevice> device,
-      ChromePrivateNetworkDeviceChooser::EventHandler event_handler);
-
-  // Functions to manage the set of Observer instances registered to this
-  // object.
-  void AddObserver(content::BrowserContext* browser_context,
-                   Observer* observer);
-  void RemoveObserver(content::BrowserContext* browser_context,
-                      Observer* observer);
+      blink::mojom::PrivateNetworkDevicePtr device,
+      network::mojom::URLLoaderNetworkServiceObserver::
+          OnPrivateNetworkAccessPermissionRequiredCallback callback) override;
 
  private:
-  base::ObserverList<ChromePrivateNetworkDeviceDelegate::Observer,
-                     /*check_empty=*/true>
-      observer_list_;
+  void HandlePrivateNetworkDeviceChooserResult(
+      network::mojom::URLLoaderNetworkServiceObserver::
+          OnPrivateNetworkAccessPermissionRequiredCallback callback,
+      bool permission_granted);
+
+  // The currently-displayed private network device chooser prompt, if any.
+  //
+  // If a new permission request comes while a chooser was already being
+  // displayed, the old one is canceled when we reassign this field.
+  // TODO(https://crbug.com/1455117): Handle multiple permission checks
+  // better, perhaps by serializing them.
+  std::unique_ptr<ChromePrivateNetworkDeviceChooser> chooser_;
 };
 
 #endif  // CHROME_BROWSER_PRIVATE_NETWORK_DEVICE_DELEGATE_H_

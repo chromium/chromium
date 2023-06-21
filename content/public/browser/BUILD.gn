@@ -319,6 +319,7 @@ source_set("browser_sources") {
     "presentation_service_delegate.h",
     "private_aggregation_data_model.cc",
     "private_aggregation_data_model.h",
+    "private_network_device_delegate.h",
     "process_visibility_util.h",
     "provision_fetcher_factory.h",
     "provision_fetcher_impl.cc",

@@ -10,35 +10,36 @@
 #include "chrome/browser/private_network_access/chrome_private_network_device_chooser_desktop.h"
 #include "chrome/browser/private_network_access/private_network_device_chooser_controller.h"
 #include "content/public/browser/render_frame_host.h"
+#include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 
 ChromePrivateNetworkDeviceDelegate::ChromePrivateNetworkDeviceDelegate() =
     default;
 ChromePrivateNetworkDeviceDelegate::~ChromePrivateNetworkDeviceDelegate() =
     default;
 
-std::unique_ptr<ChromePrivateNetworkDeviceChooser>
-ChromePrivateNetworkDeviceDelegate::RunChooser(
+void ChromePrivateNetworkDeviceDelegate::RequestPermission(
     content::RenderFrameHost& frame,
-    std::unique_ptr<blink::mojom::PrivateNetworkDevice> device,
-    ChromePrivateNetworkDeviceChooser::EventHandler event_handler) {
-  auto controller = std::make_unique<PrivateNetworkDeviceChooserController>(
-      &frame, std::move(device), std::move(event_handler));
+    blink::mojom::PrivateNetworkDevicePtr device,
+    network::mojom::URLLoaderNetworkServiceObserver::
+        OnPrivateNetworkAccessPermissionRequiredCallback callback) {
 #if BUILDFLAG(IS_ANDROID)
-  return nullptr;
+  std::move(callback).Run(false);
 #else
-  return ChromePrivateNetworkDeviceChooserDesktop::Create(
+  auto controller = std::make_unique<PrivateNetworkDeviceChooserController>(
+      &frame, std::move(device),
+      base::BindOnce(&ChromePrivateNetworkDeviceDelegate::
+                         HandlePrivateNetworkDeviceChooserResult,
+                     base::Unretained(this), std::move(callback)));
+  chooser_ = ChromePrivateNetworkDeviceChooserDesktop::Create(
       &frame, std::move(controller));
 #endif  // BUILDFLAG(IS_ANDROID)
 }
 
-void ChromePrivateNetworkDeviceDelegate::AddObserver(
-    content::BrowserContext* browser_context,
-    Observer* observer) {
-  observer_list_.AddObserver(observer);
-}
-
-void ChromePrivateNetworkDeviceDelegate::RemoveObserver(
-    content::BrowserContext* browser_context,
-    Observer* observer) {
-  observer_list_.RemoveObserver(observer);
+void ChromePrivateNetworkDeviceDelegate::
+    HandlePrivateNetworkDeviceChooserResult(
+        network::mojom::URLLoaderNetworkServiceObserver::
+            OnPrivateNetworkAccessPermissionRequiredCallback callback,
+        bool permission_granted) {
+  chooser_ = nullptr;
+  std::move(callback).Run(permission_granted);
 }

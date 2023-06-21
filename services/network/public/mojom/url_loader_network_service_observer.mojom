@@ -8,6 +8,7 @@ import "mojo/public/mojom/base/string16.mojom";
 import "mojo/public/mojom/base/time.mojom";
 import "mojo/public/mojom/base/unguessable_token.mojom";
 import "services/network/public/mojom/cookie_partition_key.mojom";
+import "services/network/public/mojom/ip_address.mojom";
 import "services/network/public/mojom/network_param.mojom";
 import "services/network/public/mojom/optional_bool.mojom";
 import "url/mojom/origin.mojom";
@@ -151,6 +152,23 @@ interface URLLoaderNetworkServiceObserver {
       AuthChallengeInfo auth_info,
       HttpResponseHeaders? head_headers,
       pending_remote<AuthChallengeResponder> auth_challenge_responder);
+
+  // Asks the URL loader observer if the caller has permission to access a
+  // device on the private network.
+  //
+  // `url` is the request's URL.
+  // `ip_address` is the remote IP address from which headers were fetched.
+  // `private_network_device_id` and `private_network_device_name` are the
+  // values of the `Private-Network-Access-ID` and `Private-Network-Access-Name`
+  // headers.
+  //
+  // `permission_granted` is a bool specifying whether the user granted private
+  // network access permission.
+  OnPrivateNetworkAccessPermissionRequired(
+      url.mojom.Url url,
+      network.mojom.IPAddress ip_address,
+      string private_network_device_id,
+      string private_network_device_name) => (bool permission_granted);
 
   // Called when the Clear-Site-Data header has been received. The callback
   // should be run after the data is deleted.

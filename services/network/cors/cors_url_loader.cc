@@ -271,6 +271,8 @@ CorsURLLoader::CorsURLLoader(
     const net::IsolationInfo& isolation_info,
     mojo::PendingRemote<mojom::DevToolsObserver> devtools_observer,
     const mojom::ClientSecurityState* factory_client_security_state,
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver>
+        url_loader_network_service_observer,
     const CrossOriginEmbedderPolicy& cross_origin_embedder_policy,
     scoped_refptr<SharedDictionaryStorage> shared_dictionary_storage,
     NetworkContext* context)
@@ -290,6 +292,8 @@ CorsURLLoader::CorsURLLoader(
       has_factory_override_(has_factory_override),
       isolation_info_(isolation_info),
       factory_client_security_state_(factory_client_security_state),
+      url_loader_network_service_observer_(
+          std::move(url_loader_network_service_observer)),
       cross_origin_embedder_policy_(cross_origin_embedder_policy),
       devtools_observer_(std::move(devtools_observer)),
       weak_devtools_observer_factory_(&devtools_observer_),
@@ -793,7 +797,8 @@ void CorsURLLoader::StartRequest() {
       net::NetworkTrafficAnnotationTag(traffic_annotation_),
       network_loader_factory_, isolation_info_, CloneClientSecurityState(),
       weak_devtools_observer_factory_.GetWeakPtr(), net_log_,
-      context_->acam_preflight_spec_conformant());
+      context_->acam_preflight_spec_conformant(),
+      std::move(url_loader_network_service_observer_));
 }
 
 void CorsURLLoader::ReportCorsErrorToDevTools(const CorsErrorStatus& status,

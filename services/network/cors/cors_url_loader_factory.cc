@@ -203,6 +203,8 @@ CorsURLLoaderFactory::CorsURLLoaderFactory(
               : CrossOriginEmbedderPolicy()),
       coep_reporter_(std::move(params->coep_reporter)),
       client_security_state_(params->client_security_state.Clone()),
+      url_loader_network_service_observer_(
+          std::move(params->url_loader_network_observer)),
       origin_access_list_(origin_access_list) {
   DCHECK(context_);
   DCHECK(origin_access_list_);
@@ -258,6 +260,17 @@ CorsURLLoaderFactory::~CorsURLLoaderFactory() {
   while (!cors_url_loaders_.empty()) {
     cors_url_loaders_.erase(cors_url_loaders_.begin());
   }
+}
+
+// This function is only used as an export for URLLoaderNetworkServiceObserver
+// gained from URLLoaderFactoryParams, which might be invalid in a few cases.
+// Please call URLLoaderFactory::GetURLLoaderNetworkServiceObserver() instead.
+mojom::URLLoaderNetworkServiceObserver*
+CorsURLLoaderFactory::url_loader_network_service_observer() const {
+  if (url_loader_network_service_observer_) {
+    return url_loader_network_service_observer_.get();
+  }
+  return nullptr;
 }
 
 void CorsURLLoaderFactory::OnURLLoaderCreated(
@@ -340,6 +353,11 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
     if (isolation_info)
       isolation_info_ptr = &isolation_info.value();
 
+    mojo::PendingRemote<mojom::URLLoaderNetworkServiceObserver> observer_remote;
+    if (url_loader_network_service_observer_.is_bound()) {
+      url_loader_network_service_observer_->Clone(
+          observer_remote.InitWithNewPipeAndPassReceiver());
+    }
     auto loader = std::make_unique<CorsURLLoader>(
         std::move(receiver), process_id_, request_id, options,
         base::BindOnce(&CorsURLLoaderFactory::DestroyCorsURLLoader,
@@ -352,7 +370,8 @@ void CorsURLLoaderFactory::CreateLoaderAndStart(
         origin_access_list_, GetAllowAnyCorsExemptHeaderForBrowser(),
         HasFactoryOverride(!!factory_override_), *isolation_info_ptr,
         std::move(devtools_observer), client_security_state_.get(),
-        cross_origin_embedder_policy_, shared_dictionary_storage_, context_);
+        std::move(observer_remote), cross_origin_embedder_policy_,
+        shared_dictionary_storage_, context_);
     auto* raw_loader = loader.get();
     OnCorsURLLoaderCreated(std::move(loader));
     raw_loader->Start();
@@ -649,9 +668,25 @@ bool CorsURLLoaderFactory::IsValidRequest(const ResourceRequest& request,
       return false;
     }
 
-    if (request.target_ip_address_space != mojom::IPAddressSpace::kUnknown) {
+    if (base::FeatureList::IsEnabled(
+            features::kPrivateNetworkAccessPermissionPrompt)) {
+      if (request.target_ip_address_space == mojom::IPAddressSpace::kPublic) {
+        mojo::ReportBadMessage(
+            "CorsURLLoaderFactory: target_ip_address_space "
+            "is set to public.");
+        return false;
+      }
+
+      // TODO(https://crbug.com/1455395):
+      // * `target_ip_address_space` should be `kLoopback` or `kLocal` when the
+      // request is bypassing mixed content.
+      // * `target_ip_address_space` should be `kUnknown` otherwise.
+      // * Anything else is forbidden.
+    } else if (request.target_ip_address_space !=
+               mojom::IPAddressSpace::kUnknown) {
       mojo::ReportBadMessage(
-          "CorsURLLoaderFactory: target_ip_address_space field is set");
+          "CorsURLLoaderFactory: target_ip_address_space is "
+          "set.");
       return false;
     }
   }

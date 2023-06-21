@@ -238,7 +238,8 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*client_security_state=*/nullptr,
       /*devtools_observer=*/
-      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true);
+      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
+      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>());
 
   preflight_controller.PerformPreflightCheck(
       base::BindOnce([](int, absl::optional<CorsErrorStatus>, bool) {}),
@@ -248,7 +249,8 @@ TEST(PreflightControllerOptionsTest, CheckOptions) {
       TRAFFIC_ANNOTATION_FOR_TESTS, &url_loader_factory, net::IsolationInfo(),
       /*client_security_state=*/nullptr,
       /*devtools_observer=*/
-      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true);
+      base::WeakPtr<mojo::Remote<mojom::DevToolsObserver>>(), net_log, true,
+      mojo::Remote<mojom::URLLoaderNetworkServiceObserver>());
 
   ASSERT_EQ(2, url_loader_factory.NumPending());
   EXPECT_EQ(mojom::kURLLoadOptionAsCorsPreflight,
@@ -476,7 +478,7 @@ class PreflightControllerTest : public testing::Test {
         weak_devtools_observer_factory.GetWeakPtr(),
         net::NetLogWithSource::Make(net::NetLog::Get(),
                                     net::NetLogSourceType::URL_REQUEST),
-        true);
+        true, mojo::Remote<mojom::URLLoaderNetworkServiceObserver>());
     run_loop_->Run();
   }
 
@@ -1049,6 +1051,9 @@ TEST_F(PreflightControllerTest, CheckPreflightAccessDetectsErrorStatus) {
   EXPECT_EQ(mojom::CorsError::kPreflightInvalidStatus,
             result0.error().cors_error);
 }
+
+// TODO(https://crbug.com/1455123): Add test for private network access
+// permission.
 
 }  // namespace
 

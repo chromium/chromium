@@ -22,7 +22,9 @@
     "prefix": "lna-permission",
     "platforms": ["Linux", "Mac", "Win"],
     "bases": ["external/wpt/fetch/local-network-access"],
-    "args": ["--enable-features=PrivateNetworkAccessPermissionPrompt"],
+    "args": [
+      "--enable-features=PrivateNetworkAccessPermissionPrompt",
+      "--enable-blink-features=PrivateNetworkAccessPermissionPrompt"],
     "expires": "Jan 1, 2024"
   },
   {
