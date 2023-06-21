@@ -19,7 +19,6 @@
 #include "third_party/blink/renderer/core/streams/writable_stream_default_writer.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame.h"
 #include "third_party/blink/renderer/modules/peerconnection/rtc_encoded_audio_frame_delegate.h"
-#include "third_party/blink/renderer/modules/peerconnection/testing/mock_transformable_audio_frame.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/peerconnection/rtc_encoded_audio_stream_transformer.h"
 #include "third_party/blink/renderer/platform/testing/testing_platform_support.h"
@@ -27,6 +26,7 @@
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 #include "third_party/webrtc/api/frame_transformer_interface.h"
 #include "third_party/webrtc/api/scoped_refptr.h"
+#include "third_party/webrtc/api/test/mock_transformable_audio_frame.h"
 #include "third_party/webrtc/rtc_base/ref_counted_object.h"
 
 using testing::_;
@@ -94,7 +94,8 @@ class RTCEncodedAudioUnderlyingSinkTest : public testing::Test {
       ScriptState* script_state,
       webrtc::TransformableFrameInterface::Direction direction =
           webrtc::TransformableFrameInterface::Direction::kSender) {
-    auto mock_frame = std::make_unique<NiceMock<MockTransformableAudioFrame>>();
+    auto mock_frame =
+        std::make_unique<NiceMock<webrtc::MockTransformableAudioFrame>>();
     ON_CALL(*mock_frame.get(), GetDirection).WillByDefault(Return(direction));
     webrtc::RTPHeader header;
     ON_CALL(*mock_frame.get(), GetHeader).WillByDefault(ReturnRef(header));

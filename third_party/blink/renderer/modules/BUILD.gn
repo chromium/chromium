@@ -231,7 +231,6 @@ source_set("modules_testing") {
     "peerconnection/testing/mock_peer_connection_interface.h",
     "peerconnection/testing/mock_rtp_receiver.h",
     "peerconnection/testing/mock_rtp_sender.h",
-    "peerconnection/testing/mock_transformable_audio_frame.h",
     "permissions/testing/internals_permission.cc",
     "permissions/testing/internals_permission.h",
     "service_worker/testing/internals_service_worker.cc",
