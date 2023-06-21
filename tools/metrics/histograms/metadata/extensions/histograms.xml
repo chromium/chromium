@@ -150,6 +150,9 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Extensions.AlarmManager.AlarmsLoadedCount" units="alarms"
     expires_after="2023-12-01">
+  <obsolete>
+    Code removed 2023/06.
+  </obsolete>
   <owner>dbertoni@chromium.org</owner>
   <owner>extensions-core@chromium.org</owner>
   <summary>

@@ -16,7 +16,7 @@
 #include "base/json/values_util.h"
 #include "base/lazy_instance.h"
 #include "base/memory/raw_ptr.h"
-#include "base/metrics/histogram_functions.h"
+#include "base/numerics/safe_conversions.h"
 #include "base/time/clock.h"
 #include "base/time/default_clock.h"
 #include "base/time/time.h"
@@ -75,7 +75,11 @@ AlarmManager::AlarmList AlarmsFromValue(const std::string extension_id,
                                         bool is_unpacked,
                                         const base::Value::List& list) {
   AlarmManager::AlarmList alarms;
-  for (const base::Value& alarm_value : list) {
+  const int max_to_create = std::min(base::saturated_cast<int>(list.size()),
+                                     AlarmManager::kMaxAlarmsPerExtension);
+
+  for (int i = 0; i < max_to_create; ++i) {
+    const base::Value& alarm_value = list[i];
     Alarm alarm;
     if (alarm_value.is_dict() &&
         alarms::Alarm::Populate(alarm_value.GetDict(), *alarm.js_alarm)) {
@@ -124,7 +128,11 @@ AlarmManager::AlarmManager(content::BrowserContext* context)
     storage->RegisterKey(kRegisteredAlarms);
 }
 
-AlarmManager::~AlarmManager() {
+AlarmManager::~AlarmManager() = default;
+
+int AlarmManager::GetCountForExtension(const ExtensionId& extension_id) const {
+  auto it = alarms_.find(extension_id);
+  return it == alarms_.end() ? 0 : it->second.size();
 }
 
 void AlarmManager::AddAlarm(const std::string& extension_id,
@@ -337,9 +345,6 @@ void AlarmManager::ReadFromStorage(const std::string& extension_id,
         AlarmsFromValue(extension_id, is_unpacked, value->GetList());
     for (auto& alarm : alarm_states)
       AddAlarmImpl(extension_id, std::move(alarm));
-
-    base::UmaHistogramCounts1000("Extensions.AlarmManager.AlarmsLoadedCount",
-                                 alarm_states.size());
   }
 
   ReadyQueue& extension_ready_queue = ready_actions_[extension_id];

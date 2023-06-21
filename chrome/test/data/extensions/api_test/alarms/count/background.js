@@ -4,7 +4,7 @@
 
 // Create alarms that won't have time to run.
 const createParams = {delayInMinutes: 60.0, periodInMinutes: 60};
-const maxAlarms = 100;
+const maxAlarms = 500;
 
 chrome.test.runTests([
   function hasNoAlarms() {
@@ -16,12 +16,21 @@ chrome.test.runTests([
     });
   },
 
-  async function setAlarms() {
+  async function setTooManyAlarms() {
+    // Create the maximum allowed number of alarms.
     for (let i = 0; i < maxAlarms; ++i) {
       await new Promise((resolve) => {
-        chrome.alarms.create('alarm' + i, createParams, resolve);
+        chrome.alarms.create('alarm' + i, createParams, () => {
+          chrome.test.assertNoLastError();
+          resolve();
+        });
       });
     }
-    chrome.test.succeed();
+    // Try to create one more over the limit.
+    chrome.alarms.create('alarm' + maxAlarms, createParams, () => {
+      chrome.test.assertLastError(
+          'An extension cannot have more than 500 active alarms.');
+      chrome.test.succeed();
+    });
   },
 ]);
