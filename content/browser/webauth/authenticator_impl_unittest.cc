@@ -1518,6 +1518,14 @@ TEST_F(AuthenticatorImplTest, GetAssertionResponseWithAttestedCredentialData) {
       AuthenticatorStatus::NOT_ALLOWED_ERROR);
 }
 
+TEST_F(AuthenticatorImplTest, GPMPasskeys_IsConditionalMediationAvailable) {
+  // Conditional mediation should always be available if gpm passkeys are
+  // enabled.
+  base::test::ScopedFeatureList scoped_feature_list{
+      device::kWebAuthnListSyncedPasskeys};
+  ASSERT_TRUE(AuthenticatorIsConditionalMediationAvailable());
+}
+
 #if BUILDFLAG(IS_WIN)
 TEST_F(AuthenticatorImplTest, IsUVPAA) {
   virtual_device_factory_->set_discover_win_webauthn_api_authenticator(true);
@@ -7179,10 +7187,9 @@ class ResidentKeyTestAuthenticatorRequestDelegate
       EXPECT_EQ(info.has_platform_authenticator_credential,
                 device::FidoRequestHandlerBase::RecognizedCredential::
                     kHasRecognizedCredential);
-      EXPECT_TRUE(
-          base::Contains(info.recognized_platform_authenticator_credentials,
-                         *config_.preselected_credential_id,
-                         &device::DiscoverableCredentialMetadata::cred_id));
+      EXPECT_TRUE(base::Contains(
+          info.recognized_credentials, *config_.preselected_credential_id,
+          &device::DiscoverableCredentialMetadata::cred_id));
       std::move(account_preselected_callback_)
           .Run(*config_.preselected_credential_id);
       request_callback_.Run(*config_.preselected_authenticator_id);
@@ -9104,7 +9111,7 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
                   tai) {
             tai_seen = true;
             CHECK_EQ(tai.has_icloud_keychain, feature_enabled);
-            CHECK_EQ(tai.recognized_platform_authenticator_credentials.size(),
+            CHECK_EQ(tai.recognized_credentials.size(),
                      feature_enabled ? 1u : 0u);
             CHECK_EQ(tai.has_icloud_keychain_credential,
                      feature_enabled
@@ -9114,9 +9121,7 @@ TEST_F(ICloudKeychainAuthenticatorImplTest, Discovery) {
                                RecognizedCredential::kNoRecognizedCredential);
 
             if (feature_enabled) {
-              CHECK_EQ(tai.recognized_platform_authenticator_credentials[0]
-                           .user.name.value(),
-                       "name");
+              CHECK_EQ(tai.recognized_credentials[0].user.name.value(), "name");
             }
           });
 

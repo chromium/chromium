@@ -216,6 +216,7 @@ class ChromeAuthenticatorRequestDelegate
   // "leaks" to be reported.
   void SetPassEmptyUsbDeviceManagerForTesting(bool value);
 
+ private:
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
                            TestTransportPrefType);
   FRIEND_TEST_ALL_PREFIXES(ChromeAuthenticatorRequestDelegateTest,
@@ -236,6 +237,11 @@ class ChromeAuthenticatorRequestDelegate
 
   void OnInvalidatedCablePairing(size_t failed_contact_index);
   void OnCableEvent(device::cablev2::Event event);
+
+  // Adds GPM passkeys matching |rp_id| to |passkeys|.
+  void GetPhoneContactableGpmPasskeysForRpId(
+      const std::string& rp_id,
+      std::vector<device::DiscoverableCredentialMetadata>* passkeys);
 
   const content::GlobalRenderFrameHostId render_frame_host_id_;
   const std::unique_ptr<AuthenticatorRequestDialogModel> dialog_model_;
@@ -271,7 +277,10 @@ class ChromeAuthenticatorRequestDelegate
   // don't show errors on the desktop too.
   bool cable_device_ready_ = false;
 
- private:
+  // can_use_synced_phone_passkeys_ is true if there is a phone pairing
+  // available that can service requests for synced GPM passkeys.
+  bool can_use_synced_phone_passkeys_ = false;
+
   base::WeakPtrFactory<ChromeAuthenticatorRequestDelegate> weak_ptr_factory_{
       this};
 };

@@ -93,12 +93,11 @@ class COMPONENT_EXPORT(DEVICE_FIDO) FidoRequestHandlerBase
     RecognizedCredential has_icloud_keychain_credential =
         RecognizedCredential::kNoRecognizedCredential;
 
-    // The set of recognized platform credential user entities that can fulfill
-    // a GetAssertion request. Not all platform authenticators report this, so
-    // the set might be empty even if
-    // |has_platform_authenticator_credential| is |kHasRecognizedCredential|.
-    std::vector<DiscoverableCredentialMetadata>
-        recognized_platform_authenticator_credentials;
+    // The set of recognized credential user entities that can fulfill a
+    // GetAssertion request. Not all authenticators report this, so the set
+    // might be empty even if |has_platform_authenticator_credential| is
+    // |kHasRecognizedCredential|.
+    std::vector<DiscoverableCredentialMetadata> recognized_credentials;
 
     bool is_ble_powered = false;
     bool can_power_on_ble_adapter = false;

@@ -213,9 +213,16 @@ class AuthenticatorRequestDialogModel {
 
   // PairedPhone represents a paired caBLEv2 device.
   struct PairedPhone {
+    // Indicates the source of the pairing information.
+    enum class PairingSource {
+      kQR,
+      kSyncDeviceInfo,
+    };
+
     PairedPhone() = delete;
     PairedPhone(const PairedPhone&);
     PairedPhone(
+        PairingSource paired_source,
         const std::string& name,
         size_t contact_id,
         const std::array<uint8_t, device::kP256X962Length> public_key_x962);
@@ -225,6 +232,10 @@ class AuthenticatorRequestDialogModel {
 
     static bool CompareByName(const PairedPhone& a, const PairedPhone& b);
 
+    // pairing_source indicates the source of this pairing. Pairings from sync
+    // device info also sync their passkey metadata to Chrome, so they should be
+    // the ones dispatched to when preselecting one such credential.
+    PairingSource pairing_source;
     // name is the human-friendly name of the phone. It may be unreasonably
     // long, however, and should be elided to fit within UIs.
     std::string name;
@@ -687,6 +698,10 @@ class AuthenticatorRequestDialogModel {
 
   void StartICloudKeychain(size_t mechanism_index);
 
+  // Contacts the "priority" paired phone from sync. At least one sync phone
+  // must be available to call this.
+  void ContactPrioritySyncedPhone();
+
   // Contacts a paired phone. The phone is specified by name.
   void ContactPhone(const std::string& name, size_t mechanism_index);
   void ContactPhoneAfterOffTheRecordInterstitial(std::string name);
@@ -697,6 +712,10 @@ class AuthenticatorRequestDialogModel {
   void DispatchRequestAsync(AuthenticatorReference* authenticator);
 
   void ContactNextPhoneByName(const std::string& name);
+
+  // Returns a phone that has been paired through Chrome Sync, or absl::nullopt
+  // if there isn't one.
+  absl::optional<PairedPhone> GetPrioritySyncedPhone();
 
   // PopulateMechanisms fills in |mechanisms_|.
   void PopulateMechanisms();

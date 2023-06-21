@@ -61,6 +61,7 @@ class AuthenticatorDialogTest : public DialogBrowserTest {
     };
 
     AuthenticatorRequestDialogModel::PairedPhone phone(
+        AuthenticatorRequestDialogModel::PairedPhone::PairingSource::kQR,
         "Elisa's Pixel 6 Pro", 0,
         std::array<uint8_t, device::kP256X962Length>{0});
 

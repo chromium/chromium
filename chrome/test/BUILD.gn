@@ -6454,6 +6454,7 @@ test("unit_tests") {
     "//components/variations/service:service",
     "//components/vector_icons",
     "//components/version_info:generate_version_info",
+    "//components/webauthn/core/browser:browser",
     "//components/webrtc",
     "//content/public/app",
     "//content/test:test_support",

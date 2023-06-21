@@ -38,6 +38,7 @@
 #include "device/fido/fido_types.h"
 #include "device/fido/pin.h"
 #include "device/fido/public_key_credential_user_entity.h"
+#include "third_party/abseil-cpp/absl/types/variant.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/gfx/paint_vector_icon.h"
 #include "ui/gfx/text_elider.h"
@@ -180,9 +181,11 @@ AuthenticatorRequestDialogModel::Mechanism::Mechanism(Mechanism&&) = default;
 AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(const PairedPhone&) =
     default;
 AuthenticatorRequestDialogModel::PairedPhone::PairedPhone(
+    PairingSource pairing_source,
     const std::string& name,
     size_t contact_id,
     const std::array<uint8_t, device::kP256X962Length> public_key_x962) {
+  this->pairing_source = pairing_source;
   this->name = name;
   this->contact_id = contact_id;
   this->public_key_x962 = public_key_x962;
@@ -403,21 +406,18 @@ void AuthenticatorRequestDialogModel::StartPlatformAuthenticatorFlow() {
 
     // If the platform authenticator reports known credentials, show them in the
     // UI.
-    if (!transport_availability_.recognized_platform_authenticator_credentials
-             .empty()) {
+    if (!transport_availability_.recognized_credentials.empty()) {
       if (transport_availability_.has_empty_allow_list) {
         // For discoverable credential requests, show an account picker.
         ephemeral_state_.creds_ =
-            transport_availability_
-                .recognized_platform_authenticator_credentials;
+            transport_availability_.recognized_credentials;
         SetCurrentStep(ephemeral_state_.creds_.size() == 1
                            ? Step::kPreSelectSingleAccount
                            : Step::kPreSelectAccount);
       } else {
         // For requests with an allow list, pre-select a random credential.
         ephemeral_state_.creds_ = {
-            transport_availability_
-                .recognized_platform_authenticator_credentials.front()};
+            transport_availability_.recognized_credentials.front()};
 #if BUILDFLAG(IS_MAC)
         if (base::FeatureList::IsEnabled(
                 device::kWebAuthnSkipSingleAccountMacOS) &&
@@ -767,7 +767,11 @@ void AuthenticatorRequestDialogModel::OnAccountPreselectedIndex(size_t index) {
   DCHECK(account_preselected_callback_);
   account_preselected_callback_.Run(cred.cred_id);
   ephemeral_state_.creds_.clear();
-  HideDialogAndDispatchToPlatformAuthenticator(source);
+  if (source == device::AuthenticatorType::kPhone) {
+    ContactPrioritySyncedPhone();
+  } else {
+    HideDialogAndDispatchToPlatformAuthenticator(source);
+  }
 }
 
 void AuthenticatorRequestDialogModel::SetSelectedAuthenticatorForTesting(
@@ -1028,6 +1032,19 @@ void AuthenticatorRequestDialogModel::StartICloudKeychain(
       device::AuthenticatorType::kICloudKeychain);
 }
 
+void AuthenticatorRequestDialogModel::ContactPrioritySyncedPhone() {
+  PairedPhone phone = *GetPrioritySyncedPhone();
+  const auto phone_mechanism_it =
+      base::ranges::find_if(mechanisms_, [&phone](const auto& mechanism) {
+        return absl::holds_alternative<Mechanism::Phone>(mechanism.type) &&
+               absl::get<Mechanism::Phone>(mechanism.type).value() ==
+                   phone.name;
+      });
+  CHECK(phone_mechanism_it != mechanisms_.end());
+  ContactPhone(phone.name,
+               std::distance(mechanisms_.begin(), phone_mechanism_it));
+}
+
 void AuthenticatorRequestDialogModel::ContactPhone(const std::string& name,
                                                    size_t mechanism_index) {
   current_mechanism_ = mechanism_index;
@@ -1081,8 +1098,7 @@ void AuthenticatorRequestDialogModel::ContactPhoneAfterBleIsPowered(
 }
 
 void AuthenticatorRequestDialogModel::StartConditionalMediationRequest() {
-  ephemeral_state_.creds_ =
-      transport_availability_.recognized_platform_authenticator_credentials;
+  ephemeral_state_.creds_ = transport_availability_.recognized_credentials;
 
   auto* render_frame_host = content::RenderFrameHost::FromID(frame_host_id_);
   auto* web_contents = GetWebContents();
@@ -1147,6 +1163,17 @@ void AuthenticatorRequestDialogModel::ContactNextPhoneByName(
   }
 
   DCHECK(found_name);
+}
+
+absl::optional<AuthenticatorRequestDialogModel::PairedPhone>
+AuthenticatorRequestDialogModel::GetPrioritySyncedPhone() {
+  // TODO(crbug.com/1428655): return the last recently used phone instead.
+  for (const PairedPhone& phone : paired_phones_) {
+    if (phone.pairing_source == PairedPhone::PairingSource::kSyncDeviceInfo) {
+      return phone;
+    }
+  }
+  return absl::nullopt;
 }
 
 void AuthenticatorRequestDialogModel::PopulateMechanisms() {

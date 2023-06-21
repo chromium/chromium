@@ -86,6 +86,10 @@ BASE_DECLARE_FEATURE(kWebAuthnSkipSingleAccountMacOS);
 COMPONENT_EXPORT(DEVICE_FIDO)
 BASE_DECLARE_FEATURE(kWebAuthnWindowsUIv6);
 
+// List synced GPM passkeys on webauthn credential pickers.
+COMPONENT_EXPORT(DEVICE_FIDO)
+BASE_DECLARE_FEATURE(kWebAuthnListSyncedPasskeys);
+
 }  // namespace device
 
 #endif  // DEVICE_FIDO_FEATURES_H_

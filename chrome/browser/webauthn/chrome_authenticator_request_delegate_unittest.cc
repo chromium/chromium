@@ -14,17 +14,22 @@
 #include "build/build_config.h"
 #include "chrome/browser/password_manager/chrome_webauthn_credentials_delegate_factory.h"
 #include "chrome/browser/webauthn/authenticator_request_dialog_model.h"
+#include "chrome/browser/webauthn/passkey_model_factory.h"
 #include "chrome/browser/webauthn/webauthn_pref_names.h"
 #include "chrome/browser/webauthn/webauthn_switches.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/test/base/chrome_render_view_host_test_harness.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "components/prefs/pref_service.h"
+#include "components/sync/base/features.h"
+#include "components/webauthn/core/browser/passkey_model.h"
+#include "components/webauthn/core/browser/test_passkey_model.h"
 #include "content/public/browser/authenticator_request_client_delegate.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/web_contents_tester.h"
 #include "device/fido/cable/cable_discovery_data.h"
+#include "device/fido/discoverable_credential_metadata.h"
 #include "device/fido/features.h"
 #include "device/fido/fido_constants.h"
 #include "device/fido/fido_discovery_factory.h"
@@ -36,6 +41,7 @@
 #include "net/ssl/ssl_info.h"
 #include "net/test/cert_test_util.h"
 #include "net/test/test_data_directory.h"
+#include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "url/gurl.h"
 #include "url/origin.h"
@@ -55,8 +61,87 @@ namespace {
 
 static constexpr char kRelyingPartyID[] = "example.com";
 
+class Observer : public testing::NiceMock<
+                     ChromeAuthenticatorRequestDelegate::TestObserver> {
+ public:
+  MOCK_METHOD(void,
+              Created,
+              (ChromeAuthenticatorRequestDelegate * delegate),
+              (override));
+  MOCK_METHOD(std::vector<std::unique_ptr<device::cablev2::Pairing>>,
+              GetCablePairingsFromSyncedDevices,
+              (),
+              (override));
+  MOCK_METHOD(void,
+              OnTransportAvailabilityEnumerated,
+              (ChromeAuthenticatorRequestDelegate * delegate,
+               device::FidoRequestHandlerBase::TransportAvailabilityInfo* tai),
+              (override));
+  MOCK_METHOD(void,
+              UIShown,
+              (ChromeAuthenticatorRequestDelegate * delegate),
+              (override));
+  MOCK_METHOD(void,
+              CableV2ExtensionSeen,
+              (base::span<const uint8_t> server_link_data),
+              (override));
+};
+
+class MockCableDiscoveryFactory : public device::FidoDiscoveryFactory {
+ public:
+  void set_cable_data(
+      device::FidoRequestType request_type,
+      std::vector<device::CableDiscoveryData> data,
+      const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
+          qr_generator_key,
+      std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings)
+      override {
+    cable_data = std::move(data);
+    qr_key = qr_generator_key;
+    v2_pairings = std::move(pairings);
+  }
+
+  void set_android_accessory_params(
+      mojo::Remote<device::mojom::UsbDeviceManager>,
+      std::string aoa_request_description) override {
+    this->aoa_configured = true;
+  }
+
+  std::vector<device::CableDiscoveryData> cable_data;
+  absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings;
+  bool aoa_configured = false;
+};
+
 class ChromeAuthenticatorRequestDelegateTest
-    : public ChromeRenderViewHostTestHarness {};
+    : public ChromeRenderViewHostTestHarness {
+ public:
+  ChromeAuthenticatorRequestDelegateTest() {
+    scoped_feature_list_.InitWithFeatures(
+        {device::kWebAuthnListSyncedPasskeys, syncer::kSyncWebauthnCredentials},
+        /*disabled_features=*/{});
+  }
+
+  void SetUp() override {
+    ChromeRenderViewHostTestHarness::SetUp();
+    PasskeyModelFactory::GetInstance()->SetTestingFactoryAndUse(
+        profile(),
+        base::BindRepeating(
+            [](content::BrowserContext*) -> std::unique_ptr<KeyedService> {
+              return std::make_unique<webauthn::TestPasskeyModel>();
+            }));
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(&observer_);
+  }
+
+  void TearDown() override {
+    ChromeAuthenticatorRequestDelegate::SetGlobalObserverForTesting(nullptr);
+    ChromeRenderViewHostTestHarness::TearDown();
+  }
+
+ protected:
+  Observer observer_;
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
 
 class TestAuthenticatorModelObserver final
     : public AuthenticatorRequestDialogModel::Observer {
@@ -156,32 +241,6 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, IndividualAttestation) {
 }
 
 TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
-  class DiscoveryFactory : public device::FidoDiscoveryFactory {
-   public:
-    void set_cable_data(
-        device::FidoRequestType request_type,
-        std::vector<device::CableDiscoveryData> data,
-        const absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>>&
-            qr_generator_key,
-        std::vector<std::unique_ptr<device::cablev2::Pairing>> pairings)
-        override {
-      cable_data = std::move(data);
-      qr_key = qr_generator_key;
-      v2_pairings = std::move(pairings);
-    }
-
-    void set_android_accessory_params(
-        mojo::Remote<device::mojom::UsbDeviceManager>,
-        std::string aoa_request_description) override {
-      this->aoa_configured = true;
-    }
-
-    std::vector<device::CableDiscoveryData> cable_data;
-    absl::optional<std::array<uint8_t, device::cablev2::kQRKeySize>> qr_key;
-    std::vector<std::unique_ptr<device::cablev2::Pairing>> v2_pairings;
-    bool aoa_configured = false;
-  };
-
   const std::array<uint8_t, 16> eid = {1, 2, 3, 4};
   const std::array<uint8_t, 32> prekey = {5, 6, 7, 8};
   const device::CableDiscoveryData v1_extension(
@@ -326,7 +385,7 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, CableConfiguration) {
       SCOPED_TRACE(windows_has_hybrid);
 #endif
 
-      DiscoveryFactory discovery_factory;
+      MockCableDiscoveryFactory discovery_factory;
       ChromeAuthenticatorRequestDelegate delegate(main_rfh());
       delegate.SetRelyingPartyId(/*rp_id=*/"example.com");
       delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
@@ -461,6 +520,114 @@ TEST_F(ChromeAuthenticatorRequestDelegateTest, VirtualEnvironmentAttestation) {
                                    /*is_enterprise_attestation=*/false,
                                    cb.callback());
   EXPECT_TRUE(cb.value());
+}
+
+// Tests that synced GPM passkeys are injected in the transport availability
+// info.
+TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys) {
+  GURL url("https://example.com");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+  ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
+      web_contents());
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
+  delegate.SetRelyingPartyId("example.com");
+
+  // Set up a paired phone from sync.
+  auto phone = std::make_unique<device::cablev2::Pairing>();
+  phone->name = "Miku's Pixel 7 XL";
+  phone->contact_id = {1, 2, 3, 4};
+  phone->id = {5, 6, 7, 8};
+  phone->from_sync_deviceinfo = true;
+  std::vector<std::unique_ptr<device::cablev2::Pairing>> phones;
+  phones.emplace_back(std::move(phone));
+  EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices)
+      .WillOnce(testing::Return(testing::ByMove(std::move(phones))));
+  MockCableDiscoveryFactory discovery_factory;
+  delegate.ConfigureCable(
+      url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
+      /*resident_key_requirement=*/absl::nullopt,
+      /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
+      &discovery_factory);
+
+  // Add a synced passkey for example.com and another for othersite.com.
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(std::string(16, 'a'));
+  passkey.set_credential_id(std::string(16, 'b'));
+  passkey.set_rp_id("example.com");
+  passkey.set_user_id(std::string({5, 6, 7, 8}));
+  passkey.set_user_name("hmiku");
+  passkey.set_user_display_name("Hatsune Miku");
+
+  sync_pb::WebauthnCredentialSpecifics passkey_other_rp_id = passkey;
+  passkey_other_rp_id.set_rp_id("othersite.com");
+
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey_other_rp_id));
+
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
+      .WillOnce([&tai](const auto* _, const auto* new_tai) {
+        tai = std::move(*new_tai);
+      });
+  delegate.OnTransportAvailabilityEnumerated(tai);
+
+  // The GPM passkey for example.com should have been added to the recognized
+  // credentials list.
+  ASSERT_EQ(tai.recognized_credentials.size(), 1u);
+  const device::DiscoverableCredentialMetadata credential =
+      tai.recognized_credentials.at(0);
+  EXPECT_EQ(credential.cred_id, std::vector<uint8_t>(16, 'b'));
+  EXPECT_EQ(credential.rp_id, "example.com");
+  EXPECT_EQ(credential.source, device::AuthenticatorType::kPhone);
+  EXPECT_EQ(credential.user.display_name, "Hatsune Miku");
+  EXPECT_EQ(credential.user.name, "hmiku");
+  EXPECT_EQ(credential.user.id, std::vector<uint8_t>({5, 6, 7, 8}));
+}
+
+// Tests that synced GPM passkeys are not discovered if there are no sync paired
+// phones.
+TEST_F(ChromeAuthenticatorRequestDelegateTest, GPMPasskeys_NoSyncPairedPhones) {
+  GURL url("https://example.com");
+  content::WebContentsTester::For(web_contents())->NavigateAndCommit(url);
+  ChromeWebAuthnCredentialsDelegateFactory::CreateForWebContents(
+      web_contents());
+  ChromeAuthenticatorRequestDelegate delegate(main_rfh());
+  delegate.SetPassEmptyUsbDeviceManagerForTesting(true);
+  delegate.SetRelyingPartyId("example.com");
+
+  // Return an empty list of synced devices.
+  EXPECT_CALL(observer_, GetCablePairingsFromSyncedDevices);
+  MockCableDiscoveryFactory discovery_factory;
+  delegate.ConfigureCable(
+      url::Origin::Create(url), device::FidoRequestType::kGetAssertion,
+      /*resident_key_requirement=*/absl::nullopt,
+      /*pairings_from_extension=*/std::vector<device::CableDiscoveryData>(),
+      &discovery_factory);
+
+  // Add a synced passkey for example.com.
+  webauthn::PasskeyModel* passkey_model =
+      PasskeyModelFactory::GetForProfile(profile());
+  ASSERT_TRUE(passkey_model);
+  sync_pb::WebauthnCredentialSpecifics passkey;
+  passkey.set_sync_id(std::string(16, 'a'));
+  passkey.set_credential_id(std::string(16, 'b'));
+  passkey.set_rp_id("example.com");
+  passkey.set_user_id(std::string({5, 6, 7, 8}));
+  passkey_model->AddNewPasskeyForTesting(std::move(passkey));
+
+  AuthenticatorRequestDialogModel::TransportAvailabilityInfo tai;
+  EXPECT_CALL(observer_, OnTransportAvailabilityEnumerated)
+      .WillOnce([&tai](const auto* _, const auto* new_tai) {
+        tai = std::move(*new_tai);
+      });
+  delegate.OnTransportAvailabilityEnumerated(tai);
+
+  // The GPM passkey should not be present in the recognized credentials list.
+  EXPECT_TRUE(tai.recognized_credentials.empty());
 }
 
 #if BUILDFLAG(IS_MAC)

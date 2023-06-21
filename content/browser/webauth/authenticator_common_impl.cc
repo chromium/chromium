@@ -1187,6 +1187,13 @@ void AuthenticatorCommonImpl::IsConditionalMediationAvailable(
     url::Origin caller_origin,
     blink::mojom::Authenticator::IsConditionalMediationAvailableCallback
         callback) {
+  // Passkeys from a phone can always be discovered through conditional
+  // mediation. To avoid leaking bluetooth or sync status, always advertise the
+  // feature is available.
+  if (base::FeatureList::IsEnabled(device::kWebAuthnListSyncedPasskeys)) {
+    std::move(callback).Run(true);
+    return;
+  }
   // Conditional mediation is always supported if the virtual environment is
   // providing a platform authenticator.
   absl::optional<bool> embedder_isuvpaa_override =
