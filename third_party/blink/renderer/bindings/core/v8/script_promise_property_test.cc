@@ -108,7 +108,7 @@ class ScriptPromisePropertyTestBase {
   ScriptPromisePropertyTestBase()
       : page_(std::make_unique<DummyPageHolder>(gfx::Size(1, 1))) {
     v8::HandleScope handle_scope(GetIsolate());
-    other_script_state_ = MakeGarbageCollected<ScriptState>(
+    other_script_state_ = ScriptState::Create(
         v8::Context::New(GetIsolate()),
         DOMWrapperWorld::EnsureIsolatedWorld(GetIsolate(), 1),
         /* execution_context = */ nullptr);

@@ -33,6 +33,7 @@
 #include "third_party/blink/public/platform/platform.h"
 #include "third_party/blink/public/web/blink.h"
 #include "third_party/blink/renderer/bindings/core/v8/binding_security.h"
+#include "third_party/blink/renderer/bindings/core/v8/script_state_impl.h"
 #include "third_party/blink/renderer/bindings/core/v8/v8_throw_dom_exception.h"
 #include "third_party/blink/renderer/core/css/css_default_style_sheets.h"
 #include "third_party/blink/renderer/core/css/media_feature_names.h"
@@ -159,6 +160,7 @@ void CoreInitializer::Initialize() {
   V8ThrowDOMException::Init();
 
   BindingSecurity::Init();
+  ScriptStateImpl::Init();
 
   TimeZoneController::Init();
 

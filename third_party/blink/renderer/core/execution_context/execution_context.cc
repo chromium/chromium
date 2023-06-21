@@ -95,8 +95,7 @@ ExecutionContext::~ExecutionContext() = default;
 
 // static
 ExecutionContext* ExecutionContext::From(const ScriptState* script_state) {
-  v8::HandleScope scope(script_state->GetIsolate());
-  return ToExecutionContext(script_state->GetContext());
+  return ToExecutionContext(script_state);
 }
 
 // static

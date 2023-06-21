@@ -11,6 +11,22 @@
 
 namespace blink {
 
+ScriptState::CreateCallback ScriptState::s_create_callback_ = nullptr;
+
+// static
+void ScriptState::SetCreateCallback(CreateCallback create_callback) {
+  DCHECK(create_callback);
+  DCHECK(!s_create_callback_);
+  s_create_callback_ = create_callback;
+}
+
+// static
+ScriptState* ScriptState::Create(v8::Local<v8::Context> context,
+                                 scoped_refptr<DOMWrapperWorld> world,
+                                 ExecutionContext* execution_context) {
+  return s_create_callback_(context, std::move(world), execution_context);
+}
+
 ScriptState::ScriptState(v8::Local<v8::Context> context,
                          scoped_refptr<DOMWrapperWorld> world,
                          ExecutionContext* execution_context)

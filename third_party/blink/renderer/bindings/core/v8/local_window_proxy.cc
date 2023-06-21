@@ -248,8 +248,7 @@ void LocalWindowProxy::CreateContext() {
   DidAttachGlobalObject();
 #endif
 
-  script_state_ = MakeGarbageCollected<ScriptState>(context, world_,
-                                                    GetFrame()->DomWindow());
+  script_state_ = ScriptState::Create(context, world_, GetFrame()->DomWindow());
 
   DCHECK(lifecycle_ == Lifecycle::kContextIsUninitialized ||
          lifecycle_ == Lifecycle::kGlobalObjectIsDetached);
