@@ -28,10 +28,11 @@ luci.bucket(
             roles = acl.BUILDBUCKET_TRIGGERER,
             groups = [
                 "project-chromium-ci-schedulers",
-                # Allow currently-oncall sheriffs to cancel builds. Useful when
+                # Allow currently-oncall gardeners to cancel builds. Useful when
                 # a tree-closer is behind and hasn't picked up a needed revert
                 # or fix yet.
                 "mdb/chrome-active-sheriffs",
+                "mdb/chrome-gpu",
             ],
             users = [
                 # Allow chrome-release/branch builders on luci.chrome.official.infra
@@ -46,6 +47,14 @@ luci.bucket(
         acl.entry(
             roles = acl.SCHEDULER_TRIGGERER,
             groups = "project-chromium-scheduler-triggerers",
+        ),
+        acl.entry(
+            roles = acl.SCHEDULER_OWNER,
+            groups = [
+                # Allow currently-oncall gardeners to pause schedulers.
+                "mdb/chrome-active-sheriffs",
+                "mdb/chrome-gpu",
+            ],
         ),
     ],
 )
