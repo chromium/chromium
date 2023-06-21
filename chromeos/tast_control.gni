@@ -342,6 +342,10 @@ tast_disabled_tests_from_chrome_all = [
   "arc.Downloads",
   "network.ConfigBaseline.login",
 
+  # crbug.com/1456760: the test is removed in ToT ChromeOS, but the roll is
+  # delaying. We can remove this once the roll happens.
+  "lacros.ShelfLaunch.primary",
+
   # READ COMMENT AT TOP BEFORE ADDING NEW TESTS HERE.
 ]
 
