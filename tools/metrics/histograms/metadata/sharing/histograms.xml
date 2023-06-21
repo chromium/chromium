@@ -38,7 +38,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.AnyShareStartedDesktop" enum="ShareSourceDesktop"
     expires_after="never">
-  <owner>kristipark@chromium.org</owner>
+  <owner>ellyjones@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <improvement direction="HIGHER_IS_BETTER"/>
   <summary>
@@ -296,14 +296,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ScreenshotsAndroid.IsEditorDismissedOnStart"
-    enum="Boolean" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>Whether the editor was dismissed during editor recreation.</summary>
-</histogram>
-
 <histogram name="Sharing.ScrollCapture.BitmapGeneratorStatus"
     enum="SharingScrollCaptureBitmapGenerationStatus"
     expires_after="2023-10-01">
@@ -395,35 +387,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Sharing.ShareTargetUpdate.DynamicUpdateResult"
-    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    The result of reading/parsing/accepting a new proto for the third party
-    Share Targets.
-
-    This is for the file types loaded from the component-update system. This
-    includes both those loaded from disk shortly after startup, and those
-    received over the network when the component version changes.
-  </summary>
-</histogram>
-
-<histogram name="Sharing.ShareTargetUpdate.ResourceBundleResult"
-    enum="ShareTargetUpdateResult" expires_after="2022-09-11">
-  <owner>jeffreycohen@chromium.org</owner>
-  <owner>kristipark@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    The result of reading/parsing/accepting a new proto for the third party
-    Share Targets.
-
-    This is for the file types loaded from the resource bundle packaged with
-    Chrome, which is always loaded at startup.
-  </summary>
-</histogram>
-
 <histogram name="Sharing.SharingHubAndroid.Opened" enum="ShareOrigin"
     expires_after="2023-11-12">
   <owner>sophey@chromium.org</owner>
@@ -441,22 +404,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     Records the index of the third party app selected from the bottom row of the
     sharing hub.
-  </summary>
-</histogram>
-
-<histogram
-    name="Sharing.SharingHubAndroid.TimeToSaveScreenshotImageBeforeShare"
-    units="ms" expires_after="M110">
-  <obsolete>
-    No longer gathered for several milestones as of M111. Not sure precisely
-    when gathering of this metric stopped.
-  </obsolete>
-  <owner>skare@chromium.org</owner>
-  <owner>src/chrome/browser/share/OWNERS</owner>
-  <summary>
-    Records the amount of time taken to save the output bitmap from the image
-    editor to temporary storage and generate a URI. Recorded when the followup
-    share actions panel is displayed.
   </summary>
 </histogram>
 
@@ -505,7 +452,7 @@ chromium-metrics-reviews@google.com.
 
 <histogram name="Sharing.SharingHubDesktop.CrOSSharesheetResult"
     enum="SharingHubSharesheetResult" expires_after="2023-11-12">
-  <owner>kristipark@chromium.org</owner>
+  <owner>melzhang@chromium.org</owner>
   <owner>src/chrome/browser/share/OWNERS</owner>
   <summary>
     Records whether the user selects a share target after opening the Chrome OS
