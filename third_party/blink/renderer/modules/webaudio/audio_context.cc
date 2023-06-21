@@ -378,9 +378,10 @@ ScriptPromise AudioContext::suspendContext(ScriptState* script_state,
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot suspend a closed AudioContext.");
-    return ScriptPromise();
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot suspend a closed AudioContext."));
   }
 
   suspended_by_user_ = true;
@@ -403,9 +404,10 @@ ScriptPromise AudioContext::resumeContext(ScriptState* script_state,
   DCHECK(IsMainThread());
 
   if (ContextState() == kClosed) {
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot resume a closed AudioContext.");
-    return ScriptPromise();
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot resume a closed AudioContext."));
   }
 
   auto* resolver = MakeGarbageCollected<ScriptPromiseResolver>(
@@ -500,12 +502,10 @@ AudioTimestamp* AudioContext::getOutputTimestamp(
 ScriptPromise AudioContext::closeContext(ScriptState* script_state,
                                          ExceptionState& exception_state) {
   if (ContextState() == kClosed) {
-    // We've already closed the context previously, but it hasn't yet been
-    // resolved, so just throw a DOM exception to trigger a promise rejection
-    // and return an empty promise.
-    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
-                                      "Cannot close a closed AudioContext.");
-    return ScriptPromise();
+    return ScriptPromise::RejectWithDOMException(
+        script_state, MakeGarbageCollected<DOMException>(
+                          DOMExceptionCode::kInvalidStateError,
+                          "Cannot close a closed AudioContext."));
   }
 
   close_resolver_ = MakeGarbageCollected<ScriptPromiseResolver>(
