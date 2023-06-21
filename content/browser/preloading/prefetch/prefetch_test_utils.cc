@@ -13,7 +13,8 @@
 
 namespace content {
 
-std::unique_ptr<PrefetchStreamingURLLoader>
+std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+          std::unique_ptr<PrefetchResponseReader>>
 MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
                                       const std::string body) {
   const GURL kTestUrl = GURL("https://test.com");
@@ -27,6 +28,8 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
   base::RunLoop on_response_received_loop;
   base::RunLoop on_response_complete_loop;
 
+  std::unique_ptr<PrefetchResponseReader> response_reader =
+      std::make_unique<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           &test_url_loader_factory, std::move(request),
@@ -49,7 +52,8 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
               [](const net::RedirectInfo& redirect_info,
                  network::mojom::URLResponseHeadPtr response_head) {
                 NOTREACHED();
-              }));
+              }),
+          response_reader->GetWeakPtr());
 
   network::URLLoaderCompletionStatus status(net::OK);
 
@@ -61,7 +65,8 @@ MakeServableStreamingURLLoaderForTest(network::mojom::URLResponseHeadPtr head,
   on_response_complete_loop.Run();
 
   DCHECK(streaming_loader->Servable(base::TimeDelta::Max()));
-  return streaming_loader;
+  return std::make_pair(std::move(streaming_loader),
+                        std::move(response_reader));
 }
 
 PrefetchStreamingURLLoader::OnPrefetchRedirectCallback
@@ -82,7 +87,8 @@ CreatePrefetchRedirectCallbackForTest(
       on_receive_redirect_loop, out_redirect_info, out_redirect_head);
 }
 
-std::unique_ptr<PrefetchStreamingURLLoader>
+std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+          std::unique_ptr<PrefetchResponseReader>>
 MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
                                                   const GURL& redirect_url) {
   network::TestURLLoaderFactory test_url_loader_factory;
@@ -98,6 +104,8 @@ MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
   net::RedirectInfo redirect_info;
   network::mojom::URLResponseHeadPtr redirect_head;
 
+  std::unique_ptr<PrefetchResponseReader> response_reader =
+      std::make_unique<PrefetchResponseReader>();
   std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
       std::make_unique<PrefetchStreamingURLLoader>(
           &test_url_loader_factory, std::move(request),
@@ -116,8 +124,9 @@ MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
                 on_response_complete_loop->Quit();
               },
               &on_response_complete_loop),
-          CreatePrefetchRedirectCallbackForTest(
-              &on_receive_redirect_loop, &redirect_info, &redirect_head));
+          CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
+                                                &redirect_info, &redirect_head),
+          response_reader->GetWeakPtr());
 
   network::URLLoaderCompletionStatus status(net::OK);
 
@@ -139,15 +148,19 @@ MakeServableStreamingURLLoaderWithRedirectForTest(const GURL& original_url,
   on_response_complete_loop.Run();
 
   DCHECK(streaming_loader->Servable(base::TimeDelta::Max()));
-  return streaming_loader;
+  return std::make_pair(std::move(streaming_loader),
+                        std::move(response_reader));
 }
 
-std::vector<std::unique_ptr<PrefetchStreamingURLLoader>>
+std::vector<std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+                      std::unique_ptr<PrefetchResponseReader>>>
 MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
     const GURL& original_url,
     const GURL& redirect_url) {
   network::TestURLLoaderFactory test_url_loader_factory;
-  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>> streaming_loaders;
+  std::vector<std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+                        std::unique_ptr<PrefetchResponseReader>>>
+      streaming_loaders;
 
   std::unique_ptr<network::ResourceRequest> original_request =
       std::make_unique<network::ResourceRequest>();
@@ -164,7 +177,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   // request, but can be used to serve the redirect. A new
   // PrefetchStreamingURLLoader will be started with a request to the redirect
   // URL.
-  streaming_loaders.emplace_back(std::make_unique<PrefetchStreamingURLLoader>(
+  auto first_response_reader = std::make_unique<PrefetchResponseReader>();
+  auto first_streaming_loader = std::make_unique<PrefetchStreamingURLLoader>(
       &test_url_loader_factory, std::move(original_request),
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce([](network::mojom::URLResponseHead* head) {
@@ -176,7 +190,10 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
             NOTREACHED();
           }),
       CreatePrefetchRedirectCallbackForTest(&on_receive_redirect_loop,
-                                            &redirect_info, &redirect_head)));
+                                            &redirect_info, &redirect_head),
+      first_response_reader->GetWeakPtr());
+  streaming_loaders.emplace_back(std::move(first_streaming_loader),
+                                 std::move(first_response_reader));
 
   net::RedirectInfo original_redirect_info;
   original_redirect_info.new_url = redirect_url;
@@ -190,7 +207,7 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       std::move(redirects),
       network::TestURLLoaderFactory::kResponseOnlyRedirectsNoDestination);
   on_receive_redirect_loop.Run();
-  streaming_loaders[0]->HandleRedirect(
+  streaming_loaders[0].first->HandleRedirect(
       PrefetchStreamingURLLoaderStatus::kStopSwitchInNetworkContextForRedirect,
       redirect_info, std::move(redirect_head));
 
@@ -203,7 +220,8 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   base::RunLoop on_response_complete_loop;
 
   // Starts the followup PrefetchStreamingURLLoader.
-  streaming_loaders.emplace_back(std::make_unique<PrefetchStreamingURLLoader>(
+  auto second_response_reader = std::make_unique<PrefetchResponseReader>();
+  auto second_streaming_loader = std::make_unique<PrefetchStreamingURLLoader>(
       &test_url_loader_factory, std::move(redirect_request),
       TRAFFIC_ANNOTATION_FOR_TESTS, /*timeout_duration=*/base::TimeDelta(),
       base::BindOnce(
@@ -222,7 +240,10 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
       base::BindRepeating([](const net::RedirectInfo& redirect_info,
                              network::mojom::URLResponseHeadPtr response_head) {
         NOTREACHED();
-      })));
+      }),
+      second_response_reader->GetWeakPtr());
+  streaming_loaders.emplace_back(std::move(second_streaming_loader),
+                                 std::move(second_response_reader));
 
   network::URLLoaderCompletionStatus status(net::OK);
   test_url_loader_factory.AddResponse(
@@ -233,7 +254,7 @@ MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
   on_response_received_loop.Run();
   on_response_complete_loop.Run();
 
-  DCHECK(streaming_loaders[1]->Servable(base::TimeDelta::Max()));
+  DCHECK(streaming_loaders[1].first->Servable(base::TimeDelta::Max()));
   return streaming_loaders;
 }
 

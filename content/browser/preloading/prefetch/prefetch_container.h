@@ -12,6 +12,7 @@
 #include "base/time/time.h"
 #include "content/browser/preloading/prefetch/prefetch_probe_result.h"
 #include "content/browser/preloading/prefetch/prefetch_status.h"
+#include "content/browser/preloading/prefetch/prefetch_streaming_url_loader.h"
 #include "content/browser/preloading/prefetch/prefetch_type.h"
 #include "content/browser/preloading/speculation_host_devtools_observer.h"
 #include "content/common/content_export.h"
@@ -158,24 +159,29 @@ class CONTENT_EXPORT PrefetchContainer {
   // Closes idle connections for all elements in |network_contexts_|.
   void CloseIdleConnections();
 
-  // Adds the given |PrefetchStreamingURLLoader| to the end of
-  // |streaming_loaders_|.
+  // Adds the given |PrefetchStreamingURLLoader| and its
+  // |PrefetchResponseReader| to the end of |streaming_loaders_|.
   void TakeStreamingURLLoader(
-      std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader);
+      std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+                std::unique_ptr<PrefetchResponseReader>>);
 
-  // Returns the first |PrefetchStreamingURLLoader| from |streaming_loaders_|.
-  // This URL loader should be used when serving the prefetch.
-  PrefetchStreamingURLLoader* GetFirstStreamingURLLoader() const;
+  // Set up a RequestHandler from the prefetch. After this point,
+  // - The PrefetchResponseReader will manage its own lifetime, and will delete
+  // itself once its serving client is finished.
+  // - If IsReadyToServeLastEvents() is true, the PrefetchStreamingURLLoader
+  // will manage its own lifetime, and will delete itself once its prefetching
+  // request is finished. Otherwise, PrefetchStreamingURLLoader is kept owned by
+  // `streaming_loaders_`.
+  PrefetchResponseReader::RequestHandler CreateRequestHandler();
 
-  // Removes the first |PrefetchStreamingURLLoader| from |streaming_loaders_|
-  // and gives owernship of it to the caller.
-  std::unique_ptr<PrefetchStreamingURLLoader> ReleaseFirstStreamingURLLoader();
+  bool HasRemainingResponseReader() const;
 
   // Returns the last |PrefetchStreamingURLLoader| from |streaming_loaders_|.
   // This URL loader should be used when fetching the prefetch.
   PrefetchStreamingURLLoader* GetLastStreamingURLLoader() const;
 
-  // Clears all |PrefetchStreamingURLLoader|s from |streaming_loaders_|.
+  // Clears all |PrefetchStreamingURLLoader|s and |PrefetchResponseReader|s from
+  // |streaming_loaders_|.
   void ResetAllStreamingURLLoaders();
 
   // The |PrefetchDocumentManager| that requested |this|.
@@ -421,7 +427,13 @@ class CONTENT_EXPORT PrefetchContainer {
   // The series of streaming URL loaders used to fetch and serve this prefetch.
   // Multiple streaming URL loaders are used in the event a redirect causes a
   // change in the network context.
-  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>> streaming_loaders_;
+  // TODO(crbug.com/1449360): Although paired with |PrefetchResponseReader|,
+  // this and similar members/variables are named "streaming_loaders". This is
+  // expected transient and |PrefetchResponseReader| will be moved out to
+  // another location.
+  std::vector<std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+                        std::unique_ptr<PrefetchResponseReader>>>
+      streaming_loaders_;
 
   // The time at which |prefetched_response_| was received. This is used to
   // determine whether or not |prefetched_response_| is stale.

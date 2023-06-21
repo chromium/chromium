@@ -22,14 +22,14 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
     base::TimeDelta timeout_duration,
     OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
     OnPrefetchResponseCompletedCallback on_prefetch_response_completed_callback,
-    OnPrefetchRedirectCallback on_prefetch_redirect_callback)
+    OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+    base::WeakPtr<PrefetchResponseReader> response_reader)
     : on_prefetch_response_started_callback_(
           std::move(on_prefetch_response_started_callback)),
       on_prefetch_response_completed_callback_(
           std::move(on_prefetch_response_completed_callback)),
       on_prefetch_redirect_callback_(std::move(on_prefetch_redirect_callback)) {
-  response_reader_ =
-      std::make_unique<PrefetchResponseReader>(weak_ptr_factory_.GetWeakPtr());
+  SetResponseReader(std::move(response_reader));
 
   url_loader_factory->CreateLoaderAndStart(
       prefetch_url_loader_.BindNewPipeAndPassReceiver(), /*request_id=*/0,
@@ -56,6 +56,14 @@ PrefetchStreamingURLLoader::PrefetchStreamingURLLoader(
 PrefetchStreamingURLLoader::~PrefetchStreamingURLLoader() {
   base::UmaHistogramEnumeration(
       "PrefetchProxy.Prefetch.StreamingURLLoaderFinalStatus", status_);
+}
+
+void PrefetchStreamingURLLoader::SetResponseReader(
+    base::WeakPtr<PrefetchResponseReader> response_reader) {
+  response_reader_ = std::move(response_reader);
+  if (response_reader_) {
+    response_reader_->SetStreamingURLLoader(GetWeakPtr());
+  }
 }
 
 void PrefetchStreamingURLLoader::SetOnReceivedHeadCallback(
@@ -112,22 +120,18 @@ void PrefetchStreamingURLLoader::DisconnectPrefetchURLLoaderMojo() {
   prefetch_url_loader_client_receiver_.reset();
   prefetch_url_loader_disconnected_ = true;
 
-  if (serving_url_loader_disconnected_) {
-    PostTaskToDeleteSelf();
-  }
+  PostTaskToDeleteSelf();
 }
 
-void PrefetchStreamingURLLoader::OnResponseReaderDisconnect() {
-  serving_url_loader_disconnected_ = true;
+void PrefetchStreamingURLLoader::PostTaskToDeleteSelfIfDisconnected() {
   if (prefetch_url_loader_disconnected_) {
     PostTaskToDeleteSelf();
   }
 }
 
-void PrefetchStreamingURLLoader::MakeSelfOwnedAndDeleteSoon(
+void PrefetchStreamingURLLoader::MakeSelfOwned(
     std::unique_ptr<PrefetchStreamingURLLoader> self) {
   self_pointer_ = std::move(self);
-  PostTaskToDeleteSelf();
 }
 
 void PrefetchStreamingURLLoader::PostTaskToDeleteSelf() {
@@ -142,7 +146,9 @@ void PrefetchStreamingURLLoader::PostTaskToDeleteSelf() {
 
 void PrefetchStreamingURLLoader::OnReceiveEarlyHints(
     network::mojom::EarlyHintsPtr early_hints) {
-  GetResponseReader().OnReceiveEarlyHints(std::move(early_hints));
+  if (response_reader_) {
+    response_reader_->OnReceiveEarlyHints(std::move(early_hints));
+  }
 }
 
 void PrefetchStreamingURLLoader::OnReceiveResponse(
@@ -201,7 +207,9 @@ void PrefetchStreamingURLLoader::OnReceiveResponse(
   head_->navigation_delivery_type =
       network::mojom::NavigationDeliveryType::kNavigationalPrefetch;
 
-  GetResponseReader().OnReceiveResponse(head_->Clone(), std::move(body));
+  if (response_reader_) {
+    response_reader_->OnReceiveResponse(head_->Clone(), std::move(body));
+  }
 
   if (on_received_head_callback_) {
     std::move(on_received_head_callback_).Run();
@@ -236,8 +244,11 @@ void PrefetchStreamingURLLoader::HandleRedirect(
           /*modified_cors_exempt_headers=*/net::HttpRequestHeaders(),
           /*new_url=*/absl::nullopt);
 
-      GetResponseReader().HandleRedirect(
-          redirect_info, std::move(redirect_head), /*pause_after_event=*/true);
+      if (response_reader_) {
+        response_reader_->HandleRedirect(redirect_info,
+                                         std::move(redirect_head),
+                                         /*pause_after_event=*/true);
+      }
       break;
     case PrefetchStreamingURLLoaderStatus::
         kStopSwitchInNetworkContextForRedirect:
@@ -249,8 +260,11 @@ void PrefetchStreamingURLLoader::HandleRedirect(
       DisconnectPrefetchURLLoaderMojo();
       timeout_timer_.AbandonAndStop();
 
-      GetResponseReader().HandleRedirect(
-          redirect_info, std::move(redirect_head), /*pause_after_event=*/false);
+      if (response_reader_) {
+        response_reader_->HandleRedirect(redirect_info,
+                                         std::move(redirect_head),
+                                         /*pause_after_event=*/false);
+      }
       break;
     case PrefetchStreamingURLLoaderStatus::kFailedInvalidRedirect:
       servable_ = false;
@@ -290,7 +304,9 @@ void PrefetchStreamingURLLoader::OnUploadProgress(
 
 void PrefetchStreamingURLLoader::OnTransferSizeUpdated(
     int32_t transfer_size_diff) {
-  GetResponseReader().OnTransferSizeUpdated(transfer_size_diff);
+  if (response_reader_) {
+    response_reader_->OnTransferSizeUpdated(transfer_size_diff);
+  }
 }
 
 void PrefetchStreamingURLLoader::OnComplete(
@@ -323,32 +339,12 @@ void PrefetchStreamingURLLoader::OnComplete(
 
   std::move(on_prefetch_response_completed_callback_)
       .Run(completion_status_.value());
-  GetResponseReader().OnComplete(completion_status_.value());
+  if (response_reader_) {
+    response_reader_->OnComplete(completion_status_.value());
+  }
 }
 
-PrefetchStreamingURLLoader::RequestHandler
-PrefetchStreamingURLLoader::ServingFinalResponseHandler(
-    std::unique_ptr<PrefetchStreamingURLLoader> self) {
-  DCHECK(self);
-  DCHECK(GetResponseReader().IsReadyToServeLastEvents());
-  return base::BindOnce(&PrefetchStreamingURLLoader::BindAndStart,
-                        weak_ptr_factory_.GetWeakPtr(), std::move(self));
-}
-
-PrefetchStreamingURLLoader::RequestHandler
-PrefetchStreamingURLLoader::ServingRedirectHandler() {
-  DCHECK(!GetResponseReader().IsReadyToServeLastEvents());
-  return base::BindOnce(&PrefetchStreamingURLLoader::BindAndStart,
-                        weak_ptr_factory_.GetWeakPtr(), nullptr);
-}
-
-void PrefetchStreamingURLLoader::BindAndStart(
-    std::unique_ptr<PrefetchStreamingURLLoader> self,
-    const network::ResourceRequest& request,
-    mojo::PendingReceiver<network::mojom::URLLoader> receiver,
-    mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
-  DCHECK(!self || self.get() == this);
-
+void PrefetchStreamingURLLoader::OnStartServing() {
   // Once the prefetch is served, stop the timeout timer.
   timeout_timer_.AbandonAndStop();
 
@@ -363,15 +359,6 @@ void PrefetchStreamingURLLoader::BindAndStart(
             : PrefetchStreamingURLLoaderStatus::
                   kSuccessfulServedBeforeCompletion;
   }
-
-  // If the final response is ready to be served, then make self owned, and
-  // delete self once serving the prefetch is finished.
-  if (self) {
-    self_pointer_ = std::move(self);
-  }
-
-  serving_url_loader_disconnected_ = false;
-  GetResponseReader().BindAndStart(std::move(receiver), std::move(client));
 }
 
 void PrefetchStreamingURLLoader::SetPriority(net::RequestPriority priority,
@@ -393,24 +380,66 @@ void PrefetchStreamingURLLoader::ResumeReadingBodyFromNet() {
   }
 }
 
-PrefetchResponseReader::PrefetchResponseReader(
-    base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader)
-    : streaming_url_loader_(streaming_url_loader) {}
+PrefetchResponseReader::PrefetchResponseReader() = default;
 
 PrefetchResponseReader::~PrefetchResponseReader() = default;
+
+void PrefetchResponseReader::SetStreamingURLLoader(
+    base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader) {
+  DCHECK(!streaming_url_loader_);
+  streaming_url_loader_ = std::move(streaming_url_loader);
+}
+
+void PrefetchResponseReader::MakeSelfOwned(
+    std::unique_ptr<PrefetchResponseReader> self) {
+  self_pointer_ = std::move(self);
+}
+
+void PrefetchResponseReader::PostTaskToDeleteSelf() {
+  if (!self_pointer_) {
+    return;
+  }
+
+  // To avoid UAF bugs, post a separate task to delete this object.
+  base::SequencedTaskRunner::GetCurrentDefault()->DeleteSoon(
+      FROM_HERE, std::move(self_pointer_));
+}
 
 void PrefetchResponseReader::OnServingURLLoaderMojoDisconnect() {
   serving_url_loader_receiver_.reset();
   serving_url_loader_client_.reset();
-  if (streaming_url_loader_) {
-    streaming_url_loader_->OnResponseReaderDisconnect();
-  }
+  PostTaskToDeleteSelf();
+}
+
+PrefetchResponseReader::RequestHandler
+PrefetchResponseReader::ServingFinalResponseHandler(
+    std::unique_ptr<PrefetchResponseReader> self) {
+  DCHECK(self);
+  DCHECK(IsReadyToServeLastEvents());
+  return base::BindOnce(&PrefetchResponseReader::BindAndStart,
+                        weak_ptr_factory_.GetWeakPtr(), std::move(self));
+}
+
+PrefetchResponseReader::RequestHandler
+PrefetchResponseReader::ServingRedirectHandler() {
+  DCHECK(!IsReadyToServeLastEvents());
+  return base::BindOnce(&PrefetchResponseReader::BindAndStart,
+                        weak_ptr_factory_.GetWeakPtr(), nullptr);
 }
 
 void PrefetchResponseReader::BindAndStart(
+    std::unique_ptr<PrefetchResponseReader> self,
+    const network::ResourceRequest& resource_request,
     mojo::PendingReceiver<network::mojom::URLLoader> receiver,
     mojo::PendingRemote<network::mojom::URLLoaderClient> client) {
+  DCHECK(!self || self.get() == this);
   DCHECK(!serving_url_loader_receiver_.is_bound());
+
+  // If the final response is ready to be served, then make self owned, and
+  // delete self once serving the prefetch is finished.
+  if (self) {
+    MakeSelfOwned(std::move(self));
+  }
 
   serving_url_loader_receiver_.Bind(std::move(receiver));
   serving_url_loader_receiver_.set_disconnect_handler(

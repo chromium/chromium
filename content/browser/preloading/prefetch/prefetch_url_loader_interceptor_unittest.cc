@@ -1218,10 +1218,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  std::vector<std::unique_ptr<PrefetchStreamingURLLoader>>
-      streaming_url_loaders =
-          MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
-              kTestUrl, kRedirectUrl);
+  auto streaming_url_loaders =
+      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+          kTestUrl, kRedirectUrl);
   EXPECT_EQ(streaming_url_loaders.size(), 2U);
 
   prefetch_container->TakeStreamingURLLoader(

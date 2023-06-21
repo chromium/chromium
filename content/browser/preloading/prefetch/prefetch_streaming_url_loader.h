@@ -22,9 +22,14 @@ class PrefetchStreamingURLLoader;
 class CONTENT_EXPORT PrefetchResponseReader final
     : public network::mojom::URLLoader {
  public:
-  explicit PrefetchResponseReader(
-      base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
+  PrefetchResponseReader();
   ~PrefetchResponseReader() override;
+
+  void SetStreamingURLLoader(
+      base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader);
+
+  void MakeSelfOwned(std::unique_ptr<PrefetchResponseReader> self);
+  void PostTaskToDeleteSelf();
 
   // Whether |this| is ready to serve its last set of events. This can either be
   // the head and body of the overall prefetch, or a redirect that required a
@@ -44,11 +49,31 @@ class CONTENT_EXPORT PrefetchResponseReader final
   void OnTransferSizeUpdated(int32_t transfer_size_diff);
   void OnComplete(network::URLLoaderCompletionStatus completion_status);
 
+  using RequestHandler = base::OnceCallback<void(
+      const network::ResourceRequest& resource_request,
+      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
+      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
+
+  // Creates a request handler to serve the final response of the prefetch, and
+  // also makes |this| self owned.
+  RequestHandler ServingFinalResponseHandler(
+      std::unique_ptr<PrefetchResponseReader> self);
+
+  // Creates a request handler to serve the next redirect. Ownership of |this|
+  // does not change.
+  RequestHandler ServingRedirectHandler();
+
+  base::WeakPtr<PrefetchResponseReader> GetWeakPtr() {
+    return weak_ptr_factory_.GetWeakPtr();
+  }
+
+ private:
   void BindAndStart(
+      std::unique_ptr<PrefetchResponseReader> self,
+      const network::ResourceRequest& resource_request,
       mojo::PendingReceiver<network::mojom::URLLoader> receiver,
       mojo::PendingRemote<network::mojom::URLLoaderClient> client);
 
- private:
   // Adds an event to the queue that will be run when serving the prefetch. If
   // |pause_after_event| is true, then the event queue will pause after running
   // the event.
@@ -100,11 +125,22 @@ class CONTENT_EXPORT PrefetchResponseReader final
   mojo::Receiver<network::mojom::URLLoader> serving_url_loader_receiver_{this};
   mojo::Remote<network::mojom::URLLoaderClient> serving_url_loader_client_;
 
+  // Set when this manages its own lifetime.
+  std::unique_ptr<PrefetchResponseReader> self_pointer_;
+
   base::WeakPtr<PrefetchStreamingURLLoader> streaming_url_loader_;
 
   base::WeakPtrFactory<PrefetchResponseReader> weak_ptr_factory_{this};
 };
 
+// Lifetime and ownership:
+//
+// Before `PrefetchContainer::CreateRequestHandler()`,
+// `PrefetchStreamingURLLoader` is owned by `PrefetchContainer`. After that, it
+// is self-owned and is deleted when `prefetch_url_loader_` is finished. The
+// PrefetchStreamingURLLoader can be deleted in one of its callbacks, so instead
+// of deleting it immediately, it is made self owned and then deletes itself
+// asynchronously.
 class CONTENT_EXPORT PrefetchStreamingURLLoader
     : public network::mojom::URLLoaderClient {
  public:
@@ -134,12 +170,15 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
       OnPrefetchResponseStartedCallback on_prefetch_response_started_callback,
       OnPrefetchResponseCompletedCallback
           on_prefetch_response_completed_callback,
-      OnPrefetchRedirectCallback on_prefetch_redirect_callback);
+      OnPrefetchRedirectCallback on_prefetch_redirect_callback,
+      base::WeakPtr<PrefetchResponseReader> response_reader);
   ~PrefetchStreamingURLLoader() override;
 
   PrefetchStreamingURLLoader(const PrefetchStreamingURLLoader&) = delete;
   PrefetchStreamingURLLoader& operator=(const PrefetchStreamingURLLoader&) =
       delete;
+
+  void SetResponseReader(base::WeakPtr<PrefetchResponseReader> response_reader);
 
   // Informs the URL loader of how to handle the most recent redirect. This
   // should only be called after |on_prefetch_redirect_callback_| is called. The
@@ -172,29 +211,11 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   }
   const network::mojom::URLResponseHead* GetHead() const { return head_.get(); }
 
-  using RequestHandler = base::OnceCallback<void(
-      const network::ResourceRequest& resource_request,
-      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client)>;
-
-  // Creates a request handler to serve the final response of the prefetch, and
-  // also makes |this| self owned.
-  RequestHandler ServingFinalResponseHandler(
-      std::unique_ptr<PrefetchStreamingURLLoader> self);
-
-  // Creates a request handler to serve the next redirect. Ownership of |this|
-  // does not change.
-  RequestHandler ServingRedirectHandler();
-
-  // The streaming URL loader can be deleted in one of its callbacks, so instead
-  // of deleting it immediately, it is made self owned and then deletes itself.
-  void MakeSelfOwnedAndDeleteSoon(
-      std::unique_ptr<PrefetchStreamingURLLoader> self);
-
-  PrefetchResponseReader& GetResponseReader() { return *response_reader_; }
+  void MakeSelfOwned(std::unique_ptr<PrefetchStreamingURLLoader> self);
+  void PostTaskToDeleteSelf();
+  void PostTaskToDeleteSelfIfDisconnected();
 
   // Called from PrefetchResponseReader.
-  void OnResponseReaderDisconnect();
   void SetPriority(net::RequestPriority priority, int32_t intra_priority_value);
   void PauseReadingBodyFromNet();
   void ResumeReadingBodyFromNet();
@@ -203,15 +224,10 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
     return weak_ptr_factory_.GetWeakPtr();
   }
 
- private:
-  void BindAndStart(
-      std::unique_ptr<PrefetchStreamingURLLoader> self,
-      const network::ResourceRequest& request,
-      mojo::PendingReceiver<network::mojom::URLLoader> url_loader_receiver,
-      mojo::PendingRemote<network::mojom::URLLoaderClient> forwarding_client);
+  void OnStartServing();
 
+ private:
   void DisconnectPrefetchURLLoaderMojo();
-  void PostTaskToDeleteSelf();
 
   // network::mojom::URLLoaderClient
   void OnReceiveEarlyHints(network::mojom::EarlyHintsPtr early_hints) override;
@@ -239,9 +255,8 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   // The timer that triggers a timeout when a request takes too long.
   base::OneShotTimer timeout_timer_;
 
-  // Once prefetching and serving is complete, then this can be deleted.
+  // Once prefetching is complete, then this can be deleted.
   bool prefetch_url_loader_disconnected_{false};
-  bool serving_url_loader_disconnected_{false};
 
   // The URL loader used to request the prefetch.
   mojo::Remote<network::mojom::URLLoader> prefetch_url_loader_;
@@ -261,7 +276,7 @@ class CONTENT_EXPORT PrefetchStreamingURLLoader
   absl::optional<network::URLLoaderCompletionStatus> completion_status_;
   absl::optional<base::TimeTicks> response_complete_time_;
 
-  std::unique_ptr<PrefetchResponseReader> response_reader_;
+  base::WeakPtr<PrefetchResponseReader> response_reader_;
 
   base::WeakPtrFactory<PrefetchStreamingURLLoader> weak_ptr_factory_{this};
 };

@@ -646,22 +646,15 @@ void PrefetchContainer::Reader::SetOnCookieCopyCompleteCallback(
 }
 
 void PrefetchContainer::TakeStreamingURLLoader(
-    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader) {
+    std::pair<std::unique_ptr<PrefetchStreamingURLLoader>,
+              std::unique_ptr<PrefetchResponseReader>> streaming_loader_pair) {
   // Transfer the OnReceivedHeadCallback to the last streaming URL loader.
   if (!streaming_loaders_.empty()) {
-    streaming_loader->SetOnReceivedHeadCallback(
-        streaming_loaders_.back()->ReleaseOnReceivedHeadCallback());
+    streaming_loader_pair.first->SetOnReceivedHeadCallback(
+        streaming_loaders_.back().first->ReleaseOnReceivedHeadCallback());
   }
 
-  streaming_loaders_.push_back(std::move(streaming_loader));
-}
-
-PrefetchStreamingURLLoader* PrefetchContainer::GetFirstStreamingURLLoader()
-    const {
-  if (streaming_loaders_.empty()) {
-    return nullptr;
-  }
-  return streaming_loaders_[0].get();
+  streaming_loaders_.push_back(std::move(streaming_loader_pair));
 }
 
 PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
@@ -669,31 +662,56 @@ PrefetchStreamingURLLoader* PrefetchContainer::GetLastStreamingURLLoader()
   if (streaming_loaders_.empty()) {
     return nullptr;
   }
-  return streaming_loaders_.back().get();
+  return streaming_loaders_.back().first.get();
 }
 
-std::unique_ptr<PrefetchStreamingURLLoader>
-PrefetchContainer::ReleaseFirstStreamingURLLoader() {
-  CHECK(!streaming_loaders_.empty() &&
-        streaming_loaders_[0]->GetResponseReader().IsReadyToServeLastEvents());
+PrefetchResponseReader::RequestHandler
+PrefetchContainer::CreateRequestHandler() {
+  CHECK(!streaming_loaders_.empty());
+  streaming_loaders_[0].first->OnStartServing();
+  if (streaming_loaders_[0].second->IsReadyToServeLastEvents()) {
+    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader;
+    std::unique_ptr<PrefetchResponseReader> response_reader;
+    std::tie(streaming_loader, response_reader) =
+        std::move(streaming_loaders_[0]);
+    streaming_loaders_.erase(streaming_loaders_.begin());
 
-  std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader =
-      std::move(streaming_loaders_[0]);
-  streaming_loaders_.erase(streaming_loaders_.begin());
-  return streaming_loader;
+    auto* raw_streaming_loader = streaming_loader.get();
+    raw_streaming_loader->MakeSelfOwned(std::move(streaming_loader));
+    raw_streaming_loader->PostTaskToDeleteSelfIfDisconnected();
+
+    auto* raw_response_reader = response_reader.get();
+    return raw_response_reader->ServingFinalResponseHandler(
+        std::move(response_reader));
+  } else {
+    return streaming_loaders_[0].second->ServingRedirectHandler();
+  }
+}
+
+bool PrefetchContainer::HasRemainingResponseReader() const {
+  return !streaming_loaders_.empty();
 }
 
 void PrefetchContainer::ResetAllStreamingURLLoaders() {
   CHECK(!streaming_loaders_.empty());
-  for (auto& streaming_loader : streaming_loaders_) {
+  for (auto& streaming_loader_pair : streaming_loaders_) {
+    // The PrefetchStreamingURLLoader and PrefetchResponseReader can be deleted
+    // in one of its callbacks, so instead of deleting it immediately, it is
+    // made self owned and then deletes itself.
+    std::unique_ptr<PrefetchStreamingURLLoader> streaming_loader;
+    std::unique_ptr<PrefetchResponseReader> response_reader;
+    std::tie(streaming_loader, response_reader) =
+        std::move(streaming_loader_pair);
     DCHECK(streaming_loader);
+    DCHECK(response_reader);
 
-    // The streaming URL loader can be deleted in one of its callbacks, so
-    // instead of deleting it immediately, it is made self owned and then
-    // deletes itself.
-    PrefetchStreamingURLLoader* raw_streaming_loader = streaming_loader.get();
-    raw_streaming_loader->MakeSelfOwnedAndDeleteSoon(
-        std::move(streaming_loader));
+    auto* raw_streaming_loader = streaming_loader.get();
+    raw_streaming_loader->MakeSelfOwned(std::move(streaming_loader));
+    raw_streaming_loader->PostTaskToDeleteSelf();
+
+    auto* raw_response_reader = response_reader.get();
+    raw_response_reader->MakeSelfOwned(std::move(response_reader));
+    raw_response_reader->PostTaskToDeleteSelf();
   }
   streaming_loaders_.clear();
 }
