@@ -84,10 +84,7 @@ bool DCLayerTree::Initialize(HWND window) {
     return false;
   }
 
-  Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual;
-  hr = dcomp_device_->CreateVisual(&dcomp_root_visual);
-  CHECK_EQ(hr, S_OK);
-  hr = dcomp_root_visual.As(&dcomp_root_visual_);
+  hr = dcomp_device_->CreateVisual(&dcomp_root_visual_);
   CHECK_EQ(hr, S_OK);
 
   dcomp_target_->SetRoot(dcomp_root_visual_.Get());
@@ -234,28 +231,13 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     CHECK(!transform_visual_);
     CHECK(!content_visual_);
 
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual;
-    hr = dcomp_device->CreateVisual(&clip_visual);
+    hr = dcomp_device->CreateVisual(&clip_visual_);
     CHECK_EQ(hr, S_OK);
-    hr = clip_visual.As(&clip_visual_);
+    hr = dcomp_device->CreateVisual(&rounded_corners_visual_);
     CHECK_EQ(hr, S_OK);
-
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> rounded_corners_visual;
-    hr = dcomp_device->CreateVisual(&rounded_corners_visual);
+    hr = dcomp_device->CreateVisual(&transform_visual_);
     CHECK_EQ(hr, S_OK);
-    hr = rounded_corners_visual.As(&rounded_corners_visual_);
-    CHECK_EQ(hr, S_OK);
-
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> transform_visual;
-    hr = dcomp_device->CreateVisual(&transform_visual);
-    CHECK_EQ(hr, S_OK);
-    hr = transform_visual.As(&transform_visual_);
-    CHECK_EQ(hr, S_OK);
-
-    Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual;
-    hr = dcomp_device->CreateVisual(&content_visual);
-    CHECK_EQ(hr, S_OK);
-    hr = content_visual.As(&content_visual_);
+    hr = dcomp_device->CreateVisual(&content_visual_);
     CHECK_EQ(hr, S_OK);
 
     hr = clip_visual_->AddVisual(rounded_corners_visual_.Get(), FALSE, nullptr);
@@ -294,8 +276,20 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
     opacity_ = opacity;
     needs_commit = true;
 
+    // |IDCompositionVisual3| should be available since Windows 8.1, but we
+    // noticed crashes due to unconditionally casting to the interface on very
+    // early versions of Windows 10. Here, we only attempt the cast when the
+    // opacity changes, which should only happen for features that we don't
+    // intend to run unconditionally. If this cast fails, we may need to exclude
+    // some Windows versions from these features.
+    // See: https://crbug.com/1455666
+    Microsoft::WRL::ComPtr<IDCompositionVisual3> clip_visual_opacity;
+    hr = clip_visual_.As(&clip_visual_opacity);
+    CHECK_EQ(hr, S_OK);
+    CHECK(clip_visual_opacity);
+
     if (opacity_ != 1) {
-      hr = clip_visual_->SetOpacity(opacity_);
+      hr = clip_visual_opacity->SetOpacity(opacity_);
       CHECK_EQ(hr, S_OK);
 
       // Let all of this subtree's visuals blend as one, instead of
@@ -303,7 +297,7 @@ bool DCLayerTree::VisualTree::VisualSubtree::Update(
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_LAYER);
       CHECK_EQ(hr, S_OK);
     } else {
-      hr = clip_visual_->SetOpacity(1.0);
+      hr = clip_visual_opacity->SetOpacity(1.0);
       CHECK_EQ(hr, S_OK);
       hr = clip_visual_->SetOpacityMode(DCOMPOSITION_OPACITY_MODE_MULTIPLY);
       CHECK_EQ(hr, S_OK);
@@ -543,7 +537,7 @@ bool DCLayerTree::VisualTree::UpdateTree(
   }
 
   // Visual for root surface. Cache it to add DelegatedInk visual if needed.
-  Microsoft::WRL::ComPtr<IDCompositionVisual3> root_surface_visual;
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> root_surface_visual;
   bool needs_commit = false;
   std::vector<std::unique_ptr<VisualSubtree>> visual_subtrees;
   visual_subtrees.resize(overlays.size());
@@ -863,7 +857,7 @@ bool DCLayerTree::InitializeInkRenderer() {
 }
 
 void DCLayerTree::AddDelegatedInkVisualToTreeIfNeeded(
-    IDCompositionVisual3* root_surface_visual) {
+    IDCompositionVisual2* root_surface_visual) {
   // Only add the ink visual to the tree if it has already been initialized.
   // It will only have been initialized if delegated ink has been used, so
   // this ensures the visual is only added when it is needed. The ink renderer

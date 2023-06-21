@@ -134,7 +134,7 @@ class DCLayerTree {
   size_t GetDcompLayerCountForTesting() const {
     return visual_tree_ ? visual_tree_->GetDcompLayerCountForTesting() : 0;
   }
-  IDCompositionVisual3* GetContentVisualForTesting(size_t index) const {
+  IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
     return visual_tree_ ? visual_tree_->GetContentVisualForTesting(index)
                         : nullptr;
   }
@@ -183,7 +183,7 @@ class DCLayerTree {
     size_t GetDcompLayerCountForTesting() const {
       return visual_subtrees_.size();
     }
-    IDCompositionVisual3* GetContentVisualForTesting(size_t index) const {
+    IDCompositionVisual2* GetContentVisualForTesting(size_t index) const {
       return visual_subtrees_[index]->content_visual();
     }
     // Returns true if the tree is optimized.
@@ -218,10 +218,10 @@ class DCLayerTree {
                   float opacity,
                   const absl::optional<gfx::Rect>& clip_rect_in_root);
 
-      IDCompositionVisual3* container_visual() const {
+      IDCompositionVisual2* container_visual() const {
         return clip_visual_.Get();
       }
-      IDCompositionVisual3* content_visual() const {
+      IDCompositionVisual2* content_visual() const {
         return content_visual_.Get();
       }
       IUnknown* dcomp_visual_content() const {
@@ -237,21 +237,21 @@ class DCLayerTree {
      private:
       // The root of this subtree. In root space and contains the clip rect and
       // controls subtree opacity.
-      Microsoft::WRL::ComPtr<IDCompositionVisual3> clip_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> clip_visual_;
       // In root space and contains the rounded rectangle clip. This is separate
       // from |clip_visual_| since an overlay layer can have both a rectangular
       // and a rounded rectangular clip rects.
-      Microsoft::WRL::ComPtr<IDCompositionVisual3> rounded_corners_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> rounded_corners_visual_;
       // The child of |clip_visual_|, transforms its children from quad to root
       // space. This visual exists because |offset_| is in quad space, so it
       // must be affected by |transform_|. They cannot be on the same visual
       // since |IDCompositionVisual::SetTransform| and
       // |IDCompositionVisual::SetOffset[XY]| are applied in the opposite order
       // than we want.
-      Microsoft::WRL::ComPtr<IDCompositionVisual3> transform_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> transform_visual_;
       // The child of |transform_visual_|. In quad space, holds
       // |dcomp_visual_content_|.
-      Microsoft::WRL::ComPtr<IDCompositionVisual3> content_visual_;
+      Microsoft::WRL::ComPtr<IDCompositionVisual2> content_visual_;
 
       // The content to be placed at the leaf of the visual subtree. Either an
       // IDCompositionSurface or an IDXGISwapChain.
@@ -329,7 +329,7 @@ class DCLayerTree {
   // delegated ink API is used. After that, it can also be added anytime the
   // visual tree is rebuilt.
   void AddDelegatedInkVisualToTreeIfNeeded(
-      IDCompositionVisual3* root_surface_visual);
+      IDCompositionVisual2* root_surface_visual);
 
   // The ink renderer must be initialized before an OS API is used in order to
   // set up the delegated ink visual and delegated ink trail object.
@@ -374,7 +374,7 @@ class DCLayerTree {
   Microsoft::WRL::ComPtr<IDCompositionSurface> root_dcomp_surface_;
 
   // Root direct composition visual for window dcomp target.
-  Microsoft::WRL::ComPtr<IDCompositionVisual3> dcomp_root_visual_;
+  Microsoft::WRL::ComPtr<IDCompositionVisual2> dcomp_root_visual_;
 
   // List of pending overlay layers from ScheduleDCLayer().
   std::vector<std::unique_ptr<DCLayerOverlayParams>> pending_overlays_;
