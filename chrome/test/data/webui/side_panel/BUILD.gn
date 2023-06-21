@@ -21,6 +21,7 @@ build_webui_tests("build") {
     "bookmarks/test_power_bookmarks_delegate.ts",
     "bookmarks/commerce/shopping_list_test.ts",
     "bookmarks/commerce/test_shopping_list_api_proxy.ts",
+    "commerce/shopping_insights_app_test.ts",
     "reading_list/reading_list_app_test.ts",
     "reading_list/test_reading_list_api_proxy.ts",
     "user_notes/app_test.ts",
@@ -44,6 +45,14 @@ build_webui_tests("build") {
     "chrome://user-notes-side-panel.top-chrome/*|" + rebase_path(
             "$root_gen_dir/chrome/browser/resources/side_panel/user_notes/tsc/*",
             target_gen_dir),
+    "chrome://shopping-insights-side-panel.top-chrome/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/commerce/tsc/*",
+            target_gen_dir),
+    "chrome://shopping-insights-side-panel.top-chrome/shared/*|" +
+        rebase_path(
+            "$root_gen_dir/chrome/browser/resources/side_panel/shared/tsc/*",
+            target_gen_dir),
   ]
   ts_definitions = [
     "//tools/typescript/definitions/bookmarks.d.ts",
@@ -53,6 +62,7 @@ build_webui_tests("build") {
   ]
   ts_deps = [
     "//chrome/browser/resources/side_panel/bookmarks:build_ts",
+    "//chrome/browser/resources/side_panel/commerce:build_ts",
     "//chrome/browser/resources/side_panel/reading_list:build_ts",
     "//chrome/browser/resources/side_panel/shared:build_ts",
     "//chrome/browser/resources/side_panel/user_notes:build_ts",

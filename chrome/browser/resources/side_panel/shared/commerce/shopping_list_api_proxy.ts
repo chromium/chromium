@@ -4,7 +4,7 @@
 
 // TODO(b:283833590): Rename this file since it serves for all shopping features
 // now.
-import {BookmarkProductInfo, PageCallbackRouter, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
+import {BookmarkProductInfo, PageCallbackRouter, PriceInsightsInfo, ProductInfo, ShoppingListHandlerFactory, ShoppingListHandlerRemote} from '../shopping_list.mojom-webui.js';
 
 let instance: ShoppingListApiProxy|null = null;
 
@@ -16,6 +16,9 @@ export interface ShoppingListApiProxy {
   trackPriceForBookmark(bookmarkId: bigint): void;
   untrackPriceForBookmark(bookmarkId: bigint): void;
   getProductInfoForCurrentUrl(): Promise<{productInfo: ProductInfo}>;
+  getPriceInsightsInfoForCurrentUrl():
+      Promise<{priceInsightsInfo: PriceInsightsInfo}>;
+  showInsightsSidePanelUi(): void;
   getCallbackRouter(): PageCallbackRouter;
 }
 
@@ -52,6 +55,14 @@ export class ShoppingListApiProxyImpl implements ShoppingListApiProxy {
 
   getProductInfoForCurrentUrl() {
     return this.handler.getProductInfoForCurrentUrl();
+  }
+
+  getPriceInsightsInfoForCurrentUrl() {
+    return this.handler.getPriceInsightsInfoForCurrentUrl();
+  }
+
+  showInsightsSidePanelUi() {
+    this.handler.showInsightsSidePanelUI();
   }
 
   getCallbackRouter() {

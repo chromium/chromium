@@ -39,6 +39,7 @@ shopping_list::mojom::ProductInfoPtr ProductInfoToMojoProduct(
   }
 
   product_info->title = info->title;
+  product_info->cluster_title = info->product_cluster_title;
   product_info->domain = base::UTF16ToUTF8(
       url_formatter::FormatUrlForDisplayOmitSchemePathAndTrivialSubdomains(
           GURL(url)));
@@ -114,6 +115,66 @@ shopping_list::mojom::BookmarkProductInfoPtr BookmarkNodeToMojoProduct(
 
   return bookmark_info;
 }
+
+shopping_list::mojom::PriceInsightsInfoPtr PriceInsightsInfoToMojoObject(
+    const absl::optional<PriceInsightsInfo>& info,
+    const std::string& locale) {
+  auto insights_info = shopping_list::mojom::PriceInsightsInfo::New();
+
+  if (!info.has_value()) {
+    return insights_info;
+  }
+
+  insights_info->cluster_id = info->product_cluster_id.value();
+
+  std::unique_ptr<payments::CurrencyFormatter> formatter =
+      std::make_unique<payments::CurrencyFormatter>(info->currency_code,
+                                                    locale);
+  formatter->SetMaxFractionalDigits(2);
+
+  if (info->typical_low_price_micros.has_value() &&
+      info->typical_high_price_micros.has_value()) {
+    insights_info->typical_low_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(info->typical_low_price_micros.value()) /
+            kToMicroCurrency)));
+
+    insights_info->typical_high_price =
+        base::UTF16ToUTF8(formatter->Format(base::NumberToString(
+            static_cast<float>(info->typical_high_price_micros.value()) /
+            kToMicroCurrency)));
+  }
+
+  if (info->catalog_attributes.has_value()) {
+    insights_info->catalog_attributes = info->catalog_attributes.value();
+  }
+
+  if (info->jackpot_url.has_value()) {
+    insights_info->jackpot = info->jackpot_url.value();
+  }
+
+  shopping_list::mojom::PriceInsightsInfo::PriceBucket bucket;
+  switch (info->price_bucket) {
+    case PriceBucket::kUnknown:
+      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kUnknown;
+      break;
+    case PriceBucket::kLowPrice:
+      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kLow;
+      break;
+    case PriceBucket::kTypicalPrice:
+      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kTypical;
+      break;
+    case PriceBucket::kHighPrice:
+      bucket = shopping_list::mojom::PriceInsightsInfo::PriceBucket::kHigh;
+      break;
+  }
+  insights_info->bucket = bucket;
+
+  insights_info->has_multiple_catalogs = info->has_multiple_catalogs;
+
+  return insights_info;
+}
+
 }  // namespace
 
 using shopping_list::mojom::BookmarkProductInfo;
@@ -315,6 +376,40 @@ void ShoppingListHandler::OnFetchProductInfoForCurrentUrl(
     const GURL& url,
     const absl::optional<ProductInfo>& info) {
   std::move(callback).Run(ProductInfoToMojoProduct(url, info, locale_));
+}
+
+void ShoppingListHandler::GetPriceInsightsInfoForCurrentUrl(
+    GetPriceInsightsInfoForCurrentUrlCallback callback) {
+  if (!shopping_service_->IsPriceInsightsEligible() || !delegate_ ||
+      !delegate_->GetCurrentTabUrl().has_value()) {
+    std::move(callback).Run(shopping_list::mojom::PriceInsightsInfo::New());
+    return;
+  }
+
+  shopping_service_->GetPriceInsightsInfoForUrl(
+      delegate_->GetCurrentTabUrl().value(),
+      base::BindOnce(
+          &ShoppingListHandler::OnFetchPriceInsightsInfoForCurrentUrl,
+          weak_ptr_factory_.GetWeakPtr(), std::move(callback)));
+}
+
+void ShoppingListHandler::OnFetchPriceInsightsInfoForCurrentUrl(
+    GetPriceInsightsInfoForCurrentUrlCallback callback,
+    const GURL& url,
+    const absl::optional<PriceInsightsInfo>& info) {
+  std::move(callback).Run(PriceInsightsInfoToMojoObject(info, locale_));
+}
+
+void ShoppingListHandler::ShowInsightsSidePanelUI() {
+  if (delegate_) {
+    delegate_->ShowInsightsSidePanelUI();
+  }
+}
+
+void ShoppingListHandler::SetDelegateForTesting(
+    std::unique_ptr<Delegate> delegate) {
+  delegate_.reset();
+  delegate_ = std::move(delegate);
 }
 
 }  // namespace commerce
