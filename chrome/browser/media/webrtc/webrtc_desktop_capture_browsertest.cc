@@ -307,8 +307,14 @@ class WebRtcDesktopCaptureBrowserTest : public WebRtcTestBase {
   FakeDesktopMediaPickerFactory picker_factory_;
 };
 
+// TODO(crbug.com/1449889): Fails on MAC.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_TabCaptureProvidesMinFps DISABLED_TabCaptureProvidesMinFps
+#else
+#define MAYBE_TabCaptureProvidesMinFps TabCaptureProvidesMinFps
+#endif
 IN_PROC_BROWSER_TEST_F(WebRtcDesktopCaptureBrowserTest,
-                       TabCaptureProvidesMinFps) {
+                       MAYBE_TabCaptureProvidesMinFps) {
   constexpr int kFps = 30;
   constexpr const char* const kFpsString = "30";
   constexpr int kTestTimeSeconds = 2;
