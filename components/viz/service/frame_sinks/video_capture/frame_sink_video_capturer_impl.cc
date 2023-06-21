@@ -1055,16 +1055,17 @@ void FrameSinkVideoCapturerImpl::MaybeCaptureFrame(
   // Request a copy of the next frame from the frame sink.
 
   // Determine whether CopyOutputRequest should use NV12 multiplane format for
-  // importing mailboxes (rather than one mailbox per plane). This is true if
-  // the SharedImage associated with the video frame is itself in multiplane
-  // format.
-  // TODO(crbug.com/1455074): Also use multiplane format for NV12 when creating
-  // mailboxes and usage of MultiplanarSharedImage for hardware video is
-  // enabled.
+  // importing/creating mailboxes (rather than one mailbox per plane). This is
+  // true if either:
+  // (1) We're importing a mailbox (i.e., `use_nv12_with_textures` is true) that
+  // was created with NV12 multiplane format
+  // (2) We're creating mailboxes and usage of MultiplanarSharedImage for
+  // hardware video is enabled.
   bool use_multiplane_for_nv12 =
-      (use_nv12_with_textures &&
-       request_properties.frame->shared_image_format_type() ==
-           media::SharedImageFormatType::kSharedImageFormat);
+      use_nv12_with_textures
+          ? (request_properties.frame->shared_image_format_type() ==
+             media::SharedImageFormatType::kSharedImageFormat)
+          : media::IsMultiPlaneFormatForHardwareVideoEnabled();
 
   auto request = std::make_unique<CopyOutputRequest>(
       VideoPixelFormatToCopyOutputRequestFormat(pixel_format_,
