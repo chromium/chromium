@@ -157,7 +157,7 @@ build_webui_tests("build") {
     "internet_page/tether_connection_dialog_test.ts",
 
     "kerberos_page/kerberos_accounts_subpage_test.ts",
-    "kerberos_page/kerberos_add_account_dialog_test.js",
+    "kerberos_page/kerberos_add_account_dialog_test.ts",
     "kerberos_page/kerberos_page_test.ts",
     "kerberos_page/test_kerberos_accounts_browser_proxy.ts",
 

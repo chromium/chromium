@@ -33,7 +33,7 @@ import {recordSettingChange} from '../metrics_recorder.js';
 import {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_accounts_browser_proxy.js';
 import {getTemplate} from './kerberos_add_account_dialog.html.js';
 
-interface KerberosAddAccountDialogElement {
+export interface KerberosAddAccountDialogElement {
   $: {
     addDialog: CrDialogElement,
     username: CrInputElement,
@@ -49,7 +49,7 @@ const DEFAULT_USERNAME_PLACEHOLDER: string = 'user@example.com';
 
 const KerberosAddAccountDialogElementBase = I18nMixin(PolymerElement);
 
-class KerberosAddAccountDialogElement extends
+export class KerberosAddAccountDialogElement extends
     KerberosAddAccountDialogElementBase {
   static get is() {
     return 'kerberos-add-account-dialog';

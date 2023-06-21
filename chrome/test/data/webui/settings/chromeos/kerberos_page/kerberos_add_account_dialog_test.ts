@@ -2,60 +2,64 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-'use strict';
-
 import 'chrome://os-settings/lazy_load.js';
 
-import {KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/lazy_load.js';
-import {assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
+import {KerberosAccount, KerberosAccountsBrowserProxyImpl, KerberosAddAccountDialogElement, KerberosConfigErrorCode, KerberosErrorType} from 'chrome://os-settings/lazy_load.js';
+import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
+import {CrCheckboxElement} from 'chrome://resources/cr_elements/cr_checkbox/cr_checkbox.js';
+import {CrDialogElement} from 'chrome://resources/cr_elements/cr_dialog/cr_dialog.js';
+import {CrInputElement} from 'chrome://resources/cr_elements/cr_input/cr_input.js';
+import {CrTextareaElement} from 'chrome://resources/cr_elements/cr_textarea/cr_textarea.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
+import {assertEquals, assertFalse, assertNotEquals, assertNull, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
-import {AccountIndex, TestKerberosAccountsBrowserProxy, TEST_KERBEROS_ACCOUNTS} from './test_kerberos_accounts_browser_proxy.js';
 
-// Tests for the kerberos-add-account-dialog element.
-suite('Kerberos add account dialog tests', function() {
-  let browserProxy = null;
+import {AccountIndex, TEST_KERBEROS_ACCOUNTS, TestKerberosAccountsBrowserProxy} from './test_kerberos_accounts_browser_proxy.js';
 
-  let dialog = null;
-  let addDialog = null;
+suite('<kerberos-add-account-dialog>', () => {
+  let browserProxy: TestKerberosAccountsBrowserProxy;
+  let dialog: KerberosAddAccountDialogElement;
 
-  let username = null;
-  let password = null;
-  let rememberPassword = null;
-  let advancedConfigButton = null;
-  let actionButton = null;
-  let generalError = null;
-  let title = null;
+  let addDialog: CrDialogElement;
+  let username: CrInputElement;
+  let password: CrInputElement;
+
+  let rememberPassword: CrCheckboxElement;
+  let advancedConfigButton: HTMLElement;
+  let actionButton: CrButtonElement;
+  let generalError: HTMLElement;
+  let title: string;
 
   // Indices of 'addAccount' params.
-  const AddParams = {
-    PRINCIPAL_NAME: 0,
-    PASSWORD: 1,
-    REMEMBER_PASSWORD: 2,
-    CONFIG: 3,
-    ALLOW_EXISTING: 4,
-  };
+  const enum AddParams {
+    PRINCIPAL_NAME = 0,
+    PASSWORD = 1,
+    REMEMBER_PASSWORD = 2,
+    CONFIG = 3,
+    ALLOW_EXISTING = 4,
+  }
 
-  setup(function() {
+  setup(() => {
     browserProxy = new TestKerberosAccountsBrowserProxy();
     KerberosAccountsBrowserProxyImpl.setInstanceForTesting(browserProxy);
-    PolymerTest.clearBody();
 
-    // Setting the default value of the relevant load time data.
-    loadTimeData.overrideValues({kerberosRememberPasswordByDefault: true});
-    loadTimeData.overrideValues({kerberosRememberPasswordEnabled: true});
-    loadTimeData.overrideValues({isGuest: false});
-    loadTimeData.overrideValues({kerberosDomainAutocomplete: ''});
+    loadTimeData.overrideValues({
+      kerberosRememberPasswordByDefault: true,
+      kerberosRememberPasswordEnabled: true,
+      isGuest: false,
+      kerberosDomainAutocomplete: '',
+    });
 
     createDialog(null);
   });
 
-  teardown(function() {
+  teardown(() => {
     dialog.remove();
-    KerberosAccountsBrowserProxyImpl.setInstanceForTesting(undefined);
+    browserProxy.reset();
   });
 
-  function createDialog(presetAccount) {
+  function createDialog(presetAccount: KerberosAccount|null): void {
     if (dialog) {
       dialog.remove();
     }
@@ -74,26 +78,38 @@ suite('Kerberos add account dialog tests', function() {
     password = dialog.$.password;
     assertTrue(!!password);
 
-    rememberPassword = dialog.$.rememberPassword;
-    assertTrue(!!rememberPassword);
+    // CrCheckboxElement
+    const checkbox =
+        addDialog.querySelector<CrCheckboxElement>('#rememberPassword');
+    assertTrue(!!checkbox);
+    rememberPassword = checkbox;
 
-    advancedConfigButton = dialog.$.advancedConfigButton;
-    assertTrue(!!advancedConfigButton);
+    const configButton =
+        addDialog.querySelector<HTMLElement>('#advancedConfigButton');
+    assertTrue(!!configButton);
+    advancedConfigButton = configButton;
 
-    actionButton = addDialog.querySelector('.action-button');
-    assertTrue(!!actionButton);
+    const button = addDialog.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!button);
+    actionButton = button;
 
-    generalError = dialog.$['general-error-message'];
-    assertTrue(!!generalError);
+    const message =
+        addDialog.querySelector<HTMLElement>('#general-error-message');
+    assertTrue(!!message);
+    generalError = message;
 
-    title = dialog.shadowRoot.querySelector('[slot=title]').innerText;
+    const element =
+        dialog.shadowRoot!.querySelector<HTMLElement>('[slot=title]');
+    assertTrue(!!element);
+    title = element.innerText;
     assertTrue(!!title);
   }
 
   // Sets |error| as error result for addAccount(), simulates a click on the
   // addAccount button and checks that |errorElement| has an non-empty
   // innerText value afterwards.
-  async function checkAddAccountError(error, errorElement) {
+  async function checkAddAccountError(
+      error: KerberosErrorType, errorElement: HTMLElement): Promise<void> {
     flush();
     assertEquals(0, errorElement.innerText.length);
     browserProxy.addAccountError = error;
@@ -105,30 +121,43 @@ suite('Kerberos add account dialog tests', function() {
 
   // Opens the Advanced Config dialog, sets |config| as Kerberos configuration
   // and clicks 'Save'. Returns a promise with the validation result.
-  async function setConfig(config) {
+  async function setConfig(config: string): Promise<void> {
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
-    const configElement = advancedConfigDialog.querySelector('#config');
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
+    assertTrue(!!advancedConfigDialog);
+    const configElement =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!configElement);
     assertFalse(configElement.disabled);
     configElement.value = config;
-    advancedConfigDialog.querySelector('.action-button').click();
+    const button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!button);
+    button.click();
     flush();
-    return browserProxy.whenCalled('validateConfig');
+    await browserProxy.whenCalled('validateConfig');
   }
 
   // Opens the Advanced Config dialog, asserts that |config| is set as
   // Kerberos configuration and clicks 'Cancel'.
-  async function assertConfig(config) {
+  async function assertConfig(config: string): Promise<void> {
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
-    assertEquals(config, advancedConfigDialog.querySelector('#config').value);
-    advancedConfigDialog.querySelector('.cancel-button').click();
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
+    assertTrue(!!advancedConfigDialog);
+    const configElement =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!configElement);
+    assertEquals(config, configElement.value);
+    const button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.cancel-button');
+    assertTrue(!!button);
+    button.click();
     flush();
   }
 
@@ -142,13 +171,13 @@ suite('Kerberos add account dialog tests', function() {
     assertFalse(username.disabled);
     assertEquals('', username.value);
     assertEquals('', password.value);
-    assertConfig(loadTimeData.getString('defaultKerberosConfig'));
+    await assertConfig(loadTimeData.getString('defaultKerberosConfig'));
     assertTrue(rememberPassword.checked);
   });
 
   // Verifies the rememberPassword state if no account is preset and password
   // should not be remembered by default.
-  test('State without preset account and password not remembered', async () => {
+  test('State without preset account and password not remembered', () => {
     loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
     createDialog(null);
 
@@ -157,14 +186,14 @@ suite('Kerberos add account dialog tests', function() {
 
   // Verifies expected state if an account is preset.
   test('State with preset account', async () => {
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST];
+    assertTrue(!!testAccount);
+    createDialog(testAccount);
     assertTrue(title.startsWith('Refresh'));
     assertEquals('Refresh', actionButton.innerText);
     assertTrue(username.readonly);
-    assertEquals(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName,
-        username.value);
-    assertConfig(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].config);
+    assertEquals(testAccount.principalName, username.value);
+    await assertConfig(testAccount.config);
     // Password and remember password are tested below since the contents
     // depends on the passwordWasRemembered property of the account.
   });
@@ -172,10 +201,12 @@ suite('Kerberos add account dialog tests', function() {
   // The password input field is empty and 'Remember password' is checked if
   // |passwordWasRemembered| is false and the password should be remembered by
   // default.
-  test('Password not preset if password was not remembered', function() {
+  test('Password not preset if password was not remembered', () => {
     assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordByDefault'));
-    assertFalse(TEST_KERBEROS_ACCOUNTS[0].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[0]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[0];
+    assertTrue(!!testAccount);
+    assertFalse(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
 
     assertEquals('', password.value);
     assertTrue(rememberPassword.checked);
@@ -186,68 +217,76 @@ suite('Kerberos add account dialog tests', function() {
   // by default.
   test(
       'Checkbox unchecked if password was not remembered and feature disabled',
-      function() {
+      () => {
         loadTimeData.overrideValues({kerberosRememberPasswordByDefault: false});
         createDialog(null);
 
-        assertFalse(
-            TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].passwordWasRemembered);
-        createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
+        const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST];
+        assertTrue(!!testAccount);
+        assertFalse(testAccount.passwordWasRemembered);
+        createDialog(testAccount);
         assertEquals('', password.value);
         assertFalse(rememberPassword.checked);
       });
 
   // The password input field is not empty and 'Remember password' is checked
   // if |passwordWasRemembered| is true.
-  test('Password preset if password was remembered', function() {
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+  test('Password preset if password was remembered', () => {
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
     assertNotEquals('', password.value);
     assertTrue(rememberPassword.checked);
   });
 
-  test('Remember password enabled', function() {
+  test('Remember password enabled', () => {
     assertTrue(loadTimeData.getBoolean('kerberosRememberPasswordEnabled'));
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
 
-    assertTrue(
-        !dialog.shadowRoot.querySelector('#rememberPasswordPolicyIndicator'));
+    assertNull(
+        dialog.shadowRoot!.querySelector('#rememberPasswordPolicyIndicator'));
     assertFalse(rememberPassword.disabled);
     assertTrue(rememberPassword.checked);
     assertNotEquals('', password.value);
   });
 
-  test('Remember password disabled', function() {
+  test('Remember password disabled', () => {
     loadTimeData.overrideValues({kerberosRememberPasswordEnabled: false});
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
 
     assertTrue(
-        !!dialog.shadowRoot.querySelector('#rememberPasswordPolicyIndicator'));
+        !!dialog.shadowRoot!.querySelector('#rememberPasswordPolicyIndicator'));
     assertTrue(rememberPassword.disabled);
     assertFalse(rememberPassword.checked);
     assertEquals('', password.value);
   });
 
-  test('Remember password visible and checked on user sessions', function() {
+  test('Remember password visible and checked on user sessions', () => {
     assertFalse(loadTimeData.getBoolean('isGuest'));
     createDialog(null);
 
-    assertFalse(
-        dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
+    const container = dialog.shadowRoot!.querySelector<HTMLElement>(
+        '#rememberPasswordContainer');
+    assertTrue(!!container);
+    assertFalse(container.hidden);
     assertTrue(rememberPassword.checked);
   });
 
-  test('Remember password hidden and not checked on MGS', function() {
+  test('Remember password hidden and not checked on MGS', () => {
     loadTimeData.overrideValues({isGuest: true});
     createDialog(null);
 
-    assertTrue(
-        dialog.shadowRoot.querySelector('#rememberPasswordContainer').hidden);
+    const container = dialog.shadowRoot!.querySelector<HTMLElement>(
+        '#rememberPasswordContainer');
+    assertTrue(!!container);
+    assertTrue(container.hidden);
     assertFalse(rememberPassword.checked);
   });
 
@@ -261,7 +300,7 @@ suite('Kerberos add account dialog tests', function() {
 
     username.value = EXPECTED_USER;
     password.value = EXPECTED_PASS;
-    const result = await setConfig(EXPECTED_CONFIG);
+    await setConfig(EXPECTED_CONFIG);
     rememberPassword.checked = EXPECTED_REMEMBER_PASS;
 
     assertFalse(actionButton.disabled);
@@ -280,7 +319,9 @@ suite('Kerberos add account dialog tests', function() {
   // If an account is preset, overwriting that account should be allowed.
   test('Allow existing is true for preset accounts', async () => {
     // Populate dialog with preset account.
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    createDialog(testAccount);
     actionButton.click();
     const args = await browserProxy.whenCalled('addAccount');
     assertTrue(args[AddParams.ALLOW_EXISTING]);
@@ -298,9 +339,10 @@ suite('Kerberos add account dialog tests', function() {
   // If the account has passwordWasRemembered === true and the user just
   // clicks the 'Add' button, an empty password is submitted.
   test('Submits empty password if remembered password is used', async () => {
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
     actionButton.click();
     const args = await browserProxy.whenCalled('addAccount');
     assertEquals('', args[AddParams.PASSWORD]);
@@ -311,9 +353,10 @@ suite('Kerberos add account dialog tests', function() {
   // the password before clicking the action button, the changed password is
   // submitted.
   test('Submits changed password if password field was changed', async () => {
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND].passwordWasRemembered);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.SECOND];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.passwordWasRemembered);
+    createDialog(testAccount);
     password.inputElement.value = 'some edit';
     password.dispatchEvent(new CustomEvent('input'));
     actionButton.click();
@@ -323,18 +366,21 @@ suite('Kerberos add account dialog tests', function() {
   });
 
   test('Advanced config open and close', async () => {
-    assertTrue(!dialog.shadowRoot.querySelector('#advancedConfigDialog'));
+    assertNull(dialog.shadowRoot!.querySelector('#advancedConfigDialog'));
     assertFalse(addDialog.hidden);
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
 
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector<CrDialogElement>(
+            '#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
     assertTrue(advancedConfigDialog.open);
     assertTrue(addDialog.hidden);
-    const saveButton = advancedConfigDialog.querySelector('.action-button');
+    const saveButton =
+        advancedConfigDialog.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!saveButton);
     assertFalse(saveButton.disabled);
     saveButton.click();
     flush();
@@ -343,7 +389,7 @@ suite('Kerberos add account dialog tests', function() {
     await browserProxy.whenCalled('validateConfig');
     flush();
     assertFalse(saveButton.disabled);
-    assertTrue(!dialog.shadowRoot.querySelector('#advancedConfigDialog'));
+    assertNull(dialog.shadowRoot!.querySelector('#advancedConfigDialog'));
     assertFalse(addDialog.hidden);
     assertTrue(addDialog.open);
   });
@@ -353,18 +399,24 @@ suite('Kerberos add account dialog tests', function() {
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
 
     // Change config and save.
     const modifiedConfig = 'modified';
-    advancedConfigDialog.querySelector('#config').value = modifiedConfig;
-    advancedConfigDialog.querySelector('.action-button').click();
+    const config =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!config);
+    config.value = modifiedConfig;
+    const button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!button);
+    button.click();
 
     // Changed value should stick.
     await browserProxy.whenCalled('validateConfig');
     flush();
-    assertConfig(modifiedConfig);
+    await assertConfig(modifiedConfig);
   });
 
   test('Advanced configuration cancel resets config', async () => {
@@ -372,31 +424,42 @@ suite('Kerberos add account dialog tests', function() {
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
 
     // Change config and cancel.
-    const prevConfig = advancedConfigDialog.querySelector('#config').value;
-    advancedConfigDialog.querySelector('#config').value = 'modified';
-    advancedConfigDialog.querySelector('.cancel-button').click();
+    const config =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!config);
+    const prevConfig = config.value;
+    config.value = 'modified';
+    const button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.cancel-button');
+    assertTrue(!!button);
+    button.click();
     flush();
 
     // Changed value should NOT stick.
-    assertConfig(prevConfig);
+    await assertConfig(prevConfig);
   });
 
   test('Advanced configuration disabled by policy', async () => {
-    assertTrue(TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD].isManaged);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.THIRD];
+    assertTrue(!!testAccount);
+    assertTrue(testAccount.isManaged);
+    createDialog(testAccount);
     advancedConfigButton.click();
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
     assertTrue(
         !!advancedConfigDialog.querySelector('#advancedConfigPolicyIndicator'));
-    assertTrue(advancedConfigDialog.querySelector('#config').disabled);
+    const config =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!config);
+    assertTrue(config.disabled);
   });
 
   test('Advanced configuration validation error', async () => {
@@ -404,7 +467,8 @@ suite('Kerberos add account dialog tests', function() {
     await browserProxy.whenCalled('validateConfig');
     flush();
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector<CrDialogElement>(
+            '#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
 
     // Cause a validation error.
@@ -415,7 +479,10 @@ suite('Kerberos add account dialog tests', function() {
     };
 
     // Clicking the action button (aka 'Save') validates the config.
-    advancedConfigDialog.querySelector('.action-button').click();
+    let button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.action-button');
+    assertTrue(!!button);
+    button.click();
 
     await browserProxy.whenCalled('validateConfig');
 
@@ -424,13 +491,15 @@ suite('Kerberos add account dialog tests', function() {
     await flushTasks();
 
     // Is some error text set?
-    const configError =
-        advancedConfigDialog.querySelector('#config-error-message');
+    const configError = advancedConfigDialog.querySelector<HTMLElement>(
+        '#config-error-message');
     assertTrue(!!configError);
     assertNotEquals(0, configError.innerText.length);
 
     // Is something selected?
-    const configElement = advancedConfigDialog.querySelector('#config');
+    const configElement =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!configElement);
     const textArea = configElement.$.input;
     assertEquals(0, textArea.selectionStart);
     assertNotEquals(0, textArea.selectionEnd);
@@ -440,9 +509,12 @@ suite('Kerberos add account dialog tests', function() {
     assertTrue(addDialog.hidden);
 
     // Was the config not accepted?
-    advancedConfigDialog.querySelector('.cancel-button').click();
+    button =
+        advancedConfigDialog.querySelector<CrButtonElement>('.cancel-button');
+    assertTrue(!!button);
+    button.click();
     flush();
-    assertConfig(loadTimeData.getString('defaultKerberosConfig'));
+    await assertConfig(loadTimeData.getString('defaultKerberosConfig'));
   });
 
   test('Validate configuration on advanced click', async () => {
@@ -462,108 +534,113 @@ suite('Kerberos add account dialog tests', function() {
     await flushTasks();
 
     const advancedConfigDialog =
-        dialog.shadowRoot.querySelector('#advancedConfigDialog');
+        dialog.shadowRoot!.querySelector('#advancedConfigDialog');
     assertTrue(!!advancedConfigDialog);
 
     // Is some error text set?
-    const configError =
-        advancedConfigDialog.querySelector('#config-error-message');
+    const configError = advancedConfigDialog.querySelector<HTMLElement>(
+        '#config-error-message');
     assertTrue(!!configError);
     assertNotEquals(0, configError.innerText.length);
 
     // Is something selected?
-    const configElement = advancedConfigDialog.querySelector('#config');
+    const configElement =
+        advancedConfigDialog.querySelector<CrTextareaElement>('#config');
+    assertTrue(!!configElement);
     const textArea = configElement.$.input;
     assertEquals(0, textArea.selectionStart);
     assertNotEquals(0, textArea.selectionEnd);
   });
 
-  test('Domain autocomplete enabled', function() {
+  test('Domain autocomplete enabled', () => {
     loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
     createDialog(null);
 
     // '@' should be automatically added to the policy value.
-    assertEquals(
-        '@domain.com',
-        dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+    const element =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#kerberosDomain');
+    assertTrue(!!element);
+    assertEquals('@domain.com', element.innerText);
   });
 
-  test('Domain autocomplete enabled override', function() {
+  test('Domain autocomplete enabled override', () => {
     loadTimeData.overrideValues({kerberosDomainAutocomplete: 'domain.com'});
-    assertTrue(
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName &&
-        TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST].principalName.indexOf(
-            '@') !== -1);
-    createDialog(TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST]);
+    const testAccount = TEST_KERBEROS_ACCOUNTS[AccountIndex.FIRST];
+    assertTrue(!!testAccount);
+    const principalName = testAccount.principalName;
+    assertTrue(!!principalName);
+    assertNotEquals(-1, principalName && principalName.indexOf('@'));
+    createDialog(testAccount);
 
     // If inserted principal contains '@', nothing should be shown.
-    assertEquals(
-        '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+    const element =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#kerberosDomain');
+    assertTrue(!!element);
+    assertEquals('', element.innerText);
   });
 
-  test('Domain autocomplete disabled', function() {
+  test('Domain autocomplete disabled', () => {
     assertEquals('', loadTimeData.getString('kerberosDomainAutocomplete'));
-    assertEquals(
-        '', dialog.shadowRoot.querySelector('#kerberosDomain').innerText);
+    const element =
+        dialog.shadowRoot!.querySelector<HTMLElement>('#kerberosDomain');
+    assertTrue(!!element);
+    assertEquals('', element.innerText);
   });
 
   // Testing how `addAccount` error types are handled by the UI:
 
   // KerberosErrorType.PARSE_PRINCIPAL_FAILED spawns a username error.
-  test('Add account error - parse principal failed', async () => {
-    await checkAddAccountError(
+  test('Add account error - parse principal failed', () => {
+    checkAddAccountError(
         KerberosErrorType.PARSE_PRINCIPAL_FAILED, username.$.error);
   });
 
   // KerberosErrorType.BAD_PRINCIPAL spawns a username error.
-  test('Add account error - bad principal', async () => {
-    await checkAddAccountError(
-        KerberosErrorType.BAD_PRINCIPAL, username.$.error);
+  test('Add account error - bad principal', () => {
+    checkAddAccountError(KerberosErrorType.BAD_PRINCIPAL, username.$.error);
   });
 
   // KerberosErrorType.DUPLICATE_PRINCIPAL_NAME spawns a username error.
-  test('Add account error - duplicate principal name', async () => {
-    await checkAddAccountError(
+  test('Add account error - duplicate principal name', () => {
+    checkAddAccountError(
         KerberosErrorType.DUPLICATE_PRINCIPAL_NAME, username.$.error);
   });
 
   // KerberosErrorType.CONTACTING_KDC_FAILED spawns a username error.
-  test('Add account error - contacting KDC failed', async () => {
-    await checkAddAccountError(
+  test('Add account error - contacting KDC failed', () => {
+    checkAddAccountError(
         KerberosErrorType.CONTACTING_KDC_FAILED, username.$.error);
   });
 
   // KerberosErrorType.BAD_PASSWORD spawns a password error.
-  test('Add account error - bad password', async () => {
-    await checkAddAccountError(
-        KerberosErrorType.BAD_PASSWORD, password.$.error);
+  test('Add account error - bad password', () => {
+    checkAddAccountError(KerberosErrorType.BAD_PASSWORD, password.$.error);
   });
 
   // KerberosErrorType.PASSWORD_EXPIRED spawns a password error.
-  test('Add account error - password expired', async () => {
-    await checkAddAccountError(
-        KerberosErrorType.PASSWORD_EXPIRED, password.$.error);
+  test('Add account error - password expired', () => {
+    checkAddAccountError(KerberosErrorType.PASSWORD_EXPIRED, password.$.error);
   });
 
   // KerberosErrorType.NETWORK_PROBLEM spawns a general error.
-  test('Add account error - network problem', async () => {
-    await checkAddAccountError(KerberosErrorType.NETWORK_PROBLEM, generalError);
+  test('Add account error - network problem', () => {
+    checkAddAccountError(KerberosErrorType.NETWORK_PROBLEM, generalError);
   });
 
   // KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE spawns a general
   // error.
-  test('Add account error - KDC does not support encryption type', async () => {
-    await checkAddAccountError(
+  test('Add account error - KDC does not support encryption type', () => {
+    checkAddAccountError(
         KerberosErrorType.KDC_DOES_NOT_SUPPORT_ENCRYPTION_TYPE, generalError);
   });
 
   // KerberosErrorType.UNKNOWN spawns a general error.
-  test('Add account error - unknown', async () => {
-    await checkAddAccountError(KerberosErrorType.UNKNOWN, generalError);
+  test('Add account error - unknown', () => {
+    checkAddAccountError(KerberosErrorType.UNKNOWN, generalError);
   });
 
   // KerberosErrorType.BAD_CONFIG spawns a general error.
-  test('Add account error - bad config', async () => {
-    await checkAddAccountError(KerberosErrorType.BAD_CONFIG, generalError);
+  test('Add account error - bad config', () => {
+    checkAddAccountError(KerberosErrorType.BAD_CONFIG, generalError);
   });
 });

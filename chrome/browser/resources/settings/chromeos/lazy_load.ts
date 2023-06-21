@@ -140,6 +140,7 @@ export {SettingsPasspointSubpageElement} from './internet_page/passpoint_subpage
 export {TetherConnectionDialogElement} from './internet_page/tether_connection_dialog.js';
 export {KerberosAccount, KerberosAccountsBrowserProxy, KerberosAccountsBrowserProxyImpl, KerberosConfigErrorCode, KerberosErrorType, ValidateKerberosConfigResult} from './kerberos_page/kerberos_accounts_browser_proxy.js';
 export {SettingsKerberosAccountsSubpageElement} from './kerberos_page/kerberos_accounts_subpage.js';
+export {KerberosAddAccountDialogElement} from './kerberos_page/kerberos_add_account_dialog.js';
 export {KeyboardShortcutBanner} from './keyboard_shortcut_banner/keyboard_shortcut_banner.js';
 export {SettingsMultideviceCombinedSetupItemElement} from './multidevice_page/multidevice_combined_setup_item.js';
 export {SettingsMultideviceFeatureItemElement} from './multidevice_page/multidevice_feature_item.js';
