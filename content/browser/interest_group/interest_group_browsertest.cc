@@ -272,6 +272,13 @@ class AllowlistedOriginContentBrowserClient
            allow_list_.contains(api_origin);
   }
 
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
+    return allow_list_.contains(destination_origin);
+  }
+
  private:
   base::flat_set<url::Origin> allow_list_;
 };
@@ -1675,6 +1682,53 @@ try {
                                          blink::kMaxAdAuctionAdComponents + 2));
     EXPECT_EQ(all_component_urls,
               GetAdAuctionComponentsInJS(render_frame_host, 32768));
+  }
+
+  // Send a request that has the content "Basic request data" to the reporting
+  // destination. This function is used in negative test cases where a reporting
+  // beacon is expected not to be sent. For example:
+  // 1. A click without user gesture happened on ad component fenced frame, the
+  // reporting beacon should not be sent.
+  // 2. Call SendBasicRequest().
+  // 3. Verify the received request's content is from SendBasicRequest().
+  // This works because `ControllableHttpResponse` only handles one request.
+  void SendBasicRequest(GURL url) {
+    // Construct the resource request.
+    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
+        web_contents()
+            ->GetPrimaryMainFrame()
+            ->GetStoragePartition()
+            ->GetURLLoaderFactoryForBrowserProcess();
+
+    auto request = std::make_unique<network::ResourceRequest>();
+
+    request->url = url;
+    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
+    request->method = net::HttpRequestHeaders::kPostMethod;
+    request->trusted_params = network::ResourceRequest::TrustedParams();
+    request->trusted_params->isolation_info =
+        net::IsolationInfo::CreateTransient();
+
+    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
+        network::SimpleURLLoader::Create(std::move(request),
+                                         TRAFFIC_ANNOTATION_FOR_TESTS);
+
+    simple_url_loader->AttachStringForUpload(
+        "Basic request data",
+        /*upload_content_type=*/"text/plain;charset=UTF-8");
+    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
+
+    // Send out the beacon.
+    simple_url_loader_ptr->DownloadHeadersOnly(
+        url_loader_factory.get(),
+        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
+  }
+
+  std::unique_ptr<NetworkResponder> CreateNetworkResponder() override {
+    // Fenced frame window.fence.reportEvent API requires a responder that
+    // handles beacons sent to the reporting url.
+    return std::make_unique<NetworkResponder>(*https_server_,
+                                              "/echoall?report_win_beacon");
   }
 
  protected:
@@ -13355,7 +13409,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_THAT(signals, ::testing::IsEmpty());
 }
 
-// Runs auction like Just like
+// Runs an ad auction similar to the one in
 // InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
 // an ad beacon that is sent by the render URL.
 IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
@@ -13395,9 +13449,66 @@ interestGroupBuyers: [$1],
 
   absl::optional<network::ResourceRequest> request =
       url_loader_monitor.WaitForUrl(
-          https_server_->GetURL("d.test", "/echoall?report_win_beacon"));
+          https_server_->GetURL("b.test", "/echoall?report_win_beacon"));
   ASSERT_TRUE(request);
   EXPECT_EQ(net::HttpRequestHeaders::kPostMethod, request->method);
+}
+
+// Runs auction like Just like
+// InterestGroupFencedFrameBrowserTest.RunAdAuctionWithWinner but also registers
+// an ad beacon that is sent by the render URL. The ad beacon will not be sent
+// out because the origin the beacon is being sent to (b.test) is not enrolled.
+IN_PROC_BROWSER_TEST_F(InterestGroupFencedFrameBrowserTest,
+                       RunAdAuctionWithWinnerRegisterUnenrolledAdBeaconBuyer) {
+  // Un-enroll 'b.test' from Privacy Sandbox. Keep the other origins to allow
+  // the ad auction to run properly.
+  content_browser_client_->SetAllowList({
+      url::Origin::Create(https_server_->GetURL("a.test", "/")),
+      url::Origin::Create(https_server_->GetURL("c.test", "/")),
+  });
+
+  URLLoaderMonitor url_loader_monitor;
+
+  GURL test_url = https_server_->GetURL("a.test", "/fenced_frames/basic.html");
+  ASSERT_TRUE(NavigateToURL(shell(), test_url));
+  url::Origin test_origin = url::Origin::Create(test_url);
+
+  GURL ad_url = https_server_->GetURL(
+      "c.test", "/fenced_frames/ad_with_fenced_frame_reporting.html");
+  EXPECT_EQ(
+      kSuccess,
+      JoinInterestGroupAndVerify(
+          blink::TestInterestGroupBuilder(
+              /*owner=*/test_origin,
+              /*name=*/"cars")
+              .SetBiddingUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/bidding_logic.js"))
+              .SetTrustedBiddingSignalsUrl(https_server_->GetURL(
+                  "a.test", "/interest_group/trusted_bidding_signals.json"))
+              .SetTrustedBiddingSignalsKeys({{"key1"}})
+              .SetAds({{{ad_url, R"({"ad":"metadata","here":[1,2]})"}}})
+              .Build()));
+
+  ASSERT_NO_FATAL_FAILURE(RunAuctionAndNavigateFencedFrame(
+      ad_url, JsReplace(
+                  R"({
+                    seller: $1,
+                    decisionLogicUrl: $2,
+                    interestGroupBuyers: [$1],
+                  })",
+                  test_origin,
+                  https_server_->GetURL("a.test",
+                                        "/interest_group/decision_logic.js"))));
+
+  // Send a basic request to the reporting destination.
+  GURL reporting_url =
+      https_server_->GetURL("b.test", "/echoall?report_win_beacon");
+  SendBasicRequest(reporting_url);
+
+  // Verify the request received is the basic request, which implies the
+  // beacon was not sent, as expected.
+  EXPECT_EQ(network_responder_->GetRequest()->content, "Basic request data");
+  EXPECT_TRUE(network_responder_->HasReceivedRequest());
 }
 
 // Runs an auction similar to
@@ -13879,46 +13990,6 @@ class InterestGroupAdComponentAutomaticBeaconBrowserTest
       EXPECT_EQ(ad_component_url, observer.last_committed_url());
       EXPECT_TRUE(observer.last_navigation_succeeded());
     }
-  }
-
-  // Send a request that has the content "Basic request data" to the reporting
-  // destination. This function is used in negative test cases where a reporting
-  // beacon is expected not to be sent. For example:
-  // 1. A click without user gesture happened on ad component fenced frame, the
-  // reporting beacon should not be sent.
-  // 2. Call SendBasicRequest().
-  // 3. Verify the received request's content is from SendBasicRequest().
-  // This works because `ControllableHttpResponse` only handles one request.
-  void SendBasicRequest(GURL url) {
-    // Construct the resource request.
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        web_contents()
-            ->GetPrimaryMainFrame()
-            ->GetStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess();
-
-    auto request = std::make_unique<network::ResourceRequest>();
-
-    request->url = url;
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    request->method = net::HttpRequestHeaders::kPostMethod;
-    request->trusted_params = network::ResourceRequest::TrustedParams();
-    request->trusted_params->isolation_info =
-        net::IsolationInfo::CreateTransient();
-
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-        network::SimpleURLLoader::Create(std::move(request),
-                                         TRAFFIC_ANNOTATION_FOR_TESTS);
-
-    simple_url_loader->AttachStringForUpload(
-        "Basic request data",
-        /*upload_content_type=*/"text/plain;charset=UTF-8");
-    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-
-    // Send out the beacon.
-    simple_url_loader_ptr->DownloadHeadersOnly(
-        url_loader_factory.get(),
-        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
   }
 };
 

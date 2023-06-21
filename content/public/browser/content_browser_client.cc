@@ -521,6 +521,13 @@ bool ContentBrowserClient::IsInterestGroupAPIAllowed(
   return false;
 }
 
+bool ContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
+    content::BrowserContext* browser_context,
+    const url::Origin& destination_origin,
+    content::PrivacySandboxInvokingAPI invoking_api) {
+  return false;
+}
+
 void ContentBrowserClient::OnAuctionComplete(
     RenderFrameHost* render_frame_host,
     InterestGroupManager::InterestGroupDataKey data_key) {}

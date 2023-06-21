@@ -17,6 +17,7 @@
 #include "base/types/pass_key.h"
 #include "content/browser/attribution_reporting/attribution_beacon_id.h"
 #include "content/common/content_export.h"
+#include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
@@ -31,6 +32,7 @@
 namespace content {
 
 class AttributionManager;
+class BrowserContext;
 class PrivateAggregationManager;
 class RenderFrameHostImpl;
 
@@ -50,11 +52,12 @@ class CONTENT_EXPORT FencedFrameReporter
   // destinations, using the passed in map.
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
-  // `attribution_manager` is used to notify Attribution Reporting API
-  // for the beacons.
+  //
+  // `browser_context` is used to help notify Attribution Reporting API
+  // for the beacons, and to check attestations before sending out the beacons.
   static scoped_refptr<FencedFrameReporter> CreateForSharedStorage(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionManager* attribution_manager,
+      BrowserContext* browser_context,
       ReportingUrlMap reporting_url_map);
 
   // Creates a FencedFrameReporter that maps FLEDGE ReportingDestination types
@@ -64,8 +67,8 @@ class CONTENT_EXPORT FencedFrameReporter
   //
   // `url_loader_factory` is used to send all reports, and must not be null.
   //
-  // `attribution_manager` is used to notify Attribution Reporting API
-  // for the beacons.
+  // `browser_context` is used to help notify Attribution Reporting API
+  // for the beacons, and to check attestations before sending out the beacons.
   //
   // `private_aggregation_manager` is used to send private aggregation requests
   // for fenced frame events. See comment above declaration of
@@ -79,7 +82,7 @@ class CONTENT_EXPORT FencedFrameReporter
   // test iff the test does not have for event private aggregation requests.
   static scoped_refptr<FencedFrameReporter> CreateForFledge(
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionManager* attribution_manager,
+      BrowserContext* browser_context,
       bool direct_seller_is_seller,
       PrivateAggregationManager* private_aggregation_manager,
       const url::Origin& main_frame_origin,
@@ -89,8 +92,9 @@ class CONTENT_EXPORT FencedFrameReporter
   // See factory methods for details.
   FencedFrameReporter(
       base::PassKey<FencedFrameReporter> pass_key,
+      PrivacySandboxInvokingAPI invoking_api,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-      AttributionManager* attribution_manager,
+      BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager = nullptr,
       const absl::optional<url::Origin>& main_frame_origin = absl::nullopt,
       const absl::optional<url::Origin>& winner_origin = absl::nullopt);
@@ -292,6 +296,8 @@ class CONTENT_EXPORT FencedFrameReporter
   // mode or in test.
   const raw_ptr<AttributionManager, DanglingUntriaged> attribution_manager_;
 
+  const raw_ptr<BrowserContext> browser_context_;
+
   base::flat_map<blink::FencedFrame::ReportingDestination,
                  ReportingDestinationInfo>
       reporting_metadata_;
@@ -326,6 +332,9 @@ class CONTENT_EXPORT FencedFrameReporter
   std::set<std::string> received_pa_events_;
 
   mojo::Remote<blink::mojom::PrivateAggregationHost> private_aggregation_host_;
+
+  // Which API created this fenced frame reporter instance.
+  PrivacySandboxInvokingAPI invoking_api_;
 };
 
 }  // namespace content

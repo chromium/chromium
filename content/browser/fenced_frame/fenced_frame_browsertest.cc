@@ -31,6 +31,7 @@
 #include "content/browser/renderer_host/navigation_request.h"
 #include "content/browser/renderer_host/render_frame_proxy_host.h"
 #include "content/browser/web_contents/web_contents_impl.h"
+#include "content/public/browser/browser_context.h"
 #include "content/public/browser/frame_type.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/common/content_features.h"
@@ -2002,6 +2003,13 @@ class FledgeFencedFrameOriginContentBrowserClient
       ContentBrowserClient::InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin) override {
+    return true;
+  }
+
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
     return true;
   }
 };
@@ -4699,49 +4707,13 @@ class FencedFrameReportEventBrowserTest
     return response;
   }
 
-  void SendBasicRequest(GURL url,
-                        absl::optional<std::string> content = absl::nullopt) {
-    // Construct the resource request.
-    scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory =
-        web_contents()
-            ->GetPrimaryMainFrame()
-            ->GetStoragePartition()
-            ->GetURLLoaderFactoryForBrowserProcess();
-
-    auto request = std::make_unique<network::ResourceRequest>();
-
-    request->url = url;
-    request->credentials_mode = network::mojom::CredentialsMode::kOmit;
-    request->method = net::HttpRequestHeaders::kPostMethod;
-    request->trusted_params = network::ResourceRequest::TrustedParams();
-    request->trusted_params->isolation_info =
-        net::IsolationInfo::CreateTransient();
-
-    std::unique_ptr<network::SimpleURLLoader> simple_url_loader =
-        network::SimpleURLLoader::Create(std::move(request),
-                                         TRAFFIC_ANNOTATION_FOR_TESTS);
-
-    if (content) {
-      simple_url_loader->AttachStringForUpload(
-          content.value(),
-          /*upload_content_type=*/"text/plain;charset=UTF-8");
-    }
-    network::SimpleURLLoader* simple_url_loader_ptr = simple_url_loader.get();
-
-    // Send out the reporting beacon.
-    simple_url_loader_ptr->DownloadHeadersOnly(
-        url_loader_factory.get(),
-        base::DoNothingWithBoundArgs(std::move(simple_url_loader)));
-  }
-
   scoped_refptr<FencedFrameReporter> CreateFencedFrameReporter() {
     return FencedFrameReporter::CreateForFledge(
         web_contents()
             ->GetPrimaryMainFrame()
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        AttributionManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()),
+        web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
         PrivateAggregationManager::GetManager(
             *web_contents()->GetBrowserContext()),
@@ -5067,7 +5039,9 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
   // Check that the request received is from `SendBasicRequest`. This implies
   // the reporting beacon from `window.fence.reportEvent` was not sent as
   // expected.
-  SendBasicRequest(https_server()->GetURL("c.test", kReportingURL), "response");
+  fenced_frame_test_helper().SendBasicRequest(
+      web_contents(), https_server()->GetURL("c.test", kReportingURL),
+      "response");
   response.WaitForRequest();
   EXPECT_TRUE(response.has_received_request());
   EXPECT_EQ(response.http_request()->content, "response");
@@ -5779,6 +5753,8 @@ IN_PROC_BROWSER_TEST_F(FencedFrameReportEventBrowserTest,
       browser_client;
   EXPECT_CALL(browser_client, IsWebAttributionReportingAllowed())
       .WillRepeatedly(testing::Return(false));
+  ON_CALL(browser_client, IsPrivacySandboxReportingDestinationAttested)
+      .WillByDefault(testing::Return(true));
 
   net::test_server::ControllableHttpResponse response(https_server(),
                                                       kReportingURL);
@@ -6343,8 +6319,7 @@ class FencedFrameAutomaticBeaconBrowserTest
             ->GetPrimaryMainFrame()
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        AttributionManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()),
+        web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
         static_cast<StoragePartitionImpl*>(
             web_contents()->GetPrimaryMainFrame()->GetStoragePartition())
@@ -6508,8 +6483,9 @@ class FencedFrameAutomaticBeaconBrowserTest
       // received the request from `SendBasicRequest`, which was sent after the
       // possible automatic beacon, implies the automatic beacon was not sent as
       // a result of the top navigation, as expected.
-      SendBasicRequest(https_server()->GetURL("c.test", kReportingURL),
-                       "response");
+      fenced_frame_test_helper().SendBasicRequest(
+          web_contents(), https_server()->GetURL("c.test", kReportingURL),
+          "response");
       response.WaitForRequest();
       EXPECT_TRUE(response.has_received_request());
       EXPECT_EQ(response.http_request()->content, "response");

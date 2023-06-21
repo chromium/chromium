@@ -274,6 +274,27 @@ struct ExpectedDebugReportWaiter {
 
 }  // namespace
 
+class InterestGroupEnabledContentBrowserClient
+    : public ContentBrowserTestContentBrowserClient {
+ public:
+  explicit InterestGroupEnabledContentBrowserClient() = default;
+
+  InterestGroupEnabledContentBrowserClient(
+      const InterestGroupEnabledContentBrowserClient&) = delete;
+  InterestGroupEnabledContentBrowserClient& operator=(
+      const InterestGroupEnabledContentBrowserClient&) = delete;
+
+  // ContentBrowserClient overrides:
+  // This is needed so that the interest group related APIs can run without
+  // failing with the result AuctionResult::kSellerRejected.
+  bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api) override {
+    return true;
+  }
+};
+
 class AttributionsBrowserTest : public ContentBrowserTest {
  public:
   AttributionsBrowserTest() = default;
@@ -311,6 +332,8 @@ class AttributionsBrowserTest : public ContentBrowserTest {
                                       ->GetDefaultStoragePartition();
     wrapper_ = static_cast<ServiceWorkerContextWrapper*>(
         partition->GetServiceWorkerContext());
+    content_browser_client_ =
+        std::make_unique<InterestGroupEnabledContentBrowserClient>();
   }
 
   void TearDownOnMainThread() override {
@@ -429,6 +452,9 @@ class AttributionsBrowserTest : public ContentBrowserTest {
       network_connection_tracker_;
 
   scoped_refptr<ServiceWorkerContextWrapper> wrapper_;
+
+  std::unique_ptr<InterestGroupEnabledContentBrowserClient>
+      content_browser_client_;
 };
 
 // Verifies that storage initialization does not hang when initialized in a
@@ -1408,8 +1434,7 @@ class AttributionsFencedFrameBrowserTest : public AttributionsBrowserTest {
             ->GetPrimaryMainFrame()
             ->GetStoragePartition()
             ->GetURLLoaderFactoryForBrowserProcess(),
-        AttributionManager::FromBrowserContext(
-            web_contents()->GetBrowserContext()),
+        web_contents()->GetBrowserContext(),
         /*direct_seller_is_seller=*/false,
         PrivateAggregationManager::GetManager(
             *web_contents()->GetBrowserContext()),

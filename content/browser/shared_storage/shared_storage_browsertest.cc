@@ -784,7 +784,22 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
             std::move(test_worklet_host_manager));
 
     host_resolver()->AddRule("*", "127.0.0.1");
+
+    browser_client_ =
+        std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
+
+    ON_CALL(browser_client(), IsPrivateAggregationAllowed)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(browser_client(), IsSharedStorageAllowed)
+        .WillByDefault(testing::Return(true));
+    ON_CALL(browser_client(), IsPrivacySandboxReportingDestinationAttested)
+        .WillByDefault(testing::Return(true));
+
     FinishSetup();
+  }
+
+  MockPrivateAggregationShellContentBrowserClient& browser_client() {
+    return *browser_client_;
   }
 
   virtual bool ResolveSelectURLToConfig() { return false; }
@@ -1107,6 +1122,9 @@ class SharedStorageBrowserTestBase : public ContentBrowserTest {
   raw_ptr<TestSharedStorageWorkletHostManager, DanglingUntriaged>
       test_worklet_host_manager_ = nullptr;
   std::unique_ptr<TestSharedStorageObserver> observer_;
+
+  std::unique_ptr<MockPrivateAggregationShellContentBrowserClient>
+      browser_client_;
 };
 
 class SharedStorageBrowserTest : public SharedStorageBrowserTestBase,
@@ -6559,9 +6577,6 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   void SetUpOnMainThread() override {
     SharedStorageBrowserTestBase::SetUpOnMainThread();
 
-    browser_client_ =
-        std::make_unique<MockPrivateAggregationShellContentBrowserClient>();
-
     a_test_origin_ = https_server()->GetOrigin("a.test");
 
     auto* storage_partition_impl =
@@ -6587,10 +6602,6 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
     return mock_callback_;
   }
 
-  MockPrivateAggregationShellContentBrowserClient& browser_client() {
-    return *browser_client_;
-  }
-
  protected:
   url::Origin a_test_origin_;
 
@@ -6602,9 +6613,6 @@ class SharedStoragePrivateAggregationEnabledBrowserTest
   base::MockRepeatingCallback<void(AggregatableReportRequest,
                                    PrivateAggregationBudgetKey)>
       mock_callback_;
-
-  std::unique_ptr<MockPrivateAggregationShellContentBrowserClient>
-      browser_client_;
 };
 
 IN_PROC_BROWSER_TEST_F(SharedStoragePrivateAggregationEnabledBrowserTest,

@@ -60,6 +60,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       const url::Origin& top_frame_origin) const override;
   bool IsFledgeAllowed(const url::Origin& top_frame_origin,
                        const url::Origin& auction_party) const override;
+  bool IsEventReportingDestinationAttested(
+      const url::Origin& destination_origin,
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api)
+      const override;
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin) const override;

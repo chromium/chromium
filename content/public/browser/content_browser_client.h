@@ -36,6 +36,7 @@
 #include "content/public/browser/interest_group_manager.h"
 #include "content/public/browser/login_delegate.h"
 #include "content/public/browser/mojo_binder_policy_map.h"
+#include "content/public/browser/privacy_sandbox_invoking_api.h"
 #include "content/public/browser/storage_partition_config.h"
 #include "content/public/common/alternative_error_page_override_info.mojom-forward.h"
 #include "content/public/common/page_visibility_state.h"
@@ -884,6 +885,13 @@ class CONTENT_EXPORT ContentBrowserClient {
       InterestGroupApiOperation operation,
       const url::Origin& top_frame_origin,
       const url::Origin& api_origin);
+
+  // Returns whether |destination_origin| can receive beacons sent through
+  // window.fence.reportEvent() or automatic beacons.
+  virtual bool IsPrivacySandboxReportingDestinationAttested(
+      content::BrowserContext* browser_context,
+      const url::Origin& destination_origin,
+      content::PrivacySandboxInvokingAPI invoking_api);
 
   virtual void OnAuctionComplete(
       RenderFrameHost* render_frame_host,

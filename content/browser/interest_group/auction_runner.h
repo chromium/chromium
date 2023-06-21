@@ -33,8 +33,8 @@ struct AuctionConfig;
 
 namespace content {
 
-class AttributionManager;
 class InterestGroupAuctionReporter;
+class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
@@ -91,41 +91,39 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   // Creates an entire FLEDGE auction. Single-use object.
   //
-  // Arguments:
-  // `auction_worklet_manager`, `interest_group_manager`,
-  //  `attribution_manager`, and `private_aggregation_manager` must
-  //  remain valid, and `log_private_aggregation_requests_callback` must be safe
-  //  to call until the AuctionRunner and any InterestGroupAuctionReporter it
-  //  returns are destroyed. `attribution_manager` could be null in
-  //  Incognito mode or in test.
+  // Arguments: `auction_worklet_manager`, `interest_group_manager`,
+  //  `browser_context`, and `private_aggregation_manager` must remain valid,
+  //  and `log_private_aggregation_requests_callback` must be safe to call until
+  //  the AuctionRunner and any InterestGroupAuctionReporter it returns are
+  //  destroyed.
   //
-  // `auction_config` is the configuration provided by client JavaScript in
-  //  the renderer in order to initiate the auction.
+  //  `auction_config` is the configuration provided by client JavaScript in the
+  //   renderer in order to initiate the auction.
   //
-  // `main_frame_origin` is the origin of the main frame where the auction is
-  //  running. Used for issuing reports.
+  //  `main_frame_origin` is the origin of the main frame where the auction is
+  //   running. Used for issuing reports.
   //
-  // `frame_origin` is the origin of the frame running the auction. Used for
-  //  issuing reports.
+  //  `frame_origin` is the origin of the frame running the auction. Used for
+  //   issuing reports.
   //
-  // `client_security_state` is the client security state of the frame that
-  //  issued the auction request -- this is used for post-auction interest group
-  //  updates, and sending reports.
+  //  `client_security_state` is the client security state of the frame that
+  //   issued the auction request -- this is used for post-auction interest
+  //   group updates, and sending reports.
   //
-  // `url_loader_factory` will be used to issue reporting requests. It should be
-  // backed by a trusted URLLoaderFactory.
+  //  `url_loader_factory` will be used to issue reporting requests. It should
+  //  be backed by a trusted URLLoaderFactory.
   //
-  // `is_interest_group_api_allowed_callback` will be called on all buyer and
-  //  seller origins, and those for which it returns false will not be allowed
-  //  to participate in the auction.
+  //  `is_interest_group_api_allowed_callback` will be called on all buyer and
+  //   seller origins, and those for which it returns false will not be allowed
+  //   to participate in the auction.
   //
-  // `callback` is invoked on auction completion. It should synchronously
-  //  destroy this AuctionRunner object. `callback` won't be invoked until after
-  //  CreateAndStart() returns.
+  //  `callback` is invoked on auction completion. It should synchronously
+  //   destroy this AuctionRunner object. `callback` won't be invoked until
+  //   after CreateAndStart() returns.
   static std::unique_ptr<AuctionRunner> CreateAndStart(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionManager* attribution_manager,
+      BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
@@ -188,7 +186,7 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
   AuctionRunner(
       AuctionWorkletManager* auction_worklet_manager,
       InterestGroupManagerImpl* interest_group_manager,
-      AttributionManager* attribution_manager,
+      BrowserContext* browser_context,
       PrivateAggregationManager* private_aggregation_manager,
       InterestGroupAuctionReporter::LogPrivateAggregationRequestsCallback
           log_private_aggregation_requests_callback,
@@ -238,9 +236,8 @@ class CONTENT_EXPORT AuctionRunner : public blink::mojom::AbortableAdAuction {
 
   const raw_ptr<InterestGroupManagerImpl> interest_group_manager_;
 
-  // Needed to create `FencedFrameReporter`. Bound to the life time of the
-  // browser context. Could be null in Incognito mode or in test.
-  const raw_ptr<AttributionManager> attribution_manager_;
+  // Needed to create `FencedFrameReporter`.
+  const raw_ptr<BrowserContext> browser_context_;
 
   const raw_ptr<PrivateAggregationManager> private_aggregation_manager_;
 

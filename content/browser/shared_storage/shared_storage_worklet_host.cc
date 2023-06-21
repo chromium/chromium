@@ -85,8 +85,7 @@ SharedStorageURNMappingResult CreateSharedStorageURNMappingResult(
   if (!urls_with_metadata[index]->reporting_metadata.empty()) {
     fenced_frame_reporter = FencedFrameReporter::CreateForSharedStorage(
         storage_partition->GetURLLoaderFactoryForBrowserProcess(),
-        AttributionManager::FromBrowserContext(browser_context),
-        urls_with_metadata[index]->reporting_metadata);
+        browser_context, urls_with_metadata[index]->reporting_metadata);
   }
   return SharedStorageURNMappingResult(
       mapped_url,
