@@ -1140,6 +1140,7 @@
     // Use the `NGSCoreLineBreaker` for `text-wrap: balance`. crbug.com/1451205
     {
       name: "CSSTextWrapBalanceByScore",
+      status: "test",
       depends_on: ["CSSTextWrapPretty"],
     },
     // `text-wrap: pretty`. crbug.com/1432798
