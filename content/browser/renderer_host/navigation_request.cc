@@ -6619,7 +6619,20 @@ NavigatorDelegate* NavigationRequest::GetDelegate() const {
 
 void NavigationRequest::Resume(NavigationThrottle* resuming_throttle) {
   DCHECK(resuming_throttle);
+  CHECK(!is_resuming_) << "This call does not support re-entrancy.";
   EnterChildTraceEvent("Resume", this);
+  is_resuming_ = true;
+
+  // Stop watching for response body changes to ensure that the response body
+  // callback isn't called later in the throttle's lifetime with a response body
+  // that is not relevant to the throttle.
+  if (response_body_watcher_) {
+    CHECK(response_body_callback_);
+    response_body_watcher_.reset();
+    std::move(response_body_callback_).Run(std::string());
+  }
+
+  is_resuming_ = false;
   throttle_runner_->ResumeProcessingNavigationEvent(resuming_throttle);
   // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
   // by the previous call.
@@ -6643,7 +6656,7 @@ void NavigationRequest::RegisterThrottleForTesting(
   throttle_runner_->AddThrottle(std::move(navigation_throttle));
 }
 bool NavigationRequest::IsDeferredForTesting() {
-  return throttle_runner_->GetDeferringThrottle() != nullptr;
+  return IsDeferred();
 }
 
 bool NavigationRequest::IsMhtmlOrSubframe() {
@@ -6788,12 +6801,20 @@ void NavigationRequest::WillProcessResponse() {
   DCHECK_EQ(state_, WILL_PROCESS_RESPONSE);
 
   processing_navigation_throttle_ = true;
+  was_get_response_body_called_ = false;
+  base::WeakPtr<NavigationRequest> this_ptr(weak_factory_.GetWeakPtr());
 
   // Notify each throttle of the response.
   throttle_runner_->ProcessNavigationEvent(
       NavigationThrottleRunner::Event::WillProcessResponse);
-  // DO NOT ADD CODE AFTER THIS, as the NavigationHandle might have been deleted
-  // by the previous call.
+
+  // `this` may have been deleted by the previous call.
+  if (!this_ptr) {
+    // DO NOT ADD CODE HERE.
+    return;
+  }
+
+  CHECK(!was_get_response_body_called_ || IsDeferred());
 }
 
 void NavigationRequest::WillCommitWithoutUrlLoader() {
@@ -7389,6 +7410,28 @@ bool NavigationRequest::SetNavigationTimeout(base::TimeDelta timeout) {
 void NavigationRequest::SetAllowCookiesFromBrowser(
     bool allow_cookies_from_browser) {
   allow_cookies_from_browser_ = allow_cookies_from_browser;
+}
+
+void NavigationRequest::GetResponseBody(ResponseBodyCallback callback) {
+  CHECK_GE(state_, WILL_PROCESS_RESPONSE)
+      << "The response body should only be requested after the response body "
+         "data pipe is received from the network stack.";
+  CHECK(processing_navigation_throttle_ || IsDeferred());
+  CHECK(response_body_callback_.is_null());
+  CHECK(callback);
+  response_body_callback_ = std::move(callback);
+  was_get_response_body_called_ = true;
+
+  CHECK(!response_body_watcher_);
+  response_body_watcher_ = std::make_unique<mojo::SimpleWatcher>(
+      FROM_HERE, mojo::SimpleWatcher::ArmingPolicy::MANUAL,
+      base::SequencedTaskRunner::GetCurrentDefault());
+  response_body_watcher_->Watch(
+      response_body(),
+      MOJO_HANDLE_SIGNAL_READABLE | MOJO_HANDLE_SIGNAL_PEER_CLOSED,
+      base::BindRepeating(&NavigationRequest::OnResponseBodyReady,
+                          weak_factory_.GetWeakPtr()));
+  response_body_watcher_->ArmOrNotify();
 }
 
 void NavigationRequest::RenderProcessBlockedStateChanged(bool blocked) {
@@ -9336,6 +9379,43 @@ void NavigationRequest::CreateWebUIIfNeeded(RenderFrameHostImpl* frame_host) {
   }
 
   web_ui_->SetController(std::move(controller));
+}
+
+bool NavigationRequest::IsDeferred() {
+  return throttle_runner_->GetDeferringThrottle() != nullptr;
+}
+
+void NavigationRequest::OnResponseBodyReady(MojoResult) {
+  uint32_t num_bytes = 0;
+  MojoResult result =
+      response_body().ReadData(nullptr, &num_bytes, MOJO_READ_DATA_FLAG_QUERY);
+  CHECK_EQ(result, MOJO_RESULT_OK);
+
+  std::string response_body_contents(num_bytes, '\0');
+  result = response_body().ReadData(response_body_contents.data(), &num_bytes,
+                                    MOJO_READ_DATA_FLAG_PEEK);
+  switch (result) {
+    case MOJO_RESULT_OK:
+      // The watcher is reset before calling the callback since the callback may
+      // resume the throttle. If the watcher is still active, resumption via
+      // callback results in running the OnceCallback twice.
+      response_body_watcher_.reset();
+      std::move(response_body_callback_).Run(std::move(response_body_contents));
+      break;
+    case MOJO_RESULT_SHOULD_WAIT:
+      response_body_watcher_->ArmOrNotify();
+      break;
+    default:
+      // The watcher is reset before calling the callback since the callback may
+      // resume the throttle. If the watcher is still active, resumption via
+      // callback results in running the OnceCallback twice.
+      response_body_watcher_.reset();
+      // The client throttle may be waiting for the response body before
+      // resuming navigation, so call the callback with an empty response body
+      // to unblock the throttle.
+      std::move(response_body_callback_).Run(std::string());
+      break;
+  }
 }
 
 }  // namespace content

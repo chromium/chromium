@@ -49,6 +49,7 @@
 #include "mojo/public/cpp/bindings/pending_associated_remote.h"
 #include "mojo/public/cpp/bindings/pending_remote.h"
 #include "mojo/public/cpp/system/data_pipe.h"
+#include "mojo/public/cpp/system/simple_watcher.h"
 #include "net/base/isolation_info.h"
 #include "net/base/proxy_server.h"
 #include "net/dns/public/resolve_error_info.h"
@@ -422,6 +423,7 @@ class CONTENT_EXPORT NavigationRequest
   void WriteIntoTrace(perfetto::TracedProto<TraceProto> context) const override;
   bool SetNavigationTimeout(base::TimeDelta timeout) override;
   void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) override;
+  void GetResponseBody(ResponseBodyCallback callback) override;
   PrerenderTriggerType GetPrerenderTriggerType() override;
   std::string GetPrerenderEmbedderHistogramSuffix() override;
 #if BUILDFLAG(IS_ANDROID)
@@ -1918,6 +1920,11 @@ class CONTENT_EXPORT NavigationRequest
   // Returns the `StoragePartition` based on the config from the `site_info_`.
   StoragePartition* GetStoragePartitionWithCurrentSiteInfo();
 
+  // Passes the response body contents to the original caller using the stored
+  // callback once the body has been successfully read from its corresponding
+  // data pipe.
+  void OnResponseBodyReady(MojoResult result);
+
   // Never null. The pointee node owns this navigation request instance.
   // This field is not a raw_ptr because of incompatibilities with tracing
   // (TRACE_EVENT*), perfetto::TracedDictionary::Add and gmock/EXPECT_THAT.
@@ -2607,6 +2614,22 @@ class CONTENT_EXPORT NavigationRequest
   // been picked for the navigation, the WebUI object will be moved to be owned
   // by the RenderFrameHost.
   std::unique_ptr<WebUIImpl> web_ui_;
+
+  // Returns whether this navigation is currently deferred.
+  bool IsDeferred();
+
+  // The watcher used to asynchronously read the response body from the data
+  // pipe. Once the response body is read, it is passed to the original caller
+  // using the stored callback. This is instantiated when a response body is
+  // requested and destroyed upon returning the response body.
+  std::unique_ptr<mojo::SimpleWatcher> response_body_watcher_;
+  ResponseBodyCallback response_body_callback_;
+  // Used to confirm that any NavigationThrottle that calls `GetResponseBody()`
+  // becomes deferred.
+  bool was_get_response_body_called_ = false;
+
+  // Used to prevent re-entrancy into `Resume()`.
+  bool is_resuming_ = false;
 
   base::WeakPtrFactory<NavigationRequest> weak_factory_{this};
 };

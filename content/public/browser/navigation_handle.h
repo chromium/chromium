@@ -9,6 +9,7 @@
 #include <string>
 #include <vector>
 
+#include "base/functional/callback.h"
 #include "base/memory/safe_ref.h"
 #include "base/supports_user_data.h"
 #include "content/common/content_export.h"
@@ -591,6 +592,26 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   // Configures whether a Cookie header added to this request should not be
   // overwritten by the network service.
   virtual void SetAllowCookiesFromBrowser(bool allow_cookies_from_browser) = 0;
+
+  // Returns the contents of the response body via callback.
+  //
+  // This method should only be called by NavigationThrottle implementations.
+  // When calling this method, the NavigationThrottle should either already be
+  // deferred or be processing and about to be deferred.
+  //
+  // The callback may be called with an empty response body if:
+  // - The NavigationThrottle resumes before the response body is read
+  // - An unhandled MojoResult is encountered while reading the response body in
+  //   `NavigationRequest::OnResponseBodyReady()`
+  //
+  // The response body is read from the data pipe using MOJO_READ_DATA_FLAG_PEEK
+  // so that the body is not consumed before reaching its intended target.
+  //
+  // Only the first response body data that is read from the data pipe will be
+  // passed into the callback.
+  using ResponseBodyCallback =
+      base::OnceCallback<void(const std::string& initial_body_chunk)>;
+  virtual void GetResponseBody(ResponseBodyCallback callback) = 0;
 
   // Prerender2:
   // Used for metrics.

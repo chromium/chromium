@@ -1259,4 +1259,163 @@ TEST_F(PersistentOriginTrialNavigationRequestTest,
   EXPECT_EQ(std::vector<std::string>(), GetPersistedTokens(origin));
 }
 
+namespace {
+
+// Test version of a NavigationThrottle that requests the response body.
+class ResponseBodyNavigationThrottle : public NavigationThrottle {
+ public:
+  using ResponseBodyCallback = base::OnceCallback<void(const std::string&)>;
+
+  ResponseBodyNavigationThrottle(NavigationHandle* handle,
+                                 ResponseBodyCallback callback)
+      : NavigationThrottle(handle), callback_(std::move(callback)) {}
+  ResponseBodyNavigationThrottle(const ResponseBodyNavigationThrottle&) =
+      delete;
+  ResponseBodyNavigationThrottle& operator=(
+      const ResponseBodyNavigationThrottle&) = delete;
+  ~ResponseBodyNavigationThrottle() override = default;
+
+  NavigationThrottle::ThrottleCheckResult WillProcessResponse() override {
+    navigation_handle()->GetResponseBody(
+        base::BindOnce(&ResponseBodyNavigationThrottle::OnResponseBodyReady,
+                       base::Unretained(this)));
+    return NavigationThrottle::DEFER;
+  }
+
+  const char* GetNameForLogging() override {
+    return "ResponseBodyNavigationThrottle";
+  }
+
+ private:
+  void OnResponseBodyReady(const std::string& response_body) {
+    std::move(callback_).Run(response_body);
+    NavigationRequest::From(navigation_handle())
+        ->GetNavigationThrottleRunnerForTesting()
+        ->CallResumeForTesting();
+  }
+
+  ResponseBodyCallback callback_;
+};
+
+}  // namespace
+
+// Tests response body.
+class NavigationRequestResponseBodyTest : public NavigationRequestTest {
+ public:
+  std::unique_ptr<NavigationSimulator> CreateNavigationSimulator() {
+    auto navigation = NavigationSimulatorImpl::CreateRendererInitiated(
+        GURL("http://example.test"), main_rfh());
+    navigation->SetAutoAdvance(false);
+    navigation->Start();
+    // It is safe to use base::Unretained as the NavigationThrottle will not be
+    // destroyed before the callback is called.
+    auto throttle = std::make_unique<ResponseBodyNavigationThrottle>(
+        navigation->GetNavigationHandle(),
+        base::BindOnce(&NavigationRequestResponseBodyTest::UpdateResponseBody,
+                       base::Unretained(this)));
+    navigation->GetNavigationHandle()->RegisterThrottleForTesting(
+        std::move(throttle));
+    return navigation;
+  }
+
+  void UpdateResponseBody(const std::string& response_body) {
+    response_body_ = response_body;
+    was_callback_called_ = true;
+  }
+
+  bool was_callback_called() const { return was_callback_called_; }
+
+  const std::string& response_body() const { return response_body_; }
+
+ protected:
+  mojo::ScopedDataPipeProducerHandle producer_handle_;
+  mojo::ScopedDataPipeConsumerHandle consumer_handle_;
+
+ private:
+  bool was_callback_called_ = false;
+  std::string response_body_;
+};
+
+TEST_F(NavigationRequestResponseBodyTest, Received) {
+  auto navigation = CreateNavigationSimulator();
+  std::string response = "response-body-content";
+  uint32_t write_size = response.size();
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(write_size, producer_handle_,
+                                                 consumer_handle_));
+  navigation->SetResponseBody(std::move(consumer_handle_));
+
+  navigation->ReadyToCommit();
+  EXPECT_EQ(
+      NavigationRequest::WILL_PROCESS_RESPONSE,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_FALSE(was_callback_called());
+  EXPECT_EQ(std::string(), response_body());
+
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer_handle_->WriteData(response.c_str(), &write_size,
+                                        MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(write_size, response.size());
+
+  navigation->Wait();
+  EXPECT_EQ(
+      NavigationRequest::READY_TO_COMMIT,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_TRUE(was_callback_called());
+  EXPECT_EQ(response, response_body());
+}
+
+TEST_F(NavigationRequestResponseBodyTest, PartiallyReceived) {
+  auto navigation = CreateNavigationSimulator();
+
+  // The data pipe size is smaller than the response body size.
+  uint32_t pipe_size = 8u;
+  ASSERT_EQ(MOJO_RESULT_OK, mojo::CreateDataPipe(pipe_size, producer_handle_,
+                                                 consumer_handle_));
+  navigation->SetResponseBody(std::move(consumer_handle_));
+
+  navigation->ReadyToCommit();
+  EXPECT_EQ(
+      NavigationRequest::WILL_PROCESS_RESPONSE,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_FALSE(was_callback_called());
+  EXPECT_EQ(std::string(), response_body());
+
+  std::string response = "response-body-content";
+  uint32_t write_size = response.size();
+  ASSERT_EQ(MOJO_RESULT_OK,
+            producer_handle_->WriteData(response.c_str(), &write_size,
+                                        MOJO_WRITE_DATA_FLAG_NONE));
+  EXPECT_EQ(write_size, pipe_size);
+
+  navigation->Wait();
+  EXPECT_EQ(
+      NavigationRequest::READY_TO_COMMIT,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_TRUE(was_callback_called());
+  // Only the first part of the response body that fits in the pipe is received.
+  EXPECT_EQ("response", response_body());
+}
+
+TEST_F(NavigationRequestResponseBodyTest, PipeClosed) {
+  auto navigation = CreateNavigationSimulator();
+  ASSERT_EQ(MOJO_RESULT_OK,
+            mojo::CreateDataPipe(10u, producer_handle_, consumer_handle_));
+  navigation->SetResponseBody(std::move(consumer_handle_));
+  navigation->ReadyToCommit();
+  EXPECT_EQ(
+      NavigationRequest::WILL_PROCESS_RESPONSE,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_FALSE(was_callback_called());
+  EXPECT_EQ(std::string(), response_body());
+
+  // Close the pipe before any data is sent.
+  producer_handle_.reset();
+  navigation->Wait();
+  EXPECT_EQ(
+      NavigationRequest::READY_TO_COMMIT,
+      NavigationRequest::From(navigation->GetNavigationHandle())->state());
+  EXPECT_TRUE(was_callback_called());
+  EXPECT_EQ(std::string(), response_body());
+}
+
 }  // namespace content

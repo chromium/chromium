@@ -6189,6 +6189,7 @@ data/locks/dedicated_worker.js
 data/locks/locks.html
 data/locks/service_worker.js
 data/locks/shared_worker.js
+data/long_response_body.html
 data/mac/mac_system_hotkeys.plist
 data/mac/mac_system_hotkeys_sparse.plist
 data/manifest/404-manifest.html
