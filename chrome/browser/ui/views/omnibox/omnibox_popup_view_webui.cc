@@ -21,7 +21,6 @@
 #include "chrome/browser/ui/views/omnibox/webui_omnibox_popup_view.h"
 #include "chrome/browser/ui/views/theme_copying_widget.h"
 #include "chrome/browser/ui/views/user_education/browser_feature_promo_controller.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_prefs.h"
 #include "components/omnibox/common/omnibox_features.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -38,9 +37,9 @@
 #include "ui/views/widget/widget.h"
 
 OmniboxPopupViewWebUI::OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
-                                             OmniboxEditModel* edit_model,
+                                             OmniboxController* controller,
                                              LocationBarView* location_bar_view)
-    : OmniboxPopupViewViews(omnibox_view, edit_model, location_bar_view),
+    : OmniboxPopupViewViews(omnibox_view, controller, location_bar_view),
       webui_view_(nullptr) {}
 
 void OmniboxPopupViewWebUI::OnSelectionChanged(

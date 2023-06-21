@@ -21,7 +21,6 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
-#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/omnibox/common/omnibox_focus_state.h"
@@ -31,10 +30,8 @@
 #include "ui/gfx/native_widget_types.h"
 #include "url/gurl.h"
 
-class AutocompleteResult;
-class OmniboxClient;
+class OmniboxController;
 class OmniboxPopupView;
-
 namespace gfx {
 class Image;
 }
@@ -66,24 +63,14 @@ class OmniboxEditModel {
     const AutocompleteInput autocomplete_input;
   };
 
-  OmniboxEditModel(OmniboxController* omnibox_controller, OmniboxView* view);
+  OmniboxEditModel(OmniboxController* controller, OmniboxView* view);
   virtual ~OmniboxEditModel();
   OmniboxEditModel(const OmniboxEditModel&) = delete;
   OmniboxEditModel& operator=(const OmniboxEditModel&) = delete;
 
-  OmniboxController* omnibox_controller() const { return omnibox_controller_; }
-
-  // TODO(jdonnelly): Remove this accessor when the AutocompleteController has
-  //     completely moved to OmniboxController.
-  AutocompleteController* autocomplete_controller() const {
-    return omnibox_controller_->autocomplete_controller();
-  }
-
   void set_popup_view(OmniboxPopupView* popup_view);
   OmniboxPopupView* get_popup_view() { return popup_view_; }
   const OmniboxPopupView* get_popup_view() const { return popup_view_; }
-
-  OmniboxClient* client() const { return omnibox_controller_->client(); }
 
   metrics::OmniboxEventProto::PageClassification GetPageClassification() const;
 
@@ -271,13 +258,6 @@ class OmniboxEditModel {
   // Clears additional text.
   void ClearAdditionalText();
 
-  // Returns the current autocomplete result.  This logic should in the future
-  // live in AutocompleteController but resides here for now.  This method is
-  // used by AutomationProvider::AutocompleteEditGetMatches.
-  const AutocompleteResult& result() const {
-    return omnibox_controller_->result();
-  }
-
   // Called when the view is gaining focus.  |control_down| is whether the
   // control key is down (at the time we're gaining focus).
   void OnSetFocus(bool control_down);
@@ -401,7 +381,7 @@ class OmniboxEditModel {
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
   // Gets the icon for the given `match`.
   gfx::Image GetMatchIcon(const AutocompleteMatch& match,
-                          SkColor vector_icon_color);
+                          SkColor vector_icon_color) const;
 #endif
 
   // Returns true if the popup exists and is open. Virtual for testing.
@@ -549,12 +529,6 @@ class OmniboxEditModel {
                  const std::u16string& pasted_text,
                  base::TimeTicks match_selection_timestamp = base::TimeTicks());
 
-  // Returns true if a query to an autocomplete provider is currently
-  // in progress.  This logic should in the future live in
-  // AutocompleteController but resides here for now.  This method is used by
-  // AutomationProvider::AutocompleteEditIsQueryInProgress.
-  bool query_in_progress() const { return !autocomplete_controller()->done(); }
-
   // An internal method to set the user text. Notably, this differs from
   // SetUserText because it does not change the user-input-in-progress state.
   void InternalSetUserText(const std::u16string& text);
@@ -611,14 +585,14 @@ class OmniboxEditModel {
 
   // This is an event handler that notifies the popup view of match icon
   // changes.
-  void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon);
+  void OnFaviconFetched(const GURL& page_url, const gfx::Image& icon) const;
 
   // Returns view text if there is a view. Until the model is made the primary
   // data source, this should not be called when there's no view.
   std::u16string GetText() const;
 
   // Owns this.
-  raw_ptr<OmniboxController> omnibox_controller_;
+  raw_ptr<OmniboxController> controller_;
 
   // Owns `OmniboxController` which owns this.
   raw_ptr<OmniboxView> view_;

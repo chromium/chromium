@@ -41,12 +41,6 @@ OmniboxController::OmniboxController(OmniboxView* view,
 
 OmniboxController::~OmniboxController() = default;
 
-void OmniboxController::set_edit_model(
-    std::unique_ptr<OmniboxEditModel> edit_model) {
-  CHECK_EQ(this, edit_model->omnibox_controller());
-  edit_model_ = std::move(edit_model);
-}
-
 void OmniboxController::StartAutocomplete(
     const AutocompleteInput& input) const {
   TRACE_EVENT0("omnibox", "OmniboxController::StartAutocomplete");

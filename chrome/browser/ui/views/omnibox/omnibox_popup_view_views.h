@@ -20,11 +20,11 @@
 #include "ui/views/view.h"
 #include "ui/views/widget/widget_observer.h"
 
-struct AutocompleteMatch;
 class LocationBarView;
-class OmniboxEditModel;
+class OmniboxController;
 class OmniboxResultView;
 class OmniboxViewViews;
+struct AutocompleteMatch;
 
 // A view representing the contents of the autocomplete popup.
 class OmniboxPopupViewViews : public views::View,
@@ -33,7 +33,7 @@ class OmniboxPopupViewViews : public views::View,
  public:
   METADATA_HEADER(OmniboxPopupViewViews);
   OmniboxPopupViewViews(OmniboxViewViews* omnibox_view,
-                        OmniboxEditModel* edit_model,
+                        OmniboxController* controller,
                         LocationBarView* location_bar_view);
   explicit OmniboxPopupViewViews(const OmniboxPopupViewViews&) = delete;
   OmniboxPopupViewViews& operator=(const OmniboxPopupViewViews&) = delete;
@@ -125,7 +125,7 @@ class OmniboxPopupViewViews : public views::View,
   // deleted, or without our knowledge.
   base::WeakPtr<AutocompletePopupWidget> popup_;
 
-  // The edit view that invokes us.
+  // The edit view that invokes us. May be nullptr in tests.
   raw_ptr<OmniboxViewViews> omnibox_view_;
 
   // The location bar view that owns |omnibox_view_|. May be nullptr in tests.
@@ -133,8 +133,6 @@ class OmniboxPopupViewViews : public views::View,
 
   // A pref change registrar for toggling result view visibility.
   PrefChangeRegistrar pref_change_registrar_;
-
-  raw_ptr<OmniboxEditModel> edit_model_;
 };
 
 #endif  // CHROME_BROWSER_UI_VIEWS_OMNIBOX_OMNIBOX_POPUP_VIEW_VIEWS_H_

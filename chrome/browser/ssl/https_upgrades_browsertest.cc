@@ -27,7 +27,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/content_settings/core/browser/host_content_settings_map.h"
 #include "components/omnibox/browser/omnibox_client.h"
-#include "components/omnibox/browser/omnibox_edit_model.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/content/stateful_ssl_host_state_delegate.h"
@@ -2246,7 +2246,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                       ->window()
                                       ->GetLocationBar()
                                       ->GetOmniboxView()
-                                      ->model()
+                                      ->controller()
                                       ->client();
 
   // Simulate the full URL was typed with an http scheme.
@@ -2284,7 +2284,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                       ->window()
                                       ->GetLocationBar()
                                       ->GetOmniboxView()
-                                      ->model()
+                                      ->controller()
                                       ->client();
 
   // Simulate the full URL was autocompleted with an http scheme.
@@ -2313,7 +2313,7 @@ IN_PROC_BROWSER_TEST_P(HttpsUpgradesBrowserTest,
                                       ->window()
                                       ->GetLocationBar()
                                       ->GetOmniboxView()
-                                      ->model()
+                                      ->controller()
                                       ->client();
 
   Profile* profile = Profile::FromBrowserContext(contents->GetBrowserContext());

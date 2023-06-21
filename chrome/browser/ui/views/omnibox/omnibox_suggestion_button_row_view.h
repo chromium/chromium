@@ -12,7 +12,6 @@
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/view.h"
 
-class OmniboxEditModel;
 class OmniboxPopupViewViews;
 class OmniboxSuggestionRowButton;
 
@@ -24,8 +23,7 @@ class Button;
 class OmniboxSuggestionButtonRowView : public views::View {
  public:
   METADATA_HEADER(OmniboxSuggestionButtonRowView);
-  explicit OmniboxSuggestionButtonRowView(OmniboxPopupViewViews* view,
-                                          OmniboxEditModel* model,
+  explicit OmniboxSuggestionButtonRowView(OmniboxPopupViewViews* popup_view,
                                           int model_index);
   OmniboxSuggestionButtonRowView(const OmniboxSuggestionButtonRowView&) =
       delete;
@@ -63,8 +61,7 @@ class OmniboxSuggestionButtonRowView : public views::View {
   void ButtonPressed(OmniboxPopupSelection::LineState state,
                      const ui::Event& event);
 
-  const raw_ptr<OmniboxPopupViewViews> popup_contents_view_;
-  raw_ptr<OmniboxEditModel> model_;
+  const raw_ptr<OmniboxPopupViewViews> popup_view_;
   size_t const model_index_;
 
   raw_ptr<OmniboxSuggestionRowButton> keyword_button_ = nullptr;

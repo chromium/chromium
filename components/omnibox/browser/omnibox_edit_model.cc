@@ -41,6 +41,7 @@
 #include "components/omnibox/browser/location_bar_model.h"
 #include "components/omnibox/browser/omnibox.mojom-shared.h"
 #include "components/omnibox/browser/omnibox_client.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_event_global_tracker.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/omnibox_log.h"
@@ -255,9 +256,9 @@ OmniboxEditModel::State::~State() = default;
 
 // OmniboxEditModel -----------------------------------------------------------
 
-OmniboxEditModel::OmniboxEditModel(OmniboxController* omnibox_controller,
+OmniboxEditModel::OmniboxEditModel(OmniboxController* controller,
                                    OmniboxView* view)
-    : omnibox_controller_(omnibox_controller),
+    : controller_(controller),
       view_(view),
       user_input_in_progress_(false),
       user_input_since_focus_(true),
@@ -287,7 +288,8 @@ void OmniboxEditModel::set_popup_view(OmniboxPopupView* popup_view) {
 
 metrics::OmniboxEventProto::PageClassification
 OmniboxEditModel::GetPageClassification() const {
-  return client()->GetLocationBarModel()->GetPageClassification(focus_source_);
+  return controller_->client()->GetLocationBarModel()->GetPageClassification(
+      focus_source_);
 }
 
 OmniboxEditModel::State OmniboxEditModel::GetStateForTabSwitch() const {
@@ -376,7 +378,7 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
   bool redo = base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch);
   // If we have a valid match use it. Otherwise get one for the current text.
   AutocompleteMatch match =
-      redo ? current_match_ : omnibox_controller_->current_match();
+      redo ? current_match_ : controller_->current_match();
   if (!match.destination_url.is_valid()) {
     GetInfoForCurrentText(&match, alternate_nav_url);
   } else if (alternate_nav_url) {
@@ -386,12 +388,13 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
     std::unique_ptr<AutocompleteProviderClient> new_provider_client;
     if (!use_existing_autocomplete_client_) {
       // Create a new client.
-      new_provider_client = client()->CreateAutocompleteProviderClient();
+      new_provider_client =
+          controller_->client()->CreateAutocompleteProviderClient();
       provider_client = new_provider_client.get();
     } else {
       // Use the existing client.
-      provider_client =
-          autocomplete_controller()->autocomplete_provider_client();
+      provider_client = controller_->autocomplete_controller()
+                            ->autocomplete_provider_client();
     }
     *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
         input_, match, provider_client);
@@ -402,7 +405,8 @@ AutocompleteMatch OmniboxEditModel::CurrentMatch(
 bool OmniboxEditModel::ResetDisplayTexts() {
   const std::u16string old_display_text = GetPermanentDisplayText();
 
-  LocationBarModel* location_bar_model = client()->GetLocationBarModel();
+  LocationBarModel* location_bar_model =
+      controller_->client()->GetLocationBarModel();
   url_for_editing_ = location_bar_model->GetFormattedFullURL();
 
 #if BUILDFLAG(IS_IOS)
@@ -441,7 +445,7 @@ void OmniboxEditModel::SetUserText(const std::u16string& text) {
   if (base::FeatureList::IsEnabled(omnibox::kRedoCurrentMatch)) {
     GetInfoForCurrentText(&current_match_, nullptr);
   } else {
-    omnibox_controller_->InvalidateCurrentMatch();
+    controller_->InvalidateCurrentMatch();
   }
   paste_state_ = NONE;
   has_temporary_text_ = false;
@@ -453,7 +457,8 @@ bool OmniboxEditModel::Unelide() {
     return false;
 
   // No need to unelide if we are already displaying the full URL.
-  if (GetText() == client()->GetLocationBarModel()->GetFormattedFullURL()) {
+  if (GetText() ==
+      controller_->client()->GetLocationBarModel()->GetFormattedFullURL()) {
     return false;
   }
 
@@ -478,17 +483,18 @@ void OmniboxEditModel::OnChanged() {
   const AutocompleteMatch& current_match =
       user_input_in_progress_ ? CurrentMatch(nullptr) : AutocompleteMatch();
 
-  client()->OnTextChanged(current_match, user_input_in_progress_, user_text_,
-                          result(), has_focus());
+  controller_->client()->OnTextChanged(current_match, user_input_in_progress_,
+                                       user_text_, controller_->result(),
+                                       has_focus());
 }
 
 void OmniboxEditModel::GetDataForURLExport(GURL* url,
                                            std::u16string* title,
                                            gfx::Image* favicon) {
   *url = CurrentMatch(nullptr).destination_url;
-  if (*url == client()->GetURL()) {
-    *title = client()->GetTitle();
-    *favicon = client()->GetFavicon();
+  if (*url == controller_->client()->GetURL()) {
+    *title = controller_->client()->GetTitle();
+    *favicon = controller_->client()->GetFavicon();
   }
 }
 
@@ -518,7 +524,7 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   // contents as a hyperlink to the current page.
   if (!user_input_in_progress_ &&
       (*text == display_text_ || *text == url_for_editing_)) {
-    *url_from_text = client()->GetLocationBarModel()->GetURL();
+    *url_from_text = controller_->client()->GetLocationBarModel()->GetURL();
     *write_url = true;
 
     // Don't let users copy Reader Mode page URLs.
@@ -541,9 +547,9 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   // the user is probably holding down control to cause the copy, which will
   // screw up our calculation of the desired_tld.
   AutocompleteMatch match_from_text;
-  client()->GetAutocompleteClassifier()->Classify(*text, is_keyword_selected(),
-                                                  true, GetPageClassification(),
-                                                  &match_from_text, nullptr);
+  controller_->client()->GetAutocompleteClassifier()->Classify(
+      *text, is_keyword_selected(), true, GetPageClassification(),
+      &match_from_text, nullptr);
   if (AutocompleteMatch::IsSearchType(match_from_text.type))
     return;
 
@@ -551,7 +557,8 @@ void OmniboxEditModel::AdjustTextForCopy(int sel_min,
   *url_from_text = match_from_text.destination_url;
 
   // Get the current page GURL (or the GURL of the currently selected match).
-  GURL current_page_url = client()->GetLocationBarModel()->GetURL();
+  GURL current_page_url =
+      controller_->client()->GetLocationBarModel()->GetURL();
   if (PopupIsOpen()) {
     AutocompleteMatch current_match = CurrentMatch(nullptr);
     if (!AutocompleteMatch::IsSearchType(current_match.type) &&
@@ -699,7 +706,7 @@ void OmniboxEditModel::Revert() {
     view_->SetWindowTextAndCaretPos(current_permanent_url, 0, false, true);
     view_->SetCaretPos(std::min(current_permanent_url.length(), start));
   }
-  client()->OnRevert();
+  controller_->client()->OnRevert();
 }
 
 void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
@@ -730,14 +737,14 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
       cursor_position = input_text.length();
     }
   }
-  input_ =
-      AutocompleteInput(input_text, cursor_position, GetPageClassification(),
-                        client()->GetSchemeClassifier(),
-                        client()->ShouldDefaultTypedNavigationsToHttps(),
-                        client()->GetHttpsPortForTesting(),
-                        client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
-  input_.set_current_url(client()->GetURL());
-  input_.set_current_title(client()->GetTitle());
+  input_ = AutocompleteInput(
+      input_text, cursor_position, GetPageClassification(),
+      controller_->client()->GetSchemeClassifier(),
+      controller_->client()->ShouldDefaultTypedNavigationsToHttps(),
+      controller_->client()->GetHttpsPortForTesting(),
+      controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
+  input_.set_current_url(controller_->client()->GetURL());
+  input_.set_current_title(controller_->client()->GetTitle());
   input_.set_prevent_inline_autocomplete(
       prevent_inline_autocomplete || just_deleted_text_ ||
       (has_selected_text && inline_autocompletion_.empty() &&
@@ -748,13 +755,14 @@ void OmniboxEditModel::StartAutocomplete(bool has_selected_text,
                                        allow_exact_keyword_match_);
   input_.set_keyword_mode_entry_method(keyword_mode_entry_method_);
 
-  omnibox_controller_->StartAutocomplete(input_);
+  controller_->StartAutocomplete(input_);
 }
 
 void OmniboxEditModel::StartPrefetch() {
   auto page_classification =
-      client()->GetLocationBarModel()->GetPageClassification(
-          OmniboxFocusSource::OMNIBOX, /*is_prefetch=*/true);
+      controller_->client()->GetLocationBarModel()->GetPageClassification(
+          OmniboxFocusSource::OMNIBOX,
+          /*is_prefetch=*/true);
   if (!OmniboxFieldTrial::IsZeroSuggestPrefetchingEnabledInContext(
           page_classification)) {
     return;
@@ -764,7 +772,7 @@ void OmniboxEditModel::StartPrefetch() {
   const bool interaction_clobber_focus_type = base::FeatureList::IsEnabled(
       omnibox::kOmniboxOnClobberFocusTypeOnContent);
 
-  GURL current_url = client()->GetURL();
+  GURL current_url = controller_->client()->GetURL();
   std::u16string text = base::UTF8ToUTF16(current_url.spec());
 
   if (is_ntp_page || interaction_clobber_focus_type) {
@@ -772,20 +780,20 @@ void OmniboxEditModel::StartPrefetch() {
   }
 
   AutocompleteInput input(text, page_classification,
-                          client()->GetSchemeClassifier());
+                          controller_->client()->GetSchemeClassifier());
   input.set_current_url(current_url);
   input.set_focus_type(interaction_clobber_focus_type && !is_ntp_page
                            ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                            : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  autocomplete_controller()->StartPrefetch(input);
+  controller_->autocomplete_controller()->StartPrefetch(input);
 }
 
 void OmniboxEditModel::StopAutocomplete() {
-  autocomplete_controller()->Stop(true);
+  controller_->autocomplete_controller()->Stop(true);
 }
 
 bool OmniboxEditModel::CanPasteAndGo(const std::u16string& text) const {
-  if (!client()->IsPasteAndGoEnabled()) {
+  if (!controller_->client()->IsPasteAndGoEnabled()) {
     return false;
   }
 
@@ -807,10 +815,12 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
 
   GURL upgraded_url;
   if (match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED &&
-      client()->ShouldDefaultTypedNavigationsToHttps() &&
+      controller_->client()->ShouldDefaultTypedNavigationsToHttps() &&
       AutocompleteInput::ShouldUpgradeToHttps(
-          text, match.destination_url, client()->GetHttpsPortForTesting(),
-          client()->IsUsingFakeHttpsForHttpsUpgradeTesting(), &upgraded_url)) {
+          text, match.destination_url,
+          controller_->client()->GetHttpsPortForTesting(),
+          controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting(),
+          &upgraded_url)) {
     input_.set_added_default_scheme_to_typed_url(true);
     DCHECK(upgraded_url.is_valid());
     match.destination_url = upgraded_url;
@@ -825,14 +835,15 @@ void OmniboxEditModel::PasteAndGo(const std::u16string& text,
 
 void OmniboxEditModel::EnterKeywordModeForDefaultSearchProvider(
     OmniboxEventProto::KeywordModeEntryMethod entry_method) {
-  if (!client()->IsDefaultSearchProviderEnabled()) {
+  if (!controller_->client()->IsDefaultSearchProviderEnabled()) {
     return;
   }
 
-  autocomplete_controller()->Stop(false);
+  controller_->autocomplete_controller()->Stop(false);
 
-  const TemplateURL* default_search_provider =
-      client()->GetTemplateURLService()->GetDefaultSearchProvider();
+  const TemplateURL* default_search_provider = controller_->client()
+                                                   ->GetTemplateURLService()
+                                                   ->GetDefaultSearchProvider();
   DCHECK(default_search_provider);
   keyword_ = default_search_provider->keyword();
   is_keyword_hint_ = false;
@@ -862,7 +873,7 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
                                      WindowOpenDisposition disposition) {
   // Intentionally accept input when selection has no line.
   // This will usually reach `OpenMatch` indirectly.
-  if (selection.line >= result().size()) {
+  if (selection.line >= controller_->result().size()) {
     AcceptInput(disposition, timestamp);
     return;
   }
@@ -873,23 +884,25 @@ void OmniboxEditModel::OpenSelection(OmniboxPopupSelection selection,
     return;
   }
 
-  const AutocompleteMatch& match = result().match_at(selection.line);
+  const AutocompleteMatch& match =
+      controller_->result().match_at(selection.line);
 
   if (selection.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
     DCHECK(match.suggestion_group_id.has_value());
 
-    const bool current_visibility = result().IsSuggestionGroupHidden(
-        GetPrefService(), match.suggestion_group_id.value());
-    result().SetSuggestionGroupHidden(GetPrefService(),
-                                      match.suggestion_group_id.value(),
-                                      !current_visibility);
+    const bool current_visibility =
+        controller_->result().IsSuggestionGroupHidden(
+            GetPrefService(), match.suggestion_group_id.value());
+    controller_->result().SetSuggestionGroupHidden(
+        GetPrefService(), match.suggestion_group_id.value(),
+        !current_visibility);
   } else if (selection.state ==
              OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION) {
     TryDeletingPopupLine(selection.line);
   } else {
     GURL alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
         input_, match,
-        autocomplete_controller()->autocomplete_provider_client());
+        controller_->autocomplete_controller()->autocomplete_provider_client());
     OpenMatch(selection, match, disposition, alternate_nav_url,
               std::u16string(), timestamp);
   }
@@ -907,7 +920,7 @@ bool OmniboxEditModel::AcceptKeyword(
   DCHECK(is_keyword_hint_ && !keyword_.empty())
       << "is_keyword_hint_: " << is_keyword_hint_ << ", keyword_: " << keyword_;
 
-  autocomplete_controller()->Stop(false);
+  controller_->autocomplete_controller()->Stop(false);
 
   is_keyword_hint_ = false;
   keyword_mode_entry_method_ = entry_method;
@@ -979,7 +992,8 @@ bool OmniboxEditModel::AcceptKeyword(
 
   base::RecordAction(base::UserMetricsAction("AcceptedKeywordHint"));
   const TemplateURL* turl =
-      client()->GetTemplateURLService()->GetTemplateURLForKeyword(keyword_);
+      controller_->client()->GetTemplateURLService()->GetTemplateURLForKeyword(
+          keyword_);
   EmitEnteredKeywordModeHistogram(entry_method, turl);
 
   return true;
@@ -990,7 +1004,7 @@ void OmniboxEditModel::AcceptTemporaryTextAsUserText() {
   has_temporary_text_ = false;
 
   if (user_input_in_progress_ || !in_revert_)
-    client()->OnInputStateChanged();
+    controller_->client()->OnInputStateChanged();
 }
 
 void OmniboxEditModel::ClearKeyword() {
@@ -999,7 +1013,7 @@ void OmniboxEditModel::ClearKeyword() {
   }
 
   TRACE_EVENT0("omnibox", "OmniboxEditModel::ClearKeyword");
-  autocomplete_controller()->Stop(false);
+  controller_->autocomplete_controller()->Stop(false);
 
   // While we're always in keyword mode upon reaching here, sometimes we've just
   // toggled in via space or tab, and sometimes we're on a non-toggled line
@@ -1011,7 +1025,7 @@ void OmniboxEditModel::ClearKeyword() {
 
   bool entry_by_tab = keyword_mode_entry_method_ == OmniboxEventProto::TAB;
 
-  omnibox_controller_->ClearPopupKeywordMode();
+  controller_->ClearPopupKeywordMode();
 
   // There are several possible states we could have been in before the user hit
   // backspace or shift-tab to enter this function:
@@ -1124,7 +1138,7 @@ void OmniboxEditModel::OnSetFocus(bool control_down) {
   control_key_state_ = control_down ? DOWN_AND_CONSUMED : UP;
 
   if (user_input_in_progress_ || !in_revert_)
-    client()->OnInputStateChanged();
+    controller_->client()->OnInputStateChanged();
 }
 
 void OmniboxEditModel::StartZeroSuggestRequest(
@@ -1132,11 +1146,12 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // Early exit if a query is already in progress or the popup is already open.
   // This is what allows this method to be called multiple times in multiple
   // code locations without harm.
-  if (query_in_progress() || PopupIsOpen())
+  if (controller_->query_in_progress() || PopupIsOpen()) {
     return;
+  }
 
   // Early exit if the page has not loaded yet, so we don't annoy users.
-  if (!client()->CurrentPageExists()) {
+  if (!controller_->client()->CurrentPageExists()) {
     return;
   }
 
@@ -1150,16 +1165,17 @@ void OmniboxEditModel::StartZeroSuggestRequest(
   // match can be wrong. The full page URL is anyways in set_current_url().
   // Don't attempt to use https as the default scheme for these requests.
   input_ = AutocompleteInput(
-      GetText(), GetPageClassification(), client()->GetSchemeClassifier(),
+      GetText(), GetPageClassification(),
+      controller_->client()->GetSchemeClassifier(),
       /*should_use_https_as_default_scheme=*/false,
-      client()->GetHttpsPortForTesting(),
-      client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
-  input_.set_current_url(client()->GetURL());
-  input_.set_current_title(client()->GetTitle());
+      controller_->client()->GetHttpsPortForTesting(),
+      controller_->client()->IsUsingFakeHttpsForHttpsUpgradeTesting());
+  input_.set_current_url(controller_->client()->GetURL());
+  input_.set_current_title(controller_->client()->GetTitle());
   input_.set_focus_type(user_clobbered_permanent_text
                             ? metrics::OmniboxFocusType::INTERACTION_CLOBBER
                             : metrics::OmniboxFocusType::INTERACTION_FOCUS);
-  autocomplete_controller()->Start(input_);
+  controller_->autocomplete_controller()->Start(input_);
 }
 
 void OmniboxEditModel::SetCaretVisibility(bool visible) {
@@ -1177,7 +1193,7 @@ void OmniboxEditModel::ConsumeCtrlKey() {
 
 void OmniboxEditModel::OnWillKillFocus() {
   if (user_input_in_progress_ || !in_revert_)
-    client()->OnInputStateChanged();
+    controller_->client()->OnInputStateChanged();
 }
 
 void OmniboxEditModel::OnKillFocus() {
@@ -1210,8 +1226,9 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   // We do not clear the pending entry from the omnibox when a load is first
   // stopped.  If the user presses Escape while stopped, whether editing or not,
   // we clear it.
-  if (client()->CurrentPageExists() && !client()->IsLoading()) {
-    client()->DiscardNonCommittedNavigations();
+  if (controller_->client()->CurrentPageExists() &&
+      !controller_->client()->IsLoading()) {
+    controller_->client()->DiscardNonCommittedNavigations();
     if (view_) {
       view_->Update();
     }
@@ -1256,7 +1273,7 @@ bool OmniboxEditModel::OnEscapeKeyPressed() {
   // Blur the omnibox and focus the web contents.
   base::UmaHistogramEnumeration(kOmniboxEscapeHistogramName,
                                 OmniboxEscapeAction::kBlur);
-  client()->FocusWebContents();
+  controller_->client()->FocusWebContents();
   return true;
 }
 
@@ -1294,11 +1311,12 @@ void OmniboxEditModel::OnUpOrDownPressed(bool down, bool page) {
   // (user_input_in_progress_ is false) unless the first result is a
   // verbatim match of the omnibox input (on-focus query refinements on SERP).
   const OmniboxPopupSelection next_selection =
-      popup_selection_.GetNextSelection(result(), GetPrefService(), direction,
-                                        step);
-  if (result().default_match() && has_temporary_text_ &&
+      popup_selection_.GetNextSelection(controller_->result(), GetPrefService(),
+                                        direction, step);
+  if (controller_->result().default_match() && has_temporary_text_ &&
       next_selection.line == 0 &&
-      (user_input_in_progress_ || result().default_match()->IsVerbatimType())) {
+      (user_input_in_progress_ ||
+       controller_->result().default_match()->IsVerbatimType())) {
     RevertTemporaryTextAndPopup();
   } else {
     // Call `StepPopupSelection()` instead of `SetPopupSelection()`, as the
@@ -1322,7 +1340,7 @@ void OmniboxEditModel::OnTabPressed(bool shift) {
 void OmniboxEditModel::OnNavigationLikely(
     size_t line,
     NavigationPredictor navigation_predictor) {
-  if (result().empty()) {
+  if (controller_->result().empty()) {
     return;
   }
 
@@ -1330,12 +1348,12 @@ void OmniboxEditModel::OnNavigationLikely(
     return;
   }
 
-  if (line >= result().size()) {
+  if (line >= controller_->result().size()) {
     return;
   }
 
-  client()->OnNavigationLikely(line, result().match_at(line),
-                               navigation_predictor);
+  controller_->client()->OnNavigationLikely(
+      line, controller_->result().match_at(line), navigation_predictor);
 }
 
 void OmniboxEditModel::OpenMatchForTesting(
@@ -1366,7 +1384,7 @@ void OmniboxEditModel::OnPopupDataChanged(
   }
 
   // The popup changed its data, the match in the controller is no longer valid.
-  omnibox_controller_->InvalidateCurrentMatch();
+  controller_->InvalidateCurrentMatch();
 
   // Update keyword/hint-related local state.
   bool keyword_state_changed =
@@ -1488,7 +1506,7 @@ bool OmniboxEditModel::OnAfterPossibleChange(
 
     GURL url = GURL(*(state_changes.new_text));
     if (url.is_valid()) {
-      client()->OnUserPastedInOmniboxResultingInValidURL();
+      controller_->client()->OnUserPastedInOmniboxResultingInValidURL();
     }
   } else if (state_changes.text_differs)
     paste_state_ = NONE;
@@ -1561,8 +1579,9 @@ bool OmniboxEditModel::OnAfterPossibleChange(
   }
   if (allow_exact_keyword_match_) {
     keyword_mode_entry_method_ = OmniboxEventProto::SPACE_IN_MIDDLE;
-    const TemplateURL* turl =
-        client()->GetTemplateURLService()->GetTemplateURLForKeyword(keyword_);
+    const TemplateURL* turl = controller_->client()
+                                  ->GetTemplateURLService()
+                                  ->GetTemplateURLForKeyword(keyword_);
     EmitEnteredKeywordModeHistogram(OmniboxEventProto::SPACE_IN_MIDDLE, turl);
     allow_exact_keyword_match_ = false;
   }
@@ -1599,14 +1618,14 @@ bool OmniboxEditModel::OnAfterPossibleChange(
 void OmniboxEditModel::OnCurrentMatchChanged() {
   has_temporary_text_ = false;
 
-  DCHECK(result().default_match());
-  const AutocompleteMatch& match = *result().default_match();
+  DCHECK(controller_->result().default_match());
+  const AutocompleteMatch& match = *controller_->result().default_match();
 
   // We store |keyword| and |is_keyword_hint| in temporary variables since
   // OnPopupDataChanged use their previous state to detect changes.
   std::u16string keyword;
   bool is_keyword_hint;
-  TemplateURLService* service = client()->GetTemplateURLService();
+  TemplateURLService* service = controller_->client()->GetTemplateURLService();
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
   OnPopupResultChanged();
 
@@ -1673,17 +1692,18 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
   // If there's a query in progress or the popup is open, pick out the default
   // match or selected match, if there is one.
   bool found_match_for_text = false;
-  if (query_in_progress() || PopupIsOpen()) {
-    if (query_in_progress() && result().default_match()) {
+  if (controller_->query_in_progress() || PopupIsOpen()) {
+    if (controller_->query_in_progress() &&
+        controller_->result().default_match()) {
       // The user cannot have manually selected a match, or the query would have
       // stopped. So the default match must be the desired selection.
-      *match = *result().default_match();
+      *match = *controller_->result().default_match();
       found_match_for_text = true;
     } else if (PopupIsOpen() &&
                GetPopupSelection().line != OmniboxPopupSelection::kNoMatch) {
       const OmniboxPopupSelection selection = GetPopupSelection();
       const AutocompleteMatch& selected_match =
-          result().match_at(selection.line);
+          controller_->result().match_at(selection.line);
       *match = (selection.state == OmniboxPopupSelection::KEYWORD_MODE)
                    ? *selected_match.associated_keyword
                    : selected_match;
@@ -1697,12 +1717,13 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
       std::unique_ptr<AutocompleteProviderClient> new_provider_client;
       if (!use_existing_autocomplete_client_) {
         // Create a new client.
-        new_provider_client = client()->CreateAutocompleteProviderClient();
+        new_provider_client =
+            controller_->client()->CreateAutocompleteProviderClient();
         provider_client = new_provider_client.get();
       } else {
         // Use the existing client.
-        provider_client =
-            autocomplete_controller()->autocomplete_provider_client();
+        provider_client = controller_->autocomplete_controller()
+                              ->autocomplete_provider_client();
       }
       *alternate_nav_url = AutocompleteResult::ComputeAlternateNavUrl(
           input_, *match, provider_client);
@@ -1719,7 +1740,7 @@ void OmniboxEditModel::GetInfoForCurrentText(AutocompleteMatch* match,
                    : GetText())
             : url_for_editing_;
 
-    client()->GetAutocompleteClassifier()->Classify(
+    controller_->client()->GetAutocompleteClassifier()->Classify(
         MaybePrependKeyword(text_for_match_generation), is_keyword_selected(),
         true, GetPageClassification(), match, alternate_nav_url);
   }
@@ -1741,7 +1762,8 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
   //  2. If there's no default match at all.
   //
   // The original selection will be restored in OnRevertTemporaryText() below.
-  if ((!user_input_in_progress_ || !result().default_match()) && view_) {
+  if ((!user_input_in_progress_ || !controller_->result().default_match()) &&
+      view_) {
     view_->SetWindowTextAndCaretPos(input_.text(), /*caret_pos=*/0,
                                     /*update_popup=*/false,
                                     /*notify_text_changed=*/true);
@@ -1754,23 +1776,24 @@ void OmniboxEditModel::RevertTemporaryTextAndPopup() {
 }
 
 bool OmniboxEditModel::ShouldPreventElision() const {
-  return client()->GetLocationBarModel()->ShouldPreventElision();
+  return controller_->client()->GetLocationBarModel()->ShouldPreventElision();
 }
 
 bool OmniboxEditModel::IsStarredMatch(const AutocompleteMatch& match) const {
-  auto* bookmark_model = client()->GetBookmarkModel();
+  auto* bookmark_model = controller_->client()->GetBookmarkModel();
   return bookmark_model && bookmark_model->IsBookmarked(match.destination_url);
 }
 
 // Android and iOS have their own platform-specific icon logic.
 #if !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
-                                          SkColor vector_icon_color) {
-  gfx::Image extension_icon = client()->GetIconIfExtensionMatch(match);
+                                          SkColor vector_icon_color) const {
+  gfx::Image extension_icon =
+      controller_->client()->GetIconIfExtensionMatch(match);
   // Extension icons are the correct size for non-touch UI but need to be
   // adjusted to be the correct size for touch mode.
   if (!extension_icon.IsEmpty()) {
-    return client()->GetSizedIcon(extension_icon);
+    return controller_->client()->GetSizedIcon(extension_icon);
   }
 
   // Get the favicon for navigational suggestions.
@@ -1789,7 +1812,7 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     // all run one after another. This seems to be harmless as the callback
     // just flips a flag to schedule a repaint. However, if it turns out to be
     // costly, we can optimize away the redundant extra callbacks.
-    gfx::Image favicon = client()->GetFaviconForPageUrl(
+    gfx::Image favicon = controller_->client()->GetFaviconForPageUrl(
         match.destination_url,
         base::BindOnce(&OmniboxEditModel::OnFaviconFetched,
                        weak_factory_.GetWeakPtr(), match.destination_url));
@@ -1797,19 +1820,21 @@ gfx::Image OmniboxEditModel::GetMatchIcon(const AutocompleteMatch& match,
     // Extension icons are the correct size for non-touch UI but need to be
     // adjusted to be the correct size for touch mode.
     if (!favicon.IsEmpty()) {
-      return client()->GetSizedIcon(favicon);
+      return controller_->client()->GetSizedIcon(favicon);
     }
   }
 
   bool is_starred_match = IsStarredMatch(match);
   const TemplateURL* turl =
       match.associated_keyword
-          ? client()->GetTemplateURLService()->GetTemplateURLForKeyword(
-                match.associated_keyword->keyword)
+          ? controller_->client()
+                ->GetTemplateURLService()
+                ->GetTemplateURLForKeyword(match.associated_keyword->keyword)
           : nullptr;
   const auto& vector_icon_type = match.GetVectorIcon(is_starred_match, turl);
 
-  return client()->GetSizedIcon(vector_icon_type, vector_icon_color);
+  return controller_->client()->GetSizedIcon(vector_icon_type,
+                                             vector_icon_color);
 }
 #endif  // !BUILDFLAG(IS_ANDROID) && !BUILDFLAG(IS_IOS)
 
@@ -1821,8 +1846,9 @@ void OmniboxEditModel::ResetPopupToInitialState() {
   if (!popup_view_) {
     return;
   }
-  size_t new_line =
-      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
+  size_t new_line = controller_->result().default_match()
+                        ? 0
+                        : OmniboxPopupSelection::kNoMatch;
   SetPopupSelection(
       OmniboxPopupSelection(new_line, OmniboxPopupSelection::NORMAL),
       /*reset_to_default=*/true);
@@ -1839,12 +1865,12 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
                                          bool force_update_ui) {
   DCHECK(popup_view_);
 
-  if (result().empty()) {
+  if (controller_->result().empty()) {
     return;
   }
 
   // Cancel the query so the matches don't change on the user.
-  autocomplete_controller()->Stop(false);
+  controller_->autocomplete_controller()->Stop(false);
 
   // This occurs when e.g. pressing tab to select an action chip or the x delete
   // icon.
@@ -1865,7 +1891,8 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
     return;
   }
 
-  const AutocompleteMatch& match = result().match_at(popup_selection_.line);
+  const AutocompleteMatch& match =
+      controller_->result().match_at(popup_selection_.line);
 
   DCHECK((popup_selection_.state != OmniboxPopupSelection::KEYWORD_MODE) ||
          match.associated_keyword.get());
@@ -1880,7 +1907,7 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
 
   std::u16string keyword;
   bool is_keyword_hint;
-  TemplateURLService* service = client()->GetTemplateURLService();
+  TemplateURLService* service = controller_->client()->GetTemplateURLService();
   match.GetKeywordUIState(service, &keyword, &is_keyword_hint);
 
   if (popup_selection_.state == OmniboxPopupSelection::FOCUSED_BUTTON_HEADER) {
@@ -1915,15 +1942,17 @@ void OmniboxEditModel::SetPopupSelection(OmniboxPopupSelection new_selection,
 
 bool OmniboxEditModel::IsPopupSelectionOnInitialLine() const {
   DCHECK(popup_view_);
-  size_t initial_line =
-      result().default_match() ? 0 : OmniboxPopupSelection::kNoMatch;
+  size_t initial_line = controller_->result().default_match()
+                            ? 0
+                            : OmniboxPopupSelection::kNoMatch;
   return GetPopupSelection().line == initial_line;
 }
 
 bool OmniboxEditModel::IsPopupControlPresentOnMatch(
     OmniboxPopupSelection selection) const {
   DCHECK(popup_view_);
-  return selection.IsControlPresentOnMatch(result(), GetPrefService());
+  return selection.IsControlPresentOnMatch(controller_->result(),
+                                           GetPrefService());
 }
 
 void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
@@ -1937,21 +1966,21 @@ void OmniboxEditModel::TryDeletingPopupLine(size_t line) {
   }
 
   // Cancel the query so the matches don't change on the user.
-  autocomplete_controller()->Stop(false);
+  controller_->autocomplete_controller()->Stop(false);
 
-  const AutocompleteMatch& match = result().match_at(line);
+  const AutocompleteMatch& match = controller_->result().match_at(line);
   if (match.SupportsDeletion()) {
     // Try to preserve the selection even after match deletion.
     size_t old_selected_line = GetPopupSelection().line;
 
     // This will synchronously notify both the edit and us that the results
     // have changed, causing both to revert to the default match.
-    autocomplete_controller()->DeleteMatch(match);
+    controller_->autocomplete_controller()->DeleteMatch(match);
 
-    // Clamp the old selection to the new size of result(), since there may be
-    // fewer results now.
+    // Clamp the old selection to the new size of controller_->result(),
+    // since there may be fewer results now.
     if (old_selected_line != OmniboxPopupSelection::kNoMatch) {
-      old_selected_line = std::min(line, result().size() - 1);
+      old_selected_line = std::min(line, controller_->result().size() - 1);
     }
 
     // Move the selection to the next choice after the deleted one.
@@ -1977,7 +2006,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       << "GetPopupAccessibilityLabelForCurrentSelection should never be called "
          "if the current selection is kNoMatch.";
 
-  const AutocompleteMatch& match = result().match_at(line);
+  const AutocompleteMatch& match = controller_->result().match_at(line);
 
   int additional_message_id = 0;
   std::u16string additional_message;
@@ -1985,31 +2014,34 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
   static_assert(OmniboxPopupSelection::LINE_STATE_MAX_VALUE == 5);
   switch (popup_selection_.state) {
     case OmniboxPopupSelection::FOCUSED_BUTTON_HEADER: {
-      bool group_hidden = result().IsSuggestionGroupHidden(
+      bool group_hidden = controller_->result().IsSuggestionGroupHidden(
           GetPrefService(), match.suggestion_group_id.value());
       int message_id = group_hidden ? IDS_ACC_HEADER_SHOW_SUGGESTIONS_BUTTON
                                     : IDS_ACC_HEADER_HIDE_SUGGESTIONS_BUTTON;
-      return l10n_util::GetStringFUTF16(message_id,
-                                        result().GetHeaderForSuggestionGroup(
-                                            match.suggestion_group_id.value()));
+      return l10n_util::GetStringFUTF16(
+          message_id, controller_->result().GetHeaderForSuggestionGroup(
+                          match.suggestion_group_id.value()));
     }
     case OmniboxPopupSelection::NORMAL: {
       int available_actions_count = 0;
       if (OmniboxPopupSelection(line, OmniboxPopupSelection::KEYWORD_MODE)
-              .IsControlPresentOnMatch(result(), GetPrefService())) {
+              .IsControlPresentOnMatch(controller_->result(),
+                                       GetPrefService())) {
         additional_message_id = IDS_ACC_KEYWORD_SUFFIX;
         available_actions_count++;
       }
       if (OmniboxPopupSelection(line,
                                 OmniboxPopupSelection::FOCUSED_BUTTON_ACTION)
-              .IsControlPresentOnMatch(result(), GetPrefService())) {
+              .IsControlPresentOnMatch(controller_->result(),
+                                       GetPrefService())) {
         additional_message =
             match.GetActionAt(0u)->GetLabelStrings().accessibility_suffix;
         available_actions_count++;
       }
       if (OmniboxPopupSelection(
               line, OmniboxPopupSelection::FOCUSED_BUTTON_REMOVE_SUGGESTION)
-              .IsControlPresentOnMatch(result(), GetPrefService())) {
+              .IsControlPresentOnMatch(controller_->result(),
+                                       GetPrefService())) {
         additional_message_id = IDS_ACC_REMOVE_SUGGESTION_SUFFIX;
         available_actions_count++;
       }
@@ -2023,7 +2055,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
       // associated_keyword of the match we're on. Populate the a11y string
       // with information from the keyword match, rather than the current match.
       TemplateURL* turl = match.associated_keyword->GetTemplateURL(
-          client()->GetTemplateURLService(), false);
+          controller_->client()->GetTemplateURLService(), false);
       std::u16string replacement_string =
           turl ? turl->short_name() : match.contents;
       return l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE,
@@ -2048,7 +2080,8 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
     include_positional_info = false;
   }
 
-  size_t total_matches = include_positional_info ? result().size() : 0;
+  size_t total_matches =
+      include_positional_info ? controller_->result().size() : 0;
 
   // If there's a button focused, we don't want the "n of m" message announced.
   return AutocompleteMatchType::ToAccessibilityLabel(
@@ -2059,7 +2092,7 @@ std::u16string OmniboxEditModel::GetPopupAccessibilityLabelForCurrentSelection(
 void OmniboxEditModel::OnPopupResultChanged() {
   if (popup_view_) {
     rich_suggestion_bitmaps_.clear();
-    const AutocompleteResult& result = this->result();
+    const AutocompleteResult& result = controller_->result();
     size_t old_selected_line = GetPopupSelection().line;
 
     if (result.default_match()) {
@@ -2085,7 +2118,7 @@ void OmniboxEditModel::OnPopupResultChanged() {
     bool popup_was_open = popup_view_->IsOpen();
     popup_view_->UpdatePopupAppearance();
     if (popup_view_->IsOpen() != popup_was_open) {
-      client()->OnPopupVisibilityChanged();
+      controller_->client()->OnPopupVisibilityChanged();
     }
   }
 }
@@ -2109,12 +2142,15 @@ void OmniboxEditModel::SetPopupRichSuggestionBitmap(int result_index,
 }
 
 PrefService* OmniboxEditModel::GetPrefService() const {
-  return autocomplete_controller()->autocomplete_provider_client()->GetPrefs();
+  return controller_->autocomplete_controller()
+      ->autocomplete_provider_client()
+      ->GetPrefs();
 }
 
 bool OmniboxEditModel::MaybeStartQueryForPopup() {
-  if (PopupIsOpen() || query_in_progress())
+  if (PopupIsOpen() || controller_->query_in_progress()) {
     return false;
+  }
 
   // The popup is neither open nor working on a query already. So, start an
   // autocomplete query for the current text. This also sets
@@ -2143,7 +2179,7 @@ void OmniboxEditModel::StepPopupSelection(
   // accept keyword on the wrong suggestion when stepping backwards.
   const auto old_selection = GetPopupSelection();
   const auto new_selection = old_selection.GetNextSelection(
-      result(), GetPrefService(), direction, step);
+      controller_->result(), GetPrefService(), direction, step);
   if (old_selection.IsChangeToKeyword(new_selection)) {
     ClearKeyword();
   }
@@ -2164,7 +2200,7 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
   // that, then we use this. These matches are marked as generated by the
   // HistoryURLProvider so we only generate them if this provider is present.
   if (control_key_state_ == DOWN && !is_keyword_selected() &&
-      autocomplete_controller()->history_url_provider()) {
+      controller_->autocomplete_controller()->history_url_provider()) {
     // For generating the hostname of the URL, we use the most recent
     // input instead of the currently visible text. This means we'll ignore any
     // visible inline autocompletion: if a user types "foo" and is autocompleted
@@ -2186,8 +2222,10 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     // URL_WHAT_YOU_TYPED AutocompleteMatch.
     AutocompleteInput input(
         text_for_desired_tld_navigation, input_.cursor_position(), "com",
-        input_.current_page_classification(), client()->GetSchemeClassifier(),
-        client()->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+        input_.current_page_classification(),
+        controller_->client()->GetSchemeClassifier(),
+        controller_->client()->ShouldDefaultTypedNavigationsToHttps(), 0,
+        false);
     input.set_prevent_inline_autocomplete(input_.prevent_inline_autocomplete());
     input.set_prefer_keyword(input_.prefer_keyword());
     input.set_keyword_mode_entry_method(input_.keyword_mode_entry_method());
@@ -2196,9 +2234,9 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
     input.set_focus_type(input_.focus_type());
     input_ = input;
     AutocompleteMatch url_match(VerbatimMatchForInput(
-        autocomplete_controller()->history_url_provider(),
-        autocomplete_controller()->autocomplete_provider_client(), input_,
-        input_.canonicalized_url(), false));
+        controller_->autocomplete_controller()->history_url_provider(),
+        controller_->autocomplete_controller()->autocomplete_provider_client(),
+        input_, input_.canonicalized_url(), false));
 
     if (url_match.destination_url.is_valid()) {
       // We have a valid URL, we use this newly generated AutocompleteMatch.
@@ -2213,7 +2251,8 @@ void OmniboxEditModel::AcceptInput(WindowOpenDisposition disposition,
 
   if (ui::PageTransitionCoreTypeIs(match.transition,
                                    ui::PAGE_TRANSITION_TYPED) &&
-      (match.destination_url == client()->GetLocationBarModel()->GetURL())) {
+      (match.destination_url ==
+       controller_->client()->GetLocationBarModel()->GetURL())) {
     // When the user hit enter on the existing permanent URL, treat it like a
     // reload for scoring purposes.  We could detect this by just checking
     // user_input_in_progress_, but it seems better to treat "edits" that end
@@ -2290,7 +2329,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   const base::TimeTicks& now(base::TimeTicks::Now());
   base::TimeDelta elapsed_time_since_user_first_modified_omnibox(
       now - time_user_first_modified_omnibox_);
-  autocomplete_controller()
+  controller_->autocomplete_controller()
       ->UpdateMatchDestinationURLWithAdditionalAssistedQueryStats(
           elapsed_time_since_user_first_modified_omnibox, &match);
 
@@ -2299,8 +2338,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // Save the result of the interaction, but do not record the histogram yet.
   focus_resulted_in_navigation_ = true;
 
-  RecordActionShownForAllActions(result(), selection);
-  HistoryFuzzyProvider::RecordOpenMatchMetrics(result(), match);
+  RecordActionShownForAllActions(controller_->result(), selection);
+  HistoryFuzzyProvider::RecordOpenMatchMetrics(controller_->result(), match);
 
   std::u16string input_text(pasted_text);
   if (input_text.empty()) {
@@ -2309,15 +2348,17 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   // Create a dummy AutocompleteInput for use in calling VerbatimMatchForInput()
   // to create an alternate navigational match.
   AutocompleteInput alternate_input(
-      input_text, GetPageClassification(), client()->GetSchemeClassifier(),
-      client()->ShouldDefaultTypedNavigationsToHttps(), 0, false);
+      input_text, GetPageClassification(),
+      controller_->client()->GetSchemeClassifier(),
+      controller_->client()->ShouldDefaultTypedNavigationsToHttps(), 0, false);
   // Somehow we can occasionally get here with no active tab.  It's not
   // clear why this happens.
-  alternate_input.set_current_url(client()->GetURL());
-  alternate_input.set_current_title(client()->GetTitle());
+  alternate_input.set_current_url(controller_->client()->GetURL());
+  alternate_input.set_current_title(controller_->client()->GetTitle());
 
   base::TimeDelta elapsed_time_since_last_change_to_default_match(
-      now - autocomplete_controller()->last_time_default_match_changed());
+      now - controller_->autocomplete_controller()
+                ->last_time_default_match_changed());
   DCHECK(match.provider);
   // These elapsed times don't really make sense for matches that come from
   // omnibox focus (because the user did not modify the omnibox), so for those
@@ -2333,8 +2374,9 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     elapsed_time_since_last_change_to_default_match = default_time_delta;
   }
 
-  // In some unusual cases, we ignore result() and instead log a fake result set
-  // with a single element (|match|) and selected_index of 0. For these cases:
+  // In some unusual cases, we ignore controller_->result() and instead
+  // log a fake result set with a single element (|match|) and selected_index of
+  // 0. For these cases:
   //  1. If the popup is closed (there is no result set).
   //  2. If the index is out of bounds. This should only happen if
   //  |selection.line| is
@@ -2342,7 +2384,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   //  3. If this is paste-and-go (meaning the contents of the dropdown
   //     are ignored regardless).
   const bool dropdown_ignored =
-      !popup_open || selection.line >= result().size() || !pasted_text.empty();
+      !popup_open || selection.line >= controller_->result().size() ||
+      !pasted_text.empty();
   ACMatches fake_single_entry_matches;
   fake_single_entry_matches.push_back(match);
   AutocompleteResult fake_single_entry_result;
@@ -2355,7 +2398,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
   size_t completed_length = match.allowed_to_be_default_match
                                 ? match.inline_autocompletion.length()
                                 : std::u16string::npos;
-  bool is_incognito = autocomplete_controller()
+  bool is_incognito = controller_->autocomplete_controller()
                           ->autocomplete_provider_client()
                           ->IsOffTheRecord();
   OmniboxLog log(
@@ -2366,8 +2409,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       SessionID::InvalidValue(),  // don't know tab ID; set later if appropriate
       GetPageClassification(), elapsed_time_since_user_first_modified_omnibox,
       completed_length, elapsed_time_since_last_change_to_default_match,
-      dropdown_ignored ? fake_single_entry_result : result(), destination_url,
-      is_incognito);
+      dropdown_ignored ? fake_single_entry_result : controller_->result(),
+      destination_url, is_incognito);
   DCHECK(dropdown_ignored ||
          (log.elapsed_time_since_user_first_modified_omnibox >=
           log.elapsed_time_since_last_change_to_default_match))
@@ -2376,13 +2419,13 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       << "default match changed.";
 
   if ((disposition == WindowOpenDisposition::CURRENT_TAB) &&
-      client()->CurrentPageExists()) {
+      controller_->client()->CurrentPageExists()) {
     // If we know the destination is being opened in the current tab,
     // we can easily get the tab ID.  (If it's being opened in a new
     // tab, we don't know the tab ID yet.)
-    log.tab_id = client()->GetSessionID();
+    log.tab_id = controller_->client()->GetSessionID();
   }
-  autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
+  controller_->autocomplete_controller()->AddProviderAndTriggeringLogs(&log);
 
   base::UmaHistogramEnumeration("Omnibox.SuggestionUsed.RichAutocompletion",
                                 match.rich_autocompletion_triggered);
@@ -2396,7 +2439,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
                                 ipv4_parts_count);
   }
 
-  client()->OnURLOpenedFromOmnibox(&log);
+  controller_->client()->OnURLOpenedFromOmnibox(&log);
   OmniboxEventGlobalTracker::GetInstance()->OnURLOpened(&log);
 
   LOCAL_HISTOGRAM_BOOLEAN("Omnibox.EventCount", true);
@@ -2410,7 +2453,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
 
   IDNA2008DeviationCharacter deviation_char_in_hostname =
       IDNA2008DeviationCharacter::kNone;
-  TemplateURLService* service = client()->GetTemplateURLService();
+  TemplateURLService* service = controller_->client()->GetTemplateURLService();
   TemplateURL* template_url = match.GetTemplateURL(service, false);
   if (template_url) {
     if (ui::PageTransitionTypeIncludingQualifiersIs(
@@ -2419,8 +2462,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       // keyword mode.
 
       // Don't increment usage count for extension keywords.
-      if (client()->ProcessExtensionKeyword(input_text, template_url, match,
-                                            disposition)) {
+      if (controller_->client()->ProcessExtensionKeyword(
+              input_text, template_url, match, disposition)) {
         if (disposition != WindowOpenDisposition::NEW_BACKGROUND_TAB && view_) {
           base::AutoReset<bool> tmp(&in_revert_, true);
           view_->RevertAll();
@@ -2431,7 +2474,8 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       base::RecordAction(base::UserMetricsAction("AcceptedKeyword"));
       EmitAcceptedKeywordSuggestionHistogram(keyword_mode_entry_method_,
                                              template_url);
-      client()->GetTemplateURLService()->IncrementUsageCount(template_url);
+      controller_->client()->GetTemplateURLService()->IncrementUsageCount(
+          template_url);
     } else {
       DCHECK(ui::PageTransitionTypeIncludingQualifiersIs(
                  match.transition, ui::PAGE_TRANSITION_GENERATED) ||
@@ -2485,9 +2529,10 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
 
   if (action) {
     OmniboxAction::ExecutionContext context(
-        *(autocomplete_controller()->autocomplete_provider_client()),
+        *(controller_->autocomplete_controller()
+              ->autocomplete_provider_client()),
         base::BindOnce(&OmniboxClient::OnAutocompleteAccept,
-                       client()->AsWeakPtr()),
+                       controller_->client()->AsWeakPtr()),
         match_selection_timestamp, disposition);
     action->Execute(context);
   }
@@ -2501,7 +2546,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
     // Track whether the destination URL sends us to a search results page
     // using the default search provider.
     TemplateURLService* template_url_service =
-        client()->GetTemplateURLService();
+        controller_->client()->GetTemplateURLService();
     if (template_url_service &&
         template_url_service->IsSearchResultsPageFromDefaultSearchProvider(
             match.destination_url)) {
@@ -2510,10 +2555,11 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
 
       // Re-use the result of the incognito check above in the experiment arm,
       // otherwise re-compute the off the record state.
-      bool is_off_the_record =
-          use_existing_autocomplete_client_
-              ? is_incognito
-              : client()->CreateAutocompleteProviderClient()->IsOffTheRecord();
+      bool is_off_the_record = use_existing_autocomplete_client_
+                                   ? is_incognito
+                                   : controller_->client()
+                                         ->CreateAutocompleteProviderClient()
+                                         ->IsOffTheRecord();
       base::UmaHistogramBoolean("Omnibox.Search.OffTheRecord",
                                 is_off_the_record);
     }
@@ -2522,7 +2568,7 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
       // This calls RevertAll again.
       base::AutoReset<bool> tmp(&in_revert_, true);
 
-      client()->OnAutocompleteAccept(
+      controller_->client()->OnAutocompleteAccept(
           destination_url, match.post_content.get(), disposition,
           ui::PageTransitionFromInt(match.transition |
                                     ui::PAGE_TRANSITION_FROM_ADDRESS_BAR),
@@ -2532,15 +2578,16 @@ void OmniboxEditModel::OpenMatch(OmniboxPopupSelection selection,
               match.type == AutocompleteMatchType::URL_WHAT_YOU_TYPED,
           input_text, match,
           VerbatimMatchForInput(
-              autocomplete_controller()->history_url_provider(),
-              autocomplete_controller()->autocomplete_provider_client(),
+              controller_->autocomplete_controller()->history_url_provider(),
+              controller_->autocomplete_controller()
+                  ->autocomplete_provider_client(),
               alternate_input, alternate_nav_url, false),
           deviation_char_in_hostname);
     }
 
-    BookmarkModel* bookmark_model = client()->GetBookmarkModel();
+    BookmarkModel* bookmark_model = controller_->client()->GetBookmarkModel();
     if (bookmark_model && bookmark_model->IsBookmarked(destination_url)) {
-      client()->OnBookmarkLaunched();
+      controller_->client()->OnBookmarkLaunched();
     }
   }
 }
@@ -2590,7 +2637,7 @@ bool OmniboxEditModel::CreatedKeywordSearchByInsertingSpaceInMiddle(
   std::u16string keyword;
   base::TrimWhitespace(new_text.substr(0, space_position), base::TRIM_LEADING,
                        &keyword);
-  return !keyword.empty() && !autocomplete_controller()
+  return !keyword.empty() && !controller_->autocomplete_controller()
                                   ->keyword_provider()
                                   ->GetKeywordForText(keyword)
                                   .empty();
@@ -2611,7 +2658,7 @@ void OmniboxEditModel::ClassifyString(const std::u16string& text,
                                       AutocompleteMatch* match,
                                       GURL* alternate_nav_url) const {
   DCHECK(match);
-  client()->GetAutocompleteClassifier()->Classify(
+  controller_->client()->GetAutocompleteClassifier()->Classify(
       text, false, false, GetPageClassification(), match, alternate_nav_url);
 }
 
@@ -2630,16 +2677,16 @@ bool OmniboxEditModel::SetInputInProgressNoNotify(bool in_progress) {
   if (user_input_in_progress_) {
     time_user_first_modified_omnibox_ = base::TimeTicks::Now();
     base::RecordAction(base::UserMetricsAction("OmniboxInputInProgress"));
-    autocomplete_controller()->ResetSession();
+    controller_->autocomplete_controller()->ResetSession();
   }
   return true;
 }
 
 void OmniboxEditModel::NotifyObserversInputInProgress(bool in_progress) {
-  client()->OnInputInProgress(in_progress);
+  controller_->client()->OnInputInProgress(in_progress);
 
   if (user_input_in_progress_ || !in_revert_)
-    client()->OnInputStateChanged();
+    controller_->client()->OnInputStateChanged();
 }
 
 void OmniboxEditModel::SetFocusState(OmniboxFocusState state,
@@ -2656,18 +2703,18 @@ void OmniboxEditModel::SetFocusState(OmniboxFocusState state,
     view_->ApplyCaretVisibility();
   }
 
-  client()->OnFocusChanged(focus_state_, reason);
+  controller_->client()->OnFocusChanged(focus_state_, reason);
 }
 
 void OmniboxEditModel::OnFaviconFetched(const GURL& page_url,
-                                        const gfx::Image& icon) {
+                                        const gfx::Image& icon) const {
   if (icon.IsEmpty() || !PopupIsOpen()) {
     return;
   }
 
   // Notify all affected matches.
-  for (size_t i = 0; i < result().size(); ++i) {
-    auto& match = result().match_at(i);
+  for (size_t i = 0; i < controller_->result().size(); ++i) {
+    auto& match = controller_->result().match_at(i);
     if (!AutocompleteMatch::IsSearchType(match.type) &&
         match.destination_url == page_url) {
       popup_view_->OnMatchIconUpdated(i);

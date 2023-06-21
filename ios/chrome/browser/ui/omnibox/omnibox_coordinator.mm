@@ -10,6 +10,7 @@
 #import "base/metrics/user_metrics_action.h"
 #import "base/strings/sys_string_conversions.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/common/omnibox_features.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
@@ -254,7 +255,7 @@
     (id<OmniboxPopupPresenterDelegate>)presenterDelegate {
   DCHECK(!_popupCoordinator);
   std::unique_ptr<OmniboxPopupViewIOS> popupView =
-      std::make_unique<OmniboxPopupViewIOS>(_editView->model(),
+      std::make_unique<OmniboxPopupViewIOS>(_editView->controller(),
                                             self.locationBar, _editView.get());
 
   _editView->SetPopupProvider(popupView.get());
@@ -262,7 +263,8 @@
   OmniboxPopupCoordinator* coordinator = [[OmniboxPopupCoordinator alloc]
       initWithBaseViewController:nil
                          browser:self.browser
-          autocompleteController:_editView->model()->autocomplete_controller()
+          autocompleteController:_editView->controller()
+                                     ->autocomplete_controller()
                        popupView:std::move(popupView)];
   coordinator.presenterDelegate = presenterDelegate;
 

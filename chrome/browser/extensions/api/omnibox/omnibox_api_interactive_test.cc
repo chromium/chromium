@@ -26,6 +26,7 @@
 #include "components/omnibox/browser/autocomplete_input.h"
 #include "components/omnibox/browser/autocomplete_match.h"
 #include "components/omnibox/browser/autocomplete_result.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "content/public/test/browser_test.h"
@@ -130,7 +131,7 @@ class OmniboxApiTest : public ExtensionApiTest,
       Browser* browser) {
     return GetLocationBar(browser)
         ->GetOmniboxView()
-        ->model()
+        ->controller()
         ->autocomplete_controller();
   }
 };

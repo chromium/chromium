@@ -24,7 +24,6 @@
 #include "ui/views/controls/image_view.h"
 #include "ui/views/view.h"
 
-class OmniboxEditModel;
 class OmniboxMatchCellView;
 class OmniboxPopupViewViews;
 class OmniboxSuggestionButtonRowView;
@@ -44,9 +43,7 @@ class ImageButton;
 class OmniboxResultView : public views::View {
  public:
   METADATA_HEADER(OmniboxResultView);
-  OmniboxResultView(OmniboxPopupViewViews* popup_contents_view,
-                    OmniboxEditModel* model,
-                    size_t model_index);
+  OmniboxResultView(OmniboxPopupViewViews* popup_view, size_t model_index);
   OmniboxResultView(const OmniboxResultView&) = delete;
   OmniboxResultView& operator=(const OmniboxResultView&) = delete;
   ~OmniboxResultView() override;
@@ -114,9 +111,6 @@ class OmniboxResultView : public views::View {
 
   // The parent view.
   const raw_ptr<OmniboxPopupViewViews> popup_view_;
-
-  // The model containing results.
-  raw_ptr<OmniboxEditModel> model_;
 
   // This result's model index.
   size_t model_index_;

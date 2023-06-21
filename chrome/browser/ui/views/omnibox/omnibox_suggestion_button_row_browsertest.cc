@@ -22,6 +22,7 @@
 #include "components/omnibox/browser/actions/omnibox_pedal.h"
 #include "components/omnibox/browser/actions/tab_switch_action.h"
 #include "components/omnibox/browser/autocomplete_match_classification.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_popup_selection.h"
 #include "components/omnibox/browser/test_scheme_classifier.h"
@@ -49,7 +50,7 @@ class OmniboxSuggestionButtonRowBrowserTest : public DialogBrowserTest {
 
     // Populate suggestions for the omnibox popup.
     AutocompleteController* autocomplete_controller =
-        omnibox_view->model()->autocomplete_controller();
+        omnibox_view->controller()->autocomplete_controller();
     AutocompleteResult& results = autocomplete_controller->result_;
     ACMatches matches;
     TermMatches termMatches = {{0, 0, 0}};

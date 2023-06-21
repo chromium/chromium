@@ -51,6 +51,7 @@
 #include "components/javascript_dialogs/app_modal_dialog_queue.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_controller_emitter.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_view.h"
 #include "components/prefs/pref_service.h"
@@ -447,7 +448,7 @@ void WaitForAutocompleteDone(Browser* browser) {
   auto* controller = browser->window()
                          ->GetLocationBar()
                          ->GetOmniboxView()
-                         ->model()
+                         ->controller()
                          ->autocomplete_controller();
   while (!controller->done())
     AutocompleteChangeObserver(browser->profile()).Wait();

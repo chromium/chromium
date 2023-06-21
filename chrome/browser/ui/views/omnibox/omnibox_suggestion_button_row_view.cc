@@ -17,6 +17,7 @@
 #include "chrome/browser/ui/views/omnibox/omnibox_match_cell_view.h"
 #include "chrome/browser/ui/views/omnibox/omnibox_popup_view_views.h"
 #include "components/omnibox/browser/actions/omnibox_action.h"
+#include "components/omnibox/browser/omnibox_controller.h"
 #include "components/omnibox/browser/omnibox_edit_model.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
@@ -52,11 +53,11 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
   OmniboxSuggestionRowButton(PressedCallback callback,
                              const std::u16string& text,
                              const gfx::VectorIcon& icon,
-                             OmniboxPopupViewViews* popup_contents_view,
+                             OmniboxPopupViewViews* popup_view,
                              OmniboxPopupSelection selection)
       : MdTextButton(std::move(callback), text, CONTEXT_OMNIBOX_PRIMARY),
         icon_(&icon),
-        popup_contents_view_(popup_contents_view),
+        popup_view_(popup_view),
         selection_(selection) {
     SetTriggerableEventFlags(GetTriggerableEventFlags() |
                              ui::EF_MIDDLE_MOUSE_BUTTON);
@@ -87,8 +88,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
     focus_ring->SetHasFocusPredicate(base::BindRepeating([](const View* view) {
       const auto* v = views::AsViewClass<OmniboxSuggestionRowButton>(view);
       CHECK(v);
-      return v->GetVisible() &&
-             v->popup_contents_view_->GetSelection() == v->selection_;
+      return v->GetVisible() && v->popup_view_->GetSelection() == v->selection_;
     }));
     focus_ring->SetColorId(kColorOmniboxResultsFocusIndicator);
   }
@@ -156,7 +156,7 @@ class OmniboxSuggestionRowButton : public views::MdTextButton {
 
  private:
   raw_ptr<const gfx::VectorIcon> icon_;
-  raw_ptr<OmniboxPopupViewViews> popup_contents_view_;
+  raw_ptr<OmniboxPopupViewViews> popup_view_;
   OmniboxPartState theme_state_ = OmniboxPartState::NORMAL;
 
   OmniboxPopupSelection selection_;
@@ -166,12 +166,9 @@ BEGIN_METADATA(OmniboxSuggestionRowButton, views::MdTextButton)
 END_METADATA
 
 OmniboxSuggestionButtonRowView::OmniboxSuggestionButtonRowView(
-    OmniboxPopupViewViews* popup_contents_view,
-    OmniboxEditModel* model,
+    OmniboxPopupViewViews* popup_view,
     int model_index)
-    : popup_contents_view_(popup_contents_view),
-      model_(model),
-      model_index_(model_index) {
+    : popup_view_(popup_view), model_index_(model_index) {
   int left_margin = OmniboxMatchCellView::GetTextIndent();
   // +4 for the focus bar width, which shifts the suggest text but isn't
   // included in `GetTextIndent()`.
@@ -214,7 +211,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
       OmniboxFieldTrial::IsChromeRefreshActionChipIconsEnabled()
           ? vector_icons::kSearchChromeRefreshIcon
           : vector_icons::kSearchIcon,
-      popup_contents_view_,
+      popup_view_,
       OmniboxPopupSelection(model_index_,
                             OmniboxPopupSelection::KEYWORD_MODE)));
 
@@ -231,7 +228,7 @@ void OmniboxSuggestionButtonRowView::BuildViews() {
                             base::Unretained(this),
                             OmniboxPopupSelection::FOCUSED_BUTTON_ACTION),
         std::u16string(), match().actions[action_index]->GetVectorIcon(),
-        popup_contents_view_,
+        popup_view_,
         OmniboxPopupSelection(model_index_,
                               OmniboxPopupSelection::FOCUSED_BUTTON_ACTION,
                               action_index)));
@@ -257,11 +254,12 @@ void OmniboxSuggestionButtonRowView::UpdateFromModel() {
   if (keyword_button_->GetVisible()) {
     std::u16string keyword;
     bool is_keyword_hint = false;
-    match().GetKeywordUIState(model_->client()->GetTemplateURLService(),
-                              &keyword, &is_keyword_hint);
+    match().GetKeywordUIState(
+        popup_view_->controller()->client()->GetTemplateURLService(), &keyword,
+        &is_keyword_hint);
 
     const auto names = SelectedKeywordView::GetKeywordLabelNames(
-        keyword, model_->client()->GetTemplateURLService());
+        keyword, popup_view_->controller()->client()->GetTemplateURLService());
     keyword_button_->SetText(names.full_name);
     keyword_button_->SetAccessibleName(
         l10n_util::GetStringFUTF16(IDS_ACC_KEYWORD_MODE, names.short_name));
@@ -319,23 +317,23 @@ views::Button* OmniboxSuggestionButtonRowView::GetActiveButton() const {
 
   // Find the button that matches model selection.
   auto selected_button =
-      base::ranges::find(buttons, popup_contents_view_->GetSelection(),
+      base::ranges::find(buttons, popup_view_->GetSelection(),
                          &OmniboxSuggestionRowButton::selection);
   return selected_button == buttons.end() ? nullptr : *selected_button;
 }
 
 bool OmniboxSuggestionButtonRowView::HasMatch() const {
-  return model_->result().size() > model_index_;
+  return popup_view_->controller()->result().size() > model_index_;
 }
 
 const AutocompleteMatch& OmniboxSuggestionButtonRowView::match() const {
-  return model_->result().match_at(model_index_);
+  return popup_view_->controller()->result().match_at(model_index_);
 }
 
 void OmniboxSuggestionButtonRowView::SetPillButtonVisibility(
     OmniboxSuggestionRowButton* button,
     OmniboxPopupSelection::LineState state) {
-  button->SetVisible(model_->IsPopupControlPresentOnMatch(
+  button->SetVisible(popup_view_->model()->IsPopupControlPresentOnMatch(
       OmniboxPopupSelection(model_index_, state)));
 }
 
@@ -351,19 +349,20 @@ void OmniboxSuggestionButtonRowView::ButtonPressed(
     // a second click of the button violates assumptions in |AcceptKeyword|.
     // Note: Since keyword mode logic depends on state of the edit model, the
     // selection must first be set to prepare for keyword mode before accepting.
-    model_->SetPopupSelection(selection);
+    popup_view_->model()->SetPopupSelection(selection);
     // Don't re-enter keyword mode if already in it. This occurs when the user
     // was in keyword mode and re-clicked the same or a different keyword chip.
-    if (model_->is_keyword_hint()) {
+    if (popup_view_->model()->is_keyword_hint()) {
       const auto entry_method =
           event.IsMouseEvent() ? metrics::OmniboxEventProto::CLICK_HINT_VIEW
                                : metrics::OmniboxEventProto::TAP_HINT_VIEW;
-      model_->AcceptKeyword(entry_method);
+      popup_view_->model()->AcceptKeyword(entry_method);
     }
   } else {
     WindowOpenDisposition disposition =
         ui::DispositionFromEventFlags(event.flags());
-    model_->OpenSelection(selection, event.time_stamp(), disposition);
+    popup_view_->model()->OpenSelection(selection, event.time_stamp(),
+                                        disposition);
   }
 }
 

@@ -60,7 +60,8 @@ class OmniboxView {
   OmniboxEditModel* model();
   const OmniboxEditModel* model() const;
 
-  OmniboxController* controller() { return controller_.get(); }
+  OmniboxController* controller();
+  const OmniboxController* controller() const;
 
   // Called when any relevant state changes other than changing tabs.
   virtual void Update() = 0;

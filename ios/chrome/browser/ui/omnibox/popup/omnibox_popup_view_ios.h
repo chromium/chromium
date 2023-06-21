@@ -9,12 +9,12 @@
 
 #include <string>
 
-#include "components/omnibox/browser/omnibox_popup_view.h"
+#import "components/omnibox/browser/omnibox_popup_view.h"
 #import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_mediator.h"
-#include "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
+#import "ios/chrome/browser/ui/omnibox/popup/omnibox_popup_provider.h"
 
-class OmniboxEditModel;
 @class OmniboxPopupMediator;
+class OmniboxController;
 class OmniboxPopupViewSuggestionsDelegate;
 class WebLocationBar;
 struct AutocompleteMatch;
@@ -24,13 +24,10 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
                             public OmniboxPopupMediatorDelegate,
                             public OmniboxPopupProvider {
  public:
-  OmniboxPopupViewIOS(OmniboxEditModel* edit_model,
+  OmniboxPopupViewIOS(OmniboxController* controller,
                       WebLocationBar* location_bar,
                       OmniboxPopupViewSuggestionsDelegate* delegate);
   ~OmniboxPopupViewIOS() override;
-
-  // Model used for this.
-  OmniboxEditModel* model() const;
 
   // OmniboxPopupView implementation.
   bool IsOpen() const override;
@@ -63,7 +60,6 @@ class OmniboxPopupViewIOS : public OmniboxPopupView,
   void SetMediator(OmniboxPopupMediator* mediator) { mediator_ = mediator; }
 
  private:
-  OmniboxEditModel* edit_model_;
   WebLocationBar* location_bar_;
   OmniboxPopupViewSuggestionsDelegate* delegate_;  // weak
   OmniboxPopupMediator* mediator_;

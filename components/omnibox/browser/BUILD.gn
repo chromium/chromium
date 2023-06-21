@@ -237,6 +237,7 @@ static_library("browser") {
     "omnibox_navigation_observer.h",
     "omnibox_popup_selection.cc",
     "omnibox_popup_selection.h",
+    "omnibox_popup_view.cc",
     "omnibox_popup_view.h",
     "omnibox_prefs.cc",
     "omnibox_prefs.h",

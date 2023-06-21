@@ -19,6 +19,7 @@
 #import "components/omnibox/browser/autocomplete_match.h"
 #import "components/omnibox/browser/clipboard_provider.h"
 #import "components/omnibox/browser/location_bar_model.h"
+#import "components/omnibox/browser/omnibox_controller.h"
 #import "components/omnibox/browser/omnibox_edit_model.h"
 #import "components/omnibox/common/omnibox_focus_state.h"
 #import "components/open_from_clipboard/clipboard_recent_content.h"
@@ -90,10 +91,12 @@ void OmniboxViewIOS::OnReceiveClipboardURLForOpenMatch(
 
   GURL url = std::move(optional_gurl).value();
 
-  AutocompleteController* controller = model()->autocomplete_controller();
+  AutocompleteController* autocomplete_controller =
+      controller()->autocomplete_controller();
 
-  OmniboxPopupSelection selection(controller->InjectAdHocMatch(
-      controller->clipboard_provider()->NewClipboardURLMatch(url)));
+  OmniboxPopupSelection selection(autocomplete_controller->InjectAdHocMatch(
+      autocomplete_controller->clipboard_provider()->NewClipboardURLMatch(
+          url)));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
@@ -112,7 +115,7 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
   std::u16string text = std::move(optional_text).value();
 
   ClipboardProvider* clipboard_provider =
-      model()->autocomplete_controller()->clipboard_provider();
+      controller()->autocomplete_controller()->clipboard_provider();
   absl::optional<AutocompleteMatch> new_match =
       clipboard_provider->NewClipboardTextMatch(text);
 
@@ -121,7 +124,8 @@ void OmniboxViewIOS::OnReceiveClipboardTextForOpenMatch(
   }
 
   OmniboxPopupSelection selection(
-      model()->autocomplete_controller()->InjectAdHocMatch(new_match.value()));
+      controller()->autocomplete_controller()->InjectAdHocMatch(
+          new_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
 
@@ -134,7 +138,7 @@ void OmniboxViewIOS::OnReceiveClipboardImageForOpenMatch(
     base::TimeTicks match_selection_timestamp,
     absl::optional<gfx::Image> optional_image) {
   ClipboardProvider* clipboard_provider =
-      model()->autocomplete_controller()->clipboard_provider();
+      controller()->autocomplete_controller()->clipboard_provider();
   clipboard_provider->NewClipboardImageMatch(
       optional_image,
       base::BindOnce(&OmniboxViewIOS::OnReceiveImageMatchForOpenMatch,
@@ -154,7 +158,7 @@ void OmniboxViewIOS::OnReceiveImageMatchForOpenMatch(
     return;
   }
   OmniboxPopupSelection selection(
-      model()->autocomplete_controller()->InjectAdHocMatch(
+      controller()->autocomplete_controller()->InjectAdHocMatch(
           optional_match.value()));
   model()->OpenSelection(selection, match_selection_timestamp, disposition);
 }
@@ -713,15 +717,15 @@ void OmniboxViewIOS::OnSelectedMatchForOpening(
     const std::u16string& pasted_text,
     size_t index) {
   const auto match_selection_timestamp = base::TimeTicks();
-  AutocompleteController* controller = model()->autocomplete_controller();
 
   // Sometimes the match provided does not correspond to the autocomplete
   // result match specified by `index`. Most Visited Tiles, for example,
   // provide ad hoc matches that are not in the result at all.
-  if (index >= controller->result().size() ||
-      controller->result().match_at(index).destination_url !=
+  if (index >= controller()->result().size() ||
+      controller()->result().match_at(index).destination_url !=
           match.destination_url) {
-    OmniboxPopupSelection selection(controller->InjectAdHocMatch(match));
+    OmniboxPopupSelection selection(
+        controller()->autocomplete_controller()->InjectAdHocMatch(match));
     model()->OpenSelection(selection, match_selection_timestamp, disposition);
     return;
   }

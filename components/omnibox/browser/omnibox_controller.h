@@ -8,13 +8,12 @@
 #include <memory>
 
 #include "base/compiler_specific.h"
-#include "base/memory/raw_ptr.h"
 #include "components/omnibox/browser/autocomplete_controller.h"
 #include "components/omnibox/browser/autocomplete_match.h"
+#include "components/omnibox/browser/omnibox_edit_model.h"
 
 class AutocompleteResult;
 class OmniboxClient;
-class OmniboxEditModel;
 class OmniboxView;
 struct AutocompleteMatch;
 
@@ -36,16 +35,27 @@ class OmniboxController : public AutocompleteController::Observer {
 
   OmniboxClient* client() { return client_.get(); }
 
-  OmniboxEditModel* edit_model() const { return edit_model_.get(); }
-  void set_edit_model(std::unique_ptr<OmniboxEditModel> edit_model);
+  OmniboxEditModel* edit_model() { return edit_model_.get(); }
+
+  void SetEditModelForTesting(std::unique_ptr<OmniboxEditModel> edit_model) {
+    edit_model_ = std::move(edit_model);
+  }
 
   AutocompleteController* autocomplete_controller() {
     return autocomplete_controller_.get();
   }
-  void set_autocomplete_controller(
+
+  void SetAutocompleteControllerForTesting(
       std::unique_ptr<AutocompleteController> autocomplete_controller) {
     autocomplete_controller_ = std::move(autocomplete_controller);
   }
+
+  const AutocompleteResult& result() const {
+    return autocomplete_controller_->result();
+  }
+
+  // Returns whether `AutocompleteController` is currently processing a query.
+  bool query_in_progress() const { return !autocomplete_controller_->done(); }
 
   // Set |current_match_| to an invalid value, indicating that we do not yet
   // have a valid match for the current text in the omnibox.
@@ -55,10 +65,6 @@ class OmniboxController : public AutocompleteController::Observer {
 
   // Turns off keyword mode for the current match.
   void ClearPopupKeywordMode() const;
-
-  const AutocompleteResult& result() const {
-    return autocomplete_controller_->result();
-  }
 
  private:
   // Stores the bitmap in the OmniboxPopupModel.

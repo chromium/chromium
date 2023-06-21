@@ -22,14 +22,14 @@
 #include "ui/views/widget/widget_observer.h"
 
 class LocationBarView;
-class OmniboxEditModel;
+class OmniboxController;
 class OmniboxViewViews;
 class WebUIOmniboxPopupView;
 
 class OmniboxPopupViewWebUI : public OmniboxPopupViewViews {
  public:
   OmniboxPopupViewWebUI(OmniboxViewViews* omnibox_view,
-                        OmniboxEditModel* edit_model,
+                        OmniboxController* controller,
                         LocationBarView* location_bar_view);
   explicit OmniboxPopupViewWebUI(const OmniboxPopupViewViews&) = delete;
   OmniboxPopupViewWebUI& operator=(const OmniboxPopupViewViews&) = delete;
