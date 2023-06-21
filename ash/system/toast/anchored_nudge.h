@@ -9,6 +9,7 @@
 
 #include "ash/ash_export.h"
 #include "ash/public/cpp/system/anchored_nudge_data.h"
+#include "ash/shell_observer.h"
 #include "ui/base/metadata/metadata_header_macros.h"
 #include "ui/views/bubble/bubble_dialog_delegate_view.h"
 
@@ -21,6 +22,10 @@ class GestureEvent;
 class MouseEvent;
 }  // namespace ui
 
+namespace aura {
+class Window;
+}
+
 namespace ash {
 
 class SystemNudgeView;
@@ -28,7 +33,8 @@ class SystemNudgeView;
 // Creates and manages the widget and contents view for an anchored nudge.
 // TODO(b/285988235): `AnchoredNudge` will replace the existing `SystemNudge`
 // and take over its name.
-class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
+class ASH_EXPORT AnchoredNudge : public ShellObserver,
+                                 public views::BubbleDialogDelegateView {
  public:
   METADATA_HEADER(AnchoredNudge);
 
@@ -49,16 +55,27 @@ class ASH_EXPORT AnchoredNudge : public views::BubbleDialogDelegateView {
       views::Widget* widget) override;
 
   // views::View:
+  void AddedToWidget() override;
   bool OnMousePressed(const ui::MouseEvent& event) override;
   bool OnMouseDragged(const ui::MouseEvent& event) override;
   void OnMouseReleased(const ui::MouseEvent& event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+
+  // ShellObserver:
+  void OnShelfAlignmentChanged(aura::Window* root_window,
+                               ShelfAlignment old_alignment) override;
+
+  // Sets the arrow of the nudge based on the current shelf's alignment.
+  void SetArrowFromShelf();
 
   const std::string& id() { return id_; }
 
  private:
   // Unique id used to find and dismiss the nudge through the manager.
   const std::string id_;
+
+  // Whether the nudge should set its arrow based on shelf alignment.
+  const bool anchored_to_shelf_;
 
   // Owned by the views hierarchy. Contents view of the anchored nudge.
   raw_ptr<SystemNudgeView> system_nudge_view_ = nullptr;

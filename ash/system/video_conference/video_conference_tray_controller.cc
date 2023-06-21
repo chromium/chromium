@@ -213,6 +213,7 @@ void VideoConferenceTrayController::MaybeShowSpeakOnMuteOptInNudge(
       weak_ptr_factory_.GetWeakPtr());
 
   nudge_data.has_infinite_duration = true;
+  nudge_data.anchored_to_shelf = true;
 
   AnchoredNudgeManager::Get()->Show(nudge_data);
 
@@ -479,6 +480,7 @@ void VideoConferenceTrayController::OnSpeakOnMuteDetected() {
           ->client()
           ->ShowSpeakOnMuteDetectionSettings();
     });
+    nudge_data.anchored_to_shelf = true;
     AnchoredNudgeManager::Get()->Show(nudge_data);
 
     last_speak_on_mute_notification_time_.emplace(current_time);
@@ -655,6 +657,7 @@ void VideoConferenceTrayController::HandleDeviceUsedWhileDisabled(
   AnchoredNudgeData nudge_data(
       nudge_id, catalog_name,
       l10n_util::GetStringFUTF16(text_id, app_name, device_name), anchor_view);
+  nudge_data.anchored_to_shelf = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 

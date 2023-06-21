@@ -27,6 +27,7 @@ void PhoneHubNudgeController::ShowNudge(views::View* anchor_view,
   }
   AnchoredNudgeData nudge_data = {kPhoneHubNudgeId, NudgeCatalogName::kPhoneHub,
                                   text, anchor_view};
+  nudge_data.anchored_to_shelf = true;
   AnchoredNudgeManager::Get()->Show(nudge_data);
 }
 

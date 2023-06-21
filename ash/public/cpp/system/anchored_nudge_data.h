@@ -81,6 +81,10 @@ struct ASH_PUBLIC_EXPORT AnchoredNudgeData {
   // anchor view is deleted, user locks session, etc.)
   bool has_infinite_duration = false;
 
+  // If true, `arrow` will be set based on the current shelf alignment, and the
+  // nudge will listen to shelf alignment changes to readjust its `arrow`.
+  bool anchored_to_shelf = false;
+
   // Nudge action callbacks.
   HoverStateChangeCallback hover_state_change_callback;
   AnchoredNudgeClickCallback nudge_click_callback;
