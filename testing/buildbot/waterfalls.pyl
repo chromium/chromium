@@ -2764,7 +2764,7 @@
     'machines': {
       'DevTools Linux (chromium)': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'additional_compile_targets': ['blink_tests'],
         'test_suites': {
