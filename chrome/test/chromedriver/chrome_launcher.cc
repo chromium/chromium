@@ -37,7 +37,6 @@
 #include "chrome/common/chrome_constants.h"
 #include "chrome/common/chrome_result_codes.h"
 #include "chrome/common/chrome_version.h"
-#include "chrome/test/chromedriver/chrome/browser_info.h"
 #include "chrome/test/chromedriver/chrome/chrome_android_impl.h"
 #include "chrome/test/chromedriver/chrome/chrome_desktop_impl.h"
 #include "chrome/test/chromedriver/chrome/chrome_finder.h"
@@ -54,7 +53,6 @@
 #include "chrome/test/chromedriver/log_replay/log_replay_socket.h"
 #include "chrome/test/chromedriver/log_replay/replay_http_client.h"
 #include "chrome/test/chromedriver/net/net_util.h"
-#include "chrome/test/chromedriver/net/pipe_builder.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "components/crx_file/crx_verifier.h"
@@ -117,6 +115,13 @@ const base::FilePath::CharType kDevToolsActivePort[] =
 
 enum ChromeType { Remote, Desktop, Android, Replay };
 
+#if BUILDFLAG(IS_POSIX)
+// The values for kReadFD and kWriteFD come from
+// content/browser/devtools/devtools_pipe_handler.cc
+const int kReadFD = 3;
+const int kWriteFD = 4;
+#endif
+
 Status PrepareDesktopCommandLine(const Capabilities& capabilities,
                                  bool enable_chrome_logs,
                                  base::CommandLine* prepared_command,
@@ -174,11 +179,7 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   switches.SetFromSwitches(capabilities.switches);
   if (!switches.HasSwitch("remote-debugging-port") &&
       !switches.HasSwitch("remote-debugging-pipe")) {
-    if (PipeBuilder::PlatformIsSupported()) {
-      switches.SetSwitch("remote-debugging-pipe");
-    } else {
-      switches.SetSwitch("remote-debugging-port", "0");
-    }
+    switches.SetSwitch("remote-debugging-port", "0");
   }
   if (capabilities.exclude_switches.count("user-data-dir") > 0) {
     LOG(WARNING) << "excluding user-data-dir switch is not supported";
@@ -234,130 +235,6 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   return Status(kOk);
 }
 
-Status GetBrowserInfo(DevToolsClient* client, BrowserInfo* browser_info) {
-  base::Value::Dict result;
-  Status status = client->SendCommandAndGetResult("Browser.getVersion",
-                                                  base::Value::Dict(), &result);
-  if (status.IsOk()) {
-    status = browser_info->FillFromBrowserVersionResponse(result);
-  } else {
-    VLOG(logging::LOGGING_WARNING)
-        << "Failed to obtain browser info: " << status.message();
-  }
-  return status;
-}
-
-Status CheckVersion(const BrowserInfo& browser_info,
-                    const Capabilities& capabilities,
-                    ChromeType ct,
-                    std::string fp = "") {
-  base::CommandLine* cmd_line = base::CommandLine::ForCurrentProcess();
-  if (cmd_line->HasSwitch("disable-build-check")) {
-    LOG(WARNING) << "You are using an unsupported command-line switch: "
-                    "--disable-build-check. Please don't report bugs that "
-                    "cannot be reproduced with this switch removed.";
-  } else if (browser_info.major_version != CHROME_VERSION_MAJOR) {
-    if (browser_info.major_version == 0) {
-      // TODO(https://crbug.com/932013): Content Shell doesn't report a version
-      // number. Skip version checking with a warning.
-      LOG(WARNING) << "Unable to retrieve " << kBrowserShortName
-                   << " version. Unable to verify browser compatibility.";
-    } else if (browser_info.major_version == CHROME_VERSION_MAJOR + 1) {
-      // TODO(https://crbug.com/chromedriver/2656): Since we don't currently
-      // release ChromeDriver for dev or canary channels, allow using
-      // ChromeDriver version n (e.g., Beta) with Chrome version n+1 (e.g., Dev
-      // or Canary), with a warning.
-      LOG(WARNING) << "This version of " << kChromeDriverProductFullName
-                   << " has not been tested with " << kBrowserShortName
-                   << " version " << browser_info.major_version << ".";
-    } else {
-      std::string version_info = base::StringPrintf(
-          "This version of %s only supports %s version %d\nCurrent browser "
-          "version is %s",
-          kChromeDriverProductFullName, kBrowserShortName, CHROME_VERSION_MAJOR,
-          browser_info.browser_version.c_str());
-      if (ct == ChromeType::Desktop && !fp.empty()) {
-        version_info.append(" with binary path " + fp);
-      } else if (ct == ChromeType::Android) {
-        version_info.append(" with package name " +
-                            capabilities.android_package);
-      }
-      return Status(kSessionNotCreated, version_info);
-    }
-  }
-  return Status{kOk};
-}
-
-Status GetWebViewsInfo(DevToolsClient* devtools_websocket_client,
-                       WebViewsInfo* views_info) {
-  DCHECK(views_info);
-  Status status{kOk};
-
-  base::Value::Dict params;
-  base::Value::Dict result;
-  status = devtools_websocket_client->SendCommandAndGetResult(
-      "Target.getTargets", params, &result);
-  if (status.IsError()) {
-    return status;
-  }
-  base::Value* target_infos = result.Find("targetInfos");
-  if (!target_infos) {
-    return Status(
-        kUnknownError,
-        "result of call to Target.getTargets does not contain targetInfos");
-  }
-  if (!target_infos->is_list()) {
-    return Status(kUnknownError,
-                  "targetInfos in Target.getTargets response is not a list");
-  }
-  std::vector<WebViewInfo> temp_views_info;
-  for (const base::Value& info_value : target_infos->GetList()) {
-    if (!info_value.is_dict()) {
-      return Status(kUnknownError, "DevTools contains non-dictionary item");
-    }
-    const base::Value::Dict* info = info_value.GetIfDict();
-    DCHECK(info);
-    const std::string* id = info->FindString("targetId");
-    if (!id) {
-      return Status(kUnknownError, "DevTools did not include id");
-    }
-    const std::string* type_as_string = info->FindString("type");
-    if (!type_as_string) {
-      return Status(kUnknownError, "DevTools did not include type");
-    }
-    const std::string* url = info->FindString("url");
-    if (!url) {
-      return Status(kUnknownError, "DevTools did not include url");
-    }
-    WebViewInfo::Type type;
-    Status parse_status = ParseType(*type_as_string, &type);
-    if (parse_status.IsError()) {
-      return parse_status;
-    }
-    temp_views_info.emplace_back(*id, std::string(), *url, type);
-  }
-  *views_info = WebViewsInfo(temp_views_info);
-  return status;
-}
-
-Status WaitForPage(DevToolsClient* client, base::TimeTicks deadline) {
-  Status status{kOk};
-  do {
-    WebViewsInfo views_info;
-    status = GetWebViewsInfo(client, &views_info);
-    if (status.IsError()) {
-      return status;
-    }
-    for (size_t i = 0; i < views_info.GetSize(); ++i) {
-      if (views_info.Get(i).type == WebViewInfo::kPage) {
-        return Status(kOk);
-      }
-    }
-    base::PlatformThread::Sleep(base::Milliseconds(50));
-  } while (base::TimeTicks::Now() < deadline);
-  return Status(kUnknownError, "unable to discover open pages");
-}
-
 Status WaitForDevToolsAndCheckVersion(
     const DevToolsEndpoint& endpoint,
     network::mojom::URLLoaderFactory* factory,
@@ -394,10 +271,39 @@ Status WaitForDevToolsAndCheckVersion(
                           browser_info->android_package.c_str()));
   }
 
-  status = CheckVersion(*browser_info, *capabilities, ct, fp);
-  *retry = status.IsOk();
-  if (status.IsError()) {
-    return status;
+  *retry = true;
+  if (cmd_line->HasSwitch("disable-build-check")) {
+    LOG(WARNING) << "You are using an unsupported command-line switch: "
+                    "--disable-build-check. Please don't report bugs that "
+                    "cannot be reproduced with this switch removed.";
+  } else if (browser_info->major_version != CHROME_VERSION_MAJOR) {
+    if (browser_info->major_version == 0) {
+      // TODO(https://crbug.com/932013): Content Shell doesn't report a version
+      // number. Skip version checking with a warning.
+      LOG(WARNING) << "Unable to retrieve " << kBrowserShortName
+                   << " version. Unable to verify browser compatibility.";
+    } else if (browser_info->major_version == CHROME_VERSION_MAJOR + 1) {
+      // TODO(https://crbug.com/chromedriver/2656): Since we don't currently
+      // release ChromeDriver for dev or canary channels, allow using
+      // ChromeDriver version n (e.g., Beta) with Chrome version n+1 (e.g., Dev
+      // or Canary), with a warning.
+      LOG(WARNING) << "This version of " << kChromeDriverProductFullName
+                   << " has not been tested with " << kBrowserShortName
+                   << " version " << browser_info->major_version << ".";
+    } else {
+      *retry = false;
+      std::string version_info = base::StringPrintf(
+          "This version of %s only supports %s version %d\nCurrent browser "
+          "version is %s",
+          kChromeDriverProductFullName, kBrowserShortName, CHROME_VERSION_MAJOR,
+          browser_info->browser_version.c_str());
+      if (ct == ChromeType::Desktop && !fp.empty())
+        version_info.append(" with binary path " + fp);
+      else if (ct == ChromeType::Android)
+        version_info.append(" with package name " +
+                            capabilities->android_package);
+      return Status(kSessionNotCreated, version_info);
+    }
   }
 
   // Always try GetWebViewsInfo at least once if the client
@@ -420,12 +326,17 @@ Status WaitForDevToolsAndCheckVersion(
 }
 
 Status CreateBrowserwideDevToolsClientAndConnect(
+    const DevToolsEndpoint& endpoint,
+    const PerfLoggingPrefs& perf_logging_prefs,
     std::unique_ptr<SyncWebSocket> socket,
     const std::vector<std::unique_ptr<DevToolsEventListener>>&
         devtools_event_listeners,
     const std::string& web_socket_url,
     std::unique_ptr<DevToolsClient>* browser_client) {
   std::string url(web_socket_url);
+  if (url.length() == 0) {
+    url = endpoint.GetBrowserDebuggerUrl();
+  }
   SyncWebSocket* socket_ptr = socket.get();
   std::unique_ptr<DevToolsClientImpl> client(new DevToolsClientImpl(
       DevToolsClientImpl::kBrowserwideDevToolsClientId, ""));
@@ -439,17 +350,10 @@ Status CreateBrowserwideDevToolsClientAndConnect(
 
   DevToolsClientImpl* client_impl = client.get();
   *browser_client = std::move(client);
-  Status status{kOk};
-  if (socket_ptr->Connect(GURL(url))) {
-    status = client_impl->SetSocket(std::move(socket));
-  } else {
-    status = Status(kDisconnected, "unable to connect to renderer");
+  if (!socket_ptr->Connect(GURL(url))) {
+    return Status(kDisconnected, "unable to connect to renderer");
   }
-  if (status.IsError()) {
-    LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
-                 << status.message();
-  }
-  return status;
+  return client_impl->SetSocket(std::move(socket));
 }
 
 Status LaunchRemoteChromeSession(
@@ -476,21 +380,47 @@ Status LaunchRemoteChromeSession(
 
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
-  BrowserInfo browser_info = *devtools_http_client->browser_info();
-  if (browser_info.web_socket_url.empty()) {
-    browser_info.web_socket_url =
-        DevToolsEndpoint(capabilities.debugger_address).GetBrowserDebuggerUrl();
-  }
   status = CreateBrowserwideDevToolsClientAndConnect(
-      std::move(socket), devtools_event_listeners, browser_info.web_socket_url,
+      DevToolsEndpoint(capabilities.debugger_address),
+      capabilities.perf_logging_prefs, std::move(socket),
+      devtools_event_listeners,
+      devtools_http_client->browser_info()->web_socket_url,
       &devtools_websocket_client);
+  if (status.IsError()) {
+    LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
+                 << status.message();
+  }
+
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
 
   *chrome = std::make_unique<ChromeRemoteImpl>(
-      browser_info, capabilities.window_types,
+      *browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy);
   return Status(kOk);
 }
+
+#if BUILDFLAG(IS_POSIX)
+Status PipeSetUp(base::LaunchOptions* options, int* write_fd, int* read_fd) {
+  int chrome_to_driver_pipe_fds[2];
+  int driver_to_chrome_pipe_fds[2];
+
+  if (pipe(chrome_to_driver_pipe_fds) == -1 ||
+      pipe(driver_to_chrome_pipe_fds) == -1)
+    return Status(kUnknownError, "cannot set up pipe");
+
+  options->fds_to_remap.emplace_back(driver_to_chrome_pipe_fds[0], kReadFD);
+  options->fds_to_remap.emplace_back(chrome_to_driver_pipe_fds[1], kWriteFD);
+
+  close(driver_to_chrome_pipe_fds[0]);
+  close(chrome_to_driver_pipe_fds[1]);
+
+  *write_fd = driver_to_chrome_pipe_fds[1];
+  *read_fd = chrome_to_driver_pipe_fds[0];
+
+  return Status(kOk);
+}
+#endif
 
 Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                            const SyncWebSocketFactory& socket_factory,
@@ -569,14 +499,15 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     options.new_process_group = true;
 #endif
 
-  PipeBuilder pipe_builder;
-  if (command.HasSwitch("remote-debugging-pipe")) {
-    pipe_builder.SetProtocolMode(
-        command.GetSwitchValueASCII("remote-debugging-pipe"));
-    pipe_builder.SetUpPipes(&options);
+#if BUILDFLAG(IS_POSIX)
+
+  int write_fd;
+  int read_fd;
+
+  if (capabilities.switches.HasSwitch("remote-debugging-pipe")) {
+    PipeSetUp(&options, &write_fd, &read_fd);
   }
 
-#if BUILDFLAG(IS_POSIX)
   base::ScopedFD devnull;
   if (!cmd_line->HasSwitch("verbose") && !enable_chrome_logs &&
       cmd_line->GetSwitchValueASCII("log-level") != "ALL") {
@@ -630,116 +561,70 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<DevToolsHttpClient> devtools_http_client;
   int exit_code;
   base::TerminationStatus chrome_status =
-      base::GetTerminationStatus(process.Handle(), &exit_code);
+      base::TERMINATION_STATUS_STILL_RUNNING;
   base::TimeTicks deadline = base::TimeTicks::Now() + base::Seconds(60);
-  std::unique_ptr<DevToolsClient> devtools_websocket_client;
-  std::unique_ptr<SyncWebSocket> socket;
-  BrowserInfo browser_info;
-  if (command.HasSwitch("remote-debugging-port")) {
-    while (chrome_status == base::TERMINATION_STATUS_STILL_RUNNING &&
-           base::TimeTicks::Now() < deadline) {
+  while (base::TimeTicks::Now() < deadline) {
+    if (!devtools_port) {
+      status =
+          internal::ParseDevToolsActivePortFile(user_data_dir, &devtools_port);
+    } else {
       status = Status(kOk);
-      if (!devtools_port) {
-        status = internal::ParseDevToolsActivePortFile(user_data_dir,
-                                                       &devtools_port);
-      }
-      if (status.IsOk()) {
-        // std::ostringstream is used in case to convert Windows wide string to
-        // string
-        std::ostringstream oss;
-        oss << command.GetProgram();
-        status = WaitForDevToolsAndCheckVersion(
-            DevToolsEndpoint(devtools_port), factory, &capabilities, 1,
-            &devtools_http_client, &retry, ChromeType::Desktop, oss.str());
-        if (!retry) {
-          break;
-        }
-      }
-      if (status.IsOk()) {
+    }
+    if (status.IsOk()) {
+      // std::ostringstream is used in case to convert Windows wide string to
+      // string
+      std::ostringstream oss;
+      oss << command.GetProgram();
+      status = WaitForDevToolsAndCheckVersion(
+          DevToolsEndpoint(devtools_port), factory, &capabilities, 1,
+          &devtools_http_client, &retry, ChromeType::Desktop, oss.str());
+      if (!retry) {
         break;
       }
-      base::PlatformThread::Sleep(base::Milliseconds(50));
-
-      // Check to see if Chrome has crashed.
-      chrome_status = base::GetTerminationStatus(process.Handle(), &exit_code);
     }
     if (status.IsOk()) {
-      socket = socket_factory.Run();
-      browser_info = *(devtools_http_client->browser_info());
-      if (browser_info.web_socket_url.empty()) {
-        browser_info.web_socket_url =
-            DevToolsEndpoint(devtools_port).GetBrowserDebuggerUrl();
-      }
-      status = CreateBrowserwideDevToolsClientAndConnect(
-          std::move(socket), devtools_event_listeners,
-          browser_info.web_socket_url, &devtools_websocket_client);
+      break;
     }
-  } else {
-    DCHECK(command.HasSwitch("remote-debugging-pipe"));
-    status = pipe_builder.CloseChildEndpoints();
-    if (status.IsOk()) {
-      status = pipe_builder.BuildSocket();
-    }
-    if (status.IsOk()) {
-      socket = pipe_builder.TakeSocket();
-      DCHECK(socket);
-      status = CreateBrowserwideDevToolsClientAndConnect(
-          std::move(socket), devtools_event_listeners,
-          browser_info.web_socket_url, &devtools_websocket_client);
-    }
-    if (status.IsOk()) {
-      status = GetBrowserInfo(devtools_websocket_client.get(), &browser_info);
-    }
-    if (status.IsOk()) {
-      status = CheckVersion(browser_info, capabilities, ChromeType::Desktop);
-    }
-    if (status.IsOk()) {
-      status = WaitForPage(devtools_websocket_client.get(), deadline);
-    }
-  }
-
-  if (status.IsError()) {
     // Check to see if Chrome has crashed.
     chrome_status = base::GetTerminationStatus(process.Handle(), &exit_code);
-  }
-
-  if (chrome_status != base::TERMINATION_STATUS_STILL_RUNNING) {
+    if (chrome_status != base::TERMINATION_STATUS_STILL_RUNNING) {
 #if BUILDFLAG(IS_WIN)
-    const int chrome_exit_code = exit_code;
+      if (exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)
 #else
-    const int chrome_exit_code = WEXITSTATUS(exit_code);
+      if (WEXITSTATUS(exit_code) ==
+          chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED)
 #endif
-    if (chrome_exit_code == chrome::RESULT_CODE_NORMAL_EXIT_PROCESS_NOTIFIED) {
-      return Status(kInvalidArgument,
-                    "user data directory is already in use, "
-                    "please specify a unique value for --user-data-dir "
-                    "argument, or don't use --user-data-dir");
+        return Status(kInvalidArgument,
+                      "user data directory is already in use, "
+                      "please specify a unique value for --user-data-dir "
+                      "argument, or don't use --user-data-dir");
+      std::string termination_reason =
+          internal::GetTerminationReason(chrome_status);
+      Status failure_status =
+          Status(kUnknownError, base::StringPrintf("%s failed to start: %s.",
+                                                   kBrowserShortName,
+                                                   termination_reason.c_str()));
+      failure_status.AddDetails(status.message());
+      // There is a use case of someone passing a path to a binary to us in
+      // capabilities that is not an actual Chrome binary but a script that
+      // intercepts our arguments and then starts Chrome itself. This method
+      // of starting Chrome should be done carefully. The right way to do it
+      // is to do an exec of Chrome at the end of the script so that Chrome
+      // remains a subprocess of ChromeDriver. This allows us to have the
+      // correct process handle so that we can terminate Chrome after the
+      // test has finished or in the case of any failure. If you can't exec
+      // the Chrome binary at the end of your script, you must find a way to
+      // properly handle our termination signal so that you don't have zombie
+      // Chrome processes running after the test is completed.
+      failure_status.AddDetails(base::StringPrintf(
+          "The process started from %s location %s is no longer running, "
+          "so %s is assuming that %s has crashed.",
+          base::ToLowerASCII(kBrowserShortName).c_str(),
+          command.GetProgram().AsUTF8Unsafe().c_str(),
+          kChromeDriverProductShortName, kBrowserShortName));
+      return failure_status;
     }
-    std::string termination_reason =
-        internal::GetTerminationReason(chrome_status);
-    Status failure_status =
-        Status(kUnknownError,
-               base::StringPrintf("%s failed to start: %s.", kBrowserShortName,
-                                  termination_reason.c_str()));
-    failure_status.AddDetails(status.message());
-    // There is a use case of someone passing a path to a binary to us in
-    // capabilities that is not an actual Chrome binary but a script that
-    // intercepts our arguments and then starts Chrome itself. This method
-    // of starting Chrome should be done carefully. The right way to do it
-    // is to do an exec of Chrome at the end of the script so that Chrome
-    // remains a subprocess of ChromeDriver. This allows us to have the
-    // correct process handle so that we can terminate Chrome after the
-    // test has finished or in the case of any failure. If you can't exec
-    // the Chrome binary at the end of your script, you must find a way to
-    // properly handle our termination signal so that you don't have zombie
-    // Chrome processes running after the test is completed.
-    failure_status.AddDetails(base::StringPrintf(
-        "The process started from %s location %s is no longer running, "
-        "so %s is assuming that %s has crashed.",
-        base::ToLowerASCII(kBrowserShortName).c_str(),
-        command.GetProgram().AsUTF8Unsafe().c_str(),
-        kChromeDriverProductShortName, kBrowserShortName));
-    return failure_status;
+    base::PlatformThread::Sleep(base::Milliseconds(50));
   }
 
   if (status.IsError()) {
@@ -755,9 +640,23 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     return status;
   }
 
+  std::unique_ptr<DevToolsClient> devtools_websocket_client;
+  std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
+  status = CreateBrowserwideDevToolsClientAndConnect(
+      DevToolsEndpoint(devtools_port), capabilities.perf_logging_prefs,
+      std::move(socket), devtools_event_listeners,
+      devtools_http_client->browser_info()->web_socket_url,
+      &devtools_websocket_client);
+  if (status.IsError()) {
+    LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
+                 << status.message();
+  }
+
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
+
   std::unique_ptr<ChromeDesktopImpl> chrome_desktop =
       std::make_unique<ChromeDesktopImpl>(
-          std::move(browser_info), capabilities.window_types,
+          *browser_info, capabilities.window_types,
           std::move(devtools_websocket_client),
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(process), command,
@@ -835,18 +734,20 @@ Status LaunchAndroidChrome(network::mojom::URLLoaderFactory* factory,
 
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
   std::unique_ptr<SyncWebSocket> socket = socket_factory.Run();
-  BrowserInfo browser_info = *devtools_http_client->browser_info();
-  if (browser_info.web_socket_url.empty()) {
-    browser_info.web_socket_url =
-        DevToolsEndpoint(devtools_port).GetBrowserDebuggerUrl();
-  }
   status = CreateBrowserwideDevToolsClientAndConnect(
+      DevToolsEndpoint(devtools_port), capabilities.perf_logging_prefs,
       std::move(socket), devtools_event_listeners,
       devtools_http_client->browser_info()->web_socket_url,
       &devtools_websocket_client);
+  if (status.IsError()) {
+    LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
+                 << status.message();
+  }
+
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
 
   *chrome = std::make_unique<ChromeAndroidImpl>(
-      browser_info, capabilities.window_types,
+      *browser_info, capabilities.window_types,
       std::move(devtools_websocket_client), std::move(devtools_event_listeners),
       capabilities.mobile_device, capabilities.page_load_strategy,
       std::move(device));
@@ -893,18 +794,22 @@ Status LaunchReplayChrome(network::mojom::URLLoaderFactory* factory,
   std::unique_ptr<SyncWebSocket> socket =
       std::make_unique<LogReplaySocket>(log_path);
   std::unique_ptr<DevToolsClient> devtools_websocket_client;
-  BrowserInfo browser_info = *devtools_http_client->browser_info();
-  if (browser_info.web_socket_url.empty()) {
-    browser_info.web_socket_url = DevToolsEndpoint(0).GetBrowserDebuggerUrl();
-  }
   status = CreateBrowserwideDevToolsClientAndConnect(
-      std::move(socket), devtools_event_listeners, browser_info.web_socket_url,
+      DevToolsEndpoint(0), capabilities.perf_logging_prefs, std::move(socket),
+      devtools_event_listeners,
+      devtools_http_client->browser_info()->web_socket_url,
       &devtools_websocket_client);
+  if (status.IsError()) {
+    LOG(WARNING) << "Browser-wide DevTools client failed to connect: "
+                 << status.message();
+  }
+
+  const BrowserInfo* browser_info = devtools_http_client->browser_info();
 
   base::Process dummy_process;
   std::unique_ptr<ChromeDesktopImpl> chrome_impl =
       std::make_unique<ChromeReplayImpl>(
-          browser_info, capabilities.window_types,
+          *browser_info, capabilities.window_types,
           std::move(devtools_websocket_client),
           std::move(devtools_event_listeners), capabilities.mobile_device,
           capabilities.page_load_strategy, std::move(dummy_process), command,
