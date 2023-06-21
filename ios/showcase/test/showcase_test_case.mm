@@ -4,6 +4,7 @@
 
 #import "ios/showcase/test/showcase_test_case.h"
 
+#import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "ios/showcase/test/showcase_test_case_app_interface.h"
 #import "ios/testing/earl_grey/coverage_utils.h"
@@ -14,6 +15,11 @@
 #endif
 
 @implementation ShowcaseTestCase
+
++ (void)load {
+  base::apple::SetOverrideFrameworkBundle(
+      [NSBundle bundleForClass:[ShowcaseTestCase class]]);
+}
 
 + (void)setUpForTestCase {
   [super setUpForTestCase];
