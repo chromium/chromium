@@ -57,10 +57,6 @@ void BrowserPolicyConnectorBase::Shutdown() {
   is_initialized_ = false;
   if (g_testing_provider)
     g_testing_provider->Shutdown();
-  if (local_test_provider_) {
-    local_test_provider_->Shutdown();
-    local_test_provider_ = nullptr;
-  }
   for (const auto& provider : policy_providers_)
     provider->Shutdown();
   // Drop g_testing_provider so that tests executed with --single-process-tests
@@ -89,8 +85,6 @@ PolicyService* BrowserPolicyConnectorBase::GetPolicyService() {
   is_initialized_ = true;
 
   policy_providers_ = CreatePolicyProviders();
-  auto local_test_provider = MaybeCreateLocalTestProvider();
-  local_test_provider_ = local_test_provider.get();
 
   if (g_testing_provider)
     g_testing_provider->Init(GetSchemaRegistry());
@@ -99,10 +93,8 @@ PolicyService* BrowserPolicyConnectorBase::GetPolicyService() {
     provider->Init(GetSchemaRegistry());
 
   g_created_policy_service = true;
-  policy_service_ = std::make_unique<PolicyServiceImpl>(
-      GetProvidersForPolicyService(),
-      std::vector<std::unique_ptr<PolicyMigrator>>(),
-      std::move(local_test_provider));
+  policy_service_ =
+      std::make_unique<PolicyServiceImpl>(GetProvidersForPolicyService());
   return policy_service_.get();
 }
 
@@ -167,11 +159,6 @@ BrowserPolicyConnectorBase::GetProvidersForPolicyService() {
 std::vector<std::unique_ptr<ConfigurationPolicyProvider>>
 BrowserPolicyConnectorBase::CreatePolicyProviders() {
   return {};
-}
-
-std::unique_ptr<ConfigurationPolicyProvider>
-BrowserPolicyConnectorBase::MaybeCreateLocalTestProvider() {
-  return nullptr;
 }
 
 void BrowserPolicyConnectorBase::OnResourceBundleCreated() {

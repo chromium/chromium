@@ -119,12 +119,6 @@ class POLICY_EXPORT PolicyMap {
     // current schema.
     void SetInvalid();
 
-    // Getter for |is_disabled_by_testing_policies_|.
-    bool IsDisabledByTestingPolicies() const;
-
-    // Marks the policy as disabled for testing policies.
-    void SetDisabledByTestingPolicies();
-
     // Marks the policy as ignored because it does not share the priority of
     // its policy atomic group.
     void SetIgnoredByPolicyAtomicGroup();
@@ -143,9 +137,6 @@ class POLICY_EXPORT PolicyMap {
     // Returns true if there is any message for |type|.
     bool HasMessage(MessageType type) const;
 
-    // Returns true if there is a message for |type| with |id|.
-    bool HasMessage(MessageType type, int message_id) const;
-
     // Returns localized messages as UTF-16 separated with LF characters. The
     // messages are organized according to message types (Warning, Error, etc).
     std::u16string GetLocalizedMessages(MessageType type,
@@ -155,7 +146,6 @@ class POLICY_EXPORT PolicyMap {
     absl::optional<base::Value> value_;
     bool ignored_ = false;
     bool is_default_value_ = false;
-    bool is_disabled_by_testing_policies_ = false;
 
     // Stores all message IDs separated by message types.
     std::map<MessageType,
@@ -260,10 +250,6 @@ class POLICY_EXPORT PolicyMap {
   // to load.
   void SetAllInvalid();
 
-  // For all policies, mark them as disabled when local test policy provider
-  // is active.
-  void DisableAllPoliciesForLocalTesting();
-
   // Erase the given |policy|, if it exists in this map.
   void Erase(const std::string& policy);
 
@@ -309,8 +295,7 @@ class POLICY_EXPORT PolicyMap {
   // Returns true if |lhs| has higher priority than |rhs|. The priority of the
   // fields are |level| > |PolicyPriority| for browser and |level| > |scope| >
   // |source| for OS. External factors such as metapolicy values are considered
-  // by default for browser policies. Policies disabled for testing have lower
-  // priority.
+  // by default for browser policies.
   bool EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                               const PolicyMap::Entry& rhs) const;
 

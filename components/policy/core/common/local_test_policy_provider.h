@@ -12,8 +12,8 @@
 
 namespace policy {
 
-// The policy provider for testing policies through the chrome://policy/test
-// page. When provider is in use the policies from all other policy providers
+// The policy provider for testing policies through the policy test page.
+// When provider is in use the policies from all other policy providers
 // will be disabled.
 class POLICY_EXPORT LocalTestPolicyProvider
     : public ConfigurationPolicyProvider {

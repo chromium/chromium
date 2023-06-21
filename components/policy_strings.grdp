@@ -367,9 +367,6 @@ Additional details:
     <message name="IDS_POLICY_HEX_COLOR_ERROR" desc="Error message in the policy summary page for the BrowserThemeColor policy when the policy value is an invalid hex color.">
       Value "<ph name="VALUE">$1<ex>#zzzzzz</ex></ph>" is an invalid hex color.
     </message>
-  <message name="IDS_POLICY_IGNORED_FOR_TESTING" desc="Text displayed in the status column when a policy is ignored when local testing policy provider is active.">
-  Ignored because Local Testing is active.
-  </message>
 
   <!-- chrome://policy -->
   <message name="IDS_POLICY_TITLE" desc="Page title and the title of the section that lists policies.">

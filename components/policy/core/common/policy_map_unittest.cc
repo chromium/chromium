@@ -1770,13 +1770,6 @@ TEST_F(PolicyMapTest, Affiliation) {
   EXPECT_TRUE(policies.IsUserAffiliated());
 }
 
-TEST_F(PolicyMapTest, DisabledTestingMessage) {
-  PolicyMap::Entry entry_a(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
-                           POLICY_SOURCE_CLOUD, base::Value("a"), nullptr);
-  entry_a.SetDisabledByTestingPolicies();
-  EXPECT_TRUE(entry_a.HasMessage(PolicyMap::MessageType::kWarning));
-}
-
 #if !BUILDFLAG(IS_CHROMEOS)
 class PolicyMapMergeTest
     : public PolicyMapTestBase,

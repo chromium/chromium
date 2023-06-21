@@ -42,9 +42,7 @@ class POLICY_EXPORT PolicyServiceImpl
   // ConfigurationPolicyProviders, in order of decreasing priority.
   explicit PolicyServiceImpl(
       Providers providers,
-      Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>(),
-      std::unique_ptr<ConfigurationPolicyProvider> local_test_provider =
-          nullptr);
+      Migrators migrators = std::vector<std::unique_ptr<PolicyMigrator>>());
 
   // Creates a new PolicyServiceImpl with the list of
   // ConfigurationPolicyProviders, in order of decreasing priority.
@@ -72,15 +70,10 @@ class POLICY_EXPORT PolicyServiceImpl
   bool IsInitializationComplete(PolicyDomain domain) const override;
   bool IsFirstPolicyLoadComplete(PolicyDomain domain) const override;
   void RefreshPolicies(base::OnceClosure callback) override;
-  void UseLocalTestPolicyProvider() override;
-  void RevertUseLocalTestPolicyProvider() override;
 #if BUILDFLAG(IS_ANDROID)
   android::PolicyServiceAndroid* GetPolicyServiceAndroid() override;
 #endif
 
-  // Add LocalTestPolicyProvider for testing.
-  void SetLocalTestPolicyProviderForTesting(
-      std::unique_ptr<ConfigurationPolicyProvider> provider);
   // If this PolicyServiceImpl has been created using
   // |CreateWithThrottledInitialization|, calling UnthrottleInitialization will
   // allow notification of observers that initialization has completed. If
@@ -98,11 +91,9 @@ class POLICY_EXPORT PolicyServiceImpl
   // If |initialization_throttled| is true, this PolicyServiceImpl will only
   // notify observers that initialization has completed (for any domain) after
   // |UnthrottleInitialization| has been called.
-  PolicyServiceImpl(
-      Providers providers,
-      Migrators migrators,
-      bool initialization_throttled,
-      std::unique_ptr<ConfigurationPolicyProvider> local_test_provider);
+  PolicyServiceImpl(Providers providers,
+                    Migrators migrators,
+                    bool initialization_throttled);
 
   // ConfigurationPolicyProvider::Observer overrides:
   void OnUpdatePolicy(ConfigurationPolicyProvider* provider) override;
@@ -140,13 +131,6 @@ class POLICY_EXPORT PolicyServiceImpl
   Providers providers_;
 
   Migrators migrators_;
-
-  // The local test policy provider.
-  // TODO (b:288258476): move ownership to BrowserPolicyConnectorBase
-  std::unique_ptr<ConfigurationPolicyProvider> local_test_provider_ = nullptr;
-
-  // True when local test provider is active.
-  bool local_test_provider_active_ = false;
 
   // Maps each policy namespace to its current policies.
   PolicyBundle policy_bundle_;

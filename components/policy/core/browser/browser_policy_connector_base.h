@@ -89,10 +89,6 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
   virtual std::vector<std::unique_ptr<ConfigurationPolicyProvider>>
   CreatePolicyProviders();
 
-  // Called from GetPolicyService() to create the local test policy provider.
-  virtual std::unique_ptr<ConfigurationPolicyProvider>
-  MaybeCreateLocalTestProvider();
-
   // Must be called when ui::ResourceBundle has been loaded, results in running
   // any callbacks scheduled in NotifyWhenResourceBundleReady().
   void OnResourceBundleCreated();
@@ -122,9 +118,6 @@ class POLICY_EXPORT BrowserPolicyConnectorBase {
 
   // Must be deleted before all the policy providers.
   std::unique_ptr<PolicyServiceImpl> policy_service_;
-
-  // The local test policy provider.
-  raw_ptr<ConfigurationPolicyProvider> local_test_provider_;
 
   // Callbacks scheduled via NotifyWhenResourceBundleReady().
   std::vector<base::OnceClosure> resource_bundle_callbacks_;
