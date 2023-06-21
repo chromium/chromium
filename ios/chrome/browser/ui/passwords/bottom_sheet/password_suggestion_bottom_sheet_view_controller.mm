@@ -227,6 +227,9 @@ CGFloat const kInitialHeightPadding = 5;
   if (_tableViewIsMinimized) {
     _tableViewIsMinimized = NO;
     [_tableView cellForRowAtIndexPath:indexPath].accessoryView = nil;
+    // Make separator visible on first cell.
+    [_tableView cellForRowAtIndexPath:indexPath].separatorInset =
+        UIEdgeInsetsMake(0.f, kTableViewHorizontalSpacing, 0.f, 0.f);
     [self addSuggestionsToTableView];
 
     // Update table view height.
@@ -539,8 +542,12 @@ CGFloat const kInitialHeightPadding = 5;
   UISheetPresentationController* presentationController =
       self.sheetPresentationController;
   if (@available(iOS 16, *)) {
-    // Update the bottom anchor constant value.
-    [self changeScrollViewBottomAnchorConstant:kScrollViewBottomAnchorConstant];
+    // Update the bottom anchor constant value only for iPhone.
+    if ([UIDevice currentDevice].userInterfaceIdiom ==
+        UIUserInterfaceIdiomPhone) {
+      [self
+          changeScrollViewBottomAnchorConstant:kScrollViewBottomAnchorConstant];
+    }
 
     // Expand to custom size (only available for iOS 16+).
     CGFloat fullHeight = [self fullHeight];
