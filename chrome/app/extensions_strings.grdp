@@ -538,6 +538,22 @@
   <message name="IDS_EXTENSIONS_SUBPAGE_BUTTON" is_accessibility_with_no_ui="true" desc="Accessibility description for a button navigating the user from an extension's settings page to its settings subpage.">
     Subpage button
   </message>
+  <!-- Extension Safety Check Review Panel strings -->
+  <message name="IDS_EXTENSIONS_SC_MALWARE" desc="The text explaining the reason for extension being potentially unsafe. The extension in question contains malware.">
+    Off • This extension contains malware
+  </message>
+  <message name="IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF" desc="The text explaining the reason for extension being potentially unsafe. The extension in question violates Chrome Web Store policy and is turned off.">
+    Off • This extension violates the Chrome Web Store policy
+  </message>
+  <message name="IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON" desc="The text explaining the reason for extension being potentially unsafe. The extension in question violates Chrome Web Store policy and is turned on.">
+    On • This extension violates the Chrome Web Store policy
+  </message>
+  <message name="IDS_EXTENSIONS_SC_UNPUBLISHED_OFF" desc="The text explaining the reason for extension being potentially unsafe. was unpublished by its developer and is turned off.">
+    Off • This extension was unpublished by its developer
+  </message>
+  <message name="IDS_EXTENSIONS_SC_UNPUBLISHED_ON" desc="The text explaining the reason for extension being potentially unsafe. The extension was unpublished by its developer and is turned on.">
+    On • This extension was unpublished by its developer
+  </message>
   <message name="IDS_EXTENSIONS_SC_TITLE" desc="Header text displayed in the Safety Check title.">
     {NUM_EXTENSIONS, plural,
      =1 {Review 1 extension that was taken down from the Chrome Web Store}

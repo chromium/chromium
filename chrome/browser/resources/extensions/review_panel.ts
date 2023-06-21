@@ -95,12 +95,10 @@ export class ExtensionsReviewPanelElement extends PolymerElement {
   private getUnsafeExtensions_(extensions:
                                    chrome.developerPrivate.ExtensionInfo[]):
       chrome.developerPrivate.ExtensionInfo[] {
-    // TODO(crbug.com/1432194): Update this filter criteria when new trigger
-    // texts are added to getExtensionInfo API.
     return extensions.filter(
-        extension => extension.disableReasons.corruptInstall ||
-            extension.disableReasons.suspiciousInstall ||
-            extension.runtimeWarnings.length || !!extension.blacklistText);
+        extension =>
+            !!(extension.safetyCheckText &&
+               extension.safetyCheckText.panelString));
   }
 
   /**

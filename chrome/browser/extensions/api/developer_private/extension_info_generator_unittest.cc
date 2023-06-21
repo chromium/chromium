@@ -34,6 +34,7 @@
 #include "chrome/common/extensions/api/developer_private.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/chromium_strings.h"
+#include "chrome/grit/generated_resources.h"
 #include "chrome/grit/google_chrome_strings.h"
 #include "components/crx_file/id_util.h"
 #include "components/supervised_user/core/common/buildflags.h"
@@ -139,12 +140,6 @@ class ExtensionInfoGeneratorUnitTest : public ExtensionServiceTestWithInstall {
           std::make_unique<developer::ExtensionInfo>(std::move(list[0]));
     }
     std::move(quit_closure_).Run();
-  }
-
-  api::developer_private::SafetyCheckStrings CreateSafetyCheckDisplayStringTest(
-      CWSInfoService::CWSInfo& cws_info) {
-    return ExtensionInfoGenerator(browser_context())
-        .CreateSafetyCheckDisplayString(cws_info);
   }
 
   std::unique_ptr<developer::ExtensionInfo> GenerateExtensionInfo(
@@ -512,27 +507,60 @@ TEST_F(ExtensionInfoGeneratorUnitTest, GenerateExtensionsJSONData) {
 
 // Test the safety check display strings
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckStringsTest) {
-  CWSInfoService::CWSInfo cws_info;
-  cws_info.is_present = true;
-  cws_info.violation_type = CWSInfoService::CWSViolationType::kMalware;
-  cws_info.unpublished_long_ago = true;
-  developer::SafetyCheckStrings display_strings =
-      CreateSafetyCheckDisplayStringTest(cws_info);
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
-            display_strings.detail_string);
-  cws_info.is_present = true;
-  cws_info.violation_type = CWSInfoService::CWSViolationType::kPolicy;
-  cws_info.unpublished_long_ago = true;
-  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
-  EXPECT_EQ(
-      l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION),
-      display_strings.detail_string);
-  cws_info.is_present = true;
-  cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
-  cws_info.unpublished_long_ago = true;
-  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
-  EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
-            display_strings.detail_string);
+  {
+    CWSInfoService::CWSInfo cws_info;
+    cws_info.is_present = true;
+    cws_info.violation_type = CWSInfoService::CWSViolationType::kMalware;
+    cws_info.unpublished_long_ago = true;
+    developer::SafetyCheckStrings display_strings =
+        ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+            cws_info, developer::EXTENSION_STATE_DISABLED);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_MALWARE),
+              display_strings.detail_string);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_MALWARE),
+              display_strings.panel_string);
+  }
+  {
+    CWSInfoService::CWSInfo cws_info;
+    cws_info.is_present = true;
+    cws_info.violation_type = CWSInfoService::CWSViolationType::kPolicy;
+    cws_info.unpublished_long_ago = true;
+    developer::SafetyCheckStrings display_strings =
+        ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+            cws_info, developer::EXTENSION_STATE_DISABLED);
+    EXPECT_EQ(
+        l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_POLICY_VIOLATION),
+        display_strings.detail_string);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_OFF),
+              display_strings.panel_string);
+  }
+  {
+    CWSInfoService::CWSInfo cws_info;
+    cws_info.is_present = true;
+    cws_info.violation_type = CWSInfoService::CWSViolationType::kPolicy;
+    developer::SafetyCheckStrings display_strings =
+        ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+            cws_info, developer::EXTENSION_STATE_ENABLED);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_POLICY_VIOLATION_ON),
+              display_strings.panel_string);
+  }
+  {
+    CWSInfoService::CWSInfo cws_info;
+    cws_info.is_present = true;
+    cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
+    cws_info.unpublished_long_ago = true;
+    developer::SafetyCheckStrings display_strings =
+        ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+            cws_info, developer::EXTENSION_STATE_DISABLED);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_SAFETY_CHECK_EXTENSIONS_UNPUBLISHED),
+              display_strings.detail_string);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_OFF),
+              display_strings.panel_string);
+    display_strings = ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+        cws_info, developer::EXTENSION_STATE_ENABLED);
+    EXPECT_EQ(l10n_util::GetStringUTF8(IDS_EXTENSIONS_SC_UNPUBLISHED_ON),
+              display_strings.panel_string);
+  }
 }
 
 TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckEmptyStringTest) {
@@ -541,7 +569,8 @@ TEST_F(ExtensionInfoGeneratorUnitTest, SafetyCheckEmptyStringTest) {
   cws_info.violation_type = CWSInfoService::CWSViolationType::kNone;
   cws_info.unpublished_long_ago = false;
   developer::SafetyCheckStrings display_strings;
-  display_strings = CreateSafetyCheckDisplayStringTest(cws_info);
+  display_strings = ExtensionInfoGenerator::CreateSafetyCheckDisplayString(
+      cws_info, developer::EXTENSION_STATE_DISABLED);
   EXPECT_EQ(display_strings.detail_string, "");
   EXPECT_EQ(display_strings.panel_string, "");
 }

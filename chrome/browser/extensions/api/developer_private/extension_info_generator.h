@@ -74,16 +74,17 @@ class ExtensionInfoGenerator {
   static std::vector<URLPattern> GetDistinctHosts(
       const URLPatternSet& patterns);
 
+  // Construct the needed strings for the safety check on the
+  // extensions page.
+  static api::developer_private::SafetyCheckStrings
+  CreateSafetyCheckDisplayString(const CWSInfoService::CWSInfo& cws_info,
+                                 api::developer_private::ExtensionState state);
+
  private:
   // Creates an ExtensionInfo for the given |extension| and |state|, and
   // asynchronously adds it to the |list|.
   void CreateExtensionInfoHelper(const Extension& extension,
                                  api::developer_private::ExtensionState state);
-
-  // Construct the needed strings for the safety check on the
-  // extensions page.
-  static api::developer_private::SafetyCheckStrings
-  CreateSafetyCheckDisplayString(CWSInfoService::CWSInfo& cws_info);
 
   // Callback for the asynchronous image loading.
   void OnImageLoaded(

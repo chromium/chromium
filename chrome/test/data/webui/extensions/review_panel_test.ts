@@ -27,7 +27,7 @@ suite('ExtensionsReviewPanel', function() {
       createExtensionInfo({
         name: 'Alpha',
         id: 'a'.repeat(32),
-        blacklistText: 'This extension contains malware.',
+        safetyCheckText: {panelString: 'This extension contains malware.'},
       }),
       createExtensionInfo({name: 'Bravo', id: 'b'.repeat(32)}),
       createExtensionInfo({name: 'Charlie', id: 'c'.repeat(29) + 'wxy'}),
