@@ -36,57 +36,6 @@
 
 namespace policy {
 
-namespace {
-// Returns the domain of the |destination|'s |url_or_path| if it can be
-// obtained, or the full value otherwise, converted to u16string. Fails if
-// |url_or_path| is empty.
-std::u16string GetDestinationURL(DlpFileDestination destination) {
-  DCHECK(destination.url_or_path().has_value());
-  DCHECK(!destination.url_or_path()->empty());
-  std::string url = destination.url_or_path().value();
-  GURL gurl(url);
-  if (gurl.is_valid() && gurl.has_host()) {
-    return base::UTF8ToUTF16(gurl.host());
-  }
-  return base::UTF8ToUTF16(url);
-}
-
-// Returns the u16string formatted name for |destination|'s |component|. Fails
-// if |component| is empty.
-const std::u16string GetDestinationComponent(DlpFileDestination destination) {
-  DCHECK(destination.component().has_value());
-  switch (destination.component().value()) {
-    case data_controls::Component::kArc:
-      return l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_ANDROID_FILES_ROOT_LABEL);
-    case data_controls::Component::kCrostini:
-      return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_LINUX_FILES_ROOT_LABEL);
-    case data_controls::Component::kPluginVm:
-      return l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_PLUGIN_VM_DIRECTORY_LABEL);
-    case data_controls::Component::kUsb:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_DESTINATION_REMOVABLE_STORAGE);
-    case data_controls::Component::kDrive:
-      return l10n_util::GetStringUTF16(IDS_FILE_BROWSER_DRIVE_DIRECTORY_LABEL);
-    case data_controls::Component::kOneDrive:
-      return l10n_util::GetStringUTF16(
-          IDS_FILE_BROWSER_DLP_COMPONENT_MICROSOFT_ONEDRIVE);
-    case data_controls::Component::kUnknownComponent:
-      NOTREACHED();
-      return u"";
-  }
-}
-
-// Returns the u16string formatted |destination|. Fails if both |component| and
-// |url_or_path| are empty. Returns the |component| if both are non-empty.
-const std::u16string GetDestination(DlpFileDestination destination) {
-  return destination.component().has_value()
-             ? GetDestinationComponent(destination)
-             : GetDestinationURL(destination);
-}
-}  // namespace
-
 FilesPolicyDialogFactory* factory_;
 
 FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
@@ -100,12 +49,6 @@ FilesPolicyDialog::FilesPolicyDialog(size_t file_count,
   set_margins(gfx::Insets::TLBR(24, 0, 20, 0));
 
   SetModalType(modal);
-
-  // TODO(b/283786807): Use type & policy for computing the strings.
-  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
-  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
-
-  AddGeneralInformation();
 }
 
 FilesPolicyDialog::~FilesPolicyDialog() = default;
@@ -181,106 +124,6 @@ views::Label* FilesPolicyDialog::AddMessage(const std::u16string& message) {
       ash::TypographyProvider::Get()->ResolveTypographyToken(
           ash::TypographyToken::kCrosBody1));
   return message_label;
-}
-
-std::u16string FilesPolicyDialog::GetOkButton() {
-  switch (action_) {
-    case dlp::FileAction::kDownload:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kUpload:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kCopy:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_COPY_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kMove:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_MOVE_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_WARN_CONTINUE_BUTTON);
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
-      return l10n_util::GetStringUTF16(
-          IDS_POLICY_DLP_FILES_TRANSFER_WARN_CONTINUE_BUTTON);
-  }
-}
-
-std::u16string FilesPolicyDialog::GetCancelButton() {
-  return l10n_util::GetStringUTF16(IDS_POLICY_DLP_WARN_CANCEL_BUTTON);
-}
-
-std::u16string FilesPolicyDialog::GetTitle() {
-  switch (action_) {
-    case dlp::FileAction::kDownload:
-      return l10n_util::GetPluralStringFUTF16(
-          // Download action is only allowed for one file.
-          IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_TITLE, 1);
-    case dlp::FileAction::kUpload:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_UPLOAD_WARN_TITLE, file_count_);
-    case dlp::FileAction::kCopy:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_COPY_WARN_TITLE, file_count_);
-    case dlp::FileAction::kMove:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_MOVE_WARN_TITLE, file_count_);
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_OPEN_WARN_TITLE, file_count_);
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
-                                     // Set proper text when file
-                                     // action is unknown
-      return l10n_util::GetPluralStringFUTF16(
-          IDS_POLICY_DLP_FILES_TRANSFER_WARN_TITLE, file_count_);
-  }
-}
-
-std::u16string FilesPolicyDialog::GetMessage() {
-  std::u16string destination_str;
-  int message_id;
-  switch (action_) {
-    case dlp::FileAction::kDownload:
-      destination_str = GetDestinationComponent(destination_);
-      // Download action is only allowed for one file.
-      return base::ReplaceStringPlaceholders(
-          l10n_util::GetPluralStringFUTF16(
-              IDS_POLICY_DLP_FILES_DOWNLOAD_WARN_MESSAGE, 1),
-          destination_str,
-          /*offset=*/nullptr);
-    case dlp::FileAction::kUpload:
-      destination_str = GetDestinationURL(destination_);
-      message_id = IDS_POLICY_DLP_FILES_UPLOAD_WARN_MESSAGE;
-      break;
-    case dlp::FileAction::kCopy:
-      destination_str = GetDestination(destination_);
-      message_id = IDS_POLICY_DLP_FILES_COPY_WARN_MESSAGE;
-      break;
-    case dlp::FileAction::kMove:
-      destination_str = GetDestination(destination_);
-      message_id = IDS_POLICY_DLP_FILES_MOVE_WARN_MESSAGE;
-      break;
-    case dlp::FileAction::kOpen:
-    case dlp::FileAction::kShare:
-      destination_str = GetDestination(destination_);
-      message_id = IDS_POLICY_DLP_FILES_OPEN_WARN_MESSAGE;
-      break;
-    case dlp::FileAction::kTransfer:
-    case dlp::FileAction::kUnknown:
-      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
-      destination_str = GetDestination(destination_);
-      message_id = IDS_POLICY_DLP_FILES_TRANSFER_WARN_MESSAGE;
-      break;
-  }
-  return base::ReplaceStringPlaceholders(
-      l10n_util::GetPluralStringFUTF16(message_id, file_count_),
-      destination_str,
-      /*offset=*/nullptr);
 }
 
 void FilesPolicyDialog::AddConfidentialRow(const gfx::ImageSkia& icon,

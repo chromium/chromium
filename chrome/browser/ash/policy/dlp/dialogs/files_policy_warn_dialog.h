@@ -37,6 +37,10 @@ class FilesPolicyWarnDialog : public FilesPolicyDialog {
  private:
   // PolicyDialogBase overrides:
   void MaybeAddConfidentialRows() override;
+  std::u16string GetOkButton() override;
+  std::u16string GetCancelButton() override;
+  std::u16string GetTitle() override;
+  std::u16string GetMessage() override;
 
   std::vector<DlpConfidentialFile> files_;
 };

@@ -94,18 +94,13 @@ class FilesPolicyDialog : public PolicyDialogBase {
 
   DlpFileDestination destination_;
   dlp::FileAction action_;
+  // Number of files listed in the dialog.
+  size_t file_count_;
 
  private:
   // PolicyDialogBase overrides:
   views::Label* AddTitle(const std::u16string& title) override;
   views::Label* AddMessage(const std::u16string& message) override;
-  std::u16string GetOkButton() override;
-  std::u16string GetCancelButton() override;
-  std::u16string GetTitle() override;
-  std::u16string GetMessage() override;
-
-  // Number of files listed in the dialog.
-  size_t file_count_;
 
   base::WeakPtrFactory<FilesPolicyDialog> weak_factory_{this};
 };

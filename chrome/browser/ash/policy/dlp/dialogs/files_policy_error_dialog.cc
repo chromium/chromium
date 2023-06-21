@@ -8,6 +8,8 @@
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_files_utils.h"
+#include "components/strings/grit/components_strings.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 
 namespace policy {
@@ -23,6 +25,10 @@ FilesPolicyErrorDialog::FilesPolicyErrorDialog(
                                    weak_factory_.GetWeakPtr()));
   SetCancelCallback(base::BindOnce(&FilesPolicyErrorDialog::OpenHelpPage,
                                    weak_factory_.GetWeakPtr()));
+  SetButtonLabel(ui::DIALOG_BUTTON_OK, GetOkButton());
+  SetButtonLabel(ui::DialogButton::DIALOG_BUTTON_CANCEL, GetCancelButton());
+
+  AddGeneralInformation();
   MaybeAddConfidentialRows();
 }
 
@@ -49,6 +55,43 @@ void FilesPolicyErrorDialog::MaybeAddConfidentialRows() {
       AddConfidentialRow(file.icon, file.title);
     }
   }
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string FilesPolicyErrorDialog::GetOkButton() {
+  return u"Dismiss";
+}
+
+std::u16string FilesPolicyErrorDialog::GetCancelButton() {
+  return l10n_util::GetStringUTF16(IDS_LEARN_MORE);
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string FilesPolicyErrorDialog::GetTitle() {
+  switch (action_) {
+    case dlp::FileAction::kDownload:
+      return u"Files blocked from downloading";
+    case dlp::FileAction::kUpload:
+      return u"Files blocked from uploading";
+    case dlp::FileAction::kCopy:
+      return u"Files blocked from copying";
+    case dlp::FileAction::kMove:
+      return u"Files blocked from moving";
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return u"Files blocked from opening";
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:  // TODO(crbug.com/1361900)
+                                     // Set proper text when file
+                                     // action is unknown
+      return u"Files blocked from transferring";
+  }
+}
+
+std::u16string FilesPolicyErrorDialog::GetMessage() {
+  // Error dialogs don't have a single message, but rather add one or two policy
+  // reasons for blocked files in `AddPolicyRow()`.
+  return u"";
 }
 
 void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
