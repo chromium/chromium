@@ -60,8 +60,9 @@ void AddMaterialChromeColorMixer(ui::ColorProvider* provider,
   mixer[kColorProfileMenuIconButtonBackground] = {ui::kColorSysTonalContainer};
   mixer[kColorProfileMenuIconButtonBackgroundHovered] = {
       ui::kColorSysStateHoverOnSubtle};
-  mixer[kColorProfileMenuSyncIcon] = {ui::kColorMenuIcon};
   mixer[kColorProfileMenuSyncErrorIcon] = {ui::kColorSysError};
+  mixer[kColorProfileMenuSyncIcon] = {ui::kColorMenuIcon};
+  mixer[kColorProfileMenuSyncInfoBackground] = {ui::kColorSysNeutralContainer};
   mixer[kColorProfileMenuSyncOffIcon] = {ui::kColorMenuIcon};
   mixer[kColorProfileMenuSyncPausedIcon] = {ui::kColorSysPrimary};
 

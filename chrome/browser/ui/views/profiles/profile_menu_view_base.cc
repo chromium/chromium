@@ -95,6 +95,7 @@ constexpr int kMinimumScrollableContentHeight = 40;
 constexpr int kMenuEdgeMargin = 16;
 
 constexpr int kSyncInfoInsidePadding = 12;
+constexpr int kSyncInfoRefreshInsidePadding = 16;
 
 // The bottom background edge should match the center of the identity image.
 constexpr auto kBackgroundInsets =
@@ -771,9 +772,13 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
           button_text));
   button->SetProminent(true);
 
+  // TODO(crbug.com/1422119): Remove `background_color_id` parameter after
+  // Chrome Refresh 2023 is launched.
   sync_info_background_callback_ = base::BindRepeating(
       &ProfileMenuViewBase::BuildSyncInfoCallToActionBackground,
-      base::Unretained(this), background_color_id);
+      base::Unretained(this),
+      features::IsChromeRefresh2023() ? kColorProfileMenuSyncInfoBackground
+                                      : background_color_id);
 }
 
 void ProfileMenuViewBase::BuildSyncInfoWithoutCallToAction(
@@ -1085,12 +1090,22 @@ void ProfileMenuViewBase::BuildSyncInfoCallToActionBackground(
     const ui::ColorProvider* color_provider) {
   const int radius = views::LayoutProvider::Get()->GetCornerRadiusMetric(
       views::Emphasis::kHigh);
-  sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
-      color_provider->GetColor(background_color_id), radius, 1));
-  sync_info_container_->SetBorder(views::CreatePaddedBorder(
-      views::CreateRoundedRectBorder(
-          1, radius, color_provider->GetColor(ui::kColorMenuSeparator)),
-      gfx::Insets(kSyncInfoInsidePadding)));
+  if (features::IsChromeRefresh2023()) {
+    sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetColor(background_color_id), radius));
+    sync_info_container_->SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(
+            0, radius,
+            color_provider->GetColor(kColorProfileMenuSyncInfoBackground)),
+        gfx::Insets(kSyncInfoRefreshInsidePadding)));
+  } else {
+    sync_info_container_->SetBackground(views::CreateRoundedRectBackground(
+        color_provider->GetColor(background_color_id), radius, 1));
+    sync_info_container_->SetBorder(views::CreatePaddedBorder(
+        views::CreateRoundedRectBorder(
+            1, radius, color_provider->GetColor(ui::kColorMenuSeparator)),
+        gfx::Insets(kSyncInfoInsidePadding)));
+  }
 }
 
 void ProfileMenuViewBase::Init() {
