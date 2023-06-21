@@ -574,6 +574,75 @@ async def test_preloadScript_addGlobally_loadedInMultipleContexts_withIframes(
 
 
 @pytest.mark.asyncio
+async def test_preloadScript_addGlobally_withBlankTargetLink(
+        websocket, context_id, html, read_sorted_messages):
+    LINK_WITH_BLANK_TARGET = html(
+        '<a href="https://example.com" target="_blank">new tab</a>')
+
+    await execute_command(
+        websocket, {
+            "method": "script.addPreloadScript",
+            "params": {
+                "functionDeclaration": """() => {
+                    console.log('my preload script', window.location.href);
+                }""",
+            }
+        })
+
+    await execute_command(
+        websocket, {
+            "method": "browsingContext.navigate",
+            "params": {
+                "url": LINK_WITH_BLANK_TARGET,
+                "wait": "complete",
+                "context": context_id
+            }
+        })
+
+    await subscribe(websocket, "log.entryAdded")
+
+    command_result = await execute_command(websocket, {
+        "method": "cdp.getSession",
+        "params": {
+            "context": context_id
+        }
+    })
+    cdp_session = command_result["cdpSession"]
+
+    command_id = await send_JSON_command(
+        websocket, {
+            "method": "cdp.sendCommand",
+            "params": {
+                "cdpMethod": "Runtime.evaluate",
+                "cdpParams": {
+                    "expression": "document.querySelector('a').click();",
+                    "userGesture": True,
+                },
+                "cdpSession": cdp_session
+            }
+        })
+
+    [command_result, log_entry_added] = await read_sorted_messages(2)
+    assert command_result == AnyExtending({
+        "id": command_id,
+        "result": ANY_DICT
+    })
+
+    assert log_entry_added == AnyExtending({
+        "method": "log.entryAdded",
+        "params": {
+            "args": [{
+                "type": "string",
+                "value": "my preload script"
+            }, {
+                'type': 'string',
+                'value': 'https://example.com/',
+            }]
+        }
+    })
+
+
+@pytest.mark.asyncio
 async def test_preloadScript_remove_nonExistingScript_fails(websocket):
     with pytest.raises(Exception) as exception_info:
         await execute_command(websocket, {
