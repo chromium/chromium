@@ -810,7 +810,11 @@ void HistorySyncBridge::OnVisitUpdated(const VisitRow& visit_row,
       // Standard case: These are all interesting, process this update.
       break;
     case VisitUpdateReason::kUpdateSyncedVisit:
-      CHECK(processing_syncer_changes_);
+      // UpdateSyncedVisit() should only be called by this bridge (so typically
+      // `processing_syncer_changes_` should be true here, but this doesn't hold
+      // in some tests). Anyway, if a foreign visit somehow does get updated on
+      // this device (e.g. due to a bug), better *not* to send out updates and
+      // potentially mess up other clients. So ignore this.
       return;
     case VisitUpdateReason::kSetOnCloseContextAnnotations:
       // None of the on-close context annotations are synced, so ignore this.

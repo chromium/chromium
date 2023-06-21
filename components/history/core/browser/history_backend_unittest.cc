@@ -4767,12 +4767,19 @@ TEST_F(HistoryBackendTest, AddSyncedVisitWritesIsKnownToSync) {
 }
 
 #if BUILDFLAG(IS_IOS)
-TEST_F(HistoryBackendTest,
-       UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+class HistoryBackendWithSyncSegmentsDataTest : public HistoryBackendTest {
+ public:
+  HistoryBackendWithSyncSegmentsDataTest() {
+    override_features_.InitWithFeatures(
+        {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
+  }
 
+ private:
+  base::test::ScopedFeatureList override_features_;
+};
+
+TEST_F(HistoryBackendWithSyncSegmentsDataTest,
+       UpdateVisitReferrerOpenerIDs_DoesNotDoubleCountVisitInSegments) {
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info =
@@ -4839,12 +4846,8 @@ TEST_F(HistoryBackendTest,
   EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 0);
 }
 
-TEST_F(HistoryBackendTest,
+TEST_F(HistoryBackendWithSyncSegmentsDataTest,
        UpdateSyncedVisit_DoesNotDoubleCountVisitInSegments) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
-
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info =
@@ -4912,12 +4915,8 @@ TEST_F(HistoryBackendTest,
   EXPECT_EQ(TotalNumVisitsForSegment(updated_visits[1].segment_id), 1);
 }
 
-TEST_F(HistoryBackendTest,
+TEST_F(HistoryBackendWithSyncSegmentsDataTest,
        AddSyncedVisit_AddsVisitWithValidOriginatorCacheGuidToSegments) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
-
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info =
@@ -4951,12 +4950,8 @@ TEST_F(HistoryBackendTest,
 }
 
 TEST_F(
-    HistoryBackendTest,
+    HistoryBackendWithSyncSegmentsDataTest,
     AddSyncedVisit_DoesNotAddVisitToSegmentsWithMissingForeignDeviceInformation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
-
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {}, "local");
@@ -4993,12 +4988,8 @@ TEST_F(
 }
 
 TEST_F(
-    HistoryBackendTest,
+    HistoryBackendWithSyncSegmentsDataTest,
     AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidLocalDeviceInformation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
-
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({"foreign"}, {});
@@ -5034,12 +5025,8 @@ TEST_F(
   EXPECT_EQ(added_visit.segment_id, 0);
 }
 
-TEST_F(HistoryBackendTest,
+TEST_F(HistoryBackendWithSyncSegmentsDataTest,
        AddSyncedVisit_DoesNotAddVisitToSegmentsWithInvalidDeviceInformation) {
-  base::test::ScopedFeatureList feature_list;
-  feature_list.InitWithFeatures(
-      {syncer::kSyncEnableHistoryDataType, history::kSyncSegmentsData}, {});
-
   backend_->SetCanAddForeignVisitsToSegments(true);
 
   SyncDeviceInfoMap sync_device_info = MakeSyncDeviceInfo({}, {});
