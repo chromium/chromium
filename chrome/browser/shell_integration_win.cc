@@ -863,9 +863,11 @@ void MigrateTaskbarPins(base::OnceClosure completion_callback) {
   // BEST_EFFORT means it will be scheduled after higher-priority tasks, but
   // MUST_USE_FOREGROUND means that when it is scheduled it will run in the
   // foregound.
+  // SKIP_ON_SHUTDOWN means the task won't start after shutdown has started.
   base::ThreadPool::CreateCOMSTATaskRunner(
       {base::MayBlock(), base::TaskPriority::BEST_EFFORT,
-       base::ThreadPolicy::MUST_USE_FOREGROUND})
+       base::ThreadPolicy::MUST_USE_FOREGROUND,
+       base::TaskShutdownBehavior::SKIP_ON_SHUTDOWN})
       ->PostTaskAndReply(
           FROM_HERE, base::BindOnce([]() {
             base::FilePath taskbar_path;
