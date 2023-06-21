@@ -70,10 +70,9 @@ class DriveUploadHandler
   void OnIOTaskStatus(
       const ::file_manager::io_task::ProgressStatus& status) override;
 
-  // Find base::File::Error error returned by the IO Task and convert them to an
-  // appropriate error notification.
-  void ConvertFileErrorToUploadError(
-      const file_manager::io_task::ProgressStatus& status);
+  // Find the base::File::Error error returned by the IO Task and convert it to
+  // an appropriate error notification.
+  void ShowIOTaskError(const file_manager::io_task::ProgressStatus& status);
 
   // DriveFsHostObserver:
   void OnUnmounted() override;

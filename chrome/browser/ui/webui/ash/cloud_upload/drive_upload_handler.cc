@@ -269,7 +269,7 @@ void DriveUploadHandler::OnIOTaskStatus(
       }
       return;
     case file_manager::io_task::State::kError:
-      ConvertFileErrorToUploadError(status);
+      ShowIOTaskError(status);
       return;
     case file_manager::io_task::State::kNeedPassword:
       NOTREACHED() << "Encrypted file should not need password to be copied or "
@@ -278,7 +278,7 @@ void DriveUploadHandler::OnIOTaskStatus(
   }
 }
 
-void DriveUploadHandler::ConvertFileErrorToUploadError(
+void DriveUploadHandler::ShowIOTaskError(
     const file_manager::io_task::ProgressStatus& status) {
   OfficeFilesUploadResult upload_result;
   std::string error_message;
