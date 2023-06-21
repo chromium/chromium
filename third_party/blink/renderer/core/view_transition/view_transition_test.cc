@@ -41,10 +41,10 @@
 #include "third_party/blink/renderer/platform/testing/unit_test_helpers.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "v8-external.h"
-#include "v8-function-callback.h"
-#include "v8-function.h"
-#include "v8-value.h"
+#include "v8/include/v8-external.h"
+#include "v8/include/v8-function-callback.h"
+#include "v8/include/v8-function.h"
+#include "v8/include/v8-value.h"
 
 namespace blink {
 

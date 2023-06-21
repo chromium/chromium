@@ -18,7 +18,7 @@
 #include "services/accessibility/features/mojo/mojo_handle.h"
 #include "services/accessibility/features/registered_wrappable.h"
 #include "services/accessibility/features/v8_manager.h"
-#include "v8-context.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"

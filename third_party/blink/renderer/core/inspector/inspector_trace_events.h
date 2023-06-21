@@ -34,8 +34,6 @@ class QuadF;
 
 namespace v8 {
 class Function;
-template <typename T>
-class Local;
 }  // namespace v8
 
 namespace WTF {

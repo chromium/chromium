@@ -37,8 +37,8 @@
 #include "third_party/webrtc/api/stats/rtc_stats.h"
 #include "third_party/webrtc/api/stats/rtc_stats_report.h"
 #include "third_party/webrtc/api/stats/rtcstats_objects.h"
-#include "v8-local-handle.h"
-#include "v8-object.h"
+#include "v8/include/v8-local-handle.h"
+#include "v8/include/v8-object.h"
 
 namespace blink {
 

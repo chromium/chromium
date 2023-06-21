@@ -7,11 +7,10 @@
 
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/blink/public/platform/web_common.h"
+#include "v8/include/v8-local-handle.h"
 
 namespace v8 {
 class Isolate;
-template <class T>
-class Local;
 class Value;
 }  // namespace v8
 

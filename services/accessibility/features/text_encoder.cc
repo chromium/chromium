@@ -15,11 +15,11 @@
 #include "gin/handle.h"
 #include "gin/public/wrapper_info.h"
 #include "services/accessibility/features/registered_wrappable.h"
-#include "v8-array-buffer.h"
-#include "v8-typed-array.h"
+#include "v8/include/v8-array-buffer.h"
 #include "v8/include/v8-isolate.h"
 #include "v8/include/v8-local-handle.h"
 #include "v8/include/v8-primitive.h"
+#include "v8/include/v8-typed-array.h"
 
 namespace ax {
 

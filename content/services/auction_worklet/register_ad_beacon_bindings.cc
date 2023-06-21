@@ -15,12 +15,12 @@
 #include "gin/converter.h"
 #include "url/gurl.h"
 #include "url/url_constants.h"
-#include "v8-context.h"
-#include "v8-object.h"
+#include "v8/include/v8-context.h"
 #include "v8/include/v8-exception.h"
 #include "v8/include/v8-external.h"
 #include "v8/include/v8-function-callback.h"
 #include "v8/include/v8-function.h"
+#include "v8/include/v8-object.h"
 
 namespace auction_worklet {
 

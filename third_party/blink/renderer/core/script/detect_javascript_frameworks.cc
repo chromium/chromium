@@ -19,11 +19,6 @@
 #include "third_party/blink/renderer/platform/bindings/v8_binding.h"
 #include "third_party/blink/renderer/platform/wtf/std_lib_extras.h"
 #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
-#include "v8-container.h"
-#include "v8-local-handle.h"
-#include "v8-object.h"
-#include "v8-primitive.h"
-#include "v8-regexp.h"
 #include "v8/include/v8.h"
 
 namespace blink {

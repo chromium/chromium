@@ -22,8 +22,8 @@
 #include "extensions/renderer/safe_builtins.h"
 #include "third_party/blink/public/web/web_script_execution_callback.h"
 #include "url/gurl.h"
-#include "v8-exception.h"
 #include "v8/include/v8-context.h"
+#include "v8/include/v8-exception.h"
 #include "v8/include/v8-forward.h"
 #include "v8/include/v8-script.h"
 
