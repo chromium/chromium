@@ -68,6 +68,10 @@
           request)) {
     DefaultInfobarOverlayRequestConfig* config =
         request->GetConfig<DefaultInfobarOverlayRequestConfig>();
+    if (!config->delegate()) {
+      // This happens when the browser is killed.
+      return nil;
+    }
     return [self coordinatorClassForInfobarType:config->infobar_type()];
   }
 
