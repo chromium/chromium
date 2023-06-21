@@ -223,22 +223,6 @@
             ]
         }
     ],
-    "AndroidFrameDeadline": [
-        {
-            "platforms": [
-                "android"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "AndroidFrameDeadline"
-                    ],
-                    "min_os_version": "13.0.0"
-                }
-            ]
-        }
-    ],
     "AndroidHatsNext": [
         {
             "platforms": [
