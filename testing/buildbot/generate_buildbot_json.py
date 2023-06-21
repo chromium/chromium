@@ -479,6 +479,9 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     return (tester_config.get('os_type') == 'win' and
         tester_config.get('browser_config') == 'release_x64')
 
+  def is_release_blocker(self, tester_config):
+    return tester_config.get('release_blocker', False)
+
   def add_variant_to_test_name(self, test_name, variant_id):
     return '{} {}'.format(test_name, variant_id)
 
@@ -672,6 +675,7 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
     add_conditional_args('mac_args', self.is_mac)
     add_conditional_args('win_args', self.is_win)
     add_conditional_args('win64_args', self.is_win64)
+    add_conditional_args('release_blocker', self.is_release_blocker)
 
     for key in additional_arg_keys or []:
       args.extend(generated_test.pop(key, []))
@@ -1799,6 +1803,13 @@ class BBJSONGenerator(object):  # pylint: disable=useless-object-inheritance
           for variant in test.get('variants', []):
             if isinstance(variant, str):
               seen_variants.add(variant)
+          release_blocker = test.get('release_blocker', False)
+          assert isinstance(release_blocker, bool)
+          if release_blocker and not test.get('bug_component'):
+            raise BBGenErr('This is a release blocker test and must have a '
+                           'bug component from the owner team. If they are '
+                           'documented in a filter file, put the filter '
+                           'path here.')
 
     missing_variants = set(self.variants.keys()) - seen_variants
     if missing_variants:
