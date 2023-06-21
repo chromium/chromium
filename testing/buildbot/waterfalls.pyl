@@ -521,7 +521,7 @@
           'content_browsertests',
         ],
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'fuchsia_accessibility_browsertests',
