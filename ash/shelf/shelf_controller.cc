@@ -75,6 +75,12 @@ void SetShelfAlignmentFromPrefs() {
   if (!prefs || !session_controller->IsActiveUserSessionStarted())
     return;
 
+  // Tablet mode uses bottom aligned shelf, don't override it if the shelf
+  // prefs change.
+  if (Shell::Get()->tablet_mode_controller()->InTabletMode()) {
+    return;
+  }
+
   for (const auto& display : display::Screen::GetScreen()->GetAllDisplays()) {
     if (Shelf* shelf = GetShelfForDisplay(display.id()))
       shelf->SetAlignment(GetShelfAlignmentPref(prefs, display.id()));
