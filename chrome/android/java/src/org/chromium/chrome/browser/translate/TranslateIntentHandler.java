@@ -7,19 +7,14 @@ package org.chromium.chrome.browser.translate;
 import android.content.Intent;
 import android.text.TextUtils;
 
-import androidx.annotation.IntDef;
 import androidx.annotation.Nullable;
 
 import org.chromium.base.FeatureList;
 import org.chromium.base.IntentUtils;
-import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.IntentHandler;
 import org.chromium.chrome.browser.IntentHandler.IntentHandlerDelegate;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
 import org.chromium.chrome.browser.tab.Tab;
-
-import java.lang.annotation.Retention;
-import java.lang.annotation.RetentionPolicy;
 
 /**
  * Utility functions used for handling TRANSLATE_TAB intents.
@@ -55,34 +50,6 @@ public class TranslateIntentHandler {
     public static final String EXTRA_EXPECTED_URL = "com.android.chrome.translate.expected_url";
 
     /**
-     * Represents the outcome of processing a TRANSLATE_TAB intent.
-     * DO NOT reorder items in this interface, because it's mirrored to UMA (as
-     * TranslateTabIntentResult). Values should be enumerated from 0 and can't have gaps. When
-     * removing items, comment them out and keep existing numeric values stable.
-     */
-    @IntDef({TranslateTabIntentResult.FEATURE_DISABLED, TranslateTabIntentResult.MISSING_AUTH_TOKEN,
-            TranslateTabIntentResult.TAB_WAS_NULL, TranslateTabIntentResult.INCOGNITO_TAB,
-            TranslateTabIntentResult.EXPECTED_URL_MISMATCH,
-            TranslateTabIntentResult.CANNOT_TRANSLATE_TAB, TranslateTabIntentResult.SUCCESS})
-    @Retention(RetentionPolicy.SOURCE)
-    public @interface TranslateTabIntentResult {
-        int FEATURE_DISABLED = 0;
-        int MISSING_AUTH_TOKEN = 1;
-        int TAB_WAS_NULL = 2;
-        int INCOGNITO_TAB = 3;
-        int EXPECTED_URL_MISMATCH = 4;
-        int CANNOT_TRANSLATE_TAB = 5;
-        int SUCCESS = 6;
-        // Update TranslateTabIntentResult in enums.xml when adding new items.
-        int NUM_ENTRIES = 7;
-    }
-
-    private static void recordTranslateTabResultUMA(@TranslateTabIntentResult int result) {
-        RecordHistogram.recordEnumeratedHistogram(
-                "Translate.TranslateTabIntentResult", result, TranslateTabIntentResult.NUM_ENTRIES);
-    }
-
-    /**
      * Translates the given tab to the given target language, if possible.
      * @param tab The tab in question.
      * @param targetLanguageCode The language to translate into. The user's preferred target
@@ -92,20 +59,9 @@ public class TranslateIntentHandler {
      */
     public static void translateTab(
             @Nullable Tab tab, @Nullable String targetLanguageCode, @Nullable String expectedUrl) {
-        if (tab == null) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.TAB_WAS_NULL);
-            return;
-        }
-        if (tab.isIncognito()) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.INCOGNITO_TAB);
-            return;
-        }
-        if (expectedUrl == null || !expectedUrl.equals(tab.getUrl().getSpec())) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.EXPECTED_URL_MISMATCH);
-            return;
-        }
-        if (!TranslateUtils.canTranslateCurrentTab(tab)) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.CANNOT_TRANSLATE_TAB);
+        if (tab == null || tab.isIncognito() || expectedUrl == null
+                || !expectedUrl.equals(tab.getUrl().getSpec())
+                || !TranslateUtils.canTranslateCurrentTab(tab)) {
             return;
         }
 
@@ -114,7 +70,6 @@ public class TranslateIntentHandler {
         } else {
             TranslateBridge.translateTabToLanguage(tab, targetLanguageCode);
         }
-        recordTranslateTabResultUMA(TranslateTabIntentResult.SUCCESS);
     }
 
     /**
@@ -132,7 +87,6 @@ public class TranslateIntentHandler {
 
         assert FeatureList.isInitialized();
         if (!ChromeFeatureList.isEnabled(ChromeFeatureList.TRANSLATE_INTENT)) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.FEATURE_DISABLED);
             // Return false here to let fallback handlers process the intent. This preserves
             // externally visible behavior when the Feature is disabled.
             return false;
@@ -141,7 +95,6 @@ public class TranslateIntentHandler {
         // Check to see if the auth token was added by LaunchIntentDispatcher. If so, we know that
         // the signature permission was enforced.
         if (!IntentHandler.wasIntentSenderChrome(intent)) {
-            recordTranslateTabResultUMA(TranslateTabIntentResult.MISSING_AUTH_TOKEN);
             // Return true here to mark the intent as handled. This will prevent further fallback
             // logic from trying to handle the malformed translate intent.
             return true;

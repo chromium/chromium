@@ -106436,16 +106436,6 @@ Full version information for the fingerprint enum values:
   <int value="6" label="The page is translated, and the translate UI is shown"/>
 </enum>
 
-<enum name="TranslateTabIntentResult">
-  <int value="0" label="Feature was disabled"/>
-  <int value="1" label="Intent sent to the wrong component (missing token)"/>
-  <int value="2" label="No current tab (was null)"/>
-  <int value="3" label="The current tab was incognito"/>
-  <int value="4" label="The current URL differed from the expected URL"/>
-  <int value="5" label="canTranslateTab() was false"/>
-  <int value="6" label="Successfully handled"/>
-</enum>
-
 <enum name="TranslateTargetLanguageOrigin">
   <int value="0" label="Recent target language"/>
   <int value="1" label="Language model"/>
