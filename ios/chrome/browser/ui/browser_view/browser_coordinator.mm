@@ -98,6 +98,7 @@
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_coordinator.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_prompt/enterprise_prompt_type.h"
 #import "ios/chrome/browser/ui/authentication/signin_presenter.h"
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/form_input_accessory/form_input_accessory_coordinator.h"
 #import "ios/chrome/browser/ui/autofill/manual_fill/manual_fill_password_coordinator.h"
 #import "ios/chrome/browser/ui/bookmarks/bookmarks_coordinator.h"
@@ -300,6 +301,10 @@ enum class ToolbarKind {
 // Coordinator in charge of the presenting autofill options in a bottom sheet.
 @property(nonatomic, strong) PasswordSuggestionBottomSheetCoordinator*
     passwordSuggestionBottomSheetCoordinator;
+
+// Coordinator in charge of the presenting autofill options in a bottom sheet.
+@property(nonatomic, strong) PaymentsSuggestionBottomSheetCoordinator*
+    paymentsSuggestionBottomSheetCoordinator;
 
 // Coordinator for the choice screen.
 @property(nonatomic, strong) ChromeCoordinator* choiceCoordinator;
@@ -616,6 +621,9 @@ enum class ToolbarKind {
   self.passwordsAccountStorageNoticeCoordinator = nil;
 
   [self.pageInfoCoordinator stop];
+
+  [self.paymentsSuggestionBottomSheetCoordinator stop];
+  self.paymentsSuggestionBottomSheetCoordinator = nil;
 
   [_sendTabToSelfCoordinator stop];
   _sendTabToSelfCoordinator = nil;
@@ -1064,6 +1072,9 @@ enum class ToolbarKind {
 
   /* passwordSuggestionCoordinator is created and started by a BrowserCommand */
 
+  /* paymentsSuggestionBottomSheetCoordinator is created and started by a
+   * BrowserCommand */
+
   /* PriceNotificationsViewCoordinator is created and started by a
    * BrowserCommand */
 
@@ -1191,6 +1202,9 @@ enum class ToolbarKind {
 
   [self.passwordsAccountStorageNoticeCoordinator stop];
   self.passwordsAccountStorageNoticeCoordinator = nil;
+
+  [self.paymentsSuggestionBottomSheetCoordinator stop];
+  self.paymentsSuggestionBottomSheetCoordinator = nil;
 
   self.printController = nil;
 
@@ -1428,6 +1442,15 @@ enum class ToolbarKind {
                               params:params
                             delegate:self.viewController];
   [self.passwordSuggestionBottomSheetCoordinator start];
+}
+
+- (void)showPaymentsBottomSheet:(const autofill::FormActivityParams&)params {
+  self.paymentsSuggestionBottomSheetCoordinator =
+      [[PaymentsSuggestionBottomSheetCoordinator alloc]
+          initWithBaseViewController:self.viewController
+                             browser:self.browser
+                              params:params];
+  [self.paymentsSuggestionBottomSheetCoordinator start];
 }
 
 #pragma mark - BrowserCoordinatorCommands

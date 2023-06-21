@@ -74,6 +74,27 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
     return;
   }
 
+  const autofill::FieldRendererId renderer_id = params.unique_field_id;
+  bool is_password_related =
+      base::Contains(registered_password_renderer_ids_, renderer_id);
+  bool is_payments_related =
+      base::Contains(registered_payments_renderer_ids_, renderer_id);
+
+  DCHECK(is_password_related || is_payments_related);
+
+  if (is_password_related) {
+    ShowPasswordBottomSheet(params);
+  } else if (is_payments_related) {
+    ShowPaymentsBottomSheet(params);
+  }
+}
+
+void AutofillBottomSheetTabHelper::ShowPasswordBottomSheet(
+    const autofill::FormActivityParams& params) {
+  if (!commands_handler_ || !password_account_storage_notice_handler_) {
+    return;
+  }
+
   if (![password_account_storage_notice_handler_
           shouldShowAccountStorageNotice]) {
     [commands_handler_ showPasswordBottomSheet:params];
@@ -85,6 +106,11 @@ void AutofillBottomSheetTabHelper::OnFormMessageReceived(
   [password_account_storage_notice_handler_ showAccountStorageNotice:^{
     [weak_commands_handler showPasswordBottomSheet:params];
   }];
+}
+
+void AutofillBottomSheetTabHelper::ShowPaymentsBottomSheet(
+    const autofill::FormActivityParams& params) {
+  [commands_handler_ showPaymentsBottomSheet:params];
 }
 
 void AutofillBottomSheetTabHelper::AttachPasswordListeners(
