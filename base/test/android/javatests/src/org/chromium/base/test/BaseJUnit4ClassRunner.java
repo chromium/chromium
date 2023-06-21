@@ -24,6 +24,7 @@ import org.junit.runners.model.Statement;
 
 import org.chromium.base.CommandLine;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.test.params.MethodParamAnnotationRule;
 import org.chromium.base.test.util.AndroidSdkLevelSkipCheck;
 import org.chromium.base.test.util.CommandLineFlags;
@@ -237,7 +238,7 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
     @CallSuper
     protected List<TestRule> getDefaultTestRules() {
         return Arrays.asList(new BaseJUnit4TestRule(), new MockitoErrorHandler(),
-                new UnitTestLifetimeAssertRule(), new ResettersForTestingTestRule());
+                new UnitTestLifetimeAssertRule());
     }
 
     /**
@@ -279,7 +280,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         super.run(notifier);
 
-        runPostClassHooks(getDescription().getTestClass());
+        try {
+            runPostClassHooks(getDescription().getTestClass());
+        } finally {
+            ResettersForTesting.onAfterClass();
+        }
     }
 
     @Override
@@ -289,9 +294,11 @@ public class BaseJUnit4ClassRunner extends AndroidJUnit4ClassRunner {
 
         long start = SystemClock.uptimeMillis();
 
+        ResettersForTesting.setMethodMode();
         runPreTestHooks(method);
 
         super.runChild(method, notifier);
+        ResettersForTesting.onAfterMethod();
 
         runPostTestHooks(method);
 

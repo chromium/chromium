@@ -12,6 +12,7 @@ import org.robolectric.DefaultTestLifecycle;
 import org.robolectric.RobolectricTestRunner;
 import org.robolectric.TestLifecycle;
 import org.robolectric.internal.bytecode.InstrumentationConfiguration;
+import org.robolectric.internal.bytecode.Sandbox;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.BundleUtils;
@@ -69,7 +70,7 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
                 } finally {
                     CommandLineFlags.tearDownMethod();
                     CommandLineFlags.tearDownClass();
-                    ResettersForTesting.executeResetters();
+                    ResettersForTesting.onAfterMethod();
                     ApplicationStatus.destroyForJUnitTests();
                     ContextUtils.clearApplicationContextForTests();
                     PathUtils.resetForTesting();
@@ -91,6 +92,19 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     }
 
     @Override
+    protected void afterClass() {
+        super.afterClass();
+        ResettersForTesting.onAfterClass();
+    }
+
+    @Override
+    protected void beforeTest(Sandbox sandbox, FrameworkMethod method, Method bootstrappedMethod)
+            throws Throwable {
+        ResettersForTesting.setMethodMode();
+        super.beforeTest(sandbox, method, bootstrappedMethod);
+    }
+
+    @Override
     protected boolean isIgnored(FrameworkMethod method) {
         if (super.isIgnored(method) || method.getAnnotation(DisabledTest.class) != null) {
             return true;
@@ -103,6 +117,7 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
     protected InstrumentationConfiguration createClassLoaderConfig(final FrameworkMethod method) {
         return new InstrumentationConfiguration.Builder(super.createClassLoaderConfig(method))
                 .doNotAcquireClass(TimeoutTimer.class) // Requires access to non-fake SystemClock.
+                .doNotAcquireClass(ResettersForTesting.class)
                 .build();
     }
 }

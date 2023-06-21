@@ -5,8 +5,13 @@
 package org.chromium.base;
 
 import static junit.framework.Assert.assertEquals;
+import static junit.framework.Assert.assertNull;
 
+import org.junit.After;
+import org.junit.AfterClass;
 import org.junit.Assert;
+import org.junit.Before;
+import org.junit.BeforeClass;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.robolectric.annotation.Config;
@@ -64,31 +69,56 @@ public class ResettersForTestingTest {
         }
     }
 
+    @BeforeClass
+    public static void setUpClass() {
+        assertNull(ResetsToOldValue.str);
+        ResetsToOldValue.setStrForTesting("setUpClass");
+    }
+
+    @AfterClass
+    public static void tearDownClass() {
+        assertEquals("setUpClass", ResetsToOldValue.str);
+        // There's no way to test that the runner's afterClass calls this, so at least test that
+        // calling it manually works.
+        ResettersForTesting.onAfterClass();
+        assertNull(ResetsToOldValue.str);
+    }
+
+    @Before
+    public void setUp() {
+        assertEquals("setUpClass", ResetsToOldValue.str);
+        ResetsToOldValue.setStrForTesting("setUp");
+    }
+
+    @After
+    public void tearDown() {
+        ResettersForTesting.onAfterMethod();
+        assertEquals("setUpClass", ResetsToOldValue.str);
+    }
+
     @Test
     public void testTypicalUsage() {
         ResetsToNull.setStrForTesting("foo");
         assertEquals("foo", ResetsToNull.str);
-        ResettersForTesting.executeResetters();
+        ResettersForTesting.onAfterMethod();
         Assert.assertNull(ResetsToNull.str);
     }
 
     @Test
     public void testResetsToPreviousValue() {
-        // Inject a previous value to verify that we can get back to it.
-        ResetsToOldValue.str = "bar";
+        assertEquals("setUp", ResetsToOldValue.str);
 
         ResetsToOldValue.setStrForTesting("foo");
         assertEquals("foo", ResetsToOldValue.str);
 
-        // After resetting the value, it should be back to the first value.
-        ResettersForTesting.executeResetters();
-        assertEquals("bar", ResetsToOldValue.str);
+        // After resetting the value, it should be back to the value set before setUp().
+        ResettersForTesting.onAfterMethod();
+        assertEquals("setUpClass", ResetsToOldValue.str);
     }
 
     @Test
     public void testMultipleResets() {
-        // Inject an outer value to verify we can get back to this.
-        ResetsToOldValue.str = "qux";
+        assertEquals("setUp", ResetsToOldValue.str);
 
         // Then set the next value.
         ResetsToOldValue.setStrForTesting("foo");
@@ -98,9 +128,9 @@ public class ResettersForTestingTest {
         ResetsToOldValue.setStrForTesting("bar");
         assertEquals("bar", ResetsToOldValue.str);
 
-        // Since we are invoking the resetters in the reverse order, we should now be back to start.
-        ResettersForTesting.executeResetters();
-        assertEquals("qux", ResetsToOldValue.str);
+        // After resetting the value, it should be back to the value set before setUp().
+        ResettersForTesting.onAfterMethod();
+        assertEquals("setUpClass", ResetsToOldValue.str);
     }
 
     @Test
@@ -114,11 +144,11 @@ public class ResettersForTestingTest {
         assertEquals("some value", ResetsToNullAndIncrements.str);
 
         // Now, execute all resetters and ensure it's only executed once.
-        ResettersForTesting.executeResetters();
+        ResettersForTesting.onAfterMethod();
         assertEquals(1, ResetsToNullAndIncrements.resetCount);
 
         // Execute the resetters again, and verify it does not invoke the same resetter again.
-        ResettersForTesting.executeResetters();
+        ResettersForTesting.onAfterMethod();
         assertEquals(1, ResetsToNullAndIncrements.resetCount);
     }
 
@@ -135,11 +165,11 @@ public class ResettersForTestingTest {
 
         // Now, execute all resetters and ensure it's only executed once, since it is a single
         // instance of the same resetter.
-        ResettersForTesting.executeResetters();
+        ResettersForTesting.onAfterMethod();
         assertEquals(1, ResetsToNullAndIncrementsWithOneShotResetter.resetCount);
 
         // Execute the resetters again, and verify it does not invoke the same resetter again.
-        ResettersForTesting.executeResetters();
+        ResettersForTesting.onAfterMethod();
         assertEquals(1, ResetsToNullAndIncrementsWithOneShotResetter.resetCount);
     }
 }
