@@ -166,12 +166,13 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
     if (callback_info.should_delay_callback) {
       callback_info.callback = std::move(callback);
     } else {
-      std::move(callback).Run(/*slow_check_notifier=*/nullptr,
-                              /*proceed=*/callback_info.should_proceed,
-                              /*show_interstitial=*/
-                              callback_info.should_show_interstitial,
-                              /*did_perform_url_real_time_check=*/false,
-                              /*did_check_url_real_time_allowlist=*/false);
+      std::move(callback).Run(
+          /*slow_check_notifier=*/nullptr,
+          /*proceed=*/callback_info.should_proceed,
+          /*show_interstitial=*/
+          callback_info.should_show_interstitial,
+          SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
+          /*did_check_url_real_time_allowlist=*/false);
     }
   }
 
@@ -183,7 +184,7 @@ class MockSafeBrowsingUrlChecker : public SafeBrowsingUrlCheckerImpl {
              /*proceed=*/callback_infos_[index].should_proceed,
              /*show_interstitial=*/
              callback_infos_[index].should_show_interstitial,
-             /*did_perform_url_real_time_check=*/false,
+             SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck,
              /*did_check_url_real_time_allowlist=*/false);
   }
 

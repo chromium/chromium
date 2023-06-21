@@ -53,10 +53,30 @@ class RealTimeUrlLookupServiceBase;
 // decides to procced with loading the URL anyway.
 class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
  public:
+  // Specifies which type of check was performed.
+  enum class PerformedCheck {
+    kUnknown = 0,
+    // A skipped check occurs in the following scenarios:
+    //  - The URL is allowlisted (not the high-confidence allowlist).
+    //  - The request destination can't be checked.
+    //  - It's a debugging URL like chrome://safe-browsing/match?type=malware.
+    //  - The URL real-time check is unable to run, but |can_check_db_| is false
+    //  so no other checks can run either.
+    kCheckSkipped = 1,
+    // The check that ran was a hash database check.
+    kHashDatabaseCheck = 2,
+    // The check that was initiated was a URL real-time check, whether or not
+    // it ended up falling back to a hash database check.
+    kUrlRealTimeCheck = 3,
+    // The check that was initiated was a hash real-time check, whether or not
+    // it ended up falling back to a hash database check.
+    kHashRealTimeCheck = 4,
+  };
+
   using NativeUrlCheckNotifier =
       base::OnceCallback<void(bool /* proceed */,
                               bool /* showed_interstitial */,
-                              bool /* did_perform_url_real_time_check */,
+                              PerformedCheck /* performed_check */,
                               bool /* did_check_url_real_time_allowlist */)>;
 
   // If |slow_check_notifier| is not null, the callback is supposed to update
@@ -66,7 +86,7 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       base::OnceCallback<void(NativeUrlCheckNotifier* /* slow_check_notifier */,
                               bool /* proceed */,
                               bool /* showed_interstitial */,
-                              bool /* did_perform_url_real_time_check */,
+                              PerformedCheck /* performed_check */,
                               bool /* did_check_url_real_time_allowlist */)>;
 
   // Constructor for SafeBrowsingUrlCheckerImpl. |url_real_time_lookup_enabled|
@@ -160,10 +180,10 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     Notifier(Notifier&& other);
     Notifier& operator=(Notifier&& other);
 
-    void OnStartSlowCheck();
+    void OnStartSlowCheck(PerformedCheck performed_check);
     void OnCompleteCheck(bool proceed,
                          bool showed_interstitial,
-                         bool did_perform_url_real_time_check,
+                         PerformedCheck performed_check,
                          bool did_check_url_real_time_allowlist);
 
    private:
@@ -176,11 +196,22 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     NativeUrlCheckNotifier native_slow_check_notifier_;
   };
 
+  struct KickOffLookupMechanismResult {
+    KickOffLookupMechanismResult(
+        SafeBrowsingLookupMechanism::StartCheckResult start_check_result,
+        PerformedCheck performed_check);
+    ~KickOffLookupMechanismResult();
+
+    SafeBrowsingLookupMechanism::StartCheckResult start_check_result;
+    PerformedCheck performed_check;
+  };
+
   // Called once the lookup mechanism runner indicates that the check is
-  // complete. The |result| parameter will only be populated if |timed_out| is
-  // false. This function eventually decides whether or not to show a blocking
-  // page.
+  // complete. |performed_check| indicates what kind of check was performed. The
+  // |result| parameter will only be populated if |timed_out| is false. This
+  // function eventually decides whether or not to show a blocking page.
   void OnUrlResultAndMaybeDeleteSelf(
+      PerformedCheck performed_check,
       bool timed_out,
       absl::optional<std::unique_ptr<CompleteCheckResult>> result);
 
@@ -191,7 +222,8 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
       const ThreatMetadata& metadata,
       absl::optional<ThreatSource> threat_source,
       std::unique_ptr<RTLookupResponse> rt_lookup_response,
-      bool timed_out);
+      bool timed_out,
+      PerformedCheck performed_check);
 
   void CheckUrlImplAndMaybeDeleteSelf(const GURL& url,
                                       const std::string& method,
@@ -201,9 +233,11 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   void ProcessUrlsAndMaybeDeleteSelf();
 
   // NOTE: this method runs callbacks which could destroy this object.
-  void BlockAndProcessUrlsAndMaybeDeleteSelf(bool showed_interstitial);
+  void BlockAndProcessUrlsAndMaybeDeleteSelf(bool showed_interstitial,
+                                             PerformedCheck performed_check);
 
-  void OnBlockingPageCompleteAndMaybeDeleteSelf(bool proceed,
+  void OnBlockingPageCompleteAndMaybeDeleteSelf(PerformedCheck performed_check,
+                                                bool proceed,
                                                 bool showed_interstitial);
 
   // Helper method that checks whether |url|'s reputation can be checked using
@@ -213,23 +247,23 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
   // This will decide which mechanism to use for a lookup and then perform it.
   // This may include running a SafeBrowsingLookupMechanism experiment if
   // eligible.
-  SafeBrowsingLookupMechanism::StartCheckResult KickOffLookupMechanism(
-      const GURL& url,
-      bool* out_hash_database_check_was_performed);
+  KickOffLookupMechanismResult KickOffLookupMechanism(const GURL& url);
 
   SBThreatType CheckWebUIUrls(const GURL& url);
 
   // Returns false if this object has been destroyed by the callback. In that
   // case none of the members of this object should be touched again.
   bool RunNextCallbackAndMaybeDeleteSelf(bool proceed,
-                                         bool showed_interstitial);
+                                         bool showed_interstitial,
+                                         PerformedCheck performed_check);
 
   security_interstitials::UnsafeResource MakeUnsafeResource(
       const GURL& url,
       SBThreatType threat_type,
       const ThreatMetadata& metadata,
       ThreatSource threat_source,
-      std::unique_ptr<RTLookupResponse> rt_lookup_response);
+      std::unique_ptr<RTLookupResponse> rt_lookup_response,
+      PerformedCheck performed_check);
 
   enum State {
     // Haven't started checking or checking is complete.
@@ -249,7 +283,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     UrlInfo(const GURL& url,
             const std::string& method,
             Notifier notifier,
-            bool did_perform_url_real_time_check,
             bool did_check_url_real_time_allowlist);
     UrlInfo(UrlInfo&& other);
 
@@ -259,9 +292,6 @@ class SafeBrowsingUrlCheckerImpl : public mojom::SafeBrowsingUrlChecker {
     std::string method;
     Notifier notifier;
 
-    // Whether real time URL check (including allowlist and cache checks) was
-    // performed.
-    bool did_perform_url_real_time_check;
     // If the allowlist was checked for this URL.
     bool did_check_url_real_time_allowlist;
   };

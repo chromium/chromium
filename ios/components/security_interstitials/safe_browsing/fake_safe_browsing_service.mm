@@ -42,17 +42,21 @@ class FakeSafeBrowsingUrlCheckerImpl
       safe_browsing::SafeBrowsingUrlCheckerImpl::NativeCheckUrlCallback
           callback) override {
     if (url.host() == FakeSafeBrowsingService::kUnsafeHost) {
-      std::move(callback).Run(/*slow_check_notifier=*/nullptr,
-                              /*proceed=*/false,
-                              /*showed_interstitial=*/true,
-                              /*did_perform_url_real_time_check=*/false,
-                              /*did_check_url_real_time_allowlist=*/true);
+      std::move(callback).Run(
+          /*slow_check_notifier=*/nullptr,
+          /*proceed=*/false,
+          /*showed_interstitial=*/true,
+          /*did_perform_url_real_time_check=*/
+          safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown,
+          /*did_check_url_real_time_allowlist=*/true);
       return;
     }
-    std::move(callback).Run(/*slow_check_notifier=*/nullptr, /*proceed=*/true,
-                            /*showed_interstitial=*/false,
-                            /*did_perform_url_real_time_check=*/false,
-                            /*did_check_url_real_time_allowlist=*/true);
+    std::move(callback).Run(
+        /*slow_check_notifier=*/nullptr, /*proceed=*/true,
+        /*showed_interstitial=*/false,
+        /*did_perform_url_real_time_check=*/
+        safe_browsing::SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown,
+        /*did_check_url_real_time_allowlist=*/true);
   }
 };
 }  // namespace

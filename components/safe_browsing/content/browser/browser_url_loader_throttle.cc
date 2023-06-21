@@ -223,12 +223,11 @@ void BrowserURLLoaderThrottle::CheckerOnSB::OnCheckUrlResult(
     NativeUrlCheckNotifier* slow_check_notifier,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_url_real_time_check,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   if (!slow_check_notifier) {
     OnCompleteCheck(false /* slow_check */, proceed, showed_interstitial,
-                    did_perform_url_real_time_check,
-                    did_check_url_real_time_allowlist);
+                    performed_check, did_check_url_real_time_allowlist);
     return;
   }
 
@@ -251,19 +250,18 @@ void BrowserURLLoaderThrottle::CheckerOnSB::OnCompleteCheck(
     bool slow_check,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_url_real_time_check,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   if (base::FeatureList::IsEnabled(safe_browsing::kSafeBrowsingOnUIThread)) {
     throttle_->OnCompleteCheck(slow_check, proceed, showed_interstitial,
-                               did_perform_url_real_time_check,
+                               performed_check,
                                did_check_url_real_time_allowlist);
   } else {
     content::GetUIThreadTaskRunner({})->PostTask(
         FROM_HERE,
         base::BindOnce(&BrowserURLLoaderThrottle::OnCompleteCheck, throttle_,
                        slow_check, proceed, showed_interstitial,
-                       did_perform_url_real_time_check,
-                       did_check_url_real_time_allowlist));
+                       performed_check, did_check_url_real_time_allowlist));
   }
 }
 
@@ -524,11 +522,13 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(
     bool slow_check,
     bool proceed,
     bool showed_interstitial,
-    bool did_perform_url_real_time_check,
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
     bool did_check_url_real_time_allowlist) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(!blocked_);
-  DCHECK(url_real_time_lookup_enabled_ || !did_perform_url_real_time_check);
+  DCHECK(url_real_time_lookup_enabled_ ||
+         performed_check !=
+             SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck);
 
   DCHECK_LT(0u, pending_checks_);
   pending_checks_--;
@@ -548,7 +548,8 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(
                                             total_delay_);
     }
     std::string url_check_type =
-        did_perform_url_real_time_check
+        performed_check ==
+                SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck
             ? base::StrCat({url_lookup_service_metric_suffix_, kFullURLLookup})
             : ".HashBasedCheck";
     LogTotalDelay2Metrics(url_check_type, did_check_url_real_time_allowlist,

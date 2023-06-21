@@ -54,10 +54,7 @@ class WebApiHandshakeChecker::CheckerOnSB
             /*render_frame_id=*/MSG_ROUTING_NONE,
             /*originated_from_service_worker=*/false);
     if (skip_checks) {
-      OnCompleteCheck(/*slow_check=*/false, /*proceed=*/true,
-                      /*showed_interstitial=*/false,
-                      /*did_perform_url_real_time_check=*/false,
-                      /*did_check_url_real_time_allowlist=*/false);
+      OnCompleteCheckInternal(/*proceed=*/true);
       return;
     }
 
@@ -90,15 +87,13 @@ class WebApiHandshakeChecker::CheckerOnSB
       SafeBrowsingUrlCheckerImpl::NativeUrlCheckNotifier* slow_check_notifier,
       bool proceed,
       bool showed_interstitial,
-      bool did_perform_url_real_time_check,
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
       bool did_check_url_real_time_allowlist) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                             ? content::BrowserThread::UI
                             : content::BrowserThread::IO);
     if (!slow_check_notifier) {
-      OnCompleteCheck(/*slow_check=*/false, proceed, showed_interstitial,
-                      did_perform_url_real_time_check,
-                      did_check_url_real_time_allowlist);
+      OnCompleteCheckInternal(proceed);
       return;
     }
 
@@ -107,25 +102,25 @@ class WebApiHandshakeChecker::CheckerOnSB
                        base::Unretained(this), /*slow_check=*/true);
   }
 
-  void OnCompleteCheck(bool slow_check,
-                       bool proceed,
-                       bool showed_interstitial,
-                       bool did_perform_url_real_time_check,
-                       bool did_check_url_real_time_allowlist) {
+  void OnCompleteCheck(
+      bool slow_check,
+      bool proceed,
+      bool showed_interstitial,
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
+      bool did_check_url_real_time_allowlist) {
+    OnCompleteCheckInternal(proceed);
+  }
+
+  void OnCompleteCheckInternal(bool proceed) {
     DCHECK_CURRENTLY_ON(base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)
                             ? content::BrowserThread::UI
                             : content::BrowserThread::IO);
     if (base::FeatureList::IsEnabled(kSafeBrowsingOnUIThread)) {
-      handshake_checker_->OnCompleteCheck(
-          slow_check, proceed, showed_interstitial,
-          did_perform_url_real_time_check, did_check_url_real_time_allowlist);
+      handshake_checker_->OnCompleteCheck(proceed);
     } else {
       content::GetUIThreadTaskRunner({})->PostTask(
-          FROM_HERE,
-          base::BindOnce(&WebApiHandshakeChecker::OnCompleteCheck,
-                         handshake_checker_, slow_check, proceed,
-                         showed_interstitial, did_perform_url_real_time_check,
-                         did_check_url_real_time_allowlist));
+          FROM_HERE, base::BindOnce(&WebApiHandshakeChecker::OnCompleteCheck,
+                                    handshake_checker_, proceed));
     }
   }
 
@@ -168,12 +163,7 @@ void WebApiHandshakeChecker::Check(const GURL& url, CheckCallback callback) {
   }
 }
 
-void WebApiHandshakeChecker::OnCompleteCheck(
-    bool slow_check,
-    bool proceed,
-    bool showed_interstitial,
-    bool did_perform_url_real_time_check,
-    bool did_check_url_real_time_allowlist) {
+void WebApiHandshakeChecker::OnCompleteCheck(bool proceed) {
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   DCHECK(check_callback_);
 
