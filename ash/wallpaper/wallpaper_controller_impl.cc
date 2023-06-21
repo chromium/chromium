@@ -1698,9 +1698,15 @@ void WallpaperControllerImpl::OnActiveUserPrefServiceChanged(
         pref_manager_->GetLocalWallpaperInfo(account_id, &local_info);
     session_manager::SessionState session_state =
         Shell::Get()->session_controller()->GetSessionState();
-    if (session_state == session_manager::SessionState::OOBE &&
-        !has_synced_info && has_local_info &&
-        local_info.type == WallpaperType::kDefault &&
+    // Default OOBE flow
+    const bool is_default_oobe_flow =
+        session_state == session_manager::SessionState::OOBE;
+    // OOBE enterprise enrollment -> add person flow
+    const bool is_add_person_flow =
+        session_state == session_manager::SessionState::LOGIN_PRIMARY &&
+        oobe_state_ != OobeDialogState::HIDDEN;
+    if ((is_default_oobe_flow || is_add_person_flow) && !has_synced_info &&
+        has_local_info && local_info.type == WallpaperType::kDefault &&
         features::IsTimeOfDayWallpaperEnabled()) {
       // Sets the time of day wallpaper as the default wallpaper on active user
       // pref changed during OOBE flow.
