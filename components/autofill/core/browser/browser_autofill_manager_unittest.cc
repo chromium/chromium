@@ -960,7 +960,7 @@ class BrowserAutofillManagerTest : public testing::Test {
     external_delegate_->CheckSuggestions(field_id, 3, &suggestion_vector[0]);
   }
 
-  void ResetBrowserAutofillManager(TestAutofillClient* client) {
+  void ResetBrowserAutofillManager() {
     // |browser_autofill_manager_| owns the |single_field_form_fill_router_| and
     // clears it upon being recreated. Clear it first and then give it a new
     // SingleFieldFormFillRouter to avoid referencing deleted memory.
@@ -6538,14 +6538,14 @@ TEST_F(BrowserAutofillManagerTest,
 // field, single field form fill suggestions are queried.
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_CreditCardNameFieldShouldAutocomplete) {
-  TestAutofillClient client;
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
-  client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
-  ResetBrowserAutofillManager(&client);
+  autofill_client_.set_form_origin(
+      autofill_client_.form_origin().ReplaceComponents(replacements));
+  ResetBrowserAutofillManager();
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
@@ -6573,14 +6573,14 @@ TEST_F(BrowserAutofillManagerTest,
 // field, single field form fill suggestions are not queried.
 TEST_F(BrowserAutofillManagerTest,
        SingleFieldFormFillSuggestions_CreditCardNumberShouldNotAutocomplete) {
-  TestAutofillClient client;
   // Since we are testing a form that submits over HTTP, we also need to set
   // the main frame to HTTP in the client, otherwise mixed form warnings will
   // trigger and autofill will be disabled.
   GURL::Replacements replacements;
   replacements.SetSchemeStr(url::kHttpScheme);
-  client.set_form_origin(client.form_origin().ReplaceComponents(replacements));
-  ResetBrowserAutofillManager(&client);
+  autofill_client_.set_form_origin(
+      autofill_client_.form_origin().ReplaceComponents(replacements));
+  ResetBrowserAutofillManager();
   browser_autofill_manager_->SetAutofillProfileEnabled(autofill_client_, false);
   browser_autofill_manager_->SetAutofillCreditCardEnabled(autofill_client_,
                                                           false);
