@@ -12,7 +12,7 @@ import android.content.pm.PackageManager;
 import android.os.Build;
 import android.webkit.WebView;
 
-import androidx.annotation.VisibleForTesting;
+import org.chromium.base.ResettersForTesting;
 
 import java.lang.reflect.InvocationTargetException;
 import java.util.Locale;
@@ -21,7 +21,7 @@ import java.util.Locale;
  * A helper class to get info about WebView package.
  */
 public final class WebViewPackageHelper {
-    private static PackageInfo sWebViewCurrentPackage;
+    private static PackageInfo sWebViewCurrentPackageForTesting;
 
     /**
      * If WebView has already been loaded into the current process this method will return the
@@ -38,8 +38,8 @@ public final class WebViewPackageHelper {
     // TODO(crbug.com/1020024) use androidx.webkit.WebViewCompat#getCurrentWebViewPackage instead.
     @SuppressWarnings("WebViewApiAvailability")
     public static PackageInfo getCurrentWebViewPackage(Context context) {
-        if (sWebViewCurrentPackage != null) {
-            return sWebViewCurrentPackage;
+        if (sWebViewCurrentPackageForTesting != null) {
+            return sWebViewCurrentPackageForTesting;
         }
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
             return WebView.getCurrentWebViewPackage();
@@ -151,9 +151,9 @@ public final class WebViewPackageHelper {
      * Inject a {@link PackageInfo} as the current webview package for testing. This PackageInfo
      * will be returned by {@link #getCurrentWebViewPackage}.
      */
-    @VisibleForTesting
     public static void setCurrentWebViewPackageForTesting(PackageInfo currentWebView) {
-        sWebViewCurrentPackage = currentWebView;
+        sWebViewCurrentPackageForTesting = currentWebView;
+        ResettersForTesting.register(() -> sWebViewCurrentPackageForTesting = null);
     }
 
     // Do not instantiate this class.

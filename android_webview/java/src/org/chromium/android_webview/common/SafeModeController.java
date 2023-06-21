@@ -12,10 +12,10 @@ import android.net.Uri;
 
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.build.BuildConfig;
@@ -65,9 +65,9 @@ public class SafeModeController {
      * @param controller The SafeModeController object to return from getInstance(). Passing in a
      * null value resets this.
      */
-    @VisibleForTesting
     public static void setInstanceForTests(SafeModeController controller) {
         sInstanceForTests = controller;
+        ResettersForTesting.register(() -> sInstanceForTests = null);
     }
 
     public static SafeModeController getInstance() {
@@ -98,7 +98,6 @@ public class SafeModeController {
         mRegisteredActions = actions;
     }
 
-    @VisibleForTesting
     public void unregisterActionsForTesting() {
         mRegisteredActions = null;
     }

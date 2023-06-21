@@ -41,7 +41,6 @@ import android.widget.TextView;
 import androidx.annotation.IntDef;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 
 import org.chromium.android_webview.common.DeveloperModeUtils;
 import org.chromium.android_webview.common.Flag;
@@ -50,6 +49,7 @@ import org.chromium.android_webview.common.services.IDeveloperUiService;
 import org.chromium.android_webview.common.services.ServiceHelper;
 import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.metrics.RecordHistogram;
 
@@ -218,15 +218,16 @@ public class FlagsFragment extends DevUiBaseFragment {
      * Notifies the caller when ListView filtering is complete, in response to modifying the text in
      * {@code R.id.flag_search_bar}.
      */
-    @VisibleForTesting
     public static void setFilterListenerForTesting(@Nullable Runnable listener) {
         sFilterListener = listener;
+        ResettersForTesting.register(() -> sFilterListener = null);
     }
 
-    @VisibleForTesting
     public static void setFlagListForTesting(@NonNull Flag[] flagList) {
         ThreadUtils.assertOnUiThread();
+        var oldValue = sFlagList;
         sFlagList = flagList;
+        ResettersForTesting.register(() -> sFlagList = oldValue);
     }
 
     private void onFilterDone() {

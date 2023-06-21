@@ -58,7 +58,6 @@ public class AwComponentUpdateServiceSafeModeTest {
     public void tearDown() {
         Assert.assertTrue("Failed to delete " + mDirectory.getAbsolutePath(),
                 FileUtils.recursivelyDeleteFile(mDirectory, null));
-        SafeModeController.setInstanceForTests(null);
     }
 
     @Test

@@ -24,6 +24,7 @@ import org.chromium.android_webview.common.services.ServiceNames;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.task.PostTask;
 import org.chromium.base.task.TaskTraits;
@@ -92,7 +93,7 @@ public class ComponentsProviderService extends Service {
     public static interface Clock {
         long currentTimeMillis();
     }
-    private static Clock sClock = System::currentTimeMillis;
+    private static Clock sClockForTesting;
 
     private File mDirectory;
     private FutureTask<Void> mDeleteTask;
@@ -220,7 +221,6 @@ public class ComponentsProviderService extends Service {
     /**
      * This must be called after {@code onCreate()}, otherwise returns a {@code null} object.
      */
-    @VisibleForTesting
     public Future<Void> getDeleteTaskForTesting() {
         return mDeleteTask;
     }
@@ -270,7 +270,8 @@ public class ComponentsProviderService extends Service {
         final SharedPreferences sharedPreferences =
                 ContextUtils.getApplicationContext().getSharedPreferences(
                         SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE);
-        long currentTime = sClock.currentTimeMillis();
+        long currentTime = sClockForTesting != null ? sClockForTesting.currentTimeMillis()
+                                                    : System.currentTimeMillis();
         long lastJobScheduleTime = sharedPreferences.getLong(LAST_SCHEDULED_UPDATE_JOB_TIME, 0L);
         if (lastJobScheduleTime + UPDATE_INTERVAL_MS > currentTime) {
             return;
@@ -298,12 +299,11 @@ public class ComponentsProviderService extends Service {
         return scheduler.getPendingJob(jobId) != null;
     }
 
-    @VisibleForTesting
     public static void setClockForTesting(Clock clock) {
-        sClock = clock;
+        sClockForTesting = clock;
+        ResettersForTesting.register(() -> sClockForTesting = null);
     }
 
-    @VisibleForTesting
     public static void clearSharedPrefsForTesting() {
         ContextUtils.getApplicationContext()
                 .getSharedPreferences(SHARED_PREFERENCES_NAME, Context.MODE_PRIVATE)

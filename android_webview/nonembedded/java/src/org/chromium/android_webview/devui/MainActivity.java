@@ -33,6 +33,7 @@ import org.chromium.android_webview.devui.util.SafeIntentUtils;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.metrics.RecordHistogram;
 
 import java.util.HashMap;
@@ -402,8 +403,9 @@ public class MainActivity extends FragmentActivity {
      * This method has been introduced to avoid mocking out {@link BuildInfo#isAtLeastT()}.
      * @param isAtLeastT Whether the running Android version is at least T.
      */
-    @VisibleForTesting
     public void setIsAtLeastTBuildForTesting(boolean isAtLeastT) {
+        var oldValue = mIsAtLeastTBuild;
         mIsAtLeastTBuild = isAtLeastT;
+        ResettersForTesting.register(() -> mIsAtLeastTBuild = oldValue);
     }
 }

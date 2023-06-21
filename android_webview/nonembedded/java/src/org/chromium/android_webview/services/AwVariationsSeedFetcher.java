@@ -22,6 +22,7 @@ import org.chromium.android_webview.common.variations.VariationsUtils;
 import org.chromium.base.CommandLine;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.task.AsyncTask;
 import org.chromium.base.task.BackgroundOnlyAsyncTask;
 import org.chromium.base.task.PostTask;
@@ -81,12 +82,12 @@ public class AwVariationsSeedFetcher extends JobService {
     private static JobScheduler sMockJobScheduler;
     private static VariationsSeedFetcher sMockDownloader;
     private static Clock sTestClock;
-    private static Date sDate;
+    private static Date sDateForTesting;
 
     private FetchTask mFetchTask;
-    private static int sJitter =
+    private static final int sJitter =
             new Random().nextInt((int) VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
-    private static boolean sUseSmallJitter;
+    private static boolean sUseSmallJitterForTesting;
 
     private static long currentTimeMillis() {
         if (sTestClock != null) {
@@ -265,7 +266,8 @@ public class AwVariationsSeedFetcher extends JobService {
                         .setRequiredNetworkType(JobInfo.NETWORK_TYPE_ANY)
                         .setBackoffCriteria(JOB_INITIAL_BACKOFF_TIME_IN_MS, JOB_BACKOFF_POLICY);
         if (requireFastMode) {
-            long backoffTime = sUseSmallJitter ? SMALL_JITTER_IN_MS : TimeUnit.MINUTES.toMillis(1);
+            long backoffTime =
+                    sUseSmallJitterForTesting ? SMALL_JITTER_IN_MS : TimeUnit.MINUTES.toMillis(1);
             builder = builder.setBackoffCriteria(backoffTime, JobInfo.BACKOFF_POLICY_LINEAR)
                               .setPersisted(true);
 
@@ -275,7 +277,8 @@ public class AwVariationsSeedFetcher extends JobService {
                 // for the population. Adding jitter to the initial request helps space them out
                 // more evenly as the mitigation is deployed so the seed fetches are not requested
                 // all at once even if SafeMode is enabled simultaneously on many devices.
-                builder = builder.setMinimumLatency(sJitter);
+                builder = builder.setMinimumLatency(
+                        sUseSmallJitterForTesting ? SMALL_JITTER_IN_MS : sJitter);
             } else {
                 builder =
                         builder.setPeriodic(VariationsFastFetchModeUtils.MAX_ALLOWABLE_SEED_AGE_MS);
@@ -483,19 +486,18 @@ public class AwVariationsSeedFetcher extends JobService {
         sTestClock = clock;
     }
 
-    @VisibleForTesting
     public static void setUseSmallJitterForTesting() {
-        sJitter = SMALL_JITTER_IN_MS;
-        sUseSmallJitter = true;
+        sUseSmallJitterForTesting = true;
+        ResettersForTesting.register(() -> sUseSmallJitterForTesting = false);
     }
 
-    @VisibleForTesting
     public static void setDateForTesting(Date date) {
-        sDate = date;
+        sDateForTesting = date;
+        ResettersForTesting.register(() -> sDateForTesting = null);
     }
 
     private static long getCurrentTimestamp() {
-        return sDate != null ? sDate.getTime() : new Date().getTime();
+        return sDateForTesting != null ? sDateForTesting.getTime() : new Date().getTime();
     }
 
     /**
