@@ -3246,7 +3246,7 @@
         'mixins': [
           '12-x64-emulator',
           'emulator-8-cores',
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'os_type': 'android',
