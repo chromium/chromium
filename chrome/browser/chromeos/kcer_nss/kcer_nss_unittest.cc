@@ -1289,9 +1289,16 @@ TEST_P(KcerNssAllKeyTypesTest, DoesPrivateKeyExistTwoTokens) {
   EXPECT_TRUE(observer_.WaitUntil(/*notifications=*/0));
 }
 
+// TODO(https://crbug.com/1453782): Times out too often on memory sanitizer
+// bots.
+#if defined(MEMORY_SANITIZER)
+#define MAYBE_AllMethodsTogether DISABLED_AllMethodsTogether
+#else
+#define MAYBE_AllMethodsTogether AllMethodsTogether
+#endif
 // Test that all methods work together as expected. Simulate a potential
 // lifecycle of a key and related objects.
-TEST_P(KcerNssAllKeyTypesTest, AllMethodsTogether) {
+TEST_P(KcerNssAllKeyTypesTest, MAYBE_AllMethodsTogether) {
   InitializeKcer({Token::kUser, Token::kDevice});
 
   // Generate new key.
