@@ -129,11 +129,13 @@ void CookieSettings::ResetCookieSetting(const GURL& primary_url) {
 // TODO(crbug.com/1386190): Update to take in CookieSettingOverrides.
 bool CookieSettings::IsThirdPartyAccessAllowed(
     const GURL& first_party_url,
-    content_settings::SettingSource* source) {
+    content_settings::SettingSource* source,
+    base::Time* expiration) {
   // Use GURL() as an opaque primary url to check if any site
   // could access cookies in a 3p context on |first_party_url|.
   return IsAllowed(GetCookieSetting(GURL(), first_party_url,
-                                    net::CookieSettingOverrides(), source));
+                                    net::CookieSettingOverrides(), source,
+                                    expiration));
 }
 
 void CookieSettings::SetThirdPartyCookieSetting(const GURL& first_party_url,
@@ -207,7 +209,8 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
     const GURL& first_party_url,
     bool is_third_party_request,
     net::CookieSettingOverrides overrides,
-    content_settings::SettingSource* source) const {
+    content_settings::SettingSource* source,
+    base::Time* expiration) const {
   // Auto-allow in extensions or for WebUI embedding a secure origin.
   if (ShouldAlwaysAllowCookies(url, first_party_url)) {
     return CONTENT_SETTING_ALLOW;
@@ -219,6 +222,9 @@ ContentSetting CookieSettings::GetCookieSettingInternal(
       url, first_party_url, ContentSettingsType::COOKIES, &info);
   if (source) {
     *source = info.source;
+  }
+  if (expiration) {
+    *expiration = info.metadata.expiration();
   }
 
   // If no explicit exception has been made and third-party cookies are blocked

@@ -304,6 +304,26 @@ TEST_P(CookieSettingsTest, UserBypassPermanentExceptions) {
   ASSERT_TRUE(expiration.is_zero());
 }
 
+TEST_P(CookieSettingsTest, UserBypassThirdPartyCookiesPermanentExceptions) {
+  GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
+  base::Time expiration;
+
+  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
+      kFirstPartySite, nullptr, &expiration));
+  EXPECT_EQ(expiration, base::Time());
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(cookie_settings_->IsThirdPartyAccessAllowed(
+      kFirstPartySite, nullptr, &expiration));
+  EXPECT_EQ(expiration, base::Time());
+
+  cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
+  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
+      first_party_url, nullptr, &expiration));
+  EXPECT_EQ(expiration, base::Time());
+}
+
 TEST_P(CookieSettingsTest, TestAllowlistedScheme) {
   cookie_settings_->SetDefaultCookieSetting(CONTENT_SETTING_BLOCK);
   EXPECT_FALSE(cookie_settings_->IsFullCookieAccessAllowed(
@@ -606,6 +626,29 @@ TEST_P(CookieSettingsTestUserBypass, UserBypassTemporaryExceptions) {
       cookie_settings_->IsStoragePartitioningBypassEnabled(kFirstPartySite));
   EXPECT_FALSE(
       cookie_settings_->IsStoragePartitioningBypassEnabled(kBlockedSite));
+}
+
+TEST_P(CookieSettingsTestUserBypass,
+       UserBypassThirdPartyCookiesTemporaryExceptions) {
+  GURL first_party_url = kFirstPartySiteForCookies.RepresentativeUrl();
+  base::Time expiration;
+
+  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
+      kFirstPartySite, nullptr, &expiration));
+  EXPECT_EQ(expiration, base::Time());
+
+  prefs_.SetInteger(prefs::kCookieControlsMode,
+                    static_cast<int>(CookieControlsMode::kBlockThirdParty));
+  EXPECT_FALSE(cookie_settings_->IsThirdPartyAccessAllowed(
+      kFirstPartySite, nullptr, &expiration));
+  EXPECT_EQ(expiration, base::Time());
+
+  cookie_settings_->SetCookieSettingForUserBypass(first_party_url);
+  EXPECT_TRUE(cookie_settings_->IsThirdPartyAccessAllowed(
+      first_party_url, nullptr, &expiration));
+  base::TimeDelta expiration_delta =
+      content_settings::features::kUserBypassUIExceptionExpiration.Get();
+  EXPECT_EQ(expiration, base::Time::Now() + expiration_delta);
 }
 
 TEST_P(CookieSettingsTest, KeepBlocked) {

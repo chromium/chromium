@@ -157,12 +157,16 @@ class COMPONENT_EXPORT(NETWORK_SERVICE) CookieSettings
                                 const GURL& first_party_url) const;
 
   // content_settings::CookieSettingsBase:
+  //
+  // Note: |source| and |expiration| are not supported in the network service.
+  // They are properties of content setting exceptions.
   ContentSetting GetCookieSettingInternal(
       const GURL& url,
       const GURL& first_party_url,
       bool is_third_party_request,
       net::CookieSettingOverrides overrides,
-      content_settings::SettingSource* source) const override;
+      content_settings::SettingSource* source,
+      base::Time* expiration) const override;
 
   // An enum that represents the scope of cookies to which the user's
   // third-party-cookie-blocking setting applies, in a given context.

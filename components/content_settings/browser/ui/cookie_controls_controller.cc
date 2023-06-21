@@ -84,6 +84,8 @@ void CookieControlsController::Update(content::WebContents* web_contents) {
 
 CookieControlsController::Status CookieControlsController::GetStatus(
     content::WebContents* web_contents) {
+  // TODO(crbug.com/1446230): Return base::Time() instead of absl::nullopt to be
+  // consistent with the expiration value stored for permanent content settings.
   if (!cookie_settings_->ShouldBlockThirdPartyCookies()) {
     return {CookieControlsStatus::kDisabled,
             CookieControlsEnforcement::kNoEnforcement, absl::nullopt};
@@ -96,10 +98,9 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   }
 
   SettingSource source;
-  // TODO(crbug.com/1446230): Return the expiration of the active exception when
-  // available.
+  base::Time expiration;
   bool is_allowed = cookie_settings_->IsThirdPartyAccessAllowed(
-      web_contents->GetLastCommittedURL(), &source);
+      web_contents->GetLastCommittedURL(), &source, &expiration);
 
   CookieControlsStatus status = is_allowed
                                     ? CookieControlsStatus::kDisabledForSite
@@ -118,7 +119,7 @@ CookieControlsController::Status CookieControlsController::GetStatus(
   } else {
     enforcement = CookieControlsEnforcement::kNoEnforcement;
   }
-  return {status, enforcement, absl::nullopt};
+  return {status, enforcement, expiration};
 }
 
 void CookieControlsController::OnCookieBlockingEnabledForSite(
