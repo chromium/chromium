@@ -201,7 +201,7 @@ bool SessionService::ShouldRestore(Browser* browser) {
   }
   if (primary_user_profile &&
       BrowserLauncher::GetForProfile(primary_user_profile)
-          ->is_launching_for_full_restore()) {
+          ->is_launching_for_last_opened_profiles()) {
     return true;
   }
 #endif  // BUILDFLAG(IS_CHROMEOS_LACROS)
