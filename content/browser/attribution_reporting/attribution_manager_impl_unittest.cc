@@ -129,6 +129,9 @@ constexpr char kPendingAndBrowserWentOfflineTimeUntilReportTime[] =
     "Conversions.AggregatableReport.PendingAndBrowserWentOffline."
     "TimeUntilReportTime";
 
+constexpr char kSentVerboseDebugReportTypeMetric[] =
+    "Conversions.SentVerboseDebugReportType";
+
 auto InvokeReportSentCallback(SendResult::Status status) {
   return [=](AttributionReport report, bool is_debug_report,
              ReportSentCallback callback) {
@@ -2691,6 +2694,8 @@ TEST_F(AttributionManagerImplTest, TooManyEventsInQueue) {
 }
 
 TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
+  base::HistogramTester histograms;
+
   const auto reporting_origin = *SuitableOrigin::Deserialize("https://r1.test");
   cookie_checker_->AddOriginWithDebugCookieSet(reporting_origin);
 
@@ -2746,6 +2751,8 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
 
   checkpoint.Call(1);
 
+  histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
+
   {
     // Trigger registered outside a fenced frame tree failed with debug
     // reporting and debug cookie is set, and feature on.
@@ -2760,6 +2767,9 @@ TEST_F(AttributionManagerImplTest, TriggerVerboseDebugReport_ReportSent) {
         kFrameId);
     task_environment_.RunUntilIdle();
   }
+
+  // kTriggerNoMatchingSource = 6
+  histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric, 6, 1);
 }
 
 TEST_F(AttributionManagerImplTest,
@@ -2925,6 +2935,8 @@ class AttributionManagerImplDebugReportTest
 };
 
 TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
+  base::HistogramTester histograms;
+
   absl::optional<AttributionDebugReport> sent_report;
 
   Checkpoint checkpoint;
@@ -2989,6 +3001,8 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
 
   checkpoint.Call(1);
 
+  histograms.ExpectTotalCount(kSentVerboseDebugReportTypeMetric, 0);
+
   {
     // Source registered outside a fenced frame failed with debug reporting, and
     // feature on.
@@ -3014,6 +3028,9 @@ TEST_F(AttributionManagerImplDebugReportTest, VerboseDebugReport_ReportSent) {
     ASSERT_TRUE(report_data);
     EXPECT_TRUE(report_data->Find("source_site"));
   }
+
+  // kSourceDestinationLimit = 0
+  histograms.ExpectUniqueSample(kSentVerboseDebugReportTypeMetric, 0, 1);
 }
 
 TEST_F(AttributionManagerImplDebugReportTest,

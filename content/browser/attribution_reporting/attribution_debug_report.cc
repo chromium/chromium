@@ -9,6 +9,7 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
@@ -35,33 +36,36 @@ using AggregatableResult = ::content::AttributionTrigger::AggregatableResult;
 
 constexpr char kAttributionDestination[] = "attribution_destination";
 
+// These values are persisted to logs. Entries should not be renumbered and
+// numeric values should never be reused.
 enum class DebugDataType {
-  kSourceDestinationLimit,
-  kSourceNoised,
-  kSourceStorageLimit,
-  kSourceSuccess,
-  kSourceUnknownError,
+  kSourceDestinationLimit = 0,
+  kSourceNoised = 1,
+  kSourceStorageLimit = 2,
+  kSourceSuccess = 3,
+  kSourceUnknownError = 4,
   // TODO(tquintanilla): Add interop test for `kSourceDestinationRateLimit`
   // case.
-  kSourceDestinationRateLimit,
-  kTriggerNoMatchingSource,
-  kTriggerAttributionsPerSourceDestinationLimit,
-  kTriggerNoMatchingFilterData,
-  kTriggerReportingOriginLimit,
-  kTriggerEventDeduplicated,
-  kTriggerEventNoMatchingConfigurations,
-  kTriggerEventNoise,
-  kTriggerEventLowPriority,
-  kTriggerEventExcessiveReports,
-  kTriggerEventStorageLimit,
-  kTriggerEventReportWindowPassed,
-  kTriggerAggregateDeduplicated,
-  kTriggerAggregateNoContributions,
-  kTriggerAggregateInsufficientBudget,
-  kTriggerAggregateStorageLimit,
-  kTriggerAggregateReportWindowPassed,
-  kTriggerAggregateExcessiveReports,
-  kTriggerUnknownError,
+  kSourceDestinationRateLimit = 5,
+  kTriggerNoMatchingSource = 6,
+  kTriggerAttributionsPerSourceDestinationLimit = 7,
+  kTriggerNoMatchingFilterData = 8,
+  kTriggerReportingOriginLimit = 9,
+  kTriggerEventDeduplicated = 10,
+  kTriggerEventNoMatchingConfigurations = 11,
+  kTriggerEventNoise = 12,
+  kTriggerEventLowPriority = 13,
+  kTriggerEventExcessiveReports = 14,
+  kTriggerEventStorageLimit = 15,
+  kTriggerEventReportWindowPassed = 16,
+  kTriggerAggregateDeduplicated = 17,
+  kTriggerAggregateNoContributions = 18,
+  kTriggerAggregateInsufficientBudget = 19,
+  kTriggerAggregateStorageLimit = 20,
+  kTriggerAggregateReportWindowPassed = 21,
+  kTriggerAggregateExcessiveReports = 22,
+  kTriggerUnknownError = 23,
+  kMaxValue = kTriggerUnknownError,
 };
 
 absl::optional<DebugDataType> DataTypeIfCookieSet(DebugDataType data_type,
@@ -403,6 +407,13 @@ base::Value::Dict GetReportData(DebugDataType type, base::Value::Dict body) {
   return dict;
 }
 
+void RecordVerboseDebugReportType(DebugDataType type) {
+  static_assert(
+      DebugDataType::kMaxValue == DebugDataType::kTriggerUnknownError,
+      "Bump version of Conversions.SentVerboseDebugReportType histogram.");
+  base::UmaHistogramEnumeration("Conversions.SentVerboseDebugReportType", type);
+}
+
 }  // namespace
 
 GURL AttributionDebugReport::ReportUrl() const {
@@ -429,6 +440,8 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
   if (!data_type) {
     return absl::nullopt;
   }
+
+  RecordVerboseDebugReportType(*data_type);
 
   base::Value::List report_body;
   report_body.Append(
@@ -458,6 +471,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
         GetReportData(*event_level_data_type,
                       GetReportDataBody(*event_level_data_type, trigger, result,
                                         &original_report_time)));
+    RecordVerboseDebugReportType(*event_level_data_type);
   }
 
   if (absl::optional<DebugDataType> aggregatable_data_type =
@@ -468,6 +482,7 @@ absl::optional<AttributionDebugReport> AttributionDebugReport::Create(
         *aggregatable_data_type,
         GetReportDataBody(*aggregatable_data_type, trigger, result,
                           /*original_report_time=*/nullptr)));
+    RecordVerboseDebugReportType(*aggregatable_data_type);
   }
 
   if (report_body.empty()) {
