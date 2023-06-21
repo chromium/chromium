@@ -433,7 +433,7 @@ AST_MATCHER_P(clang::CXXRecordDecl,
 }
 
 AST_MATCHER_P(clang::Type, isCastingUnsafe, CastingUnsafePredicate, checker) {
-  return checker.IsCastingUnsafe(&Node);
+  return checker.Matches(&Node);
 }
 
 #endif  // TOOLS_CLANG_PLUGINS_RAWPTRHELPERS_H_
