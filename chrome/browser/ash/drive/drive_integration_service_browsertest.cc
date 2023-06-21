@@ -585,8 +585,10 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithMirrorSyncEnabled,
   run_loop.Run();
 }
 
-IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
-                       GetTotalPinnedSizeWithErrorIgnoresReturnedSize) {
+// Failing reliably in M117: crbug.com/1456621
+IN_PROC_BROWSER_TEST_F(
+    DriveIntegrationBrowserTestWithBulkPinningEnabled,
+    DISABLED_GetTotalPinnedSizeWithErrorIgnoresReturnedSize) {
   auto* drive_integration_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
@@ -603,8 +605,9 @@ IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
   run_loop.Run();
 }
 
+// Failing reliably in M117: crbug.com/1456627
 IN_PROC_BROWSER_TEST_F(DriveIntegrationBrowserTestWithBulkPinningEnabled,
-                       GetTotalPinnedSizeReturnsCorrectSize) {
+                       DISABLED_GetTotalPinnedSizeReturnsCorrectSize) {
   auto* drive_integration_service =
       DriveIntegrationServiceFactory::FindForProfile(browser()->profile());
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
