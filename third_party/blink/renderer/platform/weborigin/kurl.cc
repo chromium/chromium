@@ -237,9 +237,10 @@ KURL::KURL()
 // canonical and in proper escaped form so needs no encoding. We treat it as
 // UTF-8 just in case.
 KURL::KURL(const String& url) {
-  if (!url.IsNull())
+  if (!url.IsNull()) {
     Init(NullURL(), url, nullptr);
-  else {
+    AssertStringSpecIsASCII();
+  } else {
     // WebCore expects us to preserve the nullness of strings when this
     // constructor is used. In all other cases, it expects a non-null
     // empty string, which is what Init() will create.
@@ -253,12 +254,14 @@ KURL::KURL(const String& url) {
 KURL::KURL(const GURL& gurl) {
   Init(NullURL() /* base */, String(gurl.spec()) /* relative */,
        nullptr /* query_encoding */);
+  AssertStringSpecIsASCII();
 }
 
 // Constructs a new URL given a base URL and a possibly relative input URL.
 // This assumes UTF-8 encoding.
 KURL::KURL(const KURL& base, const String& relative) {
   Init(base, relative, nullptr);
+  AssertStringSpecIsASCII();
 }
 
 // Constructs a new URL given a base URL and a possibly relative input URL.
@@ -267,6 +270,7 @@ KURL::KURL(const KURL& base,
            const String& relative,
            const WTF::TextEncoding& encoding) {
   Init(base, relative, &encoding.EncodingForFormSubmission());
+  AssertStringSpecIsASCII();
 }
 
 KURL::KURL(const AtomicString& canonical_string,
@@ -282,6 +286,7 @@ KURL::KURL(const AtomicString& canonical_string,
   // For URLs with non-ASCII hostnames canonical_string will be in punycode.
   // We can't check has_idna2008_deviation_character_ without decoding punycode.
   // here.
+  AssertStringSpecIsASCII();
 }
 
 KURL::KURL(const KURL& other)
@@ -920,14 +925,6 @@ void KURL::Init(const KURL& base,
                                      charset_converter, &output, &parsed_);
   }
 
-  // url canonicalizes to 7-bit ASCII, using punycode and percent-escapes
-  // This makes it safe to call FromUTF8() below and still keep using parsed_
-  // which stores byte offsets: Since it's all ASCII, UTF-8 byte offsets
-  // map 1-to-1 to UTF-16 codepoint offsets.
-  for (size_t i = 0; i < output.length(); ++i) {
-    DCHECK(WTF::IsASCII(output.data()[i]));
-  }
-
   // AtomicString::fromUTF8 will re-hash the raw output and check the
   // AtomicStringTable (addWithTranslator) for the string. This can be very
   // expensive for large URLs. However, since many URLs are generated from
@@ -938,6 +935,9 @@ void KURL::Init(const KURL& base,
   // check that the input is Atomic before moving forward with it. If we mark
   // non-Atomic input as Atomic here, we will render the (const) input string
   // thread unsafe.
+  //
+  // TODO(dcheng): It is unclear if the above statement is still true given the
+  // work to make refcounting thread safe.
   if (!relative.IsNull() && relative.Impl()->IsAtomic() &&
       StringView(output.data(), static_cast<unsigned>(output.length())) ==
           relative) {
@@ -948,6 +948,7 @@ void KURL::Init(const KURL& base,
 
   InitProtocolMetadata();
   InitInnerURL();
+  AssertStringSpecIsASCII();
   DCHECK(!::blink::ProtocolIsJavaScript(string_) || ProtocolIsJavaScript());
 
   // Check for deviation characters in the string. See
@@ -993,6 +994,21 @@ void KURL::InitProtocolMetadata() {
     protocol_is_in_http_family_ = false;
   }
   DCHECK_EQ(protocol_, protocol_.DeprecatedLower());
+}
+
+void KURL::AssertStringSpecIsASCII() {
+  // //url canonicalizes to 7-bit ASCII, using punycode and percent-escapes.
+  // This means that even though KURL initialization often uses `FromUTF8()`, it
+  // is still safe to use the `url::Parsed' object from the canonicalization
+  // step, despite the fact that `url::Parsed` stores byte offsets: since it's
+  // all ASCII, there is a 1:1 mapping between the UTF-8 indices and UTF-16
+  // indices.
+  DCHECK(string_.ContainsOnlyASCIIOrEmpty());
+
+  // It is not possible to check that `string_` is 8-bit here. There are some
+  // instances where `string_` reuses an already-canonicalized `AtomicString`
+  // which only contains ASCII characters but, for some reason or another, uses
+  // 16-bit characters.
 }
 
 bool KURL::ProtocolIs(const StringView protocol) const {
@@ -1048,6 +1064,7 @@ void KURL::ReplaceComponents(const url::Replacements<CHAR>& replacements,
     parsed_ = new_parsed;
     string_ = AtomicString::FromUTF8(output.data(), output.length());
     InitProtocolMetadata();
+    AssertStringSpecIsASCII();
   }
 }
 

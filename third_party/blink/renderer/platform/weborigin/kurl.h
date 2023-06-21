@@ -42,11 +42,8 @@
 // KURL stands for the URL parser in KDE's HTML Widget (KHTML). The name hasn't
 // changed since Blink forked WebKit, which in turn forked KHTML.
 //
-// KURL is Blink's main URL class, and is the analog to GURL in other Chromium
-// code. It is not thread safe but is generally cheap to copy and compare KURLs
-// to each other.
-//
-// KURL and GURL both share the same underlying URL parser, whose code is
+// KURL is Blink's URL class and is the analog to GURL in other Chromium
+// code. KURL and GURL both share the same underlying URL parser, whose code is
 // located in //url, but KURL is backed by Blink specific WTF::Strings. This
 // means that KURLs are usually cheap to copy due to WTF::Strings being
 // internally ref-counted. However, please don't copy KURLs if you can use a
@@ -138,6 +135,8 @@ class PLATFORM_EXPORT KURL {
   bool CanSetPathname() const { return IsHierarchical(); }
   bool IsHierarchical() const;
 
+  // The returned `String` is guaranteed to consist of only ASCII characters,
+  // but may be 8-bit or 16-bit.
   const String& GetString() const { return string_; }
 
   String ElidedString() const;
@@ -253,6 +252,9 @@ class PLATFORM_EXPORT KURL {
 
   void InitInnerURL();
   void InitProtocolMetadata();
+
+  // Asserts that `string_` is an ASCII string in DCHECK builds.
+  void AssertStringSpecIsASCII();
 
   bool is_valid_;
   bool protocol_is_in_http_family_;
