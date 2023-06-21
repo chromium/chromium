@@ -343,7 +343,12 @@ void EcheTray::ShowBubble() {
 
   bubble_->GetBubbleWidget()->Show();
   bubble_->GetBubbleWidget()->Activate();
+
   bubble_->bubble_view()->SetVisible(true);
+  // Since this tray already initialize the bubble before showing it in
+  // `LoadBubble()`, we need to call `NotifyTrayBubbleOpen()` here.
+  bubble_->bubble_view()->NotifyTrayBubbleOpen();
+
   SetIsActive(true);
   web_view_->GetInitiallyFocusedView()->RequestFocus();
 
@@ -643,6 +648,11 @@ void EcheTray::HideBubble() {
       event_interceptor_.get());
   SetIsActive(false);
   bubble_->bubble_view()->SetVisible(false);
+
+  // Since this tray just hide and do not destroy the bubble when closing, we
+  // need to call `NotifyTrayBubbleClosed()`.
+  bubble_->bubble_view()->NotifyTrayBubbleClosed();
+
   bubble_->GetBubbleWidget()->Deactivate();
   bubble_->GetBubbleWidget()->Hide();
   shelf()->UpdateAutoHideState();

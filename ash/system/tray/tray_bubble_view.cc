@@ -344,13 +344,6 @@ TrayBubbleView::~TrayBubbleView() {
     // Inform host items (models) that their views are being destroyed.
     delegate_->BubbleViewDestroyed();
   }
-
-  if (IsAnchoredToStatusArea()) {
-    Shell::Get()
-        ->system_tray_notifier()
-        ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
-                                                          /*visible=*/false);
-  }
 }
 
 void TrayBubbleView::InitializeAndShowBubble() {
@@ -364,11 +357,6 @@ void TrayBubbleView::InitializeAndShowBubble() {
     shadow_->SetContentBounds(layer()->bounds());
   }
 
-  if (IsAnchoredToStatusArea()) {
-    tray_bubble_counter_.emplace(
-        StatusAreaWidget::ForWindow(GetWidget()->GetNativeView()));
-  }
-
   // Register pre target event handler to reroute key
   // events to the widget for activating the view or closing it.
   if (!CanActivate() && params_.reroute_event_handler) {
@@ -376,10 +364,7 @@ void TrayBubbleView::InitializeAndShowBubble() {
   }
 
   if (IsAnchoredToStatusArea()) {
-    Shell::Get()
-        ->system_tray_notifier()
-        ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
-                                                          /*visible=*/true);
+    NotifyTrayBubbleOpen();
   }
 }
 
@@ -457,11 +442,11 @@ void TrayBubbleView::OnWidgetClosing(Widget* widget) {
   // closing.
   reroute_event_handler_.reset();
 
-  BubbleDialogDelegateView::OnWidgetClosing(widget);
-
   if (IsAnchoredToStatusArea()) {
-    tray_bubble_counter_.reset();
+    NotifyTrayBubbleClosed();
   }
+
+  BubbleDialogDelegateView::OnWidgetClosing(widget);
 }
 
 void TrayBubbleView::OnWidgetActivationChanged(Widget* widget, bool active) {
@@ -613,6 +598,34 @@ void TrayBubbleView::OnNotificationDisplayed(
     aura::Window* tray_window = GetWidget()->GetNativeView();
     tray_window->parent()->StackChildAtBottom(tray_window);
   }
+}
+
+void TrayBubbleView::NotifyTrayBubbleOpen() {
+  DCHECK(IsAnchoredToStatusArea());
+
+  StatusAreaWidget::ForWindow(GetWidget()->GetNativeView())
+      ->SetOpenTrayBubble(this);
+
+  Shell::Get()
+      ->system_tray_notifier()
+      ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/this,
+                                                        /*visible=*/true);
+}
+
+void TrayBubbleView::NotifyTrayBubbleClosed() {
+  DCHECK(IsAnchoredToStatusArea());
+
+  auto* status_area = StatusAreaWidget::ForWindow(GetWidget()->GetNativeView());
+
+  // `TrayBubbleView` may live longer than `StatusAreaWidget`.
+  if (status_area) {
+    status_area->SetOpenTrayBubble(nullptr);
+  }
+
+  Shell::Get()
+      ->system_tray_notifier()
+      ->NotifyStatusAreaAnchoredBubbleVisibilityChanged(/*tray_bubble=*/nullptr,
+                                                        /*visible=*/false);
 }
 
 void TrayBubbleView::ChildPreferredSizeChanged(View* child) {

@@ -235,6 +235,22 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
       const std::string& notification_id,
       const message_center::DisplaySource source) override;
 
+  // Notify tray bubble's observers and `StatusAreaWidget` that this tray is
+  // being open (only applicable to bubble that is anchored to status area).
+  // This function is automatically called during `TrayBubbleView`'s
+  // `InitializeAndShowBubble()`. However, if a class is showing the bubble
+  // without triggering `InitializeAndShowBubble()` of `TrayBubbleView`, it
+  // should call this method.
+  void NotifyTrayBubbleOpen();
+
+  // Notify tray bubble's observers and `StatusAreaWidget` that this tray is
+  // being closed (only applicable to bubble that is anchored to status area).
+  // This function is automatically called during `TrayBubbleView`'s
+  // `OnWidgetClosing()`. However, if a class is closing/hiding the bubble
+  // without triggering `OnWidgetClosing()` of `TrayBubbleView`, it should call
+  // this method.
+  void NotifyTrayBubbleClosed();
+
  protected:
   // views::View:
   void ChildPreferredSizeChanged(View* child) override;
@@ -287,9 +303,6 @@ class ASH_EXPORT TrayBubbleView : public views::BubbleDialogDelegateView,
   std::unique_ptr<EventHandler> reroute_event_handler_;
 
   std::unique_ptr<SystemShadow> shadow_;
-
-  absl::optional<StatusAreaWidget::ScopedTrayBubbleCounter>
-      tray_bubble_counter_;
 };
 
 BEGIN_VIEW_BUILDER(ASH_EXPORT, TrayBubbleView, views::BubbleDialogDelegateView)

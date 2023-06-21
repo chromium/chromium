@@ -42,6 +42,7 @@ class StatusAreaOverflowButtonTray;
 class StatusAreaWidgetDelegate;
 class StopRecordingButtonTray;
 class TrayBackgroundView;
+class TrayBubbleView;
 class UnifiedSystemTray;
 class VideoConferenceTray;
 class VirtualKeyboardTray;
@@ -59,17 +60,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Whether the status area is collapsed or expanded. Currently, this is only
   // applicable in in-app tablet mode. Otherwise the state is NOT_COLLAPSIBLE.
   enum class CollapseState { NOT_COLLAPSIBLE, COLLAPSED, EXPANDED };
-
-  // Used to keep track of visible TrayBubbles per display, and notify the shelf
-  // when 0<->1 bubbles are visible.
-  class ScopedTrayBubbleCounter {
-   public:
-    explicit ScopedTrayBubbleCounter(StatusAreaWidget* status_area_widget);
-    ~ScopedTrayBubbleCounter();
-
-   private:
-    base::WeakPtr<StatusAreaWidget> status_area_widget_;
-  };
 
   StatusAreaWidget(aura::Window* status_container, Shelf* shelf);
 
@@ -186,6 +176,9 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   // Overridden from views::Widget:
   bool OnNativeWidgetActivationChanged(bool active) override;
 
+  // Sets the value for `open_tray_bubble_`.
+  void SetOpenTrayBubble(TrayBubbleView* open_tray_bubble);
+
   // TODO(jamescook): Introduce a test API instead of these methods.
   LogoutButtonTray* logout_button_tray_for_testing() {
     return logout_button_tray_;
@@ -202,6 +195,8 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   StatusAreaAnimationController* animation_controller() {
     return animation_controller_.get();
   }
+
+  TrayBubbleView* open_tray_bubble() { return open_tray_bubble_; }
 
  private:
   friend class MediaTrayTest;
@@ -277,6 +272,10 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   const raw_ptr<StatusAreaWidgetDelegate, ExperimentalAsh>
       status_area_widget_delegate_;
 
+  // The active tray bubble that is opened on the display where this status area
+  // widget lives.
+  raw_ptr<TrayBubbleView> open_tray_bubble_ = nullptr;
+
   // All tray items are owned by StatusAreaWidgetDelegate, and destroyed
   // explicitly in a shutdown call in the StatusAreaWidget dtor.
   raw_ptr<StatusAreaOverflowButtonTray, DanglingUntriaged | ExperimentalAsh>
@@ -327,10 +326,6 @@ class ASH_EXPORT StatusAreaWidget : public SessionObserver,
   raw_ptr<Shelf, ExperimentalAsh> shelf_;
 
   bool initialized_ = false;
-
-  // Number of active tray bubbles on the display where status area widget
-  // lives.
-  int tray_bubble_count_ = 0;
 
   // Owned by `StatusAreaWidget`:
   std::unique_ptr<StatusAreaAnimationController> animation_controller_;
