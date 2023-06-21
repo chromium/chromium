@@ -373,6 +373,16 @@ void FakeShillDeviceClient::ClearDevices() {
   stub_devices_.clear();
 }
 
+base::Value* FakeShillDeviceClient::GetDeviceProperty(
+    const std::string& device_path,
+    const std::string& name) {
+  base::Value::Dict* device_properties = stub_devices_.FindDict(device_path);
+  if (!device_properties) {
+    return nullptr;
+  }
+  return device_properties->Find(name);
+}
+
 void FakeShillDeviceClient::SetDeviceProperty(const std::string& device_path,
                                               const std::string& name,
                                               const base::Value& value,

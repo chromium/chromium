@@ -62,6 +62,7 @@ class COMPONENT_EXPORT(HERMES_CLIENT) FakeHermesEuiccClient
   bool RemoveCarrierProfile(
       const dbus::ObjectPath& euicc_path,
       const dbus::ObjectPath& carrier_profile_path) override;
+  void UpdateShillDeviceSimSlotInfo() override;
   void QueueHermesErrorStatus(HermesResponseStatus status) override;
   void SetNextInstallProfileFromActivationCodeResult(
       HermesResponseStatus status) override;

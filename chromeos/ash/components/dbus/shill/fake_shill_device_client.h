@@ -88,6 +88,8 @@ class COMPONENT_EXPORT(SHILL_CLIENT) FakeShillDeviceClient
                  const std::string& name) override;
   void RemoveDevice(const std::string& device_path) override;
   void ClearDevices() override;
+  base::Value* GetDeviceProperty(const std::string& device_path,
+                                 const std::string& name) override;
   void SetDeviceProperty(const std::string& device_path,
                          const std::string& name,
                          const base::Value& value,

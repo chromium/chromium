@@ -103,6 +103,9 @@ class COMPONENT_EXPORT(HERMES_CLIENT) HermesEuiccClient {
         const dbus::ObjectPath& euicc_path,
         const dbus::ObjectPath& carrier_profile_path) = 0;
 
+    // Updates the SIM slot information cached by Shill to match Hermes' state.
+    virtual void UpdateShillDeviceSimSlotInfo() = 0;
+
     // Queues an error code that will be returned from a subsequent
     // method call.
     virtual void QueueHermesErrorStatus(HermesResponseStatus status) = 0;

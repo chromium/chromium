@@ -1306,6 +1306,7 @@ TEST_F(CrosNetworkConfigTest, ESimAndPSimSlotInfo) {
   helper()->hermes_manager_test()->AddEuicc(
       dbus::ObjectPath(kTestEuiccPath2), kTestEid2, /*is_active=*/true,
       /*esim_1_physical_slot=*/esim_2_physical_slot);
+  base::RunLoop().RunUntilIdle();
 
   // Add pSIM and eSIM slot info to Shill.
   base::Value::List ordered_sim_slot_info_list;

@@ -7,6 +7,7 @@
 #include "ash/constants/ash_features.h"
 #include "base/check.h"
 #include "base/command_line.h"
+#include "base/containers/flat_map.h"
 #include "base/logging.h"
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_util.h"
@@ -14,8 +15,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/values.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_euicc_client.h"
+#include "chromeos/ash/components/dbus/hermes/hermes_manager_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_profile_client.h"
 #include "chromeos/ash/components/dbus/hermes/hermes_response_status.h"
+#include "chromeos/ash/components/dbus/shill/shill_device_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_profile_client.h"
 #include "chromeos/ash/components/dbus/shill/shill_service_client.h"
 #include "chromeos/dbus/constants/dbus_switches.h"
@@ -86,6 +89,26 @@ dbus::ObjectPath PopPendingProfileWithActivationCode(
     }
   }
   return dbus::ObjectPath();
+}
+
+base::Value::List ExtractPSimSlotInfo(const base::Value* sim_slot_info_list) {
+  base::Value::List psim_slot_info_list;
+
+  if (!sim_slot_info_list || !sim_slot_info_list->is_list()) {
+    return psim_slot_info_list;
+  }
+
+  for (const auto& sim_slot_info : *sim_slot_info_list->GetIfList()) {
+    if (!sim_slot_info.is_dict()) {
+      continue;
+    }
+    const std::string* eid =
+        sim_slot_info.GetIfDict()->FindString(shill::kSIMSlotInfoEID);
+    if (!eid || eid->empty()) {
+      psim_slot_info_list.Append(sim_slot_info.Clone());
+    }
+  }
+  return psim_slot_info_list;
 }
 
 }  // namespace
@@ -252,6 +275,67 @@ bool FakeHermesEuiccClient::RemoveCarrierProfile(
   HermesProfileClient::Get()->GetTestInterface()->ClearProfile(
       carrier_profile_path);
   return true;
+}
+
+void FakeHermesEuiccClient::UpdateShillDeviceSimSlotInfo() {
+  ShillDeviceClient::TestInterface* device_test =
+      ShillDeviceClient::Get()->GetTestInterface();
+  DCHECK(device_test);
+
+  const std::string device_path =
+      device_test->GetDevicePathForType(shill::kTypeCellular);
+  if (device_path.empty()) {
+    return;
+  }
+
+  HermesManagerClient* manager_client = HermesManagerClient::Get();
+  DCHECK(manager_client);
+  HermesProfileClient* profile_client = HermesProfileClient::Get();
+  DCHECK(profile_client);
+
+  // The list of SIM slot information is expected to be in ascending order by
+  // the physical slot of the EUICCs.
+  base::flat_map<int32_t, HermesEuiccClient::Properties*>
+      physical_slot_to_properties;
+  for (const auto& euicc_path : manager_client->GetAvailableEuiccs()) {
+    HermesEuiccClient::Properties* euicc_properties = GetProperties(euicc_path);
+    DCHECK(euicc_properties);
+    physical_slot_to_properties.insert_or_assign(
+        euicc_properties->physical_slot().value(), euicc_properties);
+  }
+
+  // Check if there is already an entry for SIM slot information and copy the
+  // pSIM information if it is available.
+  base::Value::List sim_slot_info_list = ExtractPSimSlotInfo(
+      device_test->GetDeviceProperty(device_path, shill::kSIMSlotInfoProperty));
+
+  for (auto [physical_slot, euicc_properties] : physical_slot_to_properties) {
+    std::string iccid;
+    for (const auto& profile_path :
+         GetInstalledProfiles(euicc_properties).value()) {
+      HermesProfileClient::Properties* profile_properties =
+          profile_client->GetProperties(profile_path);
+      DCHECK(profile_properties);
+
+      const dbus::Property<hermes::profile::State>& state =
+          profile_properties->state();
+      if (state.value() == hermes::profile::State::kActive) {
+        iccid = state.value();
+        break;
+      }
+    }
+
+    base::Value::Dict sim_slot_info;
+    sim_slot_info.Set(shill::kSIMSlotInfoEID, euicc_properties->eid().value());
+    sim_slot_info.Set(shill::kSIMSlotInfoICCID, iccid);
+    sim_slot_info.Set(shill::kSIMSlotInfoPrimary,
+                      euicc_properties->is_active().value());
+    sim_slot_info_list.Append(std::move(sim_slot_info));
+  }
+
+  device_test->SetDeviceProperty(device_path, shill::kSIMSlotInfoProperty,
+                                 base::Value(std::move(sim_slot_info_list)),
+                                 /*notify_changed=*/true);
 }
 
 void FakeHermesEuiccClient::QueueHermesErrorStatus(
@@ -634,6 +718,12 @@ void FakeHermesEuiccClient::CallNotifyPropertyChanged(
 void FakeHermesEuiccClient::NotifyPropertyChanged(
     const dbus::ObjectPath& object_path,
     const std::string& property_name) {
+  if (property_name == hermes::euicc::kInstalledProfilesProperty ||
+      property_name == hermes::euicc::kPendingProfilesProperty ||
+      property_name == hermes::euicc::kProfilesProperty) {
+    UpdateShillDeviceSimSlotInfo();
+  }
+
   DVLOG(1) << "Property changed path=" << object_path.value()
            << ", property=" << property_name;
   for (auto& observer : observers()) {
