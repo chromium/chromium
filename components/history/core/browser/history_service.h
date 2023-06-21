@@ -404,10 +404,10 @@ class HistoryService : public KeyedService,
   using GetUniqueDomainsVisitedCallback =
       base::OnceCallback<void(DomainsVisitedResult)>;
 
-  void GetUniqueDomainsVisited(const base::Time begin_time,
-                               const base::Time end_time,
-                               GetUniqueDomainsVisitedCallback callback,
-                               base::CancelableTaskTracker* tracker);
+  virtual void GetUniqueDomainsVisited(const base::Time begin_time,
+                                       const base::Time end_time,
+                                       GetUniqueDomainsVisitedCallback callback,
+                                       base::CancelableTaskTracker* tracker);
 
   using GetLastVisitCallback = base::OnceCallback<void(HistoryLastVisitResult)>;
 

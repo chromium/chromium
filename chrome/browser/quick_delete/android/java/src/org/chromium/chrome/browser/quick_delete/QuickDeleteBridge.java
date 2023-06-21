@@ -6,12 +6,28 @@ package org.chromium.chrome.browser.quick_delete;
 
 import androidx.annotation.NonNull;
 
+import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.NativeMethods;
 import org.chromium.chrome.browser.profiles.Profile;
 
 /** The JNI bridge for Quick Delete on Android to fetch browsing history data. */
 class QuickDeleteBridge {
     private long mNativeQuickDeleteBridge;
+
+    /**
+     * Interface for a class that is fetching visited domains information.
+     */
+    public interface DomainVisitsCallback {
+        /**
+         * Called when the domain count and last visited domain are fetched from local history.
+         * @param lastVisitedDomain The synced last visited domain on all devices in the last 15
+         *                          minutes.
+         * @param domainCount The number of synced unique domains visited on all devices in the
+         *                    last 15 minutes.
+         */
+        void onLastVisitedDomainAndUniqueDomainCountReady(
+                String lastVisitedDomain, int domainCount);
+    }
 
     /**
      * Creates a {@link QuickDeleteBridge} for accessing browsing history data for the current
@@ -33,9 +49,27 @@ class QuickDeleteBridge {
         }
     }
 
+    /**
+     * Gets the synced last visited domain and unique domain count on all devices in the last 15
+     * minutes.
+     * @param callback The callback to call with the last visited domain and domain count.
+     */
+    public void getLastVisitedDomainAndUniqueDomainCount(@NonNull DomainVisitsCallback callback) {
+        QuickDeleteBridgeJni.get().getLastVisitedDomainAndUniqueDomainCount(
+                mNativeQuickDeleteBridge, callback);
+    }
+
+    @CalledByNative
+    private static void onLastVisitedDomainAndUniqueDomainCountReady(
+            DomainVisitsCallback callback, String lastVisitedDomain, int domainCount) {
+        callback.onLastVisitedDomainAndUniqueDomainCountReady(lastVisitedDomain, domainCount);
+    }
+
     @NativeMethods
     interface Natives {
         long init(QuickDeleteBridge caller, Profile profile);
         void destroy(long nativeQuickDeleteBridge, QuickDeleteBridge caller);
+        void getLastVisitedDomainAndUniqueDomainCount(
+                long nativeQuickDeleteBridge, DomainVisitsCallback callback);
     }
 }
