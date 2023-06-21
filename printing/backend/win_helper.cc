@@ -164,6 +164,17 @@ std::wstring GetPrinterDriverPort(const std::string& printer_name) {
   return port_value;
 }
 
+std::string GetDriverVersionString(DWORDLONG version_number) {
+  // A Windows driver version number is four 16-bit unsigned integers
+  // concatenated together as w.x.y.z in a 64 bit unsigned int.
+  // https://learn.microsoft.com/en-us/windows-hardware/drivers/install/inf-driverver-directive
+  return base::StringPrintf(
+      "%u.%u.%u.%u", static_cast<uint16_t>((version_number >> 48) & 0xFFFF),
+      static_cast<uint16_t>((version_number >> 32) & 0xFFFF),
+      static_cast<uint16_t>((version_number >> 16) & 0xFFFF),
+      static_cast<uint16_t>(version_number & 0xFFFF));
+}
+
 }  // namespace
 
 namespace printing {
@@ -438,14 +449,17 @@ std::string GetDriverInfo(HANDLE printer) {
   if (info_6.get()->pName)
     info[0] = base::WideToUTF8(info_6.get()->pName);
 
+  if (info_6.get()->dwlDriverVersion) {
+    info[1] = GetDriverVersionString(info_6.get()->dwlDriverVersion);
+  }
+
   if (info_6.get()->pDriverPath) {
     std::unique_ptr<FileVersionInfo> version_info(
         FileVersionInfo::CreateFileVersionInfo(
             base::FilePath(info_6.get()->pDriverPath)));
     if (version_info.get()) {
-      info[1] = base::UTF16ToUTF8(version_info->file_version());
-      info[2] = base::UTF16ToUTF8(version_info->product_name());
-      info[3] = base::UTF16ToUTF8(version_info->product_version());
+      info[2] = base::UTF16ToUTF8(version_info->file_version());
+      info[3] = base::UTF16ToUTF8(version_info->product_name());
     }
   }
 
@@ -653,6 +667,10 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
   int extra_size = out->dmDriverExtra;
   CHECK_GE(buffer_size, size + extra_size);
   return out;
+}
+
+std::string GetDriverVersionStringForTesting(DWORDLONG version_number) {
+  return GetDriverVersionString(version_number);
 }
 
 }  // namespace printing

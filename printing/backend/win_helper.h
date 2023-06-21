@@ -196,6 +196,11 @@ std::unique_ptr<DEVMODE, base::FreeDeleter> PromptDevMode(
     HWND window,
     bool* canceled);
 
+// Expose helper to convert a driver version number to human-friendly
+// dot-separated format only for testing.
+COMPONENT_EXPORT(PRINT_BACKEND)
+std::string GetDriverVersionStringForTesting(DWORDLONG version_number);
+
 }  // namespace printing
 
 #endif  // PRINTING_BACKEND_WIN_HELPER_H_
