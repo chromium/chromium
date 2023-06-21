@@ -70,7 +70,7 @@ class PLATFORM_EXPORT DataPipeBytesConsumer final : public BytesConsumer {
   void Trace(Visitor*) const override;
 
  private:
-  bool IsReadableOrWaiting() const;
+  bool IsWaiting() const;
   void MaybeClose();
   void SetError(const Error& error);
   void Notify(MojoResult);

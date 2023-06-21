@@ -22,7 +22,6 @@ BytesConsumer::Result ReplayingBytesConsumer::BeginRead(const char** buffer,
   ++notification_token_;
   if (commands_.empty()) {
     switch (state_) {
-      case BytesConsumer::InternalState::kReadable:
       case BytesConsumer::InternalState::kWaiting:
         return Result::kShouldWait;
       case BytesConsumer::InternalState::kClosed:
