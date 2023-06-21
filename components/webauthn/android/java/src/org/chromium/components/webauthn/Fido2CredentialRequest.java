@@ -230,6 +230,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mWebContents = WebContentsStatics.fromRenderFrameHost(frameHost);
         }
         mFrameHost = frameHost;
+        final boolean playServicesAvailable = apiAvailable();
 
         WebAuthSecurityChecksResults webAuthSecurityChecksResults =
                 frameHost.performGetAssertionWebAuthSecurityChecks(
@@ -252,26 +253,28 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             mAppIdExtensionUsed = true;
         }
 
-        String callerOriginString = convertOriginToString(callerOrigin);
-        byte[] clientDataHash = null;
-
         // Payments should still go through Google Play Services.
         if (payment == null && isCredManEnabled()) {
             if (options.isConditional) {
-                prefetchCredentialsViaCredMan(
-                        options, callerOrigin, callerOriginString, clientDataHash);
+                prefetchCredentialsViaCredMan(options, callerOrigin, /*clientDataHash=*/null);
+            } else if (hasAllowCredentials && playServicesAvailable) {
+                // If the allowlist contains non-discoverable credentials then
+                // the request needs to be routed directly to Play Services.
+                checkForNonDiscoverableMatch(options, callerOrigin);
             } else {
                 getCredentialViaCredMan(options, callerOrigin, /*requestPasswords=*/false);
             }
             return;
         }
 
-        if (!apiAvailable()) {
+        if (!playServicesAvailable) {
             Log.e(TAG, "Google Play Services' Fido2PrivilegedApi is not available.");
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
             return;
         }
 
+        final String callerOriginString = convertOriginToString(callerOrigin);
+        byte[] clientDataHash = null;
         if (payment != null
                 && PaymentFeatureList.isEnabled(PaymentFeatureList.SECURE_PAYMENT_CONFIRMATION)) {
             assert options.challenge != null;
@@ -485,6 +488,63 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         -> maybeDispatchGetAssertionRequest(
                                 options, callerOriginString, clientDataHash, selectedCredentialId),
                 hybridCallback);
+    }
+
+    /**
+     * Check whether a get() request needs routing to Play Services for a non-discoverable cred.
+     *
+     * This function is called if a non-payments, non-conditional get() call
+     * with an allowlist is received. In this case, if any of the elements of
+     * the allowlist are non-discoverable credentials in the local platform
+     * authenticator then the request should be sent directly to Play Services.
+     */
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private void checkForNonDiscoverableMatch(
+            PublicKeyCredentialRequestOptions options, Origin callerOrigin) {
+        assert options.allowCredentials != null;
+        assert options.allowCredentials.length > 0;
+        assert !options.isConditional;
+        assert apiAvailable();
+        assert sIsCredManEnabled;
+
+        Fido2ApiCallHelper.getInstance().invokeFido2GetCredentials(options.relyingPartyId,
+                (credentials)
+                        -> checkForNonDiscoverableMatchCredentialsReceived(
+                                options, callerOrigin, credentials),
+                this::onBinderCallException);
+    }
+
+    @RequiresApi(Build.VERSION_CODES.TIRAMISU)
+    private void checkForNonDiscoverableMatchCredentialsReceived(
+            PublicKeyCredentialRequestOptions options, Origin callerOrigin,
+            List<WebAuthnCredentialDetails> retrievedCredentials) {
+        assert options.allowCredentials != null;
+        assert options.allowCredentials.length > 0;
+        assert !options.isConditional;
+        assert apiAvailable();
+        assert sIsCredManEnabled;
+
+        for (WebAuthnCredentialDetails credential : retrievedCredentials) {
+            if (credential.mIsDiscoverable) continue;
+
+            for (PublicKeyCredentialDescriptor allowedId : options.allowCredentials) {
+                if (allowedId.type != PublicKeyCredentialType.PUBLIC_KEY) {
+                    continue;
+                }
+
+                if (Arrays.equals(allowedId.id, credential.mCredentialId)) {
+                    // This get() request can be satisfied by Play Services with
+                    // a non-discoverable credential so route it there.
+                    maybeDispatchGetAssertionRequest(options, convertOriginToString(callerOrigin),
+                            /*clientDataHash=*/null, /*credentialId=*/null);
+                    return;
+                }
+            }
+        }
+
+        // No elements of the allowlist are local, non-discoverable credentials
+        // so route to CredMan.
+        getCredentialViaCredMan(options, callerOrigin, /*requestPasswords=*/false);
     }
 
     private void maybeDispatchGetAssertionRequest(PublicKeyCredentialRequestOptions options,
@@ -1092,8 +1152,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      * TODO: update the version code to U when Chromium builds with Android 14 SDK.
      */
     @RequiresApi(Build.VERSION_CODES.TIRAMISU)
-    private void prefetchCredentialsViaCredMan(PublicKeyCredentialRequestOptions options,
-            Origin origin, String callerOriginString, byte[] clientDataHash) {
+    private void prefetchCredentialsViaCredMan(
+            PublicKeyCredentialRequestOptions options, Origin origin, byte[] clientDataHash) {
         final Context context = getContext();
 
         // The Android 14 APIs have to be called via reflection until Chromium

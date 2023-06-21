@@ -34,6 +34,7 @@ import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
 import org.chromium.blink.mojom.AuthenticatorStatus;
 import org.chromium.blink.mojom.PublicKeyCredentialCreationOptions;
+import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.AuthenticatorImpl;
@@ -41,6 +42,7 @@ import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
 import org.chromium.components.webauthn.WebAuthnBrowserBridge;
+import org.chromium.components.webauthn.WebAuthnCredentialDetails;
 import org.chromium.content.browser.ClientDataJsonImpl;
 import org.chromium.content_public.browser.RenderFrameHost;
 import org.chromium.content_public.browser.RenderFrameHost.WebAuthSecurityChecksResults;
@@ -52,6 +54,7 @@ import org.chromium.url.GURL;
 import org.chromium.url.Origin;
 
 import java.security.NoSuchAlgorithmException;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -163,10 +166,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 .thenReturn("https://subdomain.example.test:443");
 
         mCreationOptions = Fido2ApiTestHelper.createDefaultMakeCredentialOptions();
-        // Set rk=required on the assumption that most test cases care about exercising the passkeys
-        // case.
+        // Set rk=required and empty allowlist on the assumption that most test cases care about
+        // exercising the passkeys case.
         mCreationOptions.authenticatorSelection.residentKey = ResidentKeyRequirement.REQUIRED;
         mRequestOptions = Fido2ApiTestHelper.createDefaultGetAssertionOptions();
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[0];
 
         mRequest = new Fido2CredentialRequest(
                 /*intentSender=*/null);
@@ -339,6 +343,53 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testGetAssertion_allowListNoMatch_goesToCredMan() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        Assert.assertNotNull(credManRequest);
+        Assert.assertFalse(mFido2ApiCallHelper.mGetAssertionCalled);
+    }
+
+    @Test
+    @SmallTest
+    public void testGetAssertion_allowListMatch_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        PublicKeyCredentialDescriptor descriptor = new PublicKeyCredentialDescriptor();
+        descriptor.type = 0;
+        descriptor.id = new byte[] {1, 2, 3, 4};
+        descriptor.transports = new int[] {0};
+        mRequestOptions.allowCredentials = new PublicKeyCredentialDescriptor[] {descriptor};
+
+        WebAuthnCredentialDetails details = new WebAuthnCredentialDetails();
+        details.mCredentialId = descriptor.id;
+        mFido2ApiCallHelper.mCredentials = new ArrayList<>();
+        mFido2ApiCallHelper.mCredentials.add(details);
+
+        mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
+                (responseStatus, response)
+                        -> mCallback.onSignResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
+        Assert.assertNull(credManRequest);
+        Assert.assertTrue(mFido2ApiCallHelper.mGetAssertionCalled);
+    }
+
+    @Test
+    @SmallTest
     public void testConditionalGetAssertion_credManEnabledSuccess_success() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
@@ -467,10 +518,26 @@ public class Fido2CredentialRequestRobolectricTest {
     static class FakeFido2ApiCallHelper extends Fido2ApiCallHelper {
         public boolean mMakeCredentialCalled;
         public boolean mGetAssertionCalled;
+        public List<WebAuthnCredentialDetails> mCredentials;
 
         @Override
         public boolean arePlayServicesAvailable() {
             return true;
+        }
+
+        @Override
+        public void invokeFido2GetCredentials(String relyingPartyId,
+                OnSuccessListener<List<WebAuthnCredentialDetails>> successCallback,
+                OnFailureListener failureCallback) {
+            List<WebAuthnCredentialDetails> credentials;
+            if (mCredentials == null) {
+                credentials = new ArrayList();
+            } else {
+                credentials = mCredentials;
+                mCredentials = null;
+            }
+
+            successCallback.onSuccess(credentials);
         }
 
         @Override
