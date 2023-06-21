@@ -14,5 +14,5 @@ wptreport*.json
 .eslintcache
 .nyc_output*
 .wireit/
-*MANIFEST.json
+MANIFEST.json
 *.png
