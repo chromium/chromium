@@ -675,7 +675,7 @@ chromium-metrics-reviews@google.com.
   <owner>megjablon@google.com</owner>
   <owner>chrome-language@google.com</owner>
   <summary>
-    Records the time from when the translation script beings translating to when
+    Records the time from when the translation script begins translating to when
     it finishes.
 
     This is recorded when a translation (both manual and automatic) is started.
