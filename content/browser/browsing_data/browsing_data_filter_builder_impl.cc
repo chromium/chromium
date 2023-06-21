@@ -108,6 +108,20 @@ base::RepeatingCallback<bool(const T&)> NotReachedFilter() {
   });
 }
 
+bool StorageKeyInCookiePartitionKeyCollection(
+    const blink::StorageKey& storage_key,
+    const net::CookiePartitionKeyCollection& cookie_partition_key_collection) {
+  absl::optional<net::CookiePartitionKey> equivalent_cookie_partition_key =
+      storage_key.ToCookiePartitionKey();
+  // If cookie partitioning is disabled, this will be nullopt and we can just
+  // return true.
+  if (!equivalent_cookie_partition_key) {
+    return true;
+  }
+  return cookie_partition_key_collection.Contains(
+      *equivalent_cookie_partition_key);
+}
+
 }  // namespace
 
 // static
@@ -228,12 +242,12 @@ BrowsingDataFilterBuilderImpl::BuildUrlFilter() {
 
 content::StoragePartition::StorageKeyMatcherFunction
 BrowsingDataFilterBuilderImpl::BuildStorageKeyFilter() {
-  if (!cookie_partition_key_collection_.ContainsAllKeys())
-    return NotReachedFilter<blink::StorageKey>();
   if (MatchesAllOriginsAndDomains())
     return base::BindRepeating([](const blink::StorageKey&) { return true; });
   // If the filter has a StorageKey set, use it to match.
   if (HasStorageKey()) {
+    CHECK(StorageKeyInCookiePartitionKeyCollection(
+        *storage_key_, cookie_partition_key_collection_));
     return base::BindRepeating(
         &BrowsingDataFilterBuilderImpl::MatchesWithSavedStorageKey,
         base::Unretained(this));
