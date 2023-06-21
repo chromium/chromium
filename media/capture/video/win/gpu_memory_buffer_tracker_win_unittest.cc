@@ -13,7 +13,7 @@
 #include "base/memory/scoped_refptr.h"
 #include "base/test/task_environment.h"
 #include "media/capture/video/win/d3d_capture_test_utils.h"
-#include "media/capture/video/win/gpu_memory_buffer_tracker.h"
+#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #include "media/capture/video/win/video_capture_device_factory_win.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -62,9 +62,9 @@ class MockDXGIDeviceManager : public DXGIDeviceManager {
 
 }  // namespace
 
-class GpuMemoryBufferTrackerTest : public ::testing::Test {
+class GpuMemoryBufferTrackerWinTest : public ::testing::Test {
  protected:
-  GpuMemoryBufferTrackerTest() = default;
+  GpuMemoryBufferTrackerWinTest() = default;
 
   void SetUp() override {
     if (!VideoCaptureDeviceFactoryWin::PlatformSupportsMediaFoundation()) {
@@ -80,9 +80,9 @@ class GpuMemoryBufferTrackerTest : public ::testing::Test {
   scoped_refptr<MockDXGIDeviceManager> dxgi_device_manager_;
 };
 
-TEST_F(GpuMemoryBufferTrackerTest, TextureCreation) {
-  // Verify that GpuMemoryBufferTracker creates a D3D11 texture with the correct
-  // properties
+TEST_F(GpuMemoryBufferTrackerWinTest, TextureCreation) {
+  // Verify that GpuMemoryBufferTrackerWin creates a D3D11 texture with the
+  // correct properties
   const gfx::Size expected_buffer_size = {1920, 1080};
   const DXGI_FORMAT expected_buffer_format = DXGI_FORMAT_NV12;
   dxgi_device_manager_->GetMockDevice()->SetupDefaultMocks();
@@ -98,13 +98,13 @@ TEST_F(GpuMemoryBufferTrackerTest, TextureCreation) {
                                           expected_buffer_size.height())))),
                   _, _));
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
+      std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
   EXPECT_EQ(tracker->Init(expected_buffer_size, PIXEL_FORMAT_NV12, nullptr),
             true);
 }
 
-TEST_F(GpuMemoryBufferTrackerTest, InvalidateOnDeviceLoss) {
-  // Verify that GpuMemoryBufferTracker recreates a D3D11 texture with the
+TEST_F(GpuMemoryBufferTrackerWinTest, InvalidateOnDeviceLoss) {
+  // Verify that GpuMemoryBufferTrackerWin recreates a D3D11 texture with the
   // correct properties when there is a device loss
   const gfx::Size expected_buffer_size = {1920, 1080};
   const DXGI_FORMAT expected_buffer_format = DXGI_FORMAT_NV12;
@@ -129,7 +129,7 @@ TEST_F(GpuMemoryBufferTrackerTest, InvalidateOnDeviceLoss) {
       .WillOnce(Invoke([]() { return DXGI_ERROR_DEVICE_REMOVED; }));
   // Create and init tracker (causes initial texture creation)
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
+      std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
   EXPECT_EQ(tracker->Init(expected_buffer_size, PIXEL_FORMAT_NV12, nullptr),
             true);
   // The tracker now should be invalid.
@@ -139,13 +139,13 @@ TEST_F(GpuMemoryBufferTrackerTest, InvalidateOnDeviceLoss) {
   EXPECT_FALSE(gmb.dxgi_handle.IsValid());
 }
 
-TEST_F(GpuMemoryBufferTrackerTest, GetMemorySizeInBytes) {
-  // Verify that GpuMemoryBufferTracker returns an expected value from
+TEST_F(GpuMemoryBufferTrackerWinTest, GetMemorySizeInBytes) {
+  // Verify that GpuMemoryBufferTrackerWin returns an expected value from
   // GetMemorySizeInBytes
   const gfx::Size expected_buffer_size = {1920, 1080};
   dxgi_device_manager_->GetMockDevice()->SetupDefaultMocks();
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
+      std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
 
   EXPECT_EQ(tracker->Init(expected_buffer_size, PIXEL_FORMAT_NV12, nullptr),
             true);
@@ -155,8 +155,8 @@ TEST_F(GpuMemoryBufferTrackerTest, GetMemorySizeInBytes) {
   EXPECT_EQ(tracker->GetMemorySizeInBytes(), expectedSizeInBytes);
 }
 
-TEST_F(GpuMemoryBufferTrackerTest, DuplicateAsUnsafeRegion) {
-  // Verify that GpuMemoryBufferTracker copies a D3D11 texture
+TEST_F(GpuMemoryBufferTrackerWinTest, DuplicateAsUnsafeRegion) {
+  // Verify that GpuMemoryBufferTrackerWin copies a D3D11 texture
   // to shared memory.
   const gfx::Size expected_buffer_size = {1920, 1080};
   const DXGI_FORMAT expected_buffer_format = DXGI_FORMAT_NV12;
@@ -191,7 +191,7 @@ TEST_F(GpuMemoryBufferTrackerTest, DuplicateAsUnsafeRegion) {
       .Times(1);
 
   std::unique_ptr<VideoCaptureBufferTracker> tracker =
-      std::make_unique<GpuMemoryBufferTracker>(dxgi_device_manager_);
+      std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
 
   EXPECT_TRUE(tracker->Init(expected_buffer_size, PIXEL_FORMAT_NV12, nullptr));
 

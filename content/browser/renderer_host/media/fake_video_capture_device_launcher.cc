@@ -18,8 +18,6 @@
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "media/capture/video/chromeos/video_capture_jpeg_decoder.h"
-#elif BUILDFLAG(IS_WIN)
-#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
 namespace {
@@ -90,7 +88,7 @@ void FakeVideoCaptureDeviceLauncher::LaunchDeviceAsync(
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(
       new media::VideoCaptureBufferPoolImpl(
           params.buffer_type, 10,
-          std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>(
+          std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
               system_->GetFactory()->GetDxgiDeviceManager())));
 #else
   scoped_refptr<media::VideoCaptureBufferPool> buffer_pool(

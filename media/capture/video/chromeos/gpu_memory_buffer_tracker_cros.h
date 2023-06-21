@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_H_
-#define MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_H_
+#ifndef MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_CROS_H_
+#define MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_CROS_H_
 
 #include "media/capture/video/chromeos/camera_buffer_factory.h"
 #include "media/capture/video/video_capture_buffer_tracker.h"
@@ -15,15 +15,16 @@ class Size;
 namespace media {
 
 // Tracker specifics for Chrome OS GpuMemoryBuffer.
-class CAPTURE_EXPORT GpuMemoryBufferTracker final
+class CAPTURE_EXPORT GpuMemoryBufferTrackerCros final
     : public VideoCaptureBufferTracker {
  public:
-  GpuMemoryBufferTracker();
+  GpuMemoryBufferTrackerCros();
 
-  GpuMemoryBufferTracker(const GpuMemoryBufferTracker&) = delete;
-  GpuMemoryBufferTracker& operator=(const GpuMemoryBufferTracker&) = delete;
+  GpuMemoryBufferTrackerCros(const GpuMemoryBufferTrackerCros&) = delete;
+  GpuMemoryBufferTrackerCros& operator=(const GpuMemoryBufferTrackerCros&) =
+      delete;
 
-  ~GpuMemoryBufferTracker() override;
+  ~GpuMemoryBufferTrackerCros() override;
 
   // Implementation of VideoCaptureBufferTracker:
   bool Init(const gfx::Size& dimensions,
@@ -45,4 +46,4 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_H_
+#endif  // MEDIA_CAPTURE_VIDEO_CHROMEOS_GPU_MEMORY_BUFFER_TRACKER_CROS_H_

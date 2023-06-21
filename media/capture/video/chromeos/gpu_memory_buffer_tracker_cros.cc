@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
+#include "media/capture/video/chromeos/gpu_memory_buffer_tracker_cros.h"
 
 #include "base/check.h"
 #include "base/notreached.h"
@@ -12,13 +12,13 @@
 
 namespace media {
 
-GpuMemoryBufferTracker::GpuMemoryBufferTracker() : buffer_(nullptr) {}
+GpuMemoryBufferTrackerCros::GpuMemoryBufferTrackerCros() : buffer_(nullptr) {}
 
-GpuMemoryBufferTracker::~GpuMemoryBufferTracker() = default;
+GpuMemoryBufferTrackerCros::~GpuMemoryBufferTrackerCros() = default;
 
-bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
-                                  VideoPixelFormat format,
-                                  const mojom::PlaneStridesPtr& strides) {
+bool GpuMemoryBufferTrackerCros::Init(const gfx::Size& dimensions,
+                                      VideoPixelFormat format,
+                                      const mojom::PlaneStridesPtr& strides) {
   absl::optional<gfx::BufferFormat> gfx_format = PixFormatVideoToGfx(format);
   if (!gfx_format) {
     NOTREACHED() << "Unsupported VideoPixelFormat "
@@ -42,7 +42,7 @@ bool GpuMemoryBufferTracker::Init(const gfx::Size& dimensions,
   return true;
 }
 
-bool GpuMemoryBufferTracker::IsReusableForFormat(
+bool GpuMemoryBufferTrackerCros::IsReusableForFormat(
     const gfx::Size& dimensions,
     VideoPixelFormat format,
     const mojom::PlaneStridesPtr& strides) {
@@ -55,23 +55,25 @@ bool GpuMemoryBufferTracker::IsReusableForFormat(
 }
 
 std::unique_ptr<VideoCaptureBufferHandle>
-GpuMemoryBufferTracker::GetMemoryMappedAccess() {
+GpuMemoryBufferTrackerCros::GetMemoryMappedAccess() {
   NOTREACHED() << "Unsupported operation";
   return std::make_unique<NullHandle>();
 }
 
 base::UnsafeSharedMemoryRegion
-GpuMemoryBufferTracker::DuplicateAsUnsafeRegion() {
+GpuMemoryBufferTrackerCros::DuplicateAsUnsafeRegion() {
   NOTREACHED() << "Unsupported operation";
   return base::UnsafeSharedMemoryRegion();
 }
 
-mojo::ScopedSharedBufferHandle GpuMemoryBufferTracker::DuplicateAsMojoBuffer() {
+mojo::ScopedSharedBufferHandle
+GpuMemoryBufferTrackerCros::DuplicateAsMojoBuffer() {
   NOTREACHED() << "Unsupported operation";
   return mojo::ScopedSharedBufferHandle();
 }
 
-gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
+gfx::GpuMemoryBufferHandle
+GpuMemoryBufferTrackerCros::GetGpuMemoryBufferHandle() {
   DCHECK(buffer_);
   // Overriding the GpuMemoryBuffer id to an invalid id to avoid buffer
   // collision in GpuMemoryBufferFactoryNativePixmap when we pass the handle
@@ -87,7 +89,7 @@ gfx::GpuMemoryBufferHandle GpuMemoryBufferTracker::GetGpuMemoryBufferHandle() {
   return handle;
 }
 
-uint32_t GpuMemoryBufferTracker::GetMemorySizeInBytes() {
+uint32_t GpuMemoryBufferTrackerCros::GetMemorySizeInBytes() {
   DCHECK(buffer_);
   switch (buffer_->GetFormat()) {
     case gfx::BufferFormat::YUV_420_BIPLANAR:

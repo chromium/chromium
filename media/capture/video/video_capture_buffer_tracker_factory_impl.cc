@@ -11,18 +11,28 @@
 #include "media/capture/video/shared_memory_buffer_tracker.h"
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-#include "media/capture/video/chromeos/gpu_memory_buffer_tracker.h"
-#endif
-
-#if BUILDFLAG(IS_MAC)
+#include "media/capture/video/chromeos/gpu_memory_buffer_tracker_cros.h"
+#elif BUILDFLAG(IS_MAC)
 #include "media/capture/video/mac/gpu_memory_buffer_tracker_mac.h"
-#endif
-
-#if BUILDFLAG(IS_LINUX)
+#elif BUILDFLAG(IS_LINUX)
 #include "media/capture/video/linux/v4l2_gpu_memory_buffer_tracker.h"
+#elif BUILDFLAG(IS_WIN)
+#include "media/capture/video/shared_memory_buffer_tracker.h"
+#include "media/capture/video/win/gpu_memory_buffer_tracker_win.h"
 #endif
 
 namespace media {
+
+VideoCaptureBufferTrackerFactoryImpl::VideoCaptureBufferTrackerFactoryImpl() {}
+
+#if BUILDFLAG(IS_WIN)
+VideoCaptureBufferTrackerFactoryImpl::VideoCaptureBufferTrackerFactoryImpl(
+    scoped_refptr<DXGIDeviceManager> dxgi_device_manager)
+    : dxgi_device_manager_(std::move(dxgi_device_manager)) {}
+#endif
+
+VideoCaptureBufferTrackerFactoryImpl::~VideoCaptureBufferTrackerFactoryImpl() =
+    default;
 
 std::unique_ptr<VideoCaptureBufferTracker>
 VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
@@ -30,16 +40,30 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTracker(
   switch (buffer_type) {
     case VideoCaptureBufferType::kGpuMemoryBuffer:
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-      return std::make_unique<GpuMemoryBufferTracker>();
+      return std::make_unique<GpuMemoryBufferTrackerCros>();
 #elif BUILDFLAG(IS_MAC)
       return std::make_unique<GpuMemoryBufferTrackerMac>();
 #elif BUILDFLAG(IS_LINUX)
       return std::make_unique<V4L2GpuMemoryBufferTracker>();
+#elif BUILDFLAG(IS_WIN)
+      if (!dxgi_device_manager_) {
+        return nullptr;
+      }
+      return std::make_unique<GpuMemoryBufferTrackerWin>(dxgi_device_manager_);
 #else
       return nullptr;
 #endif
     default:
+#if BUILDFLAG(IS_WIN)
+      // Since windows capturer outputs NV12 only for GMBs and I420 for
+      // software frames the pixel format is used to choose between shmem
+      // and gmb trackers. Therefore I420 shmem trackers must not be
+      // reusable for NV12 format.
+      return std::make_unique<SharedMemoryBufferTracker>(
+          /*reusable_only_for_same_format=*/true);
+#else
       return std::make_unique<SharedMemoryBufferTracker>();
+#endif
   }
 }
 
@@ -48,6 +72,12 @@ VideoCaptureBufferTrackerFactoryImpl::CreateTrackerForExternalGpuMemoryBuffer(
     gfx::GpuMemoryBufferHandle handle) {
 #if BUILDFLAG(IS_MAC)
   return std::make_unique<GpuMemoryBufferTrackerMac>(handle.io_surface);
+#elif BUILDFLAG(IS_WIN)
+  if (handle.type != gfx::DXGI_SHARED_HANDLE) {
+    return nullptr;
+  }
+  return std::make_unique<GpuMemoryBufferTrackerWin>(std::move(handle),
+                                                     dxgi_device_manager_);
 #else
   return nullptr;
 #endif

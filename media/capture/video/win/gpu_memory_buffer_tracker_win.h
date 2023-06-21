@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_H_
-#define MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_H_
+#ifndef MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_WIN_H_
+#define MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_WIN_H_
 
 #include "gpu/ipc/common/gpu_memory_buffer_impl_dxgi.h"
 #include "media/base/win/dxgi_device_manager.h"
@@ -20,18 +20,20 @@ namespace media {
 
 // Tracker specifics for Windows GpuMemoryBuffer.
 // This class is not thread-safe.
-class CAPTURE_EXPORT GpuMemoryBufferTracker final
+class CAPTURE_EXPORT GpuMemoryBufferTrackerWin final
     : public VideoCaptureBufferTracker {
  public:
-  explicit GpuMemoryBufferTracker(
+  explicit GpuMemoryBufferTrackerWin(
       scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
-  GpuMemoryBufferTracker(gfx::GpuMemoryBufferHandle gmb_handle,
-                         scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
+  GpuMemoryBufferTrackerWin(
+      gfx::GpuMemoryBufferHandle gmb_handle,
+      scoped_refptr<DXGIDeviceManager> dxgi_device_manager);
 
-  GpuMemoryBufferTracker(const GpuMemoryBufferTracker&) = delete;
-  GpuMemoryBufferTracker& operator=(const GpuMemoryBufferTracker&) = delete;
+  GpuMemoryBufferTrackerWin(const GpuMemoryBufferTrackerWin&) = delete;
+  GpuMemoryBufferTrackerWin& operator=(const GpuMemoryBufferTrackerWin&) =
+      delete;
 
-  ~GpuMemoryBufferTracker() override;
+  ~GpuMemoryBufferTrackerWin() override;
 
   // Implementation of VideoCaptureBufferTracker:
   bool Init(const gfx::Size& dimensions,
@@ -77,4 +79,4 @@ class CAPTURE_EXPORT GpuMemoryBufferTracker final
 
 }  // namespace media
 
-#endif  // MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_H_
+#endif  // MEDIA_CAPTURE_VIDEO_WIN_GPU_MEMORY_BUFFER_TRACKER_WIN_H_

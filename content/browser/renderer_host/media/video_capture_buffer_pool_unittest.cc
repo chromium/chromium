@@ -34,7 +34,6 @@
 #include <dxgi1_2.h>
 #include <mfapi.h>
 #include "media/base/win/dxgi_device_manager.h"
-#include "media/capture/video/win/video_capture_buffer_tracker_factory_win.h"
 #endif
 
 namespace content {
@@ -112,7 +111,7 @@ class VideoCaptureBufferPoolTest
     DCHECK(d3d11_device_);
     pool_ = new media::VideoCaptureBufferPoolImpl(
         GetBufferType(), kTestBufferPoolSize,
-        std::make_unique<media::VideoCaptureBufferTrackerFactoryWin>(
+        std::make_unique<media::VideoCaptureBufferTrackerFactoryImpl>(
             std::move(dxgi_device_manager)));
 #else
     pool_ = new media::VideoCaptureBufferPoolImpl(
