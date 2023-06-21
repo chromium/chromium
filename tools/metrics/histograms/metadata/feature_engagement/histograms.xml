@@ -200,6 +200,8 @@ chromium-metrics-reviews@google.com.
       summary="showing the Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoPostRestore"
       summary="showing the Post Restore Promo on iOS"/>
+  <variant name="IPH_iOSPromoPostRestoreDefaultBrowser"
+      summary="showing the Post Restore Default Browser Promo on iOS"/>
   <variant name="IPH_iOSPromoWhatsNew"
       summary="showing the Whats New Promo on iOS"/>
   <variant name="IPH_iOSShareToolbarItemFeature"
