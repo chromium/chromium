@@ -96,10 +96,11 @@ const CGFloat kMinForwardVelocityToDismiss = 100;
 // dismissal of the view controller, when the swiped position is already more
 // than half of the screen's width.
 const CGFloat kMinBackwardVelocityToCancelDismiss = 10;
-// When closing all inactive tabs via the confirmation dialog, the Inactive Tabs
-// grid is popped, but to avoid having it emptied immediately (producing a
-// glitch), delay the closing of the tabs in the mediator.
-const base::TimeDelta kCloseAllInactiveTabsDelay = base::Seconds(0.3);
+// When the inactive tabs grid would be emptied (last inactive tab, or closing
+// all inactive tabs via the confirmation dialog), the Inactive Tabs grid is
+// popped, but to avoid having it emptied immediately (producing a glitch),
+// delay the closing of the tab(s) in the mediator.
+const base::TimeDelta kPopUIDelay = base::Seconds(0.3);
 
 }  // namespace
 
@@ -300,7 +301,25 @@ const base::TimeDelta kCloseAllInactiveTabsDelay = base::Seconds(0.3);
 
 - (void)gridViewController:(GridViewController*)gridViewController
         didCloseItemWithID:(NSString*)itemID {
-  [self.mediator closeItemWithID:itemID];
+  __weak __typeof(self) weakSelf = self;
+  auto closeItem = ^{
+    [weakSelf.mediator closeItemWithID:itemID];
+  };
+
+  NSInteger numberOfTabs = [self.mediator numberOfItems];
+  // If it is the latest item, pop the view (UI change), and defer the model
+  // change after the UI is no longer visible.
+  if (numberOfTabs <= 1) {
+    // Pop the view controller.
+    [_delegate inactiveTabsCoordinatorDidFinish:self];
+    // To prevent the Inactive Tabs grid from being immediately emptied, defer
+    // the closing to after the view is popped.
+    base::SequencedTaskRunner::GetCurrentDefault()->PostDelayedTask(
+        FROM_HERE, base::BindOnce(closeItem), kPopUIDelay);
+  } else {
+    // Otherwise, close the item immediately.
+    closeItem();
+  }
 }
 
 - (void)didTapPlusSignInGridViewController:
@@ -646,7 +665,7 @@ const base::TimeDelta kCloseAllInactiveTabsDelay = base::Seconds(0.3);
       FROM_HERE, base::BindOnce(^{
         [weakSelf.mediator closeAllItems];
       }),
-      kCloseAllInactiveTabsDelay);
+      kPopUIDelay);
 }
 
 // Presents the Inactive Tabs settings modally in their own navigation
