@@ -142,8 +142,10 @@ void TransientWindowManager::RestackTransientDescendants() {
   // Stack any transient children that share the same parent to be in front of
   // |window_|. The existing stacking order is preserved by iterating backwards
   // and always stacking on top.
-  Window::Windows children(parent->children());
-  for (auto* child_window : base::Reversed(children)) {
+  aura::WindowTracker tracker(
+      Window::Windows(parent->children().rbegin(), parent->children().rend()));
+  while (!tracker.windows().empty()) {
+    auto* child_window = tracker.Pop();
     if (child_window != window_ &&
         HasTransientAncestor(child_window, window_)) {
       TransientWindowManager* descendant_manager = GetOrCreate(child_window);
