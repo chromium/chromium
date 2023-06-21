@@ -15,7 +15,6 @@ import android.util.Pair;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.junit.After;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -54,7 +53,6 @@ public final class PolicyCacheTest {
     @Before
     public void setUp() {
         MockitoAnnotations.initMocks(this);
-        PolicyCache.resetForTesting();
         mPolicyCache = PolicyCache.get();
         mSharedPreferences = ContextUtils.getApplicationContext().getSharedPreferences(
                 PolicyCache.POLICY_PREF, Context.MODE_PRIVATE);
@@ -69,9 +67,6 @@ public final class PolicyCacheTest {
         when(mPolicyMap.getListValueAsString(anyString())).thenReturn(null);
         when(mPolicyMap.getDictValueAsString(anyString())).thenReturn(null);
     }
-
-    @After
-    public void tearDown() {}
 
     @Test
     public void testGetInt() {
