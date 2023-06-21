@@ -716,12 +716,12 @@ void FilesPolicyNotificationManager::ShowFilesPolicyDialog(
       if (!info.warning_info.has_value()) {
         return;
       }
-      CHECK(info.destination.has_value());
       CHECK(!info.warning_info->warning_callback.is_null());
       FilesPolicyDialog::CreateWarnDialog(
           std::move(info.warning_info->dialog_callback),
-          info.warning_info->files, info.destination.value(), info.action,
-          modal_parent);
+          info.warning_info->files,
+          info.destination.value_or(DlpFileDestination("https://example.com")),
+          info.action, modal_parent);
       break;
   }
   // TODO(ayaelattar): Timeout after total 5 minutes.
@@ -889,8 +889,8 @@ void FilesPolicyNotificationManager::Resume(
     return;
   }
   file_manager::io_task::ResumeParams params;
-  params.policy_params->type =
-      io_tasks_.at(task_id).warning_info->warning_reason;
+  params.policy_params = file_manager::io_task::PolicyResumeParams(
+      io_tasks_.at(task_id).warning_info->warning_reason);
   io_task_controller->Resume(task_id, std::move(params));
 }
 
@@ -1041,10 +1041,15 @@ void FilesPolicyNotificationManager::PauseIOTask(
     dlp::FileAction action,
     Policy warning_reason) {
   auto* io_task_controller = GetIOTaskController(context_);
-  if (!io_task_controller || !HasIOTask(task_id)) {
+  if (!io_task_controller) {
     // Proceed because the IO task can't be paused.
     std::move(callback).Run(/*should_proceed=*/true);
     return;
+  }
+  // Sometimes DLP checks are done before FilesPolicyNotificationManager is
+  // lazily created, so the task is not tracked and the pausing won't happen.
+  if (!HasIOTask(task_id)) {
+    AddIOTask(task_id, action);
   }
 
   io_tasks_.at(task_id).warning_info.emplace(
