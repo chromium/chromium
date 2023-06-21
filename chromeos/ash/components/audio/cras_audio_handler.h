@@ -932,6 +932,9 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_AUDIO) CrasAudioHandler
   bool input_device_selected_by_user_ = false;
   bool output_device_selected_by_user_ = false;
 
+  // Whether the speak-on-mute detection is enabled in CRAS.
+  bool speak_on_mute_detection_on_ = false;
+
   // Task runner of browser main thread. All member variables should be accessed
   // on this thread.
   scoped_refptr<base::SingleThreadTaskRunner> main_task_runner_;
