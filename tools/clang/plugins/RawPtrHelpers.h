@@ -89,9 +89,12 @@ AST_MATCHER(clang::Decl, isInScratchSpace) {
   return source_manager.isWrittenInScratchSpace(spelling_location);
 }
 
-AST_MATCHER(clang::Decl, isInThirdPartyLocation) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     Node.getLocation());
+AST_POLYMORPHIC_MATCHER(isInThirdPartyLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  std::string filename =
+      GetFilename(Finder->getASTContext().getSourceManager(), Node.getEndLoc());
 
   // Blink is part of the Chromium git repo, even though it contains
   // "third_party" in its path.
@@ -120,9 +123,12 @@ AST_MATCHER(clang::Decl, isBeginInThirdPartyLocation) {
   return filename.find("/third_party/") != std::string::npos;
 }
 
-AST_MATCHER(clang::Decl, isInGeneratedLocation) {
-  std::string filename = GetFilename(Finder->getASTContext().getSourceManager(),
-                                     Node.getLocation());
+AST_POLYMORPHIC_MATCHER(isInGeneratedLocation,
+                        AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
+                                                        clang::Stmt,
+                                                        clang::TypeLoc)) {
+  std::string filename =
+      GetFilename(Finder->getASTContext().getSourceManager(), Node.getEndLoc());
 
   return filename.find("/gen/") != std::string::npos ||
          filename.rfind("gen/", 0) == 0;
@@ -406,13 +412,13 @@ AST_POLYMORPHIC_MATCHER(isInMacroLocation,
 // Matches AST nodes that were spelled within system-header-files.
 // Unlike clang's `isExpansionInSystemHeader`, this is based on:
 // - spelling location
-// - Node's `getLocation()`, not `getBeginLoc()`
+// - Node's `getEndLoc()`, not `getBeginLoc()`
 AST_POLYMORPHIC_MATCHER(isSpellingInSystemHeader,
                         AST_POLYMORPHIC_SUPPORTED_TYPES(clang::Decl,
                                                         clang::Stmt,
                                                         clang::TypeLoc)) {
   auto& source_manager = Finder->getASTContext().getSourceManager();
-  auto spelling_loc = source_manager.getSpellingLoc(Node.getLocation());
+  auto spelling_loc = source_manager.getSpellingLoc(Node.getEndLoc());
   if (spelling_loc.isInvalid()) {
     return false;
   }
