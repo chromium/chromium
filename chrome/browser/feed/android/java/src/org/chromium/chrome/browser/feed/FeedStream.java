@@ -484,7 +484,8 @@ public class FeedStream implements Stream {
             mSnackManager.showSnackbar(Snackbar.make(text, controller, Snackbar.TYPE_ACTION,
                                                        Snackbar.UMA_FEED_NTP_STREAM)
                                                .setAction(actionLabel, /*actionData=*/null)
-                                               .setDuration(durationMs));
+                                               .setDuration(durationMs)
+                                               .setSingleLine(false));
         }
 
         @Override
