@@ -12,27 +12,9 @@
 
 namespace blink {
 
-const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
-  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
-    PermissionsPolicyFeatureList map({        {
-          mojom::PermissionsPolicyFeature::kAccelerometer,
-          PermissionsPolicyFeatureDefault::EnableForAll
-        },    });
+namespace {
 
-    if (base::FeatureList::IsEnabled(features::kTestFlag)) {
-      map.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
-        PermissionsPolicyFeatureDefault::EnableForSelf;
-    }
-
-    return map;
-  }());
-  return *feature_list;
-}
-
-void UpdatePermissionsPolicyFeatureListForTesting() {
-  const PermissionsPolicyFeatureList& feature_list = GetPermissionsPolicyFeatureList();
-  PermissionsPolicyFeatureList& mutable_feature_list = const_cast<PermissionsPolicyFeatureList&>(feature_list);
-
+void UpdatePermissionsPolicyFeatureListFlagDefaults(PermissionsPolicyFeatureList& mutable_feature_list) {
   if (base::FeatureList::IsEnabled(features::kTestFlag)) {
     mutable_feature_list.find(mojom::PermissionsPolicyFeature::kAccelerometer)->second =
       PermissionsPolicyFeatureDefault::EnableForSelf;
@@ -41,6 +23,36 @@ void UpdatePermissionsPolicyFeatureListForTesting() {
       PermissionsPolicyFeatureDefault::EnableForAll;
   }
 
+}
+
+}  // namespace
+
+PermissionsPolicyFeatureList GetBasePermissionsPolicyFeatureList() {
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map({        {
+          mojom::PermissionsPolicyFeature::kAccelerometer,
+          PermissionsPolicyFeatureDefault::EnableForAll
+        },    });
+
+    return map;
+  }());
+  return *feature_list;
+}
+
+const PermissionsPolicyFeatureList& GetPermissionsPolicyFeatureList() {
+  static const base::NoDestructor<PermissionsPolicyFeatureList> feature_list([] {
+    PermissionsPolicyFeatureList map = GetBasePermissionsPolicyFeatureList();
+
+    UpdatePermissionsPolicyFeatureListFlagDefaults(map);
+    return map;
+  }());
+  return *feature_list;
+}
+
+void UpdatePermissionsPolicyFeatureListForTesting() {
+  const PermissionsPolicyFeatureList& feature_list = GetPermissionsPolicyFeatureList();
+  PermissionsPolicyFeatureList& mutable_feature_list = const_cast<PermissionsPolicyFeatureList&>(feature_list);
+  UpdatePermissionsPolicyFeatureListFlagDefaults(mutable_feature_list);
 }
 
 } // namespace blink
