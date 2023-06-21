@@ -15,8 +15,6 @@ import org.chromium.base.annotations.NativeMethods;
 @JNINamespace("browser_ui")
 public class SiteSettingsFeatureList {
     public static final String SITE_DATA_IMPROVEMENTS = "SiteDataImprovements";
-    public static final String REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE =
-            "RequestDesktopSiteExceptionsDowngrade";
 
     private SiteSettingsFeatureList() {}
 

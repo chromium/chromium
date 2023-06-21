@@ -41,6 +41,8 @@ public class DeprecatedChromePreferenceKeys {
                 "Chrome.Querytiles.RecentMvClicks",
                 "Chrome.Querytiles.RecentQueryTileClicks",
                 "Chrome.PriceTracking.PriceDropAlerts",
+                "Chrome.RequestDesktopSiteExceptionsDowngrade.GlobalSettingEnabled",
+                "Chrome.RequestDesktopSiteExceptionsDowngrade.TabSettingSet",
                 "Chrome.RequestDesktopSiteGlobalSetting.DefaultEnabledShowMessage",
                 "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageShown",
                 "Chrome.SigninPromo.NTPImpressions",

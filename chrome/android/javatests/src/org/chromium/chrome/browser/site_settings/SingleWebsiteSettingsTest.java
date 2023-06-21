@@ -15,7 +15,6 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import org.chromium.base.FeatureList;
 import org.chromium.base.test.params.ParameterAnnotations.UseMethodParameter;
 import org.chromium.base.test.params.ParameterAnnotations.UseRunnerDelegate;
 import org.chromium.base.test.params.ParameterProvider;
@@ -32,18 +31,14 @@ import org.chromium.chrome.test.batch.BlankCTATabInitialStateRule;
 import org.chromium.components.browser_ui.settings.ChromeSwitchPreference;
 import org.chromium.components.browser_ui.site_settings.ContentSettingException;
 import org.chromium.components.browser_ui.site_settings.SingleWebsiteSettings;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsUtil;
 import org.chromium.components.browser_ui.site_settings.Website;
 import org.chromium.components.browser_ui.site_settings.WebsiteAddress;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 
 /**
  * Tests that exercise functionality when showing details for a single site.
@@ -124,38 +119,17 @@ public class SingleWebsiteSettingsTest {
 
     @Test
     @SmallTest
-    public void testDesktopSiteException_DowngradePath() {
-        // Enable RDS exceptions and launch single website settings.
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        SettingsActivity settingsActivity1 = SiteSettingsTestUtils.startSingleWebsitePreferences(
+    public void testDesktopSiteException() {
+        SettingsActivity settingsActivity = SiteSettingsTestUtils.startSingleWebsitePreferences(
                 createWebsiteWithContentSettingException(
                         ContentSettingsType.REQUEST_DESKTOP_SITE, ContentSettingValues.ALLOW));
         TestThreadUtils.runOnUiThreadBlocking(() -> {
-            var websitePreferences = (SingleWebsiteSettings) settingsActivity1.getMainFragment();
+            var websitePreferences = (SingleWebsiteSettings) settingsActivity.getMainFragment();
             Assert.assertNotNull("Desktop site preference should be present.",
                     websitePreferences.findPreference(SingleWebsiteSettings.getPreferenceKey(
                             ContentSettingsType.REQUEST_DESKTOP_SITE)));
         });
-        settingsActivity1.finish();
-
-        // Disable RDS exceptions for a downgrade and launch single website settings.
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
-        featureMap.put(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        SettingsActivity settingsActivity2 = SiteSettingsTestUtils.startSingleWebsitePreferences(
-                createWebsiteWithContentSettingException(
-                        ContentSettingsType.REQUEST_DESKTOP_SITE, ContentSettingValues.ALLOW));
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            var websitePreferences = (SingleWebsiteSettings) settingsActivity2.getMainFragment();
-            Assert.assertNull("Desktop site preference should not be present.",
-                    websitePreferences.findPreference(SingleWebsiteSettings.getPreferenceKey(
-                            ContentSettingsType.REQUEST_DESKTOP_SITE)));
-        });
-        settingsActivity2.finish();
+        settingsActivity.finish();
     }
 
     /**

@@ -31,7 +31,6 @@ const base::Feature* const kFeaturesExposedToJava[] = {
     &features::kProcessSharingWithStrictSiteInstances,
     &features::kReduceGpuPriorityOnBackground,
     &features::kRequestDesktopSiteAdditions,
-    &features::kRequestDesktopSiteExceptions,
     &features::kTouchDragAndContextMenu,
     &features::kWebAuthnTouchToFillCredentialSelection,
     &features::kWebBluetoothNewPermissionsBackend,

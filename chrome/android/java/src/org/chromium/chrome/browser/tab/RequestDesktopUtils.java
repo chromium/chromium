@@ -11,7 +11,6 @@ import android.text.TextUtils;
 import android.view.Display;
 
 import androidx.annotation.IntDef;
-import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.annotation.VisibleForTesting;
 
@@ -30,12 +29,9 @@ import org.chromium.chrome.browser.preferences.SharedPreferencesManager;
 import org.chromium.chrome.browser.profiles.Profile;
 import org.chromium.chrome.browser.tab.TabUtils.LoadIfNeededCaller;
 import org.chromium.chrome.browser.tab.state.CriticalPersistedTabData;
-import org.chromium.chrome.browser.tabmodel.TabModel;
-import org.chromium.chrome.browser.tabmodel.TabModelSelector;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettings;
 import org.chromium.components.browser_ui.site_settings.SingleCategorySettingsConstants;
 import org.chromium.components.browser_ui.site_settings.SiteSettingsCategory;
-import org.chromium.components.browser_ui.site_settings.SiteSettingsFeatureList;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.util.ConversionUtils;
 import org.chromium.components.content_settings.ContentSettingValues;
@@ -51,8 +47,6 @@ import org.chromium.components.messages.PrimaryActionClickBehavior;
 import org.chromium.components.profile_metrics.BrowserProfileType;
 import org.chromium.components.ukm.UkmRecorder;
 import org.chromium.components.variations.SyntheticTrialAnnotationMode;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.display.DisplayAndroid;
 import org.chromium.ui.display.DisplayAndroidManager;
 import org.chromium.ui.modaldialog.DialogDismissalCause;
@@ -221,100 +215,6 @@ public class RequestDesktopUtils {
     }
 
     /**
-     * Create a SharedPreferences string set of tab IDs of all tabs in the tab model to update the
-     * tab user agent once when desktop site domain level settings are downgraded to tab level
-     * settings.
-     * @param tabModelSelector The {@link TabModelSelector} that will provide information about
-     *         {@link Tab}s in all {@link TabModel}s.
-     */
-    public static void maybeDowngradeSiteSettings(TabModelSelector tabModelSelector) {
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-            // Remove the SharedPreferences keys if they exist when desktop site exceptions are
-            // re-enabled.
-            SharedPreferencesManager.getInstance().removeKey(
-                    ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET);
-            SharedPreferencesManager.getInstance().removeKey(
-                    ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED);
-            return;
-        }
-        if (!SiteSettingsFeatureList.isEnabled(
-                    SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
-            return;
-        }
-        // Restore tab level settings exactly once after downgrade.
-        if (sharedPreferencesManager.contains(
-                    ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)) {
-            return;
-        }
-
-        var tabIds = new HashSet<String>();
-        for (var tabModel : tabModelSelector.getModels()) {
-            for (int index = 0; index < tabModel.getCount(); index++) {
-                var tab = tabModel.getTabAt(index);
-                tabIds.add(String.valueOf(tab.getId()));
-            }
-        }
-
-        sharedPreferencesManager.writeStringSet(
-                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET, tabIds);
-        // Preserve the global setting value from prior to downgrade to eventually update the
-        // TabUserAgent for all current tabs with respect to this value.
-        sharedPreferencesManager.writeBoolean(
-                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
-                WebsitePreferenceBridge.isCategoryEnabled(
-                        tabModelSelector.getCurrentModel().getProfile(),
-                        ContentSettingsType.REQUEST_DESKTOP_SITE));
-    }
-
-    /**
-     * Restore the tab level setting for a tab that was in use before desktop site domain level
-     * settings were downgraded. This method specifically updates the CriticalPersistedTabData user
-     * agent, but does not actually apply/change the user agent for the current web contents; it is
-     * expected of the caller to do so.
-     * @param tab The {@link Tab} whose tab level setting may be restored.
-     */
-    public static void maybeRestoreUserAgentOnSiteSettingsDowngrade(@NonNull Tab tab) {
-        if (!isDesktopSiteExceptionsDowngradeEnabledForTab(tab.getId())
-                || tab.getWebContents() == null) {
-            return;
-        }
-
-        SharedPreferencesManager sharedPreferencesManager = SharedPreferencesManager.getInstance();
-
-        // Get the user agent used by the tab from the last committed entry and update the tab level
-        // setting.
-        boolean usingDesktopUserAgent =
-                tab.getWebContents().getNavigationController().getUseDesktopUserAgent();
-        @TabUserAgent
-        int tabUserAgent = usingDesktopUserAgent ? TabUserAgent.DESKTOP : TabUserAgent.MOBILE;
-
-        // Retrieve the global setting from prior to downgrade, or use the current global setting.
-        boolean globalEnabled =
-                sharedPreferencesManager.contains(
-                        ChromePreferenceKeys
-                                .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED)
-                ? sharedPreferencesManager.readBoolean(
-                        ChromePreferenceKeys
-                                .DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
-                        false)
-                : TabUtils.isDesktopSiteGlobalEnabled(
-                        Profile.fromWebContents(tab.getWebContents()));
-
-        if (globalEnabled != usingDesktopUserAgent) {
-            // Update the persisted TabUserAgent for a tab from DEFAULT if the user agent it last
-            // used is different from the global setting.
-            CriticalPersistedTabData.from(tab).setUserAgent(tabUserAgent);
-        }
-
-        // Remove the ID of the processed tab from the SharedPreferences string set so that its tab
-        // level setting is not processed again.
-        sharedPreferencesManager.removeFromStringSet(
-                ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET,
-                String.valueOf(tab.getId()));
-    }
-
-    /**
      * Upgrade a non-default tab level RDS setting to a domain level setting when RDS exceptions is
      * supported. This method is expected to be invoked only once after support is added for domain
      * level exceptions.
@@ -325,8 +225,7 @@ public class RequestDesktopUtils {
      */
     public static void maybeUpgradeTabLevelDesktopSiteSetting(
             Tab tab, Profile profile, @TabUserAgent int tabUserAgent, @Nullable GURL url) {
-        if (!ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-                || url == null) {
+        if (url == null) {
             return;
         }
 
@@ -969,18 +868,6 @@ public class RequestDesktopUtils {
         if (tab != null && !tab.isDestroyed()) {
             tab.loadIfNeeded(LoadIfNeededCaller.MAYBE_SHOW_GLOBAL_SETTING_OPT_IN_MESSAGE);
         }
-    }
-
-    private static boolean isDesktopSiteExceptionsDowngradeEnabledForTab(int tabId) {
-        if (ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-                || !SiteSettingsFeatureList.isEnabled(
-                        SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
-            return false;
-        }
-        return SharedPreferencesManager.getInstance()
-                .readStringSet(
-                        ChromePreferenceKeys.DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET)
-                .contains(String.valueOf(tabId));
     }
 
     /**

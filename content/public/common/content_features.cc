@@ -1510,12 +1510,6 @@ BASE_FEATURE(kRequestDesktopSiteAdditions,
              "RequestDesktopSiteAdditions",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-// Request Desktop Site per-site setting for Android.
-// Refer to the launch bug (https://crbug.com/1244979) for more information.
-BASE_FEATURE(kRequestDesktopSiteExceptions,
-             "RequestDesktopSiteExceptions",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // Request Desktop Site zoom for Android. Apply a pre-defined page zoom level
 // when desktop user agent is used.
 BASE_FEATURE(kRequestDesktopSiteZoom,

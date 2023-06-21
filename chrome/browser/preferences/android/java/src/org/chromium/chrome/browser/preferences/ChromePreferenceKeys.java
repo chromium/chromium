@@ -243,18 +243,6 @@ public final class ChromePreferenceKeys {
     public static final String DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT =
             "Chrome.RequestDesktopSiteGlobalSetting.OptInMessageCohort";
     /**
-     * Indicates whether the desktop site global setting was enabled prior to downgrade of desktop
-     * site domain level exceptions.
-     */
-    public static final String DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED =
-            "Chrome.RequestDesktopSiteExceptionsDowngrade.GlobalSettingEnabled";
-    /**
-     * Holds a set of tab IDs for tabs whose desktop site tab level settings have to be updated on
-     * downgrade of desktop site domain level exceptions.
-     */
-    public static final String DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET =
-            "Chrome.RequestDesktopSiteExceptionsDowngrade.TabSettingSet";
-    /**
      * Indicates display spec when the device is added to the default-on cohort for the desktop site
      * global setting experiment.
      */
@@ -1013,8 +1001,6 @@ public final class ChromePreferenceKeys {
                 DEFAULT_BROWSER_PROMO_SESSION_COUNT,
                 DEFAULT_ENABLED_DESKTOP_SITE_GLOBAL_SETTING,
                 DEFAULT_ENABLE_DESKTOP_SITE_GLOBAL_SETTING_COHORT,
-                DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_GLOBAL_SETTING_ENABLED,
-                DESKTOP_SITE_EXCEPTIONS_DOWNGRADE_TAB_SETTING_SET,
                 DESKTOP_SITE_GLOBAL_SETTING_DEFAULT_ON_COHORT_DISPLAY_SPEC,
                 DESKTOP_SITE_GLOBAL_SETTING_OPT_IN_MESSAGE_COHORT,
                 DOWNLOAD_INTERSTITIAL_DOWNLOAD_PENDING_REMOVAL,

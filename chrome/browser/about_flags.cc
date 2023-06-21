@@ -9316,11 +9316,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kForceOffTextAutosizingName,
      flag_descriptions::kForceOffTextAutosizingDescription, kOsAndroid,
      FEATURE_VALUE_TYPE(features::kForceOffTextAutosizing)},
-
-    {"request-desktop-site-exceptions",
-     flag_descriptions::kRequestDesktopSiteExceptionsName,
-     flag_descriptions::kRequestDesktopSiteExceptionsDescription, kOsAndroid,
-     FEATURE_VALUE_TYPE(features::kRequestDesktopSiteExceptions)},
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -9770,14 +9765,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kRequestDesktopSiteDefaultsLoggingDescription,
      kOsAndroid,
      FEATURE_VALUE_TYPE(chrome::android::kRequestDesktopSiteDefaultsLogging)},
-#endif  // BUILDFLAG(IS_ANDROID)
-
-#if BUILDFLAG(IS_ANDROID)
-    {"request-desktop-site-exceptions-downgrade",
-     flag_descriptions::kRequestDesktopSiteExceptionsDowngradeName,
-     flag_descriptions::kRequestDesktopSiteExceptionsDowngradeDescription,
-     kOsAndroid,
-     FEATURE_VALUE_TYPE(browser_ui::kRequestDesktopSiteExceptionsDowngrade)},
 #endif  // BUILDFLAG(IS_ANDROID)
 
 #if BUILDFLAG(IS_ANDROID)

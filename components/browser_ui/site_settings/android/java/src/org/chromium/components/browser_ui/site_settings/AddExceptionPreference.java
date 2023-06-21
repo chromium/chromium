@@ -4,7 +4,6 @@
 
 package org.chromium.components.browser_ui.site_settings;
 
-import static org.chromium.components.browser_ui.site_settings.WebsitePreference.PARAM_SUBDOMAIN_SETTINGS;
 import static org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge.SITE_WILDCARD;
 
 import android.content.Context;
@@ -30,8 +29,6 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.base.ApiCompatibilityUtils;
 import org.chromium.components.browser_ui.styles.SemanticColorUtils;
 import org.chromium.components.browser_ui.widget.CheckBoxWithDescription;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.ui.KeyboardVisibilityDelegate;
 import org.chromium.ui.text.EmptyTextWatcher;
 
@@ -134,15 +131,11 @@ public class AddExceptionPreference
         } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE) {
             // Default to domain level setting for Request Desktop Site.
             checkBox.setChecked(true);
-            if (ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
-                        PARAM_SUBDOMAIN_SETTINGS, true)) {
-                checkBox.setVisibility(View.VISIBLE);
-                checkBox.setPrimaryText(getContext().getString(
-                        R.string.website_settings_domain_desktop_site_exception_checkbox_primary));
-                checkBox.setDescriptionText(getContext().getString(
-                        R.string.website_settings_domain_desktop_site_exception_checkbox_description));
-            }
+            checkBox.setVisibility(View.VISIBLE);
+            checkBox.setPrimaryText(getContext().getString(
+                    R.string.website_settings_domain_desktop_site_exception_checkbox_primary));
+            checkBox.setDescriptionText(getContext().getString(
+                    R.string.website_settings_domain_desktop_site_exception_checkbox_description));
         }
 
         DialogInterface.OnClickListener onClickListener = new DialogInterface.OnClickListener() {

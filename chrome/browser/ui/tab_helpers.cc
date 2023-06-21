@@ -415,11 +415,8 @@ void TabHelpers::AttachTabHelpers(WebContents* web_contents) {
   prerender::NoStatePrefetchTabHelper::CreateForWebContents(web_contents);
   RecentlyAudibleHelper::CreateForWebContents(web_contents);
 #if BUILDFLAG(IS_ANDROID)
-  if (base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions) ||
-      base::FeatureList::IsEnabled(features::kRequestDesktopSiteAdditions)) {
-    RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
-        web_contents);
-  }
+  RequestDesktopSiteWebContentsObserverAndroid::CreateForWebContents(
+      web_contents);
 #endif  // BUILDFLAG(IS_ANDROID)
   // TODO(siggi): Remove this once the Resource Coordinator refactoring is done.
   //     See https://crbug.com/910288.

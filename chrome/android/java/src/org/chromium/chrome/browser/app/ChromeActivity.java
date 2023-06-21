@@ -167,7 +167,6 @@ import org.chromium.chrome.browser.tabmodel.TabCreatorManagerSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModel;
 import org.chromium.chrome.browser.tabmodel.TabModelInitializer;
 import org.chromium.chrome.browser.tabmodel.TabModelSelector;
-import org.chromium.chrome.browser.tabmodel.TabModelSelectorObserver;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorProfileSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorSupplier;
 import org.chromium.chrome.browser.tabmodel.TabModelSelectorTabObserver;
@@ -221,8 +220,6 @@ import org.chromium.components.webapps.bottomsheet.PwaBottomSheetController;
 import org.chromium.components.webapps.bottomsheet.PwaBottomSheetControllerProvider;
 import org.chromium.components.webxr.XrDelegate;
 import org.chromium.components.webxr.XrDelegateProvider;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.content_public.browser.DeviceUtils;
 import org.chromium.content_public.browser.LoadUrlParams;
 import org.chromium.content_public.browser.ScreenOrientationProvider;
@@ -847,14 +844,6 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
                 postDeferredStartupIfNeeded();
             }
         };
-
-        tabModelSelector.addObserver(new TabModelSelectorObserver() {
-            @Override
-            public void onTabStateInitialized() {
-                RequestDesktopUtils.maybeDowngradeSiteSettings(tabModelSelector);
-                tabModelSelector.removeObserver(this);
-            }
-        });
     }
 
     /**
@@ -2527,25 +2516,18 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             boolean usingDesktopUserAgent =
                     currentTab.getWebContents().getNavigationController().getUseDesktopUserAgent();
             usingDesktopUserAgent = !usingDesktopUserAgent;
-            if (ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)) {
-                Profile profile = getCurrentTabModel().getProfile();
-                RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
-                        profile, currentTab.getUrl(), usingDesktopUserAgent);
-                // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
-                // with ReloadType::ORIGINAL_REQUEST_URL. See http://crbug/1418587 for details.
-                TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent,
-                        /* forcedByUser */ false,
-                        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
-                RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
-                        profile, this, getModalDialogManager());
-                TrackerFactory.getTrackerForProfile(profile).notifyEvent(
-                        EventConstants.APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED);
-            } else {
-                TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent, /* forcedByUser */ true,
-                        UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
-                TrackerFactory.getTrackerForProfile(Profile.getLastUsedRegularProfile())
-                        .notifyEvent(EventConstants.APP_MENU_DESKTOP_SITE_FOR_TAB_CLICKED);
-            }
+            Profile profile = getCurrentTabModel().getProfile();
+            RequestDesktopUtils.setRequestDesktopSiteContentSettingsForUrl(
+                    profile, currentTab.getUrl(), usingDesktopUserAgent);
+            // Use TabUtils.switchUserAgent() instead of Tab.reload(). Because we need to reload
+            // with ReloadType::ORIGINAL_REQUEST_URL. See http://crbug/1418587 for details.
+            TabUtils.switchUserAgent(currentTab, usingDesktopUserAgent,
+                    /* forcedByUser */ false, UseDesktopUserAgentCaller.ON_MENU_OR_KEYBOARD_ACTION);
+            // TODO(crbug.com/1456560): Remove this IPH when the usage is low.
+            RequestDesktopUtils.maybeShowUserEducationPromptForAppMenuSelection(
+                    profile, this, getModalDialogManager());
+            TrackerFactory.getTrackerForProfile(profile).notifyEvent(
+                    EventConstants.APP_MENU_DESKTOP_SITE_EXCEPTION_ADDED);
             RequestDesktopUtils.recordUserChangeUserAgent(usingDesktopUserAgent, getActivityTab());
             return true;
         }

@@ -26,8 +26,6 @@ import org.robolectric.annotation.Implementation;
 import org.robolectric.annotation.Implements;
 import org.robolectric.annotation.Resetter;
 
-import org.chromium.base.FeatureList;
-import org.chromium.base.FeatureList.TestValues;
 import org.chromium.base.UserDataHost;
 import org.chromium.base.test.BaseRobolectricTestRunner;
 import org.chromium.base.test.util.JniMocker;
@@ -38,7 +36,6 @@ import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridgeJni;
 import org.chromium.components.content_settings.ContentSettingValues;
 import org.chromium.components.content_settings.ContentSettingsType;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.NavigationController;
 import org.chromium.content_public.browser.WebContents;
 import org.chromium.url.GURL;
@@ -273,24 +270,7 @@ public class TabUtilsUnitTest {
     }
 
     @Test
-    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionDisabled() {
-        enableDesktopSiteException(false);
-        GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
-
-        // Global setting is Mobile.
-        mRdsDefault = false;
-        Assert.assertFalse("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-
-        // Global setting is Desktop.
-        mRdsDefault = true;
-        Assert.assertTrue("The result should match RDS global setting.",
-                TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-    }
-
-    @Test
-    public void testReadRequestDesktopSiteContentSettings_DesktopSiteExceptionEnabled() {
-        enableDesktopSiteException(true);
+    public void testReadRequestDesktopSiteContentSettings() {
         GURL gurl = new GURL(JUnitTestGURLs.EXAMPLE_URL);
 
         // Site level setting is Mobile.
@@ -306,11 +286,5 @@ public class TabUtilsUnitTest {
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, null));
         Assert.assertTrue("The result should match RDS site level setting.",
                 TabUtils.readRequestDesktopSiteContentSettings(mProfile, gurl));
-    }
-
-    private void enableDesktopSiteException(boolean enable) {
-        TestValues features = new TestValues();
-        features.addFeatureFlagOverride(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, enable);
-        FeatureList.setTestValues(features);
     }
 }

@@ -64,7 +64,6 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import org.chromium.base.ContextUtils;
-import org.chromium.base.FeatureList;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.test.util.Batch;
 import org.chromium.base.test.util.CallbackHelper;
@@ -145,9 +144,7 @@ import org.chromium.url.GURL;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeoutException;
 
 /** Tests for everything under Settings > Site Settings. */
@@ -1513,22 +1510,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testOnlyExpectedPreferencesRequestDesktopSite() {
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, BINARY_TOGGLE, BINARY_TOGGLE);
-        Assert.assertTrue(
-                "SharedPreference USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY should be"
-                        + " updated.",
-                ContextUtils.getAppSharedPreferences().contains(
-                        SingleCategorySettingsConstants
-                                .USER_ENABLED_DESKTOP_SITE_GLOBAL_SETTING_PREFERENCE_KEY));
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testOnlyExpectedPreferencesRequestDesktopSiteDomainSettings() {
         testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
                 BINARY_TOGGLE_WITH_EXCEPTION, BINARY_TOGGLE_WITH_EXCEPTION);
@@ -1544,11 +1525,11 @@ public class SiteSettingsTest {
     @SmallTest
     @Feature({"Preferences"})
     @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_ADDITIONS)
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testOnlyExpectedPreferencesRequestDesktopSiteAdditionalSettings() {
-        String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display"};
-        testExpectedPreferences(
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, rdsDisabled, BINARY_TOGGLE);
+        String[] rdsDisabled = {"binary_toggle", "desktop_site_peripheral", "desktop_site_display",
+                "add_exception"};
+        testExpectedPreferences(SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE, rdsDisabled,
+                BINARY_TOGGLE_WITH_EXCEPTION);
     }
 
     @Test
@@ -1923,29 +1904,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testAllowRequestDesktopSite() {
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @DisableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-    public void testBlockRequestDesktopSite() {
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, false)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testAllowRequestDesktopSiteDomainSetting() {
         new TwoStatePermissionTestCase("RequestDesktopSite",
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
@@ -1957,40 +1915,6 @@ public class SiteSettingsTest {
     @Test
     @SmallTest
     @Feature({"Preferences"})
-    public void testAllowRequestDesktopSiteDomainSetting_DowngradePath() {
-        // Enable RDS exceptions.
-        Map<String, Boolean> featureMap = new HashMap<>();
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        TestThreadUtils.runOnUiThreadBlocking(() -> {
-            WebsitePreferenceBridgeJni.get().setPermissionSettingForOrigin(
-                    getBrowserContextHandle(), ContentSettingsType.REQUEST_DESKTOP_SITE,
-                    "https://example.com", "https://example.com", ContentSettingValues.ALLOW);
-        });
-
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .withExpectedPrefKeys("allowed_group")
-                .withExpectedPrefKeys(SingleCategorySettings.ADD_EXCEPTION_KEY)
-                .run();
-
-        // Disable RDS exceptions for a downgrade.
-        featureMap.put(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS, false);
-        featureMap.put(SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE, true);
-        FeatureList.setTestFeatures(featureMap);
-
-        new TwoStatePermissionTestCase("RequestDesktopSite",
-                SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,
-                ContentSettingsType.REQUEST_DESKTOP_SITE, true)
-                .run();
-    }
-
-    @Test
-    @SmallTest
-    @Feature({"Preferences"})
-    @EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testBlockRequestDesktopSiteDomainSetting() {
         new TwoStatePermissionTestCase("RequestDesktopSite",
                 SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE,

@@ -51,19 +51,6 @@ void RequestDesktopSiteWebContentsObserverAndroid::DidStartNavigation(
     return;
   }
 
-  // TODO(shuyng): Remove this if Domain Settings is launched before Additional
-  // Settings.
-  if (!base::FeatureList::IsEnabled(features::kRequestDesktopSiteExceptions)) {
-    // Stop UA override if there is a tab level setting.
-    TabModel::TabUserAgent tabSetting =
-        tab_android_
-            ? static_cast<TabModel::TabUserAgent>(tab_android_->GetUserAgent())
-            : TabModel::TabUserAgent::DEFAULT;
-    if (tabSetting != TabModel::TabUserAgent::DEFAULT) {
-      return;
-    }
-  }
-
   const GURL& url = navigation_handle->GetParentFrameOrOuterDocument()
                         ? navigation_handle->GetParentFrameOrOuterDocument()
                               ->GetOutermostMainFrame()

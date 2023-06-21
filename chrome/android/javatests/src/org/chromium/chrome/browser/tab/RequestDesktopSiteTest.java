@@ -36,11 +36,9 @@ import org.chromium.chrome.browser.ui.appmenu.AppMenuTestSupport;
 import org.chromium.chrome.test.ChromeJUnit4ClassRunner;
 import org.chromium.chrome.test.ChromeTabbedActivityTestRule;
 import org.chromium.chrome.test.R;
-import org.chromium.chrome.test.util.browser.Features;
 import org.chromium.components.browser_ui.site_settings.WebsitePreferenceBridge;
 import org.chromium.components.content_settings.ContentSettingsType;
 import org.chromium.components.feature_engagement.Tracker;
-import org.chromium.content_public.browser.ContentFeatureList;
 import org.chromium.content_public.browser.test.util.TestThreadUtils;
 import org.chromium.ui.test.util.UiRestriction;
 
@@ -98,7 +96,6 @@ public class RequestDesktopSiteTest {
 
     @Test
     @SmallTest
-    @Features.EnableFeatures(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
     public void testGlobalSiteSettingsAndException() throws TimeoutException {
         Tab tab = mActivityTestRule.loadUrlInNewTab(URL_1);
         assertUsingDesktopUserAgent(tab, false, "Default user agent should be mobile.");

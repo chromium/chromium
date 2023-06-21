@@ -892,16 +892,13 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
             case SiteSettingsCategory.Type.COOKIES:
             case SiteSettingsCategory.Type.SITE_DATA:
             case SiteSettingsCategory.Type.FEDERATED_IDENTITY_API:
+            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
                 allowSpecifyingExceptions = true;
                 break;
             case SiteSettingsCategory.Type.BACKGROUND_SYNC:
             case SiteSettingsCategory.Type.AUTOMATIC_DOWNLOADS:
                 allowSpecifyingExceptions =
                         !WebsitePreferenceBridge.isCategoryEnabled(browserContextHandle, type);
-                break;
-            case SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE:
-                allowSpecifyingExceptions = ContentFeatureMap.isEnabled(
-                        ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS);
                 break;
             case SiteSettingsCategory.Type.THIRD_PARTY_COOKIES:
                 allowSpecifyingExceptions = getCookieControlsMode() != CookieControlsMode.OFF;
@@ -1512,12 +1509,6 @@ public class SingleCategorySettings extends SiteSettingsPreferenceFragment
      */
     private boolean shouldAddExceptionsForCategory() {
         if (mCategory.getType() == SiteSettingsCategory.Type.ANTI_ABUSE) {
-            return false;
-        }
-        if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                && !ContentFeatureMap.isEnabled(ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS)
-                && SiteSettingsFeatureList.isEnabled(
-                        SiteSettingsFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS_DOWNGRADE)) {
             return false;
         }
         return true;

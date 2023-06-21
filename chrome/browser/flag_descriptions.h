@@ -2423,12 +2423,6 @@ extern const char kRequestDesktopSiteDefaultsDowngradeDescription[];
 extern const char kRequestDesktopSiteDefaultsLoggingName[];
 extern const char kRequestDesktopSiteDefaultsLoggingDescription[];
 
-extern const char kRequestDesktopSiteExceptionsName[];
-extern const char kRequestDesktopSiteExceptionsDescription[];
-
-extern const char kRequestDesktopSiteExceptionsDowngradeName[];
-extern const char kRequestDesktopSiteExceptionsDowngradeDescription[];
-
 extern const char kRequestDesktopSitePerSiteIphName[];
 extern const char kRequestDesktopSitePerSiteIphDescription[];
 

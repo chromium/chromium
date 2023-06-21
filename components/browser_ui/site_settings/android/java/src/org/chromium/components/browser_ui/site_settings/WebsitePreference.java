@@ -19,8 +19,6 @@ import androidx.preference.PreferenceViewHolder;
 import org.chromium.components.browser_ui.settings.ChromeImageViewPreference;
 import org.chromium.components.browser_ui.settings.FaviconViewUtils;
 import org.chromium.components.embedder_support.util.UrlUtilities;
-import org.chromium.content_public.browser.ContentFeatureList;
-import org.chromium.content_public.browser.ContentFeatureMap;
 import org.chromium.url.GURL;
 
 /**
@@ -39,9 +37,6 @@ class WebsitePreference extends ChromeImageViewPreference {
 
     // Whether the favicon has been fetched already.
     private boolean mFaviconFetched;
-
-    // Finch param to allow subdomain settings for Request Desktop Site.
-    static final String PARAM_SUBDOMAIN_SETTINGS = "SubdomainSettings";
 
     WebsitePreference(Context context, SiteSettingsDelegate siteSettingsClient, Website site,
             SiteSettingsCategory category) {
@@ -102,9 +97,6 @@ class WebsitePreference extends ChromeImageViewPreference {
             if (mSite.isEmbargoed(mCategory.getContentSettingsType())) {
                 setSummary(getContext().getString(R.string.automatically_blocked));
             } else if (mCategory.getType() == SiteSettingsCategory.Type.REQUEST_DESKTOP_SITE
-                    && ContentFeatureMap.getInstance().getFieldTrialParamByFeatureAsBoolean(
-                            ContentFeatureList.REQUEST_DESKTOP_SITE_EXCEPTIONS,
-                            PARAM_SUBDOMAIN_SETTINGS, true)
                     && mSite.getAddress().getIsAnySubdomainPattern()) {
                 setSummary(String.format(
                         getContext().getString(R.string.website_settings_domain_exception_label),
