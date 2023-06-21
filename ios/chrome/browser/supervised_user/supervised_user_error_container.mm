@@ -37,3 +37,9 @@ SupervisedUserErrorContainer::SupervisedUserErrorInfo&
 SupervisedUserErrorContainer::GetSupervisedUserErrorInfo() {
   return *supervised_user_error_info_.get();
 }
+
+void SupervisedUserErrorContainer::HandleCommand(
+    supervised_user::SupervisedUserInterstitial::Commands command) {
+  return;  // todo(b:279766168) have this class own the intersitial and pass the
+           // command to it.
+}

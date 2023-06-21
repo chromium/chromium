@@ -5,6 +5,7 @@
 #ifndef IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_
 #define IOS_CHROME_BROWSER_SUPERVISED_USER_SUPERVISED_USER_ERROR_CONTAINER_H_
 
+#import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "components/supervised_user/core/common/supervised_user_utils.h"
 #import "ios/web/public/web_state_user_data.h"
 #import "url/gurl.h"
@@ -55,6 +56,11 @@ class SupervisedUserErrorContainer
 
   // Returns currently stored info associated with an error page.
   SupervisedUserErrorInfo& GetSupervisedUserErrorInfo();
+
+  // Dispatch a supervised user interstitial command to the bound intersitial
+  // for execution.
+  void HandleCommand(
+      supervised_user::SupervisedUserInterstitial::Commands command);
 
  private:
   friend class web::WebStateUserData<SupervisedUserErrorContainer>;

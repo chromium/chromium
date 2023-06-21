@@ -100,6 +100,7 @@
 #import "components/supervised_user/core/browser/supervised_user_interstitial.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_error.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_error_container.h"
+#import "ios/chrome/browser/supervised_user/supervised_user_interstitial_java_script_feature.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_service_factory.h"
 #import "ios/chrome/browser/supervised_user/supervised_user_url_filter_tab_helper.h"
 #endif  // BUILDFLAG(ENABLE_SUPERVISED_USERS)
@@ -359,6 +360,10 @@ std::vector<web::JavaScriptFeature*> ChromeWebClient::GetJavaScriptFeatures(
   features.push_back(translate::TranslateJavaScriptFeature::GetInstance());
   features.push_back(WebPerformanceMetricsJavaScriptFeature::GetInstance());
   features.push_back(FollowJavaScriptFeature::GetInstance());
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+  features.push_back(
+      SupervisedUserInterstitialJavaScriptFeature::GetInstance());
+#endif
   return features;
 }
 

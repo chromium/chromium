@@ -11,6 +11,8 @@ source_set("supervised_user") {
     "supervised_user_error.mm",
     "supervised_user_error_container.h",
     "supervised_user_error_container.mm",
+    "supervised_user_interstitial_java_script_feature.h",
+    "supervised_user_interstitial_java_script_feature.mm",
     "supervised_user_metrics_service_factory.h",
     "supervised_user_metrics_service_factory.mm",
     "supervised_user_service_factory.h",
@@ -34,6 +36,7 @@ source_set("supervised_user") {
     "//ios/chrome/browser/signin",
     "//ios/chrome/browser/sync",
     "//ios/net",
+    "//ios/web/public/js_messaging:js_messaging",
     "//net",
     "//services/network/public/cpp",
   ]
