@@ -5811,7 +5811,7 @@
     'machines': {
       'linux-updater-tester-dbg': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
           'x86-64',
         ],
         'test_suites': {
