@@ -1119,9 +1119,15 @@ BASE_FEATURE(kGaiaReauthEndpoint,
              "GaiaReauthEndpoint",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
-// Enable the Game Dashboard.
+// Enables the Game Dashboard.
 BASE_FEATURE(kGameDashboard,
              "GameDashboard",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+// Enables the Game Dashboard's Record Game feature. This flag is to be enabled
+// by the feature management module.
+BASE_FEATURE(kFeatureManagementGameDashboardRecordGame,
+             "FeatureManagementGameDashboardRecordGame",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
 // Controls gamepad vibration in Exo.
