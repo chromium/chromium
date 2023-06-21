@@ -607,6 +607,17 @@ Also used in tools/metrics/histograms/metadata/page/histograms.xml.
   </token>
 </histogram>
 
+<histogram name="Navigation.DidCommitSameDocumentNavigation.Duration"
+    units="ms" expires_after="2023-10-15">
+  <owner>peilinwang@google.com</owner>
+  <owner>woa-performance-bugs+jank@google.com</owner>
+  <summary>
+    Measures the amount of time it takes to call
+    RenderFrameHostImpl::DidCommitSameDocumentNavigation(). Logged once per call
+    to RenderFrameHostImpl::DidCommitSameDocumentNavigation().
+  </summary>
+</histogram>
+
 <histogram name="Navigation.DownloadPolicy.LogArbitraryPolicyPerDownload"
     enum="NavigationDownloadPolicy" expires_after="2020-11-01">
   <owner>csharrison@chromium.org</owner>
