@@ -489,6 +489,7 @@ export enum LocalStorageKey {
   SAVE_METADATA = 'saveMetadata',
   SHOW_ALL_RESOLUTIONS = 'showAllResolutions',
   SHOW_METADATA = 'showMetadata',
+  TIME_LAPSE_DIALOG_SHOWN = 'timeLapseDialogShown',
   TOGGLE_MIC = 'toggleMic',
 }
 

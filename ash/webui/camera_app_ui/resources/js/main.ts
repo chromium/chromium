@@ -11,6 +11,7 @@ import {
   getDefaultWindowSize,
 } from './app_window.js';
 import {assert, assertInstanceof} from './assert.js';
+import * as customEffect from './custom_effect.js';
 import {DEPLOYED_VERSION} from './deployed_version.js';
 import {CameraManager} from './device/index.js';
 import {ModeConstraints} from './device/type.js';
@@ -123,11 +124,13 @@ export class App {
     window.addEventListener('resize', () => nav.layoutShownViews());
     windowController.addWindowStateListener(() => nav.layoutShownViews());
 
+    customEffect.setup();
     util.setupI18nElements(document.body);
     this.setupTooltip();
     this.setupToggles();
     localStorage.cleanup();
     this.setupEffect();
+    this.showNewFeatureToast();
     this.setupExperimentalFeatures();
 
     // Set up views navigation by their DOM z-order.
@@ -268,6 +271,26 @@ export class App {
       subtree: true,
       childList: true,
     });
+  }
+
+  private showNewFeatureToast() {
+    // TODO(b/236800499): Remove the toast around 3 milestones after the feature
+    // is launched.
+    const showTimeLapseToast = () => this.cameraManager.registerCameraUI({
+      onUpdateConfig: async () => {
+        if (localStorage.getBool(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN) ||
+            state.get(Mode.VIDEO)) {
+          return;
+        }
+        customEffect.showTimeLapseIntroToast(this.cameraView.root);
+        // Do not show the toast to users who has already seen it.
+        localStorage.set(LocalStorageKey.TIME_LAPSE_DIALOG_SHOWN, true);
+      },
+    });
+
+    if (loadTimeData.getChromeFlag(Flag.TIME_LAPSE)) {
+      showTimeLapseToast();
+    }
   }
 
   private setupExperimentalFeatures() {

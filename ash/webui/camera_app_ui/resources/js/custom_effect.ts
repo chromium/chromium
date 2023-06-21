@@ -8,7 +8,6 @@ import * as dom from './dom.js';
 import {I18nString} from './i18n_string.js';
 import {SvgWrapper} from './lit/svg_wrapper.js';
 import * as loadTimeData from './models/load_time_data.js';
-import {speakMessage} from './spoken_msg.js';
 import * as state from './state.js';
 import {PerfEvent} from './type.js';
 import * as util from './util.js';
@@ -219,7 +218,6 @@ class Toast {
 
   show(): void {
     this.parent.appendChild(this.template);
-    speakMessage(this.message);
   }
 
   focus(): void {
@@ -247,10 +245,6 @@ class NewFeatureToast extends Toast {
         dom.getFrom(template, '.custom-toast-text', HTMLSpanElement);
     const text = loadTimeData.getI18nMessage(i18nId);
     textElement.textContent = text;
-    const ariaLabelI18nId = util.assertEnumVariant(
-        I18nString, anchor.getAttribute('i18n-new-feature-label'));
-    const ariaLabel = loadTimeData.getI18nMessage(ariaLabelI18nId, text);
-    toast.setAttribute('aria-label', ariaLabel);
 
     super(
         anchor, template, toast, text, [{
@@ -341,7 +335,7 @@ function stopEffect(effectPayload: EffectPayload) {
 /**
  * Timeout for effects.
  */
-const EFFECT_TIMEOUT_MS = 10000;
+const EFFECT_TIMEOUT_MS = 6000;
 
 /**
  * Shows the new feature toast message and ripple around the `anchor` element.
@@ -402,4 +396,13 @@ export function focus(): void {
     return;
   }
   globalEffectPayload.toast.focus();
+}
+
+/**
+ * Show the new feature toast for time-lapse video recording.
+ */
+export function showTimeLapseIntroToast(parent: HTMLElement): void {
+  const videoModeButton = dom.get(
+      '.mode-item[i18n-new-feature=new_time_lapse_toast]', HTMLDivElement);
+  showNewFeature(videoModeButton, parent);
 }
