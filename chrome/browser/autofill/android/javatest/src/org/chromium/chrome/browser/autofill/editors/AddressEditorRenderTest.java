@@ -242,7 +242,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             mAddressEditor = new AddressEditorCoordinator(
                     getActivity(), mLauncher, mDelegate, mProfile, /*saveToDisk=*/false);
             mAddressEditor.showEditorDialog();
-            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
+            return mAddressEditor.getEditorDialogForTesting().getContentViewForTest();
         });
         mRenderTestRule.render(editor, "edit_new_address_profile");
     }
@@ -256,7 +256,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
             mAddressEditor = new AddressEditorCoordinator(
                     getActivity(), mLauncher, mDelegate, mProfile, /*saveToDisk=*/false);
             mAddressEditor.showEditorDialog();
-            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
+            return mAddressEditor.getEditorDialogForTesting().getContentViewForTest();
         });
         mRenderTestRule.render(editor, "edit_new_account_address_profile");
     }
@@ -271,7 +271,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                     mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     UPDATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             mAddressEditor.showEditorDialog();
-            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
+            return mAddressEditor.getEditorDialogForTesting().getContentViewForTest();
         });
         mRenderTestRule.render(editor, "edit_local_or_syncable_address_profile");
     }
@@ -287,7 +287,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                     SAVE_NEW_ADDRESS_PROFILE,
                     /*saveToDisk=*/false);
             mAddressEditor.showEditorDialog();
-            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
+            return mAddressEditor.getEditorDialogForTesting().getContentViewForTest();
         });
         mRenderTestRule.render(editor, "edit_account_address_profile");
     }
@@ -302,7 +302,7 @@ public class AddressEditorRenderTest extends BlankUiTestActivityTestCase {
                     mProfile, new AutofillAddress(getActivity(), sLocalProfile),
                     MIGRATE_EXISTING_ADDRESS_PROFILE, /*saveToDisk=*/false);
             mAddressEditor.showEditorDialog();
-            return mAddressEditor.getEditorDialogForTesting().getDataViewForTest();
+            return mAddressEditor.getEditorDialogForTesting().getContentViewForTest();
         });
         mRenderTestRule.render(editor, "migrate_local_or_syncable_address_profile");
     }

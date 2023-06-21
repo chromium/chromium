@@ -72,10 +72,13 @@ public class EditorProperties {
     public static final PropertyModel.ReadableObjectPropertyKey<Runnable> DELETE_RUNNABLE =
             new PropertyModel.ReadableObjectPropertyKey<>("delete_callback");
 
+    public static final PropertyModel.WritableBooleanPropertyKey VISIBLE =
+            new PropertyModel.WritableBooleanPropertyKey("visible");
+
     public static final PropertyKey[] ALL_KEYS = {EDITOR_TITLE, CUSTOM_DONE_BUTTON_TEXT,
             FOOTER_MESSAGE, DELETE_CONFIRMATION_TITLE, DELETE_CONFIRMATION_TEXT,
             SHOW_REQUIRED_INDICATOR, TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION, EDITOR_FIELDS,
-            DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE, DELETE_RUNNABLE};
+            DONE_RUNNABLE, CANCEL_RUNNABLE, ALLOW_DELETE, DELETE_RUNNABLE, VISIBLE};
 
     private EditorProperties() {}
 

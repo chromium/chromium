@@ -28,6 +28,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.EMAIL_ADDRESS_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PERSON_NAME_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PHONE_NUMBER_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import android.telephony.PhoneNumberUtils;
 import android.text.TextUtils;
@@ -350,8 +351,8 @@ public class ContactEditor extends EditorBase<AutofillContact> {
                                .build();
 
         mEditorMCP = PropertyModelChangeProcessor.create(
-                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
-        mEditorDialog.show(mEditorModel);
+                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
+        mEditorModel.set(VISIBLE, true);
         if (mPayerErrors != null) mEditorDialog.validateForm();
     }
 

@@ -4,6 +4,8 @@
 
 package org.chromium.chrome.browser.autofill.editors;
 
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
+
 import android.app.Activity;
 
 import androidx.annotation.IntDef;
@@ -153,8 +155,8 @@ public class AddressEditorCoordinator {
     public void showEditorDialog() {
         mEditorModel = mMediator.buildEditorModel();
         PropertyModelChangeProcessor.create(
-                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
-        mEditorDialog.show(mEditorModel);
+                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
+        mEditorModel.set(VISIBLE, true);
     }
 
     /**

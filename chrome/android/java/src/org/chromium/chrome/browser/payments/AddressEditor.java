@@ -36,6 +36,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Text
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.PLAIN_TEXT_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.REGION_INPUT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextInputType.STREET_ADDRESS_INPUT;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.VISIBLE;
 
 import android.app.ProgressDialog;
 import android.text.TextUtils;
@@ -350,7 +351,7 @@ public class AddressEditor
                                .with(CANCEL_RUNNABLE, onCancel)
                                .build();
         mEditorMCP = PropertyModelChangeProcessor.create(
-                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView, false);
+                mEditorModel, mEditorDialog, EditorDialogViewBinder::bindEditorDialogView);
 
         loadAdminAreasForCountry(mCountryField.get(VALUE));
         if (mAddressErrors != null) mEditorDialog.validateForm();
@@ -507,7 +508,7 @@ public class AddressEditor
             // This should be called when all required fields are put in mAddressField.
             setAddressFieldValuesFromCache();
             addAddressFieldsToEditor(mCountryField.get(VALUE), mProfile.getLanguageCode());
-            mEditorDialog.show(mEditorModel);
+            mEditorModel.set(VISIBLE, true);
         }
     }
 
