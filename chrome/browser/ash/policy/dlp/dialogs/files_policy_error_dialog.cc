@@ -4,6 +4,7 @@
 
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_error_dialog.h"
 
+#include "ash/style/typography.h"
 #include "base/functional/callback_helpers.h"
 #include "chrome/browser/ash/policy/dlp/dialogs/files_policy_dialog.h"
 #include "chrome/browser/chromeos/policy/dlp/dlp_confidential_file.h"
@@ -11,6 +12,7 @@
 #include "components/strings/grit/components_strings.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/views/layout/box_layout.h"
 
 namespace policy {
 
@@ -95,7 +97,19 @@ std::u16string FilesPolicyErrorDialog::GetMessage() {
 }
 
 void FilesPolicyErrorDialog::AddPolicyRow(Policy policy) {
-  // TODO(b/280780100): Implementation.
+  DCHECK(scroll_view_container_);
+  views::View* row =
+      scroll_view_container_->AddChildView(std::make_unique<views::View>());
+  row->SetLayoutManager(std::make_unique<views::BoxLayout>(
+      views::BoxLayout::Orientation::kHorizontal,
+      gfx::Insets::TLBR(10, 16, 10, 16), 0));
+
+  // TODO(b/279435843): Replace with translation strings.
+  views::Label* title_label =
+      AddRowTitle(u"Files were blocked because of policy", row);
+  title_label->SetFontList(
+      ash::TypographyProvider::Get()->ResolveTypographyToken(
+          ash::TypographyToken::kCrosBody1));
 }
 
 void FilesPolicyErrorDialog::OpenHelpPage() {
