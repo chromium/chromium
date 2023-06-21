@@ -256,17 +256,25 @@ struct PartitionAllocTestParam {
 };
 
 const std::vector<PartitionAllocTestParam> GetPartitionAllocTestParams() {
-  std::vector<size_t> ref_count_sizes = {0, 8, 16};
-  // sizeof(PartitionRefCount) == 8 under some configurations, so we can't force
-  // the size down to 4.
+  std::vector<size_t> ref_count_sizes = {16};
+
+  bool only_supports_16b_ref_count = false;
+#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+  only_supports_16b_ref_count =
+      partition_alloc::internal::base::CPU::GetInstanceNoAllocation().has_mte();
+#endif
+
+  if (!only_supports_16b_ref_count) {
+    ref_count_sizes.push_back(0);
+    ref_count_sizes.push_back(8);
+    // sizeof(PartitionRefCount) == 8 under some configurations, so we can't
+    // force the size down to 4.
 #if !PA_CONFIG(REF_COUNT_STORE_REQUESTED_SIZE) && \
     !PA_CONFIG(REF_COUNT_CHECK_COOKIE) &&         \
     !BUILDFLAG(ENABLE_DANGLING_RAW_PTR_CHECKS)
-  ref_count_sizes.push_back(4);
+    ref_count_sizes.push_back(4);
 #endif
-  // Using MTE increases extras size without increasing
-  // sizeof(PartitionRefCount), so we don't have to exclude it here, as long as
-  // ExtraAllocSize() accounts for it.
+  }
 
   std::vector<PartitionAllocTestParam> params;
   for (size_t ref_count_size : ref_count_sizes) {
@@ -457,22 +465,12 @@ class PartitionAllocTest
   }
 
   static size_t ExtraAllocSize(const PartitionAllocator& allocator) {
-    size_t ref_count_size = 0;
-    // Duplicate the logic from PartitionRoot::Init().
-    if (allocator.root()->brp_enabled()) {
-      ref_count_size = GetParam().ref_count_size;
-      if (!ref_count_size) {
-        ref_count_size = internal::kPartitionRefCountSizeAdjustment;
-      }
-#if PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
-      if (IsMemoryTaggingEnabled()) {
-        ref_count_size = internal::base::bits::AlignUp(
-            ref_count_size, internal::kMemTagGranuleSize);
-      }
-      settings.ref_count_size = ref_count_size;
-#endif  // PA_CONFIG(INCREASE_REF_COUNT_SIZE_FOR_MTE)
+    size_t ref_count_size = GetParam().ref_count_size;
+    if (!ref_count_size) {
+      ref_count_size = kInSlotRefCountBufferSize;
     }
-    return kExtraAllocSizeWithoutRefCount + ref_count_size;
+    return kExtraAllocSizeWithoutRefCount +
+           (allocator.root()->brp_enabled() ? ref_count_size : 0);
   }
 
   size_t GetNumPagesPerSlotSpan(size_t size) {
