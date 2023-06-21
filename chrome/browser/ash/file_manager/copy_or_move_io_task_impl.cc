@@ -772,16 +772,16 @@ void CopyOrMoveIOTaskImpl::OnCopyOrMoveProgress(
   int64_t& last_size = individual_progress.at(destination_path);
   int64_t delta = size - last_size;
   last_size = size;
-
   aggregate_progress += delta;
-  progress_->bytes_transferred += delta;
-  speedometer_.Update(progress_->bytes_transferred);
 
-  // Speedometer can produce infinite result which can't be serialized to JSON
-  // when sending the status via private API.
-  double remaining_seconds = speedometer_.GetRemainingSeconds();
-  if (std::isfinite(remaining_seconds)) {
-    progress_->remaining_seconds = remaining_seconds;
+  if (speedometer_.Update(progress_->bytes_transferred += delta)) {
+    const double remaining_seconds = speedometer_.GetRemainingSeconds();
+
+    // Speedometer can produce infinite result which can't be serialized to JSON
+    // when sending the status via private API.
+    if (std::isfinite(remaining_seconds)) {
+      progress_->remaining_seconds = remaining_seconds;
+    }
   }
 
   progress_callback_.Run(*progress_);

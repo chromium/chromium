@@ -219,13 +219,14 @@ void ZipIOTask::ZipItems(
 void ZipIOTask::OnZipProgress() {
   DCHECK(zip_file_creator_);
   progress_.bytes_transferred = zip_file_creator_->GetProgress().bytes;
-  speedometer_.Update(progress_.bytes_transferred);
-  const double remaining_seconds = speedometer_.GetRemainingSeconds();
+  if (speedometer_.Update(progress_.bytes_transferred)) {
+    const double remaining_seconds = speedometer_.GetRemainingSeconds();
 
-  // Speedometer can produce infinite result which can't be serialized to JSON
-  // when sending the status via private API.
-  if (std::isfinite(remaining_seconds)) {
-    progress_.remaining_seconds = remaining_seconds;
+    // Speedometer can produce infinite result which can't be serialized to JSON
+    // when sending the status via private API.
+    if (std::isfinite(remaining_seconds)) {
+      progress_.remaining_seconds = remaining_seconds;
+    }
   }
 
   progress_callback_.Run(progress_);

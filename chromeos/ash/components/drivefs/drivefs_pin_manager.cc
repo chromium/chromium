@@ -432,6 +432,8 @@ bool PinManager::Add(const FileMetadata& md, const Path& path) {
     progress_.bytes_to_pin = 0;
     progress_.pinned_files = 0;
     progress_.pinned_bytes = 0;
+    progress_.remaining_seconds = 0;
+    speedometer_.SetTotalBytes(0);
   }
 
   const auto [it, ok] =
@@ -1506,21 +1508,17 @@ void PinManager::OnError(const mojom::DriveError& error) {
 void PinManager::NotifyProgress() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  if (progress_.pinned_bytes < progress_.bytes_to_pin) {
-    if (!speedometer_) {
-      speedometer_ = std::make_unique<file_manager::Speedometer>();
-      speedometer_->SetTotalBytes(progress_.bytes_to_pin);
-    }
-    speedometer_->Update(progress_.pinned_bytes);
+  if (progress_.pinned_bytes > 0) {
+    speedometer_.SetTotalBytes(progress_.bytes_to_pin);
+    if (speedometer_.Update(progress_.pinned_bytes)) {
+      const double remaining_seconds = speedometer_.GetRemainingSeconds();
 
-    // Speedometer can produce infinite result which can't be serialized to JSON
-    // when sending the status via private API.
-    const double remaining_seconds = speedometer_->GetRemainingSeconds();
-    if (std::isfinite(remaining_seconds)) {
-      progress_.remaining_seconds = remaining_seconds;
+      // Speedometer can produce infinite result which can't be serialized to
+      // JSON when sending the status via private API.
+      if (std::isfinite(remaining_seconds)) {
+        progress_.remaining_seconds = remaining_seconds;
+      }
     }
-  } else {
-    speedometer_.reset();
   }
 
   for (Observer& observer : observers_) {

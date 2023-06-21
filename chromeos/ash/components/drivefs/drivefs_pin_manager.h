@@ -478,8 +478,7 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS) PinManager
   Files files_to_track_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Tracks the remaining seconds for the current syncing operation to complete.
-  std::unique_ptr<file_manager::Speedometer> speedometer_
-      GUARDED_BY_CONTEXT(sequence_checker_);
+  file_manager::Speedometer speedometer_ GUARDED_BY_CONTEXT(sequence_checker_);
 
   // Shortcut paths where the target path resides outside the users My drive.
   std::unordered_set<Path> untracked_shortcut_paths_
