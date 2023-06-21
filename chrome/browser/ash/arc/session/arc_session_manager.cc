@@ -1630,9 +1630,8 @@ void ArcSessionManager::MaybeReenableArc() {
   RequestEnableImpl();
 }
 
-// Starts a timer to check if provisioning takes too loong.
-// The timer will not be set if this device was previously provisioned
-// successfully.
+// Starts a timer to check if provisioning takes too long. The timer will not be
+// set if this device was previously provisioned successfully.
 void ArcSessionManager::MaybeStartTimer() {
   if (IsArcProvisioned(profile_)) {
     return;
@@ -1669,7 +1668,6 @@ void ArcSessionManager::OnRetryClicked() {
   DCHECK(!g_ui_enabled ||
          support_host_->ui_page() == ArcSupportHost::UIPage::ERROR);
   DCHECK(!requirement_checker_);
-  DCHECK(!g_ui_enabled || !support_host_->HasAuthDelegate());
 
   UpdateOptInActionUMA(OptInActionType::RETRY);
 
