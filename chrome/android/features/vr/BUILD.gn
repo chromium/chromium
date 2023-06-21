@@ -104,7 +104,3 @@ generate_jni("split_jni_headers") {
   ]
   split_name = "vr"
 }
-
-generate_jni("base_jni_headers") {
-  sources = [ "java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
-}

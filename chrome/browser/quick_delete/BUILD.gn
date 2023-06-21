@@ -5,6 +5,7 @@
 import("//build/config/android/rules.gni")
 
 android_library("java") {
+  srcjar_deps = [ ":jni_headers" ]
   sources = [
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteBridge.java",
     "android/java/src/org/chromium/chrome/browser/quick_delete/QuickDeleteController.java",
@@ -33,7 +34,7 @@ android_library("java") {
     "//third_party/androidx:androidx_annotation_annotation_jvm_java",
     "//ui/android:ui_no_recycler_view_java",
   ]
-  annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
+
   resources_package = "org.chromium.chrome.browser.quick_delete"
 }
 

@@ -33,18 +33,3 @@ android_resources("java_resources") {
     "java/res/values/dimens.xml",
   ]
 }
-
-generate_jni("jni_headers") {
-  sources = [
-    "java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
-    "java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
-    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
-    "java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
-    "java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
-    "java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
-    "java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
-  ]
-}

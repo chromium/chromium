@@ -62,26 +62,3 @@ android_apk("sample_jni_apk") {
 group("jni_generator_tests") {
   deps = [ ":sample_jni_apk" ]
 }
-
-java_annotation_processor("jni_processor") {
-  sources = [
-    "java/src/org/chromium/jni_generator/JniProcessor.java",
-
-    # Avoids a circular dependency with base:base_java. This is okay because
-    # no target should ever expect to package an annotation processor.
-    "//build/android/java/src/org/chromium/build/annotations/CheckDiscard.java",
-    "//build/android/java/src/org/chromium/build/annotations/MainDex.java",
-  ]
-
-  main_class = "org.chromium.jni_generator.JniProcessor"
-
-  annotation_processor_deps =
-      [ "//third_party/android_deps:auto_service_processor" ]
-
-  deps = [
-    "//base:jni_java",
-    "//third_party/android_deps:com_google_auto_service_auto_service_annotations_java",
-    "//third_party/android_deps:com_google_guava_guava_java",
-    "//third_party/android_deps:com_squareup_javapoet_java",
-  ]
-}

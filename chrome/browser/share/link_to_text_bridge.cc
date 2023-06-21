@@ -4,7 +4,7 @@
 
 #include <jni.h>
 
-#include "chrome/browser/share/android/jni_headers/LinkToTextBridge_jni.h"
+#include "chrome/android/chrome_jni_headers/LinkToTextBridge_jni.h"
 #include "components/shared_highlighting/core/common/disabled_sites.h"
 #include "components/shared_highlighting/core/common/shared_highlighting_metrics.h"
 #include "content/public/browser/web_contents.h"

@@ -14,11 +14,10 @@
 #include "base/functional/callback.h"
 #include "base/memory/memory_pressure_listener.h"
 #include "base/memory/memory_pressure_monitor.h"
+#include "chrome/android/chrome_jni_headers/LongScreenshotsTabService_jni.h"
 #include "components/google/core/common/google_util.h"
 #include "components/paint_preview/browser/file_manager.h"
 #include "content/public/browser/global_routing_id.h"
-
-#include "chrome/browser/share/android/jni_headers/LongScreenshotsTabService_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "url/android/gurl_android.h"
 

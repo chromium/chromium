@@ -7,7 +7,7 @@
 #include <memory>
 #include <utility>
 
-#include "chrome/android/features/vr/base_jni_headers/VrModuleProvider_jni.h"
+#include "chrome/android/chrome_jni_headers/VrModuleProvider_jni.h"
 #include "chrome/browser/android/vr/register_jni.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"

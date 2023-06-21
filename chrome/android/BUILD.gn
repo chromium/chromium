@@ -666,14 +666,16 @@ if (current_toolchain == default_toolchain) {
     # Include sources for start_surface_java_sources.gni
     sources += start_surface_java_sources
 
-    srcjar_deps += [ ":chrome_vr_android_java_enums_srcjar" ]
+    srcjar_deps += [
+      ":chrome_jni_headers",
+      ":chrome_vr_android_java_enums_srcjar",
+    ]
 
     # Add the actual implementation where necessary so that downstream targets
     # can provide their own implementations.
     jar_excluded_patterns = [ "*/AppHooksImpl.class" ]
 
     annotation_processor_deps = [
-      "//base/android/jni_generator:jni_processor",
       "//components/module_installer/android:module_interface_processor",
       "//third_party/android_deps:dagger_processor",
     ]
@@ -1178,14 +1180,6 @@ if (current_toolchain == default_toolchain) {
     deps += chrome_junit_test_java_deps
   }
 
-  generate_jni("chrome_test_util_jni_headers") {
-    testonly = true
-    sources = [
-      "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
-      "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
-    ]
-  }
-
   # Files used by chrome integration and unit javatests.
   android_library("chrome_unit_test_util_java") {
     testonly = true
@@ -1218,11 +1212,20 @@ if (current_toolchain == default_toolchain) {
     ]
   }
 
+  generate_jni("chrome_test_util_jni") {
+    testonly = true
+    sources = [
+      "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
+      "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabsTestUtils.java",
+    ]
+  }
+
   # Files used for both chrome tests and VR/AR tests
   android_library("chrome_test_util_java") {
     testonly = true
     resources_package = "org.chromium.chrome"
 
+    srcjar_deps = [ ":chrome_test_util_jni" ]
     sources = [
       "javatests/src/org/chromium/chrome/browser/FederatedIdentityTestUtils.java",
       "javatests/src/org/chromium/chrome/browser/customtabs/CustomTabActivityTestRule.java",
@@ -1271,8 +1274,6 @@ if (current_toolchain == default_toolchain) {
       "//ui/android:ui_no_recycler_view_java",
       "//url:gurl_java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   android_resources("chrome_unit_test_java_resources") {
@@ -2343,6 +2344,7 @@ if (current_toolchain == default_toolchain) {
   # Test support code that needs access to the browser.
   android_library("browser_java_test_support") {
     testonly = true
+    srcjar_deps = [ ":test_support_jni_headers" ]
     sources = [
       "javatests/src/org/chromium/chrome/browser/ServicificationBackgroundService.java",
       "javatests/src/org/chromium/chrome/browser/offlinepages/OfflineTestUtil.java",
@@ -2372,8 +2374,6 @@ if (current_toolchain == default_toolchain) {
       "//url:gurl_java",
       "//url:origin_java",
     ]
-
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   static_library("browser_test_support") {
@@ -2442,6 +2442,10 @@ if (current_toolchain == default_toolchain) {
     if (webview_includes_weblayer) {
       deps += [ "//weblayer/browser/java:base_module_java" ]
     }
+  }
+
+  generate_jni("base_module_jni") {
+    sources = [ "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java" ]
   }
 
   # Target for classes which should be in the base module, even when //chrome code
@@ -2544,7 +2548,10 @@ if (current_toolchain == default_toolchain) {
       deps += [ "//chrome/android/modules/dev_ui/provider:java" ]
     }
 
-    srcjar_deps = [ ":chrome_product_config" ]
+    srcjar_deps = [
+      ":base_module_jni",
+      ":chrome_product_config",
+    ]
 
     # If this throws an error, try depending on
     # //content/public/android:content_main_dex_java instead.
@@ -2555,7 +2562,6 @@ if (current_toolchain == default_toolchain) {
     jar_excluded_patterns = [ "*/ProductConfig.class" ]
 
     resources_package = "org.chromium.chrome.base"
-    annotation_processor_deps = [ "//base/android/jni_generator:jni_processor" ]
   }
 
   if (android_64bit_target_cpu && skip_secondary_abi_for_cq) {
@@ -3261,8 +3267,16 @@ if (current_toolchain == default_toolchain) {
 
 generate_jni("chrome_jni_headers") {
   sources = [
-    # Files under a feature's public/ dir are included in chrome_java's source
-    # files, so include these files in chrome_jni_headers.
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/BitmapDownloadRequest.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/link_to_text/LinkToTextBridge.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabService.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/long_screenshots/bitmap_generation/LongScreenshotsTabServiceFactory.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/qrcode/QRCodeGenerationRequest.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/screenshot/EditorScreenshotTask.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/MetricsRecorder.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/NotificationManager.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/SendTabToSelfAndroidBridge.java",
+    "../browser/share/android/java/src/org/chromium/chrome/browser/share/send_tab_to_self/TargetDeviceInfo.java",
     "java/src/org/chromium/chrome/browser/ApplicationLifetime.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupAgentImpl.java",
     "java/src/org/chromium/chrome/browser/ChromeBackupWatcher.java",
@@ -3372,7 +3386,6 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/media/router/ChromeMediaRouterClient.java",
     "java/src/org/chromium/chrome/browser/metrics/LaunchMetrics.java",
     "java/src/org/chromium/chrome/browser/metrics/UmaSessionStats.java",
-    "java/src/org/chromium/chrome/browser/metrics/UmaUtils.java",
     "java/src/org/chromium/chrome/browser/metrics/VariationsSession.java",
     "java/src/org/chromium/chrome/browser/mojo/ChromeInterfaceRegistrar.java",
     "java/src/org/chromium/chrome/browser/navigation_predictor/NavigationPredictorBridge.java",
@@ -3406,6 +3419,7 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/password_manager/PasswordManagerLauncher.java",
     "java/src/org/chromium/chrome/browser/password_manager/PasswordMigrationWarningBridge.java",
     "java/src/org/chromium/chrome/browser/password_manager/settings/PasswordUIView.java",
+    "java/src/org/chromium/chrome/browser/payments/ServiceWorkerPaymentAppBridge.java",
     "java/src/org/chromium/chrome/browser/permissions/NotificationBlockedDialog.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionSettingsBridge.java",
     "java/src/org/chromium/chrome/browser/permissions/PermissionUpdateRequester.java",
@@ -3460,20 +3474,26 @@ generate_jni("chrome_jni_headers") {
     "java/src/org/chromium/chrome/browser/webapps/WebappRegistry.java",
   ]
 
+  if (enable_vr) {
+    sources += [ "features/vr/java/src/org/chromium/chrome/browser/vr/VrModuleProvider.java" ]
+  }
+
   # Used for testing only, should not be shipped to end users.
   if (enable_offline_pages_harness) {
     sources += [ "java/src/org/chromium/chrome/browser/offlinepages/evaluation/OfflinePageEvaluationBridge.java" ]
   }
+
+  public_deps = [ ":base_module_jni" ]
 }
 
-source_set("chrome_test_util_jni") {
+source_set("chrome_test_util") {
   testonly = true
   sources = [
     "javatests/src/custom_tabs_test_utils.cc",
     "javatests/src/federated_identity_test_utils.cc",
   ]
   deps = [
-    ":chrome_test_util_jni_headers",
+    ":chrome_test_util_jni",
     "//base",
     "//chrome/browser",
     "//chrome/browser/profiles:profile",
@@ -3576,7 +3596,7 @@ chrome_common_shared_library("libchromefortest") {
   sources = [ "../browser/android/chrome_entry_point_for_test.cc" ]
   deps = [
     ":browser_test_support",
-    ":chrome_test_util_jni",
+    ":chrome_test_util",
     "//base/test:test_support",
     "//chrome:chrome_android_core",
     "//chrome/browser/android/metrics:ukm_utils_for_test",
