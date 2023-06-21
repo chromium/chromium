@@ -1,0 +1,55 @@
+This is a testharness.js-based test.
+FAIL .floating-flexbox 1 assert_equals: 
+<div class="floating-flexbox" data-expected-width="100">
+      <!-- contribution: 100 -->
+      <div style="flex: 1 1 200px; width:50px;">
+        <div></div>
+      </div>
+      <!-- contribution: 50 -->
+      <div style="flex: 1 1 400px; width:50px;">
+      </div>
+    </div>
+width expected 100 but got 50
+FAIL .floating-flexbox 2 assert_equals: 
+<div class="floating-flexbox" data-expected-width="100">
+      <!-- contribution: 100px
+      starts as max(specified=200, min-content=100) = 200
+      clamped down to 50 because doesn't grow
+      clamped up to 100 because auto min size is 100
+      -->
+      <div style="flex: 0 0 50px; width: 200px;">
+        <div></div>
+      </div>
+      <!-- contribution: 50px
+      starts as max(specified=50, min-content=100) = 100
+      clamped down to 50 because doesn't grow
+      auto min size is 50, so has no effect
+      -->
+      <div style="flex: 0 0 50px; width: 50px;">
+        <div></div>
+      </div>
+    </div>
+width expected 100 but got 200
+PASS .floating-flexbox 3
+FAIL .floating-flexbox 4 assert_equals: 
+<div class="floating-flexbox" data-expected-width="450">
+      <div style="flex: 1 0 50px; width: 200px;">
+        <div></div>
+      </div>
+      <div style="flex: 2 0 150px; width: 50px; margin-left: 300px;">
+        <div></div>
+      </div>
+    </div>
+width expected 450 but got 350
+FAIL .floating-flexbox 5 assert_equals: 
+<div class="floating-flexbox" data-expected-width="450" style="row-gap: 24px; column-gap: 17px;">
+      <div style="flex: 1 0 50px; width: 200px;">
+        <div></div>
+      </div>
+      <div style="flex: 2 0 150px; width: 50px; margin-left: 300px;">
+        <div></div>
+      </div>
+    </div>
+width expected 450 but got 350
+Harness: the test ran to completion.
+

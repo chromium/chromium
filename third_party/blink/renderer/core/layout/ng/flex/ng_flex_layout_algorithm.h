@@ -116,6 +116,7 @@ class CORE_EXPORT NGFlexLayoutAlgorithm
   void AdjustButtonBaseline(LayoutUnit final_content_cross_size);
 
   MinMaxSizesResult ComputeMinMaxSizeOfRowContainer();
+  MinMaxSizesResult ComputeMinMaxSizeOfRowContainerV3();
   MinMaxSizesResult ComputeMinMaxSizeOfMultilineColumnContainer();
   // This implements 9.9.3. Flex Item Intrinsic Size Contributions, from
   // https://drafts.csswg.org/css-flexbox/#intrinsic-item-contributions.

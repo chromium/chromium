@@ -1,0 +1,96 @@
+This is a testharness.js-based test.
+FAIL .floating-flexbox 1 assert_equals: 
+<div class="floating-flexbox" data-expected-width="200">
+      <!-- min contribution: 100 -->
+      <!-- desired fraction: -0.5 -->
+      <!-- chosen fraction <=0 and desired fraction <=0 and item can shrink, so it contributes its min-content contribution -->
+      <div style="flex: 1 1 200px; width:50px; min-width:0px;">
+        <div></div>
+      </div>
+      <!-- chosen fraction <=0 and desired fraction <=0 and item can shrink, so it contributes its min-content contribution -->
+      <div style="flex: 1 1 400px; width:50px;">
+        <div></div>
+      </div>
+    </div>
+width expected 200 but got 100
+FAIL .floating-flexbox 2 assert_equals: 
+<div class="floating-flexbox" data-expected-width="200">
+      <!-- min contribution: 100 -->
+      <!-- min contribution - flex basis: -100 -->
+      <!-- desired fraction: -0.5 -->
+      <!-- chosen fraction <=0 and desired fraction <=0 and item can shrink, so it contributes its min-content contribution -->
+      <div style="flex: 1 1 200px; width:50px;">
+        <div></div>
+      </div>
+      <!-- min contribution: 100 -->
+      <!-- min contribution - flex basis: -300 -->
+      <!-- desired fraction: -300/(2*400) = -0.375 -->
+      <!-- chosen fraction <=0 and desired fraction <=0 and item can shrink, so it contributes its min-content contribution -->
+      <div style="flex: 1 2 400px; width:50px;">
+        <div></div>
+      </div>
+    </div>
+width expected 200 but got 100
+FAIL .floating-flexbox 3 assert_equals: 
+<div class="floating-flexbox" data-expected-width="200">
+      <div style="flex: 1 1 200px; width:50px; min-width: 0px;">
+        <div></div>
+      </div>
+      <div style="flex: 1 2 400px; width:50px; min-width: 0px;">
+        <div></div>
+      </div>
+    </div>
+width expected 200 but got 100
+FAIL .floating-flexbox 4 assert_equals: 
+<div class="floating-flexbox" data-expected-width="300">
+      <!-- min contribution: 100 -->
+      <!-- desired fraction: -inf -->
+      <!-- chosen fraction <= 0 and item can't shrink, so contribute flex basis -->
+      <div style="flex: 1 0 200px; width:50px;">
+        <div></div>
+      </div>
+      <!-- min contribution: 100 -->
+      <!-- desired fraction: -0.75 -->
+      <!-- chosen fraction <= 0 and item CAN shrink, so contribute min contribution -->
+      <div style="flex: 1 1 400px; width:50px;">
+        <div></div>
+      </div>
+    </div>
+width expected 300 but got 250
+PASS .floating-flexbox 5
+FAIL .floating-flexbox 6 assert_equals: 
+<div class="floating-flexbox" data-expected-width="600">
+      <!-- min contribution: 200 -->
+      <!-- desired fraction: 150px -->
+      <!-- 50 + 1*150 = 200 -->
+      <div style="flex: 1 0 50px; width: 200px;">
+        <div></div>
+      </div>
+      <!-- min contribution: 200 -->
+      <!-- desired fraction: 100px -->
+      <!-- 100 + 2*150 = 400 -->
+      <div style="flex: 2 0 100px; width: 200px;">
+        <div></div>
+      </div>
+    </div>
+width expected 600 but got 400
+FAIL .floating-flexbox 7 assert_equals: 
+<div class="floating-flexbox" data-expected-width="400">
+      <!-- min contribution: 100 -->
+      <!-- desired fraction: -0.5 -->
+      <!-- final contribution = flex base size + product = 200px + 50px*0 = 200px -->
+      <div style="flex: 0 1 200px; width: 50px;">
+        <div></div>
+      </div>
+      <!-- min contribution: 200 -->
+      <!-- desired fraction: (200px - 100px) / 2 = 50px -->
+      <!-- final contribution = flex base size + product = 100px + 50px*2 = 200px -->
+      <div style="flex: 2 0 100px; width: 200px;">
+        <div></div>
+      </div>
+    </div>
+width expected 400 but got 250
+PASS .floating-flexbox 8
+PASS .floating-flexbox 9
+Harness: the test ran to completion.
+

@@ -1208,7 +1208,6 @@ crbug.com/1299946 [ Mac12 ] external/wpt/css/css-sizing/min-content-negative-mar
 # The revisions are in https://chromium-review.googlesource.com/c/chromium/src/+/3733177/14
 # We will switch to those new versions when we are confident the new algorithm
 # is going to stick.
-crbug.com/240765 external/wpt/css/css-flexbox/gap-015.html [ Failure ]
 crbug.com/240765 external/wpt/css/css-flexbox/multiline-shrink-to-fit.html [ Failure ]
 
 # Needs "new" flex container intrinsic size algorithm to work in the block direction.
