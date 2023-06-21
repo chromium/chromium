@@ -85,6 +85,7 @@ export interface PowerBookmarksListElement {
     searchField: CrToolbarSearchFieldElement,
     shownBookmarksIronList: IronListElement,
     sortMenu: CrActionMenuElement,
+    editMenu: CrActionMenuElement,
     editDialog: PowerBookmarksEditDialogElement,
     disabledFeatureDialog: CrDialogElement,
     topLevelEmptyState: SpEmptyStateElement,
@@ -893,6 +894,12 @@ export class PowerBookmarksListElement extends PolymerElement {
     this.$.sortMenu.showAt(event.target as HTMLElement);
   }
 
+  private onShowEditMenuClicked_(event: MouseEvent) {
+    event.preventDefault();
+    event.stopPropagation();
+    this.$.editMenu.showAt(event.target as HTMLElement);
+  }
+
   private onAddNewFolderClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
@@ -912,6 +919,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onBulkEditClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
+    this.$.editMenu.close();
     this.editing_ = !this.editing_;
     if (!this.editing_) {
       this.selectedBookmarks_ = [];
@@ -1003,7 +1011,7 @@ export class PowerBookmarksListElement extends PolymerElement {
         bookmarks, moveOnly);
   }
 
-  private onEditMenuClicked_(event: MouseEvent) {
+  private onBulkEditMenuClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
     this.$.contextMenu.showAt(
@@ -1024,7 +1032,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onVisualViewClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.$.sortMenu.close();
+    this.$.editMenu.close();
     this.compact_ = false;
     this.$.shownBookmarksIronList.notifyResize();
     this.bookmarksApi_.setViewType(ViewType.kExpanded);
@@ -1036,7 +1044,7 @@ export class PowerBookmarksListElement extends PolymerElement {
   private onCompactViewClicked_(event: MouseEvent) {
     event.preventDefault();
     event.stopPropagation();
-    this.$.sortMenu.close();
+    this.$.editMenu.close();
     this.compact_ = true;
     this.$.shownBookmarksIronList.notifyResize();
     this.bookmarksApi_.setViewType(ViewType.kCompact);

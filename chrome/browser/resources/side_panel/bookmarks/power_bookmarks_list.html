@@ -227,13 +227,13 @@
           title="$i18n{tooltipNewFolder}"
           aria-label="$i18n{createNewFolderA11yLabel}"
           on-click="onAddNewFolderClicked_"></cr-icon-button>
-      <cr-icon-button slot="buttons" class="icon-edit"
+      <cr-icon-button slot="buttons" iron-icon="cr:more-vert"
           disabled="[[!shownBookmarks_.length]]"
-          title="$i18n{tooltipEdit}"
-          aria-label="$i18n{editBookmarkListA11yLabel}"
-          aria-pressed="[[editing_]]"
+          title="$i18n{tooltipMore}"
+          aria-label="$i18n{tooltipMore}"
           aria-disabled="[[!shownBookmarks_.length]]"
-          on-click="onBulkEditClicked_"></cr-icon-button>
+          on-click="onShowEditMenuClicked_">
+      </cr-icon-button>
     </sp-heading>
 
     <div class="sp-scroller"
@@ -341,7 +341,7 @@
         <cr-icon-button iron-icon="cr:more-vert"
             disabled="[[!selectedBookmarks_.length]]"
             title="$i18n{tooltipMore}" aria-label="$i18n{tooltipMore}"
-            on-click="onEditMenuClicked_">
+            on-click="onBulkEditMenuClicked_">
         </cr-icon-button>
       </div>
     </cr-toolbar-selection-overlay>
@@ -357,6 +357,13 @@
       [[getSortMenuItemLowerLabel_(item)]]
     </button>
   </template>
+</cr-action-menu>
+
+<cr-action-menu id="editMenu">
+  <button class="dropdown-item" on-click="onBulkEditClicked_">
+    <iron-icon icon="bookmarks:edit"></iron-icon>
+    $i18n{tooltipEdit}
+  </button>
   <hr>
   <button id="visualView" class="dropdown-item" on-click="onVisualViewClicked_">
     <iron-icon icon="cr:check" invisible$="[[compact_]]"></iron-icon>
