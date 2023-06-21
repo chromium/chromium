@@ -3507,10 +3507,9 @@ void BrowserAutofillManager::ProcessFieldLogEventsInForm(
         address_form_event_logger_->GetFormEvents(form_structure.global_id()));
     form_events.insert_all(credit_card_form_event_logger_->GetFormEvents(
         form_structure.global_id()));
-    bool is_in_any_main_frame = driver()->IsInAnyMainFrame();
     form_interactions_ukm_logger()->LogAutofillFormSummaryAtFormRemove(
-        form_structure, form_events, is_in_any_main_frame,
-        initial_interaction_timestamp_, form_submitted_timestamp_);
+        form_structure, form_events, initial_interaction_timestamp_,
+        form_submitted_timestamp_);
   }
 }
 

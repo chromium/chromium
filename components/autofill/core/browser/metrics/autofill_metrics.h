@@ -757,7 +757,6 @@ class AutofillMetrics {
     void LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        bool is_in_any_main_frame,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp);
     void LogFormSubmitted(bool is_for_credit_card,

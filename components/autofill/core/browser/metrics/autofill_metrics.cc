@@ -2694,7 +2694,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
     LogAutofillFormSummaryAtFormRemove(
         const FormStructure& form_structure,
         FormEventSet form_events,
-        bool is_in_any_main_frame,
         const base::TimeTicks& initial_interaction_timestamp,
         const base::TimeTicks& form_submitted_timestamp) {
   if (!CanLog()) {
@@ -2711,7 +2710,6 @@ void AutofillMetrics::FormInteractionsUkmLogger::
       .SetFormSignature(HashFormSignature(form_structure.form_signature()))
       .SetAutofillFormEvents(form_events.data()[0])
       .SetAutofillFormEvents2(form_events.data()[1])
-      .SetIsInMainframe(is_in_any_main_frame)
       .SetWasSubmitted(!form_submitted_timestamp.is_null())
       .SetSampleRate(1);
 

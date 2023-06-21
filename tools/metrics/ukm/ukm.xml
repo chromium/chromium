@@ -3573,6 +3573,10 @@ be describing additional metrics about the same event.
     </summary>
   </metric>
   <metric name="IsInMainframe" enum="Boolean">
+    <obsolete>
+      Deprecated as of 06/2023. Replaced by AutofillStatusVector in
+      Autofill2.FieldInfo.
+    </obsolete>
     <summary>
       This indicates whether the form is located in the main frame or in an
       iframe. A cross-origin autofill is prevented only because shared-autofill
