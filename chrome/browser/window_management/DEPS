@@ -4,6 +4,7 @@ specific_include_rules = {
   ],
   "window_management_browsertest\.cc": [
     "+ash/shell.h",
+    "+content/browser/renderer_host/test_render_widget_host_view_mac_factory.h",
   ],
   "window_management_permission_context_browsertest\.cc": [
     "+ash/shell.h",
