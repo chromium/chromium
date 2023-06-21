@@ -124,6 +124,14 @@ constants.FSP_ACTION_HIDDEN_ONEDRIVE_URL = 'HIDDEN_ONEDRIVE_URL';
 constants.FSP_ACTION_HIDDEN_ONEDRIVE_USER_EMAIL = 'HIDDEN_ONEDRIVE_USER_EMAIL';
 
 /**
+ * ID of the fake fileSystemProvider custom action containing OneDrive document
+ * Reauthentication Required state.
+ * @const {string}
+ */
+constants.FSP_ACTION_HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED =
+    'HIDDEN_ONEDRIVE_REAUTHENTICATION_REQUIRED';
+
+/**
  * All icon types.
  */
 constants.ICON_TYPES = {
