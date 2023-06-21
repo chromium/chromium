@@ -154,6 +154,54 @@ std::u16string GetCancelButton(NotificationType type) {
   }
 }
 
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetTimeoutNotificationTitle(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return u"Download cancelled";
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
+      return u"Transfer cancelled";
+    case dlp::FileAction::kUpload:
+      return u"Upload cancelled";
+    case dlp::FileAction::kCopy:
+      return u"Copy cancelled";
+    case dlp::FileAction::kMove:
+      return u"Move cancelled";
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return u"Open cancelled";
+  }
+}
+
+// TODO(b/279435843): Replace with translation strings.
+std::u16string GetTimeoutNotificationMessage(dlp::FileAction action) {
+  switch (action) {
+    case dlp::FileAction::kDownload:
+      return u"Confirmation was required to continue downloading your files. "
+             u"Please try again";
+    case dlp::FileAction::kTransfer:
+    case dlp::FileAction::kUnknown:
+      // TODO(crbug.com/1361900): Set proper text when file action is unknown.
+      return u"Confirmation was required to continue transferring your files. "
+             u"Please try again";
+    case dlp::FileAction::kUpload:
+      return u"Confirmation was required to continue uploading your files. "
+             u"Please try again";
+    case dlp::FileAction::kCopy:
+      return u"Confirmation was required to continue copying your files. "
+             u"Please try again";
+    case dlp::FileAction::kMove:
+      return u"Confirmation was required to continue moving your files. "
+             u"Please try again";
+    case dlp::FileAction::kOpen:
+    case dlp::FileAction::kShare:
+      return u"Confirmation was required to continue opening your files. "
+             u"Please try again";
+  }
+}
+
 // Dismisses the notification with `notification_id`.
 void Dismiss(content::BrowserContext* context,
              const std::string& notification_id) {
@@ -271,7 +319,19 @@ void FilesPolicyNotificationManager::ShowDlpWarning(
 void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
     const std::string& notification_id,
     const file_manager::io_task::ProgressStatus& status) {
-  file_manager::io_task::IOTaskId id(status.task_id);
+  const dlp::FileAction action =
+      status.type == file_manager::io_task::OperationType::kCopy
+          ? dlp::FileAction::kCopy
+          : dlp::FileAction::kMove;
+
+  if (status.HasPolicyError() &&
+      status.policy_error ==
+          file_manager::io_task::PolicyErrorType::kDlpWarningTimeout) {
+    ShowDlpWarningTimeoutNotification(action, notification_id);
+    return;
+  }
+
+  const file_manager::io_task::IOTaskId id(status.task_id);
   auto callback =
       status.HasWarning()
           ? base::BindRepeating(&FilesPolicyNotificationManager::
@@ -284,10 +344,6 @@ void FilesPolicyNotificationManager::ShowsFilesPolicyNotification(
   // The notification should stay visible until actioned upon.
   message_center::RichNotificationData optional_fields;
   optional_fields.never_timeout = true;
-  const dlp::FileAction action =
-      status.type == file_manager::io_task::OperationType::kCopy
-          ? dlp::FileAction::kCopy
-          : dlp::FileAction::kMove;
   const NotificationType type = status.HasWarning() ? NotificationType::kWarning
                                                     : NotificationType::kError;
   // TODO(aidazolic): Use # warned/blocked files for strings, not total.
@@ -332,6 +388,30 @@ void FilesPolicyNotificationManager::ShowDialog(
       task_id,
       base::BindOnce(&FilesPolicyNotificationManager::OnIOTaskTimedOut,
                      weak_factory_.GetWeakPtr(), task_id)));
+}
+
+void FilesPolicyNotificationManager::ShowDlpWarningTimeoutNotification(
+    dlp::FileAction action,
+    absl::optional<std::string> notification_id) {
+  if (!notification_id.has_value()) {
+    notification_id = GetNotificationId(notification_count_++);
+  }
+  // The notification should stay visible until dismissed.
+  message_center::RichNotificationData optional_fields;
+  optional_fields.never_timeout = true;
+  auto notification = file_manager::CreateSystemNotification(
+      notification_id.value(), GetTimeoutNotificationTitle(action),
+      GetTimeoutNotificationMessage(action),
+      base::MakeRefCounted<message_center::HandleNotificationClickDelegate>(
+          base::BindRepeating(&Dismiss, context_, notification_id.value())),
+      optional_fields);
+  notification->set_buttons(
+      {message_center::ButtonInfo(GetCancelButton(NotificationType::kError))});
+  auto* profile = Profile::FromBrowserContext(context_);
+  DCHECK(profile);
+  NotificationDisplayServiceFactory::GetForProfile(profile)->Display(
+      NotificationHandler::Type::TRANSIENT, *notification,
+      /*metadata=*/nullptr);
 }
 
 bool FilesPolicyNotificationManager::HasIOTask(

@@ -88,6 +88,13 @@ class FilesPolicyNotificationManager
   void ShowDialog(file_manager::io_task::IOTaskId task_id,
                   FilesDialogType type);
 
+  // Shows a DLP warning timeout notification for `action`. `notification_id`
+  // should have value for IO tasks. When it  doesn't have a value, i.e. for non
+  // IO tasks, computes a new unique id for the notification.
+  void ShowDlpWarningTimeoutNotification(
+      dlp::FileAction action,
+      absl::optional<std::string> notification_id = absl::nullopt);
+
   // Returns whether IO task is being tracked.
   bool HasIOTask(file_manager::io_task::IOTaskId task_id) const;
 

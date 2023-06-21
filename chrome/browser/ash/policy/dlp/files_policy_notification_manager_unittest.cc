@@ -630,6 +630,59 @@ INSTANTIATE_TEST_SUITE_P(
             file_manager::io_task::PolicyErrorType::kEnterpriseConnectors,
             u"Blocked move")));
 
+class FPNMTimeoutStatusNotification
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<file_manager::io_task::OperationType,
+                     dlp::FileAction,
+                     std::u16string,
+                     std::u16string>> {};
+
+TEST_P(FPNMTimeoutStatusNotification, TimeoutErrorShowsTimeoutNotification) {
+  auto [type, action, title, message] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+  const std::string notification_id = "notification_id";
+  EXPECT_FALSE(display_service_tester.GetNotification(notification_id));
+
+  file_manager::io_task::ProgressStatus status;
+  status.task_id = 1;
+  status.state = file_manager::io_task::State::kError;
+  status.type = type;
+  base::FilePath src_file_path_1 = temp_dir_.GetPath().AppendASCII("test1.txt");
+  ASSERT_FALSE(src_file_path_1.empty());
+  base::FilePath src_file_path_2 = temp_dir_.GetPath().AppendASCII("test2.txt");
+  ASSERT_FALSE(src_file_path_2.empty());
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_1.value()),
+                              absl::nullopt);
+  status.sources.emplace_back(CreateFileSystemURL(src_file_path_2.value()),
+                              absl::nullopt);
+  status.policy_error =
+      file_manager::io_task::PolicyErrorType::kDlpWarningTimeout;
+
+  fpnm_->ShowsFilesPolicyNotification(notification_id, status);
+  auto notification = display_service_tester.GetNotification(notification_id);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), message);
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_TRUE(notification->never_timeout());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMTimeoutStatusNotification,
+    ::testing::Values(
+        std::make_tuple(file_manager::io_task::OperationType::kCopy,
+                        dlp::FileAction::kCopy,
+                        u"Copy cancelled",
+                        u"Confirmation was required to continue copying your "
+                        u"files. Please try again"),
+        std::make_tuple(file_manager::io_task::OperationType::kMove,
+                        dlp::FileAction::kMove,
+                        u"Move cancelled",
+                        u"Confirmation was required to continue moving your "
+                        u"files. Please try again")));
+
 class FPNMShowBlockTest : public FilesPolicyNotificationManagerTest,
                           public ::testing::WithParamInterface<
                               std::tuple<dlp::FileAction, std::u16string>> {
@@ -758,5 +811,52 @@ TEST_P(FPNMShowWarningTest, ShowDlpWarningNotification_Multi) {
   EXPECT_EQ(notification->buttons()[0].title, u"Cancel");
   EXPECT_EQ(notification->buttons()[1].title, u"Review");
 }
+
+class FPNMShowTimeoutTest
+    : public FilesPolicyNotificationManagerTest,
+      public ::testing::WithParamInterface<
+          std::tuple<dlp::FileAction, std::u16string, std::u16string>> {};
+
+TEST_P(FPNMShowTimeoutTest, TimeoutErrorShowsTimeoutNotification) {
+  auto [action, title, message] = GetParam();
+  NotificationDisplayServiceTester display_service_tester(profile_.get());
+
+  EXPECT_FALSE(display_service_tester.GetNotification(kNotificationId));
+  fpnm_->ShowDlpWarningTimeoutNotification(action,
+                                           /*notification_id=*/absl::nullopt);
+  auto notification = display_service_tester.GetNotification(kNotificationId);
+  ASSERT_TRUE(notification.has_value());
+  EXPECT_EQ(notification->title(), title);
+  EXPECT_EQ(notification->message(), message);
+  EXPECT_EQ(notification->buttons()[0].title, u"Dismiss");
+  EXPECT_TRUE(notification->never_timeout());
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    PolicyFilesNotify,
+    FPNMShowTimeoutTest,
+    ::testing::Values(
+        std::make_tuple(
+            dlp::FileAction::kDownload,
+            u"Download cancelled",
+            u"Confirmation was required to continue downloading your "
+            u"files. Please try again"),
+        std::make_tuple(
+            dlp::FileAction::kTransfer,
+            u"Transfer cancelled",
+            u"Confirmation was required to continue transferring your "
+            u"files. Please try again"),
+        std::make_tuple(dlp::FileAction::kUpload,
+                        u"Upload cancelled",
+                        u"Confirmation was required to continue uploading your "
+                        u"files. Please try again"),
+        std::make_tuple(dlp::FileAction::kOpen,
+                        u"Open cancelled",
+                        u"Confirmation was required to continue opening your "
+                        u"files. Please try again"),
+        std::make_tuple(dlp::FileAction::kShare,
+                        u"Open cancelled",
+                        u"Confirmation was required to continue opening your "
+                        u"files. Please try again")));
 
 }  // namespace policy
