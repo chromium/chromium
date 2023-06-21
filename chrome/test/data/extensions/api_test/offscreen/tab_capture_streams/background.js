@@ -58,8 +58,7 @@ chrome.action.onClicked.addListener(() => {
 
       // Verify the tab is currently being captured (and test
       // `tabCapture.getCapturedTabs()`).
-      const capturedTabs =
-          await chrome.tabCapture.getCapturedTabs();
+      const capturedTabs = await chrome.tabCapture.getCapturedTabs();
       chrome.test.assertEq(1, capturedTabs.length);
       chrome.test.assertEq('active', capturedTabs[0].status);
       chrome.test.assertEq(tab.id, capturedTabs[0].tabId);
