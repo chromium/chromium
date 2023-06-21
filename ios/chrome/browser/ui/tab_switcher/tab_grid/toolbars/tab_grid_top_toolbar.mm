@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_top_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_top_toolbar.h"
 
 #import "base/check_op.h"
 #import "base/feature_list.h"
@@ -13,8 +13,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_toolbars_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -70,15 +70,17 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 }
 
 - (void)setPage:(TabGridPage)page {
-  if (_page == page)
+  if (_page == page) {
     return;
+  }
   _page = page;
   [self setItemsForTraitCollection:self.traitCollection];
 }
 
 - (void)setMode:(TabGridMode)mode {
-  if (_mode == mode)
+  if (_mode == mode) {
     return;
+  }
   // Reset search state when exiting search mode.
   if (_mode == TabGridModeSearch) {
     _searchBar.text = @"";
@@ -286,8 +288,9 @@ const CGFloat kSymbolSearchImagePointSize = 22;
 
   // In the landscape mode the search bar size should only span half of the
   // width of the toolbar.
-  if (![self shouldUseCompactLayout:traitCollection])
+  if (![self shouldUseCompactLayout:traitCollection]) {
     widthModifier = kTabGridSearchBarNonCompactWidthRatioModifier;
+  }
 
   CGFloat cancelWidth = [_cancelSearchButton.title sizeWithAttributes:@{
                           NSFontAttributeName : [UIFont
@@ -339,10 +342,11 @@ const CGFloat kSymbolSearchImagePointSize = 22;
   }
   // In Landscape normal mode leading button is always "closeAll", or "Edit" if
   // bulk actions feature is enabled.
-  if (!_undoActive)
+  if (!_undoActive) {
     _leadingButton = _editButton;
-  else
+  } else {
     _leadingButton = _closeAllOrUndoButton;
+  }
 
   if (_mode == TabGridModeSelection) {
     // In the selection mode, Done button is much smaller than SelectAll

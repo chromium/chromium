@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_page_control.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_page_control.h"
 
 #import <CoreGraphics/CoreGraphics.h>
 
@@ -277,12 +277,13 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
   // `_selectedPage` should be kept in sync with the slider position.
   TabGridPage previousSelectedPage = _selectedPage;
-  if (sliderPosition < 0.25)
+  if (sliderPosition < 0.25) {
     _selectedPage = TabGridPageIncognitoTabs;
-  else if (sliderPosition < 0.75)
+  } else if (sliderPosition < 0.75) {
     _selectedPage = TabGridPageRegularTabs;
-  else
+  } else {
     _selectedPage = TabGridPageRemoteTabs;
+  }
 
   // Hide/show the separator based on the slider position. Add a delta for the
   // comparison to avoid issues when the regular tabs are selected.
@@ -290,8 +291,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
   self.firstSeparator.hidden = sliderPosition < 0.5 + kDelta;
   self.secondSeparator.hidden = sliderPosition > 0.5 - kDelta;
 
-  if (_selectedPage != previousSelectedPage)
+  if (_selectedPage != previousSelectedPage) {
     [self updateSelectedPageAccessibility];
+  }
 }
 
 // Setters for the control's text values. These need to update three things:
@@ -365,8 +367,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
 
 - (void)touchesMoved:(NSSet<UITouch*>*)touches withEvent:(UIEvent*)event {
   [super touchesMoved:touches withEvent:event];
-  if (!self.draggingSlider)
+  if (!self.draggingSlider) {
     return;
+  }
   DCHECK(!self.multipleTouchEnabled);
   DCHECK_EQ(1U, touches.count);
   UITouch* touch = [touches anyObject];
@@ -479,8 +482,9 @@ UIImageView* ImageViewForSymbol(NSString* symbolName, bool selected) {
       [self accessibilityIdentifierForPage:self.selectedPage];
   for (UIAccessibilityElement* element in self.accessibilityElements) {
     element.accessibilityTraits = UIAccessibilityTraitButton;
-    if ([element.accessibilityIdentifier isEqualToString:selectedPageID])
+    if ([element.accessibilityIdentifier isEqualToString:selectedPageID]) {
       element.accessibilityTraits |= UIAccessibilityTraitSelected;
+    }
   }
 }
 

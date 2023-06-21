@@ -2,7 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_bottom_toolbar.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_bottom_toolbar.h"
 
 #import "base/strings/sys_string_conversions.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -10,8 +10,8 @@
 #import "ios/chrome/browser/shared/ui/util/uikit_ui_util.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/grid/grid_constants.h"
 #import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_constants.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_new_tab_button.h"
-#import "ios/chrome/browser/ui/tab_switcher/tab_grid/tab_grid_toolbars_utils.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_new_tab_button.h"
+#import "ios/chrome/browser/ui/tab_switcher/tab_grid/toolbars/tab_grid_toolbars_utils.h"
 #import "ios/chrome/browser/ui/thumb_strip/thumb_strip_feature.h"
 #import "ios/chrome/common/ui/util/constraints_ui_util.h"
 #import "ios/chrome/grit/ios_strings.h"
@@ -97,8 +97,9 @@
 #pragma mark - Public
 
 - (void)setPage:(TabGridPage)page {
-  if (_page == page)
+  if (_page == page) {
     return;
+  }
   _page = page;
   _smallNewTabButton.page = page;
   _largeNewTabButton.page = page;
@@ -108,8 +109,9 @@
 }
 
 - (void)setMode:(TabGridMode)mode {
-  if (_mode == mode)
+  if (_mode == mode) {
     return;
+  }
   _mode = mode;
   // Reset selected tabs count when mode changes.
   self.selectedTabsCount = 0;
@@ -411,8 +413,9 @@
     return;
   }
   UIBarButtonItem* leadingButton = _closeAllOrUndoButton;
-  if (!_undoActive)
+  if (!_undoActive) {
     leadingButton = _editButton;
+  }
   UIBarButtonItem* trailingButton = _doneButton;
 
   if ([self shouldUseCompactLayout]) {
