@@ -3214,6 +3214,7 @@
     {
       name: "ServiceWorkerStaticRouter",
       base_feature: "none",
+      origin_trial_feature_name: "ServiceWorkerStaticRouter",
       public: true,
     },
     {

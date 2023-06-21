@@ -226,8 +226,7 @@ void ServiceWorkerMainResourceLoader::StartRequest(
 
   bool force_race_network_request = false;
   // Check if registered static route rules match the request.
-  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter) &&
-      active_worker->router_evaluator()) {
+  if (active_worker->router_evaluator()) {
     CHECK(active_worker->router_evaluator()->IsValid());
     auto sources =
         active_worker->router_evaluator()->Evaluate(resource_request_);

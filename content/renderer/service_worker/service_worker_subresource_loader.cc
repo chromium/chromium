@@ -377,27 +377,25 @@ void ServiceWorkerSubresourceLoader::DispatchFetchEvent() {
   }
 
   bool force_race_network_request = false;
-  if (base::FeatureList::IsEnabled(features::kServiceWorkerStaticRouter)) {
-    auto* router_evaluator = controller_connector_->router_evaluator();
-    if (router_evaluator) {
-      CHECK(router_evaluator->IsValid());
-      auto sources = router_evaluator->Evaluate(resource_request_);
-      if (!sources.empty()) {  // matched the rule.
-        // TODO(crbug.com/1371756): support other sources in the full form.
-        // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
-        switch (sources[0].type) {
-          case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
-            // Network fallback is requested.
-            fallback_factory_->CreateLoaderAndStart(
-                url_loader_receiver_.Unbind(), request_id_, options_,
-                resource_request_, url_loader_client_.Unbind(),
-                traffic_annotation_);
-            delete this;
-            return;
-          case blink::ServiceWorkerRouterSource::SourceType::kRace:
-            force_race_network_request = true;
-            break;
-        }
+  auto* router_evaluator = controller_connector_->router_evaluator();
+  if (router_evaluator) {
+    CHECK(router_evaluator->IsValid());
+    auto sources = router_evaluator->Evaluate(resource_request_);
+    if (!sources.empty()) {  // matched the rule.
+      // TODO(crbug.com/1371756): support other sources in the full form.
+      // https://github.com/yoshisatoyanagisawa/service-worker-static-routing-api/blob/main/final-form.md
+      switch (sources[0].type) {
+        case blink::ServiceWorkerRouterSource::SourceType::kNetwork:
+          // Network fallback is requested.
+          fallback_factory_->CreateLoaderAndStart(
+              url_loader_receiver_.Unbind(), request_id_, options_,
+              resource_request_, url_loader_client_.Unbind(),
+              traffic_annotation_);
+          delete this;
+          return;
+        case blink::ServiceWorkerRouterSource::SourceType::kRace:
+          force_race_network_request = true;
+          break;
       }
     }
   }
