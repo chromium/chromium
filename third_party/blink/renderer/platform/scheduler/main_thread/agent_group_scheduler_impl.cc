@@ -137,13 +137,14 @@ void AgentGroupSchedulerImpl::RemoveAgent(Agent* agent) {
 }
 
 void AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint() {
-  recordreplay::Assert("[RUN-2056] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint");
+  recordreplay::Assert("[RUN-2056-2211] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Start numAgents=%d",
+    (int) agents_->size());
 
   for (Agent* agent : *agents_) {
     agent->PerformMicrotaskCheckpoint();
   }
 
-  recordreplay::Assert("[RUN-2056] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Done");
+  recordreplay::Assert("[RUN-2056-2211] AgentGroupSchedulerImpl::PerformMicrotaskCheckpoint Done");
 }
 
 }  // namespace scheduler

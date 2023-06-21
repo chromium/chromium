@@ -110,12 +110,14 @@ bool Agent::IsWindowAgent() const {
 }
 
 void Agent::PerformMicrotaskCheckpoint() {
-  recordreplay::Assert("[RUN-2056] Agent::PerformMicrotaskCheckpoint");
+  recordreplay::Assert("[RUN-2056-2211] Agent::PerformMicrotaskCheckpoint %d Start",
+    (int) RecordReplayId());
 
   event_loop_->PerformMicrotaskCheckpoint();
   rejected_promises_->ProcessQueue();
 
-  recordreplay::Assert("[RUN-2056] Agent::PerformMicrotaskCheckpoint Done");
+  recordreplay::Assert("[RUN-2056-2211] Agent::PerformMicrotaskCheckpoint %d Done",
+    (int) RecordReplayId());
 }
 
 void Agent::Dispose() {
