@@ -4,6 +4,7 @@
 
 import("//build/config/chromeos/ui_mode.gni")
 import("//chromeos/ash/components/assistant/assistant.gni")
+import("//chromeos/ash/components/scalable_iph/scalable_iph.gni")
 import("//tools/grit/grit_rule.gni")
 
 assert(is_chromeos_ash)
@@ -19,7 +20,10 @@ grit("resources") {
   ]
   output_dir = "$root_gen_dir/chromeos/ash"
 
-  defines = [ "enable_cros_libassistant=$enable_cros_libassistant" ]
+  defines = [
+    "enable_cros_libassistant=$enable_cros_libassistant",
+    "enable_cros_scalable_iph=$enable_cros_scalable_iph",
+  ]
 
   grit_flags = [
     "-E",

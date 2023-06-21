@@ -17,6 +17,9 @@
       <if expr="enable_cros_libassistant">
         <part file="assistant_resources.grdp" />
       </if>
+      <if expr="enable_cros_scalable_iph">
+        <part file="scalable_iph_unscaled_resources.grdp" />
+      </if>
     </includes>
   </release>
 </grit>

@@ -1,0 +1,7 @@
+import("//build/config/chrome_build.gni")
+import("//build/config/chromeos/ui_mode.gni")
+
+declare_args() {
+  # Enable scalable IPH.
+  enable_cros_scalable_iph = is_chromeos_ash && is_chrome_branded
+}

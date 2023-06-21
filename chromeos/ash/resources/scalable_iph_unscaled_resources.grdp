@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<grit-part>
+  <!-- Resources for Scalable IPH. -->
+  <include name="IDR_WALLPAPER_1_PNG" file="../../assistant/internal/resources/scalable_iph/1.png" type="BINDATA" />
+  <include name="IDR_WALLPAPER_2_PNG" file="../../assistant/internal/resources/scalable_iph/2.png" type="BINDATA" />
+  <include name="IDR_WALLPAPER_3_PNG" file="../../assistant/internal/resources/scalable_iph/3.png" type="BINDATA" />
+  <include name="IDR_WALLPAPER_4_PNG" file="../../assistant/internal/resources/scalable_iph/4.png" type="BINDATA" />
+</grit-part>
