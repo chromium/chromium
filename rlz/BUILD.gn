@@ -9,10 +9,6 @@ import("//build/config/chromeos/ui_mode.gni")
 import("//rlz/buildflags/buildflags.gni")
 import("//testing/test.gni")
 
-config("rlz_lib_config") {
-  defines = [ "RLZ_NETWORK_IMPLEMENTATION_CHROME_NET" ]
-}
-
 source_set("rlz_utils") {
   sources = [
     "lib/assert.cc",
@@ -148,8 +144,6 @@ if (enable_rlz_support) {
         "//chromeos/ash/components/system",
       ]
     }
-
-    public_configs = [ ":rlz_lib_config" ]
   }
 
   source_set("test_support") {

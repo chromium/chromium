@@ -41,14 +41,12 @@
 #include "rlz/win/lib/machine_deal.h"
 #endif
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 #include "base/mac/scoped_nsautorelease_pool.h"
 #include "base/threading/thread.h"
 #include "net/url_request/url_request_test_util.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "services/network/public/mojom/url_loader_factory.mojom.h"
 #include "services/network/test/test_url_loader_factory.h"
-#endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
 #include "base/files/important_file_writer.h"
@@ -574,7 +572,6 @@ TEST_F(RlzLibTest, SendFinancialPing) {
   if (!rlz_lib::SupplementaryBranding::GetBrand().empty())
     return;
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 #if BUILDFLAG(IS_APPLE)
   base::mac::ScopedNSAutoreleasePool pool;
 #endif
@@ -583,7 +580,6 @@ TEST_F(RlzLibTest, SendFinancialPing) {
 
   URLLoaderFactoryRAII set_factory(
       test_url_loader_factory.GetSafeWeakWrapper().get());
-#endif
 
   MachineDealCodeHelper::Clear();
 #if BUILDFLAG(IS_WIN)
@@ -614,8 +610,6 @@ TEST_F(RlzLibTest, SendFinancialPing) {
                              /* exclude_machine_id */ true,
                              /* skip_time_check */ true);
 }
-
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 
 void ResetURLLoaderFactory() {
   rlz_lib::SetURLLoaderFactory(nullptr);
@@ -655,7 +649,6 @@ TEST_F(RlzLibTest, SendFinancialPingDuringShutdown) {
   EXPECT_TRUE(rlz_lib::test::WasSendFinancialPingInterrupted());
   rlz_lib::test::ResetSendFinancialPingInterrupted();
 }
-#endif
 
 TEST_F(RlzLibTest, ClearProductState) {
   MachineDealCodeHelper::Clear();

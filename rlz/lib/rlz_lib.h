@@ -22,32 +22,11 @@
 #include "rlz/lib/rlz_enums.h"
 #include "rlz/lib/supplementary_branding.h"
 
-// Define one of
-// + RLZ_NETWORK_IMPLEMENTATION_WIN_INET: Uses win inet to send financial pings.
-// + RLZ_NETWORK_IMPLEMENTATION_CHROME_NET: Uses chrome's network stack to send
-//   financial pings. rlz_lib::SetURLLoaderFactory() must be called before
-//   any calls to SendFinancialPing().
-#if defined(RLZ_NETWORK_IMPLEMENTATION_WIN_INET) && \
-    defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#error Exactly one of RLZ_NETWORK_IMPLEMENTATION_WIN_INET and \
-    RLZ_NETWORK_IMPLEMENTATION_CHROME_NET should be defined.
-#endif
-#if !defined(RLZ_NETWORK_IMPLEMENTATION_WIN_INET) && \
-    !defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
-#if BUILDFLAG(IS_WIN)
-#define RLZ_NETWORK_IMPLEMENTATION_WIN_INET
-#else
-#define RLZ_NETWORK_IMPLEMENTATION_CHROME_NET
-#endif
-#endif
-
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 namespace network {
 namespace mojom {
 class URLLoaderFactory;
 }  // namespace mojom
 }  // namespace network
-#endif
 
 namespace rlz_lib {
 
@@ -72,10 +51,8 @@ const size_t kMaxRlzLength = 64;
 // The maximum length of a CGI string in bytes.
 const size_t kMaxCgiLength = 2048;
 
-#if defined(RLZ_NETWORK_IMPLEMENTATION_CHROME_NET)
 // Set the URLLoaderFactory used by SendFinancialPing().
 bool RLZ_LIB_API SetURLLoaderFactory(network::mojom::URLLoaderFactory* factory);
-#endif
 
 // RLZ storage functions.
 
@@ -170,8 +147,7 @@ bool RLZ_LIB_API ParseFinancialPingResponse(Product product,
 // This ping method should be called daily. (More frequent calls will fail).
 // Also, if there are no events, the call will succeed only once a week.
 //
-// If RLZ_NETWORK_IMPLEMENTATION_CHROME_NET is set, SetURLLoaderFactory() needs
-// to be called before calling this function.
+// SetURLLoaderFactory() needs to be called before calling this function.
 //
 // product            : The product to ping for.
 // access_points      : The access points this product affects. Array must be
