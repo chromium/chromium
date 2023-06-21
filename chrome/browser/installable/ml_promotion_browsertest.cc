@@ -617,10 +617,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallNotShown) {
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownCancelled) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
@@ -642,10 +643,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
                        MlInstallShownIgnoredNavigation) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
@@ -669,10 +671,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
                        MlInstallShownIgnoredWidgetClosed) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
@@ -693,10 +696,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
@@ -743,8 +747,9 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
 
   ExpectClasificationCallReturnResult(
       /*site_url=*/GetInstallableAppURL(),
-      /*manifest_id=*/GetInstallableAppURL(), "ShowInstallPrompt",
-      TrainingRequestId(1ll), original_web_contents);
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel, TrainingRequestId(1ll),
+      original_web_contents);
 
   // This calls unblocks the metrics tasks, allowing ML to be called. However,
   // because the web contents isn't visible, the results won't be reported yet.
@@ -773,10 +778,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
 IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
@@ -798,10 +804,11 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
   // Test that guardrails now block the install.
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
 
-  ExpectClasificationCallReturnResult(/*site_url=*/GetInstallableAppURL(),
-                                      /*manifest_id=*/GetInstallableAppURL(),
-                                      "ShowInstallPrompt",
-                                      TrainingRequestId(1ll));
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
 
   ExpectTrainingResult(TrainingRequestId(1ll),
                        webapps::MlInstallUserResponse::kBlockedGuardrails);

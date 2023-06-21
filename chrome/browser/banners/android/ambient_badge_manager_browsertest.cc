@@ -21,6 +21,7 @@
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
 #include "components/webapps/browser/installable/installable_data.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/test/browser_test.h"
 #include "net/base/url_util.h"
 #include "net/test/embedded_test_server/embedded_test_server.h"
@@ -296,7 +297,8 @@ class AmbientBadgeManagerSmartTest : public AmbientBadgeManagerBrowserTest {
 
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, ShowInstallMessages) {
   EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
-      .WillOnce(RunOnceCallback<3>(GetClassificationResult("ShowMessage")));
+      .WillOnce(RunOnceCallback<3>(GetClassificationResult(
+          MLInstallabilityPromoter::kShowInstallPromptLabel)));
 
   auto app_banner_manager = std::make_unique<TestAppBannerManager>(
       web_contents(), &mock_segmentation_service_);
@@ -322,8 +324,8 @@ IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest,
 IN_PROC_BROWSER_TEST_F(AmbientBadgeManagerSmartTest, BlockedByGuardrail) {
   EXPECT_CALL(mock_segmentation_service_, GetClassificationResult(_, _, _, _))
       .Times(testing::Exactly(3))
-      .WillRepeatedly(
-          RunOnceCallback<3>(GetClassificationResult("ShowMessage")));
+      .WillRepeatedly(RunOnceCallback<3>(GetClassificationResult(
+          MLInstallabilityPromoter::kShowInstallPromptLabel)));
 
   auto app_banner_manager = std::make_unique<TestAppBannerManager>(
       web_contents(), &mock_segmentation_service_);

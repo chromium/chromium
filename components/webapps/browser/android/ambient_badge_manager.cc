@@ -25,6 +25,7 @@
 #include "components/webapps/browser/android/shortcut_info.h"
 #include "components/webapps/browser/banners/app_banner_settings_helper.h"
 #include "components/webapps/browser/features.h"
+#include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "components/webapps/browser/webapps_client.h"
 #include "content/public/browser/web_contents.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -254,8 +255,9 @@ void AmbientBadgeManager::OnGotClassificationResult(
     return;
   }
 
-  // TODO(eirage): replace this with label type.
-  if (result.ordered_labels[0] == "ShowMessage") {
+  if (!result.ordered_labels.empty() &&
+      result.ordered_labels[0] ==
+          MLInstallabilityPromoter::kShowInstallPromptLabel) {
     if (ShouldMessageBeBlockedByGuardrail()) {
       UpdateState(State::kBlocked);
     } else {
