@@ -1336,12 +1336,6 @@ if (enable_java_templates && is_android) {
     _non_java_deps = filter_exclude(_invoker_deps, java_target_patterns)
     _java_assetres_deps = [ ":${_java_binary_target_name}__assetres" ]
 
-    if (defined(invoker.alternative_android_sdk_dep)) {
-      _android_sdk_dep = invoker.alternative_android_sdk_dep
-    } else {
-      _android_sdk_dep = default_android_sdk_dep
-    }
-
     # A package name or a manifest is required to have resources. This is
     # added so that junit tests that do not care about the package name can
     # still use resources without having to explicitly set one.
@@ -1381,7 +1375,6 @@ if (enable_java_templates && is_android) {
     compile_resources(_compile_resources_target_name) {
       deps = _non_java_deps + _java_assetres_deps +
              [ ":$_merge_manifest_target_name" ]
-      android_sdk_dep = _android_sdk_dep
       build_config_dep = ":$_build_config_target_name"
       build_config = _build_config
       if (defined(_package_name)) {
@@ -2519,12 +2512,6 @@ if (enable_java_templates && is_android) {
     }
     _generated_proguard_config = "$_base_path.resources.proguard.txt"
 
-    if (defined(invoker.alternative_android_sdk_dep)) {
-      _android_sdk_dep = invoker.alternative_android_sdk_dep
-    } else {
-      _android_sdk_dep = default_android_sdk_dep
-    }
-
     if (defined(_shared_resources_allowlist_target)) {
       _allowlist_gen_dir =
           get_label_info(_shared_resources_allowlist_target, "target_gen_dir")
@@ -2618,7 +2605,6 @@ if (enable_java_templates && is_android) {
 
       build_config = _build_config
       build_config_dep = ":$_build_config_target"
-      android_sdk_dep = _android_sdk_dep
       deps = _java_assetres_deps + _non_java_deps
 
       if (_incremental_apk) {

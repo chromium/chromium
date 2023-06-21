@@ -2149,10 +2149,7 @@ if (enable_java_templates) {
   template("compile_resources") {
     forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
 
-    _deps = invoker.deps + [
-              invoker.android_sdk_dep,
-              invoker.build_config_dep,
-            ]
+    _deps = invoker.deps + [ invoker.build_config_dep ]
     if (defined(invoker.android_manifest_dep)) {
       _deps += [ invoker.android_manifest_dep ]
     }
@@ -2167,12 +2164,14 @@ if (enable_java_templates) {
     _inputs = [
       invoker.build_config,
       android_sdk_tools_bundle_aapt2,
+      android_sdk_jar,
     ]
 
     _rebased_build_config = rebase_path(invoker.build_config, root_build_dir)
 
+    _rebased_android_sdk_jar = rebase_path(android_sdk_jar, root_build_dir)
     _args = [
-      "--include-resources=@FileArg($_rebased_build_config:android:sdk_jars)",
+      "--include-resources=$_rebased_android_sdk_jar",
       "--aapt2-path",
       rebase_path(android_sdk_tools_bundle_aapt2, root_build_dir),
       "--dependencies-res-zips=@FileArg($_rebased_build_config:deps_info:dependency_zips)",
