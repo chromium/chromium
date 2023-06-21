@@ -39,8 +39,10 @@
 #include "chromeos/ash/components/drivefs/mojom/drivefs.mojom.h"
 #include "chromeos/ash/components/drivefs/sync_status_tracker.h"
 #include "components/drive/drive_api_util.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/drive/file_errors.h"
 #include "components/drive/file_system_core_util.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/child_process_security_policy.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -281,15 +283,12 @@ extensions::api::file_manager_private::BulkPinStage DrivefsPinStageToJs(
   return extensions::api::file_manager_private::BULK_PIN_STAGE_NONE;
 }
 
-bool IsPinManagerSyncingForProfile(drivefs::pinning::PinManager* pin_manager) {
-  if (!pin_manager) {
+bool IsBulkPinningEnabledForProfile(Profile* profile) {
+  if (!profile || !profile->GetPrefs()) {
     return false;
   }
-  if (pin_manager->GetProgress().stage !=
-      drivefs::pin_manager_types::mojom::Stage::kSyncing) {
-    return false;
-  }
-  return true;
+  return profile->GetPrefs()->GetBoolean(
+      drive::prefs::kDriveFsBulkPinningEnabled);
 }
 
 drivefs::pinning::PinManager* GetPinManager(Profile* profile) {
@@ -448,11 +447,12 @@ void SingleEntryPropertiesGetterForDriveFs::OnGetFileInfo(
     properties_->available_when_metered = properties_->available_offline;
     properties_->pinned = metadata->pinned;
 
-    if (drivefs::pinning::PinManager* const pin_manager =
-            GetPinManager(running_profile_);
-        IsPinManagerSyncingForProfile(pin_manager) &&
+    if (IsBulkPinningEnabledForProfile(running_profile_) &&
         IsPathUnderMyDrive(relative_path_)) {
+      drivefs::pinning::PinManager* const pin_manager =
+          GetPinManager(running_profile_);
       if (metadata->type == drivefs::mojom::FileMetadata::Type::kDirectory &&
+          pin_manager &&
           !pin_manager->IsUntrackedPath(file_system_url_.path())) {
         // Folders can't be pinned automatically to provide a way to intercept
         // items being added to these folders. However items in the folders will
