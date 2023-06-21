@@ -263,6 +263,13 @@ static_library("test_support") {
     ]
   }
 
+  if (toolkit_views) {
+    sources += [
+      "../browser/ui/views/external_protocol_dialog_test_harness.cc",
+      "../browser/ui/views/external_protocol_dialog_test_harness.h",
+    ]
+  }
+
   if (is_chrome_branded &&
       (is_mac || is_win || (is_posix && !is_android && !is_chromeos_ash) ||
        is_fuchsia)) {
@@ -10180,6 +10187,7 @@ if (!is_android) {
         "../browser/ui/views/extensions/extensions_toolbar_container_interactive_uitest.cc",
         "../browser/ui/views/extensions/extensions_toolbar_interactive_uitest.cc",
         "../browser/ui/views/extensions/extensions_toolbar_interactive_uitest.h",
+        "../browser/ui/views/external_protocol_dialog_interactive_uitest.cc",
         "../browser/ui/views/find_bar_views_interactive_uitest.cc",
         "../browser/ui/views/frame/browser_view_focus_uitest.cc",
         "../browser/ui/views/frame/browser_view_interactive_uitest.cc",
