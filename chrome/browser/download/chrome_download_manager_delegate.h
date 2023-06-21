@@ -332,7 +332,7 @@ class ChromeDownloadManagerDelegate
   // Called after a unique file name is generated in the case that there is a
   // TARGET_CONFLICT and the new file name should be displayed to the user.
   void GenerateUniqueFileNameDone(
-      gfx::NativeWindow native_window,
+      const std::string& download_guid,
       DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
       download::PathValidationResult result,
       const base::FilePath& target_path);

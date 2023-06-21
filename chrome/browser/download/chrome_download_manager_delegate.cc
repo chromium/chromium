@@ -1101,15 +1101,13 @@ void ChromeDownloadManagerDelegate::RequestConfirmation(
         return;
       }
 
-      gfx::NativeWindow native_window = web_contents->GetTopLevelNativeWindow();
       DownloadPathReservationTracker::GetReservedPath(
           download, suggested_path, download_dir,
           base::FilePath() /* fallback_directory */, true,
           DownloadPathReservationTracker::UNIQUIFY,
           base::BindOnce(
               &ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone,
-              weak_ptr_factory_.GetWeakPtr(),
-              base::UnsafeDanglingUntriaged(native_window),
+              weak_ptr_factory_.GetWeakPtr(), download->GetGuid(),
               std::move(callback)));
       return;
     }
@@ -1199,7 +1197,7 @@ void ChromeDownloadManagerDelegate::ShowFilePickerForDownload(
 
 #if BUILDFLAG(IS_ANDROID)
 void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
-    gfx::NativeWindow native_window,
+    const std::string& download_guid,
     DownloadTargetDeterminerDelegate::ConfirmationCallback callback,
     PathValidationResult result,
     const base::FilePath& target_path) {
@@ -1208,11 +1206,19 @@ void ChromeDownloadManagerDelegate::GenerateUniqueFileNameDone(
   DCHECK_CURRENTLY_ON(content::BrowserThread::UI);
   if (download::IsPathValidationSuccessful(result)) {
     if (download_prefs_->PromptForDownload()) {
-      ShowDownloadDialog(
-          native_window, 0 /* total_bytes */,
-          DownloadLocationDialogType::NAME_CONFLICT, target_path,
-          base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
-      return;
+        download::DownloadItem* download =
+            download_manager_->GetDownloadByGuid(download_guid);
+        content::WebContents* web_contents =
+            download ? content::DownloadItemUtils::GetWebContents(download)
+                     : nullptr;
+        gfx::NativeWindow native_window =
+            web_contents ? web_contents->GetTopLevelNativeWindow() : nullptr;
+        // Null native window will be handled by ShowDownloadDialog().
+        ShowDownloadDialog(
+            native_window, 0 /* total_bytes */,
+            DownloadLocationDialogType::NAME_CONFLICT, target_path,
+            base::BindOnce(&OnDownloadDialogClosed, std::move(callback)));
+        return;
     }
 
     // If user chose not to show download location dialog, uses current unique
