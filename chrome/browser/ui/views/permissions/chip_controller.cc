@@ -127,6 +127,12 @@ void ChipController::OnPromptRemoved() {
   }
 }
 
+void ChipController::OnRequestsFinalized() {
+  if (!is_confirmation_showing_) {
+    ResetPermissionPromptChip();
+  }
+}
+
 void ChipController::OnRequestDecided(
     permissions::PermissionAction permission_action) {
   DCHECK(permission_prompt_model_);

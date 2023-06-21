@@ -48,8 +48,8 @@ class ChipController : public permissions::PermissionRequestManager::Observer,
 
   // PermissionRequestManager::Observer:
   void OnPermissionRequestManagerDestructed() override;
-
   void OnPromptRemoved() override;
+  void OnRequestsFinalized() override;
 
   void OnWebContentsChanged();
 
