@@ -2486,6 +2486,18 @@
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_OFF" desc="Label for the toggle row in ambient mode settings page when it is disabled.">
           Off
         </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_TITLE" desc="Label for the drop down menu of ambient mode duration settings.">
+         Show screen saver
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_MINUTES" desc="Label for the screen saver duration option in minutes.">
+         for <ph name="MINUTES">$1<ex>10</ex></ph> minutes
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_ONE_HOUR" desc="Label for the screen saver duration option 1 hour.">
+         for 1 hour
+        </message>
+        <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_DURATION_FOREVER" desc="Label for the screen saver duration option forever.">
+         forever
+        </message>
         <message name="IDS_PERSONALIZATION_APP_AMBIENT_MODE_TOPIC_SOURCE_TITLE" desc="Label for the radio button group of ambient mode topic source, where the screen contents come from.">
          Image source
         </message>

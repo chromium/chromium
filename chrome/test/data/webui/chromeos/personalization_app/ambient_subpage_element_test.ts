@@ -9,6 +9,7 @@ import {AlbumsSubpage, AmbientActionName, AmbientModeAlbum, AmbientObserver, Amb
 import {CrRadioButtonElement} from 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {Url} from 'chrome://resources/mojo/url/mojom/url.mojom-webui.js';
+import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertNotEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 import {TestMock} from 'chrome://webui-test/test_mock.js';
@@ -30,6 +31,14 @@ suite('AmbientSubpageTest', function() {
   let personalizationStore: TestPersonalizationStore;
   const routerOriginal = PersonalizationRouter.instance;
   const routerMock = TestMock.fromClass(PersonalizationRouter);
+
+  const enum DurationOptions {
+    FIVE_MINUTES = '5',
+    TEN_MINUTES = '10',
+    THIRTY_MINUTES = '30',
+    ONE_HOUR = '60',
+    FOREVER = '0',
+  }
 
   setup(() => {
     loadTimeData.overrideValues({
@@ -70,6 +79,12 @@ suite('AmbientSubpageTest', function() {
     personalizationStore.notifyObservers();
     await waitAfterNextRender(ambientSubpage);
     return Promise.resolve(ambientSubpage);
+  }
+
+  function selectDropDownMenuOption(select: HTMLSelectElement, value: string) {
+    select.value = value;
+    select.dispatchEvent(new CustomEvent('change'));
+    flush();
   }
 
   test('displays content', async () => {
@@ -421,34 +436,66 @@ suite('AmbientSubpageTest', function() {
     assertEquals(TemperatureUnit.kFahrenheit, action.temperatureUnit);
   });
 
-  test('sets duration when a new duration list item is clicked', async () => {
+  test('duration is default to ten minutes', async () => {
     ambientSubpageElement = await displayMainSettings(
         TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
         /*ambientModeEnabled=*/ true);
 
-    const durationList =
-        ambientSubpageElement.shadowRoot!.querySelector('duration-list');
-    assertTrue(!!durationList, 'Duration setting should be renderered');
+    const durationElement =
+        ambientSubpageElement.shadowRoot!.querySelector('ambient-duration');
+    assertTrue(!!durationElement, 'Duration setting should be renderered');
 
     const durationOptions =
-        durationList!.shadowRoot!.querySelectorAll<CrRadioButtonElement>(
-            'cr-radio-button');
+        durationElement!.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+            'option');
     assertEquals(
         5, durationOptions!.length, 'Duration should have exactly 5 options');
 
-    const optionFiveMin = durationOptions[0];
     const optionTenMin = durationOptions[1];
     assertTrue(
-        optionTenMin!.checked, 'Ten minutes option is initially selected');
+        optionTenMin!.selected, 'Ten minutes option is initially selected');
+  });
+
+  test('sets duration when a new duration option is selected', async () => {
+    ambientSubpageElement = await displayMainSettings(
+        TopicSource.kArtGallery, TemperatureUnit.kFahrenheit,
+        /*ambientModeEnabled=*/ true);
+
+    const durationElement =
+        ambientSubpageElement.shadowRoot!.querySelector<HTMLSelectElement>(
+            'ambient-duration');
+    assertTrue(!!durationElement, 'Duration setting should be renderered');
+
+    const durationMenu =
+        durationElement!.shadowRoot!.querySelector<HTMLSelectElement>(
+            '#durationOptions');
+    assertTrue(!!durationMenu, 'Duration drop-down menu should be renderered');
+
+    const durationOptions =
+        durationElement!.shadowRoot!.querySelectorAll<HTMLOptionElement>(
+            'option');
+    const optionFiveMin = durationOptions[0];
+    const optionForever = durationOptions[durationOptions.length - 1];
+
     personalizationStore.expectAction(
         AmbientActionName.SET_SCREEN_SAVER_DURATION);
-
-    optionFiveMin!.click();
-    assertTrue(optionFiveMin!.checked, 'Clicked five minutes option');
-    const action = await personalizationStore.waitForAction(
-                       AmbientActionName.SET_SCREEN_SAVER_DURATION) as
+    selectDropDownMenuOption(durationMenu, DurationOptions.FIVE_MINUTES);
+    await waitAfterNextRender(ambientSubpageElement);
+    assertTrue(optionFiveMin!.selected, 'Five minutes option is selected');
+    let action = await personalizationStore.waitForAction(
+                     AmbientActionName.SET_SCREEN_SAVER_DURATION) as
         SetScreenSaverDurationAction;
-    assertEquals(5, action.minutes, 'Five minutes option should be set');
+    assertEquals(5, action.minutes, 'Duration should be set to five minutes');
+
+    personalizationStore.expectAction(
+        AmbientActionName.SET_SCREEN_SAVER_DURATION);
+    selectDropDownMenuOption(durationMenu, DurationOptions.FOREVER);
+    await waitAfterNextRender(ambientSubpageElement);
+    assertTrue(optionForever!.selected, 'Forever option is selected');
+    action = await personalizationStore.waitForAction(
+                 AmbientActionName.SET_SCREEN_SAVER_DURATION) as
+        SetScreenSaverDurationAction;
+    assertEquals(0, action.minutes, 'Duration should be set to forever');
   });
 
   test('has main settings visible with path ambient', async () => {

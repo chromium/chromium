@@ -3,29 +3,25 @@
 // found in the LICENSE file.
 
 /**
- * @fileoverview This component is temporarily added to test the screen saver
- * duration settings.
+ * @fileoverview A polymer element that presents ambient duration settings in
+ * the ambient subpage element.
  */
 
 import '../../css/common.css.js';
 import 'chrome://resources/cr_elements/cr_radio_button/cr_radio_button.js';
 import 'chrome://resources/cr_elements/cr_radio_group/cr_radio_group.js';
 import 'chrome://resources/cr_elements/cr_shared_style.css.js';
+import 'chrome://resources/cr_elements/md_select.css.js';
 
 import {WithPersonalizationStore} from '../personalization_store.js';
 
 import {setScreenSaverDuration} from './ambient_controller.js';
+import {getTemplate} from './ambient_duration_element.html.js';
 import {getAmbientProvider} from './ambient_interface_provider.js';
-import {getTemplate} from './duration_list_element.html.js';
 
-interface DurationOption {
-  name: string;
-  label: string;
-}
-
-export class DurationList extends WithPersonalizationStore {
+export class AmbientDuration extends WithPersonalizationStore {
   static get is() {
-    return 'duration-list';
+    return 'ambient-duration';
   }
 
   static get template() {
@@ -44,28 +40,7 @@ export class DurationList extends WithPersonalizationStore {
 
       options_: {
         type: Array,
-        value: [
-          {
-            name: '5',
-            label: 'for 5 minutes[temp]',
-          },
-          {
-            name: '10',
-            label: 'for 10 minutes[temp]',
-          },
-          {
-            name: '30',
-            label: 'for 30 minutes[temp]',
-          },
-          {
-            name: '60',
-            label: 'for one hour[temp]',
-          },
-          {
-            name: '0',
-            label: 'forever[temp]',
-          },
-        ],
+        value: ['5', '10', '30', '60', '0'],
       },
 
       selectedDuration_: {
@@ -76,20 +51,46 @@ export class DurationList extends WithPersonalizationStore {
   }
 
   private duration: number|null;
-  private options_: DurationOption[];
+  private options_: string[];
   private selectedDuration_: string;
 
+  private getDurationLabel_(name: string): string {
+    switch (name) {
+      case '5':
+        return this.i18n('ambientModeDurationMinutes', 5);
+      case '10':
+        return this.i18n('ambientModeDurationMinutes', 10);
+      case '30':
+        return this.i18n('ambientModeDurationMinutes', 30);
+      case '60':
+        return this.i18n('ambientModeDurationOneHour');
+      case '0':
+        return this.i18n('ambientModeDurationForever');
+      default:
+        console.error('Unknown screen saver duration value.');
+        return '';
+    }
+  }
+
   private onDurationChanged_(value: number|null) {
-    if (value) {
+    if (typeof value == 'number') {
       this.selectedDuration_ = value.toString();
     }
   }
 
-  private setScreenSaverDuration_(minutes: number) {
+  private onOptionChanged_(): void {
+    const elem: HTMLSelectElement|null =
+        this.shadowRoot!.querySelector('#durationOptions');
+    if (elem) {
+      this.selectedDuration_ = elem.value;
+    }
+  }
+
+  private setScreenSaverDuration_(minutes: number): void {
     setScreenSaverDuration(minutes, getAmbientProvider(), this.getStore());
   }
 
-  private onSelectedDurationChanged_(value: string) {
+  private onSelectedDurationChanged_(value: string): void {
     const minutes = parseInt(value, 10);
     if (isNaN(minutes)) {
       console.warn('Unexpected duration value received', value);
@@ -97,12 +98,16 @@ export class DurationList extends WithPersonalizationStore {
     }
     this.setScreenSaverDuration_(minutes);
   }
+
+  private isEqual_(lhs: string, rhs: string): boolean {
+    return lhs === rhs;
+  }
 }
 
 declare global {
   interface HTMLElementTagNameMap {
-    'duration-list': DurationList;
+    'ambient-duration': AmbientDuration;
   }
 }
 
-customElements.define(DurationList.is, DurationList);
+customElements.define(AmbientDuration.is, AmbientDuration);
