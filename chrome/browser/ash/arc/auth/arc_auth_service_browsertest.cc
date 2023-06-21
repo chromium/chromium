@@ -610,7 +610,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundFetch) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -656,7 +655,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, SuccessfulBackgroundProxyBypass) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -677,7 +675,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest,
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
   tester.ExpectUniqueSample(
@@ -750,7 +747,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, FetchSecondaryAccountInfoSucceeds) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::USER_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
   tester.ExpectUniqueSample(
@@ -1137,7 +1133,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest, GetDemoAccount) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 
@@ -1165,7 +1160,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
   EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
 }
 
@@ -1196,7 +1190,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_TRUE(auth_instance().account_info()->auth_code.value().empty());
   EXPECT_EQ(mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
 }
 
@@ -1219,7 +1212,6 @@ IN_PROC_BROWSER_TEST_P(ArcRobotAccountAuthServiceTest,
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::ROBOT_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_TRUE(auth_instance().account_info()->is_managed);
   EXPECT_FALSE(auth_instance().sign_in_persistent_error());
 }
@@ -1242,7 +1234,6 @@ IN_PROC_BROWSER_TEST_P(ArcAuthServiceTest, ChildAccountFetch) {
   EXPECT_EQ(kFakeAuthCode, auth_instance().account_info()->auth_code.value());
   EXPECT_EQ(mojom::ChromeAccountType::CHILD_ACCOUNT,
             auth_instance().account_info()->account_type);
-  EXPECT_FALSE(auth_instance().account_info()->enrollment_token);
   EXPECT_FALSE(auth_instance().account_info()->is_managed);
 }
 

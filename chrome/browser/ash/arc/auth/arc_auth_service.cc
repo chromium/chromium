@@ -184,10 +184,6 @@ std::string GetAccountName(Profile* profile) {
       [[fallthrough]];
     case mojom::ChromeAccountType::OFFLINE_DEMO_ACCOUNT:
       return std::string();
-    // TODO(b/282761972): Remove the `ACTIVE_DIRECTORY_ACCOUNT` value below,
-    // after it's removed from the corresponding mojom enum.
-    case mojom::ChromeAccountType::ACTIVE_DIRECTORY_ACCOUNT:
-      [[fallthrough]];
     case mojom::ChromeAccountType::UNKNOWN:
       NOTREACHED();
       return std::string();
