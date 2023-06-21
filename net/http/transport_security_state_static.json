@@ -110901,8 +110901,6 @@
     { "name": "crobeauty.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "crocheteursdefrance.fr", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "crown-building.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "crunchconsulting.org", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
-    { "name": "crunchtax.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "cryptominerxhq.com", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "cryptoscope.io", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
     { "name": "cs2.ac.cn", "policy": "bulk-1-year", "mode": "force-https", "include_subdomains": true },
