@@ -731,10 +731,6 @@
       base_feature: "none",
     },
     {
-      name: "CriticalCHRestartNavigationTiming",
-      status: "stable",
-    },
-    {
       name: "CrossFramePerformanceTimeline",
       status: "experimental",
     },

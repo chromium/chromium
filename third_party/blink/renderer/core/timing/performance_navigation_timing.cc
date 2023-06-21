@@ -373,10 +373,11 @@ void PerformanceNavigationTiming::BuildJSONValue(
   builder.AddNumber("loadEventEnd", loadEventEnd());
   builder.AddString("type", type());
   builder.AddNumber("redirectCount", redirectCount());
-
   builder.AddNumber(
       "activationStart",
       PerformanceNavigationTimingActivationStart::activationStart(*this));
+  builder.AddNumber("criticalCHRestart",
+                    criticalCHRestart(builder.GetScriptState()));
 
   if (RuntimeEnabledFeatures::BackForwardCacheNotRestoredReasonsEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
@@ -389,12 +390,6 @@ void PerformanceNavigationTiming::BuildJSONValue(
   if (RuntimeEnabledFeatures::PerformanceNavigateSystemEntropyEnabled(
           ExecutionContext::From(builder.GetScriptState()))) {
     builder.Add("systemEntropy", GetSystemEntropy(GetDocumentLoader()));
-  }
-
-  if (RuntimeEnabledFeatures::CriticalCHRestartNavigationTimingEnabled(
-          ExecutionContext::From(builder.GetScriptState()))) {
-    builder.Add("criticalCHRestart",
-                criticalCHRestart(builder.GetScriptState()));
   }
 }
 
