@@ -689,6 +689,63 @@ TEST_P(SVCVideoEncoderTest, EncodeClipTemporalSvc) {
   }
 }
 
+TEST_P(SVCVideoEncoderTest, ChangeLayers) {
+  VideoEncoder::Options options;
+  options.frame_size = gfx::Size(640, 480);
+  options.bitrate = Bitrate::ConstantBitrate(1000000u);  // 1Mbps
+  options.framerate = 25;
+  options.scalability_mode = GetParam().scalability_mode;
+  std::vector<scoped_refptr<VideoFrame>> frames_to_encode;
+
+  std::vector<VideoEncoderOutput> chunks;
+  size_t total_frames_count = 80;
+
+  // Encoder all frames with 3 temporal layers and put all outputs in |chunks|
+  auto frame_duration = base::Seconds(1.0 / options.framerate.value());
+
+  VideoEncoder::OutputCB encoder_output_cb = base::BindLambdaForTesting(
+      [&](VideoEncoderOutput output,
+          absl::optional<VideoEncoder::CodecDescription> desc) {
+        chunks.push_back(std::move(output));
+      });
+
+  encoder_->Initialize(profile_, options, /*info_cb=*/base::DoNothing(),
+                       std::move(encoder_output_cb),
+                       ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  RunUntilQuit();
+
+  uint32_t color = 0x964050;
+  for (auto frame_index = 0u; frame_index < total_frames_count; frame_index++) {
+    auto timestamp = frame_index * frame_duration;
+
+    const bool reconfigure = (frame_index == total_frames_count / 2);
+    if (reconfigure) {
+      encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+      RunUntilQuit();
+
+      // Ask encoder to change SVC mode, empty output callback
+      // means the encoder should keep the old one.
+      options.scalability_mode = SVCScalabilityMode::kL1T1;
+      encoder_->ChangeOptions(
+          options, VideoEncoder::OutputCB(),
+          ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+      RunUntilQuit();
+    }
+
+    auto frame =
+        CreateFrame(options.frame_size, pixel_format_, timestamp, color);
+    color = (color << 1) + frame_index;
+    frames_to_encode.push_back(frame);
+    encoder_->Encode(frame, VideoEncoder::EncodeOptions(false),
+                     ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+    RunUntilQuit();
+  }
+
+  encoder_->Flush(ValidatingStatusCB(/* quit_run_loop_on_call */ true));
+  RunUntilQuit();
+  EXPECT_EQ(chunks.size(), total_frames_count);
+}
+
 TEST_P(H264VideoEncoderTest, ReconfigureWithResize) {
   VideoEncoder::Options options;
   gfx::Size size1(320, 200), size2(400, 240);
