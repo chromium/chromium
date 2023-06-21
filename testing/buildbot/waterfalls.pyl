@@ -6059,7 +6059,7 @@
       },
       'WebRTC Chromium Linux Tester': {
         'mixins': [
-          'linux-bionic',
+          'linux-jammy',
         ],
         'test_suites': {
           'gtest_tests': 'webrtc_chromium_tests_with_baremetal_tests',

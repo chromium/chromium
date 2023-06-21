@@ -1382,6 +1382,19 @@
       'Win11 Tests x64',
     ],
   },
+  'capture_unittests': {
+    'modifications': {
+      'WebRTC Chromium Linux Tester': {
+        'swarming': {
+          'dimension_sets': [
+            {
+              'os': 'Ubuntu-22.04|Ubuntu-18.04',
+            },
+          ],
+        },
+      },
+    },
+  },
   'cc_unittests': {
     'modifications': {
       'Linux TSan Tests': {
