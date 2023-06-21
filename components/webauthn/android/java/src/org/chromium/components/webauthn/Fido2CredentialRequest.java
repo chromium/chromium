@@ -193,7 +193,10 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
         //
         // Otherwise these requests are for security keys, and Play Services is
         // currently the best answer for those requests too.
-        if (!rkDiscouraged && isCredManEnabled()) {
+        //
+        // Payments requests are also routed to Play Services since we haven't defined how SPC works
+        // in CredMan yet.
+        if (!rkDiscouraged && !options.isPaymentCredentialCreation && isCredManEnabled()) {
             makeCredentialViaCredMan(options, origin);
             return;
         }

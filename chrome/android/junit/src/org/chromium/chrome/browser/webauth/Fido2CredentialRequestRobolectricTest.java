@@ -250,6 +250,20 @@ public class Fido2CredentialRequestRobolectricTest {
 
     @Test
     @SmallTest
+    public void testMakeCredential_paymentsEnabled_goesToPlayServices() {
+        // Calls to `context.getMainExecutor()` require API level 28 or higher.
+        Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+
+        mCreationOptions.isPaymentCredentialCreation = true;
+        mRequest.handleMakeCredentialRequest(mCreationOptions, mFrameHost, mOrigin,
+                (responseStatus, response)
+                        -> mCallback.onRegisterResponse(responseStatus, response),
+                errorStatus -> mCallback.onError(errorStatus));
+        Assert.assertTrue(mFido2ApiCallHelper.mMakeCredentialCalled);
+    }
+
+    @Test
+    @SmallTest
     public void testMakeCredential_credManEnabledUserCancel_notAllowedError() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
