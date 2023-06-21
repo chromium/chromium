@@ -5,37 +5,16 @@
 #include "third_party/blink/public/common/permissions_policy/origin_with_possible_wildcards.h"
 
 #include "base/test/gtest_util.h"
-#include "base/test/scoped_feature_list.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/blink/common/permissions_policy/permissions_policy_mojom_traits.h"
-#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/permissions_policy/permissions_policy.mojom.h"
 #include "url/gurl.h"
 #include "url/origin.h"
 
 namespace blink {
 
-class OriginWithPossibleWildcardsTest : public ::testing::TestWithParam<bool> {
- public:
-  void SetUp() override {
-    scoped_feature_list_.InitWithFeatureState(
-        blink::features::kCSPWildcardsInPermissionsPolicies,
-        IsExpandedMatchingEnabled());
-  }
-
- protected:
-  bool IsExpandedMatchingEnabled() { return GetParam(); }
-
- private:
-  base::test::ScopedFeatureList scoped_feature_list_;
-};
-
-INSTANTIATE_TEST_SUITE_P(All,
-                         OriginWithPossibleWildcardsTest,
-                         ::testing::Bool());
-
-TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
+TEST(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
   // Tuple of {origin to test, serialized value, should parse, should match,
   // description}.
   const auto& values = {
@@ -85,24 +64,23 @@ TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
       std::make_tuple(url::Origin(), "https://*.foo.com", true, false,
                       "Opaque to origin, w/ wildcard"),
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
-                      "https://foo.com:*", IsExpandedMatchingEnabled(), true,
-                      "Wildcard port match"),
+                      "https://foo.com:*", true, true, "Wildcard port match"),
       std::make_tuple(url::Origin::Create(GURL("http://foo.com")),
-                      "https://foo.com:*", IsExpandedMatchingEnabled(), false,
+                      "https://foo.com:*", true, false,
                       "Wildcard port mismatch scheme"),
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")), "https://*",
-                      IsExpandedMatchingEnabled(), true, "Wildcard host match"),
+                      true, true, "Wildcard host match"),
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
-                      "https://*:80", IsExpandedMatchingEnabled(), false,
+                      "https://*:80", true, false,
                       "Wildcard host mismatch port"),
       std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
-                      "https://*:*", IsExpandedMatchingEnabled(), true,
+                      "https://*:*", true, true,
                       "Wildcard host and port match"),
       std::make_tuple(url::Origin::Create(GURL("http://foo.com")),
-                      "https://*:*", IsExpandedMatchingEnabled(), false,
+                      "https://*:*", true, false,
                       "Wildcard host and port mismatch scheme"),
-      std::make_tuple(url::Origin::Create(GURL("https://foo.com")), "https:",
-                      IsExpandedMatchingEnabled(), true, "Scheme only match"),
+      std::make_tuple(url::Origin::Create(GURL("https://foo.com")),
+                      "https:", true, true, "Scheme only match"),
   };
   for (const auto& value : values) {
     SCOPED_TRACE(std::get<4>(value));
@@ -119,7 +97,7 @@ TEST_P(OriginWithPossibleWildcardsTest, DoesMatchOrigin) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Parse) {
+TEST(OriginWithPossibleWildcardsTest, Parse) {
   // Tuple of {serialized value, type, scheme, host, port, host_wildcard,
   // port_wildcard, should parse, description}.
   const auto& values = {
@@ -162,16 +140,15 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
                       OriginWithPossibleWildcards::NodeType::kAttribute, "", "",
                       0, false, false, false,
                       "Origin with scheme wildcard in attribute"),
-      std::make_tuple("https://*",
-                      OriginWithPossibleWildcards::NodeType::kHeader, "https",
-                      "", -1, true, false, IsExpandedMatchingEnabled(),
-                      "Origin with host wildcard in header"),
+      std::make_tuple(
+          "https://*", OriginWithPossibleWildcards::NodeType::kHeader, "https",
+          "", -1, true, false, true, "Origin with host wildcard in header"),
       std::make_tuple(
           "https://*", OriginWithPossibleWildcards::NodeType::kAttribute, "",
           "", 0, false, false, false, "Origin with host wildcard in attribute"),
       std::make_tuple("https://*.com",
                       OriginWithPossibleWildcards::NodeType::kHeader, "https",
-                      "com", -1, true, false, IsExpandedMatchingEnabled(),
+                      "com", -1, true, false, true,
                       "Origin with non-registerable host wildcard in header"),
       std::make_tuple(
           "https://*.com", OriginWithPossibleWildcards::NodeType::kAttribute,
@@ -179,8 +156,7 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
           "Origin with non-registerable host wildcard in attribute"),
       std::make_tuple("https://*.appspot.com",
                       OriginWithPossibleWildcards::NodeType::kHeader, "https",
-                      "appspot.com", -1, true, false,
-                      IsExpandedMatchingEnabled(),
+                      "appspot.com", -1, true, false, true,
                       "Origin with only private tld host wildcard in header"),
       std::make_tuple(
           "https://*.appspot.com",
@@ -221,15 +197,14 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
                       "Origin with custom port in attribute"),
       std::make_tuple("https://foo.com:*",
                       OriginWithPossibleWildcards::NodeType::kHeader, "https",
-                      "foo.com", -1, false, true, IsExpandedMatchingEnabled(),
+                      "foo.com", -1, false, true, true,
                       "Origin with port wildcard in header"),
       std::make_tuple("https://foo.com:*",
                       OriginWithPossibleWildcards::NodeType::kAttribute, "", "",
                       0, false, false, false,
                       "Origin with port wildcard in attribute"),
       std::make_tuple("https:", OriginWithPossibleWildcards::NodeType::kHeader,
-                      "https", "", -1, false, false,
-                      IsExpandedMatchingEnabled(),
+                      "https", "", -1, false, false, true,
                       "Origin with just scheme in header"),
       std::make_tuple(
           "https:", OriginWithPossibleWildcards::NodeType::kAttribute, "", "",
@@ -331,20 +306,17 @@ TEST_P(OriginWithPossibleWildcardsTest, Parse) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, SerializeAndMojom) {
+TEST(OriginWithPossibleWildcardsTest, SerializeAndMojom) {
   // Tuple of {serialized value, should parse, description}.
   const auto& values = {
       std::make_tuple("https://foo.com", true, "Origin"),
       std::make_tuple("https://foo.com:433", true, "Origin with port"),
       std::make_tuple("https://*.foo.com", true,
                       "Origin with subdomain wildcard"),
-      std::make_tuple("https://*", IsExpandedMatchingEnabled(),
-                      "Origin with host wildcard"),
-      std::make_tuple("https://foo.com:*", IsExpandedMatchingEnabled(),
-                      "Origin with port wildcard"),
+      std::make_tuple("https://*", true, "Origin with host wildcard"),
+      std::make_tuple("https://foo.com:*", true, "Origin with port wildcard"),
       std::make_tuple("foo.com", false, "Origin with just host"),
-      std::make_tuple("https:", IsExpandedMatchingEnabled(),
-                      "Origin with just scheme"),
+      std::make_tuple("https:", true, "Origin with just scheme"),
       std::make_tuple("https://192.168.0.1", true, "IPv4"),
       std::make_tuple("file://example.com", true, "File host"),
       std::make_tuple("https://[2001:db8::1]", false, "IPv6"),
@@ -367,7 +339,7 @@ TEST_P(OriginWithPossibleWildcardsTest, SerializeAndMojom) {
   }
 }
 
-TEST_P(OriginWithPossibleWildcardsTest, Opaque) {
+TEST(OriginWithPossibleWildcardsTest, Opaque) {
   EXPECT_FALSE(OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(
       url::Origin(), true));
   EXPECT_FALSE(OriginWithPossibleWildcards::FromOriginAndWildcardsForTest(

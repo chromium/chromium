@@ -385,10 +385,6 @@ BASE_FEATURE(kCORSErrorsIssueOnly,
              "CORSErrorsIssueOnly",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
-BASE_FEATURE(kCSPWildcardsInPermissionsPolicies,
-             "CSPWildcardsInPermissionsPolicies",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 // When enabled, code cache is produced asynchronously from the script execution
 // (https://crbug.com/1260908).
 BASE_FEATURE(kCacheCodeOnIdle,
