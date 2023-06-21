@@ -85,19 +85,20 @@ namespace hid {
   interface Functions {
     // Enumerate connected HID devices.
     // |options|: The properties to search for on target devices.
-    static void getDevices(GetDevicesOptions options,
-                           GetDevicesCallback callback);
+    [supportsPromises] static void getDevices(GetDevicesOptions options,
+                                              GetDevicesCallback callback);
 
     // Open a connection to an HID device for communication.
     // |deviceId|: The $(ref:HidDeviceInfo.deviceId) of the device to open.
-    static void connect(long deviceId,
-                        ConnectCallback callback);
+    [supportsPromises] static void connect(long deviceId,
+                                           ConnectCallback callback);
 
     // Disconnect from a device. Invoking operations on a device after calling
     // this is safe but has no effect.
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
-    static void disconnect(long connectionId,
-                           optional DisconnectCallback callback);
+    [supportsPromises] static void disconnect(
+        long connectionId,
+        optional DisconnectCallback callback);
 
     // Receive the next input report from the device.
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
@@ -111,17 +112,18 @@ namespace hid {
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
     // |reportId|: The report ID to use, or <code>0</code> if none.
     // |data|: The report data.
-    static void send(long connectionId,
-                     long reportId,
-                     ArrayBuffer data,
-                     SendCallback callback);
+    [supportsPromises] static void send(long connectionId,
+                                        long reportId,
+                                        ArrayBuffer data,
+                                        SendCallback callback);
 
     // Request a feature report from the device.
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
     // |reportId|: The report ID, or <code>0</code> if none.
-    static void receiveFeatureReport(long connectionId,
-                                     long reportId,
-                                     ReceiveFeatureReportCallback callback);
+    [supportsPromises] static void receiveFeatureReport(
+        long connectionId,
+        long reportId,
+        ReceiveFeatureReportCallback callback);
 
     // Send a feature report to the device.
     //
@@ -130,10 +132,10 @@ namespace hid {
     // |connectionId|: The <code>connectionId</code> returned by $(ref:connect).
     // |reportId|: The report ID to use, or <code>0</code> if none.
     // |data|: The report data.
-    static void sendFeatureReport(long connectionId,
-                                  long reportId,
-                                  ArrayBuffer data,
-                                  SendCallback callback);
+    [supportsPromises] static void sendFeatureReport(long connectionId,
+                                                     long reportId,
+                                                     ArrayBuffer data,
+                                                     SendCallback callback);
   };
 
   interface Events {

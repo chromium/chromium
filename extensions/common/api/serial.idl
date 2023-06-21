@@ -263,82 +263,90 @@ namespace serial {
     // Returns information about available serial devices on the system.
     // The list is regenerated each time this method is called.
     // |callback| : Called with the list of <code>DeviceInfo</code> objects.
-    static void getDevices(GetDevicesCallback callback);
+    [supportsPromises] static void getDevices(GetDevicesCallback callback);
 
     // Connects to a given serial port.
     // |path| : The system path of the serial port to open.
     // |options| : Port configuration options.
     // |callback| : Called when the connection has been opened.
-    static void connect(DOMString path,
-                        optional ConnectionOptions options,
-                        ConnectCallback callback);
+    [supportsPromises] static void connect(DOMString path,
+                                           optional ConnectionOptions options,
+                                           ConnectCallback callback);
 
     // Update the option settings on an open serial port connection.
     // |connectionId| : The id of the opened connection.
     // |options| : Port configuration options.
     // |callback| : Called when the configuation has completed.
-    static void update(long connectionId,
-                       ConnectionOptions options,
-                       UpdateCallback callback);
+    [supportsPromises] static void update(long connectionId,
+                                          ConnectionOptions options,
+                                          UpdateCallback callback);
 
     // Disconnects from a serial port.
     // |connectionId| : The id of the opened connection.
     // |callback| : Called when the connection has been closed.
-    static void disconnect(long connectionId, DisconnectCallback callback);
+    [supportsPromises] static void disconnect(long connectionId,
+                                              DisconnectCallback callback);
 
     // Pauses or unpauses an open connection.
     // |connectionId| : The id of the opened connection.
     // |paused| : Flag to indicate whether to pause or unpause.
     // |callback| : Called when the connection has been successfully paused or
     //              unpaused.
-    static void setPaused(long connectionId,
-                          boolean paused,
-                          SetPausedCallback callback);
+    [supportsPromises] static void setPaused(long connectionId,
+                                             boolean paused,
+                                             SetPausedCallback callback);
 
     // Retrieves the state of a given connection.
     // |connectionId| : The id of the opened connection.
     // |callback| : Called with connection state information when available.
-    static void getInfo(long connectionId, GetInfoCallback callback);
+    [supportsPromises] static void getInfo(long connectionId,
+                                           GetInfoCallback callback);
 
     // Retrieves the list of currently opened serial port connections owned by
     // the application.
     // |callback| : Called with the list of connections when available.
-    static void getConnections(GetConnectionsCallback callback);
+    [supportsPromises] static void getConnections(
+        GetConnectionsCallback callback);
 
     // Writes data to the given connection.
     // |connectionId| : The id of the connection.
     // |data| : The data to send.
     // |callback| : Called when the operation has completed.
-    static void send(long connectionId,
-                     ArrayBuffer data,
-                     SendCallback callback);
+    [supportsPromises] static void send(long connectionId,
+                                        ArrayBuffer data,
+                                        SendCallback callback);
 
     // Flushes all bytes in the given connection's input and output buffers.
-    static void flush(long connectionId, FlushCallback callback);
+    [supportsPromises] static void flush(long connectionId,
+                                         FlushCallback callback);
 
     // Retrieves the state of control signals on a given connection.
     // |connectionId| : The id of the connection.
     // |callback| : Called when the control signals are available.
-    static void getControlSignals(long connectionId,
-                                  GetControlSignalsCallback callback);
+    [supportsPromises] static void getControlSignals(
+        long connectionId,
+        GetControlSignalsCallback callback);
 
     // Sets the state of control signals on a given connection.
     // |connectionId| : The id of the connection.
     // |signals| : The set of signal changes to send to the device.
     // |callback| : Called once the control signals have been set.
-    static void setControlSignals(long connectionId,
-                                  HostControlSignals signals,
-                                  SetControlSignalsCallback callback);
+    [supportsPromises] static void setControlSignals(
+        long connectionId,
+        HostControlSignals signals,
+        SetControlSignalsCallback callback);
 
     // Suspends character transmission on a given connection and places the
     // transmission line in a break state until the clearBreak is called.
     // |connectionId| : The id of the connection.
-    static void setBreak(long connectionId, SetBreakCallback callback);
+    [supportsPromises] static void setBreak(long connectionId,
+                                            SetBreakCallback callback);
 
     // Restore character transmission on a given connection and place the
     // transmission line in a nonbreak state.
     // |connectionId| : The id of the connection.
-    static void clearBreak(long connectionId, ClearBreakCallback callback);
+    [supportsPromises] static void clearBreak(long connectionId,
+                                              ClearBreakCallback callback);
   };
 
   interface Events {

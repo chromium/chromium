@@ -147,7 +147,8 @@ namespace syncFileSystem {
     // Note this call can fail. For example, if the user is not signed in to
     // Chrome or if there is no network operation. To handle these errors it is
     // important chrome.runtime.lastError is checked in the callback.
-    static void requestFileSystem(GetFileSystemCallback callback);
+    [supportsPromises] static void requestFileSystem(
+        GetFileSystemCallback callback);
 
     // Sets the default conflict resolution policy
     // for the <code>'syncable'</code> file storage for the app.
@@ -157,34 +158,38 @@ namespace syncFileSystem {
     // the file is updated.
     // |callback| can be optionally given to know if the request has
     // succeeded or not.
-    static void setConflictResolutionPolicy(
+    [supportsPromises] static void setConflictResolutionPolicy(
         ConflictResolutionPolicy policy,
         optional ResultCallback callback);
 
     // Gets the current conflict resolution policy.
-    static void getConflictResolutionPolicy(
+    [supportsPromises] static void getConflictResolutionPolicy(
         GetConflictResolutionPolicyCallback callback);
 
     // Returns the current usage and quota in bytes
     // for the <code>'syncable'</code> file storage for the app.
-    static void getUsageAndQuota([instanceOf=DOMFileSystem] object fileSystem,
-                                 QuotaAndUsageCallback callback);
+    [supportsPromises] static void getUsageAndQuota(
+        [instanceOf=DOMFileSystem] object fileSystem,
+        QuotaAndUsageCallback callback);
 
     // Returns the $(ref:FileStatus) for the given <code>fileEntry</code>.
     // The status value can be <code>'synced'</code>,
     // <code>'pending'</code> or <code>'conflicting'</code>.
     // Note that <code>'conflicting'</code> state only happens when
     // the service's conflict resolution policy is set to <code>'manual'</code>.
-    static void getFileStatus([instanceOf=Entry] object fileEntry,
-                              GetFileStatusCallback callback);
+    [supportsPromises] static void getFileStatus(
+        [instanceOf=Entry] object fileEntry,
+        GetFileStatusCallback callback);
 
     // Returns each $(ref:FileStatus) for the given <code>fileEntry</code> array.
     // Typically called with the result from dirReader.readEntries().
-    static void getFileStatuses(object[] fileEntries,
-                                GetFileStatusesCallback callback);
+    [supportsPromises] static void getFileStatuses(
+        object[] fileEntries,
+        GetFileStatusesCallback callback);
 
     // Returns the current sync backend status.
-    static void getServiceStatus(GetServiceStatusCallback callback);
+    [supportsPromises] static void getServiceStatus(
+        GetServiceStatusCallback callback);
   };
 
   interface Events {
