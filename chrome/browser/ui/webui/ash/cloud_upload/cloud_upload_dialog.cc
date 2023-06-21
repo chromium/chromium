@@ -180,16 +180,33 @@ void HandleSignInClick(Profile* profile, absl::optional<int> button_index) {
                               kNotificationId);
 }
 
-// Show system authentication error notification to prompt the user to
-// reauthenticate to ODFS via a "Sign in" button and to communicate why their
-// file can't be opened.
-void ShowUnableToOpenNotification(Profile* profile) {
+// TODO(b/288038136): Use a notification manager to handle error notifications.
+// Show system error notification to communicate why their file can't be opened.
+// If the user needs to reauthenticate to OneDrive, prompt the user to
+// reauthenticate to ODFS via a "Sign in" button.
+void ShowUnableToOpenNotification(Profile* profile, base::File::Error error) {
+  std::string message;
+  std::vector<message_center::ButtonInfo> notification_buttons;
+  switch (error) {
+    case base::File::Error::FILE_ERROR_ACCESS_DENIED:
+      // TODO(b/288022200 b/275911611): Distinguish between reauthentication
+      // required and generic error.
+      message = kReauthenticationRequiredMessage;
+      //  Add "Sign in" button.
+      notification_buttons.emplace_back(u"Sign in");
+      break;
+    default:
+      message = kGenericErrorMessage;
+  }
+
   // TODO(b/254586358): i18n these strings.
   auto notification = ash::CreateSystemNotificationPtr(
       /*type=*/message_center::NOTIFICATION_TYPE_SIMPLE,
-      /*id=*/kNotificationId, /*title=*/u"Can't open file",
-      /*message=*/
-      u"Sign in to your Microsoft account and then try again",
+      /*id=*/kNotificationId,
+      // TODO(b/242685536) Use "files" for multi-files when support for
+      // multi-files is added.
+      /*title=*/u"Can't open file",
+      /*message=*/base::UTF8ToUTF16(message),
       /*display_source=*/
       l10n_util::GetStringUTF16(IDS_ASH_MESSAGE_CENTER_SYSTEM_APP_NAME_FILES),
       /*origin_url=*/GURL(),
@@ -202,11 +219,7 @@ void ShowUnableToOpenNotification(Profile* profile) {
       /*warning_level=*/
       message_center::SystemNotificationWarningLevel::WARNING);
 
-  //  Add "Sign in" button.
-  std::vector<message_center::ButtonInfo> notification_buttons = {
-      message_center::ButtonInfo(u"Sign in")};
   notification->set_buttons(notification_buttons);
-
   notification->set_never_timeout(true);
   NotificationDisplayService* notification_service =
       NotificationDisplayServiceFactory::GetForProfile(profile);
@@ -231,14 +244,8 @@ void OpenFileFromODFS(
             if (!profile) {
               return;
             }
-            // TODO(b/288022200 b/275911611): Distinguish between
-            // reauthentication required and generic error.
-            if (result == base::File::Error::FILE_ERROR_ACCESS_DENIED) {
-              ShowUnableToOpenNotification(profile);
-              return;
-            }
             if (result != base::File::Error::FILE_OK) {
-              // TODO(b/275911611): Add generic "failed to open" notification.
+              ShowUnableToOpenNotification(profile, result);
               return;
             }
             for (const file_system_provider::Action& action : actions) {

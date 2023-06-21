@@ -21,10 +21,6 @@ class Profile;
 
 namespace ash::cloud_upload {
 
-// TODO(b/254586358): i18n this string.
-const char kReauthenticationRequiredMessage[] =
-    "Sign in to your Microsoft account and then try again";
-
 // Creates, updates and deletes cloud upload system notifications. Ensures that
 // notifications stay in the "in progress" state for a minimum of 5 seconds, and
 // a minimum of 5 seconds for the 'complete' state unless the user chooses to

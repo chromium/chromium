@@ -47,7 +47,10 @@ enum class OfficeFilesUploadResult {
   kMaxValue = kCloudError,
 };
 
+// TODO(b/254586358): i18n these strings.
 const char kGenericErrorMessage[] = "Something went wrong. Try again.";
+const char kReauthenticationRequiredMessage[] =
+    "Sign in to your Microsoft account and then try again";
 
 // Converts an absolute FilePath into a filesystem URL.
 storage::FileSystemURL FilePathToFileSystemURL(
