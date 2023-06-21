@@ -382,6 +382,7 @@ static_library("arc_test_support") {
     ":arc",
     "//ash/constants",
     "//base",
+    "//chromeos/components/payments:test_support",
     "//components/keyed_service/content",
     "//components/prefs:test_support",
     "//components/user_prefs",
