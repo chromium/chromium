@@ -409,6 +409,7 @@ void ShellContentBrowserClient::AppendExtraCommandLineSwitches(
     switches::kEnableCrashReporter,
     switches::kExposeInternalsForTesting,
     switches::kRunWebTests,
+    switches::kTestRegisterStandardScheme,
   };
 
   command_line->CopySwitchesFrom(*base::CommandLine::ForCurrentProcess(),

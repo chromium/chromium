@@ -59,6 +59,7 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   void DisableDenyXFrameOptions() override;
   void EnableReplaceI18nInJS() override;
   std::string GetSource() override;
+  void SetSupportedScheme(base::StringPiece scheme) override;
 
   // Add the locale to the load time data defaults. May be called repeatedly.
   void EnsureLoadTimeDataDefaultsAdded();
@@ -130,6 +131,9 @@ class CONTENT_EXPORT WebUIDataSourceImpl : public URLDataSourceImpl,
   bool replace_existing_source_ = true;
   bool should_replace_i18n_in_js_ = false;
   std::set<GURL> frame_ancestors_;
+
+  // Supported scheme if not one of the default supported schemes.
+  absl::optional<std::string> supported_scheme_;
 };
 
 }  // namespace content

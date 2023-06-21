@@ -134,6 +134,16 @@ class WebUIDataSourceImpl::InternalDataSource : public URLDataSource {
   bool ShouldReplaceI18nInJS() override {
     return parent_->ShouldReplaceI18nInJS();
   }
+  bool ShouldServiceRequest(const GURL& url,
+                            BrowserContext* browser_context,
+                            int render_process_id) override {
+    if (parent_->supported_scheme_.has_value()) {
+      return url.SchemeIs(parent_->supported_scheme_.value());
+    }
+
+    return URLDataSource::ShouldServiceRequest(url, browser_context,
+                                               render_process_id);
+  }
 
  private:
   raw_ptr<WebUIDataSourceImpl> parent_;
@@ -297,6 +307,12 @@ void WebUIDataSourceImpl::EnsureLoadTimeDataDefaultsAdded() {
 
 std::string WebUIDataSourceImpl::GetSource() {
   return source_name_;
+}
+
+void WebUIDataSourceImpl::SetSupportedScheme(base::StringPiece scheme) {
+  CHECK(!supported_scheme_.has_value());
+
+  supported_scheme_ = scheme;
 }
 
 std::string WebUIDataSourceImpl::GetMimeType(const GURL& url) const {
