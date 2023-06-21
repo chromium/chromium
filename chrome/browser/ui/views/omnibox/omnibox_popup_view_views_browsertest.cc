@@ -207,13 +207,12 @@ IN_PROC_BROWSER_TEST_F(OmniboxPopupViewViewsTest, ThemeIntegration) {
   // what gets used on KDE or when switching to the "classic" theme in settings.
   UseDefaultTheme();
 
-  if (features::IsChromeRefresh2023()) {
-    // TODO(khalidpeer): Delete this clause once CR23 colors are supported on
-    //   themed clients. Currently themed clients fall back to pre-CR23 colors.
-    EXPECT_NE(selection_color_light, GetSelectedColor(browser()));
-  } else {
-    EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
-  }
+  // Given that `UseDefaultTheme()` only changes the theme on Linux (i.e. the
+  // call is a no-op on non-Linux platforms), the following test logic is
+  // limited to executing only on the Linux platform.
+#if BUILDFLAG(IS_LINUX)
+  EXPECT_EQ(selection_color_light, GetSelectedColor(browser()));
+#endif  // BUILDFLAG(IS_LINUX)
 }
 
 // Integration test for omnibox popup theming in Incognito.
