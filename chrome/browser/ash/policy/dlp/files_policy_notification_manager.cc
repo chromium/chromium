@@ -664,6 +664,7 @@ void FilesPolicyNotificationManager::HandleFilesPolicyErrorNotificationClick(
     }
   }
   Dismiss(context_, notification_id);
+  io_tasks_.erase(task_id);
 }
 
 void FilesPolicyNotificationManager::ShowDialogForIOTask(
@@ -676,6 +677,9 @@ void FilesPolicyNotificationManager::ShowDialogForIOTask(
   }
 
   ShowFilesPolicyDialog(std::ref(io_tasks_.at(task_id)), type, modal_parent);
+  if (type == FilesDialogType::kError) {
+    io_tasks_.erase(task_id);
+  }
 }
 
 void FilesPolicyNotificationManager::ShowDialogForNonIOTask(
@@ -793,7 +797,10 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
   if (!HasIOTask(status.task_id) &&
       status.state == file_manager::io_task::State::kQueued) {
     AddIOTask(status.task_id, action);
-  } else if (HasIOTask(status.task_id) && status.IsCompleted()) {
+    return;
+  }
+
+  if (HasIOTask(status.task_id) && status.IsCompleted()) {
     if (status.state == file_manager::io_task::State::kCancelled &&
         HasWarning(status.task_id)) {
       CHECK(!io_tasks_.at(status.task_id)
@@ -802,8 +809,10 @@ void FilesPolicyNotificationManager::OnIOTaskStatus(
           .Run(/*should_proceed=*/false);
       io_tasks_.at(status.task_id).warning_info.reset();
     }
-    // If it's in a terminal state, stop observing.
-    io_tasks_.erase(status.task_id);
+    // Remove only if the IOTask doesn't have any blocked file.
+    if (!HasBlockedFiles(status.task_id)) {
+      io_tasks_.erase(status.task_id);
+    }
   }
 }
 

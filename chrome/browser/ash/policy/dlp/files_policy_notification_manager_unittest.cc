@@ -318,12 +318,6 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
                              std::vector<base::FilePath>{src_file_path},
                              dlp::FileAction::kCopy);
 
-  std::map<DlpConfidentialFile, Policy> expected_blocked_files{
-      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
-
-  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
-            expected_blocked_files);
-
   // Task in progress.
   EXPECT_CALL(
       observer,
@@ -342,6 +336,14 @@ TEST_F(FilesPolicyNotificationManagerTest, ShowDlpIOBlockedFiles) {
 
   base::RunLoop().RunUntilIdle();
   io_task_controller_->RemoveObserver(&observer);
+
+  // Task is not removed after completion.
+  EXPECT_TRUE(fpnm_->HasIOTask(task_id));
+
+  std::map<DlpConfidentialFile, Policy> expected_blocked_files{
+      {DlpConfidentialFile(src_file_path), Policy::kDlp}};
+  EXPECT_EQ(fpnm_->GetIOTaskBlockedFilesForTesting(task_id),
+            expected_blocked_files);
 }
 
 // Tests that cancelling a paused IO task will run the warning callback.
