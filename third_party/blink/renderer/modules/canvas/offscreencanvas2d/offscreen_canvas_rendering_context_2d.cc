@@ -522,15 +522,15 @@ void OffscreenCanvasRenderingContext2D::setFontKerning(
   if (!GetState().HasRealizedFont())
     setFont(font());
   FontDescription::Kerning kerning;
-  String font_kerning = font_kerning_string.LowerASCII();
-  if (font_kerning == kAutoKerningString)
+  if (font_kerning_string == kAutoKerningString) {
     kerning = FontDescription::kAutoKerning;
-  else if (font_kerning == kNoneKerningString)
+  } else if (font_kerning_string == kNoneKerningString) {
     kerning = FontDescription::kNoneKerning;
-  else if (font_kerning == kNormalKerningString)
+  } else if (font_kerning_string == kNormalKerningString) {
     kerning = FontDescription::kNormalKerning;
-  else
+  } else {
     return;
+  }
 
   if (GetState().GetFontKerning() == kerning)
     return;
@@ -585,23 +585,23 @@ void OffscreenCanvasRenderingContext2D::setFontVariantCaps(
   if (!GetState().HasRealizedFont())
     setFont(font());
   FontDescription::FontVariantCaps variant_caps;
-  String variant_caps_lower = font_variant_caps_string.LowerASCII();
-  if (variant_caps_lower == kNormalVariantString)
+  if (font_variant_caps_string == kNormalVariantString) {
     variant_caps = FontDescription::kCapsNormal;
-  else if (variant_caps_lower == kSmallCapsVariantString)
+  } else if (font_variant_caps_string == kSmallCapsVariantString) {
     variant_caps = FontDescription::kSmallCaps;
-  else if (variant_caps_lower == kAllSmallCapsVariantString)
+  } else if (font_variant_caps_string == kAllSmallCapsVariantString) {
     variant_caps = FontDescription::kAllSmallCaps;
-  else if (variant_caps_lower == kPetiteVariantString)
+  } else if (font_variant_caps_string == kPetiteVariantString) {
     variant_caps = FontDescription::kPetiteCaps;
-  else if (variant_caps_lower == kAllPetiteVariantString)
+  } else if (font_variant_caps_string == kAllPetiteVariantString) {
     variant_caps = FontDescription::kAllPetiteCaps;
-  else if (variant_caps_lower == kUnicaseVariantString)
+  } else if (font_variant_caps_string == kUnicaseVariantString) {
     variant_caps = FontDescription::kUnicase;
-  else if (variant_caps_lower == kTitlingCapsVariantString)
+  } else if (font_variant_caps_string == kTitlingCapsVariantString) {
     variant_caps = FontDescription::kTitlingCaps;
-  else
+  } else {
     return;
+  }
 
   if (GetState().GetFontVariantCaps() == variant_caps)
     return;

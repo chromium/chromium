@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing basic functionalities of fontVariant for canvas assert_equals: ctx.fontVariantCaps === "titling-caps" (got normal[string], expected titling-caps[string]) expected "titling-caps" but got "normal"
-Harness: the test ran to completion.
-

@@ -1,4 +1,0 @@
-This is a testharness.js-based test.
-FAIL Testing basic functionalities of fontKerning for canvas assert_equals: ctx.fontKerning === "auto" (got normal[string], expected auto[string]) expected "auto" but got "normal"
-Harness: the test ran to completion.
-
