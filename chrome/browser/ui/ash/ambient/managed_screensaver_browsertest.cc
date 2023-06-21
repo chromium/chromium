@@ -16,8 +16,8 @@
 #include "base/command_line.h"
 #include "base/files/file_util.h"
 #include "base/path_service.h"
-#include "base/run_loop.h"
 #include "base/test/scoped_feature_list.h"
+#include "base/test/test_future.h"
 #include "base/threading/thread_restrictions.h"
 #include "chrome/browser/ash/login/lock/screen_locker_tester.h"
 #include "chrome/browser/ash/login/login_manager_test.h"
@@ -180,13 +180,14 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   }
 
   void SetDevicePolicyEnabled(bool enabled) {
-    if (enabled) {
-      device_policy_.payload()
-          .mutable_device_screensaver_login_screen_enabled()
-          ->set_device_screensaver_login_screen_enabled(enabled);
-    } else {
+    if (!enabled) {
+      // Simulate policy-group guard by clearing other policies when the managed
+      // screensaver policy is disabled.
       device_policy_.payload().Clear();
     }
+    device_policy_.payload()
+        .mutable_device_screensaver_login_screen_enabled()
+        ->set_device_screensaver_login_screen_enabled(enabled);
   }
 
   void SetDevicePolicyImageDisplayIntervalSeconds(int64_t interval) {
@@ -239,15 +240,16 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   }
 
   void SetPolicyEnabled(bool enabled) {
-    if (enabled) {
-      user_policy_mixin_.RequestPolicyUpdate()
-          ->policy_payload()
-          ->mutable_subproto1()
-          ->mutable_screensaverlockscreenenabled()
-          ->set_value(enabled);
-    } else {
+    if (!enabled) {
+      // Simulate policy-group guard by clearing other policies when the managed
+      // screensaver policy is disabled.
       user_policy_mixin_.RequestPolicyUpdate()->policy_payload()->Clear();
     }
+    user_policy_mixin_.RequestPolicyUpdate()
+        ->policy_payload()
+        ->mutable_subproto1()
+        ->mutable_screensaverlockscreenenabled()
+        ->set_value(enabled);
   }
 
   void SetPolicyImageDisplayIntervalSeconds(int64_t interval) {
@@ -293,7 +295,7 @@ class ManagedScreensaverBrowserTest : public LoginManagerTest {
   UserPolicyMixin user_policy_mixin_{&mixin_host_, test_account_id_,
                                      &policy_server_mixin_};
 
-  std::unique_ptr<base::RunLoop> run_loop_;
+  std::unique_ptr<base::test::TestFuture<void>> test_future_;
   std::unique_ptr<ScreenLockerTester> screen_locker_;
 
   base::test::ScopedFeatureList feature_list_;
@@ -314,7 +316,7 @@ class ManagedScreensaverBrowserTestForAnyScreen
       public ::testing::WithParamInterface<ManagedScreensaverBrowserTestCase> {
  public:
   void Init() {
-    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    const ManagedScreensaverBrowserTestCase test_case = GetParam();
     switch (test_case.test_type) {
       case TestType::LockScreen:
         ManagedScreensaverBrowserTest::InitializeForLockScreen();
@@ -331,8 +333,29 @@ class ManagedScreensaverBrowserTestForAnyScreen
     NOTREACHED();
   }
 
+  void SetPolicy(bool enabled) {
+    const ManagedScreensaverBrowserTestCase test_case = GetParam();
+    switch (test_case.test_type) {
+      case TestType::LockScreen:
+        SetPolicyEnabled(enabled);
+        // Set intervals to zero so that we don't rely on time during testing.
+        SetPolicyImageDisplayIntervalSeconds(0);
+        SetPolicyScreenIdleTimeoutSeconds(0);
+        RefreshUserPolicy();
+        return;
+      case TestType::LoginScreen:
+        SetDevicePolicyEnabled(enabled);
+        // Set intervals to zero so that we don't rely on time during testing.
+        SetDevicePolicyImageDisplayIntervalSeconds(0);
+        SetDevicePolicyScreenIdleTimeoutSeconds(0);
+        RefreshDevicePolicy();
+        return;
+    }
+    NOTREACHED();
+  }
+
   void SetImages(const std::vector<std::string>& images) {
-    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    const ManagedScreensaverBrowserTestCase test_case = GetParam();
     switch (test_case.test_type) {
       case TestType::LockScreen:
         SetPolicyImages(images);
@@ -340,7 +363,6 @@ class ManagedScreensaverBrowserTestForAnyScreen
         // running at the same time.
         RefreshUserPolicy();
         return;
-
       case TestType::LoginScreen:
         SetDevicePolicyImages(images);
         RefreshDevicePolicy();
@@ -350,7 +372,7 @@ class ManagedScreensaverBrowserTestForAnyScreen
   }
 
   base::FilePath GetPolicyHandlerCachePath() {
-    ManagedScreensaverBrowserTestCase test_case = GetParam();
+    const ManagedScreensaverBrowserTestCase test_case = GetParam();
     switch (test_case.test_type) {
       case TestType::LoginScreen:
         return base::PathService::CheckedGet(
@@ -380,14 +402,30 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen, BasicTest) {
   SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   AutotestAmbientApi test_api;
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/3, /*timeout=*/base::Seconds(3),
-      /*on_complete=*/run_loop_->QuitClosure(),
+      /*on_complete=*/test_future_->GetCallback(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
-  run_loop_->Run();
+  ASSERT_TRUE(test_future_->Wait());
   ASSERT_NE(nullptr, GetContainerView());
+
+  // Confirm that setting the policy to disabled cleans up the images from the
+  // filesystem.
+  SetPolicy(/*enabled=*/false);
+
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
+  test_api.WaitForPhotoTransitionAnimationCompleted(
+      /*num_completions=*/1, /*timeout=*/base::Seconds(2),
+      /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
+      /*on_timeout=*/test_future_->GetCallback());
+  ASSERT_TRUE(test_future_->Wait());
+  {
+    base::ScopedAllowBlockingForTesting allow_blocking;
+    ASSERT_EQ(0, ComputeDirectorySize(GetPolicyHandlerCachePath()));
+  }
+  ASSERT_EQ(nullptr, GetContainerView());
 }
 
 IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
@@ -397,12 +435,12 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   ui::ScopedAnimationDurationScaleMode test_duration_mode(
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
   AutotestAmbientApi test_api;
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/base::Seconds(2),
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
-      /*on_timeout=*/run_loop_->QuitClosure());
-  run_loop_->Run();
+      /*on_timeout=*/test_future_->GetCallback());
+  ASSERT_TRUE(test_future_->Wait());
 
   ASSERT_EQ(nullptr, GetContainerView());
 }
@@ -415,13 +453,13 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   AutotestAmbientApi test_api;
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   // The large image will not even be downloaded and will fail to download.
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/base::Seconds(2),
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
-      /*on_timeout=*/run_loop_->QuitClosure());
-  run_loop_->Run();
+      /*on_timeout=*/test_future_->GetCallback());
+  ASSERT_TRUE(test_future_->Wait());
   ASSERT_EQ(nullptr, GetContainerView());
 }
 
@@ -433,14 +471,14 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
       ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
   AutotestAmbientApi test_api;
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   // The invalid image is downloaded but the screensaver will not start up and
   // show images as the second image will fail to decode.
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/base::Seconds(2),
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
-      /*on_timeout=*/run_loop_->QuitClosure());
-  run_loop_->Run();
+      /*on_timeout=*/test_future_->GetCallback());
+  ASSERT_TRUE(test_future_->Wait());
   ASSERT_EQ(nullptr, GetContainerView());
 }
 
@@ -452,12 +490,12 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   SetImages({kRedImageFileName, kBlueImageFileName, kGreenImageFileName});
   AutotestAmbientApi test_api;
 
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/3, /*timeout=*/base::Seconds(3),
-      /*on_complete=*/run_loop_->QuitClosure(),
+      /*on_complete=*/test_future_->GetCallback(),
       /*on_timeout=*/base::BindOnce([]() { NOTREACHED(); }));
-  run_loop_->Run();
+  ASSERT_TRUE(test_future_->Wait());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_TRUE(ComputeDirectorySize(GetPolicyHandlerCachePath()) > 0);
@@ -465,12 +503,12 @@ IN_PROC_BROWSER_TEST_P(ManagedScreensaverBrowserTestForAnyScreen,
   ASSERT_NE(nullptr, GetContainerView());
 
   SetImages({});
-  run_loop_ = std::make_unique<base::RunLoop>();
+  test_future_ = std::make_unique<base::test::TestFuture<void>>();
   test_api.WaitForPhotoTransitionAnimationCompleted(
       /*num_completions=*/1, /*timeout=*/base::Seconds(2),
       /*on_complete=*/base::BindOnce([]() { NOTREACHED(); }),
-      /*on_timeout=*/run_loop_->QuitClosure());
-  run_loop_->Run();
+      /*on_timeout=*/test_future_->GetCallback());
+  ASSERT_TRUE(test_future_->Wait());
   {
     base::ScopedAllowBlockingForTesting allow_blocking;
     ASSERT_EQ(0, ComputeDirectorySize(GetPolicyHandlerCachePath()));
