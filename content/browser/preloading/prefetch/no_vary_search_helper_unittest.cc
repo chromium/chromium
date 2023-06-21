@@ -30,8 +30,8 @@ class NoVarySearchHelperTester final {
             blink::mojom::SpeculationInjectionWorld::kNone,
             /*prefetch_document_manager=*/nullptr);
 
-    prefetch_container->TakeStreamingURLLoader(
-        MakeServableStreamingURLLoaderForTest(std::move(head), "test body"));
+    MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                          std::move(head), "test body");
     prefetches_[url] = prefetch_container->GetWeakPtr();
     no_vary_search::SetNoVarySearchData(prefetch_container->GetWeakPtr());
     owned_prefetches_.push_back(std::move(prefetch_container));

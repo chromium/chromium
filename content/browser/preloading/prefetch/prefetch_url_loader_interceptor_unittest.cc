@@ -466,9 +466,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   // Simulate the cookie copy process starting and finishing before
   // |MaybeCreateLoader| is called.
@@ -542,9 +542,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   // Simulate the cookie copy process starting, but not finishing until after
   // |MaybeCreateLoader| is called.
@@ -627,9 +627,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
@@ -775,9 +775,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   // Advance time enough so that the response is considered stale.
   task_environment()->FastForwardBy(2 * PrefetchCacheableDuration());
@@ -833,9 +833,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
   prefetch_container->RegisterCookieListener(cookie_manager());
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   // Since the cookies associated with |kTestUrl| have changed, the prefetch can
   // no longer be served.
@@ -906,9 +906,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeSuccess)) {
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   prefetch_container->GetReader().OnIsolatedCookieCopyStart();
   prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
@@ -960,9 +960,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(ProbeFailure)) {
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   prefetch_container->GetReader().OnIsolatedCookieCopyStart();
   prefetch_container->GetReader().OnIsolatedCookieCopyComplete();
@@ -1018,9 +1018,9 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderForTest(
-          network::mojom::URLResponseHead::New(), "test body"));
+  MakeServableStreamingURLLoaderForTest(prefetch_container.get(),
+                                        network::mojom::URLResponseHead::New(),
+                                        "test body");
 
   // Simulate the cookie copy process starting, but not finishing until after
   // |MaybeCreateLoader| is called.
@@ -1104,10 +1104,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest, DISABLE_ASAN(HandleRedirects)) {
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  prefetch_container->TakeStreamingURLLoader(
-      MakeServableStreamingURLLoaderWithRedirectForTest(kTestUrl,
-                                                        kRedirectUrl));
-  prefetch_container->AddRedirectHop(kRedirectUrl);
+  MakeServableStreamingURLLoaderWithRedirectForTest(prefetch_container.get(),
+                                                    kTestUrl, kRedirectUrl);
 
   // Simulate the cookie copy process starting and finishing before
   // |MaybeCreateLoader| is called.
@@ -1218,17 +1216,8 @@ TEST_F(PrefetchURLLoaderInterceptorTest,
           /*prefetch_document_manager=*/nullptr);
   prefetch_container->SimulateAttemptAtInterceptorForTest();
 
-  auto streaming_url_loaders =
-      MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
-          kTestUrl, kRedirectUrl);
-  EXPECT_EQ(streaming_url_loaders.size(), 2U);
-
-  prefetch_container->TakeStreamingURLLoader(
-      std::move(streaming_url_loaders[0]));
-  prefetch_container->AddRedirectHop(kRedirectUrl);
-  prefetch_container->TakeStreamingURLLoader(
-      std::move(streaming_url_loaders[1]));
-  streaming_url_loaders.clear();
+  MakeServableStreamingURLLoadersWithNetworkTransitionRedirectForTest(
+      prefetch_container.get(), kTestUrl, kRedirectUrl);
 
   interceptor()->AddPrefetch(prefetch_container->GetWeakPtr());
 
