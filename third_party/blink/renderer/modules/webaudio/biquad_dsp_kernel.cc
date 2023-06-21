@@ -31,22 +31,67 @@
 #include "third_party/blink/renderer/platform/wtf/math_extras.h"
 #include "third_party/blink/renderer/platform/wtf/vector.h"
 
+#ifdef __SSE2__
+#include <immintrin.h>
+#elif defined(__ARM_NEON__)
+#include <arm_neon.h>
+#endif
+
 namespace blink {
 
 namespace {
 
 bool HasConstantValues(float* values, int frames_to_process) {
-  // TODO(crbug.com/1447094): Use SIMD to optimize this.  This would speed up
-  // processing by a factor of 4 because we can process 4 floats at a
-  // time.
-  float value = values[0];
+  // Load the initial value
+  const float value = values[0];
+  // This initialization ensures that we correctly handle the first frame and
+  // start the processing from the second frame onwards, effectively excluding
+  // the first frame from the subsequent comparisons in the non-SIMD paths
+  // it guarantees that we don't redundantly compare the first frame again
+  // during the loop execution.
+  int processed_frames = 1;
 
-  for (int k = 1; k < frames_to_process; ++k) {
-    if (values[k] != value) {
+#if defined(__SSE2__)
+  // Process 4 floats at a time using SIMD
+  __m128 value_vec = _mm_set1_ps(value);
+  // Start at 0 for byte alignment
+  for (processed_frames = 0; processed_frames < frames_to_process - 3;
+       processed_frames += 4) {
+    // Load 4 floats from memory
+    __m128 input_vec = _mm_loadu_ps(&values[processed_frames]);
+    // Compare the 4 floats with the value
+    __m128 cmp_vec = _mm_cmpneq_ps(input_vec, value_vec);
+    // Check if any of the floats are not equal to the value
+    if (_mm_movemask_ps(cmp_vec) != 0) {
       return false;
     }
   }
-
+#elif defined(__ARM_NEON__)
+  // Process 4 floats at a time using SIMD
+  float32x4_t value_vec = vdupq_n_f32(value);
+  // Start at 0 for byte alignment
+  for (processed_frames = 0; processed_frames < frames_to_process - 3;
+       processed_frames += 4) {
+    // Load 4 floats from memory
+    float32x4_t input_vec = vld1q_f32(&values[processed_frames]);
+    // Compare the 4 floats with the value
+    uint32x4_t cmp_vec = vceqq_f32(input_vec, value_vec);
+    // Accumulate the elements of the cmp_vec vector using bitwise AND
+    uint32x2_t cmp_reduced_32 =
+        vand_u32(vget_low_u32(cmp_vec), vget_high_u32(cmp_vec));
+    // Check if any of the floats are not equal to the value
+    if (vget_lane_u32(vpmin_u32(cmp_reduced_32, cmp_reduced_32), 0) == 0) {
+      return false;
+    }
+  }
+#endif
+  // Fallback implementation without SIMD optimization
+  while (processed_frames < frames_to_process) {
+    if (values[processed_frames] != value) {
+      return false;
+    }
+    processed_frames++;
+  }
   return true;
 }
 
