@@ -146,7 +146,7 @@ class NGLineBreakStrategy {
     DCHECK(!opportunities.back().HasShapeExclusions());
 
     // Try `NGScoreLineBreaker` first if it's applicable.
-    if (use_score_line_break_) {
+    if (use_score_line_break_ && score_line_break_context_->IsActive()) {
       DCHECK(RuntimeEnabledFeatures::CSSTextWrapBalanceByScoreEnabled());
       DCHECK(score_line_break_context_->LineBreakPoints().empty());
       DCHECK_EQ(score_line_break_context_->LineBreakPointsIndex(), 0u);
