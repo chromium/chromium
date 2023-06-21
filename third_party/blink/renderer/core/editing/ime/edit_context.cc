@@ -756,6 +756,15 @@ void EditContext::AttachElement(Element* element_to_attach) {
                      &Member<Element>::Get))
     return;
 
+  // Currently an EditContext can only have one associated element.
+  // However, the spec is written with the expectation that this limit may be
+  // relaxed in the future; e.g. attachedElements() returns a list. For now, the
+  // EditContext implementation still uses a list of attached_elements_, but
+  // this could be changed to just a single Element pointer. See
+  // https://w3c.github.io/edit-context/#editcontext-interface
+  CHECK(attached_elements_.empty())
+      << "An EditContext can be only be associated with a single element";
+
   attached_elements_.push_back(element_to_attach);
 }
 

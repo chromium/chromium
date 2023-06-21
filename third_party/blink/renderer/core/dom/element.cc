@@ -4119,6 +4119,14 @@ void Element::setEditContext(EditContext* edit_context,
     return;
   }
 
+  if (edit_context && edit_context->attachedElements().size() > 0 &&
+      edit_context->attachedElements()[0] != this) {
+    exception_state.ThrowDOMException(
+        DOMExceptionCode::kNotSupportedError,
+        "An EditContext can be only be associated with a single element");
+    return;
+  }
+
   // If an element is in focus when being attached to a new EditContext,
   // its old EditContext, if it has any, will get blurred,
   // and the new EditContext will automatically get focused.

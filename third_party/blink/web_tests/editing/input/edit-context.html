@@ -129,24 +129,18 @@ test(function() {
 
 test(function() {
   const editContext = new EditContext();
-
   const test = document.getElementById("test");
-  const test2 = document.getElementById("test2");
 
   test.editContext = editContext;
-  test2.editContext = editContext;
 
   assert_equals(test.editContext, editContext);
-  assert_equals(test2.editContext, editContext);
-  assert_equals(editContext.attachedElements().length, 2);
+  assert_equals(editContext.attachedElements().length, 1);
   assert_equals(editContext.attachedElements()[0], test);
-  assert_equals(editContext.attachedElements()[1], test2);
 
   test.editContext = null;
 
-  assert_equals(editContext.attachedElements().length, 1);
-  assert_equals(editContext.attachedElements()[0], test2);
-}, '.attachedElements() should return associated elements');
+  assert_equals(editContext.attachedElements().length, 0);
+}, '.attachedElements() should return associated element');
 
 test(function() {
   const editContext = new EditContext();
