@@ -252,7 +252,9 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
       host->SetBoundsRect(scroll_bounds);
 
       new_desk_button_label->SetVisible(false);
-      library_button_label->SetVisible(false);
+      if (library_button_label) {
+        library_button_label->SetVisible(false);
+      }
 
       auto* default_desk_button = bar_view_->default_desk_button();
       const gfx::Size default_desk_button_size =
@@ -278,6 +280,7 @@ class DeskBarScrollViewLayout : public views::LayoutManager {
           gfx::Rect(gfx::Point((scroll_bounds.width() - content_width) / 2,
                                kDeskBarZeroStateY),
                     default_desk_button_size));
+
       // Update this button's text since it may changes while removing a desk
       // and going back to the zero state.
       default_desk_button->UpdateLabelText();

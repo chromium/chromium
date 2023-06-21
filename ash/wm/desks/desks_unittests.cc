@@ -7803,6 +7803,15 @@ TEST_P(DesksTest, TestCustomDeskNameMetricsRecording) {
   }
 }
 
+// Tests that no crash when entering overview in guest mode. This is a
+// regression test for b/287376870.
+TEST_P(DesksTest, EnterOverviewInGuestMode) {
+  // Simulate a guest user logging in, where the session is ephemeral.
+  SimulateGuestLogin();
+
+  EnterOverview();
+}
+
 // A test class that uses a mock time test environment.
 class DesksMockTimeTest : public DesksTest {
  public:
