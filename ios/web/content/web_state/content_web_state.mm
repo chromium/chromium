@@ -27,6 +27,8 @@
 #import "services/network/public/mojom/referrer_policy.mojom-shared.h"
 #import "skia/ext/skia_utils_ios.h"
 #import "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
+#import "ui/display/display.h"
+#import "ui/display/screen.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -579,30 +581,43 @@ void ContentWebState::AddNewContents(
 }
 
 int ContentWebState::GetTopControlsHeight() {
-  return [web_view_ maxViewportInsets].top;
+  return ([web_view_ maxViewportInsets].top -
+          [web_view_ minViewportInsets].top) *
+         display::Screen::GetScreen()
+             ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
+             .device_scale_factor();
 }
 
 int ContentWebState::GetTopControlsMinHeight() {
-  return [web_view_ minViewportInsets].top;
+  return 0;
 }
 
 int ContentWebState::GetBottomControlsHeight() {
-  return [web_view_ maxViewportInsets].bottom;
+  return ([web_view_ maxViewportInsets].bottom -
+          [web_view_ minViewportInsets].bottom) *
+         display::Screen::GetScreen()
+             ->GetDisplayNearestWindow(web_contents_->GetTopLevelNativeWindow())
+             .device_scale_factor();
 }
 
 int ContentWebState::GetBottomControlsMinHeight() {
-  return [web_view_ minViewportInsets].bottom;
+  return 0;
 }
 
 bool ContentWebState::ShouldAnimateBrowserControlsHeightChanges() {
-  return false;
+  return true;
 }
 
 bool ContentWebState::DoBrowserControlsShrinkRendererSize(
     content::WebContents* web_contents) {
+  // We want to remain consistent while scroll is in progress because
+  // we only resize the WebContents at the end of a gesture.
+  if (top_control_scroll_in_progress_) {
+    return cached_shrink_controls_;
+  }
   UIScrollView* web_contents_view = base::mac::ObjCCastStrict<UIScrollView>(
       web_contents->GetNativeView().Get());
-  if (web_contents_view.contentInset.top > GetTopControlsMinHeight()) {
+  if (web_contents_view.contentInset.top > [web_view_ minViewportInsets].top) {
     return true;
   }
   return false;
@@ -610,6 +625,14 @@ bool ContentWebState::DoBrowserControlsShrinkRendererSize(
 
 bool ContentWebState::OnlyExpandTopControlsAtPageTop() {
   return false;
+}
+
+void ContentWebState::SetTopControlsGestureScrollInProgress(bool in_progress) {
+  if (in_progress) {
+    cached_shrink_controls_ =
+        DoBrowserControlsShrinkRendererSize(web_contents_.get());
+  }
+  top_control_scroll_in_progress_ = in_progress;
 }
 
 }  // namespace web

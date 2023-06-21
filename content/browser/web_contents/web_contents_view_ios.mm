@@ -226,6 +226,9 @@ void WebContentsViewIOS::RenderViewHostChanged(RenderViewHost* old_host,
     static_cast<RenderWidgetHostViewIOS*>(rwhv)->UpdateNativeViewTree(
         GetNativeView());
   }
+  web_contents_->UpdateBrowserControlsState(cc::BrowserControlsState::kBoth,
+                                            cc::BrowserControlsState::kHidden,
+                                            false);
 }
 
 void WebContentsViewIOS::SetOverscrollControllerEnabled(bool enabled) {}

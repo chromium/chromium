@@ -24,6 +24,19 @@
 @synthesize minViewportInsets = _minViewportInsets;
 @synthesize maxViewportInsets = _maxViewportInsets;
 
+- (id)init {
+  if ((self = [super init])) {
+    // TODO(crbug.com/1456195): `updateMinViewportInsets` is not called when
+    // FullscreenSmoothScrollingDefault is disabled, so we populate them here.
+    // We cannot load them from FullscreenController because that would make
+    // this code dependant on UI. Rather we will need to propagated the values
+    // down to the active WebState.
+    _minViewportInsets = UIEdgeInsetsMake(79, 0, 0, 0);
+    _maxViewportInsets = UIEdgeInsetsMake(109, 0, 78, 0);
+  }
+  return self;
+}
+
 - (UIView<CRWViewportAdjustment>*)fullscreenViewportAdjuster {
   return self;
 }

@@ -5,6 +5,7 @@
 #import "ios/web/common/features.h"
 
 #import "base/metrics/field_trial_params.h"
+#import "build/blink_buildflags.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -83,7 +84,12 @@ BASE_FEATURE(kEnableWebInspector,
 
 BASE_FEATURE(kSmoothScrollingDefault,
              "FullscreenSmoothScrollingDefault",
-             base::FEATURE_ENABLED_BY_DEFAULT);
+#if BUILDFLAG(USE_BLINK)
+             base::FEATURE_DISABLED_BY_DEFAULT
+#else
+             base::FEATURE_ENABLED_BY_DEFAULT
+#endif
+);
 
 BASE_FEATURE(kEnableSessionSerializationOptimizations,
              "EnableSessionSerializationOptimizations",

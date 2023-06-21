@@ -39,7 +39,10 @@ source_set("common") {
 }
 
 source_set("features") {
-  deps = [ "//base" ]
+  deps = [
+    "//base",
+    "//build:blink_buildflags",
+  ]
   sources = [
     "features.h",
     "features.mm",

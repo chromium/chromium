@@ -301,10 +301,6 @@ bool IsTesting() {
 - (void)updateView:(UIScrollView*)view {
   [view addSubview:self];
   view.scrollEnabled = NO;
-  CGRect parentBounds = [view bounds];
-  CGRect frameBounds = CGRectZero;
-  frameBounds.size = parentBounds.size;
-  self.frame = frameBounds;
   // Remove all existing gestureRecognizers since the header might be reused.
   for (UIGestureRecognizer* recognizer in view.gestureRecognizers) {
     [view removeGestureRecognizer:recognizer];
@@ -352,6 +348,7 @@ RenderWidgetHostViewIOS::RenderWidgetHostViewIOS(RenderWidgetHost* widget)
       host()->GetFrameSinkId());
 
   if (IsTesting()) {
+    view_bounds_ = gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting);
     browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
   }
 
@@ -431,12 +428,7 @@ bool RenderWidgetHostViewIOS::HasFocus() {
 }
 
 gfx::Rect RenderWidgetHostViewIOS::GetViewBounds() {
-  // When testing, we will not have a windowScene and, as a consequence, we will
-  // not have an intrinsic renderer size. This will cause tests to fail, though,
-  // so we will instead set a default size.
-  return IsTesting()
-             ? gfx::Rect(kDefaultWidthForTesting, kDefaultHeightForTesting)
-             : gfx::Rect([ui_view_->view_ bounds]);
+  return view_bounds_;
 }
 blink::mojom::PointerLockResult RenderWidgetHostViewIOS::LockMouse(bool) {
   return {};
@@ -545,8 +537,7 @@ gfx::Rect RenderWidgetHostViewIOS::GetBoundsInRootWindow() {
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetRequestedRendererSize() {
-  return !IsTesting() ? browser_compositor_->GetRendererSize()
-                      : GetViewBounds().size();
+  return GetViewBounds().size();
 }
 
 absl::optional<DisplayFeature> RenderWidgetHostViewIOS::GetDisplayFeature() {
@@ -597,7 +588,8 @@ RenderWidgetHostViewIOS::CollectSurfaceIdsForEviction() {
 }
 
 void RenderWidgetHostViewIOS::UpdateScreenInfo() {
-  browser_compositor_->UpdateSurfaceFromUIView(GetViewBounds().size());
+  browser_compositor_->UpdateSurfaceFromUIView(
+      gfx::Rect([ui_view_->view_ bounds]).size());
   RenderWidgetHostViewBase::UpdateScreenInfo();
 }
 
@@ -815,6 +807,7 @@ bool RenderWidgetHostViewIOS::CanResignFirstResponderForTesting() const {
 void RenderWidgetHostViewIOS::UpdateNativeViewTree(gfx::NativeView view) {
   if (view) {
     [ui_view_->view_ updateView:(UIScrollView*)view.Get()];
+    UpdateFrameBounds();
   } else {
     [ui_view_->view_ removeView];
   }
@@ -897,14 +890,25 @@ void RenderWidgetHostViewIOS::GestureEventAck(
   switch (event.GetType()) {
     case blink::WebInputEvent::Type::kGestureScrollBegin:
       is_scrolling_ = true;
+      if (host()->delegate()) {
+        host()->delegate()->SetTopControlsGestureScrollInProgress(true);
+      }
       [[scrollView delegate] scrollViewWillBeginDragging:scrollView];
       break;
     case blink::WebInputEvent::Type::kGestureScrollUpdate:
       if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-        ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset);
+        ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
+                                     /*force=*/false);
       }
       break;
     case blink::WebInputEvent::Type::kGestureScrollEnd: {
+      // Make sure our cached view bounds gets updated.
+      if (!IsTesting()) {
+        view_bounds_ = gfx::Rect([ui_view_->view_ bounds]);
+      }
+      if (host()->delegate()) {
+        host()->delegate()->SetTopControlsGestureScrollInProgress(false);
+      }
       is_scrolling_ = false;
       CGPoint targetOffset = [scrollView contentOffset];
       [[scrollView delegate] scrollViewWillEndDragging:scrollView
@@ -925,35 +929,42 @@ void RenderWidgetHostViewIOS::ChildDidAckGestureEvent(
     blink::mojom::InputEventResultState ack_result,
     blink::mojom::ScrollResultDataPtr scroll_result_data) {
   if (scroll_result_data && scroll_result_data->root_scroll_offset) {
-    ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset);
+    ApplyRootScrollOffsetChanged(*scroll_result_data->root_scroll_offset,
+                                 /*force=*/false);
   }
 }
 
-void RenderWidgetHostViewIOS::ApplyRootScrollOffsetChanged(
-    const gfx::PointF& root_scroll_offset) {
-  UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
-  gfx::PointF scrollOffset = root_scroll_offset;
-  UIEdgeInsets insets = [scrollView contentInset];
-  scrollOffset.Offset(insets.left, insets.top);
+void RenderWidgetHostViewIOS::UpdateFrameBounds() {
+  // UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
+  gfx::PointF scrollOffset;
+  if (last_root_scroll_offset_) {
+    scrollOffset = *last_root_scroll_offset_;
+  }
   CGRect parentBounds = [[ui_view_->view_ superview] bounds];
   gfx::SizeF viewportSize(parentBounds.size);
 
-  // Adjust the viewport so that it doesn't overhang the screen when the
-  // min controls are shown, otherwise we won't be able to scroll to all
-  // the content.
-  RenderViewHostDelegateView* rvh_delegate_view =
-      host()->delegate()->GetDelegateView();
-  viewportSize.Enlarge(0, -(rvh_delegate_view->GetTopControlsMinHeight() +
-                            rvh_delegate_view->GetBottomControlsMinHeight()));
   CGRect frameBounds;
   frameBounds.origin = scrollOffset.ToCGPoint();
   frameBounds.size = viewportSize.ToCGSize();
 
+  // If we are scrolling we don't resize the WebView immediately.
+  if (!is_scrolling_ && !IsTesting()) {
+    view_bounds_ = gfx::Rect(frameBounds);
+  }
   [ui_view_->view_ setFrame:frameBounds];
-  if (last_root_scroll_offset_ != root_scroll_offset) {
-    [scrollView setContentOffset:root_scroll_offset.ToCGPoint()];
+}
+
+void RenderWidgetHostViewIOS::ApplyRootScrollOffsetChanged(
+    const gfx::PointF& root_scroll_offset,
+    bool force) {
+  if (last_root_scroll_offset_ != root_scroll_offset || force) {
     last_root_scroll_offset_ = root_scroll_offset;
+    UpdateFrameBounds();
+    UIScrollView* scrollView = (UIScrollView*)[ui_view_->view_ superview];
+    [scrollView setContentOffset:root_scroll_offset.ToCGPoint()];
     [[scrollView delegate] scrollViewDidScroll:scrollView];
+  } else {
+    UpdateFrameBounds();
   }
 }
 
@@ -965,17 +976,22 @@ void RenderWidgetHostViewIOS::OnRenderFrameMetadataChangedBeforeActivation(
     [scrollView setContentSize:newContentSize];
   }
   if (metadata.root_scroll_offset) {
-    ApplyRootScrollOffsetChanged(*metadata.root_scroll_offset);
+    ApplyRootScrollOffsetChanged(*metadata.root_scroll_offset, /*force=*/false);
   }
 }
 
 void RenderWidgetHostViewIOS::ContentInsetChanged() {
   if (last_root_scroll_offset_) {
-    ApplyRootScrollOffsetChanged(*last_root_scroll_offset_);
+    ApplyRootScrollOffsetChanged(*last_root_scroll_offset_, /*force=*/true);
   }
   if (!is_scrolling_) {
     host()->SynchronizeVisualProperties();
   }
+}
+
+gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
+  return gfx::ScaleToCeiledSize(GetScreenInfo().rect.size(),
+                                GetDeviceScaleFactor());
 }
 
 }  // namespace content
