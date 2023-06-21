@@ -28,11 +28,6 @@ VideoDecoderType GetPreferredLinuxDecoderImplementation() {
     return VideoDecoderType::kOutOfProcess;
   }
 
-  // If direct video decoder is disabled, revert to using the VDA
-  // implementation.
-  if (!base::FeatureList::IsEnabled(kUseChromeOSDirectVideoDecoder)) {
-    return VideoDecoderType::kVda;
-  }
   return VideoDecoderType::kVaapi;
 }
 
@@ -61,11 +56,6 @@ VideoDecoderType GetActualPlatformDecoderImplementation(
       return VideoDecoderType::kUnknown;
     case VideoDecoderType::kOutOfProcess:
       return VideoDecoderType::kOutOfProcess;
-    case VideoDecoderType::kVda: {
-      return gpu_preferences.gr_context_type == gpu::GrContextType::kGL
-                 ? VideoDecoderType::kVda
-                 : VideoDecoderType::kUnknown;
-    }
     case VideoDecoderType::kVaapi: {
       // Allow VaapiVideoDecoder on GL.
       if (gpu_preferences.gr_context_type == gpu::GrContextType::kGL) {
@@ -158,13 +148,6 @@ std::unique_ptr<VideoDecoder> CreatePlatformVideoDecoder(
           GetPreferredRenderableFourccs(traits.gpu_preferences),
           traits.media_log->Clone(), /*oop_video_decoder=*/{});
     }
-    case VideoDecoderType::kVda: {
-      return VdaVideoDecoder::Create(
-          traits.task_runner, traits.gpu_task_runner, traits.media_log->Clone(),
-          *traits.target_color_space, traits.gpu_preferences,
-          *traits.gpu_workarounds, traits.get_command_buffer_stub_cb,
-          VideoDecodeAccelerator::Config::OutputMode::ALLOCATE);
-    }
     default:
       return nullptr;
   }
@@ -200,8 +183,6 @@ GetPlatformSupportedVideoDecoderConfigs(
   base::UmaHistogramEnumeration("Media.VaapiLinux.SupportedVideoDecoder",
                                 decoder_implementation);
   switch (decoder_implementation) {
-    case VideoDecoderType::kVda:
-      return std::move(get_vda_configs).Run();
     case VideoDecoderType::kOutOfProcess:
     case VideoDecoderType::kVaapi:
     case VideoDecoderType::kV4L2:
