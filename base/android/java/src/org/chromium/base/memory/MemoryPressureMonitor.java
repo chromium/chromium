@@ -13,6 +13,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.MemoryPressureLevel;
 import org.chromium.base.MemoryPressureListener;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.supplier.Supplier;
 import org.chromium.build.annotations.MainDex;
@@ -88,13 +89,8 @@ public class MemoryPressureMonitor {
 
     private boolean mPollingEnabled;
 
-    // Changed by tests.
-    private Supplier<Integer> mCurrentPressureSupplier =
-            MemoryPressureMonitor::getCurrentMemoryPressure;
-
-    // Changed by tests.
-    private MemoryPressureCallback mReportingCallback =
-            MemoryPressureListener::notifyMemoryPressure;
+    private Supplier<Integer> mCurrentPressureSupplierForTesting;
+    private MemoryPressureCallback mReportingCallbackForTesting;
 
     private final Runnable mThrottlingIntervalTask = this ::onThrottlingIntervalFinished;
 
@@ -190,7 +186,11 @@ public class MemoryPressureMonitor {
         startThrottlingInterval();
 
         mLastReportedPressure = pressure;
-        mReportingCallback.onPressure(pressure);
+        if (mReportingCallbackForTesting != null) {
+            mReportingCallbackForTesting.onPressure(pressure);
+        } else {
+            MemoryPressureListener.notifyMemoryPressure(pressure);
+        }
     }
 
     private void onThrottlingIntervalFinished() {
@@ -212,7 +212,9 @@ public class MemoryPressureMonitor {
     }
 
     private void reportCurrentPressure() {
-        Integer pressure = mCurrentPressureSupplier.get();
+        Integer pressure = mCurrentPressureSupplierForTesting != null
+                ? mCurrentPressureSupplierForTesting.get()
+                : MemoryPressureMonitor.getCurrentMemoryPressure();
         if (pressure != null) {
             reportPressure(pressure);
         }
@@ -223,14 +225,14 @@ public class MemoryPressureMonitor {
         mIsInsideThrottlingInterval = true;
     }
 
-    @VisibleForTesting
     public void setCurrentPressureSupplierForTesting(Supplier<Integer> supplier) {
-        mCurrentPressureSupplier = supplier;
+        mCurrentPressureSupplierForTesting = supplier;
+        ResettersForTesting.register(() -> mCurrentPressureSupplierForTesting = null);
     }
 
-    @VisibleForTesting
     public void setReportingCallbackForTesting(MemoryPressureCallback callback) {
-        mReportingCallback = callback;
+        mReportingCallbackForTesting = callback;
+        ResettersForTesting.register(() -> mReportingCallbackForTesting = null);
     }
 
     /**

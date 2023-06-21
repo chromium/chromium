@@ -74,7 +74,6 @@ public class BaseRobolectricTestRunner extends RobolectricTestRunner {
                     ApplicationStatus.destroyForJUnitTests();
                     ContextUtils.clearApplicationContextForTests();
                     PathUtils.resetForTesting();
-                    ThreadUtils.setThreadAssertsDisabledForTesting(false);
                     ThreadUtils.clearUiThreadForTesting();
                     super.afterTest(method);
                 }

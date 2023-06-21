@@ -20,6 +20,7 @@ import androidx.collection.ArraySet;
 import org.chromium.base.BuildInfo;
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.SysUtils;
 import org.chromium.base.compat.ApiHelperForM;
 
@@ -188,7 +189,6 @@ public abstract class ChildConnectionAllocator {
      * Factory method used with some tests to create an allocator with values passed in directly
      * instead of being retrieved from the AndroidManifest.xml.
      */
-    @VisibleForTesting
     public static FixedSizeAllocatorImpl createFixedForTesting(Runnable freeSlotCallback,
             String packageName, String serviceClassName, int serviceCount, boolean bindToCaller,
             boolean bindAsExternalService, boolean useStrongBinding) {
@@ -197,7 +197,6 @@ public abstract class ChildConnectionAllocator {
                 serviceCount);
     }
 
-    @VisibleForTesting
     public static VariableSizeAllocatorImpl createVariableSizeForTesting(Handler launcherHandler,
             String packageName, Runnable freeSlotCallback, String serviceClassName,
             boolean bindToCaller, boolean bindAsExternalService, boolean useStrongBinding,
@@ -207,7 +206,6 @@ public abstract class ChildConnectionAllocator {
                 useStrongBinding, maxAllocated);
     }
 
-    @VisibleForTesting
     public static Android10WorkaroundAllocatorImpl createWorkaroundForTesting(
             Handler launcherHandler, String packageName, Runnable freeSlotCallback,
             String serviceClassName, boolean bindToCaller, boolean bindAsExternalService,
@@ -329,12 +327,12 @@ public abstract class ChildConnectionAllocator {
     public abstract boolean anyConnectionAllocated();
 
     /** @return the count of connections managed by the allocator */
-    @VisibleForTesting
     public abstract int allocatedConnectionsCountForTesting();
 
-    @VisibleForTesting
     public void setConnectionFactoryForTesting(ConnectionFactory connectionFactory) {
+        var oldValue = mConnectionFactory;
         mConnectionFactory = connectionFactory;
+        ResettersForTesting.register(() -> mConnectionFactory = oldValue);
     }
 
     private boolean isRunningOnLauncherThread() {
@@ -422,7 +420,6 @@ public abstract class ChildConnectionAllocator {
             return mChildProcessConnections.length - mFreeConnectionIndices.size();
         }
 
-        @VisibleForTesting
         public ChildProcessConnection getChildProcessConnectionAtSlotForTesting(int slotNumber) {
             return mChildProcessConnections[slotNumber];
         }

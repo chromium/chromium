@@ -10,6 +10,7 @@ import androidx.annotation.Nullable;
 
 import org.chromium.base.Callback;
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 
 /**
  * Concrete implementation of {@link ObservableSupplier} to be used by classes owning the
@@ -87,5 +88,6 @@ public class ObservableSupplierImpl<E> implements ObservableSupplier<E> {
     /** Used to allow developers to access supplier values on the instrumentation thread. */
     public static void setIgnoreThreadChecksForTesting(boolean ignoreThreadChecks) {
         sIgnoreThreadChecksForTesting = ignoreThreadChecks;
+        ResettersForTesting.register(() -> sIgnoreThreadChecksForTesting = false);
     }
 }
