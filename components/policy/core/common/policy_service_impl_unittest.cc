@@ -85,8 +85,7 @@ void AddTestPolicies(PolicyBundle* bundle,
 class ChangePolicyObserver : public PolicyService::Observer {
  public:
   explicit ChangePolicyObserver(MockConfigurationPolicyProvider* provider)
-      : provider_(provider),
-        observer_invoked_(false) {}
+      : provider_(provider), observer_invoked_(false) {}
 
   void OnPolicyUpdated(const PolicyNamespace&,
                        const PolicyMap& previous,
@@ -162,14 +161,13 @@ class PolicyServiceTest : public testing::Test {
     provider2_.Shutdown();
   }
 
-  MOCK_METHOD2(OnPolicyValueUpdated, void(const base::Value*,
-                                          const base::Value*));
+  MOCK_METHOD2(OnPolicyValueUpdated,
+               void(const base::Value*, const base::Value*));
 
   MOCK_METHOD0(OnPolicyRefresh, void());
 
   // Returns true if the policies for namespace |ns| match |expected|.
-  bool VerifyPolicies(const PolicyNamespace& ns,
-                      const PolicyMap& expected) {
+  bool VerifyPolicies(const PolicyNamespace& ns, const PolicyMap& expected) {
     return policy_service_->GetPolicies(ns).Equals(expected);
   }
 
@@ -328,16 +326,14 @@ TEST_F(PolicyServiceTest, NotifyObserversInMultipleNamespaces) {
       OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()),
                       PolicyEquals(&previous_policy_map),
                       PolicyEquals(&policy_map)));
-  EXPECT_CALL(
-      extension_observer,
-      OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0),
-                      PolicyEquals(&kEmptyPolicyMap),
-                      PolicyEquals(&policy_map)));
-  EXPECT_CALL(
-      extension_observer,
-      OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1),
-                      PolicyEquals(&kEmptyPolicyMap),
-                      PolicyEquals(&policy_map)));
+  EXPECT_CALL(extension_observer,
+              OnPolicyUpdated(
+                  PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension0),
+                  PolicyEquals(&kEmptyPolicyMap), PolicyEquals(&policy_map)));
+  EXPECT_CALL(extension_observer,
+              OnPolicyUpdated(
+                  PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1),
+                  PolicyEquals(&kEmptyPolicyMap), PolicyEquals(&policy_map)));
   provider0_.UpdatePolicy(std::move(bundle));
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(&chrome_observer);
@@ -367,11 +363,10 @@ TEST_F(PolicyServiceTest, NotifyObserversInMultipleNamespaces) {
       OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension1),
                       PolicyEquals(&previous_policy_map),
                       PolicyEquals(&policy_map)));
-  EXPECT_CALL(
-      extension_observer,
-      OnPolicyUpdated(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2),
-                      PolicyEquals(&kEmptyPolicyMap),
-                      PolicyEquals(&policy_map)));
+  EXPECT_CALL(extension_observer,
+              OnPolicyUpdated(
+                  PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension2),
+                  PolicyEquals(&kEmptyPolicyMap), PolicyEquals(&policy_map)));
   provider0_.UpdatePolicy(std::move(bundle));
   RunUntilIdle();
   Mock::VerifyAndClearExpectations(&chrome_observer);
@@ -656,11 +651,15 @@ TEST_F(PolicyServiceTest, NamespaceMerge) {
   provider2_.UpdatePolicy(std::move(bundle2));
   RunUntilIdle();
 
-  EXPECT_TRUE(policy_service_->GetPolicies(
-      PolicyNamespace(POLICY_DOMAIN_CHROME, std::string())).Equals(expected));
+  EXPECT_TRUE(
+      policy_service_
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_CHROME, std::string()))
+          .Equals(expected));
   expected.Erase("migrated");
-  EXPECT_TRUE(policy_service_->GetPolicies(
-      PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension)).Equals(expected));
+  EXPECT_TRUE(
+      policy_service_
+          ->GetPolicies(PolicyNamespace(POLICY_DOMAIN_EXTENSIONS, kExtension))
+          .Equals(expected));
 }
 
 TEST_F(PolicyServiceTest, IsInitializationComplete) {
@@ -845,8 +844,9 @@ class PolicyServiceTestForObservers
     const bool isInitialized = std::get<0>(params);
     const bool isPolicyFetched = std::get<1>(params);
     const bool hasObserver = std::get<2>(params);
-    if (hasObserver)
+    if (hasObserver) {
       service->AddObserver(domain, &observer_);
+    }
     EXPECT_CALL(observer_, OnPolicyServiceInitialized(domain))
         .Times(isInitialized && hasObserver);
     EXPECT_CALL(observer_, OnFirstPoliciesLoaded(domain))
@@ -857,8 +857,9 @@ class PolicyServiceTestForObservers
     DomainParameters params = std::get<domain>(GetParam());
 
     const bool hasObserver = std::get<2>(params);
-    if (hasObserver)
+    if (hasObserver) {
       service->RemoveObserver(domain, &observer_);
+    }
   }
 };
 
@@ -2354,5 +2355,144 @@ TEST_F(PolicyServiceTest, PolicyMessages) {
   EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
 }
 #endif  // !BUILDFLAG(IS_CHROMEOS) && !BUILDFLAG(IS_IOS)
+
+TEST_F(PolicyServiceTest, IgnoreNonTestPolicies) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  // Set policy.
+  std::vector<std::pair<std::string, base::Value>> policies;
+  policies.emplace_back("a", base::Value(1));
+  auto policy_bundle = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                                    std::move(policies), chrome_namespace);
+  provider0_.UpdatePolicy(std::move(policy_bundle));
+
+  // Verify policy is set.
+  PolicyMap expected_chrome1;
+  expected_chrome1.Set("a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  expected_chrome1.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+  RunUntilIdle();
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome1));
+
+  // Set local_test_policy_provider.
+  std::unique_ptr<MockConfigurationPolicyProvider> local_test_policy_provider =
+      std::make_unique<MockConfigurationPolicyProvider>();
+  policy_service_->SetLocalTestPolicyProviderForTesting(
+      std::move(local_test_policy_provider));
+
+  // Verify policy entry is disabled.
+  PolicyMap expected_chrome2;
+  PolicyMap::Entry entry =
+      PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+  entry.SetDisabledByTestingPolicies();
+
+  expected_chrome2.Set("a", std::move(entry));
+  expected_chrome2.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                       POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+  RunUntilIdle();
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome2));
+
+  // Verify initial policies are applied when provider is inactive.
+  policy_service_->RevertUseLocalTestPolicyProvider();
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome1));
+}
+
+TEST_F(PolicyServiceTest, LocalTestProviderPoliciesApplied) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  std::vector<std::pair<std::string, base::Value>> policies1;
+  auto policy_bundle1 = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                                     std::move(policies1), chrome_namespace);
+  provider0_.UpdatePolicy(std::move(policy_bundle1));
+
+  // Create local_test_policy_provider.
+  std::unique_ptr<MockConfigurationPolicyProvider> local_test_policy_provider =
+      std::make_unique<MockConfigurationPolicyProvider>();
+
+  // Create policy for provider.
+  std::vector<std::pair<std::string, base::Value>> policies;
+  policies.emplace_back("a", base::Value(1));
+  auto policy_bundle = CreateBundle(POLICY_SCOPE_USER, POLICY_SOURCE_CLOUD,
+                                    std::move(policies), chrome_namespace);
+  local_test_policy_provider->UpdatePolicy(std::move(policy_bundle));
+
+  policy_service_->SetLocalTestPolicyProviderForTesting(
+      std::move(local_test_policy_provider));
+
+  // Check if policy is applied.
+  PolicyMap expected_chrome;
+  expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+  expected_chrome.Set("a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                      POLICY_SOURCE_CLOUD, base::Value(1), nullptr);
+
+  RunUntilIdle();
+
+  EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+}
+
+TEST_F(PolicyServiceTest, LocalTestProviderPoliciesAppliedConflict) {
+  const PolicyNamespace chrome_namespace(POLICY_DOMAIN_CHROME, std::string());
+
+  // Add policy to regular provider.
+  std::vector<std::pair<std::string, base::Value>> policies;
+  policies.emplace_back("a", base::Value(0));
+  auto policy_bundle =
+      CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_PLATFORM,
+                   std::move(policies), chrome_namespace);
+  provider0_.UpdatePolicy(std::move(policy_bundle));
+
+  {
+    // Check policy is applied.
+    PolicyMap expected_chrome;
+    expected_chrome.Set("a", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                        POLICY_SOURCE_PLATFORM, base::Value(0), nullptr);
+    expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                        POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+    RunUntilIdle();
+
+    EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+  }
+
+  // Create local test policy provider.
+  std::unique_ptr<MockConfigurationPolicyProvider> local_test_policy_provider =
+      std::make_unique<MockConfigurationPolicyProvider>();
+
+  // Set policy on local test policy provider.
+  std::vector<std::pair<std::string, base::Value>> policies_local_provider;
+  policies_local_provider.emplace_back("a", base::Value(1));
+  auto policy_bundle_local_provider =
+      CreateBundle(POLICY_SCOPE_MACHINE, POLICY_SOURCE_ENTERPRISE_DEFAULT,
+                   std::move(policies_local_provider), chrome_namespace);
+  local_test_policy_provider->UpdatePolicy(
+      std::move(policy_bundle_local_provider));
+  policy_service_->SetLocalTestPolicyProviderForTesting(
+      std::move(local_test_policy_provider));
+
+  {
+    // Check policy from local test policy provider is applied.
+    PolicyMap expected_chrome;
+    PolicyMap::Entry entry1 = PolicyMap::Entry(
+        POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+        POLICY_SOURCE_ENTERPRISE_DEFAULT, base::Value(1), nullptr);
+    PolicyMap::Entry entry2 =
+        PolicyMap::Entry(POLICY_LEVEL_MANDATORY, POLICY_SCOPE_MACHINE,
+                         POLICY_SOURCE_PLATFORM, base::Value(0), nullptr);
+    entry2.SetDisabledByTestingPolicies();
+    entry1.AddConflictingPolicy(std::move(entry2));
+    entry1.AddMessage(PolicyMap::MessageType::kWarning,
+                      IDS_POLICY_CONFLICT_DIFF_VALUE);
+
+    expected_chrome.Set("a", std::move(entry1));
+    expected_chrome.Set("migrated", POLICY_LEVEL_MANDATORY, POLICY_SCOPE_USER,
+                        POLICY_SOURCE_PLATFORM, base::Value(15), nullptr);
+
+    RunUntilIdle();
+
+    EXPECT_TRUE(VerifyPolicies(chrome_namespace, expected_chrome));
+  }
+}
 
 }  // namespace policy

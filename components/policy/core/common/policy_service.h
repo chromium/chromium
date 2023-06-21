@@ -129,6 +129,14 @@ class POLICY_EXPORT PolicyService {
   // GetPolicies() is guaranteed to return the updated values at that point.
   virtual void RefreshPolicies(base::OnceClosure callback) = 0;
 
+  // Activated LocalTestPolicyProvider, when it is active policies from all
+  // other providers will be disabled.
+  virtual void UseLocalTestPolicyProvider() = 0;
+
+  // Deactivates LocalTestPolicyProvider, policies from real policy providers
+  // should be reverted to normal.
+  virtual void RevertUseLocalTestPolicyProvider() = 0;
+
 #if BUILDFLAG(IS_ANDROID)
   // Get the PolicyService JNI bridge instance.
   virtual android::PolicyServiceAndroid* GetPolicyServiceAndroid() = 0;

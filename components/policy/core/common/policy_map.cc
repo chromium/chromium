@@ -248,6 +248,12 @@ bool PolicyMap::Entry::HasMessage(MessageType type) const {
   return message_ids_.find(type) != message_ids_.end();
 }
 
+bool PolicyMap::Entry::HasMessage(MessageType type, int message_id) const {
+  return (message_ids_.find(type) != message_ids_.end()) &&
+         (message_ids_.at(type).find(message_id) !=
+          message_ids_.at(type).end());
+}
+
 std::u16string PolicyMap::Entry::GetLocalizedMessages(
     MessageType type,
     L10nLookupFunction lookup) const {
@@ -273,6 +279,16 @@ void PolicyMap::Entry::SetBlocked() {
 void PolicyMap::Entry::SetInvalid() {
   SetIgnored();
   AddMessage(MessageType::kError, IDS_POLICY_INVALID);
+}
+
+bool PolicyMap::Entry::IsDisabledByTestingPolicies() const {
+  return is_disabled_by_testing_policies_;
+}
+
+void PolicyMap::Entry::SetDisabledByTestingPolicies() {
+  SetIgnored();
+  AddMessage(MessageType::kWarning, IDS_POLICY_IGNORED_FOR_TESTING);
+  is_disabled_by_testing_policies_ = true;
 }
 
 void PolicyMap::Entry::SetIgnoredByPolicyAtomicGroup() {
@@ -415,6 +431,12 @@ void PolicyMap::SetSourceForAll(PolicySource source) {
 void PolicyMap::SetAllInvalid() {
   for (auto& it : map_) {
     it.second.SetInvalid();
+  }
+}
+
+void PolicyMap::DisableAllPoliciesForLocalTesting() {
+  for (auto& it : map_) {
+    it.second.SetDisabledByTestingPolicies();
   }
 }
 
@@ -609,9 +631,12 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
 bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                                        const PolicyMap::Entry& rhs,
                                        bool using_default_precedence) const {
+  int lhs_testing = !lhs.IsDisabledByTestingPolicies();
+  int rhs_testing = !rhs.IsDisabledByTestingPolicies();
+
 #if BUILDFLAG(IS_CHROMEOS)
-  return std::tie(lhs.level, lhs.scope, lhs.source) >
-         std::tie(rhs.level, rhs.scope, rhs.source);
+  return std::tie(lhs_testing, lhs.level, lhs.scope, lhs.source) >
+         std::tie(rhs_testing, rhs.level, rhs.scope, rhs.source);
 #else   // BUILDFLAG(IS_CHROMEOS)
   PolicyPriorityBrowser lhs_priority =
       using_default_precedence
@@ -627,7 +652,9 @@ bool PolicyMap::EntryHasHigherPriority(const PolicyMap::Entry& lhs,
                         cloud_policy_overrides_platform_policy_,
                         cloud_user_policy_overrides_cloud_machine_policy_,
                         IsUserAffiliated());
-  return std::tie(lhs.level, lhs_priority) > std::tie(rhs.level, rhs_priority);
+
+  return std::tie(lhs_testing, lhs.level, lhs_priority) >
+         std::tie(rhs_testing, rhs.level, rhs_priority);
 #endif  // BUILDFLAG(IS_CHROMEOS)
 }
 

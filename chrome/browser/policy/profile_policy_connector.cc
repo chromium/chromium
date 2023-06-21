@@ -297,12 +297,14 @@ void ProfilePolicyConnector::Init(
         policy_providers_, std::move(migrators),
         user_policy_delegate_candidate);
   } else {
-    policy_service_ = std::make_unique<PolicyServiceImpl>(policy_providers_,
-                                                          std::move(migrators));
+    policy_service_ = std::make_unique<PolicyServiceImpl>(
+        policy_providers_, std::move(migrators),
+        connector->MaybeCreateLocalTestProvider());
   }
 #else   // BUILDFLAG(IS_CHROMEOS_ASH)
-  policy_service_ = std::make_unique<PolicyServiceImpl>(policy_providers_,
-                                                        std::move(migrators));
+  policy_service_ = std::make_unique<PolicyServiceImpl>(
+      policy_providers_, std::move(migrators),
+      connector->MaybeCreateLocalTestProvider());
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
   DoPostInit();

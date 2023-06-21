@@ -48,6 +48,8 @@ class MockPolicyService : public PolicyService {
   MOCK_CONST_METHOD1(IsInitializationComplete, bool(PolicyDomain domain));
   MOCK_CONST_METHOD1(IsFirstPolicyLoadComplete, bool(PolicyDomain domain));
   MOCK_METHOD1(RefreshPolicies, void(base::OnceClosure));
+  MOCK_METHOD0(UseLocalTestPolicyProvider, void());
+  MOCK_METHOD0(RevertUseLocalTestPolicyProvider, void());
 
 #if BUILDFLAG(IS_ANDROID)
   MOCK_METHOD0(GetPolicyServiceAndroid, android::PolicyServiceAndroid*());

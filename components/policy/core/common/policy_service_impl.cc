@@ -21,6 +21,7 @@
 #include "base/values.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_bundle.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
@@ -132,16 +133,23 @@ void AddPolicyMessages(PolicyMap& policies) {
 
 }  // namespace
 
-PolicyServiceImpl::PolicyServiceImpl(Providers providers, Migrators migrators)
+PolicyServiceImpl::PolicyServiceImpl(
+    Providers providers,
+    Migrators migrators,
+    std::unique_ptr<ConfigurationPolicyProvider> local_test_provider)
     : PolicyServiceImpl(std::move(providers),
                         std::move(migrators),
-                        /*initialization_throttled=*/false) {}
+                        /*initialization_throttled=*/false,
+                        std::move(local_test_provider)) {}
 
-PolicyServiceImpl::PolicyServiceImpl(Providers providers,
-                                     Migrators migrators,
-                                     bool initialization_throttled)
+PolicyServiceImpl::PolicyServiceImpl(
+    Providers providers,
+    Migrators migrators,
+    bool initialization_throttled,
+    std::unique_ptr<ConfigurationPolicyProvider> local_test_provider)
     : providers_(std::move(providers)),
       migrators_(std::move(migrators)),
+      local_test_provider_(std::move(local_test_provider)),
       initialization_throttled_(initialization_throttled) {
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
     policy_domain_status_[domain] = PolicyDomainStatus::kUninitialized;
@@ -159,7 +167,7 @@ PolicyServiceImpl::CreateWithThrottledInitialization(Providers providers,
                                                      Migrators migrators) {
   return base::WrapUnique(
       new PolicyServiceImpl(std::move(providers), std::move(migrators),
-                            /*initialization_throttled=*/true));
+                            /*initialization_throttled=*/true, nullptr));
 }
 
 PolicyServiceImpl::~PolicyServiceImpl() {
@@ -251,6 +259,18 @@ void PolicyServiceImpl::RefreshPolicies(base::OnceClosure callback) {
   }
 }
 
+void PolicyServiceImpl::UseLocalTestPolicyProvider() {
+  if (local_test_provider_) {
+    local_test_provider_active_ = true;
+  }
+  MergeAndTriggerUpdates();
+}
+
+void PolicyServiceImpl::RevertUseLocalTestPolicyProvider() {
+  local_test_provider_active_ = false;
+  MergeAndTriggerUpdates();
+}
+
 #if BUILDFLAG(IS_ANDROID)
 android::PolicyServiceAndroid* PolicyServiceImpl::GetPolicyServiceAndroid() {
   if (!policy_service_android_)
@@ -270,6 +290,12 @@ void PolicyServiceImpl::UnthrottleInitialization() {
   for (int domain = 0; domain < POLICY_DOMAIN_SIZE; ++domain)
     updated_domains.push_back(static_cast<PolicyDomain>(domain));
   MaybeNotifyPolicyDomainStatusChange(updated_domains);
+}
+
+void PolicyServiceImpl::SetLocalTestPolicyProviderForTesting(
+    std::unique_ptr<ConfigurationPolicyProvider> provider) {
+  local_test_provider_ = std::move(provider);
+  UseLocalTestPolicyProvider();
 }
 
 void PolicyServiceImpl::OnUpdatePolicy(ConfigurationPolicyProvider* provider) {
@@ -332,14 +358,27 @@ void PolicyServiceImpl::MergeAndTriggerUpdates() {
     bundle.MergeFrom(provided_bundle);
   }
 
+  auto& chrome_policies = bundle.Get(chrome_namespace);
+
+  // TODO (b:288258476): Make disabling of policies more abstract. Providers
+  // will have attribute indicating whether they are disabled, not specific
+  // to local testing.
+  if (local_test_provider_active_) {
+    // Disables all existing policies so that only the policies from the
+    // chrome://policy/test page are applied.
+    chrome_policies.DisableAllPoliciesForLocalTesting();
+
+    // Merge policies from local policy provider.
+    PolicyBundle local_test_bundle = local_test_provider_->policies().Clone();
+    bundle.MergeFrom(local_test_bundle);
+  }
+
   // Merges all the mergeable policies
   base::flat_set<std::string> policy_lists_to_merge = GetStringListPolicyItems(
       bundle, chrome_namespace, key::kPolicyListMultipleSourceMergeList);
   base::flat_set<std::string> policy_dictionaries_to_merge =
       GetStringListPolicyItems(bundle, chrome_namespace,
                                key::kPolicyDictionaryMultipleSourceMergeList);
-
-  auto& chrome_policies = bundle.Get(chrome_namespace);
 
   // This has to be done after setting enterprise default values since it is
   // enabled by default for enterprise users.

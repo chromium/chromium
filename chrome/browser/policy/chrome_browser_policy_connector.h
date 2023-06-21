@@ -71,6 +71,9 @@ class ChromeBrowserPolicyConnector : public BrowserPolicyConnector {
 
   ConfigurationPolicyProvider* GetPlatformProvider();
 
+  std::unique_ptr<ConfigurationPolicyProvider> MaybeCreateLocalTestProvider()
+      override;
+
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
   ChromeBrowserCloudManagementController*
   chrome_browser_cloud_management_controller() {

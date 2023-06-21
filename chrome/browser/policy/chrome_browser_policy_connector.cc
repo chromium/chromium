@@ -30,6 +30,7 @@
 #include "components/policy/core/common/cloud/user_cloud_policy_manager.h"
 #include "components/policy/core/common/command_line_policy_provider.h"
 #include "components/policy/core/common/configuration_policy_provider.h"
+#include "components/policy/core/common/local_test_policy_provider.h"
 #include "components/policy/core/common/policy_logger.h"
 #include "components/policy/core/common/policy_map.h"
 #include "components/policy/core/common/policy_namespace.h"
@@ -182,6 +183,11 @@ ChromeBrowserPolicyConnector::GetPlatformProvider() {
     return provider;
   }
   return platform_provider_.get();
+}
+
+std::unique_ptr<ConfigurationPolicyProvider>
+ChromeBrowserPolicyConnector::MaybeCreateLocalTestProvider() {
+  return LocalTestPolicyProvider::CreateIfAllowed(chrome::GetChannel());
 }
 
 #if !BUILDFLAG(IS_CHROMEOS_ASH)
