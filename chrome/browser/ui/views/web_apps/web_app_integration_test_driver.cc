@@ -2926,10 +2926,12 @@ void WebAppIntegrationTestDriver::CheckInstallIconShown() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  auto* app_banner_manager =
-      webapps::TestAppBannerManagerDesktop::FromWebContents(
-          GetCurrentTab(browser()));
-  app_banner_manager->WaitForInstallableCheck();
+  content::WebContents* web_contents = GetCurrentTab(browser());
+  if (webapps::AppBannerManagerDesktop::FromWebContents(web_contents)) {
+    auto* app_banner_manager =
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+    app_banner_manager->WaitForInstallableCheck();
+  }
   EXPECT_TRUE(pwa_install_view()->GetVisible());
   AfterStateCheckAction();
 }
@@ -2940,10 +2942,12 @@ void WebAppIntegrationTestDriver::CheckInstallIconNotShown() {
   if (!BeforeStateCheckAction(__FUNCTION__)) {
     return;
   }
-  auto* app_banner_manager =
-      webapps::TestAppBannerManagerDesktop::FromWebContents(
-          GetCurrentTab(browser()));
-  app_banner_manager->WaitForInstallableCheck();
+  content::WebContents* web_contents = GetCurrentTab(browser());
+  if (webapps::AppBannerManagerDesktop::FromWebContents(web_contents)) {
+    auto* app_banner_manager =
+        webapps::TestAppBannerManagerDesktop::FromWebContents(web_contents);
+    app_banner_manager->WaitForInstallableCheck();
+  }
   EXPECT_FALSE(pwa_install_view()->GetVisible());
   AfterStateCheckAction();
 }
