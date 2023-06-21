@@ -305,10 +305,6 @@ v8::Local<v8::Context> MainThreadDebugger::ensureDefaultContextInGroup(
 
 void MainThreadDebugger::beginEnsureAllContextsInGroup(int context_group_id) {
   LocalFrame* frame = WeakIdentifierMap<LocalFrame>::Lookup(context_group_id);
-  recordreplay::Assert(
-      "[RUN-2195-2193] MainThreadDebugger::beginEnsureAllContextsInGroup %d %d %d",
-      context_group_id, !!frame,
-      frame && frame->GetSettings()->GetForceMainWorldInitialization());
   if (frame) {
     frame->GetSettings()->SetForceMainWorldInitialization(true);
   }
