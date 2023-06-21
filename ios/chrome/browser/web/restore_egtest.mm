@@ -5,6 +5,7 @@
 #import <objc/runtime.h>
 
 #import "base/functional/bind.h"
+#import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/shared/public/features/features.h"
@@ -149,7 +150,7 @@ std::unique_ptr<net::test_server::HttpResponse> CountResponse(
     _secondTestServer = std::make_unique<net::EmbeddedTestServer>();
     NSString* bundlePath = [NSBundle bundleForClass:[self class]].resourcePath;
     _secondTestServer->ServeFilesFromDirectory(
-        base::FilePath(base::SysNSStringToUTF8(bundlePath))
+        base::mac::NSStringToFilePath(bundlePath)
             .AppendASCII("ios/testing/data/http_server_files/"));
     net::test_server::RegisterDefaultHandlers(_secondTestServer.get());
   }

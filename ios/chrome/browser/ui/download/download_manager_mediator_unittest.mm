@@ -6,8 +6,8 @@
 
 #import <UIKit/UIKit.h>
 
+#import "base/mac/foundation_util.h"
 #import "base/run_loop.h"
-#import "base/strings/sys_string_conversions.h"
 #import "base/test/ios/wait_util.h"
 #import "ios/chrome/browser/download/download_directory_util.h"
 #import "ios/chrome/browser/download/external_app_util.h"
@@ -157,7 +157,7 @@ TEST_F(DownloadManagerMediatorTest, ConsumerInstantUpdate) {
   EXPECT_EQ(kDownloadManagerStateSucceeded, consumer_.state);
   EXPECT_FALSE(consumer_.installDriveButtonVisible);
   EXPECT_EQ(base::FilePath(kTestSuggestedFileName),
-            base::FilePath(base::SysNSStringToUTF8(consumer_.fileName)));
+            base::mac::NSStringToFilePath(consumer_.fileName));
   EXPECT_EQ(kTestTotalBytes, consumer_.countOfBytesExpectedToReceive);
   EXPECT_EQ(kTestReceivedBytes, consumer_.countOfBytesReceived);
   EXPECT_FLOAT_EQ(0.8f, consumer_.progress);

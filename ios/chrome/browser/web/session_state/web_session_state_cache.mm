@@ -13,6 +13,7 @@
 #import "base/files/file_util.h"
 #import "base/functional/bind.h"
 #import "base/logging.h"
+#import "base/mac/foundation_util.h"
 #import "base/observer_list.h"
 #import "base/path_service.h"
 #import "base/sequence_checker.h"
@@ -64,7 +65,7 @@ void WriteSessionData(NSData* sessionData,
 
   base::FilePath filePath =
       cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
-  NSString* filePathString = base::SysUTF8ToNSString(filePath.AsUTF8Unsafe());
+  NSString* filePathString = base::mac::FilePathToNSString(filePath);
   NSError* error = nil;
   if (![sessionData writeToFile:filePathString options:options error:&error]) {
     DLOG(WARNING) << "Error writing session data: "
@@ -155,7 +156,7 @@ void PurgeCacheOnBackgroundSequenceExcept(
   NSString* sessionID = webState->GetStableIdentifier();
   base::FilePath filePath =
       _cacheDirectory.Append(base::SysNSStringToUTF8(sessionID));
-  NSString* filePathString = base::SysUTF8ToNSString(filePath.AsUTF8Unsafe());
+  NSString* filePathString = base::mac::FilePathToNSString(filePath);
   return [NSData dataWithContentsOfFile:filePathString];
 }
 

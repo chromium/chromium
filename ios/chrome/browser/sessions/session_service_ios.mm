@@ -168,8 +168,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 
 - (void)deleteAllSessionFilesInDirectory:(const base::FilePath&)directory
                               completion:(base::OnceClosure)callback {
-  NSString* sessionsDirectory = base::SysUTF8ToNSString(
-      SessionsDirectoryForDirectory(directory).AsUTF8Unsafe());
+  NSString* sessionsDirectory =
+      base::mac::FilePathToNSString(SessionsDirectoryForDirectory(directory));
   NSArray<NSString*>* allSessionIDs = [[NSFileManager defaultManager]
       contentsOfDirectoryAtPath:sessionsDirectory
                           error:nil];
@@ -194,9 +194,8 @@ NSString* const kRootObjectKey = @"root";  // Key for the root object.
 + (NSString*)sessionPathForSessionID:(NSString*)sessionID
                            directory:(const base::FilePath&)directory {
   DCHECK(sessionID.length != 0);
-  return base::SysUTF8ToNSString(
-      SessionPathForDirectory(directory, sessionID, kSessionFileName)
-          .AsUTF8Unsafe());
+  return base::mac::FilePathToNSString(
+      SessionPathForDirectory(directory, sessionID, kSessionFileName));
 }
 
 + (NSString*)filePathForTabID:(NSString*)tabID
