@@ -1,6 +1,5 @@
 # TODO(crbug.com/1111979) Enable all tests on lacros.
 -ExternalProtocolDialogBrowserTest.TestFocus
--FolderUploadConfirmationViewTest.InitiallyFocusesCancel
 -ProfileListDesktopBrowserTest.SwitchToProfile
 # crbug.com/1121486
 # Following tests were flaky. We disable them first until we have time to investigate.
