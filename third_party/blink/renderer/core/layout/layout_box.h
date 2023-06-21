@@ -1273,7 +1273,6 @@ class CORE_EXPORT LayoutBox : public LayoutBoxModelObject {
   void ImageChanged(WrappedImagePtr, CanDeferInvalidation) override;
   ResourcePriority ComputeResourcePriority() const final;
 
-  PositionWithAffinity PositionForPoint(const PhysicalOffset&) const override;
   PositionWithAffinity PositionForPointInFragments(const PhysicalOffset&) const;
 
   virtual bool CreatesNewFormattingContext() const {
