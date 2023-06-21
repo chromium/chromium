@@ -317,6 +317,7 @@ IN_PROC_BROWSER_TEST_F(
       syncer::HISTORY_DELETE_DIRECTIVES));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
   EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
+  EXPECT_TRUE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PROXY_TABS));
 
   // With `kReplaceSyncPromosWithSignInPromos`, both PREFERENCES and
   // PRIORITY_PREFERENCES should be enabled in transport mode.
@@ -368,6 +369,7 @@ IN_PROC_BROWSER_TEST_F(
   EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::SESSIONS));
   EXPECT_FALSE(
       GetSyncService(0)->GetActiveDataTypes().Has(syncer::USER_EVENTS));
+  EXPECT_FALSE(GetSyncService(0)->GetActiveDataTypes().Has(syncer::PROXY_TABS));
 
   // Without `kReplaceSyncPromosWithSignInPromos`, neither PREFERENCES nor
   // PRIORITY_PREFERENCES should be enabled in transport mode (even if the user
