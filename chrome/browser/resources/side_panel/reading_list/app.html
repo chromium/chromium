@@ -56,7 +56,8 @@
       heading="$i18n{emptyStateHeader}"
       body="[[getEmptyStateSubheaderText_()]]">
   </sp-empty-state>
-  <div id="readingListList" class="sp-scroller" on-keydown="onItemKeyDown_"
+  <div id="readingListList" class="sp-scroller sp-scroller-top-of-page"
+      on-keydown="onItemKeyDown_"
       hidden$="[[!shouldShowList_(unreadItems_, readItems_)]]">
     <div class="sp-card" hidden="[[!unreadItems_.length]]">
       <sp-heading compact hide-back-button>

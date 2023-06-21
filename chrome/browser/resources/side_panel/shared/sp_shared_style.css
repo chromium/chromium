@@ -48,6 +48,16 @@
   border-radius: 100px;
 }
 
+:host-context([chrome-refresh-2023])
+    .sp-scroller-top-of-page::-webkit-scrollbar-track {
+  margin-block-start: var(--sp-body-padding);
+}
+
+:host-context([chrome-refresh-2023])
+    .sp-scroller-bottom-of-page::-webkit-scrollbar-track {
+  margin-block-end: var(--sp-body-padding);
+}
+
 :host-context([chrome-refresh-2023]) .sp-card:has(.sp-scroller) {
   padding-block-end: 0;
 }
