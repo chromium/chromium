@@ -5,7 +5,9 @@
 #ifndef CHROME_BROWSER_ENTERPRISE_REPORTING_REAL_TIME_REPORT_CONTROLLER_DESKTOP_H_
 #define CHROME_BROWSER_ENTERPRISE_REPORTING_REAL_TIME_REPORT_CONTROLLER_DESKTOP_H_
 
+#include "base/memory/weak_ptr.h"
 #include "chrome/browser/enterprise/reporting/extension_request/extension_request_observer_factory.h"
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
 #include "components/enterprise/browser/reporting/real_time_report_controller.h"
 
 namespace enterprise_reporting {
@@ -25,10 +27,13 @@ class RealTimeReportControllerDesktop
   void StopWatchingExtensionRequest() override;
 
   void TriggerExtensionRequest(Profile* profile);
+  void TriggerLegacyTech(const LegacyTechReportGenerator::LegacyTechData& data);
 
  private:
   std::unique_ptr<ExtensionRequestObserverFactory>
       extension_request_observer_factory_;
+
+  base::WeakPtrFactory<RealTimeReportControllerDesktop> weak_factory_{this};
 };
 
 }  // namespace enterprise_reporting

@@ -4,9 +4,17 @@
 
 #include "chrome/browser/enterprise/reporting/real_time_report_controller_android.h"
 
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_report_generator.h"
+#include "chrome/browser/enterprise/reporting/legacy_tech/legacy_tech_service.h"
+#include "components/enterprise/browser/reporting/real_time_report_type.h"
+
 namespace enterprise_reporting {
 
-RealTimeReportControllerAndroid::RealTimeReportControllerAndroid() = default;
+RealTimeReportControllerAndroid::RealTimeReportControllerAndroid() {
+  LegacyTechServiceFactory::GetInstance()->SetReportTrigger(
+      base::BindRepeating(&RealTimeReportControllerAndroid::TriggerLegacyTech,
+                          weak_factory_.GetWeakPtr()));
+}
 RealTimeReportControllerAndroid::~RealTimeReportControllerAndroid() = default;
 
 void RealTimeReportControllerAndroid::StartWatchingExtensionRequestIfNeeded() {
@@ -15,6 +23,13 @@ void RealTimeReportControllerAndroid::StartWatchingExtensionRequestIfNeeded() {
 
 void RealTimeReportControllerAndroid::StopWatchingExtensionRequest() {
   // No-op because extensions are not supported on Android.
+}
+
+void RealTimeReportControllerAndroid::TriggerLegacyTech(
+    const LegacyTechReportGenerator::LegacyTechData& data) {
+  if (trigger_callback_) {
+    trigger_callback_.Run(RealTimeReportType::kLegacyTech, data);
+  }
 }
 
 }  // namespace enterprise_reporting

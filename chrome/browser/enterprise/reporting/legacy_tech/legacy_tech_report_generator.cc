@@ -27,8 +27,8 @@ LegacyTechReportGenerator::LegacyTechData::~LegacyTechData() = default;
 LegacyTechReportGenerator::LegacyTechReportGenerator() = default;
 LegacyTechReportGenerator::~LegacyTechReportGenerator() = default;
 
-std::vector<std::unique_ptr<LegacyTechEvent>>
-LegacyTechReportGenerator::Generate(const RealTimeReportGenerator::Data& data) {
+std::unique_ptr<LegacyTechEvent> LegacyTechReportGenerator::Generate(
+    const RealTimeReportGenerator::Data& data) {
   const LegacyTechData& legacy_tech_data =
       static_cast<const LegacyTechData&>(data);
   std::unique_ptr<LegacyTechEvent> report = std::make_unique<LegacyTechEvent>();
@@ -41,9 +41,7 @@ LegacyTechReportGenerator::Generate(const RealTimeReportGenerator::Data& data) {
   report->set_filename(legacy_tech_data.filename);
   report->set_column(legacy_tech_data.column);
   report->set_line(legacy_tech_data.line);
-  std::vector<std::unique_ptr<LegacyTechEvent>> reports;
-  reports.push_back(std::move(report));
-  return reports;
+  return report;
 }
 
 }  // namespace enterprise_reporting

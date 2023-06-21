@@ -49,7 +49,7 @@ TEST_F(RealTimeReportGeneratorTest, ExtensionRequest) {
 
   std::vector<std::unique_ptr<google::protobuf::MessageLite>> reports =
       generator.Generate(
-          RealTimeReportGenerator::ReportType::kExtensionRequest,
+          RealTimeReportType::kExtensionRequest,
           ExtensionRequestReportGenerator::ExtensionRequestData(profile));
   EXPECT_EQ(1u, reports.size());
 

@@ -7,10 +7,13 @@
 
 #include <string>
 
+#include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/weak_ptr.h"
 #include "components/enterprise/browser/reporting/real_time_report_generator.h"
+#include "components/enterprise/browser/reporting/real_time_report_type.h"
 #include "components/policy/core/common/cloud/dm_token.h"
+#include "components/reporting/proto/synced/record_constants.pb.h"
 
 namespace enterprise_reporting {
 
@@ -24,12 +27,8 @@ class RealTimeReportController {
   RealTimeReportController& operator=(const RealTimeReportController&) = delete;
   ~RealTimeReportController();
 
-  enum ReportTrigger {
-    kExtensionRequest,
-  };
-
   using TriggerCallback =
-      base::RepeatingCallback<void(ReportTrigger,
+      base::RepeatingCallback<void(RealTimeReportType,
                                    const RealTimeReportGenerator::Data&)>;
 
   class Delegate {
@@ -49,25 +48,33 @@ class RealTimeReportController {
     TriggerCallback trigger_callback_;
   };
 
+  struct ReportConfig {
+    RealTimeReportType type;
+    reporting::Destination destination;
+    reporting::Priority priority;
+  };
+
   void OnDMTokenUpdated(policy::DMToken&& dm_token);
 
-  void GenerateAndUploadReport(ReportTrigger trigger,
+  void GenerateAndUploadReport(RealTimeReportType type,
                                const RealTimeReportGenerator::Data& data);
 
-  void SetExtensionRequestUploaderForTesting(
-      std::unique_ptr<RealTimeUploader> uploader);
+  void SetUploaderForTesting(RealTimeReportType type,
+                             std::unique_ptr<RealTimeUploader> uploader);
   void SetReportGeneratorForTesting(
       std::unique_ptr<RealTimeReportGenerator> generator);
   Delegate* GetDelegateForTesting();
 
  private:
-  // Creates and uploads extension requests with real time reporting pipeline.
-  void UploadExtensionRequests(const RealTimeReportGenerator::Data& data);
+  // Creates and uploads a report with real time reporting pipeline.
+  void UploadReport(const RealTimeReportGenerator::Data& data,
+                    const ReportConfig& config);
 
   policy::DMToken dm_token_ = policy::DMToken::CreateEmptyToken();
-  std::unique_ptr<RealTimeUploader> extension_request_uploader_;
   std::unique_ptr<RealTimeReportGenerator> real_time_report_generator_;
 
+  base::flat_map<RealTimeReportType, std::unique_ptr<RealTimeUploader>>
+      report_uploaders_;
   std::unique_ptr<Delegate> delegate_;
 
   base::WeakPtrFactory<RealTimeReportController> weak_ptr_factory_{this};

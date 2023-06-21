@@ -41,18 +41,17 @@ TEST_F(LegacyTechGeneratorTest, Test) {
   ASSERT_TRUE(base::Time::FromUTCExploded(kTestDate, &data.timestamp));
 
   LegacyTechReportGenerator generator;
-  auto reports = generator.Generate(data);
-  ASSERT_EQ(1u, reports.size());
+  auto report = generator.Generate(data);
 
-  EXPECT_EQ(data.type, reports[0]->feature_id());
-  EXPECT_EQ(data.url.spec(), reports[0]->url());
-  EXPECT_EQ(data.matched_url, reports[0]->allowlisted_url_match());
-  EXPECT_EQ(data.filename, reports[0]->filename());
-  EXPECT_EQ(data.column, reports[0]->column());
-  EXPECT_EQ(data.line, reports[0]->line());
+  EXPECT_EQ(data.type, report->feature_id());
+  EXPECT_EQ(data.url.spec(), report->url());
+  EXPECT_EQ(data.matched_url, report->allowlisted_url_match());
+  EXPECT_EQ(data.filename, report->filename());
+  EXPECT_EQ(data.column, report->column());
+  EXPECT_EQ(data.line, report->line());
   base::Time midnight;
   ASSERT_TRUE(base::Time::FromUTCExploded(kTestDateInMidnight, &midnight));
-  EXPECT_EQ(midnight.ToJavaTime(), reports[0]->event_timestamp_millis());
+  EXPECT_EQ(midnight.ToJavaTime(), report->event_timestamp_millis());
 }
 
 }  // namespace enterprise_reporting

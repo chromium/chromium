@@ -26,6 +26,7 @@ static_library("enterprise") {
     "browser/reporting/real_time_report_controller.h",
     "browser/reporting/real_time_report_generator.cc",
     "browser/reporting/real_time_report_generator.h",
+    "browser/reporting/real_time_report_type.h",
     "browser/reporting/real_time_uploader.cc",
     "browser/reporting/real_time_uploader.h",
     "browser/reporting/report_generator.cc",

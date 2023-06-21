@@ -44,7 +44,7 @@ class LegacyTechReportGenerator {
       delete;
   ~LegacyTechReportGenerator();
 
-  std::vector<std::unique_ptr<LegacyTechEvent>> Generate(
+  std::unique_ptr<LegacyTechEvent> Generate(
       const RealTimeReportGenerator::Data& data);
 };
 
