@@ -61,6 +61,7 @@ group("absl_component_deps") {
     "//third_party/abseil-cpp/absl/base",
     "//third_party/abseil-cpp/absl/base:config",
     "//third_party/abseil-cpp/absl/base:core_headers",
+    "//third_party/abseil-cpp/absl/base:nullability",
     "//third_party/abseil-cpp/absl/base:prefetch",
     "//third_party/abseil-cpp/absl/cleanup",
     "//third_party/abseil-cpp/absl/container:btree",
@@ -189,6 +190,7 @@ if (build_with_chromium) {
         "absl/algorithm:algorithm_test",
         "absl/algorithm:container_test",
         "absl/base:config_test",
+        "absl/base:nullability_test",
         "absl/base:prefetch_test",
         "absl/cleanup:cleanup_test",
         # TODO(mbonadei): Fix issue with EXPECT_DEATH and uncomment.

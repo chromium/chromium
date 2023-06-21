@@ -28,6 +28,15 @@ absl_source_set("log_severity") {
   ]
 }
 
+absl_source_set("nullability") {
+  sources = [ "internal/nullability_impl.h" ]
+  public = [ "nullability.h" ]
+  deps = [
+    ":core_headers",
+    "//third_party/abseil-cpp/absl/meta:type_traits",
+  ]
+}
+
 absl_source_set("raw_logging_internal") {
   sources = [ "internal/raw_logging.cc" ]
   public = [ "internal/raw_logging.h" ]
@@ -292,5 +301,13 @@ absl_test("config_test") {
   deps = [
     ":config",
     "//third_party/abseil-cpp/absl/synchronization:thread_pool",
+  ]
+}
+
+absl_test("nullability_test") {
+  sources = [ "nullability_test.cc" ]
+  deps = [
+    ":core_headers",
+    ":nullability",
   ]
 }

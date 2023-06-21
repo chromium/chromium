@@ -1868,4 +1868,29 @@ TEST(Mutex, WriterPriority) {
   EXPECT_TRUE(saw_wrote.load());
 }
 
+TEST(Mutex, LockWhenWithTimeoutResult) {
+  // Check various corner cases for Await/LockWhen return value
+  // with always true/always false conditions.
+  absl::Mutex mu;
+  const bool kAlwaysTrue = true, kAlwaysFalse = false;
+  const absl::Condition kTrueCond(&kAlwaysTrue), kFalseCond(&kAlwaysFalse);
+  EXPECT_TRUE(mu.LockWhenWithTimeout(kTrueCond, absl::Milliseconds(1)));
+  mu.Unlock();
+  EXPECT_FALSE(mu.LockWhenWithTimeout(kFalseCond, absl::Milliseconds(1)));
+  EXPECT_TRUE(mu.AwaitWithTimeout(kTrueCond, absl::Milliseconds(1)));
+  EXPECT_FALSE(mu.AwaitWithTimeout(kFalseCond, absl::Milliseconds(1)));
+  std::thread th1([&]() {
+    EXPECT_TRUE(mu.LockWhenWithTimeout(kTrueCond, absl::Milliseconds(1)));
+    mu.Unlock();
+  });
+  std::thread th2([&]() {
+    EXPECT_FALSE(mu.LockWhenWithTimeout(kFalseCond, absl::Milliseconds(1)));
+    mu.Unlock();
+  });
+  absl::SleepFor(absl::Milliseconds(100));
+  mu.Unlock();
+  th1.join();
+  th2.join();
+}
+
 }  // namespace

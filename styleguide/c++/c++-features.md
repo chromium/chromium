@@ -39,6 +39,7 @@ The current status of existing standards and Abseil features is:
       * absl::AnyInvocable: Initially supported June 20, 2022
       * Log library: Initially supported Aug 31, 2022
       * CRC32C library: Initially supported Dec 5, 2022
+      * Nullability annotation: Initially supported Jun 21, 2023
 
 [TOC]
 
@@ -1871,4 +1872,24 @@ absl::AddLogSink(&custom_sink_to_capture_absl_logs);
 **Notes:**
 *** promo
 Overlaps and uses same macros names as `base/logging.h`.
+***
+
+### Nullability annotations <sup>[tbd]</sup>
+
+```c++
+void PaySalary(absl::NotNull<Employee *> employee) {
+  pay(*employee);  // OK to dereference
+}
+```
+
+**Description:** Annotations to more clearly specify contracts
+
+**Documentation:**
+[nullability.h](https://source.chromium.org/chromium/chromium/src/+/main:third_party/abseil-cpp/absl/base/nullability.h)
+
+**Notes:**
+*** promo
+These nullability annotations are primarily a human readable signal about the
+intended contract of the pointer. They are not *types* and do not currently
+provide any correctness guarantees.
 ***
