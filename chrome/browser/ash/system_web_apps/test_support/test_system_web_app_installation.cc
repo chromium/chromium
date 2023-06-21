@@ -394,6 +394,9 @@ TestSystemWebAppInstallation::SetUpTabbedMultiWindowApp() {
           base::BindRepeating(&GenerateWebAppInstallInfoForTestApp));
   delegate->SetShouldReuseExistingWindow(false);
   delegate->SetShouldHaveTabStrip(true);
+  // Terminal, the only tabbed SWA ATM never uses system colors (or it wouldn't
+  // get per tab coloring).
+  delegate->SetUseSystemThemeColor(false);
 
   return base::WrapUnique(
       new TestSystemWebAppInstallation(std::move(delegate)));
