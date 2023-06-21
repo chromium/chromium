@@ -3926,6 +3926,7 @@ enum WebFeature {
   kWebGPUQueueSubmit = 4586,
   kWebGPUCanvasContextGetCurrentTexture = 4587,
   kEditContext = 4588,
+  kServiceWorkerStaticRouter_RegisterRouter = 4589,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

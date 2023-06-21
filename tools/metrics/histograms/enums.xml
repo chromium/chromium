@@ -43370,6 +43370,7 @@ Called by update_use_counter_feature_enum.py.-->
   <int value="4586" label="WebGPUQueueSubmit"/>
   <int value="4587" label="WebGPUCanvasContextGetCurrentTexture"/>
   <int value="4588" label="EditContext"/>
+  <int value="4589" label="ServiceWorkerStaticRouter_RegisterRouter"/>
 </enum>
 
 <enum name="FeaturePolicyAllowlistType">
