@@ -64,8 +64,8 @@ class ASH_EXPORT ClipboardHistoryItem {
     return display_image_;
   }
   const std::u16string& display_text() const { return display_text_; }
-  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
   size_t file_count() const { return file_count_; }
+  const absl::optional<ui::ImageModel>& icon() const { return icon_; }
 
  private:
   // Unique identifier.
@@ -94,12 +94,12 @@ class ASH_EXPORT ClipboardHistoryItem {
   // The text that should be displayed on this item's menu entry.
   const std::u16string display_text_;
 
+  // Indicates the count of copied files in the underlying clipboard data.
+  const size_t file_count_;
+
   // Cached image model for the item's icon. Currently, there will be no value
   // for non-file items.
   const absl::optional<ui::ImageModel> icon_;
-
-  // Indicates the count of copied files in the underlying clipboard data.
-  const size_t file_count_;
 
   // Mutable to allow const access from `AddDisplayImageUpdatedCallback()`.
   mutable base::RepeatingClosureList display_image_updated_callbacks_;

@@ -5,6 +5,7 @@
 #include "ash/shell.h"
 
 #include <algorithm>
+#include <iterator>
 #include <memory>
 #include <string>
 #include <utility>
@@ -226,6 +227,7 @@
 #include "base/functional/callback_helpers.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/ranges/algorithm.h"
 #include "base/system/sys_info.h"
 #include "base/trace_event/trace_event.h"
 #include "chromeos/ash/components/dbus/fwupd/fwupd_client.h"
@@ -1693,11 +1695,14 @@ void Shell::Init(
   // `clipboard_history_controller_` is destroyed.
   chromeos::clipboard_history::SetQueryItemDescriptorsImpl(base::BindRepeating(
       [](ClipboardHistoryControllerImpl* controller) {
+        std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> descriptors;
         if (clipboard_history_util::IsEnabledInCurrentMode()) {
-          return clipboard_history_util::GetItemDescriptorsFrom(
-              controller->history()->GetItems());
+          const auto& items = controller->history()->GetItems();
+          descriptors.reserve(items.size());
+          base::ranges::transform(items, std::back_inserter(descriptors),
+                                  &clipboard_history_util::ItemToDescriptor);
         }
-        return std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>();
+        return descriptors;
       },
       clipboard_history_controller_.get()));
   chromeos::clipboard_history::SetPasteClipboardItemByIdImpl(

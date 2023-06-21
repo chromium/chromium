@@ -19,6 +19,7 @@
 #include "base/metrics/histogram_macros.h"
 #include "base/notreached.h"
 #include "base/unguessable_token.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "ui/accessibility/ax_node_data.h"
 #include "ui/base/clipboard/clipboard_data.h"
@@ -214,7 +215,8 @@ void ClipboardHistoryItemView::Init() {
   const auto* const item = GetClipboardHistoryItem();
   CHECK(item);
   if (item->display_format() ==
-      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
+          crosapi::mojom::ClipboardHistoryDisplayFormat::kFile ||
+      chromeos::features::IsClipboardHistoryRefreshEnabled()) {
     CHECK(item->icon());
     views::Builder<views::View>(display_view)
         .AddChildAt(views::Builder<views::ImageView>()

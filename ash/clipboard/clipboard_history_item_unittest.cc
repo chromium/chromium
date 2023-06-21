@@ -11,6 +11,8 @@
 #include "base/strings/string_util.h"
 #include "base/test/icu_test_util.h"
 #include "base/test/mock_callback.h"
+#include "base/test/scoped_feature_list.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "chromeos/crosapi/mojom/clipboard_history.mojom.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -24,6 +26,12 @@
 namespace ash {
 
 namespace {
+
+using ::testing::Bool;
+using ::testing::Combine;
+using ::testing::Optional;
+using ::testing::Values;
+using ::testing::WithParamInterface;
 
 struct FormatPair {
   ui::ClipboardInternalFormat clipboard_format;
@@ -161,21 +169,17 @@ TEST_F(ClipboardHistoryItemTest, SetDisplayImageNotifiesCallback) {
 
 class ClipboardHistoryItemDisplayTest
     : public ClipboardHistoryItemTest,
-      public testing::WithParamInterface<FormatPair> {
+      public WithParamInterface<
+          std::tuple<FormatPair, /*enable_refresh=*/bool>> {
  public:
-  ClipboardHistoryItemDisplayTest() : item_(BuildClipboardHistoryItem()) {}
+  ClipboardHistoryItemDisplayTest() {
+    scoped_feature_list_.InitWithFeatureStates(
+        {{chromeos::features::kClipboardHistoryRefresh,
+          IsClipboardHistoryRefreshEnabled()},
+         {chromeos::features::kJelly, IsClipboardHistoryRefreshEnabled()}});
+  }
   ~ClipboardHistoryItemDisplayTest() override = default;
 
-  ui::ClipboardInternalFormat GetClipboardFormat() const {
-    return GetParam().clipboard_format;
-  }
-  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
-    return GetParam().display_format;
-  }
-
-  const ClipboardHistoryItem& item() const { return item_; }
-
- private:
   ClipboardHistoryItem BuildClipboardHistoryItem() const {
     ClipboardHistoryItemBuilder builder;
     builder.SetFormat(GetClipboardFormat());
@@ -184,26 +188,40 @@ class ClipboardHistoryItemDisplayTest
     return item;
   }
 
-  const ClipboardHistoryItem item_;
+  ui::ClipboardInternalFormat GetClipboardFormat() const {
+    return std::get<0>(GetParam()).clipboard_format;
+  }
+  crosapi::mojom::ClipboardHistoryDisplayFormat GetDisplayFormat() const {
+    return std::get<0>(GetParam()).display_format;
+  }
+
+  bool IsClipboardHistoryRefreshEnabled() { return std::get<1>(GetParam()); }
+
+ private:
+  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 INSTANTIATE_TEST_SUITE_P(
     All,
     ClipboardHistoryItemDisplayTest,
-    ::testing::Values(
-        FormatPair{ui::ClipboardInternalFormat::kText,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
-        FormatPair{ui::ClipboardInternalFormat::kPng,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
-        FormatPair{ui::ClipboardInternalFormat::kHtml,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
-        FormatPair{ui::ClipboardInternalFormat::kFilenames,
-                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}));
+    Combine(
+        Values(FormatPair{ui::ClipboardInternalFormat::kText,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kText},
+               FormatPair{ui::ClipboardInternalFormat::kPng,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kPng},
+               FormatPair{ui::ClipboardInternalFormat::kHtml,
+                          crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml},
+               FormatPair{
+                   ui::ClipboardInternalFormat::kFilenames,
+                   crosapi::mojom::ClipboardHistoryDisplayFormat::kFile}),
+        /*enable_refresh=*/Bool()));
 
 TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
-  const auto& maybe_icon = item().icon();
-  if (GetDisplayFormat() ==
-      crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
+  const auto item = BuildClipboardHistoryItem();
+  const auto& maybe_icon = item.icon();
+  if (IsClipboardHistoryRefreshEnabled() ||
+      GetDisplayFormat() ==
+          crosapi::mojom::ClipboardHistoryDisplayFormat::kFile) {
     ASSERT_TRUE(maybe_icon.has_value());
     EXPECT_TRUE(maybe_icon.value().IsVectorIcon());
   } else {
@@ -212,7 +230,8 @@ TEST_P(ClipboardHistoryItemDisplayTest, Icon) {
 }
 
 TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
-  const auto& maybe_image = item().display_image();
+  const auto item = BuildClipboardHistoryItem();
+  const auto& maybe_image = item.display_image();
   switch (GetDisplayFormat()) {
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kUnknown:
       NOTREACHED_NORETURN();
@@ -221,9 +240,17 @@ TEST_P(ClipboardHistoryItemDisplayTest, DisplayImage) {
       EXPECT_FALSE(maybe_image);
       break;
     case crosapi::mojom::ClipboardHistoryDisplayFormat::kPng:
-    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
       ASSERT_TRUE(maybe_image);
       EXPECT_TRUE(maybe_image.value().IsImage());
+      break;
+    case crosapi::mojom::ClipboardHistoryDisplayFormat::kHtml:
+      // Because the HTML placeholder image is a static `ImageModel`,
+      // `maybe_image` might be a vector icon or an image depending on which
+      // test cases are being run. What we know reliably is that the value of
+      // `maybe_image` should always be the current placeholder instance.
+      EXPECT_THAT(
+          maybe_image,
+          Optional(clipboard_history_util::GetHtmlPreviewPlaceholder()));
       break;
   }
 }

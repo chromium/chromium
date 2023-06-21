@@ -157,9 +157,9 @@ ASH_EXPORT ui::ImageModel GetIconForFileClipboardItem(
 // render.
 ASH_EXPORT ui::ImageModel GetHtmlPreviewPlaceholder();
 
-// Returns the item descriptors based on `items`.
-std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>
-GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items);
+// Returns an item descriptor based on `item`.
+crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
+    const ClipboardHistoryItem& item);
 
 // Calculates the preferred width for clipboard history menu item views.
 int GetPreferredItemViewWidth();

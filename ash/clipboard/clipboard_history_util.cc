@@ -247,14 +247,10 @@ ui::ImageModel GetHtmlPreviewPlaceholder() {
   return *model;
 }
 
-std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor>
-GetItemDescriptorsFrom(const std::list<ClipboardHistoryItem>& items) {
-  std::vector<crosapi::mojom::ClipboardHistoryItemDescriptor> item_descriptors;
-  for (const auto& item : items) {
-    item_descriptors.emplace_back(item.id(), item.display_format(),
-                                  item.display_text(), item.file_count());
-  }
-  return item_descriptors;
+crosapi::mojom::ClipboardHistoryItemDescriptor ItemToDescriptor(
+    const ClipboardHistoryItem& item) {
+  return crosapi::mojom::ClipboardHistoryItemDescriptor(
+      item.id(), item.display_format(), item.display_text(), item.file_count());
 }
 
 int GetPreferredItemViewWidth() {
