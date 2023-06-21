@@ -21,6 +21,7 @@ source_set("public") {
     "auth_factor_status_consumer.h",
     "auth_hub.h",
     "auth_parts.h",
+    "auth_policy_connector.h",
     "auth_session_storage.h",
     "common_types.h",
     "cryptohome_core.h",

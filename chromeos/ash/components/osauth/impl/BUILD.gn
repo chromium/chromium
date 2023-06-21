@@ -13,6 +13,7 @@ component("impl") {
   public_deps = [ "//chromeos/ash/components/osauth/public" ]
 
   deps = [
+    "//ash/constants",
     "//base",
     "//chromeos/ash/components/cryptohome",
     "//chromeos/ash/components/dbus/userdataauth",
@@ -40,10 +41,14 @@ component("impl") {
     "auth_session_storage_impl.h",
     "cryptohome_core_impl.cc",
     "cryptohome_core_impl.h",
+    "early_login_auth_policy_connector.cc",
+    "early_login_auth_policy_connector.h",
     "engines/cryptohome_based_engine.cc",
     "engines/cryptohome_based_engine.h",
     "engines/cryptohome_password_engine.cc",
     "engines/cryptohome_password_engine.h",
+    "login_screen_auth_policy_connector.cc",
+    "login_screen_auth_policy_connector.h",
   ]
 }
 

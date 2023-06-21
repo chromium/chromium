@@ -8,12 +8,14 @@
 #include <utility>
 
 #include "base/check.h"
+#include "base/check_is_test.h"
 #include "base/check_op.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/osauth/impl/auth_hub_impl.h"
 #include "chromeos/ash/components/osauth/impl/auth_session_storage_impl.h"
 #include "chromeos/ash/components/osauth/impl/cryptohome_core_impl.h"
 #include "chromeos/ash/components/osauth/impl/engines/cryptohome_password_engine.h"
+#include "chromeos/ash/components/osauth/impl/login_screen_auth_policy_connector.h"
 #include "chromeos/ash/components/osauth/public/auth_factor_engine_factory.h"
 #include "chromeos/ash/components/osauth/public/auth_parts.h"
 #include "components/prefs/pref_service.h"
@@ -63,6 +65,8 @@ void AuthPartsImpl::CreateDefaultComponents(PrefService* local_state) {
   cryptohome_core_ =
       std::make_unique<CryptohomeCoreImpl>(UserDataAuthClient::Get());
   RegisterEngineFactory(std::make_unique<CryptohomePasswordEngineFactory>());
+  login_screen_policy_connector_ =
+      std::make_unique<LoginScreenAuthPolicyConnector>(local_state);
 }
 
 AuthSessionStorage* AuthPartsImpl::GetAuthSessionStorage() {
@@ -95,9 +99,44 @@ AuthPartsImpl::GetEngineFactories() {
   return engine_factories_;
 }
 
+void AuthPartsImpl::RegisterEarlyLoginAuthPolicyConnector(
+    std::unique_ptr<AuthPolicyConnector> connector) {
+  CHECK(!early_login_policy_connector_);
+  early_login_policy_connector_ = std::move(connector);
+  early_login_policy_connector_->SetLoginScreenAuthPolicyConnector(
+      login_screen_policy_connector_.get());
+}
+
+void AuthPartsImpl::SetProfilePrefsAuthPolicyConnector(
+    AuthPolicyConnector* connector) {
+  if (profile_prefs_policy_connector_) {
+    CHECK_IS_TEST();
+    LOG(WARNING) << "Overriding ProfilePrefsAuthPolicyConnector in test";
+    profile_prefs_policy_connector_->OnShutdown();
+  }
+
+  profile_prefs_policy_connector_ = connector;
+  profile_prefs_policy_connector_->SetLoginScreenAuthPolicyConnector(
+      login_screen_policy_connector_.get());
+}
+
+AuthPolicyConnector* AuthPartsImpl::GetAuthPolicyConnector() {
+  if (profile_prefs_policy_connector_) {
+    return profile_prefs_policy_connector_;
+  }
+  if (early_login_policy_connector_) {
+    return early_login_policy_connector_.get();
+  }
+  CHECK(login_screen_policy_connector_);
+  return login_screen_policy_connector_.get();
+}
+
 void AuthPartsImpl::Shutdown() {
   if (auth_hub_) {
     auth_hub_->Shutdown();
+  }
+  if (profile_prefs_policy_connector_) {
+    profile_prefs_policy_connector_->OnShutdown();
   }
 }
 

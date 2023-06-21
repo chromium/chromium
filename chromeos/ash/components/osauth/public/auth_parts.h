@@ -15,6 +15,7 @@ class PrefService;
 namespace ash {
 
 class AuthHub;
+class AuthPolicyConnector;
 class AuthSessionStorage;
 class AuthFactorEngineFactory;
 class CryptohomeCore;
@@ -39,9 +40,14 @@ class COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_OSAUTH) AuthParts {
   virtual AuthSessionStorage* GetAuthSessionStorage() = 0;
   virtual AuthHub* GetAuthHub() = 0;
   virtual CryptohomeCore* GetCryptohomeCore() = 0;
+  virtual AuthPolicyConnector* GetAuthPolicyConnector() = 0;
 
   virtual void RegisterEngineFactory(
       std::unique_ptr<AuthFactorEngineFactory> factory) = 0;
+  virtual void RegisterEarlyLoginAuthPolicyConnector(
+      std::unique_ptr<AuthPolicyConnector> connector) = 0;
+  virtual void SetProfilePrefsAuthPolicyConnector(
+      AuthPolicyConnector* connector) = 0;
 
   virtual const std::vector<std::unique_ptr<AuthFactorEngineFactory>>&
   GetEngineFactories() = 0;

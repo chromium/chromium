@@ -60,6 +60,7 @@
 #include "chrome/browser/ash/login/easy_unlock/easy_unlock_service_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_content_script_manager_factory.h"
 #include "chrome/browser/ash/login/extensions/login_screen_extensions_lifetime_manager_factory.h"
+#include "chrome/browser/ash/login/osauth/profile_prefs_auth_policy_connector_factory.h"
 #include "chrome/browser/ash/login/quick_unlock/quick_unlock_factory.h"
 #include "chrome/browser/ash/login/saml/in_session_password_sync_manager_factory.h"
 #include "chrome/browser/ash/login/saml/password_sync_token_verifier_factory.h"
@@ -143,6 +144,7 @@ void EnsureBrowserContextKeyedServiceFactoriesBuilt() {
   ash::OAuth2LoginManagerFactory::GetInstance();
   ash::OfflineSigninLimiterFactory::GetInstance();
   ash::PasswordSyncTokenVerifierFactory::GetInstance();
+  ash::ProfilePrefsAuthPolicyConnectorFactory::GetInstance();
   ash::RecentModelFactory::GetInstance();
   ash::RemoteAppsManagerFactory::GetInstance();
   ash::ScreenTimeControllerFactory::GetInstance();
