@@ -100,7 +100,6 @@ CAPTURE_EXPORT
 
 - (void)setOnPhotoOutputStoppedForTesting:
     (base::RepeatingCallback<void()>)onPhotoOutputStopped;
-- (void)setForceLegacyStillImageApiForTesting:(bool)forceLegacyApi;
 
 // Use the below only for test.
 - (void)callLocked:(base::OnceClosure)lambda;

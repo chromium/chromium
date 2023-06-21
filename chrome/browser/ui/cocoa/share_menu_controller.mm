@@ -198,14 +198,6 @@ bool CanShare() {
   service.subject = title;
 
   NSArray* itemsToShare = @[ url ];
-  if (@available(macOS 10.14, *)) {
-  } else {
-    if ([[service name] isEqual:NSSharingServiceNamePostOnTwitter]) {
-      // The Twitter share service expects the title as an additional share
-      // item. This is the same approach system apps use.
-      itemsToShare = @[ url, title ];
-    }
-  }
   if ([[service name] isEqual:kRemindersSharingServiceName]) {
     _activity = [[NSUserActivity alloc]
         initWithActivityType:NSUserActivityTypeBrowsingWeb];

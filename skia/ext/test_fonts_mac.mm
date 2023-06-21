@@ -30,22 +30,14 @@ void InitializeSkFontMgrForTest() {
     [font_urls addObject:font_url.absoluteURL];
   }
 
-  if (@available(macOS 10.15, *)) {
-    CTFontManagerRegisterFontURLs(
-        base::apple::NSToCFPtrCast(font_urls), kCTFontManagerScopeProcess,
-        /*enabled=*/true, ^bool(CFArrayRef errors, bool done) {
-          if (CFArrayGetCount(errors)) {
-            DLOG(FATAL) << "Failed to activate fonts.";
-          }
-          return true;
-        });
-  } else {
-    if (!CTFontManagerRegisterFontsForURLs(
-            base::apple::NSToCFPtrCast(font_urls), kCTFontManagerScopeProcess,
-            /*errors=*/nullptr)) {
-      DLOG(FATAL) << "Failed to activate fonts.";
-    }
-  }
+  CTFontManagerRegisterFontURLs(
+      base::apple::NSToCFPtrCast(font_urls), kCTFontManagerScopeProcess,
+      /*enabled=*/true, ^bool(CFArrayRef errors, bool done) {
+        if (CFArrayGetCount(errors)) {
+          DLOG(FATAL) << "Failed to activate fonts.";
+        }
+        return true;
+      });
 }
 
 }  // namespace skia

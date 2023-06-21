@@ -18,7 +18,7 @@ declare_args() {
   # `mac_min_system_version` when dropping support for older macOSes but where
   # additional code changes are required to be compliant with the availability
   # rules.
-  mac_deployment_target = "10.13"
+  mac_deployment_target = "10.15"
 
   # The value of the `LSMinimumSystemVersion` in `Info.plist` files. This
   # partially controls the minimum supported version of macOS for Chromium by

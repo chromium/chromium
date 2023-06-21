@@ -76,17 +76,10 @@ OSStatus CopyCertChain(SecCertificateRef cert_handle,
   // Evaluate trust, which creates the cert chain.
   {
     base::AutoLock lock(crypto::GetMacSecurityServicesLock());
-    if (__builtin_available(macOS 10.14, *)) {
-      // The return value is intentionally ignored since we only care about
-      // building a cert chain, not whether it is trusted (the server is the
-      // only one that can decide that.)
-      std::ignore = SecTrustEvaluateWithError(trust, nullptr);
-    } else {
-      SecTrustResultType status;
-      result = SecTrustEvaluate(trust, &status);
-      if (result)
-        return result;
-    }
+    // The return value is intentionally ignored since we only care about
+    // building a cert chain, not whether it is trusted (the server is the
+    // only one that can decide that.)
+    std::ignore = SecTrustEvaluateWithError(trust, nullptr);
     *out_cert_chain = x509_util::CertificateChainFromSecTrust(trust);
   }
   return result;
