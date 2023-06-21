@@ -1404,6 +1404,7 @@ source_set("quiche_tests") {
   sources = [
     "src/quiche/binary_http/binary_http_message_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client_test.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/at_crypto_utils_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/rsa_blind_signer_test.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/rsa_blinder_test.cc",
@@ -1772,12 +1773,14 @@ component("blind_sign_auth") {
   visibility = [
     ":blind_sign_auth_test_support",
     ":quiche_tests",
-    "//chrome/browser:browser"
+    "//chrome/browser:browser",
   ]
 
   sources = [
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client.cc",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/client/anonymous_tokens_rsa_bssa_client.h",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters.cc",
+    "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/anonymous_tokens_pb_openssl_converters.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/blind_signer.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/blinder.h",
     "src/quiche/blind_sign_auth/anonymous_tokens/cpp/crypto/constants.h",
