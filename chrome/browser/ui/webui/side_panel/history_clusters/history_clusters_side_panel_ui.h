@@ -13,7 +13,12 @@
 #include "content/public/browser/web_contents_observer.h"
 #include "mojo/public/cpp/bindings/pending_receiver.h"
 #include "ui/webui/mojo_bubble_web_ui_controller.h"
+#include "ui/webui/resources/cr_components/color_change_listener/color_change_listener.mojom.h"
 #include "ui/webui/resources/cr_components/history_clusters/history_clusters.mojom-forward.h"
+
+namespace ui {
+class ColorChangeHandler;
+}
 
 namespace history_clusters {
 class HistoryClustersHandler;
@@ -31,6 +36,10 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
   HistoryClustersSidePanelUI& operator=(const HistoryClustersSidePanelUI&) =
       delete;
   ~HistoryClustersSidePanelUI() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
+          pending_receiver);
 
   // Instantiates the implementor of the mojom::PageHandlerFactory mojo
   // interface passing the pending receiver that will be internally bound.
@@ -62,6 +71,7 @@ class HistoryClustersSidePanelUI : public ui::MojoBubbleWebUIController,
       content::NavigationHandle* navigation_handle) override;
 
  private:
+  std::unique_ptr<ui::ColorChangeHandler> color_provider_handler_;
   std::unique_ptr<history_clusters::HistoryClustersHandler>
       history_clusters_handler_;
   std::unique_ptr<page_image_service::ImageServiceHandler>

@@ -26,8 +26,16 @@
     padding: 8px 0 0;
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #clusters {
+    padding: 0;
+  }
+
   :host([in-side-panel_]) history-cluster {
     border-bottom: 4px solid var(--cr-separator-color);
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) history-cluster {
+    border-bottom: none;
   }
 
   :host([in-side-panel_]) history-cluster[is-last] {

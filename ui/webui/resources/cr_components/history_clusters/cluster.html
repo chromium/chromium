@@ -7,10 +7,19 @@
     padding-bottom: var(--cluster-padding-vertical);
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) {
+    --search-query-margin: 4px;
+  }
+
   :host([in-side-panel_]) {
     --cr-icon-button-margin-start: 8px;
     padding-bottom: 0;
     padding-top: 8px;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #container {
+    background: var(--color-side-panel-card-background);
+    border-radius: 12px;
   }
 
   :host([in-side-panel_][is-first]) {
@@ -76,6 +85,17 @@
     color: var(--cr-secondary-text-color);
   }
 
+  #related-searches-divider {
+    display: none;
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #related-searches-divider {
+    display: block;
+    background-color: var(--color-side-panel-divider);
+    height: 1px;
+    margin: 8px 16px;
+  }
+
   #related-searches {
     display: flex;
     flex-wrap: wrap;
@@ -89,8 +109,20 @@
     padding: 0 16px var(--cluster-padding-vertical);
   }
 
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) #related-searches {
+    margin-top: 0;
+    padding-top: 8px;
+    flex-wrap: nowrap;
+    overflow-x: auto;
+  }
+
   search-query {
     margin-top: var(--search-query-margin);
+  }
+
+  :host-context([chrome-refresh-2023]):host([in-side-panel_]) search-query {
+    margin-top: 0;
+    flex-shrink: 0;
   }
 
   search-query:not(:last-of-type) {
@@ -116,6 +148,7 @@
     <url-visit visit="[[item]]" query="[[query]]" from-persistence="[[cluster.fromPersistence]]">
     </url-visit>
   </template>
+  <div id="related-searches-divider" hidden="[[!cluster.relatedSearches.length]]"></div>
   <div id="related-searches" hidden="[[!cluster.relatedSearches.length]]"
       role="list" aria-label$="[[i18n('relatedSearchesHeader')]]"
       on-related-search-clicked="onRelatedSearchClicked_" on-mousedown="clearSelection_">
