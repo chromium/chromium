@@ -1,0 +1,19 @@
+---
+# This is the block list used for the Replay SOC2 bot.
+#
+# An example:
+# blocklist:
+#  - bad/**
+#  - rootfile
+#
+# Each line maps to a glob expression that gets applied to the list of files
+# that the PR touches. The Replay SOC2 bot will never approve any changes to
+# .github/replay_soc2.yml. The matching is done by minimatch.
+#
+allowlist:
+  - .buildkite/**
+  - README.md
+  - .github/**
+  - "**/DEPS"
+  - DEPS
+blocklist:
