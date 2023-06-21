@@ -23,6 +23,15 @@
 
 namespace web_app {
 
+WebAppSources LiteralSources(
+    std::initializer_list<WebAppManagement::Type> install_sources) {
+  WebAppSources result;
+  for (WebAppManagement::Type install_source : install_sources) {
+    result.set(install_source);
+  }
+  return result;
+}
+
 class DedupeInstallUrlsCommandTest : public WebAppTest {
  public:
   DedupeInstallUrlsCommandTest()
@@ -99,6 +108,19 @@ class DedupeInstallUrlsCommandTest : public WebAppTest {
     CHECK(future.Wait());
   }
 
+  AppId ExternallyInstallWebApp(webapps::WebappInstallSource install_surface,
+                                const GURL& install_url,
+                                const GURL& start_url) {
+    auto web_app_info = std::make_unique<WebAppInstallInfo>();
+    web_app_info->start_url = start_url;
+    web_app_info->title = u"Test app";
+    web_app_info->install_url = install_url;
+
+    return test::InstallWebApp(profile(), std::move(web_app_info),
+                               /*overwrite_existing_manifest_fields=*/true,
+                               install_surface);
+  }
+
  protected:
   raw_ptr<FakeWebContentsManager, DisableDanglingPtrDetection>
       fake_web_contents_manager_;
@@ -171,13 +193,15 @@ TEST_F(DedupeInstallUrlsCommandTest,
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+              base::BucketsAre(base::Bucket(/*runs=*/1, /*count=*/1),
+                               base::Bucket(/*runs=*/2, /*count=*/1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
-              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+              base::BucketsAre(base::Bucket(/*install_urls=*/0, /*count=*/1),
+                               base::Bucket(/*install_urls=*/1, /*count=*/1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
-      base::BucketsAre(base::Bucket(2, 1)));
+      base::BucketsAre(base::Bucket(/*apps=*/2, /*count=*/1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest,
@@ -241,13 +265,15 @@ TEST_F(DedupeInstallUrlsCommandTest,
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1)));
+              base::BucketsAre(base::Bucket(/*runs=*/1, /*count=*/1),
+                               base::Bucket(/*runs=*/2, /*count=*/1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
-              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+              base::BucketsAre(base::Bucket(/*install_urls=*/0, /*count=*/1),
+                               base::Bucket(/*install_urls=*/1, /*count=*/1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
-      base::BucketsAre(base::Bucket(2, 1)));
+      base::BucketsAre(base::Bucket(/*apps=*/2, /*count=*/1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
@@ -340,14 +366,16 @@ TEST_F(DedupeInstallUrlsCommandTest, SameInstallUrlForRealAndPlaceholder) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1),
-                               base::Bucket(3, 1)));
+              base::BucketsAre(base::Bucket(/*runs=*/1, /*count=*/1),
+                               base::Bucket(/*runs=*/2, /*count=*/1),
+                               base::Bucket(/*runs=*/3, /*count=*/1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
-              base::BucketsAre(base::Bucket(0, 1), base::Bucket(1, 1)));
+              base::BucketsAre(base::Bucket(/*install_urls=*/0, /*count=*/1),
+                               base::Bucket(/*install_urls=*/1, /*count=*/1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
-      base::BucketsAre(base::Bucket(2, 1)));
+      base::BucketsAre(base::Bucket(/*apps=*/2, /*count=*/1)));
 }
 
 TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
@@ -444,14 +472,85 @@ TEST_F(DedupeInstallUrlsCommandTest, DefaultPlaceholderForceReinstalled) {
 
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.SessionRunCount"),
-              base::BucketsAre(base::Bucket(1, 1), base::Bucket(2, 1),
-                               base::Bucket(3, 1)));
+              base::BucketsAre(base::Bucket(/*runs=*/1, /*count=*/1),
+                               base::Bucket(/*runs=*/2, /*count=*/1),
+                               base::Bucket(/*runs=*/3, /*count=*/1)));
   EXPECT_THAT(histogram_tester.GetAllSamples(
                   "WebApp.DedupeInstallUrls.InstallUrlsDeduped"),
-              base::BucketsAre(base::Bucket(0, 2), base::Bucket(1, 1)));
+              base::BucketsAre(base::Bucket(/*install_urls=*/0, /*count=*/2),
+                               base::Bucket(/*install_urls=*/1, /*count=*/1)));
   EXPECT_THAT(
       histogram_tester.GetAllSamples("WebApp.DedupeInstallUrls.AppsDeduped"),
-      base::BucketsAre(base::Bucket(2, 1)));
+      base::BucketsAre(base::Bucket(/*apps=*/2, /*count=*/1)));
+}
+
+// Other tests just cover two apps getting deduped, this tests multiple
+// install_urls getting deduped with more than two apps in each.
+TEST_F(DedupeInstallUrlsCommandTest, MoreThanTwoDuplicates) {
+  base::HistogramTester histogram_tester;
+
+  // Set up duplicate apps.
+  GURL install_url_a("https://www.a.com/");
+  AppId app_id_a1 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::EXTERNAL_DEFAULT,
+                              install_url_a, install_url_a.Resolve("default"));
+  AppId app_id_a2 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::KIOSK,
+                              install_url_a, install_url_a.Resolve("kiosk"));
+  AppId app_id_a3 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::EXTERNAL_POLICY,
+                              install_url_a, install_url_a.Resolve("policy"));
+
+  GURL install_url_b("https://www.b.com/");
+  AppId app_id_b1 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::ARC, install_url_b,
+                              install_url_b.Resolve("arc"));
+  AppId app_id_b2 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::PRELOADED_OEM,
+                              install_url_b, install_url_b.Resolve("oem"));
+  AppId app_id_b3 =
+      ExternallyInstallWebApp(webapps::WebappInstallSource::MICROSOFT_365_SETUP,
+                              install_url_b, install_url_b.Resolve("ms365"));
+
+  // All app IDs must be unique.
+  ASSERT_EQ(base::flat_set<AppId>({app_id_a1, app_id_a2, app_id_a3, app_id_b1,
+                                   app_id_b2, app_id_b3})
+                .size(),
+            6u);
+
+  // Run dedupe scan.
+  base::test::TestFuture<void> future;
+  provider().scheduler().ScheduleDedupeInstallUrls(future.GetCallback());
+  ASSERT_TRUE(future.Wait());
+
+  // The most recently installed web app is chosen as the dedupe into target.
+  const WebAppRegistrar& registrar = provider().registrar_unsafe();
+  EXPECT_FALSE(registrar.IsInstalled(app_id_a1));
+  EXPECT_FALSE(registrar.IsInstalled(app_id_a2));
+  const WebApp* app_a = registrar.GetAppById(app_id_a3);
+  ASSERT_TRUE(app_a);
+  EXPECT_EQ(app_a->GetSources(),
+            LiteralSources({WebAppManagement::Type::kDefault,
+                            WebAppManagement::Type::kKiosk,
+                            WebAppManagement::Type::kPolicy}));
+
+  EXPECT_FALSE(registrar.IsInstalled(app_id_b1));
+  EXPECT_FALSE(registrar.IsInstalled(app_id_b2));
+  const WebApp* app_b = registrar.GetAppById(app_id_b3);
+  ASSERT_TRUE(app_b);
+  EXPECT_EQ(app_b->GetSources(),
+            LiteralSources({WebAppManagement::Type::kWebAppStore,
+                            WebAppManagement::Type::kOem,
+                            WebAppManagement::Type::kOneDriveIntegration}));
+
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.DedupeInstallUrls.SessionRunCount", /*runs=*/1, /*count=*/1);
+  histogram_tester.ExpectUniqueSample(
+      "WebApp.DedupeInstallUrls.InstallUrlsDeduped", /*install_urls=*/2,
+      /*count=*/1);
+  histogram_tester.ExpectUniqueSample("WebApp.DedupeInstallUrls.AppsDeduped",
+                                      /*apps=*/3,
+                                      /*count=*/2);
 }
 
 }  // namespace web_app
