@@ -4,12 +4,13 @@
 <script src="/resources/testharnessreport.js"></script>
 <script src="/common/dispatcher/dispatcher.js"></script>
 <script src="/common/utils.js"></script>
+<script src="../resources/utils.js"></script>
 <script src="resources/utils.sub.js"></script>
 
 <script>
-  promise_test(async t => {
-    assert_implements(HTMLScriptElement.supports('speculationrules'), 'Speculation Rules not supported');
+  setup(() => assertSpeculationRulesIsSupported());
 
+  promise_test(async t => {
     const agent = await spawnWindow(t);
     // Because `forceSinglePrefetch()` waits for 2 seconds, the redirect and final
     // responses are expected to be received before `navigate()` below.
@@ -24,8 +25,6 @@
   }, 'Redirect and final response received before navigation start');
 
   promise_test(async t => {
-    assert_implements(HTMLScriptElement.supports('speculationrules'), 'Speculation Rules not supported');
-
     const agent = await spawnWindow(t);
     // Because `forceSinglePrefetch()` waits for 2 seconds, we put 4-second delay
     // here to make the redirect response is received after `navigate()` below.
@@ -40,8 +39,6 @@
   }, 'Same-origin redirect response received after navigation start');
 
   promise_test(async t => {
-    assert_implements(HTMLScriptElement.supports('speculationrules'), 'Speculation Rules not supported');
-
     const agent = await spawnWindow(t);
     // Because `forceSinglePrefetch()` waits for 2 seconds, we put 4-second delay
     // here to make the redirect response is received after `navigate()` below.
