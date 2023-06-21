@@ -95,6 +95,7 @@ dependencies {
     compile "androidx.media3:media3-exoplayer:${media3Version}"
     compile "androidx.media3:media3-extractor:${media3Version}"
     compile "androidx.media3:media3-session:${media3Version}"
+    compile "androidx.media3:media3-ui:${media3Version}"
 
     compile 'androidx.multidex:multidex:2.0.0'
     compile 'androidx.webkit:webkit:{{androidx_dependency_version}}'
