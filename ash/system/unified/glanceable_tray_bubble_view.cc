@@ -5,6 +5,8 @@
 #include "ash/system/unified/glanceable_tray_bubble_view.h"
 
 #include "ash/shelf/shelf.h"
+#include "ash/system/time/calendar_view.h"
+#include "ash/system/tray/detailed_view_delegate.h"
 #include "ash/system/tray/tray_bubble_view.h"
 #include "ash/system/tray/tray_constants.h"
 #include "ash/system/tray/tray_utils.h"
@@ -51,6 +53,18 @@ void GlanceableTrayBubbleView::UpdateBubble() {
     classroom_bubble_view_ = child_glanceable_container->AddChildView(
         std::make_unique<ClassroomBubbleView>());
     // Add spacing between the classroom bubble and the previous bubble.
+    classroom_bubble_view_->SetProperty(views::kMarginsKey,
+                                        gfx::Insets::TLBR(8, 0, 0, 0));
+  }
+
+  if (!calendar_view_) {
+    auto detailed_view_delegate =
+        std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
+    calendar_view_ = child_glanceable_container->AddChildView(
+        std::make_unique<CalendarView>(detailed_view_delegate.get()));
+    // TODO(b:277268122): Update with glanceable spec.
+    calendar_view_->SetPreferredSize(gfx::Size(kRevampedTrayMenuWidth, 400));
+    // Add spacing between the calendar bubble and the previous bubble.
     classroom_bubble_view_->SetProperty(views::kMarginsKey,
                                         gfx::Insets::TLBR(8, 0, 0, 0));
   }

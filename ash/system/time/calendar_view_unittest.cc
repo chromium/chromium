@@ -98,10 +98,6 @@ class CalendarViewTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ =
-        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
   }
@@ -109,8 +105,6 @@ class CalendarViewTest : public AshTestBase {
   void TearDown() override {
     widget_.reset();
     delegate_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
 
     AshTestBase::TearDown();
   }
@@ -147,8 +141,7 @@ class CalendarViewTest : public AshTestBase {
     AccountId user_account = AccountId::FromUserEmail(kTestUser);
     GetSessionControllerClient()->SwitchActiveUser(user_account);
 
-    auto calendar_view =
-        std::make_unique<CalendarView>(delegate_.get(), tray_controller_.get());
+    auto calendar_view = std::make_unique<CalendarView>(delegate_.get());
 
     calendar_view_ = widget_->SetContentsView(std::move(calendar_view));
   }
@@ -327,8 +320,6 @@ class CalendarViewTest : public AshTestBase {
   // Owned by `widget_`.
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<CalendarEventListView> event_list_view_;
   static base::Time fake_time_;
 };
@@ -1407,10 +1398,6 @@ class CalendarViewAnimationTest : public AshTestBase {
 
     delegate_ =
         std::make_unique<DetailedViewDelegate>(/*tray_controller=*/nullptr);
-    tray_model_ =
-        base::MakeRefCounted<UnifiedSystemTrayModel>(/*shelf=*/nullptr);
-    tray_controller_ =
-        std::make_unique<UnifiedSystemTrayController>(tray_model_.get());
     widget_ = CreateFramelessTestWidget();
     widget_->SetFullscreen(true);
 
@@ -1430,8 +1417,6 @@ class CalendarViewAnimationTest : public AshTestBase {
 
   void TearDown() override {
     delegate_.reset();
-    tray_controller_.reset();
-    tray_model_.reset();
     widget_.reset();
     time_overrides_.reset();
 
@@ -1439,8 +1424,8 @@ class CalendarViewAnimationTest : public AshTestBase {
   }
 
   void CreateCalendarView() {
-    calendar_view_ = widget_->SetContentsView(std::make_unique<CalendarView>(
-        delegate_.get(), tray_controller_.get()));
+    calendar_view_ = widget_->SetContentsView(
+        std::make_unique<CalendarView>(delegate_.get()));
   }
 
   // Gets date cell of a given CalendarMonthView and numerical `day`.
@@ -1561,8 +1546,6 @@ class CalendarViewAnimationTest : public AshTestBase {
   // Owned by `widget_`.
   raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
   std::unique_ptr<DetailedViewDelegate> delegate_;
-  scoped_refptr<UnifiedSystemTrayModel> tray_model_;
-  std::unique_ptr<UnifiedSystemTrayController> tray_controller_;
   std::unique_ptr<base::subtle::ScopedTimeClockOverrides> time_overrides_;
   raw_ptr<CalendarModel, ExperimentalAsh> calendar_model_;
   std::unique_ptr<calendar_test_utils::CalendarClientTestImpl> calendar_client_;

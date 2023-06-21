@@ -27,8 +27,7 @@ UnifiedCalendarViewController::~UnifiedCalendarViewController() = default;
 std::unique_ptr<views::View> UnifiedCalendarViewController::CreateView() {
   DCHECK(!view_);
   const base::Time start_time = base::Time::Now();
-  auto view = std::make_unique<CalendarView>(detailed_view_delegate_.get(),
-                                             tray_controller_);
+  auto view = std::make_unique<CalendarView>(detailed_view_delegate_.get());
   base::UmaHistogramTimes("Ash.CalendarView.ConstructionTime",
                           base::Time::Now() - start_time);
   view_ = view.get();

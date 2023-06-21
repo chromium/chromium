@@ -12,11 +12,15 @@
 #include "ash/public/cpp/ash_typography.h"
 #include "ash/public/cpp/ash_view_ids.h"
 #include "ash/public/cpp/metrics_util.h"
+#include "ash/public/cpp/system_tray_client.h"
 #include "ash/resources/vector_icons/vector_icons.h"
+#include "ash/root_window_controller.h"
 #include "ash/strings/grit/ash_strings.h"
 #include "ash/style/icon_button.h"
 #include "ash/style/pill_button.h"
 #include "ash/style/typography.h"
+#include "ash/system/model/clock_model.h"
+#include "ash/system/status_area_widget.h"
 #include "ash/system/time/calendar_event_list_view.h"
 #include "ash/system/time/calendar_metrics.h"
 #include "ash/system/time/calendar_month_view.h"
@@ -26,6 +30,8 @@
 #include "ash/system/time/date_helper.h"
 #include "ash/system/tray/tray_popup_utils.h"
 #include "ash/system/tray/tri_view.h"
+#include "ash/system/unified/unified_system_tray.h"
+#include "ash/system/unified/unified_system_tray_bubble.h"
 #include "base/check.h"
 #include "base/functional/bind.h"
 #include "base/memory/raw_ptr.h"
@@ -33,6 +39,7 @@
 #include "base/ranges/algorithm.h"
 #include "base/strings/string_number_conversions.h"
 #include "base/time/time.h"
+#include "chromeos/constants/chromeos_features.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -56,6 +63,7 @@
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
 #include "ui/views/controls/scrollbar/scroll_bar.h"
+#include "ui/views/highlight_border.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/layout/fill_layout.h"
 #include "ui/views/layout/table_layout.h"
@@ -427,10 +435,8 @@ void CalendarHeaderView::UpdateHeaders(const std::u16string& month,
 BEGIN_METADATA(CalendarHeaderView, views::View)
 END_METADATA
 
-CalendarView::CalendarView(DetailedViewDelegate* delegate,
-                           UnifiedSystemTrayController* controller)
+CalendarView::CalendarView(DetailedViewDelegate* delegate)
     : TrayDetailedView(delegate),
-      controller_(controller),
       calendar_view_controller_(std::make_unique<CalendarViewController>()),
       scrolling_settled_timer_(
           FROM_HERE,
@@ -459,6 +465,26 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate,
                 calendar_view->set_should_months_animate(true);
               },
               base::Unretained(this))) {
+  // TODO(b/281867480): Remove this after the `GlanceableTrayChildBubble`
+  // extends from the `TrayDetailedView` and this `CalendarView` extends from
+  // the `GlanceableTrayChildBubble`.
+  if (features::AreGlanceablesV2Enabled()) {
+    SetPaintToLayer();
+    layer()->SetFillsBoundsOpaquely(false);
+    layer()->SetIsFastRoundedCorner(true);
+    layer()->SetRoundedCornerRadius(
+        gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
+    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
+
+    SetBackground(views::CreateThemedSolidBackground(
+        static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)));
+    SetBorder(std::make_unique<views::HighlightBorder>(
+        kBubbleCornerRadius,
+        chromeos::features::IsJellyrollEnabled()
+            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
+            : views::HighlightBorder::Type::kHighlightBorder1));
+  }
+
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetFocusBehavior(FocusBehavior::ALWAYS);
@@ -620,9 +646,9 @@ void CalendarView::CreateExtraTitleRowButtons() {
     managed_button_ = tri_view()->AddView(
         TriView::Container::END,
         std::make_unique<IconButton>(
-            base::BindRepeating(
-                &UnifiedSystemTrayController::HandleEnterpriseInfoAction,
-                base::Unretained(controller_)),
+            base::BindRepeating([]() {
+              Shell::Get()->system_tray_model()->client()->ShowEnterpriseInfo();
+            }),
             IconButton::Type::kMedium, &kSystemTrayManagedIcon,
             IDS_ASH_CALENDAR_DISABLED_BY_ADMIN));
   }
@@ -638,9 +664,15 @@ void CalendarView::CreateExtraTitleRowButtons() {
 
   DCHECK(!settings_button_);
   settings_button_ = CreateSettingsButton(
-      base::BindRepeating(
-          &UnifiedSystemTrayController::HandleOpenDateTimeSettingsAction,
-          base::Unretained(controller_)),
+      base::BindRepeating([]() {
+        ClockModel* model = Shell::Get()->system_tray_model()->clock();
+
+        if (Shell::Get()->session_controller()->ShouldEnableSettings()) {
+          model->ShowDateSettings();
+        } else if (model->can_set_time()) {
+          model->ShowSetTimeDialog();
+        }
+      }),
       IDS_ASH_CALENDAR_SETTINGS);
   settings_button_->SetTooltipText(
       l10n_util::GetStringUTF16(IDS_ASH_CALENDAR_SETTINGS_TOOLTIP));
@@ -1627,7 +1659,15 @@ void CalendarView::OnEvent(ui::Event* event) {
       const auto* next_reverse_view = focus_manager->GetNextFocusableView(
           focus_manager->GetFocusedView(), GetWidget(), /*reverse=*/true,
           /*dont_loop=*/true);
-      if (!next_reverse_view && controller_->FocusOut(/*reverse=*/true)) {
+      auto* unified_system_tray_bubble =
+          RootWindowController::ForWindow(GetWidget()->GetNativeWindow())
+              ->GetStatusAreaWidget()
+              ->unified_system_tray()
+              ->bubble();
+
+      if (!next_reverse_view && unified_system_tray_bubble &&
+          unified_system_tray_bubble->unified_system_tray_controller()
+              ->FocusOut(/*reverse=*/true)) {
         event->StopPropagation();
       }
     }

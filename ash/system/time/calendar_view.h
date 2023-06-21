@@ -80,8 +80,7 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
  public:
   METADATA_HEADER(CalendarView);
 
-  CalendarView(DetailedViewDelegate* delegate,
-               UnifiedSystemTrayController* controller);
+  explicit CalendarView(DetailedViewDelegate* delegate);
   CalendarView(const CalendarView& other) = delete;
   CalendarView& operator=(const CalendarView& other) = delete;
   ~CalendarView() override;
@@ -375,9 +374,6 @@ class ASH_EXPORT CalendarView : public CalendarModel::Observer,
   void set_should_months_animate(bool should_animate) {
     should_months_animate_ = should_animate;
   }
-
-  // Unowned.
-  raw_ptr<UnifiedSystemTrayController, ExperimentalAsh> controller_;
 
   std::unique_ptr<CalendarViewController> calendar_view_controller_;
 

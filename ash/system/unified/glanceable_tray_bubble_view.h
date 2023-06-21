@@ -12,6 +12,7 @@ class Label;
 }
 
 namespace ash {
+class CalendarView;
 class ClassroomBubbleView;
 class TasksBubbleView;
 class Shelf;
@@ -48,6 +49,9 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   // Child bubble view for the classrooms glanceable. Owned by bubble_view_.
   raw_ptr<ClassroomBubbleView, ExperimentalAsh> classroom_bubble_view_ =
       nullptr;
+
+  // Child bubble view for the calendar glanceable. Owned by bubble_view_.
+  raw_ptr<CalendarView, ExperimentalAsh> calendar_view_ = nullptr;
 };
 
 }  // namespace ash
