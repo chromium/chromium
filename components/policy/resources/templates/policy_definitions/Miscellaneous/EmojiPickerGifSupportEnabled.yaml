@@ -1,0 +1,39 @@
+owners:
+- dvallet@chromium.org
+- shend@chromium.org
+- jopalmer@chromium.org
+- greywang@chromium.org
+- essential-inputs-team@google.com
+
+caption: GIF Support in Emoji Picker
+
+desc: |-
+  This policy enables GIF support for Emoji Picker on <ph name="PRODUCT_OS_NAME">$2<ex>Google ChromeOS</ex></ph>.
+  If this policy is set to Enabled, Emoji picker will support GIF emoji.
+  If this policy is set to Disabled or not set, Emoji picker will not support GIF emoji.
+  If this policy is not set, Emoji picker will be enabled for normal users but disabled for managed users.
+
+
+supported_on:
+- chrome_os:117-
+
+features:
+  dynamic_refresh: true
+  per_profile: true
+
+type: main
+
+schema:
+  type: boolean
+
+items:
+- caption: Enable GIF support.
+  value: true
+- caption: Disable GIF support.
+  value: false
+
+default: true
+default_for_enterprise_users: false
+
+example_value: false
+tags: []

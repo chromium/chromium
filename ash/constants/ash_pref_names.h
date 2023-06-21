@@ -32,6 +32,8 @@ COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kManagedPhysicalKeyboardAutocorrectAllowed[];
 COMPONENT_EXPORT(ASH_CONSTANTS)
 extern const char kManagedPhysicalKeyboardPredictiveWritingAllowed[];
+COMPONENT_EXPORT(ASH_CONSTANTS)
+extern const char kEmojiPickerGifSupportEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kChargingSoundsEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kLowBatterySoundEnabled[];
 COMPONENT_EXPORT(ASH_CONSTANTS) extern const char kAudioDevicesMute[];

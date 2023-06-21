@@ -297,6 +297,7 @@ void Preferences::RegisterProfilePrefs(
       prefs::kManagedPhysicalKeyboardAutocorrectAllowed, true);
   registry->RegisterBooleanPref(
       prefs::kManagedPhysicalKeyboardPredictiveWritingAllowed, true);
+  registry->RegisterBooleanPref(prefs::kEmojiPickerGifSupportEnabled, true);
   registry->RegisterDictionaryPref(
       ::prefs::kLanguageInputMethodSpecificSettings);
   registry->RegisterBooleanPref(prefs::kLastUsedImeShortcutReminderDismissed,

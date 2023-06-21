@@ -5,6 +5,7 @@
 #include "chrome/browser/ui/webui/ash/emoji/emoji_page_handler.h"
 
 #include "ash/constants/ash_features.h"
+#include "ash/constants/ash_pref_names.h"
 #include "ash/public/cpp/system/toast_data.h"
 #include "ash/public/cpp/system/toast_manager.h"
 #include "base/memory/raw_ptr.h"
@@ -17,6 +18,7 @@
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/webui/ash/emoji/emoji_ui.h"
 #include "chrome/grit/generated_resources.h"
+#include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "ui/base/clipboard/scoped_clipboard_writer.h"
 #include "ui/base/ime/ash/ime_bridge.h"
@@ -213,6 +215,18 @@ EmojiPageHandler::EmojiPageHandler(
       incognito_mode_(incognito_mode),
       no_text_field_(no_text_field) {
   Profile* profile = Profile::FromWebUI(web_ui);
+
+  // There are two conditions to control the GIF support:
+  //   1. Feature flag is turned on.
+  //   2. For managed users, the policy is turned on.
+  gif_support_enabled_ =
+      base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerGIFSupport) &&
+      (profile->GetPrefs()->IsManagedPreference(
+           prefs::kEmojiPickerGifSupportEnabled)
+           ? profile->GetPrefs()->GetBoolean(
+                 prefs::kEmojiPickerGifSupportEnabled)
+           : true);
+
   url_loader_factory_ = profile->GetDefaultStoragePartition()
                             ->GetURLLoaderFactoryForBrowserProcess();
 }
@@ -242,7 +256,7 @@ void EmojiPageHandler::GetFeatureList(GetFeatureListCallback callback) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_SEARCH_EXTENSION);
   }
-  if (base::FeatureList::IsEnabled(features::kImeSystemEmojiPickerGIFSupport)) {
+  if (gif_support_enabled_) {
     enabled_features.push_back(
         emoji_picker::mojom::Feature::EMOJI_PICKER_GIF_SUPPORT);
   }

@@ -44,6 +44,10 @@ const char kManagedPhysicalKeyboardAutocorrectAllowed[] =
 const char kManagedPhysicalKeyboardPredictiveWritingAllowed[] =
     "settings.ime.managed.physical_keyboard.predictive_writing_enabled";
 
+// A boolean pref of whether GIF support is enabled in emoji picker.
+const char kEmojiPickerGifSupportEnabled[] =
+    "emoji_picker.gif_support_enabled";
+
 // Pref which stores a list of Embedded Universal Integrated Circuit Card
 // (EUICC) D-Bus paths which have had their installed profiles refreshed from
 // Hermes. Each path is stored as a string.

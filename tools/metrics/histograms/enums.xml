@@ -33707,6 +33707,7 @@ Called by update_document_policy_enum.py.-->
   <int value="1119" label="PhysicalKeyboardPredictiveWriting"/>
   <int value="1120" label="ColorCorrectionEnabled"/>
   <int value="1121" label="NativeClientForceAllowed"/>
+  <int value="1122" label="EmojiPickerGifSupportEnabled"/>
 </enum>
 
 <enum name="EnterprisePoliciesSources">

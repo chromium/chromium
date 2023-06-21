@@ -1120,6 +1120,7 @@ policies:
   1119: PhysicalKeyboardPredictiveWriting
   1120: ColorCorrectionEnabled
   1121: NativeClientForceAllowed
+  1122: EmojiPickerGifSupportEnabled
 atomic_groups:
   1: Homepage
   2: RemoteAccess
