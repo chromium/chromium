@@ -589,12 +589,6 @@ bool ArcSupportHost::Initialize() {
   loadtime_data.Set(
       "privacyPolicyLink",
       l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK));
-  loadtime_data.Set(
-      "activeDirectoryAuthTitle",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_TITLE));
-  loadtime_data.Set(
-      "activeDirectoryAuthDesc",
-      l10n_util::GetStringUTF16(IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_DESC));
   loadtime_data.Set("overlayLoading",
                     l10n_util::GetStringUTF16(IDS_ARC_POPUP_HELP_LOADING));
 

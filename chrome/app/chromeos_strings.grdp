@@ -3857,12 +3857,6 @@
   <message name="IDS_ARC_OPT_IN_PRIVACY_POLICY_LINK" desc="Text of the Link to Goolge Privacy Policy in opt-in dialog">
     Google privacy policy
   </message>
-  <message name="IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_TITLE" desc="Title displayed in opt-in dialog to inform an Active Directory user that they may have to enter their credentials">
-    Google Play Store Account
-  </message>
-  <message name="IDS_ARC_OPT_IN_ACTIVE_DIRECTORY_AUTH_DESC" desc="Description displayed in opt-in dialog to inform an Active Directory user that they may have to enter their credentials">
-    To enable your account to access the Google Play Store, please authenticate with your Identity Provider.
-  </message>
   <message name="IDS_ARC_OPT_OUT_TAB_TITLE" desc="Tab title when viewing opt-out setting dialog for android apps.">
     Settings - Remove Android apps
   </message>
