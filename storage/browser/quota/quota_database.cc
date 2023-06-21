@@ -27,6 +27,7 @@
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/quota_database_migrations.h"
+#include "storage/browser/quota/quota_features.h"
 #include "storage/browser/quota/quota_internals.mojom.h"
 #include "storage/browser/quota/special_storage_policy.h"
 #include "url/gurl.h"
@@ -932,7 +933,7 @@ QuotaError QuotaDatabase::EnsureOpened() {
     return QuotaError::kDatabaseError;
   }
 
-  db_ = std::make_unique<sql::Database>(sql::DatabaseOptions{
+  sql::DatabaseOptions options{
       .exclusive_locking = true,
       // The quota database is a critical storage component. If it's corrupted,
       // all client-side storage APIs fail, because they don't know where their
@@ -940,7 +941,12 @@ QuotaError QuotaDatabase::EnsureOpened() {
       .flush_to_media = true,
       .page_size = 4096,
       .cache_size = 500,
-  });
+  };
+  if (base::FeatureList::IsEnabled(features::kDisableQuotaDbFullFSync)) {
+    options.flush_to_media = false;
+  }
+
+  db_ = std::make_unique<sql::Database>(std::move(options));
   meta_table_ = std::make_unique<sql::MetaTable>();
 
   db_->set_histogram_tag("Quota");
