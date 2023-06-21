@@ -571,36 +571,6 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertEquals('result', checkbox.subLabel);
   });
 
-  test('history rows are shown for supervised users', async function() {
-    function assertRowsShown() {
-      assertFalse(element.shadowRoot!
-                      .querySelector<SettingsCheckboxElement>(
-                          '#browsingCheckbox')!.hidden);
-      assertFalse(element.shadowRoot!
-                      .querySelector<SettingsCheckboxElement>(
-                          '#browsingCheckboxBasic')!.hidden);
-      assertFalse(element.shadowRoot!
-                      .querySelector<SettingsCheckboxElement>(
-                          '#downloadCheckbox')!.hidden);
-    }
-
-    assertFalse(
-      loadTimeData.getBoolean('isChildAccount'));
-    assertRowsShown();
-
-
-    element.remove();
-    testBrowserProxy.reset();
-    loadTimeData.overrideValues({isChildAccount: true});
-
-    element = document.createElement('settings-clear-browsing-data-dialog');
-    document.body.appendChild(element);
-    flush();
-
-    await testBrowserProxy.whenCalled('initialize');
-    assertRowsShown();
-  });
-
   // <if expr="is_chromeos">
   // On ChromeOS the footer is never shown.
   test('ClearBrowsingDataSyncAccountInfo', function() {
@@ -644,5 +614,61 @@ suite('ClearBrowsingDataAllPlatforms', function() {
     assertFalse(!!element.shadowRoot!.querySelector(
         '#clearBrowsingDataDialog [slot=footer]'));
   });
+  // </if>
+});
+
+
+suite('ClearBrowsingDataForSupervisedUsers', function() {
+  let testBrowserProxy: TestClearBrowsingDataBrowserProxy;
+  let element: SettingsClearBrowsingDataDialogElement;
+
+  setup(async function() {
+    testBrowserProxy = new TestClearBrowsingDataBrowserProxy();
+    ClearBrowsingDataBrowserProxyImpl.setInstance(testBrowserProxy);
+    document.body.innerHTML = window.trustedTypes!.emptyHTML;
+    element = document.createElement('settings-clear-browsing-data-dialog');
+    element.set('prefs', getClearBrowsingDataPrefs());
+    loadTimeData.overrideValues({isChildAccount: true});
+    document.body.appendChild(element);
+    await testBrowserProxy.whenCalled('initialize');
+    assertTrue(element.$.clearBrowsingDataDialog.open);
+  });
+
+  teardown(function() {
+    element.remove();
+  });
+
+  test('history rows are shown for supervised users', async function() {
+    assertFalse(element.shadowRoot!
+                    .querySelector<SettingsCheckboxElement>(
+                        '#browsingCheckbox')!.hidden);
+    assertFalse(element.shadowRoot!
+                    .querySelector<SettingsCheckboxElement>(
+                        '#browsingCheckboxBasic')!.hidden);
+    assertFalse(element.shadowRoot!
+                    .querySelector<SettingsCheckboxElement>(
+                        '#downloadCheckbox')!.hidden);
+  });
+
+  // <if expr="is_win or is_macosx or is_linux">
+  test(
+      'Additional information shown for supervised users when clearing cookies',
+      function() {
+        loadTimeData.overrideValues({
+          isChildAccount: true,
+          shouldClearingCookiesKeepsSupervisedUsersSignedIn: true,
+        });
+
+        // Supervised users will see additional text informing them they will
+        // not be signed out when cookies are cleared and
+        // `kClearingCookiesKeepsSupervisedUsersSignedIn` flag enabled.
+        const checkbox =
+            element.shadowRoot!.querySelector<SettingsCheckboxElement>(
+                '#cookiesCheckboxBasic')!;
+        assertEquals(
+            element.i18n('clearCookiesSummarySignedInSupervisedProfile')
+                .toString(),
+            checkbox.subLabel);
+      });
   // </if>
 });

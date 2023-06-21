@@ -163,6 +163,11 @@
 #include "net/base/features.h"
 #endif
 
+#if BUILDFLAG(ENABLE_SUPERVISED_USERS)
+#include "chrome/browser/supervised_user/supervised_user_service_factory.h"
+#include "components/supervised_user/core/browser/supervised_user_service.h"
+#endif
+
 namespace settings {
 namespace {
 
@@ -243,6 +248,12 @@ void AddCommonStrings(content::WebUIDataSource* html_source, Profile* profile) {
 #endif
 
   html_source->AddBoolean("isChildAccount", profile->IsChild());
+
+  html_source->AddBoolean(
+      "clearingCookiesKeepsSupervisedUsersSignedIn",
+      base::FeatureList::IsEnabled(
+          supervised_user::kClearingCookiesKeepsSupervisedUsersSignedIn));
+
 #if BUILDFLAG(IS_LINUX)
   bool allow_qt_theme = base::FeatureList::IsEnabled(ui::kAllowQt);
 #else
@@ -468,6 +479,8 @@ void AddClearBrowsingDataStrings(content::WebUIDataSource* html_source,
     {"clearCookiesSummarySignedInMainProfile",
      IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_MAIN_PROFILE},
 #endif
+    {"clearCookiesSummarySignedInSupervisedProfile",
+     IDS_SETTINGS_CLEAR_COOKIES_AND_SITE_DATA_SUMMARY_BASIC_SUPERVISED_PROFILE},
     {"clearCookiesCounter", IDS_DEL_COOKIES_COUNTER},
     {"clearPasswords", IDS_SETTINGS_CLEAR_PASSWORDS},
     {"clearFormData", IDS_SETTINGS_CLEAR_FORM_DATA},
