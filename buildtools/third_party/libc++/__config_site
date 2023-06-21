@@ -55,4 +55,10 @@
 // termination function on Apple platforms.
 #define _LIBCPP_VERBOSE_ABORT(...) ::std::__libcpp_verbose_abort(__VA_ARGS__)
 
+// TODO(crbug.com/1455923) Link against compiler-rt's builtins library to
+// enable 128-arithmetic.
+#if defined(_WIN32)
+#define _LIBCPP_HAS_NO_INT128
+#endif
+
 #endif // _LIBCPP_CONFIG_SITE
