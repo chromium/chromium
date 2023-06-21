@@ -8,17 +8,10 @@
 #include <memory>
 #include <utility>
 
-#include "base/feature_list.h"
-#include "base/task/single_thread_task_runner.h"
-#include "build/build_config.h"
-
-#if BUILDFLAG(IS_WIN)
-#include <dxgi1_3.h>
-#endif
-
 #include "base/command_line.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
+#include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
 #include "base/metrics/histogram_macros.h"
@@ -28,13 +21,10 @@
 #include "base/task/bind_post_task.h"
 #include "base/task/single_thread_task_runner.h"
 #include "base/trace_event/traced_value.h"
+#include "build/build_config.h"
 #include "gpu/command_buffer/common/constants.h"
 #include "gpu/command_buffer/common/context_creation_attribs.h"
 #include "gpu/command_buffer/common/sync_token.h"
-#if BUILDFLAG(USE_DAWN)
-#include "gpu/command_buffer/service/dawn_caching_interface.h"
-#endif
-#include "gpu/command_buffer/service/dawn_context_provider.h"
 #include "gpu/command_buffer/service/feature_info.h"
 #include "gpu/command_buffer/service/gl_utils.h"
 #include "gpu/command_buffer/service/gpu_tracer.h"
@@ -52,9 +42,6 @@
 #include "gpu/ipc/service/gpu_memory_buffer_factory.h"
 #include "gpu/ipc/service/gpu_watchdog_thread.h"
 #include "third_party/skia/include/core/SkGraphics.h"
-#if BUILDFLAG(IS_WIN)
-#include "ui/gl/gl_angle_util_win.h"
-#endif
 #include "ui/gl/gl_bindings.h"
 #include "ui/gl/gl_enums.h"
 #include "ui/gl/gl_features.h"
@@ -62,6 +49,20 @@
 #include "ui/gl/gl_surface_egl.h"
 #include "ui/gl/gl_version_info.h"
 #include "ui/gl/init/gl_factory.h"
+
+#if BUILDFLAG(USE_DAWN)
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
+#endif
+
+#if BUILDFLAG(SKIA_USE_DAWN)
+#include "gpu/command_buffer/service/dawn_context_provider.h"
+#endif
+
+#if BUILDFLAG(IS_WIN)
+#include <dxgi1_3.h>
+
+#include "ui/gl/gl_angle_util_win.h"
+#endif
 
 #if BUILDFLAG(ENABLE_VULKAN)
 #include "gpu/vulkan/vulkan_device_queue.h"
@@ -327,7 +328,8 @@ GpuChannelManager::GpuChannelManager(
     ImageDecodeAcceleratorWorker* image_decode_accelerator_worker,
     viz::VulkanContextProvider* vulkan_context_provider,
     viz::MetalContextProvider* metal_context_provider,
-    DawnContextProvider* dawn_context_provider)
+    DawnContextProvider* dawn_context_provider,
+    webgpu::DawnCachingInterfaceFactory* dawn_caching_interface_factory)
     : task_runner_(task_runner),
       io_task_runner_(io_task_runner),
       gpu_preferences_(gpu_preferences),
@@ -352,6 +354,7 @@ GpuChannelManager::GpuChannelManager(
           FROM_HERE,
           base::BindRepeating(&GpuChannelManager::HandleMemoryPressure,
                               base::Unretained(this))),
+      dawn_caching_interface_factory_(dawn_caching_interface_factory),
       vulkan_context_provider_(vulkan_context_provider),
       metal_context_provider_(metal_context_provider),
       dawn_context_provider_(dawn_context_provider),
@@ -370,10 +373,6 @@ GpuChannelManager::GpuChannelManager(
     gr_shader_cache_.emplace(gpu_preferences.gpu_program_cache_size, this);
     gr_shader_cache_->CacheClientIdOnDisk(gpu::kDisplayCompositorClientId);
   }
-#if BUILDFLAG(USE_DAWN)
-  dawn_caching_interface_factory_ =
-      std::make_unique<webgpu::DawnCachingInterfaceFactory>();
-#endif
 }
 
 GpuChannelManager::~GpuChannelManager() {
@@ -555,7 +554,7 @@ void GpuChannelManager::OnDiskCacheHandleDestoyed(
     }
     case gpu::GpuDiskCacheType::kDawnWebGPU: {
 #if BUILDFLAG(USE_DAWN)
-      dawn_caching_interface_factory_->ReleaseHandle(handle);
+      dawn_caching_interface_factory()->ReleaseHandle(handle);
 #endif
       break;
     }
@@ -589,10 +588,10 @@ void GpuChannelManager::PopulateCache(const gpu::GpuDiskCacheHandle& handle,
       break;
     }
     case gpu::GpuDiskCacheType::kDawnWebGPU: {
-#if BUILDFLAG(USE_DAWN)
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
       std::unique_ptr<gpu::webgpu::DawnCachingInterface>
           dawn_caching_interface =
-              dawn_caching_interface_factory_->CreateInstance(handle);
+              dawn_caching_interface_factory()->CreateInstance(handle);
       if (!dawn_caching_interface) {
         return;
       }

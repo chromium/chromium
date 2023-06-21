@@ -28,6 +28,7 @@
 #include "build/chromeos_buildflags.h"
 #include "components/viz/common/features.h"
 #include "gpu/command_buffer/client/gpu_memory_buffer_manager.h"
+#include "gpu/command_buffer/service/dawn_caching_interface.h"
 #include "gpu/command_buffer/service/gpu_switches.h"
 #include "gpu/command_buffer/service/scheduler.h"
 #include "gpu/command_buffer/service/shared_context_state.h"
@@ -371,9 +372,24 @@ GpuServiceImpl::GpuServiceImpl(
   }
 #endif
 
+#if BUILDFLAG(USE_DAWN) || BUILDFLAG(SKIA_USE_DAWN)
+  dawn_caching_interface_factory_ =
+      std::make_unique<gpu::webgpu::DawnCachingInterfaceFactory>();
+#endif
+
   if (gpu_preferences_.gr_context_type == gpu::GrContextType::kGraphiteDawn) {
 #if BUILDFLAG(SKIA_USE_DAWN)
-    dawn_context_provider_ = gpu::DawnContextProvider::Create();
+    // GpuServiceImpl holds the instance of DawnContextProvider, so it outlives
+    // the DawnContextProvider.
+    auto cache_blob_callback = base::BindRepeating(
+        [](GpuServiceImpl* self, gpu::GpuDiskCacheType type,
+           const std::string& key, const std::string& blob) {
+          self->StoreBlobToDisk(gpu::kGraphiteDawnGpuDiskCacheHandle, key,
+                                blob);
+        },
+        base::Unretained(this));
+    dawn_context_provider_ = gpu::DawnContextProvider::Create(
+        dawn_caching_interface_factory_.get(), std::move(cache_blob_callback));
     if (!dawn_context_provider_) {
       DLOG(ERROR) << "Failed to create Dawn context provider for Graphite.";
     }
@@ -616,7 +632,8 @@ void GpuServiceImpl::InitializeWithHost(
       gpu_memory_buffer_factory_.get(), gpu_feature_info_,
       std::move(activity_flags), std::move(default_offscreen_surface),
       image_decode_accelerator_worker_.get(), vulkan_context_provider(),
-      metal_context_provider(), dawn_context_provider());
+      metal_context_provider(), dawn_context_provider(),
+      dawn_caching_interface_factory());
 
   media_gpu_channel_manager_ = std::make_unique<media::MediaGpuChannelManager>(
       gpu_channel_manager_.get());

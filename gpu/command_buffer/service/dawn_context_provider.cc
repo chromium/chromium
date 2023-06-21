@@ -11,8 +11,14 @@
 #include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/notreached.h"
+#include "base/threading/platform_thread.h"
+#include "base/trace_event/trace_arguments.h"
+#include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
+#include "gpu/command_buffer/service/dawn_instance.h"
+#include "gpu/command_buffer/service/dawn_platform.h"
 #include "gpu/config/gpu_finch_features.h"
+#include "gpu/config/gpu_preferences.h"
 #include "third_party/dawn/include/dawn/dawn_proc.h"
 #include "third_party/skia/include/gpu/graphite/Context.h"
 #include "third_party/skia/include/gpu/graphite/dawn/DawnBackendContext.h"
@@ -23,7 +29,6 @@
 #endif
 
 namespace gpu {
-
 namespace {
 
 void LogInfo(WGPULoggingType type, char const* message, void* userdata) {
@@ -55,32 +60,63 @@ wgpu::BackendType GetDefaultBackendType() {
 #endif
 }
 
+class Platform : public webgpu::DawnPlatform {
+ public:
+  using webgpu::DawnPlatform::DawnPlatform;
+
+  ~Platform() override = default;
+
+  const unsigned char* GetTraceCategoryEnabledFlag(
+      dawn::platform::TraceCategory category) override {
+    return TRACE_EVENT_API_GET_CATEGORY_GROUP_ENABLED(
+        TRACE_DISABLED_BY_DEFAULT("gpu.graphite.dawn"));
+  }
+};
+
 }  // namespace
 
-std::unique_ptr<DawnContextProvider> DawnContextProvider::Create() {
-  auto context_provider = base::WrapUnique(new DawnContextProvider());
-  if (!context_provider->GetDevice()) {
-    return nullptr;
-  }
-  return context_provider;
-}
+std::unique_ptr<DawnContextProvider> DawnContextProvider::Create(
+    webgpu::DawnCachingInterfaceFactory* caching_interface_factory,
+    CacheBlobCallback callback) {
+  auto context_provider =
+      base::WrapUnique(new DawnContextProvider(caching_interface_factory));
 
-DawnContextProvider::DawnContextProvider() {
   // TODO(rivr): This may return a GPU that is not the active one. Currently
   // the only known way to avoid this is platform-specific; e.g. on Mac, create
   // a Dawn device, get the actual Metal device from it, and compare against
   // MTLCreateSystemDefaultDevice().
-  device_ = CreateDevice(GetDefaultBackendType());
+  if (!context_provider->Initialize(std::move(callback))) {
+    context_provider.reset();
+  }
+  return context_provider;
 }
 
+DawnContextProvider::DawnContextProvider(
+    webgpu::DawnCachingInterfaceFactory* caching_interface_factory)
+    : caching_interface_factory_(caching_interface_factory) {}
 DawnContextProvider::~DawnContextProvider() = default;
 
-wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
+bool DawnContextProvider::Initialize(CacheBlobCallback callback) {
+  std::unique_ptr<webgpu::DawnCachingInterface> caching_interface;
+  if (caching_interface_factory_) {
+    caching_interface = caching_interface_factory_->CreateInstance(
+        kGraphiteDawnGpuDiskCacheHandle, std::move(callback));
+  }
+
+  platform_ = std::make_unique<Platform>(std::move(caching_interface));
+
+  GpuPreferences preferences;
 #if DCHECK_IS_ON()
-  instance_.EnableBackendValidation(true);
+  preferences.enable_dawn_backend_validation =
+      DawnBackendValidationLevel::kFull;
+#else
+  preferences.enable_dawn_backend_validation =
+      DawnBackendValidationLevel::kDisabled;
 #endif
 
-  instance_.DiscoverDefaultPhysicalDevices();
+  instance_ = webgpu::DawnInstance::Create(platform_.get(), preferences);
+  instance_->DiscoverDefaultPhysicalDevices();
+
   DawnProcTable backend_procs = dawn::native::GetProcs();
   dawnProcSetProcs(&backend_procs);
 
@@ -90,47 +126,50 @@ wgpu::Device DawnContextProvider::CreateDevice(wgpu::BackendType type) {
 
   // Disable validation in non-DCHECK builds.
 #if !DCHECK_IS_ON()
-  std::vector<const char*> force_enabled_toggles;
-  std::vector<const char*> force_disabled_toggles;
-
-  force_enabled_toggles.push_back("disable_robustness");
-  force_enabled_toggles.push_back("skip_validation");
-  force_disabled_toggles.push_back("lazy_clear_resource_on_first_use");
+  // TODO(crbug.com/1456492): check if below toggles are necessary.
+  const char* kForceEnabledToggles[] = {"disable_robustness",
+                                        "skip_validation"};
+  const char* kForceDisabledToggles[] = {"lazy_clear_resource_on_first_use"};
 
   wgpu::DawnTogglesDescriptor toggles_desc;
-  toggles_desc.enabledToggles = force_enabled_toggles.data();
-  toggles_desc.enabledTogglesCount = force_enabled_toggles.size();
-  toggles_desc.disabledToggles = force_disabled_toggles.data();
-  toggles_desc.disabledTogglesCount = force_disabled_toggles.size();
+  toggles_desc.enabledToggles = kForceEnabledToggles;
+  toggles_desc.enabledTogglesCount = std::size(kForceEnabledToggles);
+  toggles_desc.disabledToggles = kForceDisabledToggles;
+  toggles_desc.disabledTogglesCount = std::size(kForceDisabledToggles);
   descriptor.nextInChain = &toggles_desc;
 #endif
 
-  std::vector<wgpu::FeatureName> features;
-  features.push_back(wgpu::FeatureName::DawnInternalUsages);
-  features.push_back(wgpu::FeatureName::DawnMultiPlanarFormats);
-  features.push_back(wgpu::FeatureName::DepthClipControl);
-  features.push_back(wgpu::FeatureName::Depth32FloatStencil8);
-  features.push_back(wgpu::FeatureName::ImplicitDeviceSynchronization);
-  features.push_back(wgpu::FeatureName::SurfaceCapabilities);
+  // TODO(crbug.com/1456492): verify the required features.
+  wgpu::FeatureName features[] = {
+      wgpu::FeatureName::DawnInternalUsages,
+      wgpu::FeatureName::DawnMultiPlanarFormats,
+      wgpu::FeatureName::DepthClipControl,
+      wgpu::FeatureName::Depth32FloatStencil8,
+      wgpu::FeatureName::ImplicitDeviceSynchronization,
+      wgpu::FeatureName::SurfaceCapabilities,
+  };
 
-  descriptor.requiredFeatures = features.data();
-  descriptor.requiredFeaturesCount = features.size();
+  descriptor.requiredFeatures = features;
+  descriptor.requiredFeaturesCount = std::size(features);
 
-  std::vector<dawn::native::Adapter> adapters = instance_.EnumerateAdapters();
+  wgpu::BackendType backend_type = GetDefaultBackendType();
+  std::vector<dawn::native::Adapter> adapters = instance_->EnumerateAdapters();
   for (dawn::native::Adapter adapter : adapters) {
     wgpu::AdapterProperties properties;
     adapter.GetProperties(&properties);
-    if (properties.backendType == type) {
+    if (properties.backendType == backend_type) {
       wgpu::Device device(adapter.CreateDevice(&descriptor));
       if (device) {
         device.SetUncapturedErrorCallback(&LogError, nullptr);
         device.SetDeviceLostCallback(&LogFatal, nullptr);
         device.SetLoggingCallback(&LogInfo, nullptr);
       }
-      return device;
+      device_ = std::move(device);
+      return true;
     }
   }
-  return nullptr;
+
+  return false;
 }
 
 bool DawnContextProvider::InitializeGraphiteContext(
@@ -146,6 +185,10 @@ bool DawnContextProvider::InitializeGraphiteContext(
   }
 
   return !!graphite_context_;
+}
+
+wgpu::Instance DawnContextProvider::GetInstance() const {
+  return instance_->Get();
 }
 
 #if BUILDFLAG(IS_WIN)
