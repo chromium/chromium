@@ -10,7 +10,6 @@
 #include "base/test/gtest_util.h"
 #include "content/browser/fenced_frame/fenced_frame_config.h"
 #include "content/browser/fenced_frame/fenced_frame_reporter.h"
-#include "content/public/test/test_renderer_host.h"
 #include "mojo/public/cpp/test_support/test_utils.h"
 #include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
 #include "testing/gtest/include/gtest/gtest.h"
@@ -236,9 +235,7 @@ void TestProperty(
       true, unredacted_redacted_equality_fn, redacted_redacted_equality_fn);
 }
 
-class FencedFrameConfigMojomTraitsTest : public RenderViewHostTestHarness {};
-
-TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
   GURL test_url("test_url");
 
   struct TestCase {
@@ -273,7 +270,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsInternalUrnTest) {
   }
 }
 
-TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
   std::vector<blink::FencedFrame::DeprecatedFencedFrameMode> modes = {
       blink::FencedFrame::DeprecatedFencedFrameMode::kDefault,
       blink::FencedFrame::DeprecatedFencedFrameMode::kOpaqueAds,
@@ -309,7 +306,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsModeTest) {
   }
 }
 
-TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsNullInternalUrnTest) {
   FencedFrameConfig browser_config;
   RedactedFencedFrameConfig input_config =
       browser_config.RedactFor(FencedFrameEntity::kEmbedder);
@@ -341,7 +338,7 @@ absl::optional<GURL> Project(const RedactedFencedFrameConfig& config) {
                      GURL>::potentially_opaque_value);
 }
 
-TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
+TEST(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
   GURL test_url("test_url");
 
   // See the above tests for `urn`.
@@ -480,8 +477,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest, ConfigMojomTraitsTest) {
 // Test `has_fenced_frame_reporting`, which only appears in
 // FencedFrameProperties, and does not use the redacted mechanism used by other
 // fields.
-TEST_F(FencedFrameConfigMojomTraitsTest,
-       PropertiesHasFencedFrameReportingTest) {
+TEST(FencedFrameConfigMojomTraitsTest, PropertiesHasFencedFrameReportingTest) {
   FencedFrameProperties properties;
   RedactedFencedFrameProperties input_properties =
       properties.RedactFor(FencedFrameEntity::kEmbedder);
@@ -494,7 +490,7 @@ TEST_F(FencedFrameConfigMojomTraitsTest,
   // Create a reporting service with a dummy SharedURLLoaderFactory.
   properties.fenced_frame_reporter_ = FencedFrameReporter::CreateForFledge(
       base::MakeRefCounted<network::WeakWrapperSharedURLLoaderFactory>(nullptr),
-      /*browser_context=*/browser_context(),
+      /*attribution_manager=*/nullptr,
       /*direct_seller_is_seller=*/false,
       /*private_aggregation_manager=*/nullptr,
       /*main_frame_origin=*/url::Origin(),

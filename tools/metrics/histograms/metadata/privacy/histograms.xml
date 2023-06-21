@@ -766,8 +766,6 @@ reviewer.
     <variant name="IsAttributionReportingEverAllowed"
         summary="IsAttributionReportingEverAllowed"/>
     <variant name="IsFledgeAllowed" summary="IsFledgeAllowed"/>
-    <variant name="IsPrivacySandboxReportingDestinationAttested"
-        summary="IsPrivacySandboxReportingDestinationAttested"/>
     <variant name="IsPrivateAggregationAllowed"
         summary="IsPrivateAggregationAllowed"/>
     <variant name="IsSharedStorageAllowed" summary="IsSharedStorageAllowed"/>

@@ -213,8 +213,7 @@ class InterestGroupAuctionReporterTest
     interest_group_auction_reporter_ =
         std::make_unique<InterestGroupAuctionReporter>(
             interest_group_manager_impl_.get(), &auction_worklet_manager_,
-            /*browser_context=*/browser_context(),
-            &private_aggregation_manager_,
+            /*attribution_manager=*/nullptr, &private_aggregation_manager_,
             private_aggregation_manager_
                 .GetLogPrivateAggregationRequestsCallback(),
             std::move(auction_config_), kTopFrameOrigin, kFrameOrigin,

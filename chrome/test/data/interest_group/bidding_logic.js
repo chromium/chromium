@@ -28,11 +28,7 @@ function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
         browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
         '/echoall?report_win_beacon',
     'reserved.top_navigation':
-        browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
-        '/_report_event_server.html',
-    'click':
-        browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
-        '/_report_event_server.html'
+        browserSignals.interestGroupOwner + '/_report_event_server.html'
   });
   if (typeof privateAggregation !== 'undefined') {
     privateAggregation.reportContributionForEvent(

@@ -36,10 +36,7 @@
 #include "content/browser/private_aggregation/private_aggregation_manager.h"
 #include "content/browser/renderer_host/frame_tree_node.h"
 #include "content/browser/renderer_host/render_frame_host_impl.h"
-#include "content/public/browser/browser_context.h"
-#include "content/public/browser/content_browser_client.h"
 #include "content/public/browser/web_contents.h"
-#include "content/public/common/content_client.h"
 #include "content/services/auction_worklet/public/mojom/private_aggregation_request.mojom.h"
 #include "mojo/public/cpp/bindings/remote.h"
 #include "net/http/http_response_headers.h"
@@ -125,17 +122,6 @@ base::StringPiece ReportingDestinationAsString(
   NOTREACHED();
 }
 
-base::StringPiece InvokingAPIAsString(
-    const PrivacySandboxInvokingAPI invoking_api) {
-  switch (invoking_api) {
-    case PrivacySandboxInvokingAPI::kProtectedAudience:
-      return "Protected Audience";
-    case PrivacySandboxInvokingAPI::kSharedStorage:
-      return "Shared Storage";
-  }
-  NOTREACHED();
-}
-
 }  // namespace
 
 AutomaticBeaconInfo::AutomaticBeaconInfo(
@@ -200,15 +186,14 @@ FencedFrameReporter::ReportingDestinationInfo::operator=(
 
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    BrowserContext* browser_context,
+    AttributionManager* attribution_manager,
     ReportingUrlMap reporting_url_map) {
   // `private_aggregation_manager_`, `main_frame_origin_`, and `winner_origin_`
   // are only needed by FLEDGE.
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
-          base::PassKey<FencedFrameReporter>(),
-          PrivacySandboxInvokingAPI::kSharedStorage,
-          std::move(url_loader_factory), browser_context);
+          base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
+          attribution_manager);
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kSharedStorageSelectUrl,
       ReportingDestinationInfo(std::move(reporting_url_map)));
@@ -217,17 +202,16 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForSharedStorage(
 
 scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    BrowserContext* browser_context,
+    AttributionManager* attribution_manager,
     bool direct_seller_is_seller,
     PrivateAggregationManager* private_aggregation_manager,
     const url::Origin& main_frame_origin,
     const url::Origin& winner_origin) {
   scoped_refptr<FencedFrameReporter> reporter =
       base::MakeRefCounted<FencedFrameReporter>(
-          base::PassKey<FencedFrameReporter>(),
-          PrivacySandboxInvokingAPI::kProtectedAudience,
-          std::move(url_loader_factory), browser_context,
-          private_aggregation_manager, main_frame_origin, winner_origin);
+          base::PassKey<FencedFrameReporter>(), std::move(url_loader_factory),
+          attribution_manager, private_aggregation_manager, main_frame_origin,
+          winner_origin);
   reporter->direct_seller_is_seller_ = direct_seller_is_seller;
   reporter->reporting_metadata_.emplace(
       blink::FencedFrame::ReportingDestination::kBuyer,
@@ -243,22 +227,17 @@ scoped_refptr<FencedFrameReporter> FencedFrameReporter::CreateForFledge(
 
 FencedFrameReporter::FencedFrameReporter(
     base::PassKey<FencedFrameReporter> pass_key,
-    PrivacySandboxInvokingAPI invoking_api,
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
-    BrowserContext* browser_context,
+    AttributionManager* attribution_manager,
     PrivateAggregationManager* private_aggregation_manager,
     const absl::optional<url::Origin>& main_frame_origin,
     const absl::optional<url::Origin>& winner_origin)
     : url_loader_factory_(std::move(url_loader_factory)),
-      attribution_manager_(
-          AttributionManager::FromBrowserContext(browser_context)),
-      browser_context_(browser_context),
+      attribution_manager_(attribution_manager),
       private_aggregation_manager_(private_aggregation_manager),
       main_frame_origin_(main_frame_origin),
-      winner_origin_(winner_origin),
-      invoking_api_(invoking_api) {
+      winner_origin_(winner_origin) {
   DCHECK(url_loader_factory_);
-  DCHECK(browser_context_);
   // These should both be nullopt for non-FLEDGE fenced frames, and populated
   // for FLEDGE fenced frames.
   DCHECK_EQ(main_frame_origin_.has_value(), winner_origin_.has_value());
@@ -393,21 +372,6 @@ bool FencedFrameReporter::SendReportInternal(
         {"This frame registered invalid reporting url for destination '",
          ReportingDestinationAsString(reporting_destination),
          "' and event_type '", event_type, "'."});
-    NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
-    return false;
-  }
-
-  if (!GetContentClient()
-           ->browser()
-           ->IsPrivacySandboxReportingDestinationAttested(
-               browser_context_, url::Origin::Create(url), invoking_api_)) {
-    error_message = base::StrCat({
-        "The reporting destination '",
-        ReportingDestinationAsString(reporting_destination),
-        "' is not attested for '",
-        InvokingAPIAsString(invoking_api_),
-        "'.",
-    });
     NotifyFencedFrameReportingBeaconFailed(attribution_reporting_data);
     return false;
   }

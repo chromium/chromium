@@ -52,8 +52,6 @@ constexpr char kIsAttributionReportingAllowedHistogram[] =
 constexpr char kMaySendAttributionReportHistogram[] =
     "PrivacySandbox.MaySendAttributionReport";
 constexpr char kIsFledgeAllowedHistogram[] = "PrivacySandbox.IsFledgeAllowed";
-constexpr char kIsPrivacySandboxReportingDestinationAttestedHistogram[] =
-    "PrivacySandbox.IsPrivacySandboxReportingDestinationAttested";
 constexpr char kIsSharedStorageAllowedHistogram[] =
     "PrivacySandbox.IsSharedStorageAllowed";
 constexpr char kIsSharedStorageSelectURLAllowedHistogram[] =
@@ -487,23 +485,6 @@ PrivacySandboxSettingsImpl::GetM1FledgeAllowedStatus(
   }
 
   return GetSiteAccessAllowedStatus(top_frame_origin, auction_party.GetURL());
-}
-
-bool PrivacySandboxSettingsImpl::IsEventReportingDestinationAttested(
-    const url::Origin& destination_origin,
-    privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api) const {
-  // Check for attestation on the event recipient's site with whichever API
-  // created the frame that invoked the event reporting.
-  if (attestations_.IsSiteAttested(net::SchemefulSite(destination_origin),
-                                   invoking_api)) {
-    JoinHistogram(kIsPrivacySandboxReportingDestinationAttestedHistogram,
-                  Status::kAllowed);
-    return true;
-  }
-
-  JoinHistogram(kIsPrivacySandboxReportingDestinationAttestedHistogram,
-                Status::kAttestationFailed);
-  return false;
 }
 
 bool PrivacySandboxSettingsImpl::IsFledgeAllowed(

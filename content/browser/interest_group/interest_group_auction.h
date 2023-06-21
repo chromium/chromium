@@ -44,8 +44,8 @@ struct AuctionConfig;
 
 namespace content {
 
+class AttributionManager;
 class AuctionMetricsRecorder;
-class BrowserContext;
 class InterestGroupManagerImpl;
 class PrivateAggregationManager;
 
@@ -473,7 +473,7 @@ class CONTENT_EXPORT InterestGroupAuction
   // Takes ownership of the `auction_config`, so that the reporter can outlive
   // other auction-related classes.
   std::unique_ptr<InterestGroupAuctionReporter> CreateReporter(
-      BrowserContext* browser_context,
+      AttributionManager* attribution_manager,
       PrivateAggregationManager* private_aggregation_manager,
       scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory,
       std::unique_ptr<blink::AuctionConfig> auction_config,
