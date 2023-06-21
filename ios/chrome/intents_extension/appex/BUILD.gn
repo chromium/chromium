@@ -19,7 +19,7 @@ compile_entitlements("entitlements") {
   ]
   entitlements_templates =
       [ "entitlements/external/intents_extension.entitlements" ]
-  output_name = "$target_gen_dir/chrome_intents.entitlements"
+  output_name = "$target_gen_dir/intents_extension.appex.entitlements"
 }
 
 ios_appex_bundle("appex") {
