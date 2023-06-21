@@ -6689,3 +6689,15 @@ crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-doubl
 crbug.com/1442863 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
 
 crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failure Pass ]
+
+# following tests fail on Win11-arm64
+crbug.com/1456779 [ Win11-arm64 ] css3/blending/svg-blend-exclusion.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] css3/blending/svg-blend-multiply.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] css3/filters/effect-reference-subregion.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] css3/filters/effect-reference-zoom.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] css3/filters/effect-reference.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] http/tests/cache/image-with-dpr-header-cached.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] http/tests/css/css-resources-referrer-srcdoc.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] http/tests/css/css-resources-referrer.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] http/tests/images/image-with-dpr-header.html [ Failure ]  # Reftest failure
+crbug.com/1456779 [ Win11-arm64 ] http/tests/svg/svgimage-revalidation.html [ Failure ]  # Reftest failure
