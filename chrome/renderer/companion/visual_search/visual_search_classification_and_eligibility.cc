@@ -31,13 +31,12 @@ bool OrOfThresholdingRuleLooksGood(const OrOfThresholdingRules& rules) {
         rule.feature_name() == FeatureLibrary::IMAGE_LEVEL_UNSPECIFIED) {
       return false;
     }
-    if (rule.has_normalizing_feature_name() &&
-        rule.normalizing_feature_name() ==
-            FeatureLibrary::PAGE_LEVEL_UNSPECIFIED) {
+    if (rule.has_normalizing_op() &&
+        rule.normalizing_op() == FeatureLibrary::NORMALIZE_UNSPECIFIED) {
       return false;
     }
-    if (!rule.has_op() ||
-        rule.op() == FeatureLibrary::THRESHOLDING_UNSPECIFIED) {
+    if (!rule.has_thresholding_op() ||
+        rule.thresholding_op() == FeatureLibrary::THRESHOLDING_UNSPECIFIED) {
       return false;
     }
   }

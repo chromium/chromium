@@ -42,15 +42,15 @@ TEST_F(VisualClassificationAndEligibilityTest, TestCreateAndRun) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.33);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::LT);
+  rules->set_thresholding_op(FeatureLibrary::LT);
   rules->set_threshold(0.5);
 
   std::unique_ptr<VisualClassificationAndEligibility> created =
@@ -101,13 +101,13 @@ TEST_F(VisualClassificationAndEligibilityTest, TestShoppyScoreIsCorrect) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
   // Counter-intuitive rule designed to check that sensitivity and shoppy
   // scores are not swapped or messed up in some other way.
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::LT);
+  rules->set_thresholding_op(FeatureLibrary::LT);
   rules->set_threshold(0.4);
 
   std::unique_ptr<VisualClassificationAndEligibility> created =
@@ -134,13 +134,13 @@ TEST_F(VisualClassificationAndEligibilityTest, TestSensScoreIsCorrect) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
   // Counter-intuitive rule designed to check that sensitivity and shoppy
   // scores are not swapped or messed up in some other way.
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.4);
 
   std::unique_ptr<VisualClassificationAndEligibility> created =
@@ -168,7 +168,7 @@ TEST_F(VisualClassificationAndEligibilityTest, TestInvalidCreation) {
     // Spec with missing feature name in cheap pruning rules.
     EligibilitySpec spec;
     auto* rules = spec.add_cheap_pruning_rules()->add_rules();
-    rules->set_op(FeatureLibrary::GT);
+    rules->set_thresholding_op(FeatureLibrary::GT);
     rules->set_threshold(100);
     std::unique_ptr<VisualClassificationAndEligibility> created =
         VisualClassificationAndEligibility::Create(model_bytes_, spec);
@@ -189,7 +189,7 @@ TEST_F(VisualClassificationAndEligibilityTest, TestInvalidCreation) {
     EligibilitySpec spec;
     auto* rules = spec.add_post_renormalization_rules()->add_rules();
     rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-    rules->set_normalizing_feature_name(FeatureLibrary::PAGE_LEVEL_UNSPECIFIED);
+    rules->set_normalizing_op(FeatureLibrary::NORMALIZE_UNSPECIFIED);
     rules->set_threshold(100);
     std::unique_ptr<VisualClassificationAndEligibility> created =
         VisualClassificationAndEligibility::Create(model_bytes_, spec);
@@ -200,7 +200,7 @@ TEST_F(VisualClassificationAndEligibilityTest, TestInvalidCreation) {
     EligibilitySpec spec;
     auto* rules = spec.add_cheap_pruning_rules()->add_rules();
     rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-    rules->set_op(FeatureLibrary::GT);
+    rules->set_thresholding_op(FeatureLibrary::GT);
     rules->set_threshold(100);
     std::unique_ptr<VisualClassificationAndEligibility> created =
         VisualClassificationAndEligibility::Create(

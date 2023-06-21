@@ -40,20 +40,13 @@ message FeatureLibrary {
     SENS_CLASSIFIER_SCORE = 8;
   }
 
-  // Enum listing the values of page-level features (used for normalization).
-  enum PageLevelFeatureName {
-    PAGE_LEVEL_UNSPECIFIED = 0;
-    VIEWPORT_AREA = 1;
-    // Computed as the max value of the corresponding feature among all the
-    // images that are passed in during the first pass of eligibility
-    // computation, and then recomputed before the third pass with the images
-    // that remain after the second pass.
-    MAX_IMAGE_ORIGINAL_AREA = 2;
-    MAX_IMAGE_ORIGINAL_ASPECT_RATIO = 3;
-    MAX_IMAGE_ONPAGE_AREA = 4;
-    MAX_IMAGE_ONPAGE_ASPECT_RATIO = 5;
-    MAX_IMAGE_VISIBLE_AREA = 6;
-    MAX_IMAGE_FRACTION_VISIBLE = 7;
+  // Enum listing the ways in which we can normalize a feature.
+  enum NormalizingOp {
+    NORMALIZE_UNSPECIFIED = 0;
+    // Normalize by the size of the viewport area.
+    BY_VIEWPORT_AREA = 1;
+    // Normalize by the max value of the feature.
+    BY_MAX_VALUE = 2;
   }
 
   // Enum listing the types of thresholding operators.
@@ -73,8 +66,9 @@ message FeatureLibrary {
 // is greater than 5.
 message ThresholdingRule {
   optional FeatureLibrary.ImageLevelFeatureName feature_name = 1;
-  optional FeatureLibrary.PageLevelFeatureName normalizing_feature_name = 2;
-  optional FeatureLibrary.ThresholdingOp op = 3;
+  // The normalizing_op is not required.
+  optional FeatureLibrary.NormalizingOp normalizing_op = 2;
+  optional FeatureLibrary.ThresholdingOp thresholding_op = 3;
   optional float threshold = 4;
 }
 

@@ -23,24 +23,24 @@ TEST(EligibilityModuleTest, E2eExample) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(44);
   rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_ASPECT_RATIO);
-  rules->set_op(FeatureLibrary::LT);
+  rules->set_thresholding_op(FeatureLibrary::LT);
   rules->set_threshold(3);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.6);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SENS_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::LT);
+  rules->set_thresholding_op(FeatureLibrary::LT);
   rules->set_threshold(0.5);
   rules = spec.add_post_renormalization_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_normalizing_feature_name(FeatureLibrary::MAX_IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.999);
 
   EligibilityModule module(spec);
@@ -107,20 +107,20 @@ TEST(EligibilityModuleTest, E2eExample) {
   EXPECT_EQ(second_pass_eligible_image_ids.at(0), "image1");
   const base::flat_map<std::string, double> image1_features_after_third =
       module.GetDebugFeatureValuesForImage("image1");
-  EXPECT_THAT(
-      image1_features_after_third,
-      UnorderedElementsAre(
-          Pair("IMAGE_ONPAGE_AREA", 50), Pair("MAX_IMAGE_ONPAGE_AREA", 50),
-          Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(1, 0.01)),
-          Pair("IMAGE_ONPAGE_ASPECT_RATIO", 2)));
+  EXPECT_THAT(image1_features_after_third,
+              UnorderedElementsAre(
+                  Pair("IMAGE_ONPAGE_AREA", 50),
+                  Pair("normalize_by_IMAGE_ONPAGE_AREA", 50),
+                  Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(1, 0.01)),
+                  Pair("IMAGE_ONPAGE_ASPECT_RATIO", 2)));
 }
 
-TEST(EligibilityModuleTest, TestWithFeatureNormalization) {
+TEST(EligibilityModuleTest, TestWithMaxValueFeatureNormalization) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_normalizing_feature_name(FeatureLibrary::MAX_IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.5);
 
   EligibilityModule module(spec);
@@ -136,8 +136,6 @@ TEST(EligibilityModuleTest, TestWithFeatureNormalization) {
   image2.image_identifier = "image2";
   image2.onpage_rect = Rect(0, 0, 6, 10);
   images.push_back(std::move(image2));
-  // Identical to image 1, passes eligibility as well, but will have non-passing
-  // shopping score.
   SingleImageGeometryFeatures image3;
   image3.image_identifier = "image3";
   image3.onpage_rect = Rect(0, 0, 4, 10);
@@ -151,11 +149,47 @@ TEST(EligibilityModuleTest, TestWithFeatureNormalization) {
 
   const base::flat_map<std::string, double> image2_features =
       module.GetDebugFeatureValuesForImage("image2");
-  EXPECT_THAT(
-      image2_features,
-      UnorderedElementsAre(
-          Pair("IMAGE_ONPAGE_AREA", 60), Pair("MAX_IMAGE_ONPAGE_AREA", 100),
-          Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(0.6, 0.01))));
+  EXPECT_THAT(image2_features,
+              UnorderedElementsAre(
+                  Pair("IMAGE_ONPAGE_AREA", 60),
+                  Pair("normalize_by_IMAGE_ONPAGE_AREA", 100),
+                  Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(0.6, 0.01))));
+}
+
+TEST(EligibilityModuleTest, TestWithViewportAreaFeatureNormalization) {
+  EligibilitySpec spec;
+  auto* rules = spec.add_cheap_pruning_rules()->add_rules();
+  rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
+  rules->set_normalizing_op(FeatureLibrary::BY_VIEWPORT_AREA);
+  rules->set_thresholding_op(FeatureLibrary::GT);
+  rules->set_threshold(0.4);
+
+  EligibilityModule module(spec);
+
+  SizeF viewport_size(10.0, 10.0);
+  std::vector<SingleImageGeometryFeatures> images;
+  images.reserve(2);
+  SingleImageGeometryFeatures image1;
+  image1.image_identifier = "image1";
+  image1.onpage_rect = Rect(0, 0, 10, 5);
+  images.push_back(std::move(image1));
+  SingleImageGeometryFeatures image2;
+  image2.image_identifier = "image2";
+  image2.onpage_rect = Rect(0, 0, 10, 3);
+  images.push_back(std::move(image2));
+  const std::vector<std::string> eligible_image_ids =
+      module.RunFirstPassEligibilityAndCacheFeatureValues(viewport_size,
+                                                          images);
+  ASSERT_EQ(eligible_image_ids.size(), 1U);
+  EXPECT_EQ(eligible_image_ids.at(0), "image1");
+
+  const base::flat_map<std::string, double> image1_features =
+      module.GetDebugFeatureValuesForImage("image1");
+  EXPECT_THAT(image1_features,
+              UnorderedElementsAre(
+                  Pair("IMAGE_ONPAGE_AREA", 50),
+                  Pair("normalize_by_BY_VIEWPORT_AREA", 100),
+                  Pair("normalized_IMAGE_ONPAGE_AREA", DoubleNear(0.5, 0.01))));
 }
 
 TEST(EligibilityModuleTest, TestOringRules) {
@@ -163,12 +197,12 @@ TEST(EligibilityModuleTest, TestOringRules) {
   auto* ored_rules = spec.add_cheap_pruning_rules();
   auto* rules = ored_rules->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_normalizing_feature_name(FeatureLibrary::MAX_IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.5);
   rules = ored_rules->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::LT);
+  rules->set_thresholding_op(FeatureLibrary::LT);
   rules->set_threshold(45);
 
   EligibilityModule module(spec);
@@ -200,7 +234,7 @@ TEST(EligibilityModuleTest, TestImageVisibleArea) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_VISIBLE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(1.1);
 
   EligibilityModule module(spec);
@@ -227,12 +261,12 @@ TEST(EligibilityModuleTest, TestFeaturesForSecondPassCached) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_ASPECT_RATIO);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(4);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_normalizing_feature_name(FeatureLibrary::MAX_IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_normalizing_op(FeatureLibrary::BY_MAX_VALUE);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.5);
 
   EligibilityModule module(spec);
@@ -261,15 +295,15 @@ TEST(EligibilityModuleTest, TestReuseModuleBetweenImageSets) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
   rules = spec.add_classifier_score_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::SHOPPING_CLASSIFIER_SCORE);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.6);
   rules = spec.add_post_renormalization_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_ONPAGE_AREA);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(100);
 
   EligibilityModule module(spec);
@@ -346,7 +380,7 @@ TEST(EligibilityModuleTest, TestImageFractionVisible) {
   EligibilitySpec spec;
   auto* rules = spec.add_cheap_pruning_rules()->add_rules();
   rules->set_feature_name(FeatureLibrary::IMAGE_FRACTION_VISIBLE);
-  rules->set_op(FeatureLibrary::GT);
+  rules->set_thresholding_op(FeatureLibrary::GT);
   rules->set_threshold(0.26);
 
   EligibilityModule module(spec);
@@ -449,29 +483,33 @@ TEST(EligibilityModuleTest, TestPageFeatureComputation) {
   // Artificially set viewport dimensions.
   module.viewport_width_ = 100;
   module.viewport_height_ = 100;
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::VIEWPORT_AREA, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_ORIGINAL_AREA,
+                FeatureLibrary::BY_VIEWPORT_AREA, images, false),
             10000);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_ORIGINAL_AREA, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_ORIGINAL_AREA,
+                FeatureLibrary::BY_MAX_VALUE, images, false),
             2000);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_ORIGINAL_ASPECT_RATIO, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_ORIGINAL_ASPECT_RATIO,
+                FeatureLibrary::BY_MAX_VALUE, images, false),
             20);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_ORIGINAL_ASPECT_RATIO, images, false),
-            20);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_ONPAGE_AREA, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_ONPAGE_AREA, FeatureLibrary::BY_MAX_VALUE,
+                images, false),
             16000);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_ONPAGE_ASPECT_RATIO, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_ONPAGE_ASPECT_RATIO,
+                FeatureLibrary::BY_MAX_VALUE, images, false),
             10);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_VISIBLE_AREA, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_VISIBLE_AREA,
+                FeatureLibrary::BY_MAX_VALUE, images, false),
             400);
-  EXPECT_EQ(module.ComputeAndGetPageLevelFeatureValue(
-                FeatureLibrary::MAX_IMAGE_FRACTION_VISIBLE, images, false),
+  EXPECT_EQ(module.ComputeAndGetNormalizingFeatureValue(
+                FeatureLibrary::IMAGE_FRACTION_VISIBLE,
+                FeatureLibrary::BY_MAX_VALUE, images, false),
             0.0625);
 }
 }  // namespace companion::visual_search

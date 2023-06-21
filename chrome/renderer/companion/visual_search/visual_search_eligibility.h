@@ -95,15 +95,16 @@ class EligibilityModule {
   double RetrieveImageFeatureOrDie(
       FeatureLibrary::ImageLevelFeatureName feature_name,
       const std::string& image_id);
-  double RetrievePageLevelFeatureOrDie(
-      FeatureLibrary::PageLevelFeatureName feature_name);
-  double ComputeAndGetPageLevelFeatureValue(
-      FeatureLibrary::PageLevelFeatureName feature_name,
+  double RetrieveNormalizingFeatureOrDie(
+      FeatureLibrary::ImageLevelFeatureName feature_name,
+      FeatureLibrary::NormalizingOp normalizing_op);
+  double ComputeAndGetNormalizingFeatureValue(
+      FeatureLibrary::ImageLevelFeatureName feature_name,
+      FeatureLibrary::NormalizingOp normalizing_op,
       const std::vector<SingleImageGeometryFeatures>& images,
       bool limit_to_second_pass_eligible);
   double GetMaxFeatureValue(
-      FeatureLibrary::PageLevelFeatureName page_level_feature_name,
-      FeatureLibrary::ImageLevelFeatureName corresponding_image_feature_name,
+      FeatureLibrary::ImageLevelFeatureName feature_name,
       const std::vector<SingleImageGeometryFeatures>& images);
   double MaxFeatureValueAfterSecondPass(
       FeatureLibrary::ImageLevelFeatureName image_feature_name);
@@ -118,9 +119,10 @@ class EligibilityModule {
   base::flat_map<std::string,
                  base::flat_map<FeatureLibrary::ImageLevelFeatureName, double>>
       image_level_features_;
-  // Cache for features that are computed at the level of the whole page.
-  base::flat_map<FeatureLibrary::PageLevelFeatureName, double>
-      page_level_features_;
+  // Cache for the max value of image-level features, with the max taken over
+  // all the images on the page.
+  base::flat_map<FeatureLibrary::ImageLevelFeatureName, double>
+      max_value_features_;
   // Keep track of what images were eligible after the first and second passes.
   base::flat_set<std::string> eligible_after_first_pass_;
   base::flat_set<std::string> eligible_after_second_pass_;
