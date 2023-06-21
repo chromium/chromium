@@ -1258,13 +1258,13 @@ const int kDialogWidthForOneDriveSetup = 512;
 const int kDialogHeightForOneDriveSetup = 556;
 
 const int kDialogWidthForFileHandlerDialog = 512;
-const int kDialogHeightForFileHandlerDialog = 375;
-const int kDialogHeightForFileHandlerDialogNoLocalApp = 311;
+const int kDialogHeightForFileHandlerDialog = 379;
+const int kDialogHeightForFileHandlerDialogNoLocalApp = 315;
 
 const int kDialogWidthForMoveConfirmation = 512;
-const int kDialogHeightForMoveConfirmationWithCheckbox = 500;
+const int kDialogHeightForMoveConfirmationWithCheckbox = 524;
 
-const int kDialogHeightForMoveConfirmationWithoutCheckbox = 448;
+const int kDialogHeightForMoveConfirmationWithoutCheckbox = 472;
 
 const int kDialogWidthForConnectToOneDrive = 512;
 const int kDialogHeightForConnectToOneDrive = 556;
