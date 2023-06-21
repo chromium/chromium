@@ -18,34 +18,24 @@ namespace remoting {
 
 namespace {
 
-#if BUILDFLAG(IS_CHROMEOS)
-protocol::FileTransferResult<base::FilePath> GetDownloadDirectory() {
-  base::FilePath download_path;
-  if (!base::PathService::Get(chrome::DIR_DEFAULT_DOWNLOADS_SAFE,
-                              &download_path)) {
-    LOG(ERROR)
-        << "Failed to get DIR_DEFAULT_DOWNLOADS from base::PathService::Get";
+protocol::FileTransferResult<base::FilePath> GetDirectory(int path_key) {
+  base::FilePath directory_path;
+  if (!base::PathService::Get(path_key, &directory_path)) {
+    LOG(ERROR) << "Failed to get path from base::PathService::Get";
     return protocol::MakeFileTransferError(
         FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
   }
 
-  return download_path;
+  return directory_path;
 }
-#endif
 
 }  // namespace
 
 protocol::FileTransferResult<base::FilePath> GetFileUploadDirectory() {
 #if BUILDFLAG(IS_CHROMEOS)
-  return GetDownloadDirectory();
+  return GetDirectory(chrome::DIR_DEFAULT_DOWNLOADS_SAFE);
 #else
-  base::FilePath target_directory;
-  if (!base::PathService::Get(base::DIR_USER_DESKTOP, &target_directory)) {
-    LOG(ERROR) << "Failed to get DIR_USER_DESKTOP from base::PathService::Get";
-    return protocol::MakeFileTransferError(
-        FROM_HERE, protocol::FileTransfer_Error_Type_UNEXPECTED_ERROR);
-  }
-  return target_directory;
+  return GetDirectory(base::DIR_USER_DESKTOP);
 #endif
 }
 
