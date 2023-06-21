@@ -59536,6 +59536,7 @@ from previous Chrome versions.
   <int value="-2130982324" label="DesktopPWAsWebBundles:disabled"/>
   <int value="-2129940395" label="WebAssemblySimd:disabled"/>
   <int value="-2129781123" label="RequestDesktopSiteZoom:enabled"/>
+  <int value="-2129531046" label="LacrosProfileBackwardMigration:enabled"/>
   <int value="-2128705444" label="AssistantAppSupport:enabled"/>
   <int value="-2128535212" label="GuestOsFiles:enabled"/>
   <int value="-2127806304" label="Enable16Desks:disabled"/>
@@ -64684,6 +64685,7 @@ from previous Chrome versions.
   <int value="513356954" label="InstantTethering:disabled"/>
   <int value="513372959" label="ViewsProfileChooser:enabled"/>
   <int value="513728926" label="OsSettingsPolymer3:enabled"/>
+  <int value="514098449" label="LacrosProfileBackwardMigration:disabled"/>
   <int value="514406112" label="WebUIOmniboxPopup:disabled"/>
   <int value="514569020" label="RemoteCopyImageNotification:enabled"/>
   <int value="515981953" label="ElasticOverscroll:enabled"/>

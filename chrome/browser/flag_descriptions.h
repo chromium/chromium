@@ -3545,6 +3545,9 @@ extern const char kLacrosMoveProfileMigrationDescription[];
 extern const char kLacrosProfileMigrationForceOffName[];
 extern const char kLacrosProfileMigrationForceOffDescription[];
 
+extern const char kLacrosProfileBackwardMigrationName[];
+extern const char kLacrosProfileBackwardMigrationDescription[];
+
 extern const char kVirtualKeyboardNewHeaderName[];
 extern const char kVirtualKeyboardNewHeaderDescription[];
 

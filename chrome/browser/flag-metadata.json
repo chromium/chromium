@@ -5009,6 +5009,14 @@
     "expiry_milestone": 130
   },
   {
+    "name": "lacros-trigger-profile-backward-migration",
+    "owners": ["janagrill", "artyomchen", "lacros-team@google.com"],
+    // TODO(http://b/243125048): Once the Ash browser is removed, this flag
+    // should be removed as well. Until then, this absolutely must not expire.
+    // We do not yet know when the Ash browser will be removed.
+    "expiry_milestone": 140
+  },
+  {
     "name": "lacros-wayland-logging",
     "owners": [ "erikchen", "lacros-team@google.com" ],
     // Once Lacros is launched, this flag can be removed. Until then, this
