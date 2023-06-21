@@ -26,11 +26,7 @@ class Encryptor;
 // all callbacks to the thread on which the GCMStoreImpl is created.
 class GCM_EXPORT GCMStoreImpl : public GCMStore {
  public:
-  // |remove_account_mappings_with_email_key| indicates whether account mappings
-  // having email as account key should be removed while loading. This is
-  // required during the migration of account identifier from email to Gaia ID.
   GCMStoreImpl(const base::FilePath& path,
-               bool remove_account_mappings_with_email_key,
                scoped_refptr<base::SequencedTaskRunner> blocking_task_runner,
                std::unique_ptr<Encryptor> encryptor);
 

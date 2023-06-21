@@ -589,7 +589,6 @@ void ApplicationContextImpl::CreateGCMDriver() {
 
   gcm_driver_ = gcm::CreateGCMDriverDesktop(
       base::WrapUnique(new gcm::GCMClientFactory), GetLocalState(), store_path,
-      /*remove_account_mappings_with_email_key=*/true,
       // Because ApplicationContextImpl is destroyed after all WebThreads have
       // been shut down, base::Unretained() is safe here.
       base::BindRepeating(&RequestProxyResolvingSocketFactory,

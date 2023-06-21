@@ -32,7 +32,6 @@ std::unique_ptr<GCMDriver> CreateGCMDriverDesktop(
     std::unique_ptr<GCMClientFactory> gcm_client_factory,
     PrefService* prefs,
     const base::FilePath& store_path,
-    bool remove_account_mappings_with_email_key,
     base::RepeatingCallback<void(
         mojo::PendingReceiver<network::mojom::ProxyResolvingSocketFactory>)>
         get_socket_factory_callback,

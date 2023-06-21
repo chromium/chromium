@@ -236,9 +236,6 @@ class GCMClient {
   // connection. Must be called on |io_task_runner|.
   // |chrome_build_info|: chrome info, i.e., version, channel and etc.
   // |store_path|: path to the GCM store.
-  // |remove_account_mappings_with_email_key|: Whether account mappings having
-  //     email as account key should be removed while loading. Required
-  //     during the migration of account identifier from email to Gaia ID.
   // |blocking_task_runner|: for running blocking file tasks.
   // |io_task_runner|: for running IO tasks. When provided, it could be a
   //     wrapper on top of base::SingleThreadTaskRunner::GetCurrentDefault() to
@@ -252,7 +249,6 @@ class GCMClient {
   virtual void Initialize(
       const ChromeBuildInfo& chrome_build_info,
       const base::FilePath& store_path,
-      bool remove_account_mappings_with_email_key,
       const scoped_refptr<base::SequencedTaskRunner>& blocking_task_runner,
       scoped_refptr<base::SequencedTaskRunner> io_task_runner,
       base::RepeatingCallback<void(

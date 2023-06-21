@@ -97,8 +97,7 @@ std::unique_ptr<GCMStoreImpl> GCMStoreImplTest::BuildGCMStore() {
   store_path_ =
       temp_directory_.GetPath().Append(FILE_PATH_LITERAL("GCM Store"));
   return std::make_unique<GCMStoreImpl>(
-      store_path_, /*remove_account_mappings_with_email_key=*/true,
-      task_environment_.GetMainThreadTaskRunner(),
+      store_path_, task_environment_.GetMainThreadTaskRunner(),
       std::make_unique<FakeEncryptor>());
 }
 
