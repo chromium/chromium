@@ -4,6 +4,10 @@
 
 import("//chrome/common/features.gni")
 import("//third_party/closure_compiler/compile_js.gni")
+import(
+    "//tools/code_coverage/js_source_maps/create_js_source_maps/create_js_source_maps.gni")
+import(
+    "//tools/code_coverage/js_source_maps/merge_js_source_maps/merge_js_source_maps.gni")
 import("//tools/grit/grit_rule.gni")
 import("//tools/grit/preprocess_if_expr.gni")
 import("//tools/polymer/html_to_wrapper.gni")
@@ -11,6 +15,7 @@ import("//tools/typescript/ts_definitions.gni")
 import("//tools/typescript/ts_library.gni")
 import("//ui/file_manager/file_names.gni")
 import("//ui/webui/resources/tools/generate_grd.gni")
+import("//ui/webui/webui_features.gni")
 
 grit("resources") {
   source = "file_manager_resources.grd"
@@ -74,8 +79,13 @@ preprocess_folder = "$target_gen_dir/preprocessed"
 # This is for files direct from the src/:  input_folder="./".
 preprocess_if_expr("preprocess_static") {
   in_folder = "./"
-  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_static.json"
+  if (enable_webui_inline_sourcemaps) {
+    out_folder = "${preprocess_folder}/_tmp"
+    enable_removal_comments = enable_webui_inline_sourcemaps
+  } else {
+    out_folder = preprocess_folder
+  }
 
   in_files = static_js_files
 
@@ -88,10 +98,33 @@ preprocess_if_expr("preprocess_static") {
   ]
 }
 
+if (enable_webui_inline_sourcemaps) {
+  create_js_source_maps("create_source_maps_static") {
+    inline_sourcemaps = true
+
+    sources =
+        filter_include(get_target_outputs(":preprocess_static"), [ "*.js" ])
+    originals = []
+    outputs = []
+
+    foreach(in_file, sources) {
+      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
+      originals += [ rebased_path ]
+      outputs += [ "${preprocess_folder}/" + rebased_path ]
+    }
+    deps = [ ":preprocess_static" ]
+  }
+}
+
 preprocess_if_expr("preprocess_static_image_loader") {
   in_folder = "."
-  out_folder = preprocess_folder
   out_manifest = "$target_gen_dir/manifest_preprocess_static_image_loader.json"
+  if (enable_webui_inline_sourcemaps) {
+    out_folder = "${preprocess_folder}/_tmp"
+    enable_removal_comments = enable_webui_inline_sourcemaps
+  } else {
+    out_folder = preprocess_folder
+  }
 
   in_files = image_loader_static_js_files
 
@@ -99,6 +132,25 @@ preprocess_if_expr("preprocess_static_image_loader") {
     "//ui/file_manager/image_loader:background",
     "//ui/file_manager/image_loader:js_modules",
   ]
+}
+
+if (enable_webui_inline_sourcemaps) {
+  create_js_source_maps("create_source_maps_image_loader") {
+    inline_sourcemaps = true
+
+    sources =
+        filter_include(get_target_outputs(":preprocess_static_image_loader"),
+                       [ "*.js" ])
+    originals = []
+    outputs = []
+
+    foreach(in_file, sources) {
+      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
+      originals += [ rebased_path ]
+      outputs += [ "${preprocess_folder}/" + rebased_path ]
+    }
+    deps = [ ":preprocess_static_image_loader" ]
+  }
 }
 
 # This is for files that are generated in "gen/": input_folder=target_gen_dir.
@@ -138,13 +190,27 @@ ts_library("build_ts") {
     ":copy_definitions_to_gen",
     ":copy_definitions_to_proprocess",
     ":copy_fmp",
-    ":copy_ts",
     ":generate_definitions",
     ":preprocess_generated",
     ":preprocess_static",
     ":preprocess_static_image_loader",
     "//ash/webui/common/resources:generate_definitions",
   ]
+
+  if (enable_webui_inline_sourcemaps) {
+    enable_source_maps = true
+    extra_deps += [
+      ":create_source_maps_copy_ts",
+      ":create_source_maps_image_loader",
+      ":create_source_maps_static",
+    ]
+  } else {
+    extra_deps += [
+      ":copy_ts",
+      ":preprocess_static",
+      ":preprocess_static_image_loader",
+    ]
+  }
 
   deps = [
     "//ash/webui/common/resources:build_ts",
@@ -176,11 +242,30 @@ ts_library("build_ts") {
   }
 }
 
+if (enable_webui_inline_sourcemaps) {
+  merge_js_source_maps("merge_source_maps") {
+    deps = [ ":build_ts" ]
+    manifest_files =
+        filter_include(get_target_outputs(":build_ts"), [ "*.manifest" ])
+    js_files = filter_include(get_target_outputs(":build_ts"), [ "*.js" ])
+
+    sources = []
+    outputs = []
+
+    out_dir = "$target_gen_dir/merge_source_maps"
+    foreach(_js_file, js_files) {
+      sources += [ _js_file ]
+      outputs += [ string_replace(_js_file, "$target_gen_dir/tsc", out_dir) ]
+    }
+  }
+}
+
 ts_library("test_build_ts") {
   testonly = true
   root_dir = preprocess_folder
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "tsconfig_base.json"
+  enable_source_maps = enable_webui_inline_sourcemaps
 
   in_files =
       ts_test_files + [ "file_manager/externs/test/file_manager_private.js" ]
@@ -218,9 +303,13 @@ ts_library("test_build_ts") {
     ":copy_definitions_to_gen",
     ":copy_definitions_to_proprocess",
     ":copy_fmp_test",
-    ":copy_ts",
     ":generate_definitions",
   ]
+  if (enable_webui_inline_sourcemaps) {
+    extra_deps += [ ":create_source_maps_copy_ts" ]
+  } else {
+    extra_deps += [ ":copy_ts" ]
+  }
 }
 
 ts_definitions("generate_definitions") {
@@ -245,9 +334,34 @@ copy("copy_definitions_to_proprocess") {
   outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
 }
 
-copy("copy_ts") {
-  sources = ts_files + ts_test_files + ts_polymer
-  outputs = [ "$preprocess_folder/{{source_target_relative}}" ]
+preprocess_if_expr("copy_ts") {
+  in_folder = "."
+  out_manifest = "$target_gen_dir/manifest_preprocess_copy_ts.json"
+  if (enable_webui_inline_sourcemaps) {
+    out_folder = "${preprocess_folder}/_tmp"
+    enable_removal_comments = enable_webui_inline_sourcemaps
+  } else {
+    out_folder = preprocess_folder
+  }
+
+  in_files = ts_files + ts_test_files + ts_polymer
+}
+
+if (enable_webui_inline_sourcemaps) {
+  create_js_source_maps("create_source_maps_copy_ts") {
+    inline_sourcemaps = true
+
+    sources = filter_include(get_target_outputs(":copy_ts"), [ "*.ts" ])
+    originals = []
+    outputs = []
+
+    foreach(in_file, sources) {
+      rebased_path = rebase_path(in_file, "${preprocess_folder}/_tmp")
+      originals += [ rebased_path ]
+      outputs += [ "${preprocess_folder}/" + rebased_path ]
+    }
+    deps = [ ":copy_ts" ]
+  }
 }
 
 copy("copy_fmp") {
@@ -292,7 +406,6 @@ generate_grd("build_grd") {
   grdp_files = [ "$target_gen_dir/file_manager/static_resources.grdp" ]
 
   deps = [
-    ":build_ts",
     "file_manager:build_static_grdp",
     "//ui/file_manager/image_loader:build",
   ]
@@ -329,8 +442,15 @@ generate_grd("build_grd") {
       "//ui/file_manager/file_manager/foreground/js:build_worker",
     ]
   } else {
-    manifest_files =
-        filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+    if (enable_webui_inline_sourcemaps) {
+      deps += [ ":merge_source_maps" ]
+      manifest_files = filter_include(get_target_outputs(":merge_source_maps"),
+                                      [ "*_manifest.json" ])
+    } else {
+      deps += [ ":build_ts" ]
+      manifest_files =
+          filter_include(get_target_outputs(":build_ts"), [ "*_manifest.json" ])
+    }
   }
 }
 
