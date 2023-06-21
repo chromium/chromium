@@ -21,6 +21,7 @@ import androidx.annotation.VisibleForTesting;
 import androidx.core.view.MarginLayoutParamsCompat;
 
 import org.chromium.base.ObserverList;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
 import org.chromium.base.annotations.JNINamespace;
 import org.chromium.ui.dragdrop.DragAndDropDelegate;
@@ -34,7 +35,7 @@ import org.chromium.ui.mojom.CursorType;
  */
 @JNINamespace("ui")
 public class ViewAndroidDelegate {
-    private static DragAndDropDelegate sDragAndDropTestDelegate;
+    private static DragAndDropDelegate sDragAndDropDelegateForTesting;
     private final DragAndDropDelegateImpl mDragAndDropDelegateImpl;
 
     /**
@@ -168,8 +169,8 @@ public class ViewAndroidDelegate {
     }
 
     protected DragAndDropDelegate getDragAndDropDelegate() {
-        return sDragAndDropTestDelegate != null ? sDragAndDropTestDelegate
-                                                : mDragAndDropDelegateImpl;
+        return sDragAndDropDelegateForTesting != null ? sDragAndDropDelegateForTesting
+                                                      : mDragAndDropDelegateImpl;
     }
 
     /**
@@ -616,8 +617,8 @@ public class ViewAndroidDelegate {
         mDragAndDropDelegateImpl.destroy();
     }
 
-    @VisibleForTesting
     public static void setDragAndDropDelegateForTest(DragAndDropDelegate testDelegate) {
-        sDragAndDropTestDelegate = testDelegate;
+        sDragAndDropDelegateForTesting = testDelegate;
+        ResettersForTesting.register(() -> sDragAndDropDelegateForTesting = null);
     }
 }

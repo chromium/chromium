@@ -12,8 +12,7 @@ import android.util.AttributeSet;
 import android.view.View;
 import android.widget.ProgressBar;
 
-import androidx.annotation.VisibleForTesting;
-
+import org.chromium.base.ResettersForTesting;
 import org.chromium.ui.interpolators.Interpolators;
 
 import java.util.ArrayList;
@@ -168,9 +167,9 @@ public class LoadingView extends ProgressBar {
      * @param disableAnimation Whether the fading animation should be disabled during {@link
      *         #hideLoadingUI()}.
      */
-    @VisibleForTesting
     public static void setDisableAnimationForTest(boolean disableAnimation) {
         sDisableAnimationForTest = disableAnimation;
+        ResettersForTesting.register(() -> sDisableAnimationForTest = false);
     }
 
     /**

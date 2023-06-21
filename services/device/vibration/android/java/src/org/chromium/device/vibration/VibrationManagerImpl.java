@@ -11,8 +11,11 @@ import android.os.Vibrator;
 
 import org.chromium.base.ContextUtils;
 import org.chromium.base.Log;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.annotations.CalledByNative;
+import org.chromium.base.annotations.CalledByNativeForTesting;
 import org.chromium.base.annotations.JNINamespace;
+import org.chromium.build.BuildConfig;
 import org.chromium.device.mojom.VibrationManager;
 import org.chromium.mojo.system.MojoException;
 import org.chromium.services.service_manager.InterfaceFactory;
@@ -65,7 +68,7 @@ public class VibrationManagerImpl implements VibrationManager {
                 && mHasVibratePermission) {
             mVibrator.vibrate(sanitizedMilliseconds);
         }
-        setVibrateMilliSecondsForTesting(sanitizedMilliseconds);
+        sVibrateMilliSecondsForTesting = sanitizedMilliseconds;
         callback.call();
     }
 
@@ -74,7 +77,10 @@ public class VibrationManagerImpl implements VibrationManager {
         if (mHasVibratePermission) {
             mVibrator.cancel();
         }
-        setVibrateCancelledForTesting(true);
+        if (BuildConfig.IS_FOR_TEST) {
+            sVibrateCancelledForTesting = true;
+            ResettersForTesting.register(() -> sVibrateCancelledForTesting = false);
+        }
         callback.call();
     }
 
@@ -90,20 +96,12 @@ public class VibrationManagerImpl implements VibrationManager {
         }
     }
 
-    static void setVibrateMilliSecondsForTesting(long milliseconds) {
-        sVibrateMilliSecondsForTesting = milliseconds;
-    }
-
-    static void setVibrateCancelledForTesting(boolean cancelled) {
-        sVibrateCancelledForTesting = cancelled;
-    }
-
     @CalledByNative
     static long getVibrateMilliSecondsForTesting() {
         return sVibrateMilliSecondsForTesting;
     }
 
-    @CalledByNative
+    @CalledByNativeForTesting
     static boolean getVibrateCancelledForTesting() {
         return sVibrateCancelledForTesting;
     }

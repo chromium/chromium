@@ -36,6 +36,7 @@ import androidx.annotation.VisibleForTesting;
 import org.chromium.base.ApplicationState;
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.compat.ApiHelperForM;
@@ -1068,14 +1069,18 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
      * Allows overriding the ConnectivityManagerDelegate for tests.
      */
     void setConnectivityManagerDelegateForTests(ConnectivityManagerDelegate delegate) {
+        var oldValue = mConnectivityManagerDelegate;
         mConnectivityManagerDelegate = delegate;
+        ResettersForTesting.register(() -> mConnectivityManagerDelegate = oldValue);
     }
 
     /**
      * Allows overriding the WifiManagerDelegate for tests.
      */
     void setWifiManagerDelegateForTests(WifiManagerDelegate delegate) {
+        var oldValue = mWifiManagerDelegate;
         mWifiManagerDelegate = delegate;
+        ResettersForTesting.register(() -> mWifiManagerDelegate = oldValue);
     }
 
     @VisibleForTesting
@@ -1086,7 +1091,6 @@ public class NetworkChangeNotifierAutoDetect extends BroadcastReceiver {
     /**
      * Returns whether the object has registered to receive network connectivity intents.
      */
-    @VisibleForTesting
     boolean isReceiverRegisteredForTesting() {
         return mRegistered;
     }

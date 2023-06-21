@@ -34,6 +34,7 @@ import org.chromium.base.ContextUtils;
 import org.chromium.base.FileUtils;
 import org.chromium.base.Log;
 import org.chromium.base.PackageManagerUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.StrictModeContext;
 import org.chromium.base.ThreadUtils;
 import org.chromium.base.annotations.CalledByNative;
@@ -200,7 +201,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      * If set, overrides the WindowAndroid passed in {@link selectFile()}.
      */
     @SuppressLint("StaticFieldLeak")
-    private static WindowAndroid sOverrideWindowAndroid;
+    private static WindowAndroid sWindowAndroidForTesting;
 
     private long mNativeSelectFileDialog;
     private List<String> mFileTypes;
@@ -250,9 +251,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
     /**
      * Overrides the WindowAndroid passed in {@link selectFile()}.
      */
-    @VisibleForTesting
     public static void setWindowAndroidForTests(WindowAndroid window) {
-        sOverrideWindowAndroid = window;
+        sWindowAndroidForTesting = window;
+        ResettersForTesting.register(() -> sWindowAndroidForTesting = null);
     }
 
     /**
@@ -260,7 +261,9 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
      */
     @VisibleForTesting
     public void setFileTypesForTests(List<String> fileTypes) {
+        List<String> oldValue = mFileTypes;
         mFileTypes = fileTypes;
+        ResettersForTesting.register(() -> mFileTypes = oldValue);
     }
 
     /**
@@ -276,7 +279,7 @@ public class SelectFileDialog implements WindowAndroid.IntentCallback, PhotoPick
         mFileTypes = new ArrayList<String>(Arrays.asList(fileTypes));
         mCapture = capture;
         mAllowMultiple = multiple;
-        mWindowAndroid = (sOverrideWindowAndroid == null) ? window : sOverrideWindowAndroid;
+        mWindowAndroid = (sWindowAndroidForTesting == null) ? window : sWindowAndroidForTesting;
 
         mSupportsImageCapture =
                 mWindowAndroid.canResolveActivity(new Intent(MediaStore.ACTION_IMAGE_CAPTURE));

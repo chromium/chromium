@@ -11,11 +11,11 @@ import android.os.Handler;
 import android.provider.Settings;
 
 import androidx.annotation.Nullable;
-import androidx.annotation.VisibleForTesting;
 import androidx.vectordrawable.graphics.drawable.Animatable2Compat;
 import androidx.vectordrawable.graphics.drawable.AnimatedVectorDrawableCompat;
 
 import org.chromium.base.ContextUtils;
+import org.chromium.base.ResettersForTesting;
 import org.chromium.base.compat.ApiHelperForO;
 
 /**
@@ -79,8 +79,8 @@ public class AnimationLooper {
         }
     }
 
-    @VisibleForTesting
     static void setAreAnimatorsEnabledForTests(@Nullable Boolean areAnimatorsEnabled) {
         sAreAnimatorsEnabledForTests = areAnimatorsEnabled;
+        ResettersForTesting.register(() -> sAreAnimatorsEnabledForTests = null);
     }
 }
