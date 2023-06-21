@@ -12660,10 +12660,13 @@
             ],
             "experiments": [
                 {
-                    "name": "EnableWarmUp_20230613",
+                    "name": "EnableAll_20230608",
                     "params": {
-                        "sw_warm_up_intersection_observer": "false",
-                        "sw_warm_up_on_visible": "false"
+                        "sw_warm_up_dry_run": "true",
+                        "sw_warm_up_intersection_observer": "true",
+                        "sw_warm_up_on_pointerdown": "true",
+                        "sw_warm_up_on_pointerover": "true",
+                        "sw_warm_up_on_visible": "true"
                     },
                     "enable_features": [
                         "SpeculativeServiceWorkerWarmUp"
