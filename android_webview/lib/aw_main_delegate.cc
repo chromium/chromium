@@ -186,28 +186,6 @@ absl::optional<int> AwMainDelegate::BasicStartupComplete() {
     base::android::RegisterApkAssetWithFileDescriptorStore(
         content::kV8Snapshot64DataDescriptor,
         gin::V8Initializer::GetSnapshotFilePath(false, file_type));
-
-    {
-      // Disable origin trial features on WebView unless the flag was explicitly
-      // specified via command-line.
-      std::string disabled_origin_trials_switch_value = cl->GetSwitchValueASCII(
-          embedder_support::kOriginTrialDisabledFeatures);
-      base::flat_set<std::string> disabled_origin_trials(
-          base::SplitString(disabled_origin_trials_switch_value, "|",
-                            base::TRIM_WHITESPACE, base::SPLIT_WANT_NONEMPTY));
-
-      // Disable origin trials for the FedCM API on WebView because the FedCM
-      // API is not implemented on WebView. The inserted feature string should
-      // match a name in
-      // third_party/blink/renderer/platform/runtime_enabled_features.json5.
-      // Currently, there is no method to obtain these strings directly so it is
-      // hard coded.
-      disabled_origin_trials.insert("FedCM");
-
-      cl->AppendSwitchASCII(
-          embedder_support::kOriginTrialDisabledFeatures,
-          base::JoinString(std::move(disabled_origin_trials).extract(), "|"));
-    }
   }
 
   if (cl->HasSwitch(switches::kWebViewSandboxedRenderer)) {
