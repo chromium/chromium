@@ -90,6 +90,22 @@ void AddMaterialSidePanelColorMixer(ui::ColorProvider* provider,
       ui::kColorSysTertiaryContainer};
   mixer[kColorSidePanelCustomizeChromeCustomOptionForeground] = {
       ui::kColorSysOnTertiaryContainer};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpActiveTab] = {ui::kColorSysBase};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpArrowsAndRefreshButton] = {
+      ui::kColorSysOnSurfaceSecondary};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpBackground] = {ui::kColorSysBase};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpBorder] = {
+      ui::kColorSysSurfaceVariant};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpCaron] = {
+      ui::kColorSysOnSurfacePrimary};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpCaronContainer] = {
+      ui::kColorSysHeaderContainer};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpChromeLogo] = {
+      ui::kColorSysOnSurface};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpOmnibox] = {
+      ui::kColorSysOmniboxContainer};
+  mixer[kColorSidePanelCustomizeChromeMiniNtpTabStripBackground] = {
+      ui::kColorSysHeader};
   mixer[kColorSidePanelCustomizeChromeThemeBackground] = {
       ui::kColorSysBaseContainerElevated};
   mixer[kColorSidePanelCustomizeChromeThemeCheckmarkBackground] = {

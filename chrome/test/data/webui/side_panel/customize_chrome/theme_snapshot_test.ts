@@ -134,10 +134,10 @@ suite('ThemeSnapshotTest', () => {
         shownPages[0]!.getAttribute('theme-type'),
         CustomizeThemeType.CLASSIC_CHROME);
     assertEquals(
-        $$<HTMLImageElement>(
-            themeSnapshotElement, '#classicChromeBackground img')!.src,
-        'chrome://customize-chrome-side-panel.top-chrome/icons/' +
-            'gm3_mini_new_tab_page.svg');
+        $$<SVGUseElement>(
+            themeSnapshotElement,
+            '#classicChromeBackground svg use')!.href.baseVal,
+        'icons/gm3_mini_new_tab_page.svg#miniNewTabPage');
   });
 
   test('uploading a background updates theme snapshot', async () => {

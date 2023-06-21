@@ -387,6 +387,15 @@
   E_CPONLY(kColorSidePanelCustomizeChromeColorPickerOptionBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeCustomOptionForeground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpActiveTab) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpArrowsAndRefreshButton) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpBackground) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpBorder) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpCaron) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpCaronContainer) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpChromeLogo) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpOmnibox) \
+  E_CPONLY(kColorSidePanelCustomizeChromeMiniNtpTabStripBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkBackground) \
   E_CPONLY(kColorSidePanelCustomizeChromeThemeCheckmarkForeground) \
