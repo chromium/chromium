@@ -69,8 +69,6 @@ class ButtonOptionsMenu : public views::View, public TouchInjectorObserver {
   // Functions related to buttons.
   void OnTrashButtonPressed();
   void OnDoneButtonPressed();
-  void OnTapButtonPressed();
-  void OnMoveButtonPressed();
   void OnButtonLabelAssignmentPressed();
 
   // View position calculation. Make it virtual for unit test.

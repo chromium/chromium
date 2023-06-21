@@ -17,6 +17,7 @@
 #include "chrome/app/vector_icons/vector_icons.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/action_type_button_group.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/action_view.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
@@ -234,52 +235,13 @@ void ButtonOptionsMenu::AddActionSelection() {
   auto* container = AddChildView(std::make_unique<ash::RoundedContainer>(
       ash::RoundedContainer::Behavior::kTopRounded));
   // Create a 1x2 table with a column padding of 8.
-  container->SetLayoutManager(std::make_unique<views::TableLayout>())
-      ->AddColumn(views::LayoutAlignment::kStretch,
-                  views::LayoutAlignment::kStretch,
-                  /*horizontal_resize=*/1.0f,
-                  views::TableLayout::ColumnSize::kUsePreferred,
-                  /*fixed_width=*/0, /*min_width=*/0)
-      .AddPaddingColumn(/*horizontal_resize=*/views::TableLayout::kFixedSize,
-                        /*width=*/8)
-      .AddColumn(views::LayoutAlignment::kStretch,
-                 views::LayoutAlignment::kStretch,
-                 /*horizontal_resize=*/1.0f,
-                 views::TableLayout::ColumnSize::kUsePreferred,
-                 /*fixed_width=*/0, /*min_width=*/0)
-      .AddRows(1, views::TableLayout::kFixedSize, 0);
+  container->SetLayoutManager(std::make_unique<views::FlexLayout>())
+      ->SetOrientation(views::LayoutOrientation::kHorizontal)
+      .SetMainAxisAlignment(views::LayoutAlignment::kCenter);
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 2, 0));
 
-  auto* tap_button = container->AddChildView(std::make_unique<ash::FeatureTile>(
-      base::BindRepeating(&ButtonOptionsMenu::OnTapButtonPressed,
-                          base::Unretained(this)),
-      /*is_togglable=*/true,
-      /*type=*/ash::FeatureTile::TileType::kCompact));
-  tap_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  tap_button->SetAccessibleName(
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  tap_button->SetLabel(u"Single button");
-  tap_button->SetVectorIcon(vector_icons::kCloseIcon);
-  tap_button->SetVisible(true);
-  tap_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
-
-  auto* move_button =
-      container->AddChildView(std::make_unique<ash::FeatureTile>(
-          base::BindRepeating(&ButtonOptionsMenu::OnMoveButtonPressed,
-                              base::Unretained(this)),
-          /*is_togglable=*/true,
-          /*type=*/ash::FeatureTile::TileType::kCompact));
-  move_button->SetID(ash::VIEW_ID_ACCESSIBILITY_FEATURE_TILE);
-  move_button->SetAccessibleName(
-      // TODO(b/279117180): Replace placeholder names with a11y strings.
-      l10n_util::GetStringUTF16(IDS_APP_LIST_FOLDER_NAME_PLACEHOLDER));
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  move_button->SetLabel(u"Dpad");
-  move_button->SetVectorIcon(kGameControlsDpadKeyboardIcon);
-  move_button->SetVisible(true);
-  move_button->SetBackground(views::CreateSolidBackground(SK_ColorTRANSPARENT));
+  container->AddChildView(
+      ActionTypeButtonGroup::CreateButtonGroup(controller_, action_));
 }
 
 void ButtonOptionsMenu::AddActionEdit() {
@@ -372,14 +334,6 @@ void ButtonOptionsMenu::OnTrashButtonPressed() {
 void ButtonOptionsMenu::OnDoneButtonPressed() {
   // TODO(b/270969760): Implement save menu functionality.
   controller_->RemoveButtonOptionsMenu();
-}
-
-void ButtonOptionsMenu::OnTapButtonPressed() {
-  // TODO(b/270969760): Implement tap button functionality.
-}
-
-void ButtonOptionsMenu::OnMoveButtonPressed() {
-  // TODO(b/270969760): Implement move button functionality.
 }
 
 void ButtonOptionsMenu::OnButtonLabelAssignmentPressed() {
