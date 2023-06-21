@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Cast Linux",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -32,7 +32,7 @@
         {
           "bucket": "ci",
           "builder": "Cast Linux",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -58,6 +58,6 @@
   "builder_group": "chromium.linux",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Android arm64 Builder All Targets (dbg)",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-android-archive",
@@ -39,14 +39,10 @@
         {
           "bucket": "ci",
           "builder": "Android arm64 Builder All Targets (dbg)",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "mirroring_builder_group_and_names": [
-        {
-          "builder": "android-arm64-all-targets-dbg",
-          "group": "tryserver.chromium.android"
-        },
         {
           "builder": "android_compile_dbg",
           "group": "tryserver.chromium.android"
@@ -69,6 +65,6 @@
   "builder_group": "chromium.android",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "android"
+    "chrome_browser_release"
   ]
 }

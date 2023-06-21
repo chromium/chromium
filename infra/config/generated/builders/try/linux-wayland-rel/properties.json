@@ -11,7 +11,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Builder (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -37,7 +37,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Linux Tests (Wayland)",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-linux-archive",
@@ -60,7 +60,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Linux Builder (Wayland)",
-                "project": "chromium"
+                "project": "chromium-m116"
               }
             }
           }
@@ -70,14 +70,14 @@
         {
           "bucket": "ci",
           "builder": "Linux Builder (Wayland)",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "builder_ids_in_scope_for_testing": [
         {
           "bucket": "ci",
           "builder": "Linux Tests (Wayland)",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "rts_config": {

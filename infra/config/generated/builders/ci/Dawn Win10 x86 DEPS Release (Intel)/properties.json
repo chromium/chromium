@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x86 DEPS Builder",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -32,7 +32,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "Dawn Win10 x86 DEPS Release (Intel)",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-dawn-archive",
@@ -53,7 +53,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "Dawn Win10 x86 DEPS Builder",
-                "project": "chromium"
+                "project": "chromium-m116"
               },
               "run_tests_serially": true
             }
@@ -64,7 +64,7 @@
         {
           "bucket": "ci",
           "builder": "Dawn Win10 x86 DEPS Release (Intel)",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "mirroring_builder_group_and_names": [
@@ -85,6 +85,6 @@
   "builder_group": "chromium.dawn",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "dawn"
+    "chrome_browser_release"
   ]
 }

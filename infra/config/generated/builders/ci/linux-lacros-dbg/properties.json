@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "linux-lacros-dbg",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "build_gs_bucket": "chromium-chromiumos-archive",
@@ -36,13 +36,7 @@
         {
           "bucket": "ci",
           "builder": "linux-lacros-dbg",
-          "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "linux-lacros-dbg",
-          "group": "tryserver.chromium.chromiumos"
+          "project": "chromium-m116"
         }
       ]
     }
@@ -62,6 +56,6 @@
   "builder_group": "chromium.chromiumos",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

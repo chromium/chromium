@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac-arm64-rel",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -31,7 +31,7 @@
             "builder_id": {
               "bucket": "ci",
               "builder": "mac11-arm64-rel-tests",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "builder_group": "chromium.mac",
@@ -52,7 +52,7 @@
               "parent": {
                 "bucket": "ci",
                 "builder": "mac-arm64-rel",
-                "project": "chromium"
+                "project": "chromium-m116"
               }
             }
           }
@@ -62,13 +62,7 @@
         {
           "bucket": "ci",
           "builder": "mac11-arm64-rel-tests",
-          "project": "chromium"
-        }
-      ],
-      "mirroring_builder_group_and_names": [
-        {
-          "builder": "mac11-arm64-rel",
-          "group": "tryserver.chromium.mac"
+          "project": "chromium-m116"
         }
       ]
     }
@@ -83,6 +77,6 @@
   "builder_group": "chromium.mac",
   "recipe": "chromium",
   "sheriff_rotations": [
-    "chromium"
+    "chrome_browser_release"
   ]
 }

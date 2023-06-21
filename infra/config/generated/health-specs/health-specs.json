@@ -24,15 +24,6 @@
   },
   "thresholds": {
     "ci": {
-      "Linux ChromiumOS Full": {
-        "_default": "_default"
-      },
-      "chromeos-amd64-generic-asan-rel": {
-        "_default": "_default"
-      },
-      "chromeos-amd64-generic-cfi-thin-lto-rel": {
-        "_default": "_default"
-      },
       "chromeos-amd64-generic-dbg": {
         "_default": "_default"
       },
@@ -40,9 +31,6 @@
         "_default": "_default"
       },
       "chromeos-amd64-generic-rel": {
-        "_default": "_default"
-      },
-      "chromeos-arm-generic-dbg": {
         "_default": "_default"
       },
       "chromeos-arm-generic-rel": {
@@ -57,31 +45,13 @@
       "chromeos-octopus-rel": {
         "_default": "_default"
       },
-      "lacros-amd64-generic-binary-size-rel": {
-        "_default": "_default"
-      },
       "lacros-amd64-generic-rel": {
-        "_default": "_default"
-      },
-      "lacros-amd64-generic-rel-skylab": {
         "_default": "_default"
       },
       "lacros-arm-generic-rel": {
         "_default": "_default"
       },
-      "lacros-arm-generic-rel-skylab": {
-        "_default": "_default"
-      },
       "lacros-arm64-generic-rel": {
-        "_default": "_default"
-      },
-      "lacros-arm64-generic-rel-skylab": {
-        "_default": "_default"
-      },
-      "linux-ash-chromium-generator-rel": {
-        "_default": "_default"
-      },
-      "linux-cfm-rel": {
         "_default": "_default"
       },
       "linux-chromeos-dbg": {

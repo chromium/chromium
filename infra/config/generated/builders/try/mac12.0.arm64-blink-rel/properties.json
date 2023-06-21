@@ -7,7 +7,7 @@
             "builder_id": {
               "bucket": "try",
               "builder": "mac12.0.arm64-blink-rel",
-              "project": "chromium"
+              "project": "chromium-m116"
             },
             "builder_spec": {
               "builder_group": "tryserver.blink",
@@ -31,7 +31,7 @@
         {
           "bucket": "try",
           "builder": "mac12.0.arm64-blink-rel",
-          "project": "chromium"
+          "project": "chromium-m116"
         }
       ],
       "retry_failed_shards": true
