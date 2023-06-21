@@ -24,6 +24,7 @@
 #include "content/browser/service_worker/service_worker_info.h"
 #include "content/browser/service_worker/service_worker_registration.h"
 #include "content/browser/service_worker/service_worker_version.h"
+#include "content/common/service_worker/service_worker_router_evaluator.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
@@ -164,6 +165,14 @@ void FindRegistrationForClientUrlTraceEventEnd(
             trace_event_id),
         "Status", blink::ServiceWorkerStatusToString(status));
   }
+}
+
+std::string RouterRulesToString(blink::ServiceWorkerRouterRules rules) {
+  ServiceWorkerRouterEvaluator e(rules);
+  if (!e.IsValid()) {
+    return "data corruption detected";
+  }
+  return e.ToString();
 }
 
 }  // namespace
@@ -1452,6 +1461,10 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
           registration_data->navigation_preload_state->enabled;
       info.active_version.navigation_preload_state.header =
           registration_data->navigation_preload_state->header;
+      if (registration_data->router_rules) {
+        info.active_version.router_rules =
+            RouterRulesToString(*registration_data->router_rules);
+      }
     } else {
       info.waiting_version.status = ServiceWorkerVersion::INSTALLED;
       info.waiting_version.script_url = registration_data->script;
@@ -1465,6 +1478,10 @@ void ServiceWorkerRegistry::DidGetAllRegistrations(
           registration_data->navigation_preload_state->enabled;
       info.waiting_version.navigation_preload_state.header =
           registration_data->navigation_preload_state->header;
+      if (registration_data->router_rules) {
+        info.waiting_version.router_rules =
+            RouterRulesToString(*registration_data->router_rules);
+      }
     }
     infos.push_back(info);
   }
