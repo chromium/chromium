@@ -133,6 +133,11 @@ extern const char kDocumentPictureInPictureApiDescription[];
 extern const char kEnableBenchmarkingName[];
 extern const char kEnableBenchmarkingDescription[];
 
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+extern const char kFontationsFontBackendName[];
+extern const char kFontationsFontBackendDescription[];
+#endif
+
 extern const char kForceStartupSigninPromoName[];
 extern const char kForceStartupSigninPromoDescription[];
 

@@ -162,6 +162,14 @@ const char kForceStartupSigninPromoDescription[] =
     "If enabled, the full screen signin promo will be forced to show up at "
     "Chrome start-up.";
 
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+extern const char kFontationsFontBackendName[] =
+    "Enable Fontations font backend";
+extern const char kFontationsFontBackendDescription[] =
+    "If enabled, the Fontations font backend will be used for web fonts where "
+    "otherwise FreeType would have been used.";
+#endif
+
 const char kGainmapHdrImagesName[] = "Gainmap HDR image rendering";
 const char kGainmapHdrImagesDescription[] =
     "If enabled, renders images that include an gainmap in HDR";

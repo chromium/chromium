@@ -6,6 +6,7 @@ import("//build/buildflag_header.gni")
 import("//build/config/compiler/compiler.gni")
 import("//build/config/features.gni")
 import("//build/config/rust.gni")
+import("//skia/features.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
 import("//third_party/blink/renderer/build/scripts/scripts.gni")
@@ -104,6 +105,7 @@ buildflag_header("buildflags") {
   flags = [
     "RTC_USE_H264=$rtc_use_h264",
     "BUILD_RUST_CRASH=$build_rust_crash",
+    "USE_FONTATIONS_BACKEND=$use_typeface_fontations",
   ]
 }
 

@@ -8,7 +8,7 @@
 #include "third_party/skia/include/core/SkFontMgr.h"
 
 #include "build/build_config.h"
-#include "third_party/blink/renderer/platform/fonts/fontations_buildflags.h"
+#include "third_party/blink/public/common/buildflags.h"
 #include "third_party/blink/renderer/platform/wtf/allocator/allocator.h"
 
 namespace blink {

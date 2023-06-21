@@ -2654,6 +2654,11 @@
     "expiry_milestone": 123
   },
   {
+      "name": "enable-fontations-backend",
+      "owners": [ "drott", "layout-dev@chromium.org" ],
+      "expiry_milestone": 127
+  },
+  {
     "name": "enable-force-dark",
     "owners": [ "beverloo", "pdr" ],
     "expiry_milestone": 123

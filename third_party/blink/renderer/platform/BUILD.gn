@@ -10,7 +10,6 @@ import("//build/config/features.gni")
 import("//build/config/ui.gni")
 import("//build/nocompile.gni")
 import("//media/media_options.gni")
-import("//skia/features.gni")
 import("//testing/libfuzzer/fuzzer_test.gni")
 import("//testing/test.gni")
 import("//third_party/blink/public/public_features.gni")
@@ -147,9 +146,9 @@ group("make_platform_generated") {
     ":character_data",
     ":color_data",
     ":font_family_names",
-    ":fontations_buildflags",
     ":runtime_enabled_features",
     ":runtime_feature_state_override_context",
+    "//third_party/blink/public/common:buildflags",
     "//third_party/blink/renderer/platform/network:make_generated",
   ]
 }
@@ -238,12 +237,6 @@ config("blink_platform_implementation") {
   visibility = [ "./*" ]
 
   defines = [ "BLINK_PLATFORM_IMPLEMENTATION=1" ]
-}
-
-buildflag_header("fontations_buildflags") {
-  header = "fontations_buildflags.h"
-  header_dir = "third_party/blink/renderer/platform/fonts/"
-  flags = [ "USE_FONTATIONS_BACKEND=$use_typeface_fontations" ]
 }
 
 config("blink_platform_pch") {

@@ -3993,6 +3993,11 @@ const FeatureEntry kFeatureEntries[] = {
     {"enable-gpu-rasterization", flag_descriptions::kGpuRasterizationName,
      flag_descriptions::kGpuRasterizationDescription, kOsAll,
      MULTI_VALUE_TYPE(kEnableGpuRasterizationChoices)},
+#if BUILDFLAG(USE_FONTATIONS_BACKEND)
+    {"enable-fontations-backend", flag_descriptions::kFontationsFontBackendName,
+     flag_descriptions::kFontationsFontBackendDescription, kOsAll,
+     FEATURE_VALUE_TYPE(blink::features::kFontationsFontBackend)},
+#endif
     {"enable-experimental-web-platform-features",
      flag_descriptions::kExperimentalWebPlatformFeaturesName,
      flag_descriptions::kExperimentalWebPlatformFeaturesDescription, kOsAll,
