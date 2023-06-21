@@ -11,6 +11,9 @@
     readonly attribute unsigned long timestamp;  // RTP timestamp.
     attribute ArrayBuffer data;
     RTCEncodedAudioFrameMetadata getMetadata();
-  [RuntimeEnabled=RTCEncodedAudioFrameClone, RaisesException] RTCEncodedAudioFrame clone();
+  [RuntimeEnabled=RTCEncodedAudioFrameClone, RaisesException]
+  RTCEncodedAudioFrame clone();
     stringifier;
+  [RuntimeEnabled=RTCEncodedAudioFrameAbsCaptureTime, RaisesException] void
+  setTimestamp(unsigned long timestamp);
 };

@@ -7333,6 +7333,7 @@ interface RTCEncodedAudioFrame
     method clone
     method constructor
     method getMetadata
+    method setTimestamp
     method toString
     setter data
 interface RTCEncodedVideoFrame

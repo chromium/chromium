@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
+#include "third_party/blink/renderer/platform/bindings/exception_code.h"
 #include "third_party/webrtc/api/frame_transformer_factory.h"
 
 namespace blink {
@@ -52,6 +53,18 @@ void RTCEncodedAudioFrameDelegate::SetData(const DOMArrayBuffer* data) {
   if (webrtc_frame_ && data) {
     webrtc_frame_->SetData(rtc::ArrayView<const uint8_t>(
         static_cast<const uint8_t*>(data->Data()), data->ByteLength()));
+  }
+}
+
+void RTCEncodedAudioFrameDelegate::SetTimestamp(
+    uint32_t timestamp,
+    ExceptionState& exception_state) {
+  base::AutoLock lock(lock_);
+  if (webrtc_frame_) {
+    webrtc_frame_->SetRTPTimestamp(timestamp);
+  } else {
+    exception_state.ThrowDOMException(DOMExceptionCode::kInvalidStateError,
+                                      "Underlying webrtc frame doesn't exist.");
   }
 }
 
