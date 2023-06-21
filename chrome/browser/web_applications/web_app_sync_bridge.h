@@ -9,6 +9,7 @@
 
 #include "base/allocator/partition_allocator/pointers/raw_ptr.h"
 #include "base/functional/callback_forward.h"
+#include "base/functional/callback_helpers.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/one_shot_event.h"
@@ -89,8 +90,18 @@ class WebAppSyncBridge : public syncer::ModelTypeSyncBridge {
   // This is the writable API for the registry. Any updates will be written to
   // LevelDb and sync service. There can be only 1 update at a time.
   std::unique_ptr<WebAppRegistryUpdate> BeginUpdate();
+
+  // Writes to the RAM database are synchronous. It is normally not necessary to
+  // wait for the disk write to complete, because:
+  // - All reads and writes happen from the RAM database.
+  // - The disk database is only read during startup before the system starts,
+  //   and is only written to during the rest of the browser's lifetime.
+  // The only reason waiting may be necessary here is to handle the edge case
+  // that a crash happens and the operation wants to ensure that the disk state
+  // is updated before continuing. This may be necessary for, say, a two-phase
+  // commit involving nother browser system with its own storage.
   void CommitUpdate(std::unique_ptr<WebAppRegistryUpdate> update,
-                    CommitCallback callback);
+                    CommitCallback callback = base::DoNothing());
 
   void Init(base::OnceClosure callback);
 

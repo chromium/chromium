@@ -190,7 +190,7 @@ void DedupeInstallUrlsCommand::StartWithLock(
   dedupe_choices_ = std::move(pending_dedupe_operations.dedupe_choices);
 
   lock_->sync_bridge().CommitUpdate(
-      std::move(pending_dedupe_operations.registry_update), base::DoNothing());
+      std::move(pending_dedupe_operations.registry_update));
 
   pending_jobs_ = std::move(pending_dedupe_operations.remove_install_url_jobs);
   ProcessPendingJobsOrComplete();
