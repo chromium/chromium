@@ -18,14 +18,31 @@ source_set("color_headers") {
     "color_provider.h",
     "color_provider_manager.h",
     "color_provider_utils.h",
-    "system_theme.h",
   ]
 
   public_deps = [
+    ":color_provider_key",
     ":mojom",
     "//base",
     "//skia",
     "//ui/gfx:color_utils",
+  ]
+}
+
+# Keep the deps on this target to a minimum so that chromeos/crosapi can depend on it.
+component("color_provider_key") {
+  sources = [
+    "color_provider_key.cc",
+    "color_provider_key.h",
+    "system_theme.h",
+  ]
+
+  defines = [ "IS_COLOR_PROVIDER_KEY_IMPL" ]
+
+  deps = [
+    "//base",
+    "//skia",
+    "//third_party/abseil-cpp:absl",
   ]
 }
 
@@ -148,6 +165,7 @@ component("mixers") {
   deps = [
     ":color",
     ":color_headers",
+    ":color_provider_key",
     "//skia",
     "//third_party/material_color_utilities",
     "//ui/base:features",

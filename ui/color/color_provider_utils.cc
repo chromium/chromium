@@ -76,11 +76,11 @@ ColorProviderUtilsCallbacks* g_color_provider_utils_callbacks = nullptr;
 
 ColorProviderUtilsCallbacks::~ColorProviderUtilsCallbacks() = default;
 
-base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
+base::StringPiece ColorModeName(ColorProviderKey::ColorMode color_mode) {
   switch (color_mode) {
-    case ColorProviderManager::ColorMode::kLight:
+    case ColorProviderKey::ColorMode::kLight:
       return "kLight";
-    case ColorProviderManager::ColorMode::kDark:
+    case ColorProviderKey::ColorMode::kDark:
       return "kDark";
     default:
       return "<invalid>";
@@ -88,11 +88,11 @@ base::StringPiece ColorModeName(ColorProviderManager::ColorMode color_mode) {
 }
 
 base::StringPiece ContrastModeName(
-    ColorProviderManager::ContrastMode contrast_mode) {
+    ColorProviderKey::ContrastMode contrast_mode) {
   switch (contrast_mode) {
-    case ColorProviderManager::ContrastMode::kNormal:
+    case ColorProviderKey::ContrastMode::kNormal:
       return "kNormal";
-    case ColorProviderManager::ContrastMode::kHigh:
+    case ColorProviderKey::ContrastMode::kHigh:
       return "kHigh";
     default:
       return "<invalid>";
