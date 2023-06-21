@@ -1000,10 +1000,6 @@ void GpuDataManagerImplPrivate::UpdateGpuInfo(
   uint32_t vulkan_version = gpu_info_.vulkan_version;
 #endif
   gpu_info_ = gpu_info;
-  base::UmaHistogramCustomMicrosecondsTimes(
-      "GPU.GPUInitializationTime.V3", gpu_info_.initialization_time,
-      base::Milliseconds(5), base::Seconds(5), 50);
-  UMA_HISTOGRAM_EXACT_LINEAR("GPU.GpuCount", gpu_info_.GpuCount(), 10);
   RecordDiscreteGpuHistograms(gpu_info_);
 #if BUILDFLAG(IS_WIN)
   if (!dx_diagnostics.IsEmpty()) {
