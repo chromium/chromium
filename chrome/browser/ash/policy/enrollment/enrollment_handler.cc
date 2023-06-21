@@ -74,8 +74,8 @@ em::DeviceRegisterRequest::Flavor EnrollmentModeToRegistrationFlavor(
     EnrollmentConfig::Mode mode) {
   switch (mode) {
     case EnrollmentConfig::MODE_NONE:
-    case EnrollmentConfig::OBSOLETE_MODE_ENROLLED_ROLLBACK:
-    case EnrollmentConfig::MODE_OFFLINE_DEMO_DEPRECATED:
+    case EnrollmentConfig::DEPRECATED_MODE_ENROLLED_ROLLBACK:
+    case EnrollmentConfig::DEPRECATED_MODE_OFFLINE_DEMO:
       break;
     case EnrollmentConfig::MODE_MANUAL:
       return em::DeviceRegisterRequest::FLAVOR_ENROLLMENT_MANUAL;
