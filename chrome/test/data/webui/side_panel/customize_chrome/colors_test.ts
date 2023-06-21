@@ -25,6 +25,9 @@ suite('ColorsTest', () => {
   let chromeColorsResolver: PromiseResolver<{colors: ChromeColor[]}>;
 
   setup(() => {
+    loadTimeData.overrideValues({
+      chromeRefresh2023Attribute: '',
+    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     handler = installMock(
         CustomizeChromePageHandlerRemote,
@@ -345,27 +348,48 @@ suite('ColorsTest', () => {
     assertEquals(colorsElement.$.customColorContainer, indexedColors[0]);
   });
 
-  [false, true].forEach((hasBackgroundImage) => {
-    test(
-        `background color visibility if theme has image ${hasBackgroundImage}`,
-        async () => {
-          initializeElement();
-          const theme = createTheme();
-          if (hasBackgroundImage) {
-            theme.backgroundImage = createBackgroundImage('https://foo.com');
-          } else {
-            theme.backgroundImage = undefined;
-          }
-          callbackRouter.setTheme(theme);
-          await callbackRouter.$.flushForTesting();
+  ([
+    [false, false],
+    [false, true],
+    [true, false],
+    [true, true],
+  ] as Array<[boolean, boolean]>)
+      .forEach(([hasBackgroundImage, isChromeRefresh2023]) => {
+        test(
+            `background color visible if theme has image ${
+                hasBackgroundImage} GM3 ${isChromeRefresh2023}`,
+            async () => {
+              if (isChromeRefresh2023) {
+                loadTimeData.overrideValues({
+                  chromeRefresh2023Attribute: 'chrome-refresh-2023',
+                });
+              }
+              initializeElement();
+              const theme = createTheme();
+              if (hasBackgroundImage) {
+                theme.backgroundImage =
+                    createBackgroundImage('https://foo.com');
+              } else {
+                theme.backgroundImage = undefined;
+              }
+              callbackRouter.setTheme(theme);
+              await callbackRouter.$.flushForTesting();
 
-          const colors = colorsElement.shadowRoot!.querySelectorAll(
-              'customize-chrome-color');
-          for (const color of colors) {
-            assertEquals(hasBackgroundImage, color.backgroundColorHidden);
-          }
-        });
-  });
+              const colors = colorsElement.shadowRoot!.querySelectorAll(
+                  'customize-chrome-color');
+              for (const color of colors) {
+                if (color.id === 'customColor') {
+                  assertEquals(
+                      isChromeRefresh2023 || hasBackgroundImage,
+                      color.backgroundColorHidden);
+                } else {
+                  assertEquals(
+                      hasBackgroundImage && !isChromeRefresh2023,
+                      color.backgroundColorHidden);
+                }
+              }
+            });
+      });
 
   ([
     ['#defaultColor', undefined, undefined],

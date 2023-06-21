@@ -73,6 +73,14 @@ export class ColorsElement extends PolymerElement {
         },
       },
       showManagedDialog_: Boolean,
+      showBackgroundColor_: {
+        type: Boolean,
+        computed: 'computeShowBackgroundColor_(theme_)',
+      },
+      showCustomColorBackgroundColor_: {
+        type: Boolean,
+        computed: 'computeShowCustomColorBackgroundColor_(theme_)',
+      },
     };
   }
 
@@ -90,6 +98,14 @@ export class ColorsElement extends PolymerElement {
   private customColor_: Color;
   private setThemeListenerId_: number|null = null;
   private showManagedDialog_: boolean;
+  private isChromeRefresh2023_: boolean;
+
+  constructor() {
+    super();
+    this.isChromeRefresh2023_ =
+        loadTimeData.getString('chromeRefresh2023Attribute') ===
+        'chrome-refresh-2023';
+  }
 
   override connectedCallback() {
     super.connectedCallback();
@@ -108,7 +124,7 @@ export class ColorsElement extends PolymerElement {
   }
 
   private computeDefaultColor_(): Color {
-    if (loadTimeData.getString('chromeRefresh2023Attribute')) {
+    if (this.isChromeRefresh2023_) {
       return this.theme_.isDarkMode ? DARK_BASELINE_BLUE_COLOR :
                                       LIGHT_BASELINE_BLUE_COLOR;
     }
@@ -186,6 +202,14 @@ export class ColorsElement extends PolymerElement {
   private themeHasMainColor_(): boolean {
     return !!this.theme_ && !!this.theme_.backgroundImage &&
         !!this.theme_.backgroundImage.mainColor;
+  }
+
+  private computeShowBackgroundColor_(): boolean {
+    return this.isChromeRefresh2023_ || !this.themeHasBackgroundImage_();
+  }
+
+  private computeShowCustomColorBackgroundColor_(): boolean {
+    return !this.isChromeRefresh2023_ && !this.themeHasBackgroundImage_();
   }
 
   private onDefaultColorClick_() {

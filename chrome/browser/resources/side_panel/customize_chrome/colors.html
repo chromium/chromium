@@ -75,7 +75,7 @@
         background-color="[[defaultColor_.background]]"
         base-color="[[defaultColor_.base]]"
         foreground-color="[[defaultColor_.foreground]]"
-        background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
+        background-color-hidden="[[!showBackgroundColor_]]"
         title="$i18n{defaultColorName}"
         aria-label="$i18n{defaultColorName}"
         role="radio"
@@ -107,7 +107,7 @@
         background-color="[[item.background]]"
         base-color="[[item.base]]"
         foreground-color="[[item.foreground]]"
-        background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
+        background-color-hidden="[[!showBackgroundColor_]]"
         title="[[item.name]]"
         aria-label$="[[item.name]]"
         role="radio"
@@ -130,7 +130,7 @@
         id="customColor"
         background-color="[[customColor_.background]]"
         foreground-color="[[customColor_.foreground]]"
-        background-color-hidden="[[themeHasBackgroundImage_(theme_)]]"
+        background-color-hidden="[[!showCustomColorBackgroundColor_]]"
         checked="[[isCustomColorSelected_]]"
         basic-color>
     </customize-chrome-color>
