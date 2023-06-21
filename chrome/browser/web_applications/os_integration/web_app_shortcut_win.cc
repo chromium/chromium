@@ -574,10 +574,6 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
   scoped_refptr<OsIntegrationTestOverride> test_override =
       OsIntegrationTestOverride::Get();
 
-  // Shortcut paths under which to create shortcuts.
-  std::vector<base::FilePath> shortcut_paths =
-      GetShortcutPaths(creation_locations);
-
   bool pin_to_taskbar = false;
   // PinShortcutToTaskbar in unit-tests are not preferred as unpinning causes
   // crashes, so use the shortcut override for testing to not pin to taskbar.
@@ -587,6 +583,18 @@ bool CreatePlatformShortcuts(const base::FilePath& web_app_path,
     pin_to_taskbar =
         creation_locations.in_quick_launch_bar && CanPinShortcutToTaskbar();
   }
+
+  // We don't want to actually create shortcuts in the quick launch directory.
+  // Those are created by Windows as a side effect of pinning a shortcut to
+  // the taskbar, e.g., a desktop shortcut. So, create a copy of
+  // shortcut_locations with in_quick_launch_bar turned off and pass that
+  // to GetShortcutPaths.
+  ShortcutLocations shortcut_locations_wo_quick_launch(creation_locations);
+  shortcut_locations_wo_quick_launch.in_quick_launch_bar = false;
+
+  // Shortcut paths under which to create shortcuts.
+  std::vector<base::FilePath> shortcut_paths =
+      GetShortcutPaths(shortcut_locations_wo_quick_launch);
 
   // Create/update the shortcut in the web app path for the "Pin To Taskbar"
   // option in Win7 and Win10 versions that support pinning. We use the web app
