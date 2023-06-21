@@ -14864,35 +14864,6 @@
             ]
         }
     ],
-    "WebRTC-Aec3DelayEstimatorDetectPreEcho": [
-        {
-            "platforms": [
-                "fuchsia",
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled"
-                }
-            ]
-        }
-    ],
-    "WebRTC-Aec3PreEchoConfiguration": [
-        {
-            "platforms": [
-                "linux",
-                "mac",
-                "windows"
-            ],
-            "experiments": [
-                {
-                    "name": "threshold:0.5,mode:2"
-                }
-            ]
-        }
-    ],
     "WebRTC-Aec3TransparentModeHmm": [
         {
             "platforms": [
