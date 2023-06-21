@@ -65,10 +65,10 @@ struct EnrollmentConfig {
     // Forced enrollment triggered as a fallback to attestation re-enrollment,
     // user can't skip.
     MODE_ATTESTATION_MANUAL_FALLBACK = 11,
-    // Deprecated: Demo mode does not support offline enrollment.
+    // Deprecated. Demo mode does not support offline enrollment.
     // Enrollment for offline demo mode with locally stored policy data.
     DEPRECATED_MODE_OFFLINE_DEMO = 12,
-    // Obsolete. Flow that happens when already enrolled device undergoes
+    // Deprecated. Flow that happens when already enrolled device undergoes
     // version rollback. Enrollment information is preserved during rollback,
     // but some steps have to be repeated as stateful partition was wiped.
     DEPRECATED_MODE_ENROLLED_ROLLBACK = 13,
