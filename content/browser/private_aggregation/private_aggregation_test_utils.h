@@ -141,6 +141,12 @@ class MockPrivateAggregationContentBrowserClientBase : public SuperClass {
                const url::Origin& top_frame_origin,
                const url::Origin& accessing_origin),
               (override));
+  MOCK_METHOD(bool,
+              IsPrivacySandboxReportingDestinationAttested,
+              (content::BrowserContext * browser_context,
+               const url::Origin& destination_origin,
+               content::PrivacySandboxInvokingAPI invoking_api),
+              (override));
 };
 
 using MockPrivateAggregationContentBrowserClient =

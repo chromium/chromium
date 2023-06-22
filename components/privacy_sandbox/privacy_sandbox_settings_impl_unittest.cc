@@ -72,6 +72,8 @@ constexpr auto kAdMeasurementSourceOrigin =
 constexpr auto kAdMeasurementDestinationOrigin =
     InputKey::kAdMeasurementDestinationOrigin;
 constexpr auto kAccessingOrigin = InputKey::kAccessingOrigin;
+constexpr auto kEventReportingDestinationOrigin =
+    InputKey::kEventReportingDestinationOrigin;
 
 // using enum privacy_sandbox_test_util::TestOutput;
 using privacy_sandbox_test_util::OutputKey;
@@ -106,6 +108,10 @@ constexpr auto kIsAttributionReportingEverAllowed =
     OutputKey::kIsAttributionReportingEverAllowed;
 constexpr auto kIsAttributionReportingEverAllowedMetric =
     OutputKey::kIsAttributionReportingEverAllowedMetric;
+constexpr auto kIsEventReportingDestinationAttestedForFledge =
+    OutputKey::kIsEventReportingDestinationAttestedForFledge;
+constexpr auto kIsEventReportingDestinationAttestedForSharedStorage =
+    OutputKey::kIsEventReportingDestinationAttestedForSharedStorage;
 
 // using enum ContentSetting;
 constexpr auto CONTENT_SETTING_ALLOW = ContentSetting::CONTENT_SETTING_ALLOW;
@@ -1769,6 +1775,7 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
@@ -1778,6 +1785,8 @@ TEST_F(PrivacySandboxAttestationsTest, NoEnrollments) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
                kMaySendAttributionReport, kIsFledgeAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
@@ -1807,6 +1816,7 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
@@ -1816,6 +1826,8 @@ TEST_F(PrivacySandboxAttestationsTest, EnrollmentWithoutAttestations) {
           {MultipleOutputKeys{
                kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
                kMaySendAttributionReport, kIsFledgeAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
                kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
            false},
           {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
@@ -1844,16 +1856,19 @@ TEST_F(PrivacySandboxAttestationsTest, TopicsAttestation) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
       TestOutput{{kIsTopicsAllowedForContext, true},
-                 {MultipleOutputKeys{kIsAttributionReportingAllowed,
-                                     kMaySendAttributionReport,
-                                     kIsFledgeAllowed, kIsSharedStorageAllowed,
-                                     kIsPrivateAggregationAllowed},
+                 {MultipleOutputKeys{
+                      kIsAttributionReportingAllowed, kMaySendAttributionReport,
+                      kIsFledgeAllowed, kIsSharedStorageAllowed,
+                      kIsEventReportingDestinationAttestedForFledge,
+                      kIsEventReportingDestinationAttestedForSharedStorage,
+                      kIsPrivateAggregationAllowed},
                   false},
                  {kIsTopicsAllowedForContextMetric,
                   static_cast<int>(Status::kAllowed)},
@@ -1883,25 +1898,29 @@ TEST_F(PrivacySandboxAttestationsTest, PrivateAggregationAttestation) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
-      TestOutput{{kIsPrivateAggregationAllowed, true},
-                 {MultipleOutputKeys{kIsTopicsAllowedForContext,
-                                     kIsAttributionReportingAllowed,
-                                     kMaySendAttributionReport,
-                                     kIsFledgeAllowed, kIsSharedStorageAllowed},
-                  false},
-                 {kIsPrivateAggregationAllowedMetric,
-                  static_cast<int>(Status::kAllowed)},
-                 {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                                     kIsAttributionReportingAllowedMetric,
-                                     kMaySendAttributionReportMetric,
-                                     kIsFledgeAllowedMetric,
-                                     kIsSharedStorageAllowedMetric},
-                  static_cast<int>(Status::kAttestationFailed)}});
+      TestOutput{
+          {kIsPrivateAggregationAllowed, true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
+               kMaySendAttributionReport, kIsFledgeAllowed,
+               kIsEventReportingDestinationAttestedForFledge,
+               kIsEventReportingDestinationAttestedForSharedStorage,
+               kIsSharedStorageAllowed},
+           false},
+          {kIsPrivateAggregationAllowedMetric,
+           static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
+                              kIsAttributionReportingAllowedMetric,
+                              kMaySendAttributionReportMetric,
+                              kIsFledgeAllowedMetric,
+                              kIsSharedStorageAllowedMetric},
+           static_cast<int>(Status::kAttestationFailed)}});
 }
 
 TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
@@ -1921,16 +1940,21 @@ TEST_F(PrivacySandboxAttestationsTest, SharedStorageAttestation) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
       TestOutput{
-          {kIsSharedStorageAllowed, true},
+          {MultipleOutputKeys{
+               kIsSharedStorageAllowed,
+               kIsEventReportingDestinationAttestedForSharedStorage},
+           true},
           {MultipleOutputKeys{kIsTopicsAllowedForContext,
                               kIsAttributionReportingAllowed,
                               kMaySendAttributionReport, kIsFledgeAllowed,
+                              kIsEventReportingDestinationAttestedForFledge,
                               kIsPrivateAggregationAllowed},
            false},
           {kIsSharedStorageAllowedMetric, static_cast<int>(Status::kAllowed)},
@@ -1954,30 +1978,37 @@ TEST_F(PrivacySandboxAttestationsTest, FledgeAttestation) {
           {kAttestationsMap,
            PrivacySandboxAttestationsMap{
                {net::SchemefulSite(enrollee_url),
+                {PrivacySandboxAttestationsGatedAPI::kProtectedAudience}},
+               {net::SchemefulSite(enrollee_url),
                 {PrivacySandboxAttestationsGatedAPI::kProtectedAudience}}}}},
       TestInput{
           {kTopicsURL, enrollee_url},
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAccessingOrigin, url::Origin::Create(enrollee_url)}},
-      TestOutput{{kIsFledgeAllowed, true},
-                 {MultipleOutputKeys{
-                      kIsTopicsAllowedForContext,
-                      kIsAttributionReportingAllowed, kMaySendAttributionReport,
-                      kIsSharedStorageAllowed, kIsPrivateAggregationAllowed},
-                  false},
-                 {kIsFledgeAllowedMetric, static_cast<int>(Status::kAllowed)},
-                 {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
-                                     kIsAttributionReportingAllowedMetric,
-                                     kMaySendAttributionReportMetric,
-                                     kIsSharedStorageAllowedMetric,
-                                     kIsPrivateAggregationAllowedMetric},
-                  static_cast<int>(Status::kAttestationFailed)}});
+      TestOutput{
+          {MultipleOutputKeys{kIsFledgeAllowed,
+                              kIsEventReportingDestinationAttestedForFledge},
+           true},
+          {MultipleOutputKeys{
+               kIsTopicsAllowedForContext, kIsAttributionReportingAllowed,
+               kMaySendAttributionReport, kIsSharedStorageAllowed,
+               kIsPrivateAggregationAllowed,
+               kIsEventReportingDestinationAttestedForSharedStorage},
+           false},
+          {kIsFledgeAllowedMetric, static_cast<int>(Status::kAllowed)},
+          {MultipleOutputKeys{kIsTopicsAllowedForContextMetric,
+                              kIsAttributionReportingAllowedMetric,
+                              kMaySendAttributionReportMetric,
+                              kIsSharedStorageAllowedMetric,
+                              kIsPrivateAggregationAllowedMetric},
+           static_cast<int>(Status::kAttestationFailed)}});
 }
 
 TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
@@ -1998,6 +2029,7 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
           {kTopFrameOrigin, url::Origin::Create(top_frame_url)},
           {kAdMeasurementReportingOrigin, url::Origin::Create(enrollee_url)},
           {kFledgeAuctionPartyOrigin, url::Origin::Create(enrollee_url)},
+          {kEventReportingDestinationOrigin, url::Origin::Create(enrollee_url)},
           {kAdMeasurementSourceOrigin,
            url::Origin::Create(GURL(top_frame_url))},
           {kAdMeasurementDestinationOrigin,
@@ -2006,9 +2038,12 @@ TEST_F(PrivacySandboxAttestationsTest, AttributionReportingAttestation) {
       TestOutput{{MultipleOutputKeys{kIsAttributionReportingAllowed,
                                      kMaySendAttributionReport},
                   true},
-                 {MultipleOutputKeys{kIsTopicsAllowedForContext,
-                                     kIsFledgeAllowed, kIsSharedStorageAllowed,
-                                     kIsPrivateAggregationAllowed},
+                 {MultipleOutputKeys{
+                      kIsTopicsAllowedForContext, kIsFledgeAllowed,
+                      kIsSharedStorageAllowed,
+                      kIsEventReportingDestinationAttestedForFledge,
+                      kIsEventReportingDestinationAttestedForSharedStorage,
+                      kIsPrivateAggregationAllowed},
                   false},
                  {MultipleOutputKeys{kIsAttributionReportingAllowedMetric,
                                      kMaySendAttributionReportMetric},
@@ -2037,12 +2072,18 @@ TEST_F(PrivacySandboxAttestationsTest, SetOverrideFromDevtools) {
   // With an empty attestation map, Topics is not allowed.
   EXPECT_FALSE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
       url::Origin::Create(top_level_url), caller_url));
+  EXPECT_FALSE(privacy_sandbox_settings()->IsEventReportingDestinationAttested(
+      url::Origin::Create(GURL("https://embedded.com")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
 
   // With an override of the site from a devtools call, Topics is allowed.
   PrivacySandboxAttestations::GetInstance()->AddOverride(
       net::SchemefulSite(GURL("https://embedded.com")));
   EXPECT_TRUE(privacy_sandbox_settings()->IsTopicsAllowedForContext(
       url::Origin::Create(top_level_url), caller_url));
+  EXPECT_TRUE(privacy_sandbox_settings()->IsEventReportingDestinationAttested(
+      url::Origin::Create(GURL("https://embedded.com")),
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPI::kProtectedAudience));
 }
 
 }  // namespace privacy_sandbox

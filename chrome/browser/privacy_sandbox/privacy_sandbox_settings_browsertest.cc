@@ -19,10 +19,22 @@
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
 #include "content/public/test/browsing_data_remover_test_util.h"
+#include "content/public/test/fenced_frame_test_util.h"
+#include "content/public/test/test_frame_navigation_observer.h"
 #include "content/public/test/test_host_resolver.h"
 #include "net/dns/mock_host_resolver.h"
+#include "net/test/embedded_test_server/controllable_http_response.h"
 #include "net/test/embedded_test_server/http_request.h"
 #include "net/test/embedded_test_server/http_response.h"
+
+namespace {
+
+// The registerAdBeacon call in
+// `chrome/test/data/interest_group/bidding_logic.js` will send
+// "reserved.top_navigation" and "click" events to this URL.
+constexpr char kReportingURL[] = "/_report_event_server.html";
+
+}  // namespace
 
 class PrivacySandboxSettingsBrowserTest : public InProcessBrowserTest {
  public:
@@ -142,4 +154,250 @@ IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsAdsApisFlagBrowserTest,
   // The flag should enable this feature.
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       privacy_sandbox::kOverridePrivacySandboxSettingsLocalTesting));
+}
+
+class PrivacySandboxSettingsEventReportingBrowserTest
+    : public InProcessBrowserTest {
+ public:
+  PrivacySandboxSettingsEventReportingBrowserTest() {
+    feature_list_.InitAndEnableFeature(
+        privacy_sandbox::kEnforcePrivacySandboxAttestations);
+  }
+
+  void SetUpOnMainThread() override {
+    host_resolver()->AddRule("*", "127.0.0.1");
+    https_server_.SetSSLConfig(net::EmbeddedTestServer::CERT_TEST_NAMES);
+    https_server_.AddDefaultHandlers(GetChromeTestDataDir());
+
+    content::SetupCrossSiteRedirector(&https_server_);
+
+    // Do not start the https server at this point to allow the tests to set up
+    // response listeners.
+  }
+
+  privacy_sandbox::PrivacySandboxSettings* privacy_sandbox_settings() {
+    return PrivacySandboxSettingsFactory::GetForProfile(browser()->profile());
+  }
+
+  content::WebContents* web_contents() {
+    return browser()->tab_strip_model()->GetActiveWebContents();
+  }
+
+  content::test::FencedFrameTestHelper& fenced_frame_test_helper() {
+    return fenced_frame_test_helper_;
+  }
+
+  content::RenderFrameHost* LoadAndNavigateFencedFrame() {
+    GURL initial_url(https_server_.GetURL("a.test", "/empty.html"));
+    GURL fenced_frame_url(
+        https_server_.GetURL("a.test", "/fenced_frames/title1.html"));
+
+    if (!ui_test_utils::NavigateToURL(browser(), initial_url)) {
+      return nullptr;
+    }
+
+    // Load a fenced frame.
+    EXPECT_TRUE(
+        ExecJs(web_contents()->GetPrimaryMainFrame(),
+               "var fenced_frame = document.createElement('fencedframe');"
+               "fenced_frame.id = 'fenced_frame';"
+               "document.body.appendChild(fenced_frame);"));
+    auto* fenced_frame_node =
+        fenced_frame_test_helper().GetMostRecentlyAddedFencedFrame(
+            web_contents()->GetPrimaryMainFrame());
+    content::TestFrameNavigationObserver observer(fenced_frame_node);
+    fenced_frame_test_helper().NavigateFencedFrameUsingFledge(
+        web_contents()->GetPrimaryMainFrame(), fenced_frame_url,
+        "fenced_frame");
+    observer.Wait();
+
+    return fenced_frame_node;
+  }
+
+ protected:
+  net::EmbeddedTestServer https_server_{
+      net::test_server::EmbeddedTestServer::TYPE_HTTPS};
+
+ private:
+  content::test::FencedFrameTestHelper fenced_frame_test_helper_;
+  base::test::ScopedFeatureList feature_list_;
+};
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       AutomaticBeaconDestinationEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting({
+          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+      });
+
+  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Set the automatic beacon
+  constexpr char kBeaconMessage[] = "this is the message";
+  EXPECT_TRUE(ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.setReportEventDataForAutomaticBeacons({
+        eventType: 'reserved.top_navigation',
+        eventData: $1,
+        destination: ['buyer']
+      });
+    )",
+                                                           kBeaconMessage)));
+
+  GURL navigation_url(https_server_.GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node,
+             content::JsReplace("window.open($1, '_blank');", navigation_url)));
+
+  // Verify the automatic beacon was sent and has the correct data.
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, kBeaconMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       AutomaticBeaconDestinationNotEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting({
+          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+      });
+
+  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Set the automatic beacon
+  constexpr char kBeaconMessage[] = "this is the message";
+  EXPECT_TRUE(ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.setReportEventDataForAutomaticBeacons({
+        eventType: 'reserved.top_navigation',
+        eventData: $1,
+        destination: ['buyer']
+      });
+    )",
+                                                           kBeaconMessage)));
+
+  GURL navigation_url(https_server_.GetURL("a.test", "/title2.html"));
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node,
+             content::JsReplace("window.open($1, '_blank');", navigation_url)));
+
+  // Verify the automatic beacon was not sent.
+  fenced_frame_test_helper().SendBasicRequest(
+      web_contents(), https_server_.GetURL("d.test", kReportingURL),
+      "response");
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, "response");
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       ReportEventDestinationEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting({
+          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+      });
+
+  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Set the automatic beacon
+  constexpr char kBeaconMessage[] = "this is the message";
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.reportEvent({
+        eventType: $1,
+        eventData: $2,
+        destination: ['buyer']
+      });
+    )",
+                                                   "click", kBeaconMessage)));
+
+  // Verify the automatic beacon was sent and has the correct data.
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, kBeaconMessage);
+}
+
+IN_PROC_BROWSER_TEST_F(PrivacySandboxSettingsEventReportingBrowserTest,
+                       ReportEventDestinationNotEnrolled) {
+  privacy_sandbox_settings()->SetAllPrivacySandboxAllowedForTesting();
+  EXPECT_TRUE(privacy_sandbox_settings()->IsPrivacySandboxEnabled());
+
+  // In order to check events reported over the network, we register an HTTP
+  // response interceptor for each reportEvent request we expect.
+  net::test_server::ControllableHttpResponse response(&https_server_,
+                                                      kReportingURL);
+
+  ASSERT_TRUE(https_server_.Start());
+
+  privacy_sandbox::PrivacySandboxAttestations::GetInstance()
+      ->SetAttestationsForTesting({
+          {net::SchemefulSite(https_server_.GetOrigin("a.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kProtectedAudience}},
+          {net::SchemefulSite(https_server_.GetOrigin("d.test")),
+           {privacy_sandbox::PrivacySandboxAttestationsGatedAPI::
+                kSharedStorage}},
+      });
+
+  content::RenderFrameHost* fenced_frame_node = LoadAndNavigateFencedFrame();
+  ASSERT_NE(fenced_frame_node, nullptr);
+
+  // Set the automatic beacon
+  constexpr char kBeaconMessage[] = "this is the message";
+  EXPECT_TRUE(
+      ExecJs(fenced_frame_node, content::JsReplace(R"(
+      window.fence.reportEvent({
+        eventType: $1,
+        eventData: $2,
+        destination: ['buyer']
+      });
+    )",
+                                                   "click", kBeaconMessage)));
+
+  // Verify the automatic beacon was not sent.
+  fenced_frame_test_helper().SendBasicRequest(
+      web_contents(), https_server_.GetURL("d.test", kReportingURL),
+      "response");
+  response.WaitForRequest();
+  EXPECT_EQ(response.http_request()->content, "response");
 }

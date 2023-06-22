@@ -6,6 +6,7 @@
 #define COMPONENTS_PRIVACY_SANDBOX_PRIVACY_SANDBOX_SETTINGS_IMPL_H_
 
 #include "components/browsing_topics/common/common_types.h"
+#include "components/privacy_sandbox/privacy_sandbox_attestations/privacy_sandbox_attestations.h"
 #include "components/privacy_sandbox/privacy_sandbox_settings.h"
 
 #include "base/memory/raw_ptr.h"
@@ -60,6 +61,10 @@ class PrivacySandboxSettingsImpl : public PrivacySandboxSettings {
       const url::Origin& top_frame_origin) const override;
   bool IsFledgeAllowed(const url::Origin& top_frame_origin,
                        const url::Origin& auction_party) const override;
+  bool IsEventReportingDestinationAttested(
+      const url::Origin& destination_origin,
+      privacy_sandbox::PrivacySandboxAttestationsGatedAPI invoking_api)
+      const override;
   bool IsSharedStorageAllowed(
       const url::Origin& top_frame_origin,
       const url::Origin& accessing_origin) const override;

@@ -35,6 +35,13 @@ class MockAttributionReportingContentBrowserClientBase : public SuperClass {
   MOCK_METHOD(bool, IsWebAttributionReportingAllowed, (), (override));
 
   MOCK_METHOD(bool, ShouldUseOsWebSourceAttributionReporting, (), (override));
+
+  MOCK_METHOD(bool,
+              IsPrivacySandboxReportingDestinationAttested,
+              (content::BrowserContext * browser_context,
+               const url::Origin& destination_origin,
+               content::PrivacySandboxInvokingAPI invoking_api),
+              (override));
 };
 
 using MockAttributionReportingContentBrowserClient =

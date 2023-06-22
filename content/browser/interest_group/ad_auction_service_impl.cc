@@ -254,9 +254,7 @@ void AdAuctionServiceImpl::RunAdAuction(
 
   std::unique_ptr<AuctionRunner> auction = AuctionRunner::CreateAndStart(
       &auction_worklet_manager_, &GetInterestGroupManager(),
-      AttributionManager::FromBrowserContext(
-          render_frame_host().GetBrowserContext()),
-      private_aggregation_manager_,
+      render_frame_host().GetBrowserContext(), private_aggregation_manager_,
       // Unlike other callbacks, this needs to be safe to call after destruction
       // of the AdAuctionServiceImpl, so that the reporter can outlive it.
       base::BindRepeating(

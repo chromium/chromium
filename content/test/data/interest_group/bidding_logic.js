@@ -25,7 +25,7 @@ function reportWin(auctionSignals, perBuyerSignals, sellerSignals,
   sendReportTo(browserSignals.interestGroupOwner + '/echoall?report_bidder');
   registerAdBeacon({
     'auctionwinner':
-        browserSignals.interestGroupOwner.replace('a.test', 'd.test') +
+        browserSignals.interestGroupOwner.replace('a.test', 'b.test') +
         '/echoall?report_win_beacon'
   });
   if (typeof privateAggregation !== 'undefined') {

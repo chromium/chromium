@@ -667,6 +667,13 @@ bool WebTestContentBrowserClient::IsInterestGroupAPIAllowed(
   return true;
 }
 
+bool WebTestContentBrowserClient::IsPrivacySandboxReportingDestinationAttested(
+    content::BrowserContext* browser_context,
+    const url::Origin& destination_origin,
+    content::PrivacySandboxInvokingAPI invoking_api) {
+  return true;
+}
+
 void WebTestContentBrowserClient::GetHyphenationDictionary(
     base::OnceCallback<void(const base::FilePath&)> callback) {
   // Use the dictionaries in the runtime deps instead of the repository. The

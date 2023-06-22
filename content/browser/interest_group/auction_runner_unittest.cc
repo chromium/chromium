@@ -1666,7 +1666,7 @@ class AuctionRunnerTest : public RenderViewHostTestHarness,
     abortable_ad_auction_.reset();
     auction_runner_ = AuctionRunner::CreateAndStart(
         auction_worklet_manager_.get(), interest_group_manager_.get(),
-        /*attribution_manager=*/nullptr, &private_aggregation_manager_,
+        /*browser_context=*/browser_context(), &private_aggregation_manager_,
         private_aggregation_manager_.GetLogPrivateAggregationRequestsCallback(),
         std::move(auction_config), top_frame_origin_, frame_origin_, source_id_,
         GetClientSecurityState(), dummy_report_shared_url_loader_factory_,
