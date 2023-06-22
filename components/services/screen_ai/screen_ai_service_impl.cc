@@ -178,7 +178,7 @@ void ScreenAIService::InitializeOCR(
   }
 
   bool init_successful = library_->InitOCR(library_path.DirName());
-  base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initalized",
+  base::UmaHistogramBoolean("Accessibility.ScreenAI.OCR.Initialized",
                             init_successful);
   if (!init_successful) {
     std::move(callback).Run(false);
