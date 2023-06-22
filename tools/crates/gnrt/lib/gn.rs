@@ -85,6 +85,7 @@ pub struct RuleConcrete {
 ///
 /// For undocumented fields, refer to the docs in the above file.
 #[derive(Debug)]
+#[allow(clippy::large_enum_variant)]
 pub enum Rule {
     Concrete {
         common: RuleCommon,
@@ -189,8 +190,8 @@ pub fn build_rule_from_std_dep(
         .build_script
         .as_ref()
         .filter(|_| !crate_config.skip_build_rs)
-        .map(|p| paths.to_gn_abs_path(&p).unwrap());
-    let normalize_target_name = |package_name: &str| package_name.replace("-", "_");
+        .map(|p| paths.to_gn_abs_path(p).unwrap());
+    let normalize_target_name = |package_name: &str| package_name.replace('-', "_");
     let cargo_pkg_authors =
         if dep.authors.is_empty() { None } else { Some(dep.authors.join(", ")) };
 
@@ -274,7 +275,7 @@ pub fn build_rule_from_std_dep(
     for dep_of_dep in dep
         .dependencies
         .iter()
-        .filter(|d| exclude_deps.iter().find(|e| e.as_str() == &*d.package_name).is_none())
+        .filter(|d| !exclude_deps.iter().any(|e| e.as_str() == &*d.package_name))
     {
         let cond = match &dep_of_dep.platform {
             None => Condition::Always,
@@ -316,7 +317,7 @@ fn do_concat_field<
 
 /// Generate the `BuildFile` for `dep`, or return `None` if no rules would be
 /// present.
-fn make_build_file_for_chromium_dep<'a>(
+fn make_build_file_for_chromium_dep(
     dep: &deps::Package,
     paths: &paths::ChromiumPaths,
     manifest: &CargoPackage,
@@ -340,7 +341,7 @@ fn make_build_file_for_chromium_dep<'a>(
     let mut rule_template = RuleConcrete {
         edition: manifest.edition.to_string(),
         cargo_pkg_version: manifest.version.to_string(),
-        cargo_pkg_authors: cargo_pkg_authors,
+        cargo_pkg_authors,
         cargo_pkg_name: manifest.name.clone(),
         cargo_pkg_description,
         build_root: dep.build_script.as_ref().map(|p| to_gn_path(p.as_path())),
@@ -522,12 +523,12 @@ fn write_build_file<W: Write>(
     if with_preamble {
         writeln!(writer, "{COPYRIGHT_HEADER}\n")?;
         writeln!(writer, r#"import("//build/rust/cargo_crate.gni")"#)?;
-        writeln!(writer, "")?;
+        writeln!(writer)?;
     }
 
     for (name, rule) in &build_file.rules {
         // Don't use writeln!, each rule adds a trailing newline.
-        write!(writer, "{}", RuleFormatter { rule: &rule, name: &name })?;
+        write!(writer, "{}", RuleFormatter { rule, name })?;
     }
     Ok(())
 }
@@ -541,9 +542,9 @@ struct RuleFormatter<'a> {
 impl<'a> fmt::Display for RuleFormatter<'a> {
     fn fmt(&self, f: &mut fmt::Formatter<'_>) -> fmt::Result {
         match self.rule {
-            Rule::Concrete { common, details } => write_concrete(f, &self.name, common, details),
+            Rule::Concrete { common, details } => write_concrete(f, self.name, common, details),
             Rule::Group { common, concrete_target } => {
-                write_group(f, &self.name, common, concrete_target)
+                write_group(f, self.name, common, concrete_target)
             }
         }
     }
@@ -658,7 +659,7 @@ fn write_concrete<W: Write>(
     }
 
     if let Some(raw_gn) = &details.gn_variables_lib {
-        writeln!(writer, "{}", raw_gn)?;
+        writeln!(writer, "{raw_gn}")?;
     }
 
     writeln!(writer, "}}")
@@ -837,7 +838,7 @@ pub fn platform_to_condition(platform: &platforms::Platform) -> String {
 pub fn cfg_expr_to_condition(cfg_expr: &cargo_platform::CfgExpr) -> String {
     match cfg_expr {
         cargo_platform::CfgExpr::Not(expr) => {
-            format!("!({})", cfg_expr_to_condition(&expr))
+            format!("!({})", cfg_expr_to_condition(expr))
         }
         cargo_platform::CfgExpr::All(exprs) => exprs
             .iter()
@@ -865,7 +866,7 @@ pub fn cfg_to_condition(cfg: &cargo_platform::Cfg) -> String {
         },
         cargo_platform::Cfg::KeyPair(key, value) => {
             assert_eq!(key, "target_os");
-            target_os_to_condition(&value)
+            target_os_to_condition(value)
         }
     }
     .to_string()
@@ -891,7 +892,7 @@ fn target_os_to_condition(target_os: &str) -> &'static str {
     panic!("target os {target_os} not found")
 }
 
-static TRIPLE_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
+static TRIPLE_TO_GN_CONDITION: &[(&str, &str)] = &[
     ("i686-linux-android", "is_android && target_cpu == \"x86\""),
     ("x86_64-linux-android", "is_android && target_cpu == \"x64\""),
     ("armv7-linux-android", "is_android && target_cpu == \"arm\""),
@@ -910,7 +911,7 @@ static TRIPLE_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
     ("aarch64-apple-darwin", "is_mac && target_cpu == \"arm64\""),
 ];
 
-static TARGET_OS_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
+static TARGET_OS_TO_GN_CONDITION: &[(&str, &str)] = &[
     ("android", "is_android"),
     ("darwin", "is_mac"),
     ("fuchsia", "is_fuchsia"),
@@ -919,12 +920,11 @@ static TARGET_OS_TO_GN_CONDITION: &'static [(&'static str, &'static str)] = &[
     ("windows", "is_win"),
 ];
 
-static COPYRIGHT_HEADER: &'static str = "# Copyright 2023 The Chromium Authors
+static COPYRIGHT_HEADER: &str = "# Copyright 2023 The Chromium Authors
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.";
 
-static VISIBILITY_CONSTRAINT: &'static str =
-    "# Only for usage from third-party crates. Add the crate to
+static VISIBILITY_CONSTRAINT: &str = "# Only for usage from third-party crates. Add the crate to
 # third_party.toml to use it from first-party code.
 visibility = [ \"//third_party/rust/*\" ]";
 
@@ -1245,7 +1245,7 @@ build_script_outputs = [
         // do this by default since it might not work on all terminals.
         let color_arg = format!(
             "--color={option}",
-            option = std::env::var("DIFF_COLOR").map(|s| s).unwrap_or("never".to_string()),
+            option = std::env::var("DIFF_COLOR").unwrap_or("never".to_string()),
         );
 
         // Closure to invoke diff on the inputs. This is wrapped in a closure so

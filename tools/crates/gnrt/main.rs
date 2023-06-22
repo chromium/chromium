@@ -83,7 +83,7 @@ fn main() -> Result<()> {
     let paths = paths::ChromiumPaths::new().context("Could not find chromium checkout paths")?;
 
     match args.subcommand() {
-        Some(("gen", args)) => gen::generate(&args, &paths),
+        Some(("gen", args)) => gen::generate(args, &paths),
         Some(("download", args)) => {
             let security = args.get_one::<String>("security-critical").unwrap() == "yes";
             let name = args.get_one::<String>("name").unwrap();

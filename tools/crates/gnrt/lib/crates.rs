@@ -99,8 +99,8 @@ impl Epoch {
     /// `semver` library.
     pub fn from_version(version: &Version) -> Self {
         match version.major {
-            0 => Self::Minor(version.minor.try_into().unwrap()),
-            x => Self::Major(x.try_into().unwrap()),
+            0 => Self::Minor(version.minor),
+            x => Self::Major(x),
         }
     }
 
@@ -165,7 +165,7 @@ impl FromStr for Epoch {
             return Err(EpochParseError::BadFormat);
         }
         let s = iter.next().ok_or(EpochParseError::BadFormat)?;
-        if iter.next() != None {
+        if iter.next().is_some() {
             return Err(EpochParseError::BadFormat);
         }
 
@@ -187,7 +187,7 @@ impl FromStr for Epoch {
         }?;
 
         // Ensure there's no remaining parts.
-        if parts.next() == None { Ok(result) } else { Err(EpochParseError::BadFormat) }
+        if parts.next().is_none() { Ok(result) } else { Err(EpochParseError::BadFormat) }
     }
 }
 
@@ -356,8 +356,8 @@ impl ThirdPartySource {
     pub fn cargo_patches(&self) -> Vec<manifest::PatchSpecification> {
         let mut patches: Vec<_> = self
             .manifests
-            .iter()
-            .map(|(c, _)| manifest::PatchSpecification {
+            .keys()
+            .map(|c| manifest::PatchSpecification {
                 package_name: c.name.clone(),
                 patch_name: format!(
                     "{name}_{epoch}",

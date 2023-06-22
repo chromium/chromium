@@ -25,15 +25,9 @@ pub fn download(
     let build_path = paths.third_party.join(ThirdPartySource::build_path(&vendored_crate));
     let crate_path = paths.third_party.join(ThirdPartySource::crate_path(&vendored_crate));
 
-    let url = format!(
-        "{dir}/{name}/{name}-{version}.{suffix}",
-        dir = CRATES_IO_DOWNLOAD_URL,
-        suffix = CRATES_IO_DOWNLOAD_SUFFIX
-    );
-    let curl_out = check_output(
-        &mut process::Command::new("curl").arg("--fail").arg(url.to_string()),
-        "curl",
-    )?;
+    let url =
+        format!("{CRATES_IO_DOWNLOAD_URL}/{name}/{name}-{version}.{CRATES_IO_DOWNLOAD_SUFFIX}");
+    let curl_out = check_output(process::Command::new("curl").arg("--fail").arg(&url), "curl")?;
     check_exit_ok(&curl_out, "curl")?;
 
     // Makes the directory where the build file will go. The crate's source code
@@ -46,7 +40,7 @@ pub fn download(
     std::fs::create_dir(&crate_path).expect("Crate directory '{crate_path}' already exists");
 
     let mut untar = check_spawn(
-        &mut process::Command::new("tar")
+        process::Command::new("tar")
             // Extract and unzip from stdin.
             .arg("xzf")
             .arg("-")
@@ -79,11 +73,11 @@ pub fn download(
 
     let (_, readme_license) = ALLOWED_LICENSES
         .iter()
-        .find(|(allowed_license, _)| &cargo.package.license == *allowed_license)
+        .find(|(allowed_license, _)| cargo.package.license == *allowed_license)
         .expect("License in downloaded Cargo.toml is not in ALLOWED_LICENSES");
 
     let vcs_path = crate_path.join(".cargo_vcs_info.json");
-    let vcs_contents = match fs::read_to_string(&vcs_path) {
+    let vcs_contents = match fs::read_to_string(vcs_path) {
         Ok(s) => serde_json::from_str(&s).unwrap(),
         Err(_) => None,
     };
@@ -123,14 +117,14 @@ fn gen_readme_chromium_text(
 
     format!(
         "Name: {crate_name}\n\
-         URL: {url}\n\
+         URL: {CRATES_IO_VIEW_URL}/{package_name}\n\
          Description: {description}\n\
          Version: {version}\n\
          Security Critical: {security}\n\
          License: {license}\n\
          {revision}",
         crate_name = manifest.package.name,
-        url = format!("{}/{}", CRATES_IO_VIEW_URL, manifest.package.name),
+        package_name = manifest.package.name,
         description = manifest.package.description.as_ref().unwrap_or(&"".to_string()),
         version = manifest.package.version,
     )
