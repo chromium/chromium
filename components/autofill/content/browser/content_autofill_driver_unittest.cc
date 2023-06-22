@@ -82,10 +82,9 @@ ContentAutofillDriverTestApi test_api(ContentAutofillDriver* cad) {
 
 class FakeAutofillAgent : public mojom::AutofillAgent {
  public:
-  FakeAutofillAgent()
-      : called_clear_section_(false), called_clear_previewed_form_(false) {}
+  FakeAutofillAgent() = default;
 
-  ~FakeAutofillAgent() override {}
+  ~FakeAutofillAgent() override = default;
 
   void BindPendingReceiver(mojo::ScopedInterfaceEndpointHandle handle) {
     receivers_.Add(this, mojo::PendingAssociatedReceiver<mojom::AutofillAgent>(
@@ -117,7 +116,7 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   }
 
   // Returns data received via mojo interface method
-  // mojom::AutofillAent::FieldTypePredictionsAvailable().
+  // mojom::AutofillAgent::FieldTypePredictionsAvailable().
   bool GetFieldTypePredictionsAvailable(
       std::vector<FormDataPredictions>* predictions) {
     if (!predictions_)
@@ -209,6 +208,8 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
     CallDone();
   }
 
+  void UndoAutofill(const FormData& form) override {}
+
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override {
     predictions_ = forms;
@@ -293,9 +294,9 @@ class FakeAutofillAgent : public mojom::AutofillAgent {
   // Records data received from FieldTypePredictionsAvailable() call.
   absl::optional<std::vector<FormDataPredictions>> predictions_;
   // Records whether ClearSection() got called.
-  bool called_clear_section_;
+  bool called_clear_section_ = false;
   // Records whether ClearPreviewedForm() got called.
-  bool called_clear_previewed_form_;
+  bool called_clear_previewed_form_ = false;
   // Records the trigger source received from a TriggerSuggestions() call.
   absl::optional<AutofillSuggestionTriggerSource> suggestion_trigger_source_;
   // Records the ID received from FillFieldWithValue(), PreviewFieldWithValue(),

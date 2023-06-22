@@ -522,6 +522,22 @@ std::vector<FieldGlobalId> ContentAutofillRouter::FillOrPreviewForm(
   return renderer_forms.safe_fields;
 }
 
+void ContentAutofillRouter::UndoAutofill(
+    ContentAutofillDriver* source,
+    const FormData& data,
+    const url::Origin& triggered_origin,
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map,
+    void (*callback)(ContentAutofillDriver* target, const FormData& form)) {
+  internal::FormForest::RendererForms renderer_forms =
+      form_forest_.GetRendererFormsOfBrowserForm(data, triggered_origin,
+                                                 field_type_map);
+  for (const FormData& renderer_form : renderer_forms.renderer_forms) {
+    if (auto* target = DriverOfFrame(renderer_form.host_frame)) {
+      callback(target, renderer_form);
+    }
+  }
+}
+
 void ContentAutofillRouter::SendAutofillTypePredictionsToRenderer(
     ContentAutofillDriver* source,
     const std::vector<FormDataPredictions>& browser_fdps,

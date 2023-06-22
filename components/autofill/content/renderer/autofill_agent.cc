@@ -701,6 +701,33 @@ void AutofillAgent::FillOrPreviewForm(const FormData& form,
   }
 }
 
+void AutofillAgent::UndoAutofill(const FormData& form) {
+  // If `element_` is null or not focused, Undo was either triggered from
+  // another frame or the `element_` has been detached from the DOM or the focus
+  // was moved otherwise. If `element_` is from a different form than `form`,
+  // then Undo was triggered from a different form in the same frame, and either
+  // this is a subframe and both forms should be filled, or focus has changed
+  // right after the user accepted the suggestions.
+  //
+  // In these cases, we set `element_` to some form field as if Undo had been
+  // triggered from that field. This is necessary because currently
+  // AutofillAgent relies on `element_` in many places.
+  if (!form.fields.empty() && (element_.IsNull() || !element_.Focused() ||
+                               form_util::GetFormRendererId(element_.Form()) !=
+                                   form.unique_renderer_id)) {
+    if (unsafe_render_frame() == nullptr) {
+      return;
+    }
+    WebDocument document = unsafe_render_frame()->GetWebFrame()->GetDocument();
+    element_ = form_util::FindFormControlElementByUniqueRendererId(
+        document, form.fields.front().unique_renderer_id);
+  }
+  if (element_.IsNull()) {
+    return;
+  }
+  form_util::UndoForm(form, element_);
+}
+
 void AutofillAgent::FieldTypePredictionsAvailable(
     const std::vector<FormDataPredictions>& forms) {
   bool attach_predictions_to_dom = base::FeatureList::IsEnabled(
@@ -830,9 +857,9 @@ void AutofillAgent::AcceptDataListSuggestion(
     std::u16string value = input_element.EditingValue().Utf16();
     std::vector<base::StringPiece16> parts = base::SplitStringPiece(
         value, u",", base::KEEP_WHITESPACE, base::SPLIT_WANT_ALL);
-    if (parts.size() == 0)
-      parts.push_back(base::StringPiece16());
-
+    if (parts.empty()) {
+      parts.emplace_back();
+    }
     std::u16string last_part(parts.back());
     // We want to keep just the leading whitespace.
     for (size_t i = 0; i < last_part.size(); ++i) {
@@ -947,7 +974,7 @@ void AutofillAgent::ShowSuggestions(
   // autofill agent.
   // The /*disable presubmit*/ comment below is used to disable a presubmit
   // script that ensures that only IsPasswordFieldForAutofill() is used in this
-  // code (it has to appear between the function name and the parentesis to not
+  // code (it has to appear between the function name and the parenthesis to not
   // match a regex). In this specific case we are actually interested in whether
   // the field is currently a password field, not whether it has ever been a
   // password field.

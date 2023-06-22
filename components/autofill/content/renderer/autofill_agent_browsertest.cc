@@ -18,6 +18,7 @@
 #include "components/autofill/content/renderer/password_generation_agent.h"
 #include "components/autofill/content/renderer/test_password_autofill_agent.h"
 #include "components/autofill/core/common/autofill_features.h"
+#include "components/autofill/core/common/form_data.h"
 #include "content/public/renderer/render_frame.h"
 #include "content/public/test/navigation_simulator.h"
 #include "content/public/test/render_view_test.h"
@@ -29,6 +30,7 @@
 #include "third_party/abseil-cpp/absl/types/variant.h"
 #include "third_party/blink/public/common/associated_interfaces/associated_interface_provider.h"
 #include "third_party/blink/public/common/features.h"
+#include "third_party/blink/public/web/web_form_control_element.h"
 
 using ::testing::_;
 using ::testing::AllOf;
@@ -326,6 +328,34 @@ TEST_F(AutofillAgentTestWithFeatures, TriggerSuggestions) {
   autofill_agent_->TriggerSuggestions(
       FieldRendererId(1),
       AutofillSuggestionTriggerSource::kFormControlElementClicked);
+}
+
+TEST_F(AutofillAgentTest, UndoAutofillSetsLastQueriedElement) {
+  LoadHTML(R"(
+    <form id="form_id">
+        <input id="text_id_1">
+        <select id="select_id_1">
+          <option value="undo_select_option_1">Foo</option>
+          <option value="autofill_select_option_1">Bar</option>
+        </select>
+        <selectmenu id="selectmenu_id_1">
+          <option value="undo_selectmenu_option_1">Foo</option>
+          <option value="autofill_selectmenu_option_1">Bar</option>
+        </selectmenu>
+      </form>
+  )");
+
+  blink::WebVector<blink::WebFormElement> forms =
+      GetMainFrame()->GetDocument().Forms();
+  EXPECT_EQ(1U, forms.size());
+  FormData form;
+  EXPECT_TRUE(form_util::WebFormElementToFormData(
+      forms[0], blink::WebFormControlElement(), nullptr,
+      form_util::EXTRACT_VALUE, &form, nullptr));
+
+  ASSERT_TRUE(autofill_agent_->focused_element().IsNull());
+  autofill_agent_->UndoAutofill(form);
+  EXPECT_FALSE(autofill_agent_->focused_element().IsNull());
 }
 
 }  // namespace autofill

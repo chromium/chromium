@@ -68,7 +68,7 @@ class FieldDataManager;
 //
 // Note that Autofill encompasses:
 // - single text field suggestions, that we usually refer to as Autocomplete,
-// - password form fill, refered to as Password Autofill, and
+// - password form fill, referred to as Password Autofill, and
 // - entire form fill based on one field entry, referred to as Form Autofill.
 class AutofillAgent : public content::RenderFrameObserver,
                       public FormTracker::Observer,
@@ -103,6 +103,7 @@ class AutofillAgent : public content::RenderFrameObserver,
       base::OnceCallback<void(bool)> callback) override;
   void FillOrPreviewForm(const FormData& form,
                          mojom::RendererFormDataAction action) override;
+  void UndoAutofill(const FormData& form) override;
   void FieldTypePredictionsAvailable(
       const std::vector<FormDataPredictions>& forms) override;
   void ClearSection() override;
@@ -410,7 +411,7 @@ class AutofillAgent : public content::RenderFrameObserver,
   bool is_secure_context_required_;
 
   // This flag denotes whether or not password suggestions need to be
-  // programatically queried. This is needed on Android WebView because it
+  // programmatically queried. This is needed on Android WebView because it
   // doesn't use PasswordAutofillAgent to handle password form.
   bool query_password_suggestion_ = false;
 

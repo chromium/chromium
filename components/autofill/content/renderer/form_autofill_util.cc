@@ -2507,6 +2507,9 @@ std::vector<WebFormControlElement> FillOrPreviewForm(
                                   callback);
 }
 
+void UndoForm(const FormData& form,
+              const WebFormControlElement& form_control_element) {}
+
 void ClearPreviewedElements(
     std::vector<blink::WebFormControlElement>& previewed_elements,
     const WebFormControlElement& initiating_element,

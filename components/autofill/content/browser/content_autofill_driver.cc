@@ -240,7 +240,16 @@ std::vector<FieldGlobalId> ContentAutofillDriver::FillOrPreviewForm(
 void ContentAutofillDriver::UndoAutofill(
     const FormData& data,
     const url::Origin& triggered_origin,
-    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {}
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {
+  return autofill_router().UndoAutofill(
+      this, data, triggered_origin, field_type_map,
+      [](ContentAutofillDriver* target, const FormData& data) {
+        if (!target->RendererIsAvailable()) {
+          return;
+        }
+        target->GetAutofillAgent()->UndoAutofill(data);
+      });
+}
 
 void ContentAutofillDriver::SendAutofillTypePredictionsToRenderer(
     const std::vector<FormStructure*>& forms) {
