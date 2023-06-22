@@ -6,6 +6,7 @@
 
 #include <memory>
 
+#include "base/feature_list.h"
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/content_settings/cookie_settings_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -13,6 +14,7 @@
 #include "chrome/browser/ui/views/location_bar/old_cookie_controls_bubble_view.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/content_settings/browser/ui/cookie_controls_controller.h"
+#include "components/content_settings/core/common/features.h"
 #include "components/omnibox/browser/omnibox_field_trial.h"
 #include "components/omnibox/browser/vector_icons.h"
 #include "content/public/browser/browser_context.h"
@@ -35,6 +37,11 @@ CookieControlsIconView::CookieControlsIconView(
   SetAccessibilityProperties(
       /*role*/ absl::nullopt,
       l10n_util::GetStringUTF16(IDS_COOKIE_CONTROLS_TOOLTIP));
+
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    bubble_coordinator_ =
+        std::make_unique<CookieControlsBubbleCoordinator>(this);
+  }
 }
 
 CookieControlsIconView::~CookieControlsIconView() = default;
@@ -88,6 +95,23 @@ void CookieControlsIconView::OnStatefulBounceCountChanged(int bounce_count) {
   }
 }
 
+void CookieControlsIconView::OnStatusChanged(
+    CookieControlsStatus status,
+    CookieControlsEnforcement enforcement,
+    absl::optional<base::Time> expiration) {
+  // TODO(1446230): Implement OnStatusChanged.
+}
+
+void CookieControlsIconView::OnSitesCountChanged(int allowed_sites,
+                                                 int blocked_sites) {
+  // TODO(1446230): Implement OnSitesCountChanged.
+}
+
+void CookieControlsIconView::OnBreakageConfidenceLevelChanged(
+    CookieControlsBreakageConfidenceLevel level) {
+  // TODO(1446230): Implement OnBreakageConfidenceLevelChanged.
+}
+
 bool CookieControlsIconView::ShouldBeVisible() const {
   if (delegate()->ShouldHidePageActionIcons()) {
     return false;
@@ -99,6 +123,12 @@ bool CookieControlsIconView::ShouldBeVisible() const {
 
   if (!delegate()->GetWebContentsForPageActionIconView()) {
     return false;
+  }
+
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    // TODO(1446230): Remove this once the CookieControlsObserver methods have
+    // been implemented.
+    return true;
   }
 
   switch (status_) {
@@ -121,12 +151,18 @@ bool CookieControlsIconView::GetAssociatedBubble() const {
 
 void CookieControlsIconView::OnExecuting(
     PageActionIconView::ExecuteSource source) {
-  OldCookieControlsBubbleView::ShowBubble(
-      this, this, delegate()->GetWebContentsForPageActionIconView(),
-      controller_.get(), status_);
+  if (base::FeatureList::IsEnabled(content_settings::features::kUserBypassUI)) {
+    bubble_coordinator_->ShowBubble(
+        delegate()->GetWebContentsForPageActionIconView(), controller_.get());
+  } else {
+    OldCookieControlsBubbleView::ShowBubble(
+        this, this, delegate()->GetWebContentsForPageActionIconView(),
+        controller_.get(), status_);
+  }
 }
 
 views::BubbleDialogDelegate* CookieControlsIconView::GetBubble() const {
+  // TODO(crbug.com/1446230): Return new bubble when ready.
   return OldCookieControlsBubbleView::GetCookieBubble();
 }
 
