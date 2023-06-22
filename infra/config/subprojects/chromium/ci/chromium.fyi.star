@@ -1349,6 +1349,8 @@ def build_perf_builder(**kwargs):
         siso_config = "remote_all",
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
+        # TODO(b/273407069): enable reproxy mode by default.
+        siso_experiments = ["use-reproxy"],
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         notifies = ["chrome-build-perf"],
         **kwargs

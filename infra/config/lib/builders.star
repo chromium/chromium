@@ -471,6 +471,7 @@ def builder(
         siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
+        siso_experiments = None,
         health_spec = args.DEFAULT,
         **kwargs):
     """Define a builder.
@@ -656,6 +657,7 @@ def builder(
             instance and other Cloud services. e.g. logging, trace etc.
         siso_enable_cloud_profiler: If True, enable cloud profiler in siso.
         siso_enable_cloud_trace: If True, enable cloud trace in siso.
+        siso_experiments: a list of experiment flags for siso.
         **kwargs: Additional keyword arguments to forward on to `luci.builder`.
 
     Returns:
@@ -821,10 +823,11 @@ def builder(
         properties["$build/reclient"] = reclient
 
     siso = {
-        "project": defaults.get_value("siso_project", siso_project),
+        "config": defaults.get_value("siso_config", siso_config),
         "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
         "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
-        "config": defaults.get_value("siso_config", siso_config),
+        "experiments": siso_experiments,
+        "project": defaults.get_value("siso_project", siso_project),
     }
     if siso["project"]:
         properties["$build/siso"] = siso
