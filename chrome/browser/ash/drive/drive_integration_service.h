@@ -148,6 +148,8 @@ class DriveIntegrationService : public KeyedService,
   void SetEnabled(bool enabled);
   bool is_enabled() const { return enabled_; }
 
+  bool IsOnline() const;
+
   bool IsMounted() const;
 
   bool mount_failed() const { return mount_failed_; }

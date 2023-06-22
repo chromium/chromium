@@ -855,6 +855,10 @@ void DriveIntegrationService::SetEnabled(bool enabled) {
   }
 }
 
+bool DriveIntegrationService::IsOnline() const {
+  return preference_watcher_ && preference_watcher_->IsOnline();
+}
+
 bool DriveIntegrationService::IsMounted() const {
   if (mount_point_name_.empty()) {
     return false;

@@ -69,6 +69,7 @@
 #include "chrome/common/extensions/extension_constants.h"
 #include "chrome/common/pref_names.h"
 #include "components/drive/drive_api_util.h"
+#include "components/drive/drive_pref_names.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/prefs/scoped_user_pref_update.h"
@@ -558,10 +559,17 @@ void RecordDriveOfflineUMAs(Profile* profile,
 
   for (const FileSystemURL& file_url : file_urls) {
     if (file_url.type() == storage::kFileSystemTypeDriveFs) {
+      ViewFileType type = GetViewFileType(file_url.path());
       integration_service->GetMetadata(
           file_url.path(),
-          base::BindOnce(&RecordDriveOfflineUMAsGotMetadata, profile,
-                         GetViewFileType(file_url.path())));
+          base::BindOnce(&RecordDriveOfflineUMAsGotMetadata, profile, type));
+      if (!integration_service->IsOnline() &&
+          drive::util::IsDriveFsBulkPinningEnabled(profile) &&
+          profile->GetPrefs()->GetBoolean(
+              drive::prefs::kDriveFsBulkPinningEnabled)) {
+        base::UmaHistogramEnumeration(
+            "FileBrowser.GoogleDrive.BulkPinning.OfflineOpen", type);
+      }
     }
   }
 }

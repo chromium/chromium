@@ -556,6 +556,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="FileBrowser.GoogleDrive.BulkPinning.OfflineOpen"
+    enum="ViewFileType" expires_after="2024-07-01">
+  <owner>joelhockey@google.com</owner>
+  <owner>src/ui/file_manager/OWNERS</owner>
+  <summary>
+    Chrome OS File Browser: File types that a user attempts to open for users
+    who have bulk pinning enabled when their device is offline, recorded when a
+    Drive file is opened.
+  </summary>
+</histogram>
+
 <histogram name="FileBrowser.GoogleDrive.BulkPinning.PinnedFiles"
     enum="BooleanPinned" expires_after="2024-06-01">
   <owner>simmonsjosh@google.com</owner>
