@@ -49,11 +49,15 @@ struct BLINK_COMMON_EXPORT ServiceWorkerRouterRaceSource {
 // TODO(crbug.com/1371756): implement other sources in the proposal.
 struct BLINK_COMMON_EXPORT ServiceWorkerRouterSource {
   // Type of sources.
+  // These values are persisted to logs. Entries should not be renumbered and
+  // numeric values should never be reused.
   enum class SourceType {
     // Network is used as a source.
-    kNetwork,
+    kNetwork = 0,
     // Race network and fetch handler.
-    kRace,
+    kRace = 1,
+
+    kMaxValue = kRace,
   };
   SourceType type;
 
