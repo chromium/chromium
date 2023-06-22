@@ -22,7 +22,6 @@
 #endif
 
 // These interfaces were generated from CoreGraphics binaries.
-API_AVAILABLE(macos(10.14))
 @interface CGVirtualDisplay : NSObject
 
 @property(readonly, nonatomic) unsigned int vendorID;
@@ -48,7 +47,6 @@ API_AVAILABLE(macos(10.14))
 @end
 
 // These interfaces were generated from CoreGraphics binaries.
-API_AVAILABLE(macos(10.14))
 @interface CGVirtualDisplayDescriptor : NSObject
 
 @property(nonatomic) unsigned int vendorID;
@@ -72,7 +70,6 @@ API_AVAILABLE(macos(10.14))
 @end
 
 // These interfaces were generated from CoreGraphics binaries.
-API_AVAILABLE(macos(10.14))
 @interface CGVirtualDisplayMode : NSObject
 
 @property(readonly, nonatomic) unsigned int width;
@@ -85,7 +82,6 @@ API_AVAILABLE(macos(10.14))
 @end
 
 // These interfaces were generated from CoreGraphics binaries.
-API_AVAILABLE(macos(10.14))
 @interface CGVirtualDisplaySettings : NSObject
 
 @property(strong, nonatomic) NSArray* modes;
@@ -100,8 +96,7 @@ namespace {
 static bool g_need_display_removal_workaround = true;
 
 // A global singleton that tracks the current set of mocked displays.
-std::map<int64_t, CGVirtualDisplay * __strong> g_display_map
-    API_AVAILABLE(macos(10.14));
+std::map<int64_t, CGVirtualDisplay * __strong> g_display_map;
 
 // A helper function for creating virtual display and return CGVirtualDisplay
 // object.
@@ -109,8 +104,7 @@ CGVirtualDisplay* CreateVirtualDisplay(int width,
                                        int height,
                                        int ppi,
                                        BOOL hiDPI,
-                                       NSString* name)
-    API_AVAILABLE(macos(10.14)) {
+                                       NSString* name) {
   CGVirtualDisplaySettings* settings = [[CGVirtualDisplaySettings alloc] init];
   settings.hiDPI = hiDPI;
 
@@ -324,92 +318,87 @@ VirtualDisplayMacUtil::~VirtualDisplayMacUtil() {
 
 int64_t VirtualDisplayMacUtil::AddDisplay(int64_t display_id,
                                           const DisplayParams& display_params) {
-  if (@available(macos 10.14, *)) {
-    DCHECK(display_params.IsValid());
+  DCHECK(display_params.IsValid());
 
-    NSString* display_name =
-        [NSString stringWithFormat:@"Virtual Display #%lld", display_id];
-    CGVirtualDisplay* display = CreateVirtualDisplay(
-        display_params.width, display_params.height, display_params.ppi,
-        display_params.hiDPI, display_name);
-    DCHECK(display);
+  NSString* display_name =
+      [NSString stringWithFormat:@"Virtual Display #%lld", display_id];
+  CGVirtualDisplay* display = CreateVirtualDisplay(
+      display_params.width, display_params.height, display_params.ppi,
+      display_params.hiDPI, display_name);
+  DCHECK(display);
 
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-              << " - display id: " << display_id
-              << ". CreateVirtualDisplay success.";
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display id: " << display_id
+            << ". CreateVirtualDisplay success.";
 
-    int64_t id = display.displayID;
-    DCHECK_NE(id, 0u);
+  int64_t id = display.displayID;
+  DCHECK_NE(id, 0u);
 
-    WaitForDisplay(id, /*added=*/true);
+  WaitForDisplay(id, /*added=*/true);
 
-    EnsureDisplayWithResolution(
-        id, gfx::Size(display_params.width, display_params.height));
+  EnsureDisplayWithResolution(
+      id, gfx::Size(display_params.width, display_params.height));
 
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-              << " - display id: " << display_id << "(" << id
-              << "). WaitForDisplay success.";
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display id: " << display_id << "(" << id
+            << "). WaitForDisplay success.";
 
-    DCHECK(!g_display_map[id]);
-    g_display_map[id] = display;
+  DCHECK(!g_display_map[id]);
+  g_display_map[id] = display;
 
-    return id;
-  }
-  return display::kInvalidDisplayId;
+  return id;
 }
 
 void VirtualDisplayMacUtil::RemoveDisplay(int64_t display_id) {
-  if (@available(macos 10.14, *)) {
-    auto it = g_display_map.find(display_id);
-    DCHECK(it != g_display_map.end());
+  auto it = g_display_map.find(display_id);
+  DCHECK(it != g_display_map.end());
 
-    // The first display removal has known flaky timeouts if removed
-    // individually. Remove another display simultaneously during the first
-    // display removal.
-    // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
-    if (g_need_display_removal_workaround) {
-      const int64_t tmp_display_id = AddDisplay(0, k1920x1080);
-      auto tmp_it = g_display_map.find(tmp_display_id);
-      DCHECK(tmp_it != g_display_map.end());
+  // The first display removal has known flaky timeouts if removed
+  // individually. Remove another display simultaneously during the first
+  // display removal.
+  // TODO(crbug.com/1126278): Resolve this defect in a more hermetic manner.
+  if (g_need_display_removal_workaround) {
+    const int64_t tmp_display_id = AddDisplay(0, k1920x1080);
+    auto tmp_it = g_display_map.find(tmp_display_id);
+    DCHECK(tmp_it != g_display_map.end());
 
-      waiting_for_ids_.insert(display_id);
-      waiting_for_ids_.insert(tmp_display_id);
-
-      g_display_map.erase(it);
-      g_display_map.erase(tmp_it);
-
-      g_need_display_removal_workaround = false;
-
-      StartWaiting();
-
-      return;
-    }
+    waiting_for_ids_.insert(display_id);
+    waiting_for_ids_.insert(tmp_display_id);
 
     g_display_map.erase(it);
+    g_display_map.erase(tmp_it);
 
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-              << " - display id: " << display_id << ". Erase success.";
+    g_need_display_removal_workaround = false;
 
-    WaitForDisplay(display_id, /*added=*/false);
+    StartWaiting();
 
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-              << " - display id: " << display_id << ". WaitForDisplay success.";
+    return;
   }
+
+  g_display_map.erase(it);
+
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display id: " << display_id << ". Erase success.";
+
+  WaitForDisplay(display_id, /*added=*/false);
+
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display id: " << display_id << ". WaitForDisplay success.";
 }
 
 // static
 bool VirtualDisplayMacUtil::IsAPIAvailable() {
   bool is_api_available = false;
   // The underlying API is only available on macos 10.14 or higher.
-  // TODO(crbug.com/1126278): enable support on 10.15 and 10.14.
+  // TODO(crbug.com/1126278): enable support on 10.15.
   if (@available(macos 11.0, *)) {
     is_api_available = true;
   }
@@ -559,31 +548,29 @@ void VirtualDisplayMacUtil::OnDisplayAddedOrRemoved(int64_t id) {
 }
 
 void VirtualDisplayMacUtil::RemoveAllDisplays() {
-  if (@available(macos 10.14, *)) {
-    int display_count = g_display_map.size();
+  int display_count = g_display_map.size();
 
-    // TODO(crbug.com/1126278): Please remove this log or replace it with
-    // [D]CHECK() ASAP when the TEST is stable.
-    LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
-              << " - display count: " << display_count << ".";
+  // TODO(crbug.com/1126278): Please remove this log or replace it with
+  // [D]CHECK() ASAP when the TEST is stable.
+  LOG(INFO) << "VirtualDisplayMacUtil::" << __func__
+            << " - display count: " << display_count << ".";
 
-    if (!display_count) {
-      return;
-    }
-
-    if (display_count == 1 && g_need_display_removal_workaround) {
-      RemoveDisplay(g_display_map.begin()->first);
-      return;
-    }
-
-    for (const auto& [id, display] : g_display_map) {
-      waiting_for_ids_.insert(id);
-    }
-
-    g_display_map.clear();
-
-    StartWaiting();
+  if (!display_count) {
+    return;
   }
+
+  if (display_count == 1 && g_need_display_removal_workaround) {
+    RemoveDisplay(g_display_map.begin()->first);
+    return;
+  }
+
+  for (const auto& [id, display] : g_display_map) {
+    waiting_for_ids_.insert(id);
+  }
+
+  g_display_map.clear();
+
+  StartWaiting();
 }
 
 void VirtualDisplayMacUtil::WaitForDisplay(int64_t id, bool added) {

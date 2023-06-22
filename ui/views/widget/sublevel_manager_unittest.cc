@@ -38,11 +38,6 @@ class SublevelManagerTest : public ViewsTestBase,
     set_native_widget_type(
         std::get<ViewsTestBase::NativeWidgetType>(GetParam()));
     ViewsTestBase::SetUp();
-#if BUILDFLAG(IS_MAC)
-    // MacOS 10.13 does not report window z-ordering reliably.
-    if (base::mac::IsAtMostOS10_13())
-      GTEST_SKIP();
-#endif
   }
 
   std::unique_ptr<Widget> CreateChildWidget(

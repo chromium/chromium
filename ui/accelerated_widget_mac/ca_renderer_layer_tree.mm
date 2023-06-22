@@ -831,9 +831,9 @@ CARendererLayerTree::ContentLayer::ContentLayer(
   if (type_ == CALayerType::kVideo) {
     // If the layer's aspect ratio could be made to match the video's aspect
     // ratio by expanding either dimension by a fractional pixel, do so. The
-    // mismatch probably resulted from rounding the dimensions to integers.
-    // This works around a macOS 10.13 bug which breaks detached fullscreen
-    // playback of slightly distorted videos (https://crbug.com/792632).
+    // mismatch probably resulted from rounding the dimensions to integers. This
+    // works around a macOS bug which breaks detached fullscreen playback of
+    // slightly distorted videos (https://crbug.com/792632).
     const auto av_rect(cv_pixel_buffer
                            ? gfx::RectF(CVPixelBufferGetWidth(cv_pixel_buffer),
                                         CVPixelBufferGetHeight(cv_pixel_buffer))

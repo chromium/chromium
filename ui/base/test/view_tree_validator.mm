@@ -40,7 +40,7 @@ bool IgnoreChildBoundsChecks(NSView* view) {
   // On macOS 10.14+, NSButton has a subview of a private helper class whose
   // bounds extend a bit outside the NSButton itself. We don't care about this
   // helper class's bounds being outside the button.
-  return base::mac::IsAtLeastOS10_14() && [view isKindOfClass:[NSButton class]];
+  return [view isKindOfClass:[NSButton class]];
 }
 
 }  // namespace

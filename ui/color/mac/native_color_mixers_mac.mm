@@ -50,8 +50,7 @@ AppearanceProperties AppearancePropertiesForKey(const ColorProviderKey& key) {
           key.contrast_mode == ColorProviderKey::ContrastMode::kHigh};
 }
 
-NSAppearance* AppearanceForKey(const ColorProviderKey& key)
-    API_AVAILABLE(macos(10.14)) {
+NSAppearance* AppearanceForKey(const ColorProviderKey& key) {
   AppearanceProperties properties = AppearancePropertiesForKey(key);
 
   // TODO(crbug.com/1420707): How does this work? The documentation says that
@@ -87,13 +86,11 @@ void AddNativeCoreColorMixer(ColorProvider* provider,
 
   if (@available(macOS 11, *)) {
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else if (@available(macOS 10.14, *)) {
+  } else {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
     NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
-  } else {
-    load_colors();
   }
 }
 
@@ -112,21 +109,10 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
     ColorMixer& mixer = provider->AddMixer();
 
-    // TODO(crbug.com/1268521): Investigate native color set behaviour for dark
-    // windows on macOS versions running < 10.14.
-    if (@available(macOS 10.14, *)) {
-      AddNativeColorSetInColorMixer(mixer);
-    } else if (!properties.dark) {
-      AddNativeColorSetInColorMixer(mixer);
-    }
+    AddNativeColorSetInColorMixer(mixer);
 
-    if (@available(macOS 10.14, *)) {
-      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-          NSColor.alternatingContentBackgroundColors[1])};
-    } else {
-      mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
-          NSColor.controlAlternatingRowBackgroundColors[1])};
-    }
+    mixer[kColorTableBackgroundAlternate] = {skia::NSSystemColorToSkColor(
+        NSColor.alternatingContentBackgroundColors[1])};
 
     SkColor menu_separator_color = properties.dark
                                        ? SkColorSetA(gfx::kGoogleGrey800, 0xCC)
@@ -145,13 +131,11 @@ void AddNativeUiColorMixer(ColorProvider* provider,
 
   if (@available(macOS 11, *)) {
     [AppearanceForKey(key) performAsCurrentDrawingAppearance:load_colors];
-  } else if (@available(macOS 10.14, *)) {
+  } else {
     NSAppearance* saved_appearance = NSAppearance.currentAppearance;
     NSAppearance.currentAppearance = AppearanceForKey(key);
     load_colors();
     NSAppearance.currentAppearance = saved_appearance;
-  } else {
-    load_colors();
   }
 }
 

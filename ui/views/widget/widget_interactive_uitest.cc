@@ -53,10 +53,6 @@
 #include "ui/views/win/hwnd_util.h"
 #endif
 
-#if BUILDFLAG(IS_MAC)
-#include "base/mac/mac_util.h"
-#endif
-
 namespace views::test {
 
 namespace {
@@ -629,12 +625,6 @@ TEST_F(WidgetTestInteractive, MAYBE_ChildStackedRelativeToParent) {
 }
 
 TEST_F(WidgetTestInteractive, ChildWidgetStackAbove) {
-#if BUILDFLAG(IS_MAC)
-  // MacOS 10.13 and before don't report window z-ordering reliably.
-  if (base::mac::IsAtMostOS10_13())
-    GTEST_SKIP();
-#endif
-
   WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
   Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
                         CreateChildPlatformWidget(toplevel->GetNativeView()),
@@ -661,12 +651,6 @@ TEST_F(WidgetTestInteractive, ChildWidgetStackAbove) {
 }
 
 TEST_F(WidgetTestInteractive, ChildWidgetStackAtTop) {
-#if BUILDFLAG(IS_MAC)
-  // MacOS 10.13 and before don't report window z-ordering reliably.
-  if (base::mac::IsAtMostOS10_13())
-    GTEST_SKIP();
-#endif
-
   WidgetAutoclosePtr toplevel(CreateTopLevelPlatformWidget());
   Widget* children[] = {CreateChildPlatformWidget(toplevel->GetNativeView()),
                         CreateChildPlatformWidget(toplevel->GetNativeView()),
