@@ -241,6 +241,9 @@ const HatsConfig kHatsBorealisGamesSurvey = {
     base::Days(1),                                // new_device_threshold
     prefs::kHatsBorealisGamesSurveyIsSelected,    // is_selected_pref_name
     prefs::kHatsBorealisGamesSurveyCycleEndTs,  // cycle_end_timestamp_pref_name
+    prefs::kHatsBorealisGamesLastInteractionTimestamp,
+    // survey_last_interaction_timestamp_pref_name
+    base::Days(7),  // threshold_time
 };
 
 }  // namespace ash

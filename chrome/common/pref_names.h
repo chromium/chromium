@@ -292,6 +292,7 @@ extern const char kHatsOsSettingsSearchSurveyCycleEndTs[];
 extern const char kHatsOsSettingsSearchSurveyIsSelected[];
 extern const char kHatsBorealisGamesSurveyCycleEndTs[];
 extern const char kHatsBorealisGamesSurveyIsSelected[];
+extern const char kHatsBorealisGamesLastInteractionTimestamp[];
 extern const char kEolStatus[];
 extern const char kEndOfLifeDate[];
 extern const char kEolNotificationDismissed[];

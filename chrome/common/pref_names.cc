@@ -826,6 +826,11 @@ const char kHatsBorealisGamesSurveyIsSelected[] =
 const char kHatsBorealisGamesSurveyCycleEndTs[] =
     "hats_borealis_games_end_timestamp";
 
+// An base::Time pref. This is the timestamp that indicates the end of the
+// most recent Borealis games survey interaction.
+const char kHatsBorealisGamesLastInteractionTimestamp[] =
+    "hats_borealis_games_last_interaction_timestamp";
+
 // A boolean pref. Indicates if we've already shown a notification to inform the
 // current user about the quick unlock feature.
 const char kPinUnlockFeatureNotificationShown[] =

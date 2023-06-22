@@ -597,6 +597,8 @@ void Preferences::RegisterProfilePrefs(
   registry->RegisterInt64Pref(::prefs::kHatsBorealisGamesSurveyCycleEndTs, 0);
   registry->RegisterBooleanPref(::prefs::kHatsBorealisGamesSurveyIsSelected,
                                 false);
+  registry->RegisterTimePref(
+      ::prefs::kHatsBorealisGamesLastInteractionTimestamp, base::Time());
 
   registry->RegisterBooleanPref(prefs::kShowDisplaySizeScreenEnabled, true);
 
