@@ -41,7 +41,7 @@ class AppRecover : public App {
 
  private:
   ~AppRecover() override = default;
-  void Initialize() override;
+  [[nodiscard]] int Initialize() override;
   void Uninitialize() override;
   void FirstTaskRun() override;
 
@@ -56,8 +56,9 @@ class AppRecover : public App {
   scoped_refptr<GlobalPrefs> global_prefs_;
 };
 
-void AppRecover::Initialize() {
+int AppRecover::Initialize() {
   global_prefs_ = CreateGlobalPrefs(updater_scope());
+  return kErrorOk;
 }
 
 void AppRecover::Uninitialize() {

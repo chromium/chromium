@@ -57,7 +57,7 @@ class AppServer : public App {
 
  private:
   // Overrides of App.
-  void Initialize() final;
+  [[nodiscard]] int Initialize() final;
   void FirstTaskRun() final;
 
   // Sets up the server to handle active version RPCs.

@@ -30,10 +30,9 @@ scoped_refptr<T> AppSingletonInstance() {
 // server app instance.
 class App : public base::RefCountedThreadSafe<App> {
  public:
-  // Starts the thread pool and task executor, then runs a runloop on the main
-  // sequence until Shutdown() is called. Returns the exit code for the
-  // program.
-  int Run();
+  // Runs a runloop on the main sequence until `Shutdown()` is called. Returns
+  // the exit code for the program.
+  [[nodiscard]] int Run();
 
  protected:
   friend class base::RefCountedThreadSafe<App>;
@@ -50,7 +49,7 @@ class App : public base::RefCountedThreadSafe<App> {
  private:
   // Implementations of App can override this to perform work on the main
   // sequence while blocking is still allowed.
-  virtual void Initialize() {}
+  [[nodiscard]] virtual int Initialize();
 
   // Called on the main sequence while blocking is allowed and before
   // shutting down the thread pool.
@@ -60,6 +59,9 @@ class App : public base::RefCountedThreadSafe<App> {
   // method. It is called on the main sequence. Blocking is not allowed. It may
   // call Shutdown.
   virtual void FirstTaskRun() = 0;
+
+  // Runs the loop of the main sequence. Blocking is not allowed.
+  [[nodiscard]] int RunTasks();
 
   // A callback that quits the main sequence runloop.
   base::OnceCallback<void(int)> quit_;

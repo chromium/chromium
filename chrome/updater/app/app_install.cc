@@ -96,9 +96,10 @@ AppInstall::AppInstall(SplashScreen::Maker splash_screen_maker,
 
 AppInstall::~AppInstall() = default;
 
-void AppInstall::Initialize() {
+int AppInstall::Initialize() {
   setup_lock_ =
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+  return kErrorOk;
 }
 
 void AppInstall::FirstTaskRun() {

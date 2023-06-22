@@ -59,7 +59,7 @@ class AppInstall : public App {
   ~AppInstall() override;
 
   // Overrides for App.
-  void Initialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
 
   // Called after the version of the active updater has been retrieved.

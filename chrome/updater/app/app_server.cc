@@ -46,8 +46,9 @@ AppServer::AppServer() : external_constants_(CreateExternalConstants()) {}
 
 AppServer::~AppServer() = default;
 
-void AppServer::Initialize() {
+int AppServer::Initialize() {
   first_task_ = ModeCheck();
+  return kErrorOk;
 }
 
 base::OnceClosure AppServer::ModeCheck() {

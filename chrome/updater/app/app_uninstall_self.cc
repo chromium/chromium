@@ -30,7 +30,7 @@ class AppUninstallSelf : public App {
 
  private:
   ~AppUninstallSelf() override = default;
-  void Initialize() override;
+  [[nodiscard]] int Initialize() override;
   void Uninitialize() override;
   void FirstTaskRun() override;
 
@@ -40,9 +40,10 @@ class AppUninstallSelf : public App {
   std::unique_ptr<ScopedLock> setup_lock_;
 };
 
-void AppUninstallSelf::Initialize() {
+int AppUninstallSelf::Initialize() {
   setup_lock_ =
       ScopedLock::Create(kSetupMutex, updater_scope(), kWaitForSetupLock);
+  return kErrorOk;
 }
 
 void AppUninstallSelf::Uninitialize() {}

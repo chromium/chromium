@@ -31,7 +31,7 @@ class PrivilegedHelperServer : public App {
   SEQUENCE_CHECKER(sequence_checker_);
 
   // Overrides for App.
-  void Initialize() override;
+  [[nodiscard]] int Initialize() override;
   void FirstTaskRun() override;
   void Uninitialize() override;
 
