@@ -6,6 +6,7 @@
 
 #include "base/functional/callback.h"
 #include "base/logging.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_state.h"
 #include "chromeos/lacros/lacros_service.h"
@@ -76,8 +77,9 @@ QuickAnswersStateLacros::QuickAnswersStateLacros() {
                           base::Unretained(this)));
 
   prefs_initialized_ = true;
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPrefsInitialized();
+  }
 
   UpdateEligibility();
 }
@@ -138,6 +140,13 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
   DCHECK(value.is_bool());
   bool settings_enabled = value.GetBool();
 
+  if (chromeos::IsKioskSession() && settings_enabled) {
+    settings_enabled = false;
+    SetPref(crosapi::mojom::PrefPath::kQuickAnswersEnabled, base::Value(false));
+    SetPref(crosapi::mojom::PrefPath::kQuickAnswersConsentStatus,
+            base::Value(quick_answers::prefs::ConsentStatus::kRejected));
+  }
+
   if (settings_enabled_ == settings_enabled) {
     return;
   }
@@ -150,8 +159,9 @@ void QuickAnswersStateLacros::OnSettingsEnabledChanged(base::Value value) {
             base::Value(quick_answers::prefs::ConsentStatus::kAccepted));
   }
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnSettingsEnabled(settings_enabled_);
+  }
 }
 
 void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
@@ -159,8 +169,9 @@ void QuickAnswersStateLacros::OnConsentStatusChanged(base::Value value) {
   consent_status_ =
       static_cast<quick_answers::prefs::ConsentStatus>(value.GetInt());
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnConsentStatusUpdated(consent_status_);
+  }
 }
 
 void QuickAnswersStateLacros::OnDefinitionEnabledChanged(base::Value value) {
@@ -183,8 +194,9 @@ void QuickAnswersStateLacros::OnApplicationLocaleChanged(base::Value value) {
   DCHECK(value.is_string());
   auto locale = value.GetString();
 
-  if (locale.empty())
+  if (locale.empty()) {
     return;
+  }
 
   // We should not directly use the pref locale, resolve the generic locale name
   // to one of the locally defined ones first.
@@ -210,8 +222,9 @@ void QuickAnswersStateLacros::OnPreferredLanguagesChanged(base::Value value) {
   DCHECK(value.is_string());
   preferred_languages_ = value.GetString();
 
-  for (auto& observer : observers_)
+  for (auto& observer : observers_) {
     observer.OnPreferredLanguagesChanged(preferred_languages_);
+  }
 }
 
 void QuickAnswersStateLacros::OnImpressionCountChanged(base::Value value) {

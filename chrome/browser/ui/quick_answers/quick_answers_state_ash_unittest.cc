@@ -10,6 +10,8 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ui/quick_answers/test/chrome_quick_answers_test_base.h"
+#include "chromeos/ash/components/login/login_state/login_state.h"
+#include "chromeos/components/kiosk/kiosk_utils.h"
 #include "chromeos/components/quick_answers/public/cpp/quick_answers_prefs.h"
 #include "chromeos/constants/chromeos_features.h"
 #include "components/language/core/browser/pref_names.h"
@@ -304,6 +306,22 @@ TEST_F(QuickAnswersStateAshTest, EnabledThenDisabledByPolicy) {
 
   prefs()->SetManagedPref(quick_answers::prefs::kQuickAnswersEnabled,
                           base::Value(false));
+  EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
+            observer()->consent_status());
+  EXPECT_FALSE(observer()->settings_enabled());
+}
+
+TEST_F(QuickAnswersStateAshTest, ForceDisabledForKiosk) {
+  QuickAnswersState::Get()->AddObserver(observer());
+
+  ash::LoginState::Get()->SetLoggedInState(
+      ash::LoginState::LoggedInState::LOGGED_IN_NONE,
+      ash::LoginState::LoggedInUserType::LOGGED_IN_USER_KIOSK);
+  EXPECT_TRUE(chromeos::IsKioskSession());
+  prefs()->SetBoolean(quick_answers::prefs::kQuickAnswersEnabled, true);
+
+  EXPECT_FALSE(
+      prefs()->IsManagedPreference(quick_answers::prefs::kQuickAnswersEnabled));
   EXPECT_EQ(quick_answers::prefs::ConsentStatus::kRejected,
             observer()->consent_status());
   EXPECT_FALSE(observer()->settings_enabled());
