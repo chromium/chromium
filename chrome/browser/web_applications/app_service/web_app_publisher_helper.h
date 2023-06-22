@@ -52,7 +52,7 @@
 #include "chrome/browser/apps/app_service/app_web_contents_data.h"
 #include "chrome/browser/apps/app_service/media_requests.h"
 #include "chrome/browser/badging/badge_manager_delegate.h"
-#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_display_service.h"
 #include "content/public/browser/media_request_state.h"
@@ -69,7 +69,7 @@ namespace apps {
 struct ShareTarget;
 struct AppLaunchParams;
 enum class RunOnOsLoginMode;
-}
+}  // namespace apps
 
 namespace badging {
 class BadgeManager;
@@ -78,7 +78,7 @@ class BadgeManager;
 namespace base {
 class FilePath;
 class Time;
-}
+}  // namespace base
 
 namespace content {
 class WebContents;
@@ -109,8 +109,7 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
                               public WebAppInstallManagerObserver,
 #if BUILDFLAG(IS_CHROMEOS)
                               public NotificationDisplayService::Observer,
-                              public MediaCaptureDevicesDispatcher::Observer,
-                              public apps::AppWebContentsData::Client,
+                              public MediaStreamCaptureIndicator::Observer,
 #endif
                               public content_settings::Observer {
  public:
@@ -352,14 +351,11 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  // MediaCaptureDevicesDispatcher::Observer:
-  void OnRequestUpdate(int render_process_id,
-                       int render_frame_id,
-                       blink::mojom::MediaStreamType stream_type,
-                       content::MediaRequestState state) override;
-
-  // apps::AppWebContentsData::Client:
-  void OnWebContentsDestroyed(content::WebContents* contents) override;
+  // MediaStreamCaptureIndicator::Observer:
+  void OnIsCapturingVideoChanged(content::WebContents* web_contents,
+                                 bool is_capturing_video) override;
+  void OnIsCapturingAudioChanged(content::WebContents* web_contents,
+                                 bool is_capturing_audio) override;
 #endif
 
   // content_settings::Observer:
@@ -459,9 +455,9 @@ class WebAppPublisherHelper : public WebAppRegistrarObserver,
 
   raw_ptr<badging::BadgeManager, DanglingUntriaged> badge_manager_ = nullptr;
 
-  base::ScopedObservation<MediaCaptureDevicesDispatcher,
-                          MediaCaptureDevicesDispatcher::Observer>
-      media_dispatcher_{this};
+  base::ScopedObservation<MediaStreamCaptureIndicator,
+                          MediaStreamCaptureIndicator::Observer>
+      media_indicator_observation_{this};
 
   apps::MediaRequests media_requests_;
 #endif

@@ -29,6 +29,7 @@
 #include "chrome/browser/apps/app_service/launch_utils.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
+#include "chrome/browser/media/webrtc/media_stream_capture_indicator.h"
 #include "chrome/browser/notifications/notification_common.h"
 #include "chrome/browser/notifications/notification_handler.h"
 #include "chrome/browser/profiles/profile.h"
@@ -62,8 +63,6 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
-#include "content/public/browser/render_frame_host.h"
-#include "content/public/browser/render_process_host.h"
 #include "content/public/browser/web_contents.h"
 #include "content/public/test/browser_test.h"
 #include "content/public/test/browser_test_utils.h"
@@ -71,6 +70,8 @@
 #include "net/test/embedded_test_server/embedded_test_server.h"
 #include "testing/gmock/include/gmock/gmock-matchers.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "third_party/blink/public/common/mediastream/media_stream_request.h"
+#include "third_party/blink/public/mojom/mediastream/media_stream.mojom.h"
 #include "ui/display/types/display_constants.h"
 #include "ui/message_center/public/cpp/notification.h"
 #include "ui/message_center/public/cpp/notification_types.h"
@@ -430,10 +431,8 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
   const GURL app_url = embedded_test_server()->GetURL("/web_apps/basic.html");
   AppId app_id = InstallWebAppFromManifest(browser(), app_url);
   Browser* browser = LaunchWebAppBrowserAndWait(app_id);
-  content::RenderFrameHost* render_frame_host =
-      browser->tab_strip_model()->GetActiveWebContents()->GetPrimaryMainFrame();
-  const int render_process_id = render_frame_host->GetProcess()->GetID();
-  const int render_frame_id = render_frame_host->GetRoutingID();
+  content::WebContents* web_contents =
+      browser->tab_strip_model()->GetActiveWebContents();
 
   MockAppPublisher mock_app_publisher;
   LacrosWebAppsController& lacros_web_apps_controller =
@@ -441,16 +440,22 @@ IN_PROC_BROWSER_TEST_F(LacrosWebAppsControllerBrowserTest, MediaRequest) {
            ->LacrosWebAppsControllerForTesting();
   lacros_web_apps_controller.SetPublisherForTesting(&mock_app_publisher);
 
-  content::GetIOThreadTaskRunner({})->PostTask(
-      FROM_HERE, base::BindLambdaForTesting([render_process_id, render_frame_id,
-                                             app_url]() {
-        MediaCaptureDevicesDispatcher::GetInstance()
-            ->OnMediaRequestStateChanged(
-                render_process_id, render_frame_id,
-                /*page_request_id=*/0, app_url,
-                blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE,
-                content::MEDIA_REQUEST_STATE_DONE);
-      }));
+  // Register and start a fake device streaming microphone audio.
+  blink::mojom::StreamDevices fake_devices;
+  blink::MediaStreamDevice device(
+      blink::mojom::MediaStreamType::DEVICE_AUDIO_CAPTURE, "fake_device",
+      "fake_device");
+  fake_devices.audio_device = device;
+
+  std::unique_ptr<content::MediaStreamUI> ui =
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          ->RegisterMediaStream(web_contents, fake_devices);
+  ui->OnStarted(base::RepeatingClosure(),
+                content::MediaStreamUI::SourceCallback(),
+                /*label=*/std::string(), /*screen_capture_ids=*/{},
+                content::MediaStreamUI::StateChangeCallback());
+
   mock_app_publisher.Wait();
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().size(), 1U);
   EXPECT_EQ(mock_app_publisher.get_capability_access_deltas().back()->app_id,

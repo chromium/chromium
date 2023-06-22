@@ -73,6 +73,7 @@
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_sync_bridge.h"
+#include "chrome/browser/web_applications/web_app_tab_helper.h"
 #include "chrome/browser/web_applications/web_app_utils.h"
 #include "chrome/common/chrome_features.h"
 #include "components/content_settings/core/browser/content_settings_type_set.h"
@@ -108,6 +109,7 @@
 #include "chrome/browser/apps/app_service/browser_app_instance_tracker.h"
 #include "chrome/browser/apps/app_service/metrics/app_service_metrics.h"
 #include "chrome/browser/badging/badge_manager_factory.h"
+#include "chrome/browser/media/webrtc/media_capture_devices_dispatcher.h"
 #include "chrome/browser/notifications/notification_display_service_factory.h"
 #include "chrome/browser/web_applications/chromeos_web_app_experiments.h"
 #include "chromeos/constants/chromeos_features.h"
@@ -1486,61 +1488,31 @@ void WebAppPublisherHelper::OnNotificationDisplayServiceDestroyed(
   notification_display_service_.Reset();
 }
 
-void WebAppPublisherHelper::OnRequestUpdate(
-    int render_process_id,
-    int render_frame_id,
-    blink::mojom::MediaStreamType stream_type,
-    const content::MediaRequestState state) {
-  content::WebContents* web_contents =
-      content::WebContents::FromRenderFrameHost(
-          content::RenderFrameHost::FromID(render_process_id, render_frame_id));
-
-  if (!web_contents) {
+void WebAppPublisherHelper::OnIsCapturingVideoChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_video) {
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id) {
     return;
   }
 
-  absl::optional<AppId> app_id =
-      FindInstalledAppWithUrlInScope(profile(), web_contents->GetVisibleURL(),
-                                     /*window_only=*/false);
-  if (!app_id.has_value()) {
-    return;
-  }
-
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app) {
-    return;
-  }
-
-  if (media_requests_.IsNewRequest(app_id.value(), web_contents, state)) {
-    content::WebContentsUserData<
-        apps::AppWebContentsData>::CreateForWebContents(web_contents, this);
-  }
-
-  auto result = media_requests_.UpdateRequests(app_id.value(), web_contents,
-                                               stream_type, state);
-  delegate_->ModifyWebAppCapabilityAccess(app_id.value(), result.camera,
+  auto result = media_requests_.UpdateCameraState(*app_id, web_contents,
+                                                  is_capturing_video);
+  delegate_->ModifyWebAppCapabilityAccess(*app_id, result.camera,
                                           result.microphone);
 }
 
-void WebAppPublisherHelper::OnWebContentsDestroyed(
-    content::WebContents* web_contents) {
-  DCHECK(web_contents);
-
-  absl::optional<AppId> app_id = FindInstalledAppWithUrlInScope(
-      profile(), web_contents->GetLastCommittedURL(),
-      /*window_only=*/false);
-  if (!app_id.has_value()) {
+void WebAppPublisherHelper::OnIsCapturingAudioChanged(
+    content::WebContents* web_contents,
+    bool is_capturing_audio) {
+  const AppId* app_id = WebAppTabHelper::GetAppId(web_contents);
+  if (!app_id) {
     return;
   }
 
-  const WebApp* web_app = GetWebApp(app_id.value());
-  if (!web_app) {
-    return;
-  }
-
-  auto result =
-      media_requests_.OnWebContentsDestroyed(app_id.value(), web_contents);
-  delegate_->ModifyWebAppCapabilityAccess(app_id.value(), result.camera,
+  auto result = media_requests_.UpdateMicrophoneState(*app_id, web_contents,
+                                                      is_capturing_audio);
+  delegate_->ModifyWebAppCapabilityAccess(*app_id, result.camera,
                                           result.microphone);
 }
 #endif
@@ -1606,7 +1578,10 @@ void WebAppPublisherHelper::Init() {
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS)
-  media_dispatcher_.Observe(MediaCaptureDevicesDispatcher::GetInstance());
+  media_indicator_observation_.Observe(
+      MediaCaptureDevicesDispatcher::GetInstance()
+          ->GetMediaStreamCaptureIndicator()
+          .get());
 #endif
 }
 

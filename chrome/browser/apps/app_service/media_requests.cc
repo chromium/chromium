@@ -24,6 +24,36 @@ MediaRequests::MediaRequests() = default;
 
 MediaRequests::~MediaRequests() = default;
 
+AccessingRequest MediaRequests::UpdateMicrophoneState(
+    const std::string& app_id,
+    const content::WebContents* web_contents,
+    bool is_accessing_microphone) {
+  absl::optional<bool> accessing_microphone;
+  if (is_accessing_microphone) {
+    accessing_microphone = MaybeAddRequest(
+        app_id, web_contents, app_id_to_web_contents_for_microphone_);
+  } else {
+    accessing_microphone = MaybeRemoveRequest(
+        app_id, web_contents, app_id_to_web_contents_for_microphone_);
+  }
+  return AccessingRequest(/*camera=*/absl::nullopt, accessing_microphone);
+}
+
+AccessingRequest MediaRequests::UpdateCameraState(
+    const std::string& app_id,
+    const content::WebContents* web_contents,
+    bool is_accessing_camera) {
+  absl::optional<bool> accessing_camera;
+  if (is_accessing_camera) {
+    accessing_camera = MaybeAddRequest(app_id, web_contents,
+                                       app_id_to_web_contents_for_camera_);
+  } else {
+    accessing_camera = MaybeRemoveRequest(app_id, web_contents,
+                                          app_id_to_web_contents_for_camera_);
+  }
+  return AccessingRequest(accessing_camera, /*microphone=*/absl::nullopt);
+}
+
 bool MediaRequests::IsNewRequest(const std::string& app_id,
                                  const content::WebContents* web_contents,
                                  const content::MediaRequestState state) {
