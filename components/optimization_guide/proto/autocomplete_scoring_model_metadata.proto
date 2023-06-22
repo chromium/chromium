@@ -59,6 +59,8 @@ message ScoringSignalSpec {
   optional float min_value = 4;
   // Maximum value of valid signals.
   optional float max_value = 5;
+  // The upper boundary for normalization.
+  optional float norm_upper_boundary = 6;
 }
 
 // The message contains a set of params to run a specific autocomplete scoring

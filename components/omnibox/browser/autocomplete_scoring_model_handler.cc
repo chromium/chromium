@@ -294,6 +294,13 @@ AutocompleteScoringModelHandler::ExtractInputFromScoringSignals(
                 : kDefaultMissingValue;
     }
 
+    // Normalize signal if configured.
+    if (scoring_signal_spec.has_norm_upper_boundary()) {
+      float upper_boundary = scoring_signal_spec.norm_upper_boundary();
+      DCHECK_GT(upper_boundary, 0);
+      val = std::clamp(*val, -upper_boundary, upper_boundary) / upper_boundary;
+    }
+
     model_input.push_back(*val);
   }
   DCHECK_EQ(static_cast<size_t>(model_input.size()),
