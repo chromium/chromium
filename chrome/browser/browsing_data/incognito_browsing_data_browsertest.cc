@@ -11,6 +11,7 @@
 #include "base/path_service.h"
 #include "base/run_loop.h"
 #include "base/test/bind.h"
+#include "base/test/test_future.h"
 #include "base/time/time.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
@@ -29,6 +30,7 @@
 #include "components/prefs/pref_service.h"
 #include "content/public/browser/storage_partition.h"
 #include "content/public/browser/storage_usage_info.h"
+#include "content/public/common/content_client.h"
 #include "content/public/common/content_paths.h"
 #include "content/public/test/browser_test.h"
 #include "media/base/media_switches.h"
@@ -224,11 +226,23 @@ IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, Download) {
 
 // Test that the salt for media device IDs is reset between Incognito sessions.
 IN_PROC_BROWSER_TEST_F(IncognitoBrowsingDataBrowserTest, MediaDeviceIdSalt) {
-  std::string original_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
-
+  auto get_salt = [&]() {
+    content::RenderFrameHost* frame_host = GetBrowser()
+                                               ->tab_strip_model()
+                                               ->GetActiveWebContents()
+                                               ->GetPrimaryMainFrame();
+    url::Origin origin = frame_host->GetLastCommittedOrigin();
+    net::SiteForCookies site_for_cookies =
+        net::SiteForCookies::FromOrigin(origin);
+    blink::StorageKey storage_key = blink::StorageKey::CreateFirstParty(origin);
+    base::test::TestFuture<bool, const std::string&> future;
+    content::GetContentClientForTesting()->browser()->GetMediaDeviceIDSalt(
+        frame_host, site_for_cookies, storage_key, future.GetCallback());
+    return future.Get<1>();
+  };
+  std::string original_salt = get_salt();
   RestartIncognitoBrowser();
-
-  std::string new_salt = GetBrowser()->profile()->GetMediaDeviceIDSalt();
+  std::string new_salt = get_salt();
   EXPECT_NE(original_salt, new_salt);
 }
 

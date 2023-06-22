@@ -12,6 +12,8 @@
 #include "base/lazy_instance.h"
 #include "base/strings/string_number_conversions.h"
 #include "chrome/browser/extensions/extension_tab_util.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
@@ -120,8 +122,32 @@ std::string WebrtcAudioPrivateFunction::CalculateHMAC(
                                           raw_id);
 }
 
-void WebrtcAudioPrivateFunction::InitDeviceIDSalt() {
-  device_id_salt_ = browser_context()->GetMediaDeviceIDSalt();
+void WebrtcAudioPrivateFunction::InitDeviceIdSalt(
+    bool is_input_devices,
+    base::OnceCallback<void(media::AudioDeviceDescriptions)>
+        device_descriptions_callback) {
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context());
+  if (!salt_service) {
+    GotSalt(is_input_devices, std::move(device_descriptions_callback),
+            browser_context()->UniqueId());
+    return;
+  }
+
+  salt_service->GetSalt(base::BindOnce(
+      &WebrtcAudioPrivateFunction::GotSalt, this, is_input_devices,
+      std::move(device_descriptions_callback)));
+}
+
+void WebrtcAudioPrivateFunction::GotSalt(
+    bool is_input_devices,
+    base::OnceCallback<void(media::AudioDeviceDescriptions)>
+        device_descriptions_callback,
+    const std::string& device_id_salt) {
+  device_id_salt_ = device_id_salt;
+  GetAudioSystem()->GetDeviceDescriptions(
+      is_input_devices, std::move(device_descriptions_callback));
 }
 
 std::string WebrtcAudioPrivateFunction::device_id_salt() const {
@@ -137,9 +163,8 @@ media::AudioSystem* WebrtcAudioPrivateFunction::GetAudioSystem() {
 
 ExtensionFunction::ResponseAction WebrtcAudioPrivateGetSinksFunction::Run() {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
-  InitDeviceIDSalt();
-  GetAudioSystem()->GetDeviceDescriptions(
-      false,
+  InitDeviceIdSalt(
+      /*is_input_devices=*/false,
       base::BindOnce(
           &WebrtcAudioPrivateGetSinksFunction::ReceiveOutputDeviceDescriptions,
           this));
@@ -171,12 +196,10 @@ WebrtcAudioPrivateGetAssociatedSinkFunction::Run() {
   params_ = wap::GetAssociatedSink::Params::Create(args());
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   EXTENSION_FUNCTION_VALIDATE(params_);
-  InitDeviceIDSalt();
-
-  GetAudioSystem()->GetDeviceDescriptions(
-      true, base::BindOnce(&WebrtcAudioPrivateGetAssociatedSinkFunction::
-                               ReceiveInputDeviceDescriptions,
-                           this));
+  InitDeviceIdSalt(/*is_input_devices=*/true,
+                   base::BindOnce(&WebrtcAudioPrivateGetAssociatedSinkFunction::
+                                      ReceiveInputDeviceDescriptions,
+                                  this));
   return RespondLater();
 }
 

@@ -82,6 +82,7 @@
 #include "content/browser/loader/resource_cache_manager.h"
 #include "content/browser/loader/subresource_proxying_url_loader_service.h"
 #include "content/browser/log_console_message.h"
+#include "content/browser/media/media_devices_util.h"
 #include "content/browser/media/media_interface_proxy.h"
 #include "content/browser/media/webaudio/audio_context_manager_impl.h"
 #include "content/browser/navigation_or_document_handle.h"
@@ -171,6 +172,7 @@
 #include "content/public/browser/document_service_internal.h"
 #include "content/public/browser/download_manager.h"
 #include "content/public/browser/global_routing_id.h"
+#include "content/public/browser/media_device_id.h"
 #include "content/public/browser/network_service_util.h"
 #include "content/public/browser/peak_gpu_memory_tracker.h"
 #include "content/public/browser/render_process_host.h"
@@ -1537,8 +1539,7 @@ RenderFrameHostImpl::RenderFrameHostImpl(
           agent_scheduling_group_->GetProcess(),
           RenderProcessHostImpl::kKeepAliveHandleFactoryTimeout),
       subframe_unload_timeout_(kUnloadTimeout),
-      media_device_id_salt_base_(
-          BrowserContext::CreateRandomMediaDeviceIDSalt()),
+      media_device_id_salt_base_(CreateRandomMediaDeviceIDSalt()),
       document_associated_data_(absl::in_place, *this, document_token),
       lifecycle_state_(lifecycle_state),
       inner_tree_main_frame_tree_node_id_(
@@ -12902,7 +12903,7 @@ void RenderFrameHostImpl::DidCommitNewDocument(
 
   // Reset the salt so that media device IDs are reset for the new document
   // if necessary.
-  media_device_id_salt_base_ = BrowserContext::CreateRandomMediaDeviceIDSalt();
+  media_device_id_salt_base_ = CreateRandomMediaDeviceIDSalt();
 
   accessibility_fatal_error_count_ = 0;
 

@@ -865,6 +865,7 @@ static_library("extensions") {
     "//components/language/core/common",
     "//components/language/core/language_model",
     "//components/live_caption:constants",
+    "//components/media_device_salt",
     "//components/nacl/common:buildflags",
     "//components/navigation_interception",
     "//components/net_log",

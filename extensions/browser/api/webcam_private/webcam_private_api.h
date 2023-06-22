@@ -36,10 +36,12 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
                  const std::string& webcam_id,
                  base::OnceCallback<void(Webcam*)> callback);
 
-  bool OpenSerialWebcam(
+  enum class OpenSerialWebcamResult { kSuccess, kInUse, kError };
+  void OpenSerialWebcam(
       const std::string& extension_id,
       const std::string& device_path,
-      const base::RepeatingCallback<void(const std::string&, bool)>& callback);
+      const base::RepeatingCallback<void(const std::string&,
+                                         OpenSerialWebcamResult)>& callback);
   bool CloseWebcam(const std::string& extension_id,
                    const std::string& device_id);
 
@@ -57,15 +59,34 @@ class WebcamPrivateAPI : public BrowserContextKeyedAPI {
       std::string hmac_device_id,
       base::OnceCallback<void(const absl::optional<std::string>&)> callback);
 
+  void GetDeviceIdOnUIThread(const std::string& extension_id,
+                             const std::string& webcam_id,
+                             base::OnceCallback<void(Webcam*)> webcam_callback,
+                             const std::string& salt);
+
   void OnOpenSerialWebcam(
+      const std::string& webcam_id,
       const std::string& extension_id,
       const std::string& device_path,
       scoped_refptr<Webcam> webcam,
-      const base::RepeatingCallback<void(const std::string&, bool)>& callback,
+      const base::RepeatingCallback<void(const std::string&,
+                                         OpenSerialWebcamResult)>& callback,
       bool success);
+  void GotWebcamId(const std::string& extension_id,
+                   const std::string& device_path,
+                   const base::RepeatingCallback<void(const std::string&,
+                                                      OpenSerialWebcamResult)>&
+                       open_serial_webcam_callback,
+                   const std::string& webcam_id);
 
-  std::string GetWebcamId(const std::string& extension_id,
-                          const std::string& device_id);
+  void GetWebcamId(const std::string& extension_id,
+                   const std::string& device_id,
+                   base::OnceCallback<void(const std::string&)> callback);
+  void FinalizeGetWebcamId(
+      const std::string& extension_id,
+      const std::string& device_id,
+      base::OnceCallback<void(const std::string&)> webcam_id_callback,
+      const std::string& device_id_salt);
 
   WebcamResource* FindWebcamResource(const std::string& extension_id,
                                      const std::string& webcam_id) const;
@@ -108,7 +129,8 @@ class WebcamPrivateOpenSerialWebcamFunction : public ExtensionFunction {
   ResponseAction Run() override;
 
  private:
-  void OnOpenWebcam(const std::string& webcam_id, bool success);
+  void OnOpenWebcam(const std::string& webcam_id,
+                    WebcamPrivateAPI::OpenSerialWebcamResult result);
 };
 
 class WebcamPrivateCloseWebcamFunction : public ExtensionFunction {

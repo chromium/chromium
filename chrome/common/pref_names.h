@@ -722,7 +722,6 @@ extern const char kWebAppsUrlHandlerInfo[];
 
 extern const char kDefaultAudioCaptureDevice[];
 extern const char kDefaultVideoCaptureDevice[];
-extern const char kMediaDeviceIdSalt[];
 extern const char kMediaStorageIdSalt[];
 #if BUILDFLAG(IS_WIN)
 extern const char kMediaCdmOriginData[];

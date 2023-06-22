@@ -82,6 +82,8 @@ blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
     const MediaDeviceSaltAndOrigin& salt_and_origin,
     const blink::WebMediaDeviceInfoArray& device_infos);
 
+CONTENT_EXPORT std::string CreateRandomMediaDeviceIDSalt();
+
 }  // namespace content
 
 #endif  // CONTENT_BROWSER_MEDIA_MEDIA_DEVICES_UTIL_H_

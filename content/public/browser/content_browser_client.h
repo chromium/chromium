@@ -2235,12 +2235,17 @@ class CONTENT_EXPORT ContentBrowserClient {
                                       const url::Origin& requesting_origin,
                                       const url::Origin& embedding_origin);
 
-  // Returns true if the site is allowed to use persistent media device IDs.
-  virtual bool ArePersistentMediaDeviceIDsAllowed(
-      content::BrowserContext* browser_context,
-      const GURL& scope,
+  // Returns via callback:
+  //  1. A boolean indicating whether persistent device IDs are allowed.
+  //  2. A salt for hashing media device IDs for the given storage key.
+  //  Ideally, the salt should be unique per `storage_key` and persistent if
+  //  cookie access is allowed for `site_for_cookies`. However the embedder is
+  //  free to return a salt that does not satisfy all these properties.
+  virtual void GetMediaDeviceIDSalt(
+      content::RenderFrameHost* rfh,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin);
+      const blink::StorageKey& storage_key,
+      base::OnceCallback<void(bool, const std::string&)> callback);
 
   // Requests an SMS from |origin_list| from a remote device with telephony
   // capabilities, for example the user's mobile phone. Callbacks |callback|

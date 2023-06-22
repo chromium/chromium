@@ -8,6 +8,8 @@
 
 #include "base/functional/bind.h"
 #include "base/lazy_instance.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/media_device_id.h"
 #include "content/public/browser/resource_context.h"
@@ -112,15 +114,27 @@ void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
     return;
   }
 
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context_);
+  salt_service->GetSalt(base::BindOnce(
+      &WebcamPrivateAPI::GetDeviceIdOnUIThread, weak_ptr_factory_.GetWeakPtr(),
+      extension_id, webcam_id, std::move(callback)));
+}
+
+void WebcamPrivateAPI::GetDeviceIdOnUIThread(
+    const std::string& extension_id,
+    const std::string& webcam_id,
+    base::OnceCallback<void(Webcam*)> webcam_callback,
+    const std::string& salt) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+
   url::Origin security_origin =
       extensions::Extension::CreateOriginFromExtensionId(extension_id);
-
-  std::string salt = browser_context_->GetMediaDeviceIDSalt();
-
   auto got_device_cb =
       base::BindOnce(&WebcamPrivateAPI::OnGotDeviceIdOnUIThread,
                      weak_ptr_factory_.GetWeakPtr(), extension_id, webcam_id,
-                     std::move(callback));
+                     std::move(webcam_callback));
 
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE,
@@ -128,16 +142,30 @@ void WebcamPrivateAPI::GetWebcam(const std::string& extension_id,
                      security_origin, webcam_id, std::move(got_device_cb)));
 }
 
-bool WebcamPrivateAPI::OpenSerialWebcam(
+void WebcamPrivateAPI::OpenSerialWebcam(
     const std::string& extension_id,
     const std::string& device_path,
-    const base::RepeatingCallback<void(const std::string&, bool)>& callback) {
-  const std::string& webcam_id = GetWebcamId(extension_id, device_path);
-  WebcamResource* webcam_resource = FindWebcamResource(extension_id, webcam_id);
-  if (webcam_resource)
-    return false;
+    const base::RepeatingCallback<void(const std::string&,
+                                       OpenSerialWebcamResult)>& callback) {
+  GetWebcamId(extension_id, device_path,
+              base::BindOnce(&WebcamPrivateAPI::GotWebcamId,
+                             weak_ptr_factory_.GetWeakPtr(), extension_id,
+                             device_path, callback));
+}
 
+void WebcamPrivateAPI::GotWebcamId(
+    const std::string& extension_id,
+    const std::string& device_path,
+    const base::RepeatingCallback<void(const std::string&,
+                                       OpenSerialWebcamResult)>& callback,
+    const std::string& webcam_id) {
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  WebcamResource* webcam_resource = FindWebcamResource(extension_id, webcam_id);
+  if (webcam_resource) {
+    callback.Run("", OpenSerialWebcamResult::kInUse);
+    return;
+  }
+
   mojo::PendingRemote<device::mojom::SerialPort> port;
   auto* port_manager = api::SerialPortManager::Get(browser_context_);
   DCHECK(port_manager);
@@ -146,9 +174,8 @@ bool WebcamPrivateAPI::OpenSerialWebcam(
   visca_webcam->Open(
       extension_id, port_manager, device_path,
       base::BindRepeating(&WebcamPrivateAPI::OnOpenSerialWebcam,
-                          weak_ptr_factory_.GetWeakPtr(), extension_id,
-                          device_path, visca_webcam, callback));
-  return true;
+                          weak_ptr_factory_.GetWeakPtr(), webcam_id,
+                          extension_id, device_path, visca_webcam, callback));
 }
 
 bool WebcamPrivateAPI::CloseWebcam(const std::string& extension_id,
@@ -161,28 +188,44 @@ bool WebcamPrivateAPI::CloseWebcam(const std::string& extension_id,
 }
 
 void WebcamPrivateAPI::OnOpenSerialWebcam(
+    const std::string& webcam_id,
     const std::string& extension_id,
     const std::string& device_path,
     scoped_refptr<Webcam> webcam,
-    const base::RepeatingCallback<void(const std::string&, bool)>& callback,
+    const base::RepeatingCallback<void(const std::string&,
+                                       OpenSerialWebcamResult)>& callback,
     bool success) {
   if (success) {
-    const std::string& webcam_id = GetWebcamId(extension_id, device_path);
     webcam_resource_manager_->Add(
         new WebcamResource(extension_id, webcam.get(), webcam_id));
-    callback.Run(webcam_id, true);
+    callback.Run(webcam_id, OpenSerialWebcamResult::kSuccess);
   } else {
-    callback.Run("", false);
+    callback.Run("", OpenSerialWebcamResult::kError);
   }
 }
 
-std::string WebcamPrivateAPI::GetWebcamId(const std::string& extension_id,
-                                          const std::string& device_id) {
+void WebcamPrivateAPI::GetWebcamId(
+    const std::string& extension_id,
+    const std::string& device_id,
+    base::OnceCallback<void(const std::string&)> webcam_id_callback) {
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context_);
+  salt_service->GetSalt(base::BindOnce(
+      &WebcamPrivateAPI::FinalizeGetWebcamId, weak_ptr_factory_.GetWeakPtr(),
+      extension_id, device_id, std::move(webcam_id_callback)));
+}
+
+void WebcamPrivateAPI::FinalizeGetWebcamId(
+    const std::string& extension_id,
+    const std::string& device_id,
+    base::OnceCallback<void(const std::string&)> webcam_id_callback,
+    const std::string& device_id_salt) {
   url::Origin security_origin =
       extensions::Extension::CreateOriginFromExtensionId(extension_id);
-
-  return content::GetHMACForMediaDeviceID(
-      browser_context_->GetMediaDeviceIDSalt(), security_origin, device_id);
+  std::string webcam_id = content::GetHMACForMediaDeviceID(
+      device_id_salt, security_origin, device_id);
+  std::move(webcam_id_callback).Run(webcam_id);
 }
 
 WebcamResource* WebcamPrivateAPI::FindWebcamResource(
@@ -238,26 +281,24 @@ ExtensionFunction::ResponseAction WebcamPrivateOpenSerialWebcamFunction::Run() {
       webcam_private::OpenSerialWebcam::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  if (WebcamPrivateAPI::Get(browser_context())
-          ->OpenSerialWebcam(
-              extension_id(), params->path,
-              base::BindRepeating(
-                  &WebcamPrivateOpenSerialWebcamFunction::OnOpenWebcam,
-                  this))) {
-    // OpenSerialWebcam responds asynchronously.
-    return RespondLater();
-  }
-
-  return RespondNow(Error(kPathInUse));
+  WebcamPrivateAPI::Get(browser_context())
+      ->OpenSerialWebcam(
+          extension_id(), params->path,
+          base::BindRepeating(
+              &WebcamPrivateOpenSerialWebcamFunction::OnOpenWebcam, this));
+  // OpenSerialWebcam responds asynchronously.
+  return RespondLater();
 }
 
 void WebcamPrivateOpenSerialWebcamFunction::OnOpenWebcam(
     const std::string& webcam_id,
-    bool success) {
-  if (success) {
+    WebcamPrivateAPI::OpenSerialWebcamResult result) {
+  if (result == WebcamPrivateAPI::OpenSerialWebcamResult::kSuccess) {
     Respond(WithArguments(webcam_id));
-  } else {
+  } else if (result == WebcamPrivateAPI::OpenSerialWebcamResult::kError) {
     Respond(Error(kOpenSerialWebcamError));
+  } else if (result == WebcamPrivateAPI::OpenSerialWebcamResult::kInUse) {
+    Respond(Error(kPathInUse));
   }
 }
 

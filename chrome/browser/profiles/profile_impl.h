@@ -29,7 +29,6 @@
 #include "content/public/browser/host_zoom_map.h"
 #include "extensions/buildflags/buildflags.h"
 
-class MediaDeviceIDSalt;
 class PrefService;
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
@@ -95,7 +94,6 @@ class ProfileImpl : public Profile {
   content::BackgroundSyncController* GetBackgroundSyncController() override;
   content::ReduceAcceptLanguageControllerDelegate*
   GetReduceAcceptLanguageControllerDelegate() override;
-  std::string GetMediaDeviceIDSalt() override;
   std::unique_ptr<download::InProgressDownloadManager>
   RetrieveInProgressDownloadManager() override;
   content::FileSystemAccessPermissionContext*
@@ -304,11 +302,6 @@ class ProfileImpl : public Profile {
 
   std::unique_ptr<ash::LocaleChangeGuard> locale_change_guard_;
 #endif
-
-  // TODO(mmenke):  This should be removed from the Profile, and use a
-  // BrowserContextKeyedService instead.
-  // See https://crbug.com/713733
-  scoped_refptr<MediaDeviceIDSalt> media_device_id_salt_;
 
   // STOP!!!! DO NOT ADD ANY MORE ITEMS HERE!!!!
   //

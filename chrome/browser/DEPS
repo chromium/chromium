@@ -189,6 +189,7 @@ include_rules = [
   "+components/location/android",
   "+components/lookalikes/core",
   "+components/login",
+  "+components/media_device_salt",
   "+components/media_message_center",
   "+components/media_router/browser",
   "+components/history_clusters",

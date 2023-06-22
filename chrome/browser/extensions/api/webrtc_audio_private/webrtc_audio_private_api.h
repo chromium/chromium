@@ -67,15 +67,21 @@ class WebrtcAudioPrivateFunction : public ExtensionFunction {
 
   // Initializes |device_id_salt_|. Must be called on the UI thread,
   // before any calls to |device_id_salt()|.
-  void InitDeviceIDSalt();
+  void InitDeviceIdSalt(
+      bool is_input_devices,
+      base::OnceCallback<void(media::AudioDeviceDescriptions)> callback);
 
   // Callable from any thread. Must previously have called
-  // |InitDeviceIDSalt()|.
+  // |InitDeviceIdSalt()|.
   std::string device_id_salt() const;
 
   media::AudioSystem* GetAudioSystem();
 
  private:
+  void GotSalt(bool is_input_devices,
+               base::OnceCallback<void(media::AudioDeviceDescriptions)>
+                   device_descriptions_callback,
+               const std::string& salt_and_origin);
   std::string device_id_salt_;
   std::unique_ptr<media::AudioSystem> audio_system_;
 };

@@ -2205,9 +2205,6 @@ const char kDefaultAudioCaptureDevice[] = "media.default_audio_capture_device";
 // The default video capture device used by the Media content setting.
 const char kDefaultVideoCaptureDevice[] = "media.default_video_capture_Device";
 
-// The salt used for creating random MediaSource IDs.
-const char kMediaDeviceIdSalt[] = "media.device_id_salt";
-
 // The salt used for creating Storage IDs. The Storage ID is used by encrypted
 // media to bind persistent licenses to the device which is authorized to play
 // the content.

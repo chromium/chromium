@@ -40,7 +40,6 @@
 #include "content/public/common/content_features.h"
 #include "content/public/common/content_switches.h"
 #include "content/public/test/browser_task_environment.h"
-#include "content/public/test/test_browser_context.h"
 #include "content/public/test/test_renderer_host.h"
 #include "media/audio/audio_device_description.h"
 #include "media/audio/audio_system_impl.h"
@@ -320,7 +319,7 @@ class MediaStreamDispatcherHostTest : public testing::Test {
         std::make_unique<media::TestAudioThread>());
     audio_system_ =
         std::make_unique<media::AudioSystemImpl>(audio_manager_.get());
-    browser_context_ = std::make_unique<TestBrowserContext>();
+    ResetMediaDeviceIDSalt();
     // Make sure we use fake devices to avoid long delays.
     base::CommandLine::ForCurrentProcess()->AppendSwitchASCII(
         switches::kUseFakeDeviceForMediaStream,
@@ -396,9 +395,9 @@ class MediaStreamDispatcherHostTest : public testing::Test {
 
   void GetSaltAndOrigin(GlobalRenderFrameHostId /*render_frame_host_id*/,
                         MediaDeviceSaltAndOriginCallback callback) {
-    std::move(callback).Run(MediaDeviceSaltAndOrigin(
-        browser_context_->GetMediaDeviceIDSalt(), "fake_group_id_salt", origin_,
-        focus_, background_));
+    std::move(callback).Run(
+        MediaDeviceSaltAndOrigin(media_device_id_salt_, "fake_group_id_salt",
+                                 origin_, focus_, background_));
   }
 
   MOCK_METHOD2(MockOnBadMessage, void(int, bad_message::BadMessageReason));
@@ -518,15 +517,15 @@ class MediaStreamDispatcherHostTest : public testing::Test {
     media::AudioDeviceDescriptions::const_iterator audio_it =
         audio_device_descriptions_.begin();
     for (; audio_it != audio_device_descriptions_.end(); ++audio_it) {
-      if (DoesMediaDeviceIDMatchHMAC(browser_context_->GetMediaDeviceIDSalt(),
-                                     origin, device.id, audio_it->unique_id)) {
+      if (DoesMediaDeviceIDMatchHMAC(media_device_id_salt_, origin, device.id,
+                                     audio_it->unique_id)) {
         EXPECT_FALSE(found_match) << "Multiple matches found.";
         found_match = true;
       }
     }
     for (const std::string& device_id : stub_video_device_ids_) {
-      if (DoesMediaDeviceIDMatchHMAC(browser_context_->GetMediaDeviceIDSalt(),
-                                     origin, device.id, device_id)) {
+      if (DoesMediaDeviceIDMatchHMAC(media_device_id_salt_, origin, device.id,
+                                     device_id)) {
         EXPECT_FALSE(found_match) << "Multiple matches found.";
         found_match = true;
       }
@@ -565,13 +564,17 @@ class MediaStreamDispatcherHostTest : public testing::Test {
         ->video_device;
   }
 
+  void ResetMediaDeviceIDSalt() {
+    media_device_id_salt_ = CreateRandomMediaDeviceIDSalt();
+  }
+
   base::test::ScopedFeatureList scoped_feature_list_;
   std::unique_ptr<MockMediaStreamDispatcherHost> host_;
   std::unique_ptr<MediaStreamManager> media_stream_manager_;
   BrowserTaskEnvironment task_environment_;
   std::unique_ptr<media::AudioManager> audio_manager_;
   std::unique_ptr<media::AudioSystem> audio_system_;
-  std::unique_ptr<TestBrowserContext> browser_context_;
+  std::string media_device_id_salt_;
   media::AudioDeviceDescriptions audio_device_descriptions_;
   std::vector<std::string> stub_video_device_ids_;
   url::Origin origin_;
@@ -694,8 +697,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithAudioAndVideo) {
 TEST_F(MediaStreamDispatcherHostTest, GenerateStreamWithDepthVideo) {
   // We specify to generate both audio and video stream.
   blink::StreamControls controls(true, true);
-  std::string source_id = GetHMACForMediaDeviceID(
-      browser_context_->GetMediaDeviceIDSalt(), origin_, kDepthVideoDeviceId);
+  std::string source_id = GetHMACForMediaDeviceID(media_device_id_salt_,
+                                                  origin_, kDepthVideoDeviceId);
   // |source_id| corresponds to the depth device. As we can generate only one
   // video stream using GenerateStreamAndWaitForResult, we use
   // controls.video.source_id to specify that the stream is depth video.
@@ -973,7 +976,7 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
       audio_device_descriptions_.begin();
   for (; audio_it != audio_device_descriptions_.end(); ++audio_it) {
     std::string source_id = GetHMACForMediaDeviceID(
-        browser_context_->GetMediaDeviceIDSalt(), origin_, audio_it->unique_id);
+        media_device_id_salt_, origin_, audio_it->unique_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
     controls.audio.device_id = source_id;
@@ -984,8 +987,8 @@ TEST_F(MediaStreamDispatcherHostTest, GenerateStreamsWithSourceId) {
   }
 
   for (const std::string& device_id : stub_video_device_ids_) {
-    std::string source_id = GetHMACForMediaDeviceID(
-        browser_context_->GetMediaDeviceIDSalt(), origin_, device_id);
+    std::string source_id =
+        GetHMACForMediaDeviceID(media_device_id_salt_, origin_, device_id);
     ASSERT_FALSE(source_id.empty());
     blink::StreamControls controls(true, true);
     controls.video.device_id = source_id;
@@ -1264,7 +1267,7 @@ TEST_F(MediaStreamDispatcherHostTest, Salt) {
   EXPECT_NE(label1, label2);
 
   // Reset salt and try to generate third stream with the invalidated device ID.
-  browser_context_ = std::make_unique<TestBrowserContext>();
+  ResetMediaDeviceIDSalt();
   EXPECT_CALL(*host_, OnDeviceOpenSuccess()).Times(0);
   OpenVideoDeviceAndWaitForFailure(kPageRequestId, device_id1);
   // Last open device ID and session are from the second stream.

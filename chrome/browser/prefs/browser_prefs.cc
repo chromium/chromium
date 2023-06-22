@@ -31,7 +31,6 @@
 #include "chrome/browser/gpu/gpu_mode_manager.h"
 #include "chrome/browser/lifetime/browser_shutdown.h"
 #include "chrome/browser/login_detection/login_detection_prefs.h"
-#include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/media_storage_id_salt.h"
 #include "chrome/browser/media/router/discovery/access_code/access_code_cast_feature.h"
@@ -117,6 +116,7 @@
 #include "components/language/core/browser/language_prefs.h"
 #include "components/lens/buildflags.h"
 #include "components/lookalikes/core/lookalike_url_util.h"
+#include "components/media_device_salt/media_device_id_salt.h"
 #include "components/metrics/demographics/user_demographics.h"
 #include "components/metrics/metrics_pref_names.h"
 #include "components/network_time/network_time_tracker.h"
@@ -1580,7 +1580,7 @@ void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry,
   login_detection::prefs::RegisterProfilePrefs(registry);
   lookalikes::RegisterProfilePrefs(registry);
   MediaCaptureDevicesDispatcher::RegisterProfilePrefs(registry);
-  MediaDeviceIDSalt::RegisterProfilePrefs(registry);
+  media_device_salt::MediaDeviceIDSalt::RegisterProfilePrefs(registry);
   MediaEngagementService::RegisterProfilePrefs(registry);
   MediaStorageIdSalt::RegisterProfilePrefs(registry);
   metrics::RegisterDemographicsProfilePrefs(registry);

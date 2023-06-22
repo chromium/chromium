@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#ifndef CHROME_BROWSER_MEDIA_MEDIA_DEVICE_ID_SALT_H_
-#define CHROME_BROWSER_MEDIA_MEDIA_DEVICE_ID_SALT_H_
+#ifndef COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_ID_SALT_H_
+#define COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_ID_SALT_H_
 
 #include <string>
 
@@ -12,6 +12,12 @@
 #include "components/prefs/pref_member.h"
 
 class PrefService;
+
+namespace media_device_salt {
+
+namespace prefs {
+extern const char kMediaDeviceIdSalt[];
+}
 
 // MediaDeviceIDSalt is responsible for creating and retrieving a salt string
 // that is used for creating MediaSource IDs that can be cached by a web
@@ -26,9 +32,9 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
   MediaDeviceIDSalt(const MediaDeviceIDSalt&) = delete;
   MediaDeviceIDSalt& operator=(const MediaDeviceIDSalt&) = delete;
 
-  std::string GetSalt() const;
-
   static void RegisterProfilePrefs(user_prefs::PrefRegistrySyncable* registry);
+
+  std::string GetSalt() const;
   static void Reset(PrefService* pref_service);
 
  private:
@@ -38,4 +44,6 @@ class MediaDeviceIDSalt : public base::RefCountedThreadSafe<MediaDeviceIDSalt> {
   mutable StringPrefMember media_device_id_salt_;
 };
 
-#endif  // CHROME_BROWSER_MEDIA_MEDIA_DEVICE_ID_SALT_H_
+}  // namespace media_device_salt
+
+#endif  // COMPONENTS_MEDIA_DEVICE_SALT_MEDIA_DEVICE_ID_SALT_H_

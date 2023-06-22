@@ -769,11 +769,11 @@ class ChromeContentBrowserClient : public content::ContentBrowserClient {
                               const url::Origin& requesting_origin,
                               const url::Origin& embedding_origin) override;
 
-  bool ArePersistentMediaDeviceIDsAllowed(
-      content::BrowserContext* browser_context,
-      const GURL& scope,
+  void GetMediaDeviceIDSalt(
+      content::RenderFrameHost* rfh,
       const net::SiteForCookies& site_for_cookies,
-      const absl::optional<url::Origin>& top_frame_origin) override;
+      const blink::StorageKey& storage_key,
+      base::OnceCallback<void(bool, const std::string&)> callback) override;
 
 #if !BUILDFLAG(IS_ANDROID)
   base::OnceClosure FetchRemoteSms(

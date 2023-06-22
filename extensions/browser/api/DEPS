@@ -4,6 +4,7 @@ include_rules = [
   "+components/content_settings/core/test",
   "+components/device_event_log",
   "+components/file_access",
+  "+components/media_device_salt",
   "+components/permissions",
   "+components/safe_browsing/core/common",
   "+components/ukm",

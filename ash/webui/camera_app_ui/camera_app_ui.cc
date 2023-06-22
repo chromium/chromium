@@ -18,6 +18,8 @@
 #include "base/task/thread_pool.h"
 #include "components/arc/intent_helper/arc_intent_helper_bridge.h"
 #include "components/content_settings/core/common/content_settings_types.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "content/public/browser/browser_context.h"
 #include "content/public/browser/browser_thread.h"
 #include "content/public/browser/devtools_agent_host.h"
@@ -115,12 +117,11 @@ void CreateAndAddCameraAppUIHTMLSource(content::BrowserContext* browser_context,
       std::string("object-src 'self';"));
 }
 
-// Translates the renderer-side source ID to video device id.
-void TranslateVideoDeviceId(
-    const std::string& salt,
+void GotSalt(
     const url::Origin& origin,
     const std::string& source_id,
-    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback,
+    const std::string& salt) {
   auto callback_on_io_thread = base::BindOnce(
       [](const std::string& salt, const url::Origin& origin,
          const std::string& source_id,
@@ -134,6 +135,19 @@ void TranslateVideoDeviceId(
       salt, std::move(origin), source_id, std::move(callback));
   content::GetIOThreadTaskRunner({})->PostTask(
       FROM_HERE, std::move(callback_on_io_thread));
+}
+
+// Translates the renderer-side source ID to video device id.
+void TranslateVideoDeviceId(
+    content::BrowserContext* browser_context,
+    const url::Origin& origin,
+    const std::string& source_id,
+    base::OnceCallback<void(const absl::optional<std::string>&)> callback) {
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context);
+  salt_service->GetSalt(
+      base::BindOnce(&GotSalt, origin, source_id, std::move(callback)));
 }
 
 void HandleCameraResult(
@@ -159,8 +173,6 @@ void SendNewCaptureBroadcast(content::BrowserContext* context,
 std::unique_ptr<media::CameraAppDeviceProviderImpl>
 CreateCameraAppDeviceProvider(const url::Origin& security_origin,
                               content::BrowserContext* context) {
-  auto media_device_id_salt = context->GetMediaDeviceIDSalt();
-
   mojo::PendingRemote<cros::mojom::CameraAppDeviceBridge> device_bridge;
   auto device_bridge_receiver = device_bridge.InitWithNewPipeAndPassReceiver();
 
@@ -168,9 +180,8 @@ CreateCameraAppDeviceProvider(const url::Origin& security_origin,
   content::GetVideoCaptureService().ConnectToCameraAppDeviceBridge(
       std::move(device_bridge_receiver));
 
-  auto mapping_callback =
-      base::BindRepeating(&TranslateVideoDeviceId, media_device_id_salt,
-                          std::move(security_origin));
+  auto mapping_callback = base::BindRepeating(&TranslateVideoDeviceId, context,
+                                              std::move(security_origin));
 
   return std::make_unique<media::CameraAppDeviceProviderImpl>(
       std::move(device_bridge), std::move(mapping_callback));

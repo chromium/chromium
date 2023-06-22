@@ -51,7 +51,6 @@
 #include "chrome/browser/login_detection/login_detection_prefs.h"
 #include "chrome/browser/media/history/media_history_keyed_service.h"
 #include "chrome/browser/media/history/media_history_keyed_service_factory.h"
-#include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/media/media_engagement_service.h"
 #include "chrome/browser/media/webrtc/webrtc_event_log_manager.h"
 #include "chrome/browser/optimization_guide/optimization_guide_keyed_service.h"
@@ -102,6 +101,8 @@
 #include "components/history/core/common/pref_names.h"
 #include "components/keyed_service/core/service_access_type.h"
 #include "components/language/core/browser/url_language_histogram.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/nacl/browser/nacl_browser.h"
 #include "components/nacl/browser/pnacl_host.h"
 #include "components/no_state_prefetch/browser/no_state_prefetch_manager.h"
@@ -640,7 +641,12 @@ void ChromeBrowsingDataRemoverDelegate::RemoveEmbedderData(
       if (privacy_sandbox_settings)
         privacy_sandbox_settings->OnCookiesCleared();
 
-      MediaDeviceIDSalt::Reset(profile_->GetPrefs());
+      auto* media_device_salt_service =
+          media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+              ->GetForBrowserContext(profile_);
+      if (media_device_salt_service) {
+        media_device_salt_service->ResetSalt();
+      }
 
 #if BUILDFLAG(IS_ANDROID)
       Java_PackageHash_onCookiesDeleted(

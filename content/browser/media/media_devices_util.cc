@@ -9,6 +9,7 @@
 
 #include "base/command_line.h"
 #include "base/functional/bind.h"
+#include "base/strings/strcat.h"
 #include "base/strings/string_split.h"
 #include "base/strings/string_tokenizer.h"
 #include "content/browser/renderer_host/frame_tree.h"
@@ -97,6 +98,32 @@ std::string GetDefaultMediaDeviceIDFromCommandLine(
   return std::string();
 }
 
+void GotSalt(const std::string& frame_salt,
+             const url::Origin& origin,
+             bool has_focus,
+             bool is_background,
+             absl::optional<ukm::SourceId> source_id,
+             MediaDeviceSaltAndOriginCallback callback,
+             bool are_persistent_device_ids_allowed,
+             const std::string& salt) {
+  DCHECK_CURRENTLY_ON(BrowserThread::UI);
+  std::string device_id_salt = salt;
+  if (!are_persistent_device_ids_allowed) {
+    device_id_salt += frame_salt;
+  }
+
+  // |group_id_salt| must be unique per document, but it must also change if
+  // cookies are cleared. Also, it must be different from |device_id_salt|,
+  // thus appending a constant.
+  std::string group_id_salt = base::StrCat({salt, frame_salt, "group_id"});
+
+  MediaDeviceSaltAndOrigin salt_and_origin(std::move(device_id_salt),
+                                           std::move(group_id_salt), origin,
+                                           has_focus, is_background);
+  salt_and_origin.ukm_source_id = std::move(source_id);
+  std::move(callback).Run(salt_and_origin);
+}
+
 }  // namespace
 
 MediaDeviceSaltAndOrigin::MediaDeviceSaltAndOrigin() = default;
@@ -144,62 +171,26 @@ void GetMediaDeviceSaltAndOrigin(GlobalRenderFrameHostId render_frame_host_id,
   DCHECK_CURRENTLY_ON(BrowserThread::UI);
   RenderFrameHostImpl* frame_host =
       RenderFrameHostImpl::FromID(render_frame_host_id);
-  RenderProcessHost* process_host =
-      RenderProcessHost::FromID(render_frame_host_id.child_id);
-  url::Origin origin;
-  GURL url;
-  net::SiteForCookies site_for_cookies;
-  url::Origin main_frame_origin;
-  std::string frame_salt;
-  absl::optional<ukm::SourceId> source_id;
-  bool has_focus = true;
-  bool is_background = false;
-
-  if (frame_host) {
-    origin = frame_host->GetLastCommittedOrigin();
-    url = frame_host->GetLastCommittedURL();
-    site_for_cookies = frame_host->ComputeSiteForCookies();
-    main_frame_origin = frame_host->frame_tree_node()
-                            ->frame_tree()
-                            .GetMainFrame()
-                            ->GetLastCommittedOrigin();
-    source_id = frame_host->GetPageUkmSourceId();
-    frame_salt = frame_host->GetMediaDeviceIDSaltBase();
-    has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
-
-    auto* web_contents = content::WebContents::FromRenderFrameHost(frame_host);
-    is_background =
-        web_contents && web_contents->GetDelegate() &&
-        web_contents->GetDelegate()->IsNeverComposited(web_contents);
+  if (!frame_host) {
+    std::move(callback).Run(MediaDeviceSaltAndOrigin());
+    return;
   }
 
-  bool are_persistent_ids_allowed = false;
-  std::string device_id_salt;
-  std::string group_id_salt;
-  if (process_host) {
-    are_persistent_ids_allowed =
-        GetContentClient()->browser()->ArePersistentMediaDeviceIDsAllowed(
-            process_host->GetBrowserContext(), url, site_for_cookies,
-            main_frame_origin);
-    device_id_salt = process_host->GetBrowserContext()->GetMediaDeviceIDSalt();
-    group_id_salt = device_id_salt;
-  }
+  net::SiteForCookies site_for_cookies = frame_host->ComputeSiteForCookies();
+  url::Origin origin = frame_host->GetLastCommittedOrigin();
+  bool has_focus = frame_host->GetView() && frame_host->GetView()->HasFocus();
+  absl::optional<ukm::SourceId> source_id = frame_host->GetPageUkmSourceId();
+  WebContents* web_contents = WebContents::FromRenderFrameHost(frame_host);
+  bool is_background =
+      web_contents && web_contents->GetDelegate() &&
+      web_contents->GetDelegate()->IsNeverComposited(web_contents);
+  std::string frame_salt = frame_host->GetMediaDeviceIDSaltBase();
 
-  // If persistent IDs are not allowed, append |frame_salt| to make it
-  // specific to the current document.
-  if (!are_persistent_ids_allowed)
-    device_id_salt += frame_salt;
-
-  // |group_id_salt| must be unique per document, but it must also change if
-  // cookies are cleared. Also, it must be different from |device_id_salt|,
-  // thus appending a constant.
-  group_id_salt += frame_salt + "groupid";
-
-  MediaDeviceSaltAndOrigin salt_and_origin(
-      std::move(device_id_salt), std::move(group_id_salt), std::move(origin),
-      has_focus, is_background);
-  salt_and_origin.ukm_source_id = source_id;
-  std::move(callback).Run(salt_and_origin);
+  GetContentClient()->browser()->GetMediaDeviceIDSalt(
+      frame_host, site_for_cookies, frame_host->storage_key(),
+      base::BindOnce(&GotSalt, std::move(frame_salt), std::move(origin),
+                     has_focus, is_background, std::move(source_id),
+                     std::move(callback)));
 }
 
 blink::WebMediaDeviceInfo TranslateMediaDeviceInfo(
@@ -238,6 +229,10 @@ blink::WebMediaDeviceInfoArray TranslateMediaDeviceInfoArray(
         TranslateMediaDeviceInfo(has_permission, salt_and_origin, device_info));
   }
   return result;
+}
+
+std::string CreateRandomMediaDeviceIDSalt() {
+  return base::UnguessableToken::Create().ToString();
 }
 
 }  // namespace content

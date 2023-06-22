@@ -30,6 +30,8 @@
 #include "chrome/common/buildflags.h"
 #include "chrome/test/base/in_process_browser_test.h"
 #include "chrome/test/base/ui_test_utils.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/network_session_configurator/common/network_switches.h"
 #include "content/public/browser/audio_service.h"
 #include "content/public/browser/browser_thread.h"
@@ -123,6 +125,15 @@ class WebrtcAudioPrivateTest : public AudioWaitingExtensionTest {
     return RunFunctionAndReturnSingleResult(function.get(), "[]", profile());
   }
 
+  std::string GetMediaDeviceIDSalt() {
+    media_device_salt::MediaDeviceSaltService* salt_service =
+        media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+            ->GetForBrowserContext(profile());
+    base::test::TestFuture<const std::string&> future;
+    salt_service->GetSalt(future.GetCallback());
+    return future.Get();
+  }
+
   GURL source_url_;
 };
 
@@ -156,7 +167,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetSinks) {
         media::AudioDeviceDescription::IsDefaultDevice(it->unique_id)
             ? media::AudioDeviceDescription::kDefaultDeviceId
             : content::GetHMACForMediaDeviceID(
-                  profile()->GetMediaDeviceIDSalt(),
+                  GetMediaDeviceIDSalt(),
                   url::Origin::Create(source_url_.DeprecatedGetOriginAsURL()),
                   it->unique_id);
 
@@ -191,8 +202,7 @@ IN_PROC_BROWSER_TEST_F(WebrtcAudioPrivateTest, GetAssociatedSink) {
     VLOG(2) << "Trying to find associated sink for device " << raw_device_id;
     GURL origin(GURL("http://www.google.com/").DeprecatedGetOriginAsURL());
     std::string source_id_in_origin = content::GetHMACForMediaDeviceID(
-        profile()->GetMediaDeviceIDSalt(), url::Origin::Create(origin),
-        raw_device_id);
+        GetMediaDeviceIDSalt(), url::Origin::Create(origin), raw_device_id);
 
     base::Value::List parameters;
     parameters.Append(origin.spec());

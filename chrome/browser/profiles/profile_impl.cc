@@ -63,7 +63,6 @@
 #include "chrome/browser/file_system_access/file_system_access_permission_context_factory.h"
 #include "chrome/browser/heavy_ad_intervention/heavy_ad_service_factory.h"
 #include "chrome/browser/k_anonymity_service/k_anonymity_service_factory.h"
-#include "chrome/browser/media/media_device_id_salt.h"
 #include "chrome/browser/notifications/platform_notification_service_factory.h"
 #include "chrome/browser/notifications/platform_notification_service_impl.h"
 #include "chrome/browser/origin_trials/origin_trials_factory.h"
@@ -729,8 +728,6 @@ void ProfileImpl::DoFinalInit(CreateMode create_mode) {
       prefs::kForceEphemeralProfiles,
       base::BindRepeating(&ProfileImpl::UpdateIsEphemeralInStorage,
                           base::Unretained(this)));
-
-  media_device_id_salt_ = new MediaDeviceIDSalt(prefs_.get());
 
   base::FilePath base_cache_path;
   // It would be nice to use PathService for fetching this directory, but
@@ -1426,10 +1423,6 @@ ProfileImpl::GetReduceAcceptLanguageControllerDelegate() {
 content::OriginTrialsControllerDelegate*
 ProfileImpl::GetOriginTrialsControllerDelegate() {
   return OriginTrialsFactory::GetForBrowserContext(this);
-}
-
-std::string ProfileImpl::GetMediaDeviceIDSalt() {
-  return media_device_id_salt_->GetSalt();
 }
 
 std::unique_ptr<download::InProgressDownloadManager>

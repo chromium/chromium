@@ -225,6 +225,8 @@
 #include "components/language/core/browser/pref_names.h"
 #include "components/lens/buildflags.h"
 #include "components/live_caption/caption_util.h"
+#include "components/media_device_salt/media_device_salt_service.h"
+#include "components/media_device_salt/media_device_salt_service_factory.h"
 #include "components/media_router/browser/presentation/presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/receiver_presentation_service_delegate_impl.h"
 #include "components/media_router/browser/presentation/web_contents_presentation_manager.h"
@@ -7143,18 +7145,31 @@ void ChromeContentBrowserClient::BlockBluetoothScanning(
       ContentSettingsType::BLUETOOTH_SCANNING, CONTENT_SETTING_BLOCK);
 }
 
-bool ChromeContentBrowserClient::ArePersistentMediaDeviceIDsAllowed(
-    content::BrowserContext* browser_context,
-    const GURL& url,
+void ChromeContentBrowserClient::GetMediaDeviceIDSalt(
+    content::RenderFrameHost* rfh,
     const net::SiteForCookies& site_for_cookies,
-    const absl::optional<url::Origin>& top_frame_origin) {
+    const blink::StorageKey& storage_key,
+    base::OnceCallback<void(bool, const std::string&)> callback) {
+  GURL url = rfh->GetLastCommittedURL();
+  url::Origin top_frame_origin = rfh->GetMainFrame()->GetLastCommittedOrigin();
+  content::BrowserContext* browser_context = rfh->GetBrowserContext();
+
   // Persistent MediaDevice IDs are allowed if cookies are allowed.
   scoped_refptr<content_settings::CookieSettings> cookie_settings =
       CookieSettingsFactory::GetForProfile(
           Profile::FromBrowserContext(browser_context));
-  return cookie_settings->IsFullCookieAccessAllowed(
+  bool allowed = cookie_settings->IsFullCookieAccessAllowed(
       url, site_for_cookies, top_frame_origin,
       cookie_settings->SettingOverridesForStorage());
+  media_device_salt::MediaDeviceSaltService* salt_service =
+      media_device_salt::MediaDeviceSaltServiceFactory::GetInstance()
+          ->GetForBrowserContext(browser_context);
+  if (!salt_service) {
+    std::move(callback).Run(allowed, browser_context->UniqueId());
+    return;
+  }
+
+  salt_service->GetSalt(base::BindOnce(std::move(callback), allowed));
 }
 
 #if !BUILDFLAG(IS_ANDROID)
