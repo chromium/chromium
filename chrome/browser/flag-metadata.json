@@ -3517,6 +3517,11 @@
     "expiry_milestone": 120
   },
   {
+    "name": "enable-tailored-security-retry-for-sync-users",
+    "owners": ["jacastro", "chrome-counter-abuse-alerts@google.com"],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-tailored-security-updated-messages",
     "owners": [ "awado", "jacastro", "chrome-counter-abuse-alerts@google.com"],
     "expiry_milestone": 120
