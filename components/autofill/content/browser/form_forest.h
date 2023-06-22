@@ -9,6 +9,7 @@
 #include "base/containers/flat_set.h"
 #include "base/containers/span.h"
 #include "base/memory/raw_ptr.h"
+#include "base/memory/raw_ref.h"
 #include "components/autofill/core/browser/autofill_driver.h"
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
@@ -311,13 +312,8 @@ class FormForest {
   friend class FormForestTestApi;
 
   struct FrameAndForm {
-    constexpr explicit operator bool() {
-      DCHECK_EQ(!frame, !form);
-      return frame && form;
-    }
-
-    raw_ptr<FrameData> frame = nullptr;
-    raw_ptr<FormData> form = nullptr;
+    raw_ref<FrameData> frame;
+    raw_ref<FormData> form;
   };
 
   // Returns the FrameData known for |frame|, or creates a new one and returns

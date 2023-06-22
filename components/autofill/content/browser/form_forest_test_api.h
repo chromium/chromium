@@ -71,9 +71,6 @@ void FormForestTestApi::TraverseTrees(base::stack<FrameForm>& frontier,
   while (!frontier.empty()) {
     FrameForm next = frontier.top();
     frontier.pop();
-    DCHECK(next);
-    if (!next)
-      continue;
     fun(*next.form);
     ExpandForm(frontier, next);
   }

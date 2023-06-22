@@ -19,7 +19,7 @@ void FormForestTestApi::ExpandForm(base::stack<FrameForm>& frontier,
     FrameData* child_frame;
     if (local_child && (child_frame = GetFrameData(*local_child))) {
       for (FormData& child_form : child_frame->child_forms)
-        frontier.push({child_frame, &child_form});
+        frontier.push({raw_ref(*child_frame), raw_ref(child_form)});
     }
   }
 }
@@ -55,8 +55,9 @@ std::ostream& FormForestTestApi::PrintForest(std::ostream& os) {
   for (const std::unique_ptr<FrameData>& frame : frame_datas()) {
     DCHECK(frame);
     if (frame && !frame->parent_form) {
-      for (FormData& form : frame->child_forms)
-        frontier.push({frame.get(), &form});
+      for (FormData& form : frame->child_forms) {
+        frontier.push({raw_ref(*frame), raw_ref(form)});
+      }
     }
   }
   TraverseTrees(frontier, [this, &os](const FormData& form) mutable {

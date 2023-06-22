@@ -11,7 +11,6 @@
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/memory/raw_ptr_exclusion.h"
 #include "base/metrics/histogram_functions.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/numerics/safe_conversions.h"
@@ -62,7 +61,7 @@ FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
       auto it = base::ranges::find(frame->child_forms, form.renderer_id,
                                    &FormData::unique_renderer_id);
       CHECK(it != frame->child_forms.end());
-      return {frame, &*it};
+      return {raw_ref(*frame), raw_ref(*it)};
     }
     form = *frame->parent_form;
   }
@@ -221,9 +220,6 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
       !child_frames_changed) {
     form->fields = std::move(form_fields);
   } else {
-    FrameAndForm root = GetRoot(form->global_id());
-    CHECK(root);
-
     // Moves the first |max_number_of_fields_to_be_moved| fields that originated
     // from the renderer form |source_form| from |source| to |target|.
     // Default-initializes each source field after its move to prevent it from
@@ -311,15 +307,13 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // If Node::next_frame is out of bounds (indicating that all fields and
     // frames have been visited already), we omit the latter step.
     struct Node {
-      // This field is not a raw_ptr<> because it was filtered by the rewriter
-      // for: #reinterpret-cast-trivial-type
-      RAW_PTR_EXCLUSION FrameData* frame;  // Not null.
-      // This field is not a raw_ptr<> because it was filtered by
-      // the rewriter for: #reinterpret-cast-trivial-type
-      RAW_PTR_EXCLUSION FormData* form;  // Not null.
+      raw_ref<FrameData> frame;
+      raw_ref<FormData> form;
       size_t next_frame;  // In the range [0, `form->child_frames.size()`].
     };
+
     base::stack<Node> frontier;
+    FrameAndForm root = GetRoot(form->global_id());
     frontier.push({root.frame, root.form, 0});
 
     // Fields to be moved to |root_fields| may not just come from |form_fields|
@@ -328,7 +322,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     // from their subtrees. To access these fields, we store the fields from the
     // root as well as from former root nodes (unless they have no fields) in
     // |roots_on_path|.
-    base::stack<FormData*> roots_on_path;
+    base::stack<raw_ref<FormData>> roots_on_path;
 
     // New fields of the root form. To be populated in the tree traversal.
     std::vector<FormFieldData> root_fields;
@@ -367,8 +361,6 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
       Node n = frontier.top();
       frontier.pop();
-      DCHECK(n.frame);
-      DCHECK(n.form);
 
       // Pushes the current form on |roots_on_path| only if this is the first
       // time we encounter the form in the traversal (Node::next_frame == 0).
@@ -443,8 +435,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
           } else {
             child_frame->parent_form = n.form->global_id();
             for (size_t i = child_frame->child_forms.size(); i > 0; --i) {
-              frontier.push({.frame = child_frame,
-                             .form = &child_frame->child_forms[i - 1],
+              frontier.push({.frame = raw_ref(*child_frame),
+                             .form = raw_ref(child_frame->child_forms[i - 1]),
                              .next_frame = 0});
             }
           }
@@ -498,7 +490,7 @@ const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
-  return CHECK_DEREF(mutable_this.GetRoot(renderer_form).form.get());
+  return *mutable_this.GetRoot(renderer_form).form;
 }
 
 FormForest::RendererForms::RendererForms() = default;
