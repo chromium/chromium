@@ -1,4 +1,4 @@
-# tags: [ Android Fuchsia Linux Mac Mac10.13 Mac10.14 Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
+# tags: [ Android Fuchsia Linux Mac Mac10.15 Mac11 Mac11-arm64 Mac12 Mac12-arm64 Mac13 Mac13-arm64 Win Win10.20h2 Win11 Win11-arm64 ]
 # tags: [ Release Debug ]
 # results: [ Slow ]
 
@@ -325,8 +325,6 @@ crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-s
 crbug.com/1081534 [ Mac10.15 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac11 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
 crbug.com/1081534 [ Mac12 ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-transformclip.html [ Slow ]
-crbug.com/1081534 [ Mac10.14 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video-shadow.html [ Slow ]
-crbug.com/1081534 [ Mac10.14 Release ] virtual/oopr-canvas2d/fast/canvas/canvas-composite-video.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-gradient-over-pattern.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-image-over-gradient.html [ Slow ]
 crbug.com/1081534 [ Mac ] virtual/oopr-canvas2d/fast/canvas/canvas-blending-pattern-over-color.html [ Slow ]
@@ -426,8 +424,6 @@ crbug.com/866850 [ Mac ] virtual/gpu/fast/canvas/OffscreenCanvas-filter-in-worke
 crbug.com/869800 [ Release ] http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-aborted.html [ Slow ]
 crbug.com/869800 [ Release ] http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-simple.html [ Slow ]
 crbug.com/869800 [ Release ] http/tests/xmlhttprequest/timeout/xmlhttprequest-timeout-worker-synconworker.html [ Slow ]
-
-### Slow only on Mac10.13
 
 # Tests with slowest_run >= 10s on flakiness dashboard for site_per_process_blink_web_tests
 
@@ -905,8 +901,6 @@ crbug.com/1093853 [ Mac12 Release ] external/wpt/dom/ranges/Range-surroundConten
 crbug.com/1093853 [ Release Win ] external/wpt/dom/ranges/Range-surroundContents.html [ Slow ]
 crbug.com/1093478 external/wpt/quirks/unitless-length/limited-quirks.html [ Slow ]
 crbug.com/1133836 [ Linux ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Mac10.13 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
-crbug.com/1133836 [ Mac10.14 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 crbug.com/1133836 [ Mac10.15 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 crbug.com/1133836 [ Mac11-arm64 Release ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
 crbug.com/1133836 [ Mac12 ] external/wpt/scroll-to-text-fragment/redirects.html [ Slow ]
@@ -1048,8 +1042,6 @@ crbug.com/1043350 [ Mac11 Release ] http/tests/devtools/elements/edit/set-attrib
 crbug.com/1043350 [ Mac12 Release ] http/tests/devtools/elements/edit/set-attribute.js [ Slow ]
 crbug.com/1043350 [ Release Win ] http/tests/devtools/elements/edit/set-attribute.js [ Slow ]
 crbug.com/1043310 [ Release Win ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
-crbug.com/1043310 [ Mac10.13 Release ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
-crbug.com/1043310 [ Mac10.14 Release ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
 crbug.com/1043310 [ Mac11 Release ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
 crbug.com/1043310 [ Mac12 Release ] external/wpt/css/cssom-view/idlharness.html [ Slow ]
 crbug.com/1043285 [ Linux Release ] http/tests/devtools/elements/styles/selector-line.js [ Slow ]
@@ -1315,7 +1307,6 @@ crbug.com/1046784 [ Mac12 ] http/tests/devtools/forced-layout-in-microtask.js [ 
 crbug.com/1046784 [ Release Win ] http/tests/devtools/forced-layout-in-microtask.js [ Slow ]
 crbug.com/1046784 http/tests/devtools/application-panel/resources-panel-iframe-idb.js [ Slow ]
 crbug.com/1046784 [ Linux ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
-crbug.com/1046784 [ Mac10.13 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac10.15 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac11 Release ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]
 crbug.com/1046784 [ Mac12 ] http/tests/devtools/a11y-axe-core/sources/scope-pane-a11y-test.js [ Slow ]

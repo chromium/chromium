@@ -98,20 +98,6 @@ class MacPortTest(port_testcase.PortTestCase):
         self.assertFalse(port.default_smoke_test_only())
         all_tests_platform = MockPlatformInfo('mac', 'mac11')
 
-        port = self.make_port(os_version='mac10.13')
-        port.host.platform = all_tests_platform
-        self.assertTrue(port.default_smoke_test_only())
-
-        port = self.make_port(os_version='mac10.14')
-        port.host.platform = all_tests_platform
-        self.assertTrue(port.default_smoke_test_only())
-
     def test_default_timeout_ms(self):
         port = self.make_port(os_version='mac11')
         default_timeout = port._default_timeout_ms()
-
-        port = self.make_port(os_version='mac10.13')
-        self.assertEquals(4 * default_timeout, port._default_timeout_ms())
-
-        port = self.make_port(os_version='mac10.14')
-        self.assertEquals(4 * default_timeout, port._default_timeout_ms())

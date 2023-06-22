@@ -62,12 +62,17 @@ _PLATFORM_TOKENS_LIST = [
     'Fuchsia',
     'Linux',
     'Mac',
-    'Mac10.13',
-    'Mac10.14',
+    'Mac10.15',
+    'Mac11',
+    'Mac11-arm64',
+    'Mac12',
+    'Mac12-arm64',
+    'Mac13',
+    'Mac13-arm64',
     'Win',
-    'Win7',
     'Win10.20h2',
     'Win11',
+    'Win11-arm64',
 ]
 
 _BUILD_TYPE_TOKEN_LIST = [

@@ -35,9 +35,8 @@ _log = logging.getLogger(__name__)
 
 
 class MacPort(base.Port):
-    SUPPORTED_VERSIONS = ('mac10.13', 'mac10.14', 'mac10.15', 'mac11',
-                          'mac11-arm64', 'mac12', 'mac12-arm64', 'mac13',
-                          'mac13-arm64')
+    SUPPORTED_VERSIONS = ('mac10.15', 'mac11', 'mac11-arm64', 'mac12',
+                          'mac12-arm64', 'mac13', 'mac13-arm64')
     port_name = 'mac'
 
     FALLBACK_PATHS = {}
@@ -53,8 +52,6 @@ class MacPort(base.Port):
     FALLBACK_PATHS['mac11-arm64'] = ['mac-mac11-arm64'
                                      ] + FALLBACK_PATHS['mac11']
     FALLBACK_PATHS['mac10.15'] = ['mac-mac10.15'] + FALLBACK_PATHS['mac11']
-    FALLBACK_PATHS['mac10.14'] = ['mac-mac10.14'] + FALLBACK_PATHS['mac10.15']
-    FALLBACK_PATHS['mac10.13'] = ['mac-mac10.13'] + FALLBACK_PATHS['mac10.14']
 
     CONTENT_SHELL_NAME = 'Content Shell'
 
@@ -115,26 +112,8 @@ class MacPort(base.Port):
         config_file_basename = 'apache2-httpd-%s-php7.conf' % (self._apache_version(),)
         return self._filesystem.join(self.apache_config_directory(), config_file_basename)
 
-    def default_smoke_test_only(self):
-        # only run platform specific tests on older mac versions
-        if self._version in {'mac10.13', 'mac10.14'}:
-            return True
-        return super().default_smoke_test_only()
-
-    def path_to_smoke_tests_file(self):
-        if self._version in {'mac10.13', 'mac10.14'}:
-            return self._filesystem.join(self.web_tests_dir(), 'SmokeTests',
-                                         'Mac.txt')
-        return super().path_to_smoke_tests_file()
-
     def _path_to_driver(self, target=None):
         return self._build_path_with_target(target,
                                             self.driver_name() + '.app',
                                             'Contents', 'MacOS',
                                             self.driver_name())
-
-    def _default_timeout_ms(self):
-        # increase timeout by 4x on older mac versions
-        if self._version in {'mac10.13', 'mac10.14'}:
-            return 4 * super()._default_timeout_ms()
-        return super()._default_timeout_ms()
