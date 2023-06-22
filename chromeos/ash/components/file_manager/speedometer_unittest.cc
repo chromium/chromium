@@ -20,8 +20,7 @@ using base::Seconds;
 using testing::IsNan;
 
 TEST(SpeedometerTest, RemainingTime) {
-  base::ScopedMockClockOverride mock_clock;
-
+  base::ScopedMockClockOverride clock;
   Speedometer meter;
 
   // Testing without setting the total bytes:
@@ -35,7 +34,7 @@ TEST(SpeedometerTest, RemainingTime) {
 
   // 1st sample.
   // 1st sample, but not enough to calculate the remaining time.
-  mock_clock.Advance(Seconds(11));
+  clock.Advance(Seconds(11));
 
   EXPECT_TRUE(meter.Update(100));
   EXPECT_EQ(1u, meter.GetSampleCount());
@@ -43,56 +42,56 @@ TEST(SpeedometerTest, RemainingTime) {
 
   // Sample received less than 3 second after the previous one should be
   // ignored.
-  mock_clock.Advance(Milliseconds(2999));
+  clock.Advance(Milliseconds(2999));
   EXPECT_FALSE(meter.Update(300));
   EXPECT_EQ(1u, meter.GetSampleCount());
   EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 
   // 2nd sample, the remaining time can be computed.
-  mock_clock.Advance(Milliseconds(1));
+  clock.Advance(Milliseconds(1));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(2u, meter.GetSampleCount());
   EXPECT_EQ(25, round(meter.GetRemainingSeconds()));
 
   // 3rd sample. +3 seconds and still only processed 300 bytes.
-  mock_clock.Advance(Seconds(3));
+  clock.Advance(Seconds(3));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(3u, meter.GetSampleCount());
   EXPECT_EQ(50, round(meter.GetRemainingSeconds()));
 
   // 4th sample, +5 seconds and still only 300 bytes.
-  mock_clock.Advance(Seconds(5));
+  clock.Advance(Seconds(5));
   EXPECT_TRUE(meter.Update(300));
   EXPECT_EQ(4u, meter.GetSampleCount());
   EXPECT_EQ(110, round(meter.GetRemainingSeconds()));
 
   // 5th sample, +3 seconds and now bumped from 300 to 600 bytes.
-  mock_clock.Advance(Seconds(3));
+  clock.Advance(Seconds(3));
   EXPECT_TRUE(meter.Update(600));
   EXPECT_EQ(5u, meter.GetSampleCount());
   EXPECT_EQ(55, round(meter.GetRemainingSeconds()));
 
   // Elapsed time should impact the remaining time.
-  mock_clock.Advance(Seconds(12));
+  clock.Advance(Seconds(12));
   EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
 
   // GetRemainingSeconds() can return negative value.
-  mock_clock.Advance(Seconds(60));
+  clock.Advance(Seconds(60));
   EXPECT_EQ(-17, round(meter.GetRemainingSeconds()));
 }
 
 TEST(SpeedometerTest, Samples) {
-  base::ScopedMockClockOverride mock_clock;
+  base::ScopedMockClockOverride clock;
+  Speedometer meter;
 
   constexpr size_t kMaxSamples = 20;
-  Speedometer meter;
   meter.SetTotalBytes(20000);
 
   // Slow speed of 100 bytes per second.
   int total_transferred = 0;
   for (size_t i = 0; i < kMaxSamples; i++) {
     EXPECT_EQ(i, meter.GetSampleCount());
-    mock_clock.Advance(Seconds(3));
+    clock.Advance(Seconds(3));
     total_transferred = i * 100;
     EXPECT_TRUE(meter.Update(total_transferred));
   }
@@ -107,7 +106,7 @@ TEST(SpeedometerTest, Samples) {
   for (size_t i = 0; i < kMaxSamples; i++) {
     // Check buffer not expanded more than the specified length.
     EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
-    mock_clock.Advance(Seconds(3));
+    clock.Advance(Seconds(3));
     total_transferred = initial_transferred_bytes + (i * 300);
     EXPECT_TRUE(meter.Update(total_transferred));
 
@@ -123,7 +122,7 @@ TEST(SpeedometerTest, Samples) {
   for (size_t i = 0; i < kMaxSamples; i++) {
     // Check buffer not expanded more than the specified length.
     EXPECT_EQ(kMaxSamples, meter.GetSampleCount());
-    mock_clock.Advance(Seconds(3));
+    clock.Advance(Seconds(3));
     EXPECT_TRUE(meter.Update(total_transferred));
   }
 
@@ -133,6 +132,54 @@ TEST(SpeedometerTest, Samples) {
   // never grow towards the total bytes.
   EXPECT_EQ(std::numeric_limits<double>::infinity(),
             meter.GetRemainingSeconds());
+}
+
+TEST(SpeedometerTest, ProgressGoingBackwards) {
+  base::ScopedMockClockOverride clock;
+  Speedometer meter;
+
+  // Sets total number of bytes and a couple of samples.
+  meter.SetTotalBytes(2000);
+  EXPECT_TRUE(meter.Update(100));
+  clock.Advance(Seconds(5));
+  EXPECT_TRUE(meter.Update(300));
+  EXPECT_EQ(2u, meter.GetSampleCount());
+  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+
+  // Progress going backwards should clear the samples.
+  clock.Advance(Seconds(3));
+  EXPECT_TRUE(meter.Update(200));
+  EXPECT_EQ(1u, meter.GetSampleCount());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
+
+  clock.Advance(Seconds(5));
+  EXPECT_TRUE(meter.Update(300));
+  EXPECT_EQ(2u, meter.GetSampleCount());
+  EXPECT_EQ(85, round(meter.GetRemainingSeconds()));
+}
+
+TEST(SpeedometerTest, ChangeTotalBytes) {
+  base::ScopedMockClockOverride clock;
+  Speedometer meter;
+
+  // Sets total number of bytes and a couple of samples.
+  meter.SetTotalBytes(2000);
+  EXPECT_TRUE(meter.Update(100));
+  clock.Advance(Seconds(5));
+  EXPECT_TRUE(meter.Update(300));
+  EXPECT_EQ(2u, meter.GetSampleCount());
+  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+
+  // Setting the total number of bytes to the existing value shouldn't change
+  // anything.
+  meter.SetTotalBytes(2000);
+  EXPECT_EQ(2u, meter.GetSampleCount());
+  EXPECT_EQ(43, round(meter.GetRemainingSeconds()));
+
+  // Changing the total number of bytes should clear the samples.
+  meter.SetTotalBytes(3000);
+  EXPECT_EQ(0u, meter.GetSampleCount());
+  EXPECT_THAT(meter.GetRemainingSeconds(), IsNan());
 }
 
 }  // namespace

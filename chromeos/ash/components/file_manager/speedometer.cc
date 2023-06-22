@@ -17,6 +17,8 @@ void Speedometer::SetTotalBytes(const int64_t total_bytes) {
     DCHECK_GE(total_bytes, 0);
     // The goalposts are moving. Throw away the current samples.
     samples_.Clear();
+    VLOG_IF(1, total_bytes_ > 0)
+        << "Total bytes changed from " << total_bytes_ << " to " << total_bytes;
     total_bytes_ = total_bytes;
   }
 }
@@ -34,12 +36,19 @@ bool Speedometer::Update(const int64_t bytes) {
   if (const auto it = samples_.End()) {
     const Sample& last = **it;
     DCHECK_GE(now, last.time);
-    DCHECK_GE(bytes, last.bytes);
+
     // Drop this sample if we received the previous one less than 3 second ago.
     if (const base::TimeDelta d = now - last.time; d < base::Seconds(3)) {
       VLOG(1) << "Dropped sample {bytes: " << bytes
               << "} as the previous one was received " << d << " ago";
       return false;
+    }
+
+    if (bytes < last.bytes) {
+      // Progress is going backwards. Throw away the previous samples.
+      samples_.Clear();
+      VLOG(1) << "Progress went backwards from " << last.bytes << " bytes to "
+              << bytes << " bytes";
     }
   }
 
