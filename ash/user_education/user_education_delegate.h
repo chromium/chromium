@@ -28,6 +28,7 @@ struct TutorialDescription;
 namespace ash {
 
 enum class HelpBubbleId;
+enum class SystemWebAppType;
 enum class TutorialId;
 
 // The delegate of the `UserEducationController` which facilitates communication
@@ -80,6 +81,13 @@ class ASH_EXPORT UserEducationDelegate {
   // `aborted_callback` passed in at the time of start will be called.
   // NOTE: Currently only the primary user profile is supported.
   virtual void AbortTutorial(const AccountId& account_id) = 0;
+
+  // Attempts to launch the system web app associated with the given type on
+  // the display associated with the given ID asynchronously.
+  // NOTE: Currently only the primary user profile is supported.
+  virtual void LaunchSystemWebAppAsync(const AccountId& account_id,
+                                       SystemWebAppType system_web_app_type,
+                                       int64_t display_id) = 0;
 };
 
 }  // namespace ash

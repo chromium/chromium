@@ -45,6 +45,9 @@ class ChromeUserEducationDelegate : public ash::UserEducationDelegate,
                      base::OnceClosure completed_callback,
                      base::OnceClosure aborted_callback) override;
   void AbortTutorial(const AccountId& account_id) override;
+  void LaunchSystemWebAppAsync(const AccountId& account_id,
+                               ash::SystemWebAppType system_web_app_type,
+                               int64_t display_id) override;
 
   // ProfileManagerObserver:
   void OnProfileAdded(Profile* profile) override;

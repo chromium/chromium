@@ -12,6 +12,7 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/ash/system_web_apps/system_web_app_ui_utils.h"
 #include "chrome/browser/ui/user_education/user_education_service.h"
 #include "chrome/browser/ui/user_education/user_education_service_factory.h"
 #include "chrome/browser/ui/views/user_education/browser_user_education_service.h"
@@ -146,6 +147,23 @@ void ChromeUserEducationDelegate::AbortTutorial(const AccountId& account_id) {
   UserEducationServiceFactory::GetForProfile(profile)
       ->tutorial_service()
       .AbortTutorial(/*abort_step=*/absl::nullopt);
+}
+
+void ChromeUserEducationDelegate::LaunchSystemWebAppAsync(
+    const AccountId& account_id,
+    ash::SystemWebAppType system_web_app_type,
+    int64_t display_id) {
+  Profile* profile = Profile::FromBrowserContext(
+      ash::BrowserContextHelper::Get()->GetBrowserContextByAccountId(
+          account_id));
+
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  CHECK(IsPrimaryProfile(profile));
+
+  ash::LaunchSystemWebAppAsync(profile, system_web_app_type,
+                               ash::SystemAppLaunchParams(),
+                               std::make_unique<apps::WindowInfo>(display_id));
 }
 
 void ChromeUserEducationDelegate::OnProfileAdded(Profile* profile) {
