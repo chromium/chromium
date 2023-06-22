@@ -759,20 +759,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Platform.Hibernate.LoginToResumeReady" units="ms"
-    expires_after="2024-06-08">
-  <owner>mka@chromium.org</owner>
-  <owner>bgeffon@chromium.org</owner>
-  <owner>chromeos-hibernate@google.com</owner>
-  <summary>
-    The time between when hiberman receives the request to resume, and when
-    resume is ready to launch. This represents an approximation of how long the
-    user had to wait for a hibernate resume to occur. Recorded when resume is
-    ready, and reported when hiberman flushes metrics at the completion of
-    resume.
-  </summary>
-</histogram>
-
 <histogram name="Platform.Hibernate.MemoryAndSwapAvailable" units="MiB"
     expires_after="2024-06-08">
   <owner>mka@chromium.org</owner>
@@ -792,6 +778,19 @@ chromium-metrics-reviews@google.com.
   <summary>
     ChromeOS memory available in MiB when hibernate is triggered. Reported at
     hibernate.
+  </summary>
+</histogram>
+
+<histogram name="Platform.Hibernate.ResumeTime.Total" units="ms"
+    expires_after="2024-06-08">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The time between when hiberman receives the request to resume, and when the
+    hibernated image has been restored. This represents an approximation of how
+    long the user had to wait for a hibernate resume to complete after logging
+    in. Reported when hiberman flushes metrics at the completion of resume.
   </summary>
 </histogram>
 
