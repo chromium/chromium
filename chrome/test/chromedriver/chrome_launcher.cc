@@ -54,6 +54,7 @@
 #include "chrome/test/chromedriver/log_replay/log_replay_socket.h"
 #include "chrome/test/chromedriver/log_replay/replay_http_client.h"
 #include "chrome/test/chromedriver/net/net_util.h"
+#include "chrome/test/chromedriver/net/pipe_builder.h"
 #include "chrome/test/chromedriver/net/sync_websocket.h"
 #include "chrome/test/chromedriver/net/sync_websocket_factory.h"
 #include "components/crx_file/crx_verifier.h"
@@ -115,13 +116,6 @@ const base::FilePath::CharType kDevToolsActivePort[] =
     FILE_PATH_LITERAL("DevToolsActivePort");
 
 enum ChromeType { Remote, Desktop, Android, Replay };
-
-#if BUILDFLAG(IS_POSIX)
-// The values for kReadFD and kWriteFD come from
-// content/browser/devtools/devtools_pipe_handler.cc
-const int kReadFD = 3;
-const int kWriteFD = 4;
-#endif
 
 Status PrepareDesktopCommandLine(const Capabilities& capabilities,
                                  bool enable_chrome_logs,
@@ -236,6 +230,19 @@ Status PrepareDesktopCommandLine(const Capabilities& capabilities,
   return Status(kOk);
 }
 
+Status GetBrowserInfo(DevToolsClient* client, BrowserInfo* browser_info) {
+  base::Value::Dict result;
+  Status status = client->SendCommandAndGetResult("Browser.getVersion",
+                                                  base::Value::Dict(), &result);
+  if (status.IsOk()) {
+    status = browser_info->FillFromBrowserVersionResponse(result);
+  } else {
+    VLOG(logging::LOGGING_WARNING)
+        << "Failed to obtain browser info: " << status.message();
+  }
+  return status;
+}
+
 Status CheckVersion(const BrowserInfo& browser_info,
                     const Capabilities& capabilities,
                     ChromeType ct,
@@ -275,6 +282,76 @@ Status CheckVersion(const BrowserInfo& browser_info,
     }
   }
   return Status{kOk};
+}
+
+Status GetWebViewsInfo(DevToolsClient* devtools_websocket_client,
+                       WebViewsInfo* views_info) {
+  DCHECK(views_info);
+  Status status{kOk};
+
+  base::Value::Dict params;
+  base::Value::Dict result;
+  status = devtools_websocket_client->SendCommandAndGetResult(
+      "Target.getTargets", params, &result);
+  if (status.IsError()) {
+    return status;
+  }
+  base::Value* target_infos = result.Find("targetInfos");
+  if (!target_infos) {
+    return Status(
+        kUnknownError,
+        "result of call to Target.getTargets does not contain targetInfos");
+  }
+  if (!target_infos->is_list()) {
+    return Status(kUnknownError,
+                  "targetInfos in Target.getTargets response is not a list");
+  }
+  std::vector<WebViewInfo> temp_views_info;
+  for (const base::Value& info_value : target_infos->GetList()) {
+    if (!info_value.is_dict()) {
+      return Status(kUnknownError, "DevTools contains non-dictionary item");
+    }
+    const base::Value::Dict* info = info_value.GetIfDict();
+    DCHECK(info);
+    const std::string* id = info->FindString("targetId");
+    if (!id) {
+      return Status(kUnknownError, "DevTools did not include id");
+    }
+    const std::string* type_as_string = info->FindString("type");
+    if (!type_as_string) {
+      return Status(kUnknownError, "DevTools did not include type");
+    }
+    const std::string* url = info->FindString("url");
+    if (!url) {
+      return Status(kUnknownError, "DevTools did not include url");
+    }
+    WebViewInfo::Type type;
+    Status parse_status = ParseType(*type_as_string, &type);
+    if (parse_status.IsError()) {
+      return parse_status;
+    }
+    temp_views_info.emplace_back(*id, std::string(), *url, type);
+  }
+  *views_info = WebViewsInfo(temp_views_info);
+  return status;
+}
+
+Status WaitForPage(DevToolsClient* client, base::TimeTicks deadline) {
+  Status status{kOk};
+  do {
+    WebViewsInfo views_info;
+    status = GetWebViewsInfo(client, &views_info);
+    if (status.IsError()) {
+      return status;
+    }
+    for (size_t i = 0; i < views_info.GetSize(); ++i) {
+      if (views_info.Get(i).type == WebViewInfo::kPage) {
+        return Status(kOk);
+      }
+    }
+    base::PlatformThread::Sleep(base::Milliseconds(50));
+  } while (base::TimeTicks::Now() < deadline);
+  return Status(kUnknownError, "unable to discover open pages");
 }
 
 Status WaitForDevToolsAndCheckVersion(
@@ -410,28 +487,6 @@ Status LaunchRemoteChromeSession(
   return Status(kOk);
 }
 
-#if BUILDFLAG(IS_POSIX)
-Status PipeSetUp(base::LaunchOptions* options, int* write_fd, int* read_fd) {
-  int chrome_to_driver_pipe_fds[2];
-  int driver_to_chrome_pipe_fds[2];
-
-  if (pipe(chrome_to_driver_pipe_fds) == -1 ||
-      pipe(driver_to_chrome_pipe_fds) == -1)
-    return Status(kUnknownError, "cannot set up pipe");
-
-  options->fds_to_remap.emplace_back(driver_to_chrome_pipe_fds[0], kReadFD);
-  options->fds_to_remap.emplace_back(chrome_to_driver_pipe_fds[1], kWriteFD);
-
-  close(driver_to_chrome_pipe_fds[0]);
-  close(chrome_to_driver_pipe_fds[1]);
-
-  *write_fd = driver_to_chrome_pipe_fds[1];
-  *read_fd = chrome_to_driver_pipe_fds[0];
-
-  return Status(kOk);
-}
-#endif
-
 Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
                            const SyncWebSocketFactory& socket_factory,
                            const Capabilities& capabilities,
@@ -509,15 +564,17 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     options.new_process_group = true;
 #endif
 
-#if BUILDFLAG(IS_POSIX)
-
-  int write_fd;
-  int read_fd;
-
-  if (capabilities.switches.HasSwitch("remote-debugging-pipe")) {
-    PipeSetUp(&options, &write_fd, &read_fd);
+  PipeBuilder pipe_builder;
+  if (command.HasSwitch("remote-debugging-pipe")) {
+    pipe_builder.SetProtocolMode(
+        command.GetSwitchValueASCII("remote-debugging-pipe"));
+    status = pipe_builder.SetUpPipes(&options);
+    if (status.IsError()) {
+      return status;
+    }
   }
 
+#if BUILDFLAG(IS_POSIX)
   base::ScopedFD devnull;
   if (!cmd_line->HasSwitch("verbose") && !enable_chrome_logs &&
       cmd_line->GetSwitchValueASCII("log-level") != "ALL") {
@@ -620,7 +677,27 @@ Status LaunchDesktopChrome(network::mojom::URLLoaderFactory* factory,
     // either command.HasSwitch("remote-debugging-port") or
     // command.HasSwitch("remote-debugging-pipe") holds.
     // This branch is reached only in case of remote-debugging-pipe.
-    status = Status{kUnknownError, "pipes are not supported"};
+    DCHECK(command.HasSwitch("remote-debugging-pipe"));
+    status = pipe_builder.CloseChildEndpoints();
+    if (status.IsOk()) {
+      status = pipe_builder.BuildSocket();
+    }
+    if (status.IsOk()) {
+      socket = pipe_builder.TakeSocket();
+      DCHECK(socket);
+      status = CreateBrowserwideDevToolsClientAndConnect(
+          std::move(socket), devtools_event_listeners,
+          browser_info.web_socket_url, &devtools_websocket_client);
+    }
+    if (status.IsOk()) {
+      status = GetBrowserInfo(devtools_websocket_client.get(), &browser_info);
+    }
+    if (status.IsOk()) {
+      status = CheckVersion(browser_info, capabilities, ChromeType::Desktop);
+    }
+    if (status.IsOk()) {
+      status = WaitForPage(devtools_websocket_client.get(), deadline);
+    }
   }
 
   if (status.IsError()) {
