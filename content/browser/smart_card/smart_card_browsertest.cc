@@ -85,6 +85,11 @@ class MockSmartCardConnection : public device::mojom::SmartCardConnection {
               (override));
 
   MOCK_METHOD(void, Status, (StatusCallback callback), (override));
+
+  MOCK_METHOD(void,
+              BeginTransaction,
+              (BeginTransactionCallback callback),
+              (override));
 };
 
 class FakeSmartCardDelegate : public SmartCardDelegate {

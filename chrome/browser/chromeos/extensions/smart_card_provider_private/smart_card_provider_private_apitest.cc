@@ -20,6 +20,7 @@
 
 namespace scard_api = extensions::api::smart_card_provider_private;
 
+using device::mojom::SmartCardDisposition;
 using device::mojom::SmartCardError;
 using device::mojom::SmartCardResult;
 using device::mojom::SmartCardResultPtr;
@@ -72,6 +73,62 @@ class SmartCardProviderPrivateApiTest : public ExtensionApiTest {
         validHandle = 987;
         chrome.smartCardProviderPrivate.reportConnectResult(requestId,
             validHandle, "T1", "SUCCESS");
+      }
+    )";
+
+  static constexpr char kTransactionJs[] =
+      R"(
+      let transactionActive = false;
+
+      chrome.smartCardProviderPrivate.onBeginTransactionRequested.addListener(
+          beginTransaction);
+
+      function beginTransaction(requestId, scardHandle) {
+        if (scardHandle !== validHandle) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+
+        if (transactionActive === true) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "SHARING_VIOLATION");
+          return;
+        }
+
+        transactionActive = true;
+
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+          "SUCCESS");
+      }
+
+      chrome.smartCardProviderPrivate.onEndTransactionRequested.addListener(
+          endTransaction);
+
+      function endTransaction(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          chrome.test.notifyFail(`Got EndTransaction on a dead connection.`);
+          return;
+        }
+
+        if (transactionActive === false) {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "NOT_TRANSACTED");
+          chrome.test.notifyFail(
+            `Got EndTransaction without an active transaction.`);
+          return;
+        }
+
+        transactionActive = false;
+
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+          "SUCCESS");
+
+        if (afterEndTransaction) {
+          afterEndTransaction(disposition);
+        }
       }
     )";
 
@@ -1348,6 +1405,136 @@ IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest, Status) {
   EXPECT_EQ(status->state, device::mojom::SmartCardConnectionState::kSpecific);
   EXPECT_EQ(status->protocol, device::mojom::SmartCardProtocol::kT1);
   EXPECT_EQ(status->answer_to_reset, std::vector<uint8_t>({3u, 2u, 1u}));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       BeginTransactionAndDropMojoRemote) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      function afterEndTransaction(disposition) {
+        if (disposition !== "LEAVE_CARD") {
+          chrome.test.notifyFail(`Wrong disposition: ${disposition}`);
+        }
+        chrome.test.notifyPass();
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      result_future;
+
+  connection->BeginTransaction(result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_transaction());
+
+  // mojo disconnection of the SmartCardTransaction should trigger a
+  // onEndTransactionRequested event to the provider.
+  ResultCatcher result_catcher;
+  {
+    mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
+        std::move(result->get_transaction()));
+
+    EXPECT_TRUE(transaction.is_connected());
+  }
+  ASSERT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       BeginAndEndTransaction) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      function afterEndTransaction(disposition) {
+        if (disposition !== "UNPOWER_CARD") {
+          chrome.test.notifyFail(`Wrong disposition: ${disposition}`);
+        }
+        chrome.test.notifyPass();
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      result_future;
+
+  connection->BeginTransaction(result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
+      std::move(result->get_transaction()));
+  EXPECT_TRUE(transaction.is_connected());
+
+  ResultCatcher result_catcher;
+  base::test::TestFuture<device::mojom::SmartCardResultPtr> end_result_future;
+  transaction->EndTransaction(SmartCardDisposition::kUnpower,
+                              end_result_future.GetCallback());
+  EXPECT_TRUE(end_result_future.Take()->is_success());
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
+}
+
+// If a SmartCardConnection remote is dropped, its SmartCardTransaction mojo
+// connection (if any) will be dropped as well.
+// The interface implementations are expected to clean up appropriately by
+// calling first EndTransaction() and then Disconnect().
+IN_PROC_BROWSER_TEST_F(SmartCardProviderPrivateApiTest,
+                       TransactionSharesConnectionFate) {
+  LoadFakeProviderExtension({kEstablishContextJs, kConnectJs, kTransactionJs,
+                             R"(
+      function afterEndTransaction(disposition) {
+        if (disposition !== "LEAVE_CARD") {
+          chrome.test.notifyFail(`Wrong disposition: ${disposition}`);
+        }
+        chrome.test.notifyPass();
+      }
+
+      chrome.smartCardProviderPrivate.onDisconnectRequested.addListener(
+          disconnect);
+
+      function disconnect(requestId, scardHandle, disposition) {
+        if (scardHandle !== validHandle || disposition != "LEAVE_CARD") {
+          chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+            "INVALID_PARAMETER");
+          return;
+        }
+        validHandle = 0;
+        chrome.smartCardProviderPrivate.reportPlainResult(requestId,
+          "SUCCESS");
+
+        if (transactionActive === true) {
+          chrome.test.notifyFail(`Disconnected with an active transaction.`);
+        }
+      }
+      )"});
+
+  auto [context, connection] = CreateContextAndConnection();
+  ASSERT_TRUE(connection.is_bound());
+
+  base::test::TestFuture<device::mojom::SmartCardTransactionResultPtr>
+      result_future;
+
+  connection->BeginTransaction(result_future.GetCallback());
+
+  auto result = result_future.Take();
+  ASSERT_TRUE(result->is_transaction());
+
+  mojo::AssociatedRemote<device::mojom::SmartCardTransaction> transaction(
+      std::move(result->get_transaction()));
+  EXPECT_TRUE(transaction.is_connected());
+
+  ResultCatcher result_catcher;
+
+  // Losing an SmartCardConnection mojo connection should also trigger
+  // mojo disconnection of the SmartCardTransaction
+  connection.reset();
+  transaction.FlushForTesting();
+  EXPECT_FALSE(transaction.is_connected());
+
+  EXPECT_TRUE(result_catcher.GetNextResult()) << result_catcher.message();
 }
 
 }  // namespace extensions

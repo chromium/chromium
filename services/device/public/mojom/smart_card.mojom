@@ -211,6 +211,22 @@ union SmartCardStatusResult {
   SmartCardError error;
 };
 
+// The result of a SmartCardConnection.BeginTransaction request.
+union SmartCardTransactionResult {
+  pending_associated_remote<SmartCardTransaction> transaction;
+  SmartCardError error;
+};
+
+// An interface to a transaction.
+// All commands sent through the related SmartCardConnection will be part of
+// this transaction.
+interface SmartCardTransaction {
+  // Ends a logical transaction, allowing other applications to resume
+  // interactions with that card.
+  // Upon termination, the action indicated by `disposition` is performed.
+  EndTransaction(SmartCardDisposition disposition) => (SmartCardResult result);
+};
+
 // An interface to a valid connection (SCARDHANDLE) within a context
 // in a PC/SC (winscard.h) provider.
 interface SmartCardConnection {
@@ -236,9 +252,15 @@ interface SmartCardConnection {
   // Returns the status of the connected reader.
   Status() => (SmartCardStatusResult result);
 
-  // TODO(crbug.com/1386175): Add methods:
-  // * BeginTransaction()
-  // * EndTransaction()
+  // Initiates a logical transaction against the card in the reader associated
+  // with this connection. If successful, this blocks other applications from
+  // accessing the card, allowing the calling application to perform a sequence
+  // of operations against the card with assurance that any intermediate state
+  // information will remain valid.
+  //
+  // On Windows, if a transaction is held on the card for more than five seconds
+  // with no operations happening on that card, then the card is reset.
+  BeginTransaction() => (SmartCardTransactionResult result);
 };
 
 // An interface to a valid context in a PC/SC (winscard.h) provider.

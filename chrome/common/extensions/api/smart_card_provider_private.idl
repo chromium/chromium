@@ -209,6 +209,18 @@ namespace smartCardProviderPrivate {
     // reportStatusResult.
     [maxListeners=1] static void onStatusRequested(long requestId,
         long scardHandle);
+
+    // Browser requested a SCardBeginTransaction call.
+    // Extension must report the result to the browser by calling
+    // reportPlainResult.
+    [maxListeners=1] static void onBeginTransactionRequested(long requestId,
+        long scardHandle);
+
+    // Browser requested a SCardEndTransaction call.
+    // Extension must report the result to the browser by calling
+    // reportPlainResult.
+    [maxListeners=1] static void onEndTransactionRequested(long requestId,
+        long scardHandle, Disposition disposition);
   };
 
   interface Functions {
