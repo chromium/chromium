@@ -72,6 +72,10 @@
 #include "ui/display/manager/display_manager.h"
 #include "ui/display/screen.h"
 
+// Enable VLOG level 1.
+#undef ENABLED_VLOG_LEVEL
+#define ENABLED_VLOG_LEVEL 1
+
 namespace arc {
 namespace {
 
@@ -325,7 +329,7 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
         // crosvm is compiled in 32 bit.
         // TODO(khmel): Remove this once crosvm becomes 64 bit binary on ARM.
         if (vm_ram_mib > static_cast<int>(k32bitVmRamMaxMib)) {
-          VLOG(1) << "VmMemorySize is enabled, but we are on a 32-bit device, "
+          VLOG(2) << "VmMemorySize is enabled, but we are on a 32-bit device, "
                   << "so limit the size to " << k32bitVmRamMaxMib << " MiB.";
           vm_ram_mib = k32bitVmRamMaxMib;
         }
@@ -333,18 +337,18 @@ vm_tools::concierge::StartArcVmRequest CreateStartArcVmRequest(
 
       if (vm_ram_mib > kVmRamMinMib) {
         request.set_memory_mib(vm_ram_mib);
-        VLOG(1) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
+        VLOG(2) << "VmMemorySize is enabled. memory_mib=" << vm_ram_mib;
       } else {
-        VLOG(1) << "VmMemorySize is enabled, but computed size is "
+        VLOG(2) << "VmMemorySize is enabled, but computed size is "
                 << "min(" << ram_mib << " + " << shift_mib << "," << max_mib
                 << ") == " << vm_ram_mib << "MiB, less than " << kVmRamMinMib
                 << " MiB safe minium.";
       }
     } else {
-      VLOG(1) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
+      VLOG(2) << "VmMemorySize is enabled, but GetSystemMemoryInfo failed.";
     }
   } else {
-    VLOG(1) << "VmMemorySize is disabled.";
+    VLOG(2) << "VmMemorySize is disabled.";
   }
 
   AppendParamsFromStartParams(request, start_params);
@@ -569,7 +573,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   void OnVmStarted(
       const vm_tools::concierge::VmStartedSignal& signal) override {
     if (signal.name() == kArcVmName)
-      VLOG(1) << "OnVmStarted: ARCVM cid=" << signal.vm_info().cid();
+      VLOG(2) << "OnVmStarted: ARCVM cid=" << signal.vm_info().cid();
   }
 
   void OnVmStopped(
@@ -578,11 +582,11 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     const int64_t cid = signal.cid();
     if (cid != current_cid_) {
-      VLOG(1) << "Ignoring VmStopped signal: current CID=" << current_cid_
+      VLOG(2) << "Ignoring VmStopped signal: current CID=" << current_cid_
               << ", stopped CID=" << cid;
       return;
     }
-    VLOG(1) << "OnVmStopped: ARCVM cid=" << cid;
+    VLOG(2) << "OnVmStopped: ARCVM cid=" << cid;
     current_cid_ = kInvalidCid;
     const bool is_system_shutdown =
         signal.reason() == vm_tools::concierge::SERVICE_SHUTDOWN;
@@ -640,7 +644,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    VLOG(1) << "Checking adb sideload status";
+    VLOG(2) << "Checking adb sideload status";
     ash::SessionManagerClient::Get()->QueryAdbSideload(base::BindOnce(
         &ArcVmClientAdapter::OnQueryAdbSideload, weak_factory_.GetWeakPtr(),
         std::move(params), std::move(callback)));
@@ -652,7 +656,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       // job (in case of user session termination) or session_manager (in case
       // of browser-initiated exit on e.g. chrome://flags or UI language change)
       // will stop all VMs including ARCVM right after the browser exits.
-      VLOG(1)
+      VLOG(2)
           << "StopArcInstance is called during browser shutdown. Do nothing.";
       return;
     }
@@ -711,7 +715,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
   // ash::ConciergeClient::Observer overrides:
   void ConciergeServiceStopped() override {
-    VLOG(1) << "vm_concierge stopped";
+    VLOG(2) << "vm_concierge stopped";
     // At this point, all crosvm processes are gone. Notify the observer of the
     // event.
     // NOTE: In a normal system shutdown OnVmStopped() is called before this.
@@ -752,7 +756,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   }
 
   void StopArcInstanceInternal() {
-    VLOG(1) << "Stopping arcvm";
+    VLOG(1) << "Sending request to stop ARCVM";
     // This may be called before ARCVM has been upgraded and the proper VM id
     // has been set. Since ConciergeClient::StopVm() returns successfully
     // regardless of whether the VM exists, check to see which VM is actually
@@ -776,7 +780,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    VLOG(1) << "Waiting for Concierge to be available";
+    VLOG(2) << "Waiting for Concierge to be available";
     GetConciergeClient()->WaitForServiceToBeAvailable(
         base::BindOnce(&ArcVmClientAdapter::OnConciergeAvailable,
                        weak_factory_.GetWeakPtr(), std::move(callback)));
@@ -791,7 +795,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     // Stop the existing VM if any (e.g. in case of a chrome crash).
-    VLOG(1) << "Stopping the existing VM if any.";
+    VLOG(2) << "Stopping the existing VM if any.";
     vm_tools::concierge::StopVmRequest request;
     request.set_name(kArcVmName);
     request.set_owner_id(user_id_hash_);
@@ -866,7 +870,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
   void OnDemoResourcesLoaded(chromeos::VoidDBusMethodCallback callback,
                              FileSystemStatus file_system_status) {
     if (!start_params_.use_virtio_blk_data) {
-      VLOG(1) << "Using virtio-fs for /data";
+      VLOG(2) << "Using virtio-fs for /data";
       StartArcVm(std::move(callback), std::move(file_system_status),
                  /*data_disk_path=*/absl::nullopt);
       return;
@@ -885,7 +889,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
     }
 
     if (use_lvm) {
-      VLOG(1) << "Using virtio-blk with the LVM-provided disk for /data";
+      VLOG(2) << "Using virtio-blk with the LVM-provided disk for /data";
 
       // LVM disk name is generated by cryptohome::DmcryptVolumePrefix in
       // src/platform2/cryptohome.
@@ -897,7 +901,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    VLOG(1) << "Using virtio-blk with the concierge-provided disk for /data";
+    VLOG(2) << "Using virtio-blk with the concierge-provided disk for /data";
 
     // If request.disk_size is not set, concierge calculates the desired size
     // (90% of the available space) and creates a sparse disk image.
@@ -926,12 +930,12 @@ class ArcVmClientAdapter : public ArcClientAdapter,
 
     switch (res->status()) {
       case vm_tools::concierge::DISK_STATUS_CREATED:
-        VLOG(1) << "Created a disk image for /data at " << res->disk_path();
+        VLOG(2) << "Created a disk image for /data at " << res->disk_path();
         StartArcVm(std::move(callback), std::move(file_system_status),
                    base::FilePath(res->disk_path()));
         return;
       case vm_tools::concierge::DISK_STATUS_EXISTS:
-        VLOG(1) << "Disk image for /data already exists: " << res->disk_path();
+        VLOG(2) << "Disk image for /data already exists: " << res->disk_path();
         StartArcVm(std::move(callback), std::move(file_system_status),
                    base::FilePath(res->disk_path()));
         return;
@@ -972,6 +976,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         file_system_status, use_per_vm_core_scheduling, start_params_,
         is_host_on_vm_, delegate_.get());
 
+    VLOG(1) << "Sending request to start ARCVM";
     GetConciergeClient()->StartArcVm(
         start_request,
         base::BindOnce(&ArcVmClientAdapter::OnStartArcVmReply,
@@ -1005,7 +1010,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       chromeos::VoidDBusMethodCallback callback,
       ash::SessionManagerClient::AdbSideloadResponseCode response_code,
       bool enabled) {
-    VLOG(1) << "IsAdbSideloadAllowed, response_code="
+    VLOG(2) << "IsAdbSideloadAllowed, response_code="
             << static_cast<int>(response_code) << ", enabled=" << enabled;
 
     switch (response_code) {
@@ -1022,7 +1027,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
         break;
     }
 
-    VLOG(1) << "Starting upstart jobs for UpgradeArc()";
+    VLOG(2) << "Starting upstart jobs for UpgradeArc()";
     std::vector<std::string> environment{
         "CHROMEOS_USER=" +
         cryptohome::CreateAccountIdentifierFromIdentification(cryptohome_id_)
@@ -1068,7 +1073,7 @@ class ArcVmClientAdapter : public ArcClientAdapter,
       return;
     }
 
-    VLOG(1) << "Starting arcvm-post-vm-start-services.";
+    VLOG(2) << "Starting arcvm-post-vm-start-services.";
     std::vector<std::string> environment;
     std::deque<JobDesc> jobs{JobDesc{kArcVmPostVmStartServicesJobName,
                                      UpstartOperation::JOB_START,

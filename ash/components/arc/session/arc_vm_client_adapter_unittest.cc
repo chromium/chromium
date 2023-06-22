@@ -329,8 +329,9 @@ class ArcVmClientAdapterTest : public testing::Test,
                                public ArcClientAdapter::Observer {
  public:
   ArcVmClientAdapterTest() {
-    // Use the same VLOG() level as production. Note that session_manager sets
-    // "--vmodule=*arc/*=1" in src/platform2/login_manager/chrome_setup.cc.
+    // Use the same VLOG() level as production. Note that
+    // arc_vm_client_adapter.cc defines ENABLED_VLOG_LEVEL 1, which is respected
+    // at compile time when use_runtime_vlog is set to false.
     logging::SetMinLogLevel(-1);
 
     // Create and set new fake clients every time to reset clients' status.
