@@ -56,14 +56,15 @@
 
       .oobe-optin-row {
         border-top: 1px solid var(--cros-color-primary-inverted);
-        font-size: 13px;
+        font-size: var(--oobe-optin-row-font-size);
         margin-top: 12px;
         padding-top: 12px;
       }
 
       .oobe-optin-title {
         color: var(--oobe-header-text-color);
-        font-weight: var(--oobe-header-font-weight);
+        font-family: var(--oobe-optin-title-font-family:);
+        font-weight: var(--oobe-optin-title-font-weight);
       }
 
       .oobe-optin-content {

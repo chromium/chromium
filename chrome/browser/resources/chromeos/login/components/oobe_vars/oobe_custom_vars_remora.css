@@ -100,6 +100,18 @@
       --oobe-guest-tos-terms-title-font-weight: var(--oobe-header-font-weight);
       --oobe-guest-tos-terms-title-line-height: 24px;
 
+      --oobe-consolidated-consent-terms-title-font-family:
+          var(--oobe-header-font-family);
+      --oobe-consolidated-consent-terms-title-font-size: 18px;
+      --oobe-consolidated-consent-terms-title-font-weight:
+          var(--oobe-header-font-weight);
+      --oobe-consolidated-consent-terms-title-line-height: 24px;
+
+      --oobe-optin-row-font-size: 13px;
+
+      --oobe-optin-title-font-family: var(--oobe-default-font-family);
+      --oobe-optin-title-font-weight: var(--oobe-header-font-weight);
+
       /* Select */
       --oobe-select-height: 44px;
 
