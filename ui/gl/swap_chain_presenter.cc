@@ -1833,8 +1833,11 @@ bool SwapChainPresenter::VideoProcessorBlt(
       use_vp_super_resolution = !is_on_battery_power_ && SUCCEEDED(hr);
     }
 
-    hr = video_context->VideoProcessorBlt(video_processor.Get(),
-                                          output_view_.Get(), 0, 1, &stream);
+    {
+      TRACE_EVENT0("gpu", "ID3D11VideoContext::VideoProcessorBlt");
+      hr = video_context->VideoProcessorBlt(video_processor.Get(),
+                                            output_view_.Get(), 0, 1, &stream);
+    }
     base::UmaHistogramSparse(
         (use_vp_super_resolution
              ? "GPU.VideoProcessorBlt.VpSuperResolution.On"
@@ -1850,8 +1853,11 @@ bool SwapChainPresenter::VideoProcessorBlt(
 
         ToggleVpSuperResolution(gpu_vendor_id_, video_context.Get(),
                                 video_processor.Get(), false);
-        hr = video_context->VideoProcessorBlt(
-            video_processor.Get(), output_view_.Get(), 0, 1, &stream);
+        {
+          TRACE_EVENT0("gpu", "ID3D11VideoContext::VideoProcessorBlt");
+          hr = video_context->VideoProcessorBlt(
+              video_processor.Get(), output_view_.Get(), 0, 1, &stream);
+        }
 
         base::UmaHistogramSparse(
             "GPU.VideoProcessorBlt.VpSuperResolution.RetryOffAfterError", hr);
