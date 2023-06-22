@@ -1096,15 +1096,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryInfoSample" enum="BatteryInfoSampleResult"
-    expires_after="2020-11-29">
-  <owner>tbroch@chromium.org</owner>
-  <summary>
-    Counts the number of times we have read the battery status from sysfs and if
-    it gave us sensible values. Chrome OS only.
-  </summary>
-</histogram>
-
 <histogram name="Power.BatteryLife.{BatteryCapacityType}" units="minute"
     expires_after="2024-05-12">
   <owner>puthik@chromium.org</owner>
@@ -1199,16 +1190,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.BatteryRemainingWhenChargeStarts" units="%"
-    expires_after="2022-05-01">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Chrome OS remaining battery charge as percent of the maximum battery charge,
-    sampled when charging starts.
-  </summary>
-</histogram>
-
 <histogram name="Power.BitfixChunks" units="units" expires_after="M77">
   <owner>dianders@chromium.org</owner>
   <summary>
@@ -1226,23 +1207,6 @@ chromium-metrics-reviews@google.com.
     around 97% of the time and a non-zero value around 3% of the time. Would be
     exactly equal to Power.BitfixChunks if there were only one corrupted word in
     each chunk but is sometimes several times higher.
-  </summary>
-</histogram>
-
-<histogram name="Power.ConnectedChargingPorts"
-    enum="PowerConnectedChargingPorts" expires_after="2022-04-24">
-  <owner>bleung@chromium.org</owner>
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    Connected charging ports on Chrome OS. A sample is reported every time that
-    the power manager polls sysfs (typically every 30 seconds). Ordinals are
-    assigned based on the lexicographical ordering of power supply names from
-    sysfs and have no implied correspondence with ports' physical locations. For
-    example, with ports 'CROS_USB_PD_CHARGER0' and 'CROS_USB_PD_CHARGER1',
-    'first' refers to the former and 'second' to the latter. To determine a
-    port's physical location, see the powerd charging_ports pref in the device's
-    overlay.
   </summary>
 </histogram>
 
@@ -1463,17 +1427,6 @@ chromium-metrics-reviews@google.com.
   <summary>
     The amount of time a system spent awake every time it woke up in dark resume
     triggered by a net detect SSID match.
-  </summary>
-</histogram>
-
-<histogram name="Power.DarkResumeWakeupsPerHour" units="units"
-    expires_after="2020-08-02">
-  <owner>chirantan@chromium.org</owner>
-  <summary>
-    The number of times a system woke up in dark resume in an hour. Note that
-    this value is scaled up or down to an hour based on the amount of time the
-    system spent in suspend. So if the system suspended for 20 minutes and woke
-    up 3 times, it would report a value of 9.
   </summary>
 </histogram>
 

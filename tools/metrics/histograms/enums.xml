@@ -11246,12 +11246,6 @@ Called by update_bad_message_reasons.py.-->
              the OS."/>
 </enum>
 
-<enum name="BatteryInfoSampleResult">
-  <int value="0" label="Read"/>
-  <int value="1" label="Good"/>
-  <int value="2" label="Bad"/>
-</enum>
-
 <enum name="BatterySaverBubbleActionType">
   <int value="0" label="Turn off mode for current session"/>
   <int value="1" label="Dismissed bubble"/>
@@ -84947,17 +84941,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="2" label="USB Charger"/>
   <int value="3" label="Unconfirmed Spring Charger"/>
   <int value="4" label="Safe Spring Charger"/>
-</enum>
-
-<enum name="PowerConnectedChargingPorts">
-  <summary>
-    Connected charging ports on Chrome OS, as reported by the kernel.
-  </summary>
-  <int value="0" label="No ports connected"/>
-  <int value="1" label="First port connected"/>
-  <int value="2" label="Second port connected"/>
-  <int value="3" label="First and second ports connected"/>
-  <int value="4" label="More than two ports exist"/>
 </enum>
 
 <enum name="PowerDimEvent">
