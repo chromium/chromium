@@ -329,6 +329,8 @@ FakeWebContentsManager::CreateMetadataWithIconAndTitle(std::u16string title,
 FakeWebContentsManager::FakePageState::FakePageState() = default;
 FakeWebContentsManager::FakePageState::~FakePageState() = default;
 FakeWebContentsManager::FakePageState::FakePageState(FakePageState&&) = default;
+FakeWebContentsManager::FakePageState&
+FakeWebContentsManager::FakePageState::operator=(FakePageState&&) = default;
 
 FakeWebContentsManager::FakeIconState::FakeIconState() = default;
 FakeWebContentsManager::FakeIconState::~FakeIconState() = default;
@@ -397,7 +399,7 @@ AppId FakeWebContentsManager::CreateBasicInstallPageState(
 void FakeWebContentsManager::SetPageState(
     const GURL& gurl,
     FakeWebContentsManager::FakePageState page_state) {
-  page_state_.emplace(gurl, std::move(page_state));
+  page_state_[gurl] = std::move(page_state);
 }
 FakeWebContentsManager::FakePageState&
 FakeWebContentsManager::GetOrCreatePageState(const GURL& gurl) {

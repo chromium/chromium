@@ -52,6 +52,7 @@ class FakeWebContentsManager : public WebContentsManager {
     FakePageState();
     ~FakePageState();
     FakePageState(FakePageState&&);
+    FakePageState& operator=(FakePageState&&);
 
     AppId PopulateWithBasicManifest(GURL install_url,
                                     GURL manifest_url,
