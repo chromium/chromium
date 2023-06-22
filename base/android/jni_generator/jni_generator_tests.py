@@ -218,7 +218,7 @@ class BaseTest(unittest.TestCase):
 
       java_sources_file = pathlib.Path(tdir) / 'java_sources.txt'
       java_sources_file.write_text('\n'.join(java_sources))
-      cmd += ['--java-sources-file', str(java_sources_file)]
+      cmd += ['--java-sources-files', str(java_sources_file)]
       if native_sources:
         native_sources_file = pathlib.Path(tdir) / 'native_sources.txt'
         native_sources_file.write_text('\n'.join(native_sources))

@@ -743,7 +743,6 @@ template("test_runner_script") {
     forward_variables_from(invoker,
                            [
                              "assert_no_deps",
-                             "metadata",
                              "public_deps",
                              "visibility",
                            ])

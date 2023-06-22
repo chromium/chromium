@@ -3672,27 +3672,23 @@ template("libmonochrome_apk_or_bundle_tmpl") {
   }
 }
 
-_define_32_bit_libmonochrome =
-    !android_64bit_target_cpu ||
+if (!android_64bit_target_cpu ||
     (!skip_secondary_abi_for_cq &&
-     current_toolchain == android_secondary_abi_toolchain)
-
-libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
-  enable_target = _define_32_bit_libmonochrome
-  define_unwind_table_target =
-      add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
-  if (enable_resource_allowlist_generation) {
-    # Make sure allowlist_inputs is built first so when concurrent_links == 1
-    # it comes before the actual (very slow) link step.
-    deps = [ ":libmonochrome_inputs" ]
-  }
-}
-
-if (_define_32_bit_libmonochrome) {
+     current_toolchain == android_secondary_abi_toolchain)) {
   # Avoiding a real link for this step allows the actual libmonochrome to
   # run at the same time as R8.
   libmonochrome_apk_or_bundle_tmpl("libmonochrome_inputs") {
     collect_inputs_only = true
+  }
+
+  libmonochrome_apk_or_bundle_tmpl("libmonochrome") {
+    define_unwind_table_target =
+        add_unwind_tables_in_chrome_32bit_apk && current_cpu == "arm"
+    if (enable_resource_allowlist_generation) {
+      # Make sure allowlist_inputs is built first so when concurrent_links == 1
+      # it comes before the actual (very slow) link step.
+      deps = [ ":libmonochrome_inputs" ]
+    }
   }
 
   if (android_64bit_target_cpu && !skip_secondary_abi_for_cq) {

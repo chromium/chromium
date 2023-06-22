@@ -54,6 +54,12 @@ generate_jni_registration("cronet_jni_registration") {
 
   # JNI generated is used for test and non-test apks.
   include_testonly = true
+  file_exclusions = [
+    "//base/android/java/src/org/chromium/base/library_loader/LibraryLoader.java",
+    "//base/android/java/src/org/chromium/base/library_loader/LibraryPrefetcher.java",
+    "//base/android/java/src/org/chromium/base/process_launcher/ChildProcessService.java",
+    "//base/android/java/src/org/chromium/base/SysUtils.java",
+  ]
 }
 
 android_library("cronet_jni_registration_java") {
