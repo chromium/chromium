@@ -545,13 +545,13 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
     }
 
     auto* feature_info = context_state_->feature_info();
+    // NV12 is always supported on Apple.
+    ASSERT_TRUE(feature_info->feature_flags().chromium_image_ycbcr_420v);
     supports_etc1_ =
         feature_info->validators()->compressed_texture_format.IsValid(
             GL_ETC1_RGB8_OES);
     supports_ar30_ = feature_info->feature_flags().chromium_image_ar30;
     supports_ab30_ = feature_info->feature_flags().chromium_image_ab30;
-    supports_ycbcr_420v_ =
-        feature_info->feature_flags().chromium_image_ycbcr_420v;
     supports_ycbcr_p010_ =
         feature_info->feature_flags().chromium_image_ycbcr_p010;
 
@@ -569,7 +569,6 @@ class IOSurfaceImageBackingFactoryParameterizedTestBase
   bool supports_ar30_ = false;
   bool supports_ab30_ = false;
   bool supports_ycbcr_p010_ = false;
-  bool supports_ycbcr_420v_ = false;
 };
 
 // SharedImageFormat parameterized tests.
@@ -583,7 +582,7 @@ class IOSurfaceImageBackingFactoryScanoutTest
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
     } else if (format == viz::MultiPlaneFormat::kNV12) {
-      return supports_ycbcr_420v_ && !has_pixel_data;
+      return !has_pixel_data;
     } else if (format == viz::MultiPlaneFormat::kP010) {
       return supports_ycbcr_p010_ && !has_pixel_data;
     }
@@ -1043,8 +1042,6 @@ class IOSurfaceImageBackingFactoryGMBTest
       return supports_ar30_;
     } else if (format == viz::SinglePlaneFormat::kRGBA_1010102) {
       return supports_ab30_;
-    } else if (format == viz::MultiPlaneFormat::kNV12) {
-      return supports_ycbcr_420v_;
     } else if (format == viz::MultiPlaneFormat::kP010) {
       return supports_ycbcr_p010_;
     }
