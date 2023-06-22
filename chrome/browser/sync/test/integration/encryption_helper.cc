@@ -77,6 +77,18 @@ bool PassphraseAcceptedChecker::IsExitConditionSatisfied(std::ostream* os) {
   return !service()->GetUserSettings()->IsPassphraseRequired();
 }
 
+PassphraseTypeChecker::PassphraseTypeChecker(
+    syncer::SyncServiceImpl* service,
+    syncer::PassphraseType expected_passphrase_type)
+    : SingleClientStatusChangeChecker(service),
+      expected_passphrase_type_(expected_passphrase_type) {}
+
+bool PassphraseTypeChecker::IsExitConditionSatisfied(std::ostream* os) {
+  *os << "Checking expected passhrase type";
+  return service()->GetUserSettings()->GetPassphraseType() ==
+         expected_passphrase_type_;
+}
+
 TrustedVaultKeyRequiredStateChecker::TrustedVaultKeyRequiredStateChecker(
     syncer::SyncServiceImpl* service,
     bool desired_state)

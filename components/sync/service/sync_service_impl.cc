@@ -290,7 +290,7 @@ void SyncServiceImpl::Initialize() {
 
   // *After* setting up `auth_manager_`, run a prefs migration that depends on
   // the account state.
-  sync_prefs_.MaybeMigratePrefsForReplacingSyncWithSignin(
+  sync_prefs_.MaybeMigratePrefsForSyncToSigninPart1(
       GetSyncAccountStateForPrefs());
 
   if (!IsLocalSyncEnabled()) {
@@ -959,6 +959,9 @@ void SyncServiceImpl::OnEngineInitialized(bool success,
   if (!protocol_event_observers_.empty()) {
     engine_->RequestBufferedProtocolEventsAndEnableForwarding();
   }
+
+  sync_prefs_.MaybeMigratePrefsForSyncToSigninPart2(
+      user_settings_->IsUsingExplicitPassphrase());
 
   data_type_manager_ =
       sync_client_->GetSyncApiComponentFactory()->CreateDataTypeManager(
@@ -2083,6 +2086,9 @@ void SyncServiceImpl::StopAndClear() {
   // For explicit passphrase users, clear the encryption key, such that they
   // will need to reenter it if sync gets re-enabled.
   sync_prefs_.ClearEncryptionBootstrapToken();
+  // If the migration didn't finish before StopAndClear() was called, mark it as
+  // done so it doesn't trigger again if the user signs in later.
+  sync_prefs_.MarkPartialSyncToSigninMigrationFullyDone();
 
 #if BUILDFLAG(IS_IOS)
   sync_prefs_.ClearBookmarksAndReadingListAccountStorageOptIn();

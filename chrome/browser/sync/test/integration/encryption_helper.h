@@ -62,6 +62,20 @@ class PassphraseAcceptedChecker : public SingleClientStatusChangeChecker {
   bool IsExitConditionSatisfied(std::ostream* os) override;
 };
 
+// Checker to block until service has finished setting up a given passphrase
+// type.
+class PassphraseTypeChecker : public SingleClientStatusChangeChecker {
+ public:
+  PassphraseTypeChecker(syncer::SyncServiceImpl* service,
+                        syncer::PassphraseType expected_passphrase_type);
+
+  // StatusChangeChecker implementation.
+  bool IsExitConditionSatisfied(std::ostream* os) override;
+
+ private:
+  const syncer::PassphraseType expected_passphrase_type_;
+};
+
 // Checker used to block until Sync requires or stops requiring trusted vault
 // keys.
 class TrustedVaultKeyRequiredStateChecker

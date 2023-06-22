@@ -8,12 +8,9 @@
 #include <utility>
 
 #include "base/base64.h"
-#include "base/rand_util.h"
-#include "base/strings/string_number_conversions.h"
-#include "base/values.h"
 #include "components/prefs/pref_registry_simple.h"
 #include "components/prefs/pref_service.h"
-#include "components/sync/base/model_type.h"
+#include "components/sync/base/pref_names.h"
 
 namespace syncer {
 

@@ -10,6 +10,7 @@
 #include "build/chromeos_buildflags.h"
 #include "chrome/browser/defaults.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chrome/browser/sync/test/integration/encryption_helper.h"
 #include "chrome/browser/sync/test/integration/single_client_status_change_checker.h"
 #include "chrome/browser/sync/test/integration/sync_service_impl_harness.h"
 #include "chrome/browser/sync/test/integration/sync_test.h"
@@ -426,12 +427,63 @@ IN_PROC_BROWSER_TEST_F(
   ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
             GetSyncService(0)->GetTransportState());
 
-  // Passwords is still enabled, but Preferences should've been disabled by the
-  // migration.
+  // Passwords should still be enabled (not affected by the migration).
   EXPECT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPasswords));
+  // Preferences should've been disabled by the migration.
   EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
       syncer::UserSelectableType::kPreferences));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
+    PRE_MigratesSignedInCustomPassphraseUser) {
+  ASSERT_TRUE(SetupClients());
+  // Sign in, without turning on Sync-the-feature.
+  ASSERT_TRUE(GetClient(0)->SignInPrimaryAccount());
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  GetSyncService(0)->GetUserSettings()->SetEncryptionPassphrase("hunter2");
+  ASSERT_TRUE(PassphraseTypeChecker(GetSyncService(0),
+                                    syncer::PassphraseType::kCustomPassphrase)
+                  .Wait());
+
+  // E.g. Preferences, Passwords, and Autofill are enabled by default.
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPasswords));
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kAutofill));
+}
+
+IN_PROC_BROWSER_TEST_F(
+    SingleClientStandaloneTransportReplaceSyncWithSigninMigrationSyncTest,
+    MigratesSignedInCustomPassphraseUser) {
+  ASSERT_TRUE(SetupClients());
+
+  ASSERT_FALSE(GetSyncService(0)->IsSyncFeatureEnabled());
+  ASSERT_TRUE(GetClient(0)->AwaitSyncTransportActive());
+  ASSERT_EQ(syncer::SyncService::TransportState::ACTIVE,
+            GetSyncService(0)->GetTransportState());
+
+  ASSERT_EQ(GetSyncService(0)->GetUserSettings()->GetPassphraseType(),
+            syncer::PassphraseType::kCustomPassphrase);
+
+  // Passwords is still enabled (not affected by the migration).
+  ASSERT_TRUE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPasswords));
+  // Preferences got disabled by the migration (same as for
+  // non-custom-passphrase users).
+  ASSERT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kPreferences));
+  // Autofill should've been disabled specifically for custom passphrase users.
+  EXPECT_FALSE(GetSyncService(0)->GetUserSettings()->GetSelectedTypes().Has(
+      syncer::UserSelectableType::kAutofill));
 }
 
 }  // namespace

@@ -546,8 +546,7 @@ class SyncPrefsMigrationTest : public testing::Test {
   TestingPrefServiceSimple pref_service_;
 };
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_NoMigrationForSignedOutUser) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSignedOutUser) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -558,7 +557,7 @@ TEST_F(SyncPrefsMigrationTest,
 
   // The migration runs for a signed-out user. This should do nothing.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kNotSignedIn);
 
   // Everything should be unchanged.
@@ -567,8 +566,7 @@ TEST_F(SyncPrefsMigrationTest,
   EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_NoMigrationForSyncingUser) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_NoMigrationForSyncingUser) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -578,7 +576,7 @@ TEST_F(SyncPrefsMigrationTest,
 
   // The migration runs for a syncing user. This should do nothing.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kSyncing);
 
   // Everything should be unchanged.
@@ -587,31 +585,39 @@ TEST_F(SyncPrefsMigrationTest,
   EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_RunsOnlyOnce) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_RunsOnlyOnce) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
   // The migration initially runs for a new user (not signed in yet). This does
   // not change any actual prefs, but marks the migration as "done".
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kNotSignedIn);
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/false);
   ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
 
-  // Later, the user signs in. When the migration function gets triggered again
+  // Later, the user signs in. When the migration functions get triggered again
   // (typically at the next browser startup), it should *not* migrate anything.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/true);
 
-  // Nothing happened - pref is still unset.
+  // Nothing happened - prefs are still unset.
   EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_RunsAgainAfterFeatureReenabled) {
-  // Initial state: Preferences are enabled.
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_RunsAgainAfterFeatureReenabled) {
+  // Initial state: Preferences and Autofill are enabled.
   SetBooleanUserPrefValue(kPreferencesPref, PREF_TRUE);
+  SetBooleanUserPrefValue(kAutofillPref, PREF_TRUE);
 
   // The feature gets enabled for the first time, and the migration runs.
   {
@@ -619,16 +625,22 @@ TEST_F(SyncPrefsMigrationTest,
         kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForReplacingSyncWithSignin(
+        .MaybeMigratePrefsForSyncToSigninPart1(
             SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForSyncToSigninPart2(
+            /*is_using_explicit_passphrase=*/true);
 
     // Preferences got migrated to false.
     ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
+    // Autofill got migrated to false (for a custom passphrase user).
+    ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
   }
 
-  // Reset Preferences to true so we can check whether the migration happened
-  // again.
+  // Reset Preferences and Autofill to true so we can check whether the
+  // migration happened again.
   SetBooleanUserPrefValue(kPreferencesPref, PREF_TRUE);
+  SetBooleanUserPrefValue(kAutofillPref, PREF_TRUE);
 
   // The feature gets disabled, and the migration logic gets triggered again on
   // the next browser startup.
@@ -637,30 +649,38 @@ TEST_F(SyncPrefsMigrationTest,
     feature_list.InitAndDisableFeature(kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForReplacingSyncWithSignin(
+        .MaybeMigratePrefsForSyncToSigninPart1(
             SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForSyncToSigninPart2(
+            /*is_using_explicit_passphrase=*/true);
 
     // Since the feature is disabled now, this didn't do anything - Preferences
     // is still true.
     ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_TRUE));
+    ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_TRUE));
   }
 
   // The feature gets enabled for the second time, and the migration runs.
-  // Since it was disabled in the between, the migration should run again
+  // Since it was disabled in between, the migration should run again.
   {
     base::test::ScopedFeatureList feature_list(
         kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForReplacingSyncWithSignin(
+        .MaybeMigratePrefsForSyncToSigninPart1(
             SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+    SyncPrefs(&pref_service_)
+        .MaybeMigratePrefsForSyncToSigninPart2(
+            /*is_using_explicit_passphrase=*/true);
 
-    // Preferences should have been migrated to false again.
+    // Preferences and Autofill should have been migrated to false again.
     EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
+    EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
   }
 }
 
-TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_TurnsPreferencesOff) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsPreferencesOff) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -668,15 +688,14 @@ TEST_F(SyncPrefsMigrationTest, ReplacingSyncWithSignin_TurnsPreferencesOff) {
 
   // Run the migration for a pre-existing signed-in non-syncing user.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
   // Preferences should have been set to false.
   EXPECT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_FALSE));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_MigratesBookmarksOptedIn) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksOptedIn) {
   {
     // The feature starts disabled.
     base::test::ScopedFeatureList feature_list;
@@ -705,7 +724,7 @@ TEST_F(SyncPrefsMigrationTest,
         kReplaceSyncPromosWithSignInPromos);
 
     SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForReplacingSyncWithSignin(
+        .MaybeMigratePrefsForSyncToSigninPart1(
             SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
     // Bookmarks and ReadingList should still be enabled (by default).
@@ -720,8 +739,7 @@ TEST_F(SyncPrefsMigrationTest,
 }
 
 #if BUILDFLAG(IS_IOS)
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_MigratesBookmarksNotOptedIn) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_MigratesBookmarksNotOptedIn) {
   {
     // The feature starts disabled.
     base::test::ScopedFeatureList feature_list;
@@ -757,7 +775,7 @@ TEST_F(SyncPrefsMigrationTest,
 
     // Run the migration!
     SyncPrefs(&pref_service_)
-        .MaybeMigratePrefsForReplacingSyncWithSignin(
+        .MaybeMigratePrefsForSyncToSigninPart1(
             SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
     // After the migration, bookmarks should be disabled.
@@ -772,8 +790,7 @@ TEST_F(SyncPrefsMigrationTest,
 }
 #endif  // BUILDFLAG(IS_IOS)
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_LeavesAutofillAloneIfPasswordsOn) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_LeavesAutofillAloneIfPasswordsOn) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -784,15 +801,14 @@ TEST_F(SyncPrefsMigrationTest,
 
   // Run the migration for a pre-existing signed-in non-syncing user.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
   // Autofill should still be unset.
   EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
 }
 
-TEST_F(SyncPrefsMigrationTest,
-       ReplacingSyncWithSignin_TurnsAutofillOffIfPasswordsOff) {
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_TurnsAutofillOffIfPasswordsOff) {
   base::test::ScopedFeatureList feature_list(
       kReplaceSyncPromosWithSignInPromos);
 
@@ -803,12 +819,128 @@ TEST_F(SyncPrefsMigrationTest,
 
   // Run the migration for a pre-existing signed-in non-syncing user.
   SyncPrefs(&pref_service_)
-      .MaybeMigratePrefsForReplacingSyncWithSignin(
+      .MaybeMigratePrefsForSyncToSigninPart1(
           SyncPrefs::SyncAccountState::kSignedInNotSyncing);
 
   // Autofill should have been set to false, since the user specifically opted
   // out of Passwords.
   EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       SyncToSignin_TurnsAutofillOffForCustomPassphraseUser) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Autofill is enabled (by default; not set explicitly).
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Run the first phase of the migration.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart1(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Autofill should still be unaffected for now, since the passphrase state
+  // wasn't known yet.
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Now run the second phase, once the passphrase state is known (and it's
+  // a custom passphrase).
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/true);
+
+  // Now Autofill should've been turned off.
+  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
+}
+
+TEST_F(SyncPrefsMigrationTest,
+       SyncToSignin_LeavesAutofillAloneForUserWithoutExplicitPassphrase) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Autofill is enabled (by default; not set explicitly).
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Run the first phase of the migration.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart1(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Autofill should still be unaffected for now, since the passphrase state
+  // wasn't known yet.
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Now run the second phase, once the passphrase state is known (and it's a
+  // regular keystore passphrase, i.e. no custom passphrase).
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/false);
+
+  // Since this is not a custom passphrase user, Autofill should still be
+  // unaffected.
+  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+}
+
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_Part2RunsOnSecondAttempt) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  // Autofill is enabled (by default; not set explicitly).
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Run the first phase of the migration.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart1(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+
+  // Autofill should still be unaffected for now, since the passphrase state
+  // wasn't known yet.
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Before the second phase runs, Chrome gets restarted, so the first phase
+  // runs again. This should effectively do nothing.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart1(
+          SyncPrefs::SyncAccountState::kSignedInNotSyncing);
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Now run the second phase.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/true);
+
+  // Now Autofill should've been turned off.
+  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_FALSE));
+}
+
+TEST_F(SyncPrefsMigrationTest, SyncToSignin_Part2DoesNotRunOnSignin) {
+  base::test::ScopedFeatureList feature_list(
+      kReplaceSyncPromosWithSignInPromos);
+
+  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // The migration initially runs for a new user (not signed in yet). This does
+  // not change any actual prefs, but marks the migration as "done".
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart1(
+          SyncPrefs::SyncAccountState::kNotSignedIn);
+  // Note that part 2 doesn't get triggered here, since that only happens once
+  // the sync engine got initialized.
+  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  ASSERT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
+
+  // Later, the user signs in. This triggers sync engine initialization, and
+  // thus part 2 of the migration.
+  SyncPrefs(&pref_service_)
+      .MaybeMigratePrefsForSyncToSigninPart2(
+          /*is_using_explicit_passphrase=*/true);
+
+  // Since this was *not* a pre-existing signed-in user, the migration should
+  // have done nothing.
+  ASSERT_TRUE(BooleanUserPrefMatches(kPreferencesPref, PREF_UNSET));
+  EXPECT_TRUE(BooleanUserPrefMatches(kAutofillPref, PREF_UNSET));
 }
 
 }  // namespace
