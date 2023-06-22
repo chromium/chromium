@@ -1912,7 +1912,6 @@ int main(int argc, char **argv) {
 		"\tusage %s [ URL [ filename ] ]\n", argv[0]);
     }
     xmlNanoHTTPCleanup();
-    xmlMemoryDump();
     return(0);
 }
 #endif /* STANDALONE */

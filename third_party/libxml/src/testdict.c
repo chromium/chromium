@@ -22,99 +22,71 @@ static const char *seeds2[] = {
    NULL
 };
 
-#define NB_STRINGS_NS 100
 #define NB_STRINGS_MAX 10000
+#define NB_STRINGS_NS 1000
+#define NB_STRINGS_PREFIX 50
 #define NB_STRINGS_MIN 10
 
-static xmlChar *strings1[NB_STRINGS_MAX];
-static xmlChar *strings2[NB_STRINGS_MAX];
-static const xmlChar *test1[NB_STRINGS_MAX];
-static const xmlChar *test2[NB_STRINGS_MAX];
+static xmlChar **strings1;
+static xmlChar **strings2;
+static const xmlChar **test1;
+static const xmlChar **test2;
 static int nbErrors = 0;
 
-static void fill_strings(void) {
+static void
+fill_string_pool(xmlChar **strings, const char **seeds) {
     int i, j, k;
+    int start_ns = NB_STRINGS_MAX - NB_STRINGS_NS;
 
     /*
      * That's a bit nasty but the output is fine and it doesn't take hours
      * there is a small but sufficient number of duplicates, and we have
      * ":xxx" and full QNames in the last NB_STRINGS_NS values
      */
-    for (i = 0; seeds1[i] != NULL; i++) {
-        strings1[i] = xmlStrdup((const xmlChar *) seeds1[i]);
-	if (strings1[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings1\n");
+    for (i = 0; seeds[i] != NULL; i++) {
+        strings[i] = xmlStrdup((const xmlChar *) seeds[i]);
+	if (strings[i] == NULL) {
+	    fprintf(stderr, "Out of memory while generating strings\n");
 	    exit(1);
 	}
     }
-    for (j = 0, k = 0;i < NB_STRINGS_MAX - NB_STRINGS_NS;i++,j++) {
-        strings1[i] = xmlStrncatNew(strings1[j], strings1[k], -1);
-	if (strings1[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings1\n");
+    for (j = 0, k = 0; i < start_ns; i++) {
+        strings[i] = xmlStrncatNew(strings[j], strings[k], -1);
+	if (strings[i] == NULL) {
+	    fprintf(stderr, "Out of memory while generating strings\n");
 	    exit(1);
 	}
+        if (xmlStrlen(strings[i]) > 30) {
+            fprintf(stderr, "### %s %s\n", strings[start_ns+j], strings[k]);
+            abort();
+        }
+        j++;
 	if (j >= 50) {
 	    j = 0;
 	    k++;
 	}
     }
-    for (j = 0; (j < 50) && (i < NB_STRINGS_MAX); i++, j+=2) {
-        strings1[i] = xmlStrncatNew(strings1[j], (const xmlChar *) ":", -1);
-	if (strings1[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings1\n");
+    for (j = 0, k = 0; (j < NB_STRINGS_PREFIX) && (i < NB_STRINGS_MAX);
+         i++, j++) {
+        strings[i] = xmlStrncatNew(strings[k], (const xmlChar *) ":", -1);
+	if (strings[i] == NULL) {
+	    fprintf(stderr, "Out of memory while generating strings\n");
 	    exit(1);
 	}
+        k += 1;
+        if (k >= start_ns) k = 0;
     }
-    for (j = NB_STRINGS_MAX - NB_STRINGS_NS, k = 0;
-         i < NB_STRINGS_MAX;i++,j++) {
-        strings1[i] = xmlStrncatNew(strings1[j], strings1[k], -1);
-	if (strings1[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings1\n");
+    for (j = 0, k = 0; i < NB_STRINGS_MAX; i++) {
+        strings[i] = xmlStrncatNew(strings[start_ns+j], strings[k], -1);
+	if (strings[i] == NULL) {
+	    fprintf(stderr, "Out of memory while generating strings\n");
 	    exit(1);
 	}
-	k += 3;
-	if (k >= 50) k = 0;
+        j++;
+        if (j >= NB_STRINGS_PREFIX) j = 0;
+	k += 5;
+        if (k >= start_ns) k = 0;
     }
-
-    /*
-     * Now do the same with the second pool of strings
-     */
-    for (i = 0; seeds2[i] != NULL; i++) {
-        strings2[i] = xmlStrdup((const xmlChar *) seeds2[i]);
-	if (strings2[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings2\n");
-	    exit(1);
-	}
-    }
-    for (j = 0, k = 0;i < NB_STRINGS_MAX - NB_STRINGS_NS;i++,j++) {
-        strings2[i] = xmlStrncatNew(strings2[j], strings2[k], -1);
-	if (strings2[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings2\n");
-	    exit(1);
-	}
-	if (j >= 50) {
-	    j = 0;
-	    k++;
-	}
-    }
-    for (j = 0; (j < 50) && (i < NB_STRINGS_MAX); i++, j+=2) {
-        strings2[i] = xmlStrncatNew(strings2[j], (const xmlChar *) ":", -1);
-	if (strings2[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings2\n");
-	    exit(1);
-	}
-    }
-    for (j = NB_STRINGS_MAX - NB_STRINGS_NS, k = 0;
-         i < NB_STRINGS_MAX;i++,j++) {
-        strings2[i] = xmlStrncatNew(strings2[j], strings2[k], -1);
-	if (strings2[i] == NULL) {
-	    fprintf(stderr, "Out of memory while generating strings2\n");
-	    exit(1);
-	}
-	k += 3;
-	if (k >= 50) k = 0;
-    }
-
 }
 
 #ifdef WITH_PRINT
@@ -429,7 +401,18 @@ int main(void)
     int ret;
 
     LIBXML_TEST_VERSION
-    fill_strings();
+
+    strings1 = xmlMalloc(NB_STRINGS_MAX * sizeof(strings1[0]));
+    memset(strings1, 0, NB_STRINGS_MAX * sizeof(strings1[0]));
+    strings2 = xmlMalloc(NB_STRINGS_MAX * sizeof(strings2[0]));
+    memset(strings2, 0, NB_STRINGS_MAX * sizeof(strings2[0]));
+    test1 = xmlMalloc(NB_STRINGS_MAX * sizeof(test1[0]));
+    memset(test1, 0, NB_STRINGS_MAX * sizeof(test1[0]));
+    test2 = xmlMalloc(NB_STRINGS_MAX * sizeof(test2[0]));
+    memset(test2, 0, NB_STRINGS_MAX * sizeof(test2[0]));
+
+    fill_string_pool(strings1, seeds1);
+    fill_string_pool(strings2, seeds2);
 #ifdef WITH_PRINT
     print_strings();
 #endif
@@ -440,7 +423,10 @@ int main(void)
         printf("dictionary tests failed with %d errors\n", nbErrors);
     }
     clean_strings();
+    xmlFree(strings1);
+    xmlFree(strings2);
+    xmlFree(test1);
+    xmlFree(test2);
     xmlCleanupParser();
-    xmlMemoryDump();
     return(ret);
 }

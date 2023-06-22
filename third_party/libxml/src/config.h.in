@@ -68,9 +68,6 @@
 /* Define to 1 if you have the <pthread.h> header file. */
 #undef HAVE_PTHREAD_H
 
-/* Define to 1 if you have the `putenv' function. */
-#undef HAVE_PUTENV
-
 /* Define to 1 if you have the `rand_r' function. */
 #undef HAVE_RAND_R
 

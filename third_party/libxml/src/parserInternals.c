@@ -176,6 +176,228 @@ xmlErrInternal(xmlParserCtxtPtr ctxt, const char *msg, const xmlChar * str)
 }
 
 /**
+ * xmlFatalErr:
+ * @ctxt:  an XML parser context
+ * @error:  the error number
+ * @extra:  extra information string
+ *
+ * Handle a fatal parser error, i.e. violating Well-Formedness constraints
+ */
+void
+xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors error, const char *info)
+{
+    const char *errmsg;
+
+    if ((ctxt != NULL) && (ctxt->disableSAX != 0) &&
+        (ctxt->instate == XML_PARSER_EOF))
+	return;
+    switch (error) {
+        case XML_ERR_INVALID_HEX_CHARREF:
+            errmsg = "CharRef: invalid hexadecimal value";
+            break;
+        case XML_ERR_INVALID_DEC_CHARREF:
+            errmsg = "CharRef: invalid decimal value";
+            break;
+        case XML_ERR_INVALID_CHARREF:
+            errmsg = "CharRef: invalid value";
+            break;
+        case XML_ERR_INTERNAL_ERROR:
+            errmsg = "internal error";
+            break;
+        case XML_ERR_PEREF_AT_EOF:
+            errmsg = "PEReference at end of document";
+            break;
+        case XML_ERR_PEREF_IN_PROLOG:
+            errmsg = "PEReference in prolog";
+            break;
+        case XML_ERR_PEREF_IN_EPILOG:
+            errmsg = "PEReference in epilog";
+            break;
+        case XML_ERR_PEREF_NO_NAME:
+            errmsg = "PEReference: no name";
+            break;
+        case XML_ERR_PEREF_SEMICOL_MISSING:
+            errmsg = "PEReference: expecting ';'";
+            break;
+        case XML_ERR_ENTITY_LOOP:
+            errmsg = "Detected an entity reference loop";
+            break;
+        case XML_ERR_ENTITY_NOT_STARTED:
+            errmsg = "EntityValue: \" or ' expected";
+            break;
+        case XML_ERR_ENTITY_PE_INTERNAL:
+            errmsg = "PEReferences forbidden in internal subset";
+            break;
+        case XML_ERR_ENTITY_NOT_FINISHED:
+            errmsg = "EntityValue: \" or ' expected";
+            break;
+        case XML_ERR_ATTRIBUTE_NOT_STARTED:
+            errmsg = "AttValue: \" or ' expected";
+            break;
+        case XML_ERR_LT_IN_ATTRIBUTE:
+            errmsg = "Unescaped '<' not allowed in attributes values";
+            break;
+        case XML_ERR_LITERAL_NOT_STARTED:
+            errmsg = "SystemLiteral \" or ' expected";
+            break;
+        case XML_ERR_LITERAL_NOT_FINISHED:
+            errmsg = "Unfinished System or Public ID \" or ' expected";
+            break;
+        case XML_ERR_MISPLACED_CDATA_END:
+            errmsg = "Sequence ']]>' not allowed in content";
+            break;
+        case XML_ERR_URI_REQUIRED:
+            errmsg = "SYSTEM or PUBLIC, the URI is missing";
+            break;
+        case XML_ERR_PUBID_REQUIRED:
+            errmsg = "PUBLIC, the Public Identifier is missing";
+            break;
+        case XML_ERR_HYPHEN_IN_COMMENT:
+            errmsg = "Comment must not contain '--' (double-hyphen)";
+            break;
+        case XML_ERR_PI_NOT_STARTED:
+            errmsg = "xmlParsePI : no target name";
+            break;
+        case XML_ERR_RESERVED_XML_NAME:
+            errmsg = "Invalid PI name";
+            break;
+        case XML_ERR_NOTATION_NOT_STARTED:
+            errmsg = "NOTATION: Name expected here";
+            break;
+        case XML_ERR_NOTATION_NOT_FINISHED:
+            errmsg = "'>' required to close NOTATION declaration";
+            break;
+        case XML_ERR_VALUE_REQUIRED:
+            errmsg = "Entity value required";
+            break;
+        case XML_ERR_URI_FRAGMENT:
+            errmsg = "Fragment not allowed";
+            break;
+        case XML_ERR_ATTLIST_NOT_STARTED:
+            errmsg = "'(' required to start ATTLIST enumeration";
+            break;
+        case XML_ERR_NMTOKEN_REQUIRED:
+            errmsg = "NmToken expected in ATTLIST enumeration";
+            break;
+        case XML_ERR_ATTLIST_NOT_FINISHED:
+            errmsg = "')' required to finish ATTLIST enumeration";
+            break;
+        case XML_ERR_MIXED_NOT_STARTED:
+            errmsg = "MixedContentDecl : '|' or ')*' expected";
+            break;
+        case XML_ERR_PCDATA_REQUIRED:
+            errmsg = "MixedContentDecl : '#PCDATA' expected";
+            break;
+        case XML_ERR_ELEMCONTENT_NOT_STARTED:
+            errmsg = "ContentDecl : Name or '(' expected";
+            break;
+        case XML_ERR_ELEMCONTENT_NOT_FINISHED:
+            errmsg = "ContentDecl : ',' '|' or ')' expected";
+            break;
+        case XML_ERR_PEREF_IN_INT_SUBSET:
+            errmsg =
+                "PEReference: forbidden within markup decl in internal subset";
+            break;
+        case XML_ERR_GT_REQUIRED:
+            errmsg = "expected '>'";
+            break;
+        case XML_ERR_CONDSEC_INVALID:
+            errmsg = "XML conditional section '[' expected";
+            break;
+        case XML_ERR_EXT_SUBSET_NOT_FINISHED:
+            errmsg = "Content error in the external subset";
+            break;
+        case XML_ERR_CONDSEC_INVALID_KEYWORD:
+            errmsg =
+                "conditional section INCLUDE or IGNORE keyword expected";
+            break;
+        case XML_ERR_CONDSEC_NOT_FINISHED:
+            errmsg = "XML conditional section not closed";
+            break;
+        case XML_ERR_XMLDECL_NOT_STARTED:
+            errmsg = "Text declaration '<?xml' required";
+            break;
+        case XML_ERR_XMLDECL_NOT_FINISHED:
+            errmsg = "parsing XML declaration: '?>' expected";
+            break;
+        case XML_ERR_EXT_ENTITY_STANDALONE:
+            errmsg = "external parsed entities cannot be standalone";
+            break;
+        case XML_ERR_ENTITYREF_SEMICOL_MISSING:
+            errmsg = "EntityRef: expecting ';'";
+            break;
+        case XML_ERR_DOCTYPE_NOT_FINISHED:
+            errmsg = "DOCTYPE improperly terminated";
+            break;
+        case XML_ERR_LTSLASH_REQUIRED:
+            errmsg = "EndTag: '</' not found";
+            break;
+        case XML_ERR_EQUAL_REQUIRED:
+            errmsg = "expected '='";
+            break;
+        case XML_ERR_STRING_NOT_CLOSED:
+            errmsg = "String not closed expecting \" or '";
+            break;
+        case XML_ERR_STRING_NOT_STARTED:
+            errmsg = "String not started expecting ' or \"";
+            break;
+        case XML_ERR_ENCODING_NAME:
+            errmsg = "Invalid XML encoding name";
+            break;
+        case XML_ERR_STANDALONE_VALUE:
+            errmsg = "standalone accepts only 'yes' or 'no'";
+            break;
+        case XML_ERR_DOCUMENT_EMPTY:
+            errmsg = "Document is empty";
+            break;
+        case XML_ERR_DOCUMENT_END:
+            errmsg = "Extra content at the end of the document";
+            break;
+        case XML_ERR_NOT_WELL_BALANCED:
+            errmsg = "chunk is not well balanced";
+            break;
+        case XML_ERR_EXTRA_CONTENT:
+            errmsg = "extra content at the end of well balanced chunk";
+            break;
+        case XML_ERR_VERSION_MISSING:
+            errmsg = "Malformed declaration expecting version";
+            break;
+        case XML_ERR_NAME_TOO_LONG:
+            errmsg = "Name too long";
+            break;
+        case XML_ERR_INVALID_ENCODING:
+            errmsg = "Invalid bytes in character encoding";
+            break;
+        case XML_IO_UNKNOWN:
+            errmsg = "I/O error";
+            break;
+#if 0
+        case:
+            errmsg = "";
+            break;
+#endif
+        default:
+            errmsg = "Unregistered error message";
+    }
+    if (ctxt != NULL)
+	ctxt->errNo = error;
+    if (info == NULL) {
+        __xmlRaiseError(NULL, NULL, NULL, ctxt, NULL, XML_FROM_PARSER, error,
+                        XML_ERR_FATAL, NULL, 0, info, NULL, NULL, 0, 0, "%s\n",
+                        errmsg);
+    } else {
+        __xmlRaiseError(NULL, NULL, NULL, ctxt, NULL, XML_FROM_PARSER, error,
+                        XML_ERR_FATAL, NULL, 0, info, NULL, NULL, 0, 0, "%s: %s\n",
+                        errmsg, info);
+    }
+    if (ctxt != NULL) {
+	ctxt->wellFormed = 0;
+	if (ctxt->recovery == 0)
+	    ctxt->disableSAX = 1;
+    }
+}
+
+/**
  * xmlErrEncodingInt:
  * @ctxt:  an XML parser context
  * @error:  the error number
@@ -327,11 +549,13 @@ xmlParserGrow(xmlParserCtxtPtr ctxt) {
     /* Don't grow memory buffers. */
     if ((buf->encoder == NULL) && (buf->readcallback == NULL))
         return(0);
+    if (buf->error != 0)
+        return(-1);
 
     if (((curEnd > XML_MAX_LOOKUP_LIMIT) ||
          (curBase > XML_MAX_LOOKUP_LIMIT)) &&
         ((ctxt->options & XML_PARSE_HUGE) == 0)) {
-        xmlErrInternal(ctxt, "Huge input lookup", NULL);
+        xmlErrMemory(ctxt, "Huge input lookup");
         xmlHaltParser(ctxt);
 	return(-1);
     }
@@ -342,10 +566,11 @@ xmlParserGrow(xmlParserCtxtPtr ctxt) {
     ret = xmlParserInputBufferGrow(buf, INPUT_CHUNK);
     xmlBufSetInputBaseCur(buf->buffer, in, 0, curBase);
 
-    /* TODO: Get error code from xmlParserInputBufferGrow */
     if (ret < 0) {
-        xmlErrInternal(ctxt, "Growing input buffer", NULL);
-        xmlHaltParser(ctxt);
+        xmlFatalErr(ctxt, buf->error, NULL);
+        /* Buffer contents may be lost in case of memory errors. */
+        if (buf->error == XML_ERR_NO_MEMORY)
+            xmlHaltParser(ctxt);
     }
 
     return(ret);
@@ -418,9 +643,10 @@ xmlParserShrink(xmlParserCtxtPtr ctxt) {
     xmlParserInputBufferPtr buf = in->buf;
     size_t used;
 
-    /* Don't shrink memory buffers. */
+    /* Don't shrink pull parser memory buffers. */
     if ((buf == NULL) ||
-        ((buf->encoder == NULL) && (buf->readcallback == NULL)))
+        ((ctxt->progressive == 0) &&
+         (buf->encoder == NULL) && (buf->readcallback == NULL)))
         return;
 
     used = in->cur - in->base;
@@ -513,6 +739,8 @@ xmlParserInputShrink(xmlParserInputPtr in) {
  * xmlNextChar:
  * @ctxt:  the XML parser context
  *
+ * DEPRECATED: Internal function, do not use.
+ *
  * Skip to the next char input char.
  */
 
@@ -531,9 +759,9 @@ xmlNextChar(xmlParserCtxtPtr ctxt)
     }
 
     if (ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) {
-        if (xmlParserGrow(ctxt) < 0)
-            return;
-        if (ctxt->input->cur >= ctxt->input->end)
+        xmlParserGrow(ctxt);
+        if ((ctxt->instate == XML_PARSER_EOF) ||
+            (ctxt->input->cur >= ctxt->input->end))
             return;
     }
 
@@ -658,6 +886,8 @@ encoding_error:
  * @ctxt:  the XML parser context
  * @len:  pointer to the length of the char read
  *
+ * DEPRECATED: Internal function, do not use.
+ *
  * The current char value, if using UTF-8 this may actually span multiple
  * bytes in the input buffer. Implement the end of line normalization:
  * 2.11 End-of-Line Handling
@@ -677,9 +907,11 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
     if (ctxt->instate == XML_PARSER_EOF)
 	return(0);
 
-    if ((ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) &&
-        (xmlParserGrow(ctxt) < 0))
-        return(0);
+    if (ctxt->input->end - ctxt->input->cur < INPUT_CHUNK) {
+        xmlParserGrow(ctxt);
+        if (ctxt->instate == XML_PARSER_EOF)
+            return(0);
+    }
 
     if ((*ctxt->input->cur >= 0x20) && (*ctxt->input->cur <= 0x7F)) {
 	    *len = 1;
@@ -710,14 +942,20 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 
             avail = ctxt->input->end - ctxt->input->cur;
 
-	    if ((avail < 2) || (cur[1] & 0xc0) != 0x80)
+            if (avail < 2)
+                goto incomplete_sequence;
+	    if ((cur[1] & 0xc0) != 0x80)
 		goto encoding_error;
 	    if ((c & 0xe0) == 0xe0) {
-		if ((avail < 3) || (cur[2] & 0xc0) != 0x80)
+                if (avail < 3)
+                    goto incomplete_sequence;
+		if ((cur[2] & 0xc0) != 0x80)
 		    goto encoding_error;
 		if ((c & 0xf0) == 0xf0) {
+                    if (avail < 4)
+                        goto incomplete_sequence;
 		    if (((c & 0xf8) != 0xf0) ||
-			(avail < 4) || ((cur[3] & 0xc0) != 0x80))
+			((cur[3] & 0xc0) != 0x80))
 			goto encoding_error;
 		    /* 4-byte code */
 		    *len = 4;
@@ -779,17 +1017,8 @@ xmlCurrentChar(xmlParserCtxtPtr ctxt, int *len) {
 	return(0xA);
     }
     return(*ctxt->input->cur);
-encoding_error:
-    /*
-     * An encoding problem may arise from a truncated input buffer
-     * splitting a character in the middle. In that case do not raise
-     * an error but return 0 to indicate an end of stream problem
-     */
-    if (ctxt->input->end - ctxt->input->cur < 4) {
-	*len = 0;
-	return(0);
-    }
 
+encoding_error:
     /*
      * If we detect an UTF8 error that probably mean that the
      * input encoding didn't get properly advertised in the
@@ -797,7 +1026,11 @@ encoding_error:
      * to ISO-Latin-1 (if you don't like this policy, just declare the
      * encoding !)
      */
-    {
+    if (ctxt->input->end - ctxt->input->cur < 4) {
+	__xmlErrEncoding(ctxt, XML_ERR_INVALID_CHAR,
+		     "Input is not proper UTF-8, indicate encoding !\n",
+		     NULL, NULL);
+    } else {
         char buffer[150];
 
 	snprintf(&buffer[0], 149, "Bytes: 0x%02X 0x%02X 0x%02X 0x%02X\n",
@@ -810,6 +1043,16 @@ encoding_error:
     ctxt->charset = XML_CHAR_ENCODING_8859_1;
     *len = 1;
     return(*ctxt->input->cur);
+
+incomplete_sequence:
+    /*
+     * An encoding problem may arise from a truncated input buffer
+     * splitting a character in the middle. In that case do not raise
+     * an error but return 0. This should only happen when push parsing
+     * char data.
+     */
+    *len = 0;
+    return(0);
 }
 
 /**
@@ -817,6 +1060,8 @@ encoding_error:
  * @ctxt:  the XML parser context
  * @cur:  pointer to the beginning of the char
  * @len:  pointer to the length of the char read
+ *
+ * DEPRECATED: Internal function, do not use.
  *
  * The current char value, if using UTF-8 this may actually span multiple
  * bytes in the input buffer.
@@ -1393,6 +1638,8 @@ xmlNewIOInputStream(xmlParserCtxtPtr ctxt, xmlParserInputBufferPtr input,
  * xmlNewEntityInputStream:
  * @ctxt:  an XML parser context
  * @entity:  an Entity pointer
+ *
+ * DEPRECATED: Internal function, do not use.
  *
  * Create a new input stream based on an xmlEntityPtr
  *

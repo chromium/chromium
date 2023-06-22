@@ -14,7 +14,7 @@
 #include "libxml.h"
 #include <stdio.h>
 
-#include <stdlib.h> /* for putenv() */
+#include <stdlib.h>
 #include <string.h>
 #include <libxml/xmlerror.h>
 #include <libxml/catalog.h>
@@ -133,11 +133,6 @@ int main(int argc, char **argv) {
     return(0);
 #endif
 
-#ifdef HAVE_PUTENV
-    /* access to the proxy can slow up regression tests a lot */
-    putenv((char *) "http_proxy=");
-#endif
-
     memset(chartab, 0, sizeof(chartab));
     strncpy((char *) chartab, "  chartab\n", 20);
     memset(inttab, 0, sizeof(inttab));
@@ -174,8 +169,8 @@ int main(int argc, char **argv) {
     mem = xmlMemUsed();
     if ((blocks != 0) || (mem != 0)) {
         printf("testapi leaked %d bytes in %d blocks\n", mem, blocks);
+        ret = 1;
     }
-    xmlMemoryDump();
 
     return (ret != 0);
 }
@@ -5305,7 +5300,14 @@ test_xmlSAXDefaultVersion(void) {
         mem_base = xmlMemBlocks();
         version = gen_int(n_version, 0);
 
+        {
+            int original_version = xmlSAXDefaultVersion(2);
+
+
         ret_val = xmlSAXDefaultVersion(version);
+            (void)xmlSAXDefaultVersion(original_version);
+        }
+
         desret_int(ret_val);
         call_tests++;
         des_int(n_version, version, 0);
@@ -25770,23 +25772,23 @@ test_xmlValidateElement(void) {
     int n_ctxt;
     xmlDocPtr doc; /* a document instance */
     int n_doc;
-    xmlNodePtr elem; /* an element instance */
-    int n_elem;
+    xmlNodePtr root; /*  */
+    int n_root;
 
     for (n_ctxt = 0;n_ctxt < gen_nb_xmlValidCtxtPtr;n_ctxt++) {
     for (n_doc = 0;n_doc < gen_nb_xmlDocPtr;n_doc++) {
-    for (n_elem = 0;n_elem < gen_nb_xmlNodePtr;n_elem++) {
+    for (n_root = 0;n_root < gen_nb_xmlNodePtr;n_root++) {
         mem_base = xmlMemBlocks();
         ctxt = gen_xmlValidCtxtPtr(n_ctxt, 0);
         doc = gen_xmlDocPtr(n_doc, 1);
-        elem = gen_xmlNodePtr(n_elem, 2);
+        root = gen_xmlNodePtr(n_root, 2);
 
-        ret_val = xmlValidateElement(ctxt, doc, elem);
+        ret_val = xmlValidateElement(ctxt, doc, root);
         desret_int(ret_val);
         call_tests++;
         des_xmlValidCtxtPtr(n_ctxt, ctxt, 0);
         des_xmlDocPtr(n_doc, doc, 1);
-        des_xmlNodePtr(n_elem, elem, 2);
+        des_xmlNodePtr(n_root, root, 2);
         xmlResetLastError();
         if (mem_base != xmlMemBlocks()) {
             printf("Leak of %d blocks found in xmlValidateElement",
@@ -25794,7 +25796,7 @@ test_xmlValidateElement(void) {
 	    test_ret++;
             printf(" %d", n_ctxt);
             printf(" %d", n_doc);
-            printf(" %d", n_elem);
+            printf(" %d", n_root);
             printf("\n");
         }
     }
@@ -34695,9 +34697,11 @@ test_xmlSchemaInitTypes(void) {
     int test_ret = 0;
 
 #if defined(LIBXML_SCHEMAS_ENABLED)
+    int ret_val;
 
 
-        xmlSchemaInitTypes();
+        ret_val = xmlSchemaInitTypes();
+        desret_int(ret_val);
         call_tests++;
         xmlResetLastError();
     function_tests++;

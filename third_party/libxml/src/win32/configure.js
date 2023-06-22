@@ -698,6 +698,10 @@ txtOut += "Put static libs in: " + buildLibPrefix + "\n";
 txtOut += "Put shared libs in: " + buildSoPrefix + "\n";
 txtOut += "      Include path: " + buildInclude + "\n";
 txtOut += "          Lib path: " + buildLib + "\n";
+txtOut += "\n";
+txtOut += "DEPRECATION WARNING: The build system in the win32 directory is\n";
+txtOut += "deprecated and will be removed in a future release. Please switch\n";
+txtOut += "to CMake.\n";
 WScript.Echo(txtOut);
 
 //

@@ -400,7 +400,7 @@ struct _xmlXPathParserContext {
     int xptr;				/* it this an XPointer expression */
     xmlNodePtr         ancestor;	/* used for walking preceding axis */
 
-    int              valueFrame;        /* unused */
+    int              valueFrame;        /* always zero for compatibility */
 };
 
 /************************************************************************

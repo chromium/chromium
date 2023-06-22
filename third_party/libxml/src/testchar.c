@@ -5,6 +5,8 @@
  * copy: see Copyright for the status of this software.
  */
 
+#define XML_DEPRECATED
+
 #include <stdio.h>
 #include <string.h>
 #include <libxml/tree.h>
@@ -654,6 +656,141 @@ error:
     return(test_ret);
 }
 
+static int
+testUserEncoding(void) {
+    /*
+     * Create a document encoded as UTF-16LE with an ISO-8859-1 encoding
+     * declaration, then parse it with xmlReadMemory and the encoding
+     * argument set to UTF-16LE.
+     */
+    xmlDocPtr doc = NULL;
+    const char *start = "<?xml version='1.0' encoding='ISO-8859-1'?><d>";
+    const char *end = "</d>";
+    char *buf = NULL;
+    xmlChar *text;
+    int startSize = strlen(start);
+    int textSize = 100000; /* Make sure to exceed internal buffer sizes. */
+    int endSize = strlen(end);
+    int totalSize = startSize + textSize + endSize;
+    int k = 0;
+    int i;
+    int ret = 1;
+
+    buf = xmlMalloc(2 * totalSize);
+    for (i = 0; start[i] != 0; i++) {
+        buf[k++] = start[i];
+        buf[k++] = 0;
+    }
+    for (i = 0; i < textSize; i++) {
+        buf[k++] = 'x';
+        buf[k++] = 0;
+    }
+    for (i = 0; end[i] != 0; i++) {
+        buf[k++] = end[i];
+        buf[k++] = 0;
+    }
+
+    doc = xmlReadMemory(buf, 2 * totalSize, NULL, "UTF-16LE", 0);
+    if (doc == NULL) {
+        fprintf(stderr, "failed to parse document\n");
+        goto error;
+    }
+
+    text = doc->children->children->content;
+    for (i = 0; i < textSize; i++) {
+        if (text[i] != 'x') {
+            fprintf(stderr, "text node has wrong content at offset %d\n", k);
+            goto error;
+        }
+    }
+
+    ret = 0;
+
+error:
+    xmlFreeDoc(doc);
+    xmlFree(buf);
+
+    return ret;
+}
+
+static int
+testUTF8Chunks(void) {
+#if defined(LIBXML_PUSH_ENABLED) && defined(LIBXML_OUTPUT_ENABLED)
+    xmlParserCtxtPtr ctxt;
+    xmlChar *out;
+    int outSize;
+    char *buf;
+    int i;
+    int ret = 0;
+
+    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+
+    xmlParseChunk(ctxt, "<d>", 3, 0);
+    xmlParseChunk(ctxt, "\xF0", 1, 0);
+    xmlParseChunk(ctxt, "\x9F", 1, 0);
+    xmlParseChunk(ctxt, "\x98", 1, 0);
+    xmlParseChunk(ctxt, "\x8A", 1, 0);
+    xmlParseChunk(ctxt, "</d>", 4, 1);
+
+    xmlDocDumpMemory(ctxt->myDoc, &out, &outSize);
+    if (strcmp((char *) out,
+               "<?xml version=\"1.0\"?>\n<d>&#x1F60A;</d>\n") != 0) {
+        fprintf(stderr, "failed UTF-8 chunk test 1\n");
+        ret += 1;
+    }
+
+    xmlFree(out);
+    xmlFreeDoc(ctxt->myDoc);
+    xmlFreeParserCtxt(ctxt);
+
+    ctxt = xmlCreatePushParserCtxt(NULL, NULL, NULL, 0, NULL);
+
+    xmlParseChunk(ctxt, "<d>", 3, 0);
+
+    /*
+     * Create a chunk longer than XML_PARSER_BIG_BUFFER_SIZE (300) ending
+     * with an incomplete UTF-8 sequence.
+     */
+    buf = xmlMalloc(1000 * 2 + 1);
+    for (i = 0; i < 2000; i += 2)
+        memcpy(buf + i, "\xCE\xB1", 2);
+    buf[i] = '\xCE';
+    xmlParseChunk(ctxt, buf, 2001, 0);
+    xmlFree(buf);
+
+    xmlParseChunk(ctxt, "\xB1</d>", 4, 0);
+    xmlParseChunk(ctxt, NULL, 0, 0);
+
+    xmlDocDumpMemory(ctxt->myDoc, &out, &outSize);
+    if (strncmp((char *) out, "<?xml version=\"1.0\"?>\n<d>", 25) != 0) {
+        fprintf(stderr, "failed UTF-8 chunk test 2-1\n");
+        ret += 1;
+        goto error;
+    }
+    for (i = 25; i < 25 + 1001 * 7; i += 7) {
+        if (memcmp(out + i, "&#x3B1;", 7) != 0) {
+            fprintf(stderr, "failed UTF-8 chunk test 2-2 %d\n", i);
+            ret += 1;
+            goto error;
+        }
+    }
+    if (strcmp((char *) out + i, "</d>\n") != 0) {
+        fprintf(stderr, "failed UTF-8 chunk test 2-3\n");
+        ret += 1;
+        goto error;
+    }
+
+error:
+    xmlFree(out);
+    xmlFreeDoc(ctxt->myDoc);
+    xmlFreeParserCtxt(ctxt);
+
+    return(ret);
+#else
+    return(0);
+#endif
+}
+
 int main(void) {
 
     int ret = 0;
@@ -676,14 +813,12 @@ int main(void) {
      */
     ret += testCharRanges();
     ret += testDocumentRanges();
+    ret += testUserEncoding();
+    ret += testUTF8Chunks();
 
     /*
      * Cleanup function for the XML library.
      */
     xmlCleanupParser();
-    /*
-     * this is to debug memory for regression tests
-     */
-    xmlMemoryDump();
     return(ret ? 1 : 0);
 }

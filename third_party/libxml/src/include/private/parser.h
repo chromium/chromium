@@ -20,6 +20,8 @@
 XML_HIDDEN void
 xmlErrMemory(xmlParserCtxtPtr ctxt, const char *extra);
 XML_HIDDEN void
+xmlFatalErr(xmlParserCtxtPtr ctxt, xmlParserErrors error, const char *info);
+XML_HIDDEN void
 __xmlErrEncoding(xmlParserCtxtPtr ctxt, xmlParserErrors xmlerr,
                  const char *msg, const xmlChar *str1,
                  const xmlChar *str2) LIBXML_ATTR_FORMAT(3,0);

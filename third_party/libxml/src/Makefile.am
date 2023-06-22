@@ -145,11 +145,12 @@ runsuite_DEPENDENCIES = $(DEPS)
 runsuite_LDADD= $(LDADDS)
 
 xmllint_SOURCES=xmllint.c
-xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS)
+xmllint_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
 xmllint_DEPENDENCIES = $(DEPS)
 xmllint_LDADD=  $(RDL_LIBS) $(LDADDS)
 
 xmlcatalog_SOURCES=xmlcatalog.c
+xmlcatalog_CFLAGS = $(AM_CFLAGS) $(RDL_CFLAGS) $(ICONV_CFLAGS)
 xmlcatalog_DEPENDENCIES = $(DEPS)
 xmlcatalog_LDADD = $(RDL_LIBS) $(LDADDS)
 
@@ -233,7 +234,6 @@ endif
 tests: $(OLD_TESTS)
 
 Scripttests : xmllint$(EXEEXT)
-	@(echo > .memdump)
 	@echo "## Scripts regression tests"
 	@echo "## Some of the base computations may be different if srcdir != ."
 	-@(for i in $(srcdir)/test/scripts/*.script ; do \
@@ -243,10 +243,8 @@ Scripttests : xmllint$(EXEEXT)
 	  if [ ! -f $(srcdir)/result/scripts/$$name ] ; then \
 	      echo New test file $$name ; \
 	      $(CHECKER) $(top_builddir)/xmllint --shell $$xml < $$i > $(srcdir)/result/scripts/$$name 2> $(srcdir)/result/scripts/$$name.err ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
 	      log=`$(CHECKER) $(top_builddir)/xmllint --shell $$xml < $$i > result.$$name 2> result.$$name.err ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/scripts/$$name result.$$name ; \
 	      diff $(srcdir)/result/scripts/$$name.err result.$$name.err` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
@@ -254,7 +252,6 @@ Scripttests : xmllint$(EXEEXT)
 	  fi ; fi ; done)
 
 Catatests : xmlcatalog$(EXEEXT)
-	@(echo > .memdump)
 	@echo "## Catalog regression tests"
 	-@(for i in $(srcdir)/test/catalogs/*.script ; do \
 	  name=`basename $$i .script`; \
@@ -263,10 +260,8 @@ Catatests : xmlcatalog$(EXEEXT)
 	  if [ ! -f $(srcdir)/result/catalogs/$$name ] ; then \
 	      echo New test file $$name ; \
 	      $(CHECKER) $(top_builddir)/xmlcatalog --shell $$xml < $$i 2>&1 > $(srcdir)/result/catalogs/$$name ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
 	      log=`$(CHECKER) $(top_builddir)/xmlcatalog --shell $$xml < $$i 2>&1 > result.$$name ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/catalogs/$$name result.$$name` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
 	      rm result.$$name ; \
@@ -278,33 +273,22 @@ Catatests : xmlcatalog$(EXEEXT)
 	  if [ ! -f $(srcdir)/result/catalogs/$$name ] ; then \
 	      echo New test file $$name ; \
 	      $(CHECKER) $(top_builddir)/xmlcatalog --shell $$sgml < $$i > $(srcdir)/result/catalogs/$$name ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	  else \
 	      log=`$(CHECKER) $(top_builddir)/xmlcatalog --shell $$sgml < $$i > result.$$name ; \
-	      grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      diff $(srcdir)/result/catalogs/$$name result.$$name` ; \
 	      if [ -n "$$log" ] ; then echo $$name result ; echo "$$log" ; fi ; \
 	      rm result.$$name ; \
 	  fi ; fi ; done)
 	@echo "## Add and del operations on XML Catalogs"
 	-@($(CHECKER) $(top_builddir)/xmlcatalog --create --noout $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --add public Pubid sysid $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --add public Pubid2 sysid2 $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --add public Pubid3 sysid3 $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	diff result/catalogs/mycatalog.full $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --del sysid $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --del sysid3 $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	$(CHECKER) $(top_builddir)/xmlcatalog --noout --del sysid2 $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	diff result/catalogs/mycatalog.empty $(srcdir)/result/catalogs/mycatalog; \
-	grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0"; \
 	rm -f $(srcdir)/result/catalogs/mycatalog)
 
 dba100000.xml: dbgenattr.pl
@@ -319,30 +303,21 @@ Timingtests: xmllint$(EXEEXT) dba100000.xml
 	@echo "## 3/ repeated DOM parsing"
 	@echo "## 4/ repeated DOM validation"
 	-@($(top_builddir)/xmllint --stream --timing dba100000.xml; \
-	   MEM=`cat .memdump | grep "MEMORY ALLOCATED" | awk '{ print $$7}'`;\
 	   if [ "$$MEM" != "" ] ; then echo Using $$MEM bytes ; fi ; \
-	   grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	   exit 0)
 	-@($(top_builddir)/xmllint --stream --timing --memory dba100000.xml; \
-	   MEM=`cat .memdump | grep "MEMORY ALLOCATED" | awk '{ print $$7}'`;\
 	   if [ "$$MEM" != "" ] ; then echo Using $$MEM bytes ; fi ; \
-	   grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	   exit 0)
 	-@($(top_builddir)/xmllint --noout --timing --repeat $(srcdir)/test/valid/REC-xml-19980210.xml; \
-	   MEM=`cat .memdump | grep "MEMORY ALLOCATED" | awk '{ print $$7}'`;\
 	   if [ "$$MEM" != "" ] ; then echo Using $$MEM bytes ; fi ; \
-	   grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	   exit 0)
 
 VTimingtests: xmllint$(EXEEXT)
 	-@($(top_builddir)/xmllint --noout --timing --valid --repeat $(srcdir)/test/valid/REC-xml-19980210.xml; \
-	   MEM=`cat .memdump | grep "MEMORY ALLOCATED" | awk '{ print $$7}'`;\
 	   if [ "$$MEM" != "" ] ; then echo Using $$MEM bytes ; fi ; \
-	   grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	   exit 0)
 
 Schematrontests: xmllint$(EXEEXT)
-	@(echo > .memdump)
 	@echo "## Schematron regression tests"
 	-@(for i in $(srcdir)/test/schematron/*.sct ; do \
 	  name=`basename $$i | sed 's+\.sct++'`; \
@@ -355,11 +330,9 @@ Schematrontests: xmllint$(EXEEXT)
 		  $(CHECKER) $(top_builddir)/xmllint$(EXEEXT) --schematron $$i $$j \
 		    > $(srcdir)/result/schematron/"$$name"_"$$xno" \
 		    2> $(srcdir)/result/schematron/"$$name"_"$$xno".err; \
-	          grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	      else \
 	          log=`$(CHECKER) $(top_builddir)/xmllint$(EXEEXT) --schematron $$i $$j \
 		    > res.$$name 2> err.$$name;\
-	          grep "MORY ALLO" .memdump  | grep -v "MEMORY ALLOCATED : 0";\
 	          diff $(srcdir)/result/schematron/"$$name"_"$$xno" \
 		       res.$$name;\
 	          diff $(srcdir)/result/schematron/"$$name"_"$$xno".err \
