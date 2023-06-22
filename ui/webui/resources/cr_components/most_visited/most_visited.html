@@ -50,9 +50,15 @@
     width: 24px;
   }
 
+  #addShortcutIconContainer {
+    background-color:
+        var(--add-shortcut-background-color, var(--tile-background-color));
+  }
+
   #addShortcutIcon {
     -webkit-mask-image: url(chrome://resources/images/add.svg);
-    background-color: var(--google-grey-900);
+    background-color:
+        var(--add-shortcut-foreground-color, var(--google-grey-900));
   }
 
   .query-tile-icon {
@@ -260,7 +266,7 @@
   <cr-button id="addShortcut" tabindex="0" on-click="onAdd_"
       hidden$="[[!showAdd_]]" on-keydown="onAddShortcutKeyDown_"
       aria-label="[[i18n('addLinkTitle')]]" title="[[i18n('addLinkTitle')]]" noink>
-    <div class="tile-icon">
+    <div id="addShortcutIconContainer" class="tile-icon">
       <div id="addShortcutIcon" draggable="false"></div>
     </div>
     <div class="tile-title">
