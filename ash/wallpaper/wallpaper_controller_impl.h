@@ -754,8 +754,6 @@ class ASH_EXPORT WallpaperControllerImpl
       const WallpaperInfo& wallpaper_info,
       base::Time modification_time);
 
-  PrefService* GetUserPrefServiceSyncable(const AccountId& account_id) const;
-
   // This will not update a new wallpaper if the synced |info.collection_id| is
   // the same as the user's current collection_id.
   void HandleDailyWallpaperInfoSyncedIn(const AccountId& account_id,

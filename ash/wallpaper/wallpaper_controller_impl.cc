@@ -3074,14 +3074,6 @@ void WallpaperControllerImpl::OnDriveFsWallpaperChange(
   }
 }
 
-PrefService* WallpaperControllerImpl::GetUserPrefServiceSyncable(
-    const AccountId& account_id) const {
-  if (!wallpaper_controller_client_->IsWallpaperSyncEnabled(account_id))
-    return nullptr;
-  return Shell::Get()->session_controller()->GetUserPrefServiceForUser(
-      account_id);
-}
-
 void WallpaperControllerImpl::HandleDailyWallpaperInfoSyncedIn(
     const AccountId& account_id,
     const WallpaperInfo& info) {
