@@ -11,6 +11,7 @@
 #include "base/scoped_observation.h"
 #include "base/strings/stringprintf.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
 #include "build/buildflag.h"
@@ -20,6 +21,7 @@
 #include "chrome/browser/background/background_contents_service_observer.h"
 #include "chrome/browser/background/background_mode_manager.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/chrome_notification_types.h"
 #include "chrome/browser/extensions/extension_apitest.h"
 #include "chrome/browser/extensions/extension_service.h"
@@ -178,7 +180,9 @@ namespace {
 // Native Client embeds.
 class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
  public:
-  AppBackgroundPageNaClTest() : extension_(nullptr) {}
+  AppBackgroundPageNaClTest() : extension_(nullptr) {
+    feature_list_.InitAndEnableFeature(kNaclAllow);
+  }
   ~AppBackgroundPageNaClTest() override {}
 
   void SetUpOnMainThread() override {
@@ -202,6 +206,7 @@ class AppBackgroundPageNaClTest : public AppBackgroundPageApiTest {
 
  private:
   raw_ptr<const Extension> extension_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 }  // namespace

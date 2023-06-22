@@ -6,6 +6,8 @@
 #include "base/files/file_path.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/bind.h"
+#include "base/test/scoped_feature_list.h"
+#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/extensions/crx_installer.h"
 #include "chrome/browser/extensions/extension_browsertest.h"
 #include "chrome/browser/profiles/profile.h"
@@ -40,7 +42,7 @@ const char kExtensionId[] = "bjjcibdiodkkeanflmiijlcfieiemced";
 // .nexe is part of an extension from the Chrome Webstore.
 class NaClExtensionTest : public extensions::ExtensionBrowserTest {
  public:
-  NaClExtensionTest() {}
+  NaClExtensionTest() { feature_list_.InitAndEnableFeature(kNaclAllow); }
 
   void SetUpOnMainThread() override {
     extensions::ExtensionBrowserTest::SetUpOnMainThread();
@@ -157,6 +159,9 @@ class NaClExtensionTest : public extensions::ExtensionBrowserTest {
     CheckPluginsCreated(extension->GetResourceURL("test.html"),
                         expected_to_succeed);
   }
+
+ private:
+  base::test::ScopedFeatureList feature_list_;
 };
 
 // Test that the NaCl plugin isn't blocked for Webstore extensions.

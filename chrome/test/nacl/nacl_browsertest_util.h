@@ -8,6 +8,7 @@
 #include <memory>
 
 #include "base/files/file_path.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/values.h"
 #include "build/build_config.h"
 #include "chrome/test/base/in_process_browser_test.h"
@@ -108,6 +109,7 @@ class NaClBrowserTestBase : public InProcessBrowserTest {
  private:
   bool StartTestServer();
 
+  base::test::ScopedFeatureList feature_list_;
   std::unique_ptr<net::EmbeddedTestServer> test_server_;
 };
 

@@ -6,6 +6,7 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
+#include "build/build_config.h"
 #include "chrome/browser/browser_process.h"
 #include "chrome/common/chrome_switches.h"
 #include "chrome/common/ppapi_utils.h"

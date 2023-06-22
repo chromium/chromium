@@ -16,6 +16,7 @@
 #include "base/run_loop.h"
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/test_timeouts.h"
 #include "base/threading/thread_restrictions.h"
 #include "base/values.h"
@@ -27,6 +28,7 @@
 #include "chrome/browser/apps/platform_apps/api/media_galleries/media_galleries_api.h"
 #include "chrome/browser/apps/platform_apps/app_browsertest_util.h"
 #include "chrome/browser/browser_process.h"
+#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/media_galleries/media_file_system_registry.h"
 #include "chrome/browser/media_galleries/media_galleries_preferences.h"
 #include "chrome/browser/media_galleries/media_galleries_test_util.h"
@@ -247,6 +249,11 @@ class MediaGalleriesPlatformAppBrowserTest : public PlatformAppBrowserTest {
 #if BUILDFLAG(ENABLE_NACL)
 class MediaGalleriesPlatformAppPpapiTest
     : public MediaGalleriesPlatformAppBrowserTest {
+ public:
+  MediaGalleriesPlatformAppPpapiTest() {
+    feature_list_.InitAndEnableFeature(kNaclAllow);
+  }
+
  protected:
   void SetUpCommandLine(base::CommandLine* command_line) override {
     MediaGalleriesPlatformAppBrowserTest::SetUpCommandLine(command_line);
@@ -268,6 +275,7 @@ class MediaGalleriesPlatformAppPpapiTest
 
  private:
   base::FilePath app_dir_;
+  base::test::ScopedFeatureList feature_list_;
 };
 
 IN_PROC_BROWSER_TEST_F(MediaGalleriesPlatformAppPpapiTest, SendFilesystem) {

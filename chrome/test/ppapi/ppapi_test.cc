@@ -17,6 +17,7 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/threading/thread_restrictions.h"
 #include "build/build_config.h"
+#include "chrome/browser/chrome_browser_main_extra_parts_nacl_deprecation.h"
 #include "chrome/browser/content_settings/host_content_settings_map_factory.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/ui/browser.h"
@@ -144,7 +145,7 @@ PPAPITestBase::PPAPITestBase() {
   scoped_feature_list_.InitWithFeatures(
       // enabled_features
       {net::features::kSplitHostCacheByNetworkIsolationKey,
-       net::features::kPartitionConnectionsByNetworkIsolationKey},
+       net::features::kPartitionConnectionsByNetworkIsolationKey, kNaclAllow},
       // disabled_features
       {});
 }
