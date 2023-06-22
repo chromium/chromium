@@ -2023,6 +2023,7 @@ static_library("ui") {
       "//third_party/libaddressinput:strings",
       "//ui/base/dragdrop:types",
       "//ui/base/dragdrop/mojom",
+      "//ui/color:color_provider_key",
       "//ui/color/dynamic_color",
       "//ui/events",
       "//ui/webui/resources/cr_components/app_management:mojo_bindings",
