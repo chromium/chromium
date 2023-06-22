@@ -1183,9 +1183,10 @@ const char* AlreadySeenSigninViewPreferenceKey(
                        @"signinInProgress: %d, accessPoint: %d, "
                        @"signinPromoViewVisible: %d, invalidOrClosed %d>",
                        self.class.description, self, self.identity,
-                       self.signinPromoViewState, self.signinInProgress,
-                       self.accessPoint, self.signinPromoViewVisible,
-                       self.invalidOrClosed];
+                       static_cast<int>(self.signinPromoViewState),
+                       self.signinInProgress,
+                       static_cast<int>(self.accessPoint),
+                       self.signinPromoViewVisible, self.invalidOrClosed];
 }
 
 @end

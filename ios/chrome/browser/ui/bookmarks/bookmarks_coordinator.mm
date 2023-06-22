@@ -796,7 +796,8 @@ enum class PresentedState {
           @"bookmarkNavigationController=%p (presented: %@), "
           @"folderEditorCoordinator=%p, folderChooserCoordinator=%p "
           @"profileBookmarkModel=%p, accountBookmarkModel=%p>",
-          NSStringFromClass([self class]), self, self.currentPresentedState,
+          NSStringFromClass([self class]), self,
+          static_cast<int>(self.currentPresentedState),
           self.bookmarkEditorCoordinator, self.bookmarkNavigationController,
           self.bookmarkNavigationController ? @"YES" : @"NO",
           self.folderEditorCoordinator, self.folderChooserCoordinator,

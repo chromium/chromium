@@ -296,7 +296,8 @@ using signin_metrics::PromoAction;
                        @"userSigninCoordinator: %p, addAccountSigninManager: "
                        @"%p, alertCoordinator: %p>",
                        self.class.description, self,
-                       static_cast<int>(self.signinIntent), self.accessPoint,
+                       static_cast<int>(self.signinIntent),
+                       static_cast<int>(self.accessPoint),
                        self.userSigninCoordinator, self.addAccountSigninManager,
                        self.alertCoordinator];
 }

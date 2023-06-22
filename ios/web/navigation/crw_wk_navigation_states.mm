@@ -55,7 +55,8 @@
 #ifndef NDEBUG
 - (NSString*)description {
   return [NSString stringWithFormat:@"state: %d, index: %ld, context: %@",
-                                    _state, static_cast<long>(_index),
+                                    static_cast<int>(_state),
+                                    static_cast<long>(_index),
                                     _context->GetDescription()];
 }
 #endif  // NDEBUG
