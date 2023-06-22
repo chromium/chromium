@@ -4,8 +4,15 @@
 
 package org.chromium.chrome.browser.webauth;
 
+import static com.google.common.truth.Truth.assertThat;
+
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.anyBoolean;
+import static org.mockito.ArgumentMatchers.anyInt;
+import static org.mockito.ArgumentMatchers.eq;
+import static org.mockito.Mockito.never;
+import static org.mockito.Mockito.times;
+import static org.mockito.Mockito.verify;
 
 import android.app.Activity;
 import android.app.PendingIntent;
@@ -17,7 +24,6 @@ import androidx.test.filters.SmallTest;
 import com.google.android.gms.tasks.OnFailureListener;
 import com.google.android.gms.tasks.OnSuccessListener;
 
-import org.junit.Assert;
 import org.junit.Assume;
 import org.junit.Before;
 import org.junit.Rule;
@@ -38,6 +44,9 @@ import org.chromium.blink.mojom.PublicKeyCredentialDescriptor;
 import org.chromium.blink.mojom.PublicKeyCredentialRequestOptions;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.webauthn.AuthenticatorImpl;
+import org.chromium.components.webauthn.CredManMetricsHelper;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.components.webauthn.Fido2ApiCallHelper;
 import org.chromium.components.webauthn.Fido2ApiTestHelper;
 import org.chromium.components.webauthn.Fido2CredentialRequest;
@@ -140,6 +149,8 @@ public class Fido2CredentialRequestRobolectricTest {
     ClientDataJsonImpl.Natives mClientDataJsonImplMock;
     @Mock
     Activity mActivity;
+    @Mock
+    CredManMetricsHelper mMetricsHelper;
 
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -199,7 +210,7 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.setCredManClassesForTesting(mCredentialManager,
                 FakeAndroidCredManCreateRequest.Builder.class,
                 FakeAndroidCredManGetRequest.Builder.class,
-                FakeAndroidCredentialOption.Builder.class);
+                FakeAndroidCredentialOption.Builder.class, mMetricsHelper);
 
         mMockBrowserBridge = new MockBrowserBridge();
         mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
@@ -219,19 +230,19 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManCreateRequest credManRequest = mCredentialManager.getCreateRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertEquals(
-                credManRequest.getOrigin(), Fido2CredentialRequest.convertOriginToString(mOrigin));
-        Assert.assertEquals(
-                credManRequest.getType(), "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        Assert.assertEquals(credManRequest.getCredentialData().getString(
-                                    "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
-                "{serialized_make_request}");
-        Assert.assertTrue(credManRequest.getAlwaysSendAppInfoToProvider());
-        Assert.assertTrue(
-                credManRequest.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"));
-        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Assert.assertFalse(mFido2ApiCallHelper.mMakeCredentialCalled);
+        assertThat(credManRequest).isNotNull();
+        ;
+        assertThat(credManRequest.getOrigin())
+                .isEqualTo(Fido2CredentialRequest.convertOriginToString(mOrigin));
+        assertThat(credManRequest.getType())
+                .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        assertThat(credManRequest.getCredentialData().getString(
+                           "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
+                .isEqualTo("{serialized_make_request}");
+        assertThat(credManRequest.getAlwaysSendAppInfoToProvider()).isTrue();
+        assertThat(credManRequest.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
+                .isTrue();
+        assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
     }
 
     @Test
@@ -245,7 +256,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertTrue(mFido2ApiCallHelper.mMakeCredentialCalled);
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
     }
 
     @Test
@@ -259,7 +270,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertTrue(mFido2ApiCallHelper.mMakeCredentialCalled);
+        assertThat(mFido2ApiCallHelper.mMakeCredentialCalled).isTrue();
     }
 
     @Test
@@ -274,8 +285,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
     }
 
     @Test
@@ -290,8 +301,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onRegisterResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
     }
 
     @Test
@@ -305,20 +316,25 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertEquals(
-                credManRequest.getOrigin(), Fido2CredentialRequest.convertOriginToString(mOrigin));
-        Assert.assertEquals(credManRequest.getCredentialOptions().size(), 1);
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getOrigin())
+                .isEqualTo(Fido2CredentialRequest.convertOriginToString(mOrigin));
+        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
         FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
-        Assert.assertNotNull(option);
-        Assert.assertEquals(option.getType(), "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        Assert.assertEquals(option.getCredentialRetrievalData().getString(
-                                    "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
-                "{serialized_get_request}");
-        Assert.assertTrue(option.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"));
-        Assert.assertFalse(option.isSystemProviderRequired());
-        Assert.assertEquals(mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(option).isNotNull();
+        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        assertThat(option.getCredentialRetrievalData().getString(
+                           "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
+                .isEqualTo("{serialized_get_request}");
+        assertThat(option.getCandidateQueryData().containsKey("com.android.chrome.CHANNEL"))
+                .isTrue();
+        assertThat(option.isSystemProviderRequired()).isFalse();
+        assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSKEY), any());
     }
 
     @Test
@@ -333,9 +349,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
     }
 
     @Test
@@ -350,9 +368,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), any());
     }
 
     @Test
@@ -372,8 +392,8 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertFalse(mFido2ApiCallHelper.mGetAssertionCalled);
+        assertThat(credManRequest).isNotNull();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isFalse();
     }
 
     @Test
@@ -398,8 +418,8 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNull(credManRequest);
-        Assert.assertTrue(mFido2ApiCallHelper.mGetAssertionCalled);
+        assertThat(credManRequest).isNull();
+        assertThat(mFido2ApiCallHelper.mGetAssertionCalled).isTrue();
     }
 
     @Test
@@ -414,19 +434,25 @@ public class Fido2CredentialRequestRobolectricTest {
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertEquals(
-                credManRequest.getOrigin(), Fido2CredentialRequest.convertOriginToString(mOrigin));
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getOrigin())
+                .isEqualTo(Fido2CredentialRequest.convertOriginToString(mOrigin));
         FakeAndroidCredentialOption option = credManRequest.getCredentialOptions().get(0);
-        Assert.assertNotNull(option);
-        Assert.assertEquals(option.getType(), "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        Assert.assertEquals(option.getCredentialRetrievalData().getString(
-                                    "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"),
-                "{serialized_get_request}");
-        Assert.assertFalse(option.isSystemProviderRequired());
-        Assert.assertEquals(mCallback.getStatus(), null);
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManConditionalRequestPendingCallCount(), 1);
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(option).isNotNull();
+        assertThat(option.getType()).isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        assertThat(option.getCredentialRetrievalData().getString(
+                           "androidx.credentials.BUNDLE_KEY_REQUEST_JSON"))
+                .isEqualTo("{serialized_get_request}");
+        assertThat(option.isSystemProviderRequired()).isFalse();
+        assertThat(mCallback.getStatus()).isNull();
+        assertThat(mMockBrowserBridge.getOnCredManConditionalRequestPendingCallCount())
+                .isEqualTo(1);
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(
+                        eq(CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS));
     }
 
     @Test
@@ -442,8 +468,12 @@ public class Fido2CredentialRequestRobolectricTest {
                 (responseStatus, response)
                         -> mCallback.onSignResponse(responseStatus, response),
                 errorStatus -> mCallback.onError(errorStatus));
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
+        verify(mMetricsHelper, times(1))
+                .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.FAILURE));
     }
 
     @Test
@@ -459,10 +489,11 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
 
         mRequest.cancelConditionalGetAssertion(mFrameHost);
-        Assert.assertEquals(
-                mCallback.getStatus(), Integer.valueOf(AuthenticatorStatus.ABORT_ERROR));
-        Assert.assertEquals(mMockBrowserBridge.getCleanupRequestCallCount(), 1);
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(mCallback.getStatus())
+                .isEqualTo(Integer.valueOf(AuthenticatorStatus.ABORT_ERROR));
+        assertThat(mMockBrowserBridge.getCleanupRequestCallCount()).isEqualTo(1);
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
     }
 
     @Test
@@ -483,9 +514,11 @@ public class Fido2CredentialRequestRobolectricTest {
 
         mMockBrowserBridge.getCredManGetAssertionCallback().onResult(true);
 
-        Assert.assertEquals(mCallback.getStatus(), null);
-        Assert.assertEquals(mMockBrowserBridge.getCleanupRequestCallCount(), 0);
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 1);
+        assertThat(mCallback.getStatus()).isNull();
+        assertThat(mMockBrowserBridge.getCleanupRequestCallCount()).isEqualTo(0);
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(1);
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
     }
 
     @Test
@@ -501,8 +534,8 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
 
         FakeAndroidCredManGetRequest credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertEquals(credManRequest.getCredentialOptions().size(), 1);
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getCredentialOptions()).hasSize(1);
 
         String username = "coolUserName";
         String password = "38kay5er1sp0r38";
@@ -511,22 +544,24 @@ public class Fido2CredentialRequestRobolectricTest {
         mMockBrowserBridge.getCredManGetAssertionCallback().onResult(true);
 
         credManRequest = mCredentialManager.getGetRequest();
-        Assert.assertNotNull(credManRequest);
-        Assert.assertEquals(credManRequest.getCredentialOptions().size(), 2);
+        assertThat(credManRequest).isNotNull();
+        assertThat(credManRequest.getCredentialOptions()).hasSize(2);
         List<FakeAndroidCredentialOption> credentialOptions = credManRequest.getCredentialOptions();
-        Assert.assertEquals(credentialOptions.get(0).getType(),
-                "androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
-        Assert.assertEquals(
-                credentialOptions.get(1).getType(), "android.credentials.TYPE_PASSWORD_CREDENTIAL");
+        assertThat(credentialOptions.get(0).getType())
+                .isEqualTo("androidx.credentials.TYPE_PUBLIC_KEY_CREDENTIAL");
+        assertThat(credentialOptions.get(1).getType())
+                .isEqualTo("android.credentials.TYPE_PASSWORD_CREDENTIAL");
 
-        Assert.assertEquals(mMockBrowserBridge.getOnCredManClosedCallCount(), 0);
+        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
         // A password is selected, the callback will not be signed.
-        Assert.assertEquals(mCallback.getStatus(), null);
+        assertThat(mCallback.getStatus()).isNull();
 
-        Assert.assertEquals(
-                mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("username"), username);
-        Assert.assertEquals(
-                mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("password"), password);
+        assertThat(mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("username"))
+                .isEqualTo(username);
+        assertThat(mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("password"))
+                .isEqualTo(password);
+        verify(mMetricsHelper, times(1))
+                .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSWORD), any());
     }
 
     static class FakeFido2ApiCallHelper extends Fido2ApiCallHelper {

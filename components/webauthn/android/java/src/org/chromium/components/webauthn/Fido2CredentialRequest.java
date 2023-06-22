@@ -43,6 +43,8 @@ import org.chromium.blink.mojom.PublicKeyCredentialType;
 import org.chromium.blink.mojom.ResidentKeyRequirement;
 import org.chromium.components.payments.PaymentFeatureList;
 import org.chromium.components.version_info.VersionInfo;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManGetRequestEnum;
+import org.chromium.components.webauthn.CredManMetricsHelper.CredManPrepareRequestEnum;
 import org.chromium.content_public.browser.ClientDataJson;
 import org.chromium.content_public.browser.ClientDataRequestType;
 import org.chromium.content_public.browser.ContentFeatureMap;
@@ -96,6 +98,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private static Boolean sIsCredManEnabled;
 
     private final WebAuthenticationDelegate.IntentSender mIntentSender;
+    private CredManMetricsHelper mMetricsHelper;
     private GetAssertionResponseCallback mGetAssertionCallback;
     private MakeCredentialResponseCallback mMakeCredentialCallback;
     private FidoErrorResponseCallback mErrorCallback;
@@ -112,7 +115,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
     private boolean mIsCrossOrigin;
     private boolean mOverrideVersionCheckForTesting;
 
-    private enum ConditionalUiState {
+    public enum ConditionalUiState {
         NONE,
         WAITING_FOR_CREDENTIAL_LIST,
         WAITING_FOR_SELECTION,
@@ -136,6 +139,7 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
      */
     public Fido2CredentialRequest(WebAuthenticationDelegate.IntentSender intentSender) {
         mIntentSender = intentSender;
+        mMetricsHelper = new CredManMetricsHelper();
     }
 
     private void returnErrorAndResetCallback(int error) {
@@ -418,11 +422,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
     @VisibleForTesting
     public void setCredManClassesForTesting(Object credentialManager, Class createRequestBuilder,
-            Class getRequestBuilder, Class credentialOptionBuilder) {
+            Class getRequestBuilder, Class credentialOptionBuilder,
+            CredManMetricsHelper metricsHelper) {
         mCredentialManagerServiceForTesting = credentialManager;
         mCredManCreateRequestBuilderClassForTesting = createRequestBuilder;
         mCredManGetRequestBuilderClassForTesting = getRequestBuilder;
         mCredManCredentialOptionBuilderClassForTesting = credentialOptionBuilder;
+        mMetricsHelper = metricsHelper;
     }
 
     private boolean apiAvailable() {
@@ -1010,12 +1016,17 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     if (mConditionalUiState == ConditionalUiState.NONE) {
                         returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
                     }
+
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.CANCELLED, mConditionalUiState);
                 } else {
                     // Includes:
                     //  * GetCredentialException.TYPE_UNKNOWN
                     //  * GetCredentialException.TYPE_NO_CREATE_OPTIONS
                     //  * GetCredentialException.TYPE_INTERRUPTED
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.FAILURE, mConditionalUiState);
                 }
                 mConditionalUiState = options.isConditional
                         ? ConditionalUiState.WAITING_FOR_SELECTION
@@ -1042,6 +1053,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
                 } catch (ReflectiveOperationException e) {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.FAILURE, mConditionalUiState);
                     mConditionalUiState = options.isConditional
                             ? ConditionalUiState.WAITING_FOR_SELECTION
                             : ConditionalUiState.NONE;
@@ -1054,6 +1067,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     mBrowserBridge.onPasswordCredentialReceived(mFrameHost,
                             data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_ID"),
                             data.getString(CRED_MAN_PREFIX + "BUNDLE_KEY_PASSWORD"));
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.SUCCESS_PASSWORD, mConditionalUiState);
                     return;
                 }
 
@@ -1063,6 +1078,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         Fido2CredentialRequestJni.get().getCredentialResponseFromJson(json);
                 if (responseSerialized == null) {
                     Log.e(TAG, "Failed to convert response from CredMan to Mojo object: %s", json);
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.FAILURE, mConditionalUiState);
                     mConditionalUiState = options.isConditional
                             ? ConditionalUiState.WAITING_FOR_SELECTION
                             : ConditionalUiState.NONE;
@@ -1076,6 +1093,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                 ByteBuffer.wrap(responseSerialized));
                 if (response == null) {
                     Log.e(TAG, "Failed to parse Mojo object");
+                    mMetricsHelper.reportGetCredentialMetrics(
+                            CredManGetRequestEnum.FAILURE, mConditionalUiState);
                     mConditionalUiState = options.isConditional
                             ? ConditionalUiState.WAITING_FOR_SELECTION
                             : ConditionalUiState.NONE;
@@ -1091,6 +1110,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         ? ConditionalUiState.WAITING_FOR_SELECTION
                         : ConditionalUiState.NONE;
                 notifyBrowserOnCredManClosed(true);
+                mMetricsHelper.reportGetCredentialMetrics(
+                        CredManGetRequestEnum.SUCCESS_PASSKEY, mConditionalUiState);
                 mGetAssertionCallback.onSignResponse(AuthenticatorStatus.SUCCESS, response);
                 mGetAssertionCallback = null;
             }
@@ -1098,6 +1119,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
 
         if (mConditionalUiState == ConditionalUiState.REQUEST_SENT_TO_PLATFORM) {
             Log.e(TAG, "Received a second credential selection while the first still in progress.");
+            mMetricsHelper.reportGetCredentialMetrics(
+                    CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             return;
         }
         mConditionalUiState = options.isConditional ? ConditionalUiState.REQUEST_SENT_TO_PLATFORM
@@ -1106,6 +1129,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             final Object getCredentialRequest =
                     buildGetCredentialRequest(options, origin, requestPasswords);
             if (getCredentialRequest == null) {
+                mMetricsHelper.reportGetCredentialMetrics(
+                        CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
                 mConditionalUiState = options.isConditional
                         ? ConditionalUiState.WAITING_FOR_SELECTION
                         : ConditionalUiState.NONE;
@@ -1120,6 +1145,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                 java.util.concurrent.Executor.class, OutcomeReceiver.class)
                         .invoke(manager, context, getCredentialRequest, null,
                                 context.getMainExecutor(), receiver);
+                mMetricsHelper.reportGetCredentialMetrics(
+                        CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
             } catch (NoSuchMethodException e) {
                 // In order to be compatible with Android 14 Beta 1, the older
                 // form of the call is also tried.
@@ -1140,9 +1167,13 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                                 java.util.concurrent.Executor.class, OutcomeReceiver.class)
                         .invoke(manager, getCredentialRequest, activity, null,
                                 context.getMainExecutor(), receiver);
+                mMetricsHelper.reportGetCredentialMetrics(
+                        CredManGetRequestEnum.SENT_REQUEST, mConditionalUiState);
             }
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
+            mMetricsHelper.reportGetCredentialMetrics(
+                    CredManGetRequestEnum.COULD_NOT_SEND_REQUEST, mConditionalUiState);
             mConditionalUiState = options.isConditional ? ConditionalUiState.WAITING_FOR_SELECTION
                                                         : ConditionalUiState.NONE;
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
@@ -1173,6 +1204,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         getCredManExceptionType(e) + " (" + e.getMessage() + ")");
                 mConditionalUiState = ConditionalUiState.NONE;
                 returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                mMetricsHelper.recordCredmanPrepareRequestHistogram(
+                        CredManPrepareRequestEnum.FAILURE);
             }
 
             @Override
@@ -1195,6 +1228,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                     Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
                     mConditionalUiState = ConditionalUiState.NONE;
                     returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+                    mMetricsHelper.recordCredmanPrepareRequestHistogram(
+                            CredManPrepareRequestEnum.FAILURE);
                     return;
                 }
 
@@ -1206,6 +1241,9 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                         hasPublicKeyCredentials,
                         (requestPasswords)
                                 -> getCredentialViaCredMan(options, origin, requestPasswords));
+                mMetricsHelper.recordCredmanPrepareRequestHistogram(hasPublicKeyCredentials
+                                ? CredManPrepareRequestEnum.SUCCESS_HAS_RESULTS
+                                : CredManPrepareRequestEnum.SUCCESS_NO_RESULTS);
             }
         };
 
@@ -1216,6 +1254,8 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
             if (getCredentialRequest == null) {
                 mConditionalUiState = ConditionalUiState.NONE;
                 returnErrorAndResetCallback(AuthenticatorStatus.NOT_ALLOWED_ERROR);
+                mMetricsHelper.recordCredmanPrepareRequestHistogram(
+                        CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST);
                 return;
             }
 
@@ -1226,10 +1266,14 @@ public class Fido2CredentialRequest implements Callback<Pair<Integer, Intent>> {
                             java.util.concurrent.Executor.class, OutcomeReceiver.class)
                     .invoke(manager, getCredentialRequest, null, context.getMainExecutor(),
                             receiver);
+            mMetricsHelper.recordCredmanPrepareRequestHistogram(
+                    CredManPrepareRequestEnum.SENT_REQUEST);
         } catch (ReflectiveOperationException e) {
             Log.e(TAG, "Reflection failed; are you running on Android 14?", e);
             mConditionalUiState = ConditionalUiState.NONE;
             returnErrorAndResetCallback(AuthenticatorStatus.UNKNOWN_ERROR);
+            mMetricsHelper.recordCredmanPrepareRequestHistogram(
+                    CredManPrepareRequestEnum.COULD_NOT_SEND_REQUEST);
             return;
         }
     }

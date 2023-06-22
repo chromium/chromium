@@ -22340,6 +22340,29 @@ to ensure that the crash string is shown properly on the user-facing crash UI.
   <int value="1" label="JCB card"/>
 </enum>
 
+<enum name="CredManGetRequestEnum">
+  <int value="0" label="A getCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a getCredential request to the platform."/>
+  <int value="2" label="A passkey is received from the getCredential request."/>
+  <int value="3"
+      label="A password is received from the getCredential request."/>
+  <int value="4" label="getCredential request failed."/>
+  <int value="5" label="getCredential request cancelled by the user."/>
+</enum>
+
+<enum name="CredManPrepareRequestEnum">
+  <int value="0"
+      label="A prepareGetCredential request was sent to the platform."/>
+  <int value="1"
+      label="Unable to sent a prepareGetCredential request to the platform."/>
+  <int value="2"
+      label="prepareGetCredential request succeeded and there are results."/>
+  <int value="3"
+      label="prepareGetCredential request succeeded but there are no results."/>
+  <int value="4" label="prepareGetCredential request failed."/>
+</enum>
+
 <enum name="CrFullscreenState">
   <int value="0" label="Entering Fullscreen State"/>
   <int value="1" label="Exiting Fullscreen State"/>

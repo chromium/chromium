@@ -22,6 +22,35 @@ chromium-metrics-reviews@google.com.
 
 <histograms>
 
+<histogram name="WebAuthentication.Android.CredManConditionalRequests"
+    enum="CredManGetRequestEnum" expires_after="2024-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records events for Android Credential Management getCredential API for
+    conditional UI requests.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Android.CredManModalRequests"
+    enum="CredManGetRequestEnum" expires_after="2024-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records events for Android Credential Management getCredential API for modal
+    requests.
+  </summary>
+</histogram>
+
+<histogram name="WebAuthentication.Android.CredManPrepareRequest"
+    enum="CredManPrepareRequestEnum" expires_after="2024-01-01">
+  <owner>derinel@google.com</owner>
+  <owner>kenrb@chromium.org</owner>
+  <summary>
+    Records events for Android Credential Management prepareGetCredential API.
+  </summary>
+</histogram>
+
 <histogram name="WebAuthentication.CableV2.AOADiscoveryEvent"
     enum="WebAuthenticationAOADiscoveryEvent" expires_after="2023-12-10">
   <owner>agl@chromium.org</owner>
