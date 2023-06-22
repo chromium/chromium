@@ -8568,14 +8568,12 @@ domain Page
       DocumentLoaded
       DedicatedWorkerOrWorklet
       OutstandingNetworkRequestOthers
-      OutstandingIndexedDBTransaction
       RequestedMIDIPermission
       RequestedAudioCapturePermission
       RequestedVideoCapturePermission
       RequestedBackForwardCacheBlockedSensors
       RequestedBackgroundWorkPermission
       BroadcastChannel
-      IndexedDBConnection
       WebXR
       SharedWorker
       WebLocks

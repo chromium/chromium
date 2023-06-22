@@ -309,9 +309,6 @@ class MODULES_EXPORT IDBTransaction final
   IDBDatabaseMetadata old_database_metadata_;
 
   Member<EventQueue> event_queue_;
-
-  FrameScheduler::SchedulingAffectingFeatureHandle
-      feature_handle_for_scheduler_;
 };
 
 }  // namespace blink

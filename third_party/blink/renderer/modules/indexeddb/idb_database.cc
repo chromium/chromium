@@ -108,13 +108,6 @@ IDBDatabase::IDBDatabase(
       event_queue_(
           MakeGarbageCollected<EventQueue>(context, TaskType::kDatabaseAccess)),
       callbacks_receiver_(this, context) {
-  if (!base::FeatureList::IsEnabled(
-          features::kAllowPageWithIDBConnectionInBFCache) &&
-      context) {
-    feature_handle_for_scheduler_ = context->GetScheduler()->RegisterFeature(
-        SchedulingPolicy::Feature::kIndexedDBConnection,
-        {SchedulingPolicy::DisableBackForwardCache()});
-  }
   callbacks_receiver_.Bind(std::move(callbacks_receiver),
                            context->GetTaskRunner(TaskType::kDatabaseAccess));
 }
@@ -433,7 +426,6 @@ void IDBDatabase::close() {
 
   connection_lifetime_.reset();
   close_pending_ = true;
-  feature_handle_for_scheduler_.reset();
 
   if (transactions_.empty())
     CloseConnection();
@@ -561,10 +553,8 @@ void IDBDatabase::ContextDestroyed() {
 }
 
 void IDBDatabase::ContextEnteredBackForwardCache() {
-  if (features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    if (backend_) {
-      backend_->DidBecomeInactive();
-    }
+  if (backend_) {
+    backend_->DidBecomeInactive();
   }
 }
 

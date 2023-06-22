@@ -55,7 +55,8 @@ enum class WebSchedulerTrackedFeature : uint32_t {
   // kServiceWorkerControlledPage = 16. Removed after implementing ServiceWorker
   // support.
 
-  kOutstandingIndexedDBTransaction = 17,
+  // No longer blocking after https://crbug.com/1378823.
+  // kOutstandingIndexedDBTransaction = 17,
 
   // Whether the page tried to request a permission regardless of the outcome.
   // TODO(altimin): Track this more accurately depending on the data.
@@ -85,7 +86,8 @@ enum class WebSchedulerTrackedFeature : uint32_t {
 
   kBroadcastChannel = 27,
 
-  kIndexedDBConnection = 28,
+  // No longer blocking after https://crbug.com/1331187.
+  // kIndexedDBConnection = 28,
 
   // kWebGL = 29. Removed after implementing WebGL support.
   // kWebVR = 30. The entire feature has been deleted.

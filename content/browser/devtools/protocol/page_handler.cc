@@ -1524,9 +1524,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           OutstandingNetworkRequestOthers;
-    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
-      return Page::BackForwardCacheNotRestoredReasonEnum::
-          OutstandingIndexedDBTransaction;
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return Page::BackForwardCacheNotRestoredReasonEnum::
           RequestedMIDIPermission;
@@ -1544,8 +1541,6 @@ Page::BackForwardCacheNotRestoredReason BlocklistedFeatureToProtocol(
           RequestedBackgroundWorkPermission;
     case WebSchedulerTrackedFeature::kBroadcastChannel:
       return Page::BackForwardCacheNotRestoredReasonEnum::BroadcastChannel;
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
-      return Page::BackForwardCacheNotRestoredReasonEnum::IndexedDBConnection;
     case WebSchedulerTrackedFeature::kWebXR:
       return Page::BackForwardCacheNotRestoredReasonEnum::WebXR;
     case WebSchedulerTrackedFeature::kSharedWorker:
@@ -1778,9 +1773,7 @@ Page::BackForwardCacheNotRestoredReasonType MapBlocklistedFeatureToType(
   switch (feature) {
     case WebSchedulerTrackedFeature::kWebRTC:
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
-    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
     case WebSchedulerTrackedFeature::kBroadcastChannel:
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
     case WebSchedulerTrackedFeature::kWebXR:
     case WebSchedulerTrackedFeature::kSharedWorker:
     case WebSchedulerTrackedFeature::kWebHID:

@@ -739,10 +739,6 @@ void DatabaseImpl::Abort(int64_t transaction_id) {
 
 void DatabaseImpl::DidBecomeInactive() {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  CHECK(blink::features::
-            IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled())
-      << "This method will only be called if a page with IndexedDB transaction "
-         "is eligible for BFCache.";
   if (!connection_->IsConnected()) {
     return;
   }

@@ -62,9 +62,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
     case WebSchedulerTrackedFeature::kOutstandingNetworkRequestOthers:
       return {"OutstandingNetworkRequestOthers",
               "outstanding network request (others)"};
-    case WebSchedulerTrackedFeature::kOutstandingIndexedDBTransaction:
-      return {"OutstandingIndexedDBTransaction",
-              "outstanding IndexedDB transaction"};
     case WebSchedulerTrackedFeature::kRequestedMIDIPermission:
       return {"RequestedMIDIPermission", "requested midi permission"};
     case WebSchedulerTrackedFeature::kRequestedAudioCapturePermission:
@@ -81,8 +78,6 @@ FeatureNames FeatureToNames(WebSchedulerTrackedFeature feature) {
               "requested background work permission"};
     case WebSchedulerTrackedFeature::kBroadcastChannel:
       return {"BroadcastChannel", "requested broadcast channel permission"};
-    case WebSchedulerTrackedFeature::kIndexedDBConnection:
-      return {"IndexedDBConnection", "IndexedDB connection present"};
     case WebSchedulerTrackedFeature::kWebXR:
       return {"WebXR", "WebXR"};
     case WebSchedulerTrackedFeature::kWebLocks:

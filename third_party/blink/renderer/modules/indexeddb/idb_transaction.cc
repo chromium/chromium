@@ -98,15 +98,6 @@ IDBTransaction::IDBTransaction(
       event_queue_(
           MakeGarbageCollected<EventQueue>(ExecutionContext::From(script_state),
                                            TaskType::kDatabaseAccess)) {
-  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    feature_handle_for_scheduler_ =
-        ExecutionContext::From(script_state)
-            ->GetScheduler()
-            ->RegisterFeature(
-                SchedulingPolicy::Feature::kOutstandingIndexedDBTransaction,
-                {SchedulingPolicy::DisableBackForwardCache()});
-  }
-
   DCHECK(database_);
   DCHECK(!scope_.empty()) << "Non-versionchange transactions must operate "
                              "on a well-defined set of stores";
@@ -398,13 +389,6 @@ void IDBTransaction::commit(ExceptionState& exception_state) {
 
   if (transaction_backend())
     transaction_backend()->Commit(num_errors_handled_);
-
-  if (!features::IsAllowPageWithIDBConnectionAndTransactionInBFCacheEnabled()) {
-    // Once IDBtransaction.commit() is called, the page should no longer be
-    // prevented from entering back/forward cache for having outstanding IDB
-    // connections. Commit ends the inflight IDB transactions.
-    feature_handle_for_scheduler_.reset();
-  }
 }
 
 void IDBTransaction::RegisterRequest(IDBRequest* request) {
@@ -705,8 +689,6 @@ void IDBTransaction::Finished() {
 
   deleted_indexes_.clear();
   deleted_object_stores_.clear();
-
-  feature_handle_for_scheduler_.reset();
 }
 
 }  // namespace blink
