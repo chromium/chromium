@@ -32,7 +32,7 @@ import("//build/rust/mixed_static_library.gni")
 #     the *public* API that bindings are needed for.
 #
 #     TODO(crbug.com/1329611): Internal headers should still to be included in
-#     the targets_and_headers metadata...
+#     the targets_and_args metadata...
 #
 #   deps:
 #     Other `rs_bindings_from_cc` targets that the bindings need to depend on
@@ -157,7 +157,7 @@ template("rs_bindings_from_cc") {
   _rs_out_path = "${target_gen_dir}/${_lib_target_name}.rs"
   _cc_out_path = "${target_gen_dir}/${_lib_target_name}_impl.cc"
 
-  # Calculating the --targets_and_headers snippet for the *current* target
+  # Calculating the --targets_and_args snippet for the *current* target
   # and putting it into GN's `metadata`.
   group(_metadata_target_name) {
     testonly = _testonly
@@ -169,8 +169,8 @@ template("rs_bindings_from_cc") {
 
     metadata = {
       # The data below corresponds to a single-target entry inside
-      # `--targets_and_headers` cmdline argument of `rs_bindings_from_cc`.
-      crubit_target_and_headers = [
+      # `--targets_and_args` cmdline argument of `rs_bindings_from_cc`.
+      crubit_target_and_args = [
         {
           # The `get_label_info` call below expands ":foo_rs_api" into
           # something like "//dir/bar/baz:foo_rs_api".  Crubit assumes that
@@ -183,7 +183,7 @@ template("rs_bindings_from_cc") {
     }
   }
 
-  # Gathering --targets-and-headers data from *all* transitive dependencies and
+  # Gathering --targets-and-args data from *all* transitive dependencies and
   # putting them into the file at `_metadata_path`.
   generated_file(_gen_metadata_target_name) {
     testonly = _testonly
@@ -195,7 +195,7 @@ template("rs_bindings_from_cc") {
     testonly = _testonly
     outputs = [ _metadata_path ]
     output_conversion = "json"
-    data_keys = [ "crubit_target_and_headers" ]
+    data_keys = [ "crubit_target_and_args" ]
 
     # `walk_keys` are used to limit how deep the transitive dependency goes.
     # This is important, because Crubit doesn't care about all the `deps` or
@@ -266,7 +266,7 @@ template("rs_bindings_from_cc") {
       # Target-specific inputs:
       "--public_headers",
       string_join(",", _rebased_public_headers),
-      "--targets_and_headers_from_gn",
+      "--targets_and_args_from_gn",
       rebase_path(_metadata_path),
     ]
 

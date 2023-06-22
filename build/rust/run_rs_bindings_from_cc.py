@@ -34,9 +34,9 @@ def format_cmdline(args):
 
 def main():
   parser = argparse.ArgumentParser()
-  parser.add_argument("--targets_and_headers_from_gn",
+  parser.add_argument("--targets_and_args_from_gn",
                       metavar="FILE",
-                      help="File parsed into --targets_and_headers Crubit arg",
+                      help="File parsed into --targets_and_args Crubit arg",
                       required=True),
   parser.add_argument("--public_headers",
                       metavar="FILE",
@@ -69,14 +69,15 @@ def main():
       [os.path.relpath(hdr) for hdr in args.public_headers.split(",")])))
 
   # Targets to headers map.
-  with open(args.targets_and_headers_from_gn, "r") as f:
-    targets_and_headers = json.load(f)
-  for entry in targets_and_headers:
+  with open(args.targets_and_args_from_gn, "r") as f:
+    targets_and_args = json.load(f)
+  for entry in targets_and_args:
+    entry["f"] = ["supported"]
     hdrs = entry["h"]
     for i in range(len(hdrs)):
       hdrs[i] = os.path.relpath(hdrs[i])
-  generator_args.append("--targets_and_headers={0}".format(
-      json.dumps(targets_and_headers)))
+  generator_args.append("--targets_and_args={0}".format(
+      json.dumps(targets_and_args)))
 
   # All Crubit invocations in Chromium share the following cmdline args.
   generator_args.append(f"--rustfmt_exe_path={RUSTFMT_EXE_PATH}")
