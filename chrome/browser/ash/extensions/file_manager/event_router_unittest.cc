@@ -188,6 +188,43 @@ MATCHER_P3(ExpectEventArgString, index, field, expected_value, "") {
                                      result_listener);
 }
 
+// A matcher that matches an `extensions::Event::event_args` and attempts to
+// extract the "pauseParams" key. It then looks at the output at `policyParams`
+// and matches the `field` against the `expected_value`.
+MATCHER_P(ExpectEventArgPauseParams, expected_value, "") {
+  EXPECT_GE(arg.size(), 1u);
+  const base::Value::Dict* pause_params =
+      arg[0].GetDict().FindDict("pauseParams");
+  EXPECT_TRUE(pause_params)
+      << "The pause_params field is not available on the event";
+
+  const base::Value::Dict* conflict_pause_params =
+      pause_params->FindDict("conflictParams");
+  EXPECT_FALSE(conflict_pause_params)
+      << "The conflictParams field is not available on the event";
+
+  const base::Value::Dict* policy_pause_params =
+      pause_params->FindDict("policyParams");
+  EXPECT_TRUE(policy_pause_params)
+      << "The policyParams field is not available on the event";
+  const std::string* actual_value = policy_pause_params->FindString("type");
+  EXPECT_TRUE(actual_value) << "Could not find the string with key: type";
+  return testing::ExplainMatchResult(expected_value, *actual_value,
+                                     result_listener);
+}
+
+// A matcher that matches an `extensions::Event::event_args` and attempts to
+// extract the "policyError" key.  against the `expected_value`.
+MATCHER_P(ExpectEventArgPolicyError, expected_value, "") {
+  EXPECT_GE(arg.size(), 1u);
+  const std::string* policy_error = arg[0].GetDict().FindString("policyError");
+  EXPECT_TRUE(policy_error)
+      << "The policyError field is not available on the event";
+
+  return testing::ExplainMatchResult(expected_value, *policy_error,
+                                     result_listener);
+}
+
 TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
   // Setup event routers.
   extensions::TestEventRouter* test_event_router =
@@ -223,6 +260,71 @@ TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForTrash) {
                 ExpectEventArgString(
                     0u, "fileSystemRoot",
                     "filesystem:chrome-extension://abc/external/Downloads/")))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  event_router->OnIOTaskStatus(status);
+  run_loop.Run();
+}
+
+TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForCopyPause) {
+  // Setup event routers.
+  extensions::TestEventRouter* test_event_router =
+      extensions::CreateAndUseTestEventRouter(profile_.get());
+  TestEventRouterObserver observer(test_event_router);
+  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  event_router->ForceBroadcastingForTesting(true);
+
+  io_task::EntryStatus source_entry =
+      CreateSuccessfulEntryStatusForFileName("foo.txt");
+
+  std::vector<io_task::EntryStatus> source_entries;
+  source_entries.push_back(std::move(source_entry));
+
+  // Setup the ProgressStatus event.
+  file_manager::io_task::ProgressStatus status;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.state = file_manager::io_task::State::kPaused;
+  status.sources = std::move(source_entries);
+  status.pause_params.policy_params =
+      io_task::PolicyPauseParams(policy::Policy::kDlp);
+
+  // Expect the event to have dlp as policy pause params.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                     AllOf(ExpectEventArgPauseParams("dlp")))))
+      .WillOnce(RunClosure(run_loop.QuitClosure()));
+
+  event_router->OnIOTaskStatus(status);
+  run_loop.Run();
+}
+
+TEST_F(FileManagerEventRouterTest, OnIOTaskStatusForPolicyError) {
+  // Setup event routers.
+  extensions::TestEventRouter* test_event_router =
+      extensions::CreateAndUseTestEventRouter(profile_.get());
+  TestEventRouterObserver observer(test_event_router);
+  auto event_router = std::make_unique<EventRouter>(profile_.get());
+  event_router->ForceBroadcastingForTesting(true);
+
+  io_task::EntryStatus source_entry =
+      CreateSuccessfulEntryStatusForFileName("foo.txt");
+
+  std::vector<io_task::EntryStatus> source_entries;
+  source_entries.push_back(std::move(source_entry));
+
+  // Setup the ProgressStatus event.
+  file_manager::io_task::ProgressStatus status;
+  status.type = file_manager::io_task::OperationType::kCopy;
+  status.state = file_manager::io_task::State::kError;
+  status.sources = std::move(source_entries);
+  status.policy_error = io_task::PolicyErrorType::kDlp;
+
+  // Expect the event to have dlp as policy error.
+  base::RunLoop run_loop;
+  EXPECT_CALL(observer,
+              OnBroadcastEvent(Field(&extensions::Event::event_args,
+                                     AllOf(ExpectEventArgPolicyError("dlp")))))
       .WillOnce(RunClosure(run_loop.QuitClosure()));
 
   event_router->OnIOTaskStatus(status);
