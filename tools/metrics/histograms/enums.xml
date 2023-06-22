@@ -10225,9 +10225,10 @@ others/histograms.xml -->
 </enum>
 
 <enum name="AuxiliarySearchRequestStatus">
-  <int value="0" label="Sent"/>
-  <int value="1" label="Success"/>
-  <int value="2" label="Failure"/>
+  <int value="0" label="Sent (overall number of requests issued)"/>
+  <int value="1" label="Processed, Successful (data accepted by recipient)"/>
+  <int value="2" label="Processed, Unsuccessful (recipient failure)"/>
+  <int value="3" label="Not Processed (e.g. device not eligible)"/>
 </enum>
 
 <enum name="AVDAFrameInformation">

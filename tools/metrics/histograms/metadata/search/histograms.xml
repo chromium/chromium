@@ -23,9 +23,9 @@ chromium-metrics-reviews@google.com.
 <histograms>
 
 <variants name="AuxiliarySearchDataType">
-  <variant name="" summary="all requests"/>
-  <variant name=".Bookmark" summary="BOOKMARK"/>
-  <variant name=".Tab" summary="TAB"/>
+  <variant name="" summary="All Requests"/>
+  <variant name=".Bookmarks" summary="Bookmarks"/>
+  <variant name=".Tabs" summary="Tabs"/>
 </variants>
 
 <histogram name="Search.Ambient.Query" enum="AmbientSearchEntryPoint"
