@@ -8,5 +8,17 @@ source_set("bottom_sheet") {
     "payments_suggestion_bottom_sheet_coordinator.h",
     "payments_suggestion_bottom_sheet_coordinator.mm",
   ]
-  deps = [ "//ios/chrome/browser/shared/coordinator/chrome_coordinator" ]
+  deps = [
+    ":bottom_sheet_ui",
+    "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+  ]
+}
+
+source_set("bottom_sheet_ui") {
+  configs += [ "//build/config/compiler:enable_arc" ]
+  sources = [
+    "payments_suggestion_bottom_sheet_view_controller.h",
+    "payments_suggestion_bottom_sheet_view_controller.mm",
+  ]
+  deps = [ "//ios/chrome/common/ui/confirmation_alert" ]
 }
