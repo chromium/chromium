@@ -201,6 +201,9 @@ RTCInboundRtpStreamStats* ToV8Stat(
   if (webrtc_stat.fec_packets_discarded.is_defined()) {
     v8_stat->setFecPacketsDiscarded(*webrtc_stat.fec_packets_discarded);
   }
+  if (webrtc_stat.fec_bytes_received.is_defined()) {
+    v8_stat->setFecPacketsDiscarded(*webrtc_stat.fec_bytes_received);
+  }
   if (webrtc_stat.bytes_received.is_defined()) {
     v8_stat->setBytesReceived(*webrtc_stat.bytes_received);
   }

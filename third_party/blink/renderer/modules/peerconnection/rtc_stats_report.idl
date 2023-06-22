@@ -92,6 +92,7 @@ dictionary RTCInboundRtpStreamStats : RTCReceivedRtpStreamStats {
   unsigned long long   packetsDiscarded;
   unsigned long long   fecPacketsReceived;
   unsigned long long   fecPacketsDiscarded;
+  unsigned long long   fecBytesReceived;
   unsigned long long   bytesReceived;
   unsigned long        nackCount;
   unsigned long        firCount;
