@@ -1471,24 +1471,23 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     damage_rect += origin.OffsetFromOrigin();
     damage_rect.Intersect(output_rect);
 
-    if (device_scale_factor <= 1) {
-      damage_rect = gfx::ConvertRectToPixels(damage_rect, device_scale_factor);
-    } else {
-      // The damage will eventually be rescaled by 1/device_scale_factor. Since
-      // that scale factor is <1, taking the enclosed rect here means that that
-      // rescaled RectF is <1px smaller than |damage_rect| in each dimension,
-      // which makes the enclosing rect equal to |damage_rect|.
-      damage_rect.Scale(device_scale_factor);
+    if (!client_submits_in_pixel_coords) {
+      if (device_scale_factor <= 1) {
+        damage_rect =
+            gfx::ConvertRectToPixels(damage_rect, device_scale_factor);
+      } else {
+        // The damage will eventually be rescaled by 1/device_scale_factor.
+        // Since that scale factor is <1, taking the enclosed rect here means
+        // that that rescaled RectF is <1px smaller than |damage_rect| in each
+        // dimension, which makes the enclosing rect equal to |damage_rect|.
+        damage_rect.Scale(device_scale_factor);
+      }
     }
   }
 
   absl::optional<gfx::Rect> quad_clip_rect;
   if (state_.clip_rect) {
-    // The clip rect will later be rescaled by 1/device_scale_factor, and the
-    // enclosing rect used. Take the enclosed rect here to mitigate error.
-    gfx::RectF clip_rect_px(*state_.clip_rect);
-    clip_rect_px.Scale(device_scale_factor);
-    quad_clip_rect = gfx::ToEnclosedRect(clip_rect_px);
+    quad_clip_rect = gfx::ToEnclosedRect(*state_.clip_rect);
   }
 
   state_.damage.Clear();
@@ -1529,9 +1528,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
     DCHECK(sub_surfaces_.empty());
     auto rounded_corners_rect = state_.rounded_corners_bounds;
 
-    // Convert from dip to px.
-    rounded_corners_rect.Scale(device_scale_factor);
-
     // Set the mask.
     msk = gfx::MaskFilterInfo(rounded_corners_rect);
   }
@@ -1569,11 +1565,6 @@ void Surface::AppendContentsToFrame(const gfx::PointF& origin,
       // Later in 'SurfaceAggregator' this transform will have 2d translation.
       quad_to_target_transform = gfx::Transform();
     }
-  }
-
-  if (client_submits_in_pixel_coords) {
-    // Client DPs are actually pixels. This coverts to target space of surface.
-    quad_to_target_transform.PostScale(device_scale_factor);
   }
 
   if (current_resource_.id) {

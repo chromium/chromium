@@ -396,7 +396,12 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
 
   const gfx::Rect& bounds = root_surface_->surface_hierarchy_content_bounds();
   if (bounds != host_window_->bounds()) {
-    host_window_->SetBounds({host_window_->bounds().origin(), bounds.size()});
+    float device_scale_factor = GetScaleFactor();
+    gfx::Size size = bounds.size();
+    if (client_submits_surfaces_in_pixel_coordinates_) {
+      size = gfx::ScaleToCeiledSize(size, 1.0f / device_scale_factor);
+    }
+    host_window_->SetBounds({host_window_->bounds().origin(), size});
   }
 
   // TODO(yjliu): a) consolidate with ClientControlledShellSurface. b) use the
@@ -406,8 +411,9 @@ void SurfaceTreeHost::UpdateHostWindowBounds() {
     gfx::Transform tr;
     float scale = GetScaleFactor();
     tr.Scale(1.0f / scale, 1.0f / scale);
-    if (host_window_->transform() != tr)
-      host_window_->SetTransform(tr);
+    if (root_surface_->window()->transform() != tr) {
+      root_surface_->window()->SetTransform(tr);
+    }
   }
   const bool fills_bounds_opaquely =
       gfx::SizeF(bounds.size()) == root_surface_->content_size() &&

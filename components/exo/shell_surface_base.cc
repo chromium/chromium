@@ -474,13 +474,8 @@ void ShellSurfaceBase::UpdateShape() {
     return;
   }
 
-  auto scaled_rects = std::make_unique<std::vector<gfx::Rect>>();
-  for (const gfx::Rect& rect_dp : shape_rects_dp_.value()) {
-    const float scale_factor = host_window()->layer()->device_scale_factor();
-    scaled_rects->push_back(gfx::ScaleToEnclosedRect(rect_dp, scale_factor));
-  }
-
-  host_window()->layer()->SetAlphaShape(std::move(scaled_rects));
+  auto shape_rects = std::make_unique<ui::Layer::ShapeRects>(*shape_rects_dp_);
+  host_window()->layer()->SetAlphaShape(std::move(shape_rects));
 }
 
 void ShellSurfaceBase::SetApplicationId(const char* application_id) {
