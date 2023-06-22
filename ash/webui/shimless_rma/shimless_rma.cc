@@ -283,6 +283,20 @@ void AddShimlessRmaStrings(content::WebUIDataSource* html_source) {
        IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_REVERT_BUTTON_LABEL},
       {"confirmDeviceInfoSkuWarning",
        IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_SKU_WARNING},
+      {"confirmDeviceInfoDeviceNotCompliant",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DEVICE_NOT_COMPLIANT},
+      {"confirmDeviceInfoDeviceCompliant",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DEVICE_COMPLIANT},
+      {"confirmDeviceInfoDeviceComplianceWarning",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DEVICE_COMPLIANCE_WARNING},
+      {"confirmDeviceInfoDeviceQuestionIsBranded",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DEVICE_QUESTION_IS_BRANDED},
+      {"confirmDeviceInfoDeviceQuestionDoesMeetRequirements",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_DEVICE_QUESTION_DOES_MEET_REQUIREMENTS},
+      {"confirmDeviceInfoDeviceAnswerNo",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_ANSWER_NO},
+      {"confirmDeviceInfoDeviceAnswerYes",
+       IDS_SHIMLESS_RMA_CONFIRM_DEVICE_INFO_ANSWER_YES},
       // Firmware reimaging page
       {"firmwareUpdateInstallImageTitleText",
        IDS_SHIMLESS_RMA_FIRMWARE_UPDATE_INSTALL_IMAGE_TITLE},
@@ -375,6 +389,8 @@ void AddFeatureFlags(content::WebUIDataSource* html_source) {
       base::FeatureList::IsEnabled(features::kShimlessRMAOsUpdate));
   html_source->AddBoolean("diagnosticPageEnabled",
                           features::IsShimlessRMADiagnosticPageEnabled());
+  html_source->AddBoolean("complianceCheckEnabled",
+                          features::IsShimlessRMAComplianceCheckEnabled());
 }
 
 }  // namespace

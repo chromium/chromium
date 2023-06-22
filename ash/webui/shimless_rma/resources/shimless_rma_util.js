@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 import {assert} from 'chrome://resources/ash/common/assert.js';
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {afterNextRender} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
 import {StateResult} from './shimless_rma_types.js';
@@ -114,4 +115,11 @@ export function focusPageTitle(element) {
   afterNextRender(element, () => {
     pageTitle.focus();
   });
+}
+
+/**
+ * @returns whether the "Compliance Check" flag is enabled.
+ */
+export function isComplianceCheckEnabled() {
+  return loadTimeData.getBoolean('complianceCheckEnabled');
 }

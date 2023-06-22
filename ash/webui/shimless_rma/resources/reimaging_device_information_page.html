@@ -1,4 +1,18 @@
 <style include="cr-shared-style shimless-rma-shared shimless-fonts">
+  hr {
+    border: 0;
+    border-top: 1px solid var(--cros-separator-color);
+    display: block;
+    height: 1px;
+    width: 100%;
+  }
+
+  .input-row {
+    /* Input should always be interactable over the footer. */
+    z-index: 1;
+  }
+
+  hr,
   .input-row {
     margin-bottom: 30px;
   }
@@ -61,6 +75,20 @@
 
   #tooltipContent {
     line-height: var(--shimless-instructions-line-height);
+  }
+
+  #complianceWarning {
+    align-items: center;
+    color: var(--cros-color-warning);
+    display: flex;
+    margin-top: 2px;
+  }
+
+  #complianceWarning iron-icon {
+    display: inline-block;
+    height: 18px;
+    margin-inline-end: 6px;
+    width: 18px;
   }
 </style>
 
@@ -156,7 +184,7 @@
           <div id="tooltipContent">[[i18n('confirmDeviceInfoSkuWarning')]]</div>
         </paper-tooltip>
       </div>
-      <div class="input-holder">
+      <div class="input-holder input-row">
         <select id="skuSelect" class="md-select"
             on-change="onSelectedSkuChange_" aria-labelledby="skuLabel"
             disabled="[[allButtonsDisabled]]">
@@ -171,6 +199,56 @@
             aria-describedby="skuLabel">
           [[i18n('confirmDeviceInfoResetButtonLabel')]]
         </cr-button>
+      </div>
+      <div hidden="[[!shouldShowComplianceSection_()]]">
+        <div hidden="[[!isComplianceStatusKnown_()]]">
+          <hr>
+          <div class="input-row">
+            <div>
+              [[getComplianceStatusString_()]]
+            </div>
+            <div id="complianceWarning">
+              <iron-icon icon="shimless-icon:info"></iron-icon>
+              <span>
+                [[i18n('confirmDeviceInfoDeviceComplianceWarning')]]
+              </span>
+            </div>
+          </div>
+        </div>
+        <div hidden="[[isComplianceStatusKnown_()]]">
+          <div class="input-row">
+            <label class="cr-form-field-label">
+              [[i18n('confirmDeviceInfoDeviceQuestionIsBranded')]]
+            </label>
+            <div class="input-holder">
+              <select id="isChassisBranded" class="md-select"
+                  disabled="[[allButtonsDisabled]]">
+                <option value="no">
+                  [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
+                </option>
+                <option value="yes">
+                  [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
+                </option>
+              </select>
+            </div>
+          </div>
+          <div class="input-row">
+            <label class="cr-form-field-label">
+              [[i18n('confirmDeviceInfoDeviceQuestionDoesMeetRequirements')]]
+            </label>
+            <div class="input-holder">
+              <select id="doesMeetRequirements" class="md-select"
+                  disabled="[[allButtonsDisabled]]">
+                <option value="no">
+                  [[i18n('confirmDeviceInfoDeviceAnswerNo')]]
+                </option>
+                <option value="yes">
+                  [[i18n('confirmDeviceInfoDeviceAnswerYes')]]
+                </option>
+              </select>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   </div>

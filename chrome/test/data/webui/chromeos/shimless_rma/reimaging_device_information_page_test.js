@@ -2,6 +2,7 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
+import {loadTimeData} from 'chrome://resources/ash/common/load_time_data.m.js';
 import {PromiseResolver} from 'chrome://resources/ash/common/promise_resolver.js';
 import {fakeDeviceRegions, fakeDeviceSkus, fakeDeviceWhiteLabels} from 'chrome://shimless-rma/fake_data.js';
 import {FakeShimlessRmaService} from 'chrome://shimless-rma/fake_shimless_rma_service.js';
@@ -9,7 +10,9 @@ import {setShimlessRmaServiceForTesting} from 'chrome://shimless-rma/mojo_interf
 import {ReimagingDeviceInformationPage} from 'chrome://shimless-rma/reimaging_device_information_page.js';
 import {ShimlessRma} from 'chrome://shimless-rma/shimless_rma.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chromeos/chai_assert.js';
-import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
+
+import {isVisible} from '../test_util.js';
 
 const fakeSerialNumber = 'serial# 0001';
 const fakeDramPartNumber = 'dram# 0123';
@@ -73,6 +76,7 @@ suite('reimagingDeviceInformationPageTest', function() {
 
   test('ReimagingDeviceInformationPageInitializes', async () => {
     await initializeReimagingDeviceInformationPage();
+    await waitAfterNextRender(component);
 
     const serialNumberComponent =
         component.shadowRoot.querySelector('#serialNumber');
@@ -348,6 +352,35 @@ suite('reimagingDeviceInformationPageTest', function() {
 
         assertFalse(disableNextButtonEventFired);
       });
+
+  test('ReimagingDeviceInformationPage_ComplianceCheckDisabled', async () => {
+    loadTimeData.overrideValues({complianceCheckEnabled: false});
+
+    await initializeReimagingDeviceInformationPage();
+
+    // Expect compliance-related fields to not be present when flag is off.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#complianceWarning')));
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#doesMeetRequirements')));
+  });
+
+  test('ReimagingDeviceInformationPage_ComplianceCheckEnabled', async () => {
+    loadTimeData.overrideValues({complianceCheckEnabled: true});
+
+    await initializeReimagingDeviceInformationPage();
+
+    // Expect certain compliance-related fields to be present when flag is on.
+    // TODO(cambickel): Update this when FeatureLevel property is added.
+    assertFalse(
+        isVisible(component.shadowRoot.querySelector('#complianceWarning')));
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#isChassisBranded')));
+    assertTrue(
+        isVisible(component.shadowRoot.querySelector('#doesMeetRequirements')));
+  });
 
   // TODO(gavindodd): Add tests for the selection lists when they are
   // reimplemented and bound.
