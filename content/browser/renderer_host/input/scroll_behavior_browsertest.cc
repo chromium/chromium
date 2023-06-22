@@ -288,36 +288,34 @@ class ScrollBehaviorBrowserTest : public ContentBrowserTest,
     }
   }
 
-  void ValueHoldsAt(const std::string& scroll_top_script, double scroll_top) {
+  void ValueHoldsAt(const std::string& scroll_top_script,
+                    double scroll_top,
+                    double tolerance = 0) {
     // This function checks that the scroll top value holds at the given value
     // for 10 frames.
     MainThreadFrameObserver frame_observer(GetWidgetHost());
     int frame_count = 10;
     while (frame_count > 0) {
-      ASSERT_EQ(EvalJs(shell(), scroll_top_script).ExtractDouble(), scroll_top);
+      // EXPECT_NEAR is equivalent to EXPECT_EQ if tolerance is zero.
+      EXPECT_NEAR(EvalJs(shell(), scroll_top_script).ExtractDouble(),
+                  scroll_top, tolerance);
       frame_observer.Wait();
       frame_count--;
     }
   }
 
-  double WaitForScrollToEnd(const std::string& script) {
+  double AssertScrollEndedAtPosition(const std::string& script,
+                                     double target_position,
+                                     double tolerance) {
     MainThreadFrameObserver frame_observer(GetWidgetHost());
-    int frame_count = 0;
-    double scroll_top = -1;
-    while (true) {
-      double new_scroll_top = EvalJs(shell(), script).ExtractDouble();
-      if (new_scroll_top == scroll_top) {
-        frame_count++;
-        // Return when the scroll top value holds steady for 10 frames.
-        if (frame_count == 10)
-          return scroll_top;
-      } else {
-        // Scroll top value changed; reset counter.
-        frame_count = 0;
-        scroll_top = new_scroll_top;
-      }
+    double scroll_top = EvalJs(shell(), script).ExtractDouble();
+    while (std::abs(target_position - scroll_top) > tolerance) {
+      scroll_top = EvalJs(shell(), script).ExtractDouble();
       frame_observer.Wait();
     }
+    // Assert that we have not scrolled past the target position.
+    ValueHoldsAt(script, target_position, 1);
+    return scroll_top;
   }
 
   void RunTestInstantScriptScrollAdjustsSmoothWheelScroll();
@@ -388,7 +386,7 @@ void ScrollBehaviorBrowserTest::
                  /* blocking */ false);
   WaitForScrollToStart("element.scrollTop");
   EXPECT_TRUE(ExecJs(shell()->web_contents(), "element.scrollBy(0, -5);"));
-  EXPECT_NEAR(WaitForScrollToEnd("element.scrollTop"), 95, 1);
+  AssertScrollEndedAtPosition("element.scrollTop", 95, 1);
 }
 
 IN_PROC_BROWSER_TEST_P(ScrollBehaviorBrowserTestWithPercentBasedScrolling,
@@ -410,8 +408,8 @@ void ScrollBehaviorBrowserTest::
   SimulateScroll(content::mojom::GestureSourceType::kMouseInput, 0, 200, "s1",
                  /* blocking */ false);
   WaitForScrollToStart("s1.scrollTop");
-  EXPECT_NEAR(WaitForScrollToEnd("s1.scrollTop"), 200, 1);
-  EXPECT_NEAR(WaitForScrollToEnd("s2.scrollTop"), 200, 1);
+  AssertScrollEndedAtPosition("s1.scrollTop", 200, 1);
+  AssertScrollEndedAtPosition("s2.scrollTop", 200, 1);
 }
 
 // This tests that a in-progress smooth scroll on an overflow:scroll element
