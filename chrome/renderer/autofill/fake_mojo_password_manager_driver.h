@@ -45,7 +45,8 @@ class FakeMojoPasswordManagerDriver
 
   MOCK_METHOD(void,
               ShowPasswordSuggestions,
-              (base::i18n::TextDirection,
+              (autofill::FieldRendererId element_id,
+               base::i18n::TextDirection,
                const std::u16string&,
                int,
                const gfx::RectF&),

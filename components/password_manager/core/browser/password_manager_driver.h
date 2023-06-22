@@ -117,7 +117,7 @@ class PasswordManagerDriver
   // |generation_element_id|. It is critical for a11y to keep it updated
   // to make proper announcements.
   virtual void SetSuggestionAvailability(
-      autofill::FieldRendererId generation_element_id,
+      autofill::FieldRendererId element_id,
       const autofill::mojom::AutofillState state) = 0;
 
   // Returns the PasswordGenerationFrameHelper associated with this instance.

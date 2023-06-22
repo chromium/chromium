@@ -37,7 +37,7 @@ class StubPasswordManagerDriver : public PasswordManagerDriver {
   void PreviewGenerationSuggestion(const std::u16string& password) override;
   void ClearPreviewedForm() override;
   void SetSuggestionAvailability(
-      autofill::FieldRendererId generation_element_id,
+      autofill::FieldRendererId element_id,
       const autofill::mojom::AutofillState state) override;
   PasswordGenerationFrameHelper* GetPasswordGenerationHelper() override;
   PasswordManagerInterface* GetPasswordManager() override;

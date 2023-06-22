@@ -56,7 +56,8 @@ class FakeContentPasswordManagerDriver : public mojom::PasswordManagerDriver {
 
   void PasswordFormCleared(const autofill::FormData& form_data) override {}
 
-  void ShowPasswordSuggestions(base::i18n::TextDirection text_direction,
+  void ShowPasswordSuggestions(autofill::FieldRendererId element_id,
+                               base::i18n::TextDirection text_direction,
                                const std::u16string& typed_username,
                                int options,
                                const gfx::RectF& bounds) override {}

@@ -219,9 +219,9 @@ void ContentPasswordManagerDriver::ClearPreviewedForm() {
 }
 
 void ContentPasswordManagerDriver::SetSuggestionAvailability(
-    autofill::FieldRendererId generation_element_id,
+    autofill::FieldRendererId element_id,
     const autofill::mojom::AutofillState state) {
-  GetAutofillAgent()->SetSuggestionAvailability(generation_element_id, state);
+  GetAutofillAgent()->SetSuggestionAvailability(element_id, state);
 }
 
 PasswordGenerationFrameHelper*
@@ -427,6 +427,7 @@ void ContentPasswordManagerDriver::UserModifiedNonPasswordField(
 }
 
 void ContentPasswordManagerDriver::ShowPasswordSuggestions(
+    autofill::FieldRendererId element_id,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
     int options,
@@ -450,7 +451,7 @@ void ContentPasswordManagerDriver::ShowPasswordSuggestions(
 #endif  // BUILDFLAG(IS_ANDROID)
 
   GetPasswordAutofillManager()->OnShowPasswordSuggestions(
-      text_direction, typed_username, options,
+      element_id, text_direction, typed_username, options,
       TransformToRootCoordinates(render_frame_host_, bounds));
 }
 

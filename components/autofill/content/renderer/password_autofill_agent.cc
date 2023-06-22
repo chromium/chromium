@@ -598,11 +598,12 @@ class PasswordAutofillAgent::DeferringPasswordManagerDriver
              renderer_id, field_name, value,
              autocomplete_attribute_has_username);
   }
-  void ShowPasswordSuggestions(::base::i18n::TextDirection text_direction,
+  void ShowPasswordSuggestions(FieldRendererId element_id,
+                               ::base::i18n::TextDirection text_direction,
                                const std::u16string& typed_username,
                                int32_t options,
                                const gfx::RectF& bounds) override {
-    DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions,
+    DeferMsg(&mojom::PasswordManagerDriver::ShowPasswordSuggestions, element_id,
              text_direction, typed_username, options, bounds);
   }
 #if BUILDFLAG(IS_ANDROID)
@@ -1653,7 +1654,7 @@ void PasswordAutofillAgent::ShowSuggestionPopup(
     options |= ACCEPTS_WEBAUTHN_CREDENTIALS;
 
   GetPasswordManagerDriver().ShowPasswordSuggestions(
-      field.text_direction, typed_username, options,
+      field.unique_renderer_id, field.text_direction, typed_username, options,
       render_frame()->ElementBoundsInWindow(user_input));
 }
 

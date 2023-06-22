@@ -704,8 +704,9 @@ class PasswordAutofillAgentTest : public ChromeRenderViewTest {
       return show_all == ((options & autofill::SHOW_ALL) != 0);
     };
 
-    EXPECT_CALL(fake_driver_, ShowPasswordSuggestions(
-                                  _, Eq(username), Truly(show_all_matches), _))
+    EXPECT_CALL(
+        fake_driver_,
+        ShowPasswordSuggestions(_, _, Eq(username), Truly(show_all_matches), _))
         .Times(testing::AtLeast(1));
     base::RunLoop().RunUntilIdle();
   }
@@ -2348,7 +2349,11 @@ TEST_F(PasswordAutofillAgentTest, CredentialsOnClick) {
   CheckSuggestions(std::u16string(), true);
 
   // Now simulate a user typing in a saved username. The list is filtered.
-  EXPECT_CALL(fake_driver_, ShowPasswordSuggestions(_, _, 0, _))
+  EXPECT_CALL(
+      fake_driver_,
+      ShowPasswordSuggestions(
+          FieldRendererId(username_element_.UniqueRendererFormControlId()), _,
+          _, 0, _))
       .Times(testing::AtLeast(1));
   SimulateUsernameTyping(kAliceUsername);
 }

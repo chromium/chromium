@@ -140,7 +140,8 @@ interface PasswordManagerDriver {
 
   // Instructs the browser to show a popup with password suggestions. The popup
   // will use |text_direction| for displaying text.
-  ShowPasswordSuggestions(mojo_base.mojom.TextDirection text_direction,
+  ShowPasswordSuggestions(FieldRendererId element_id,
+                          mojo_base.mojom.TextDirection text_direction,
                           mojo_base.mojom.String16 typed_username,
                           int32 options, gfx.mojom.RectF bounds);
 

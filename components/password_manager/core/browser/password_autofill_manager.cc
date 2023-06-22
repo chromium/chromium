@@ -646,11 +646,12 @@ void PasswordAutofillManager::DeleteFillData() {
 }
 
 void PasswordAutofillManager::OnShowPasswordSuggestions(
+    autofill::FieldRendererId element_id,
     base::i18n::TextDirection text_direction,
     const std::u16string& typed_username,
     int options,
     const gfx::RectF& bounds) {
-  ShowPopup(
+  bool autofill_available = ShowPopup(
       bounds, text_direction,
       BuildSuggestions(typed_username,
                        ForPasswordField(options & autofill::IS_PASSWORD_FIELD),
@@ -658,6 +659,11 @@ void PasswordAutofillManager::OnShowPasswordSuggestions(
                        OffersGeneration(false), ShowPasswordSuggestions(true),
                        ShowWebAuthnCredentials(
                            options & autofill::ACCEPTS_WEBAUTHN_CREDENTIALS)));
+
+  password_manager_driver_->SetSuggestionAvailability(
+      element_id, autofill_available
+                      ? autofill::mojom::AutofillState::kAutofillAvailable
+                      : autofill::mojom::AutofillState::kNoSuggestions);
 }
 
 bool PasswordAutofillManager::MaybeShowPasswordSuggestions(
