@@ -191,43 +191,6 @@ std::string V4L2Device::GetDriverName() {
 }
 
 // static
-uint32_t V4L2Device::VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
-                                                   bool slice_based) {
-  if (profile >= H264PROFILE_MIN && profile <= H264PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_H264_SLICE;
-    else
-      return V4L2_PIX_FMT_H264;
-#if BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile >= HEVCPROFILE_MIN && profile <= HEVCPROFILE_MAX) {
-    if (slice_based) {
-      return V4L2_PIX_FMT_HEVC_SLICE;
-    } else {
-      return V4L2_PIX_FMT_HEVC;
-    }
-#endif  // BUILDFLAG(ENABLE_HEVC_PARSER_AND_HW_DECODER)
-  } else if (profile >= VP8PROFILE_MIN && profile <= VP8PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_VP8_FRAME;
-    else
-      return V4L2_PIX_FMT_VP8;
-  } else if (profile >= VP9PROFILE_MIN && profile <= VP9PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_VP9_FRAME;
-    else
-      return V4L2_PIX_FMT_VP9;
-  } else if (profile >= AV1PROFILE_MIN && profile <= AV1PROFILE_MAX) {
-    if (slice_based)
-      return V4L2_PIX_FMT_AV1_FRAME;
-    else
-      return V4L2_PIX_FMT_AV1;
-  } else {
-    DVLOGF(1) << "Unsupported profile: " << GetProfileName(profile);
-    return V4L2_PIX_FMT_INVALID;
-  }
-}
-
-// static
 int32_t V4L2Device::VideoCodecProfileToV4L2H264Profile(
     VideoCodecProfile profile) {
   switch (profile) {

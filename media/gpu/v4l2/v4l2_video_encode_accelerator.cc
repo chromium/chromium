@@ -212,7 +212,7 @@ bool V4L2VideoEncodeAccelerator::Initialize(
   client_ = client_ptr_factory_->GetWeakPtr();
 
   output_format_fourcc_ =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
+      VideoCodecProfileToV4L2PixFmt(config.output_profile, false);
   if (output_format_fourcc_ == V4L2_PIX_FMT_INVALID) {
     MEDIA_LOG(ERROR, media_log.get())
         << "invalid output_profile=" << GetProfileName(config.output_profile);

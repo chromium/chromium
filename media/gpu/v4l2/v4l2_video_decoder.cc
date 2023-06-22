@@ -346,8 +346,7 @@ V4L2Status V4L2VideoDecoder::InitializeBackend() {
   // Try both kStateful and kStateless APIs via |fourcc| and select the first
   // combination where Open()ing the |device_| works.
   for (const auto api : {kStateful, kStateless}) {
-    const auto fourcc =
-        V4L2Device::VideoCodecProfileToV4L2PixFmt(profile_, api);
+    const auto fourcc = VideoCodecProfileToV4L2PixFmt(profile_, api);
     if (fourcc == V4L2_PIX_FMT_INVALID ||
         !device_->Open(V4L2Device::Type::kDecoder, fourcc)) {
       continue;

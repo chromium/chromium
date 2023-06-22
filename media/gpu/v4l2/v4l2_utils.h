@@ -19,6 +19,10 @@
   v4l2_fourcc('Q', '0', '8', 'C') /* Qualcomm 8-bit compressed */
 #endif
 
+#ifndef V4L2_PIX_FMT_INVALID
+#define V4L2_PIX_FMT_INVALID v4l2_fourcc('0', '0', '0', '0')
+#endif
+
 namespace gfx {
 class Size;
 }
@@ -83,6 +87,11 @@ void GetSupportedResolution(const IoctlAsCallback& ioctl_cb,
                             gfx::Size* min_resolution,
                             gfx::Size* max_resolution);
 
+// Translates a media::VideoCodecProfile to a supported pixel format
+// (e.g. V4L2_PIX_FMT_VP9) if those are supported by Chrome. It returns
+// V4L2_PIX_FMT_INVALID otherwise.
+uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
+                                       bool slice_based);
 }  // namespace media
 
 #endif  // MEDIA_GPU_V4L2_V4L2_UTILS_H_

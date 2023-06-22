@@ -97,10 +97,6 @@ class MEDIA_GPU_EXPORT V4L2Device
     : public base::RefCountedThreadSafe<V4L2Device> {
  public:
   // Utility format conversion functions
-  // If there is no corresponding single- or multi-planar format, returns
-  // V4L2_PIX_FMT_INVALID.
-  static uint32_t VideoCodecProfileToV4L2PixFmt(VideoCodecProfile profile,
-                                                bool slice_based);
   // Calculates the largest plane's allocation size requested by a V4L2 device.
   static gfx::Size AllocatedSizeFromV4L2Format(
       const struct v4l2_format& format);

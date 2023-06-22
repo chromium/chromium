@@ -314,8 +314,7 @@ void V4L2VideoDecodeAccelerator::InitializeTask(const Config& config,
 bool V4L2VideoDecodeAccelerator::CheckConfig(const Config& config) {
   DCHECK(decoder_thread_.task_runner()->BelongsToCurrentThread());
 
-  input_format_fourcc_ =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(config.profile, false);
+  input_format_fourcc_ = VideoCodecProfileToV4L2PixFmt(config.profile, false);
 
   if (input_format_fourcc_ == V4L2_PIX_FMT_INVALID ||
       !device_->Open(V4L2Device::Type::kDecoder, input_format_fourcc_)) {

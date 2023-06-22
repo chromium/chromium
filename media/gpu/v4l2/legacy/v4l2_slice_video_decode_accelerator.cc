@@ -303,8 +303,7 @@ bool V4L2SliceVideoDecodeAccelerator::Initialize(const Config& config,
 
   video_profile_ = config.profile;
 
-  input_format_fourcc_ =
-      V4L2Device::VideoCodecProfileToV4L2PixFmt(video_profile_, true);
+  input_format_fourcc_ = VideoCodecProfileToV4L2PixFmt(video_profile_, true);
 
   if (input_format_fourcc_ == V4L2_PIX_FMT_INVALID ||
       !device_->Open(V4L2Device::Type::kDecoder, input_format_fourcc_)) {
