@@ -13,6 +13,7 @@ import {SetupCancelDialogElement} from 'chrome://cloud-upload/setup_cancel_dialo
 import {SignInPageElement} from 'chrome://cloud-upload/sign_in_page.js';
 import {WelcomePageElement} from 'chrome://cloud-upload/welcome_page.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {assertDeepEquals, assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 import {CloudUploadTestBrowserProxy, ProxyOptions} from './cloud_upload_test_browser_proxy.js';
@@ -29,6 +30,39 @@ suite('<cloud-upload>', () => {
   async function setUp(options: ProxyOptions) {
     testProxy = new CloudUploadTestBrowserProxy(options);
     CloudUploadBrowserProxy.setInstance(testProxy);
+
+    // Setup fake strings.
+    loadTimeData.resetForTesting({
+      'cancel': 'Cancel',
+      'close': 'Close',
+      'open': 'Open',
+      'install': 'Install',
+      'installing': 'Installing',
+      'installed': 'Installed',
+      'connectToOneDriveTitle': 'Connect to OneDrive',
+      'connectToOneDriveSignInFlowBodyText':
+          'Connect to OneDrive body in Sign in',
+      'connectToOneDriveBodyText': 'Connect to OneDrive body',
+      'cantConnectOneDrive': 'Can not connect',
+      'connectOneDrive': 'Connect',
+      'oneDriveConnectedTitle': 'Connected',
+      'oneDriveConnectedBodyText': 'Connected Body',
+      'animationPlayText': 'Play',
+      'animationPauseText': 'Pause',
+      'fileHandlerTitle': 'Test title',
+      'word': 'Word',
+      'excel': 'Excel',
+      'powerPoint': 'PowerPoint',
+      'googleDocs': 'Google Docs',
+      'googleSheets': 'Google Sheets',
+      'googleSlides': 'Google Slides',
+      'microsoft365': 'Microsoft 365',
+      'otherApps': 'Other apps',
+      'googleDriveStorage': 'Google Drive as storage',
+      'oneDriveStorage': 'OneDrive as storage',
+      'installPWATitle': 'Install PWA title',
+      'installPWABodyText': 'Install PWA body',
+    });
 
     // Creates and attaches the <cloud-upload> element to the DOM tree.
     cloudUploadApp =
@@ -129,6 +163,7 @@ suite('<cloud-upload>', () => {
    * the <cloud-upload> component.
    */
   teardown(() => {
+    loadTimeData.resetForTesting();
     assert(window.trustedTypes);
     container.innerHTML = window.trustedTypes.emptyHTML;
     testProxy.handler.reset();

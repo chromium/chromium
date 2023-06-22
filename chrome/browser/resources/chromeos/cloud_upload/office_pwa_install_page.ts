@@ -7,6 +7,7 @@ import 'chrome://resources/cr_elements/cr_icons.css.js';
 
 import {CrButtonElement} from 'chrome://resources/cr_elements/cr_button/cr_button.js';
 import {assertInstanceof} from 'chrome://resources/js/assert_ts.js';
+import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 
 import {BaseSetupPageElement, CANCEL_SETUP_EVENT, NEXT_PAGE_EVENT} from './base_setup_page.js';
 import {CloudUploadBrowserProxy} from './cloud_upload_browser_proxy.js';
@@ -33,8 +34,8 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
     const proxy = CloudUploadBrowserProxy.getInstance();
 
     assertInstanceof(event.target, CrButtonElement);
-    const actionButton = event.target;
-    actionButton.innerText = 'Installing';
+    const actionButton: CrButtonElement = event.target;
+    actionButton.innerText = loadTimeData.getString('installing');
     actionButton.classList.replace('install', 'installing');
     actionButton.disabled = true;
 
@@ -50,7 +51,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
     ]);
 
     if (install_result) {
-      actionButton.innerText = 'Installed';
+      actionButton.innerText = loadTimeData.getString('installed');
       actionButton.classList.replace('installing', 'installed');
 
       // Keep the installed state shown for a minimum time before changing
@@ -64,7 +65,7 @@ export class OfficePwaInstallPageElement extends BaseSetupPageElement {
           new CustomEvent(NEXT_PAGE_EVENT, {bubbles: true, composed: true}));
     } else {
       // TODO(b:251046341): Proper error display.
-      actionButton.innerText = 'Install';
+      actionButton.innerText = loadTimeData.getString('install');
       actionButton.classList.replace('installing', 'install');
       actionButton.disabled = false;
     }

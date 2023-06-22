@@ -36,6 +36,9 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"cancel", IDS_CANCEL},
       {"close", IDS_CLOSE},
       {"open", IDS_OFFICE_FILE_HANDLER_OPEN_BUTTON},
+      {"install", IDS_INSTALL},
+      {"installing", IDS_OFFICE_INSTALL_PWA_INSTALLING_BUTTON},
+      {"installed", IDS_OFFICE_INSTALL_PWA_INSTALLED_BUTTON},
       {"connectToOneDriveTitle", IDS_CONNECT_TO_ONEDRIVE_TITLE},
       {"connectToOneDriveBodyText", IDS_CONNECT_TO_ONEDRIVE_BODY_TEXT},
       {"cantConnectOneDrive", IDS_CANT_CONNECT_ONEDRIVE},
@@ -54,7 +57,9 @@ CloudUploadUI::CloudUploadUI(content::WebUI* web_ui)
       {"microsoft365", IDS_OFFICE_FILE_HANDLER_APP_MICROSOFT},
       {"otherApps", IDS_OFFICE_FILE_HANDLER_APP_OTHERS},
       {"googleDriveStorage", IDS_OFFICE_FILE_HANDLER_STORAGE_GOOGLE},
-      {"oneDriveStorage", IDS_OFFICE_FILE_HANDLER_STORAGE_MICROSOFT}};
+      {"oneDriveStorage", IDS_OFFICE_FILE_HANDLER_STORAGE_MICROSOFT},
+      {"installPWATitle", IDS_OFFICE_INSTALL_PWA_TITLE},
+      {"installPWABodyText", IDS_OFFICE_INSTALL_PWA_BODY_TEXT}};
   source->AddLocalizedStrings(kStrings);
   source->AddBoolean("isJellyEnabled", chromeos::features::IsJellyEnabled());
   webui::SetupWebUIDataSource(
