@@ -4,12 +4,14 @@
 
 #include "chrome/browser/ash/policy/reporting/metrics_reporting/apps/app_events_observer.h"
 
+#include <cstddef>
 #include <memory>
 
 #include "base/check.h"
 #include "base/containers/contains.h"
 #include "base/memory/ptr_util.h"
 #include "base/memory/weak_ptr.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list_types.h"
 #include "base/sequence_checker.h"
 #include "base/values.h"
@@ -30,6 +32,17 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace reporting {
+namespace {
+
+// Derives disk space consumption for the specified list, assuming the size of
+// each individual entity in the list is the same.
+size_t GetDiskConsumptionForList(const base::Value::List& list) {
+  if (list.empty()) {
+    return 0;
+  }
+  return list.size() * sizeof(list.front());
+}
+}  // namespace
 
 // static
 std::unique_ptr<AppEventsObserver> AppEventsObserver::CreateForProfile(
@@ -71,6 +84,9 @@ void AppEventsObserver::AppInstallTracker::Add(base::StringPiece app_id) {
   ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
                                            ::ash::reporting::kAppsInstalled);
   apps_installed_pref->Append(app_id);
+  base::UmaHistogramCounts1M(
+      kDiskConsumptionMetricsName,
+      GetDiskConsumptionForList(apps_installed_pref.Get()));
 }
 
 void AppEventsObserver::AppInstallTracker::Remove(base::StringPiece app_id) {
@@ -83,6 +99,9 @@ void AppEventsObserver::AppInstallTracker::Remove(base::StringPiece app_id) {
   ScopedListPrefUpdate apps_installed_pref(profile_->GetPrefs(),
                                            ::ash::reporting::kAppsInstalled);
   apps_installed_pref->EraseValue(base::Value(app_id));
+  base::UmaHistogramCounts1M(
+      kDiskConsumptionMetricsName,
+      GetDiskConsumptionForList(apps_installed_pref.Get()));
 }
 
 bool AppEventsObserver::AppInstallTracker::Contains(

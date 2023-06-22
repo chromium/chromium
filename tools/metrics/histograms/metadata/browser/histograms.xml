@@ -132,6 +132,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram name="Browser.ERP.AppInstallTrackerDiskConsumption" units="bytes"
+    expires_after="2023-11-08">
+  <owner>vshenvi@google.com</owner>
+  <owner>cros-reporting-team@google.com</owner>
+  <summary>
+    Recorded when the AppEventsObserver::AppInstallTracker starts tracking new
+    app installs or uninstalls. This represents the total disk space consumed by
+    the component in the user pref store before encryption.
+  </summary>
+</histogram>
+
 <histogram name="Browser.ERP.EventEnqueueResult"
     enum="EnterpriseCloudReportingStatusCode" expires_after="2023-11-17">
   <owner>lbaraz@chromium.org</owner>
