@@ -461,14 +461,10 @@ void StyleCascade::ApplyCascadeAffecting(CascadeResolver& resolver) {
 void StyleCascade::ApplyHighPriority(CascadeResolver& resolver) {
   uint64_t bits = map_.HighPriorityBits();
 
-  if (bits) {
-    int first = static_cast<int>(kFirstHighPriorityCSSProperty);
-    int last = static_cast<int>(kLastHighPriorityCSSProperty);
-    for (int i = first; i <= last; ++i) {
-      if (bits & (static_cast<uint64_t>(1) << i)) {
-        LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
-      }
-    }
+  while (bits) {
+    int i = base::bits::CountTrailingZeroBits(bits);
+    bits &= bits - 1;  // Clear the lowest bit.
+    LookupAndApply(CSSProperty::Get(ConvertToCSSPropertyID(i)), resolver);
   }
 
   state_.UpdateFont();
