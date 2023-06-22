@@ -433,9 +433,9 @@ void AUHALStream::UpdatePlayoutTimestamp(const AudioTimeStamp* timestamp) {
                "timestamp->mSampleTime", timestamp->mSampleTime,
                "last_sample_time_", last_sample_time_);
 
-  if (last_sample_time_) {
+  // if mSampleTime jumps backwards, do not look for glitches.
+  if (last_sample_time_ && last_sample_time_ <= timestamp->mSampleTime) {
     DCHECK_NE(0U, last_number_of_frames_);
-    CHECK_GE(timestamp->mSampleTime, last_sample_time_);
     UInt32 sample_time_diff =
         static_cast<UInt32>(timestamp->mSampleTime - last_sample_time_);
     DCHECK_GE(sample_time_diff, last_number_of_frames_);
