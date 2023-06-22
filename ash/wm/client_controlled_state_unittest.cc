@@ -21,6 +21,7 @@
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/pip/pip_positioner.h"
 #include "ash/wm/screen_pinning_controller.h"
+#include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
 #include "ash/wm/splitview/split_view_divider.h"
 #include "ash/wm/tablet_mode/tablet_mode_controller.h"
@@ -840,38 +841,44 @@ TEST_F(ClientControlledStateTest,
   EXPECT_EQ(WindowStateType::kMaximized, delegate()->new_state());
 }
 
-TEST_F(ClientControlledStateTest, ResizeSnappedWindowInTabletMode) {
+TEST_P(ClientControlledStateTestClamshellAndTablet, ResizeSnappedWindow) {
+  // Set screen width.
+  UpdateDisplay("1200x600");
+
   window()->SetProperty(aura::client::kAppType,
                         static_cast<int>(AppType::ARC_APP));
   ASSERT_EQ(chromeos::OrientationType::kLandscapePrimary,
             GetCurrentScreenOrientation());
   auto* const split_view_controller = SplitViewController::Get(window());
 
-  // Enter tablet mode
-  Shell::Get()->tablet_mode_controller()->SetEnabledForTest(true);
-  ASSERT_EQ(true, Shell::Get()->tablet_mode_controller()->InTabletMode());
-
   // Snap a window
   widget_delegate()->EnableSnap();
-  split_view_controller->SnapWindow(
-      window(), SplitViewController::SnapPosition::kPrimary);
-  EXPECT_EQ(WindowStateType::kPrimarySnapped, delegate()->new_state());
+  const WindowSnapWMEvent snap_primary(WM_EVENT_SNAP_PRIMARY);
+  window_state()->OnWMEvent(&snap_primary);
   state()->EnterNextState(window_state(), delegate()->new_state());
+  ApplyPendingRequestedBounds();
   EXPECT_TRUE(window_state()->IsSnapped());
 
-  // Move the divider
-  const gfx::Rect initial_bounds = delegate()->requested_bounds();
-  auto* const split_view_divider = split_view_controller->split_view_divider();
-  const gfx::Rect divider_bounds =
-      split_view_divider->GetDividerBoundsInScreen(false);
+  // Resize to 1/3 (i.e. make the width 400).
   ui::test::EventGenerator* const generator = GetEventGenerator();
-  generator->set_current_screen_location(divider_bounds.CenterPoint());
-  const gfx::Rect display_bounds =
-      screen_util::GetDisplayWorkAreaBoundsInScreenForActiveDeskContainer(
-          window());
-  const gfx::Point resize_point(display_bounds.width() * 0.33f, 0);
-  generator->DragMouseTo(resize_point);
-  EXPECT_GT(initial_bounds.width(), delegate()->requested_bounds().width());
+  if (InTabletMode()) {
+    const gfx::Rect divider_bounds =
+        split_view_controller->split_view_divider()->GetDividerBoundsInScreen(
+            false);
+    generator->set_current_screen_location(divider_bounds.CenterPoint());
+  } else {
+    generator->set_current_screen_location(
+        window()->GetBoundsInScreen().right_center());
+  }
+  generator->DragMouseTo(gfx::Point(1200 / 3, 0));
+  EXPECT_NEAR(delegate()->requested_bounds().width(), 1200 / 3,
+              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
+  ApplyPendingRequestedBounds();
+
+  // Changing display size should keep the current snap ratio.
+  UpdateDisplay("900x600");
+  EXPECT_NEAR(delegate()->requested_bounds().width(), 900 / 3,
+              InTabletMode() ? kSplitviewDividerShortSideLength / 2 : 0);
 }
 
 TEST_F(ClientControlledStateTest, FlingFloatedWindowInTabletMode) {

@@ -114,8 +114,16 @@ void ClientControlledState::HandleWorkspaceEvents(WindowState* window_state,
     return;
   // Client is responsible for adjusting bounds after workspace bounds change.
   if (window_state->IsSnapped()) {
-    gfx::Rect bounds = GetSnappedWindowBoundsInParent(
-        window_state->window(), window_state->GetStateType());
+    const aura::Window* window = window_state->window();
+    // If `SplitViewController` is aware of `window` (e.g. in tablet), let the
+    // controller handle the workspace event.
+    if (SplitViewController::Get(window)->IsWindowInSplitView(window)) {
+      return;
+    }
+
+    gfx::Rect bounds = window->bounds();
+    window_state->AdjustSnappedBoundsForDisplayWorkspaceChange(&bounds);
+
     // Then ask delegate to set the desired bounds for the snap state.
     delegate_->HandleBoundsRequest(window_state, window_state->GetStateType(),
                                    bounds, window_state->GetDisplay().id());
