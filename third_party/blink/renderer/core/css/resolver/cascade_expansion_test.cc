@@ -63,13 +63,17 @@ class CascadeExpansionTest : public PageTestBase {
     HeapVector<Member<ExpansionResult>> ret;
     ExpandCascade(
         result.GetMatchedProperties()[i], GetDocument(), i,
-        [&ret](CascadePriority cascade_priority,
-               const CSSProperty& css_property, const CSSPropertyName& name) {
-          ExpansionResult* er =
-              MakeGarbageCollected<ExpansionResult>(css_property);
-          EXPECT_EQ(name, css_property.GetCSSPropertyName());
+        [this, &ret](CascadePriority cascade_priority,
+                     const AtomicString& name) {
+          ExpansionResult* er = MakeGarbageCollected<ExpansionResult>(
+              CustomProperty(name, GetDocument()));
           er->priority = cascade_priority;
-
+          ret.push_back(er);
+        },
+        [&ret](CascadePriority cascade_priority, CSSPropertyID id) {
+          ExpansionResult* er =
+              MakeGarbageCollected<ExpansionResult>(CSSProperty::Get(id));
+          er->priority = cascade_priority;
           ret.push_back(er);
         });
     return ret;
@@ -95,15 +99,19 @@ class CascadeExpansionTest : public PageTestBase {
       wtf_size_t i) {
     Vector<CSSPropertyID> visited;
 
-    ExpandCascade(matched_properties, GetDocument(), i,
-                  [&visited](CascadePriority cascade_priority [[maybe_unused]],
-                             const CSSProperty& css_property,
-                             const CSSPropertyName& name) {
-                    EXPECT_EQ(name, css_property.GetCSSPropertyName());
-                    if (css_property.IsVisited()) {
-                      visited.push_back(css_property.PropertyID());
-                    }
-                  });
+    ExpandCascade(
+        matched_properties, GetDocument(), i,
+        [](CascadePriority cascade_priority [[maybe_unused]],
+           const AtomicString& name [[maybe_unused]]) {
+          // Do nothing.
+        },
+        [&visited](CascadePriority cascade_priority [[maybe_unused]],
+                   CSSPropertyID id) {
+          const CSSProperty& css_property = CSSProperty::Get(id);
+          if (css_property.IsVisited()) {
+            visited.push_back(css_property.PropertyID());
+          }
+        });
 
     return visited;
   }

@@ -29,6 +29,11 @@ CORE_EXPORT extern const CSSBitset kPropertiesWithVisited;
 // two rather hot cache lines). This saves a little time in parsing.
 extern const CSSBitset kKnownExposedProperties;
 
+// Properties that have the IsSurrogate() bit set; i.e., they may need
+// to go through SurrogateFor() to be resolved against direction and
+// writing mode.
+extern const CSSBitset kSurrogateProperties;
+
 }  // namespace blink
 
 #endif  // THIRD_PARTY_BLINK_RENDERER_CORE_CSS_PROPERTY_BITSETS_H_
