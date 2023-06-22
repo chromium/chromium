@@ -1,9 +1,13 @@
 rootWebArea
 ++genericContainer ignored
 ++++genericContainer ignored
+++++++genericContainer name='Done'
 ++++++link name='link with no href but onclick' defaultActionVerb=jump
 ++++++++staticText name='link with no href but onclick' defaultActionVerb=clickAncestor
 ++++++++++inlineTextBox name='link with no href but onclick'
 ++++++link name='link with no href and click handler added via script' defaultActionVerb=jump
 ++++++++staticText name='link with no href and click handler added via script' defaultActionVerb=clickAncestor
 ++++++++++inlineTextBox name='link with no href and click handler added via script'
+++++++genericContainer
+++++++++staticText name='Link with no event handler'
+++++++++++inlineTextBox name='Link with no event handler'

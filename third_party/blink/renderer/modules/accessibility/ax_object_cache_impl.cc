@@ -3345,11 +3345,18 @@ void AXObjectCacheImpl::SectionOrRegionRoleMaybeChanged(Element* element) {
     return;
   }
 
-  // If role would stay the same, do nothing.
-  if (ax_object->RoleValue() == ax_object->DetermineAccessibilityRole())
-    return;
+  HandleRoleMaybeChangedWithCleanLayout(element);
+}
 
-  HandleRoleChangeWithCleanLayout(element);
+void AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout(Node* node) {
+  // If role would stay the same, do nothing.
+  if (AXObject* obj = GetOrCreate(node)) {
+    if (obj->RoleValue() == obj->DetermineAccessibilityRole()) {
+      return;
+    }
+
+    HandleRoleChangeWithCleanLayout(node);
+  }
 }
 
 // Be as safe as possible about changes that could alter the accessibility role,
@@ -3679,7 +3686,7 @@ void AXObjectCacheImpl::HandleValidationMessageVisibilityChangedWithCleanLayout(
 }
 
 void AXObjectCacheImpl::HandleEventListenerAdded(
-    const Node& node,
+    Node& node,
     const AtomicString& event_type) {
   // If this is the first |event_type| listener for |node|, handle the
   // subscription change.
@@ -3688,7 +3695,7 @@ void AXObjectCacheImpl::HandleEventListenerAdded(
 }
 
 void AXObjectCacheImpl::HandleEventListenerRemoved(
-    const Node& node,
+    Node& node,
     const AtomicString& event_type) {
   // If there are no more |event_type| listeners for |node|, handle the
   // subscription change.
@@ -3702,7 +3709,7 @@ bool AXObjectCacheImpl::DoesEventListenerImpactIgnoredState(
 }
 
 void AXObjectCacheImpl::HandleEventSubscriptionChanged(
-    const Node& node,
+    Node& node,
     const AtomicString& event_type) {
   // Adding or Removing an event listener for certain events may affect whether
   // a node or its descendants should be accessibility ignored.
@@ -3716,6 +3723,12 @@ void AXObjectCacheImpl::HandleEventSubscriptionChanged(
   if (AXObject* obj = SafeGet(&node)) {
     if (obj->CachedParentObject())
       ChildrenChanged(obj->CachedParentObject());
+    // The role of an element depends on whether it has an event listener, so
+    // check if the role changed, and if so re-create the object.
+    if (obj->RoleValue() != obj->DetermineAccessibilityRole()) {
+      DeferTreeUpdate(&AXObjectCacheImpl::HandleRoleMaybeChangedWithCleanLayout,
+                      &node);
+    }
   }
 }
 

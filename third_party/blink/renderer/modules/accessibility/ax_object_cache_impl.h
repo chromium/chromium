@@ -210,9 +210,9 @@ class MODULES_EXPORT AXObjectCacheImpl
   void FinishedParsingTable(HTMLTableElement*) override;
   void HandleValidationMessageVisibilityChanged(
       const Node* form_control) override;
-  void HandleEventListenerAdded(const Node& node,
+  void HandleEventListenerAdded(Node& node,
                                 const AtomicString& event_type) override;
-  void HandleEventListenerRemoved(const Node& node,
+  void HandleEventListenerRemoved(Node& node,
                                   const AtomicString& event_type) override;
   void HandleFocusedUIElementChanged(Element* old_focused_element,
                                      Element* new_focused_element) override;
@@ -348,6 +348,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   void HandleActiveDescendantChangedWithCleanLayout(Node*);
   void SectionOrRegionRoleMaybeChanged(Element* element);
+  void HandleRoleMaybeChangedWithCleanLayout(Node*);
   void HandleRoleChangeWithCleanLayout(Node*);
   void HandleAriaHiddenChangedWithCleanLayout(Node*);
   void HandleAriaExpandedChangeWithCleanLayout(Node*);
@@ -826,7 +827,7 @@ class MODULES_EXPORT AXObjectCacheImpl
 
   bool DoesEventListenerImpactIgnoredState(
       const AtomicString& event_type) const;
-  void HandleEventSubscriptionChanged(const Node& node,
+  void HandleEventSubscriptionChanged(Node& node,
                                       const AtomicString& event_type);
 
   //
