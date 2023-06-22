@@ -477,8 +477,8 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
 }
 
 // SiteQualityMetrics tests.
-#if BUILDFLAG(IS_MAC)
-// TODO(crbug.com/1450786): Fix the flakiness of the test.
+#if BUILDFLAG(IS_MAC) || BUILDFLAG(IS_LINUX)
+// TODO(crbug.com/1450421): Fix the flakiness of the test.
 #define MAYBE_SiteQualityMetrics_ServiceWorker_FetchHandler \
   DISABLED_SiteQualityMetrics_ServiceWorker_FetchHandler
 #else
