@@ -212,13 +212,6 @@ WebString GetAttribute(const WebElement& element) {
   return element.GetAttribute(GetWebString<attribute>());
 }
 
-std::u16string TruncateString(std::u16string str, size_t max_length) {
-  if (str.length() > max_length) {
-    str.resize(max_length);
-  }
-  return str;
-}
-
 bool IsElementInControlElementSet(
     const WebElement& element,
     const std::vector<WebFormControlElement>& control_elements) {
@@ -461,9 +454,8 @@ void AddButtonTitleToList(std::u16string title,
   if (title.empty()) {
     return;
   }
-  list->emplace_back(
-      TruncateString(std::move(title), kMaxLengthForSingleButtonTitle),
-      button_type);
+  list->emplace_back(std::move(title).substr(0, kMaxLengthForSingleButtonTitle),
+                     button_type);
 }
 
 // Returns true iff |attribute| contains one of |kButtonFeatures|.
@@ -901,7 +893,7 @@ void RemoveDuplicatesAndLimitTotalLength(ButtonTitleList* result) {
     if (total_length > kMaxLengthForAllButtonTitles) {
       int new_length =
           title.first.length() - (total_length - kMaxLengthForAllButtonTitles);
-      title.first = TruncateString(std::move(title.first), new_length);
+      title.first = title.first.substr(0, new_length);
     }
     unique_titles.push_back(std::move(title));
 
@@ -1021,9 +1013,8 @@ void FilterOptionElementsAndGetOptionStrings(
     if (HasTagName<kOption>(option_element)) {
       const WebOptionElement option = option_element.To<WebOptionElement>();
       options->push_back(
-          {.value = TruncateString(option.Value().Utf16(), kMaxStringLength),
-           .content =
-               TruncateString(option.GetText().Utf16(), kMaxStringLength)});
+          {.value = option.Value().Utf16().substr(0, kMaxStringLength),
+           .content = option.GetText().Utf16().substr(0, kMaxStringLength)});
     }
   }
 }
@@ -1292,7 +1283,7 @@ void FillFormField(const FormFieldData& data,
     if (IsTextInput(input_element) || IsMonthInput(input_element)) {
       // If the maxlength attribute contains a negative value, maxLength()
       // returns the default maxlength value.
-      value = TruncateString(std::move(value), input_element.MaxLength());
+      value = std::move(value).substr(0, input_element.MaxLength());
     }
     field->SetAutofillValue(blink::WebString::FromUTF16(value),
                             WebAutofillState::kAutofilled);
@@ -1724,7 +1715,7 @@ bool OwnedOrUnownedFormToFormData(
     // it is set to kUnknown.
     base::UmaHistogramEnumeration("Autofill.LabelInference.InferredLabelSource",
                                   field.label_source);
-    field.label = TruncateString(std::move(field.label), kMaxStringLength);
+    field.label = field.label.substr(0, kMaxStringLength);
 
     if (optional_field && *form_control_element == control_element) {
       *optional_field = field;
@@ -2322,7 +2313,7 @@ void WebFormControlElementToFormField(
 
   // Constrain the maximum data length to prevent a malicious site from DOS'ing
   // the browser: http://crbug.com/49332
-  field->value = TruncateString(std::move(value), kMaxStringLength);
+  field->value = std::move(value).substr(0, kMaxStringLength);
 
   // If the field was autofilled or the user typed into it, check the value
   // stored in |field_data_manager| against the value property of the DOM
