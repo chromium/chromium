@@ -69,8 +69,6 @@ class CompanionTabHelper
   // Returns the latest text query set by the client or an empty string if none.
   // Clears the last previous query after returning a copy.
   std::string GetTextQuery();
-  // Sets the latest text query and shows the side panel with that query.
-  void SetTextQuery(const std::string& text_query);
   // Starts the region search controller with the specified parameters.
   void StartRegionSearch(content::WebContents* web_contents,
                          bool use_fullscreen_capture);
@@ -113,6 +111,9 @@ class CompanionTabHelper
   explicit CompanionTabHelper(content::WebContents* web_contents);
 
   friend class content::WebContentsUserData<CompanionTabHelper>;
+
+  // Sets the latest text query and shows the side panel with that query.
+  void SetTextQuery(const std::string& text_query);
 
   // Sets appropriate source and target language parameters and translate
   // filter.
