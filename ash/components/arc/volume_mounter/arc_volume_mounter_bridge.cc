@@ -52,13 +52,6 @@ constexpr char kMyFilesUuid[] = "0000000000000000000000000000CAFEF00D2019";
 // Dummy UUID for testing.
 constexpr char kDummyUuid[] = "00000000000000000000000000000000DEADBEEF";
 
-// Keep in sync with Android's ArcVolumeMounterService.MAX_MOUNT_FAILURE_COUNT.
-// Receiving this value at ReportMountFailureCount() indicates that mounting a
-// volume has been given up after failing in mount attempts the number of times.
-// It goes to the overflow bucket of the Arc.VolumeMounter.MountFailureCount
-// histogram.
-constexpr int kUmaMaxMountFailureCount = 40;
-
 // The minimum and maximum values of app UID in Android. Defined in Android's
 // system/core/libcutils/include/private/android_filesystem_config.h.
 constexpr uint32_t kAndroidAppUidStart = 10000;
@@ -341,12 +334,6 @@ void ArcVolumeMounterBridge::RequestAllMountPoints() {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(&ArcVolumeMounterBridge::SendAllMountEvents,
                                 weak_ptr_factory_.GetWeakPtr()));
-}
-
-void ArcVolumeMounterBridge::ReportMountFailureCount(uint16_t count) {
-  base::UmaHistogramCustomCounts("Arc.VolumeMounter.MountFailureCount",
-                                 base::strict_cast<int>(count), /*min=*/1,
-                                 kUmaMaxMountFailureCount, /*buckets=*/10);
 }
 
 bool ArcVolumeMounterBridge::IsReadyToSendMountingEvents() {

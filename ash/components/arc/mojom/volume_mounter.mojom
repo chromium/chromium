@@ -44,25 +44,12 @@ struct MountPointInfo {
   [MinVersion=2] bool visible;
 };
 
+// Deprecated method IDs: 2
 // Next Method ID: 4
 interface VolumeMounterHost {
   // Requests all recorded MountPointInfos to be sent through a series of
   // VolumeMounterInstance::OnMountEvent call.
   [MinVersion=0] RequestAllMountPoints@1();
-
-  // Reports the number of mount failures for a volume. The value 0 indicates
-  // that the volume is successfully mounted without any failures. The maximum
-  // number (defined in Android's ArcVolumeMounterService) indicates that
-  // mounting the volume is given up after failing in maximum number of retries.
-  // A value n between them indicates that the volume is successfully mounted
-  // after n failures (= n retries).
-  // This method is called basically once for each volume, i.e., it's called
-  // once for the MyFiles volume after every Android boot, and called once every
-  // time a removable media device is inserted to Chrome OS. An exception is
-  // when a volume is ejected before it's mounted, in which time it's not
-  // called at all. Also, when Android's volume daemon (vold) is reset, all
-  // volumes are remounted and this method is called again for each of them.
-  [MinVersion=3] ReportMountFailureCount@2(uint16 count);
 
   // Sets up external storage mount points for MyFiles and removable media by
   // setting their owner to be Android's MediaProvider.

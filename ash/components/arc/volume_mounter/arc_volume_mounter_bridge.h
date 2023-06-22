@@ -84,7 +84,6 @@ class ArcVolumeMounterBridge
 
   // mojom::VolumeMounterHost overrides:
   void RequestAllMountPoints() override;
-  void ReportMountFailureCount(uint16_t count) override;
   void SetUpExternalStorageMountPoints(
       uint32_t media_provider_uid,
       SetUpExternalStorageMountPointsCallback callback) override;
