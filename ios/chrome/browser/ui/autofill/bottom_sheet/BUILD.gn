@@ -12,7 +12,11 @@ source_set("bottom_sheet") {
   ]
   deps = [
     ":bottom_sheet_ui",
+    "//base",
     "//ios/chrome/browser/shared/coordinator/chrome_coordinator",
+    "//ios/chrome/browser/shared/model/browser",
+    "//ios/chrome/browser/shared/model/web_state_list",
+    "//ios/web/public",
   ]
 }
 

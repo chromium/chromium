@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
+#import "ios/chrome/browser/shared/model/browser/browser.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
@@ -35,7 +36,8 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
-  self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc] init];
+  self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc]
+      initWithWebStateList:self.browser->GetWebStateList()];
   self.viewController =
       [[PaymentsSuggestionBottomSheetViewController alloc] init];
   [self.baseViewController presentViewController:self.viewController
@@ -47,6 +49,7 @@
   [super stop];
   [self.viewController dismissViewControllerAnimated:NO completion:nil];
   self.viewController = nil;
+  [self.mediator disconnect];
   self.mediator = nil;
 }
 

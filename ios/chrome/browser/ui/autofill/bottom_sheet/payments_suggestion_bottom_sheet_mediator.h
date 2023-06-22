@@ -7,10 +7,16 @@
 
 #import <Foundation/Foundation.h>
 
+class WebStateList;
 // This mediator fetches a list suggestions to display in the bottom sheet.
 // It also manages filling the form when a suggestion is selected, as well
 // as showing the keyboard if requested when the bottom sheet is dismissed.
 @interface PaymentsSuggestionBottomSheetMediator : NSObject
+
+- (instancetype)initWithWebStateList:(WebStateList*)webStateList;
+
+// Disconnects the mediator.
+- (void)disconnect;
 
 @end
 
