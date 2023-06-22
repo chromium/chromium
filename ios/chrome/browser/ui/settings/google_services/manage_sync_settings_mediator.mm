@@ -508,10 +508,14 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
 #pragma mark - Loads sign out section
 
 - (void)loadSignOutAndTurnOffSyncSection {
+  // The SignOutAndTurnOffSyncSection only exists in
+  // SyncSettingsAccountState::kSyncing state.
   switch (self.syncAccountState) {
-    case SyncSettingsAccountState::kSyncing:
     case SyncSettingsAccountState::kSignedOut:
-      break;
+      // kSignedOut is a temporary state; it only exists if the user just signed
+      // out and the UI is in the process of being dismissed. In this case,
+      // don't bother updating the section.
+      return;
     case SyncSettingsAccountState::kAdvancedInitialSyncSetup:
       CHECK(!self.signOutAndTurnOffSyncItem);
       return;
@@ -519,6 +523,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       // For kSignedIn, loadSignOutAndManageAccountsSection will load the
       // corresponding section.
       return;
+    case SyncSettingsAccountState::kSyncing:
+      break;
   }
   // Creates the sign-out item and its section.
   TableViewModel* model = self.consumer.tableViewModel;
