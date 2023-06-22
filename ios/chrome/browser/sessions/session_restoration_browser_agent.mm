@@ -21,6 +21,7 @@
 #import "ios/chrome/browser/shared/model/url/chrome_url_constants.h"
 #import "ios/chrome/browser/shared/model/web_state_list/all_web_state_observation_forwarder.h"
 #import "ios/chrome/browser/shared/model/web_state_list/web_state_list.h"
+#import "ios/chrome/browser/tabs/inactive_tabs/features.h"
 #import "ios/chrome/browser/web/features.h"
 #import "ios/chrome/browser/web/page_placeholder_tab_helper.h"
 #import "ios/chrome/browser/web/session_state/web_session_state_tab_helper.h"
@@ -256,6 +257,12 @@ void SessionRestorationBrowserAgent::SaveSession(bool immediately) {
   if (!CanSaveSession())
     return;
 
+  if (IsInactiveTabsAvailable() && batch_in_progress_) {
+    save_after_batch_ = true;
+    save_immediately_ = save_immediately_ || immediately;
+    return;
+  }
+
   [session_service_ saveSession:session_ios_factory_
                       sessionID:session_identifier_
                       directory:browser_state_->GetStatePath()
@@ -393,6 +400,31 @@ void SessionRestorationBrowserAgent::WebStateMoved(WebStateList* web_state_list,
 
   // Persist the session state if the new web state is not loading.
   SaveSession(/*immediately=*/false);
+}
+
+void SessionRestorationBrowserAgent::WillBeginBatchOperation(
+    WebStateList* web_state_list) {
+  // Ignore this if Inactive Tabs is not available via Finch.
+  if (!IsInactiveTabsAvailable()) {
+    return;
+  }
+  batch_in_progress_ = true;
+  save_after_batch_ = false;
+  save_immediately_ = false;
+}
+
+void SessionRestorationBrowserAgent::BatchOperationEnded(
+    WebStateList* web_state_list) {
+  // Ignore this if Inactive Tabs is not available via Finch.
+  if (!IsInactiveTabsAvailable()) {
+    return;
+  }
+  batch_in_progress_ = false;
+  if (save_after_batch_) {
+    SaveSession(save_immediately_);
+    save_after_batch_ = false;
+    save_immediately_ = false;
+  }
 }
 
 // WebStateObserver methods
