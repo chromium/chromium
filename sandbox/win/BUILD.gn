@@ -99,6 +99,8 @@ static_library("sandbox") {
     "src/sandbox_policy_base.h",
     "src/sandbox_policy_diagnostic.cc",
     "src/sandbox_policy_diagnostic.h",
+    "src/sandbox_rand.cc",
+    "src/sandbox_rand.h",
     "src/security_capabilities.cc",
     "src/security_capabilities.h",
     "src/service_resolver.cc",
