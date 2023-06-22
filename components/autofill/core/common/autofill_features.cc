@@ -305,6 +305,9 @@ BASE_FEATURE(kAutofillFeedback,
              "AutofillFeedback",
              base::FEATURE_DISABLED_BY_DEFAULT);
 
+// Changes Autofill Clear Form into Undo Autofill.
+BASE_FEATURE(kAutofillUndo, "AutofillUndo", base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Makes is_autofilled = true cached only after filling and not previewing.
 BASE_FEATURE(kAutofillOnlyCacheIsAutofilledOnFill,
              "AutofillOnlyCacheIsAutofilledOnFill",

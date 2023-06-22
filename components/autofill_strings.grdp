@@ -12,6 +12,17 @@
     </message>
   </if>
 
+  <if expr="not is_ios">
+    <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="The entry in the suggestions dropdown that undoes the last filling operation on a field.">
+      Undo autofill
+    </message>
+  </if>
+  <if expr="is_ios">
+    <message name="IDS_AUTOFILL_UNDO_MENU_ITEM" desc="iOS: The entry in the suggestions keyboard accessory that undoes the last filling operation on a field. Title-cased.">
+      Undo Autofill
+    </message>
+  </if>
+
   <if expr="is_android or is_ios">
     <message name="IDS_AUTOFILL_CLEAR_LOCAL_COPY_BUTTON" desc="The label of the button that clears the local copy of a Wallet Credit Card." formatter_data="android_java">
       Clear copy

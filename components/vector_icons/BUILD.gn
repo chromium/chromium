@@ -201,6 +201,7 @@ aggregate_vector_icons("components_vector_icons") {
     "sync_problem_chrome_refresh.icon",
     "tenancy.icon",
     "troubleshoot.icon",
+    "undo.icon",
     "usb.icon",
     "usb_chrome_refresh.icon",
     "usb_off_chrome_refresh.icon",

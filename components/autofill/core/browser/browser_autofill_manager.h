@@ -156,6 +156,9 @@ class BrowserAutofillManager : public AutofillManager,
                               const CreditCard& credit_card,
                               const std::u16string& cvc,
                               AutofillTriggerSource trigger_source) override;
+  // Reverts the last autofill operation on `form` that affected
+  // `trigger_field`, virtual for testing.
+  virtual void UndoAutofill(FormData form, const FormFieldData& trigger_field);
   // Virtual for testing
   virtual void DidShowSuggestions(bool has_autofill_suggestions,
                                   const FormData& form,

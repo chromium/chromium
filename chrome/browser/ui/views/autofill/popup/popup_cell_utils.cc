@@ -147,6 +147,10 @@ std::unique_ptr<views::ImageView> GetIconImageViewByName(
     return ImageViewFromVectorIcon(kBackspaceIcon, kIconSize);
   }
 
+  if (icon_str == "undoIcon") {
+    return ImageViewFromVectorIcon(vector_icons::kUndoIcon, kIconSize);
+  }
+
   if (icon_str == "globeIcon") {
     return ImageViewFromVectorIcon(kGlobeIcon, kIconSize);
   }

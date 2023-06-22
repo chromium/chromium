@@ -8,10 +8,12 @@
 
 #include "base/command_line.h"
 #include "base/compiler_specific.h"
+#include "base/feature_list.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/metrics/user_action_tester.h"
+#include "base/test/scoped_feature_list.h"
 #include "base/test/task_environment.h"
 #include "build/build_config.h"
 #include "components/autofill/core/browser/autofill_experiments.h"
@@ -143,7 +145,10 @@ class MockBrowserAutofillManager : public BrowserAutofillManager {
   void ShowCardsFromAccountOption() {
     should_show_cards_from_account_option_ = true;
   }
-
+  MOCK_METHOD(void,
+              UndoAutofill,
+              (FormData form, const FormFieldData& trigger_field),
+              (override));
   MOCK_METHOD(void,
               FillOrPreviewForm,
               (mojom::RendererFormDataAction action,
@@ -692,13 +697,37 @@ TEST_F(AutofillExternalDelegateUnitTest,
       2);  // Row 2
 }
 
-// Test that the driver is directed to clear the form after being notified that
-// the user accepted the suggestion to clear the form.
-TEST_F(AutofillExternalDelegateUnitTest, ExternalDelegateClearForm) {
-  EXPECT_CALL(autofill_client_,
-              HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
-  EXPECT_CALL(*autofill_driver_, RendererShouldClearFilledSection());
+class AutofillExternalDelegateUnitTest_UndoAutofill
+    : public AutofillExternalDelegateUnitTest,
+      public testing::WithParamInterface<bool> {
+ public:
+  bool UndoInsteadOfClear() { return GetParam(); }
 
+ private:
+  void SetUp() override {
+    UndoInsteadOfClear()
+        ? scoped_feature_list_.InitAndEnableFeature(features::kAutofillUndo)
+        : scoped_feature_list_.InitAndDisableFeature(features::kAutofillUndo);
+    AutofillExternalDelegateUnitTest::SetUp();
+  }
+  base::test::ScopedFeatureList scoped_feature_list_;
+};
+
+INSTANTIATE_TEST_SUITE_P(AutofillExternalDelegateUnitTest,
+                         AutofillExternalDelegateUnitTest_UndoAutofill,
+                         testing::Bool());
+
+// Test that the driver is directed to clear or undo the form after being
+// notified that the user accepted the suggestion to clear or undo the form.
+TEST_P(AutofillExternalDelegateUnitTest_UndoAutofill,
+       ExternalDelegateUndoAndClearForm) {
+  if (UndoInsteadOfClear()) {
+    EXPECT_CALL(*browser_autofill_manager_, UndoAutofill(_, _));
+  } else {
+    EXPECT_CALL(autofill_client_,
+                HideAutofillPopup(PopupHidingReason::kAcceptSuggestion));
+    EXPECT_CALL(*autofill_driver_, RendererShouldClearFilledSection());
+  }
   external_delegate_->DidAcceptSuggestion(Suggestion(PopupItemId::kClearForm),
                                           0);
 }

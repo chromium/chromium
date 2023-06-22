@@ -107,6 +107,11 @@ std::vector<FieldGlobalId> AutofillDriverIOS::FillOrPreviewForm(
   return safe_fields;
 }
 
+void AutofillDriverIOS::UndoAutofill(
+    const FormData& data,
+    const url::Origin& triggered_origin,
+    const base::flat_map<FieldGlobalId, ServerFieldType>& field_type_map) {}
+
 void AutofillDriverIOS::HandleParsedForms(const std::vector<FormData>& forms) {
   const std::map<FormGlobalId, std::unique_ptr<FormStructure>>& map =
       browser_autofill_manager_->form_structures();

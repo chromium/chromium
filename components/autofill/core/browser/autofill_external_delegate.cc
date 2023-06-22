@@ -233,9 +233,15 @@ void AutofillExternalDelegate::DidAcceptSuggestion(const Suggestion& suggestion,
       manager_->ShowAutofillSettings(popup_type_);
       break;
     case PopupItemId::kClearForm:
-      // User selected 'Clear form'.
-      AutofillMetrics::LogAutofillFormCleared();
-      driver_->RendererShouldClearFilledSection();
+      // This serves as a clear form or undo autofill suggestion, depending on
+      // the state of the feature `kAutofillUndo`.
+      if (base::FeatureList::IsEnabled(features::kAutofillUndo)) {
+        manager_->UndoAutofill(query_form_, query_field_);
+      } else {
+        // User selected 'Clear form'.
+        AutofillMetrics::LogAutofillFormCleared();
+        driver_->RendererShouldClearFilledSection();
+      }
       break;
     case PopupItemId::kPasswordEntry:
     case PopupItemId::kUsernameEntry:
@@ -444,7 +450,9 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
   // form.  Append the 'Clear form' menu item.
   if (query_field_.is_autofilled) {
     std::u16string value =
-        l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
+        base::FeatureList::IsEnabled(features::kAutofillUndo)
+            ? l10n_util::GetStringUTF16(IDS_AUTOFILL_UNDO_MENU_ITEM)
+            : l10n_util::GetStringUTF16(IDS_AUTOFILL_CLEAR_FORM_MENU_ITEM);
 #if BUILDFLAG(IS_ANDROID)
     if (IsKeyboardAccessoryEnabled())
       value = base::i18n::ToUpper(value);
@@ -452,7 +460,9 @@ void AutofillExternalDelegate::ApplyAutofillOptions(
 
     suggestions->emplace_back(value);
     suggestions->back().popup_item_id = PopupItemId::kClearForm;
-    suggestions->back().icon = "clearIcon";
+    suggestions->back().icon =
+        base::FeatureList::IsEnabled(features::kAutofillUndo) ? "undoIcon"
+                                                              : "clearIcon";
     suggestions->back().acceptance_a11y_announcement =
         l10n_util::GetStringUTF16(IDS_AUTOFILL_A11Y_ANNOUNCE_CLEARED_FORM);
   }

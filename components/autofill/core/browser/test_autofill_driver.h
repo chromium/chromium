@@ -107,6 +107,11 @@ class TestAutofillDriverTemplate : public T {
     return result;
   }
 
+  void UndoAutofill(const FormData& form_data,
+                    const url::Origin& triggered_origin,
+                    const base::flat_map<FieldGlobalId, ServerFieldType>&
+                        field_type_map) override {}
+
   // Methods unique to TestAutofillDriver that tests can use to specialize
   // functionality.
 

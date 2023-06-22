@@ -16,11 +16,13 @@
 #include <utility>
 #include <vector>
 
+#include "base/check_deref.h"
 #include "base/check_op.h"
 #include "base/command_line.h"
 #include "base/containers/adapters.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase.h"
+#include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/flat_map.h"
 #include "base/feature_list.h"
 #include "base/files/file_util.h"
@@ -62,6 +64,7 @@
 #include "components/autofill/core/browser/data_model/phone_number.h"
 #include "components/autofill/core/browser/field_type_utils.h"
 #include "components/autofill/core/browser/field_types.h"
+#include "components/autofill/core/browser/form_autofill_history.h"
 #include "components/autofill/core/browser/form_data_importer.h"
 #include "components/autofill/core/browser/form_structure.h"
 #include "components/autofill/core/browser/geo/phone_number_i18n.h"
@@ -100,6 +103,7 @@
 #include "components/autofill/core/common/form_field_data.h"
 #include "components/autofill/core/common/password_form_fill_data.h"
 #include "components/autofill/core/common/signatures.h"
+#include "components/autofill/core/common/unique_ids.h"
 #include "components/pref_registry/pref_registry_syncable.h"
 #include "components/prefs/pref_service.h"
 #include "components/security_interstitials/core/pref_names.h"
@@ -1341,6 +1345,40 @@ void BrowserAutofillManager::FillOrPreviewProfileForm(
   FillOrPreviewDataModelForm(action, form, field, &profile,
                              /*optional_cvc=*/nullptr, form_structure,
                              autofill_field, trigger_source);
+}
+
+void BrowserAutofillManager::UndoAutofill(FormData form,
+                                          const FormFieldData& trigger_field) {
+  if (!form_autofill_history_.HasHistory(trigger_field.global_id())) {
+    LOG_AF(log_manager())
+        << "Could not undo the filling operation on field "
+        << trigger_field.global_id()
+        << " because history was dropped upon reaching history limit of "
+        << kMaxStorableFieldFillHistory;
+    return;
+  }
+  FormAutofillHistory::FillOperation operation =
+      form_autofill_history_.GetLastFillingOperationForField(
+          trigger_field.global_id());
+
+  // Only process fields whose last autofill operation is the one being undone
+  // on `field`. And among those fields, skip the ones that have been modified
+  // since that operation. Remove the ones to be skipped so that we only pass
+  // fields to be undone by the renderer.
+  base::EraseIf(form.fields, [this, &operation](const FormFieldData& field) {
+    return !field.is_autofilled ||
+           form_autofill_history_.GetLastFillingOperationForField(
+               field.global_id()) != operation;
+  });
+  for (FormFieldData& field : form.fields) {
+    // Using the form history, reset the field's value and is_autofilled state.
+    std::tie(field.value, field.is_autofilled) =
+        operation.GetAutofillValue(field.global_id());
+  }
+
+  driver()->UndoAutofill(form, operation.GetOrigin(),
+                         operation.GetFieldTypeMap());
+  form_autofill_history_.EraseFormFillEntry(operation);
 }
 
 void BrowserAutofillManager::FillOrPreviewForm(

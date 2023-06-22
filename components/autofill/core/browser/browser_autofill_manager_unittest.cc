@@ -519,6 +519,12 @@ class MockAutofillDriver : public TestAutofillDriver {
                (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
               (override));
   MOCK_METHOD(void,
+              UndoAutofill,
+              (const FormData& data,
+               const url::Origin& triggered_origin,
+               (const base::flat_map<FieldGlobalId, ServerFieldType>&)),
+              (override));
+  MOCK_METHOD(void,
               SendAutofillTypePredictionsToRenderer,
               (const std::vector<FormStructure*>& forms),
               (override));
@@ -2878,6 +2884,26 @@ TEST_F(BrowserAutofillManagerTest, DoNotFillIfFormFieldChanged) {
 
   EXPECT_THAT(filled_fields, Each(Not(HasValue(u""))));
   EXPECT_THAT(skipped_fields, Each(HasValue(u"")));
+}
+
+TEST_F(BrowserAutofillManagerTest, UndoAutofillCallsDriver) {
+  FormData form;
+  test::CreateTestAddressFormData(&form);
+  FormsSeen({form});
+  FormStructure* form_structure;
+  AutofillField* autofill_field;
+  std::vector<FieldGlobalId> safe_fields{form.fields.front().global_id()};
+  ASSERT_TRUE(browser_autofill_manager_->GetCachedFormAndField(
+      form, form.fields.front(), &form_structure, &autofill_field));
+  EXPECT_CALL(*autofill_driver_, FillOrPreviewForm)
+      .WillOnce(Return(safe_fields));
+  browser_autofill_manager_->FillOrPreviewDataModelFormForTest(
+      mojom::RendererFormDataAction::kFill, form, form.fields.front(),
+      personal_data().GetProfiles().front(), /*optional_cvc=*/nullptr,
+      form_structure, autofill_field);
+
+  EXPECT_CALL(*autofill_driver_, UndoAutofill(_, _, _));
+  browser_autofill_manager_->UndoAutofill(form, form.fields.front());
 }
 
 TEST_F(BrowserAutofillManagerTest,
