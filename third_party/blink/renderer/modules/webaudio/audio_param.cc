@@ -80,6 +80,9 @@ AudioParam* AudioParam::Create(BaseAudioContext& context,
 }
 
 AudioParam::~AudioParam() {
+  if (recordreplay::IsRecordingOrReplaying("leak-references", "~AudioParam")) {
+    return;
+  }
   // The graph lock is required to destroy the handler. And we can't use
   // `context_` to touch it, since that object may also be a dead heap object.
   {
