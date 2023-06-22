@@ -4169,6 +4169,7 @@ if (is_android) {
       "android/java/src/org/chromium/base/annotations/CalledByNativeForTesting.java",
       "android/java/src/org/chromium/base/annotations/CalledByNativeUnchecked.java",
       "android/java/src/org/chromium/base/annotations/JNINamespace.java",
+      "android/java/src/org/chromium/base/annotations/JniIgnoreNatives.java",
       "android/java/src/org/chromium/base/annotations/NativeClassQualifiedName.java",
       "android/java/src/org/chromium/base/annotations/NativeMethods.java",
     ]

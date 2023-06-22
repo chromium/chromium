@@ -9,6 +9,7 @@ import android.view.View;
 import android.webkit.WebViewDelegate;
 
 import org.chromium.android_webview.AwContents;
+import org.chromium.base.annotations.JniIgnoreNatives;
 import org.chromium.build.annotations.UsedByReflection;
 
 /**
@@ -17,6 +18,7 @@ import org.chromium.build.annotations.UsedByReflection;
  * and then drawn and detached from the view tree any number of times (using requestDrawGL and
  * detach respectively).
  */
+@JniIgnoreNatives
 class DrawGLFunctor implements AwContents.NativeDrawGLFunctor {
     private static final String TAG = DrawGLFunctor.class.getSimpleName();
 

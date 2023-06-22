@@ -259,7 +259,8 @@ template("system_webview_apk_or_module_tmpl") {
       foreach(_lib, _jni_registrations) {
         _label =
             get_label_info(_lib, "label_no_toolchain") + "__jni_registration"
-        srcjar_deps += [ "$_label($default_toolchain)" ]
+        _toolchain = get_label_info(_lib, "toolchain")
+        srcjar_deps += [ "$_label($_toolchain)" ]
       }
     }
 

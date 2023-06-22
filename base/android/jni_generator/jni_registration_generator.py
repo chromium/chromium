@@ -40,6 +40,11 @@ MERGEABLE_KEYS = [
     'REGISTER_NATIVES',
 ]
 
+# Classes here will be removed from the java side of registration.
+PERMANENTLY_IGNORED_JAVA_ONLY_FILES = [r'\W+third_party/cardboard/']
+PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE = re.compile(
+    '|'.join(PERMANENTLY_IGNORED_JAVA_ONLY_FILES))
+
 
 def _Generate(options, native_sources, java_sources):
   """Generates files required to perform JNI registration.
@@ -70,10 +75,8 @@ def _Generate(options, native_sources, java_sources):
         results.append(d)
       cached_results_for_stubs[path] = jni_obj
 
-  native_sources_set = {d['FILE_PATH'] for d in results}
-  java_sources_set = set(java_sources)
-  stub_dicts = _GenerateStubsAndAssert(options, native_sources_set,
-                                       java_sources_set,
+  used_sources = {d['FILE_PATH'] for d in results}
+  stub_dicts = _GenerateStubsAndAssert(options, used_sources, java_sources,
                                        cached_results_for_stubs)
   # Sort to make output deterministic.
   results.sort(key=lambda d: d['FULL_CLASS_NAME'])
@@ -155,10 +158,10 @@ def _Generate(options, native_sources, java_sources):
                                          stub_methods=stub_methods_string))
 
 
-def _GenerateStubsAndAssert(options, native_sources_set, java_sources_set,
+def _GenerateStubsAndAssert(options, native_sources, java_sources,
                             cached_results_for_stubs):
-  native_only = native_sources_set - java_sources_set
-  java_only = java_sources_set - native_sources_set
+  native_only = native_sources - java_sources
+  java_only = java_sources - native_sources
   # Using stub_only because we just need this to do a boolean check to see if
   # the files have JNI - we don't need any actual output.
   dict_by_path = {
@@ -201,6 +204,12 @@ def _DictForPath(options, path, stub_only=False, cached_results_for_stubs=None):
   assert (cached_results_for_stubs is not None) == stub_only
   jni_obj = stub_only and cached_results_for_stubs.get(path)
   if not jni_obj:
+    with open(path) as f:
+      # TODO(crbug.com/1410871): Remove annotation once using GN metadata to
+      #     only parse specific files.
+      if '@JniIgnoreNatives' in f.read():
+        return None, path, None
+
     jni_obj = jni_generator.JNIFromJavaSource.CreateFromFile(path, options)
     if not options.include_test_only:
       jni_obj.RemoveTestOnlyNatives()
@@ -886,10 +895,21 @@ def _MakeProxySignature(options, proxy_native):
   })
 
 
-def _ParseSourceList(path):
-  # Path can have duplicates.
-  with open(path) as f:
-    return sorted(set(f.read().splitlines()))
+def _GetFilesSetFromSources(sources_files, file_exclusions):
+  def should_include(p):
+    return ((p.startswith('..') or os.path.isabs(p))
+            and p not in file_exclusions and not p.endswith('.kt')
+            and not p.endswith('package-info.java'))
+
+  java_file_paths = set()
+  for f in sources_files:
+    # Skip generated files (ones starting with ..), since the GN targets do not
+    # declare any deps, so they may not be built at the time of this script
+    # running. Thus, we don't support JNI from generated files. Also skip Kotlin
+    # files as they are not supported by JNI generation.
+    java_file_paths.update(p for p in build_utils.ReadSourcesList(f)
+                           if should_include(p))
+  return java_file_paths
 
 
 def main(argv):
@@ -899,21 +919,22 @@ def main(argv):
   arg_parser.add_argument('--native-sources-file',
                           help='A file which contains Java file paths, derived '
                           'from native deps onto generate_jni.')
-  arg_parser.add_argument('--java-sources-file',
+  arg_parser.add_argument('--java-sources-files',
                           required=True,
-                          help='A file which contains Java file paths, derived '
-                          'from java deps metadata.')
+                          action='append',
+                          help='A list of .sources files which contain Java '
+                          'file paths, derived from our Java dependencies.')
   arg_parser.add_argument(
       '--add-stubs-for-missing-native',
       action='store_true',
-      help='Adds stub methods for any --java-sources-file which are missing '
+      help='Adds stub methods for any --java-sources-files which are missing '
       'from --native-sources-files. If not passed, we will assert that none of '
       'these exist.')
   arg_parser.add_argument(
       '--remove-uncalled-methods',
       action='store_true',
       help='Removes --native-sources-files which are not in '
-      '--java-sources-file. If not passed, we will assert that none of these '
+      '--java-sources-files. If not passed, we will assert that none of these '
       'exist.')
   arg_parser.add_argument(
       '--header-path', help='Path to output header file (optional).')
@@ -922,6 +943,10 @@ def main(argv):
       required=True,
       help='Path to output srcjar for GEN_JNI.java (and J/N.java if proxy'
       ' hash is enabled).')
+  arg_parser.add_argument('--file-exclusions',
+                          default=[],
+                          help='A list of Java files which should be ignored '
+                          'by the parser.')
   arg_parser.add_argument(
       '--namespace',
       default='',
@@ -974,23 +999,40 @@ def main(argv):
         'Invalid arguments: --manual-jni-registration without --header-path. '
         'Cannot manually register JNI if there is no output header file.')
 
-  java_sources = _ParseSourceList(args.java_sources_file)
+  java_sources_files = sorted(
+      set(action_helpers.parse_gn_list(args.java_sources_files)))
+  java_sources = _GetFilesSetFromSources(java_sources_files,
+                                         args.file_exclusions)
+  java_sources = {
+      j
+      for j in java_sources
+      if not PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE.match(j)
+  }
   if args.native_sources_file:
-    native_sources = _ParseSourceList(args.native_sources_file)
+    native_sources = _GetFilesSetFromSources([args.native_sources_file],
+                                             args.file_exclusions)
   else:
     assert not args.remove_uncalled_methods
     if args.add_stubs_for_missing_native:
       # This will create a fully stubbed out GEN_JNI.
-      native_sources = []
+      native_sources = set()
     else:
       # Just treating it like we have perfect alignment between native and java
       # when only looking at java.
       native_sources = java_sources
 
+  native_ignored = {
+      j
+      for j in native_sources if PERMANENTLY_IGNORED_JAVA_ONLY_FILES_RE.match(j)
+  }
+  assert not native_ignored, (
+      f'''Permanently ignored java files shouldn't be in a generate_jni target:
+      {native_ignored}
+      ''')
   _Generate(args, native_sources, java_sources=java_sources)
 
   if args.depfile:
-    all_inputs = [args.java_sources_file] + native_sources + java_sources
+    all_inputs = java_sources_files + list(native_sources) + list(java_sources)
     if args.native_sources_file:
       all_inputs.append(args.native_sources_file)
     action_helpers.write_depfile(args.depfile, args.srcjar_path, all_inputs)
