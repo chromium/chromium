@@ -176,7 +176,7 @@ void PictureLayerTiling::TakeTilesAndPropertiesFrom(
                        pending_twin->current_occlusion_in_layer_space_);
 }
 
-void PictureLayerTiling::SetRasterSourceAndResize(
+bool PictureLayerTiling::SetRasterSourceAndResize(
     scoped_refptr<RasterSource> raster_source) {
   DCHECK(!raster_source->IsSolidColor());
   gfx::Size old_layer_bounds = raster_source_->GetSize();
@@ -194,11 +194,16 @@ void PictureLayerTiling::SetRasterSourceAndResize(
     // as valid keys to the TileMap, so just drop all tiles and clear the live
     // tiles rect.
     Reset();
-    return;
+    // When the tile size changes, all tiles and all tile priority rects
+    // including the live tiles rect should be updated, therefore return true to
+    // notify the caller to call |ComputeTilePriorityRects| to do this.
+    return true;
   }
 
+  // When the layer bounds are the same, we need not notify the caller as it
+  // will update tiling as needed, so return false.
   if (old_layer_bounds == new_layer_bounds)
-    return;
+    return false;
 
   // The SetLiveTilesRect() method would drop tiles outside the new bounds,
   // but may do so incorrectly if resizing the tiling causes the number of
@@ -255,6 +260,9 @@ void PictureLayerTiling::SetRasterSourceAndResize(
         CreateTile(info);
     }
   }
+  // We need not notify the caller as it will update tiling as needed, so return
+  // false to ensure the existing logic remains unchanged.
+  return false;
 }
 
 void PictureLayerTiling::Invalidate(const Region& layer_invalidation) {

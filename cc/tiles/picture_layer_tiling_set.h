@@ -219,11 +219,11 @@ class CC_EXPORT PictureLayerTilingSet {
       RAW_PTR_EXCLUSION StateSinceLastTilePriorityUpdate* state_to_clear_;
     };
 
-    StateSinceLastTilePriorityUpdate()
-        : invalidated(false), added_tilings(false) {}
+    StateSinceLastTilePriorityUpdate() = default;
 
-    bool invalidated;
-    bool added_tilings;
+    bool invalidated = false;
+    bool added_tilings = false;
+    bool tiling_needs_update = false;
   };
 
   explicit PictureLayerTilingSet(

@@ -174,7 +174,9 @@ void PictureLayerTilingSet::UpdateTilingsToCurrentRasterSourceForCommit(
   // Invalidate tiles and update them to the new raster source.
   for (const std::unique_ptr<PictureLayerTiling>& tiling : tilings_) {
     DCHECK(tree_ != PENDING_TREE || !tiling->has_tiles());
-    tiling->SetRasterSourceAndResize(raster_source);
+    // Force |UpdateTilePriorities| on commit for cases when tiling needs update
+    state_since_last_tile_priority_update_.tiling_needs_update |=
+        tiling->SetRasterSourceAndResize(raster_source);
 
     // Force |UpdateTilePriorities| on commit for cases where the compositor is
     // heavily pipelined resulting in back to back draw and commit. This
@@ -411,6 +413,11 @@ bool PictureLayerTilingSet::TilingsNeedUpdate(
 
   if (visible_rect_in_layer_space != last_frame.visible_rect_in_layer_space)
     return true;
+
+  if (state_since_last_tile_priority_update_.tiling_needs_update) {
+    return true;
+  }
+
   return false;
 }
 
