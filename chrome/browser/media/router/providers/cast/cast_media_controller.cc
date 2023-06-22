@@ -70,14 +70,9 @@ absl::optional<gfx::Size> GetValidSize(const base::Value::Dict& dict) {
 
 }  // namespace
 
-CastMediaController::CastMediaController(
-    AppActivity* activity,
-    mojo::PendingReceiver<mojom::MediaController> receiver,
-    mojo::PendingRemote<mojom::MediaStatusObserver> observer)
+CastMediaController::CastMediaController(AppActivity* activity)
     : sender_id_("sender-" + base::NumberToString(base::RandUint64())),
-      activity_(activity),
-      receiver_(this, std::move(receiver)),
-      observer_(std::move(observer)) {}
+      activity_(activity) {}
 
 CastMediaController::~CastMediaController() {}
 
@@ -148,6 +143,13 @@ void CastMediaController::PreviousTrack() {
       *CastInternalMessage::From(std::move(request)));
 }
 
+void CastMediaController::AddMediaController(
+    mojo::PendingReceiver<mojom::MediaController> receiver,
+    mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
+  receivers_.Add(this, std::move(receiver));
+  observers_.Add(std::move(observer));
+}
+
 void CastMediaController::SetSession(const CastSession& session) {
   session_id_ = session.session_id();
   const base::Value::Dict* volume =
@@ -161,13 +163,17 @@ void CastMediaController::SetSession(const CastSession& session) {
     media_status_.can_set_volume = *volume_type != "fixed";
     media_status_.can_mute = media_status_.can_set_volume;
   }
-  observer_->OnMediaStatusUpdated(media_status_.Clone());
+  for (const auto& observer : observers_) {
+    observer->OnMediaStatusUpdated(media_status_.Clone());
+  }
 }
 
 void CastMediaController::SetMediaStatus(
     const base::Value::Dict& status_value) {
   UpdateMediaStatus(status_value);
-  observer_->OnMediaStatusUpdated(media_status_.Clone());
+  for (const auto& observer : observers_) {
+    observer->OnMediaStatusUpdated(media_status_.Clone());
+  }
 }
 
 base::Value::Dict CastMediaController::CreateMediaRequest(V2MessageType type) {

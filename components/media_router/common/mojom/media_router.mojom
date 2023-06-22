@@ -324,16 +324,16 @@ interface MediaRouteProvider {
   // initiate discovery of media sinks in response.
   DiscoverSinksNow();
 
-  // Creates a controller for the media route with given |route_id| and binds it
-  // to |media_controller| for receiving media commands. This method returns
-  // false if such a media route doesn't exist, a controller already exists
-  // for it, or there was an error while creating a controller. This method must
-  // close |media_controller| in case of such a failure. |media_controller|
-  // becomes invalid when the media route is terminated. The created controller
-  // is destroyed when |media_controller| becomes invalid, after which this
-  // method can be called again with the same |route_id|. This method also sets
-  // |observer| to be notified whenever there is a change in the status of the
-  // media route.
+  // Registers a controller for the media route with given |route_id| and binds
+  // it to |media_controller| for receiving media commands. Multiple media
+  // controllers may be registered for the same route ID. This method returns
+  // false if such a media route doesn't exist or there was an error while
+  // creating the controller. This method must close |media_controller| in case
+  // of such a failure. |media_controller| and the created controller become
+  // invalid when the media route is terminated by calling |TerminateRoute|.
+  // This method also sets |observer| to be notified whenever there is a change
+  // in the status of the media route.
+  // TODO(crbug.com/1456500): Rename to RegisterMediaRouteController().
   CreateMediaRouteController(string route_id,
                              pending_receiver<MediaController> media_controller,
                              pending_remote<MediaStatusObserver> observer) =>

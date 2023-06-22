@@ -105,8 +105,11 @@ void AppActivity::SendMediaStatusToClients(
 void AppActivity::CreateMediaController(
     mojo::PendingReceiver<mojom::MediaController> media_controller,
     mojo::PendingRemote<mojom::MediaStatusObserver> observer) {
-  media_controller_ = std::make_unique<CastMediaController>(
-      this, std::move(media_controller), std::move(observer));
+  if (!media_controller_) {
+    media_controller_ = std::make_unique<CastMediaController>(this);
+  }
+  media_controller_->AddMediaController(std::move(media_controller),
+                                        std::move(observer));
 
   if (session_id_) {
     CastSession* session = GetSession();
