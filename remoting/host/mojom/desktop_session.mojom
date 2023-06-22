@@ -481,6 +481,9 @@ struct VideoLayout {
 
   // True if this display configuration supports capturing the entire desktop.
   bool supports_full_desktop_capture;
+
+  // ID of the display to be associated with the main window on the client.
+  int64 primary_screen_id;
 };
 
 // Allows the desktop process to forward events and data to the network process
