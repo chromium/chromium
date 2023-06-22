@@ -1425,17 +1425,6 @@ LayoutUnit LayoutBox::LogicalTop() const {
   return logical_top;
 }
 
-LayoutUnit LayoutBox::LogicalHeightWithVisibleOverflow() const {
-  NOT_DESTROYED();
-  if (!LayoutOverflowIsSet() || IsScrollContainer() ||
-      StyleRef().OverflowY() == EOverflow::kClip)
-    return LogicalHeight();
-  LayoutRect overflow = LayoutOverflowRect();
-  if (StyleRef().IsHorizontalWritingMode())
-    return overflow.MaxY();
-  return overflow.MaxX();
-}
-
 LayoutUnit LayoutBox::ConstrainLogicalHeightByMinMax(
     LayoutUnit logical_height,
     LayoutUnit intrinsic_content_height) const {
@@ -5298,16 +5287,6 @@ LayoutRect LayoutBox::RectForOverflowPropagation(const LayoutRect& rect) const {
   return result;
 }
 
-DISABLE_CFI_PERF
-LayoutRect LayoutBox::LogicalLayoutOverflowRectForPropagation(
-    LayoutObject* container) const {
-  NOT_DESTROYED();
-  LayoutRect rect = LayoutOverflowRectForPropagation(container);
-  if (!Parent()->StyleRef().IsHorizontalWritingMode())
-    return rect.TransposedRect();
-  return rect;
-}
-
 NGPhysicalBoxStrut LayoutBox::BorderBoxOutsetsForClipping() const {
   auto padding_box = -BorderBoxOutsets();
   if (!ShouldApplyOverflowClipMargin())
@@ -5327,59 +5306,6 @@ NGPhysicalBoxStrut LayoutBox::BorderBoxOutsetsForClipping() const {
 
   return overflow_clip_margin.Inflate(
       StyleRef().OverflowClipMargin()->GetMargin());
-}
-
-DISABLE_CFI_PERF
-LayoutRect LayoutBox::LayoutOverflowRectForPropagation(
-    LayoutObject* container) const {
-  NOT_DESTROYED();
-  // Only propagate interior layout overflow if we don't clip it.
-  LayoutRect rect = BorderBoxRect();
-
-  if (!ShouldApplyLayoutContainment() &&
-      (!ShouldClipOverflowAlongBothAxis() || ShouldApplyOverflowClipMargin())) {
-    LayoutRect overflow = LayoutOverflowRect();
-    if (HasNonVisibleOverflow()) {
-      const OverflowClipAxes overflow_clip_axes = GetOverflowClipAxes();
-      LayoutRect clip_rect = rect;
-      if (ShouldApplyOverflowClipMargin()) {
-        // We should apply overflow clip margin only if we clip overflow on both
-        // axes.
-        DCHECK_EQ(overflow_clip_axes, kOverflowClipBothAxis);
-        NGPhysicalBoxStrut outsets = BorderBoxOutsetsForClipping();
-        clip_rect.ExpandEdges(outsets.top, outsets.right, outsets.bottom,
-                              outsets.left);
-        overflow.Intersect(clip_rect);
-      } else {
-        ApplyOverflowClip(overflow_clip_axes, clip_rect, overflow);
-      }
-    }
-    rect.Unite(overflow);
-  }
-
-  bool has_transform = HasLayer() && Layer()->Transform();
-  if (has_transform) {
-    // If we are relatively positioned or if we have a transform, then we have
-    // to convert this rectangle into physical coordinates, apply relative
-    // positioning and transforms to it, and then convert it back.
-    DeprecatedFlipForWritingMode(rect);
-
-    PhysicalOffset container_offset;
-
-    if (ShouldUseTransformFromContainer(container)) {
-      gfx::Transform t;
-      GetTransformFromContainer(container ? container : Container(),
-                                container_offset, t);
-      rect = EnclosingLayoutRect(t.MapRect(gfx::RectF(rect)));
-    } else {
-      rect.Move(container_offset.ToLayoutSize());
-    }
-
-    // Now we need to flip back.
-    DeprecatedFlipForWritingMode(rect);
-  }
-
-  return RectForOverflowPropagation(rect);
 }
 
 DISABLE_CFI_PERF
