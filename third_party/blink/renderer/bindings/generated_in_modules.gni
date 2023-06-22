@@ -661,6 +661,8 @@ generated_dictionary_sources_in_modules = [
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_recorder_options.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_action_details.h",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_picture_in_picture_action_details.cc",
+  "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_picture_in_picture_action_details.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.cc",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_session_seek_to_action_details.h",
   "$root_gen_dir/third_party/blink/renderer/bindings/modules/v8/v8_media_settings_range.cc",

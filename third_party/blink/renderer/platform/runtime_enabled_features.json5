@@ -2251,6 +2251,10 @@
       base_feature: "none",
     },
     {
+      name: "MediaSessionEnterPictureInPicture",
+      public: true,
+    },
+    {
       name: "MediaSessionSlides",
       status: "stable",
       base_feature: "none",

@@ -36,6 +36,7 @@
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "services/media_session/public/cpp/media_image_manager.h"
 #include "services/media_session/public/mojom/audio_focus.mojom.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/mojom/favicon/favicon_url.mojom.h"
 #include "third_party/blink/public/strings/grit/blink_strings.h"
 #include "ui/gfx/favicon_size.h"
@@ -1179,10 +1180,15 @@ void MediaSessionImpl::ScrubTo(base::TimeDelta seek_time) {
 }
 
 void MediaSessionImpl::EnterPictureInPicture() {
-  if (ShouldRouteAction(
+  if (base::FeatureList::IsEnabled(
+          blink::features::kMediaSessionEnterPictureInPicture) &&
+      ShouldRouteAction(
           media_session::mojom::MediaSessionAction::kEnterPictureInPicture)) {
     DidReceiveAction(
-        media_session::mojom::MediaSessionAction::kEnterPictureInPicture);
+        media_session::mojom::MediaSessionAction::kEnterPictureInPicture,
+        blink::mojom::MediaSessionActionDetails::NewPictureInPicture(
+            blink::mojom::MediaSessionPictureInPictureActionDetails::New(
+                /*automatic=*/false)));
     return;
   }
 

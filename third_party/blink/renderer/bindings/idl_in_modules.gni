@@ -413,6 +413,7 @@ static_idl_files_in_modules = get_path_info(
           "//third_party/blink/renderer/modules/mediasession/media_position_state.idl",
           "//third_party/blink/renderer/modules/mediasession/media_session.idl",
           "//third_party/blink/renderer/modules/mediasession/media_session_action_details.idl",
+          "//third_party/blink/renderer/modules/mediasession/media_session_picture_in_picture_action_details.idl",
           "//third_party/blink/renderer/modules/mediasession/media_session_seek_to_action_details.idl",
           "//third_party/blink/renderer/modules/mediasession/navigator_media_session.idl",
           "//third_party/blink/renderer/modules/mediasource/audio_track_source_buffer.idl",
