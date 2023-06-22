@@ -621,8 +621,8 @@ FileManagerPrivateMountCrostiniFunction::Run() {
 void FileManagerPrivateMountCrostiniFunction::RestartCallback(
     crostini::CrostiniResult result) {
   if (result != crostini::CrostiniResult::SUCCESS) {
-    Respond(Error(
-        base::StringPrintf("Error mounting crostini container: %d", result)));
+    Respond(Error(base::StringPrintf("Error mounting crostini container: %d",
+                                     static_cast<int>(result))));
     return;
   }
   // Use OriginalProfile since using crostini in incognito such as saving
@@ -640,8 +640,8 @@ void FileManagerPrivateMountCrostiniFunction::RestartCallback(
 void FileManagerPrivateMountCrostiniFunction::MountCallback(
     crostini::CrostiniResult result) {
   if (result != crostini::CrostiniResult::SUCCESS) {
-    Respond(Error(
-        base::StringPrintf("Error mounting crostini container: %d", result)));
+    Respond(Error(base::StringPrintf("Error mounting crostini container: %d",
+                                     static_cast<int>(result))));
     return;
   }
   Respond(NoArguments());

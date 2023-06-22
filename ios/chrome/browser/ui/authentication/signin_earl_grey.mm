@@ -97,7 +97,8 @@ using base::test::ios::WaitUntilConditionOrTimeout;
   NSString* errorStr = [NSString
       stringWithFormat:@"Unexpected email of the signed in user [expected = "
                        @"\"%@\", actual = \"%@\", consent %d]",
-                       expectedEmail, primaryAccountEmail, consent];
+                       expectedEmail, primaryAccountEmail,
+                       static_cast<int>(consent)];
   EG_TEST_HELPER_ASSERT_TRUE(
       [expectedEmail isEqualToString:primaryAccountEmail], errorStr);
 }

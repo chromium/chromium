@@ -356,9 +356,9 @@ void CrostiniExportImport::SharePath(
   auto vm_info =
       crostini::CrostiniManager::GetForProfile(profile_)->GetVmInfo(vm_name);
   if (result != CrostiniResult::SUCCESS || !vm_info.has_value()) {
-    std::move(callback).Run(
-        base::FilePath(), false,
-        base::StringPrintf("VM could not be started: %d", result));
+    std::move(callback).Run(base::FilePath(), false,
+                            base::StringPrintf("VM could not be started: %d",
+                                               static_cast<int>(result)));
     return;
   }
   guest_os::GuestOsSharePath::GetForProfile(profile_)->SharePath(

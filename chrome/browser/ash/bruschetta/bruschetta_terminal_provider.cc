@@ -68,7 +68,8 @@ void BruschettaTerminalProvider::EnsureRunning(
               success ? ""
                       : base::StringPrintf(
                             "Error starting bruschetta for terminal: %d (%s)",
-                            result, BruschettaResultString(result)));
+                            static_cast<int>(result),
+                            BruschettaResultString(result)));
         },
         std::move(callback)));
   } else {

@@ -288,7 +288,7 @@ void LaunchCrostiniAppImpl(
               OnLaunchFailed(app_id, std::move(callback),
                              base::StringPrintf(
                                  "crostini restart to launch app %s failed: %d",
-                                 app_id.c_str(), result),
+                                 app_id.c_str(), static_cast<int>(result)),
                              result);
               return;
             }

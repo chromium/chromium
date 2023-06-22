@@ -956,13 +956,13 @@ TEST_F(RestoreDataTest, ToString) {
       "Display id: -1 \nApp Title:  )",
       kAppId1, kWindowId1, kActivationIndex1,
       kDeskGuid1.AsLowercaseString().c_str(),
-      kCurrentBounds1.ToString().c_str(), kWindowStateType1,
+      kCurrentBounds1.ToString().c_str(), static_cast<int>(kWindowStateType1),
       base::UTF16ToUTF8(kTitle1).c_str(), kWindowId2, kActivationIndex2,
       kDeskGuid2.AsLowercaseString().c_str(),
-      kCurrentBounds2.ToString().c_str(), kWindowStateType2,
+      kCurrentBounds2.ToString().c_str(), static_cast<int>(kWindowStateType2),
       base::UTF16ToUTF8(kTitle2).c_str(), kAppId2, kWindowId3,
       kActivationIndex3, kDeskGuid3.AsLowercaseString().c_str(),
-      kCurrentBounds3.ToString().c_str(), kWindowStateType3);
+      kCurrentBounds3.ToString().c_str(), static_cast<int>(kWindowStateType3));
   EXPECT_EQ(restore_data().ToString(), expected_string);
 }
 

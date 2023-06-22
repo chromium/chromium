@@ -354,8 +354,8 @@ TEST_F(FloatingAccessibilityControllerTest, CanChangePosition) {
   // Loop through all positions twice.
   for (int i = 0; i < 2; i++) {
     for (const auto& test : kTestCases) {
-      SCOPED_TRACE(
-          base::StringPrintf("Testing position #[%d]", test.expected_position));
+      SCOPED_TRACE(base::StringPrintf(
+          "Testing position #[%d]", static_cast<int>(test.expected_position)));
       // Tap the position button.
       ui::GestureEvent event = CreateTapEvent();
       button->OnGestureEvent(&event);
@@ -520,8 +520,8 @@ TEST_F(FloatingAccessibilityControllerTest, CollisionWithAutoclicksMenu) {
   // Loop through all positions twice.
   for (int i = 0; i < 2; i++) {
     for (const auto& test : kTestCases) {
-      SCOPED_TRACE(
-          base::StringPrintf("Testing position #[%d]", test.expected_position));
+      SCOPED_TRACE(base::StringPrintf(
+          "Testing position #[%d]", static_cast<int>(test.expected_position)));
       // Tap the position button.
       {
         ui::GestureEvent event = CreateTapEvent();

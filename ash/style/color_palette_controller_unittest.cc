@@ -602,7 +602,8 @@ TEST_F(ColorPaletteControllerLocalPrefTest,
 void PrintTo(const SampleColorScheme& scheme, std::ostream* os) {
   *os << base::StringPrintf(
       "SampleColorScheme(scheme: %u primary: %x secondary: %x tertiary: %x)",
-      scheme.scheme, scheme.primary, scheme.secondary, scheme.tertiary);
+      static_cast<unsigned>(scheme.scheme), scheme.primary, scheme.secondary,
+      scheme.tertiary);
 }
 
 }  // namespace ash

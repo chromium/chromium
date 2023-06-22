@@ -368,7 +368,7 @@ NSString* NavigationItemImpl::GetDescription() const {
           base::UTF16ToUTF8(title_).c_str(), transition_type_,
           GetUserAgentTypeDescription(user_agent_type_).c_str(),
           is_created_from_hash_change_ ? @"true" : @"false",
-          navigation_initiation_type_,
+          static_cast<int>(navigation_initiation_type_),
           GetHttpsUpgradeTypeDescription(https_upgrade_type_).c_str()];
 }
 #endif

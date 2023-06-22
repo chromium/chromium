@@ -246,8 +246,9 @@ struct FormatEvent : public ObserverEvent {
   }
 
   std::string DebugString() const {
-    return StringPrintf("OnFormatEvent(%d, %d, %s, %s)", event, error_code,
-                        device_path.c_str(), device_label.c_str());
+    return StringPrintf("OnFormatEvent(%d, %d, %s, %s)", event,
+                        static_cast<int>(error_code), device_path.c_str(),
+                        device_label.c_str());
   }
 };
 
@@ -276,8 +277,9 @@ struct RenameEvent : public ObserverEvent {
   }
 
   std::string DebugString() const {
-    return StringPrintf("OnRenameEvent(%d, %d, %s, %s)", event, error_code,
-                        device_path.c_str(), device_label.c_str());
+    return StringPrintf("OnRenameEvent(%d, %d, %s, %s)", event,
+                        static_cast<int>(error_code), device_path.c_str(),
+                        device_label.c_str());
   }
 };
 
@@ -308,9 +310,11 @@ struct MountEvent : public ObserverEvent {
 
   std::string DebugString() const {
     return StringPrintf("OnMountEvent(%d, %d, %s, %s, %d, %d)", event,
-                        error_code, mount_point.source_path.c_str(),
-                        mount_point.mount_path.c_str(), mount_point.mount_type,
-                        mount_point.mount_error);
+                        static_cast<int>(error_code),
+                        mount_point.source_path.c_str(),
+                        mount_point.mount_path.c_str(),
+                        static_cast<int>(mount_point.mount_type),
+                        static_cast<int>(mount_point.mount_error));
   }
 };
 

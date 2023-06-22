@@ -188,7 +188,8 @@ TEST_F(ShelfTest, DisableAutoHide) {
 TEST_F(ShelfTest, ShelfHiddenOnScreenOnSecondaryDisplay) {
   for (const auto& state : {session_manager::SessionState::LOCKED,
                             session_manager::SessionState::LOGIN_PRIMARY}) {
-    SCOPED_TRACE(base::StringPrintf("Testing state: %d", state));
+    SCOPED_TRACE(
+        base::StringPrintf("Testing state: %d", static_cast<int>(state)));
     GetSessionControllerClient()->SetSessionState(state);
     UpdateDisplay("800x600,800x600");
 

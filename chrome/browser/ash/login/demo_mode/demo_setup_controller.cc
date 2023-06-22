@@ -390,7 +390,8 @@ DemoSetupController::DemoSetupError::GetLocalizedRecoveryMessage() const {
 
 std::string DemoSetupController::DemoSetupError::GetDebugDescription() const {
   return base::StringPrintf("DemoSetupError (code: %d, recovery: %d) : %s",
-                            error_code_, recovery_method_,
+                            static_cast<int>(error_code_),
+                            static_cast<int>(recovery_method_),
                             debug_message_.c_str());
 }
 
