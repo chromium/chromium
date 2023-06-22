@@ -63,6 +63,7 @@
 #include "ui/views/layout/flex_layout_types.h"
 #include "ui/views/layout/layout_manager.h"
 #include "ui/views/layout/table_layout.h"
+#include "ui/views/style/typography.h"
 #include "ui/views/view.h"
 #include "ui/views/view_class_properties.h"
 
@@ -461,13 +462,20 @@ void BuildProfileTitleAndSubtitle(views::View* parent,
                       gfx::Insets::TLBR(kDefaultMargin, 0, 0, 0)));
 
   if (!title.empty()) {
-    profile_titles_container->AddChildView(std::make_unique<views::Label>(
-        title, views::style::CONTEXT_DIALOG_TITLE));
+    profile_titles_container->AddChildView(
+        features::IsChromeRefresh2023()
+            ? std::make_unique<views::Label>(title,
+                                             views::style::CONTEXT_DIALOG_TITLE,
+                                             views::style::STYLE_HEADLINE_4)
+            : std::make_unique<views::Label>(
+                  title, views::style::CONTEXT_DIALOG_TITLE));
   }
 
   if (!subtitle.empty()) {
     profile_titles_container->AddChildView(std::make_unique<views::Label>(
-        subtitle, views::style::CONTEXT_LABEL, views::style::STYLE_SECONDARY));
+        subtitle, views::style::CONTEXT_LABEL,
+        features::IsChromeRefresh2023() ? views::style::STYLE_BODY_3
+                                        : views::style::STYLE_SECONDARY));
   }
 }
 
@@ -649,11 +657,17 @@ void ProfileMenuViewBase::SetProfileIdentityInfo(
 
   std::unique_ptr<views::Label> heading_label;
   if (!profile_name.empty()) {
-    views::Label::CustomFont font = {
-        views::Label::GetDefaultFontList()
-            .DeriveWithSizeDelta(2)
-            .DeriveWithWeight(gfx::Font::Weight::BOLD)};
-    heading_label = std::make_unique<views::Label>(profile_name, font);
+    if (features::IsChromeRefresh2023()) {
+      heading_label = std::make_unique<views::Label>(
+          profile_name, views::style::CONTEXT_LABEL,
+          views::style::STYLE_HEADLINE_5);
+    } else {
+      views::Label::CustomFont font = {
+          views::Label::GetDefaultFontList()
+              .DeriveWithSizeDelta(2)
+              .DeriveWithWeight(gfx::Font::Weight::BOLD)};
+      heading_label = std::make_unique<views::Label>(profile_name, font);
+    }
     heading_label->SetElideBehavior(gfx::ELIDE_TAIL);
     heading_label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
     heading_label->SetProperty(
@@ -749,7 +763,11 @@ void ProfileMenuViewBase::BuildSyncInfoWithCallToAction(
   }
 
   views::Label* label = description_container->AddChildView(
-      std::make_unique<views::Label>(description));
+      features::IsChromeRefresh2023()
+          ? std::make_unique<views::Label>(description,
+                                           views::style::CONTEXT_LABEL,
+                                           views::style::STYLE_BODY_3_EMPHASIS)
+          : std::make_unique<views::Label>(description));
   label->SetMultiLine(true);
   label->SetHandlesTooltips(false);
   label->SetProperty(
@@ -875,7 +893,9 @@ void ProfileMenuViewBase::SetProfileManagementHeading(
   // Add heading.
   views::Label* label = profile_mgmt_heading_container_->AddChildView(
       std::make_unique<views::Label>(heading, views::style::CONTEXT_LABEL,
-                                     views::style::STYLE_HINT));
+                                     features::IsChromeRefresh2023()
+                                         ? views::style::STYLE_BODY_3_EMPHASIS
+                                         : views::style::STYLE_HINT));
   label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
   label->SetHandlesTooltips(false);
 }
