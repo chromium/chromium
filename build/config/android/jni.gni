@@ -26,7 +26,11 @@ if (target_os == "android") {
 
 template("jni_sources_list") {
   generated_file(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY + [ "deps" ])
+    forward_variables_from(invoker,
+                           TESTONLY_AND_VISIBILITY + [
+                                 "deps",
+                                 "walk_keys",
+                               ])
     outputs = [ invoker.output ]
     data_keys = [ "jni_source_files" ]
     rebase = root_build_dir
@@ -52,10 +56,10 @@ template("jni_sources_list") {
 # about the format of the header file.
 #
 # Variables
-#   targets: List of .build_config.json supported targets to provide java sources.
+#   java_targets: List of android_* targets that comprise your app.
+#   native_deps: List of shared_library targets that comprise your app.
 #   manual_jni_registration: Manually do JNI registration - required for feature
 #     splits which provide their own native library. (optional)
-#   file_exclusions: List of .java files that should be skipped. (optional)
 #   namespace: Registration functions will be wrapped into this. (optional)
 #   require_native_mocks: Enforce that any native calls using
 #     org.chromium.base.annotations.NativeMethods must have a mock set
@@ -66,28 +70,35 @@ template("jni_sources_list") {
 #
 # Example
 #   generate_jni_registration("chrome_jni_registration") {
-#     targets = [ ":chrome_public_apk" ]
+#     java_targets = [ ":chrome_public_apk" ]
 #     manual_jni_registration = false
-#     file_exclusions = [
-#       "//path/to/Exception.java",
-#     ]
 #   }
 template("generate_jni_registration") {
+  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
   if (defined(invoker.native_deps)) {
-    _jni_sources_list = "$target_gen_dir/$target_name.jnisources"
-    _jni_sources_target = "${target_name}__jni_sources"
-    jni_sources_list(_jni_sources_target) {
-      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+    _native_sources_list = "$target_gen_dir/$target_name.nativesources.txt"
+    jni_sources_list("${target_name}__native_sources") {
       deps = invoker.native_deps
-      output = _jni_sources_list
+      output = _native_sources_list
     }
   }
 
-  action_with_pydeps(target_name) {
-    forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+  _java_sources_list = "$target_gen_dir/$target_name.javasources.txt"
+  jni_sources_list("${target_name}__java_sources") {
+    deps = invoker.java_targets
+    output = _java_sources_list
 
+    # When apk or bundle module targets are uses, do not pull metadata from
+    # their native library deps.
+    walk_keys = [ "java_walk_keys" ]
+  }
+
+  action_with_pydeps(target_name) {
     script = "//base/android/jni_generator/jni_registration_generator.py"
     inputs = []
+
+    # Cannot depend on jni_sources_list targets since they likely depend on
+    # this target via srcjar_deps. Depfiles are used to add the dep instead.
     deps = []
     _srcjar_output = "$target_gen_dir/$target_name.srcjar"
     outputs = [ _srcjar_output ]
@@ -98,31 +109,14 @@ template("generate_jni_registration") {
       rebase_path(_srcjar_output, root_build_dir),
       "--depfile",
       rebase_path(depfile, root_build_dir),
+      "--java-sources-file",
+      rebase_path(_java_sources_list, root_build_dir),
     ]
 
-    if (defined(_jni_sources_target)) {
-      inputs += [ _jni_sources_list ]
-      deps += [ ":$_jni_sources_target" ]
+    if (defined(_native_sources_list)) {
       args += [
         "--native-sources-file",
-        rebase_path(_jni_sources_list, root_build_dir),
-      ]
-    }
-    foreach(_target, invoker.java_targets) {
-      # Due to robolectric, we can't import internal_rules.gni unconditionally,
-      # which means that build_config_target_suffix isn't always available, so
-      # we hardcode the value of it here.
-      deps += [ "${_target}__build_config_crbug_908819($default_toolchain)" ]
-      _build_config =
-          get_label_info("${_target}($default_toolchain)", "target_gen_dir") +
-          "/" + get_label_info("${_target}($default_toolchain)", "name") +
-          ".build_config.json"
-      _rebased_build_config = rebase_path(_build_config, root_build_dir)
-      inputs += [ _build_config ]
-
-      args += [
-        # This is a list of .sources files.
-        "--java-sources-files=@FileArg($_rebased_build_config:deps_info:jni_all_source)",
+        rebase_path(_native_sources_list, root_build_dir),
       ]
     }
 
@@ -181,12 +175,6 @@ template("generate_jni_registration") {
       public_configs = [ "//build/config/android:jni_include_dir" ]
     }
 
-    if (defined(invoker.file_exclusions)) {
-      _rebase_file_exclusions =
-          rebase_path(invoker.file_exclusions, root_build_dir)
-      args += [ "--file-exclusions=$_rebase_file_exclusions" ]
-    }
-
     if (defined(invoker.namespace)) {
       args += [ "--namespace=${invoker.namespace}" ]
     }
@@ -207,15 +195,16 @@ template("generate_jni_registration") {
 # In order to depend on the JNI registration, use
 # <native-target-name>__jni_registration.
 template("_native_with_jni") {
-  forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
-  _jni_registration_name = "${target_name}__jni_registration"
+  _needs_native_dep =
+      (defined(invoker.manual_jni_registration) &&
+       invoker.manual_jni_registration) || allow_jni_multiplexing
+  if (_needs_native_dep || current_toolchain == default_toolchain) {
+    _jni_registration_target_name = "${target_name}__jni_registration"
+  }
 
-  # DFMs only ever need to be defined in the default toolchain, since we never
-  # do cross-toolchain deps with DFMs.
-  _use_all_toolchains = !defined(invoker.module_name)
-
-  if (_use_all_toolchains || current_toolchain == default_toolchain) {
-    generate_jni_registration(_jni_registration_name) {
+  if (current_toolchain == default_toolchain) {
+    generate_jni_registration(_jni_registration_target_name) {
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
       native_deps = invoker.deps
 
       if (allow_jni_multiplexing) {
@@ -248,19 +237,20 @@ template("_native_with_jni") {
                ])
   }
 
-  target(invoker.target_type, target_name) {
-    deps = invoker.deps
-    _need_native_dep =
-        (defined(invoker.manual_jni_registration) &&
-         invoker.manual_jni_registration) || allow_jni_multiplexing
-    if (_need_native_dep) {
-      _jni_registration_dep = ":$_jni_registration_name"
-      if (!_use_all_toolchains) {
-        _jni_registration_dep += "($default_toolchain)"
+  if (!defined(invoker.enable_target) || invoker.enable_target) {
+    target(invoker.target_type, target_name) {
+      deps = invoker.deps
+      if (_needs_native_dep) {
+        deps += [ ":$_jni_registration_target_name($default_toolchain)" ]
       }
-      deps += [ _jni_registration_dep ]
+      forward_variables_from(invoker, TESTONLY_AND_VISIBILITY)
+      forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
     }
-    forward_variables_from(invoker, "*", TESTONLY_AND_VISIBILITY + [ "deps" ])
+  } else {
+    not_needed(invoker, "*")
+    if (current_toolchain != default_toolchain) {
+      not_needed([ "target_name" ])
+    }
   }
 }
 
