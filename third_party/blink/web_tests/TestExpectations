@@ -6617,9 +6617,6 @@ crbug.com/1413770 wpt_internal/storage/estimate-usage-details-filesystem.https.t
 
 crbug.com/1455325 external/wpt/html/semantics/forms/form-submission-0/form-double-submit-requestsubmit.html [ Pass Timeout ]
 
-# Temporarily disabled to unblock https://crrev.com/c/4610580
-crbug.com/1442863 http/tests/devtools/bindings/shadowdom-navigator.js [ Failure Pass ]
-
 crbug.com/1455984 external/wpt/longtask-timing/longtask-attributes.html [ Failure Pass ]
 
 # following tests fail on Win11-arm64
