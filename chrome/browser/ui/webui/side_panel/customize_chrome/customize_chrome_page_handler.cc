@@ -36,7 +36,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/native_theme/native_theme.h"
 
@@ -59,7 +59,7 @@ side_panel::mojom::ChromeColorPtr CreateDynamicChromeColor(
     bool is_dark_mode) {
   auto color = side_panel::mojom::ChromeColor::New();
   auto color_palette = ui::GeneratePalette(
-      color_info.color, ui::ColorProviderManager::SchemeVariant::kTonalSpot);
+      color_info.color, ui::ColorProviderKey::SchemeVariant::kTonalSpot);
   color->name = l10n_util::GetStringUTF8(color_info.label_id);
   color->seed = color_info.color;
   color->background = is_dark_mode ? color_palette->primary().get(80)

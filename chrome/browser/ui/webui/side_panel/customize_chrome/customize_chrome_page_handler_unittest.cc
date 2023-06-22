@@ -56,7 +56,7 @@
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/ui_base_features.h"
 #include "ui/color/color_provider.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/dynamic_color/palette_factory.h"
 #include "ui/native_theme/native_theme.h"
 #include "ui/shell_dialogs/select_file_dialog_factory.h"
@@ -411,9 +411,9 @@ TEST_F(CustomizeChromePageHandlerTest, GetOverviewChromeColorsGM3) {
 
   ASSERT_EQ(kCustomizeChromeColors.size(), colors.size());
   for (size_t i = 0; i < kCustomizeChromeColors.size(); i++) {
-    auto palette = ui::GeneratePalette(
-        kCustomizeChromeColors[i].color,
-        ui::ColorProviderManager::SchemeVariant::kTonalSpot);
+    auto palette =
+        ui::GeneratePalette(kCustomizeChromeColors[i].color,
+                            ui::ColorProviderKey::SchemeVariant::kTonalSpot);
     EXPECT_EQ(l10n_util::GetStringUTF8(kCustomizeChromeColors[i].label_id),
               colors[i]->name);
     EXPECT_EQ(kCustomizeChromeColors[i].color, colors[i]->seed);
@@ -427,9 +427,9 @@ TEST_F(CustomizeChromePageHandlerTest, GetOverviewChromeColorsGM3) {
 
   ASSERT_EQ(kCustomizeChromeColors.size(), colors.size());
   for (size_t i = 0; i < kCustomizeChromeColors.size(); i++) {
-    auto palette = ui::GeneratePalette(
-        kCustomizeChromeColors[i].color,
-        ui::ColorProviderManager::SchemeVariant::kTonalSpot);
+    auto palette =
+        ui::GeneratePalette(kCustomizeChromeColors[i].color,
+                            ui::ColorProviderKey::SchemeVariant::kTonalSpot);
     EXPECT_EQ(l10n_util::GetStringUTF8(kCustomizeChromeColors[i].label_id),
               colors[i]->name);
     EXPECT_EQ(kCustomizeChromeColors[i].color, colors[i]->seed);
