@@ -68,10 +68,7 @@ class PrinterCapabilitiesTest : public testing::Test {
     disallow_blocking_ = std::make_unique<base::ScopedDisallowBlocking>();
   }
 
-  void TearDown() override {
-    disallow_blocking_.reset();
-    test_backend_.reset();
-  }
+  void TearDown() override { PrintBackend::SetPrintBackendForTesting(nullptr); }
 
   base::Value::Dict GetSettingsOnBlockingTaskRunnerAndWaitForResults(
       const std::string& printer_name,
