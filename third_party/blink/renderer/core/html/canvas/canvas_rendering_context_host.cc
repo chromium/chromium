@@ -158,6 +158,12 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   const SkImageInfo resource_info =
       SkImageInfo::Make(SkISize::Make(Size().width(), Size().height()),
                         GetRenderingContextSkColorInfo());
+  // Do not initialize the CRP using Skia. The CRP can have bottom left origin
+  // in which case Skia Graphite won't be able to render into it, and WebGL is
+  // responsible for clearing the CRP when it renders anyway and we have clear
+  // rect tracking in the shared image system to enforce this.
+  constexpr auto kShouldInitialize =
+      CanvasResourceProvider::ShouldInitialize::kNo;
   if (SharedGpuContext::IsGpuCompositingEnabled() && LowLatencyEnabled()) {
     // If LowLatency is enabled, we need a resource that is able to perform well
     // in such mode. It will first try a PassThrough provider and, if that is
@@ -183,8 +189,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
             gpu::SHARED_IMAGE_USAGE_CONCURRENT_READ_WRITE;
       }
       provider = CanvasResourceProvider::CreateSharedImageProvider(
-          resource_info, FilterQuality(),
-          CanvasResourceProvider::ShouldInitialize::kCallClear,
+          resource_info, FilterQuality(), kShouldInitialize,
           SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
           RenderingContext()->IsOriginTopLeft(), shared_image_usage_flags);
     }
@@ -197,8 +202,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
       shared_image_usage_flags |= gpu::SHARED_IMAGE_USAGE_SCANOUT;
     }
     provider = CanvasResourceProvider::CreateSharedImageProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear,
+        resource_info, FilterQuality(), kShouldInitialize,
         SharedGpuContext::ContextProviderWrapper(), RasterMode::kGPU,
         RenderingContext()->IsOriginTopLeft(), shared_image_usage_flags);
   }
@@ -208,13 +212,11 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGL() {
   // provider.
   if (!provider) {
     provider = CanvasResourceProvider::CreateSharedBitmapProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear, dispatcher);
+        resource_info, FilterQuality(), kShouldInitialize, dispatcher);
   }
   if (!provider) {
     provider = CanvasResourceProvider::CreateBitmapProvider(
-        resource_info, FilterQuality(),
-        CanvasResourceProvider::ShouldInitialize::kCallClear);
+        resource_info, FilterQuality(), kShouldInitialize);
   }
 
   ReplaceResourceProvider(std::move(provider));
