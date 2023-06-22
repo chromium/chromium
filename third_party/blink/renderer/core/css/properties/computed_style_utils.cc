@@ -747,28 +747,34 @@ CSSValue* ComputedStyleUtils::ValueForPositionOffset(
       // block.
       LayoutBlock* container = layout_object->ContainingBlock();
 
-      // clientOffset is the distance from this object's border edge to the
+      // client_offset is the distance from this object's border edge to the
       // container's padding edge. Thus it includes margins which we subtract
       // below.
-      const LayoutSize client_offset =
-          box->LocationOffset() -
-          LayoutSize(container->ClientLeft(), container->ClientTop());
+      const PhysicalOffset client_offset =
+          RuntimeEnabledFeatures::LayoutNGNoLocationEnabled()
+              ? box->PhysicalLocation() -
+                    PhysicalOffset(container->ClientLeft(),
+                                   container->ClientTop())
+              : PhysicalOffset(box->LocationOffset() -
+                               LayoutSize(container->ClientLeft(),
+                                          container->ClientTop()));
+
       LayoutUnit position;
 
       switch (property.PropertyID()) {
         case CSSPropertyID::kLeft:
-          position = client_offset.Width() - box->MarginLeft();
+          position = client_offset.left - box->MarginLeft();
           break;
         case CSSPropertyID::kTop:
-          position = client_offset.Height() - box->MarginTop();
+          position = client_offset.top - box->MarginTop();
           break;
         case CSSPropertyID::kRight:
           position = container->ClientWidth() - box->MarginRight() -
-                     (box->OffsetWidth() + client_offset.Width());
+                     (box->OffsetWidth() + client_offset.left);
           break;
         case CSSPropertyID::kBottom:
           position = container->ClientHeight() - box->MarginBottom() -
-                     (box->OffsetHeight() + client_offset.Height());
+                     (box->OffsetHeight() + client_offset.top);
           break;
         default:
           NOTREACHED();
