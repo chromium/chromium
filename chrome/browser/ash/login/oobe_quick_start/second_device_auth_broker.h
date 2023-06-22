@@ -110,12 +110,18 @@ class SecondDeviceAuthBroker : public GaiaAuthConsumer {
     std::string fallback_url;
   };
 
-  using ChallengeBytesCallback = base::OnceCallback<void(
-      const base::expected<std::string, GoogleServiceAuthError>&)>;
-  using AttestationCertificateCallback = base::OnceCallback<void(
-      const base::expected<std::string, AttestationErrorType>&)>;
-  using RefreshTokenOrErrorCallback = base::OnceCallback<void(
-      const base::expected<std::string, GoogleServiceAuthError>&)>;
+  using ChallengeBytesOrError =
+      const base::expected<std::string, GoogleServiceAuthError>&;
+  using ChallengeBytesCallback =
+      base::OnceCallback<void(ChallengeBytesOrError)>;
+  using AttestationCertificateOrError =
+      const base::expected<std::string, AttestationErrorType>&;
+  using AttestationCertificateCallback =
+      base::OnceCallback<void(AttestationCertificateOrError)>;
+  using RefreshTokenOrError =
+      const base::expected<std::string, GoogleServiceAuthError>&;
+  using RefreshTokenOrErrorCallback =
+      base::OnceCallback<void(RefreshTokenOrError)>;
 
   // Possible set of response types for `RefreshTokenCallback`.
   using RefreshTokenResponse =

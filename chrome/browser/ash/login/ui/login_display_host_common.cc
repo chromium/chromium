@@ -16,6 +16,7 @@
 #include "base/notreached.h"
 #include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/ash/app_mode/kiosk_app_types.h"
+#include "chrome/browser/ash/attestation/attestation_ca_client.h"
 #include "chrome/browser/ash/language_preferences.h"
 #include "chrome/browser/ash/login/app_mode/kiosk_launch_controller.h"
 #include "chrome/browser/ash/login/choobe_flow_controller.h"
@@ -23,6 +24,7 @@
 #include "chrome/browser/ash/login/lock_screen_utils.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker_factory.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/screens/encryption_migration_screen.h"
 #include "chrome/browser/ash/login/screens/gaia_screen.h"
@@ -43,7 +45,9 @@
 #include "chrome/browser/browser_process.h"
 #include "chrome/browser/browser_process_platform_part.h"
 #include "chrome/browser/lifetime/termination_notification.h"
+#include "chrome/browser/profiles/profile.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/signin/chrome_device_id_helper.h"
 #include "chrome/browser/ui/ash/wallpaper_controller_client_impl.h"
 #include "chrome/browser/ui/browser_list.h"
 #include "chrome/browser/ui/webui/ash/diagnostics_dialog.h"
@@ -59,6 +63,7 @@
 #include "chrome/browser/ui/webui/ash/login/user_creation_screen_handler.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/grit/generated_resources.h"
+#include "chromeos/ash/components/attestation/attestation_flow_adaptive.h"
 #include "chromeos/ash/components/dbus/userdataauth/userdataauth_client.h"
 #include "chromeos/ash/components/login/auth/auth_performer.h"
 #include "components/keep_alive_registry/keep_alive_types.h"
@@ -188,6 +193,23 @@ bool IsAuthError(SigninError error) {
          error == SigninError::kNewUserFailedNetworkNotConnected ||
          error == SigninError::kNewUserFailedNetworkConnected ||
          error == SigninError::kKnownUserFailedNetworkConnected;
+}
+
+std::unique_ptr<quick_start::SecondDeviceAuthBroker>
+CreateSecondDeviceAuthBroker() {
+  std::unique_ptr<attestation::ServerProxy> server_proxy(
+      new attestation::AttestationCAClient());
+  std::unique_ptr<attestation::AttestationFlow> attestation_flow =
+      std::make_unique<attestation::AttestationFlowAdaptive>(
+          std::move(server_proxy));
+
+  // TODO(b:286850431) - Fix device id generation.
+  const std::string device_id =
+      GenerateSigninScopedDeviceId(/*for_ephemeral=*/false);
+  auto* signin_profile = ProfileHelper::GetSigninProfile();
+  return std::make_unique<quick_start::SecondDeviceAuthBroker>(
+      device_id, signin_profile->GetURLLoaderFactory(),
+      std::move(attestation_flow));
 }
 
 }  // namespace
@@ -724,7 +746,8 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
         std::make_unique<ash::quick_start::TargetDeviceBootstrapController>(
             quick_start::TargetDeviceConnectionBrokerFactory::Create(
                 service->GetNearbyConnectionsManager(),
-                service->GetQuickStartDecoder(), is_resume_after_update));
+                service->GetQuickStartDecoder(), is_resume_after_update),
+            CreateSecondDeviceAuthBroker());
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }

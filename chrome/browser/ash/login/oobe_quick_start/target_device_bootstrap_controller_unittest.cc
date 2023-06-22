@@ -10,9 +10,13 @@
 #include "base/command_line.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
+#include "base/types/expected.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/mock_second_device_auth_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/oobe_quick_start_pref_names.h"
+#include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chrome/browser/nearby_sharing/fake_nearby_connections_manager.h"
 #include "chrome/test/base/scoped_testing_local_state.h"
 #include "chrome/test/base/testing_browser_process.h"
@@ -20,6 +24,9 @@
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_task_environment.h"
+#include "google_apis/gaia/google_service_auth_error.h"
+#include "services/network/public/cpp/weak_wrapper_shared_url_loader_factory.h"
+#include "services/network/test/test_url_loader_factory.h"
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
@@ -52,10 +59,16 @@ class FakeObserver : public Observer {
   Status last_status;
 };
 
+constexpr char kFakeChallengeBytes[] =
+    "ABz12ClFhY8/D89zWFB+KTHgUwJ5T3Avco/1IQuu+K/"
+    "65KlsmB7o0+UyPde8ZW+b33aeJ9uyST8EMzS6WhK60e/VDjug+7LLK4YzDz1nNw==";
+
 }  // namespace
 
 class TargetDeviceBootstrapControllerTest : public testing::Test {
  public:
+  using MockAuthBroker = testing::NiceMock<MockSecondDeviceAuthBroker>;
+
   static constexpr char kSourceDeviceId[] = "fake-source-device-id";
 
   TargetDeviceBootstrapControllerTest()
@@ -69,6 +82,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
 
   void SetUp() override { CreateBootstrapController(); }
   void TearDown() override {
+    auth_broker_ = nullptr;
     bootstrap_controller_->RemoveObserver(fake_observer_.get());
     TargetDeviceConnectionBrokerFactory::SetFactoryForTesting(nullptr);
   }
@@ -80,8 +94,12 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     fake_target_device_connection_broker_ =
         fake_target_device_connection_broker.get();
 
+    auto auth_broker =
+        std::make_unique<MockAuthBroker>(test_factory_.GetSafeWeakWrapper());
+    auth_broker_ = auth_broker.get();
     bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>(
-        std::move(fake_target_device_connection_broker));
+        std::move(fake_target_device_connection_broker),
+        std::move(auth_broker));
     fake_observer_ = std::make_unique<FakeObserver>();
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
@@ -103,11 +121,14 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   PrefService* GetLocalState() { return local_state_.Get(); }
 
  protected:
+  absl::optional<FidoAssertionInfo> assertion_info_;
   base::test::SingleThreadTaskEnvironment task_environment_;
+  network::TestURLLoaderFactory test_factory_;
   raw_ptr<FakeTargetDeviceConnectionBroker, ExperimentalAsh>
       fake_target_device_connection_broker_;
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
+  raw_ptr<MockAuthBroker> auth_broker_;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
   ScopedTestingLocalState local_state_;
 };
@@ -399,6 +420,49 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest,
+       TransferringGaiaAccountSendsChallengeBytesToAuthenticatedConnection) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
+  bootstrap_controller_->AttemptGoogleAccountTransfer();
+
+  EXPECT_EQ(fake_observer_->last_status.step,
+            Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS);
+  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+      fake_observer_->last_status.payload));
+
+  EXPECT_EQ(fake_target_device_connection_broker_->GetFakeConnection()
+                ->get_challenge_bytes(),
+            kFakeChallengeBytes);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       FailureFetchingChallengeBytesIsProperlySurfaced) {
+  bootstrap_controller_->StartAdvertising();
+  fake_target_device_connection_broker_->on_start_advertising_callback().Run(
+      /*success=*/true);
+  fake_target_device_connection_broker_->InitiateConnection(kSourceDeviceId);
+  fake_target_device_connection_broker_->AuthenticateConnection(
+      kSourceDeviceId);
+
+  // Set up generic error as response
+  auth_broker_->SetupChallengeBytesResponse(base::unexpected(
+      GoogleServiceAuthError::FromServiceError("Unexpected Error")));
+  bootstrap_controller_->AttemptGoogleAccountTransfer();
+
+  EXPECT_EQ(fake_observer_->last_status.step, Step::ERROR);
+  ASSERT_TRUE(
+      absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
+  EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
+            ErrorCode::FETCHING_CHALLENGE_BYTES_FAILED);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
        TransferGaiaAccountDetailsSucceeds) {
   bootstrap_controller_->StartAdvertising();
   fake_target_device_connection_broker_->on_start_advertising_callback().Run(
@@ -407,6 +471,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,
@@ -419,7 +484,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
 
   EXPECT_EQ(fake_observer_->last_status.step,
             Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS);
-  EXPECT_TRUE(absl::holds_alternative<absl::monostate>(
+  EXPECT_TRUE(absl::holds_alternative<FidoAssertionInfo>(
       fake_observer_->last_status.payload));
 }
 
@@ -432,6 +497,7 @@ TEST_F(TargetDeviceBootstrapControllerTest,
   fake_target_device_connection_broker_->AuthenticateConnection(
       kSourceDeviceId);
 
+  auth_broker_->SetupChallengeBytesResponse(kFakeChallengeBytes);
   bootstrap_controller_->AttemptGoogleAccountTransfer();
 
   EXPECT_EQ(fake_observer_->last_status.step,

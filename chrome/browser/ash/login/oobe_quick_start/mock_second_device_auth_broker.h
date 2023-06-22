@@ -35,6 +35,8 @@ class MockSecondDeviceAuthBroker : public SecondDeviceAuthBroker {
               FetchAttestationCertificate,
               (const std::string&, AttestationCertificateCallback),
               (override));
+
+  void SetupChallengeBytesResponse(ChallengeBytesOrError challenge);
 };
 
 }  // namespace ash::quick_start

@@ -10,6 +10,7 @@
 #include "base/notreached.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/time/time.h"
+#include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/target_device_bootstrap_controller.h"
 #include "chrome/browser/ash/login/ui/login_display_host.h"
 #include "chrome/browser/ash/login/wizard_context.h"
@@ -69,6 +70,7 @@ void QuickStartScreen::ShowImpl() {
       bootstrap_controller_->StartAdvertising();
       break;
     case FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS:
+      view_->ShowTransferringGaiaCredentials();
       bootstrap_controller_->AttemptGoogleAccountTransfer();
       break;
     case FlowState::RESUMING_AFTER_CRITICAL_UPDATE:
@@ -145,10 +147,12 @@ void QuickStartScreen::OnStatusChanged(
       return;
 
     case Step::TRANSFERRING_GOOGLE_ACCOUNT_DETAILS:
-      view_->ShowTransferringGaiaCredentials();
+      // Intermediate state. Nothing to do.
+      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
       break;
     case Step::TRANSFERRED_GOOGLE_ACCOUNT_DETAILS:
-      view_->ShowFidoAssertionReceived(status.fido_email);
+      CHECK(flow_state_ == FlowState::CONTINUING_AFTER_ENROLLMENT_CHECKS);
+      OnTransferredGoogleAccountDetails(status);
       break;
     case Step::NONE:
     case Step::ADVERTISING:
@@ -157,6 +161,26 @@ void QuickStartScreen::OnStatusChanged(
       quick_start::QS_LOG(INFO)
           << "Hit screen which is not implemented. Continuing";
       return;
+  }
+}
+
+void QuickStartScreen::OnTransferredGoogleAccountDetails(
+    const quick_start::TargetDeviceBootstrapController::Status& status) {
+  using FidoAssertionInfo = quick_start::FidoAssertionInfo;
+  using ErrorCode = quick_start::TargetDeviceBootstrapController::ErrorCode;
+
+  if (absl::holds_alternative<FidoAssertionInfo>(status.payload)) {
+    quick_start::QS_LOG(INFO) << "Successfully received FIDO assertion.";
+    auto fido_assertion = absl::get<FidoAssertionInfo>(status.payload);
+    view_->ShowFidoAssertionReceived(fido_assertion.email);
+  } else {
+    CHECK(absl::holds_alternative<ErrorCode>(status.payload));
+    quick_start::QS_LOG(ERROR)
+        << "Error receiving FIDO assertion. Error Code = "
+        << static_cast<int>(absl::get<ErrorCode>(status.payload));
+
+    // TODO(b:286873060) - Implement retry mechanism/graceful exit.
+    NOTIMPLEMENTED();
   }
 }
 

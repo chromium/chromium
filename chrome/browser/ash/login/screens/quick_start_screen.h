@@ -58,6 +58,9 @@ class QuickStartScreen
   void OnStatusChanged(
       const quick_start::TargetDeviceBootstrapController::Status& status) final;
 
+  void OnTransferredGoogleAccountDetails(
+      const quick_start::TargetDeviceBootstrapController::Status& status);
+
   // Sets in the UI the discoverable name that will be used for advertising.
   // Android devices will see this fast pair notification 'Chromebook (123)'
   void DetermineDiscoverableName();

@@ -60,7 +60,10 @@ class FakeConnection : public Connection {
     phone_instance_id_ = phone_instance_id;
   }
 
+  std::string get_challenge_bytes() { return challenge_bytes_; }
+
  private:
+  std::string challenge_bytes_ = "";
   bool handshake_initiated_ = false;
   HandshakeSuccessCallback handshake_success_callback_;
   RequestWifiCredentialsCallback wifi_credentials_callback_;

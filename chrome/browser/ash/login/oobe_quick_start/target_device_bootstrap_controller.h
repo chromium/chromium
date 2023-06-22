@@ -15,6 +15,7 @@
 #include "base/observer_list_types.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
+#include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chromeos/ash/services/nearby/public/mojom/quick_start_decoder_types.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -25,7 +26,8 @@ class TargetDeviceBootstrapController
  public:
   explicit TargetDeviceBootstrapController(
       std::unique_ptr<TargetDeviceConnectionBroker>
-          target_device_connection_broker);
+          target_device_connection_broker,
+      std::unique_ptr<SecondDeviceAuthBroker> auth_broker);
   TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
   TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
       delete;
@@ -52,12 +54,15 @@ class TargetDeviceBootstrapController
     WIFI_CREDENTIALS_NOT_RECEIVED,
     USER_VERIFICATION_FAILED,
     GAIA_ASSERTION_NOT_RECEIVED,
+    FETCHING_CHALLENGE_BYTES_FAILED,
   };
 
   using QRCodePixelData = std::vector<uint8_t>;
 
-  using Payload = absl::variant<absl::monostate, ErrorCode, QRCodePixelData>;
+  using Payload = absl::
+      variant<absl::monostate, ErrorCode, QRCodePixelData, FidoAssertionInfo>;
 
+  // TODO(b/288054370) - Consolidate fields.
   struct Status {
     Status();
     ~Status();
@@ -66,7 +71,6 @@ class TargetDeviceBootstrapController
     std::string ssid;
     std::string pin;
     absl::optional<std::string> password;
-    std::string fido_email;
   };
 
   class Observer : public base::CheckedObserver {
@@ -138,6 +142,9 @@ class TargetDeviceBootstrapController
       absl::optional<mojom::WifiCredentials> credentials);
   void OnFidoAssertionReceived(absl::optional<FidoAssertionInfo> assertion);
 
+  void OnChallengeBytesReceived(
+      quick_start::SecondDeviceAuthBroker::ChallengeBytesOrError);
+
   std::unique_ptr<TargetDeviceConnectionBroker> connection_broker_;
 
   std::string pin_;
@@ -150,6 +157,11 @@ class TargetDeviceBootstrapController
       authenticated_connection_;
 
   int32_t session_id_;
+
+  // Challenge bytes to be sent to the Android device for the FIDO assertion.
+  std::string challenge_bytes_ = "";
+
+  std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
 
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};

@@ -57,6 +57,7 @@ void FakeConnection::WaitForUserVerification(
 void FakeConnection::RequestAccountTransferAssertion(
     const std::string& challenge_b64url,
     RequestAccountTransferAssertionCallback callback) {
+  challenge_bytes_ = challenge_b64url;
   request_account_transfer_assertion_callback_ = std::move(callback);
 }
 

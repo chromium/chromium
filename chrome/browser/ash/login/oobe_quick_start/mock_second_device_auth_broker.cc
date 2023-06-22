@@ -9,6 +9,8 @@
 #include "chrome/browser/ash/login/oobe_quick_start/second_device_auth_broker.h"
 #include "chromeos/ash/components/attestation/mock_attestation_flow.h"
 #include "services/network/public/cpp/shared_url_loader_factory.h"
+#include "testing/gmock/include/gmock/gmock.h"
+#include "testing/gtest/include/gtest/gtest.h"
 
 namespace ash::quick_start {
 namespace {
@@ -16,6 +18,9 @@ namespace {
 constexpr char kDeviceId[] = "fake-device-id";
 
 }  // namespace
+
+using testing::Invoke;
+using testing::WithArg;
 
 MockSecondDeviceAuthBroker::MockSecondDeviceAuthBroker(
     scoped_refptr<network::SharedURLLoaderFactory> url_loader_factory)
@@ -25,5 +30,14 @@ MockSecondDeviceAuthBroker::MockSecondDeviceAuthBroker(
           std::make_unique<attestation::MockAttestationFlow>()) {}
 
 MockSecondDeviceAuthBroker::~MockSecondDeviceAuthBroker() = default;
+
+void MockSecondDeviceAuthBroker::SetupChallengeBytesResponse(
+    ChallengeBytesOrError challenge) {
+  ON_CALL(*this, GetChallengeBytes)
+      .WillByDefault(
+          WithArg<0>(Invoke([challenge](ChallengeBytesCallback callback) {
+            std::move(callback).Run(challenge);
+          })));
+}
 
 }  // namespace ash::quick_start
