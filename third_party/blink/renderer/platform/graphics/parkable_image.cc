@@ -37,10 +37,7 @@ void RecordReadStatistics(size_t size,
                           base::TimeDelta time_since_freeze) {
   int throughput_mb_s =
       static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
-  int size_kb = static_cast<int>(size / 1024);  // in KiB
 
-  // Size should be <1MiB in most cases.
-  base::UmaHistogramCounts10000("Memory.ParkableImage.Read.Size", size_kb);
   // Size is usually >1KiB, and at most ~10MiB, and throughput ranges from
   // single-digit MB/s to ~1000MiB/s depending on the CPU/disk, hence the
   // ranges.
@@ -49,13 +46,9 @@ void RecordReadStatistics(size_t size,
                                             base::Seconds(1), 100);
   base::UmaHistogramCounts1000("Memory.ParkableImage.Read.Throughput",
                                throughput_mb_s);
-  base::UmaHistogramLongTimes("Memory.ParkableImage.Read.TimeSinceFreeze",
-                              time_since_freeze);
 }
 
 void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
-  int throughput_mb_s =
-      static_cast<int>(size / duration.InSecondsF() / (1024 * 1024));
   int size_kb = static_cast<int>(size / 1024);  // in KiB
 
   // Size should be <1MiB in most cases.
@@ -66,8 +59,6 @@ void RecordWriteStatistics(size_t size, base::TimeDelta duration) {
   base::UmaHistogramCustomMicrosecondsTimes(
       "Memory.ParkableImage.Write.Latency", duration, base::Microseconds(500),
       base::Seconds(1), 100);
-  base::UmaHistogramCounts1000("Memory.ParkableImage.Write.Throughput",
-                               throughput_mb_s);
 }
 
 void AsanPoisonBuffer(RWBuffer* rw_buffer) {

@@ -136,8 +136,7 @@ class ParkableImageBaseTest : public ::testing::Test {
 
   // This checks that the "Memory.ParkableImage.Write.*" statistics from
   // |RecordReadStatistics()| are recorded correctly, namely
-  // "Memory.ParkableImage.Write.Latency",
-  // "Memory.ParkableImage.Write.Throughput", and
+  // "Memory.ParkableImage.Write.Latency" and
   // "Memory.ParkableImage.Write.Size".
   //
   // Checks the counts for all 3 metrics, but only checks the value for
@@ -146,28 +145,23 @@ class ParkableImageBaseTest : public ::testing::Test {
                              base::HistogramBase::Count expected_count) {
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Write.Latency",
                                        expected_count);
-    histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Write.Throughput",
-                                       expected_count);
     histogram_tester_.ExpectBucketCount("Memory.ParkableImage.Write.Size",
                                         sample, expected_count);
   }
 
   // This checks that the "Memory.ParkableImage.Read.*" statistics from
   // |RecordReadStatistics()| are recorded correctly, namely
-  // "Memory.ParkableImage.Read.Latency",
-  // "Memory.ParkableImage.Read.Throughput", and
-  // "Memory.ParkableImage.Read.Size".
+  // "Memory.ParkableImage.Read.Latency", and
+  // "Memory.ParkableImage.Read.Throughput".
   //
-  // Checks the counts for all 3 metrics, but only checks the value for
-  // "Memory.ParkableImage.Read.Size", since the others can't be easily tested.
+  // Checks the counts for both metrics, but not their values, since they can't
+  // be easily tested.
   void ExpectReadStatistics(base::HistogramBase::Sample sample,
                             base::HistogramBase::Count expected_count) {
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Latency",
                                        expected_count);
     histogram_tester_.ExpectTotalCount("Memory.ParkableImage.Read.Throughput",
                                        expected_count);
-    histogram_tester_.ExpectTotalCount(
-        "Memory.ParkableImage.Read.TimeSinceFreeze", expected_count);
   }
 
   base::HistogramTester histogram_tester_;
