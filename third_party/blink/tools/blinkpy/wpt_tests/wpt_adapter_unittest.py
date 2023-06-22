@@ -50,6 +50,7 @@ class WPTAdapterTest(unittest.TestCase):
                     },
                 },
             }))
+
         self._mocks = contextlib.ExitStack()
         self._mocks.enter_context(self.fs.patch_builtins())
         self.output_stream = io.StringIO()
@@ -134,6 +135,53 @@ class WPTAdapterTest(unittest.TestCase):
         }
         files.pop('/mock-checkout/out/Release/wpt_reports.json')
         self.assertEqual(files, files_before)
+
+    def test_parse_filters(self):
+        adapter = WPTAdapter.from_args(
+            self.host,
+            [
+                # Do not replace the mock manifest in `setUp()` with the empty base
+                # manifest.
+                '--no-manifest-update',
+                '--isolated-script-test-filter',
+                'wpt_internal/variant.html?*b*z::-external/wpt/dir*',
+                '--gtest_filter',
+                'wpt_internal/variant.html?foo=bar/abc:wpt_internal/variant.html?xyz',
+            ])
+        with adapter.test_env() as options:
+            self.assertEqual(
+                set(options.include), {
+                    'wpt_internal/variant.html?foo=bar/abc',
+                    'wpt_internal/variant.html?xyz',
+                    'wpt_internal/variant.html?foo=baz',
+                })
+            self.assertIn('dir/reftest.html', options.exclude)
+            self.assertFalse(options.default_exclude)
+
+    def test_parse_isolated_filter_nonexistent_tests(self):
+        """Check that no tests run if all tests in the filter do not exist.
+
+        This often occurs when the build retries the suite without a patch that
+        adds new failing tests.
+        """
+        adapter = WPTAdapter.from_args(self.host, [
+            '--zero-tests-executed-ok',
+            '--isolated-script-test-filter',
+            'does-not-exist.any.html::does-not-exist.any.worker.html',
+        ])
+        with adapter.test_env() as options:
+            self.assertEqual(options.include, [])
+            self.assertTrue(options.default_exclude)
+
+    def test_run_all_with_zero_tests_executed_ok(self):
+        # `--zero-tests-executed-ok` without explicit tests should still run the
+        # entire suite. This matches the `run_web_tests.py` behavior.
+        adapter = WPTAdapter.from_args(self.host, [
+            '--zero-tests-executed-ok',
+        ])
+        with adapter.test_env() as options:
+            self.assertEqual(options.include, [])
+            self.assertFalse(options.default_exclude)
 
     def test_binary_args_propagation(self):
         adapter = WPTAdapter.from_args(self.host, [
