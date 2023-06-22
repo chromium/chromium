@@ -50,8 +50,10 @@ void FrameContentAsText(wtf_size_t max_chars,
     LayoutObject* owner_layout_object = cur_local_child->OwnerLayoutObject();
     if (!layout_view || !layout_view->Size().Width() ||
         !layout_view->Size().Height() ||
-        (layout_view->Location().X() + layout_view->Size().Width() <= 0) ||
-        (layout_view->Location().Y() + layout_view->Size().Height() <= 0) ||
+        (layout_view->PhysicalLocation().left + layout_view->Size().Width() <=
+         0) ||
+        (layout_view->PhysicalLocation().top + layout_view->Size().Height() <=
+         0) ||
         (owner_layout_object && owner_layout_object->Style() &&
          owner_layout_object->Style()->Visibility() != EVisibility::kVisible)) {
       continue;
