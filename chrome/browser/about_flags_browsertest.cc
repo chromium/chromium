@@ -67,7 +67,7 @@ void SimulateTextType(content::WebContents* contents,
                     "var textarea = parent.getElementsByTagName('textarea')[0];"
                     "textarea.focus();"
                     "textarea.value = `%s`;"
-                    "textarea.onchange();",
+                    "textarea.dispatchEvent(new Event('change'));",
                     experiment_id, text)));
 }
 
@@ -82,7 +82,7 @@ void ToggleEnableDropdown(content::WebContents* contents,
                          "querySelector('.experiment-enable-disable');"
                          "s.focus();"
                          "s.selectedIndex = %d;"
-                         "s.onchange();",
+                         "s.dispatchEvent(new Event('change'));",
                          experiment_id, enable ? 1 : 0)));
 }
 

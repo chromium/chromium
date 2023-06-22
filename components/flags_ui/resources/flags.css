@@ -452,7 +452,7 @@ button.primary:-webkit-any(:active, :hover) {
     padding: 4px;
   }
 
-  .searching flags-experiment::part(description) {
+  .searching flags-experiment::part(body) {
     overflow: visible;
     white-space: normal;
   }

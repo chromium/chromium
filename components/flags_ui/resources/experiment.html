@@ -134,10 +134,6 @@
     color: var(--secondary-color);
   }
 
-  .hidden {
-    display: none;
-  }
-
   @media (max-width: 480px) {
     .experiment {
       border-bottom: 1px solid var(--separator-color);
@@ -163,11 +159,16 @@
     }
 
     /* Hide the overflow description text */
-    .experiment p {
+    .body {
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
       width: 100%;
+    }
+
+    .expand .body {
+      overflow: visible;
+      white-space: normal;
     }
   }
 
@@ -182,7 +183,7 @@
   <div class="experiment-default flex-container">
     <div class="flex">
       <h2 class="experiment-name"></h2>
-      <p part="description">
+      <p class="body" part="body">
         <span class="description"></span> – <span class="platforms"></span>
       </p>
       <div class="textarea-container"></div>
