@@ -74,6 +74,9 @@ AttributionConfig::RateLimitConfig RateLimitWith(
 AttributionConfig::EventLevelLimit EventLevelLimitWith(
     base::FunctionRef<void(content::AttributionConfig::EventLevelLimit&)> f);
 
+AttributionConfig::AggregateLimit AggregateLimitWith(
+    base::FunctionRef<void(content::AttributionConfig::AggregateLimit&)> f);
+
 AttributionConfig AttributionConfigWith(
     base::FunctionRef<void(AttributionConfig&)> f);
 

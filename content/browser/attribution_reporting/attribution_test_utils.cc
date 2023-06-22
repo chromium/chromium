@@ -101,6 +101,13 @@ AttributionConfig::EventLevelLimit EventLevelLimitWith(
   return limit;
 }
 
+AttributionConfig::AggregateLimit AggregateLimitWith(
+    base::FunctionRef<void(content::AttributionConfig::AggregateLimit&)> f) {
+  content::AttributionConfig::AggregateLimit limit;
+  f(limit);
+  return limit;
+}
+
 AttributionConfig AttributionConfigWith(
     base::FunctionRef<void(AttributionConfig&)> f) {
   AttributionConfig limit;

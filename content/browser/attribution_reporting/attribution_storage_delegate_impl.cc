@@ -15,7 +15,6 @@
 
 #include "base/check_op.h"
 #include "base/feature_list.h"
-#include "base/logging.h"
 #include "base/memory/ptr_util.h"
 #include "base/metrics/field_trial_params.h"
 #include "base/rand_util.h"
@@ -43,32 +42,6 @@ namespace content {
 namespace {
 
 using ::attribution_reporting::mojom::SourceType;
-
-const base::FeatureParam<base::TimeDelta> kFirstNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "first_report_window_deadline",
-    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
-
-const base::FeatureParam<base::TimeDelta> kSecondNavigationReportWindowDeadline{
-    &blink::features::kConversionMeasurement, "second_report_window_deadline",
-    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
-
-const base::FeatureParam<base::TimeDelta> kFirstEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
-    "first_event_report_window_deadline",
-    AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline};
-
-const base::FeatureParam<base::TimeDelta> kSecondEventReportWindowDeadline{
-    &blink::features::kConversionMeasurement,
-    "second_event_report_window_deadline",
-    AttributionConfig::EventLevelLimit::kDefaultSecondReportWindowDeadline};
-
-const base::FeatureParam<base::TimeDelta> kAggregateReportMinDelay{
-    &blink::features::kConversionMeasurement, "aggregate_report_min_delay",
-    AttributionConfig::AggregateLimit::kDefaultMinDelay};
-
-const base::FeatureParam<base::TimeDelta> kAggregateReportDelaySpan{
-    &blink::features::kConversionMeasurement, "aggregate_report_delay_span",
-    AttributionConfig::AggregateLimit::kDefaultDelaySpan};
 
 const base::FeatureParam<bool> kVTCEarlyReportingWindows(
     &blink::features::kConversionMeasurement,
@@ -140,67 +113,7 @@ AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     AttributionDelayMode delay_mode)
     : AttributionStorageDelegateImpl(noise_mode,
                                      delay_mode,
-                                     AttributionConfig()) {
-  base::TimeDelta first_deadline = kFirstNavigationReportWindowDeadline.Get();
-  base::TimeDelta second_deadline = kSecondNavigationReportWindowDeadline.Get();
-
-  if (!first_deadline.is_negative() && first_deadline < second_deadline) {
-    config_.event_level_limit.first_navigation_report_window_deadline =
-        first_deadline;
-    config_.event_level_limit.second_navigation_report_window_deadline =
-        second_deadline;
-  } else {
-    LOG(WARNING)
-        << "Invalid navigation reporting window deadline value(s) - "
-        << "Reporting window deadlines should be non-negative "
-        << "and the first deadline should be less than the second."
-        << "Using default values: ["
-        << AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline
-        << ", "
-        << AttributionConfig::EventLevelLimit::
-               kDefaultSecondReportWindowDeadline
-        << "]";
-  }
-
-  first_deadline = kFirstEventReportWindowDeadline.Get();
-  second_deadline = kSecondEventReportWindowDeadline.Get();
-
-  if (!first_deadline.is_negative() && first_deadline < second_deadline) {
-    config_.event_level_limit.first_event_report_window_deadline =
-        first_deadline;
-    config_.event_level_limit.second_event_report_window_deadline =
-        second_deadline;
-  } else {
-    LOG(WARNING)
-        << "Invalid VTC reporting window deadline value(s) - "
-        << "Reporting window deadlines should be non-negative "
-        << "and the first deadline should be less than the second."
-        << "Using default values: ["
-        << AttributionConfig::EventLevelLimit::kDefaultFirstReportWindowDeadline
-        << ", "
-        << AttributionConfig::EventLevelLimit::
-               kDefaultSecondReportWindowDeadline
-        << "]";
-  }
-
-  if (base::TimeDelta min_delay = kAggregateReportMinDelay.Get();
-      !min_delay.is_negative()) {
-    config_.aggregate_limit.min_delay = min_delay;
-  } else {
-    LOG(WARNING) << "Minimum aggregate delay declared negative, "
-                 << "using default value: "
-                 << AttributionConfig::AggregateLimit::kDefaultMinDelay;
-  }
-
-  if (base::TimeDelta delay_span = kAggregateReportDelaySpan.Get();
-      !delay_span.is_negative()) {
-    config_.aggregate_limit.delay_span = delay_span;
-  } else {
-    LOG(WARNING) << "Aggregate delay span declared negative, "
-                 << "using default value: "
-                 << AttributionConfig::AggregateLimit::kDefaultDelaySpan;
-  }
-}
+                                     AttributionConfig()) {}
 
 AttributionStorageDelegateImpl::AttributionStorageDelegateImpl(
     AttributionNoiseMode noise_mode,

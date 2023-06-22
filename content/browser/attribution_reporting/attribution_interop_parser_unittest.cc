@@ -681,19 +681,31 @@ TEST(AttributionInteropParserTest, ValidConfig) {
        })},
       {R"json({"max_aggregatable_reports_per_destination":"10"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
-         c.aggregate_limit = {.max_reports_per_destination = 10};
+         c.aggregate_limit =
+             AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
+               a.max_reports_per_destination = 10;
+             });
        })},
       {R"json({"aggregatable_budget_per_source":"100"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
-         c.aggregate_limit = {.aggregatable_budget_per_source = 100};
+         c.aggregate_limit =
+             AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
+               a.aggregatable_budget_per_source = 100;
+             });
        })},
       {R"json({"aggregatable_report_min_delay":"0"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
-         c.aggregate_limit = {.min_delay = base::TimeDelta()};
+         c.aggregate_limit =
+             AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
+               a.min_delay = base::TimeDelta();
+             });
        })},
       {R"json({"aggregatable_report_delay_span":"0"})json", false,
        AttributionConfigWith([](AttributionConfig& c) {
-         c.aggregate_limit = {.delay_span = base::TimeDelta()};
+         c.aggregate_limit =
+             AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
+               a.delay_span = base::TimeDelta();
+             });
        })},
       {R"json({
         "max_sources_per_origin":"10",
@@ -735,11 +747,14 @@ TEST(AttributionInteropParserTest, ValidConfig) {
                e.max_reports_per_destination = 10;
                e.max_attributions_per_navigation_source = 5;
                e.max_attributions_per_event_source = 1;
-             }),
-         c.aggregate_limit = {.max_reports_per_destination = 10,
-                              .aggregatable_budget_per_source = 1000,
-                              .min_delay = base::Minutes(10),
-                              .delay_span = base::Minutes(20)},
+             });
+         c.aggregate_limit =
+             AggregateLimitWith([](AttributionConfig::AggregateLimit& a) {
+               a.max_reports_per_destination = 10;
+               a.aggregatable_budget_per_source = 1000;
+               a.min_delay = base::Minutes(10);
+               a.delay_span = base::Minutes(20);
+             });
          c.throttler_policy = {.max_total = 2, .max_per_reporting_site = 1};
        })}};
 

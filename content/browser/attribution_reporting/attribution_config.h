@@ -114,7 +114,9 @@ struct CONTENT_EXPORT AttributionConfig {
     // should also be updated.
   };
 
-  struct AggregateLimit {
+  struct CONTENT_EXPORT AggregateLimit {
+    AggregateLimit();
+
     // Returns true if this config is valid.
     [[nodiscard]] bool Validate() const;
 
