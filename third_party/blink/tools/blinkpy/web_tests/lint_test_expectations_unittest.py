@@ -557,7 +557,7 @@ class MainTest(unittest.TestCase):
     def test_success(self):
         lint_test_expectations.lint = lambda host, options: ([], [])
         res = lint_test_expectations.main(['--platform', 'test'], self.stderr)
-        self.assertEqual('', self.stderr.getvalue().strip())
+        self.assertEqual('Lint succeeded.', self.stderr.getvalue().strip())
         self.assertEqual(res, 0)
 
     def test_success_with_warning(self):

@@ -491,9 +491,8 @@ def main(argv, stderr, host=None):
         host.executive.error_output_limit = None
     else:
         # PRESUBMIT.py relies on our output, so don't include timestamps.
-        configure_logging(logging_level=logging.WARNING,
-                          stream=stderr,
-                          include_time=False)
+        configure_logging(
+            logging_level=logging.INFO, stream=stderr, include_time=False)
 
     try:
         exit_status = run_checks(host, options)
