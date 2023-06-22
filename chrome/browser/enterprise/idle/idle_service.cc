@@ -10,6 +10,7 @@
 #include "base/functional/bind.h"
 #include "base/functional/callback.h"
 #include "base/json/values_util.h"
+#include "base/task/single_thread_task_runner.h"
 #include "chrome/browser/enterprise/idle/idle_features.h"
 #include "chrome/browser/enterprise/idle/idle_service_factory.h"
 #include "chrome/browser/profiles/profile.h"
@@ -52,19 +53,28 @@ class IdleService::BrowserObserver : public BrowserListObserver {
 
   // BrowserListObserver:
   void OnBrowserSetLastActive(Browser* browser) override {
+    CHECK(browser);
     Profile* profile = browser->profile();
     auto* prefs = profile->GetPrefs();
     if (browser->is_type_normal() && profile == profile_ &&
         prefs->GetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup)) {
-      ShowIdleBubble(
-          browser,
-          IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout(),
-          GetActionSet(prefs));
-      prefs->SetBoolean(prefs::kIdleTimeoutShowBubbleOnStartup, false);
+      base::TimeDelta timeout =
+          IdleServiceFactory::GetForBrowserContext(profile)->GetTimeout();
+      ShowIdleBubble(browser, timeout, GetActionSet(prefs),
+                     base::BindOnce(&IdleService::BrowserObserver::OnClose,
+                                    browser->AsWeakPtr()));
     }
   }
 
  private:
+  static void OnClose(base::WeakPtr<Browser> browser) {
+    if (!browser) {
+      return;
+    }
+    browser->profile()->GetPrefs()->SetBoolean(
+        prefs::kIdleTimeoutShowBubbleOnStartup, false);
+  }
+
   IdleDialog::ActionSet GetActionSet(PrefService* prefs) {
     std::vector<ActionType> actions;
     base::ranges::transform(prefs->GetList(prefs::kIdleTimeoutActions),
