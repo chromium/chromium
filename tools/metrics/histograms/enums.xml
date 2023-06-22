@@ -10033,6 +10033,61 @@ others/histograms.xml -->
   <int value="2" label="Declined after accepting"/>
 </enum>
 
+<enum name="AutofillWebDataBackendImplOperationResult">
+  <int value="0" label="AddFormElements: Success"/>
+  <int value="1" label="AddFormElements: Failure"/>
+  <int value="10" label="RemoveFormElementsAddedBetween: Success"/>
+  <int value="11" label="RemoveFormElementsAddedBetween: Failure"/>
+  <int value="20" label="RemoveFormValueForElementName: Success"/>
+  <int value="22" label="RemoveFormValueForElementName: Failure"/>
+  <int value="30" label="AddAutofillProfile: Success"/>
+  <int value="31" label="AddAutofillProfile: Failure"/>
+  <int value="40" label="UpdateAutofillProfile: Success"/>
+  <int value="41" label="UpdateAutofillProfile: ReadFailure"/>
+  <int value="42" label="UpdateAutofillProfile: WriteFailure"/>
+  <int value="50" label="RemoveAutofillProfile: Success"/>
+  <int value="51" label="RemoveAutofillProfile: ReadFailure"/>
+  <int value="52" label="RemoveAutofillProfile: WriteFailure"/>
+  <int value="60" label="UpdateAutofillEntries: Success"/>
+  <int value="61" label="UpdateAutofillEntries: Failure"/>
+  <int value="70" label="AddCreditCard: Success"/>
+  <int value="71" label="AddCreditCard: Failure"/>
+  <int value="80" label="UpdateCreditCard: Success"/>
+  <int value="81" label="UpdateCreditCard: ReadFailure"/>
+  <int value="82" label="UpdateCreditCard: WriteFailure"/>
+  <int value="90" label="RemoveCreditCard: Success"/>
+  <int value="91" label="RemoveCreditCard: ReadFailure"/>
+  <int value="92" label="RemoveCreditCard: WriteFailure"/>
+  <int value="100" label="AddFullServerCreditCard: Success"/>
+  <int value="101" label="AddFullServerCreditCard: Failure"/>
+  <int value="110" label="UnmaskServerCreditCard: Success"/>
+  <int value="111" label="UnmaskServerCreditCard: Failure"/>
+  <int value="120" label="MaskServerCreditCard: Success"/>
+  <int value="121" label="MaskServerCreditCard: Failure"/>
+  <int value="130" label="UpdateServerCardMetadata: Success"/>
+  <int value="131" label="UpdateServerCardMetadata: Failure"/>
+  <int value="140" label="AddIBAN: Success"/>
+  <int value="141" label="AddIBAN: Failure"/>
+  <int value="150" label="UpdateIBAN: Success"/>
+  <int value="151" label="UpdateIBAN: ReadFailure"/>
+  <int value="152" label="UpdateIBAN: WriteFailure"/>
+  <int value="160" label="RemoveIBAN: Success"/>
+  <int value="161" label="RemoveIBAN: ReadFailure"/>
+  <int value="162" label="RemoveIBAN: WriteFailure"/>
+  <int value="170" label="UpdateServerAddressMetadata: Success"/>
+  <int value="171" label="UpdateServerAddressMetadata: Failure"/>
+  <int value="180" label="AddUpiId: Success"/>
+  <int value="181" label="AddUpiId: Failure"/>
+  <int value="190" label="ClearAllServerData: Success"/>
+  <int value="191" label="ClearAllServerData: Failure"/>
+  <int value="200" label="ClearAllLocalData: Success"/>
+  <int value="201" label="ClearAllLocalData: Failure"/>
+  <int value="210" label="RemoveAutofillDataModifiedBetween: Success"/>
+  <int value="211" label="RemoveAutofillDataModifiedBetween: Failure"/>
+  <int value="220" label="RemoveOriginURLsModifiedBetween: Success"/>
+  <int value="221" label="RemoveOriginURLsModifiedBetween: Failure"/>
+</enum>
+
 <enum name="AutoFramingError">
   <int value="0" label="No error"/>
   <int value="1" label="Initialization error"/>

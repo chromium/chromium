@@ -17,8 +17,10 @@
 #include "base/task/single_thread_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/task/thread_pool/thread_pool_instance.h"
+#include "base/test/metrics/histogram_tester.h"
 #include "base/test/task_environment.h"
 #include "base/time/time.h"
+#include "base/uuid.h"
 #include "components/autofill/core/browser/data_model/autofill_profile.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
 #include "components/autofill/core/browser/geo/autofill_country.h"
@@ -38,6 +40,8 @@
 #include "testing/gtest/include/gtest/gtest.h"
 
 using base::ASCIIToUTF16;
+using base::Bucket;
+using base::BucketsAre;
 using base::Time;
 using base::WaitableEvent;
 using testing::_;
@@ -518,6 +522,54 @@ TEST_F(WebDataServiceAutofillTest, AutofillRemoveModifiedBetween) {
   handle2 = wds_->GetCreditCards(&card_consumer2);
   EXPECT_EQ(handle2, card_consumer2.WaitForHandle());
   ASSERT_EQ(0U, card_consumer2.result().size());
+}
+
+// Verify that WebDatabase.AutofillWebDataBackendImpl.OperationSuccess records
+// success and failures in the methods of AutofillWebDataBackendImpl.
+TEST_F(WebDataServiceAutofillTest, SuccessReporting) {
+  auto add_card_synchronously = [&](const CreditCard& card) {
+    wds_->AddCreditCard(card);
+
+    // Wait that card was added by enqueuing a lookup which is handled on the
+    // same SequencedTaskRunner as the previous `AddCreditCard` operation and
+    // waiting for the result.
+    AutofillWebDataServiceWaiter<std::vector<std::unique_ptr<CreditCard>>>
+        consumer;
+    WebDataServiceBase::Handle handle = wds_->GetCreditCards(&consumer);
+    EXPECT_EQ(handle, consumer.WaitForHandle());
+  };
+
+  // Values are taken from enum Result in autofill_webdata_backend_impl.cc.
+  constexpr int kAddCreditCard_Success = 70;
+  constexpr int kRemoveCreditCard_ReadFailure = 91;
+
+  // Verify that success is reported correctly.
+  {
+    base::HistogramTester histogram_tester;
+    add_card_synchronously(CreditCard());
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "WebDatabase.AutofillWebDataBackendImpl.OperationResult"),
+                BucketsAre(Bucket(kAddCreditCard_Success, 1)));
+  }
+
+  // Verify that failure is reported correctly.
+  {
+    base::HistogramTester histogram_tester;
+    // Asynchronously delete a non-existing card which should trigger a failure
+    // report.
+    std::string non_existing_guid =
+        base::Uuid::GenerateRandomV4().AsLowercaseString();
+    wds_->RemoveCreditCard(non_existing_guid);
+
+    // Add a second card just to ensure that the delete operation has been fully
+    // processed.
+    add_card_synchronously(CreditCard());
+
+    EXPECT_THAT(histogram_tester.GetAllSamples(
+                    "WebDatabase.AutofillWebDataBackendImpl.OperationResult"),
+                BucketsAre(Bucket(kRemoveCreditCard_ReadFailure, 1),
+                           Bucket(kAddCreditCard_Success, 1)));
+  }
 }
 
 }  // namespace autofill

@@ -14249,6 +14249,16 @@ regressions. -->
   </summary>
 </histogram>
 
+<histogram name="WebDatabase.AutofillWebDataBackendImpl.OperationResult"
+    enum="AutofillWebDataBackendImplOperationResult" expires_after="2023-12-01">
+  <owner>battre@chromium.org</owner>
+  <owner>asully@chromium.org</owner>
+  <summary>
+    Records the success or failure of various database operations in
+    autofill::AutofillWebDataBackendImpl.
+  </summary>
+</histogram>
+
 <histogram name="WebDatabase.FailedMigrationToVersion" units="version"
     expires_after="2023-12-01">
   <owner>battre@chromium.org</owner>

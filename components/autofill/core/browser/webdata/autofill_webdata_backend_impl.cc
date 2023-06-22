@@ -10,9 +10,10 @@
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
-#include "base/notreached.h"
+#include "base/metrics/histogram_functions.h"
 #include "base/observer_list.h"
 #include "base/task/single_thread_task_runner.h"
+#include "base/types/cxx23_to_underlying.h"
 #include "components/autofill/core/browser/data_model/autofill_offer_data.h"
 #include "components/autofill/core/browser/data_model/autofill_wallet_usage_data.h"
 #include "components/autofill/core/browser/data_model/credit_card.h"
@@ -34,6 +35,76 @@ using base::Time;
 namespace autofill {
 
 namespace {
+
+// Do not modify the order or values of these elements as they are reported
+// as metrics. This is represented as AutofillWebDataBackendImplOperationResult
+// in enums.xml.
+// The ID space is a bit stretched out to enable adding new failure testing
+// inside functions where needed without destroying the order of elements.
+enum class Result {
+  kAddFormElements_Success = 0,
+  kAddFormElements_Failure = 1,
+  kRemoveFormElementsAddedBetween_Success = 10,
+  kRemoveFormElementsAddedBetween_Failure = 11,
+  kRemoveFormValueForElementName_Success = 20,
+  kRemoveFormValueForElementName_Failure = 22,
+  kAddAutofillProfile_Success = 30,
+  kAddAutofillProfile_Failure = 31,
+  kUpdateAutofillProfile_Success = 40,
+  kUpdateAutofillProfile_ReadFailure = 41,
+  kUpdateAutofillProfile_WriteFailure = 42,
+  kRemoveAutofillProfile_Success = 50,
+  kRemoveAutofillProfile_ReadFailure = 51,
+  kRemoveAutofillProfile_WriteFailure = 52,
+  kUpdateAutofillEntries_Success = 60,
+  kUpdateAutofillEntries_Failure = 61,
+  kAddCreditCard_Success = 70,
+  kAddCreditCard_Failure = 71,
+  kUpdateCreditCard_Success = 80,
+  kUpdateCreditCard_ReadFailure = 81,
+  kUpdateCreditCard_WriteFailure = 82,
+  kRemoveCreditCard_Success = 90,
+  kRemoveCreditCard_ReadFailure = 91,
+  kRemoveCreditCard_WriteFailure = 92,
+  kAddFullServerCreditCard_Success = 100,
+  kAddFullServerCreditCard_Failure = 101,
+  kUnmaskServerCreditCard_Success = 110,
+  kUnmaskServerCreditCard_Failure = 111,
+  kMaskServerCreditCard_Success = 120,
+  kMaskServerCreditCard_Failure = 121,
+  kUpdateServerCardMetadata_Success = 130,
+  kUpdateServerCardMetadata_Failure = 131,
+  kAddIBAN_Success = 140,
+  kAddIBAN_Failure = 141,
+  kUpdateIBAN_Success = 150,
+  kUpdateIBAN_ReadFailure = 151,
+  kUpdateIBAN_WriteFailure = 152,
+  kRemoveIBAN_Success = 160,
+  kRemoveIBAN_ReadFailure = 161,
+  kRemoveIBAN_WriteFailure = 162,
+  kUpdateServerAddressMetadata_Success = 170,
+  kUpdateServerAddressMetadata_Failure = 171,
+  kAddUpiId_Success = 180,
+  kAddUpiId_Failure = 181,
+  kClearAllServerData_Success = 190,
+  kClearAllServerData_Failure = 191,
+  kClearAllLocalData_Success = 200,
+  kClearAllLocalData_Failure = 201,
+  kRemoveAutofillDataModifiedBetween_Success = 210,
+  kRemoveAutofillDataModifiedBetween_Failure = 211,
+  kRemoveOriginURLsModifiedBetween_Success = 220,
+  kRemoveOriginURLsModifiedBetween_Failure = 221,
+  kMaxValue = kRemoveOriginURLsModifiedBetween_Failure,
+};
+
+// Reports the success or failure of various operations on the database via UMA.
+//
+// Unit tests live in web_data_service_unittest.cc.
+void ReportResult(Result result) {
+  base::UmaHistogramEnumeration(
+      "WebDatabase.AutofillWebDataBackendImpl.OperationResult", result);
+}
+
 WebDatabase::State DoNothingAndCommit(WebDatabase* db) {
   return WebDatabase::COMMIT_NEEDED;
 }
@@ -171,7 +242,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
   AutofillChangeList changes;
   if (!AutofillTable::FromWebDatabase(db)->AddFormFieldValues(fields,
                                                               &changes)) {
-    NOTREACHED();
+    ReportResult(Result::kAddFormElements_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -181,6 +252,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFormElements(
   for (auto& db_observer : db_observer_list_)
     db_observer.AutofillEntriesChanged(changes);
 
+  ReportResult(Result::kAddFormElements_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -214,8 +286,10 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormElementsAddedBetween(
       for (auto& db_observer : db_observer_list_)
         db_observer.AutofillEntriesChanged(changes);
     }
+    ReportResult(Result::kRemoveFormElementsAddedBetween_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
+  ReportResult(Result::kRemoveFormElementsAddedBetween_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -234,8 +308,10 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveFormValueForElementName(
     for (auto& db_observer : db_observer_list_)
       db_observer.AutofillEntriesChanged(changes);
 
+    ReportResult(Result::kRemoveFormValueForElementName_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
+  ReportResult(Result::kRemoveFormValueForElementName_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -244,7 +320,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->AddAutofillProfile(profile)) {
-    NOTREACHED();
+    ReportResult(Result::kAddAutofillProfile_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -261,6 +337,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddAutofillProfile(
                                       AutofillProfileChange::ADD, profile)));
   }
 
+  ReportResult(Result::kAddAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -275,10 +352,11 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
       AutofillTable::FromWebDatabase(db)->GetAutofillProfile(profile.guid(),
                                                              profile.source());
   if (!original_profile) {
+    ReportResult(Result::kUpdateAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
   if (!AutofillTable::FromWebDatabase(db)->UpdateAutofillProfile(profile)) {
-    NOTREACHED();
+    ReportResult(Result::kUpdateAutofillProfile_WriteFailure);
     return WebDatabase::COMMIT_NEEDED;
   }
 
@@ -295,6 +373,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillProfile(
                                       AutofillProfileChange::UPDATE, profile)));
   }
 
+  ReportResult(Result::kUpdateAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -307,13 +386,13 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
       AutofillTable::FromWebDatabase(db)->GetAutofillProfile(guid,
                                                              profile_source);
   if (!profile) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveAutofillProfile_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   if (!AutofillTable::FromWebDatabase(db)->RemoveAutofillProfile(
           guid, profile_source)) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveAutofillProfile_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -331,6 +410,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveAutofillProfile(
                                                  *profile.get())));
   }
 
+  ReportResult(Result::kRemoveAutofillProfile_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -384,9 +464,12 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateAutofillEntries(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->UpdateAutofillEntries(
-          autofill_entries))
+          autofill_entries)) {
+    ReportResult(Result::kUpdateAutofillEntries_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
+  }
 
+  ReportResult(Result::kUpdateAutofillEntries_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -395,7 +478,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddCreditCard(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->AddCreditCard(credit_card)) {
-    NOTREACHED();
+    ReportResult(Result::kAddCreditCard_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -403,6 +486,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddCreditCard(
     db_observer.CreditCardChanged(CreditCardChange(
         CreditCardChange::ADD, credit_card.guid(), &credit_card));
   }
+  ReportResult(Result::kAddCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -414,11 +498,13 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateCreditCard(
   // the write and the caller will detect this on the next refresh.
   std::unique_ptr<CreditCard> original_credit_card =
       AutofillTable::FromWebDatabase(db)->GetCreditCard(credit_card.guid());
-  if (!original_credit_card)
+  if (!original_credit_card) {
+    ReportResult(Result::kUpdateCreditCard_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
+  }
 
   if (!AutofillTable::FromWebDatabase(db)->UpdateCreditCard(credit_card)) {
-    NOTREACHED();
+    ReportResult(Result::kUpdateCreditCard_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -426,6 +512,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateCreditCard(
     db_observer.CreditCardChanged(CreditCardChange(
         CreditCardChange::UPDATE, credit_card.guid(), &credit_card));
   }
+  ReportResult(Result::kUpdateCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -436,12 +523,12 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveCreditCard(
   std::unique_ptr<CreditCard> card =
       AutofillTable::FromWebDatabase(db)->GetCreditCard(guid);
   if (!card) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveCreditCard_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   if (!AutofillTable::FromWebDatabase(db)->RemoveCreditCard(guid)) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveCreditCard_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -449,6 +536,7 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveCreditCard(
     db_observer.CreditCardChanged(
         CreditCardChange(CreditCardChange::REMOVE, guid, card.get()));
   }
+  ReportResult(Result::kRemoveCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -458,7 +546,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFullServerCreditCard(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->AddFullServerCreditCard(
           credit_card)) {
-    NOTREACHED();
+    ReportResult(Result::kAddFullServerCreditCard_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -466,6 +554,7 @@ WebDatabase::State AutofillWebDataBackendImpl::AddFullServerCreditCard(
     db_observer.CreditCardChanged(CreditCardChange(
         CreditCardChange::ADD, credit_card.guid(), &credit_card));
   }
+  ReportResult(Result::kAddFullServerCreditCard_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -495,8 +584,11 @@ WebDatabase::State AutofillWebDataBackendImpl::UnmaskServerCreditCard(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->UnmaskServerCreditCard(card,
-                                                                 full_number))
+                                                                 full_number)) {
+    ReportResult(Result::kUnmaskServerCreditCard_Success);
     return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kUnmaskServerCreditCard_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -504,8 +596,11 @@ WebDatabase::State AutofillWebDataBackendImpl::MaskServerCreditCard(
     const std::string& id,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-  if (AutofillTable::FromWebDatabase(db)->MaskServerCreditCard(id))
+  if (AutofillTable::FromWebDatabase(db)->MaskServerCreditCard(id)) {
+    ReportResult(Result::kMaskServerCreditCard_Success);
     return WebDatabase::COMMIT_NEEDED;
+  }
+  ReportResult(Result::kMaskServerCreditCard_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -514,14 +609,17 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerCardMetadata(
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   DCHECK_NE(CreditCard::LOCAL_CARD, card.record_type());
-  if (!AutofillTable::FromWebDatabase(db)->UpdateServerCardMetadata(card))
+  if (!AutofillTable::FromWebDatabase(db)->UpdateServerCardMetadata(card)) {
+    ReportResult(Result::kUpdateServerCardMetadata_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
+  }
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.CreditCardChanged(
         CreditCardChange(CreditCardChange::UPDATE, card.server_id(), &card));
   }
 
+  ReportResult(Result::kUpdateServerCardMetadata_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -539,13 +637,14 @@ WebDatabase::State AutofillWebDataBackendImpl::AddIBAN(const IBAN& iban,
                                                        WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->AddIBAN(iban)) {
-    NOTREACHED();
+    ReportResult(Result::kAddIBAN_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.IBANChanged(IBANChange(IBANChange::ADD, iban.guid(), &iban));
   }
+  ReportResult(Result::kAddIBAN_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -556,17 +655,20 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateIBAN(const IBAN& iban,
   // the write and the caller will detect this on the next refresh.
   std::unique_ptr<IBAN> original_iban =
       AutofillTable::FromWebDatabase(db)->GetIBAN(iban.guid());
-  if (!original_iban)
+  if (!original_iban) {
+    ReportResult(Result::kUpdateIBAN_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
+  }
 
   if (!AutofillTable::FromWebDatabase(db)->UpdateIBAN(iban)) {
-    NOTREACHED();
+    ReportResult(Result::kUpdateIBAN_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.IBANChanged(IBANChange(IBANChange::UPDATE, iban.guid(), &iban));
   }
+  ReportResult(Result::kUpdateIBAN_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -577,18 +679,19 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveIBAN(
   std::unique_ptr<IBAN> iban =
       AutofillTable::FromWebDatabase(db)->GetIBAN(guid);
   if (!iban) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveIBAN_ReadFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   if (!AutofillTable::FromWebDatabase(db)->RemoveIBAN(guid)) {
-    NOTREACHED();
+    ReportResult(Result::kRemoveIBAN_WriteFailure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
   for (auto& db_observer : db_observer_list_) {
     db_observer.IBANChanged(IBANChange(IBANChange::REMOVE, guid, iban.get()));
   }
+  ReportResult(Result::kRemoveIBAN_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -599,6 +702,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
   DCHECK_EQ(AutofillProfile::SERVER_PROFILE, profile.record_type());
   if (!AutofillTable::FromWebDatabase(db)->UpdateServerAddressMetadata(
           profile)) {
+    ReportResult(Result::kUpdateServerAddressMetadata_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
 
@@ -607,6 +711,7 @@ WebDatabase::State AutofillWebDataBackendImpl::UpdateServerAddressMetadata(
         AutofillProfileChange::UPDATE, profile.server_id(), &profile));
   }
 
+  ReportResult(Result::kUpdateServerAddressMetadata_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -614,9 +719,11 @@ WebDatabase::State AutofillWebDataBackendImpl::AddUpiId(
     const std::string& upi_id,
     WebDatabase* db) {
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
-
-  if (!AutofillTable::FromWebDatabase(db)->InsertUpiId(upi_id))
+  if (!AutofillTable::FromWebDatabase(db)->InsertUpiId(upi_id)) {
+    ReportResult(Result::kAddUpiId_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
+  }
+  ReportResult(Result::kAddUpiId_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
@@ -676,8 +783,10 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllServerData(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->ClearAllServerData()) {
     NotifyOfMultipleAutofillChanges();
+    ReportResult(Result::kClearAllServerData_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
+  ReportResult(Result::kClearAllServerData_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -686,8 +795,10 @@ WebDatabase::State AutofillWebDataBackendImpl::ClearAllLocalData(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (AutofillTable::FromWebDatabase(db)->ClearAllLocalData()) {
     NotifyOfMultipleAutofillChanges();
+    ReportResult(Result::kClearAllLocalData_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
+  ReportResult(Result::kClearAllLocalData_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -715,8 +826,10 @@ AutofillWebDataBackendImpl::RemoveAutofillDataModifiedBetween(
     }
     // Note: It is the caller's responsibility to post notifications for any
     // changes, e.g. by calling the Refresh() method of PersonalDataManager.
+    ReportResult(Result::kRemoveAutofillDataModifiedBetween_Success);
     return WebDatabase::COMMIT_NEEDED;
   }
+  ReportResult(Result::kRemoveAutofillDataModifiedBetween_Failure);
   return WebDatabase::COMMIT_NOT_NEEDED;
 }
 
@@ -727,10 +840,12 @@ WebDatabase::State AutofillWebDataBackendImpl::RemoveOriginURLsModifiedBetween(
   DCHECK(owning_task_runner()->RunsTasksInCurrentSequence());
   if (!AutofillTable::FromWebDatabase(db)->RemoveOriginURLsModifiedBetween(
           delete_begin, delete_end)) {
+    ReportResult(Result::kRemoveOriginURLsModifiedBetween_Failure);
     return WebDatabase::COMMIT_NOT_NEEDED;
   }
   // Note: It is the caller's responsibility to post notifications for any
   // changes, e.g. by calling the Refresh() method of PersonalDataManager.
+  ReportResult(Result::kRemoveOriginURLsModifiedBetween_Success);
   return WebDatabase::COMMIT_NEEDED;
 }
 
