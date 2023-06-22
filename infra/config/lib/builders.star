@@ -400,7 +400,7 @@ defaults = args.defaults(
     reclient_cache_silo = None,
     reclient_ensure_verified = None,
     reclient_disable_bq_upload = None,
-    siso_config = None,
+    siso_configs = None,
     siso_project = None,
     siso_enable_cloud_profiler = None,
     siso_enable_cloud_trace = None,
@@ -467,7 +467,7 @@ def builder(
         reclient_cache_silo = None,
         reclient_ensure_verified = None,
         reclient_disable_bq_upload = None,
-        siso_config = args.DEFAULT,
+        siso_configs = args.DEFAULT,
         siso_project = args.DEFAULT,
         siso_enable_cloud_profiler = args.DEFAULT,
         siso_enable_cloud_trace = args.DEFAULT,
@@ -651,7 +651,7 @@ def builder(
             effect if reclient_instance is not set.
         reclient_disable_bq_upload: If True, rbe_metrics will not be uploaded to
             BigQuery after each build
-        siso_config: a string of siso config. available values are defined in
+        siso_configs: a list of siso configs to enable. available values are defined in
             //build/config/siso/config.star.
         siso_project: a string indicating the GCP project hosting the RBE
             instance and other Cloud services. e.g. logging, trace etc.
@@ -823,7 +823,7 @@ def builder(
         properties["$build/reclient"] = reclient
 
     siso = {
-        "config": defaults.get_value("siso_config", siso_config),
+        "configs": defaults.get_value("siso_configs", siso_configs),
         "enable_cloud_profiler": defaults.get_value("siso_enable_cloud_profiler", siso_enable_cloud_profiler),
         "enable_cloud_trace": defaults.get_value("siso_enable_cloud_trace", siso_enable_cloud_trace),
         "experiments": siso_experiments,
