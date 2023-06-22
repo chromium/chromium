@@ -1,14 +1,16 @@
-// Copyright 2018 The Chromium Authors
+// Copyright 2023 The Chromium Authors
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "media/gpu/v4l2/v4l2_device.h"
+#include "media/gpu/v4l2/v4l2_utils.h"
 
 #include <cstring>
 #include <sstream>
 #include <vector>
 
 #include "media/base/color_plane_layout.h"
+#include "media/base/video_frame_layout.h"
+#include "media/base/video_types.h"
 #include "media/gpu/v4l2/v4l2_utils.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "ui/gfx/native_pixmap_handle.h"
@@ -79,7 +81,7 @@ namespace media {
 
 // Test V4L2FormatToVideoFrameLayout with NV12 pixelformat, which has one buffer
 // and two color planes.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutNV12) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY, {320}, {86400}));
   ASSERT_TRUE(layout.has_value());
@@ -103,7 +105,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12) {
 
 // Test V4L2FormatToVideoFrameLayout with NV12M pixelformat, which has two
 // buffers and two color planes.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12M) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutNV12M) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY, {320, 320}, {57600, 28800}));
   ASSERT_TRUE(layout.has_value());
@@ -127,7 +129,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNV12M) {
 
 // Test V4L2FormatToVideoFrameLayout with YUV420 pixelformat, which has one
 // buffer and three color planes.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutYUV420) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutYUV420) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_YUV420, V4L2_FIELD_ANY, {320}, {86400}));
   ASSERT_TRUE(layout.has_value());
@@ -150,7 +152,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutYUV420) {
 
 // Test V4L2FormatToVideoFrameLayout with single planar v4l2_format.
 // Expect an invalid VideoFrameLayout.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNoMultiPlanar) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutNoMultiPlanar) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutput(
       300, 180, V4L2_PIX_FMT_NV12, V4L2_FIELD_ANY, 320, 86400));
   EXPECT_FALSE(layout.has_value());
@@ -158,7 +160,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutNoMultiPlanar) {
 
 // Test V4L2FormatToVideoFrameLayout with unsupported v4l2_format pixelformat,
 // e.g. V4L2_PIX_FMT_NV16. Expect an invalid VideoFrameLayout.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedPixelformat) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutUnsupportedPixelformat) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_NV16, V4L2_FIELD_ANY, {320}, {86400}));
   EXPECT_FALSE(layout.has_value());
@@ -167,7 +169,7 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedPixelformat) {
 // Test V4L2FormatToVideoFrameLayout with unsupported pixelformat which's
 // #color planes > #buffers, e.g. V4L2_PIX_FMT_YUV422M.
 // Expect an invalid VideoFrameLayout.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedStrideCalculation) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutUnsupportedStrideCalculation) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_YUV422M, V4L2_FIELD_ANY, {320}, {86400}));
   EXPECT_FALSE(layout.has_value());
@@ -175,14 +177,14 @@ TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutUnsupportedStrideCalculation) {
 
 // Test V4L2FormatToVideoFrameLayout with wrong stride value (expect even).
 // Expect an invalid VideoFrameLayout.
-TEST(V4L2DeviceTest, V4L2FormatToVideoFrameLayoutWrongStrideValue) {
+TEST(V4L2UtilsTest, V4L2FormatToVideoFrameLayoutWrongStrideValue) {
   auto layout = V4L2FormatToVideoFrameLayout(V4L2FormatVideoOutputMplane(
       300, 180, V4L2_PIX_FMT_YUV420, V4L2_FIELD_ANY, {319}, {86400}));
   EXPECT_FALSE(layout.has_value());
 }
 
 // Test GetNumPlanesOfV4L2PixFmt.
-TEST(V4L2DeviceTest, GetNumPlanesOfV4L2PixFmt) {
+TEST(V4L2UtilsTest, GetNumPlanesOfV4L2PixFmt) {
   EXPECT_EQ(1u, GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_NV12));
   EXPECT_EQ(1u, GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YUV420));
   EXPECT_EQ(1u, GetNumPlanesOfV4L2PixFmt(V4L2_PIX_FMT_YVU420));

@@ -150,7 +150,7 @@ source_set("unit_test") {
   testonly = true
   sources = [
     "legacy/v4l2_stateful_workaround_unittest.cc",
-    "v4l2_device_unittest.cc",
+    "v4l2_utils_unittest.cc",
   ]
   deps = [
     ":v4l2",
