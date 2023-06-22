@@ -2921,6 +2921,9 @@ PaintOpBuffer::PaintOpBuffer(PaintOpBuffer&& other) {
 }
 
 PaintOpBuffer::~PaintOpBuffer() {
+  if (!recordreplay::AreEventsDisallowed()) {
+    recordreplay::Assert("[RUN-2104-2228] ~PaintOpBuffer");
+  }
   Reset();
 }
 
