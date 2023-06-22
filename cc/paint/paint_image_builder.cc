@@ -29,6 +29,8 @@ PaintImageBuilder::PaintImageBuilder(PaintImage image, bool clear_contents)
 #if DCHECK_IS_ON()
   id_set_ = true;
 #endif
+  recordreplay::Assert("[RUN-1975-2225] PaintImageBuilder %d %d",
+                       clear_contents, paint_image_.stable_id());
   if (clear_contents) {
     paint_image_.sk_image_ = nullptr;
     paint_image_.paint_record_ = nullptr;
