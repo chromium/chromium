@@ -61,9 +61,14 @@ TargetDeviceBootstrapController::QRCodePixelData GenerateQRCode(
 TargetDeviceBootstrapController::TargetDeviceBootstrapController(
     std::unique_ptr<TargetDeviceConnectionBroker>
         target_device_connection_broker,
-    std::unique_ptr<SecondDeviceAuthBroker> auth_broker)
+    std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
+    std::unique_ptr<
+        TargetDeviceBootstrapController::AccessibilityManagerWrapper>
+        accessibility_manager_wrapper)
     : connection_broker_(std::move(target_device_connection_broker)),
-      auth_broker_(std::move(auth_broker)) {}
+      auth_broker_(std::move(auth_broker)),
+      accessibility_manager_wrapper_(std::move(accessibility_manager_wrapper)) {
+}
 
 TargetDeviceBootstrapController::~TargetDeviceBootstrapController() = default;
 
@@ -103,8 +108,10 @@ void TargetDeviceBootstrapController::StartAdvertising() {
   DCHECK(!weak_ptr_factory_.HasWeakPtrs());
 
   status_.step = Step::ADVERTISING;
+  bool use_pin_authentication =
+      accessibility_manager_wrapper_->IsSpokenFeedbackEnabled();
   connection_broker_->StartAdvertising(
-      this, /*use_pin_authentication=*/false,
+      this, use_pin_authentication,
       base::BindOnce(&TargetDeviceBootstrapController::OnStartAdvertisingResult,
                      weak_ptr_factory_.GetWeakPtr()));
   NotifyObservers();

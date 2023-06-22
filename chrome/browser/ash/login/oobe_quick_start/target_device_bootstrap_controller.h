@@ -24,15 +24,6 @@ namespace ash::quick_start {
 class TargetDeviceBootstrapController
     : public TargetDeviceConnectionBroker::ConnectionLifecycleListener {
  public:
-  explicit TargetDeviceBootstrapController(
-      std::unique_ptr<TargetDeviceConnectionBroker>
-          target_device_connection_broker,
-      std::unique_ptr<SecondDeviceAuthBroker> auth_broker);
-  TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
-  TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
-      delete;
-  ~TargetDeviceBootstrapController() override;
-
   enum class Step {
     NONE,
     ERROR,
@@ -73,6 +64,17 @@ class TargetDeviceBootstrapController
     absl::optional<std::string> password;
   };
 
+  class AccessibilityManagerWrapper {
+   public:
+    AccessibilityManagerWrapper() = default;
+    AccessibilityManagerWrapper(AccessibilityManagerWrapper&) = delete;
+    AccessibilityManagerWrapper& operator=(AccessibilityManagerWrapper&) =
+        delete;
+    virtual ~AccessibilityManagerWrapper() = default;
+
+    virtual bool IsSpokenFeedbackEnabled() const = 0;
+  };
+
   class Observer : public base::CheckedObserver {
    public:
     virtual void OnStatusChanged(const Status& status) = 0;
@@ -80,6 +82,17 @@ class TargetDeviceBootstrapController
    protected:
     ~Observer() override = default;
   };
+
+  TargetDeviceBootstrapController(
+      std::unique_ptr<TargetDeviceConnectionBroker>
+          target_device_connection_broker,
+      std::unique_ptr<SecondDeviceAuthBroker> auth_broker,
+      std::unique_ptr<AccessibilityManagerWrapper>
+          accessibility_manager_wrapper);
+  TargetDeviceBootstrapController(TargetDeviceBootstrapController&) = delete;
+  TargetDeviceBootstrapController& operator=(TargetDeviceBootstrapController&) =
+      delete;
+  ~TargetDeviceBootstrapController() override;
 
   void AddObserver(Observer* obs);
   void RemoveObserver(Observer* obs);
@@ -162,6 +175,8 @@ class TargetDeviceBootstrapController
   std::string challenge_bytes_ = "";
 
   std::unique_ptr<quick_start::SecondDeviceAuthBroker> auth_broker_;
+
+  std::unique_ptr<AccessibilityManagerWrapper> accessibility_manager_wrapper_;
 
   base::WeakPtrFactory<TargetDeviceBootstrapController>
       weak_ptr_factory_for_clients_{this};

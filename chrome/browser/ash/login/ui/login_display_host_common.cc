@@ -195,6 +195,20 @@ bool IsAuthError(SigninError error) {
          error == SigninError::kKnownUserFailedNetworkConnected;
 }
 
+class AccessibilityManagerWrapper
+    : public quick_start::TargetDeviceBootstrapController::
+          AccessibilityManagerWrapper {
+ public:
+  AccessibilityManagerWrapper() = default;
+  AccessibilityManagerWrapper(AccessibilityManagerWrapper&) = delete;
+  AccessibilityManagerWrapper& operator=(AccessibilityManagerWrapper&) = delete;
+  ~AccessibilityManagerWrapper() override = default;
+
+  bool IsSpokenFeedbackEnabled() const override {
+    return ash::AccessibilityManager::Get()->IsSpokenFeedbackEnabled();
+  }
+};
+
 std::unique_ptr<quick_start::SecondDeviceAuthBroker>
 CreateSecondDeviceAuthBroker() {
   std::unique_ptr<attestation::ServerProxy> server_proxy(
@@ -747,7 +761,8 @@ LoginDisplayHostCommon::GetQuickStartBootstrapController() {
             quick_start::TargetDeviceConnectionBrokerFactory::Create(
                 service->GetNearbyConnectionsManager(),
                 service->GetQuickStartDecoder(), is_resume_after_update),
-            CreateSecondDeviceAuthBroker());
+            CreateSecondDeviceAuthBroker(),
+            std::make_unique<AccessibilityManagerWrapper>());
   }
   return bootstrap_controller_->GetAsWeakPtrForClient();
 }

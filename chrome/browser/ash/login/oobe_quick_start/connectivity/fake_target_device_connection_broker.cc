@@ -86,6 +86,7 @@ void FakeTargetDeviceConnectionBroker::StartAdvertising(
   ++num_start_advertising_calls_;
   connection_lifecycle_listener_ = listener;
   on_start_advertising_callback_ = std::move(on_start_advertising_callback);
+  start_advertising_use_pin_authentication_ = use_pin_authentication;
 }
 
 void FakeTargetDeviceConnectionBroker::StopAdvertising(

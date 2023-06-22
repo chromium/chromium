@@ -11,6 +11,7 @@
 #include "base/memory/raw_ptr.h"
 #include "base/test/bind.h"
 #include "base/types/expected.h"
+#include "chrome/browser/ash/accessibility/accessibility_manager.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fake_target_device_connection_broker.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/fido_assertion_info.h"
 #include "chrome/browser/ash/login/oobe_quick_start/connectivity/target_device_connection_broker.h"
@@ -63,6 +64,16 @@ constexpr char kFakeChallengeBytes[] =
     "ABz12ClFhY8/D89zWFB+KTHgUwJ5T3Avco/1IQuu+K/"
     "65KlsmB7o0+UyPde8ZW+b33aeJ9uyST8EMzS6WhK60e/VDjug+7LLK4YzDz1nNw==";
 
+class FakeAccessibilityManagerWrapper
+    : public TargetDeviceBootstrapController::AccessibilityManagerWrapper {
+ public:
+  bool IsSpokenFeedbackEnabled() const override {
+    return spoken_feedback_enabled_;
+  }
+
+  bool spoken_feedback_enabled_ = false;
+};
+
 }  // namespace
 
 class TargetDeviceBootstrapControllerTest : public testing::Test {
@@ -97,9 +108,14 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
     auto auth_broker =
         std::make_unique<MockAuthBroker>(test_factory_.GetSafeWeakWrapper());
     auth_broker_ = auth_broker.get();
+
+    auto fake_accessibility_manager =
+        std::make_unique<FakeAccessibilityManagerWrapper>();
+    fake_accessibility_manager_ = fake_accessibility_manager.get();
+
     bootstrap_controller_ = std::make_unique<TargetDeviceBootstrapController>(
-        std::move(fake_target_device_connection_broker),
-        std::move(auth_broker));
+        std::move(fake_target_device_connection_broker), std::move(auth_broker),
+        std::move(fake_accessibility_manager));
     fake_observer_ = std::make_unique<FakeObserver>();
     bootstrap_controller_->AddObserver(fake_observer_.get());
   }
@@ -129,6 +145,7 @@ class TargetDeviceBootstrapControllerTest : public testing::Test {
   FakeNearbyConnectionsManager fake_nearby_connections_manager_;
   std::unique_ptr<FakeObserver> fake_observer_;
   raw_ptr<MockAuthBroker> auth_broker_;
+  FakeAccessibilityManagerWrapper* fake_accessibility_manager_ = nullptr;
   std::unique_ptr<TargetDeviceBootstrapController> bootstrap_controller_;
   ScopedTestingLocalState local_state_;
 };
@@ -137,6 +154,12 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertising) {
   bootstrap_controller_->StartAdvertising();
   EXPECT_EQ(
       1u, fake_target_device_connection_broker_->num_start_advertising_calls());
+  ASSERT_TRUE(fake_target_device_connection_broker_
+                  ->start_advertising_use_pin_authentication()
+                  .has_value());
+  EXPECT_FALSE(fake_target_device_connection_broker_
+                   ->start_advertising_use_pin_authentication()
+                   .value());
   EXPECT_EQ(
       bootstrap_controller_.get(),
       fake_target_device_connection_broker_->connection_lifecycle_listener());
@@ -155,6 +178,20 @@ TEST_F(TargetDeviceBootstrapControllerTest, StartAdvertisingFail) {
       absl::holds_alternative<ErrorCode>(fake_observer_->last_status.payload));
   EXPECT_EQ(absl::get<ErrorCode>(fake_observer_->last_status.payload),
             ErrorCode::START_ADVERTISING_FAILED);
+}
+
+TEST_F(TargetDeviceBootstrapControllerTest,
+       StartAdvertisingWithChromevoxUsesPin) {
+  fake_accessibility_manager_->spoken_feedback_enabled_ = true;
+  bootstrap_controller_->StartAdvertising();
+  EXPECT_EQ(
+      1u, fake_target_device_connection_broker_->num_start_advertising_calls());
+  ASSERT_TRUE(fake_target_device_connection_broker_
+                  ->start_advertising_use_pin_authentication()
+                  .has_value());
+  EXPECT_TRUE(fake_target_device_connection_broker_
+                  ->start_advertising_use_pin_authentication()
+                  .value());
 }
 
 TEST_F(TargetDeviceBootstrapControllerTest, StopAdvertising) {
