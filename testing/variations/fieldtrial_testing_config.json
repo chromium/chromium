@@ -11932,21 +11932,6 @@
             ]
         }
     ],
-    "SecagentdEnableBatchEvents": [
-        {
-            "platforms": [
-                "chromeos"
-            ],
-            "experiments": [
-                {
-                    "name": "Enabled",
-                    "enable_features": [
-                        "CrOSLateBootSecagentdBatchEvents"
-                    ]
-                }
-            ]
-        }
-    ],
     "SecagentdEnableCoalesceTerminates": [
         {
             "platforms": [
@@ -11957,6 +11942,21 @@
                     "name": "Enabled_20230614",
                     "enable_features": [
                         "CrOSLateBootSecagentdCoalesceTerminates"
+                    ]
+                }
+            ]
+        }
+    ],
+    "SecagentdEnableXDRNetworkEvents": [
+        {
+            "platforms": [
+                "chromeos"
+            ],
+            "experiments": [
+                {
+                    "name": "Enabled",
+                    "enable_features": [
+                        "CrOSLateBootSecagentdXDRNetworkEvents"
                     ]
                 }
             ]
