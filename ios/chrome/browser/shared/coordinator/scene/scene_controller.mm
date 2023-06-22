@@ -2117,7 +2117,8 @@ void InjectNTP(Browser* browser) {
 
   self.settingsNavigationController =
       [SettingsNavigationController defaultBrowserControllerForBrowser:browser
-                                                              delegate:self];
+                                                              delegate:self
+                                                          sourceForUMA:source];
   [baseViewController presentViewController:self.settingsNavigationController
                                    animated:YES
                                  completion:nil];
