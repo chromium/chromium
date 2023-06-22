@@ -21,7 +21,6 @@ ASH_EXPORT extern const char kKeyboardShortcutHelpPageUrl[];
 ASH_EXPORT void ShowDeprecatedAcceleratorNotification(
     const char* notification_id,
     int message_id,
-    int old_shortcut_id,
     int new_shortcut_id);
 
 ASH_EXPORT void ShowDockedMagnifierNotification();
