@@ -86,7 +86,7 @@ class CrOSComponentInstallerPolicy : public ComponentInstallerPolicy {
   std::string GetName() const override;
 
  protected:
-  const raw_ptr<CrOSComponentInstaller, DanglingUntriaged | ExperimentalAsh>
+  const raw_ptr<CrOSComponentInstaller, ExperimentalAsh>
       cros_component_installer_;
 
  private:
