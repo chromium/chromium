@@ -501,8 +501,6 @@ std::vector<internal::DisplayInfo> GetDisplayInfosFromSystem() {
   std::vector<internal::DisplayInfo> display_infos;
   EnumDisplayMonitors(nullptr, nullptr, EnumMonitorForDisplayInfoCallback,
                       reinterpret_cast<LPARAM>(&display_infos));
-  DCHECK_EQ(::GetSystemMetrics(SM_CMONITORS),
-            static_cast<int>(display_infos.size()));
   return display_infos;
 }
 
