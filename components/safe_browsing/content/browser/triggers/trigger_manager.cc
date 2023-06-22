@@ -193,6 +193,12 @@ bool TriggerManager::StartCollectingThreatDetailsWithReason(
   return true;
 }
 
+void TriggerManager::SetInterstitialInteractions(
+    std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+        interstitial_interactions) {
+  interstitial_interactions_ = std::move(interstitial_interactions);
+}
+
 bool TriggerManager::FinishCollectingThreatDetails(
     const TriggerType trigger_type,
     WebContentsKey web_contents_key,

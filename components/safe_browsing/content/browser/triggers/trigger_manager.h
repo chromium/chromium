@@ -149,6 +149,12 @@ class TriggerManager {
       ReferrerChainProvider* referrer_chain_provider,
       const SBErrorOptions& error_display_options);
 
+  // Store map of security interstitial interactions that should be sent in the
+  // threat report.
+  void SetInterstitialInteractions(
+      std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+          interstitial_interactions);
+
   // Completes the collection of a ThreatDetails report for the specified
   // |web_contents_key| (derived from a WebContents*) and sends the
   // report. |delay| can be used to wait a period of time before finishing the
@@ -194,6 +200,10 @@ class TriggerManager {
 
   // Keeps track of how often triggers fire and throttles them when needed.
   std::unique_ptr<TriggerThrottler> trigger_throttler_;
+
+  // Keeps track of user interactions with a security interstitial.
+  std::unique_ptr<security_interstitials::InterstitialInteractionMap>
+      interstitial_interactions_;
 
   base::WeakPtrFactory<TriggerManager> weak_factory_{this};
   // WeakPtrFactory should be last, don't add any members below it.
