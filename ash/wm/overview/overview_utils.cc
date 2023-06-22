@@ -199,7 +199,7 @@ gfx::Rect GetGridBoundsInScreen(
     bool divider_changed,
     bool account_for_hotseat) {
   auto* split_view_controller = SplitViewController::Get(target_root);
-  auto state = split_view_controller->state();
+  SplitViewController::State state = split_view_controller->state();
 
   // If we are in splitview mode already just use the given state, otherwise
   // convert |window_dragging_state| to a split view state.
@@ -220,6 +220,12 @@ gfx::Rect GetGridBoundsInScreen(
   gfx::Rect work_area =
       WorkAreaInsets::ForWindow(target_root)->ComputeStableWorkArea();
   absl::optional<SplitViewController::SnapPosition> opposite_position;
+
+  // We should show partial overview for the following use cases:
+  // 1. In tablet split view mode;
+  // 2. On one window snapped in clamshell mode with feature flag `kSnapGroup`
+  // is enabled and feature param `kAutomaticallyLockGroup` is true;
+  // 3. On one window snapped in clamshell in overview session.
   switch (state) {
     case SplitViewController::State::kPrimarySnapped:
       bounds = split_view_controller->GetSnappedWindowBoundsInScreen(

@@ -16,8 +16,11 @@
 #include "ash/test/ash_test_base.h"
 #include "ash/wm/mru_window_tracker.h"
 #include "ash/wm/overview/overview_controller.h"
+#include "ash/wm/overview/overview_grid.h"
 #include "ash/wm/overview/overview_item.h"
 #include "ash/wm/overview/overview_item_view.h"
+#include "ash/wm/overview/overview_session.h"
+#include "ash/wm/overview/overview_test_base.h"
 #include "ash/wm/overview/overview_test_util.h"
 #include "ash/wm/snap_group/snap_group_controller.h"
 #include "ash/wm/snap_group/snap_group_expanded_menu_view.h"
@@ -130,6 +133,15 @@ void WaitForSeconds(int seconds) {
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE, loop.QuitClosure(), base::Seconds(seconds));
   loop.Run();
+}
+
+gfx::Rect GetOverviewGridBounds() {
+  OverviewSession* overview_session = GetOverviewSession();
+  if (!overview_session) {
+    return gfx::Rect();
+  }
+
+  return overview_session->grid_list()[0]->bounds_for_testing();
 }
 
 }  // namespace
@@ -637,6 +649,58 @@ TEST_F(SnapGroupEntryPointArm1Test, SplitViewDividerBoundsTest) {
     std::unique_ptr<aura::Window> w2(CreateTestWindow());
     SnapTwoTestWindowsInArm1(w1.get(), w2.get(), is_display_horizontal_layout);
     EXPECT_TRUE(UnionBoundsEqualToWorkAreaBounds(w1.get(), w2.get()));
+  }
+}
+
+TEST_F(SnapGroupEntryPointArm1Test, OverviewEnterExitBasic) {
+  UpdateDisplay("800x600");
+
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+  SnapTwoTestWindowsInArm1(w1.get(), w2.get(), /*horizontal=*/true);
+
+  // Verify that full overview session is expected when starting overview from
+  // accelerator and that split view divider will not be available.
+  OverviewController* overview_controller = Shell::Get()->overview_controller();
+  overview_controller->StartOverview(OverviewStartAction::kAccelerator);
+  WaitForOverviewEnterAnimation();
+  EXPECT_TRUE(overview_controller->overview_session());
+  EXPECT_EQ(GetOverviewGridBounds(), work_area_bounds());
+  EXPECT_FALSE(split_view_divider());
+
+  // Verify that the snap group is restored with two windows snapped and that
+  // the split view divider becomes available on overview exit.
+  ToggleOverview();
+  EXPECT_FALSE(overview_controller->overview_session());
+  SnapGroupController* snap_group_controller =
+      Shell::Get()->snap_group_controller();
+  EXPECT_TRUE(snap_group_controller->AreWindowsInSnapGroup(w1.get(), w2.get()));
+  EXPECT_EQ(chromeos::WindowStateType::kPrimarySnapped,
+            WindowState::Get(w1.get())->GetStateType());
+  EXPECT_EQ(chromeos::WindowStateType::kSecondarySnapped,
+            WindowState::Get(w2.get())->GetStateType());
+  EXPECT_TRUE(split_view_divider());
+}
+
+// Tests that partial overview is shown on the other side of the screen on one
+// window snapped.
+TEST_F(SnapGroupEntryPointArm1Test, PartialOverview) {
+  UpdateDisplay("800x600");
+  std::unique_ptr<aura::Window> w1(CreateTestWindow());
+  std::unique_ptr<aura::Window> w2(CreateTestWindow());
+
+  for (const auto& snap_state :
+       {chromeos::WindowStateType::kPrimarySnapped,
+        chromeos::WindowStateType::kSecondarySnapped}) {
+    SnapOneTestWindow(w1.get(), snap_state);
+    WaitForOverviewEnterAnimation();
+    OverviewController* overview_controller =
+        Shell::Get()->overview_controller();
+    EXPECT_TRUE(overview_controller->overview_session());
+    EXPECT_NE(GetOverviewGridBounds(), work_area_bounds());
+    EXPECT_NEAR(GetOverviewGridBounds().width(),
+                work_area_bounds().width() / 2.f,
+                kSplitviewDividerShortSideLength / 2.f);
   }
 }
 

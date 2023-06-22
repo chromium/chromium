@@ -5,6 +5,7 @@
 #include "ash/wm/snap_group/snap_group_controller.h"
 
 #include "ash/shell.h"
+#include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/snap_group/snap_group.h"
 #include "ash/wm/splitview/split_view_constants.h"
 #include "ash/wm/splitview/split_view_controller.h"
@@ -17,9 +18,13 @@
 
 namespace ash {
 
-SnapGroupController::SnapGroupController() = default;
+SnapGroupController::SnapGroupController() {
+  Shell::Get()->overview_controller()->AddObserver(this);
+}
 
-SnapGroupController::~SnapGroupController() = default;
+SnapGroupController::~SnapGroupController() {
+  Shell::Get()->overview_controller()->RemoveObserver(this);
+}
 
 bool SnapGroupController::AreWindowsInSnapGroup(aura::Window* window1,
                                                 aura::Window* window2) const {
@@ -60,6 +65,7 @@ bool SnapGroupController::AddSnapGroup(aura::Window* window1,
 }
 
 bool SnapGroupController::RemoveSnapGroup(SnapGroup* snap_group) {
+  CHECK(snap_group);
   aura::Window* window1 = snap_group->window1();
   aura::Window* window2 = snap_group->window2();
   CHECK(window_to_snap_group_map_.find(window1) !=
@@ -130,6 +136,36 @@ bool SnapGroupController::IsArm1AutomaticallyLockEnabled() const {
 bool SnapGroupController::IsArm2ManuallyLockEnabled() const {
   return features::IsSnapGroupEnabled() &&
          !features::kAutomaticallyLockGroup.Get();
+}
+
+void SnapGroupController::OnOverviewModeEnded() {
+  // Disallow overview to be shown on the other
+  // side of the screen when restoring the snapped state of the windows in a
+  // snap group.
+  // TODO(b/286968669): Restore the snap ratio when snapping the windows in snap
+  // group.
+  // TODO(b/288335850): Currently `SplitViewController` only supports two
+  // windows, the group at the end will overwrite any split view operations.
+  // This will be addressed in multiple snap groups feature.
+  // TODO(b/288333989): The order in `snap_groups_` doesn't reflect the mru
+  // order yet, which will be addressed in b/288333989.
+  // TODO(b/288334530): Iterate through all the displays and restore the snap
+  // groups based on the mru order.
+  base::AutoReset<bool> bypass(&can_enter_overview_, false);
+  for (const auto& snap_group : snap_groups_) {
+    CHECK(snap_group);
+    auto* window1 = snap_group->window1();
+    auto* window2 = snap_group->window2();
+
+    auto* root_window = window1->GetRootWindow();
+    SplitViewController* split_view_controller =
+        SplitViewController::Get(root_window);
+
+    split_view_controller->SnapWindow(
+        window1, SplitViewController::SnapPosition::kPrimary);
+    split_view_controller->SnapWindow(
+        window2, SplitViewController::SnapPosition::kSecondary);
+  }
 }
 
 aura::Window* SnapGroupController::RetrieveTheOtherWindowInSnapGroup(

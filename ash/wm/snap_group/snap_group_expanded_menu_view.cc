@@ -92,12 +92,12 @@ SnapGroupExpandedMenuView::SnapGroupExpandedMenuView(SnapGroup* snap_group)
 SnapGroupExpandedMenuView::~SnapGroupExpandedMenuView() = default;
 
 void SnapGroupExpandedMenuView::OnUpdatePrimaryWindowButtonPressed() {
-  split_view_controller()->OpenOverviewOnTheOtherSideOfTheScreen(
+  split_view_controller()->OpenPartialOverviewToUpdateSnapGroup(
       SplitViewController::SnapPosition::kSecondary);
 }
 
 void SnapGroupExpandedMenuView::OnUpdateSecondaryWindowButtonPressed() {
-  split_view_controller()->OpenOverviewOnTheOtherSideOfTheScreen(
+  split_view_controller()->OpenPartialOverviewToUpdateSnapGroup(
       SplitViewController::SnapPosition::kPrimary);
 }
 

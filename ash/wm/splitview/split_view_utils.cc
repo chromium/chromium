@@ -363,8 +363,9 @@ void MaybeRestoreSplitView(bool refresh_snapped_windows) {
       }
 
       if (split_view_controller->state() ==
-          SplitViewController::State::kBothSnapped)
+          SplitViewController::State::kBothSnapped) {
         break;
+      }
     }
   }
 

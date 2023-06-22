@@ -308,12 +308,18 @@ bool ShouldExcludeForOverview(const aura::Window* window) {
   // snap position is the position where the window was first snapped. See
   // `default_snap_position_` in SplitViewController for more details.
   auto* split_view_controller =
-      SplitViewController::Get(Shell::GetPrimaryRootWindow());
+      SplitViewController::Get(window->GetRootWindow());
 
   auto* snap_group_controller = Shell::Get()->snap_group_controller();
+
+  // A window should be excluded from being shown in overview when we are
+  // selecting another window to complete a window layout, which can happen when
+  // in tablet split view mode or during snap group creation session in
+  // clamshell mode with `IsArm1AutomaticallyLockEnabled()` returns true.
   const bool should_exclude_in_clamshell =
       snap_group_controller &&
-      snap_group_controller->IsArm1AutomaticallyLockEnabled();
+      snap_group_controller->IsArm1AutomaticallyLockEnabled() &&
+      split_view_controller->in_snap_group_creation_session();
   if ((split_view_controller->InTabletSplitViewMode() ||
        should_exclude_in_clamshell) &&
       window == split_view_controller->GetDefaultSnappedWindow()) {

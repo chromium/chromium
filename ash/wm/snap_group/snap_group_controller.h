@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "ash/ash_export.h"
+#include "ash/wm/overview/overview_observer.h"
 #include "base/containers/flat_map.h"
 #include "base/observer_list.h"
 
@@ -24,7 +25,7 @@ class SnapGroup;
 // of this class will be created and owned by `Shell`. It controls the creation
 // and destruction of the `SnapGroup`.
 // TODO: It should also implement the `OverviewObserver` and `TabletObserver`.
-class ASH_EXPORT SnapGroupController {
+class ASH_EXPORT SnapGroupController : public OverviewObserver {
  public:
   class Observer : public base::CheckedObserver {
    public:
@@ -41,7 +42,7 @@ class ASH_EXPORT SnapGroupController {
   SnapGroupController();
   SnapGroupController(const SnapGroupController&) = delete;
   SnapGroupController& operator=(const SnapGroupController&) = delete;
-  ~SnapGroupController();
+  ~SnapGroupController() override;
 
   // Returns true if `window1` and `window2` are in the same snap group.
   bool AreWindowsInSnapGroup(aura::Window* window1,
@@ -81,6 +82,9 @@ class ASH_EXPORT SnapGroupController {
   // param `kAutomaticallyLockGroup` is false, i.e. the user has to explicitly
   // create the snap group when the lock option shows up on two windows snapped.
   bool IsArm2ManuallyLockEnabled() const;
+
+  // OverviewObserver:
+  void OnOverviewModeEnded() override;
 
   const SnapGroups& snap_groups_for_testing() const { return snap_groups_; }
   const WindowToSnapGroupMap& window_to_snap_group_map_for_testing() const {
