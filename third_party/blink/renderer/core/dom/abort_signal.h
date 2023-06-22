@@ -17,9 +17,11 @@
 
 namespace blink {
 
+class AbortController;
 class AbortSignalCompositionManager;
 class ExceptionState;
 class ExecutionContext;
+class FollowAlgorithm;
 class ScriptState;
 
 // Implementation of https://dom.spec.whatwg.org/#interface-AbortSignal
@@ -122,11 +124,19 @@ class CORE_EXPORT AbortSignal : public EventTargetWithInlineData,
   // needed, e.g. to not rely on GC timing.
   void RemoveAlgorithm(AlgorithmHandle*);
 
+  class SignalAbortPassKey {
+   private:
+    SignalAbortPassKey() = default;
+
+    friend class AbortController;
+    friend class AbortSignal;
+    friend class FollowAlgorithm;
+  };
   // The "To signal abort" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-add. Run all algorithms that were
   // added by AddAlgorithm(), in order of addition, then fire an "abort"
   // event. Does nothing if called more than once.
-  void SignalAbort(ScriptState*, ScriptValue reason);
+  void SignalAbort(ScriptState*, ScriptValue reason, SignalAbortPassKey);
 
   // The "follow" algorithm from the standard:
   // https://dom.spec.whatwg.org/#abortsignal-follow

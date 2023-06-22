@@ -45,6 +45,8 @@ class OnceCallbackAlgorithm final : public AbortSignal::Algorithm {
   base::OnceClosure callback_;
 };
 
+}  // namespace
+
 class FollowAlgorithm final : public AbortSignal::Algorithm {
  public:
   FollowAlgorithm(ScriptState* script_state,
@@ -54,7 +56,8 @@ class FollowAlgorithm final : public AbortSignal::Algorithm {
   ~FollowAlgorithm() override = default;
 
   void Run() override {
-    following_->SignalAbort(script_state_, parent_->reason(script_state_));
+    following_->SignalAbort(script_state_, parent_->reason(script_state_),
+                            AbortSignal::SignalAbortPassKey());
   }
 
   void Trace(Visitor* visitor) const override {
@@ -69,8 +72,6 @@ class FollowAlgorithm final : public AbortSignal::Algorithm {
   Member<AbortSignal> parent_;
   Member<AbortSignal> following_;
 };
-
-}  // namespace
 
 AbortSignal::AbortSignal(ExecutionContext* execution_context)
     : AbortSignal(execution_context, SignalType::kInternal) {}
@@ -179,7 +180,7 @@ void AbortSignal::AbortTimeoutFired(ScriptState* script_state) {
   auto* isolate = script_state->GetIsolate();
   v8::Local<v8::Value> reason = V8ThrowDOMException::CreateOrEmpty(
       isolate, DOMExceptionCode::kTimeoutError, "signal timed out");
-  SignalAbort(script_state, ScriptValue(isolate, reason));
+  SignalAbort(script_state, ScriptValue(isolate, reason), SignalAbortPassKey());
 }
 
 ScriptValue AbortSignal::reason(ScriptState* script_state) const {
@@ -241,7 +242,9 @@ void AbortSignal::RemoveAlgorithm(AlgorithmHandle* handle) {
   abort_algorithms_.erase(handle);
 }
 
-void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
+void AbortSignal::SignalAbort(ScriptState* script_state,
+                              ScriptValue reason,
+                              SignalAbortPassKey) {
   DCHECK(!reason.IsEmpty());
   if (aborted())
     return;
@@ -275,7 +278,7 @@ void AbortSignal::SignalAbort(ScriptState* script_state, ScriptValue reason) {
       // This is safe against reentrancy because new dependents are not added to
       // already aborted signals.
       for (auto& signal : source_signal_manager->GetDependentSignals()) {
-        signal->SignalAbort(script_state, abort_reason_);
+        signal->SignalAbort(script_state, abort_reason_, SignalAbortPassKey());
       }
     }
     composition_manager_->Settle();
@@ -286,7 +289,8 @@ void AbortSignal::Follow(ScriptState* script_state, AbortSignal* parent) {
   if (aborted())
     return;
   if (parent->aborted()) {
-    SignalAbort(script_state, parent->reason(script_state));
+    SignalAbort(script_state, parent->reason(script_state),
+                SignalAbortPassKey());
     return;
   }
 

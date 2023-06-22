@@ -39,7 +39,7 @@ void AbortController::abort(ScriptState* script_state) {
 }
 
 void AbortController::abort(ScriptState* script_state, ScriptValue reason) {
-  signal_->SignalAbort(script_state, reason);
+  signal_->SignalAbort(script_state, reason, AbortSignal::SignalAbortPassKey());
 }
 
 void AbortController::Trace(Visitor* visitor) const {
