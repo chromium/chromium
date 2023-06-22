@@ -180,9 +180,9 @@ void HTMLDetailsElement::ParseAttribute(
       // other ones with the same name.
       CHECK_NE(params.reason,
                AttributeModificationReason::kBySynchronizationOfLazyAttribute);
-      if (!GetName().empty() &&
+      if (RuntimeEnabledFeatures::AccordionPatternEnabled() &&
+          !GetName().empty() &&
           params.reason == AttributeModificationReason::kDirectly) {
-        CHECK(RuntimeEnabledFeatures::AccordionPatternEnabled());
         // It's important that we have a copy of the set of details
         // elements, because the setAttribute call can trigger mutation
         // events that change the set.
