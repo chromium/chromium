@@ -29,6 +29,7 @@ class EditLabel : public views::LabelButton {
   ~EditLabel() override;
 
   void OnActionUpdated();
+  // Returns true if the EditLabel shows "?".
   bool IsInputUnbound();
 
  private:
@@ -36,6 +37,7 @@ class EditLabel : public views::LabelButton {
 
   void Init();
   void SetTextLabel(const std::u16string& text);
+  void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
   std::u16string CalculateAccessibleName();
 
   void SetToDefault();

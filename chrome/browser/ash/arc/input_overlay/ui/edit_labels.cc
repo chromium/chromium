@@ -6,20 +6,27 @@
 
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
+#include "chrome/grit/generated_resources.h"
+#include "ui/base/l10n/l10n_util.h"
 #include "ui/views/layout/table_layout.h"
 
 namespace arc::input_overlay {
 
+// static
 std::unique_ptr<EditLabels> EditLabels::CreateEditLabels(
     DisplayOverlayController* controller,
-    Action* action) {
-  auto labels = std::make_unique<EditLabels>(controller, action);
+    Action* action,
+    NameTag* name_tag) {
+  auto labels = std::make_unique<EditLabels>(controller, action, name_tag);
   labels->Init();
   return labels;
 }
 
-EditLabels::EditLabels(DisplayOverlayController* controller, Action* action)
-    : controller_(controller), action_(action) {}
+EditLabels::EditLabels(DisplayOverlayController* controller,
+                       Action* action,
+                       NameTag* name_tag)
+    : controller_(controller), action_(action), name_tag_(name_tag) {}
 
 EditLabels::~EditLabels() = default;
 
@@ -34,30 +41,29 @@ void EditLabels::Init() {
     default:
       NOTREACHED();
   }
+
+  UpdateNameTag();
 }
 
 void EditLabels::OnActionUpdated() {
   for (auto* label : labels_) {
     label->OnActionUpdated();
   }
+
+  UpdateNameTag();
 }
 
-std::u16string EditLabels::GetTextForNameTag() {
-  std::u16string key_string = u"";
-  bool unassigned = true;
-  for (auto* label : labels_) {
-    key_string.append(label->GetText());
-    key_string.append(u", ");
-    if (!label->IsInputUnbound()) {
-      unassigned = false;
-    }
+void EditLabels::SetNameTagState(bool is_error,
+                                 const std::u16string& error_tooltip) {
+  // If an individual label doesn't need to show error, but other sibling label
+  // still has label unassigned, |name_tag_| still needs to show error.
+  if (!is_error && missing_assign_) {
+    name_tag_->SetState(
+        /*is_error=*/true,
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING));
+  } else {
+    name_tag_->SetState(is_error, error_tooltip);
   }
-  key_string.erase(key_string.end() - 2, key_string.end());
-  // TODO(b/274690042): Replace placeholder text with localized strings.
-  if (unassigned) {
-    key_string = u"unassigned";
-  }
-  return labels_.size() == 1 ? u"Key " + key_string : u"Keys " + key_string;
 }
 
 void EditLabels::InitForActionTapKeyboard() {
@@ -101,6 +107,38 @@ void EditLabels::InitForActionMoveKeyboard() {
           std::make_unique<EditLabel>(controller_, action_, labels_.size())));
     }
   }
+}
+
+void EditLabels::UpdateNameTag() {
+  std::u16string key_string = u"";
+  // Check if all labels are unassigned. The prefix for the sub-title is
+  // different if all labels are unassigned.
+  bool all_unassigned = true;
+  // If at least one label is unassigned, it needs to show error state.
+  missing_assign_ = false;
+  DCHECK_GE(labels_.size(), 1u);
+  for (auto* label : labels_) {
+    key_string.append(label->GetText());
+    key_string.append(u", ");
+    if (label->IsInputUnbound()) {
+      missing_assign_ = true;
+    } else {
+      all_unassigned = false;
+    }
+  }
+  key_string.erase(key_string.end() - 2, key_string.end());
+  // TODO(b/274690042): Replace placeholder text with localized strings.
+  if (all_unassigned) {
+    key_string = u"unassigned";
+  }
+
+  name_tag_->SetSubtitle(labels_.size() == 1 ? u"Key " + key_string
+                                             : u"Keys " + key_string);
+  name_tag_->SetState(
+      /*is_error=*/missing_assign_,
+      missing_assign_
+          ? l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_MISSING_BINDING)
+          : u"");
 }
 
 }  // namespace arc::input_overlay

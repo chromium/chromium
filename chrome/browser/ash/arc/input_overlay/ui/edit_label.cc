@@ -10,8 +10,10 @@
 #include "chrome/browser/ash/arc/input_overlay/actions/action.h"
 #include "chrome/browser/ash/arc/input_overlay/actions/input_element.h"
 #include "chrome/browser/ash/arc/input_overlay/display_overlay_controller.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/ui_utils.h"
 #include "chrome/browser/ash/arc/input_overlay/util.h"
+#include "chrome/grit/generated_resources.h"
 #include "chromeos/strings/grit/chromeos_strings.h"
 #include "ui/accessibility/ax_enums.mojom.h"
 #include "ui/base/l10n/l10n_util.h"
@@ -78,6 +80,13 @@ void EditLabel::SetTextLabel(const std::u16string& text) {
   }
 }
 
+void EditLabel::SetNameTagState(bool is_error,
+                                const std::u16string& error_tooltip) {
+  DCHECK(parent());
+  auto* parent_view = static_cast<EditLabels*>(parent());
+  parent_view->SetNameTagState(is_error, error_tooltip);
+}
+
 std::u16string EditLabel::CalculateAccessibleName() {
   return l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_KEYMAPPING_KEY)
       .append(u" ")
@@ -126,6 +135,7 @@ void EditLabel::OnBlur() {
     SetToUnbound();
   } else {
     SetToDefault();
+    SetNameTagState(/*is_error=*/false, u"");
   }
 }
 
@@ -136,6 +146,9 @@ bool EditLabel::OnKeyPressed(const ui::KeyEvent& event) {
       (!action_->support_modifier_key() &&
        ModifierDomCodeToEventFlag(code) != ui::EF_NONE) ||
       IsReservedDomCode(code)) {
+    SetNameTagState(
+        /*is_error=*/true,
+        l10n_util::GetStringUTF16(IDS_INPUT_OVERLAY_EDIT_RESERVED_KEYS));
     return false;
   }
 

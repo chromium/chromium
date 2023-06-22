@@ -19,6 +19,7 @@
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_label.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/edit_labels.h"
 #include "chrome/browser/ash/arc/input_overlay/ui/editing_list.h"
+#include "chrome/browser/ash/arc/input_overlay/ui/name_tag.h"
 #include "ui/events/keycodes/keyboard_codes_posix.h"
 
 namespace arc::input_overlay {
@@ -49,8 +50,8 @@ class EditLabelTest : public ViewTestBase {
     return labels[index];
   }
 
-  EditLabel* GetEditLabel(const ButtonOptionsMenu* menu_, size_t index) const {
-    auto& labels = menu_->labels_view_->labels_;
+  EditLabel* GetEditLabel(const ButtonOptionsMenu* menu, size_t index) const {
+    auto& labels = menu->labels_view_->labels_;
     DCHECK_LT(index, labels.size());
     return labels[index];
   }
@@ -64,6 +65,26 @@ class EditLabelTest : public ViewTestBase {
   void TapKeyboardKeyOnEditLabel(EditLabel* label, ui::KeyboardCode code) {
     label->OnKeyPressed(ui::KeyEvent(ui::ET_KEY_PRESSED, code, ui::EF_NONE));
     label->OnKeyReleased(ui::KeyEvent(ui::ET_KEY_RELEASED, code, ui::EF_NONE));
+  }
+
+  void FocusOnLabel(EditLabel* label) {
+    DCHECK(label);
+    label->OnFocus();
+  }
+
+  void BlurOnLabel(EditLabel* label) {
+    DCHECK(label);
+    label->OnBlur();
+  }
+
+  bool IsInErrorState(ButtonOptionsMenu* menu) {
+    DCHECK(menu);
+    return IsNameTagInErrorState(menu->labels_view_);
+  }
+
+  bool IsInErrorState(ActionViewListItem* list_item) {
+    DCHECK(list_item);
+    return IsNameTagInErrorState(list_item->labels_view_);
   }
 
   void CheckAction(ActionType action_type,
@@ -101,6 +122,25 @@ class EditLabelTest : public ViewTestBase {
     }
   }
 
+  void CheckErrorState(ActionType action_type,
+                       bool menu_has_error,
+                       bool list_item_has_error) {
+    switch (action_type) {
+      case ActionType::TAP:
+        EXPECT_EQ(menu_has_error, IsInErrorState(tap_action_menu_.get()));
+        EXPECT_EQ(list_item_has_error,
+                  IsInErrorState(tap_action_list_item_.get()));
+        break;
+      case ActionType::MOVE:
+        EXPECT_EQ(menu_has_error, IsInErrorState(move_action_menu_.get()));
+        EXPECT_EQ(list_item_has_error,
+                  IsInErrorState(move_action_list_item_.get()));
+        break;
+      default:
+        NOTREACHED();
+    }
+  }
+
   std::unique_ptr<EditingList> editing_list_;
   std::unique_ptr<TestButtonOptionsMenu> tap_action_menu_;
   std::unique_ptr<TestButtonOptionsMenu> move_action_menu_;
@@ -108,6 +148,16 @@ class EditLabelTest : public ViewTestBase {
   raw_ptr<ActionViewListItem, DanglingUntriaged> move_action_list_item_;
 
  private:
+  // Checks if the name tag attached to |edit_labels| is in error state.
+  bool IsNameTagInErrorState(EditLabels* edit_labels) {
+    DCHECK(edit_labels);
+    NameTag* name_tag = edit_labels->name_tag_;
+    DCHECK(name_tag);
+    views::ImageView* error_icon = name_tag->error_icon_;
+    DCHECK(error_icon);
+    return error_icon->GetVisible();
+  }
+
   void SetUp() override {
     ViewTestBase::SetUp();
     InitWithFeature(ash::features::kArcInputOverlayBeta);
@@ -144,9 +194,13 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   // Modify the label for ActionTap and noting is conflicted.
   // ActionTap: ␣ -> m.
   CheckAction(ActionType::TAP, {ui::DomCode::SPACE}, {u"␣"});
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
   CheckAction(ActionType::TAP, {ui::DomCode::US_M}, {u"m"});
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
 
   // Modify the label for ActionMove and nothing is conflicted.
   // ActionMove: wasd -> lasd.
@@ -154,12 +208,17 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
               {u"w", u"a", u"s", u"d"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
+
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_L);
   CheckAction(ActionType::MOVE,
               {ui::DomCode::US_L, ui::DomCode::US_A, ui::DomCode::US_S,
                ui::DomCode::US_D},
               {u"l", u"a", u"s", u"d"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
 
   // Modify the label for ActionMove and it is conflicted inside.
   // ActionMove: lasd -> ?ald.
@@ -169,6 +228,8 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
               {ui::DomCode::NONE, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
               {u"?", u"a", u"l", u"d"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
 
   // Modify the label for ActionMove and it is conflicted outside.
   // ActionTap: m -> ?
@@ -176,10 +237,14 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
                             ui::VKEY_M);
   CheckAction(ActionType::TAP, {}, {u"?"});
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
   CheckAction(ActionType::MOVE,
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::US_D},
               {u"m", u"a", u"l", u"d"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
 
   // Modify the label for ActionTap and it is conflicted outside.
   // ActionTap: ? -> d.
@@ -187,10 +252,53 @@ TEST_F(EditLabelTest, TestEditingListLabelEditing) {
   TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
                             ui::VKEY_D);
   CheckAction(ActionType::TAP, {ui::DomCode::US_D}, {u"d"});
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
   CheckAction(ActionType::MOVE,
               {ui::DomCode::US_M, ui::DomCode::US_A, ui::DomCode::US_L,
                ui::DomCode::NONE},
               {u"m", u"a", u"l", u"?"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
+}
+
+TEST_F(EditLabelTest, TestEditingListLabelReservedKey) {
+  // Press a reserved key on Action tap with no error state and then it shows
+  // error state.
+  FocusOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
+  TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
+                            ui::VKEY_ESCAPE);
+  // Label is not changed.
+  CheckAction(ActionType::TAP, {ui::DomCode::SPACE}, {u"␣"});
+  // Error state shows temporarily on list item view.
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/true);
+  // Error state shows up temporarily and disappears after leaving focus.
+  BlurOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
+  CheckErrorState(ActionType::TAP, /*menu_has_error=*/false,
+                  /*list_item_has_error=*/false);
+
+  // Press a reserved key on Action move which is already in error state.
+  // ActionMove: wasd -> wal?.
+  FocusOnLabel(GetEditLabel(tap_action_list_item_, /*index=*/0));
+  TapKeyboardKeyOnEditLabel(GetEditLabel(tap_action_list_item_, /*index=*/0),
+                            ui::VKEY_D);
+  CheckAction(ActionType::MOVE,
+              {ui::DomCode::US_W, ui::DomCode::US_A, ui::DomCode::US_S,
+               ui::DomCode::NONE},
+              {u"w", u"a", u"s", u"?"});
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
+  FocusOnLabel(GetEditLabel(move_action_list_item_, /*index=*/0));
+  // Press a reserved key on Action move and error state still shows up.
+  TapKeyboardKeyOnEditLabel(GetEditLabel(move_action_list_item_, /*index=*/0),
+                            ui::VKEY_ESCAPE);
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
+  BlurOnLabel(GetEditLabel(move_action_list_item_, /*index=*/0));
+  // Error state still shows up after leaving focus.
+  CheckErrorState(ActionType::MOVE, /*menu_has_error=*/true,
+                  /*list_item_has_error=*/true);
 }
 
 }  // namespace arc::input_overlay

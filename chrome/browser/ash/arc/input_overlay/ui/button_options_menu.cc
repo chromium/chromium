@@ -265,11 +265,11 @@ void ButtonOptionsMenu::AddActionEdit() {
   container->SetBorderInsets(gfx::Insets::VH(14, 16));
   container->SetProperty(views::kMarginsKey, gfx::Insets::TLBR(0, 0, 8, 0));
 
-  auto labels_view = EditLabels::CreateEditLabels(controller_, action_);
   // TODO(b/274690042): Replace placeholder text with localized strings.
-  labels_name_tag_ = container->AddChildView(NameTag::CreateNameTag(
-      u"Selected key", labels_view->GetTextForNameTag()));
-  labels_view_ = container->AddChildView(std::move(labels_view));
+  auto* name_tag =
+      container->AddChildView(NameTag::CreateNameTag(u"Selected key"));
+  labels_view_ = container->AddChildView(
+      EditLabels::CreateEditLabels(controller_, action_, name_tag));
 }
 
 void ButtonOptionsMenu::AddActionNameLabel() {
@@ -379,7 +379,6 @@ void ButtonOptionsMenu::OnActionTypeChanged(const Action& action,
 void ButtonOptionsMenu::OnActionUpdated(const Action& action) {
   if (action_ == &action) {
     labels_view_->OnActionUpdated();
-    labels_name_tag_->SetSubtitle(labels_view_->GetTextForNameTag());
   }
 }
 

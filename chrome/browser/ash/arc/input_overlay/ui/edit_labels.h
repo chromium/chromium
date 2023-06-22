@@ -17,6 +17,7 @@ namespace arc::input_overlay {
 class Action;
 class DisplayOverlayController;
 class EditLabel;
+class NameTag;
 
 // EditLabels wraps the input labels belonging to one action.
 class EditLabels : public views::View {
@@ -35,9 +36,12 @@ class EditLabels : public views::View {
   // -------------
   static std::unique_ptr<EditLabels> CreateEditLabels(
       DisplayOverlayController* controller,
-      Action* action);
+      Action* action,
+      NameTag* name_tag);
 
-  EditLabels(DisplayOverlayController* controller, Action* action);
+  EditLabels(DisplayOverlayController* controller,
+             Action* action,
+             NameTag* name_tag);
 
   EditLabels(const EditLabels&) = delete;
   EditLabels& operator=(const EditLabels&) = delete;
@@ -45,7 +49,7 @@ class EditLabels : public views::View {
 
   void OnActionUpdated();
 
-  std::u16string GetTextForNameTag();
+  void SetNameTagState(bool is_error, const std::u16string& error_tooltip);
 
  private:
   friend class EditLabelTest;
@@ -54,10 +58,18 @@ class EditLabels : public views::View {
   void InitForActionTapKeyboard();
   void InitForActionMoveKeyboard();
 
+  // Called when |labels_| is initiated or changes the content.
+  void UpdateNameTag();
+
   raw_ptr<DisplayOverlayController> controller_ = nullptr;
   raw_ptr<Action, DanglingUntriaged> action_ = nullptr;
+  // Displays the content in |labels_|.
+  raw_ptr<NameTag, DanglingUntriaged> name_tag_ = nullptr;
 
   std::vector<EditLabel*> labels_;
+
+  // It is true that at least one of |labels_| is unassigned.
+  bool missing_assign_ = false;
 };
 }  // namespace arc::input_overlay
 
