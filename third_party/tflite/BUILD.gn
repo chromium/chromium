@@ -268,9 +268,9 @@ source_set("tflite_kernel_internals") {
   configs += [
     ":tflite_config",
     ":tflite_flags",
-    "//third_party/eigen3:eigen_includes",
   ]
 
+  public_configs = [ "//third_party/eigen3:eigen_includes" ]
   visibility = [ ":*" ]
 }
 
@@ -617,6 +617,8 @@ static_library("tflite_standalone") {
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+    "src/tensorflow/lite/delegates/utils.cc",
+    "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
     "src/tensorflow/lite/experimental/remat/metadata_util.cc",
@@ -711,7 +713,6 @@ static_library("tflite_standalone") {
     "//third_party/farmhash",
     "//third_party/fft2d",
     "//third_party/fp16",
-    "//third_party/gemmlowp",
     "//third_party/neon_2_sse",
     "//third_party/pthreadpool:pthreadpool_standalone",
     "//third_party/ruy",
@@ -719,7 +720,6 @@ static_library("tflite_standalone") {
 
   if (build_tflite_with_xnnpack) {
     deps += [
-      ":tflite_kernel_internals",
       "//third_party/cpuinfo",
       "//third_party/xnnpack:xnnpack_standalone",
     ]
@@ -728,9 +728,11 @@ static_library("tflite_standalone") {
   public_deps = [
     ":tflite-config-proto",
     ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
     ":tflite_kernels_standalone",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
@@ -788,6 +790,8 @@ static_library("tflite") {
     "src/tensorflow/lite/delegates/interpreter_utils.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate.h",
     "src/tensorflow/lite/delegates/nnapi/nnapi_delegate_disabled.cc",
+    "src/tensorflow/lite/delegates/utils.cc",
+    "src/tensorflow/lite/delegates/utils.h",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.cc",
     "src/tensorflow/lite/experimental/acceleration/mini_benchmark/mini_benchmark.h",
     "src/tensorflow/lite/experimental/remat/metadata_util.cc",
@@ -878,7 +882,6 @@ static_library("tflite") {
     "//third_party/farmhash",
     "//third_party/fft2d",
     "//third_party/fp16",
-    "//third_party/gemmlowp",
     "//third_party/neon_2_sse",
     "//third_party/pthreadpool",
     "//third_party/ruy",
@@ -886,7 +889,6 @@ static_library("tflite") {
 
   if (build_tflite_with_xnnpack) {
     deps += [
-      ":tflite_kernel_internals",
       "//third_party/cpuinfo",
       "//third_party/xnnpack",
     ]
@@ -895,9 +897,11 @@ static_library("tflite") {
   public_deps = [
     ":tflite-config-proto",
     ":tflite_kernel_common_headers",
+    ":tflite_kernel_internals",
     ":tflite_kernels",
     ":tflite_public_headers",
     "//third_party/flatbuffers",
+    "//third_party/gemmlowp",
   ]
 
   configs -= [ "//build/config/compiler:chromium_code" ]
