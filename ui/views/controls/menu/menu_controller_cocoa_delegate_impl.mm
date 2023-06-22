@@ -120,13 +120,10 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 // --- Private API begin ---
 
-// Historically, all menu handling in macOS was handled by HI Toolbox, and the
-// bridge from Cocoa to Carbon to use Carbon's menus was the class
-// NSCarbonMenuImpl. However, starting in macOS 13, it looks like this is
-// changing, as now a NSCocoaMenuImpl class exists, which is optionally created
-// in -[NSMenu _createMenuImpl] and may possibly in the future be returned from
-// -[NSMenu _menuImpl]. Therefore, abstract away into a protocol the (one)
-// common method that this code uses that is present on both Impl classes.
+// In macOS 13 and earlier, the internals of menus are handled by HI Toolbox,
+// and the bridge to that code is NSCarbonMenuImpl. Starting with macOS 14, the
+// internals of menus are in NSCocoaMenuImpl. Abstract away into a protocol the
+// (one) common method that this code uses that is present on both Impl classes.
 @protocol CrNSMenuImpl <NSObject>
 @optional
 - (void)highlightItemAtIndex:(NSInteger)index;
@@ -139,62 +136,22 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
 
 // --- Private API end ---
 
-// An NSTextAttachmentCell to show the [New] tag on a menu item.
-//
-// /!\ WARNING /!\
-//
-// Do NOT update to the "new in macOS 10.11" API of NSTextAttachment.image until
-// macOS 10.15 is the minimum required macOS for Chromium. Because menus are
-// Carbon-based, the new NSTextAttachment.image API did not function correctly
-// until then. Specifically, in macOS 10.11-10.12, images that use the new API
-// do not appear. In macOS 10.13-10.14, the flipped flag of -[NSImage
-// imageWithSize:flipped:drawingHandler:] is not respected. Only when 10.15 is
-// the minimum required OS can https://crrev.com/c/2572937 be relanded.
-@interface NewTagAttachmentCell : NSTextAttachmentCell
-@end
-
-@implementation NewTagAttachmentCell
-
-- (instancetype)initWithColorProvider:(const ui::ColorProvider*)colorProvider {
-  if (self = [super init]) {
-    self.image = NewTagImage(colorProvider);
-  }
-  return self;
-}
-
-- (NSPoint)cellBaselineOffset {
-  // The baseline offset of the badge image to the menu text baseline.
-  const int kBadgeBaselineOffset = features::IsChromeRefresh2023() ? -2 : -4;
-  return NSMakePoint(0, kBadgeBaselineOffset);
-}
-
-- (NSSize)cellSize {
-  return [self.image size];
-}
-
-@end
-
-@interface MenuControllerCocoaDelegateImpl () {
-  NSMutableArray* _menuObservers;
+@implementation MenuControllerCocoaDelegateImpl {
+  base::scoped_nsobject<NSMutableArray> _menuObservers;
   gfx::Rect _anchorRect;
 }
-@end
-
-@implementation MenuControllerCocoaDelegateImpl
 
 - (instancetype)init {
   if (self = [super init]) {
-    _menuObservers = [[NSMutableArray alloc] init];
+    _menuObservers.reset([[NSMutableArray alloc] init]);
   }
   return self;
 }
 
 - (void)dealloc {
-  for (NSObject* obj in _menuObservers) {
-    [[NSNotificationCenter defaultCenter] removeObserver:obj];
+  for (NSObject* obj in _menuObservers.get()) {
+    [NSNotificationCenter.defaultCenter removeObserver:obj];
   }
-
-  [_menuObservers release];
 
   [super dealloc];
 }
@@ -208,17 +165,18 @@ NSImage* IPHDotImage(const ui::ColorProvider* color_provider) {
                       atIndex:(size_t)index
             withColorProvider:(const ui::ColorProvider*)colorProvider {
   if (model->IsNewFeatureAt(index)) {
+    NSTextAttachment* attachment =
+        [[[NSTextAttachment alloc] initWithData:nil ofType:nil] autorelease];
+    attachment.image = NewTagImage(colorProvider);
+    NSSize newTagSize = attachment.image.size;
+
+    // The baseline offset of the badge image to the menu text baseline.
+    const int kBadgeBaselineOffset = features::IsChromeRefresh2023() ? -2 : -4;
+    attachment.bounds = NSMakeRect(0, kBadgeBaselineOffset, newTagSize.width,
+                                   newTagSize.height);
+
     NSMutableAttributedString* attrTitle = [[[NSMutableAttributedString alloc]
         initWithString:menuItem.title] autorelease];
-
-    // /!\ WARNING /!\ Do not update this to use NSTextAttachment.image until
-    // macOS 10.15 is the minimum required OS. See the details on the class
-    // comment above.
-    NSTextAttachment* attachment =
-        [[[NSTextAttachment alloc] init] autorelease];
-    attachment.attachmentCell = [[[NewTagAttachmentCell alloc]
-        initWithColorProvider:colorProvider] autorelease];
-
     [attrTitle
         appendAttributedString:[NSAttributedString
                                    attributedStringWithAttachment:attachment]];
