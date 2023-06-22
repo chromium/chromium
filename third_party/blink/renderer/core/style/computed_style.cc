@@ -1425,31 +1425,31 @@ bool ComputedStyle::HasFilters() const {
 
 namespace {
 
-gfx::SizeF GetReferenceBoxSize(const LayoutBox* box, CoordBox coord_box) {
+gfx::RectF GetReferenceBox(const LayoutBox* box, CoordBox coord_box) {
   if (box) {
     if (const LayoutBlock* containing_block = box->ContainingBlock()) {
       // In SVG contexts, all values behave as view-box.
       if (box->IsSVG()) {
-        return SVGLengthContext(To<SVGElement>(box->GetNode()))
-            .ResolveViewport();
+        return gfx::RectF(
+            SVGLengthContext(To<SVGElement>(box->GetNode())).ResolveViewport());
       }
       // https://drafts.csswg.org/css-box-4/#typedef-coord-box
       switch (coord_box) {
         case CoordBox::kFillBox:
         case CoordBox::kContentBox:
-          return gfx::SizeF(containing_block->PhysicalContentBoxSize());
+          return gfx::RectF(containing_block->PhysicalContentBoxRect());
         case CoordBox::kPaddingBox:
-          return gfx::SizeF(containing_block->PhysicalPaddingBoxRect().size);
+          return gfx::RectF(containing_block->PhysicalPaddingBoxRect());
         case CoordBox::kViewBox:
         case CoordBox::kStrokeBox:
         case CoordBox::kBorderBox:
-          return gfx::SizeF(containing_block->BorderBoxRect().Size());
+          return gfx::RectF(containing_block->PhysicalBorderBoxRect());
       }
     }
   }
   // As the motion path calculations can be called before all the layout
   // has been correctly calculated, we can end up here.
-  return {0.0, 0.0};
+  return gfx::RectF();
 }
 
 gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
@@ -1465,11 +1465,11 @@ gfx::PointF GetOffsetFromContainingBlock(const LayoutBox* box) {
 
 // https://drafts.fxtf.org/motion/#offset-position-property
 gfx::PointF GetStartingPointOfThePath(
-    const gfx::PointF& offset_from_containing_block,
+    const gfx::PointF& offset_from_reference_box,
     const LengthPoint& offset_position,
     const gfx::SizeF& reference_box_size) {
   if (offset_position.X().IsAuto()) {
-    return offset_from_containing_block;
+    return offset_from_reference_box;
   }
   if (offset_position.X().IsNone()) {
     // Currently all the use cases will behave as "at center".
@@ -1580,10 +1580,11 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
         break;
       }
       case BasicShape::kStyleRayType: {
-        const gfx::PointF offset_from_containing_block =
-            GetOffsetFromContainingBlock(box);
-        const gfx::SizeF reference_box_size =
-            GetReferenceBoxSize(box, coord_box);
+        const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
+        const gfx::PointF offset_from_reference_box =
+            GetOffsetFromContainingBlock(box) -
+            reference_box.OffsetFromOrigin();
+        const gfx::SizeF& reference_box_size = reference_box.size();
         const StyleRay& ray = To<StyleRay>(basic_shape);
         // Specifies the origin of the ray, where the ray’s line begins (the 0%
         // position). It’s resolved by using the <position> to position a 0x0
@@ -1599,13 +1600,13 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
               ray.CenterX(), ray.CenterY(), reference_box_size);
         } else {
           starting_point = GetStartingPointOfThePath(
-              offset_from_containing_block, position, reference_box_size);
+              offset_from_reference_box, position, reference_box_size);
         }
         path_position = CalculatePointAndTangentOnRay(ray, box, starting_point,
                                                       reference_box_size);
         // `path_position.point` is now relative to the containing block.
         // Make it relative to the box.
-        path_position.point -= offset_from_containing_block.OffsetFromOrigin();
+        path_position.point -= offset_from_reference_box.OffsetFromOrigin();
         break;
       }
       case BasicShape::kBasicShapeCircleType:
@@ -1614,17 +1615,18 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       case BasicShape::kBasicShapeXYWHType:
       case BasicShape::kBasicShapeRectType:
       case BasicShape::kBasicShapePolygonType: {
-        const gfx::PointF offset_from_containing_block =
-            GetOffsetFromContainingBlock(box);
-        const gfx::SizeF reference_box_size =
-            GetReferenceBoxSize(box, coord_box);
+        const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
+        const gfx::PointF offset_from_reference_box =
+            GetOffsetFromContainingBlock(box) -
+            reference_box.OffsetFromOrigin();
+        const gfx::SizeF& reference_box_size = reference_box.size();
         const gfx::PointF starting_point = GetStartingPointOfThePath(
-            offset_from_containing_block, position, reference_box_size);
+            offset_from_reference_box, position, reference_box_size);
         path_position = CalculatePointAndTangentOnBasicShape(
             basic_shape, starting_point, reference_box_size);
         // `path_position.point` is now relative to the containing block.
         // Make it relative to the box.
-        path_position.point -= offset_from_containing_block.OffsetFromOrigin();
+        path_position.point -= offset_from_reference_box.OffsetFromOrigin();
         break;
       }
     }
@@ -1641,16 +1643,17 @@ void ComputedStyle::ApplyMotionPathTransform(float origin_x,
       inset->SetTopRightRadius(style.BorderTopRightRadius());
       inset->SetBottomRightRadius(style.BorderBottomRightRadius());
       inset->SetBottomLeftRadius(style.BorderBottomLeftRadius());
-      const gfx::PointF offset_from_containing_block =
-          GetOffsetFromContainingBlock(box);
-      const gfx::SizeF reference_box_size = GetReferenceBoxSize(box, coord_box);
+      const gfx::RectF reference_box = GetReferenceBox(box, coord_box);
+      const gfx::PointF offset_from_reference_box =
+          GetOffsetFromContainingBlock(box) - reference_box.OffsetFromOrigin();
+      const gfx::SizeF& reference_box_size = reference_box.size();
       const gfx::PointF starting_point = GetStartingPointOfThePath(
-          offset_from_containing_block, position, reference_box_size);
+          offset_from_reference_box, position, reference_box_size);
       path_position = CalculatePointAndTangentOnBasicShape(
           *inset, starting_point, reference_box_size);
       // `path_position.point` is now relative to the containing block.
       // Make it relative to the box.
-      path_position.point -= offset_from_containing_block.OffsetFromOrigin();
+      path_position.point -= offset_from_reference_box.OffsetFromOrigin();
     }
   } else {
     const auto* url_operation =
