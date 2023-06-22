@@ -187,11 +187,6 @@ public class AccessibilityState {
     @Deprecated
     private static boolean sAccessibilitySpeakPasswordEnabled;
 
-    // The recommended multiplier to apply to a timeout for changes to the UI needed by the user.
-    // Uses all content flags, cached from {AccessibilityManager#getRecommendedTimeoutMillis}.
-    // Requires Android Q, for versions < Q, this will always be equal to 1.0f.
-    private static float sRecommendedTimeoutMultiplier;
-
     // The IDs of all running accessibility services.
     private static String[] sServiceIds;
 
@@ -259,9 +254,29 @@ public class AccessibilityState {
         return sAccessibilitySpeakPasswordEnabled;
     }
 
-    public static float getRecommendedTimeoutMultiplier() {
+    /**
+     * Convenience method to get a recommended timeout on all versions of Android. The method that
+     * is part of AccessibilityManager is only available on Android >= Q.
+     *
+     * This method will query the AccessibilityManager, which considers the currently running
+     * services, to provide a suggested timeout. On Android >= Q, the returned value may not be
+     * either of the provided timeouts, and for versions < Q this will return the maximum of the
+     * two timeouts.
+     *
+     * @param minimumTimeout - minimum allowed timeout for the calling feature.
+     * @param nonA11yTimeout - the timeout if no a11y services are running for the feature.
+     * @return Suggested timeout given the currently running services (in milliseconds).
+     */
+    public static int getRecommendedTimeoutMillis(int minimumTimeout, int nonA11yTimeout) {
         if (!sInitialized) updateAccessibilityServices();
-        return sRecommendedTimeoutMultiplier;
+
+        int recommendedTimeout = nonA11yTimeout;
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            recommendedTimeout = sAccessibilityManager.getRecommendedTimeoutMillis(
+                    nonA11yTimeout, FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS);
+        }
+
+        return Math.max(minimumTimeout, recommendedTimeout);
     }
 
     /**
@@ -316,14 +331,6 @@ public class AccessibilityState {
         sAccessibilityManager =
                 (AccessibilityManager) ContextUtils.getApplicationContext().getSystemService(
                         Context.ACCESSIBILITY_SERVICE);
-
-        sRecommendedTimeoutMultiplier = 1.0f;
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
-            sRecommendedTimeoutMultiplier =
-                    sAccessibilityManager.getRecommendedTimeoutMillis(
-                            100, FLAG_CONTENT_ICONS | FLAG_CONTENT_TEXT | FLAG_CONTENT_CONTROLS)
-                    / 100.0f;
-        }
 
         // Get the list of currently running accessibility services.
         List<AccessibilityServiceInfo> services =
@@ -822,13 +829,6 @@ public class AccessibilityState {
 
         // Explicitly set mask so events can be (ir)relevant to currently enabled service.
         sEventTypeMask = mask;
-    }
-
-    @VisibleForTesting
-    public static void setRecommendedTimeoutMultiplierForTesting(float multiplier) {
-        if (!sInitialized) updateAccessibilityServices();
-
-        sRecommendedTimeoutMultiplier = multiplier;
     }
 
     // clang-format on

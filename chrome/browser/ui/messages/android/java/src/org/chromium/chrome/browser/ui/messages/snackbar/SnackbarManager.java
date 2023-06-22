@@ -305,8 +305,8 @@ public class SnackbarManager implements OnClickListener, ActivityStateListener, 
         // multiply the duration by the recommended multiplier and use that with a minimum of 30s.
         return !AccessibilityState.isPerformGesturesEnabled()
                 ? durationMs
-                : Math.max(sAccessibilitySnackbarDurationMs,
-                        (int) (AccessibilityState.getRecommendedTimeoutMultiplier() * durationMs));
+                : AccessibilityState.getRecommendedTimeoutMillis(
+                        sAccessibilitySnackbarDurationMs, durationMs);
     }
 
     /**
