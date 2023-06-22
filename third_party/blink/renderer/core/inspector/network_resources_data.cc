@@ -84,6 +84,7 @@ void NetworkResourcesData::ResourceData::Trace(Visitor* visitor) const {
   visitor->template RegisterWeakCallbackMethod<
       NetworkResourcesData::ResourceData,
       &NetworkResourcesData::ResourceData::ProcessCustomWeakness>(this);
+  visitor->Trace(replay_cached_resource_strong_);
 }
 
 void NetworkResourcesData::ResourceData::SetContent(const String& content,
@@ -129,6 +130,9 @@ size_t NetworkResourcesData::ResourceData::EvictContent() {
 void NetworkResourcesData::ResourceData::SetResource(
     const Resource* cached_resource) {
   cached_resource_ = cached_resource;
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                           "NetworkResourcesData"))
+    replay_cached_resource_strong_ = cached_resource;
   if (const auto* font_resource = DynamicTo<FontResource>(cached_resource))
     font_resource->AddClearDataObserver(this);
 }
@@ -172,6 +176,9 @@ void NetworkResourcesData::ResourceData::FontResourceDataWillBeCleared() {
   }
   // There is no point tracking the resource anymore.
   cached_resource_ = nullptr;
+  if (recordreplay::IsRecordingOrReplaying("avoid-weak-pointers",
+                                           "NetworkResourcesData"))
+    replay_cached_resource_strong_ = nullptr;
   network_resources_data_->MaybeDecodeDataToContent(RequestId());
 }
 

@@ -203,6 +203,7 @@ class NetworkResourcesData final
 
     // We use UntracedMember<> here to do custom weak processing.
     UntracedMember<const Resource> cached_resource_;
+    Member<const Resource> replay_cached_resource_strong_;
 
     scoped_refptr<BlobDataHandle> downloaded_file_blob_;
     scoped_refptr<net::X509Certificate> certificate_;
