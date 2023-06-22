@@ -10,6 +10,10 @@
 
 #if BUILDFLAG(IS_WIN)
 #include <windows.h>
+
+#include <initguid.h>
+
+#include "base/logging_win.h"
 #endif  // BUILDFLAG(IS_WIN)
 
 #include "base/base_paths.h"
@@ -269,6 +273,18 @@ void InitLogging(UpdaterScope updater_scope) {
                        /*enable_thread_id=*/true,
                        /*enable_timestamp=*/true,
                        /*enable_tickcount=*/false);
+
+#if BUILDFLAG(IS_WIN)
+  // Enable Event Tracing for Windows.
+  // {4D7D9607-78B6-4583-A188-2136AB85F5F1}
+  constexpr GUID kUpdaterETWProviderName = {
+      0x4d7d9607,
+      0x78b6,
+      0x4583,
+      {0xa1, 0x88, 0x21, 0x36, 0xab, 0x85, 0xf5, 0xf1}};
+  logging::LogEventProvider::Initialize(kUpdaterETWProviderName);
+#endif
+
   VLOG(1) << "Log initialized for " <<
       [] {
         base::FilePath file_exe;

@@ -7,6 +7,7 @@
 
 #include <string>
 
+#include "base/at_exit.h"
 #include "chrome/updater/win/installer/installer.h"
 #include "chrome/updater/win/ui/l10n_util.h"
 
@@ -17,6 +18,8 @@ int WINAPI wWinMain(HINSTANCE /* instance */,
                     HINSTANCE /* previous_instance */,
                     LPWSTR command_line,
                     int /* command_show */) {
+  base::AtExitManager exit_manager;
+
   updater::ProcessExitResult result =
       updater::WMain(reinterpret_cast<HMODULE>(&__ImageBase));
 
