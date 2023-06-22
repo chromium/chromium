@@ -134,8 +134,7 @@ void CanvasRenderingContextHost::CreateCanvasResourceProviderWebGPU() {
                         GetRenderingContextSkColorInfo());
   std::unique_ptr<CanvasResourceProvider> provider;
   if (SharedGpuContext::IsGpuCompositingEnabled()) {
-    provider = CanvasResourceProvider::CreateWebGPUImageProvider(
-        resource_info, /*is_origin_top_left=*/true);
+    provider = CanvasResourceProvider::CreateWebGPUImageProvider(resource_info);
   }
   ReplaceResourceProvider(std::move(provider));
   if (ResourceProvider() && ResourceProvider()->IsValid()) {

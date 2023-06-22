@@ -18,23 +18,10 @@ class CanvasResourceProvider;
 class WebGPURecyclableResourceCache;
 class WebGraphicsContext3DProviderWrapper;
 
-struct ResourceCacheKey {
-  ResourceCacheKey(const SkImageInfo& info, bool is_origin_top_left);
-  ~ResourceCacheKey() = default;
-  bool operator==(const ResourceCacheKey& other) const;
-  bool operator!=(const ResourceCacheKey& other) const;
-
-  // If we support more parameters for CreateWebGPUImageProvider(), we should
-  // add them here.
-  const SkImageInfo info;
-  const bool is_origin_top_left;
-};
-
 class PLATFORM_EXPORT RecyclableCanvasResource {
  public:
   RecyclableCanvasResource(
       std::unique_ptr<CanvasResourceProvider> resource_provider,
-      const ResourceCacheKey& cache_key,
       base::WeakPtr<WebGPURecyclableResourceCache> cache);
 
   ~RecyclableCanvasResource();
@@ -45,7 +32,6 @@ class PLATFORM_EXPORT RecyclableCanvasResource {
 
  private:
   std::unique_ptr<CanvasResourceProvider> resource_provider_;
-  const ResourceCacheKey cache_key_;
   base::WeakPtr<WebGPURecyclableResourceCache> cache_;
 };
 
@@ -57,8 +43,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   ~WebGPURecyclableResourceCache() = default;
 
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      const SkImageInfo& info,
-      bool is_origin_top_left);
+      const SkImageInfo& info);
 
   // When the holder is destroyed, move the resource provider to
   // |unused_providers_| if the cache is not full.
@@ -109,7 +94,7 @@ class PLATFORM_EXPORT WebGPURecyclableResourceCache {
   // Search |unused_providers_| and acquire the canvas resource provider with
   // the same cache key for re-use.
   std::unique_ptr<CanvasResourceProvider> AcquireCachedProvider(
-      const ResourceCacheKey& cache_key);
+      const SkImageInfo& image_info);
 
   // Release the stale resources which are recycled before the last clean-up.
   void ReleaseStaleResources();

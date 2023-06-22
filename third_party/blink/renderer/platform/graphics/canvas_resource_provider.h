@@ -267,7 +267,6 @@ class PLATFORM_EXPORT CanvasResourceProvider
 
   static std::unique_ptr<CanvasResourceProvider> CreateWebGPUImageProvider(
       const SkImageInfo& info,
-      bool is_origin_top_left,
       uint32_t shared_image_usage_flags = 0);
 
   static std::unique_ptr<CanvasResourceProvider> CreatePassThroughProvider(

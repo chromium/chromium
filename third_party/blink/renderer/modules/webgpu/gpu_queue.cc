@@ -249,7 +249,11 @@ WGPUCopyTextureForBrowserOptions CreateCopyTextureForBrowserOptions(
     options.conversionMatrix =
         color_space_conversion_constants->gamut_conversion_matrix.data();
   }
-  options.flipY = image->IsOriginTopLeft() == flipY;
+  // The source texture, which is either a WebGPUMailboxTexture for
+  // accelerated images or an intermediate texture created for unaccelerated
+  // images, is always origin top left, so no additional flip is needed apart
+  // from the client specified flip in GPUImageCopyExternalImage i.e. |flipY|.
+  options.flipY = flipY;
 
   return options;
 }

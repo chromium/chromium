@@ -55,8 +55,7 @@ class PLATFORM_EXPORT DawnControlClientHolder
   void MarkContextLost();
   bool IsContextLost() const;
   std::unique_ptr<RecyclableCanvasResource> GetOrCreateCanvasResource(
-      const SkImageInfo& info,
-      bool is_origin_top_left);
+      const SkImageInfo& info);
 
   // Flush commands on this client immediately.
   void Flush();
