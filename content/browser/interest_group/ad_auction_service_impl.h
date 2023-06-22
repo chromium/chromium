@@ -112,6 +112,7 @@ class CONTENT_EXPORT AdAuctionServiceImpl final
 
     BiddingAndAuctionData data;
     base::Uuid request_id;
+    url::Origin seller;
     GetInterestGroupAdAuctionDataCallback callback;
   };
 

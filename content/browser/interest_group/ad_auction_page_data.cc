@@ -49,4 +49,30 @@ const std::set<std::string>& AdAuctionPageData::GetAuctionSignalsForOrigin(
   return it->second;
 }
 
+void AdAuctionPageData::RegisterAdAuctionRequestContext(
+    const std::string& id,
+    AdAuctionRequestContext context) {
+  context_map_.insert(std::make_pair(id, std::move(context)));
+}
+
+AdAuctionRequestContext* AdAuctionPageData::GetContextForAdAuctionRequest(
+    const std::string& id) {
+  auto it = context_map_.find(id);
+  if (it == context_map_.end()) {
+    return nullptr;
+  }
+  return &it->second;
+}
+
+AdAuctionRequestContext::AdAuctionRequestContext(
+    url::Origin seller,
+    base::flat_map<url::Origin, std::vector<std::string>> group_names,
+    quiche::ObliviousHttpRequest::Context context)
+    : seller(std::move(seller)),
+      group_names(std::move(group_names)),
+      context(std::move(context)) {}
+AdAuctionRequestContext::AdAuctionRequestContext(
+    AdAuctionRequestContext&& other) = default;
+AdAuctionRequestContext::~AdAuctionRequestContext() = default;
+
 }  // namespace content

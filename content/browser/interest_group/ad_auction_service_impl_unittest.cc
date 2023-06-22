@@ -8,6 +8,7 @@
 #include <string>
 #include <vector>
 
+#include "ad_auction_page_data.h"
 #include "base/barrier_closure.h"
 #include "base/base64.h"
 #include "base/containers/contains.h"
@@ -36,6 +37,7 @@
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
 #include "content/browser/aggregation_service/aggregatable_report.h"
 #include "content/browser/fenced_frame/fenced_frame_url_mapping.h"
+#include "content/browser/interest_group/ad_auction_page_data.h"
 #include "content/browser/interest_group/auction_process_manager.h"
 #include "content/browser/interest_group/interest_group_manager_impl.h"
 #include "content/browser/interest_group/interest_group_storage.h"
@@ -7961,6 +7963,28 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
   manager_->RecordInterestGroupWin(
       {test_origin, "cars"}, R"({"renderUrl": "https://c.test/ad2.html"})");
   task_environment()->FastForwardBy(base::Seconds(1));
+
+  manager_->JoinInterestGroup(
+      blink::TestInterestGroupBuilder(test_origin, "boats")
+          .SetAds(
+              {{{GURL("https://c.test/ad6.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat1"},
+                {GURL("https://c.test/ad7.html"), /*metadata=*/absl::nullopt},
+                {GURL("https://c.test/ad8.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat2"}}})
+          .SetAdComponents(
+              {{{GURL("https://c.test/ad9.html"), /*metadata=*/absl::nullopt,
+                 /*size_group=*/absl::nullopt,
+                 /*buyer_reporting_id=*/absl::nullopt,
+                 /*buyer_and_seller_reporting_id=*/absl::nullopt, "Boat3"}}})
+          .Build(),
+      test_origin.GetURL().Resolve("/example.html"));
+  task_environment()->FastForwardBy(base::Seconds(1));
+
   absl::optional<AdAuctionDataAndId> result =
       GetAdAuctionDataAndFlushForFrame(test_origin);
   EXPECT_TRUE(result.has_value());
@@ -7979,24 +8003,48 @@ TEST_F(AdAuctionServiceImplBAndATest, EncryptsPayload) {
       ohttp_gateway.DecryptObliviousHttpRequest(result.value().request);
   EXPECT_TRUE(request.ok()) << request.status();
   auto got = request->GetPlaintextData();
+
+  // The message should be a power of 2 in length
   EXPECT_EQ(1, absl::popcount(got.size()));
+
   // The generation ID is random, so match against everything before and
   // everything after.
   std::string got_str = cbor::DiagnosticWriter::Write(
       cbor::Reader::Read(base::as_bytes(base::make_span(got))).value());
-  EXPECT_THAT(got_str, testing::StartsWith(
-                           R"({0: h'0000000000000000000000000000', )"
-                           R"("version": 0, "publisher": "https://a.test", )"
-                           R"("generationId": ")"));
+  EXPECT_THAT(
+      got_str,
+      testing::StartsWith(
+          R"({0: h'000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(000000000000000000000000000000000000000000000000000000000000000)"
+          R"(00000000000000000000000000000000000000000', )"
+          R"("version": 0, "publisher": "https://a.test", )"
+          R"("generationId": ")"));
   EXPECT_THAT(
       got_str,
       testing::EndsWith(
           R"(", )"
           R"("interestGroups": {"https://a.test": )"
-          R"(h'1F8B08000000000000001DCC4B0E82500C4661D115A9F81ABB04074E2D6D033)"
-          R"(5F05FD2A28421772D2C54C3F87C39F3C22491657F38965C9ECE02EA54983C5A92)"
-          R"(7BEAFA04C510335FAE37549EC6507F580D6A63A95D59C1D3AEA9EC6F3F18364DE)"
-          R"(FFA7D1A22E7E295B7EBD6DEC9B0E6E2075B1CB8476E000000'}})"));
+          R"(h'1F8B080000000000000075CD3B0EC2300C06600A5CA80F5E2B3D02032B8E6)"
+          R"(3B541AD5DC501C406394B0F4A15168460B17ED9D6FFC511C16AA4BD40C8D32C)"
+          R"(2C434F64A6A81DD85AFA419838E8339D4B365E6E4AFEE01A864EC7C61312E33)"
+          R"(D6B8D9BBE2F1C66EDE0E97A74AC0F7716C76999BD219B176585D56A9D148BE0)"
+          R"(BF10DC6C77FF88E50F22C6F9292E52ED07F6021F82676FD7000000'}})"));
+
+  AdAuctionPageData* page_data = PageUserData<AdAuctionPageData>::GetForPage(
+      static_cast<RenderFrameHostImpl*>(main_rfh())->GetPage());
+  ASSERT_TRUE(page_data);
+  AdAuctionRequestContext* context =
+      page_data->GetContextForAdAuctionRequest(result.value().request_id);
+  ASSERT_TRUE(context);
+  EXPECT_EQ(test_origin, context->seller);
+  EXPECT_THAT(context->group_names,
+              testing::UnorderedElementsAre(testing::Pair(
+                  test_origin, testing::ElementsAre("boats", "cars"))));
 }
 
 TEST_F(AdAuctionServiceImplBAndATest, OriginNotAllowed) {
