@@ -2698,7 +2698,7 @@
   {
     "name": "enable-generic-sensor-extra-classes",
     "owners": [ "reillyg@chromium.org", "raphael.kubo.da.costa@intel.com" ],
-    "expiry_milestone": 116
+    "expiry_milestone": 120
   },
   {
     "name": "enable-get-all-screens-media",
