@@ -445,12 +445,12 @@ TEST_F(TouchTransformControllerTest, ExtendedMode) {
 
 TEST_F(TouchTransformControllerTest, TouchRadiusScale) {
   ui::TouchscreenDevice touch_device =
-      CreateTouchscreenDevice(5, gfx::Size(1001, 1001));
+      CreateTouchscreenDevice(5, gfx::Size(100001, 100001));
   ManagedDisplayInfo display =
       CreateDisplayInfo(1, touch_device, gfx::Rect(0, 0, 2560, 1600));
 
-  // Default touchscreen position range is 1001x1001;
-  EXPECT_EQ(sqrt((2560.0 * 1600.0) / (1001.0 * 1001.0)),
+  // Default touchscreen position range is 100001x100001;
+  EXPECT_EQ(sqrt((2560.0 * 1600.0) / (100001.0 * 100001.0)),
             GetTouchResolutionScale(display, touch_device));
 }
 

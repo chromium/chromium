@@ -166,12 +166,6 @@ std::unique_ptr<TouchEventConverterEvdev> TouchEventConverterEvdev::Create(
       std::move(fd), std::move(path), id, devinfo, shared_palm_state,
       dispatcher);
   converter->Initialize(devinfo);
-  if (!converter->GetTouchscreenSize().GetCheckedArea().IsValid()) {
-    LOG(WARNING) << "Ignoring touchscreen \"" << converter->input_device().name
-                 << "\" reporting invalid size "
-                 << converter->GetTouchscreenSize().ToString();
-    return nullptr;
-  }
   return converter;
 }
 

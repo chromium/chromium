@@ -2512,20 +2512,6 @@ TEST_F(TouchEventConverterEvdevTest, FingerSizeWithResolution) {
   EXPECT_FLOAT_EQ(11.f, in_progress_event.minor);
 }
 
-// b/162596241
-TEST_F(TouchEventConverterEvdevTest, InvalidDimensions) {
-  EventDeviceInfo devinfo;
-  input_absinfo absinfo = {};
-  absinfo.maximum = 1 << 16;
-  devinfo.SetAbsInfo(ABS_X, absinfo);
-  devinfo.SetAbsInfo(ABS_MT_POSITION_X, absinfo);
-  devinfo.SetAbsInfo(ABS_Y, absinfo);
-  devinfo.SetAbsInfo(ABS_MT_POSITION_Y, absinfo);
-  EXPECT_FALSE(
-      TouchEventConverterEvdev::Create({}, base::FilePath(kTestDevicePath), 0,
-                                       devinfo, shared_palm_state(), nullptr));
-}
-
 TEST_F(TouchEventConverterEvdevTest, BasicTouchscreen) {
   ui::MockTouchEventConverterEvdev* dev = device();
 
