@@ -2122,13 +2122,15 @@
       // frames. Can be used for UKM or for the perofrmance API.
       name: "LongAnimationFrameMonitoring",
       implied_by: ["LongAnimationFrameTiming", "LongAnimationFrameUKM", "LongTaskFromLongAnimationFrame"],
-      status: "experimental"
+      status: "experimental",
+      origin_trial_feature_name: "LongAnimationFrameTiming"
     },
     {
       // Enables long aniamtion frames as a performance API (the
       // "long-animation-frame" timeline entry)
       name: "LongAnimationFrameTiming",
-      status: "experimental"
+      status: "experimental",
+      origin_trial_feature_name: "LongAnimationFrameTiming"
     },
     {
       // Enables long aniamtion frame logging to UKM
