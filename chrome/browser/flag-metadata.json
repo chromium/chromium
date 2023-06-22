@@ -1149,7 +1149,12 @@
   {
     "name": "clipboard-history-longpress",
     "owners": ["ckincaid@google.com", "multipaste@google.com"],
-    "expiry_milestone": 117
+    "expiry_milestone": 118
+  },
+  {
+    "name": "clipboard-history-refresh",
+    "owners": ["ckincaid@google.com", "multipaste@google.com"],
+    "expiry_milestone": 118
   },
     {
     "name": "clipboard-maximum-age",
