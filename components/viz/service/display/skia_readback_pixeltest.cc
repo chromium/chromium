@@ -169,6 +169,58 @@ void ReadbackTexturesOnGpuThread(gpu::SharedImageManager* shared_image_manager,
   }
 }
 
+void WriteTextureOnGpuMainThread(gpu::SharedImageManager* shared_image_manager,
+                                 gpu::SharedContextState* context_state,
+                                 const gpu::Mailbox& mailbox,
+                                 const gfx::Size& texture_size,
+                                 SkColorType color_type,
+                                 int plane,
+                                 base::span<const uint8_t> pixel_data) {
+  if (!context_state->MakeCurrent(nullptr)) {
+    return;
+  }
+
+  auto representation = shared_image_manager->ProduceSkia(
+      mailbox, context_state->memory_type_tracker(), context_state);
+
+  SkSurfaceProps surface_props{0, kUnknown_SkPixelGeometry};
+
+  std::vector<GrBackendSemaphore> begin_semaphores;
+  std::vector<GrBackendSemaphore> end_semaphores;
+
+  auto scoped_write = representation->BeginScopedWriteAccess(
+      /*final_msaa_count=*/1, surface_props, &begin_semaphores, &end_semaphores,
+      gpu::SharedImageRepresentation::AllowUnclearedAccess::kYes);
+
+  context_state->gr_context()->wait(begin_semaphores.size(),
+                                    begin_semaphores.data());
+
+  DCHECK(color_type == kAlpha_8_SkColorType ||
+         color_type == kR8G8_unorm_SkColorType);
+
+  size_t row_bytes =
+      texture_size.width() * (color_type == kAlpha_8_SkColorType ? 1 : 2);
+
+  SkPixmap pixmap(SkImageInfo::Make(texture_size.width(), texture_size.height(),
+                                    color_type, kUnpremul_SkAlphaType),
+                  pixel_data.data(), row_bytes);
+
+  auto* surface = scoped_write->surface(plane);
+  surface->writePixels(pixmap, 0, 0);
+
+  GrFlushInfo flush_info;
+  flush_info.fNumSemaphores = end_semaphores.size();
+  flush_info.fSignalSemaphores = end_semaphores.data();
+
+  gpu::AddVulkanCleanupTaskForSkiaFlush(context_state->vk_context_provider(),
+                                        &flush_info);
+
+  // Graphite surfaces do not need to be flushed, only Ganesh ones.
+  if (GrDirectContext* direct_context = context_state->gr_context()) {
+    direct_context->flush(flush_info);
+  }
+}
+
 // Reads back NV12 planes from textures returned in the result.
 // Will issue a task to the GPU thread and block on its completion.
 // The |texture_size| needs to be passed in explicitly, because if the request
@@ -225,6 +277,30 @@ void ReadbackNV12Planes(TestGpuServiceHolder* gpu_service_holder,
               /*num_textures=*/1);
         }
 
+        wait.Signal();
+      }));
+
+  wait.Wait();
+}
+
+void WriteNV12Plane(TestGpuServiceHolder* gpu_service_holder,
+                    gpu::Mailbox mailbox,
+                    const gfx::Size& texture_size,
+                    SkColorType color_type,
+                    int plane,
+                    base::span<const uint8_t> pixel_data) {
+  base::WaitableEvent wait;
+
+  // Write the texture on the GPU main thread to ensure ordering with the
+  // creation of the SharedImage referred to by `mailbox`.
+  gpu_service_holder->ScheduleGpuMainTask(base::BindLambdaForTesting(
+      [&mailbox, &texture_size, &color_type, &plane, &pixel_data, &wait]() {
+        WriteTextureOnGpuMainThread(
+            TestGpuServiceHolder::GetInstance()
+                ->gpu_service()
+                ->shared_image_manager(),
+            TestGpuServiceHolder::GetInstance()->GetSharedContextState().get(),
+            mailbox, texture_size, color_type, plane, pixel_data);
         wait.Signal();
       }));
 
@@ -766,8 +842,15 @@ TEST_P(SkiaReadbackPixelTestNV12WithBlit, ExecutesCopyRequestWithBlit) {
         child_context_provider_->SharedImageInterface()->CreateSharedImage(
             format, plane_size, gfx::ColorSpace::CreateREC709(),
             kTopLeft_GrSurfaceOrigin, kPremul_SkAlphaType,
-            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels", pixels);
+            gpu::SHARED_IMAGE_USAGE_DISPLAY_READ, "TestLabels",
+            gpu::kNullSurfaceHandle);
     DCHECK(!mailboxes[i].mailbox.IsZero());
+
+    // Populate the data. Note that this is done on the GPU main thread, so it
+    // is ordered with the creation of the SharedImage above.
+    auto color_type = i == 0 ? kAlpha_8_SkColorType : kR8G8_unorm_SkColorType;
+    WriteNV12Plane(gpu_service_holder_, mailboxes[i].mailbox, plane_size,
+                   color_type, /*plane=*/0, pixels);
   }
 
   std::unique_ptr<CopyOutputResult> result = IssueCopyOutputRequestAndRender(
