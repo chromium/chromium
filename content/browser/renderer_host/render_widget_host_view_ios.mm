@@ -992,8 +992,9 @@ void RenderWidgetHostViewIOS::ContentInsetChanged() {
 }
 
 gfx::Size RenderWidgetHostViewIOS::GetCompositorViewportPixelSize() {
-  return gfx::ScaleToCeiledSize(GetScreenInfo().rect.size(),
-                                GetDeviceScaleFactor());
+  return gfx::ScaleToCeiledSize(
+      IsTesting() ? GetRequestedRendererSize() : GetScreenInfo().rect.size(),
+      GetDeviceScaleFactor());
 }
 
 }  // namespace content
