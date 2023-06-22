@@ -66,7 +66,7 @@ std::unique_ptr<views::View> CreateButtonContainer(
       l10n_util::GetStringUTF16(label_message_id)));
   label->SetFontList(gfx::FontList({"Roboto"}, gfx::Font::NORMAL,
                                    kLabelFontSize, gfx::Font::Weight::NORMAL));
-  label->SetEnabledColor(gfx::kGoogleGrey900);
+  label->SetEnabledColorId(ui::kColorSysOnSurface);
   label->SetHorizontalAlignment(gfx::ALIGN_CENTER);
   return container;
 }
