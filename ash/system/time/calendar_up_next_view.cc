@@ -28,7 +28,6 @@
 #include "ui/views/background.h"
 #include "ui/views/controls/label.h"
 #include "ui/views/controls/scroll_view.h"
-#include "ui/views/focus/focus_manager.h"
 #include "ui/views/layout/box_layout.h"
 #include "ui/views/metadata/view_factory_internal.h"
 
@@ -262,19 +261,7 @@ SkPath CalendarUpNextView::GetClipPath() const {
 }
 
 void CalendarUpNextView::RefreshEvents() {
-  auto* focus_manager = GetFocusManager();
-  views::View* focused_view = nullptr;
-  // Saves the focused view before `UpdateEvents()` so that the focus can be
-  // restored after the events are removed and added again in `UpdateEvents()`.
-  if (focus_manager && focus_manager->GetFocusedView()) {
-    focused_view = focus_manager->GetFocusedView();
-  }
   UpdateEvents(calendar_view_controller_->UpcomingEvents());
-  // Only requests focus if `focused_view` is a child view of `content_view_`
-  // since `focused_view` can be other focusable views outside the up next view.
-  if (focus_manager && focused_view && content_view_->Contains(focused_view)) {
-    focused_view->RequestFocus();
-  }
 }
 
 void CalendarUpNextView::Layout() {
