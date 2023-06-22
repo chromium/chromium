@@ -16,9 +16,11 @@
 #include "chrome/browser/ash/drive/file_system_util.h"
 #include "chrome/browser/ash/file_manager/io_task.h"
 #include "chromeos/ash/components/file_manager/speedometer.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/services/unzip/public/cpp/unzip.h"
 #include "storage/browser/file_system/file_system_context.h"
 #include "storage/browser/file_system/file_system_url.h"
+#include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace file_manager::io_task {
 
@@ -84,6 +86,18 @@ class ExtractIOTask : public IOTask {
 
   void CheckSizeThenExtract();
 
+  // Stores the file access object and begins the actual extraction. This object
+  // needs to survive for the all extraction time, otherwise when Data Leak
+  // Prevention features are enabled, managed archives cannot be opened.
+  void GotScopedFileAccess(file_access::ScopedFileAccess file_access);
+
+  // Retrieves a scoped file access object for the zip files under examination
+  // and calls `GotScopedFileAccess`. This is required to open the zip files
+  // when Data Leak Prevention features are enabled. When these features are not
+  // enabled, `GotScopedFileAccess` is directly called with a default
+  // always-allow file access object.
+  void GetScopedFileAccess();
+
   // URLs of the files that have archives in them for extraction.
   const std::vector<storage::FileSystemURL> source_urls_;
 
@@ -117,6 +131,10 @@ class ExtractIOTask : public IOTask {
 
   // Reference to the unpacker service instances.
   std::map<base::FilePath, scoped_refptr<unzip::ZipFileUnpacker>> unpackers_;
+
+  // Scoped file access object required to open the zipped files when Data Leak
+  // Prevention features are enabled.
+  absl::optional<file_access::ScopedFileAccess> file_access_;
 
   base::WeakPtrFactory<ExtractIOTask> weak_ptr_factory_{this};
 };

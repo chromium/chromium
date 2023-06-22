@@ -14,5 +14,4 @@ source_set("cpp") {
     "//components/services/storage/public/cpp/filesystem",
     "//components/services/unzip/public/mojom",
   ]
-  deps = [ "//components/file_access:file_access" ]
 }

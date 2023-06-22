@@ -21,6 +21,7 @@
 #include "chrome/browser/ash/file_manager/path_util.h"
 #include "chrome/browser/ash/fileapi/file_system_backend.h"
 #include "chrome/browser/platform_util.h"
+#include "components/file_access/scoped_file_access.h"
 #include "components/services/unzip/content/unzip_service.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "content/public/browser/browser_thread.h"
@@ -299,6 +300,22 @@ void ExtractIOTask::CheckSizeThenExtract() {
   }
 }
 
+void ExtractIOTask::GotScopedFileAccess(
+    file_access::ScopedFileAccess file_access) {
+  file_access_ = std::move(file_access);
+  CheckSizeThenExtract();
+}
+
+void ExtractIOTask::GetScopedFileAccess() {
+  std::vector<base::FilePath> zip_files;
+  for (const EntryStatus& source : progress_.sources) {
+    zip_files.push_back(source.url.path());
+  }
+  file_access::RequestFilesAccessForSystem(
+      {zip_files}, base::BindOnce(&ExtractIOTask::GotScopedFileAccess,
+                                  weak_ptr_factory_.GetWeakPtr()));
+}
+
 void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
                             IOTask::CompleteCallback complete_callback) {
   progress_callback_ = std::move(progress_callback);
@@ -315,7 +332,7 @@ void ExtractIOTask::Execute(IOTask::ProgressCallback progress_callback,
     RecordUmaExtractStatus(ExtractStatus::kUnknownError);
     Complete();
   } else {
-    CheckSizeThenExtract();
+    GetScopedFileAccess();
   }
 }
 

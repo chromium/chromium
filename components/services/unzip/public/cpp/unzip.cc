@@ -21,7 +21,6 @@
 #include "base/task/sequenced_task_runner.h"
 #include "base/task/thread_pool.h"
 #include "base/time/time.h"
-#include "components/file_access/scoped_file_access_delegate.h"
 #include "components/services/storage/public/cpp/filesystem/filesystem_impl.h"
 #include "components/services/unzip/public/mojom/unzipper.mojom.h"
 #include "mojo/public/cpp/bindings/receiver.h"
@@ -373,8 +372,7 @@ void DoUnzipWithParams(mojo::PendingRemote<mojom::Unzipper> unzipper,
                        UnzipFilterCallback filter_callback,
                        UnzipListenerCallback listener_callback,
                        mojom::UnzipOptionsPtr options,
-                       UnzipCallback result_callback,
-                       file_access::ScopedFileAccess file_access) {
+                       UnzipCallback result_callback) {
   base::File zip_file(zip_path, base::File::FLAG_OPEN | base::File::FLAG_READ);
   if (!CheckZipFileValid(zip_path, zip_file)) {
     std::move(result_callback).Run(false);
@@ -408,16 +406,14 @@ void ZipFileUnpacker::Unpack(mojo::PendingRemote<mojom::Unzipper> unzipper,
                              UnzipCallback result_callback) {
   DCHECK(!result_callback.is_null());
 
-  file_access::RequestFilesAccessForSystem(
-      {zip_file},
-      base::BindPostTask(
-          runner_,
-          base::BindOnce(
-              &::unzip::DoUnzipWithParams, std::move(unzipper),
-              std::ref(params_), zip_file, output_dir, UnzipFilterCallback(),
-              base::BindPostTaskToCurrentDefault(std::move(listener_callback)),
-              std::move(options),
-              base::BindPostTaskToCurrentDefault(std::move(result_callback)))));
+  runner_->PostTask(
+      FROM_HERE,
+      base::BindOnce(
+          &::unzip::DoUnzipWithParams, std::move(unzipper), std::ref(params_),
+          zip_file, output_dir, UnzipFilterCallback(),
+          base::BindPostTaskToCurrentDefault(std::move(listener_callback)),
+          std::move(options),
+          base::BindPostTaskToCurrentDefault(std::move(result_callback))));
 }
 
 void ReleaseParams(scoped_refptr<UnzipParams>& unzip_params) {
