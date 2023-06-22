@@ -163,7 +163,8 @@ views::BubbleDialogModelHost* HighEfficiencyBubbleView::ShowBubble(
   }
 
   if (base::FeatureList::IsEnabled(
-          performance_manager::features::kDiscardExceptionsImprovements)) {
+          performance_manager::features::kDiscardExceptionsImprovements) &&
+      !is_guest && !profile->IsIncognitoProfile()) {
     const bool is_enabled = !high_efficiency::IsSiteInExceptionsList(
         profile->GetPrefs(), web_contents->GetURL().host());
     AddSiteToExceptionsListButton(&dialog_model_builder, bubble_delegate,
