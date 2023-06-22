@@ -102,7 +102,7 @@ std::vector<extensions::ExtensionId>
 ExtensionsSitePermissionsPageViewUnitTest::GetExtensionsShowingRequests() {
   return extensions_container()
       ->GetExtensionsToolbarControls()
-      ->request_access_button_for_testing()
+      ->request_access_button()
       ->GetExtensionIdsForTesting();
 }
 

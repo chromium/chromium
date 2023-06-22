@@ -62,7 +62,7 @@ ExtensionsRequestAccessButton*
 ExtensionsToolbarControlsUnitTest::request_access_button() {
   return extensions_container()
       ->GetExtensionsToolbarControls()
-      ->request_access_button_for_testing();
+      ->request_access_button();
 }
 
 ExtensionsToolbarButton*
