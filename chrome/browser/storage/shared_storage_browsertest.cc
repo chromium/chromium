@@ -570,12 +570,22 @@ class SharedStorageChromeBrowserTest
   base::test::ScopedFeatureList attestation_feature_;
 };
 
+// We disable a parameter on Android due to hardware limitations. The
+// `resolve_to_config` parameter is also tested at the content/ layer.
+#if BUILDFLAG(IS_ANDROID)
 using SharedStorageChromeBrowserParams =
-    std::tuple</*resolve_to_config=*/bool,
-               /*enable_privacy_sandbox=*/bool,
+    std::tuple</*enable_privacy_sandbox=*/bool,
                /*allow_third_party_cookies=*/bool,
                /*enforce_attestations=*/bool,
                /*should_enroll_main_host=*/bool>;
+#else
+using SharedStorageChromeBrowserParams = std::tuple<
+    /*enable_privacy_sandbox=*/bool,
+    /*allow_third_party_cookies=*/bool,
+    /*enforce_attestations=*/bool,
+    /*should_enroll_main_host=*/bool,
+    /*resolve_to_config=*/bool>;
+#endif
 
 class SharedStoragePrefBrowserTest
     : public SharedStorageChromeBrowserTestBase,
@@ -591,14 +601,19 @@ class SharedStoragePrefBrowserTest
   }
 
   bool ResolveSelectURLToConfig() const override {
-    return std::get<0>(GetParam());
+#if BUILDFLAG(IS_ANDROID)
+    return true;
+#else
+    return std::get<4>(GetParam());
+#endif
   }
-  bool EnablePrivacySandbox() const override { return std::get<1>(GetParam()); }
+  bool EnablePrivacySandbox() const override { return std::get<0>(GetParam()); }
   bool AllowThirdPartyCookies() const override {
-    return std::get<2>(GetParam());
+    return std::get<1>(GetParam());
   }
-  bool EnforceAttestations() const override { return std::get<3>(GetParam()); }
-  bool ShouldEnrollMainHost() const override { return std::get<4>(GetParam()); }
+  bool EnforceAttestations() const override { return std::get<2>(GetParam()); }
+  bool ShouldEnrollMainHost() const override { return std::get<3>(GetParam()); }
+
   void AddSimpleModuleWithPermissionBypassed(
       const content::ToRenderFrameHost& execution_target) {
     content::WebContentsConsoleObserver add_module_console_observer(
@@ -711,19 +726,26 @@ class SharedStoragePrefBrowserTest
 INSTANTIATE_TEST_SUITE_P(
     All,
     SharedStoragePrefBrowserTest,
-    testing::Combine(testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool(),
-                     testing::Bool()),
+    testing::Combine(
+#if !BUILDFLAG(IS_ANDROID)
+        testing::Bool(),
+#endif
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool(),
+        testing::Bool()),
     [](const testing::TestParamInfo<SharedStoragePrefBrowserTest::ParamType>&
            info) {
-      return base::StrCat(
-          {"ResolveSelectURLTo", std::get<0>(info.param) ? "Config" : "URN",
-           "_PrivacySandbox", std::get<1>(info.param) ? "Enabled" : "Disabled",
-           "_3PCookies", std::get<2>(info.param) ? "Allowed" : "Blocked",
-           "_Attestations", std::get<3>(info.param) ? "Enforced" : "Unenforced",
-           "_MainHost", std::get<4>(info.param) ? "Enrolled" : "Unenrolled"});
+      return base::StrCat({
+#if !BUILDFLAG(IS_ANDROID)
+        "ResolveSelectURLTo", std::get<4>(info.param) ? "Config_" : "URN_",
+#endif
+            "PrivacySandbox", std::get<0>(info.param) ? "Enabled" : "Disabled",
+            "_3PCookies", std::get<1>(info.param) ? "Allowed" : "Blocked",
+            "_Attestations",
+            std::get<2>(info.param) ? "Enforced" : "Unenforced", "_MainHost",
+            std::get<3>(info.param) ? "Enrolled" : "Unenrolled"
+      });
     });
 
 IN_PROC_BROWSER_TEST_P(SharedStoragePrefBrowserTest, AddModule) {
