@@ -368,9 +368,11 @@ chromium-metrics-reviews@google.com.
   <token key="UserCategory">
     <variant name=".ConsumerFullUrlLookup" summary="consumer real time"/>
     <variant name=".EnterpriseFullUrlLookup" summary="enterprise real time"/>
-    <variant name=".HashBasedCheck" summary="hash-based"/>
+    <variant name=".HashPrefixDatabaseCheck" summary="hash-prefix database"/>
+    <variant name=".HashPrefixRealTimeCheck" summary="hash-prefix real-time"/>
     <variant name=".NoneFullUrlLookup"
         summary="neither consumer nor enterprise"/>
+    <variant name=".SkippedCheck" summary="skipped"/>
   </token>
 </histogram>
 

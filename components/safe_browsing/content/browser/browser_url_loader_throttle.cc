@@ -547,13 +547,8 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(
       LogTotalDelay2MetricsWithResponseType(is_response_from_cache_,
                                             total_delay_);
     }
-    std::string url_check_type =
-        performed_check ==
-                SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck
-            ? base::StrCat({url_lookup_service_metric_suffix_, kFullURLLookup})
-            : ".HashBasedCheck";
-    LogTotalDelay2Metrics(url_check_type, did_check_url_real_time_allowlist,
-                          total_delay_);
+    LogTotalDelay2Metrics(GetUrlCheckTypeForLogging(performed_check),
+                          did_check_url_real_time_allowlist, total_delay_);
   }
 
   if (proceed) {
@@ -580,6 +575,23 @@ void BrowserURLLoaderThrottle::OnCompleteCheck(
     delegate_->CancelWithError(
         showed_interstitial ? kNetErrorCodeForSafeBrowsing : net::ERR_ABORTED,
         kCustomCancelReasonForURLLoader);
+  }
+}
+
+std::string BrowserURLLoaderThrottle::GetUrlCheckTypeForLogging(
+    SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check) {
+  switch (performed_check) {
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUrlRealTimeCheck:
+      return base::StrCat({url_lookup_service_metric_suffix_, kFullURLLookup});
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashDatabaseCheck:
+      return ".HashPrefixDatabaseCheck";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kCheckSkipped:
+      return ".SkippedCheck";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kHashRealTimeCheck:
+      return ".HashPrefixRealTimeCheck";
+    case SafeBrowsingUrlCheckerImpl::PerformedCheck::kUnknown:
+      NOTREACHED();
+      return ".HashPrefixDatabaseCheck";
   }
 }
 

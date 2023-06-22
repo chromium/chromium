@@ -190,6 +190,7 @@ source_set("unit_tests") {
       "//components/safe_browsing/core/browser/hashprefix_realtime:hash_realtime_utils",
       "//components/security_interstitials/content:security_interstitial_page",
       "//components/security_interstitials/core",
+      "//net/traffic_annotation:test_support",
     ]
   }
 

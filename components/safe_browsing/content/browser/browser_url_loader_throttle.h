@@ -202,6 +202,11 @@ class BrowserURLLoaderThrottle : public blink::URLLoaderThrottle {
       SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check,
       bool did_check_url_real_time_allowlist);
 
+  // Returns the suffixed to be used for the TotalDelay2 metrics that specifies
+  // which type of check was performed.
+  std::string GetUrlCheckTypeForLogging(
+      SafeBrowsingUrlCheckerImpl::PerformedCheck performed_check);
+
   // Called to skip future safe browsing checks and resume the request if
   // necessary.
   void SkipChecks();
