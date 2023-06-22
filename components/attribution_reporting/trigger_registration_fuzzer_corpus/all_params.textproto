@@ -285,7 +285,7 @@ object_value {
     }
   }
   field {
-    name: "aggregatable_dedup_keys"
+    name: "aggregatable_deduplication_keys"
     value {
       array_value {
         value {
@@ -383,6 +383,14 @@ object_value {
     value {
       string_value {
         value: "https://publickeyservice.aws.privacysandboxservices.com"
+      }
+    }
+  }
+  field {
+    name: "aggregatable_source_registration_time"
+    value {
+      string_value {
+        value: "include"
       }
     }
   }
