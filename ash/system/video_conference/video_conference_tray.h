@@ -131,6 +131,7 @@ class ASH_EXPORT VideoConferenceTray
   void HandleLocaleChange() override;
   void AnchorUpdated() override;
   void OnAnimationEnded() override;
+  bool ShouldEnterPushedState(const ui::Event& event) override;
 
   // VideoConferenceTrayController::Observer:
   void OnHasMediaAppStateChange() override;

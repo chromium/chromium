@@ -33,6 +33,7 @@
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/chromeos/styles/cros_tokens_color_mappings.h"
 #include "ui/color/color_id.h"
+#include "ui/events/event.h"
 #include "ui/gfx/canvas.h"
 #include "ui/gfx/geometry/point_f.h"
 #include "ui/gfx/scoped_canvas.h"
@@ -318,6 +319,12 @@ void VideoConferenceTray::OnAnimationEnded() {
   // `MaybeShowSpeakOnMuteOptInNudge()` will only attempt to show the nudge if
   // the tray was made visible.
   VideoConferenceTrayController::Get()->MaybeShowSpeakOnMuteOptInNudge(this);
+}
+
+bool VideoConferenceTray::ShouldEnterPushedState(const ui::Event& event) {
+  // Never enter pushed state to avoid displaying unnecessary ink drop in
+  // `ButtonController::OnMousePressed()`.
+  return false;
 }
 
 void VideoConferenceTray::OnHasMediaAppStateChange() {
