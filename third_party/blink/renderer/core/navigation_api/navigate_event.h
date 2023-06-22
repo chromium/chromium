@@ -25,6 +25,7 @@
 
 namespace blink {
 
+class AbortController;
 class AbortSignal;
 class NavigationDestination;
 class NavigateEventInit;
@@ -42,13 +43,15 @@ class NavigateEvent final : public Event,
  public:
   static NavigateEvent* Create(ExecutionContext* context,
                                const AtomicString& type,
-                               NavigateEventInit* init) {
-    return MakeGarbageCollected<NavigateEvent>(context, type, init);
+                               NavigateEventInit* init,
+                               AbortController* controller = nullptr) {
+    return MakeGarbageCollected<NavigateEvent>(context, type, init, controller);
   }
 
   NavigateEvent(ExecutionContext* context,
                 const AtomicString& type,
-                NavigateEventInit* init);
+                NavigateEventInit* init,
+                AbortController* controller);
 
   void SetDispatchParams(NavigateEventDispatchParams* dispatch_params) {
     dispatch_params_ = dispatch_params;
@@ -107,6 +110,7 @@ class NavigateEvent final : public Event,
   bool can_intercept_;
   bool user_initiated_;
   bool hash_change_;
+  Member<AbortController> controller_;
   Member<AbortSignal> signal_;
   Member<FormData> form_data_;
   String download_request_;
