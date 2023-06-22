@@ -595,11 +595,6 @@
     "expiry_milestone": 120
   },
   {
-    "name": "autofill-enable-upstream-save-card-offer-ui-experiment",
-    "owners": [ "koulvipul@google.com", "payments-autofill-team@google.com"],
-    "expiry_milestone": 116
-  },
-  {
     "name": "autofill-enable-virtual-card",
     "owners": [ "siyua", "jsaul@google.com", "aneeshali@google.com" ],
     "expiry_milestone": 112
