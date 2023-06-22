@@ -953,11 +953,19 @@ base::expected<void, GLError> CopySharedImageHelper::ReadPixels(
     CHECK(context.finished);
     if (context.async_result) {
       success = true;
+      // Use CopyPlane to flip as Graphite doesn't support bottom left origin
+      // images. Using a negative height causes CopyPlane to flip while copying.
+      // TODO(crbug.com/1449764): Remove this if Graphite performs the flip once
+      // it supports bottom left origin images.
+      const int height =
+          source_shared_image->surface_origin() == kTopLeft_GrSurfaceOrigin
+              ? dst_info.height()
+              : -dst_info.height();
       libyuv::CopyPlane(
           static_cast<const uint8_t*>(context.async_result->data(0)),
           context.async_result->rowBytes(0),
           static_cast<uint8_t*>(pixel_address), row_bytes,
-          dst_info.width() * dst_info.bytesPerPixel(), dst_info.height());
+          dst_info.width() * dst_info.bytesPerPixel(), height);
     } else {
       success = false;
     }
