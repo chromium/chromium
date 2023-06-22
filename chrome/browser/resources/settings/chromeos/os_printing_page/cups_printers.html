@@ -125,6 +125,10 @@
     display: flex;
     height: 75px;
   }
+
+  cr-button {
+    border-radius: 18px;
+  }
 </style>
 
 <template is="dom-if" if="[[!canAddPrinter]]">
@@ -252,18 +256,13 @@
       <div id="addPrinterSectionRevamp" class="list-frame add-printer-section"
           hidden="[[!isPrinterSettingsRevampEnabled_]]">
         <div class="layout horizontal center custom-list-item-top">
-          <div id="addPrinterTextRevamp" aria-hidden="true">
-            $i18n{addCupsPrinterManually}
-          </div>
-          <cr-icon-button id="addManualPrinterIconRevamp"
-              class="action-button add-manual-printer-icon"
-              iron-icon="os-settings:printer-add"
-              on-click="onAddPrinterClick_"
+          <cr-button on-click="onAddPrinterClick_"
               disabled="[[!addPrinterButtonActive_(canAddPrinter,
                   prefs.native_printing.user_native_printers_allowed.value)]]"
-              title="$i18n{addCupsPrinterManually}"
               deep-link-focus-id$="[[Setting.kAddPrinter]]">
-          </cr-icon-button>
+            <iron-icon icon="cr:add" slot="prefix-icon"></iron-icon>
+            $i18n{addCupsPrinterManually}
+          </cr-button>
         </div>
       </div>
     </div>
