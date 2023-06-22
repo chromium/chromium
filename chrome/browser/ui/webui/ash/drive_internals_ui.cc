@@ -608,12 +608,19 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
       return;
     }
 
+    const bool enabled = drive::util::IsDriveFsBulkPinningEnabled(profile());
+    SetSectionEnabled("bulk-pinning-section", enabled);
+    if (!enabled) {
+      return;
+    }
+
     service->RemoveObserver(this);
     service->AddObserver(this);
 
     MaybeCallJavascript(
         "updateBulkPinning",
         Value(GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled)));
+
     if (PinManager* const manager = service->GetPinManager()) {
       OnBulkPinProgress(manager->GetProgress());
     }
@@ -623,6 +630,7 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     using drivefs::pinning::HumanReadableSize;
 
     Value::Dict d;
+    d.Set("enabled", GetPrefs()->GetBoolean(kDriveFsBulkPinningEnabled));
     d.Set("stage", drivefs::pinning::ToString(progress.stage));
     d.Set("free_space", ToString(HumanReadableSize(progress.free_space)));
     d.Set("required_space",
