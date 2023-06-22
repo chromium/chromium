@@ -10,7 +10,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R116-15506.0.0",
+        "cros_img": "volteer-public/R117-15511.0.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_LKGM",
         "public_builder": "cros_test_platform_public",
