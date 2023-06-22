@@ -506,6 +506,10 @@ class WaylandPopup : aura::WindowObserver {
   }
 
   void Reposition(WaylandPositioner* positioner, uint32_t token) {
+    if (wl_resource_get_version(resource_) <
+        XDG_POPUP_REPOSITIONED_SINCE_VERSION) {
+      return;
+    }
     xdg_popup_send_repositioned(resource_, token);
 
     display::Display display =

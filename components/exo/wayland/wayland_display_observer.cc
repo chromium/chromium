@@ -151,6 +151,10 @@ void WaylandDisplayHandler::XdgOutputSendLogicalSize(const gfx::Size& size) {
 }
 
 void WaylandDisplayHandler::XdgOutputSendDescription(const std::string& desc) {
+  if (wl_resource_get_version(xdg_output_resource_) <
+      ZXDG_OUTPUT_V1_DESCRIPTION_SINCE_VERSION) {
+    return;
+  }
   zxdg_output_v1_send_description(xdg_output_resource_, desc.c_str());
 }
 
