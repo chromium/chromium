@@ -2109,9 +2109,13 @@ void RasterDecoderImpl::DoWritePixelsINTERNAL(GLint x_offset,
                        "Failed to write pixels to SkCanvas");
   }
 
-  skgpu::ganesh::Flush(surface);
-  dest_scoped_access->ApplyBackendSurfaceEndState();
-  SubmitIfNecessary(std::move(end_semaphores));
+  if (graphite_context()) {
+    GraphiteFlushAndSubmit();
+  } else {
+    skgpu::ganesh::Flush(surface);
+    dest_scoped_access->ApplyBackendSurfaceEndState();
+    SubmitIfNecessary(std::move(end_semaphores));
+  }
 
   if (!dest_shared_image->IsCleared()) {
     dest_shared_image->SetClearedRect(
