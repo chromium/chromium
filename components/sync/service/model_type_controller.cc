@@ -148,12 +148,12 @@ void ModelTypeController::LoadModels(
     const ModelLoadCallback& model_load_callback) {
   DCHECK(CalledOnValidThread());
   DCHECK(model_load_callback);
-  DCHECK_EQ(NOT_RUNNING, state_);
+  CHECK_EQ(NOT_RUNNING, state_);
 
   auto it = delegate_map_.find(configure_context.sync_mode);
   DCHECK(it != delegate_map_.end()) << ModelTypeToDebugString(type());
   delegate_ = it->second.get();
-  DCHECK(delegate_);
+  CHECK(delegate_);
 
   DVLOG(1) << "Sync starting for " << ModelTypeToDebugString(type());
   state_ = MODEL_STARTING;
@@ -181,7 +181,7 @@ void ModelTypeController::LoadModels(
 std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
   DCHECK(CalledOnValidThread());
   DCHECK(activation_response_);
-  DCHECK_EQ(MODEL_LOADED, state_);
+  CHECK_EQ(MODEL_LOADED, state_);
 
   state_ = RUNNING;
   DVLOG(1) << "Sync running for " << ModelTypeToDebugString(type());
@@ -192,7 +192,7 @@ std::unique_ptr<DataTypeActivationResponse> ModelTypeController::Connect() {
 void ModelTypeController::Stop(SyncStopMetadataFate fate,
                                StopCallback callback) {
   DCHECK(CalledOnValidThread());
-  DCHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
+  CHECK(delegate_ || state() == NOT_RUNNING || state() == FAILED);
 
   switch (state()) {
     case NOT_RUNNING:
@@ -253,7 +253,7 @@ bool ModelTypeController::ShouldRunInTransportOnlyMode() const {
 }
 
 void ModelTypeController::GetAllNodes(AllNodesCallback callback) {
-  DCHECK(delegate_);
+  CHECK(delegate_);
   delegate_->GetAllNodesForDebugging(std::move(callback));
 }
 
@@ -367,14 +367,14 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
 
   if (model_load_callback_) {
     DCHECK(model_stop_callbacks_.empty());
-    DCHECK(state_ == MODEL_LOADED || state_ == FAILED);
+    CHECK(state_ == MODEL_LOADED || state_ == FAILED);
 
     model_load_callback_.Run(type(), error);
   } else if (!model_stop_callbacks_.empty()) {
     // State FAILED is possible if an error occurred during STOPPING, either
     // because the load failed or because ReportModelError() was called
     // directly by a subclass.
-    DCHECK(state_ == NOT_RUNNING || state_ == FAILED);
+    CHECK(state_ == NOT_RUNNING || state_ == FAILED);
 
     // We make a copy in case running the callbacks has side effects and
     // modifies the vector, although we don't expect that in practice.
@@ -388,7 +388,7 @@ void ModelTypeController::TriggerCompletionCallbacks(const SyncError& error) {
 }
 
 void ModelTypeController::ClearMetadataWhileStopped() {
-  DCHECK(state_ == NOT_RUNNING || state_ == FAILED);
+  CHECK(state_ == NOT_RUNNING || state_ == FAILED);
   for (auto& [sync_mode, delegate] : delegate_map_) {
     // `delegate` can be null during testing.
     // TODO(crbug.com/1418351): Remove test-only code-path.
