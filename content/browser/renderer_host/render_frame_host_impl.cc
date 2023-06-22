@@ -8129,6 +8129,14 @@ void RenderFrameHostImpl::CreateNewWindow(
   new_main_rfh->render_view_host()->RenderViewCreated(new_main_rfh);
 }
 
+void RenderFrameHostImpl::SendLegacyTechEvent(
+    const std::string& type,
+    blink::mojom::LegacyTechEventCodeLocationPtr code_location) {
+  GetContentClient()->browser()->ReportLegacyTechEvent(
+      this, type, GetLastCommittedURL(), code_location->filename,
+      code_location->line, code_location->column);
+}
+
 void RenderFrameHostImpl::SendPrivateAggregationRequestsForFencedFrameEvent(
     const std::string& event_type) {
   if (!base::FeatureList::IsEnabled(blink::features::kPrivateAggregationApi) ||

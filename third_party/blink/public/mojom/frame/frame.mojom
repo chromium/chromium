@@ -199,6 +199,15 @@ struct IframeAttributes {
   string? src;
 };
 
+// Code location for an enterprise legacy technology event. The data will be
+// uploaded to the enterprise management server without being parsed by the
+// browser process.
+struct LegacyTechEventCodeLocation {
+  string filename;
+  uint64 line;
+  uint64 column;
+};
+
 // Implemented in Browser, this interface defines frame-specific methods that
 // will be invoked from the render process (e.g. content::RenderFrameHostImpl).
 //
@@ -620,6 +629,18 @@ interface LocalFrameHost {
       array<ReportingDestination> destinations,
       network.mojom.AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features);
+
+  // Notify the browser that there is a legacy technology used by the page.
+  // The event contains the technology `type` and code location from the
+  // ExecutionContext.
+  // The event will only be sent when legacy tech report feature is turned on by
+  // the browser.
+  // All data will be later uploaded to the enterprise management service as is.
+  // Note that we don't guarantee any data here is valid, data will be valided
+  // by the server.
+  SendLegacyTechEvent(
+    string type,
+    LegacyTechEventCodeLocation code_location);
 
   // Fenced frames can send beacons automatically when an event happens.
   //

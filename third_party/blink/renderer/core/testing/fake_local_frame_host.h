@@ -183,6 +183,9 @@ class FakeLocalFrameHost : public mojom::blink::LocalFrameHost {
       const WTF::Vector<blink::FencedFrame::ReportingDestination>& destinations,
       network::AttributionReportingRuntimeFeatures
           attribution_reporting_runtime_features) override;
+  void SendLegacyTechEvent(
+      const WTF::String& type,
+      mojom::blink::LegacyTechEventCodeLocationPtr code_location) override;
   void SendPrivateAggregationRequestsForFencedFrameEvent(
       const WTF::String& event_type) override;
   void CreatePortal(

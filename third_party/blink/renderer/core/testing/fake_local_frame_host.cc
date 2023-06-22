@@ -264,6 +264,10 @@ void FakeLocalFrameHost::SetFencedFrameAutomaticBeaconReportEventData(
     network::AttributionReportingRuntimeFeatures
         attribution_reporting_runtime_features) {}
 
+void FakeLocalFrameHost::SendLegacyTechEvent(
+    const WTF::String& type,
+    mojom::blink::LegacyTechEventCodeLocationPtr code_location) {}
+
 void FakeLocalFrameHost::SendPrivateAggregationRequestsForFencedFrameEvent(
     const WTF::String& event_type) {}
 
