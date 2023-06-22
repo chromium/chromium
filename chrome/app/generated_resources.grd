@@ -2977,6 +2977,10 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
         desc="Subpage secondary text when download deep scanning is in progress">
         Scanning for malware...
       </message>
+      <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_ENTERPRISE_SECONDARY"
+        desc="Subpage secondary text when download deep scanning is in progress">
+        Checking with your organization's security policies...
+      </message>
       <message name="IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_DISCARD"
         desc="Subpage button to discard a file when download deep scanning is in progress">
         Delete file

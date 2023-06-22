@@ -1263,8 +1263,11 @@ DownloadUIModel::GetBubbleUIInfoForInProgressOrComplete(
                     IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING))
                 .AddSubpageSecondaryIconAndText(
                     vector_icons::kDocumentScannerIcon,
-                    l10n_util::GetStringUTF16(
-                        IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY))
+                    download::IsDownloadConnectorEnabled(profile())
+                        ? l10n_util::GetStringUTF16(
+                              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_ENTERPRISE_SECONDARY)
+                        : l10n_util::GetStringUTF16(
+                              IDS_DOWNLOAD_BUBBLE_SUBPAGE_SUMMARY_ASYNC_SCANNING_SECONDARY))
                 .AddIconAndColor(
                     features::IsChromeRefresh2023()
                         ? vector_icons::kNotSecureWarningChromeRefreshIcon
