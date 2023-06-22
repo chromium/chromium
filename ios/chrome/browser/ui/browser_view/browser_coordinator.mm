@@ -13,6 +13,7 @@
 #import "components/content_settings/core/browser/host_content_settings_map.h"
 #import "components/feature_engagement/public/event_constants.h"
 #import "components/feature_engagement/public/tracker.h"
+#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/password_manager/core/common/password_manager_features.h"
 #import "components/profile_metrics/browser_profile_type.h"
 #import "components/safe_browsing/core/common/features.h"
@@ -39,6 +40,7 @@
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper.h"
 #import "ios/chrome/browser/ntp/new_tab_page_tab_helper_delegate.h"
 #import "ios/chrome/browser/overscroll_actions/overscroll_actions_tab_helper.h"
+#import "ios/chrome/browser/passwords/password_controller_delegate.h"
 #import "ios/chrome/browser/prerender/preload_controller_delegate.h"
 #import "ios/chrome/browser/prerender/prerender_service.h"
 #import "ios/chrome/browser/prerender/prerender_service_factory.h"
@@ -105,7 +107,6 @@
 #import "ios/chrome/browser/ui/browser_container/browser_container_coordinator.h"
 #import "ios/chrome/browser/ui/browser_container/browser_container_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/browser_coordinator+private.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
 #import "ios/chrome/browser/ui/browser_view/key_commands_provider.h"
@@ -258,7 +259,8 @@ enum class ToolbarKind {
                                   WebContentCommands,
                                   WebNavigationNTPDelegate,
                                   BubblePresenterDelegate,
-                                  OverscrollActionsControllerDelegate>
+                                  OverscrollActionsControllerDelegate,
+                                  PasswordControllerDelegate>
 
 // Whether the coordinator is started.
 @property(nonatomic, assign, getter=isStarted) BOOL started;
@@ -690,7 +692,7 @@ enum class ToolbarKind {
                          keyCommandsProvider:_keyCommandsProvider
                                 dependencies:_viewControllerDependencies];
   self.tabLifecycleMediator.baseViewController = self.viewController;
-  self.tabLifecycleMediator.delegate = self.viewController;
+  self.tabLifecycleMediator.passwordControllerDelegate = self;
 
   _webNavigationBrowserAgent->SetDelegate(self);
 
@@ -1440,7 +1442,7 @@ enum class ToolbarKind {
           initWithBaseViewController:self.viewController
                              browser:self.browser
                               params:params
-                            delegate:self.viewController];
+                            delegate:self];
   [self.passwordSuggestionBottomSheetCoordinator start];
 }
 
@@ -2807,6 +2809,38 @@ enum class ToolbarKind {
 - (FullscreenController*)fullscreenControllerForOverscrollActionsController:
     (OverscrollActionsController*)controller {
   return _fullscreenController;
+}
+
+#pragma mark - PasswordControllerDelegate methods
+
+- (BOOL)displaySignInNotification:(UIViewController*)viewController
+                        fromTabId:(NSString*)tabId {
+  NSString* visibleTabId = self.activeWebState->GetStableIdentifier();
+  // Ignore unless the call comes from currently visible tab.
+  if (![tabId isEqualToString:visibleTabId]) {
+    return NO;
+  }
+  [self.viewController addChildViewController:viewController];
+  [self.viewController.view addSubview:viewController.view];
+  [viewController didMoveToParentViewController:self.viewController];
+  return YES;
+}
+
+- (void)displaySavedPasswordList {
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  [applicationCommandsHandler
+      showSavedPasswordsSettingsFromViewController:self.viewController
+                                  showCancelButton:YES
+                                startPasswordCheck:NO];
+}
+
+- (void)showPasswordDetailsForCredential:
+    (password_manager::CredentialUIEntry)credential {
+  id<ApplicationCommands> applicationCommandsHandler =
+      HandlerForProtocol(_dispatcher, ApplicationCommands);
+  [applicationCommandsHandler showPasswordDetailsForCredential:credential
+                                              showCancelButton:YES];
 }
 
 @end

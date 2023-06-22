@@ -7,13 +7,11 @@
 
 #import <UIKit/UIKit.h>
 
-#import "ios/chrome/browser/ui/browser_view/common_tab_helper_delegate.h"
-
-@protocol CommonTabHelperDelegate;
 @class CommandDispatcher;
 @class DownloadManagerCoordinator;
 @class NewTabPageCoordinator;
 @protocol FollowIPHPresenter;
+@protocol PasswordControllerDelegate;
 class PrerenderService;
 @class PrintController;
 @protocol RepostFormTabHelperDelegate;
@@ -50,7 +48,8 @@ class WebStateList;
 @property(nonatomic, assign) TabInsertionBrowserAgent* tabInsertionBrowserAgent;
 @property(nonatomic, weak) id<OverscrollActionsControllerDelegate>
     overscrollActionsDelegate;
-@property(nonatomic, weak) id<CommonTabHelperDelegate> delegate;
+@property(nonatomic, weak) id<PasswordControllerDelegate>
+    passwordControllerDelegate;
 @property(nonatomic, weak) id<SnapshotGeneratorDelegate>
     snapshotGeneratorDelegate;
 

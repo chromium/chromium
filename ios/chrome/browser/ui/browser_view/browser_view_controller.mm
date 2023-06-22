@@ -3,14 +3,12 @@
 // found in the LICENSE file.
 
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller.h"
-#import "ios/chrome/browser/ui/browser_view/browser_view_controller+delegates.h"
 #import "ios/chrome/browser/ui/browser_view/browser_view_controller+private.h"
 
 #import "base/apple/bundle_locations.h"
 #import "base/mac/foundation_util.h"
 #import "base/strings/sys_string_conversions.h"
 #import "base/task/sequenced_task_runner.h"
-#import "components/password_manager/core/browser/ui/credential_ui_entry.h"
 #import "components/signin/public/identity_manager/identity_manager.h"
 #import "components/strings/grit/components_strings.h"
 #import "components/ukm/ios/ukm_url_recorder.h"
@@ -2097,37 +2095,6 @@ enum HeaderBehaviour {
     return self.fullscreenController->ResizesScrollView() ? UIEdgeInsetsZero
                                                           : maxViewportInsets;
   }
-}
-
-#pragma mark - PasswordControllerDelegate methods
-// TODO(crbug.com/1272487): Refactor the PasswordControllerDelegate API into an
-// independent coordinator.
-
-- (BOOL)displaySignInNotification:(UIViewController*)viewController
-                        fromTabId:(NSString*)tabId {
-  // Check if the call comes from currently visible tab.
-  NSString* visibleTabId = self.currentWebState->GetStableIdentifier();
-  if ([tabId isEqualToString:visibleTabId]) {
-    [self addChildViewController:viewController];
-    [self.view addSubview:viewController.view];
-    [viewController didMoveToParentViewController:self];
-    return YES;
-  } else {
-    return NO;
-  }
-}
-
-- (void)displaySavedPasswordList {
-  [self.applicationCommandsHandler
-      showSavedPasswordsSettingsFromViewController:self
-                                  showCancelButton:YES
-                                startPasswordCheck:NO];
-}
-
-- (void)showPasswordDetailsForCredential:
-    (password_manager::CredentialUIEntry)credential {
-  [self.applicationCommandsHandler showPasswordDetailsForCredential:credential
-                                                   showCancelButton:YES];
 }
 
 #pragma mark - WebStateContainerViewProvider

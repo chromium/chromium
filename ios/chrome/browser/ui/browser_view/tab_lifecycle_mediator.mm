@@ -81,10 +81,10 @@
   PasswordTabHelper* passwordTabHelper =
       PasswordTabHelper::FromWebState(webState);
   DCHECK(_baseViewController);
-  DCHECK(_delegate);
+  DCHECK(_passwordControllerDelegate);
   DCHECK(_commandDispatcher);
   passwordTabHelper->SetBaseViewController(_baseViewController);
-  passwordTabHelper->SetPasswordControllerDelegate(_delegate);
+  passwordTabHelper->SetPasswordControllerDelegate(_passwordControllerDelegate);
   passwordTabHelper->SetDispatcher(_commandDispatcher);
 
   AutofillBottomSheetTabHelper* bottomSheetTabHelper =
