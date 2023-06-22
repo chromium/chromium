@@ -270,6 +270,9 @@ template <typename Base>
 void LayoutNGBlockFlowMixin<Base>::UpdateNGBlockLayout() {
   Base::CheckIsNotDestroyed();
 
+  recordreplay::Assert(
+      "[RUN-1239-2230] LayoutNGBlockFlowMixin::UpdateNGBlockLayout %d",
+      Base::IsOutOfFlowPositioned());
   if (Base::IsOutOfFlowPositioned()) {
     LayoutNGMixin<Base>::UpdateOutOfFlowBlockLayout();
     return;

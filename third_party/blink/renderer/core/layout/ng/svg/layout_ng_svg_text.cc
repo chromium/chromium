@@ -213,7 +213,12 @@ void LayoutNGSVGText::UpdateBlockLayout(bool relayout_children) {
 
   gfx::RectF old_boundaries = ObjectBoundingBox();
 
+  recordreplay::Assert("[RUN-1239-2230] LayoutNGSVGText::UpdateBlockLayout A %d",
+                       GetElement()->RecordReplayId());
   UpdateNGBlockLayout();
+  recordreplay::Assert("[RUN-1239-2230] LayoutNGSVGText::UpdateBlockLayout B %d",
+                       GetElement()->RecordReplayId());
+
   needs_update_bounding_box_ = true;
 
   gfx::RectF boundaries = ObjectBoundingBox();
