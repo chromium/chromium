@@ -1884,8 +1884,7 @@ void HTMLElement::SetPopoverFocusOnShow() {
     return;
   }
 
-  Element* control =
-      IsAutofocusable() ? this : GetFocusDelegate(/*autofocus_only=*/true);
+  Element* control = IsAutofocusable() ? this : GetAutofocusDelegate();
 
   // If the popover does not use autofocus, then the focus should remain on the
   // currently active element.

@@ -759,8 +759,7 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
   // GetFocusableArea calls GetFocusDelegate, this allows us to skip redundant
   // recursive calls to the same descendants.
   Element* GetFocusableArea(bool in_descendant_traversal = false) const;
-  Element* GetFocusDelegate(bool autofocus_only,
-                            bool in_descendant_traversal = false) const;
+  Element* GetFocusDelegate(bool in_descendant_traversal = false) const;
   // Element focus function called through IDL (i.e. element.focus() in JS)
   // Delegates to Focus() with focus type set to kScript
   void focusForBindings(const FocusOptions*);
