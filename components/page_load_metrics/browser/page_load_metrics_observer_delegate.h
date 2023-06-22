@@ -210,8 +210,10 @@ class PageLoadMetricsObserverDelegate {
   // UKM source ID for the latest soft navigation.
   virtual ukm::SourceId GetUkmSourceIdForSoftNavigation() const = 0;
 
-  // UKM source ID for the current page load. For prerendered page loads, this
-  // returns ukm::kInvalidSourceId until activation navigation.
+  // UKM source ID for the current page load.
+  // Note: For prerendered page loads, this returns ukm::kInvalidSourceId until
+  // the activation navigation. After activation, this returns a UKM source ID
+  // associated with the activation navigation's ID.
   virtual ukm::SourceId GetPageUkmSourceId() const = 0;
 
   // Whether the associated navigation is the first navigation in its associated

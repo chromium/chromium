@@ -36,6 +36,54 @@ The Prerender2 is the new implementation of prerendering.
   no-op in the prerendered pages. The known activation-gated APIs are listed
   [here](https://wicg.github.io/nav-speculation/prerendering.html#activation-gated).
 
+# UKM Source Ids
+
+As previously mentioned, there are two navigations involved in Prerender2: the
+prerendering navigation and the activation navigation. As a result, there are
+two UKM Source IDs that are currently used for a prerendered page; one derived
+from each navigation's ID.
+
+The SourceId for the prerendering navigation is currently returned by
+[RenderFrameHost::GetPageUkmSourceId()](https://source.chromium.org/search?q=symbol:%5Econtent::RenderFrameHost::GetPageUkmSourceId$),
+and by [NavigationHandle::GetNextPageUkmSourceId()](https://source.chromium.org/search?q=symbol:%5Econtent::NavigationHandle::GetNextPageUkmSourceId$)
+when called on the `NavigationHandle` for the prerendering navigation. This
+source ID is not associated with a URL by [SourceUrlRecorder](https://source.chromium.org/search?q=symbol:%5Eukm::internal::SourceUrlRecorderWebContentsObserver$) (the data
+collection policy disallows recording it before prerender activation), so any
+metrics recorded using it will not be associated with a URL.
+
+The SourceId for the activation navigation is associated with a URL by
+`SourceUrlRecorder`. The value is currently returned by
+`NavigationHandle::GetNextPageUkmSourceId()` when called on the
+`NavigationHandle` for the activation navigation, and by
+[PageLoadMetricsObserverDelegate::GetPageUkmSourceId](https://source.chromium.org/search?q=symbol:page_load_metrics::PageLoadMetricsObserverDelegate::GetPageUkmSourceId$)
+(and is used by all PLMOs that record UKMs for prerendered pages).
+
+There are 2 patterns recording metrics for prerendering pages used currently in
+content/:
+
+1. Use the source ID of the most recently navigated primary page (obtained from
+   `NavigationHandle::GetNextPageUkmSourceId()`, which uses the activation
+   navigation ID for prerender activations). This UKM source ID is always
+   associated with a URL. This approach is currently used by Precog (the UKM
+   infrastructure in content/browser/preloading) to record the
+   `Preloading_Prediction` and `Preloading_Attempt` UKMs.
+
+2. Use the triggering page's UKM source ID to record metrics for a prerendering
+   page. [PrerenderHost](https://source.chromium.org/search?q=symbol:content::PrerenderHost$)
+   uses this approach currently to record the `PrerenderPageLoad` UKM, which it
+   reports even if the prerendered page isn't activated. Precog also uses this
+   approach to record the `Preloading_Attempt_PreviousPrimaryPage` UKM. They
+   both currently use `RenderFrameHost::GetPageUkmSourceId` to retrieve the
+   source ID, which will be associated with a URL in most cases, except when the
+   triggering page itself was prerendered.
+
+Another possible approach is to collect/remember metrics while prerendering and
+only record them using the activation navigation's source ID after the prerender
+is activated (a similar pattern is used by `PageLoadMetricsObserver`s outside
+content/). In the future, we may want to support recording UKMs after activation
+with both source IDs. This will require registering the prerender navigation
+source ID with a URL after activation.
+
 # References
 
 The date is the publication date, not the last updated date.

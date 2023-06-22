@@ -84,7 +84,14 @@ class CONTENT_EXPORT NavigationHandle : public base::SupportsUserData {
   virtual int64_t GetNavigationId() = 0;
 
   // Get the page UKM ID that will be in use once this navigation fully commits
-  // (the eventual value of GetRenderFrameHost()->GetPageUkmSourceId()).
+  // (typically the eventual value of
+  // GetRenderFrameHost()->GetPageUkmSourceId()).
+  //
+  // WARNING: For prerender activations, this will return a UKM ID that is
+  // different from the eventual value of
+  // GetRenderFrameHost()->GetPageUkmSourceId(). See
+  // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/prerender/README.md#ukm-source-ids
+  // for more details.
   virtual ukm::SourceId GetNextPageUkmSourceId() = 0;
 
   // The URL the frame is navigating to. This may change during the navigation

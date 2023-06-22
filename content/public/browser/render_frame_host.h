@@ -947,6 +947,14 @@ class CONTENT_EXPORT RenderFrameHost : public IPC::Listener,
   // fenced frames is the same as the id for the outermost main frame. For
   // portals, this id for frames inside a portal is the same as the id for the
   // main frame for the portal.
+  // Note: For prerendered pages, this will return a UKM Source ID derived from
+  // the prerendering navigation's ID, which isn't associated with a URL. See
+  // https://chromium.googlesource.com/chromium/src/+/main/content/browser/preloading/prerender/README.md#ukm-source-ids
+  // for more details.
+  // TODO(crbug.com/1245014): We should either: 1) make sure callers don't use
+  // this for pages while they are prerendering and update it to return a UKM ID
+  // that is derived from the activation navigation's ID; or 2) actually record
+  // the current value as a source post-activation.
   virtual ukm::SourceId GetPageUkmSourceId() = 0;
 
   // Report an inspector issue to devtools. Note that the issue is stored on the
