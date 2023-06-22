@@ -62,6 +62,9 @@ class DesktopMediaListView
 
   DesktopMediaSourceView* GetSelectedView();
 
+  const int item_spacing_;
+  const int vertical_margins_;
+
   raw_ptr<DesktopMediaListController, DanglingUntriaged> controller_;
 
   DesktopMediaSourceViewStyle single_style_;

@@ -13067,6 +13067,18 @@ Please help our engineers fix this problem. Tell us what happened right before y
       <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_SCREEN_WITH_MUTE_WARNING" desc="Text for the checkbox on the window picker dialog which is displayed when attempting to share a screen, if local audio playback will be suppressed while capturing audio. In that case, when checked, system audio will be shared, and the local audio playback suppressed; otherwise only video will be shared, and local audio playback will not be suppressed.">
         Also share system audio. This device will be muted to prevent feedback.
       </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_SYSTEM_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a screen.">
+        Also share system audio
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_ALSO_SHARE_TAB_AUDIO" desc="Text for the audio toggle in the window picker dialog which is displayed when attempting to share a tab.">
+        Also share tab audio
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB" desc="Text for the audio-sharing label in the window picker dialog, which is displayed when attempting to share a window or the screen, and audio is only supported for tabs.">
+        To share audio, share a tab instead
+      </message>
+      <message name="IDS_DESKTOP_MEDIA_PICKER_AUDIO_SHARE_HINT_TAB_OR_SCREEN" desc="Text for the audio-sharing label in the window picker dialog, which is displayed when attempting to share a window, and audio is only supported for tabs and screens.">
+        To share audio, share a tab or screen instead
+      </message>
       <message name="IDS_DESKTOP_MEDIA_PICKER_SOURCE_TYPE_SCREEN" desc="Text for the button on the window picker dialog, clicking which takes one to full screen sharing" meaning="Refers to the device's entire screen. Short for 'share the entire screen'.">
         Entire Screen
       </message>

@@ -9,6 +9,7 @@
 #include "base/task/sequenced_task_runner.h"
 #include "chrome/browser/media/webrtc/desktop_media_list_layout_config.h"
 #include "chrome/browser/ui/color/chrome_color_id.h"
+#include "chrome/browser/ui/views/desktop_capture/desktop_media_picker_views.h"
 #include "chrome/grit/generated_resources.h"
 #include "content/public/browser/browser_task_traits.h"
 #include "content/public/browser/browser_thread.h"
@@ -262,10 +263,17 @@ std::unique_ptr<views::View> DesktopMediaTabList::BuildUI(
   scroll_view->SetPreferredSize(gfx::Size(kListWidth, 0));
   full_panel->AddChildView(std::move(preview_sidebar));
 
-  full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
-      views::BoxLayout::Orientation::kHorizontal,
-      gfx::Insets::TLBR(15, 0, 0, 0),
-      /*between_child_spacing=*/12, true));
+  const gfx::Insets kFullPannelInset =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign)
+          ? gfx::Insets::VH(16, 0)
+          : gfx::Insets::TLBR(15, 0, 0, 0);
+  const int kChildSpacing =
+      base::FeatureList::IsEnabled(kDisplayMediaPickerRedesign) ? 16 : 12;
+  views::BoxLayout* layout =
+      full_panel->SetLayoutManager(std::make_unique<views::BoxLayout>(
+          views::BoxLayout::Orientation::kHorizontal, kFullPannelInset,
+          kChildSpacing, true));
+  layout->SetFlexForView(scroll_view, 1);
 
   auto container = std::make_unique<View>();
   container->SetUseDefaultFillLayout(true);

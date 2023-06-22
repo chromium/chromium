@@ -18,7 +18,6 @@ class KeyEvent;
 }  // namespace ui
 
 namespace views {
-class Checkbox;
 class MdTextButton;
 class TableView;
 class View;
@@ -37,11 +36,13 @@ class DesktopMediaPickerViewsTestApi {
 
   bool AudioSupported(DesktopMediaList::Type type) const;
 
-  void FocusAudioCheckbox();
+  void FocusAudioShareControl();
   void PressMouseOnSourceAtIndex(size_t index, bool double_click = false);
   void PressKeyOnSourceAtIndex(size_t index, const ui::KeyEvent& event);
   void SelectTabForSourceType(DesktopMediaList::Type source_type);
-  views::Checkbox* GetAudioShareCheckbox();
+  bool HasAudioShareControl() const;
+  void SetAudioSharingApprovedByUser(bool allow);
+  bool IsAudioSharingApprovedByUser() const;
   views::MdTextButton* GetReselectButton();
 
   bool HasSourceAtIndex(size_t index) const;
