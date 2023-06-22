@@ -982,6 +982,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5308380583665731573">Hubungkan</translation>
 <translation id="5313326810920013265">Setelan bluetooth</translation>
 <translation id="5314219114274263156">Perekaman layar diambil</translation>
+<translation id="5314489738835854379">Berpindah mundur melalui jendela</translation>
 <translation id="5316716239522500219">Cerminkan monitor</translation>
 <translation id="5317780077021120954">Simpan</translation>
 <translation id="5319712128756744240">Sambungkan perangkat baru</translation>
@@ -1128,6 +1129,7 @@ Hubungkan perangkat ke sumber listrik.</translation>
 <translation id="5958529069007801266">Pengguna yang diawasi</translation>
 <translation id="5961960957587052807">Ringan</translation>
 <translation id="5965524703725988602">Tombol Tema gelap. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Berpindah maju melalui jendela</translation>
 <translation id="5976112937189445008">Tekan Enter untuk merekam jendela</translation>
 <translation id="5978382165065462689">Berbagi kontrol layar via Remote Assistance.</translation>
 <translation id="5980301590375426705">Hentikan sesi tamu</translation>
@@ -1338,6 +1340,7 @@ Baru diinstal</translation>
 <translation id="6891721121089053234">Lihat foto, media, dan aplikasi terbaru ponsel Anda di <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Salin</translation>
 <translation id="6901883536534621389">Coba gestur untuk menavigasi</translation>
+<translation id="6912841030378044227">Fokus ke kolom URL</translation>
 <translation id="6919251195245069855">Tidak bisa mengenali kartu smart Anda. Coba lagi.</translation>
 <translation id="6920245099716267363">Aktifkan/nonaktifkan Hotspot. Hotspot aktif, 1 perangkat terhubung.</translation>
 <translation id="6931576957638141829">Simpan ke</translation>
@@ -1687,6 +1690,7 @@ Untuk mematikan perangkat, tekan dan tahan tombol daya di perangkat lagi.</trans
 <translation id="8513108775083588393">Putar otomatis</translation>
 <translation id="851458219935658693">Menampilkan jendela dari desktop saat ini, tombol pilihan dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> Anda mungkin tidak diisi daya saat dinyalakan.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Input mikrofon dikontrol oleh <ph name="APP_NAME" />}other{Input mikrofon dikontrol oleh # aplikasi}}</translation>
 <translation id="8535393432370007982">Urungkan tata urutan menurut warna</translation>
 <translation id="8541078764854166027">Framing kamera</translation>
 <translation id="8542053257095774575">Tidak ada desktop atau template tersimpan</translation>

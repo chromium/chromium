@@ -926,6 +926,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="504465286040788597">Paragrafo precedente</translation>
 <translation id="5045550434625856497">Password non corretta</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Se parli mentre l'audio è disattivato, riceverai una notifica. I dati audio non vengono mai inoltrati dal tuo dispositivo.</translation>
 <translation id="5078796286268621944">PIN errato</translation>
 <translation id="5083553833479578423">Sblocca altre funzioni dell'assistente.</translation>
 <translation id="5092436659250499817">Attiva/disattiva la retroilluminazione della tastiera</translation>
@@ -956,6 +957,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5207949376430453814">Evidenzia il cursore di testo</translation>
 <translation id="5208059991603368177">On</translation>
 <translation id="5216991270656129561">Funzionalità disattivata fino alle ore <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Invia messaggi o rispondi rapidamente sul tuo smartphone usando Phone Hub.</translation>
 <translation id="5222676887888702881">Esci</translation>
 <translation id="5229343007215035173">Attiva/disattiva la Schermata privata</translation>
 <translation id="5234764350956374838">Ignora</translation>
@@ -979,6 +981,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5308380583665731573">Connetti</translation>
 <translation id="5313326810920013265">Impostazioni Bluetooth</translation>
 <translation id="5314219114274263156">Registrazione dello schermo acquisita</translation>
+<translation id="5314489738835854379">Spostati indietro tra le finestre</translation>
 <translation id="5316716239522500219">Consente di duplicare i monitor</translation>
 <translation id="5317780077021120954">Salva</translation>
 <translation id="5319712128756744240">Accoppia nuovo dispositivo</translation>
@@ -1125,6 +1128,7 @@ Collega il dispositivo all'alimentazione.</translation>
 <translation id="5958529069007801266">Utente supervis.</translation>
 <translation id="5961960957587052807">Leggera</translation>
 <translation id="5965524703725988602">Attiva/disattiva il tema scuro. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Spostati avanti tra le finestre</translation>
 <translation id="5976112937189445008">Premi Invio per registrare la finestra</translation>
 <translation id="5978382165065462689">Condividi il controllo dello schermo tramite Assistenza remota.</translation>
 <translation id="5980301590375426705">Esci come Ospite</translation>
@@ -1335,6 +1339,7 @@ Nuova installazione</translation>
 <translation id="6891721121089053234">Visualizza le foto, i contenuti multimediali e le app recenti del tuo telefono su <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova i gesti per la navigazione</translation>
+<translation id="6912841030378044227">Imposta lo stato attivo sulla barra degli indirizzi</translation>
 <translation id="6919251195245069855">Impossibile riconoscere la smart card. Riprova.</translation>
 <translation id="6920245099716267363">Attiva/disattiva l'hotspot. L'hotspot è attivo, 1 dispositivo connesso.</translation>
 <translation id="6931576957638141829">Salva in</translation>
@@ -1684,6 +1689,7 @@ Per arrestare il dispositivo, tieni di nuovo premuto il relativo tasto di accens
 <translation id="8513108775083588393">Rotazione aut.</translation>
 <translation id="851458219935658693">Mostra finestre della scrivania corrente, pulsante di opzione selezionato</translation>
 <translation id="8517041960877371778">Il tuo dispositivo <ph name="DEVICE_TYPE" /> potrebbe non caricarsi mentre è acceso.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Ingresso del microfono controllato da <ph name="APP_NAME" />}other{Ingresso del microfono controllato da # app}}</translation>
 <translation id="8535393432370007982">Annulla l'ordinamento per colore</translation>
 <translation id="8541078764854166027">Zoom automat.</translation>
 <translation id="8542053257095774575">Nessuna scrivania o nessun modello salvati</translation>

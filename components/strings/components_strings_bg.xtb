@@ -535,6 +535,7 @@
 <translation id="2202020181578195191">Въведете валидна година на изтичане</translation>
 <translation id="2202627062836089804">задната страна на картата ви</translation>
 <translation id="2204482073374652408">Актуализирането завърши!</translation>
+<translation id="2208053750671792556">Не получихте кода си? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Тава 3</translation>
 <translation id="2210794033760923560">Качване на отчет</translation>
 <translation id="2212735316055980242">Правилото не е намерено</translation>
@@ -948,6 +949,7 @@
 <translation id="3270847123878663523">&amp;Отмяна на пренареждането</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> иска да се свърже</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Въведете <ph name="NUMBER_OF_DIGITS" />-цифрения код за потвърждение</translation>
 <translation id="3281350579597955952">{0,plural, =1{Според администраторско правило отварянето на този файл в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}other{Според администраторско правило отварянето на тези файлове в(ъв) <ph name="DESTINATION_NAME" /> не се препоръчва}}</translation>
 <translation id="3282085321714087552">Организацията ви (<ph name="ENROLLMENT_DOMAIN" />) изпрати известна информация, като например настройки или правила, до долупосочените уебсайтове.</translation>
 <translation id="3286372614333682499">вертикална ориентация</translation>
@@ -2252,7 +2254,6 @@
 <translation id="6394852772105848029">Този сайт иска да отвори приложението <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Изход от цял екран</translation>
 <translation id="6401136357288658127">Това правило е оттеглено. Вместо него използвайте <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">Надписи на <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Редактиране на отметката</translation>
 <translation id="6405181733356710802">Искате ли да продължите към <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Въвеждане на датата на валидност и кода за проверка за <ph name="CREDIT_CARD" /></translation>
@@ -2594,6 +2595,7 @@
 <translation id="7219179957768738017">Връзката използва <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Обработва се</translation>
 <translation id="7221855153210829124">Показва известия</translation>
+<translation id="7221857374443660083">Банката иска да се увери, че това сте вие</translation>
 <translation id="722454870747268814">Нов раздел в режим „инкогнито“</translation>
 <translation id="7227293336683593977">История на цените</translation>
 <translation id="7233592378249864828">Отпечатване на лист за потвърждение</translation>

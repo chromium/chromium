@@ -2550,6 +2550,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3088325635286126843">Hernoem …</translation>
 <translation id="3089137131053189723">Soektog is uitgevee</translation>
 <translation id="3089941350495701096">&amp;Leeslys</translation>
+<translation id="3089948625237571254">Kopieer videoraam</translation>
 <translation id="3090227230165225418">Kondig aflaaikennisgewings aan</translation>
 <translation id="3090589793601454425">Moenie skuif nie</translation>
 <translation id="3090819949319990166">Kan nie eksterne crx-lêer na <ph name="TEMP_CRX_FILE" /> kopieer nie.</translation>
@@ -3054,6 +3055,7 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3559262020195162408">Kon nie beleid op die toestel installeer nie.</translation>
 <translation id="3559533181353831840">Ongeveer <ph name="TIME_LEFT" /> oor</translation>
 <translation id="3560034655160545939">&amp;Speltoets</translation>
+<translation id="3561201631376780358">Maak kantpaneel oop om alle boekmerke te sien</translation>
 <translation id="3562423906127931518">Hierdie proses kan 'n paar minute neem. Stel tans die Linux-houer op.</translation>
 <translation id="3562655211539199254">Bekyk onlangse Chrome-oortjies van jou foon af</translation>
 <translation id="3563432852173030730">Kioskprogram kon nie afgelaai word nie.</translation>
@@ -4912,6 +4914,7 @@ Gebruik Ctrl + Alt + Verlaag Helderheid om uit te zoem.</translation>
 <translation id="5173668317844998239">Voeg vingerafdrukke by wat op jou sekuriteitsleutel geberg is en vee hulle uit</translation>
 <translation id="5174169235862638850">Wagwoord is na knipbord gekopieer</translation>
 <translation id="5175379009094579629">Die toestelnaam is ongeldig. Voer 'n geldige toestelnaam in en probeer weer.</translation>
+<translation id="5176787661653201403">Kopieer videoraam</translation>
 <translation id="5177479852722101802">Hou aan om kamera- en mikrofoontoegang te blokkeer</translation>
 <translation id="5177549709747445269">Jy gebruik tans mobiele data</translation>
 <translation id="5178667623289523808">Vind vorige</translation>
@@ -5363,6 +5366,7 @@ Toestemmings wat jy reeds aan webwerwe en apps gegee het, kan op hierdie rekenin
 <translation id="5571066253365925590">Bluetooth geaktiveer</translation>
 <translation id="5571092938913434726">Globale mediakontroles</translation>
 <translation id="5571832155627049070">Pasmaak jou profiel</translation>
+<translation id="5572166921642484567">Kies ’n kleurskemamodus</translation>
 <translation id="5572252023412311448">Wys werfbesonderhede vir <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Jy sal verbeterde voorstelle in die adresbalk kry</translation>
 <translation id="557506220935336383">Sien uitbreidingtoestemmings vir ander werwe</translation>
@@ -5494,6 +5498,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5684661240348539843">Bate-identifiseerder</translation>
 <translation id="5684950556880280580">Jou wagwoord is opgedateer</translation>
 <translation id="5687326903064479980">Tydsone</translation>
+<translation id="5687606994963670306">Chrome vee werwe wat ouer as 30 dae is outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf keer om vir jou advertensies voor te stel. Kom meer te wete oor hoe om <ph name="BEGIN_LINK" />jou advertensieprivaatheid in Chrome te bestuur.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Maak seker dat jou toestel ingeprop is en moenie dit afskakel nie. Installering kan tot 20 minute duur. Jou toestel sal outomaties afskakel wanneer installering voltooi is.</translation>
 <translation id="5689516760719285838">Ligging</translation>
 <translation id="5689531695336322499">Dit lyk of <ph name="SUPERVISED_USER_NAME" /> reeds Voice Match met Assistent op 'n ander toestel opgestel het. Hierdie vorige opnames is gebruik om 'n stemmodel op hierdie toestel te maak.</translation>
@@ -7323,6 +7328,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7273110280511444812">laas aangeheg op <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> tot vol</translation>
 <translation id="727595954130325265">Koop nou</translation>
+<translation id="7276100255011548441">Chrome vee onderwerpe wat ouer as 4 weke is outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Of jy kan onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie. Kom meer te wete oor hoe om <ph name="BEGIN_LINK" />jou advertensieprivaatheid in Chrome te bestuur.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Aflaaifout</translation>
 <translation id="7280649757394340890">Teks-na-spraak-steminstellings</translation>
 <translation id="7280877790564589615">Toestemming versoek</translation>
@@ -8814,6 +8820,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8534656636775144800">Oeps! Kon nie by die domein aansluit nie. Probeer weer.</translation>
 <translation id="8535005006684281994">Netscape-sertifikaathernuwing se URL</translation>
 <translation id="8536713137312218707">Kitsopdragte</translation>
+<translation id="8536810348276651776">Meld jou op die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou Family Link-instellings vir Chrome geld.</translation>
 <translation id="8536956381488731905">Klank met sleuteldruk</translation>
 <translation id="8539727552378197395">Nee (NetHttp)</translation>
 <translation id="8539766201049804895">Gradeer op</translation>

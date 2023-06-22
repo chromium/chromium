@@ -535,6 +535,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="2202020181578195191">Angiv et gyldigt udløbsår</translation>
 <translation id="2202627062836089804">bagsiden af dit kort</translation>
 <translation id="2204482073374652408">Opdateringen er fuldført.</translation>
+<translation id="2208053750671792556">Har du ikke modtaget din kode? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Bakke 3</translation>
 <translation id="2210794033760923560">Upload rapport</translation>
 <translation id="2212735316055980242">Politikken blev ikke fundet</translation>
@@ -855,6 +856,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3041612393474885105">Certifikatoplysninger</translation>
 <translation id="305162504811187366">Historik for Chrome Fjernskrivebord, herunder tidsstempler, hosts og id'er for klientsessioner</translation>
 <translation id="3052964831964880138">Prisfald på <ph name="PRICE_DROP" /> på <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome sletter automatisk emner, der er mere end 4 uger gamle. Når du browser videre, kan et emne dukke op på listen igen. Du kan også blokere de emner, som du ikke vil have, at Chrome skal dele med websites. Få flere oplysninger om administration af privatliv ved annoncering i Chrome.</translation>
 <translation id="3061707000357573562">Tjeneste til programrettelse</translation>
 <translation id="306573536155379004">Spillet er startet.</translation>
 <translation id="3068991664510324412">Computer- og videospil</translation>
@@ -948,6 +950,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="3270847123878663523">&amp;Fortryd omarrangering</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vil gerne oprette forbindelse</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Angiv den <ph name="NUMBER_OF_DIGITS" />-cifrede verificeringskode</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}one{Administratorpolitikken fraråder at åbne denne fil på <ph name="DESTINATION_NAME" />}other{Administratorpolitikken fraråder at åbne disse filer på <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Din organisation <ph name="ENROLLMENT_DOMAIN" /> har sendt nogle oplysninger til følgende websites, f.eks. indstillinger eller politikker.</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -2252,7 +2255,6 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="6394852772105848029">Dette website vil have tilladelse til at åbne appen <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Afslut fuld skærm</translation>
 <translation id="6401136357288658127">Denne politik er udfaset. Du bør bruge politikken <ph name="NEW_POLICY" /> i stedet.</translation>
-<translation id="6403709186844650075">Indlæser undertekster på <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Rediger bogmærke</translation>
 <translation id="6405181733356710802">Vil du fortsætte til <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Angiv udløbsdatoen og kontrolkoden for <ph name="CREDIT_CARD" /></translation>
@@ -2594,6 +2596,7 @@ Ellers vil det blive blokeret af dine privatlivsindstillinger. Det giver det ind
 <translation id="7219179957768738017">Forbindelsen bruger <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Behandler</translation>
 <translation id="7221855153210829124">Vise notifikationer</translation>
+<translation id="7221857374443660083">Din bank vil gerne sikre sig, at det er dig</translation>
 <translation id="722454870747268814">Ny inkognitofane</translation>
 <translation id="7227293336683593977">Prishistorik</translation>
 <translation id="7233592378249864828">Udskriv bekræftelsesark</translation>

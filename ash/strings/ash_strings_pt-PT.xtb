@@ -1690,6 +1690,7 @@ Para encerrar o dispositivo, prima sem soltar o botão ligar/desligar novamente 
 <translation id="8513108775083588393">Rotação auto.</translation>
 <translation id="851458219935658693">Mostrar janelas do espaço de trabalho atual, botão de opção selecionado</translation>
 <translation id="8517041960877371778">O <ph name="DEVICE_TYPE" /> pode não carregar enquanto estiver ligado.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de som do microfone controlada pela app <ph name="APP_NAME" />}other{Entrada de som do microfone controlada por # apps}}</translation>
 <translation id="8535393432370007982">Anular ordenação por cor</translation>
 <translation id="8541078764854166027">Enquad. câmara</translation>
 <translation id="8542053257095774575">Nenhum espaço de trabalho ou modelo guardado</translation>

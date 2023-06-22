@@ -859,6 +859,7 @@
 <translation id="3041612393474885105">სერტიფიკატის ინფორმაცია</translation>
 <translation id="305162504811187366">Chrome-ის დისტანციური სამუშაო დაფის ისტორია, მათ შორის დროის ანაბეჭდები, ჰოსტები და კლიენტთა სესიების ID-ები</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />-ზე ფასის <ph name="PRICE_DROP" />-ით შემცირება</translation>
+<translation id="3054512251683174387">Chrome ავტომატურად შლის 4 კვირაზე ძველ თემებს. თქვენ მიერ ვების დათვალიერების პარალელურად, ესა თუ ეს თემა შეიძლება ხელახლა გამოჩნდეს სიაში. სურვილისამებრ, შეგიძლიათ დაბლოკოთ თემები, რომლებიც არ გსურთ, Chrome-მა რომ გაუზიაროს საიტებს. შეიტყვეთ მეტი Chrome-ში რეკლამის კონფიდენციალურობის მართვის შესახებ.</translation>
 <translation id="3061707000357573562">ჩასწორების სერვისი</translation>
 <translation id="306573536155379004">თამაში დაიწყო.</translation>
 <translation id="3067505415088964188">ფასი დაბალია</translation>
@@ -2259,7 +2260,6 @@
 <translation id="6394852772105848029">ამ საიტს სურს, გახსნას <ph name="APP_NAME" /> აპი</translation>
 <translation id="6398765197997659313">სრულეკრანიანი რეჟიმიდან გამოსვლა</translation>
 <translation id="6401136357288658127">ეს წესები მოძველდა. სანაცვლოდ უნდა გამოიყენოთ <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">იქმნება <ph name="SOURCE" /> სუბტიტრები</translation>
 <translation id="6404511346730675251">სანიშნის რედაქტირება</translation>
 <translation id="6405181733356710802">გსურთ <ph name="APP_NAME" />-ზე გადასვლა?</translation>
 <translation id="6410264514553301377">შეიყვანეთ <ph name="CREDIT_CARD" />-ის მოქმედების ვადა და CVC</translation>

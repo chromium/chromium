@@ -931,6 +931,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="504465286040788597">Prethodni pasus</translation>
 <translation id="5045550434625856497">Neispravna lozinka</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">Dobićete obaveštenje ako govorite dok je zvuk isključen. Zvuk ostaje na uređaju.</translation>
 <translation id="5078796286268621944">Netačan PIN</translation>
 <translation id="5083553833479578423">Otključajte još funkcija Pomoćnika.</translation>
 <translation id="5092436659250499817">Uključi/isključi pozadinsko osvetljenje tastature</translation>
@@ -961,6 +962,7 @@ Probajte ponovo u režimu laptopa.</translation>
 <translation id="5207949376430453814">Istakni kursor za tekst</translation>
 <translation id="5208059991603368177">Uključeno</translation>
 <translation id="5216991270656129561">Isključeno do <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Brzo šaljite poruke ili odgovarajte na njih pomoću Phone Hub-a.</translation>
 <translation id="5222676887888702881">Odjavi me</translation>
 <translation id="5229343007215035173">Uključi/isključi ekran za privatnost</translation>
 <translation id="5234764350956374838">Odbaci</translation>
@@ -1695,6 +1697,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Unos preko mikrofona kontroliše <ph name="APP_NAME" />}one{Unos preko mikrofona kontroliše # aplikacija}few{Unos preko mikrofona kontrolišu # aplikacije}other{Unos preko mikrofona kontroliše # aplikacija}}</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
 <translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>

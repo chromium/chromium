@@ -89,6 +89,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="1492417797159476138">Já guardou este nome de utilizador para este site.</translation>
 <translation id="1497590942294823549">Menu → Gestor de Palavras-passe</translation>
 <translation id="1498283581832036924">A sua conta de <ph name="WEBSITE" /> não vai ser apagada.</translation>
+<translation id="1501820324067650154">Para obter as opções do trajeto, toque em "Obter direções"</translation>
 <translation id="1506063256525392513">Isto permite-lhe tirar e carregar fotos, bem como ler códigos QR</translation>
 <translation id="1509486075633541495">Inicie sessão no Website</translation>
 <translation id="1509960214886564027">As funcionalidades em muitos sites podem falhar.</translation>
@@ -175,6 +176,7 @@ Para alterar esta definição, <ph name="BEGIN_LINK" />limpe os dados do Chrome 
 <translation id="2073572773299281212">Ativo há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Pode escolher o que pretende sincronizar nas <ph name="BEGIN_LINK" />definições<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Anular</translation>
+<translation id="2080409463824088391">Abrir na app…</translation>
 <translation id="2080769225927880590">Inicie sessão com uma conta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fixar Separador</translation>
@@ -231,6 +233,7 @@ Os sites não podem utilizar cookies para ver a sua atividade de navegação em 
 <translation id="2476359652512522418">Não selecionado</translation>
 <translation id="2479148705183875116">Aceder às Definições</translation>
 <translation id="2482878487686419369">Notificações</translation>
+<translation id="2484459871750294497">Como posso ativar esta funcionalidade?</translation>
 <translation id="2496626742194544812">Ir para o primeiro separador</translation>
 <translation id="2500374554657206846">Opções para Guardar palavra-passe</translation>
 <translation id="2523363575747517183">Este Website está a tentar repetidamente abrir outra aplicação.</translation>
@@ -310,8 +313,11 @@ O seu motor de pesquisa é o <ph name="DSE_NAME" />. Se aplicável, consulte as 
 <translation id="2921219216347069551">Impossível Partilhar Página</translation>
 <translation id="2923448633003185837">Colar e ir</translation>
 <translation id="292639812446257861">Marcar como não lidas</translation>
+<translation id="2931440415625410757">Mostrar instruções</translation>
 <translation id="2932085390869194046">Sugerir palavra-passe…</translation>
 <translation id="2932765531295814441">Adicione palavras-passe manualmente</translation>
+<translation id="2952246431280799028">Toque sem soltar numa morada.</translation>
+<translation id="2952278131021475699">Pesquisa com a câmara do Lens</translation>
 <translation id="2952581218264071393">1. Abra as definições do Chrome.</translation>
 <translation id="2958718410589002129">Palavras-passe</translation>
 <translation id="2961210776189273067">Título</translation>
@@ -538,7 +544,6 @@ Se aplicável, consulte as instruções do motor de pesquisa para eliminar o his
 <translation id="448433063499977729">A sincronização foi desativada</translation>
 <translation id="4488754974567924717">Informamos se as suas palavras-passe estiverem comprometidas</translation>
 <translation id="4489536976005181779">{count,plural, =1{Página adicionada à sua Lista de leitura na sua conta, {email}}other{Páginas adicionadas à sua Lista de leitura na sua conta, {email}}}</translation>
-<translation id="4496373720959965247">Adicione separadores e alterne entre páginas.</translation>
 <translation id="4502566650163919158">Rever agora</translation>
 <translation id="4505980578794259603">Última verificação: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Fechar a promoção de início de sessão</translation>
@@ -1258,6 +1263,7 @@ Os seus dados foram encriptados com a sua frase de acesso a <ph name="TIME" />. 
 <translation id="891282356902782456">Esta palavra-passe está guardada apenas neste dispositivo. Para usá-la nos seus outros dispositivos, guarde-a na sua Conta Google, <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Realce texto num site</translation>
 <translation id="8917490105272468696">Sim, aceito</translation>
+<translation id="8926984231484284953">Use moradas em páginas Web para obter direções e informações locais.</translation>
 <translation id="8928133177108699615">Computador</translation>
 <translation id="8934982071228289624">Para guardar esta palavra-passe na sua conta, tem de definir primeiro um código secreto no dispositivo.</translation>
 <translation id="8940809892068499052">Abra separadores de navegação anónima de outras apps</translation>

@@ -226,6 +226,7 @@
 <translation id="2476359652512522418">አልተመረጠም</translation>
 <translation id="2479148705183875116">ወደ ቅንብሮች ሂድ</translation>
 <translation id="2482878487686419369">ማስታወቂያዎች</translation>
+<translation id="2484459871750294497">እንዴት ይሄን ባህሪ ላንቃው?</translation>
 <translation id="2496626742194544812">ወደ መጀመሪያ ትር ሂድ</translation>
 <translation id="2500374554657206846">የይለፍ ቃል የሚቀመጡባቸው አማራጮች</translation>
 <translation id="2523363575747517183">ይህ ድር ጣቢያ በተደጋጋሚነት ሌላ መተግበሪያ ለመክፈት እየሞከረ ነው።</translation>
@@ -304,8 +305,10 @@
 <translation id="2921219216347069551">ገፅ ማጋራት አልተቻለም</translation>
 <translation id="2923448633003185837">ለጥፍ እና ሂድ</translation>
 <translation id="292639812446257861">እንዳልተነበበ ምልክት አድርግ</translation>
+<translation id="2931440415625410757">መመሪያዎችን አሳይ</translation>
 <translation id="2932085390869194046">የይለፍ ቃል ጠቁም...</translation>
 <translation id="2932765531295814441">የይለፍ ቃላትን ራስዎ ያክሉ</translation>
+<translation id="2952278131021475699">የሌንስ ካሜራ ፍለጋ</translation>
 <translation id="2952581218264071393">1. የChrome ቅንብሮችን ይክፈቱ</translation>
 <translation id="2958718410589002129">የይለፍ ቃላት</translation>
 <translation id="2961210776189273067">ርዕስ</translation>
@@ -528,7 +531,6 @@
 <translation id="448433063499977729">ስምረት ጠፍቷል</translation>
 <translation id="4488754974567924717">የእርስዎ የይለፍ ቃላት ከተጠለፉ እናሳውቅዎታለን</translation>
 <translation id="4489536976005181779">{count,plural, =1{ገፅ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}one{ገፅ ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክሏል፣ {email}}other{ገጾች ወደ የእርስዎ የንባብ ዝርዝር በመለያዎ ውስጥ ታክለዋል፣ {email}}}</translation>
-<translation id="4496373720959965247">ትሮችን ያክሉ እና በገጾች መካከል ይቀያይሩ</translation>
 <translation id="4502566650163919158">አሁን ይፈትሹ</translation>
 <translation id="4505980578794259603">መጨረሻ የተፈተሸው <ph name="TIME" /> ላይ።</translation>
 <translation id="4508750114462689118">የመግቢያ ማስተዋወቂያን ዝጋ</translation>

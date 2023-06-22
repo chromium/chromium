@@ -536,6 +536,7 @@
 <translation id="2202020181578195191">মেয়াদ শেষ হওয়ার বছরের সঠিক মান লিখুন</translation>
 <translation id="2202627062836089804">আপনার কার্ডের পিছনের দিক</translation>
 <translation id="2204482073374652408">আপডেট প্রসেস সম্পূর্ণ হয়েছে!</translation>
+<translation id="2208053750671792556">নিজের কোড রিসিভ করেননি? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ট্রে ৩</translation>
 <translation id="2210794033760923560">রিপোর্ট আপলোড করুন</translation>
 <translation id="2212735316055980242">নীতি পাওয়া যায়নি</translation>
@@ -949,6 +950,7 @@
 <translation id="3270847123878663523">&amp;পুনর্বিন্যাসকে পূর্বাবস্থায় ফেরান</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> এদের সঙ্গে সংযুক্ত হতে চায়</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-সংখ্যার যাচাইকরণ কোড লিখুন</translation>
 <translation id="3281350579597955952">{0,plural, =1{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}one{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}other{অ্যাডমিনিস্ট্রেটরের নীতি অনুযায়ী <ph name="DESTINATION_NAME" />-এ এই ফাইল খোলা যাবে না}}</translation>
 <translation id="3282085321714087552">আপনার সংস্থা, <ph name="ENROLLMENT_DOMAIN" />, নিম্নলিখিত ওয়েবসাইটগুলিকে সেটিংস বা নীতির মতো কিছু তথ্য পাঠিয়েছে।</translation>
 <translation id="3286372614333682499">পোর্ট্রেট</translation>
@@ -2252,7 +2254,6 @@
 <translation id="6394852772105848029">এই সাইট <ph name="APP_NAME" /> অ্যাপ খুলতে চায়</translation>
 <translation id="6398765197997659313">পূর্ণ স্ক্রীণ বন্ধ করুন</translation>
 <translation id="6401136357288658127">এই নীতি বন্ধ করে দেওয়া হয়েছে। পরিবর্তে আপনাকে <ph name="NEW_POLICY" /> নীতি ব্যবহার করতে হবে।</translation>
-<translation id="6403709186844650075"><ph name="SOURCE" /> ক্যাপশন করা চলছে</translation>
 <translation id="6404511346730675251">বুকমার্ক সম্পাদনা করুন</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" />-এ চালিয়ে যেতে চান?</translation>
 <translation id="6410264514553301377">Enter the expiration date and CVC for <ph name="CREDIT_CARD" /></translation>
@@ -2594,6 +2595,7 @@
 <translation id="7219179957768738017">এই সংযোগটি <ph name="SSL_VERSION" />টি ব্যবহার করে</translation>
 <translation id="7220786058474068424">প্রক্রিয়ায় রয়েছে</translation>
 <translation id="7221855153210829124">বিজ্ঞপ্তিগুলি দেখান</translation>
+<translation id="7221857374443660083">আপনার পরিচয় সম্পর্কে ব্যাঙ্ক নিশ্চিত হতে চায়</translation>
 <translation id="722454870747268814">নতুন ছদ্মবেশী ট্যাব</translation>
 <translation id="7227293336683593977">দাম সম্পর্কিত ইতিহাস</translation>
 <translation id="7233592378249864828">প্রিন্ট কনর্ফামেশন শিট</translation>

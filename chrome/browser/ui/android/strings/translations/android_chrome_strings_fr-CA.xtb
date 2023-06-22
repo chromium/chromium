@@ -854,6 +854,7 @@ Pour modifier ce paramètre, <ph name="BEGIN_LINK" />réinitialisez la synchroni
 <translation id="5665379678064389456">Créer un événement dans <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome ne peut pas vérifier la présence de mises à jour</translation>
 <translation id="5686790454216892815">Nom de fichier trop long</translation>
+<translation id="5687606994963670306">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d'empêcher un site de vous suggérer des annonces. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
 <translation id="569435661099256888">Vous pouvez voir les pages que vous avez visitées ou les effacer de votre historique</translation>
 <translation id="569536719314091526">Utilisez le bouton Plus d'options pour traduire cette page vers n'importe quelle langue</translation>
 <translation id="5696597120588531049">Chrome peut vous aider à vous protéger, entre autres, contre les violations de données et les sites Web non sécuritaires</translation>
@@ -1168,6 +1169,7 @@ Par exemple, certains sites Web peuvent répondre à cette demande en diffusant 
 <translation id="7260367682327802201">Il est possible que votre appareil Android ait un paramètre similaire. Si la mesure des annonces est activée dans Chrome et sur votre appareil Android, une entreprise peut être capable de mesurer l’efficacité d’une annonce sur les sites Web que vous visitez et dans les applications que vous utilisez.</translation>
 <translation id="727288900855680735">Envoyer un <ph name="ONE_TIME_CODE" /> à <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Site bloqué</translation>
+<translation id="7276100255011548441">Chrome supprime automatiquement les sujets datant de plus de quatre semaines. Au fil de votre navigation sur le Web, un sujet peut réapparaître dans la liste. Vous pouvez également bloquer les sujets que vous ne souhaitez pas que Chrome partage avec des sites. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
 <translation id="7286703216224610554">Partager la réaction uniquement</translation>
 <translation id="7290209999329137901">Impossible de renommer l'élément</translation>
 <translation id="7291910923717764901">Les descriptions d'image ont été ajoutées pour cette page</translation>

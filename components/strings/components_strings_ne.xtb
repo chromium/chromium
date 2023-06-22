@@ -527,6 +527,7 @@
 <translation id="2202020181578195191">म्याद सकिने मान्य वर्ष प्रविष्टि गर्नुहोस्</translation>
 <translation id="2202627062836089804">आफ्नो कार्डको पछाडिको भाग</translation>
 <translation id="2204482073374652408">अपडेट गर्ने कार्य सम्पन्न भयो!</translation>
+<translation id="2208053750671792556">कोड प्राप्त गर्नुभएन? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">रिपोर्ट अपलोड गर्नुहोस्</translation>
 <translation id="2212735316055980242">नीति फेला परेन</translation>
@@ -844,6 +845,7 @@
 <translation id="3041612393474885105">प्रमाणपत्र जानकारी</translation>
 <translation id="305162504811187366">Chrome को रिमोट डेस्कटपसम्बन्धी इतिहास (जस्तै, टाइमस्ट्याम्प, होस्ट र क्लाइन्ट सेसन ID)</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> को मूल्य <ph name="PRICE_DROP" /> घटेको छ</translation>
+<translation id="3054512251683174387">Chrome ले ४ हप्ताभन्दा पुराना विषयहरू स्वतः मेटाउँछ। तपाईंले विभिन्न साइटहरू ब्राउज गरिराख्ने क्रममा कुनै विषय यो सूचीमा फेरि देखिन सक्छ। अथवा तपाईं Chrome ले कुनै विषय साइटहरूसँग सेयर नगरोस् भन्ने चाहनुहुन्छ भने तपाईं उक्त विषय ब्लक गर्न सक्नुहुन्छ। Chrome मा विज्ञापनको गोपनीयता व्यवस्थापन गर्ने सम्बन्धमा थप जान्नुहोस्।</translation>
 <translation id="3061707000357573562">प्याचसम्बन्धी सेवा</translation>
 <translation id="306573536155379004">गेम सुरु भएको छ।</translation>
 <translation id="3068991664510324412">कम्प्युटर तथा भिडियो गेमहरू</translation>
@@ -933,6 +935,7 @@
 <translation id="3270847123878663523">क्रम परिवर्तन &amp;पूर्ववत गर्नुहोस्</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> जडान गर्न चाहन्छ</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> अङ्कको पुष्टि कोड हाल्नुहोस्</translation>
 <translation id="3281350579597955952">{0,plural, =1{एड्मिनले तोक्नुभएको नीतिअनुसार यो फाइल <ph name="DESTINATION_NAME" /> मा खोल्न सिफारिस गरिँदैन}other{एड्मिनले तोक्नुभएको नीतिअनुसार यी फाइलहरू <ph name="DESTINATION_NAME" /> मा खोल्न सिफारिस गरिँदैन}}</translation>
 <translation id="3282085321714087552">तपाईंको सङ्गठन <ph name="ENROLLMENT_DOMAIN" /> ले निम्न वेबसाइटहरूमा सेटिङ वा नीतिहरू जस्ता केही जानकारी पठाएको छ।</translation>
 <translation id="3286372614333682499">पोर्ट्रेट</translation>
@@ -2560,6 +2563,7 @@
 <translation id="7219179957768738017">जडानले <ph name="SSL_VERSION" /> प्रयोग गर्छ।</translation>
 <translation id="7220786058474068424">प्रशोधन गर्दै</translation>
 <translation id="7221855153210829124">सूचनाहरू देखाउनुहोस्</translation>
+<translation id="7221857374443660083">तपाईंको बैंकले यी व्यक्ति तपाईं नै हो भन्ने कुरा पुष्टि गर्न चाहन्छ</translation>
 <translation id="722454870747268814">नयाँ इन्कोग्निटो ट्याब</translation>
 <translation id="7227293336683593977">विगतको मूल्य</translation>
 <translation id="7233592378249864828">पुष्टि गर्ने पाना प्रिन्ट गर्नुहोस्</translation>

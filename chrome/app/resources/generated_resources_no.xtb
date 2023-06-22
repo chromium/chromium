@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Legg til i ordliste</translation>
 <translation id="1018656279737460067">Avbrutt</translation>
 <translation id="1022489261739821355">Viser passord fra <ph name="BEGIN_LINK" />Google-kontoen<ph name="END_LINK" /> din</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Enheten administreres av <ph name="DOMAIN" />. Administratorene har tilgang til dataene i alle profiler på denne enheten.</translation>
 <translation id="1024734233509995696">Denne fanen bruker kameraet eller mikrofonen</translation>
 <translation id="1026655690966755180">Legg til port</translation>
@@ -3500,6 +3501,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="3919145445993746351">For å få utvidelsene dine på alle datamaskinene dine, slå på synkronisering</translation>
 <translation id="3919229493046408863">Slå av varsler fra enheter i nærheten</translation>
 <translation id="3919262972282962508">Gamle versjoner av Chrome-apper lar seg ikke åpne på Mac-enheter etter desember 2022. Kontakt administratoren din for å oppdatere til en ny versjon eller fjerne denne appen.</translation>
+<translation id="3919376399641777316">Bruker Google Disk-lagring</translation>
 <translation id="3919798653937160644">Sider du åpner i dette vinduet, vises ikke i nettleserloggen, og de etterlater ingen andre spor (f.eks. informasjonskapsler) på datamaskinen etter at du har lukket alle åpne gjestevinduer. Derimot beholdes eventuelle filer du laster ned.</translation>
 <translation id="3920504717067627103">Administratorinnstillinger for sertifikater</translation>
 <translation id="3920909973552939961">Nettsteder som ikke har lov til å installere betalingsbehandlere</translation>
@@ -3648,6 +3650,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4044612648082411741">Angi sertifikatpassordet ditt</translation>
 <translation id="4044708573046946214">Skjermlåspassord</translation>
 <translation id="404493185430269859">Standard søkemotor</translation>
+<translation id="4044964245574571633">Bruker Microsoft OneDrive-lagring</translation>
 <translation id="4045196801416070837">Enhetslyder</translation>
 <translation id="4046013316139505482">Disse utvidelsene trenger ikke å se og endre informasjonen på dette nettstedet.</translation>
 <translation id="4046123991198612571">Neste spor</translation>
@@ -3686,6 +3689,7 @@ Du kan administrere innstillingene for denne kontoen ved å installere Family Li
 <translation id="4084682180776658562">Legg til bokmerke</translation>
 <translation id="4084835346725913160">Lukk <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript er blokkert på siden.</translation>
+<translation id="4085620044235559093">Velg en app for å åpne <ph name="FILE_TYPE" /> filer</translation>
 <translation id="4087089424473531098">Opprettet utvidelsen:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4441,6 +4445,7 @@ Bruk Ctrl + Alt + lysstyrke ned for å zoome ut.</translation>
 <translation id="4742970037960872810">Fjern markering</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Finn ut hvordan du oppdaterer programmer<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Gå til nettstedet</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Slå på lyden for nettstedet}other{Slå på lyden for nettstedene}}</translation>
 <translation id="474609389162964566">Bruk assistenten med «Hey Google»</translation>
 <translation id="4746351372139058112">Meldinger</translation>
@@ -5506,6 +5511,7 @@ Du kan sende den til Google for å sjekke om den er utrygg. Skanninger tar vanli
 <translation id="5684661240348539843">Ressursidentifikator</translation>
 <translation id="5684950556880280580">Passordet ditt er oppdatert</translation>
 <translation id="5687326903064479980">Tidssone</translation>
+<translation id="5687606994963670306">Chrome sletter automatisk nettsteder som er eldre enn 30 dager. Hvis du besøker et nettsted på nytt, kan det havne på listen igjen. Du kan også blokkere et nettsted fra å foreslå annonser for deg. Finn ut hvordan du <ph name="BEGIN_LINK" />administrerer annonsepersonvernet ditt i Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Sørg for at enheten er koblet til, og ikke slå den av. Installasjonen kan ta opptil 20 minutter. Enheten slår seg av automatisk når installasjonen er fullført.</translation>
 <translation id="5689516760719285838">Sted</translation>
 <translation id="5689531695336322499">Det ser ut til at <ph name="SUPERVISED_USER_NAME" /> allerede har konfigurert Voice Match med assistenten på en annen enhet. Disse tidligere opptakene ble brukt til å lage en stemmemodell på denne enheten.</translation>
@@ -7341,6 +7347,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7273110280511444812">sist vedlagt <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> til batteriet er fullt</translation>
 <translation id="727595954130325265">Kjøp nå</translation>
+<translation id="7276100255011548441">Chrome sletter automatisk emner som er eldre enn fire uker. Når du fortsetter å bla gjennom, kan det hende at emner dukker opp på listen igjen. Alternativt kan du blokkere emner som du ikke vil at Chrome skal dele med nettsteder. Finn ut hvordan du <ph name="BEGIN_LINK" />administrerer annonsepersonvernet ditt i Chrome<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Nedlastingsfeil</translation>
 <translation id="7280649757394340890">Stemmeinnstillinger for tekst til tale</translation>
 <translation id="7280877790564589615">Tillatelse forespurt</translation>
@@ -7528,6 +7535,7 @@ Du har # passord til som er utsatt for sikkerhetsbrudd. Google Passordlagring an
 <translation id="7432200167665670017">Administratoren din har blokkert «<ph name="EXTENSION_NAME" />» – app-ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Sett inn smartkortet for å fortsette å bruke <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Nei</translation>
+<translation id="7434100547946193426">Andre apper</translation>
 <translation id="7434509671034404296">Utvikler</translation>
 <translation id="7434757724413878233">Museakselerasjon</translation>
 <translation id="7434969625063495310">Kunne ikke legge til utskriftstjeneren. Kontroller tjenerens konfigurasjon, og prøv på nytt.</translation>
@@ -8840,6 +8848,7 @@ Jeg tror ikke det er nødvendig å blokkere dette nettstedet.</translation>
 <translation id="8534656636775144800">Beklager. Det oppstod en feil da du prøvde å knytte deg til domenet. Prøv på nytt.</translation>
 <translation id="8535005006684281994">Fornying av Netscape-sertifikat for nettadresse</translation>
 <translation id="8536713137312218707">Hurtigkommandoer</translation>
+<translation id="8536810348276651776">Logger deg av de fleste nettsteder. Du forblir pålogget Google-kontoen din, slik at Family Link-innstillingene for Chrome fortsetter å gjelde.</translation>
 <translation id="8536956381488731905">Lyd ved tastetrykk</translation>
 <translation id="8539727552378197395">Nei (kun http)</translation>
 <translation id="8539766201049804895">Oppgrader</translation>

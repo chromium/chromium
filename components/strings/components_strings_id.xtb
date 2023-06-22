@@ -535,6 +535,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="2202020181578195191">Masukkan tahun habis masa berlaku yang valid</translation>
 <translation id="2202627062836089804">bagian belakang kartu Anda</translation>
 <translation id="2204482073374652408">Update selesai!</translation>
+<translation id="2208053750671792556">Tidak menerima kode Anda? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Baki 3</translation>
 <translation id="2210794033760923560">Upload Laporan</translation>
 <translation id="2212735316055980242">Kebijakan tidak ditemukan</translation>
@@ -855,6 +856,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3041612393474885105">Informasi Sertifikat</translation>
 <translation id="305162504811187366">Histori Chrome Desktop Jarak Jauh, termasuk stempel waktu, host, dan ID sesi klien</translation>
 <translation id="3052964831964880138">Diskon <ph name="PRICE_DROP" /> untuk <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome akan otomatis menghapus topik yang tersimpan lebih dari 4 minggu. Saat Anda menjelajah, suatu topik mungkin muncul kembali di daftar. Atau, Anda dapat memblokir topik yang tidak ingin Anda bagikan dari Chrome ke situs. Pelajari lebih lanjut cara mengelola privasi iklan Anda di Chrome.</translation>
 <translation id="3061707000357573562">Layanan Patch</translation>
 <translation id="306573536155379004">Game dimulai.</translation>
 <translation id="3068991664510324412">Game komputer &amp; video game</translation>
@@ -948,6 +950,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="3270847123878663523">&amp;Urungkan Pengaturan Ulang</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ingin terhubung</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Masukkan kode verifikasi <ph name="NUMBER_OF_DIGITS" /> digit</translation>
 <translation id="3281350579597955952">{0,plural, =1{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}other{Kebijakan administrator tidak merekomendasikan untuk membuka file ini di <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisasi Anda, <ph name="ENROLLMENT_DOMAIN" />, telah mengirim beberapa info ke situs berikut, seperti setelan atau kebijakan.</translation>
 <translation id="3286372614333682499">potret</translation>
@@ -2251,7 +2254,6 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="6394852772105848029">Situs ini ingin membuka aplikasi <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Keluar dari tampilan layar penuh</translation>
 <translation id="6401136357288658127">Kebijakan ini tidak digunakan lagi. Sebaiknya Anda menggunakan kebijakan <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">Membuat teks dalam bahasa <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6405181733356710802">Lanjutkan ke <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Masukkan tanggal kedaluwarsa dan CVC <ph name="CREDIT_CARD" /></translation>
@@ -2593,6 +2595,7 @@ Jika tidak, ini akan diblokir oleh setelan privasi Anda. Ini akan memungkinkan k
 <translation id="7219179957768738017">Koneksi menggunakan <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Dalam proses</translation>
 <translation id="7221855153210829124">Tampilkan notifikasi</translation>
+<translation id="7221857374443660083">Bank Anda ingin memastikan bahwa ini memang Anda</translation>
 <translation id="722454870747268814">Tab Samaran Baru</translation>
 <translation id="7227293336683593977">Histori Harga</translation>
 <translation id="7233592378249864828">Cetak lembar konfirmasi</translation>

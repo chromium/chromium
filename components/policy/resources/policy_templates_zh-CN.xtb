@@ -435,6 +435,11 @@
       如果此政策已启用或未设置，浏览器会决定要使用哪种 User-Agent GREASE 算法。如果此政策已停用，系统会使用旧版 User-Agent GREASE 算法。
       此政策只是一项暂时性措施，会在某个未来版本中移除。</translation>
 <translation id="142346659686073702">允许独立用户使用 Crostini</translation>
+<translation id="1423900783955065155">此政策旨在控制是否可将具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存在往返缓存中。设置了此标头的网站可能不希望从往返缓存中恢复相应网页，因为即使页面不再可访问，一些敏感信息仍然可能被显示出来。
+
+如果已启用或未设置此政策，除非触发了缓存逐出（例如当网站的 HTTP-Only Cookie 发生更改时），否则系统可能会从往返缓存中恢复具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页。
+
+如果已停用此政策，具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页将不会储存在往返缓存中。</translation>
 <translation id="1425551776320718592">禁止此设备的用户使用 ADB 旁加载，但不对设备强制执行 Powerwash。使用此设置可能会导致设备处于不安全的状态。</translation>
 <translation id="1426170570389588560">设置打印任务元数据的存储时间段（天）</translation>
 <translation id="1426410128494586442">是</translation>
@@ -2206,6 +2211,7 @@
 <translation id="305106159605171619">“用户代理字符串缩短”功能已停用，且未通过现场试验或源试用启用。</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">停用“屏幕录制”功能</translation>
+<translation id="3063307261083019730">禁止具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存在往返缓存中。</translation>
 <translation id="3064530882228745118">在 Kerberos 身份验证期间使用 CNAME 查找功能</translation>
 <translation id="3066446511111537292">允许此设备的关联用户使用 ADB 旁加载</translation>
 <translation id="3067462824622454143">允许用户决定是否应在设备休眠或合盖时锁定设备</translation>
@@ -3029,6 +3035,7 @@
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
 <translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
+<translation id="379318040165550702">允许用户选择</translation>
 <translation id="3793998702484455655">在 iOS 上，Chrome 会尝试升级某些类型的混合内容（HTTPS 网站上的 HTTP）子资源。
 如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md。
 
@@ -3550,7 +3557,6 @@
 
       如果此政策未设置，系统会允许网站请求访问，但用户可以更改此设置。</translation>
 <translation id="4275048399551500192">不显示由其他设备启动的 <ph name="PRODUCT_NAME" /> 会话的媒体控件</translation>
-<translation id="4282183301963493864">禁止在所有网页上使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4282243913059705499">始终在工具栏中显示 <ph name="PRODUCT_NAME" /> 图标</translation>
 <translation id="4285674129118156176">允许独立用户使用 ARC</translation>
 <translation id="428948795004445932">网络数据的取样和收集时间间隔。所允许的最低时间间隔为 1 分钟。
@@ -4175,7 +4181,6 @@
       如果您不设置此政策，<ph name="PRODUCT_NAME" /> 将会只连接到位于 RFC1918/RFC4193 的投放设备，除非 CastAllowAllIPs 功能已开启。</translation>
 <translation id="489803897780524242">此参数可控制是否为默认搜索服务提供商替换搜索字词</translation>
 <translation id="4899708173828500852">启用安全浏览</translation>
-<translation id="4904462841601272815">允许在所有网页上使用 <ph name="PRODUCT_NAME" /></translation>
 <translation id="4906194810004762807">设备策略的更新频率</translation>
 <translation id="49093841899738146">如果此政策已启用，<ph name="PRODUCT_NAME" /> 便可从 Google 服务（例如 Hangouts Meet）收集 WebRTC 事件日志并将它们上传到 Google。这些日志包含一些诊断信息，例如 RTP 数据包的时间和大小、网络拥塞情况反馈，以及与语音帧和视频帧的时间和质量相关的元数据。在调试 <ph name="PRODUCT_NAME" /> 中的语音会议或视频会议问题时，这些信息非常有用。这些日志不包含会议的任何音频或视频内容。为了更便于进行调试，Google 可能会利用会话 ID 将这些日志与 Google 服务自身收集的其他日志关联起来。
 
@@ -4612,6 +4617,13 @@
 <translation id="5345910753471481870">不在“新标签页”页面上的搜索框中显示 Google 智能镜头按钮。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="534836255587440809">禁止在登录屏幕上自动点击</translation>
+<translation id="5361708558735884308">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设置为 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
+
+通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
+
+如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
+
+从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
 <translation id="5365946944967967336">在工具栏上显示“主页”按钮</translation>
@@ -5306,6 +5318,7 @@
 <translation id="603768430528561926">如果此政策已启用或未设置，企业设备用户便可通过 <ph name="PRODUCT_OS_NAME" />注册流程来兑换优惠。
 
       如果此政策已停用，用户将无法兑换这类优惠。</translation>
+<translation id="6042407236638640864">允许具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页进入往返缓存</translation>
 <translation id="6042629184389251062">禁止进行以网址为键的指标收集</translation>
 <translation id="6046615715547751255">不允许使用精细报告控件</translation>
 <translation id="6048199181629830227">启用用电高峰转移电源管理</translation>
@@ -7585,6 +7598,7 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 
       如果启用了或未配置此设置，那么系统将允许网站检查用户有无已保存的付款方式。</translation>
 <translation id="8118665053362250806">设置媒体磁盘缓存大小</translation>
+<translation id="8123648898339555150">允许具有“<ph name="CACHE_CONTROL_NO_STORE_NAME" />”标头的网页储存在往返缓存中。</translation>
 <translation id="8124468781472887384">设备打印机配置访问政策。</translation>
 <translation id="8128192446158421884">AutoOpenFileTypes 可应用到的网址</translation>
 <translation id="8131046602440880289">允许在使用“随选朗读”功能时使用增强型网络文字转语音的语音</translation>
@@ -8380,9 +8394,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 <translation id="8858642179038618439">强制启用 YouTube 安全模式</translation>
 <translation id="8860342862142842017">对于指定的一系列 subjectPublicKeyInfo 哈希，不强制执行证书透明化要求</translation>
 <translation id="8860894781631833477">用户可以配置 <ph name="PRODUCT_OS_NAME" /> 发布渠道</translation>
-<translation id="8862436312516745856">如果此政策已启用或未设置，系统会允许在所有网页上使用 <ph name="PRODUCT_NAME" />。
-
-如果此政策已停用，所有网页上都无法使用 <ph name="PRODUCT_NAME" />。</translation>
 <translation id="8864975621965365890">浏览使用 <ph name="PRODUCT_FRAME_NAME" />呈现的网站时，阻止显示“停止支持”的提示。</translation>
 <translation id="8865404058177794289">为 RSA 密钥用法检查使用默认设置</translation>
 <translation id="8866430022832109569">应用内广告资源报告</translation>

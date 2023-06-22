@@ -535,6 +535,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="2202020181578195191">Unesite važeću godinu isteka</translation>
 <translation id="2202627062836089804">poleđina kartice</translation>
 <translation id="2204482073374652408">Ažuriranje je završeno!</translation>
+<translation id="2208053750671792556">Niste primili kôd? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Ladica 3</translation>
 <translation id="2210794033760923560">Otpremi izvještaj</translation>
 <translation id="2212735316055980242">Pravilo nije pronađeno</translation>
@@ -855,6 +856,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3041612393474885105">Informacije o potvrdi</translation>
 <translation id="305162504811187366">Historija Chrome udaljenog računara, uključujući vremenske oznake, host računare i ID-ove sesija klijenta</translation>
 <translation id="3052964831964880138">Pad cijene od <ph name="PRICE_DROP" /> za proizvod <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome automatski briše teme starije od 4 tjedna. Kako nastavljate s pregledavanjem, tema se može ponovo pojaviti na popisu. Možete i blokirati teme za koje ne želite da ih Chrome dijeli s web-lokacijama. Saznajte više o upravljanju zaštitom privatnosti u online oglašavanju u Chrome.</translation>
 <translation id="3061707000357573562">Usluga za zakrpe</translation>
 <translation id="306573536155379004">Igra je počela.</translation>
 <translation id="3068991664510324412">Kompjuterske i video igrice</translation>
@@ -948,6 +950,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="3270847123878663523">&amp;Poništi preuređivanje</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> se želi povezati</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Unesite <ph name="NUMBER_OF_DIGITS" />-cifreni kôd za potvrdu</translation>
 <translation id="3281350579597955952">{0,plural, =1{Prema administratorskim pravilima nije preporučeno otvaranje ovog fajla na lokaciji <ph name="DESTINATION_NAME" />}one{Prema administratorskim pravilima nije preporučeno otvaranje ovih fajlova na lokaciji <ph name="DESTINATION_NAME" />}few{Prema administratorskim pravilima nije preporučeno otvaranje ovih fajlova na lokaciji <ph name="DESTINATION_NAME" />}other{Prema administratorskim pravilima nije preporučeno otvaranje ovih fajlova na lokaciji <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Vaša organizacija, <ph name="ENROLLMENT_DOMAIN" />, je poslala određene informacije web lokacijama u nastavku, naprimjer postavke ili pravila.</translation>
 <translation id="3286372614333682499">uspravno</translation>
@@ -2252,7 +2255,6 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="6394852772105848029">Ova web lokacija želi otvoriti aplikaciju <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Napusti prikaz preko cijelog ekrana</translation>
 <translation id="6401136357288658127">Ovo pravilo je zastarjelo. Umjesto njega koristite pravilo <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">Titlovi <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Uredite oznaku</translation>
 <translation id="6405181733356710802">Nastaviti na aplikaciji <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Unesite datum isteka i CVC za karticu <ph name="CREDIT_CARD" /></translation>
@@ -2594,6 +2596,7 @@ To će u suprotnom biti blokirano prema vašim postavkama privatnosti. Ovo će o
 <translation id="7219179957768738017">Veza koristi <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Obrada</translation>
 <translation id="7221855153210829124">Prikaži obavještenja</translation>
+<translation id="7221857374443660083">Vaša banka želi potvrditi vaš identitet</translation>
 <translation id="722454870747268814">Nova anonimna kartica</translation>
 <translation id="7227293336683593977">Historija cijena</translation>
 <translation id="7233592378249864828">Štampanje tabele za potvrdu</translation>

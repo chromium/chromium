@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Ajouter au dictionnaire</translation>
 <translation id="1018656279737460067">Annulé</translation>
 <translation id="1022489261739821355">Affichage des mots de passe de votre <ph name="BEGIN_LINK" />compte Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Votre appareil est géré par <ph name="DOMAIN" />. Les administrateurs ont accès aux données de tous les profils enregistrés sur cet appareil.</translation>
 <translation id="1024734233509995696">Cet onglet utilise votre appareil photo ou votre microphone</translation>
 <translation id="1026655690966755180">Ajouter un port</translation>
@@ -3467,6 +3468,7 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3919145445993746351">Pour utiliser vos extensions sur tous vos ordinateurs, activez la synchronisation</translation>
 <translation id="3919229493046408863">Désactiver les notifications lorsque des appareils se trouvent à proximité</translation>
 <translation id="3919262972282962508">Les anciennes versions des applications Chrome ne s'ouvriront plus sur les appareils Mac après décembre 2022. Communiquez avec votre administrateur pour passer à une nouvelle version ou retirer cette application.</translation>
+<translation id="3919376399641777316">Utilise l'espace de stockage Google Disque</translation>
 <translation id="3919798653937160644">Les pages que vous consultez dans cette fenêtre ne sont pas consignées dans l'historique du navigateur et ne laissent aucune autre trace sur votre ordinateur (comme des témoins) une fois que vous avez fermé toutes les fenêtres ouvertes en tant qu'invité. Tous les fichiers téléchargés sont toutefois conservés.</translation>
 <translation id="3920504717067627103">Politiques pour les certificats</translation>
 <translation id="3920909973552939961">Non autorisés à installer des modules de traitement de paiement</translation>
@@ -3617,6 +3619,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4044612648082411741">Entrez le mot de passe de votre certificat</translation>
 <translation id="4044708573046946214">Mots de passe de verrouillage d'écran</translation>
 <translation id="404493185430269859">Moteur de recherche par défaut</translation>
+<translation id="4044964245574571633">Utilise l'espace de stockage Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Sons de l'appareil</translation>
 <translation id="4046013316139505482">Ces extensions n'ont pas besoin de consulter ni de modifier l'information sur ce site.</translation>
 <translation id="4046123991198612571">Chanson suivante</translation>
@@ -3655,6 +3658,7 @@ Souhaitez-vous lancer <ph name="CONTROL_PANEL_APPLET_NAME" />?</translation>
 <translation id="4084682180776658562">Favoris</translation>
 <translation id="4084835346725913160">Fermer <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript a été bloqué dans cette page.</translation>
+<translation id="4085620044235559093">Choisir une application pour ouvrir les fichiers <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Extension créée :
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4405,6 +4409,7 @@ Appuyez sur Ctrl+Alt+diminuer la luminosité pour dézoomer.</translation>
 <translation id="4742970037960872810">Retirer la surbrillance</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Découvrir comment mettre à jour des applications<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Accéder au site</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Réactiver le son sur le site}one{Réactiver le son sur le site}other{Réactiver le son sur les sites}}</translation>
 <translation id="474609389162964566">Accédez à votre Assistant avec la commande rapide « Ok Google »</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5456,6 +5461,7 @@ Vous pouvez l'envoyer à Google pour vérifier s'il est dangereux. Les analyses 
 <translation id="5684661240348539843">Identifiant de ressource</translation>
 <translation id="5684950556880280580">Votre mot de passe a été mis à jour</translation>
 <translation id="5687326903064479980">Fuseau horaire</translation>
+<translation id="5687606994963670306">Chrome supprime automatiquement les sites datant de plus de 30 jours. Un site que vous revisitez pourrait réapparaître dans la liste. Vous avez également la possibilité d'empêcher un site de vous suggérer des annonces. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Assurez-vous que votre appareil est branché et ne l'éteignez pas. L'installation peut prendre jusqu'à 20 minutes. Votre appareil s'éteindra automatiquement une fois l'installation terminée.</translation>
 <translation id="5689516760719285838">Lieu</translation>
 <translation id="5689531695336322499">Il semble que <ph name="SUPERVISED_USER_NAME" /> ait déjà configuré Voice Match avec l'Assistant sur un autre appareil. Ces enregistrements précédents ont été utilisés pour créer un modèle vocal sur cet appareil.</translation>
@@ -7282,6 +7288,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7273110280511444812">date de la dernière connexion : <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % - <ph name="TIME" /> avant le chargement complet</translation>
 <translation id="727595954130325265">Magasiner maintenant</translation>
+<translation id="7276100255011548441">Chrome supprime automatiquement les sujets datant de plus de quatre semaines. Au fil de votre navigation sur le Web, un sujet peut réapparaître dans la liste. Vous pouvez également bloquer les sujets que vous ne souhaitez pas que Chrome partage avec des sites. Apprenez-en plus sur comment <ph name="BEGIN_LINK" />gérer la confidentialité des annonces dans Chrome<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Erreur de téléchargement</translation>
 <translation id="7280649757394340890">Paramètres vocaux de synthèse vocale</translation>
 <translation id="7280877790564589615">Autorisation demandée</translation>
@@ -7466,6 +7473,7 @@ Vous avez # autres mots de passe compromis. Le gestionnaire de mots de passe de
 <translation id="7432200167665670017">Votre administrateur a bloqué « <ph name="EXTENSION_NAME" /> » – Identifiant de l'application <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insérez votre carte à puce pour continuer à utiliser votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Conserver</translation>
+<translation id="7434100547946193426">Autres applications</translation>
 <translation id="7434509671034404296">Concepteur</translation>
 <translation id="7434757724413878233">Accélération de la souris</translation>
 <translation id="7434969625063495310">Impossible d'ajouter le serveur d'impression. Veuillez vérifier la configuration du serveur, puis réessayer.</translation>
@@ -8767,6 +8775,7 @@ Conservez votre fichier de clé en lieu sûr. Vous en aurez besoin lors de la cr
 <translation id="8534656636775144800">Oups! Une erreur s'est produite lorsque vous avez tenté de vous joindre au domaine. Veuillez réessayer.</translation>
 <translation id="8535005006684281994">URL de renouvellement du certificat Netscape</translation>
 <translation id="8536713137312218707">Commandes rapides</translation>
+<translation id="8536810348276651776">Cette option vous déconnectera de la plupart des sites. Vous resterez connecté à votre compte Google, donc vos paramètres Family Link pour Chrome s'appliqueront toujours.</translation>
 <translation id="8536956381488731905">Son à chaque touche</translation>
 <translation id="8539727552378197395">Non (HttpOnly)</translation>
 <translation id="8539766201049804895">Mettre à niveau</translation>

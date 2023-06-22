@@ -228,6 +228,7 @@
 <translation id="2476359652512522418">ਚੁਣੀ ਨਹੀਂ ਗਈ</translation>
 <translation id="2479148705183875116">ਸੈਟਿੰਗਾਂ 'ਤੇ ਜਾਓ</translation>
 <translation id="2482878487686419369">ਸੂਚਨਾਵਾਂ</translation>
+<translation id="2484459871750294497">ਮੈਂ ਇਸ ਵਿਸ਼ੇਸ਼ਤਾ ਨੂੰ ਕਿਵੇਂ ਚਾਲੂ ਕਰਾਂ?</translation>
 <translation id="2496626742194544812">ਪਹਿਲੀ ਟੈਬ 'ਤੇ ਜਾਓ</translation>
 <translation id="2500374554657206846">ਪਾਸਵਰਡ ਰੱਖਿਅਤ ਕਰਨ ਦੇ ਵਿਕਲਪ</translation>
 <translation id="2523363575747517183">ਇਹ ਵੈੱਬਸਾਈਟ ਵਾਰ-ਵਾਰ ਕੋਈ ਹੋਰ ਐਪਲੀਕੇਸ਼ਨ ਖੋਲ੍ਹਣ ਦੀ ਕੋਸ਼ਿਸ਼ ਕਰ ਰਹੀ ਹੈ।</translation>
@@ -306,8 +307,10 @@
 <translation id="2921219216347069551">ਸਫ਼ਾ ਸ਼ੇਅਰ ਨਹੀਂ ਕਰ ਸਕਦਾ</translation>
 <translation id="2923448633003185837">ਪੇਸਟ ਕਰੋ ਅਤੇ ਅੱਗੇ ਵੱਧੋ</translation>
 <translation id="292639812446257861">ਨਾ-ਪੜ੍ਹੇ ਹੋਏ ਇੰਦਰਾਜ਼ਾਂ ਦੀ ਨਿਸ਼ਾਨਦੇਹੀ ਕਰੋ</translation>
+<translation id="2931440415625410757">ਹਿਦਾਇਤਾਂ ਦਿਖਾਓ</translation>
 <translation id="2932085390869194046">ਪਾਸਵਰਡ ਸੁਝਾਓ...</translation>
 <translation id="2932765531295814441">ਪਾਸਵਰਡਾਂ ਨੂੰ ਹੱਥੀਂ ਸ਼ਾਮਲ ਕਰੋ</translation>
+<translation id="2952278131021475699">Lens ਕੈਮਰੇ ਰਾਹੀਂ ਖੋਜ</translation>
 <translation id="2952581218264071393">1. Chrome ਸੈਟਿੰਗਾਂ ਖੋਲ੍ਹੋ</translation>
 <translation id="2956733177489514605">ਆਪਣੇ ਪਾਸਵਰਡਾਂ ਅਤੇ ਹੋਰ ਚੀਜ਼ਾਂ ਨੂੰ ਸਿੰਕ ਕਰਨ ਲਈ ਆਪਣੇ Google ਖਾਤੇ ਨਾਲ ਸਾਈਨ-ਇਨ ਕਰੋ।</translation>
 <translation id="2958718410589002129">ਪਾਸਵਰਡ</translation>
@@ -533,7 +536,6 @@
 <translation id="448433063499977729">ਸਿੰਕ ਬੰਦ ਕਰ ਦਿੱਤਾ ਗਿਆ ਹੈ</translation>
 <translation id="4488754974567924717">ਪਾਸਵਰਡਾਂ ਨਾਲ ਛੇੜਛਾੜ ਹੋਣ 'ਤੇ, ਅਸੀਂ ਤੁਹਾਨੂੰ ਸੂਚਿਤ ਕਰਾਂਗੇ</translation>
 <translation id="4489536976005181779">{count,plural, =1{ਪੰਨੇ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}one{ਪੰਨੇ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}other{ਪੰਨਿਆਂ ਨੂੰ ਤੁਹਾਡੇ ਖਾਤੇ, {email} ਦੀ ਪੜ੍ਹਨ-ਸੂਚੀ ਵਿੱਚ ਸ਼ਾਮਲ ਕੀਤਾ ਗਿਆ}}</translation>
-<translation id="4496373720959965247">ਟੈਬਾਂ ਸ਼ਾਮਲ ਕਰੋ ਅਤੇ ਪੰਨਿਆਂ ਵਿਚਕਾਰ ਅਦਲਾ-ਬਦਲੀ ਕਰੋ</translation>
 <translation id="4502566650163919158">ਹੁਣੇ ਜਾਂਚ ਕਰੋ</translation>
 <translation id="4505980578794259603">ਪਿਛਲੀ ਵਾਰ <ph name="TIME" /> ਜਾਂਚ ਕੀਤੀ ਗਈ।</translation>
 <translation id="4508750114462689118">ਸਾਈਨ-ਇਨ ਪ੍ਰੋਮੋ ਬੰਦ ਕਰੋ</translation>

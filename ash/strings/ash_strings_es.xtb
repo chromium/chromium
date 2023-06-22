@@ -983,6 +983,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5308380583665731573">Conectar</translation>
 <translation id="5313326810920013265">Configuración de Bluetooth</translation>
 <translation id="5314219114274263156">Grabación de pantalla realizada</translation>
+<translation id="5314489738835854379">Desplazarse hacia atrás por las ventanas</translation>
 <translation id="5316716239522500219">Proyectar monitores</translation>
 <translation id="5317780077021120954">Guardar</translation>
 <translation id="5319712128756744240">Emparejar nuevo dispositivo</translation>
@@ -1129,6 +1130,7 @@ Todos los usuarios deben cerrar sesión para continuar.</translation>
 <translation id="5958529069007801266">Usuario supervis.</translation>
 <translation id="5961960957587052807">Suave</translation>
 <translation id="5965524703725988602">Activar o desactivar tema oscuro. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Desplazarse hacia delante por las ventanas</translation>
 <translation id="5976112937189445008">Pulsa Intro para grabar la ventana</translation>
 <translation id="5978382165065462689">Compartiendo control de la pantalla a través de Asistencia remota.</translation>
 <translation id="5980301590375426705">Cerrar como invitado</translation>
@@ -1339,6 +1341,7 @@ Nueva instalación</translation>
 <translation id="6891721121089053234">Consulta las fotos, el contenido multimedia y las aplicaciones recientes de tu teléfono en tu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copiar</translation>
 <translation id="6901883536534621389">Prueba gestos para desplazarte</translation>
+<translation id="6912841030378044227">Enfocar la barra de direcciones</translation>
 <translation id="6919251195245069855">No se ha podido reconocer la tarjeta inteligente. Vuelve a intentarlo.</translation>
 <translation id="6920245099716267363">Activar o desactivar punto de acceso. Punto de acceso activado. 1 dispositivo conectado.</translation>
 <translation id="6931576957638141829">Guardar en</translation>
@@ -1688,6 +1691,7 @@ Para apagarlo, mantén pulsado de nuevo el botón de encendido del dispositivo.<
 <translation id="8513108775083588393">Giro automático</translation>
 <translation id="851458219935658693">Mostrar ventanas del escritorio actual, botón seleccionado</translation>
 <translation id="8517041960877371778">Es posible que tu <ph name="DEVICE_TYPE" /> no se cargue mientras esté encendido.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Entrada de micrófono controlada por <ph name="APP_NAME" />}other{Entrada de micrófono controlada por # aplicaciones}}</translation>
 <translation id="8535393432370007982">Deshacer orden por color</translation>
 <translation id="8541078764854166027">Encuadre</translation>
 <translation id="8542053257095774575">No hay escritorios ni plantillas guardados</translation>

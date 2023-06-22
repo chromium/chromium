@@ -538,6 +538,7 @@
 <translation id="2202020181578195191">वैध समाप्ती वर्ष एंटर करा</translation>
 <translation id="2202627062836089804">तुमच्या कार्डची मागील बाजू</translation>
 <translation id="2204482073374652408">अपडेट करणे संपले!</translation>
+<translation id="2208053750671792556">तुमचा कोड मिळाला नाही? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ट्रे ३</translation>
 <translation id="2210794033760923560">अहवाल अपलोड करा</translation>
 <translation id="2212735316055980242">धोरण आढळले नाही</translation>
@@ -858,6 +859,7 @@
 <translation id="3041612393474885105">सर्टिफिकेट माहिती</translation>
 <translation id="305162504811187366">टाइमस्टॅंप, होस्ट आणि क्लायंट सेशन आयडी यांच्या समावेशासह Chrome रिमोट डेस्कटॉप इतिहास</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> पासून किमतीमध्ये <ph name="PRICE_DROP" /> घसरण</translation>
+<translation id="3054512251683174387">Chrome ४ आठवड्यांपेक्षा जुने विषय ऑटो-डिलीट करते. तुम्ही ब्राउझ करत असताना, विषय सूचीमध्ये पुन्हा दिसू शकतो किंवा Chrome ने साइटसोबत शेअर करू नये असे तुम्हाला वाटत असलेले विषय तुम्ही ब्लॉक करू शकता. Chrome मध्ये तुमची जाहिरातीसंबंधित गोपनीयता व्यवस्थापित करण्याविषयी अधिक जाणून घ्या.</translation>
 <translation id="3061707000357573562">पॅच सेवा</translation>
 <translation id="306573536155379004">गेमला सुरुवात झाली.</translation>
 <translation id="3067505415088964188">किंमत कमी आहे</translation>
@@ -952,6 +954,7 @@
 <translation id="3270847123878663523">&amp;पुनर्क्रमित करा पूर्ववत करा</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> कनेक्ट करू इच्छिते</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> अंकी पडताळणी कोड एंटर करा</translation>
 <translation id="3281350579597955952">{0,plural, =1{अ‍ॅडमिनिस्ट्रेटर धोरण ही फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}other{अ‍ॅडमिनिस्ट्रेटर धोरण या फाइल <ph name="DESTINATION_NAME" /> मध्ये उघडण्याची शिफारस करत नाही}}</translation>
 <translation id="3282085321714087552">तुमच्या संस्थेने <ph name="ENROLLMENT_DOMAIN" /> खालील वेबसाइटना सेटिंग्ज किंवा धोरणे यांसारखी काही माहिती पाठवली आहे.</translation>
 <translation id="3286372614333682499">पोट्रेट</translation>
@@ -2257,7 +2260,6 @@
 <translation id="6394852772105848029">या साइटला <ph name="APP_NAME" /> हे ॲप उघडायचे आहे</translation>
 <translation id="6398765197997659313">पूर्ण स्क्रीनमधून निर्गमन करा</translation>
 <translation id="6401136357288658127">हे धोरण कालबाह्य झाले आहे. तुम्ही त्याऐवजी <ph name="NEW_POLICY" /> धोरण वापरले पाहिजे.</translation>
-<translation id="6403709186844650075"><ph name="SOURCE" /> कॅप्शन देणे</translation>
 <translation id="6404511346730675251">बुकमार्क संपादित करा</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> वर पुढे सुरू ठेवायचे आहे का?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> साठी कालबाह्यता तारीख आणि CVC प्रविष्‍ट करा</translation>
@@ -2599,6 +2601,7 @@
 <translation id="7219179957768738017">कनेक्शन <ph name="SSL_VERSION" /> वापरते.</translation>
 <translation id="7220786058474068424">प्रक्रिया करत आहे</translation>
 <translation id="7221855153210829124">सूचना दर्शवा</translation>
+<translation id="7221857374443660083">हे तुम्हीच असल्याचे तुमच्या बॅंकला खात्री करायची आहे</translation>
 <translation id="722454870747268814">नवीन गुप्त टॅब</translation>
 <translation id="7227293336683593977">किमतीचा इतिहास</translation>
 <translation id="7233592378249864828">खात्री केलेले शीट प्रिंट करा</translation>

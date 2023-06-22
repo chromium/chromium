@@ -226,6 +226,7 @@
 <translation id="2476359652512522418">Не выбрано</translation>
 <translation id="2479148705183875116">Открыть настройки</translation>
 <translation id="2482878487686419369">Уведомления</translation>
+<translation id="2484459871750294497">Как включить эту функцию?</translation>
 <translation id="2496626742194544812">Перейти к первой вкладке</translation>
 <translation id="2500374554657206846">Параметры сохранения пароля</translation>
 <translation id="2523363575747517183">Этот сайт часто пытается открыть другое приложение.</translation>
@@ -304,8 +305,10 @@
 <translation id="2921219216347069551">Ошибка</translation>
 <translation id="2923448633003185837">Вставить и перейти</translation>
 <translation id="292639812446257861">Отметить как непрочитанное</translation>
+<translation id="2931440415625410757">Показать инструкции</translation>
 <translation id="2932085390869194046">Сгенерировать пароль…</translation>
 <translation id="2932765531295814441">Добавляйте пароли вручную</translation>
+<translation id="2952278131021475699">Поиск через Объектив</translation>
 <translation id="2952581218264071393">1. Откройте настройки Chrome.</translation>
 <translation id="2958718410589002129">Пароли</translation>
 <translation id="2961210776189273067">Обращение</translation>
@@ -528,7 +531,6 @@
 <translation id="448433063499977729">Синхронизация отключена</translation>
 <translation id="4488754974567924717">Мы сообщим, если ваши пароли будут раскрыты.</translation>
 <translation id="4489536976005181779">{count,plural, =1{Страница добавлена в список для чтения в вашем аккаунте ({email}).}one{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}few{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}many{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}other{Страницы добавлены в список для чтения в вашем аккаунте ({email}).}}</translation>
-<translation id="4496373720959965247">Добавляйте вкладки и переключайтесь между ними</translation>
 <translation id="4502566650163919158">Проверить сейчас</translation>
 <translation id="4505980578794259603">Последняя проверка: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Закрыть сообщение о входе</translation>

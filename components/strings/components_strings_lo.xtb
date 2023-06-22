@@ -921,6 +921,7 @@
 <translation id="3041612393474885105">ຂໍ້ມູນໃບຢັ້ງຢືນ</translation>
 <translation id="305162504811187366">ປະຫວັດ Chrome Remote Desktop, ຮວມທັງເວລາ, ID ເຊດຊັນຂອງໂຮສ ແລະ ລູກຂ່າຍ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> ຫຼຸດລາຄາ <ph name="PRICE_DROP" /></translation>
+<translation id="3054512251683174387">Chrome ຈະລຶບເວັບໄຊທີ່ດົນກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເມື່ອທ່ານເລືອກເບິ່ງໄປເລື້ອຍໆ, ຫົວຂໍ້ໃດໜຶ່ງກໍອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກຄັ້ງ. ຫຼື ທ່ານສາມາດບລັອກຫົວຂໍ້ທີ່ທ່ານບໍ່ຕ້ອງການໃຫ້ Chrome ແບ່ງປັນກັບເວັບໄຊຕ່າງໆໄດ້. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານໃນ Chrome.</translation>
 <translation id="3061707000357573562">ການບໍລິການແກ້ບັນຫາ</translation>
 <translation id="306573536155379004">ເລີ່ມເກມແລ້ວ.</translation>
 <translation id="3067505415088964188">ລາຄາຕ່ຳ</translation>
@@ -2428,7 +2429,6 @@
 <translation id="6398765197997659313">ອອກຈາກເຕັມໜ້າຈໍ</translation>
 <translation id="6401136357288658127">ເຊົາຮອງຮັບນະໂຍບາຍນີ້ແລ້ວ. ທ່ານຄວນໃຊ້ນະໂຍບາຍ <ph name="NEW_POLICY" /> ນີ້ແທນ.</translation>
 <translation id="6403167778944553">ຫ້ອງນອນ ແລະ ຫ້ອງນ້ຳ</translation>
-<translation id="6403709186844650075">ການສະແດງຄຳບັນຍາຍພາສາ <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">ແກ້​ໄຂບຸກມາກສ໌</translation>
 <translation id="6405181733356710802">ສືບຕໍ່ຫາ <ph name="APP_NAME" /> ບໍ?</translation>
 <translation id="6410264514553301377">ປ້ອນວັນທີໝົດອາຍຸ ແລະ CVC ສຳລັບ <ph name="CREDIT_CARD" /></translation>

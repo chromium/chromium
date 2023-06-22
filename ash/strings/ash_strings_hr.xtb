@@ -981,6 +981,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5308380583665731573">Poveži</translation>
 <translation id="5313326810920013265">Postavke Bluetootha</translation>
 <translation id="5314219114274263156">Napravljena je snimka zaslona</translation>
+<translation id="5314489738835854379">Kruženje unatrag od prozora do prozora</translation>
 <translation id="5316716239522500219">Zrcalni monitori</translation>
 <translation id="5317780077021120954">Spremi</translation>
 <translation id="5319712128756744240">Uparite novi uređaj</translation>
@@ -1127,6 +1128,7 @@ Priključite uređaj na napajanje.</translation>
 <translation id="5958529069007801266">Nadzirani korisnik</translation>
 <translation id="5961960957587052807">Blago</translation>
 <translation id="5965524703725988602">Prebacite tamnu temu. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Kruženje unaprijed od prozora do prozora</translation>
 <translation id="5976112937189445008">Pritisnite Enter za snimanje prozora</translation>
 <translation id="5978382165065462689">Dijelite kontrolu nad zaslonom putem Daljinske pomoći.</translation>
 <translation id="5980301590375426705">Zatvori sesiju gosta</translation>
@@ -1337,6 +1339,7 @@ Novo instaliranje</translation>
 <translation id="6891721121089053234">Pogledajte nedavne fotografije, medijske sadržaje i aplikacije s telefona na uređaju <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6901883536534621389">Isprobajte pokrete za kretanje</translation>
+<translation id="6912841030378044227">Fokusiranje na adresnu traku</translation>
 <translation id="6919251195245069855">Nismo prepoznali vašu pametnu karticu. Pokušajte ponovo.</translation>
 <translation id="6920245099716267363">Prebacite žarišnu točku. Žarišna točka je uključena, povezan je jedan uređaj.</translation>
 <translation id="6931576957638141829">Spremi u</translation>
@@ -1686,6 +1689,7 @@ Da biste isključili uređaj, ponovno pritisnite i zadržite tipku za uključiva
 <translation id="8513108775083588393">Autom. zakret.</translation>
 <translation id="851458219935658693">Prikaži prozore s trenutačne radne površine, odabran je izborni gumb</translation>
 <translation id="8517041960877371778">Uređaj <ph name="DEVICE_TYPE" /> možda se neće puniti dok je uključen.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Ulazom mikrofona upravlja aplikacija <ph name="APP_NAME" />}one{Ulazom mikrofona upravlja # aplikacija}few{Ulazom mikrofona upravlja # aplikacije}other{Ulazom mikrofona upravlja # aplikacija}}</translation>
 <translation id="8535393432370007982">Poništavanje poretka po boji</translation>
 <translation id="8541078764854166027">Okvir kamere</translation>
 <translation id="8542053257095774575">Nema nijedne spremljene radne površine ili predloška</translation>

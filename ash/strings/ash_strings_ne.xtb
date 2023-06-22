@@ -980,6 +980,7 @@
 <translation id="5308380583665731573">कनेक्ट गर्नुहोस्</translation>
 <translation id="5313326810920013265">ब्लुटुथ सम्बन्धी सेटिङहरू</translation>
 <translation id="5314219114274263156">स्क्रिन रेकर्डिङ गरियो</translation>
+<translation id="5314489738835854379">विन्डोहरू उल्टो क्रमअनुसार पालैपालो हेर्नुहोस्</translation>
 <translation id="5316716239522500219">दर्पण मनिटर</translation>
 <translation id="5317780077021120954">बचत गर्नुहोस्</translation>
 <translation id="5319712128756744240">नयाँ डिभाइस कनेक्ट गर्नुहोस्</translation>
@@ -1124,6 +1125,7 @@
 <translation id="5958529069007801266">सुपरिवेक्षित प्रयोगकर्ता</translation>
 <translation id="5961960957587052807">हलुका</translation>
 <translation id="5965524703725988602">अँध्यारो थिम टगल गर्नुहोस्। <ph name="STATE_TEXT" />।</translation>
+<translation id="5975235751479998104">विन्डोहरू सुल्टो क्रमअनुसार पालैपालो हेर्नुहोस्</translation>
 <translation id="5976112937189445008">विन्डो रेकर्ड गर्न इन्टर थिच्नुहोस्</translation>
 <translation id="5978382165065462689">रिमोट सहायता मार्फत तपाईँको स्क्रीन नियन्त्रण साझेदारी गर्दै।</translation>
 <translation id="5980301590375426705">अतिथि सत्रबाट निस्कनु…</translation>
@@ -1334,6 +1336,7 @@
 <translation id="6891721121089053234">आफ्नो फोनमा भएका हालसालैका फोटो, मिडिया तथा एपहरू <ph name="DEVICE_TYPE" /> मा हेर्नुहोस्</translation>
 <translation id="6896758677409633944">प्रतिलिपि गर्नुहोस्</translation>
 <translation id="6901883536534621389">नेभिगेट गर्न जेस्चर प्रयोग गरी हेर्नुहोस्</translation>
+<translation id="6912841030378044227">एड्रेस बारमा फोकस गर्नुहोस्</translation>
 <translation id="6919251195245069855">तपाईंको स्मार्ट कार्ड पहिचान गर्न सकिएन। फेरि प्रयास गर्नुहोस्।</translation>
 <translation id="6920245099716267363">हटस्पट टगल गर्नुहोस्। हटस्पट अन छ, एउटा डिभाइस कनेक्ट गरिएको छ।</translation>
 <translation id="6931576957638141829">यसमा सेभ गरियोस्</translation>
@@ -1683,6 +1686,7 @@
 <translation id="8513108775083588393">स्वतः परिक्रमा</translation>
 <translation id="851458219935658693">हालको डेस्कमा भएका विन्डोहरू देखाइयोस्, रेडियो बटन चयन गरियो</translation>
 <translation id="8517041960877371778">खुला हुँदा तपाईँको <ph name="DEVICE_TYPE" /> चार्ज नहुन सक्छ।</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> ले माइक इनपुट नियन्त्रण गर्दै छ}other{# वटा एपले माइक इनपुट नियन्त्रण गर्दै छन्}}</translation>
 <translation id="8535393432370007982">रङअनुसार क्रमबद्ध गर्ने कार्य अन्डू गर्नुहोस्</translation>
 <translation id="8541078764854166027">क्यामेरा फ्रेमिङ</translation>
 <translation id="8542053257095774575">कुनै पनि डेस्क वा टेम्प्लेट सेभ गरिएको छैन</translation>

@@ -527,6 +527,7 @@
 <translation id="2202020181578195191">ସମୟସୀମା ଶେଷ ହେଉଥିବା ଏକ ବୈଧ ବର୍ଷ ଲେଖନ୍ତୁ</translation>
 <translation id="2202627062836089804">ଆପଣଙ୍କ କାର୍ଡର ପଛପଟେ</translation>
 <translation id="2204482073374652408">ଅପଡେଟ କରିବା ସମ୍ପୂର୍ଣ୍ଣ ହୋଇଛି!</translation>
+<translation id="2208053750671792556">ଆପଣଙ୍କ କୋଡ ପାଇନାହାଁନ୍ତି? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ଟ୍ରେ 3</translation>
 <translation id="2210794033760923560">ରିପୋର୍ଟ ଅପଲୋଡ କରନ୍ତୁ</translation>
 <translation id="2212735316055980242">ନୀତି ମିଳିଲା ନାହିଁ</translation>
@@ -934,6 +935,7 @@
 <translation id="3270847123878663523">ପୁନଃକ୍ରମକୁ &amp;ପୂର୍ବବତ୍ କରନ୍ତୁ</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ସଂଯୋଗ ହେବାକୁ ଚାହୁଁଛି</translation>
 <translation id="3272091146646336650">ସୁପର B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" />-ଅଙ୍କ ବିଶିଷ୍ଟ ଯାଞ୍ଚକରଣ କୋଡ ଲେଖନ୍ତୁ</translation>
 <translation id="3281350579597955952">{0,plural, =1{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}other{<ph name="DESTINATION_NAME" />ରେ ଏହି ଫାଇଲଗୁଡ଼ିକୁ ଖୋଲିବା ପାଇଁ ଆଡମିନିଷ୍ଟ୍ରେଟର ନୀତି ସୁପାରିଶ କରେ ନାହିଁ}}</translation>
 <translation id="3282085321714087552">ଆପଣଙ୍କ ସଂସ୍ଥା, <ph name="ENROLLMENT_DOMAIN" />, ନିମ୍ନୋକ୍ତ ୱେବସାଇଟଗୁଡ଼ିକୁ ସେଟିଂସ୍ କିମ୍ବା ନୀତିଗୁଡ଼ିକ ପରି କିଛି ସୂଚନା ପଠାଇଛି।</translation>
 <translation id="3286372614333682499">ପୋଟ୍ରେଟ</translation>
@@ -2559,6 +2561,7 @@
 <translation id="7219179957768738017">ସଂଯୋଗ <ph name="SSL_VERSION" />ର ବ୍ୟବହାର କରିଥାଏ।</translation>
 <translation id="7220786058474068424">ପ୍ରକ୍ରିୟାକରଣ ହେଉଛି</translation>
 <translation id="7221855153210829124">ବିଜ୍ଞପ୍ତି ଦେଖାନ୍ତୁ</translation>
+<translation id="7221857374443660083">ଏହା ଆପଣ ଅଟନ୍ତି ବୋଲି ଆପଣଙ୍କ ବେଙ୍କ ସୁନିଶ୍ଚିତ କରିବାକୁ ଚାହେଁ</translation>
 <translation id="722454870747268814">ନୂଆ ଇନକଗ୍ନିଟୋ ଟାବ୍</translation>
 <translation id="7227293336683593977">ମୂଲ୍ୟ ଇତିହାସ</translation>
 <translation id="7233592378249864828">ପ୍ରିଣ୍ଟ ସୁନିଶ୍ଚିତକରଣ ସିଟ୍</translation>

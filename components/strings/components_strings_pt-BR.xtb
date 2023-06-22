@@ -856,6 +856,7 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="3041612393474885105">Informações do certificado</translation>
 <translation id="305162504811187366">o histórico da Área de trabalho remota do Google Chrome, incluindo carimbos de data/hora, hosts e IDs de sessões de clientes.</translation>
 <translation id="3052964831964880138">Redução de <ph name="PRICE_DROP" /> no preço deste produto: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">O Chrome exclui automaticamente os temas que estão na lista há mais de quatro semanas. Enquanto você navega, um tema pode reaparecer na lista. Você também pode bloquear temas que não quer que o Chrome compartilhe com sites. Saiba mais sobre como gerenciar a privacidade de anúncios no Chrome.</translation>
 <translation id="3061707000357573562">Aplicar patch ao serviço</translation>
 <translation id="306573536155379004">Jogo iniciado.</translation>
 <translation id="3068991664510324412">Computador e videogames</translation>
@@ -2254,7 +2255,6 @@ Se não fizer isso, a permissão será bloqueada pelas configurações de privac
 <translation id="6394852772105848029">Este site quer abrir o app <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Sair do modo tela cheia</translation>
 <translation id="6401136357288658127">Essa política está obsoleta. Use a política <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">Legendas em <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Editar favorito</translation>
 <translation id="6405181733356710802">Ir para <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Digite a data de validade e o CVC do <ph name="CREDIT_CARD" /></translation>

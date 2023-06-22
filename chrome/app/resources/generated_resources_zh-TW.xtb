@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">你的裝置由 <ph name="DOMAIN" /> 管理，管理員可以存取裝置上任一設定檔中的資料。</translation>
 <translation id="1024734233509995696">這個分頁正在使用相機或麥克風</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
@@ -3482,6 +3483,7 @@
 <translation id="3919145445993746351">如要在所有電腦上使用你的擴充功能，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
 <translation id="3919262972282962508">2022 年 12 月之後，舊版 Chrome 應用程式將無法在 Mac 裝置上開啟。如要更新至新版本或移除這個應用程式，請與系統管理員聯絡。</translation>
+<translation id="3919376399641777316">使用 Google 雲端硬碟儲存空間</translation>
 <translation id="3919798653937160644">你在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，而且所有開啟的訪客視窗都關閉後，電腦上也不會留下 Cookie 等其他追蹤記錄。不過，系統將保留你下載的所有檔案。</translation>
 <translation id="3920504717067627103">憑證原則</translation>
 <translation id="3920909973552939961">不得安裝付款處理常式</translation>
@@ -3631,6 +3633,7 @@
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>
 <translation id="4044708573046946214">螢幕鎖定密碼</translation>
 <translation id="404493185430269859">預設搜尋引擎</translation>
+<translation id="4044964245574571633">使用 Microsoft OneDrive 儲存空間</translation>
 <translation id="4045196801416070837">裝置音效</translation>
 <translation id="4046013316139505482">這些擴充功能不需要查看和變更這個網站上的資訊。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
@@ -3669,6 +3672,7 @@
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
+<translation id="4085620044235559093">選擇用來開啟 <ph name="FILE_TYPE" /> 檔案的應用程式</translation>
 <translation id="4087089424473531098">已建立以下擴充功能：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4418,6 +4422,7 @@
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">前往網站</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -5474,6 +5479,7 @@
 <translation id="5684661240348539843">資產 ID</translation>
 <translation id="5684950556880280580">你的密碼已更新</translation>
 <translation id="5687326903064479980">時區</translation>
+<translation id="5687606994963670306">Chrome 會自動刪除 30 天前的網站，你再次造訪的網站可能會重新顯示在清單中。你也可以封鎖網站，讓該網站無法為你提供建議廣告。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告隱私權<ph name="END_LINK" />。</translation>
 <translation id="5687935527303996204">確保你的裝置已接上電源並保持啟動狀態。安裝程序最多可能需要 20 分鐘才能完成。安裝完成後，該裝置會自動關機。</translation>
 <translation id="5689516760719285838">位置</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" />似乎已在其他裝置上設定 Google 助理的 Voice Match 功能。系統已使用先前的錄音檔在這部裝置上建立語音模型。</translation>
@@ -7301,6 +7307,7 @@
 <translation id="7273110280511444812">最後附加日期為 <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" />後充飽</translation>
 <translation id="727595954130325265">立即選購</translation>
+<translation id="7276100255011548441">Chrome 會自動刪除 4 週前的主題，隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你也可以封鎖不希望 Chrome 提供給網站的主題。進一步瞭解如何<ph name="BEGIN_LINK" />在 Chrome 中管理廣告隱私權<ph name="END_LINK" />。</translation>
 <translation id="727952162645687754">下載錯誤</translation>
 <translation id="7280649757394340890">文字轉語音聲音設定</translation>
 <translation id="7280877790564589615">要求權限</translation>
@@ -7487,6 +7494,7 @@
 <translation id="7432200167665670017">你的管理員已封鎖「<ph name="EXTENSION_NAME" />」(應用程式 ID：<ph name="EXTENSION_ID" />)</translation>
 <translation id="7433708794692032816">插入智慧型卡片才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">保留</translation>
+<translation id="7434100547946193426">其他應用程式</translation>
 <translation id="7434509671034404296">開發人員選項</translation>
 <translation id="7434757724413878233">滑鼠加速</translation>
 <translation id="7434969625063495310">無法新增印表機伺服器。請檢查伺服器設定，然後再試一次。</translation>
@@ -8791,6 +8799,7 @@
 <translation id="8534656636775144800">糟糕！嘗試加入網域時發生錯誤，請再試一次。</translation>
 <translation id="8535005006684281994">Netscape 憑證更新網址</translation>
 <translation id="8536713137312218707">快速指令</translation>
+<translation id="8536810348276651776">你會從大多數網站登出，但不會登出 Google 帳戶，因此 Chrome 的 Family Link 設定不受影響。</translation>
 <translation id="8536956381488731905">按鍵音效</translation>
 <translation id="8539727552378197395">否 (限 Http)</translation>
 <translation id="8539766201049804895">升級</translation>

@@ -982,6 +982,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5308380583665731573">Connecta</translation>
 <translation id="5313326810920013265">Configuració del Bluetooth</translation>
 <translation id="5314219114274263156">S'ha fet una gravació de pantalla</translation>
+<translation id="5314489738835854379">Retrocedeix per les finestres</translation>
 <translation id="5316716239522500219">Projecta els monitors</translation>
 <translation id="5317780077021120954">Desa</translation>
 <translation id="5319712128756744240">Vincula un dispositiu nou</translation>
@@ -1128,6 +1129,7 @@ Connecta el dispositiu a l'alimentació.</translation>
 <translation id="5958529069007801266">Usuari supervisat</translation>
 <translation id="5961960957587052807">Lleuger</translation>
 <translation id="5965524703725988602">Commuta el tema fosc. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Avança per les finestres</translation>
 <translation id="5976112937189445008">Prem Retorn per gravar la finestra</translation>
 <translation id="5978382165065462689">Es comparteix el control de la pantalla mitjançant l'Assistència remota.</translation>
 <translation id="5980301590375426705">Tanca com a convidat</translation>
@@ -1338,6 +1340,7 @@ Instal·lació nova</translation>
 <translation id="6891721121089053234">Consulta les aplicacions, els fitxers multimèdia i les fotos recents del telèfon al teu <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copia</translation>
 <translation id="6901883536534621389">Prova els gestos per navegar</translation>
+<translation id="6912841030378044227">Posa el focus a la barra d'adreces</translation>
 <translation id="6919251195245069855">No s'ha reconegut la targeta intel·ligent. Torna-ho a provar.</translation>
 <translation id="6920245099716267363">Commuta el punt d'accés Wi‐Fi. Està activat i hi ha 1 dispositiu connectat.</translation>
 <translation id="6931576957638141829">Desa a</translation>
@@ -1684,6 +1687,7 @@ Per apagar el dispositiu, torna a mantenir premut el botó d'engegada.</translat
 <translation id="8513108775083588393">Rotació autom.</translation>
 <translation id="851458219935658693">Mostra les finestres de l'escriptori actual amb el botó d'opció seleccionat</translation>
 <translation id="8517041960877371778">És possible que el dispositiu <ph name="DEVICE_TYPE" /> no es carregui mentre està encès.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{<ph name="APP_NAME" /> controla l'entrada del micròfon}other{# aplicacions controlen l'entrada del micròfon}}</translation>
 <translation id="8535393432370007982">Desfés l'ordenació per color</translation>
 <translation id="8541078764854166027">Enquadr. càmera</translation>
 <translation id="8542053257095774575">No s'ha desat cap escriptori ni cap plantilla</translation>

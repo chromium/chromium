@@ -535,6 +535,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="2202020181578195191">Sisestage kehtiv aegumisaasta</translation>
 <translation id="2202627062836089804">kaardi tagaküljel</translation>
 <translation id="2204482073374652408">Värskendamine lõpetatud!</translation>
+<translation id="2208053750671792556">Kas te ei saanud koodi? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Salv 3</translation>
 <translation id="2210794033760923560">Laadi aruanne üles</translation>
 <translation id="2212735316055980242">Reeglit ei leitud</translation>
@@ -855,6 +856,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3041612393474885105">Sertifikaadi andmed</translation>
 <translation id="305162504811187366">Chrome Remote Desktopi ajalugu, sh ajatemplid, hostid ja kliendiseansside ID-d</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> hinnalangus teenuse <ph name="PRODUCT_NAME" /> puhul</translation>
+<translation id="3054512251683174387">Chrome kustutab automaatselt teemad, mis on vanemad kui 4 nädalat. Kui jätkate sirvimist, võib teema uuesti loendis ilmuda. Võite ka blokeerida teemad, mida te ei soovi lasta Chrome'il saitidega jagada. Lugege lisateavet Chrome'is reklaamide privaatsuse haldamise kohta.</translation>
 <translation id="3061707000357573562">Teenuse paikamine</translation>
 <translation id="306573536155379004">Mäng algas.</translation>
 <translation id="3068991664510324412">Arvuti- ja videomängud</translation>
@@ -948,6 +950,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="3270847123878663523">&amp;Võta korrastamine tagasi</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> soovib ühenduse luua</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Sisestage <ph name="NUMBER_OF_DIGITS" />-kohaline kinnituskood</translation>
 <translation id="3281350579597955952">{0,plural, =1{Administraatori reegel ei soovita seda faili sihtkohas <ph name="DESTINATION_NAME" /> avada}other{Administraatori reegel ei soovita neid faile sihtkohas <ph name="DESTINATION_NAME" /> avada}}</translation>
 <translation id="3282085321714087552">Teie organisatsioon, <ph name="ENROLLMENT_DOMAIN" />, on järgmistele veebisaitidele teatud teavet saatnud, näiteks seadete ja eeskirjade teavet.</translation>
 <translation id="3286372614333682499">vertikaalpaigutus</translation>
@@ -2252,7 +2255,6 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="6394852772105848029">See sait soovib avada rakenduse <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Välju täisekraanilt</translation>
 <translation id="6401136357288658127">Selle reegli tugi on katkestatud. Peaksite selle asemel kasutama reeglit <ph name="NEW_POLICY" />.</translation>
-<translation id="6403709186844650075">Subtiitrid – <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Muuda järjehoidjat</translation>
 <translation id="6405181733356710802">Kas minna edasi rakendusse <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Sisestage krediitkaardi <ph name="CREDIT_CARD" /> aegumiskuupäev ja CVC</translation>
@@ -2594,6 +2596,7 @@ Vastasel korral blokeeritakse see teie privaatsusseadetes. See võimaldab teie k
 <translation id="7219179957768738017">Ühendus kasutab protokolli <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Töötlemine</translation>
 <translation id="7221855153210829124">märguandeid näidata</translation>
+<translation id="7221857374443660083">Teie pank soovib veenduda, et see olete teie</translation>
 <translation id="722454870747268814">Uus inkognito vaheleht</translation>
 <translation id="7227293336683593977">Hinna ajalugu</translation>
 <translation id="7233592378249864828">Prindi kinnitusleht</translation>

@@ -930,6 +930,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="504465286040788597">Perenggan sebelumnya</translation>
 <translation id="5045550434625856497">Kata laluan tidak sah</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Anda akan diberitahu jika anda bercakap semasa diredam. Peranti anda tidak menghasilkan audio.</translation>
 <translation id="5078796286268621944">PIN salah</translation>
 <translation id="5083553833479578423">Buka kunci pelbagai lagi ciri Assistant.</translation>
 <translation id="5092436659250499817">Hidupkan/matikan lampu latar papan kekunci</translation>
@@ -960,6 +961,7 @@ Semua pengguna mesti log keluar untuk meneruskan.</translation>
 <translation id="5207949376430453814">Serlahkan karet teks</translation>
 <translation id="5208059991603368177">Hidup</translation>
 <translation id="5216991270656129561">Dimatikan hingga <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Hantar atau balas mesej telefon anda dengan pantas menggunakan Hab Telefon.</translation>
 <translation id="5222676887888702881">Log keluar</translation>
 <translation id="5229343007215035173">Hidupkan/matikan skrin privasi</translation>
 <translation id="5234764350956374838">Ketepikan</translation>
@@ -1691,6 +1693,7 @@ Untuk mematikan peranti, tekan dan tahan butang kuasa pada peranti sekali lagi.<
 <translation id="8513108775083588393">Autoputar</translation>
 <translation id="851458219935658693">Tunjukkan tetingkap daripada meja semasa, butang radio dipilih</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> anda mungkin tidak akan dicas semasa dihidupkan.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Input mikrofon dikawal oleh <ph name="APP_NAME" />}other{Input mikrofon dikawal oleh # apl}}</translation>
 <translation id="8535393432370007982">Buat asal tertib isihan mengikut warna</translation>
 <translation id="8541078764854166027">Bingkai kamera</translation>
 <translation id="8542053257095774575">Tiada meja atau templat yang disimpan</translation>

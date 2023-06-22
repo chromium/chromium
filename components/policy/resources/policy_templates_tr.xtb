@@ -3606,7 +3606,6 @@ Not: Dahili chrome://* ile chrome-untrusted://* URL'lerinin engellenmesi beklenm
 
       Politikayı ayarlanmadan bırakırsanız web siteleri erişim izni isteyebilir. Kullanıcılar bu ayarı değiştirebilirler.</translation>
 <translation id="4275048399551500192">Diğer cihazlar tarafından başlatılan <ph name="PRODUCT_NAME" /> oturumları için medya kontrollerini gösterme</translation>
-<translation id="4282183301963493864"><ph name="PRODUCT_NAME" /> öğesini tüm web sayfalarında devre dışı bırak</translation>
 <translation id="4282243913059705499">Araç çubuğunda her zaman <ph name="PRODUCT_NAME" /> simgesini göster</translation>
 <translation id="4285674129118156176">Bağlı olmayan kullanıcıların ARC'yi kullanmasına izin ver</translation>
 <translation id="428948795004445932">Ağ verilerinin örneklenme ve toplanma hızı. İzin verilen minimum sıklık 1 dakikadır.
@@ -4243,7 +4242,6 @@ Bu politika geçici olup sistem ses yankısı giderme özelliği kullanıma sunu
       Politika ayarlanmadan bırakılırsa <ph name="PRODUCT_NAME" /> yalnızca RFC1918/RFC4193 adreslerinde yayın cihazlarına bağlanır (CastAllowAllIPs özelliği açılmazsa).</translation>
 <translation id="489803897780524242">Varsayılan arama sağlayıcısı için arama terimi yerleştirmeyi kontrol eden parametre</translation>
 <translation id="4899708173828500852">Güvenli Taramayı etkinleştir</translation>
-<translation id="4904462841601272815"><ph name="PRODUCT_NAME" /> öğesini tüm web sayfalarında etkinleştir</translation>
 <translation id="4906194810004762807">Aygıt Politikası için yenileme hızı</translation>
 <translation id="49093841899738146">Politika, Etkin değerine ayarlanırsa <ph name="PRODUCT_NAME" /> ürünü, Hangouts Meet gibi Google hizmetlerinden WebRTC olay günlüklerini toplayıp bu günlükleri Google'a yükleyebilir. Bu günlükler, <ph name="PRODUCT_NAME" /> ürünündeki sesli veya görüntülü toplantılarla ilgili sorunlarda hata ayıklamada kullanılacak teşhis bilgileri içerir. Bunlar, RTP paketlerinin saati ve boyutu, ağdaki tıkanmayla ilgili geri bildirim, ses ve video karelerinin zamanı ve kalitesiyle ilgili meta veriler gibi bilgilerdir. Bu günlükler toplantıya ait ses veya video içeriği barındırmaz. Hata ayıklamayı kolaylaştırmak için Google bu günlükleri bir oturum kimliği aracılığıyla Google hizmetinin kendisi tarafından toplanan diğer günlüklerle ilişkilendirebilir.
 
@@ -8528,9 +8526,6 @@ Politika ayarlanmaz veya devre dışı bırakılırsa kullanıcının bu aramala
 <translation id="8858642179038618439">YouTube Güvenlik Modunu zorla</translation>
 <translation id="8860342862142842017">subjectPublicKeyInfo karma listesi için Sertifika Şeffaflığı uygulamasını devre dışı bırak</translation>
 <translation id="8860894781631833477">Kullanıcılar <ph name="PRODUCT_OS_NAME" /> sürüm kanalını yapılandırabilir</translation>
-<translation id="8862436312516745856">Etkin seçeneğine ayarlanır veya ayarlanmadan bırakılırsa tüm web sayfalarında <ph name="PRODUCT_NAME" /> için izin verilir.
-
-Devre Dışı seçeneğine ayarlanırsa <ph name="PRODUCT_NAME" />, hiçbir web sayfasında kullanılamaz.</translation>
 <translation id="8864975621965365890">Bir site <ph name="PRODUCT_FRAME_NAME" /> tarafından oluşturulduğunda görülen reddetme sorusunu engeller.</translation>
 <translation id="8865404058177794289">RSA anahtarı kullanma kontrolü için varsayılan ayarı kullan</translation>
 <translation id="8866430022832109569">Uygulama envanteri ile ilgili raporlama</translation>

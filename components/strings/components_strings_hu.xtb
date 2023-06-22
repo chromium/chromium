@@ -535,6 +535,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="2202020181578195191">Érvényes lejárati évet kell megadnia</translation>
 <translation id="2202627062836089804">a kártya hátoldalán</translation>
 <translation id="2204482073374652408">Frissítés befejezve!</translation>
+<translation id="2208053750671792556">Nem kapta meg a kódot? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3. tálca</translation>
 <translation id="2210794033760923560">Jelentés feltöltése</translation>
 <translation id="2212735316055980242">Nem találhatók irányelvek</translation>
@@ -855,6 +856,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3041612393474885105">Tanúsítvány adatai</translation>
 <translation id="305162504811187366">A Chrome távoliasztal-szolgáltatás előzményei, beleértve az időbélyegeket, a gazdagépeket és az ügyfelek munkamenet-azonosítóit is</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> értékű árcsökkenés a következő terméknél: <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">A Chrome automatikusan törli a négy hétnél régebbi témákat. A böngészési tevékenységei alapján előfordulhat, hogy egy adott téma újra megjelenik a listában. Arra is lehetősége van, hogy letiltsa azokat a témákat, amelyeket nem szeretne, hogy a Chrome megosszon a webhelyekkel. További információ a hirdetésekhez kapcsolódó adatvédelem Chrome-ban való kezeléséről.</translation>
 <translation id="3061707000357573562">Javítókészlet szolgáltatás</translation>
 <translation id="306573536155379004">A játék elindult.</translation>
 <translation id="3068991664510324412">Számítógépes játékok és videojátékok</translation>
@@ -946,6 +948,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="3270847123878663523">&amp;Átrendezés visszavonása</translation>
 <translation id="3271648667212143903">A(z) <ph name="ORIGIN" /> csatlakozni szeretne</translation>
 <translation id="3272091146646336650">„Super B” méret</translation>
+<translation id="3272112314896217187">Adja meg a kapott <ph name="NUMBER_OF_DIGITS" /> számjegyű ellenőrző kódot</translation>
 <translation id="3281350579597955952">{0,plural, =1{A rendszergazda által beállított házirend nem javasolja ennek a fájlnak a megnyitását itt: <ph name="DESTINATION_NAME" />}other{A rendszergazda által beállított házirend nem javasolja ezeknek a fájloknak a megnyitását itt: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">A szervezete (<ph name="ENROLLMENT_DOMAIN" />) elküldött bizonyos információkat (pl. a beállításokat és a házirendeket) a következő webhelyeknek.</translation>
 <translation id="3286372614333682499">álló</translation>
@@ -2250,7 +2253,6 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="6394852772105848029">Ez a webhely szeretné megnyitni a(z) <ph name="APP_NAME" /> alkalmazást</translation>
 <translation id="6398765197997659313">Kilépés a teljes képernyős módból</translation>
 <translation id="6401136357288658127">Ez a házirend megszűnt. Használja helyette a(z) <ph name="NEW_POLICY" /> házirendet.</translation>
-<translation id="6403709186844650075">Feliratozás: <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Könyvjelző szerkesztése</translation>
 <translation id="6405181733356710802">Továbblép a(z) <ph name="APP_NAME" /> webhelyre?</translation>
 <translation id="6410264514553301377">Írja be a(z) <ph name="CREDIT_CARD" /> kártyán szereplő lejárati dátumot és CVC-t</translation>
@@ -2592,6 +2594,7 @@ Ezt egyéb esetben letiltják az Ön adatvédelmi beállításai. Az engedélyez
 <translation id="7219179957768738017">A kapcsolat a következőt használja: <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Feldolgozás alatt</translation>
 <translation id="7221855153210829124">Értesítéseket megjeleníteni</translation>
+<translation id="7221857374443660083">A bank szeretne meggyőződni az Ön személyazonosságáról</translation>
 <translation id="722454870747268814">Új inkognitó lap</translation>
 <translation id="7227293336683593977">Árelőzmények</translation>
 <translation id="7233592378249864828">Megerősítő lap nyomtatása</translation>

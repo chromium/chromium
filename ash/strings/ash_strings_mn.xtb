@@ -1692,6 +1692,7 @@
 <translation id="8513108775083588393">Автомат эргэх</translation>
 <translation id="851458219935658693">Одоогийн дэлгэцээс цонхыг харуулах, радио товчлуурыг сонгосон</translation>
 <translation id="8517041960877371778">Таны <ph name="DEVICE_TYPE" /> асаалттай үед цэнэглэхгүй.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофоны оролтыг <ph name="APP_NAME" /> хянадаг}other{Микрофоны оролтыг # апп хянадаг}}</translation>
 <translation id="8535393432370007982">Өнгөөр эрэмбэлэх дарааллыг болих</translation>
 <translation id="8541078764854166027">Камерын хүрээлэх онцлог</translation>
 <translation id="8542053257095774575">Хадгалсан дэлгэц эсвэл загвар байхгүй</translation>

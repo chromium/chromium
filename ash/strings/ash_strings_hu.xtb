@@ -983,6 +983,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5308380583665731573">Csatlakozás</translation>
 <translation id="5313326810920013265">Bluetooth-beállítások</translation>
 <translation id="5314219114274263156">Képernyőfelvétel elkészítve</translation>
+<translation id="5314489738835854379">Váltás visszafelé az ablakokon keresztül</translation>
 <translation id="5316716239522500219">Monitorok tükrözése</translation>
 <translation id="5317780077021120954">Mentés</translation>
 <translation id="5319712128756744240">Új eszköz párosítása</translation>
@@ -1129,6 +1130,7 @@ Az összes felhasználónak ki kell jelentkeznie a folytatáshoz.</translation>
 <translation id="5958529069007801266">Felügyelt felhasználó</translation>
 <translation id="5961960957587052807">Enyhe</translation>
 <translation id="5965524703725988602">Sötét téma be-/kikapcsolása. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Váltás előre az ablakokon keresztül</translation>
 <translation id="5976112937189445008">Nyomja le az Entert az ablak tartalmának rögzítéséhez</translation>
 <translation id="5978382165065462689">A képernyő irányításának megosztása a Távsegítség szolgáltatás keretein belül.</translation>
 <translation id="5980301590375426705">Kilépés vendégként</translation>
@@ -1339,6 +1341,7 @@ Frissen telepítve</translation>
 <translation id="6891721121089053234">A telefonján található friss fotók, médiatartalmak és alkalmazások megtekintése az Ön <ph name="DEVICE_TYPE" /> eszközén</translation>
 <translation id="6896758677409633944">Másolás</translation>
 <translation id="6901883536534621389">Kézmozdulatok kipróbálása a navigáláshoz</translation>
+<translation id="6912841030378044227">Fókuszálás a címsávra</translation>
 <translation id="6919251195245069855">A rendszer nem ismerte fel az intelligens kártyáját. Próbálja újra.</translation>
 <translation id="6920245099716267363">Hotspot be-/kikapcsolása. A hotspot be van kapcsolva, 1 eszköz csatlakozik.</translation>
 <translation id="6931576957638141829">Mentés ide</translation>
@@ -1688,6 +1691,7 @@ Az eszköz leállításához tartsa ismét nyomva az eszköz bekapcsológombját
 <translation id="8513108775083588393">Autom.forgatás</translation>
 <translation id="851458219935658693">A jelenlegi asztal ablakainak megjelenítésére vonatkozó kapcsológomb van kiválasztva</translation>
 <translation id="8517041960877371778">Előfordulhat, hogy a(z) <ph name="DEVICE_TYPE" /> nem töltődik, amíg be van kapcsolva.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{A mikrofonbemenetet a(z) <ph name="APP_NAME" /> alkalmazás vezérli}other{A mikrofonbemenetet # alkalmazás vezérli}}</translation>
 <translation id="8535393432370007982">Szín szerinti rendezés visszavonása</translation>
 <translation id="8541078764854166027">Keretezés</translation>
 <translation id="8542053257095774575">Nincsenek mentett asztalok vagy sablonok</translation>

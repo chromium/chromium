@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Толь бичигт нэмэх</translation>
 <translation id="1018656279737460067">Цуцлагдсан байна</translation>
 <translation id="1022489261739821355">Таны <ph name="BEGIN_LINK" />Google Бүртгэл<ph name="END_LINK" /> дээрх нууц үгнүүдийг харуулж байна</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Таны төхөөрөмжийг <ph name="DOMAIN" />-с удирддаг. Администратор энэ төхөөрөмж дээрх дурын профайлын өгөгдөлд хандах боломжтой.</translation>
 <translation id="1024734233509995696">Энэ таб таны камер эсвэл микрофоныг ашиглаж байна</translation>
 <translation id="1026655690966755180">Порт нэмэх</translation>
@@ -3493,6 +3494,7 @@
 <translation id="3919145445993746351">Өргөтгөлөө бүх компьютер дээрээ авахын тулд синкийг асаана уу</translation>
 <translation id="3919229493046408863">Төхөөрөмжүүд ойролцоо байх үед мэдэгдлийг унтраах</translation>
 <translation id="3919262972282962508">Chrome Аппын хуучин хувилбарууд 2022 оны 12-р сараас хойш Mac төхөөрөмжүүд дээр нээгдэхгүй. Шинэ хувилбар луу шинэчлэх эсвэл энэ аппыг хасахын тулд администратортайгаа холбогдоно уу.</translation>
+<translation id="3919376399641777316">Google Драйв санг ашиглана</translation>
 <translation id="3919798653937160644">Таны энэ цонхонд үзсэн хуудаснууд хөтчийн түүхэд гарч ирэхгүй бөгөөд тэдгээр нь таныг Зочны нээлттэй бүх цонхыг хаасны дараа компьютер дээр күүки зэрэг бусад ул мөр үлдээхгүй. Гэсэн хэдий ч таны татсан аливаа файлыг хадгална.</translation>
 <translation id="3920504717067627103">Гэрчилгээний бодлого</translation>
 <translation id="3920909973552939961">Төлбөр хариуцагч суулгахыг зөвшөөрөөгүй</translation>
@@ -3642,6 +3644,7 @@
 <translation id="4044612648082411741">Сертификатынхаа нууц үгийг оруулна уу</translation>
 <translation id="4044708573046946214">Дэлгэцийн түгжээний нууц үг</translation>
 <translation id="404493185430269859">Анхдагч хайлтын хөдөлгүүр</translation>
+<translation id="4044964245574571633">Microsoft OneDrive-н хадгалах санг ашиглана</translation>
 <translation id="4045196801416070837">Төхөөрөмжийн дуунууд</translation>
 <translation id="4046013316139505482">Эдгээр өргөтгөлд энэ сайт дээрх мэдээллийг харах болон өөрчлөх хэрэггүй.</translation>
 <translation id="4046123991198612571">Дараагийн бичлэг</translation>
@@ -3680,6 +3683,7 @@
 <translation id="4084682180776658562">Хадгалах</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" />-ыг хаах</translation>
 <translation id="4085298594534903246">JavaScript-ыг энэ хуудсанд хориглосон байна.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" />-н файлуудыг нээх аппыг сонгоно уу</translation>
 <translation id="4087089424473531098">Өргөтгөлийг үүсгэсэн:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4432,6 +4436,7 @@
 <translation id="4742970037960872810">Тодруулгыг хасах</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Аппыг шинэчилж сурна уу<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Сайт руу очих</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Сайтын дууг нээх}other{Сайтуудын дууг нээх}}</translation>
 <translation id="474609389162964566">Туслахдаа “Ok Google”-р хандаарай</translation>
 <translation id="4746351372139058112">Мессежүүд</translation>
@@ -5493,6 +5498,7 @@
 <translation id="5684661240348539843">Үндсэн мэдээлэл тодорхойлогч</translation>
 <translation id="5684950556880280580">Таны нууц үгийг шинэчилсэн</translation>
 <translation id="5687326903064479980">Цагийн бүс</translation>
+<translation id="5687606994963670306">Chrome 30 хоногоос дээш удсан сайтуудыг автоматаар устгадаг. Таны дахин зочилсон сайт жагсаалтад дахин гарч ирж магадгүй. Эсвэл та сайтыг танд зар санал болгохыг блоклож болно. <ph name="BEGIN_LINK" />Зарын нууцлалаа Chrome-д удирдах<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="5687935527303996204">Төхөөрөмжөө залгасан эсэхийг шалгаад, бүү унтраагаарай. Суулгахад 20 хүртэлх минут шаардлагатай байж болзошгүй. Суулгаж дууссаны дараа таны төхөөрөмж автоматаар унтарна.</translation>
 <translation id="5689516760719285838">Байршил</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> өөр төхөөрөмж дээр Voice Match-г аль хэдийн Туслахаар тохируулсан бололтой. Эдгээр өмнөх бичлэгийг энэ төхөөрөмжид дуу хоолойн загвар үүсгэхэд ашигласан.</translation>
@@ -7321,6 +7327,7 @@
 <translation id="7273110280511444812"><ph name="DATE" /> дээр хамгийн сүүлд хавсаргасан</translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> дүүрэх хүртэл</translation>
 <translation id="727595954130325265">Одоо дэлгүүр хэсэх</translation>
+<translation id="7276100255011548441">Chrome нь 4 долоо хоногоос дээш удсан сэдвүүдийг автоматаар устгадаг. Таныг үргэлжлүүлэн үзэх явцад ямар нэг сэдэв жагсаалтад дахин гарч ирж магадгүй. Эсвэл та Chrome-г сайтуудтай хуваалцахыг хүсэхгүй байгаа сэдвүүдээ блоклож болно. <ph name="BEGIN_LINK" />Зарын нууцлалаа Chrome-д удирдах<ph name="END_LINK" /> талаар нэмэлт мэдээлэл авна уу.</translation>
 <translation id="727952162645687754">Татаж авч байх үед гарах алдаа</translation>
 <translation id="7280649757394340890">Бичвэрийг ярианд хувиргах дуу хоолойны тохиргоо</translation>
 <translation id="7280877790564589615">Зөвшөөрөл хүссэн</translation>
@@ -7507,6 +7514,7 @@
 <translation id="7432200167665670017">Танай админ "<ph name="EXTENSION_NAME" />"-г блоклосон - Аппын ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Өөрийн <ph name="DEVICE_TYPE" />-г үргэлжлүүлэн ашиглахын тулд ухаалаг карт оруулна уу</translation>
 <translation id="7433957986129316853">Үүнийг хадгалах</translation>
+<translation id="7434100547946193426">Бусад апп</translation>
 <translation id="7434509671034404296">Хөгжүүлэгч</translation>
 <translation id="7434757724413878233">Хулганын хурдасгуур</translation>
 <translation id="7434969625063495310">Хэвлэх серверийг нэмж чадсангүй. Серверийн тохируулгыг шалгаад дахин оролдоно уу.</translation>
@@ -8810,6 +8818,7 @@
 <translation id="8534656636775144800">Уучлаарай, домайнд нэгдэхэд алдаа гарлаа. Дахин оролдоно уу.</translation>
 <translation id="8535005006684281994">Нетскейп гэрчилгээг шинэчлэх холбоос</translation>
 <translation id="8536713137312218707">Шуурхай тушаал</translation>
+<translation id="8536810348276651776">Таныг ихэнх сайтаас гаргана. Та Google Бүртгэлдээ нэвтэрсэн хэвээр байх бөгөөд ингэснээр таны Chrome-н Family Link-н тохиргоо хэрэгжинэ.</translation>
 <translation id="8536956381488731905">Товч дарахад дуу гарах</translation>
 <translation id="8539727552378197395">Үгүй (HttpOnly)</translation>
 <translation id="8539766201049804895">Дэвшүүлэх</translation>

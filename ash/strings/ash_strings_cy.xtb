@@ -982,6 +982,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5308380583665731573">Cysylltu</translation>
 <translation id="5313326810920013265">Gosodiadau Bluetooth</translation>
 <translation id="5314219114274263156">Wedi recordio'r sgrîn</translation>
+<translation id="5314489738835854379">Seiclo yn ôl drwy'r ffenestri</translation>
 <translation id="5316716239522500219">Adlewyrchu monitorau</translation>
 <translation id="5317780077021120954">Cadw</translation>
 <translation id="5319712128756744240">Paru dyfais newydd</translation>
@@ -1128,6 +1129,7 @@ Cysylltwch eich dyfais â phŵer.</translation>
 <translation id="5958529069007801266">Defnyddiwr dan oruchwyliaeth</translation>
 <translation id="5961960957587052807">Golau</translation>
 <translation id="5965524703725988602">Toglo'r Thema dywyll <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Seiclo ymlaen drwy'r ffenestri</translation>
 <translation id="5976112937189445008">Pwyswch Enter i recordio'r ffenestr</translation>
 <translation id="5978382165065462689">Rhannu rheolaeth o'ch sgrîn drwy Gymorth o Bell.</translation>
 <translation id="5980301590375426705">Gadael gwestai</translation>
@@ -1338,6 +1340,7 @@ Gosodiad newydd</translation>
 <translation id="6891721121089053234">Gweld lluniau, cyfryngau ac apiau diweddar eich ffôn ar eich <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copïo</translation>
 <translation id="6901883536534621389">Rhowch gynnig ar ystumiau i lywio</translation>
+<translation id="6912841030378044227">Ffocysu ar y bar cyfeiriad</translation>
 <translation id="6919251195245069855">Methu ag adnabod eich cerdyn clyfar. Rhowch gynnig arall arni.</translation>
 <translation id="6920245099716267363">Toglo'r Boethfan. Mae'r boethfan ymlaen, mae 1 ddyfais wedi'i chysylltu.</translation>
 <translation id="6931576957638141829">Cadw yn</translation>
@@ -1687,6 +1690,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8513108775083588393">Awtogylchdroi</translation>
 <translation id="851458219935658693">Dangos ffenestri o'r ddesg bresennol, botwm radio wedi'i ddewis</translation>
 <translation id="8517041960877371778">Mae'n bosib na fydd eich <ph name="DEVICE_TYPE" /> yn gwefru tra bydd ymlaen.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mewnbwn meic wedi'i reoli gan <ph name="APP_NAME" />}zero{Mewnbwn meic wedi'i reoli gan # apiau}two{Mewnbwn meic wedi'i reoli gan # ap}few{Mewnbwn meic wedi'i reoli gan # ap}many{Mewnbwn meic wedi'i reoli gan # ap}other{Mewnbwn meic wedi'i reoli gan # ap}}</translation>
 <translation id="8535393432370007982">Dadwnued trefnu yn ôl lliw</translation>
 <translation id="8541078764854166027">Fframio camera</translation>
 <translation id="8542053257095774575">Nid oes unrhyw ddesgiau neu dempledi wedi'u cadw</translation>

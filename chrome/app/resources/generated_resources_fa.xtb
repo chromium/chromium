@@ -78,6 +78,7 @@
 <translation id="1061130374843955397">به <ph name="DEVICE_TYPE" /> خودتان خوش آمدید</translation>
 <translation id="1061373870045429865">ایجاد رمزینه پاسخ‌سریع برای این پیوند</translation>
 <translation id="1061904396131502319">تقریباً زمان استراحت است</translation>
+<translation id="10619348099955377">کپی کردن نام نمایشی</translation>
 <translation id="1062407476771304334">جایگزینی</translation>
 <translation id="1062628064301375934">به ما کمک کنید وب را خصوصی‌تر کنیم</translation>
 <translation id="1066964438793906105">اسکن برای یافتن بدافزار</translation>
@@ -178,6 +179,7 @@
 <translation id="1142002900084379065">عکس‌های اخیر</translation>
 <translation id="1143142264369994168">امضا کننده گواهی</translation>
 <translation id="1145593918056169051">چاپگر متوقف شده است</translation>
+<translation id="114571748016232560">مشکلی پیش آمد. درعوض پنجره‌ها را به‌صورت دستی باز کنید.</translation>
 <translation id="114721135501989771">‏هوشمندی‌های Google را در Chrome دریافت کنید</translation>
 <translation id="1147322039136785890">حالا نوبت <ph name="SUPERVISED_USER_NAME" /> است</translation>
 <translation id="1147991416141538220">برای درخواست دسترسی، با سرپرست این دستگاه تماس بگیرید.</translation>
@@ -432,6 +434,7 @@
 <translation id="1359923111303110318">‏قفل دستگاه می‌تواند با Smart Lock باز شود. برای باز کردن قفل، Enter را فشار دهید.</translation>
 <translation id="1361164813881551742">افزودن دستی</translation>
 <translation id="1361655923249334273">استفاده نشده</translation>
+<translation id="1362829980946830670">می‌توانید ضمن فعال نگه داشتن جلسه فعلی، جلسه قبلی خود را ازسر بگیرید.</translation>
 <translation id="1362865166188278099">مشکل مکانیکی. چاپگر را بررسی کنید</translation>
 <translation id="1363585519747660921">‏چاپگر USB باید پیکربندی شود</translation>
 <translation id="136378536198524553">«بهینه‌سازی انرژی» روشن است</translation>
@@ -528,6 +531,7 @@
 <translation id="1442851588227551435">‏تنظیم کردن بلیت فعال Kerberos</translation>
 <translation id="1444628761356461360">این تنظیم توسط مالک دستگاه مدیریت می‌شود، <ph name="OWNER_EMAIL" />.</translation>
 <translation id="144518587530125858">بارگیری "<ph name="IMAGE_PATH" />" برای زمینه ممکن نیست.</translation>
+<translation id="1447531650545977377">درحال روشن کردن همگام‌سازی…</translation>
 <translation id="1448264954024227422">‏می‌توانید از این حساب در برنامه‌های Android استفاده کنید. اگر می‌خواهید برای شخص دیگری حساب اضافه کنید، به‌جای آن به <ph name="DEVICE_TYPE" /> خود <ph name="LINK_BEGIN" />شخص جدیدی اضافه کنید<ph name="LINK_END" />.
 
 اجازه‌هایی که قبلاً به برنامه‌ها داده‌اید ممکن است در این حساب اعمال شود. می‌توانید اجازه‌های برنامه‌های Android را در بخش <ph name="APPS_LINK_BEGIN" />تنظیمات برنامه‌ها<ph name="APPS_LINK_END" /> کنترل کنید.</translation>
@@ -567,6 +571,7 @@
 <translation id="1474893630593443211">کنترل بیشتر بر آگهی‌هایی که می‌بینید</translation>
 <translation id="1475502736924165259">گواهی‌هایی برای فایل دارید که در هیچ‌کدام از دسته‌های دیگر قرار نمی‌گیرد</translation>
 <translation id="1476088332184200792">کپی در دستگاه</translation>
+<translation id="1476347941828409626">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="1476607407192946488">&amp;تنظیمات زبان</translation>
 <translation id="1477446329585670721">برای اینکه از سیستم <ph name="DOMAIN" /> خارج نشوید، باید کارت هوشمندتان را در دستگاه نگه دارید.</translation>
 <translation id="1477654881618305065">سازمانتان اجازه نمی‌دهد این محتوا را هم‌رسانی کنید. درصورت نیاز به راهنمایی، با سرپرستتان تماس بگیرید.</translation>
@@ -577,6 +582,7 @@
 <translation id="1481537595330271162">هنگام تغییر اندازه دیسک خطایی روی داد</translation>
 <translation id="1482626744466814421">نشانک‌گذاری این برگه…</translation>
 <translation id="1482772681918035149">ویرایش گذرواژه‌ها</translation>
+<translation id="1483431819520123112">نام نمایشی در بریده‌دان کپی شد</translation>
 <translation id="1483493594462132177">ارسال</translation>
 <translation id="1484102317210609525"><ph name="DEVICE_NAME" /> (HDMI/DP)</translation>
 <translation id="1484979925941077974">سایت درحال استفاده از بلوتوث است</translation>
@@ -960,6 +966,8 @@
 <translation id="1782541958479207225">{NUM_NOTES,plural, =1{یک یادداشت}one{# یادداشت}other{# یادداشت}}</translation>
 <translation id="1784707308176068866">درصورت درخواست یک برنامه بومی همکار، در پس‌زمینه اجرا شود</translation>
 <translation id="1784849162047402014">فضای ذخیره‌سازی دستگاه رو به اتمام است</translation>
+<translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{حذف نصب «<ph name="APP_NAME" />» باعث حذف نصب این برنامه نیز می‌شود:}one{حذف نصب «<ph name="APP_NAME" />» باعث حذف نصب این برنامه‌ها نیز می‌شود:}other{حذف نصب «<ph name="APP_NAME" />» باعث حذف نصب این برنامه‌ها نیز می‌شود:}}</translation>
+<translation id="1786290960428378411">درخواست خواندن و تغییر</translation>
 <translation id="1787350673646245458">تصویر کاربر</translation>
 <translation id="1790976235243700817">برداشتن دسترسی</translation>
 <translation id="1792619191750875668">نمایشگر گسترده</translation>
@@ -1291,6 +1299,7 @@
 <translation id="2073148037220830746">{NUM_EXTENSIONS,plural, =1{برای نصب این افزونه، کلیک کنید}one{برای نصب این افزونه‌ها، کلیک کنید}other{برای نصب این افزونه‌ها، کلیک کنید}}</translation>
 <translation id="2073496667646280609">شاید فضای ذخیره‌سازی کافی در دستگاه یا مکانی که برای پشتیبان‌گیری انتخاب کرده‌اید نداشته باشید. بخشی‌از فضا را آزاد کنید یا پشتیبان‌گیری را در مکان دیگری انجام دهید.</translation>
 <translation id="2073505299004274893">از <ph name="CHARACTER_LIMIT" /> نویسه یا کمتر استفاده کنید</translation>
+<translation id="2075088158103027942">رفتن به اشتراک</translation>
 <translation id="2075474481720804517"><ph name="BATTERY_PERCENTAGE" />٪ باتری</translation>
 <translation id="2076269580855484719">پنهان کردن این افزایه</translation>
 <translation id="2076672359661571384">متوسط (توصیه می‌شود)</translation>
@@ -2113,6 +2122,7 @@
 <translation id="2731700343119398978">لطفاً صبر کنید...</translation>
 <translation id="2731971182069536520">دفعه بعد که دستگاهتان را بازراه‌اندازی می‌کنید، سرپرستتان به‌روزرسانی یک‌باره‌ای انجام می‌دهد که داده‌های محلی شما را حذف خواهد کرد.</translation>
 <translation id="2732134891301408122">محتوای اضافی <ph name="CURRENT_ELEMENT" /> از <ph name="TOTAL_ELEMENTS" /></translation>
+<translation id="2733992589856193783">برای این سایت گذرکلید ایجاد کردید. برای ورود به سیستم، به دستگاه همراه نیاز دارید.</translation>
 <translation id="27349076983469322">پس‌زمینه روشن</translation>
 <translation id="2735712963799620190">زمان‌بندی</translation>
 <translation id="2737363922397526254">کوچک کردن...</translation>
@@ -2222,6 +2232,7 @@
 <translation id="2812049959647166806">‏از Thunderbolt پشتیبانی نمی‌شود</translation>
 <translation id="2812171980080389735">شبکه‌ها و گذرواژه‌ها ذخیره شده‌اند تا بتوانید فوراً متصل شوید</translation>
 <translation id="2813094189969465044">کنترل‌های والدین</translation>
+<translation id="2813765525536183456">افزودن نمایه جدید</translation>
 <translation id="281390819046738856">درخواست امضا نشد.</translation>
 <translation id="2814489978934728345">توقف بارگیری این صفحه</translation>
 <translation id="2815693974042551705">پوشه نشانک</translation>
@@ -2238,6 +2249,7 @@
 <translation id="2828375943530438449">برگشتن از ورود به سیستم</translation>
 <translation id="2828650939514476812">‏اتصال به شبکه Wi-Fi</translation>
 <translation id="2828833307884755422"><ph name="MEMORY_SAVINGS" /> آزاد شد</translation>
+<translation id="2830528677948328648">‏مدیریت «حساب Google»</translation>
 <translation id="2831430281393059038">دستگاه پشتیبانی می‌شود</translation>
 <translation id="2832124733806557606">فرزندتان می‌تواند برای ورود به سیستم یا باز کردن قفل دستگاه از پین استفاده کند.</translation>
 <translation id="2835177225987815960">راه‌اندازی اسکن فعلی بازنشانی خواهد شد، ازجمله کلیدهای واگذارشده و اولویت‌های سرعت اسکن خودکار.</translation>
@@ -2727,6 +2739,7 @@
 <translation id="3280243678470289153">‏ماندن در Chrome</translation>
 <translation id="328119399589609861">کنترل دسترسی دستگاه به میکروفون، دوربین، و غیره</translation>
 <translation id="3282210178675490297">درحال هم‌رسانی برگه با <ph name="APP_NAME" /></translation>
+<translation id="328265255303378234">جلسه ازسر گرفته نشد</translation>
 <translation id="3283148363895519428">برای ادامه راه‌اندازی، دستورالعمل‌های روی صفحه را دنبال کنید. تلفنتان باید نزدیک شما باشد و بلوتوث آن روشن باشد.</translation>
 <translation id="3284050785966252943">پیش‌نمایش تکمیل خودکار فراداده</translation>
 <translation id="3285322247471302225">&amp;برگه جدید</translation>
@@ -3088,6 +3101,7 @@
 <translation id="3600051066689725006">اطلاعات درخواست وب</translation>
 <translation id="360180734785106144">پیشنهاد ویژگی‌های جدید به‌محض دردسترس قرار گرفتن</translation>
 <translation id="3602290021589620013">پیش‌نمایش</translation>
+<translation id="3602495161941872610">رفع مشکل همگام‌سازی</translation>
 <translation id="3602870520245633055">چاپ و اسکن کردن</translation>
 <translation id="3602894439067790744">خواندن شماره‌ها به‌صورت</translation>
 <translation id="3603622770190368340">دریافت گواهی‌نامه شبکه</translation>
@@ -3097,6 +3111,7 @@
 <translation id="3610241585790874201">مجاز نیست در دستگاه داده ذخیره کند</translation>
 <translation id="3610369246614755442">پنکه پایه اتصال نیاز به سرویس دارد</translation>
 <translation id="3610961622607302617">تغییر گذرواژه <ph name="WEBSITE" /></translation>
+<translation id="3611634011145829814">رفتن به صفحه اشتراک</translation>
 <translation id="3611658447322220736">سایت‌هایی که اخیراً بسته شده‌اند می‌توانند ارسال و دریافت داده را تکمیل کنند</translation>
 <translation id="3612673635130633812">‏بارگیری‌شده توسط &lt;a href="<ph name="URL" />"&gt;<ph name="EXTENSION" />&lt;/a&gt;</translation>
 <translation id="3613134908380545408">نشان دادن <ph name="FOLDER_NAME" /></translation>
@@ -3196,6 +3211,7 @@
 <translation id="369522892592566391">{NUM_FILES,plural, =0{بررسی‌های امنیتی انجام شدند. داده‌های شما بارگذاری خواهند شد.}=1{بررسی‌های امنیتی انجام شدند. فایل شما بارگذاری خواهد شد.}one{بررسی‌های امنیتی انجام شدند. فایل‌های شما بارگذاری خواهند شد.}other{بررسی‌های امنیتی انجام شدند. فایل‌های شما بارگذاری خواهند شد.}}</translation>
 <translation id="3696817060563289264">فایل‌های تشخیص نوشتار بارگیری شد</translation>
 <translation id="3697716475445175867">آخرین مورد بازشده</translation>
+<translation id="3697952514309507634">‏دیگر نمایه‌های Chrome</translation>
 <translation id="3698471669415859717">مرور تکمیل شد</translation>
 <translation id="3699624789011381381">آدرس ايميل</translation>
 <translation id="3699920817649120894">همگام‌سازی و شخصی‌سازی خاموش شود؟</translation>
@@ -3380,6 +3396,7 @@
 <translation id="3827774300009121996">&amp;تمام صفحه</translation>
 <translation id="3828029223314399057">جستجوی نشانک‌ها</translation>
 <translation id="3828953470056652895">‏<ph name="BEGIN_LINK1" />شرایط خدمات Google<ph name="END_LINK1" />، <ph name="BEGIN_LINK2" />شرایط خدمات تکمیلی Chrome و ChromeOS<ph name="END_LINK2" />، و <ph name="BEGIN_LINK3" />شرایط خدمات Play<ph name="END_LINK3" /> را خوانده‌ام و با آن‌ها موافقت می‌کنم.</translation>
+<translation id="3829530269338026191"><ph name="WINDOW_TITLE" /> - استفاده زیاد از حافظه - <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">دستگاه ذخیره‌سازی متصل به شبکه برای کسب‌وکار کوچک و متوسط</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{سرپرستتان ۱ افزونه بالقوه مضر را دوباره روشن کرده است}one{سرپرستتان {NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده است}other{سرپرستتان {NUM_EXTENSIONS} افزونه بالقوه مضر را دوباره روشن کرده است}}</translation>
 <translation id="3834728400518755610">‏برای اعمال تغییر ایجادشده در تنظیم میکروفون، باید Linux را خاموش کنید. برای ادامه دادن، Linux را خاموش کنید.</translation>
@@ -3779,6 +3796,7 @@
 <translation id="4176463684765177261">غیرفعال شد</translation>
 <translation id="4176864026061939326">این دستگاه مدیریت می‌شود. سرپرست دستگاه برای حساب <ph name="USER_EMAIL_ADDRESS" /> به نمایه جدیدی نیاز دارد</translation>
 <translation id="4177501066905053472">موضوع‌های آگهی</translation>
+<translation id="4178220097446335546">‏برای فراموش کردن این اشتراک و شبکه‌های مرتبط با آن، به صفحه اشتراک Passpoint بروید و اشتراک را حذف کنید.</translation>
 <translation id="4180788401304023883">‏مجوز CA "<ph name="CERTIFICATE_NAME" />" حذف شود؟</translation>
 <translation id="4181602000363099176">۲۰ برابر</translation>
 <translation id="4181841719683918333">زبان‌ها</translation>
@@ -3931,6 +3949,7 @@
 <translation id="4316850752623536204">وب‌سایت برنامه‌نویس</translation>
 <translation id="4317733381297736564">خریدهای درون‌برنامه</translation>
 <translation id="4317820549299924617">راستی‌آزمایی انجام نشد</translation>
+<translation id="4319441675152393296">برای خواندن و تغییر دادن <ph name="HOST" />، روی نماد این افزونه کلیک کنید</translation>
 <translation id="4320177379694898372">اتصال اینترنتی ندارید</translation>
 <translation id="4321179778687042513">مهار</translation>
 <translation id="432160826079505197">‏نمایش <ph name="FILE_NAME" /> در Finder</translation>
@@ -3982,6 +4001,7 @@
 <translation id="4364830672918311045">نمایش اعلان‌ها</translation>
 <translation id="4366138410738374926">چاپ شروع شد</translation>
 <translation id="4367513928820380646">مرور اجازه‌های برداشته‌شده</translation>
+<translation id="4367971618859387374">نام نمایشی</translation>
 <translation id="4369215744064167350">درخواست وب‌سایت تأیید شد</translation>
 <translation id="436926121798828366">هرزمان بخواهید می‌توانید این انتخاب را در <ph name="SETTINGS_LINK" /> تغییر دهید</translation>
 <translation id="4369735607080757018">انواع محدودی از داده‌ها بین سایت‌ها هم‌رسانی می‌شود تا سایت‌ها بتوانند عملکرد آگهی‌هایشان را بسنجند، برای مثال زمانی از روز که آگهی به شما نشان داده شده است</translation>
@@ -4116,6 +4136,7 @@
 <translation id="4476590490540813026">ورزشکار</translation>
 <translation id="4476659815936224889">‏برای اسکن کردن این کد، می‌توانید از برنامه اسکنر QR در تلفن یا دیگر برنامه‌های دوربین استفاده کنید.</translation>
 <translation id="4477015793815781985">‏باید شامل Ctrl، ‏Alt یا ⌘ باشد</translation>
+<translation id="4478161224666880173">می‌توانید از حساب <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> در این سایت استفاده کنید. برای ادامه دادن، به <ph name="IDENTITY_PROVIDER_ETLD_PLUS_ONE" /> وارد شوید.</translation>
 <translation id="4478664379124702289">ذخیره پی&amp;وند به‌عنوان...</translation>
 <translation id="4479424953165245642">مدیریت برنامه‌های کاربردی کیوسک</translation>
 <translation id="4479639480957787382">اترنت</translation>
@@ -4230,11 +4251,15 @@
 <translation id="4568213207643490790">‏متأسفیم، حساب‌های Google در این دستگاه مجاز نیستند.</translation>
 <translation id="4569747168316751899">وقتی دستگاه فعالیتی ندارد</translation>
 <translation id="4570201855944865395">هم‌ترازی دوطرفه برای درخواست این افزونه:</translation>
+<translation id="4572463055282177066">این نمایه را <ph name="DOMAIN" /> مدیریت می‌کند. برای ادامه استفاده از این نمایه تحت‌مدیریت، سازمانتان شما را ملزم می‌کند نشان‌های دستگاهتان را هم‌رسانی کنید.
+
+نشان‌های دستگاه می‌تواند شامل اطلاعاتی درباره مرورگر، سیستم‌عامل، دستگاه، نرم‌افزارهای نصب‌شده، و فایل‌ها باشد.</translation>
 <translation id="4572779512957829735">پین را برای کلید امنیتی وارد کنید</translation>
 <translation id="457386861538956877">بیشتر...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">جفت کردن دستگاه بلوتوث</translation>
 <translation id="4576763597586015380">‏برای ادامه ذخیره کردن گذرواژه‌ها در «حساب Google» خود، هویتتان را به‌تأیید برسانید</translation>
+<translation id="4576965832613128988"><ph name="WINDOW_TITLE" /> - برگه غیرفعال</translation>
 <translation id="4579453506923101210">فراموش کردن تلفن متصل</translation>
 <translation id="4579581181964204535">ارسال محتوای <ph name="HOST_NAME" /> امکان‌پذیر نیست.</translation>
 <translation id="4579876313423027742">‏برای اعلان‌های مرور، به <ph name="LINK_BEGIN" />تنظیمات مرورگر Chrome<ph name="LINK_END" /> بروید</translation>
@@ -4610,6 +4635,7 @@
 <translation id="4899052647152077033">نگاتیو</translation>
 <translation id="4899696330053002588">حاوی آگهی است</translation>
 <translation id="489985760463306091">رایانه‌تان را راه‌اندازی مجدد کنید تا برداشتن برنامه کامل شود</translation>
+<translation id="490031510406860025">در این سایت مجاز نیست</translation>
 <translation id="4900392736118574277">صفحه شروع به <ph name="URL" /> تغییر کرد.</translation>
 <translation id="490051679772058907"><ph name="REFRESH_RATE" /> هرتز - درهم‌بافته</translation>
 <translation id="4900652253009739885">نمی‌توان تنها کلید اختصاص‌یافته به کنش «انتخاب» را برداشت. برای <ph name="RESPONSE" />، کلیدی را فشار دهید.</translation>
@@ -4719,6 +4745,7 @@
 <translation id="5010043101506446253">مدیر گواهی‌نامه</translation>
 <translation id="501057610015570208">‏برنامه‌هایی که مشخصه مانیفست «kiosk_only» دارند باید در حالت کیوسک ChromeOS Flex نصب شوند.</translation>
 <translation id="5010886807652684893">نمای تصویری</translation>
+<translation id="501394389332262641">صدای ضعیف بودن باتری</translation>
 <translation id="5015344424288992913">در حال تحلیل پراکسی...</translation>
 <translation id="5016491575926936899">می‌توانید از رایانه پیامک ارسال کنید، اتصال اینترنت را به‌اشتراک بگذارید، به اعلان‌های مکالمه پاسخ دهید، و قفل <ph name="DEVICE_TYPE" /> را با تلفنتان باز کنید.<ph name="FOOTNOTE_POINTER" /> <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="5016983299133677671">گذرواژه جدیدی را امتحان کنید</translation>
@@ -4793,6 +4820,7 @@
 <translation id="5079010647467150187">‏افزودن VPN داخلی…</translation>
 <translation id="5079699784114005398">‏پس‌از روشن شدن، اگر با «حساب Google» خود به سیستم وارد شوید، برنامه‌های شما در همه دستگاه‌های ChromeOS دردسترس خواهند بود. حتی اگر همگام‌سازی مرورگر خاموش باشد، برنامه‌های وب نصب‌شده از مرورگر Chrome همگام‌سازی می‌شوند.</translation>
 <translation id="508059534790499809">‏بازآوری بلیت Kerberos</translation>
+<translation id="5081124414979006563">باز کردن «نمایه مهمان»</translation>
 <translation id="5081960376148623587">انتخاب کنید صفحه‌ها پیش‌بارگیری شوند یا نه</translation>
 <translation id="5084328598860513926">روند آماده‌سازی قطع شد. لطفاً دوباره امتحان کنید یا با سرپرست یا مالک دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">سایت‌ها به‌احتمال زیاد عملکردی مطابق انتظار شما خواهند داشت</translation>
@@ -5122,7 +5150,7 @@
 <translation id="5375318608039113175">‏برای استفاده از «هم‌رسانی با اطراف» با این مخاطبین، نشانی ایمیل پیوندشده با «حساب Google» آن‌ها را به مخاطبین خود اضافه کنید.</translation>
 <translation id="5375577102295339548">سایت‌ها می‌توانند به تأیید اینکه شما روبات نیستید کمک کنند</translation>
 <translation id="5376094717770783089">درخواست دسترسی دارد</translation>
-<translation id="5376169624176189338">برای برگشت به عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
+<translation id="5376169624176189338">برای برگشتن به‌عقب کلیک کنید، برای دیدن سابقه نگه دارید</translation>
 <translation id="5376931455988532197">فایل بسیار بزرگ است</translation>
 <translation id="5379140238605961210">ادامه مسدود کردن دسترسی به میکروفون</translation>
 <translation id="5380424552031517043"><ph name="PERMISSION" /> برداشته شد</translation>
@@ -5170,6 +5198,7 @@
 <translation id="5420274697768050645">برای امنیت بیشتر، گذرواژه برای باز کردن قفل دستگاه الزامی باشد</translation>
 <translation id="5420438158931847627">وضوح نوشتار یا تصاویر را تعیین می‌کند</translation>
 <translation id="5420935737933866496">کپی کردن پیوند</translation>
+<translation id="5421048291985386320">ورود مجدد به سیستم</translation>
 <translation id="5422781158178868512">متأسفیم، دستگاه ذخیره‌سازی خارجی شما شناسایی نشد.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423753908060469325">ایجاد میان‌بر…</translation>
@@ -5278,6 +5307,7 @@
 <translation id="5501809658163361512">{COUNT,plural, =1{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}one{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}other{دریافت <ph name="ATTACHMENTS" /> از <ph name="DEVICE_NAME" /> ناموفق بود}}</translation>
 <translation id="5502500733115278303">‏وارد شده از Firefox</translation>
 <translation id="5502915260472117187">کودک</translation>
+<translation id="5503910407200952415">{NUM_PROFILES,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>
 <translation id="5503982651688210506">ادامه دهید به <ph name="HOST" /> اجازه دهید از دوربینتان استفاده کند و آن را حرکت دهد، و از میکروفونتان استفاده کند</translation>
 <translation id="5505307013568720083">جوهر تمام شده است</translation>
 <translation id="5507756662695126555">انکارناپذیری</translation>
@@ -5411,6 +5441,7 @@
            و <ph name="BEGIN_LINK3" />{BrowserSwitcherUseIeSitelist}<ph name="END_LINK3" /> تأثیر می‌گیرد</translation>
 <translation id="5620568081365989559">‏DevTools درخواست دسترسی کامل به <ph name="FOLDER_PATH" /> را دارد. مراقب باشید هیچ اطلاعات حساسی را در دسترس قرار ندهید.</translation>
 <translation id="5620612546311710611">آمار استفاده</translation>
+<translation id="5621272825308610394">بدون نام نمایشی</translation>
 <translation id="562250930904332809">&amp;غیرفعال کردن زیرنویس ناشنوایان زنده</translation>
 <translation id="5623282979409330487">این سایت به حسگرهای حرکتی دسترسی دارد.</translation>
 <translation id="5623842676595125836">گزارش</translation>
@@ -5448,13 +5479,16 @@
 <translation id="5653154844073528838"><ph name="PRINTER_COUNT" /> چاپگر ذخیره‌شده دارید.</translation>
 <translation id="565515993087783098">‏درصورت فراموش کردن این شبکه، اشتراک Passpoint و شبکه‌های مرتبط با آن نیز حذف خواهد شد.</translation>
 <translation id="5655296450510165335">ثبت‌نام دستگاه</translation>
+<translation id="5655823808357523308">نحوه نمایش رنگ‌ها در صفحه‌نمایش را تنظیم می‌کند</translation>
 <translation id="5656845498778518563">‏ارسال بازخورد به Google</translation>
 <translation id="5657156137487675418">مجازبودن همه کوکی‌ها</translation>
 <translation id="5657667036353380798">‏برنامه افزودنی خارجی برای نصب شدن به Chrome نسخه <ph name="MINIMUM_CHROME_VERSION" /> یا بالاتر نیاز دارد.</translation>
 <translation id="5659593005791499971">ایمیل</translation>
+<translation id="566040795510471729">‏سفارشی‌سازی Chrome</translation>
 <translation id="5662513737565158057">‏نحوه کارکرد برنامه‌های Linux را تغییر دهید.</translation>
 <translation id="5663459693447872156">تغییر خودکار به نیم پهنا</translation>
 <translation id="5663653125349867535">&amp;فهرست خواندن</translation>
+<translation id="5666911576871845853">افزودن نمایه جدید</translation>
 <translation id="5667293444945855280">بدافزار</translation>
 <translation id="5667546120811588575">‏درحال راه‌اندازی Google Play...</translation>
 <translation id="5668351004957198136">ناموفق</translation>
@@ -5462,6 +5496,7 @@
 <translation id="5671641761787789573">تصویرها مسدود شدند</translation>
 <translation id="5671658447180261823">برداشتن پیشنهاد <ph name="SUGGESTION_NAME" /></translation>
 <translation id="567210741546439261">&amp;نشانک‌ها و فهرست‌ها</translation>
+<translation id="5674059598547281505">جلسه قبلی ازسر گرفته شود؟</translation>
 <translation id="567587836466137939">این دستگاه به‌روزرسانی‌های نرم‌افزار و امنیتی خودکار را تا <ph name="MONTH_AND_YEAR" /> دریافت می‌کند. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">برای دریافت نشانک‌ها، گذرواژه‌ها و سایر موارد در همه دستگاه‌ها، به سیستم وارد شوید و همگام‌سازی را روشن کنید</translation>
 <translation id="567740581294087470">چه نوع بازخوردی ارائه می‌دهید؟</translation>
@@ -5477,6 +5512,7 @@
 <translation id="5684661240348539843">شناسه دارایی</translation>
 <translation id="5684950556880280580">گذرواژه‌تان به‌روزرسانی شد</translation>
 <translation id="5687326903064479980">منطقه زمانی</translation>
+<translation id="5687606994963670306">‏Chrome سایت‌های قدیمی‌تر از ۳۰ روز را به‌طور خودکار حذف می‌کند. سایت‌هایی که مجدداً از آن‌ها بازدید می‌کنید ممکن است دوباره در فهرست نمایش داده شود. یا می‌توانید سایتی را مسدود کنید تا به شما آگهی پیشنهاد ندهد. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
 <translation id="5687935527303996204">مطمئن شوید دستگاهتان به برق وصل باشد و آن را خاموش نکنید. روند نصب ممکن است تا ۲۰ دقیقه طول بکشد. پس‌از تکمیل نصب، دستگاه به‌طور خودکار خاموش می‌شود.</translation>
 <translation id="5689516760719285838">مکان</translation>
 <translation id="5689531695336322499">‏به‌نظر می‌رسد <ph name="SUPERVISED_USER_NAME" /> ازقبل Voice Match را با «دستیار» در دستگاه دیگری راه‌اندازی کرده است. آن قطعه‌های قبلاً ضبط‌شده برای ایجاد مدل صوتی در این دستگاه استفاده شدند.</translation>
@@ -5655,6 +5691,7 @@
 <translation id="5846200638699387931">خطای دستوری رابطه: <ph name="ERROR_LINE" /></translation>
 <translation id="5846455742152785308">بدون سایه</translation>
 <translation id="5846504156837627898">مدیریت اجازه‌های سایت</translation>
+<translation id="5846749317653566506">برای اطمینان از متمایز بودن رنگ‌ها، تنظیمات تصحیح رنگ را انجام دهید</translation>
 <translation id="5846807460505171493">‏نصب به‌روزرسانی‌ها و برنامه‌ها. با ادامه دادن، موافقت می‌کنید این دستگاه همچنین می‌تواند به‌طور خودکار به‌روزرسانی و برنامه از Google، شرکت مخابراتی، و سازنده دستگاهتان بارگیری و نصب کند و احتمالاً این کار با مصرف داده شبکه تلفن همراه خواهد بود. بعضی از این برنامه‌ها ممکن است خریدهای درون‌برنامه ارائه دهند.</translation>
 <translation id="5849212445710944278">قبلاً اضافه شده است</translation>
 <translation id="5851868085455377790">صادرکننده</translation>
@@ -5985,6 +6022,7 @@
 <translation id="6113942107547980621">‏برای استفاده از Smart Lock، به نمایه کاربر اصلی در تلفن جابه‌جا شوید</translation>
 <translation id="6116921718742659598">تغییر تنظیمات زبان و ورودی</translation>
 <translation id="6119927814891883061">تغییر نام دستگاه به <ph name="DEVICE_NAME" /></translation>
+<translation id="6119972796024789243">تصحیح رنگ</translation>
 <translation id="6120707837086723438">‏درحال دیدن دستورهای پخت پیشنهادی هستید که براساس فعالیت اخیر مرتبط با دستورهای پخت در «جستجو» گردآوری شده است.
         <ph name="BREAK" />
         <ph name="BREAK" />
@@ -6191,6 +6229,7 @@
 <translation id="630065524203833229">&amp;خروج</translation>
 <translation id="6300718114348072351"><ph name="PRINTER_NAME" /> به‌طور خودکار پیکربندی نشد. لطفاً جزئیات پیشرفته چاپگر را مشخص کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="6301300352769835063">‏به Google اجازه دهید از داده‌های سخت‌افزار برای کمک به بهبود <ph name="DEVICE_OS" /> استفاده کند. اگر نپذیرید، این داده‌ها همچنان برای تعیین به‌روزرسانی‌های مناسب به Google ارسال می‌شوند اما ذخیره نمی‌شوند یا به‌نحو دیگری از آن‌ها استفاده نمی‌شود. در g.co/flex/HWDataCollection، اطلاعات بیشتری دریافت کنید.</translation>
+<translation id="6302661287897119265">فیلتر</translation>
 <translation id="630292539633944562">پیشنهادهای اطلاعات شخصی</translation>
 <translation id="6305607932814307878">خط‌مشی کلی:</translation>
 <translation id="6305702903308659374">‏پخش با صدایی معمولی حتی اگر ChromeVox درحال صحبت کردن باشد</translation>
@@ -6639,6 +6678,7 @@
 <translation id="6698810901424468597">خواندن و تغییر داده‌هایتان در <ph name="WEBSITE_1" /> و <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">قفل سیم کارت شبکه تلفن همراه</translation>
 <translation id="6700480081846086223">فرستادن <ph name="HOST_NAME" /></translation>
+<translation id="670121579181704262">همگام‌سازی روشن است</translation>
 <translation id="6701535245008341853">نمایه دریافت نشد.</translation>
 <translation id="6702639462873609204">&amp;ویرایش...</translation>
 <translation id="6703212423117969852">‏می‌توانید بعداً در Chrome دوباره امتحان کنید.</translation>
@@ -6781,6 +6821,7 @@
 <translation id="6812841287760418429">حفظ تغییرات</translation>
 <translation id="6813907279658683733">تمام صفحه</translation>
 <translation id="6815376457351236663">درهرصورت باز شود</translation>
+<translation id="6816097980753839617">آبی-زرد (آبی‌دشواربینی)</translation>
 <translation id="6818198425579322765">زبان صفحه موردنظر برای ترجمه</translation>
 <translation id="6818547713623251698">مشاهده کردن عکس‌ها، رسانه، اعلان‌ها، و برنامه‌های تلفن شما</translation>
 <translation id="6818802132960437751">مجهز به محافظ دربرابر ویروس</translation>
@@ -6831,6 +6872,7 @@
 <translation id="6850286078059909152">رنگ نوشتار</translation>
 <translation id="6851181413209322061">‏داده‌های استفاده و عیب‌یابی را ارسال کنید. این دستگاه درحال‌حاضر به‌صورت‌ خودکار داده‌های عیب‌یابی و داده‌های استفاده از دستگاه و برنامه را برای Google ارسال می‌کند. این داده‌ها برای شناسایی فرزندتان استفاده نخواهند شد و به بهبود پایداری سیستم و برنامه و موارد دیگر کمک خواهد کرد. بعضی داده‌های انبوهشی نیز به برنامه‌ها و شرکای Google (مانند «برنامه‌نویس‌های Android») کمک می‌کند. این تنظیم را مالک اعمال می‌کند. اگر «فعالیت‌ها در وب و برنامه» تکمیلی برای فرزندتان روشن باشد، ممکن است این داده‌ها در «حساب Google» او ذخیره شود.</translation>
 <translation id="6851497530878285708">برنامه فعال شد</translation>
+<translation id="6852290167968069627">‏ChromeOS به‌دلیل وجود مشکلی در شبکه نمی‌تواند جلسه قبلی شما را ازسر بگیرد. به شبکه پایداری متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> نصب‌شده از <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
 <translation id="6853388645642883916">به‌روزرسان در حالت خواب</translation>
 <translation id="68541483639528434">بستن برگه‌های دیگر</translation>
@@ -6917,6 +6959,7 @@
 <translation id="6929760895658557216">Okay Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{یک افزونه رد شد}one{# افزونه رد شد}other{# افزونه رد شد}}</translation>
 <translation id="6931690462168617033">قدرت کلیک</translation>
+<translation id="6933321725007230600">درحال روشن کردن همگام‌سازی…</translation>
 <translation id="6935286146439255109">سینی کاغذ موجود نیست</translation>
 <translation id="6938386202199793006">۱ چاپگر ذخیره‌نشده دارید.</translation>
 <translation id="6938387822292071111">نمایش تصاویر در کارت‌های پیش‌نمایش نگه داشتن روی برگه</translation>
@@ -7031,6 +7074,7 @@
 <translation id="7014174261166285193">نصب انجام نشد.</translation>
 <translation id="7014480873681694324">برداشتن برجسته‌سازی</translation>
 <translation id="7014741021609395734">میزان بزرگ‌نمایی</translation>
+<translation id="7016995776279438971">قرمز-سبز، ضعف در قرمز (قرمزدشواربینی)</translation>
 <translation id="7017004637493394352">‏دوباره بگویید «Ok Google»</translation>
 <translation id="7017219178341817193">افزودن صفحه جدید</translation>
 <translation id="7017354871202642555">بعد از تنظیم پنجره، تنظیم حالت امکان‌پذیر نیست.</translation>
@@ -7165,6 +7209,7 @@
 <translation id="714447804011008506">بارگیری‌ها اکنون در نوارابزار است</translation>
 <translation id="7144856456372460176">نصب <ph name="APP" />…</translation>
 <translation id="7144878232160441200">سعی مجدد</translation>
+<translation id="7145413760160421938">جلسه قبلی ازسر گرفته نشد</translation>
 <translation id="7148426638542880639">سایت‌ها ممکن است مطابق انتظار شما عمل نکنند. اگر می‌خواهید اطلاعاتی درباره سایت‌هایی که بازدید می‌کنید در دستگاه باقی نگذارید، این گزینه را انتخاب کنید.</translation>
 <translation id="7149839598364933473">تبدیل این دستگاه به دستگاه <ph name="DEVICE_OS" />.</translation>
 <translation id="7149893636342594995">۲۴ ساعت گذشته</translation>
@@ -7261,6 +7306,7 @@
 <translation id="7240339475467890413">به نقطه اتصال جدید متصل شود؟</translation>
 <translation id="7241389281993241388">لطفاً جهت ورود به مجوز سرویس گیرنده، به <ph name="TOKEN_NAME" /> وارد شوید.</translation>
 <translation id="7241763419756062043">کیفیت مرور و جستجو را انتخاب کنید</translation>
+<translation id="7243092385765551741">گذرکلید حذف شود؟</translation>
 <translation id="7243632151880336635">پاک کردن و خروج از سیستم</translation>
 <translation id="7245162963905242662">‏جستجوی این صفحه با Google…</translation>
 <translation id="7245628041916450754"><ph name="WIDTH" /> × <ph name="HEIGHT" /> (بهترین)</translation>
@@ -7304,6 +7350,7 @@
 <translation id="7273110280511444812">آخرین اتصال در تاریخ <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />٪ - <ph name="TIME" /> تا شارژ کامل</translation>
 <translation id="727595954130325265">اکنون بخرید</translation>
+<translation id="7276100255011548441">‏Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. یا می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
 <translation id="727952162645687754">خطای بارگیری</translation>
 <translation id="7280649757394340890">تنظیمات صدای نوشتار به گفتار</translation>
 <translation id="7280877790564589615">مجوز درخواست شد</translation>
@@ -7328,6 +7375,7 @@
 <translation id="7299515639584427954">برنامه پیش‌فرض برای پیوندهای پشتیبانی‌شده تغییر کند؟</translation>
 <translation id="7299588179200441056"><ph name="URL" /> - <ph name="FOLDER" /></translation>
 <translation id="7301470816294041580">‏می‌توانید بپرسید «Ok Google, what song is this?‎» (Ok Google، نام این آهنگ چیست؟) یا «Ok Google, what's on my screen?‎» (Ok Google، چه چیزی روی صفحه است؟)</translation>
+<translation id="7301812050652048720">گذرکلید حذف شد</translation>
 <translation id="730289542559375723">{NUM_APPLICATIONS,plural, =1{‏این برنامه می‌تواند مانع عملکرد درست Chrome شود.}one{‏این برنامه‌ها می‌توانند مانع عملکرد درست Chrome شوند.}other{‏این برنامه‌ها می‌توانند مانع عملکرد درست Chrome شوند.}}</translation>
 <translation id="7303281435234579599">وای! هنگام راه‌اندازی حالت نمایشی، مشکلی پیش آمد.</translation>
 <translation id="7303900363563182677">دسترسی این سایت به نوشتار و تصاویر کپی‌شده در بریده‌دان مسدود شده است</translation>
@@ -7609,6 +7657,7 @@
 <translation id="7531779363494549572">به «تنظیمات &gt; برنامه‌ها و اعلان‌ها &gt; اعلان‌ها» بروید.</translation>
 <translation id="7532009420053991888"><ph name="LINUX_APP_NAME" /> پاسخ نمی‌دهد. برای بستن برنامه، «بستن اجباری» را انتخاب کنید.</translation>
 <translation id="7535730537657706072">برای پاک کردن سابقه مرور «حالت ناشناس» از دستگاه، همه «برگه‌های ناشناس» را ببندید</translation>
+<translation id="7536815228183532290">ورود به سیستم با <ph name="EMAIL" /></translation>
 <translation id="7537451260744431038">سایت‌ها نمی‌توانند از کوکی‌ها برای بهبود تجربه مرورتان استفاده کنند، مثلاً برای اینکه شما را درحالت واردشده به سیستم نگه دارند یا موارد موجود در سبد خریدتان را به‌خاطر بسپارند</translation>
 <translation id="7538088324298143359">جستجو درون تصویر با <ph name="SEARCH_ENGINE" /></translation>
 <translation id="7540972813190816353">در هنگام بررسی برای وجود به‌روزرسانی خطایی رخ داد: <ph name="ERROR" /></translation>
@@ -7688,6 +7737,7 @@
 <translation id="7609148976235050828">لطفاً به اینترنت متصل شوید و دوباره امتحان کنید.</translation>
 <translation id="7611713099524036757">Meta</translation>
 <translation id="7612401678989660900">مجاز کردن دسترسی برای برنامه‌ها و وب‌سایت‌های دارای اجازه میکروفون</translation>
+<translation id="7612497353238585898">سایت فعال</translation>
 <translation id="7612655942094160088">فعال کردن ویژگی‌های تلفن مرتبط.</translation>
 <translation id="7612989789287281429">درحال وارد کردن شما به سیستم…</translation>
 <translation id="761530003705945209">‏در Google Drive پشتیبان‌گیری کنید. به‌آسانی داده‌های خود را بازیابی کنید یا هرزمان خواستید دستگاهتان را عوض کنید. نسخه پشتیبان شما حاوی داده‌های برنامه است. داده‌های پشتیبان در Google بارگذاری می‌شود و بااستفاده از گذرواژه «حساب Google» رمزگذاری می‌شود.</translation>
@@ -7869,6 +7919,7 @@
 <translation id="7744192722284567281">در نقض داده پیدا شد</translation>
 <translation id="7744649840067671761">برای شروع روند اختصاص دادن، کلیدی از صفحه‌کلید یا کلید خارجی دیگری را فشار دهید.
 برای برداشتن تخصیص، کلید اختصاص‌یافته را فشار دهید.</translation>
+<translation id="7745677556280361868">‏این شبکه در صفحه اشتراک Passpoint برداشته شود؟</translation>
 <translation id="7746045113967198252">موارد روی صفحه‌نمایش (ازجمله نوشتار) را بزرگ‌تر یا کوچک‌تر می‌کند. می‌توانید این تنظیم را بعداً در «تنظیمات &gt; دستگاه &gt; نمایش» پیدا کنید.</translation>
 <translation id="7746739418892731373">‏درحال دیدن عکس‌ها و ویدیوهای برگزیده از «کتابخانه Google Photos» هستید. در <ph name="BEGIN_LINK" />photos.google.com/settings<ph name="END_LINK" /> می‌توانید محتوایی را که در برگزیده‌ها نشان داده می‌شود کنترل کنید.
         <ph name="BREAK" />
@@ -7890,6 +7941,7 @@
 <translation id="7764225426217299476">افزودن آدرس</translation>
 <translation id="7764256770584298012"><ph name="DOWNLOAD_RECEIVED" /> از <ph name="DOWNLOAD_DOMAIN" /></translation>
 <translation id="7764527477537408401">باز کردن گروه در پنجره جدید</translation>
+<translation id="7764909446494215916">‏مدیریت «حساب Google»</translation>
 <translation id="7765158879357617694">انتقال</translation>
 <translation id="7765507180157272835">‏بلوتوث و Wi-Fi لازم است</translation>
 <translation id="7766082757934713382">با متوقف کردن موقت به‌روزرسانی‌های خودکار سیستم و برنامه‌ها، مصرف داده شبکه را کاهش دهید</translation>
@@ -7923,6 +7975,7 @@
 <translation id="7784796923038949829">خواندن یا تغییر داده‌های سایت امکان‌پذیر نیست</translation>
 <translation id="778480864305029524">‏برای استفاده از «اشتراک‌گذاری اینترنت فوری»، اعلان‌ها را برای «خدمات Google Play» روشن کنید.</translation>
 <translation id="7785471469930192436">برای اینکه سابقه جستجویتان را درصورت امکان حذف کنید، به دستورالعمل‌های موتور جستجو مراجعه کنید</translation>
+<translation id="77855763949601045">باز کردن «نمایه مهمان»</translation>
 <translation id="7786663536153819505">برای اسکن رمزینه پاسخ‌سریع، دستورالعمل‌های روی تلفن را دنبال کنید. بلوتوث تلفن باید روشن باشد.
     <ph name="BR" />
     <ph name="BR" />
@@ -7936,6 +7989,7 @@
 <translation id="7791436592012979144">پیمایش معکوس فعال است</translation>
 <translation id="7791543448312431591">افزودن</translation>
 <translation id="7792012425874949788">هنگام ورود به سیستم خطایی رخ داد</translation>
+<translation id="7792336732117553384">‏مدیریت نمایه‌های Chrome</translation>
 <translation id="7792388396321542707">توقف هم‌رسانی</translation>
 <translation id="779308894558717334">سبز روشن</translation>
 <translation id="7793098747275782155">آبی تیره</translation>
@@ -8024,6 +8078,7 @@
 <translation id="7873386145597434863">‏Steam ویژه Chromebook</translation>
 <translation id="7874257161694977650">‏پس‌زمینه‌های Chromebook</translation>
 <translation id="7876027585589532670">نمی‌توان میان‌بر را ویرایش کرد</translation>
+<translation id="7877126887274043657">رفع مشکل همگام‌سازی</translation>
 <translation id="7877451762676714207">خطای سرور ناشناس. لطفاً دوباره سعی کنید یا با سرپرست سرور تماس بگیرید.</translation>
 <translation id="7879172417209159252">نمی‌توان از این افزونه استفاده کرد</translation>
 <translation id="7879478708475862060">پیروی از روش ورودی</translation>
@@ -8077,6 +8132,7 @@
 <translation id="7920363873148656176"><ph name="ORIGIN" /> می‌تواند <ph name="FILENAME" /> را مشاهده کند</translation>
 <translation id="7920482456679570420">واژه‌هایی را که نیازی به غلط‌گیری املا ندارند اضافه کنید</translation>
 <translation id="7921347341284348270">نمی‌توانید اعلان‌های تلفنتان را در این حساب مدیریت‌شده مشاهده کنید. با حساب دیگری دوباره امتحان کنید. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
+<translation id="7921901223958867679">این افزونه می‌تواند <ph name="HOST" /> را بخواند و تغییر دهد</translation>
 <translation id="7922606348470480702">یک افزونه</translation>
 <translation id="7922935920104868876">نمایش جزئیات مربوط به مسدود کردن کوکی‌های شخص ثالث در «حالت ناشناس»</translation>
 <translation id="7923564237306226146">‏ارتقای Linux کامل شد</translation>
@@ -8097,6 +8153,10 @@
 <translation id="7933486544522242079">ذخیره و هم‌رسانی</translation>
 <translation id="7933518760693751884">روی نماد «نشانک» کلیک کنید تا صفحه‌ها برای خواندن در فرصتی دیگر ذخیره شوند</translation>
 <translation id="7933634003144813719">مدیریت پوشه‌های هم‌رسانی‌شده</translation>
+<translation id="793474285422359265">اگر روی «لغو» کلیک کنید، این کار ممکن است بر داده‌های مرورگر شما تأثیر بگذارد و ممکن است لازم باشد بازنشانی کارخانه‌ای انجام دهید.</translation>
+<translation id="7934988177580964533">سازمانتان این نمایه را مدیریت می‌کند. برای ادامه استفاده از این نمایه تحت‌مدیریت، سازمانتان شما را ملزم می‌کند نشان‌های دستگاهتان را هم‌رسانی کنید.
+
+نشان‌های دستگاه می‌تواند شامل اطلاعاتی درباره مرورگر، سیستم‌عامل، دستگاه، نرم‌افزارهای نصب‌شده، و فایل‌ها باشد.</translation>
 <translation id="793531125873261495">هنگام بارگیری دستگاه مجازی خطایی روی داد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> درصد تکمیل شد</translation>
 <translation id="7939062555109487992">گزینه‌های پیشرفته</translation>
@@ -8268,6 +8328,7 @@
 <translation id="8076492880354921740">برگه‌ها</translation>
 <translation id="8076835018653442223">سرپرستتان دسترسی به فایل‌های محلی موجود در دستگاهتان را غیرفعال کرده است</translation>
 <translation id="8077120325605624147">هر سایتی که بازدید کنید می‌تواند هر نوع آگهی را به شما نمایش دهد</translation>
+<translation id="8077579734294125741">‏دیگر نمایه‌های Chrome</translation>
 <translation id="80798452873915119">سایت‌ها می‌توانند درخواست کنند پنجره‌های همه نمایشگرهایتان را مدیریت کنند</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289"><ph name="MANAGER_NAME" /> جلسه‌تان را مدیریت می‌کند. سرپرستان می‌توانند نمایه‌تان را حذف کنند و بر ترافیک شبکه‌تان نیز نظارت داشته باشند.</translation>
@@ -8323,6 +8384,7 @@
 <translation id="8119438628456698432">درحال ایجاد فایل‌های گزارش…</translation>
 <translation id="811994229154425014">دوفاصله برای تایپ نقطه</translation>
 <translation id="8120505434908124087">نصب نمایه سیم‌کارت داخلی</translation>
+<translation id="8121750884985440809">اکنون درحال پخش محتوای صفحه‌نمایش خود هستید</translation>
 <translation id="81238879832906896">گل زرد و سفید</translation>
 <translation id="8123975449645947908">پیمایش به‌عقب</translation>
 <translation id="8124313775439841391">‏ONC مدیریت شده</translation>
@@ -8436,6 +8498,7 @@
 <translation id="822050276545350872">ازاین‌پس نیازی نیست منتظر بمانید</translation>
 <translation id="8221491193165283816">معمولاً اعلان‌ها را مسدود می‌کنید. برای اینکه اجازه دهید این سایت اعلان بفرستد، اینجا را کلیک کنید.</translation>
 <translation id="822347941086490485">‏درحال پیدا کردن دستگاه‌های HID…</translation>
+<translation id="8224427620313426549">حساب <ph name="DOMAIN_LINK" /> حذف نخواهد شد</translation>
 <translation id="8225046344534779393">اتصال اینترنت را بررسی کنید</translation>
 <translation id="8225173734540525852">‏برنامه <ph name="APPLICATION_NAME" /> برای دردسترس بودن به Drive نیاز دارد.</translation>
 <translation id="8225265270453771718">هم‌رسانی پنجره برنامه</translation>
@@ -8786,6 +8849,7 @@
 <translation id="8534656636775144800">وای!  هنگام اتصال به دامنه مشکلی پیش آمد. لطفاً دوباره امتحان کنید.</translation>
 <translation id="8535005006684281994">‏نشانی وب تجدید گواهی Netscape</translation>
 <translation id="8536713137312218707">فرمان‌های سریع</translation>
+<translation id="8536810348276651776">‏شما را از سیستم اکثر سایت‌ها خارج می‌کند. از سیستم «حساب Google» خود خارج نخواهید شد بنابراین تنظیمات Family Link ویژه Chrome اعمال می‌شود.</translation>
 <translation id="8536956381488731905">صدای فشار کلید</translation>
 <translation id="8539727552378197395">‏نه (فقط Http)</translation>
 <translation id="8539766201049804895">ارتقا</translation>
@@ -9090,6 +9154,7 @@
 <translation id="8791534160414513928">‏ارسال درخواست "Do Not Track" با ترافیک مرور</translation>
 <translation id="879413103056696865">وقتی نقطه اتصال روشن است، <ph name="PHONE_NAME" /> شما:</translation>
 <translation id="8795916974678578410">پنجرهٔ جدید</translation>
+<translation id="8796919761992612392">‏سفارشی‌سازی Chrome</translation>
 <translation id="8797459392481275117">این سایت هرگز ترجمه نشود</translation>
 <translation id="8798099450830957504">پیش‌فرض</translation>
 <translation id="8800034312320686233">سایت کار نمی‌کند؟</translation>
@@ -9318,6 +9383,7 @@
 <translation id="8989359959810288806">بازآوری وضعیت اشتراک‌گذاری اینترنت</translation>
 <translation id="8991520179165052608">سایت می‌تواند از میکروفن شما استفاده کند</translation>
 <translation id="8991694323904646277">دوربین متصل نیست</translation>
+<translation id="8992671062738341478"><ph name="WINDOW_TITLE" /> - استفاده از حافظه - <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">‏اگر گذرواژه <ph name="DEVICE_TYPE" /> را فراموش کنید، همچنان می‌توانید داده‌های محلی‌تان را بازیابی کنید. باید به سیستم «حساب Google» خود وارد شوید یا از بازیابی حساب استفاده کنید.</translation>
 <translation id="8993737615451556423">کنترل‌هایی برای افزایش سرعت، کاهش سرعت، و توقف موقت صدای خواندن ارائه می‌دهد</translation>
 <translation id="899384117894244799">برداشتن کاربر محدودشده</translation>
@@ -9333,6 +9399,7 @@
 <translation id="9003647077635673607">در همه وب‌سایت‌ها مجاز باشد</translation>
 <translation id="9003677638446136377">بررسی مجدد</translation>
 <translation id="9004754973617721124">داده‌ها و اجازه‌های سایت <ph name="SITE_NAME" />، همه سایت‌های تحت آن، و برنامه‌های نصب‌شده‌اش پاک شود؟</translation>
+<translation id="9007688236643268728">ورود مجدد به سیستم</translation>
 <translation id="9008201768610948239">نادیده گرفتن</translation>
 <translation id="9008201858626224558">دکمه برگشت صفحه جزئیات <ph name="SUBPAGE_TITLE" /></translation>
 <translation id="9008828754342192581">قبلاً انتخاب کرده‌اید همه افزونه‌ها در <ph name="ORIGIN" /> مجاز باشند</translation>
@@ -9528,6 +9595,7 @@
 <translation id="9157697743260533322">راه‌اندازی به‌روزرسانی‌های خودکار برای همه کاربران انجام نشد (خطای راه‌اندازی قبل از تولید: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">در چاپگر باز است</translation>
 <translation id="9158715103698450907">اوه! هنگام راستی‌آزمایی مشکلی در ارتباط شبکه رخ داد. لطفاً اتصال شبکه را بررسی کنید و دوباره امتحان کنید.</translation>
+<translation id="9159458465299853289">همگام‌سازی روشن است</translation>
 <translation id="9159643062839240276">‏موارد زیر را امتحان کنید:
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />بررسی کابل‌های شبکه، مودم، و رهیاب
@@ -9572,6 +9640,7 @@
 <translation id="9201117361710210082">قبلاً مشاهده شده</translation>
 <translation id="9201220332032049474">گزینه‌های قفل صفحه</translation>
 <translation id="9201842707396338580">مشکلی پیش آمد. لطفاً با مالک یا سرپرست دستگاه تماس بگیرید. کد خطا: <ph name="ERROR_CODE" />.</translation>
+<translation id="9203296457393252944">قرمز-سبز، ضعف در سبز (سبزدشواربینی)</translation>
 <translation id="9203398526606335860">&amp;نمایه سازی فعال شد</translation>
 <translation id="9203904171912129171">انتخاب دستگاه</translation>
 <translation id="920410963177453528">برای انتخاب پانلی دیگر، روی منوی کرکره‌ای کلیک کنید</translation>
@@ -9597,6 +9666,7 @@
 <translation id="930551443325541578">تکرار کلیدها و نشانه‌های تکیه</translation>
 <translation id="930893132043726269">درحال‌حاضر فراگردی می‌شود</translation>
 <translation id="930991362911221750">به <ph name="APP_NAME" /> اجازه می‌دهید این برگه را ببیند؟</translation>
+<translation id="931273044114601262">در این سایت مجاز است</translation>
 <translation id="93140074055951850">‏برنامه‌های Android متوقف شدند</translation>
 <translation id="932327136139879170">منزل</translation>
 <translation id="932508678520956232">نمی‌توان چاپ کردن را آغاز کرد.</translation>
@@ -9638,6 +9708,7 @@
 <translation id="965211523698323809">ارسال و دریافت پیامک از <ph name="DEVICE_TYPE" /> شما. <ph name="LINK_BEGIN" />بیشتر بدانید<ph name="LINK_END" /></translation>
 <translation id="96535553604365597">‏گزارش مشکل در Google Cast</translation>
 <translation id="966588271015727539">نمایشگر بریل انتخاب کنید</translation>
+<translation id="966624321292940409">{NUM_PROFILES,plural, =1{بستن این نمایه}one{بستن این نمایه (# پنجره)}other{بستن این نمایه (# پنجره)}}</translation>
 <translation id="967398046773905967">‏به هیچ سایتی اجازه دسترسی به دستگاه‌های HID داده نشود</translation>
 <translation id="967624055006145463">داده ذخیره شد</translation>
 <translation id="96774243435178359">چاپگرهای مدیریت‌شده</translation>
@@ -9668,6 +9739,7 @@
 <translation id="992256792861109788">صورتی</translation>
 <translation id="992592832486024913">‏غیرفعال کردن ChromeVox (بازخورد گفتاری)</translation>
 <translation id="992778845837390402">‏درحال‌حاضر پشتیبان‌گیری Linux درحال انجام است</translation>
+<translation id="992995739384733897"><ph name="WINDOW_TITLE" /> - ذخیره شد <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">نصب درحال انجام است.</translation>
 <translation id="994289308992179865">&amp;حلقه</translation>
 <translation id="995755448277384931">‏افزودن IBAN</translation>

@@ -10,6 +10,7 @@ Sommige functies zijn wellicht niet beschikbaar en wijzigingen in voorkeuren wor
 <translation id="1104942323762546749">Chromium wil je wachtwoorden exporteren. Geef je Windows-wachtwoord op om dit toe te staan.</translation>
 <translation id="113122355610423240">Chromium is je standaardbrowser</translation>
 <translation id="1131805035311359397">Als je wilt checken of je wachtwoorden zijn beveiligd tegen gegevenslekken en andere beveiligingsproblemen, <ph name="BEGIN_LINK" />log je in bij Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Klik op het Chromium-menu</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Chromium-extensies hadden toegang tot HID-apparaten}=1{Chromium-extensies hebben toegang tot 1 HID-apparaat}other{Chromium-extensies hebben toegang tot # HID-apparaten}}</translation>
 <translation id="1185134272377778587">Over Chromium</translation>
 <translation id="1203500561924088507">Bedankt voor het installeren. Je moet de browser opnieuw opstarten voordat je <ph name="BUNDLE_NAME" /> kunt gebruiken.</translation>
@@ -59,6 +60,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="2384373936468275798">Chromium OS kan je gegevens niet synchroniseren, omdat de inloggegevens voor je account zijn verouderd.</translation>
 <translation id="2396765026452590966">De extensie <ph name="EXTENSION_NAME" /> heeft gewijzigd welke pagina je ziet als je Chromium start.</translation>
 <translation id="2401032172288869980">Chromium heeft camera- en microfoonrechten nodig voor deze site</translation>
+<translation id="2451727308784734061">Gebruik je snelkoppeling om snel naar Wachtwoordmanager te gaan. Je kunt je snelkoppeling verplaatsen naar het startscherm of de App Launcher van je computer.</translation>
 <translation id="2478295928299953161">Chromium wordt zo meteen gesloten</translation>
 <translation id="2483889755041906834">In Chromium</translation>
 <translation id="2485422356828889247">Installatie ongedaan maken</translation>
@@ -250,6 +252,7 @@ Rechten die je al hebt gegeven aan websites en apps, kunnen van toepassing zijn 
 <translation id="6333502561965082103">Er wordt een andere bewerking in Chromium uitgevoerd. Probeer het later opnieuw.</translation>
 <translation id="6334986366598267305">Het is nu gemakkelijker om Chromium met je Google-account en op gedeelde computers te gebruiken.</translation>
 <translation id="6373523479360886564">Weet je zeker dat je Chromium wilt verwijderen?</translation>
+<translation id="6375219077595103062">Voeg een snelkoppeling naar Wachtwoordmanager toe</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Hoe we deze gegevens gebruiken:<ph name="END_BOLD" /> Chromium kan een schatting van je interesses maken. Later kan een site die je bezoekt Chromium vragen om je interesses te bekijken zodat de advertenties die je ziet, kunnen worden gepersonaliseerd.</translation>
 <translation id="6403826409255603130">Chromium is een webbrowser die webpagina's en applicaties bliksemsnel uitvoert. Chromium is snel, stabiel en eenvoudig in gebruik. Surf veiliger op internet met de in Chromium ingebouwde beveiliging tegen malware en phishing.</translation>
 <translation id="6442900851116057561">Chromium OS opnieuw opstarten</translation>
@@ -373,6 +376,7 @@ Chromium kan je instellingen niet herstellen.</translation>
 <translation id="8697124171261953979">Hiermee wordt ook gecontroleerd welke pagina wordt getoond wanneer je Chromium start of vanuit de omnibox zoekt.</translation>
 <translation id="8704119203788522458">Personaliseer jouw Chromium</translation>
 <translation id="8796602469536043152">Chromium heeft toegangsrechten voor je camera en microfoon nodig voor deze site</translation>
+<translation id="8826492472752484139">Klik op Wachtwoordmanager</translation>
 <translation id="8833697763442816810">Chromium OS-systeem</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Welke gegevens worden gebruikt:<ph name="END_BOLD" /> Je browsegeschiedenis, een lijst van de sites die je via Chromium op dit apparaat hebt bezocht.</translation>
 <translation id="8862326446509486874">Je hebt geen rechten om op systeemniveau te installeren. Meld je aan als beheerder en voer het installatieprogramma opnieuw uit.</translation>

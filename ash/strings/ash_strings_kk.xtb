@@ -982,6 +982,7 @@
 <translation id="5308380583665731573">Қосылу</translation>
 <translation id="5313326810920013265">Bluetooth параметрлері</translation>
 <translation id="5314219114274263156">Экран жазбасы алынды</translation>
+<translation id="5314489738835854379">Терезелер арқылы кері айналдыру</translation>
 <translation id="5316716239522500219">Айна мониторлары</translation>
 <translation id="5317780077021120954">Сақтау</translation>
 <translation id="5319712128756744240">Жаңа құрылғымен жұптау</translation>
@@ -1128,6 +1129,7 @@
 <translation id="5958529069007801266">Бақылаудағы пайдаланушы</translation>
 <translation id="5961960957587052807">Жарық</translation>
 <translation id="5965524703725988602">Қараңғы режимді ауыстыру. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Терезелер арқылы алға айналдыру</translation>
 <translation id="5976112937189445008">Терезені жазу үшін басыңыз</translation>
 <translation id="5978382165065462689">Remote Assistance арқылы экранды бөлісіп басқару.</translation>
 <translation id="5980301590375426705">Қонақты шығару</translation>
@@ -1338,6 +1340,7 @@
 <translation id="6891721121089053234">Телефондағы соңғы фотосуреттерді, медиафайлдарды және қолданбаларды <ph name="DEVICE_TYPE" /> құрылғысында көріңіз.</translation>
 <translation id="6896758677409633944">Көшіру</translation>
 <translation id="6901883536534621389">Навигация қимылдарын байқап көріңіз</translation>
+<translation id="6912841030378044227">Мекенжай жолағында ерекшелеу</translation>
 <translation id="6919251195245069855">Смарт карта анықталмады. Қайталап көріңіз.</translation>
 <translation id="6920245099716267363">Хотспотты қосу/өшіру. Хотспот қосулы, 1 құрылғы жалғанған.</translation>
 <translation id="6931576957638141829">Сақтау орны</translation>
@@ -1687,6 +1690,7 @@
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофон кірісін <ph name="APP_NAME" /> басқарады}other{Микрофон кірісін # қолданба басқарады}}</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
 <translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>

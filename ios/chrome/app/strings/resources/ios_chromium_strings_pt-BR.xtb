@@ -14,9 +14,11 @@
 <translation id="1617663976202781617">Dados da sincronização do Chromium</translation>
 <translation id="1722370509450468186">A senha será salva na sua conta (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dados do Chromium apagados</translation>
+<translation id="1758508597843173586">Bloqueie o modo de navegação anônima ao sair do Chromium ou mudar para outro app.</translation>
 <translation id="1838412507805038478">O Chromium verificou que <ph name="ISSUER" /> emitiu o certificado deste website.</translation>
 <translation id="1843424232666537147">O Google Chrome possui recursos que ajudam a gerenciar seus dados de Internet e a velocidade de carregamento de páginas da Web.
 <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Maps no Chromium</translation>
 <translation id="1867772173333403444">4. Selecione o Chromium</translation>
 <translation id="2006345422933397527">Não foi possível verificar se há atualizações. Verifique sua conexão de Internet.</translation>
 <translation id="2052320862053429062">O Chromium verifica periodicamente se as suas senhas estão em listas que foram publicadas on-line. Quando isso é feito, as senhas e os nomes de usuário são criptografados para que não possam ser lidos por ninguém, nem o Google.</translation>
@@ -57,6 +59,7 @@
 <translation id="452436063477828504">Garanta que você sempre possa usar os dados do Chromium na sua Conta do Google</translation>
 <translation id="4555020257205549924">Quando este recurso está ativado, o Chromium oferece a tradução de páginas escritas em outros idiomas usando o Google Tradutor. <ph name="BEGIN_LINK" />Saiba mais<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Agora você poderá usar o Chromium sempre que tocar em links em mensagens, documentos e outros apps.</translation>
+<translation id="4625550158881452646">Crie eventos da agenda no Chromium</translation>
 <translation id="4633738821577273991">Use também o recurso Navegação segura com maior proteção neste perfil do Chromium</translation>
 <translation id="4654936625574199632">Para ajudar a melhorar o app, o Chromium envia dados de uso e de falhas ao Google. <ph name="BEGIN_LINK" />Gerenciar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Ativar o leitor do Chromium</translation>
@@ -67,6 +70,7 @@
 <translation id="4999538639245140991">Como você está saindo de uma conta gerenciada por <ph name="SIGNOUT_MANAGED_DOMAIN" />, os dados do Chromium serão excluídos deste dispositivo, mas permanecerão na sua Conta do Google.</translation>
 <translation id="5048795749726991615">Para acessar com facilidade suas senhas salvas em outros apps, use o preenchimento automático no Chromium</translation>
 <translation id="5171868502429358653">Faça login no Chromium</translation>
+<translation id="5224044903258607400">Toque em "Visualizar com o Google Maps no Chromium"</translation>
 <translation id="5224391634244552924">Nenhuma senha salva. O Chromium poderá verificar suas senhas quando elas forem salvas.</translation>
 <translation id="5308226104666789935">Não é possível verificar se há atualizações</translation>
 <translation id="5396916991083608703">Definir o Chromium como padrão?</translation>
@@ -76,6 +80,7 @@
 <translation id="5573014823074921752">Dica do Chromium. Para ver mais opções de guia, toque no botão "Mostrar guias" na barra de ferramentas localizada na parte superior ou inferior da tela e mantenha-o pressionado.</translation>
 <translation id="5700709190537129682">Não é possível verificar suas senhas com o Chromium</translation>
 <translation id="5777187867430702742">Página do Chromium</translation>
+<translation id="5925698807555796756">Ative a opção "Bloquear guias anônimas ao fechar o Chromium".</translation>
 <translation id="5945387852661427312">Você está fazendo login com uma conta gerenciada por <ph name="DOMAIN" /> e dando ao administrador dela o controle sobre seus dados do Chromium, os quais ficarão permanentemente vinculados a essa conta. Se você sair do Chromium, seus dados serão excluídos deste dispositivo, mas permanecerão armazenados na sua Conta do Google.</translation>
 <translation id="5983312940147103417">Melhorar o Chromium</translation>
 <translation id="6062449165341879460">A organização <ph name="DOMAIN" /> vai ter acesso aos dados, favoritos, histórico, senhas e outras configurações do Chromium que você armazenar nessa conta. Quando você sair, seus dados vão ser apagados deste dispositivo.  No entanto, os dados continuarão armazenados na sua Conta do Google gerenciada e vão ficar disponíveis para sua organização. A organização também pode definir políticas do usuário específicas para a conta, e elas podem mudar o comportamento do Chromium.</translation>
@@ -120,6 +125,7 @@
 <translation id="7980860476903281594">O Chromium compartilha sua localização com os sites aos quais você concede permissão.</translation>
 <translation id="8013573822802650211">Para ver suas guias em qualquer lugar onde você usar o Chromium, faça login em todos os seus dispositivos</translation>
 <translation id="8073677936375100957">Limpar seus dados do Chromium deste dispositivo?</translation>
+<translation id="8164086860209325020">Acesse as Configurações do Chromium</translation>
 <translation id="8240981428553046115">Não foi possível verificar se há atualizações. Tente novamente mais tarde.</translation>
 <translation id="8409374867500149834">Você tem a segurança reforçada do Chromium contra sites perigosos</translation>
 <translation id="858114650497379505">Você pode usar as senhas armazenadas no Gerenciador de senhas em outros apps do iPhone.</translation>

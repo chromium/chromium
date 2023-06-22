@@ -1688,6 +1688,7 @@
 <translation id="8513108775083588393">自動旋轉</translation>
 <translation id="851458219935658693">顯示目前桌面嘅視窗，揀咗圓形按鈕</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在開啟時可能無法充電。</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{麥克風輸入來源由「<ph name="APP_NAME" />」控制}other{麥克風輸入來源由 # 個應用程式控制}}</translation>
 <translation id="8535393432370007982">根據顏色復原排列次序</translation>
 <translation id="8541078764854166027">相機取景功能</translation>
 <translation id="8542053257095774575">沒有已儲存的桌面或範本</translation>

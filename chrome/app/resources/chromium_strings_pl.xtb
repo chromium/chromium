@@ -8,6 +8,7 @@
 <translation id="1104942323762546749">Chromium chce wyeksportować Twoje hasła. Wpisz swoje hasło do Windows, by na to zezwolić.</translation>
 <translation id="113122355610423240">Chromium jest domyślną przeglądarką</translation>
 <translation id="1131805035311359397">Aby sprawdzić, czy Twoje hasła są chronione przed naruszeniami bezpieczeństwa danych i innymi zagrożeniami tego typu, <ph name="BEGIN_LINK" />zaloguj się w Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Kliknij menu Chromium</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Rozszerzenia do Chromium miały dostęp do urządzeń HID}=1{Rozszerzenia do Chromium mają dostęp do urządzenia HID}few{Rozszerzenia do Chromium mają dostęp do # urządzeń HID}many{Rozszerzenia do Chromium mają dostęp do # urządzeń HID}other{Rozszerzenia do Chromium mają dostęp do # urządzenia HID}}</translation>
 <translation id="1185134272377778587">Chromium – informacje</translation>
 <translation id="1203500561924088507">Dziękujemy za instalację. Przed rozpoczęciem korzystania z programu <ph name="BUNDLE_NAME" /> musisz ponownie uruchomić przeglądarkę.</translation>
@@ -57,6 +58,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="2384373936468275798">System operacyjny Chromium nie może zsynchronizować danych, ponieważ dane logowania na Twoje konto są nieaktualne.</translation>
 <translation id="2396765026452590966">Rozszerzenie „<ph name="EXTENSION_NAME" />” ustawiło inną stronę wyświetlaną po uruchomieniu Chromium.</translation>
 <translation id="2401032172288869980">Ta strona musi mieć w Chromium dostęp do aparatu i mikrofonu</translation>
+<translation id="2451727308784734061">Aby szybko otworzyć Menedżera haseł, użyj skrótu. Skrót na komputerze możesz przenieść na ekran główny lub do Menu z aplikacjami.</translation>
 <translation id="2478295928299953161">Przeglądarka Chromium zostanie wkrótce zamknięta</translation>
 <translation id="2483889755041906834">W Chromium</translation>
 <translation id="2485422356828889247">Odinstaluj</translation>
@@ -246,6 +248,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane stronom i aplikacjom. K
 <translation id="6333502561965082103">Chromium wykonuje teraz inną operację. Spróbuj ponownie później.</translation>
 <translation id="6334986366598267305">Korzystanie z Chromium na wspólnych komputerach i przy użyciu konta Google jest teraz jeszcze łatwiejsze.</translation>
 <translation id="6373523479360886564">Czy na pewno chcesz odinstalować Chromium?</translation>
+<translation id="6375219077595103062">Dodaj skrót do Menedżera haseł</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Jak używamy tych danych:<ph name="END_BOLD" /> Chromium może oszacować, jakie są Twoje zainteresowania. Witryna, którą później odwiedzisz, może o nie zapytać i na tej podstawie spersonalizować wyświetlane reklamy.</translation>
 <translation id="6403826409255603130">Chromium to przeglądarka obsługująca strony i aplikacje z szybkością błyskawicy. Jest szybka, stabilna i łatwa w użyciu. Bezpiecznie przeglądaj internet dzięki wbudowanej w Chromium ochronie przed złośliwym oprogramowaniem i phishingiem.</translation>
 <translation id="6442900851116057561">Uruchom ponownie Chromium OS</translation>
@@ -369,6 +372,7 @@ Chromium nie może odzyskać ustawień.</translation>
 <translation id="8697124171261953979">Kontroluje także to, jaka strona wyświetla się po uruchomieniu Chromium lub wyszukiwaniu w omniboksie.</translation>
 <translation id="8704119203788522458">Oto Twoja przeglądarka Chromium</translation>
 <translation id="8796602469536043152">Chromium potrzebuje uprawnień dostępu do aparatu i mikrofonu na tej stronie</translation>
+<translation id="8826492472752484139">Kliknij „Menedżer haseł”</translation>
 <translation id="8833697763442816810">System operacyjny Chromium</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Jakich danych używamy:<ph name="END_BOLD" /> używamy Twojej historii przeglądania, czyli rejestru witryn, które odwiedzasz w Chromium na tym urządzeniu.</translation>
 <translation id="8862326446509486874">Nie masz odpowiednich uprawnień do przeprowadzenia instalacji na poziomie systemowym. Uruchom ponownie program instalacyjny jako administrator.</translation>

@@ -570,6 +570,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="2202020181578195191">Ange ett giltigt utgångsår</translation>
 <translation id="2202627062836089804">baksidan av kortet</translation>
 <translation id="2204482073374652408">Uppdateringen är slutförd.</translation>
+<translation id="2208053750671792556">Fick du inte koden? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Fack 3</translation>
 <translation id="2210794033760923560">Ladda upp rapport</translation>
 <translation id="2212735316055980242">Policyn hittades inte</translation>
@@ -1018,6 +1019,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="3270847123878663523">&amp;Ångra Ändra ordning</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> vill ansluta</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Ange verifieringskoden på <ph name="NUMBER_OF_DIGITS" /> siffror</translation>
 <translation id="3281350579597955952">{0,plural, =1{Enligt administratörspolicyn är det inte rekommenderat att öppna filen i <ph name="DESTINATION_NAME" />}other{Enligt administratörspolicyn är det inte rekommenderat att öppna filerna i <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Organisationen <ph name="ENROLLMENT_DOMAIN" /> har skickat en del information, t.ex. inställningar eller principer, till följande webbplatser.</translation>
 <translation id="3286372614333682499">stående</translation>
@@ -2421,7 +2423,6 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="6398765197997659313">Avsluta helskärmsläge</translation>
 <translation id="6401136357288658127">Den här principen är utfasad. Använd principen <ph name="NEW_POLICY" /> i stället.</translation>
 <translation id="6403167778944553">Sovrum och badrum</translation>
-<translation id="6403709186844650075">Textning på <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Redigera bokmärke</translation>
 <translation id="6405181733356710802">Vill du fortsätta till <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ange utgångsdatum och CVC-kod för <ph name="CREDIT_CARD" /></translation>
@@ -2795,6 +2796,7 @@ Annars blockeras detta av integritetsinställningarna. Om du tillåter detta kan
 <translation id="7219179957768738017">För anslutningen används <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Bearbetning pågår</translation>
 <translation id="7221855153210829124">Visa aviseringar</translation>
+<translation id="7221857374443660083">Din bank vill bekräfta att det är du</translation>
 <translation id="722454870747268814">Ny inkognitoflik</translation>
 <translation id="7227293336683593977">Prishistorik</translation>
 <translation id="7233592378249864828">Skriva ut bekräftelseark</translation>

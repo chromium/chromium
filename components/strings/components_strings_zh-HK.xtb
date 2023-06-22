@@ -856,6 +856,7 @@
 <translation id="3041612393474885105">憑證資料</translation>
 <translation id="305162504811187366">Chrome 遠端桌面記錄，包括時間戳記、主機和用戶端工作階段 ID</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> 降價 <ph name="PRICE_DROP" /></translation>
+<translation id="3054512251683174387">Chrome 會自動刪除 4 週前的主題，隨著你持續瀏覽內容，清單中可能會再次出現特定主題。你也可以封鎖不希望 Chrome 提供給網站的主題。進一步瞭解如何在 Chrome 中管理廣告隱私權。</translation>
 <translation id="3061707000357573562">修補服務</translation>
 <translation id="306573536155379004">啟動咗遊戲。</translation>
 <translation id="3068991664510324412">電腦遊戲和電視遊戲</translation>
@@ -949,7 +950,7 @@
 <translation id="3270847123878663523">復原重新排序(&amp;U)</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> 要求連接至</translation>
 <translation id="3272091146646336650">Super B</translation>
-<translation id="3272112314896217187">輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
+<translation id="3272112314896217187">請輸入 <ph name="NUMBER_OF_DIGITS" /> 位數驗證碼</translation>
 <translation id="3281350579597955952">{0,plural, =1{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這個檔案}other{管理員政策不建議在<ph name="DESTINATION_NAME" />中開啟這些檔案}}</translation>
 <translation id="3282085321714087552">機構 (<ph name="ENROLLMENT_DOMAIN" />) 已將一些資訊 (例如設定或政策) 傳送到以下網站。</translation>
 <translation id="3286372614333682499">直向</translation>
@@ -2253,7 +2254,6 @@
 <translation id="6394852772105848029">此網站要求開啟 <ph name="APP_NAME" /> 應用程式</translation>
 <translation id="6398765197997659313">退出全螢幕模式</translation>
 <translation id="6401136357288658127">此政策已被淘汰，請改用 <ph name="NEW_POLICY" /> 政策。</translation>
-<translation id="6403709186844650075">字幕語言：<ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">編輯書籤</translation>
 <translation id="6405181733356710802">要繼續前往 <ph name="APP_NAME" /> 嗎？</translation>
 <translation id="6410264514553301377">請輸入 <ph name="CREDIT_CARD" /> 的到期日和信用卡驗證碼 (CVC)</translation>
@@ -2595,7 +2595,7 @@
 <translation id="7219179957768738017">這個連線使用 <ph name="SSL_VERSION" />。</translation>
 <translation id="7220786058474068424">正在處理</translation>
 <translation id="7221855153210829124">顯示通知</translation>
-<translation id="7221857374443660083">銀行想要確認你的身分</translation>
+<translation id="7221857374443660083">銀行要確認您的身分</translation>
 <translation id="722454870747268814">新增無痕式分頁</translation>
 <translation id="7227293336683593977">價格記錄</translation>
 <translation id="7233592378249864828">列印確認工作表</translation>

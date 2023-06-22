@@ -1687,6 +1687,7 @@
 <translation id="8513108775083588393">自动屏幕旋转</translation>
 <translation id="851458219935658693">显示当前桌面中的窗口，已选中单选按钮</translation>
 <translation id="8517041960877371778">您的 <ph name="DEVICE_TYPE" /> 在开启时可能无法充电。</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{麦克风输入由“<ph name="APP_NAME" />”控制}other{麦克风输入由 # 个应用控制}}</translation>
 <translation id="8535393432370007982">撤消按颜色排序</translation>
 <translation id="8541078764854166027">相机取景</translation>
 <translation id="8542053257095774575">尚未保存任何桌面或模板</translation>

@@ -10,6 +10,7 @@ Neke funkcije su možda nedostupne i promene podešavanja neće biti sačuvane.
 <translation id="1104942323762546749">Chromium želi da izveze lozinke. Unesite lozinku za Windows da biste to omogućili.</translation>
 <translation id="113122355610423240">Chromium je podrazumevani pregledač</translation>
 <translation id="1131805035311359397">Da biste proverili da li su lozinke bezbedne od upada u podatke i drugih bezbednosnih problema, <ph name="BEGIN_LINK" />prijavite se u Chromium<ph name="END_LINK" />.</translation>
+<translation id="1153368717515616349">Kliknite na Chromium meni</translation>
 <translation id="1157106475430165622">{NUM_DEVICES,plural, =0{Dodaci za Chromium su pristupali uređajima za ljudski interfejs}=1{Dodaci za Chromium pristupaju uređajima za ljudski interfejs}one{Dodaci za Chromium pristupaju # uređaju za ljudski interfejs}few{Dodaci za Chromium pristupaju uređajima za ljudski interfejs (#)}other{Dodaci za Chromium pristupaju uređajima za ljudski interfejs (#)}}</translation>
 <translation id="1185134272377778587">O Chromium-u</translation>
 <translation id="1203500561924088507">Hvala vam na instalaciji. Potrebno je da restartujete pregledač pre nego što počnete da koristite <ph name="BUNDLE_NAME" />.</translation>
@@ -59,6 +60,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="2384373936468275798">Chromium OS ne može da sinhronizuje podatke zato što su podaci za prijavljivanje na nalog zastareli.</translation>
 <translation id="2396765026452590966">Dodatak „<ph name="EXTENSION_NAME" />“ je promenio stranicu koja se prikazuje kada pokrenete Chromium.</translation>
 <translation id="2401032172288869980">Chromium-u su potrebne dozvole za kameru i mikrofon za ovaj sajt</translation>
+<translation id="2451727308784734061">Koristite prečicu da biste brzo pristupali Menadžeru lozinki. Prečicu možete da premestite na početni ekran računara ili u pokretač aplikacija.</translation>
 <translation id="2478295928299953161">Chromium će se uskoro zatvoriti</translation>
 <translation id="2483889755041906834">U Chromium-u</translation>
 <translation id="2485422356828889247">Deinstaliraj</translation>
@@ -250,6 +252,7 @@ Dozvole koje ste već dali veb-sajtovima i aplikacijama mogu da važe za ovaj n
 <translation id="6333502561965082103">Druga radnja u Chromium-u je u toku. Probajte ponovo kasnije.</translation>
 <translation id="6334986366598267305">Sada možete lakše da koristite Chromium sa Google nalogom i na deljenim računarima.</translation>
 <translation id="6373523479360886564">Jeste li sigurni da želite da deinstalirate Chromium?</translation>
+<translation id="6375219077595103062">Dodajte prečicu u Menadžer lozinki</translation>
 <translation id="6384011394608460044"><ph name="BEGIN_BOLD" />Kako koristimo ove podatke:<ph name="END_BOLD" /> Chromium može da proceni vaša interesovanja. Sajt koji kasnije posetite može da zatraži od Chromium-a pristup vašim interesovanjima da bi personalizovao oglase koji vam se prikazuju.</translation>
 <translation id="6403826409255603130">Chromium je veb pregledač koji pokreće veb-stranice i aplikacije munjevitom brzinom. Brz je, stabilan i jednostavan za korišćenje. Pregledajte Veb bezbednije sa zaštitom od malvera i „pecanja“ koja je ugrađena u Chromium.</translation>
 <translation id="6442900851116057561">Restartujte Chromium OS</translation>
@@ -374,6 +377,7 @@ Chromium ne može da vrati podešavanja.</translation>
 <translation id="8697124171261953979">Kontroliše i stranicu koja se prikazuje kada pokrenete Chromium ili pretražujete iz omniboksa.</translation>
 <translation id="8704119203788522458">Ovo je vaš Chromium</translation>
 <translation id="8796602469536043152">Chromium traži dozvolu da pristupi kameri i mikrofonu za ovaj sajt</translation>
+<translation id="8826492472752484139">Kliknite na Menadžer lozinki</translation>
 <translation id="8833697763442816810">Sistem Chromium OS</translation>
 <translation id="8846118132221683440"><ph name="BEGIN_BOLD" />Koji podaci se koriste:<ph name="END_BOLD" /> Istorija pregledanja, evidencija sajtova koje ste posetili pomoću Chromium-a na ovom uređaju.</translation>
 <translation id="8862326446509486874">Nemate odgovarajuća prava za instalaciju na nivou sistema. Probajte ponovo da pokrenete program za instalaciju, ovoga puta kao administrator.</translation>

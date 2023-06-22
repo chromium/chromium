@@ -857,6 +857,7 @@ Tài khoản Google của bạn có thể có các dạng nhật ký duyệt web
 <translation id="5665379678064389456">Tạo sự kiện trong <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome không thể kiểm tra để tìm các bản cập nhật</translation>
 <translation id="5686790454216892815">Tên tệp quá dài</translation>
+<translation id="5687606994963670306">Chrome tự động xoá các trang web mà đã hơn 30 ngày bạn không truy cập. Những trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Ngoài ra, bạn có thể ngăn một trang web đề xuất quảng cáo cho bạn. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="569435661099256888">Bạn có thể xem các trang mình đã truy cập hoặc xoá các trang này khỏi nhật ký</translation>
 <translation id="569536719314091526">Dịch trang này sang ngôn ngữ bất kỳ từ nút Tùy chọn khác</translation>
 <translation id="5696597120588531049">Chrome có thể bảo vệ bạn trước các sự cố rò rỉ dữ liệu, trang web không an toàn và những vấn đề khác</translation>
@@ -1171,6 +1172,7 @@ Ví dụ: một số trang web có thể phản hồi yêu cầu này bằng cá
 <translation id="7260367682327802201">Thiết bị Android của bạn có thể có chế độ cài đặt tương tự. Nếu bạn bật tính năng Đo lường quảng cáo trong Chrome và trên thiết bị Android, một công ty có thể đo lường mức độ hiệu quả của quảng cáo trên những trang web bạn truy cập và ứng dụng bạn dùng.</translation>
 <translation id="727288900855680735">Gửi <ph name="ONE_TIME_CODE" /> tới <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Trang web bị chặn</translation>
+<translation id="7276100255011548441">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="7286703216224610554">Chỉ chia sẻ phản ứng</translation>
 <translation id="7290209999329137901">Không đổi tên được</translation>
 <translation id="7291910923717764901">Đã thêm nội dung mô tả hình ảnh cho trang này</translation>

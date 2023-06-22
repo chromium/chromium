@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">لغت میں &amp;شامل کریں</translation>
 <translation id="1018656279737460067">منسوخ کردہ</translation>
 <translation id="1022489261739821355">‏آپ کے <ph name="BEGIN_LINK" />Google اکاؤنٹ<ph name="END_LINK" /> سے پاس ورڈز کو دکھایا جا رہا ہے</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">آپ کا آلہ <ph name="DOMAIN" /> کے زیر انتظام ہے۔ منتظمین اس آلے پر کسی بھی پروفائل میں ڈیٹا تک رسائی حاصل کر سکتے ہیں۔</translation>
 <translation id="1024734233509995696">یہ ٹیب آپ کا کیمرا یا مائیکروفون استعمال کر رہا ہے</translation>
 <translation id="1026655690966755180">پورٹ شامل کریں</translation>
@@ -3484,6 +3485,7 @@
 <translation id="3919145445993746351">اپنے سبھی کمپیوٹرز پر اپنی ایکسٹینشنز حاصل کرنے کے لیے، مطابقت پذیری کو آن کریں</translation>
 <translation id="3919229493046408863">آلات کے قریب ہونے پر اطلاع کو آف کریں</translation>
 <translation id="3919262972282962508">‏دسمبر 2022 کے بعد، Chrome ایپس کے پرانے ورژنز Mac آلات پر اب مزید نہیں کھل سکیں گے۔ نئے ورژن پر اپ ڈیٹ کرنے کے لیے اپنے منتظم سے رابطہ کریں یا یہ ایپ ہٹائیں۔</translation>
+<translation id="3919376399641777316">‏Google Drive اسٹوریج استعمال کرتا ہے</translation>
 <translation id="3919798653937160644">جو صفحات آپ اس ونڈو میں دیکھتے ہیں وہ براؤزر کی سرگزشت میں ظاہر نہیں ہوں گے اور جب آپ سبھی کھلی ہوئی مہمان ونڈوز بند کر دیں گے تو وہ آپ کے کمپیوٹر پر کوکیز جیسے دیگر نشانات نہیں چھوڑیں گے۔ تاہم، جو بھی فائلیں آپ ڈاؤن لوڈ کریں گے انہیں برقرار رکھا جائے گا۔</translation>
 <translation id="3920504717067627103">سرٹیفکیٹ کی پالیسیاں</translation>
 <translation id="3920909973552939961">ادائیگی کے ہینڈلرز انسٹال کرنے کی اجازت نہیں ہے</translation>
@@ -3634,6 +3636,7 @@
 <translation id="4044612648082411741">اپنا سرٹیفکیٹ پاس ورڈ درج کریں</translation>
 <translation id="4044708573046946214">اسکرین لاک کا پاس ورڈ</translation>
 <translation id="404493185430269859">ڈیفالٹ سرچ انجن</translation>
+<translation id="4044964245574571633">‏Microsoft OneDrive اسٹوریج استعمال کرتا ہے</translation>
 <translation id="4045196801416070837">آلہ کی آوازیں</translation>
 <translation id="4046013316139505482">ان ایکسٹینشنز کو اس سائٹ پر معلومات دیکھنا اور تبدیل کرنا درکار نہیں ہے۔</translation>
 <translation id="4046123991198612571">اگلا ٹریک</translation>
@@ -3672,6 +3675,7 @@
 <translation id="4084682180776658562">بُک مارک</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> کو بند کریں</translation>
 <translation id="4085298594534903246">‏JavaScript کو اس صفحہ پر مسدود کر دیا گیا۔</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> فائلز کھولنے کے لیے ایپ منتخب کریں</translation>
 <translation id="4087089424473531098">ایکسٹینشن بنایا گیا:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4423,6 +4427,7 @@
 <translation id="4742970037960872810">ہائی لائٹ کو ہٹائیں</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ایپلیکیشنز کو اپ ڈیٹ کرنے کا طریقہ جانیں<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">سائٹ پر جائیں</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{سائٹ کی آواز چلائیں}other{سائٹس کی آواز چلائیں}}</translation>
 <translation id="474609389162964566">‏"Ok Google" کے ساتھ اپنی اسسٹنٹ تک رسائی حاصل کریں</translation>
 <translation id="4746351372139058112">پیغامات</translation>
@@ -5482,6 +5487,7 @@
 <translation id="5684661240348539843">اثاثہ شناخت کنندہ</translation>
 <translation id="5684950556880280580">آپ کا پاس ورڈ اپ ڈیٹ کر دیا گیا ہے</translation>
 <translation id="5687326903064479980">ٹائم زون</translation>
+<translation id="5687606994963670306">‏Chrome ‏30 دن سے زیادہ پرانی سائٹس کو خودکار طور پر حذف کر دیتا ہے۔ آپ کے کسی سائٹ کو دوبارہ ملاحظہ کرنے پر فہرست میں وہ دوبارہ نظر آ سکتی ہے۔ یا آپ کے لیے تجویز کردہ اشتہارات سے آپ سائٹ کو مسدود کر سکتے ہیں۔ <ph name="BEGIN_LINK" />Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="5687935527303996204">یقینی بنائیں کہ آپ کا آلہ پلگ ان ہے اور اسے آف نہ کریں۔ انسٹالیشن میں 20 تک لگ سکتے ہیں۔ انسٹالیشن مکمل ہونے پر آپ کا آلہ خودکار طور پر شٹ ڈاؤن ہو جائے گا۔</translation>
 <translation id="5689516760719285838">مقام</translation>
 <translation id="5689531695336322499">‏ایسا لگتا ہے کہ <ph name="SUPERVISED_USER_NAME" /> نے پہلے ہی کسی دوسرے آلہ پر اپنی اسسٹنٹ کے ساتھ Voice Match کو سیٹ اپ کر دیا ہے۔ ان گزشتہ ریکارڈنگز کا استعمال اس آلہ پر ایک صوتی ماڈل تخلیق کرنے کیلئے کیا گیا۔</translation>
@@ -7311,6 +7317,7 @@
 <translation id="7273110280511444812">آخری بار منسلک کرنے کی تاریخ <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> مکمل ہو جانے تک</translation>
 <translation id="727595954130325265">ابھی خریدیں</translation>
+<translation id="7276100255011548441">‏Chrome‏ 4 ہفتے سے زیادہ پرانی موضوعات کو خودکار طور پر حذف کر دیتا ہے۔ جب تک آپ براؤزنگ جاری رکھتے ہیں فہرست پر موضوع دوبارہ ظاہر ہو سکتا ہے۔ یا آپ ان موضوعات کو مسدود کر سکتے ہیں جنہیں آپ نہیں چاہتے کہ Chrome سائٹس کے ساتھ اس کا اشتراک کرے۔ <ph name="BEGIN_LINK" />Chrome میں اپنے اشتہار کی رازداری کا نظم کرنے<ph name="END_LINK" /> کے بارے میں مزید جانیں۔</translation>
 <translation id="727952162645687754">ڈاؤن لوڈ میں خرابی</translation>
 <translation id="7280649757394340890">ٹیکسٹ ٹو اسپیچ آواز کی ترتیبات</translation>
 <translation id="7280877790564589615">اجازت کی درخواست کی گئی</translation>
@@ -7497,6 +7504,7 @@
 <translation id="7432200167665670017">‏آپ کے منتظم نے "<ph name="EXTENSION_NAME" />" کو مسدود کر دیا ہے - ایپ ID <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">اپنے <ph name="DEVICE_TYPE" /> کا استعمال جاری رکھنے کیلئے سمارٹ کارڈ داخل کریں</translation>
 <translation id="7433957986129316853">اسے رکھیں</translation>
+<translation id="7434100547946193426">دیگر ایپس</translation>
 <translation id="7434509671034404296">ڈویلپر</translation>
 <translation id="7434757724413878233">ماؤس کا ایکسیلریشن</translation>
 <translation id="7434969625063495310">پرنٹ سرور شامل نہیں کر سکا۔ براہ کرم سرور کی کنفیگریشن کو چیک کریں اور دوبارہ کوشش کریں۔</translation>
@@ -8802,6 +8810,7 @@
 <translation id="8534656636775144800">افوہ!  ڈومین میں شامل ہونے کی کوشش کرتے وقت کچھ غلط ہو گیا۔ براہ کرم دوبارہ کوشش کریں۔</translation>
 <translation id="8535005006684281994">‏Netscape سرٹیفیکیٹ تجدید URL</translation>
 <translation id="8536713137312218707">فوری ہدایات</translation>
+<translation id="8536810348276651776">‏اکثر سائٹس سے آپ کو سائن آؤٹ کرتا ہے۔ آپ اپنے Google اکاؤنٹ میں سائن ان رہیں گے تاکہ Chrome کے لیے آپ کے Family Link کی ترتیبات لاگو ہوں۔</translation>
 <translation id="8536956381488731905">کلید دبانے پر آواز</translation>
 <translation id="8539727552378197395">‏کوئی (HttpOnly) نہیں ہے</translation>
 <translation id="8539766201049804895">اپ گریڈ کریں</translation>

@@ -226,6 +226,7 @@ Websites kan ikke bruge cookies til at se din browseraktivitet på forskellige w
 <translation id="2476359652512522418">Ikke valgt</translation>
 <translation id="2479148705183875116">Gå til Indstillinger</translation>
 <translation id="2482878487686419369">Notifikationer</translation>
+<translation id="2484459871750294497">Hvordan aktiverer jeg denne funktion?</translation>
 <translation id="2496626742194544812">Gå til første fane</translation>
 <translation id="2500374554657206846">Valgmuligheder for at gemme adgangskode</translation>
 <translation id="2523363575747517183">Dette website forsøger hele tiden at åbne en anden app.</translation>
@@ -304,8 +305,10 @@ Din standardsøgemaskine er <ph name="DSE_NAME" />. I vejledningen til søgemask
 <translation id="2921219216347069551">Siden kan ikke deles</translation>
 <translation id="2923448633003185837">Indsæt og fortsæt</translation>
 <translation id="292639812446257861">Markér som ulæst</translation>
+<translation id="2931440415625410757">Vis vejledning</translation>
 <translation id="2932085390869194046">Foreslå adgangskode...</translation>
 <translation id="2932765531295814441">Tilføj adgangskoder manuelt</translation>
+<translation id="2952278131021475699">Lens-kamerasøgning</translation>
 <translation id="2952581218264071393">1. Åbn indstillingerne for Chrome</translation>
 <translation id="2958718410589002129">Adgangskoder</translation>
 <translation id="2961210776189273067">Titel</translation>
@@ -528,7 +531,6 @@ Se din søgemaskines vejledning i, hvordan du sletter din søgehistorik, hvis de
 <translation id="448433063499977729">Synkronisering er blevet deaktiveret</translation>
 <translation id="4488754974567924717">Hvis dine adgangskoder kompromitteres, kontakter vi dig</translation>
 <translation id="4489536976005181779">{count,plural, =1{Siden blev føjet til din læseliste på kontoen {email}}one{Siden blev føjet til din læseliste på kontoen {email}}other{Siderne blev føjet til din læseliste på kontoen {email}}}</translation>
-<translation id="4496373720959965247">Tilføj faner, og skift mellem sider</translation>
 <translation id="4502566650163919158">Tjek nu</translation>
 <translation id="4505980578794259603">Senest tjekket <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Luk loginkampagne</translation>

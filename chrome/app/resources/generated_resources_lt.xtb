@@ -178,6 +178,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1142002900084379065">Naujausios nuotraukos</translation>
 <translation id="1143142264369994168">Sertifikatą pasirašantis asmuo</translation>
 <translation id="1145593918056169051">Spausdintuvas sustabdytas</translation>
+<translation id="114571748016232560">Kažkas nepavyko. Vietoj to atidarykite langus patys.</translation>
 <translation id="114721135501989771">„Google“ išm. funkc. „Chrome“</translation>
 <translation id="1147322039136785890">Dabar <ph name="SUPERVISED_USER_NAME" /> eilė</translation>
 <translation id="1147991416141538220">Norėdami paprašyti prieigos, susisiekite su šio įrenginio administratoriumi.</translation>
@@ -434,6 +435,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1359923111303110318">Įrenginį galima atrakinti naudojant „Smart Lock“. Paspauskite „Enter“, kad atrakintumėte.</translation>
 <translation id="1361164813881551742">Pridėti neautomatiškai</translation>
 <translation id="1361655923249334273">Nenaudota</translation>
+<translation id="1362829980946830670">Galite tęsti ankstesnį seansą, kol dabartinis seansas lieka aktyvus.</translation>
 <translation id="1362865166188278099">Mechaninė problema. Patikrinkite spausdintuvą</translation>
 <translation id="1363585519747660921">Reikia konfigūruoti USB spausdintuvą</translation>
 <translation id="136378536198524553">Energijos taupymo priemonė įjungta</translation>
@@ -530,6 +532,7 @@ Bet kuriuo metu patikrinkite slaptažodžius skiltyje „<ph name="GOOGLE_PASSWO
 <translation id="1442851588227551435">Aktyvaus „Kerberos“ bilieto nustatymas</translation>
 <translation id="1444628761356461360">Šį nustatymą tvarko įrenginio savininkas (<ph name="OWNER_EMAIL" />).</translation>
 <translation id="144518587530125858">Temai nepavyko įkelti „<ph name="IMAGE_PATH" />“.</translation>
+<translation id="1447531650545977377">&amp;Sinchronizavimo įjungimas...</translation>
 <translation id="1448264954024227422">Galite naudoti šią paskyrą „Android“ programose. Jei norite pridėti paskyrą kitam asmeniui, geriau <ph name="LINK_BEGIN" />pridėkite naują asmenį<ph name="LINK_END" /> prie „<ph name="DEVICE_TYPE" />“.
 
 Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyrai. „Android“ programų leidimus galite valdyti skiltyje <ph name="APPS_LINK_BEGIN" />„Programų nustatymai“<ph name="APPS_LINK_END" />.</translation>
@@ -569,6 +572,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1474893630593443211">Geresnis rodomų skelbimų valdymas</translation>
 <translation id="1475502736924165259">Turite pateiktų sertifikatų, kurie neatitinka jokių kitų kategorijų</translation>
 <translation id="1476088332184200792">Kopijuoti į įrenginį</translation>
+<translation id="1476347941828409626">&amp;Tvarkyti „Chrome“ profilius</translation>
 <translation id="1476607407192946488">&amp;Kalbos nustatymai</translation>
 <translation id="1477446329585670721"><ph name="DOMAIN" /> reikia, kad paliktumėte įdėtą išmaniąją kortelę.</translation>
 <translation id="1477654881618305065">Organizacijoje neleidžiama bendrinti šio turinio. Jei reikia pagalbos, susisiekite su administratoriumi.</translation>
@@ -2228,6 +2232,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="2812049959647166806">„Thunderbolt“ nepalaikoma</translation>
 <translation id="2812171980080389735">Išsaugoti tinklai ir slaptažodžiai, kad galėtumėte akimirksniu prisijungti</translation>
 <translation id="2813094189969465044">Tėvų kontrolė</translation>
+<translation id="2813765525536183456">Naujo profilio &amp;pridėjimas</translation>
 <translation id="281390819046738856">Nepavyko pasirašyti užklausos.</translation>
 <translation id="2814489978934728345">Nutraukti šio puslapio įkėlimą</translation>
 <translation id="2815693974042551705">Žymių aplankas</translation>
@@ -2733,6 +2738,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3280243678470289153">Toliau naršyti „Chrome“</translation>
 <translation id="328119399589609861">Valdykite įrenginio prieigą prie mikrofono, fotoaparato ir kt.</translation>
 <translation id="3282210178675490297">Bendrinamas skirtukas su „<ph name="APP_NAME" />“</translation>
+<translation id="328265255303378234">Nepavyksta tęsti seanso</translation>
 <translation id="3283148363895519428">Tęskite sąranką vadovaudamiesi telefono instrukcijomis. Įsitikinkite, kad telefonas yra netoliese ir įjungtas „Bluetooth“.</translation>
 <translation id="3284050785966252943">Automatinio pildymo metaduomenų peržiūra</translation>
 <translation id="3285322247471302225">Naujas &amp;skirtukas</translation>
@@ -3094,6 +3100,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3600051066689725006">Žiniatinklio užklausos informacija</translation>
 <translation id="360180734785106144">Pasiūlyti naujų funkcijų, kai jos bus pasiekiamos</translation>
 <translation id="3602290021589620013">Peržiūra</translation>
+<translation id="3602495161941872610">Spręsti &amp;sinchronizavimo problemą</translation>
 <translation id="3602870520245633055">Spausdinimas ir nuskaitymas</translation>
 <translation id="3602894439067790744">Skaityti skaičius kaip</translation>
 <translation id="3603622770190368340">Gauti tinklo sertifikatą</translation>
@@ -3202,6 +3209,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="369522892592566391">{NUM_FILES,plural, =0{Saugos patikros atliktos. Duomenys bus įkelti.}=1{Saugos patikros atliktos. Failas bus įkeltas.}one{Saugos patikros atliktos. Failai bus įkelti.}few{Saugos patikros atliktos. Failai bus įkelti.}many{Saugos patikros atliktos. Failai bus įkelti.}other{Saugos patikros atliktos. Failai bus įkelti.}}</translation>
 <translation id="3696817060563289264">Atsisiųsti teksto atpažinimo failai</translation>
 <translation id="3697716475445175867">paskutinį kartą atidaryta</translation>
+<translation id="3697952514309507634">Kiti „Chrome“ profiliai</translation>
 <translation id="3698471669415859717">Peržiūra baigta</translation>
 <translation id="3699624789011381381">El. pašto adresas</translation>
 <translation id="3699920817649120894">Išjungti sinchronizavimą ir suasmeninimą?</translation>
@@ -3386,6 +3394,7 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3827774300009121996">&amp;Visas ekranas</translation>
 <translation id="3828029223314399057">Ieškoti žymėse</translation>
 <translation id="3828953470056652895">Perskaičiau <ph name="BEGIN_LINK1" />„Google“ paslaugų teikimo sąlygas<ph name="END_LINK1" />, <ph name="BEGIN_LINK2" />papildomas „Chrome“ ir „Chrome“ OS paslaugų teikimo sąlygas<ph name="END_LINK2" />, <ph name="BEGIN_LINK3" />„Play“ paslaugų teikimo sąlygas<ph name="END_LINK3" /> ir su jomis sutinku.</translation>
+<translation id="3829530269338026191">„<ph name="WINDOW_TITLE" />“ – didelės atminties sąnaudos – <ph name="MEMORY_VALUE" /></translation>
 <translation id="3829765597456725595">SMB failų bendrinimas</translation>
 <translation id="3830654885961023588">{NUM_EXTENSIONS,plural, =1{Administratorius vėl įjungė 1 potencialiai žalingą plėtinį}one{Administratorius vėl įjungė {NUM_EXTENSIONS} potencialiai žalingą plėtinį}few{Administratorius vėl įjungė {NUM_EXTENSIONS} potencialiai žalingus plėtinius}many{Administratorius vėl įjungė {NUM_EXTENSIONS} potencialiai žalingo plėtinio}other{Administratorius vėl įjungė {NUM_EXTENSIONS} potencialiai žalingų plėtinių}}</translation>
 <translation id="3834728400518755610">Norint pritaikyti mikrofono nustatymų pakeitimą, reikia išjungti „Linux“. Išjunkite „Linux“, jei norite tęsti.</translation>
@@ -4236,11 +4245,15 @@ Ar norite paleisti „<ph name="CONTROL_PANEL_APPLET_NAME" />“?</translation>
 <translation id="4568213207643490790">Deja, „Google“ paskyrų negalima naudoti šiame įrenginyje.</translation>
 <translation id="4569747168316751899">Kai neaktyvus</translation>
 <translation id="4570201855944865395">Šio plėtinio užklausos pateikimo priežastis:</translation>
+<translation id="4572463055282177066">Šį profilį tvarko <ph name="DOMAIN" />. Jei norite toliau naudoti šį tvarkomą profilį, jūsų organizacija reikalauja bendrinti įrenginio signalus.
+
+Įrenginio signalai gali apimti informaciją apie naršyklę, OS, įrenginį, įdiegtą programinę įrangą ir failus.</translation>
 <translation id="4572779512957829735">Įveskite saugos rakto PIN kodą</translation>
 <translation id="457386861538956877">Daugiau...</translation>
 <translation id="4574741712540401491">•  <ph name="LIST_ITEM_TEXT" /></translation>
 <translation id="4576541033847873020">„Bluetooth“ įrenginio susiejimas</translation>
 <translation id="4576763597586015380">Norėdami ir toliau saugoti slaptažodžius „Google“ paskyroje, patvirtinkite savo tapatybę</translation>
+<translation id="4576965832613128988">„<ph name="WINDOW_TITLE" />“ – neaktyvus skirtukas</translation>
 <translation id="4579453506923101210">Pamiršti susietą telefoną</translation>
 <translation id="4579581181964204535">Nepavyko perduoti <ph name="HOST_NAME" />.</translation>
 <translation id="4579876313423027742">Jei reikia naršyklės pranešimų, eikite į <ph name="LINK_BEGIN" />„Chrome“ naršyklės nustatymų skiltį<ph name="LINK_END" /></translation>
@@ -4799,6 +4812,7 @@ Jei norite nutolinti, naudokite „Ctrl“ + „Alt“ + šviesumo mažinimo kla
 <translation id="5079010647467150187">Pridėti įtaisytąjį VPN...</translation>
 <translation id="5079699784114005398">Kai įjungta, programos bus pasiekiamos bet kuriuose „ChromeOS“ įrenginiuose, kai prisijungsite naudodami „Google“ paskyrą. Iš „Chrome“ naršyklės įdiegtos žiniatinklio programos bus sinchronizuojamos, net jei naršyklės sinchronizavimas išjungtas.</translation>
 <translation id="508059534790499809">Atnaujinti „Kerberos“ bilietą</translation>
+<translation id="5081124414979006563">&amp;Svečio profilio atidarymas</translation>
 <translation id="5081960376148623587">Pasirinkite, ar norite iš anksto įkelti puslapius</translation>
 <translation id="5084328598860513926">Pertraukta aprūpinimo eiga. Bandykite dar kartą arba susisiekite su įrenginio savininku ar administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="5084622689760736648">Labiau tikėtina, kad svetainės veiks taip, kaip tikitės</translation>
@@ -5176,6 +5190,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="5420274697768050645">Atrakinant įrenginį reikalauti slaptažodžio, kad būtų užtikrintas didesnis saugumas</translation>
 <translation id="5420438158931847627">Nustatomas teksto ir vaizdų ryškumas</translation>
 <translation id="5420935737933866496">Kopijuoti nuorodą</translation>
+<translation id="5421048291985386320">&amp;Prisijungimas dar kartą</translation>
 <translation id="5422781158178868512">Apgailestaujame, tačiau jūsų išorinis atmintinės įrenginys yra neatpažįstamas.</translation>
 <translation id="5423505005476604112">Crostini</translation>
 <translation id="5423753908060469325">Kurti šaukinį...</translation>
@@ -5462,6 +5477,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="5662513737565158057">Keiskite „Linux“ programų veikimą.</translation>
 <translation id="5663459693447872156">Automatiškai įjungti pusės pločio režimą</translation>
 <translation id="5663653125349867535">&amp;Skaitymo sąrašas</translation>
+<translation id="5666911576871845853">&amp;Pridėti naują profilį</translation>
 <translation id="5667293444945855280">Kenkėjiška programa</translation>
 <translation id="5667546120811588575">Nustatoma „Google Play“...</translation>
 <translation id="5668351004957198136">Nepavyko</translation>
@@ -5469,6 +5485,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="5671641761787789573">Vaizdai užblokuoti</translation>
 <translation id="5671658447180261823">Pašalinti pasiūlymą „<ph name="SUGGESTION_NAME" />“</translation>
 <translation id="567210741546439261">&amp;Žymės ir sąrašai</translation>
+<translation id="5674059598547281505">Tęsti ankstesnį seansą?</translation>
 <translation id="567587836466137939">Šiam įrenginiui bus teikiami automatiniai programinės įrangos ir saugos naujiniai iki <ph name="MONTH_AND_YEAR" />. <ph name="LINK_BEGIN" />Sužinokite daugiau<ph name="LINK_END" /></translation>
 <translation id="567643736130151854">Prisijunkite ir įjunkite sinchronizavimą, kad gautumėte žymes, slaptažodžius ir daugiau visuose įrenginiuose</translation>
 <translation id="567740581294087470">Kokio tipo atsiliepimą teikiate?</translation>
@@ -5484,6 +5501,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="5684661240348539843">Ištekliaus identifikatorius</translation>
 <translation id="5684950556880280580">Slaptažodis atnaujintas</translation>
 <translation id="5687326903064479980">Laiko juosta</translation>
+<translation id="5687606994963670306">„Chrome“ automatiškai ištrina senesnes nei trisdešimt dienų svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų. Sužinokite daugiau apie <ph name="BEGIN_LINK" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Įsitikinkite, kad įrenginys prijungtas ir neišjunkite jo. Diegimas gali trukti iki 20 minučių. Įrenginys automatiškai išsijungs, kai diegimas bus baigtas.</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="5689531695336322499">Panašu, kad <ph name="SUPERVISED_USER_NAME" /> jau nustatė „Voice Match“ naudodamas (-a) Padėjėją kitame įrenginyje. Ankstesni įrašai buvo naudojami kuriant balso modelį šiame įrenginyje.</translation>
@@ -6650,6 +6668,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6698810901424468597">Skaityti ir keisti duomenis <ph name="WEBSITE_1" /> ir <ph name="WEBSITE_2" /></translation>
 <translation id="6700093763382332031">Mobiliojo ryšio SIM kortelės užraktas</translation>
 <translation id="6700480081846086223">Perduoti <ph name="HOST_NAME" /></translation>
+<translation id="670121579181704262">&amp;Sinchronizavimas įjungtas</translation>
 <translation id="6701535245008341853">Profilio gauti nepavyko.</translation>
 <translation id="6702639462873609204">&amp;Redaguoti...</translation>
 <translation id="6703212423117969852">Vėliau galite bandyti dar kartą „Chrome“ naršyklėje.</translation>
@@ -6842,6 +6861,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6850286078059909152">Teksto spalva</translation>
 <translation id="6851181413209322061">Siųskite naudojimo ir diagnostikos duomenis. Šiuo metu šis įrenginys automatiškai siunčia „Google“ diagnostikos, įrenginio ir programų naudojimo duomenis. Tai nebus naudojama siekiant nustatyti jūsų vaiko tapatybę ir padės pagerinti sistemos bei programos stabilumą ir teikti kitus patobulinimus. Kai kurie sukaupti duomenys taip pat bus naudingi „Google“ programoms ir partneriams, pvz., „Android“ kūrėjams. Šį nustatymą taiko savininkas. Jei papildomas Žiniatinklio ir programų veiklos nustatymas įjungtas vaiko įrenginyje, šie duomenys gali būti išsaugoti vaiko „Google“ paskyroje.</translation>
 <translation id="6851497530878285708">Programa įgalinta</translation>
+<translation id="6852290167968069627">Dėl tinklo problemos „ChromeOS“ negali tęsti ankstesnio seanso. Prisijunkite prie stabilaus tinklo ir bandykite dar kartą.</translation>
 <translation id="6853029310037965825"><ph name="APP_TYPE" /> įdiegta iš <ph name="BEGIN_LINK" /><ph name="INSTALL_SOURCE" /><ph name="END_LINK" /></translation>
 <translation id="6853388645642883916">Atnaujinimo priemonė yra miego būsenos</translation>
 <translation id="68541483639528434">Uždaryti kitus skirtukus</translation>
@@ -6928,6 +6948,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="6929760895658557216">Ok Google</translation>
 <translation id="6930161297841867798">{NUM_EXTENSIONS,plural, =1{Plėtinys atmestas}one{Atmestas # plėtinys}few{Atmesti # plėtiniai}many{Atmesta # plėtinio}other{Atmesta # plėtinių}}</translation>
 <translation id="6931690462168617033">Paspaudimo stiprumas</translation>
+<translation id="6933321725007230600">Įjungti &amp;sinchronizavimą...</translation>
 <translation id="6935286146439255109">Nėra popieriaus dėklo</translation>
 <translation id="6938386202199793006">Esate išsaugoję 1 spausdintuvą.</translation>
 <translation id="6938387822292071111">Rodyti vaizdus skirtukų peržiūros iššokančiosiose kortelėse</translation>
@@ -7176,6 +7197,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="714447804011008506">Dabar atsisiuntimai yra įrankių juostoje</translation>
 <translation id="7144856456372460176">Įdiegti „<ph name="APP" />“...</translation>
 <translation id="7144878232160441200">Kartoti</translation>
+<translation id="7145413760160421938">Negalima tęsti ankstesnio seanso</translation>
 <translation id="7148426638542880639">Svetainės gali neveikti taip, kaip tikitės. Pasirinkite šią parinktį, jei nenorite įrenginyje išsaugoti informacijos apie svetaines, kuriose lankotės.</translation>
 <translation id="7149839598364933473">Konvertuokite šį įrenginį į „<ph name="DEVICE_OS" />“ įrenginį.</translation>
 <translation id="7149893636342594995">Pastarosios 24 valandos</translation>
@@ -7315,6 +7337,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7273110280511444812">paskutinį kartą pridėta <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> iki visiško įkrovimo</translation>
 <translation id="727595954130325265">Apsipirkti dabar</translation>
+<translation id="7276100255011548441">„Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Arba galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis. Sužinokite daugiau apie <ph name="BEGIN_LINK" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Atsisiuntimo klaida</translation>
 <translation id="7280649757394340890">Teksto į kalbą balso nustatymai</translation>
 <translation id="7280877790564589615">Prašoma leidimo</translation>
@@ -7620,6 +7643,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7531779363494549572">Eikite į skiltį „Nustatymai“ &gt; „Programos ir pranešimai“ &gt; „Pranešimai“.</translation>
 <translation id="7532009420053991888">„<ph name="LINUX_APP_NAME" />“ nereaguoja. Pasirinkite „Priverstinai uždaryti“, kad uždarytumėte programą.</translation>
 <translation id="7535730537657706072">Jei norite išvalyti naršymo inkognito režimu istoriją iš įrenginio, uždarykite visus inkognito skirtukus</translation>
+<translation id="7536815228183532290">Prisijungta kaip <ph name="EMAIL" /></translation>
 <translation id="7537451260744431038">Svetainės negali naudoti slapukų naršymo kokybei pagerinti, pavyzdžiui, kad liktumėte prisijungę ar būtų įsimintos pirkinių krepšelyje esančios prekės</translation>
 <translation id="7538088324298143359">„<ph name="SEARCH_ENGINE" />“ paieška vaizde</translation>
 <translation id="7540972813190816353">Tikrinant, ar yra naujinių, įvyko klaida: <ph name="ERROR" /></translation>
@@ -7934,6 +7958,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7784796923038949829">Nepavyko nuskaityti arba pakeisti svetainės duomenų</translation>
 <translation id="778480864305029524">Jei norite naudoti momentinio įrenginio kaip modemo naudojimo funkciją, įjunkite „Google Play“ paslaugų pranešimus.</translation>
 <translation id="7785471469930192436">Peržiūrėkite paieškos variklio instrukcijas, kaip ištrinti paieškos istoriją (jei taikoma).</translation>
+<translation id="77855763949601045">&amp;Atidaryti svečio profilį</translation>
 <translation id="7786663536153819505">Vykdykite telefone pateiktas instrukcijas, kad nuskaitytumėte QR kodą. Patikrinkite, ar telefone įjungtas „Bluetooth“ ryšys.
     <ph name="BR" />
     <ph name="BR" />
@@ -7948,6 +7973,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7791436592012979144">Atvirkštinis slinkimas įgalintas</translation>
 <translation id="7791543448312431591">Pridėti</translation>
 <translation id="7792012425874949788">Prisijungiant įvyko klaida</translation>
+<translation id="7792336732117553384">„Chrome“ profilių &amp;tvarkymas</translation>
 <translation id="7792388396321542707">Nebebendrinti</translation>
 <translation id="779308894558717334">Šviesiai žalia</translation>
 <translation id="7793098747275782155">Tamsiai mėlyna</translation>
@@ -8036,6 +8062,7 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7873386145597434863">„Steam“, skirta „Chromebook“</translation>
 <translation id="7874257161694977650">„Chrome“ fonai</translation>
 <translation id="7876027585589532670">Negalima redaguoti sparčiojo klavišo</translation>
+<translation id="7877126887274043657">&amp;Sinchronizavimo problemos sprendimas</translation>
 <translation id="7877451762676714207">Nežinoma serverio klaida. Bandykite dar kartą arba susisiekite su serverio administratoriumi.</translation>
 <translation id="7879172417209159252">Negalima naudoti plėtinio</translation>
 <translation id="7879478708475862060">Stebėti įvesties režimą</translation>
@@ -8109,6 +8136,9 @@ Paspauskite priskirtą jungiklį ar klavišą, kad pašalintumėte priskyrimą</
 <translation id="7933486544522242079">Išsaugoti ir bendrinti</translation>
 <translation id="7933518760693751884">Jei norite išsaugoti puslapį, kad galėtumėte naudoti vėliau, spustelėkite žymės piktogramą</translation>
 <translation id="7933634003144813719">Tvarkyti bendrinamus aplankus</translation>
+<translation id="7934988177580964533">Šį profilį tvarko jūsų organizacija. Jei norite toliau naudoti šį tvarkomą profilį, jūsų organizacija reikalauja bendrinti įrenginio signalus.
+
+Įrenginio signalai gali apimti informaciją apie naršyklę, OS, įrenginį, įdiegtą programinę įrangą ir failus.</translation>
 <translation id="793531125873261495">Atsisiunčiant virtualų įrenginį įvyko klaida. Bandykite dar kartą.</translation>
 <translation id="7935451262452051102"><ph name="PERCENT" /> proc. atlikta</translation>
 <translation id="7939062555109487992">Išplėstinės parinktys</translation>
@@ -8280,6 +8310,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8076492880354921740">Skirtukai</translation>
 <translation id="8076835018653442223">Administratorius išjungė prieigą prie vietinių failų įrenginyje</translation>
 <translation id="8077120325605624147">Bet kokia svetainė, kurioje lankotės, gali rodyti jums bet kokį skelbimą</translation>
+<translation id="8077579734294125741">Kiti „Chrome“ profiliai</translation>
 <translation id="80798452873915119">Svetainėse gali būti prašoma tvarkyti langus visuose ekranuose</translation>
 <translation id="808089508890593134">Google</translation>
 <translation id="8081623398548615289">Jūsų seansą valdo <ph name="MANAGER_NAME" />. Administratoriai gali ištrinti jūsų profilį ir stebėti tinklo srautą.</translation>
@@ -8335,6 +8366,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8119438628456698432">Generuojami žurnalo failai…</translation>
 <translation id="811994229154425014">Įvesti tašką dukart paspaudus tarpo klavišą</translation>
 <translation id="8120505434908124087">Įdiegti „eSIM“ kortelės profilį</translation>
+<translation id="8121750884985440809">Šiuo metu perduodate savo ekrano vaizdą</translation>
 <translation id="81238879832906896">Geltonos ir baltos spalvos gėlė</translation>
 <translation id="8123975449645947908">Slinkti atgal</translation>
 <translation id="8124313775439841391">Tvarkoma ONC</translation>
@@ -8798,6 +8830,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8534656636775144800">Oi, kažkas nepavyko bandant prijungti prie domeno. Bandykite dar kartą.</translation>
 <translation id="8535005006684281994">„Netscape“ sertifikato atnaujinimo URL</translation>
 <translation id="8536713137312218707">Sparčiosios komandos</translation>
+<translation id="8536810348276651776">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, kad būtų taikomi „Chrome“ skirti „Family Link“ nustatymai.</translation>
 <translation id="8536956381488731905">Garsas paspaudus klavišą</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8539766201049804895">Naujovinti</translation>
@@ -9332,6 +9365,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="8989359959810288806">Atnaujinti įrenginio kaip modemo naudojimo būseną</translation>
 <translation id="8991520179165052608">Svetainė gali naudoti jūsų mikrofoną</translation>
 <translation id="8991694323904646277">Nėra fotoaparato</translation>
+<translation id="8992671062738341478">„<ph name="WINDOW_TITLE" />“ – atminties sąnaudos – <ph name="MEMORY_VALUE" /></translation>
 <translation id="8993059306046735527">Jei pamiršite „<ph name="DEVICE_TYPE" />“ slaptažodį, vis tiek galėsite atkurti vietinius duomenis. Turėsite prisijungti prie „Google“ paskyros arba naudoti paskyros atkūrimo funkciją.</translation>
 <translation id="8993737615451556423">Teikiami skaitymo balsu spartinimo, lėtinimo ir pristabdymo valdikliai</translation>
 <translation id="899384117894244799">Riboto naudotojo profilio pašalinimas</translation>
@@ -9347,6 +9381,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9003647077635673607">Leisti visose svetainėse</translation>
 <translation id="9003677638446136377">Tikrinti dar kartą</translation>
 <translation id="9004754973617721124">Išvalyti svetainės <ph name="SITE_NAME" />, visų jos antrinių svetainių ir įdiegtos programos duomenis bei leidimus?</translation>
+<translation id="9007688236643268728">&amp;Prisijungti dar kartą</translation>
 <translation id="9008201768610948239">Nepaisyti</translation>
 <translation id="9008201858626224558"><ph name="SUBPAGE_TITLE" /> puslapio „Išsami informacija“ mygtukas „Atgal“</translation>
 <translation id="9008828754342192581">Anksčiau pasirinkote leisti visus plėtinius <ph name="ORIGIN" /></translation>
@@ -9542,6 +9577,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="9157697743260533322">Nepavyko nustatyti automatinių naujinių visiems naudotojams (išankstinio paleidimo klaida: <ph name="ERROR_NUMBER" />)</translation>
 <translation id="9157915340203975005">Spausdintuvo durelės atidarytos</translation>
 <translation id="9158715103698450907">Deja, nustatant tapatybę iškilo tinklo ryšio problema. Patikrinkite tinklo ryšį ir bandykite dar kartą.</translation>
+<translation id="9159458465299853289">&amp;Sinchronizavimas įjungtas</translation>
 <translation id="9159643062839240276">Pabandykite:
     <ph name="BEGIN_LIST" />
       <ph name="LIST_ITEM" />patikrinti tinklo laidus, modemą ir maršruto parinktuvą;
@@ -9682,6 +9718,7 @@ Leidimai, kuriuos jau esate suteikę svetainėms ir programoms, gali būti taiko
 <translation id="992256792861109788">Rožinė</translation>
 <translation id="992592832486024913">Išjungti „ChromeVox“ (ekrano skaitymą balsu)</translation>
 <translation id="992778845837390402">Šiuo metu kuriama „Linux“ atsarginė kopija</translation>
+<translation id="992995739384733897">„<ph name="WINDOW_TITLE" />“ – išsaugota <ph name="MEMORY_VALUE" /></translation>
 <translation id="993540765962421562">Diegiama</translation>
 <translation id="994289308992179865">&amp;Ciklas</translation>
 <translation id="995755448277384931">IBAN pridėjimas</translation>

@@ -857,6 +857,7 @@
 <translation id="5665379678064389456">ایجاد رویداد در <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">‏Chrome نمی‌تواند به‌روزرسانی‌ها را بررسی کند</translation>
 <translation id="5686790454216892815">نام فایل خیلی طولانی است</translation>
+<translation id="5687606994963670306">‏Chrome سایت‌های قدیمی‌تر از ۳۰ روز را به‌طور خودکار حذف می‌کند. سایت‌هایی که مجدداً از آن‌ها بازدید می‌کنید ممکن است دوباره در فهرست نمایش داده شود. یا می‌توانید سایتی را مسدود کنید تا به شما آگهی پیشنهاد ندهد. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
 <translation id="569435661099256888">‏می‌توانید صفحه‌هایی را که از آن‌‎ها بازدید کرده‌اید ببینید یا آن‌ها را از سابقه پاک کنید</translation>
 <translation id="569536719314091526">با استفاده از دکمه «گزینه‌های بیشتر»، این صفحه را به زبان‌های دیگر ترجمه کنید</translation>
 <translation id="5696597120588531049">‏Chrome می‌تواند به محافظت از شما دربرابر نقض داده، وب‌سایت‌های غیرایمن، و موارد دیگر کمک کند</translation>
@@ -1171,6 +1172,7 @@
 <translation id="7260367682327802201">‏احتمالاً دستگاه Android شما تنظیم مشابهی دارد. اگر «سنجش آگهی» در Chrome و دستگاه Android شما روشن باشد، ممکن است شرکتی بتواند اثربخشی آگهی را در وب‌سایت‌هایی که بازدید می‌کنید و برنامه‌هایی که استفاده می‌کنید بسنجد.</translation>
 <translation id="727288900855680735"><ph name="ONE_TIME_CODE" /> به <ph name="ORIGIN" /> ارسال شود؟</translation>
 <translation id="7274013316676448362">سایت مسدودشده</translation>
+<translation id="7276100255011548441">‏Chrome موضوعات قدیمی‌تر از ۴ هفته را به‌طور خودکار حذف می‌کند. همان‌طور که به مرور ادامه می‌دهید، ممکن است موضوعی دوباره در فهرست ظاهر شود. یا می‌توانید موضوعاتی را که نمی‌خواهید Chrome با سایت‌ها هم‌رسانی کند مسدود کنید. درباره <ph name="BEGIN_LINK" />مدیریت حریم خصوصی آگهی در Chrome<ph name="END_LINK" /> بیشتر بدانید.</translation>
 <translation id="7286703216224610554">فقط واکنش هم‌رسانی می‌شود</translation>
 <translation id="7290209999329137901">عدم‌دسترسی به تغییر نام</translation>
 <translation id="7291910923717764901">توضیحات تصویر برای این صفحه اضافه شد</translation>
@@ -1507,7 +1509,7 @@
 <translation id="8937772741022875483">‏فعالیت Chrome شما در «آسایش دیجیتالی» برداشته شود؟</translation>
 <translation id="8942627711005830162">باز کردن در پنجره دیگر</translation>
 <translation id="8945143127965743188"><ph name="LANG" /> - این زبان بارگیری نشد. بعداً دوباره امتحان کنید.</translation>
-<translation id="8955719471735800169">برگشت به بالا</translation>
+<translation id="8955719471735800169">برگشتن به بالا</translation>
 <translation id="8964479563882643397">برای باز کردن «برگه ناشناس»، روی منو ضربه بزنید</translation>
 <translation id="8965591936373831584">در انتظار</translation>
 <translation id="8968085728801125376">{TAB_COUNT,plural, =1{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_ONE" /> برگه دیگر بسته خواهند شد}one{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}other{<ph name="INCOGNITO_TAB_COUNT" /> برگه ناشناس و <ph name="TAB_COUNT_MANY" /> برگه دیگر بسته خواهند شد}}</translation>

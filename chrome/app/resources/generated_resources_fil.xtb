@@ -5516,6 +5516,7 @@ Puwede mo itong ipadala sa Google para masuri kung hindi ito ligtas. Kadalasang 
 <translation id="5684661240348539843">Identifier ng Asset</translation>
 <translation id="5684950556880280580">Na-update ang iyong password</translation>
 <translation id="5687326903064479980">Timezone</translation>
+<translation id="5687606994963670306">Awtomatikong dine-delete ng Chrome ang mga site na mahigit 30 araw na. Posibleng makita ulit sa listahan ang site na binalikan mo. O puwede kang mag-block ng site sa pagmumungkahi ng mga ad para sa iyo. Matuto pa tungkol sa <ph name="BEGIN_LINK" />pamamahala ng iyong privacy sa ad sa Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Tiyaking nakasaksak ang iyong device, at huwag itong i-off. Posibleng abutin nang hanggang 20 minuto ang pag-install. Awtomatikong magsa-shut down ang iyong device kapag tapos na ang pag-install.</translation>
 <translation id="5689516760719285838">Lokasyon</translation>
 <translation id="5689531695336322499">Mukhang na-set up na ni <ph name="SUPERVISED_USER_NAME" /> ang Voice Match sa Assistant sa ibang device. Ginamit ang mga nakaraang recording na ito para gumawa ng voice model sa device na ito.</translation>
@@ -7353,6 +7354,7 @@ May # ka pang nakompromisong password. Inirerekomenda ng Google Password Manager
 <translation id="7273110280511444812">huling na-attach noong <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> na lang bago mapuno</translation>
 <translation id="727595954130325265">Mamili Na</translation>
+<translation id="7276100255011548441">Awtomatikong dine-delete ng Chrome ang mga paksang mahigit 4 na linggo na. Habang patuloy kang nagba-browse, posibleng makita ulit ang isang paksa sa listahan. O puwede mong i-block ang mga paksang ayaw mong i-share ng Chrome sa mga site. Matuto pa tungkol sa <ph name="BEGIN_LINK" />pamamahala ng iyong privacy sa ad sa Chrome.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Error sa pag-download</translation>
 <translation id="7280649757394340890">Mga setting ng boses ng Text-to-Speech</translation>
 <translation id="7280877790564589615">Nahiling ang pahintulot</translation>
@@ -8853,6 +8855,7 @@ Ilagay ang iyong key file sa ligtas na lugar. Kailangan mo ito upang lumikha ng 
 <translation id="8534656636775144800">Oops!  Nagkaproblema noong sinusubukang sumali sa domain. Pakisubukang muli.</translation>
 <translation id="8535005006684281994">URL ng Pag-renew ng Netscape Certificate</translation>
 <translation id="8536713137312218707">Mabibilis na Command</translation>
+<translation id="8536810348276651776">Isa-sign out ka sa karamihan ng mga site. Mananatili kang naka-sign in sa iyong Google Account kaya malalapat ang mga setting mo ng Family Link para sa Chrome.</translation>
 <translation id="8536956381488731905">Tunog sa keypress</translation>
 <translation id="8539727552378197395">Hindi (HttpOnly)</translation>
 <translation id="8539766201049804895">I-upgrade</translation>

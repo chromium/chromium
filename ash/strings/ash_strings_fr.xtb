@@ -981,6 +981,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5308380583665731573">Connexion</translation>
 <translation id="5313326810920013265">Paramètres Bluetooth</translation>
 <translation id="5314219114274263156">Enregistrement d'écran effectué</translation>
+<translation id="5314489738835854379">Revenir à la fenêtre précédente</translation>
 <translation id="5316716239522500219">Mettre en miroir les moniteurs</translation>
 <translation id="5317780077021120954">Enregistrer</translation>
 <translation id="5319712128756744240">Associer un nouvel appareil</translation>
@@ -1127,6 +1128,7 @@ Branchez votre appareil sur une source d'alimentation.</translation>
 <translation id="5958529069007801266">Utilis. supervisé</translation>
 <translation id="5961960957587052807">Clair</translation>
 <translation id="5965524703725988602">Activer/Désactiver le thème sombre. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Passer à la fenêtre suivante</translation>
 <translation id="5976112937189445008">Appuyez sur Entrée pour enregistrer la fenêtre</translation>
 <translation id="5978382165065462689">Partager le contrôle de votre écran via l'assistance à distance</translation>
 <translation id="5980301590375426705">Fermer sess. Invité</translation>
@@ -1337,6 +1339,7 @@ Nouvelle installation</translation>
 <translation id="6891721121089053234">Afficher les photos, applis et contenus multimédias récents de votre téléphone sur votre <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Copier</translation>
 <translation id="6901883536534621389">Essayez les gestes pour la navigation</translation>
+<translation id="6912841030378044227">Placer le curseur sur la barre d'adresse</translation>
 <translation id="6919251195245069855">Impossible de reconnaître votre carte à puce. Veuillez réessayer.</translation>
 <translation id="6920245099716267363">Activer/Désactiver le point d'accès. Celui-ci est activé, 1 appareil est connecté.</translation>
 <translation id="6931576957638141829">Enregistrer sous</translation>
@@ -1362,7 +1365,7 @@ Nouvelle installation</translation>
 <translation id="7026338066939101231">Diminuer</translation>
 <translation id="7029814467594812963">Quitter la session</translation>
 <translation id="7032161822340700104">Seulement six modèles autorisés. Supprimez un modèle pour en enregistrer un nouveau.</translation>
-<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser <ph name="DEVICE_NAME" />. Activez le contacteur physique sur votre appareil <ph name="DEVICE_NAME" />.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser <ph name="DEVICE_NAME" />. Activez <ph name="DEVICE_NAME" /> à l'aide du bouton physique.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone d'état</translation>
 <translation id="7045033600005038336">Remplacer le modèle ?</translation>

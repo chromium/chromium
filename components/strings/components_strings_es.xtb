@@ -535,6 +535,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="2202020181578195191">Introduce un año de vencimiento válido</translation>
 <translation id="2202627062836089804">reverso de tu tarjeta</translation>
 <translation id="2204482073374652408">La actualización ha finalizado.</translation>
+<translation id="2208053750671792556">¿No has recibido tu código? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Bandeja 3</translation>
 <translation id="2210794033760923560">Subir informe</translation>
 <translation id="2212735316055980242">Política no encontrada</translation>
@@ -855,6 +856,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3041612393474885105">Datos del certificado</translation>
 <translation id="305162504811187366">Historial de Escritorio Remoto de Chrome, incluidas las marcas de tiempo, los hosts y los IDs de sesión del cliente</translation>
 <translation id="3052964831964880138">Bajada de precio de <ph name="PRICE_DROP" /> en <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome elimina automáticamente los temas con una antigüedad superior a 4 semanas. Cuando continúes navegando, es posible que vuelva a aparecer un tema en la lista. También puedes bloquear los temas que no quieras que Chrome comparta con los sitios. Consulta más información sobre cómo gestionar la privacidad en la publicidad en Chrome.</translation>
 <translation id="3061707000357573562">Aplicar parche a servicio</translation>
 <translation id="306573536155379004">Juego iniciado.</translation>
 <translation id="3068991664510324412">Juegos de ordenador y videojuegos</translation>
@@ -948,6 +950,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="3270847123878663523">&amp;Deshacer reorganización</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> quiere conectarse</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Introduce el código de verificación de <ph name="NUMBER_OF_DIGITS" /> dígitos</translation>
 <translation id="3281350579597955952">{0,plural, =1{La política del administrador no recomienda abrir este archivo en <ph name="DESTINATION_NAME" />}other{La política del administrador no recomienda abrir estos archivos en <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Tu organización, <ph name="ENROLLMENT_DOMAIN" />, ha enviado algunos datos (como ajustes o políticas) a los siguientes sitios web.</translation>
 <translation id="3286372614333682499">vertical</translation>
@@ -2252,7 +2255,6 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="6394852772105848029">Este sitio quiere abrir la aplicación <ph name="APP_NAME" /></translation>
 <translation id="6398765197997659313">Salir del modo de pantalla completa</translation>
 <translation id="6401136357288658127">Esta política está obsoleta. Deberías usar la política <ph name="NEW_POLICY" /> en su lugar.</translation>
-<translation id="6403709186844650075">Subtítulos en <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Editar marcador</translation>
 <translation id="6405181733356710802">¿Ir a <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Introduce la fecha de vencimiento y el código CVC de la tarjeta <ph name="CREDIT_CARD" /></translation>
@@ -2594,6 +2596,7 @@ De lo contrario, lo impedirá tu configuración de privacidad. Permitirá que el
 <translation id="7219179957768738017">La conexión utiliza <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Procesando pago</translation>
 <translation id="7221855153210829124">Mostrar notificaciones</translation>
+<translation id="7221857374443660083">Tu banco quiere verificar tu identidad</translation>
 <translation id="722454870747268814">Nueva pestaña de Incógnito</translation>
 <translation id="7227293336683593977">Historial de precios</translation>
 <translation id="7233592378249864828">Imprimir hoja de confirmación</translation>

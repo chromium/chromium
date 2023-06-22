@@ -921,6 +921,7 @@
 <translation id="3041612393474885105">પ્રમાણપત્ર માહિતી</translation>
 <translation id="305162504811187366">ટાઇમસ્ટેમ્પ, હોસ્ટ અને ક્લાયન્ટ સત્ર ids સહિત Chrome રીમોટ ડેસ્કટૉપનો ઇતિહાસ</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ની કિંમતમાં <ph name="PRICE_DROP" />નો ઘટાડો થયો</translation>
+<translation id="3054512251683174387">Chrome 4 અઠવાડિયાથી વધુ જૂના વિષયોને ઑટોમૅટિક રીતે ડિલીટ કરે છે. જેમ-જેમ તમે બ્રાઉઝ કરતા જશો, તેમ-તેમ સૂચિમાં કોઈ વિષય ફરીથી દેખાઈ શકે છે. અથવા અન્ય સાઇટ સાથે Chrome શેર ન કરે એવું જો તમે ઇચ્છતા હો, તો તમે તેવા વિષયોને બ્લૉક કરી શકો છો. Chromeમાં તમારી જાહેરાત સંબંધિત પ્રાઇવસી મેનેજ કરવા વિશે વધુ જાણો.</translation>
 <translation id="3061707000357573562">પૅચ સેવા</translation>
 <translation id="306573536155379004">ગેમ શરૂ થઈ ગઈ છે.</translation>
 <translation id="3067505415088964188">કિંમત ઓછી છે</translation>
@@ -2428,7 +2429,6 @@
 <translation id="6398765197997659313">પૂર્ણ સ્ક્રીનથી બહાર નીકળો</translation>
 <translation id="6401136357288658127">આ પૉલિસી ટાળવામાં આવી છે. તેના બદલે તમારે <ph name="NEW_POLICY" /> પૉલિસીનો ઉપયોગ કરવો જોઈએ.</translation>
 <translation id="6403167778944553">બેડરૂમ અને બાથરૂમની ઍક્સેસરી</translation>
-<translation id="6403709186844650075"><ph name="SOURCE" />માં કૅપ્શન આપી રહ્યાં છીએ</translation>
 <translation id="6404511346730675251">બુકમાર્કમાં ફેરફાર કરો</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> પર આગળ વધીએ?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> માટે સમાપ્તિ તારીખ અને CVC દાખલ કરો</translation>

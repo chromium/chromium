@@ -535,6 +535,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="2202020181578195191">Įveskite tinkamus galiojimo laiko pabaigos metus</translation>
 <translation id="2202627062836089804">užpakalinėje kortelės dalyje</translation>
 <translation id="2204482073374652408">Atnaujinimas baigtas!</translation>
+<translation id="2208053750671792556">Negavote kodo? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3 dėklas</translation>
 <translation id="2210794033760923560">Įkelti ataskaitą</translation>
 <translation id="2212735316055980242">Politika nerasta</translation>
@@ -855,6 +856,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3041612393474885105">Sertifikato informacija</translation>
 <translation id="305162504811187366">„Chrome“ nuotolinio kompiuterio valdymo istorija, įskaitant laiko žymes, prieglobas ir klientų seansų ID</translation>
 <translation id="3052964831964880138">„<ph name="PRODUCT_NAME" />“ <ph name="PRICE_DROP" /> kainos sumažėjimas</translation>
+<translation id="3054512251683174387">„Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Arba galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis. Sužinokite daugiau apie su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“.</translation>
 <translation id="3061707000357573562">Pataisos paslauga</translation>
 <translation id="306573536155379004">Žaidimas prasidėjo.</translation>
 <translation id="3068991664510324412">Kompiuteriniai ir vaizdo žaidimai</translation>
@@ -949,6 +951,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="3270847123878663523">&amp;Anuliuoti pertvarkymą</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> nori prisijungti</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Įveskite <ph name="NUMBER_OF_DIGITS" /> skaitm. patvirtinimo kodą</translation>
 <translation id="3281350579597955952">{0,plural, =1{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šio failo naudojant <ph name="DESTINATION_NAME" />}one{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}few{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}many{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}other{Pagal administratoriaus politikos nuostatas nerekomenduojama atidaryti šių failų naudojant <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Jūsų organizacija (<ph name="ENROLLMENT_DOMAIN" />) nusiuntė tam tikros informacijos, pvz., informacijos apie nustatymus ar politikos nuostatas, toliau nurodytoms svetainėms.</translation>
 <translation id="3286372614333682499">portretas</translation>
@@ -2253,7 +2256,6 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="6394852772105848029">Ši svetainė nori atidaryti programą „<ph name="APP_NAME" />“</translation>
 <translation id="6398765197997659313">Išeiti iš viso ekrano režimo</translation>
 <translation id="6401136357288658127">Ši politika nebenaudojama. Vietoj jos turėtumėte naudoti politiką „<ph name="NEW_POLICY" />“.</translation>
-<translation id="6403709186844650075">Subtitrai <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Redaguoti žymę</translation>
 <translation id="6405181733356710802">Eiti toliau į „<ph name="APP_NAME" />“?</translation>
 <translation id="6410264514553301377">įveskite „<ph name="CREDIT_CARD" />“ galiojimo pabaigos datą ir kortelės saugos kodą (CVC)</translation>
@@ -2595,6 +2597,7 @@ Kitu atveju tai bus užblokuota pagal jūsų privatumo nustatymus. Taip turinys,
 <translation id="7219179957768738017">Ryšiui naudojama <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Apdorojama</translation>
 <translation id="7221855153210829124">Rodyti pranešimus</translation>
+<translation id="7221857374443660083">Bankas nori įsitikinti, kad tai jūs</translation>
 <translation id="722454870747268814">Naujas inkognito skirtukas</translation>
 <translation id="7227293336683593977">Kainų istorija</translation>
 <translation id="7233592378249864828">Spausdinti patvirtinimo lapą</translation>

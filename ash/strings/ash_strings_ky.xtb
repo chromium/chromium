@@ -929,6 +929,7 @@
 <translation id="504465286040788597">Мурунку абзац</translation>
 <translation id="5045550434625856497">Сырсөз туура эмес</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Үнү басылган режимде сүйлөсөңүз, билдирме аласыз. Аудио түзмөктө гана сакталат.</translation>
 <translation id="5078796286268621944">Туура эмес PIN</translation>
 <translation id="5083553833479578423">Жардамчынын башка функцияларын иштетиңиз.</translation>
 <translation id="5092436659250499817">Баскычтоптун жарыгын күйгүзүү/өчүрүү</translation>
@@ -959,6 +960,7 @@
 <translation id="5207949376430453814">Текст киргизүү учурунда курсор баса белгиленсин</translation>
 <translation id="5208059991603368177">Күйүк</translation>
 <translation id="5216991270656129561"><ph name="TIME" /> чейин өчүк</translation>
+<translation id="5221423477036820198">Phone Hub аркылуу телефон билдирүүлөрүн тез жөнөтүңүз же аларга жооп бериңиз.</translation>
 <translation id="5222676887888702881">Чыгуу</translation>
 <translation id="5229343007215035173">Купуялык экранын күйгүзүү/өчүрүү</translation>
 <translation id="5234764350956374838">Этибарга албоо</translation>
@@ -982,6 +984,7 @@
 <translation id="5308380583665731573">Туташуу</translation>
 <translation id="5313326810920013265">Bluetooth параметрлери</translation>
 <translation id="5314219114274263156">Экрандан видео жаздырылып алынды</translation>
+<translation id="5314489738835854379">Мурунку терезеге өтүү</translation>
 <translation id="5316716239522500219">Мониторлорду чагылыштыруу</translation>
 <translation id="5317780077021120954">Сактоо</translation>
 <translation id="5319712128756744240">Жаңы түзмөк кошуу</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">Көзөмөлдөнгөн колдонуучу</translation>
 <translation id="5961960957587052807">Жарык</translation>
 <translation id="5965524703725988602">Караңгы теманы өчүрүү/күйгүзүү. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Кийинки терезеге өтүү</translation>
 <translation id="5976112937189445008">Терезени жаздыруу үчүн "Enter" баскычын басыңыз</translation>
 <translation id="5978382165065462689">Алыскы жардамчы аркылуу экраныңыздын көзөмөлүн бөлүшүүдө.</translation>
 <translation id="5980301590375426705">Конокту чыгаруу</translation>
@@ -1338,6 +1342,7 @@
 <translation id="6891721121089053234">Телефонуңуздагы соңку сүрөттөрдү, медиа файлдарды жана колдонмолорду <ph name="DEVICE_TYPE" /> түзмөгүндө көрүңүз</translation>
 <translation id="6896758677409633944">Көчүрүү</translation>
 <translation id="6901883536534621389">Өтүү үчүн жаңсап көрүңүз</translation>
+<translation id="6912841030378044227">Дарек тилкесине өтүү</translation>
 <translation id="6919251195245069855">Акылдуу картаңыз таанылган жок. Кайталап көрүңүз.</translation>
 <translation id="6920245099716267363">Хотспотту өчүрүү/күйгүзүү. Хотспот күйүк, 1 түзмөк туташкан.</translation>
 <translation id="6931576957638141829">Төмөнкүгө сактоо:</translation>
@@ -1687,6 +1692,7 @@
 <translation id="8513108775083588393">Авто буруу</translation>
 <translation id="851458219935658693">Учурдагы иш тактадагы терезелерди көрсөтүү, радио баскычы тандалды</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> түзмөгүңүз өчүп турганда кубатталбай калышы мүмкүн.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофонду <ph name="APP_NAME" /> башкарат}other{Микрофонду # колдонмо башкарат}}</translation>
 <translation id="8535393432370007982">Түсү боюнча иреттөө тартибин артка кайтаруу</translation>
 <translation id="8541078764854166027">Камера алкагы</translation>
 <translation id="8542053257095774575">Сакталган иш такталар же үлгүлөр жок</translation>

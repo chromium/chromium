@@ -34,7 +34,7 @@
 <translation id="3882834874697329510">Per rebre una alerta quan hi hagi un preu més baix en una pestanya oberta, activa les notificacions a Configuració.</translation>
 <translation id="3940195383040445971">Seguiment dels preus a les pestanyes</translation>
 <translation id="3954615705217314756">{TABS_COUNT,plural, =1{Agrupa la pestanya}other{Agrupa les pestanyes}}</translation>
-<translation id="3996880007329611795">Rep notificacions</translation>
+<translation id="3996880007329611795">Rep una notificació</translation>
 <translation id="4133493477912226187">Sembla que hi ha <ph name="NUMBER_OF_TABS" /> pestanyes relacionades. Vols agrupar-les?</translation>
 <translation id="4212246570487010370">Continua navegant</translation>
 <translation id="4648718555153979859">Les teves pestanyes s'agrupen aquí</translation>

@@ -140,6 +140,7 @@ Tu je nekaj stvari, ki jih lahko poskusite za začetek.</translation>
 <translation id="1550406609415860283">Na voljo so naprave</translation>
 <translation id="1550523713251050646">Kliknite za več možnosti</translation>
 <translation id="1555130319947370107">Modra</translation>
+<translation id="1557622599341396706">Pokaži ime namizja</translation>
 <translation id="1576511610858879060">Chromebook ali naprava Bluetooth uporablja starejšo različico Bluetootha. Uporabite drug vhodni vir za boljšo kakovost zvoka.</translation>
 <translation id="1576623706766186887">Pomanjšava, ko je lupa vklopljena</translation>
 <translation id="1586324912145647027">Odpiranje namizja od 1 do 8</translation>
@@ -982,10 +983,12 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5308380583665731573">Povezovanje</translation>
 <translation id="5313326810920013265">Nastavitve za Bluetooth</translation>
 <translation id="5314219114274263156">Videoposnetek zaslona je bil ustvarjen</translation>
+<translation id="5314489738835854379">Pomik nazaj po oknih</translation>
 <translation id="5316716239522500219">Zrcaljenje monitorjev</translation>
 <translation id="5317780077021120954">Shrani</translation>
 <translation id="5319712128756744240">Seznanite novo napravo</translation>
 <translation id="5322611492012084517">Telefona ni mogoče najti</translation>
+<translation id="5323994101633366939">Skrij ime namizja</translation>
 <translation id="5327248766486351172">Ime</translation>
 <translation id="5329548388331921293">Vzpostavljanje povezave …</translation>
 <translation id="5331975486040154427">Naprava USB-C (vrata levo zadaj)</translation>
@@ -1128,6 +1131,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="5958529069007801266">Zaščiteni uporabnik</translation>
 <translation id="5961960957587052807">Rahla</translation>
 <translation id="5965524703725988602">Preklop temne teme. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Pomikanje naprej po oknih</translation>
 <translation id="5976112937189445008">Pritisnite Enter, če želite snemati okno</translation>
 <translation id="5978382165065462689">Deljenje nadzora nad zaslonom prek pomoči na daljavo.</translation>
 <translation id="5980301590375426705">Zapusti sejo gosta</translation>
@@ -1167,6 +1171,7 @@ Priklopite napravo v vir napajanja.</translation>
 <translation id="6103838137565245112">sistem</translation>
 <translation id="6114505516289286752">Datoteke za govor v jeziku <ph name="LANGUAGE" /> so bile prenesene</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Popravljanje barv</translation>
 <translation id="6121838516699723042">Potrditev prenosa datoteke <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Pomočnik Google ni na voljo v gostujoči seji.</translation>
 <translation id="6129953537138746214">Presledek</translation>
@@ -1338,6 +1343,7 @@ Nova namestitev</translation>
 <translation id="6891721121089053234">Oglejte si nedavne fotografije, predstavnost in aplikacije telefona v napravi <ph name="DEVICE_TYPE" />.</translation>
 <translation id="6896758677409633944">Kopiraj</translation>
 <translation id="6901883536534621389">Poskusite se premikati s potezami</translation>
+<translation id="6912841030378044227">Preklop na naslovno vrstico</translation>
 <translation id="6919251195245069855">Pametne kartice ni bilo mogoče prepoznati. Poskusite znova.</translation>
 <translation id="6920245099716267363">Preklop dostopne točke. Dostopna točka je vklopljena, povezana je 1 naprava.</translation>
 <translation id="6931576957638141829">Shrani v</translation>
@@ -1634,6 +1640,7 @@ Nova namestitev</translation>
 <translation id="8247998213073982446"><ph name="APP_NAME" />, aplikacija</translation>
 <translation id="8255234195843591763">Ponastavite, če želite posodobiti</translation>
 <translation id="8261506727792406068">Izbriši</translation>
+<translation id="8262312463845990408">Preklop predvajanja</translation>
 <translation id="8270450402312105425">{0,plural, =1{Spremenite napravo na prejšnjo različico v eni uri}one{Spremenite napravo na prejšnjo različico v # uri}two{Spremenite napravo na prejšnjo različico v # urah}few{Spremenite napravo na prejšnjo različico v # urah}other{Spremenite napravo na prejšnjo različico v # urah}}</translation>
 <translation id="8277261673056602147">Označevanje besedila na zaslonu</translation>
 <translation id="8284362522226889623">Povlecite s štirimi prsti v levo, če želite preklopiti na prejšnje namizje.</translation>

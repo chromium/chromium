@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">A Chromium ellenőrizte, hogy a(z) <ph name="ISSUER" /> adta ki ezt a webhelytanúsítványt.</translation>
 <translation id="1843424232666537147">A Google Chrome számos olyan funkciót biztosít, amelyek segítik internetes adatainak kezelésében, illetve a weboldalak betöltési gyorsaságának beállításában.
 <ph name="BEGIN_LINK" />További információ<ph name="END_LINK" />.</translation>
+<translation id="1847960401032164406">Térkép a Chromiumban</translation>
 <translation id="1867772173333403444">4. Válassza ki a Chromium böngészőt.</translation>
 <translation id="2006345422933397527">A Chromium nem tudott frissítéseket keresni. Ellenőrizze az internetkapcsolatot.</translation>
 <translation id="2052320862053429062">A Chromium rendszeres időközönként online közzétett listák alapján ellenőrzi az Ön jelszavait. Az eljárás során jelszavai és felhasználónevei titkosítva vannak, így senki nem láthatja őket, még a Google sem.</translation>
@@ -69,6 +70,7 @@
 <translation id="4999538639245140991">Mivel kijelentkezik a(z) <ph name="SIGNOUT_MANAGED_DOMAIN" /> által felügyelt fiókból, törli az eszközön található Chromium-adatokat. Ezek az adatok Google-fiókjában továbbra is megmaradnak.</translation>
 <translation id="5048795749726991615">Használja a Chromium Automatikus kitöltés funkcióját, hogy egyszerűen hozzáférhessen mentett jelszavaihoz a többi alkalmazásában is</translation>
 <translation id="5171868502429358653">Bejelentkezés a Chromiumba</translation>
+<translation id="5224044903258607400">Koppintson a „Megtekintés a Google Térképpel a Chromiumban” lehetőségre.</translation>
 <translation id="5224391634244552924">Nincsenek mentett jelszavak. A Chromium képes a jelszavak ellenőrzésére, ha Ön elmenti őket.</translation>
 <translation id="5308226104666789935">A Chromium nem tud frissítéseket keresni</translation>
 <translation id="5396916991083608703">Beállítja a Chromiumot alapértelmezettként?</translation>

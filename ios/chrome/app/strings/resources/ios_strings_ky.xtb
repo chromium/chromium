@@ -69,6 +69,7 @@
 <translation id="1358214951266274152">Көчүрүп алган шилтеме менен өтүңүз</translation>
 <translation id="1360432990279830238">Аккаунттан чыгып, шайкештирүүнү өчүрөсүзбү?</translation>
 <translation id="1363028406613469049">Трек</translation>
+<translation id="1365106417372288489">iPhone түзмөгүңүз жакында калыбына келтирилген. Бул демейки серепчиңизди өзгөрткөн болушу мүмкүн.</translation>
 <translation id="1375321115329958930">Сакталган сырсөздөр</translation>
 <translation id="1377255359165588604">Шайкештирүү иштебей калды.</translation>
 <translation id="1377321085342047638">Карт номер</translation>
@@ -143,6 +144,7 @@
 <translation id="1872096359983322073">Колчырак</translation>
 <translation id="1883255238294161206">Тизмени жыйнап коюу</translation>
 <translation id="1894023287452300670">Баасына бул жерден көз сала аласыз</translation>
+<translation id="189531189292803889">iPad түзмөгүңүз жакында калыбына келтирилген. Бул демейки серепчиңизди өзгөрткөн болушу мүмкүн.</translation>
 <translation id="1910975740091000991">iOS үчүн Chrome</translation>
 <translation id="1911619930368729126">Google Drive'га жүкт брүү</translation>
 <translation id="1923342640370224680">Акыркы саатта</translation>
@@ -226,6 +228,7 @@
 <translation id="2476359652512522418">Тандалган жок</translation>
 <translation id="2479148705183875116">Параметрлерге өтүү</translation>
 <translation id="2482878487686419369">Билдирмелер</translation>
+<translation id="2484459871750294497">Бул функцияны кантип иштетем?</translation>
 <translation id="2496626742194544812">Биринчи өтмөккө өтүү</translation>
 <translation id="2500374554657206846">Сырсөздү сактоо параметрлери</translation>
 <translation id="2523363575747517183">Бул вебсайт башка колдонмону ачууга бир нече жолу аракет кылууда.</translation>
@@ -304,8 +307,10 @@
 <translation id="2921219216347069551">Бетти бөлш мүмкн эмс</translation>
 <translation id="2923448633003185837">Чаптоо жана өтүү</translation>
 <translation id="292639812446257861">Окула элек деп белгилөө</translation>
+<translation id="2931440415625410757">Нускамаларды көрсөтүү</translation>
 <translation id="2932085390869194046">Сырсөз сунушталсын…</translation>
 <translation id="2932765531295814441">Сырсөздөрдү кол менен кошуу</translation>
+<translation id="2952278131021475699">Lens аркылуу издөө</translation>
 <translation id="2952581218264071393">1. Chrome'дун параметрлерин ачыңыз</translation>
 <translation id="2958718410589002129">Сырсөздөр</translation>
 <translation id="2961210776189273067">Аталышы</translation>
@@ -528,7 +533,6 @@
 <translation id="448433063499977729">Шайкештирүү өчүрүлгөн</translation>
 <translation id="4488754974567924717">Эгер сырсөздөрүңүз уурдалса, биз сизге кабарлап коёбуз</translation>
 <translation id="4489536976005181779">{count,plural, =1{Барак {email} аккаунтуңуздагы окуу тизмесине кошулду}other{Барактар {email} аккаунтуңуздагы окуу тизмесине кошулду}}</translation>
-<translation id="4496373720959965247">Өтмөктөрдү кошуп, барактарды которуштуруңуз</translation>
 <translation id="4502566650163919158">Азыр текшерүү</translation>
 <translation id="4505980578794259603">Акыркы жолу качан текшерилген: <ph name="TIME" />.</translation>
 <translation id="4508750114462689118">Кирүүгө үндөгөн жарнама жабылсын</translation>
@@ -1017,6 +1021,7 @@ Handoff Параметрлердин жалпы бөлүмүндө да иште
 <translation id="750493650310597496">0 тандалды</translation>
 <translation id="7508728395076009983">Жашыруун өтмөктөрдү кулпулоо үчүн Touch ID, Face ID же өткөрүүчү кодду жөндөңүз.</translation>
 <translation id="7514365320538308">Жүктөп алуу</translation>
+<translation id="7524055474074101597">Сырсөздөрүңүзгө жана башка колдонмолорго кириңиз.</translation>
 <translation id="7531345132340165516">Учурдагы сайт</translation>
 <translation id="7537586195939242955">Кечиресиз, учурда картаңызды Passbook'ка орнотуу мүмкүн эмес</translation>
 <translation id="754655535278952384"><ph name="TIME" /> текшерилди</translation>

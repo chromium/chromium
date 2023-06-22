@@ -1691,6 +1691,7 @@ Druk en hou weer die aan/af-skakelaar op die toestel om dit af te skakel.</trans
 <translation id="8513108775083588393">Outodraai</translation>
 <translation id="851458219935658693">Wys vensters van die huidige lessenaar af; radioknoppie is gekies</translation>
 <translation id="8517041960877371778">Jou <ph name="DEVICE_TYPE" /> mag nie laai terwyl dit aangeskakel is nie.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofooninvoer word deur <ph name="APP_NAME" /> beheer}other{Mikrofooninvoer word deur # apps beheer}}</translation>
 <translation id="8535393432370007982">Ontdoen sorteervolgorde volgens kleur</translation>
 <translation id="8541078764854166027">Kamera se raamfunksie</translation>
 <translation id="8542053257095774575">Geen gestoorde lessenaars of template nie</translation>

@@ -931,6 +931,7 @@
 <translation id="504465286040788597">Претходни пасус</translation>
 <translation id="5045550434625856497">Неисправна лозинка</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">Добићете обавештење ако говорите док је звук искључен. Звук остаје на уређају.</translation>
 <translation id="5078796286268621944">Нетачан PIN</translation>
 <translation id="5083553833479578423">Откључајте још функција Помоћника.</translation>
 <translation id="5092436659250499817">Укључи/искључи позадинско осветљење тастатуре</translation>
@@ -961,6 +962,7 @@
 <translation id="5207949376430453814">Истакни курсор за текст</translation>
 <translation id="5208059991603368177">Укључено</translation>
 <translation id="5216991270656129561">Искључено до <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Брзо шаљите поруке или одговарајте на њих помоћу Phone Hub-а.</translation>
 <translation id="5222676887888702881">Одјави ме</translation>
 <translation id="5229343007215035173">Укључи/искључи екран за приватност</translation>
 <translation id="5234764350956374838">Одбаци</translation>
@@ -1695,6 +1697,7 @@
 <translation id="8513108775083588393">Аутом. ротир.</translation>
 <translation id="851458219935658693">Приказујте прозоре са актуелне радне површине, дугме за избор је изабрано</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> се можда неће пунити док је укључен.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Унос преко микрофона контролише <ph name="APP_NAME" />}one{Унос преко микрофона контролише # апликација}few{Унос преко микрофона контролишу # апликације}other{Унос преко микрофона контролише # апликација}}</translation>
 <translation id="8535393432370007982">Опозовите редослед сортирања према боји</translation>
 <translation id="8541078764854166027">Уоквир. камере</translation>
 <translation id="8542053257095774575">Нема сачуваних радних површина нити шаблона</translation>

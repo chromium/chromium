@@ -435,6 +435,11 @@ Isso substitui a política <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY_NAM
       Se a política for ativada ou for deixada sem definição, o navegador vai decidir o melhor algoritmo User-Agent GREASE para usar. Se ela for desativada, o algoritmo User-Agent GREASE anterior será usado.
       A política é uma medida temporária e será removida em uma versão futura.</translation>
 <translation id="142346659686073702">Permitir que usuários sem afiliação utilizem o Crostini</translation>
+<translation id="1423900783955065155">Esta política controla se uma página com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> pode ser armazenada no cache de avanço e retorno. O site que define esse cabeçalho não pode esperar que a página seja restaurada do cache de avanço e retorno, já que algumas informações sensíveis ainda podem aparecer após a restauração, mesmo que não estejam mais acessíveis.
+
+Se a política for ativada ou não for definida, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> poderá ser restaurada do cache de avanço e retorno. Isso não vai acontecer se a remoção do cache for acionada, por exemplo, quando houver mudança no cookie somente HTTP para o site.
+
+Se ela for desativada, a página com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> não será armazenada no cache de avanço e retorno.</translation>
 <translation id="1425551776320718592">Impede que os usuários deste dispositivo usem sideload com adb, sem forçar um Powerwash, o que pode deixar o dispositivo em um estado questionável de segurança</translation>
 <translation id="1426170570389588560">Define a duração, em dias, do armazenamento de metadados de trabalhos de impressão</translation>
 <translation id="1426410128494586442">Sim</translation>
@@ -2236,6 +2241,7 @@ Se a política for ativada ou não for definida, o usuário poderá definir a im
 <translation id="305106159605171619">A redução do user agent foi desativada e não foi ativada por testes de campo e de origem.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Desativar o Screencast</translation>
+<translation id="3063307261083019730">Não permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam armazenadas no cache de avanço e retorno.</translation>
 <translation id="3064530882228745118">Usar a consulta CNAME ao negociar a autenticação do Kerberos</translation>
 <translation id="3066446511111537292">Permite que usuários afiliados deste dispositivo usem sideload com adb</translation>
 <translation id="3067462824622454143">Permitir que os usuários decidam se o dispositivo vai ser bloqueado quando a tampa for fechada</translation>
@@ -3635,7 +3641,6 @@ Observação: o bloqueio de URLs internos chrome://* e chrome-untrusted://* pode
 
       Se não for definida, os sites terão permissão para solicitar acesso, mas os usuários poderão mudar essa configuração.</translation>
 <translation id="4275048399551500192">Não mostrar controles de mídia para sessões do <ph name="PRODUCT_NAME" /> iniciadas por outros dispositivos</translation>
-<translation id="4282183301963493864">Desativar o <ph name="PRODUCT_NAME" /> em todas as páginas da Web</translation>
 <translation id="4282243913059705499">Sempre mostrar o ícone do <ph name="PRODUCT_NAME" /> na barra de ferramentas</translation>
 <translation id="4285674129118156176">Permitir que usuários sem afiliação utilizem o ARC</translation>
 <translation id="428948795004445932">Frequência de amostragem e coleta de dados de rede. O mínimo permitido é de um minuto.
@@ -4299,7 +4304,6 @@ Esta política é temporária e será removida assim que o cancelamento de eco d
       Se a política não for definida, o <ph name="PRODUCT_NAME" /> será conectado aos dispositivos Cast apenas em RFC1918/RFC4193, exceto se o recurso CastAllowAllIPs estiver ativado.</translation>
 <translation id="489803897780524242">Parâmetro que controla o posicionamento do termo de pesquisa para o provedor de pesquisa padrão</translation>
 <translation id="4899708173828500852">Ativar Navegação segura</translation>
-<translation id="4904462841601272815">Ativar o <ph name="PRODUCT_NAME" /> em todas as páginas da Web</translation>
 <translation id="4906194810004762807">Taxa de atualização da Política de dispositivos</translation>
 <translation id="49093841899738146">Se a política for definida como "Ativada", o <ph name="PRODUCT_NAME" /> poderá coletar logs de eventos WebRTC em Serviços do Google (por exemplo, no Hangouts Meet) e fazer upload deles para o Google. Esses registros contêm informações de diagnóstico que são úteis para depurar problemas com chamadas de áudio ou videochamadas no <ph name="PRODUCT_NAME" />, como o horário e o tamanho de pacotes RTP, feedback sobre congestionamento na rede e metadados sobre o tempo e a qualidade de frames de áudio e vídeo. Esses registros não têm conteúdo de áudio ou vídeo da chamada. Com um código de sessão, o Google pode associar esses registros a outros coletados pelo próprio serviço do Google. Isso é feito para facilitar a depuração.
 
@@ -5458,6 +5462,7 @@ Se a política for desativada, a proteção de extensões pelo recurso <ph name=
 <translation id="603768430528561926">Se a política for definida como "Ativada" ou não for definida, dispositivos de empresas poderão resgatar ofertas com o registro do <ph name="PRODUCT_OS_NAME" />.
 
       Se a política for definida como "Desativada", os usuários não poderão resgatar essas ofertas.</translation>
+<translation id="6042407236638640864">Permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam inseridas no cache de avanço e retorno</translation>
 <translation id="6042629184389251062">A coleta de métricas inseridas no URL não é permitida</translation>
 <translation id="6046615715547751255">Não permitir controles de geração de relatórios granulares</translation>
 <translation id="6048199181629830227">Ativar o gerenciamento de energia no período de pico</translation>
@@ -7821,6 +7826,7 @@ Esta política não terá efeito quando a <ph name="SCREENSAVER_LOCK_SCREEN_ENAB
 
       Se a configuração estiver ativada ou não estiver definida, os sites terão permissão para verificar se o usuário salvou formas de pagamento.</translation>
 <translation id="8118665053362250806">Definir tamanho do cache de disco da mídia</translation>
+<translation id="8123648898339555150">Permitir que as páginas com o cabeçalho <ph name="CACHE_CONTROL_NO_STORE_NAME" /> sejam armazenadas no cache de avanço e retorno.</translation>
 <translation id="8124468781472887384">Política de acesso à configuração de impressoras do dispositivo.</translation>
 <translation id="8128192446158421884">URLs em que é possível aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir as vozes aprimoradas da conversão de texto em voz da rede ao usar o Selecionar para ouvir</translation>
@@ -8637,9 +8643,6 @@ por padrão a partir da versão M119.
 <translation id="8858642179038618439">Forçar modo de segurança do YouTube</translation>
 <translation id="8860342862142842017">Desativar a aplicação da Transparência dos certificados para uma lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Os usuários podem configurar o canal de lançamento do <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8862436312516745856">Se a política for ativada ou deixada sem definição, o <ph name="PRODUCT_NAME" /> terá permissão para aparecer em todas as páginas da Web.
-
-Se ela for desativada, o <ph name="PRODUCT_NAME" /> não vai estar disponível em nenhuma página da Web.</translation>
 <translation id="8864975621965365890">Remove a solicitação de recusa que aparece quando um site é processado pelo <ph name="PRODUCT_FRAME_NAME" />.</translation>
 <translation id="8865404058177794289">Aplicar a configuração padrão para a verificação de uso da Chave RSA</translation>
 <translation id="8866430022832109569">Relatórios de inventário do app</translation>

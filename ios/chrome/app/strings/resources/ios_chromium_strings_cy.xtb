@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Data o gysoni Chromium</translation>
 <translation id="1722370509450468186">Bydd eich cyfrinair yn cael ei gadw yn eich Cyfrif (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Cliriwyd data Chromium</translation>
+<translation id="1758508597843173586">Clowch eich tabiau anhysbys pan fyddwch yn gadael Chromium neu'n newid i ap gwahanol.</translation>
 <translation id="1838412507805038478">Gwnaeth Chromium ddilysu bod <ph name="ISSUER" /> wedi cyhoeddi tystysgrif y wefan hon.</translation>
 <translation id="1843424232666537147">Mae gan Chromium nodweddion sy'n eich helpu i reoli'ch data rhyngrwyd a pha mor gyflym rydych yn gallu llwytho tudalennau gwe.
 <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
@@ -57,6 +58,7 @@
 <translation id="452436063477828504">Gwnewch yn siŵr y gallwch chi bob amser ddefnyddio'r data Chromium yn eich Cyfrif Google</translation>
 <translation id="4555020257205549924">Pan fydd y nodwedd hon yn cael ei droi ymlaen, bydd Chromium yn cynnig cyfieithu tudalennau sydd wedi'u hysgrifennu mewn ieithoedd eraill gan ddefnyddio Google Translate. <ph name="BEGIN_LINK" />Dysgu rhagor<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Gallwch bellach ddefnyddio Chromium unrhyw bryd y byddwch yn tapio dolenni mewn negeseuon, dogfennau ac apiau eraill.</translation>
+<translation id="4625550158881452646">Creu Digwyddiadau Calendr ar Chromium</translation>
 <translation id="4633738821577273991">Cael Gwell Pori'n Ddiogel ar gyfer y proffil Chromium hwn hefyd</translation>
 <translation id="4654936625574199632">Er mwyn helpu i wella'r ap, mae Chrome yn anfon adroddiadau defnydd a thoriadau at Google. <ph name="BEGIN_LINK" />Rheoli<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Troi sganydd Chromium ymlaen</translation>
@@ -76,6 +78,7 @@
 <translation id="5573014823074921752">Awgrym Chromium. Am ragor o opsiynau tabiau, cyffyrddwch a daliwch y botwm Dangos Tabiau yn y bar offer, sydd ar waelod neu ar frig eich sgrîn.</translation>
 <translation id="5700709190537129682">Ni all Chromium wirio'ch cyfrineiriau</translation>
 <translation id="5777187867430702742">Tudalen Chromium</translation>
+<translation id="5925698807555796756">Troi 'Cloi Tabiau Anhysbys Pan Fyddwch yn Cau Chromium' ymlaen.</translation>
 <translation id="5945387852661427312">Rydych yn mewngofnodi gyda chyfrif a reolir gan <ph name="DOMAIN" /> ac yn rhoi rheolaeth dros eich data Chromium i'w weinyddwr. Bydd eich data yn cael eu cysylltu'n barhaol i'r cyfrif hwn. Bydd allgofnodi o Chromium yn dileu eich data o'r ddyfais hon, ond bydd yn parhau i gael ei storio yn eich Cyfrif Google.</translation>
 <translation id="5983312940147103417">Gwella Chromium</translation>
 <translation id="6062449165341879460">Bydd gan <ph name="DOMAIN" /> eich sefydliad fynediad at eich data Chromium, nodau tudalen, hanes, cyfrineiriau a gosodiadau eraill rydych yn eu storio yn y cyfrif hwn. Pan fyddwch yn allgofnodi, bydd eich data yn cael eu clirio o'r ddyfais hon.  Fodd bynnag, bydd eich data yn parhau i gael ei storio yn eich Cyfrif Google a reolir a bydd ar gael i'ch sefydliad. Gall eich sefydliad hefyd osod polisïau defnyddwyr sy'n benodol i'r cyfrif hwnnw a all newid ymddygiad Chromium.</translation>
@@ -120,6 +123,7 @@
 <translation id="7980860476903281594">Mae Chromium yn rhannu eich lleoliad â gwefannau rydych yn eu caniatáu.</translation>
 <translation id="8013573822802650211">I weld eich tabiau o ble bynnag rydych yn defnyddio Chromium, mewngofnodwch ar eich holl ddyfeisiau</translation>
 <translation id="8073677936375100957">Clirio'ch data Chromium o'r ddyfais hon?</translation>
+<translation id="8164086860209325020">Mynd i Osodiadau Chromium</translation>
 <translation id="8240981428553046115">Ni allai Chromium wirio am ddiweddariadau. Rhowch gynnig arall arni'n nes ymlaen.</translation>
 <translation id="8409374867500149834">Mae gennych ddiogelwch cryfaf Chromium yn erbyn gwefannau niweidiol</translation>
 <translation id="858114650497379505">Gallwch ddefnyddio'r cyfrineiriau a gadwyd gennych i'r Rheolwr Cyfrineiriau mewn apiau eraill ar eich iPhone.</translation>

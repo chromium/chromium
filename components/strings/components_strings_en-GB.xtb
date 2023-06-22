@@ -918,6 +918,7 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="3041612393474885105">Certificate Information</translation>
 <translation id="305162504811187366">Chrome Remote Desktop history, including timestamps, hosts and client session ids</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> price drop on <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about managing your ad privacy in Chrome.</translation>
 <translation id="3061707000357573562">Patch Service</translation>
 <translation id="306573536155379004">Game started.</translation>
 <translation id="3068991664510324412">Computer and video games</translation>
@@ -2423,7 +2424,6 @@ This will otherwise be blocked by your privacy settings. This will allow the con
 <translation id="6398765197997659313">Exit full screen</translation>
 <translation id="6401136357288658127">This policy is deprecated. You should use the <ph name="NEW_POLICY" /> policy instead.</translation>
 <translation id="6403167778944553">Bed and Bath</translation>
-<translation id="6403709186844650075">Captioning <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">Edit bookmark</translation>
 <translation id="6405181733356710802">Continue to <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Enter the expiry date and CVC for <ph name="CREDIT_CARD" /></translation>

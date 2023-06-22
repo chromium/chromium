@@ -921,6 +921,7 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="3041612393474885105">Impormasyon sa Certificate</translation>
 <translation id="305162504811187366">History ng Remote na Desktop ng Chrome, kabilang ang mga timestamp, host, at client session id</translation>
 <translation id="3052964831964880138"><ph name="PRICE_DROP" /> pagbaba ng presyo ng <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Awtomatikong dine-delete ng Chrome ang mga paksang mahigit 4 na linggo na. Habang patuloy kang nagba-browse, posibleng makita ulit ang isang paksa sa listahan. O puwede mong i-block ang mga paksang ayaw mong i-share ng Chrome sa mga site. Matuto pa tungkol sa pamamahala ng iyong privacy sa ad sa Chrome.</translation>
 <translation id="3061707000357573562">Serbisyo sa Pag-patch</translation>
 <translation id="306573536155379004">Nagsimula na ang laro.</translation>
 <translation id="3067505415088964188">Mababa ang presyo</translation>
@@ -2428,7 +2429,6 @@ Kung ayaw mo, iba-block ito ng iyong mga setting ng privacy. Papayagan nito ang 
 <translation id="6398765197997659313">Lumabas sa buong screen</translation>
 <translation id="6401136357288658127">Hindi na ginagamit ang patakarang ito. Dapat mong gamitin ang patakarang <ph name="NEW_POLICY" /> sa halip.</translation>
 <translation id="6403167778944553">Kama at Paliguan</translation>
-<translation id="6403709186844650075">Paglalagay ng caption sa <ph name="SOURCE" /></translation>
 <translation id="6404511346730675251">I-edit ang bookmark</translation>
 <translation id="6405181733356710802">Magpatuloy sa <ph name="APP_NAME" />?</translation>
 <translation id="6410264514553301377">Ilagay ang petsa ng pag-expire at CVC para sa <ph name="CREDIT_CARD" /></translation>

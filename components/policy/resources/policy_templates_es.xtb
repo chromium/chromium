@@ -437,6 +437,11 @@ Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SET
       Si se habilita esta política o no se establece, el navegador decidirá qué algoritmo User-Agent GREASE se usará. Si la política se inhabilita, se usará el anterior algoritmo User-Agent GREASE.
       Esta política es una medida temporal y se eliminará en una futura versión.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
+<translation id="1423900783955065155">Esta política controla si una página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se puede almacenar en la caché de páginas completas. Es posible que el sitio web que configura este encabezado no espere que se restaure la página desde la caché de páginas completas, ya que parte de la información sensible podría seguir mostrándose después de la restauración aunque ya no se pueda acceder a ella.
+
+Si se habilita esta política o no se define, es posible que la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se restaure desde la caché de páginas completas, a menos que se quite de la caché (por ejemplo, cuando haya un cambio de cookies exclusivas del protocolo HTTP en el sitio).
+
+Si se inhabilita esta política, la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> no se almacenará en la caché de páginas completas.</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
 <translation id="1426170570389588560">Define el periodo, en número de días, durante el que se almacenarán los metadatos de los trabajos de impresión</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -2219,6 +2224,7 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
+<translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo usen la instalación de fuente desconocida adb</translation>
 <translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo se debe bloquear al suspenderlo o al cerrar la tapa</translation>
@@ -3579,7 +3585,6 @@ Nota: Bloquear las URLs internas chrome://* y chrome-untrusted://* podría provo
 
       Si no se le asigna ningún valor, los sitios web podrán solicitar acceso, pero los usuarios podrán cambiar esta opción.</translation>
 <translation id="4275048399551500192">No mostrar controles multimedia para las sesiones de <ph name="PRODUCT_NAME" /> iniciadas por otros dispositivos</translation>
-<translation id="4282183301963493864">Inhabilitar <ph name="PRODUCT_NAME" /> en todas las páginas web</translation>
 <translation id="4282243913059705499">Mostrar siempre el icono de <ph name="PRODUCT_NAME" /> en la barra de herramientas</translation>
 <translation id="4285674129118156176">Permitir que los usuarios no afiliados utilicen ARC</translation>
 <translation id="428948795004445932">Intervalo en el que se muestrean y recogen los datos de red. El valor mínimo permitido es 1 minuto.
@@ -4214,7 +4219,6 @@ Esta política es temporal y se eliminará en cuanto se lance la cancelación de
       Si no se le asigna ningún valor, <ph name="PRODUCT_NAME" /> solo se conectará con dispositivos de emisión en direcciones de RFC 1918 o RFC 4193, a no ser que la función CastAllowAllIPs esté activada.</translation>
 <translation id="489803897780524242">Parámetro que controla el emplazamiento de los términos de búsqueda para el proveedor de búsquedas predeterminado</translation>
 <translation id="4899708173828500852">Habilitar Navegación segura</translation>
-<translation id="4904462841601272815">Habilitar <ph name="PRODUCT_NAME" /> en todas las páginas web</translation>
 <translation id="4906194810004762807">Frecuencia de actualización de Device Policy</translation>
 <translation id="49093841899738146">Si se habilita esta política, <ph name="PRODUCT_NAME" /> podrá recoger registros de eventos WebRTC procedentes de servicios de Google como Hangouts Meet y enviarlos a Google. Esos registros tienen información de diagnóstico para depurar errores de llamadas de audio o videollamadas en <ph name="PRODUCT_NAME" />, como la hora y el tamaño de los paquetes RTP, datos sobre la congestión de la red y metadatos del tiempo y la calidad de los frames de audio y vídeo. Estos registros no tienen contenido de audio ni de vídeo de la reunión. Para facilitar la depuración, Google podría asociar estos registros, mediante un ID de sesión, a otros registros recogidos por el propio servicio de Google.
 
@@ -5371,6 +5375,7 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="603768430528561926">Si se habilita la política o no se establece, los usuarios de dispositivos empresariales podrán canjear ofertas mediante el registro de <ph name="PRODUCT_OS_NAME" />.
 
       Si se inhabilita la política, los usuarios no podrán canjear estas ofertas.</translation>
+<translation id="6042407236638640864">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se guarden en la caché de páginas completas</translation>
 <translation id="6042629184389251062">No se permite la recogida de métricas con clave de URL</translation>
 <translation id="6046615715547751255">No permitir los controles de informes granulares</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
@@ -7685,6 +7690,7 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 
       Si se habilita este ajuste o no se configura, los sitios web pueden comprobar si el usuario tiene algún método de pago guardado.</translation>
 <translation id="8118665053362250806">Establecer tamaño de caché de disco de medios</translation>
+<translation id="8123648898339555150">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="8124468781472887384">Política de acceso a la configuración de las impresoras de dispositivos.</translation>
 <translation id="8128192446158421884">URL a las que se puede aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
@@ -8495,9 +8501,6 @@ Si esta política se inhabilita o no se establece, los datos del usuario de esta
 <translation id="8858642179038618439">Forzar el modo de seguridad de YouTube</translation>
 <translation id="8860342862142842017">Inhabilitar los requisitos de la transparencia en los certificados en una lista de hashes subjectPublicKeyInfo</translation>
 <translation id="8860894781631833477">Los usuarios pueden configurar el canal de lanzamiento de <ph name="PRODUCT_OS_NAME" /></translation>
-<translation id="8862436312516745856">Si se habilita o no se establece, <ph name="PRODUCT_NAME" /> se permitirá en todas las páginas web.
-
-Si se inhabilita, <ph name="PRODUCT_NAME" /> no estará disponible en ninguna página web.</translation>
 <translation id="8864975621965365890">Elimina el mensaje de desactivación que aparece cuando <ph name="PRODUCT_FRAME_NAME" /> muestra un sitio.</translation>
 <translation id="8865404058177794289">Usar la configuración predeterminada para la comprobación de uso de claves RSA</translation>
 <translation id="8866430022832109569">Informes de inventario de aplicaciones</translation>

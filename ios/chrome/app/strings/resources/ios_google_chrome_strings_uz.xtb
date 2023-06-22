@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Siz tizimga kirdingiz va maʼlumotlaringizni <ph name="DOMAIN" /> boshqaradigan hisob bilan sinxronladingiz. Uning administratori endi Chrome funksiyasini oʻzgartirishi mumkin boʻlgan oʻsha hisobga tegishli foydalanuvchi siyosatlarini oʻrnatishi mumkin.</translation>
 <translation id="1554731936187952550">Sizdagi Chromium zararli saytlarga qarshi eng kuchli himoya tizimiga ega</translation>
 <translation id="1682483655351012182">Chrome axborotini sinxronlash</translation>
+<translation id="1733654336159102143">Chrome tark etilganda yoki boshqa ilovaga oʻtganda inkognito rejimni qulflash.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Xabarlar, hujjatlar va boshqa ilovalardagi havola bosilganda Chrome avtomatik ochilsin</translation>
 <translation id="1917964099031477364">Bu hisob va uning barcha saqlanmagan maʼlumotlari Chromedan olib tashlanadi.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome yangilanishlar chiqqanini tekshira olmadi. Keyinroq qayta urining.</translation>
 <translation id="2732745070297234559">Chrome barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="2736805085127235148">Chrome bildirishnomalari ayni vaqtda qurilma sozlamalarida yoniq emas</translation>
+<translation id="2754286486056173475">Chrome orqali Taqvim tadbirlarini yaratish</translation>
 <translation id="2767464022270041271">Hech qanday parol saqlanmagan. Google Parollar menejeri parollarni saqlanishidan oldin tekshirishi mumkin.</translation>
 <translation id="2840432500933227975">iOSda Chrome sozlamalarini ochib, keyin “Birlamchi brauzer ILOVASI” ustiga bosib, Chromeni tanlang.</translation>
 <translation id="2869959624320573933">Chrome hisobiga kirish</translation>
@@ -100,6 +102,7 @@
 <translation id="6676840375528380067">Chrome maʼlumotlaringiz bu qurilmadan tozalansinmi?</translation>
 <translation id="6709398533399187136">Parolingiz oshkor qilingan. Google Parollar menejeri uni hoziroq almashtirishni tavsiya etadi.</translation>
 <translation id="6822673484890854830">Chrome ayrim parollarni tekshira olmadi. Keyinroq qayta urining.</translation>
+<translation id="6896070677477855330">“Chrome yopilganda Inkognito varaqlar qulflansin” parametrini yoqing.</translation>
 <translation id="6964931465519938134">Siz endi Chrome brauzerini har doim xabarlar, hujjatlar va boshqa ilovalardagi havolalar ustiga bosib ishga tushirishingiz mumkin.</translation>
 <translation id="6975725306479268850">Avtomatik kiritish uchun Chromeni tanlang</translation>
 <translation id="7059914902409643750">Chrome brauzerini oʻzingizga moslashtiring</translation>
@@ -141,6 +144,7 @@
 <translation id="8765470054473112089">Manzillar qatori yoki qidiruv oynasiga matn kiritilganda Chrome yaxshiroq takliflar olish uchun yozilgan matnni birlamchi qidiruv tizimiga yuboradi. Inkognito rejimda bu funksiya yoqilmasin</translation>
 <translation id="8772179140489533211">Chrome orqali kirish oynasi chiqadi.</translation>
 <translation id="8788269841521769222">Bu parolni eslab qolishingiz shart emas. U Google Parollar menejerida <ph name="EMAIL" /> hisobiga saqlanadi.</translation>
+<translation id="880967149107462122">Chrome sozlamalarini oching</translation>
 <translation id="8857676124663337448">Google Parollar menejeri barcha parollarni tekshira olmadi. Ertaga qayta urining.</translation>
 <translation id="8897749957032330183">Parollar shu qurilmadagi Google Parollar menejeriga saqlanadi.</translation>
 <translation id="8969290730818637510">Yoniq boʻlsa:

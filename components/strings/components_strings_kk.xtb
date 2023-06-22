@@ -535,6 +535,7 @@
 <translation id="2202020181578195191">Дұрыс жарамдылық мерзімі аяқталатын жылды енгізіңіз</translation>
 <translation id="2202627062836089804">картаңыздың артқы жағы</translation>
 <translation id="2204482073374652408">Жаңарту аяқталды!</translation>
+<translation id="2208053750671792556">Кодыңызды алған жоқсыз ба? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3-науа</translation>
 <translation id="2210794033760923560">Есепті жүктеп салу</translation>
 <translation id="2212735316055980242">Саясат табылмады</translation>
@@ -855,6 +856,7 @@
 <translation id="3041612393474885105">Сертификат ақпараты</translation>
 <translation id="305162504811187366">Chrome Remote Desktop тарихы, соның ішінде уақыт белгілері, хостар мен клиент сеансының идентификаторлары</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> бағасы <ph name="PRICE_DROP" /> арзандады.</translation>
+<translation id="3054512251683174387">Chrome браузері 4 аптадан асқан тақырыптарды автоматты жояды. Оны қайта қараған кезде, тақырып тізімге қайта қосылуы мүмкін. Болмаса Chrome браузері сайттармен бөлісуді қаламайтын тақырыптарды бөгей аласыз. Chrome-да жарнамадағы құпиялықты басқару туралы толық ақпарат.</translation>
 <translation id="3061707000357573562">Қызметті түзету</translation>
 <translation id="306573536155379004">Ойын басталды.</translation>
 <translation id="3068991664510324412">Компьютердегі және бейне ойындар</translation>
@@ -947,6 +949,7 @@
 <translation id="3270847123878663523">&amp;Қайта тәртіпке келтіруді болдырмау</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> сайты байланыс орнатқысы келеді</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> цифрлық растау кодын енгізіңіз</translation>
 <translation id="3281350579597955952">{0,plural, =1{Әкімші саясаты бойынша бұл файлды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}other{Әкімші саясаты бойынша бұл файлдарды <ph name="DESTINATION_NAME" /> ішінде ашпаған дұрыс.}}</translation>
 <translation id="3282085321714087552">Ұйымыңыз (<ph name="ENROLLMENT_DOMAIN" />) келесі веб-сайттарға бірқатар ақпарат (мысалы, параметрлер немесе саясаттар) жіберді.</translation>
 <translation id="3286372614333682499">портреттік</translation>
@@ -2251,7 +2254,6 @@
 <translation id="6394852772105848029">Бұл сайт <ph name="APP_NAME" /> қолданбасын ашқысы келіп тұр.</translation>
 <translation id="6398765197997659313">Толық экраннан шығу</translation>
 <translation id="6401136357288658127">Бұл саясат ескірді. Орнына <ph name="NEW_POLICY" /> саясатын пайдаланғаныңыз жөн.</translation>
-<translation id="6403709186844650075"><ph name="SOURCE" /> субтитрі</translation>
 <translation id="6404511346730675251">Бетбелгіні өзгерту</translation>
 <translation id="6405181733356710802"><ph name="APP_NAME" /> ашылсын ба?</translation>
 <translation id="6410264514553301377"><ph name="CREDIT_CARD" /> картасының жарамдылық мерзімін және CVC кодын енгізіңіз</translation>
@@ -2593,6 +2595,7 @@
 <translation id="7219179957768738017">Байланыс <ph name="SSL_VERSION" /> пайдаланады.</translation>
 <translation id="7220786058474068424">Өңделуде</translation>
 <translation id="7221855153210829124">Хабарландыруларды көрсету</translation>
+<translation id="7221857374443660083">Банк жеке басыңызды растауды қалайды.</translation>
 <translation id="722454870747268814">Жаңа инкогнито қойындысы</translation>
 <translation id="7227293336683593977">Баға тарихы</translation>
 <translation id="7233592378249864828">Растау парағын басып шығару</translation>

@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">چند دستگاه دردسترس است</translation>
 <translation id="1550523713251050646">برای گزینه‌های بیشتر کلیک کنید</translation>
 <translation id="1555130319947370107">آبی</translation>
+<translation id="1557622599341396706">نمایش نام میزکار</translation>
 <translation id="1576511610858879060">‏Chromebook یا دستگاه بلوتوث شما از نسخه قدیمی بلوتوث استفاده می‌کند. برای کیفیت صدای بهتر، از منبع ورودی دیگری استفاده کنید.</translation>
 <translation id="1576623706766186887">زوم‌پس کردن هنگام روشن بودن ذره‌بین</translation>
 <translation id="1586324912145647027">رفتن به میزکار ۱ تا ۸</translation>
@@ -928,6 +929,7 @@
 <translation id="504465286040788597">پاراگراف قبلی</translation>
 <translation id="5045550434625856497">گذرواژه نادرست</translation>
 <translation id="5062496344832867502">RAM</translation>
+<translation id="5068762093486106012">اگر هنگام بی‌صدا بودن صحبت کنید به شما اطلاع داده می‌شود. صدا هرگز از دستگاهتان خارج نمی‌شود.</translation>
 <translation id="5078796286268621944">پین اشتباه</translation>
 <translation id="5083553833479578423">باز کردن قفل ویژگی‌های بیشتری از «دستیار».</translation>
 <translation id="5092436659250499817">روشن/ خاموش کردن نور پس‌زمینه صفحه‌کلید</translation>
@@ -958,6 +960,7 @@
 <translation id="5207949376430453814">برجسته کردن هشتک نوشتار</translation>
 <translation id="5208059991603368177">روشن</translation>
 <translation id="5216991270656129561">خاموش تا <ph name="TIME" /></translation>
+<translation id="5221423477036820198">بااستفاده از «مرکز کنترل تلفن»، به‌سرعت از تلفنتان پیام ارسال کنید یا به پیام‌ها پاسخ دهید.</translation>
 <translation id="5222676887888702881">خروج از سیستم</translation>
 <translation id="5229343007215035173">روشن/ خاموش کردن صفحه حریم خصوصی</translation>
 <translation id="5234764350956374838">رد کردن</translation>
@@ -981,10 +984,12 @@
 <translation id="5308380583665731573">متصل کردن</translation>
 <translation id="5313326810920013265">تنظیمات بلوتوث</translation>
 <translation id="5314219114274263156">ضبط صفحه‌نمایش انجام شد</translation>
+<translation id="5314489738835854379">چرخش روبه عقب میان پنجره‌ها</translation>
 <translation id="5316716239522500219">بازتاب مانیتورها</translation>
 <translation id="5317780077021120954">ذخیره</translation>
 <translation id="5319712128756744240">جفت کردن دستگاه جدید</translation>
 <translation id="5322611492012084517">تلفنتان پیدا نشد</translation>
+<translation id="5323994101633366939">پنهان کردن نام میزکار</translation>
 <translation id="5327248766486351172">نام</translation>
 <translation id="5329548388331921293">درحال اتصال...</translation>
 <translation id="5331975486040154427">‏دستگاه USB-C (درگاه عقب سمت چپ)</translation>
@@ -1127,6 +1132,7 @@
 <translation id="5958529069007801266">کاربر نظارت‌شده</translation>
 <translation id="5961960957587052807">روشن</translation>
 <translation id="5965524703725988602">روشن/خاموش کردن «زمینه تیره». <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">چرخش روبه جلو میان پنجره‌ها</translation>
 <translation id="5976112937189445008">برای ضبط پنجره، کلید «ورود» را فشار دهید</translation>
 <translation id="5978382165065462689">هم‌رسانی کنترل صفحه‌تان از طریق راهنمایی ازراه‌دور.</translation>
 <translation id="5980301590375426705">خروج از مهمان</translation>
@@ -1166,6 +1172,7 @@
 <translation id="6103838137565245112">سیستم</translation>
 <translation id="6114505516289286752">فایل‌های گفتار <ph name="LANGUAGE" /> بارگیری شد</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">تصحیح رنگ</translation>
 <translation id="6121838516699723042">تأیید بارگیری <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">‏«دستیار Google» در جلسه مهمان دردسترس نیست.</translation>
 <translation id="6129953537138746214">فاصله</translation>
@@ -1337,6 +1344,7 @@
 <translation id="6891721121089053234">عکس‌ها، رسانه‌ها، و برنامه‌های جدید تلفنتان را در <ph name="DEVICE_TYPE" /> مشاهده کنید</translation>
 <translation id="6896758677409633944">کپی</translation>
 <translation id="6901883536534621389">استفاده از اشاره‌ها برای پیمایش</translation>
+<translation id="6912841030378044227">تمرکز در نوار نشانی</translation>
 <translation id="6919251195245069855">کارت هوشمندتان تشخیص داده نشد. دوباره امتحان کنید.</translation>
 <translation id="6920245099716267363">روشن/خاموش کردن «نقطه اتصال». نقطه اتصال روشن است، یک دستگاه متصل است.</translation>
 <translation id="6931576957638141829">ذخیره در</translation>
@@ -1633,6 +1641,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />، برنامه</translation>
 <translation id="8255234195843591763">برای به‌روزرسانی، دستگاه را بازنشانی کنید</translation>
 <translation id="8261506727792406068">حذف</translation>
+<translation id="8262312463845990408">فعال/ غیرفعال کردن بازپخش</translation>
 <translation id="8270450402312105425">{0,plural, =1{ظرف یک ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}one{ظرف # ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}other{ظرف # ساعت آینده، دستگاه را به نسخه قبلی تغییر دهید}}</translation>
 <translation id="8277261673056602147">برجسته کردن نوشتار روی صفحه</translation>
 <translation id="8284362522226889623">برای رفتن به میزکار قبلی، با چهار انگشت تند به چپ بکشید</translation>
@@ -1686,6 +1695,7 @@
 <translation id="8513108775083588393">چرخش خودکار</translation>
 <translation id="851458219935658693">نمایش پنجره‌ها از میزکار فعلی، دکمه رادیو انتخاب شد</translation>
 <translation id="8517041960877371778">ممکن است وقتی <ph name="DEVICE_TYPE" /> شما خاموش است، شارژ نشود.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{ورودی میکروفون را <ph name="APP_NAME" /> کنترل می‌کند}one{ورودی میکروفون را # برنامه کنترل می‌کند}other{ورودی میکروفون را # برنامه کنترل می‌کند}}</translation>
 <translation id="8535393432370007982">واگرد کردن مرتب‌سازی براساس رنگ</translation>
 <translation id="8541078764854166027">قاب‌بندی دوربین</translation>
 <translation id="8542053257095774575">میزکار یا الگوی ذخیره‌شده‌ای ندارید</translation>
