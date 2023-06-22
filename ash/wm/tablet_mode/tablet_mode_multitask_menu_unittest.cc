@@ -791,4 +791,108 @@ TEST_F(TabletModeMultitaskMenuTest, HidesWhenMinimized) {
   EXPECT_FALSE(GetMultitaskMenu());
 }
 
+namespace {
+
+class TestHandler : public ui::EventHandler {
+ public:
+  TestHandler() = default;
+  TestHandler(const TestHandler&) = delete;
+  TestHandler& operator=(const TestHandler&) = delete;
+  ~TestHandler() override = default;
+
+  // ui::EventHandler:
+  void OnTouchEvent(ui::TouchEvent* event) override { flags_ = event->flags(); }
+  int GetFlagsAndReset() {
+    EXPECT_NE(-1, flags_);
+    int ret = flags_;
+    flags_ = -1;
+    return ret;
+  }
+
+  int flags() const { return flags_; }
+
+ private:
+  // latest flags.
+  int flags_ = -1;
+};
+
+}  // namespace
+
+// Make sure that swipe down will set the ui::EF_RESERVED_FOR_GESTURE flag
+// on touch event, while swipe right will not.
+TEST_F(TabletModeMultitaskMenuTest, BlockSwipeDown) {
+  auto* menu_controller = TabletModeControllerTestApi()
+                              .tablet_mode_window_manager()
+                              ->tablet_mode_multitask_menu_controller();
+
+  auto* root = Shell::GetPrimaryRootWindow();
+  TestHandler test_handler;
+  root->AddPreTargetHandler(&test_handler);
+
+  auto window = CreateAppWindow();
+  auto* generator = GetEventGenerator();
+
+  // Start slightly off the edge.
+  const gfx::Point starting_point(
+      display::Screen::GetScreen()->GetPrimaryDisplay().bounds().width() / 2,
+      3);
+  {
+    // Emulate swipe down by touches.
+
+    gfx::Point touch_point(starting_point);
+    generator->PressTouch(touch_point);
+    // Trigger Scroll Begin
+    touch_point.set_y(5);
+    generator->MoveTouch(touch_point);
+    EXPECT_FALSE(menu_controller->is_drag_active_for_test());
+    EXPECT_FALSE(menu_controller->reserved_for_gesture_sent_for_test());
+    EXPECT_FALSE(test_handler.GetFlagsAndReset() & ui::EF_RESERVED_FOR_GESTURE);
+
+    // Trigger Scroll Update which sets `is_drag_active` to true.
+    touch_point.set_y(10);
+    generator->MoveTouch(touch_point);
+    EXPECT_TRUE(menu_controller->is_drag_active_for_test());
+    EXPECT_FALSE(menu_controller->reserved_for_gesture_sent_for_test());
+    EXPECT_FALSE(test_handler.GetFlagsAndReset() & ui::EF_RESERVED_FOR_GESTURE);
+
+    // Next touch event should have the EF_RESERVED_FOR_GESTURE flag.
+    touch_point.set_y(15);
+    generator->MoveTouch(touch_point);
+    EXPECT_TRUE(menu_controller->reserved_for_gesture_sent_for_test());
+    EXPECT_TRUE(test_handler.GetFlagsAndReset() & ui::EF_RESERVED_FOR_GESTURE);
+
+    // After this, touches should be blocked.
+    touch_point.set_y(16);
+    generator->MoveTouch(touch_point);
+    EXPECT_EQ(-1, test_handler.flags());
+
+    generator->ReleaseTouch();
+
+    // The controller should be in clean state.
+    EXPECT_FALSE(menu_controller->is_drag_active_for_test());
+    EXPECT_FALSE(menu_controller->reserved_for_gesture_sent_for_test());
+    EXPECT_EQ(-1, test_handler.flags());
+  }
+
+  // Emulate swipe right by touches. It should never trigger drag nor
+  // set reserved_for_gesture_sent_for_test().
+  {
+    gfx::Point touch_point(starting_point);
+    generator->PressTouch(touch_point);
+
+    for (int i = 0; i < 3; i++) {
+      touch_point.set_x(touch_point.x() + 5);
+      generator->MoveTouch(touch_point);
+      EXPECT_FALSE(menu_controller->is_drag_active_for_test());
+      EXPECT_FALSE(menu_controller->reserved_for_gesture_sent_for_test());
+      EXPECT_FALSE(test_handler.GetFlagsAndReset() &
+                   ui::EF_RESERVED_FOR_GESTURE);
+    }
+    generator->ReleaseTouch();
+  }
+
+  // Cleanup
+  root->RemovePreTargetHandler(&test_handler);
+}
+
 }  // namespace ash

@@ -81,6 +81,18 @@ void TabletModeMultitaskMenuController::ResetMultitaskMenu() {
   multitask_menu_.reset();
 }
 
+void TabletModeMultitaskMenuController::OnTouchEvent(ui::TouchEvent* event) {
+  if (is_drag_active_) {
+    if (!reserved_for_gesture_sent_) {
+      reserved_for_gesture_sent_ = true;
+      event->set_flags(event->flags() | ui::EF_RESERVED_FOR_GESTURE);
+      return;
+    }
+    event->StopPropagation();
+    event->ForceProcessGesture();
+  }
+}
+
 void TabletModeMultitaskMenuController::OnGestureEvent(
     ui::GestureEvent* event) {
   aura::Window* target = static_cast<aura::Window*>(event->target());
@@ -104,6 +116,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
         return;
       }
       is_drag_active_ = false;
+      reserved_for_gesture_sent_ = false;
       if (details.scroll_y_hint() > 0 && HitTestRect(window, screen_location)) {
         // We may need to recreate `multitask_menu_` on the new target window.
         multitask_menu_ =
@@ -141,6 +154,7 @@ void TabletModeMultitaskMenuController::OnGestureEvent(
         event->SetHandled();
       }
       is_drag_active_ = false;
+      reserved_for_gesture_sent_ = false;
       break;
     case ui::ET_SCROLL_FLING_START:
       if (!is_drag_active_) {

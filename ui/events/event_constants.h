@@ -98,6 +98,13 @@ constexpr MouseEventFlags EF_UNADJUSTED_MOUSE = 1 << 24;
 // mouse to another display when the mouse hits the window boundaries).
 constexpr MouseEventFlags EF_NOT_SUITABLE_FOR_MOUSE_WARPING = 1 << 25;
 
+// Flags specific to touch events.
+using TouchEventFlags = EventFlags;
+
+// Indicates this touch event is reserved for gesture recognition and
+// should not be handled in the event handler.
+constexpr TouchEventFlags EF_RESERVED_FOR_GESTURE = 1 << 26;
+
 // These value match the Windows default.
 constexpr int kDoubleClickTimeMs = 500;
 

@@ -41,7 +41,15 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   void ResetMultitaskMenu();
 
   // ui::EventHandler:
+  void OnTouchEvent(ui::TouchEvent* event) override;
   void OnGestureEvent(ui::GestureEvent* event) override;
+
+  // Accessors for testings.
+  bool is_drag_active_for_test() const { return is_drag_active_; }
+
+  bool reserved_for_gesture_sent_for_test() const {
+    return reserved_for_gesture_sent_;
+  }
 
  private:
   void MaybeCreateMultitaskMenu(aura::Window* active_window);
@@ -49,6 +57,8 @@ class TabletModeMultitaskMenuController : public ui::EventHandler {
   // True while a drag to open or close the menu is in progress. Needed since a
   // drag may go outside menu bounds, during which we still handle events.
   bool is_drag_active_ = false;
+
+  bool reserved_for_gesture_sent_ = false;
 
   // Creates a draggable bar when app windows are activated.
   std::unique_ptr<TabletModeMultitaskCueController> multitask_cue_controller_;
