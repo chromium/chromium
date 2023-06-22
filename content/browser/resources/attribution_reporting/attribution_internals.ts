@@ -977,6 +977,12 @@ function sourceRegistrationStatusToText(status: SourceStatus): string {
         return 'Rejected: excessive reporting origins';
       case StoreSourceResult.kProhibitedByBrowserPolicy:
         return 'Rejected: prohibited by browser policy';
+      case StoreSourceResult.kDestinationReportingLimitReached:
+        return 'Rejected: destination reporting limit reached';
+      case StoreSourceResult.kDestinationGlobalLimitReached:
+        return 'Rejected: destination global limit reached';
+      case StoreSourceResult.kDestinationBothLimitsReached:
+        return 'Rejected: destination both limits reached';
       default:
         return status.toString();
     }
