@@ -805,8 +805,8 @@ TEST_P(AmbientControllerTestForAnyUiSettings,
 TEST_F(AmbientControllerTest, ShouldResetLockScreenInactivityTimerOnEvent) {
   auto* ambient_ui_model = AmbientUiModel::Get();
   // Set a long photo download delay so that state is
-  // `AmbientUiVisibility::kShown` but widget does not exist to receive events
-  // yet.
+  // `AmbientUiVisibility::kShouldShow` but widget does not exist to receive
+  // events yet.
   SetPhotoDownloadDelay(base::Seconds(1));
   LockScreen();
   FastForwardByLockScreenInactivityTimeout();
