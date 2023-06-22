@@ -42,6 +42,16 @@ static constexpr int kAutofillContextCustomLast =
 static constexpr int kAutofillContextFeedback =
     IDC_CONTENT_CONTEXT_AUTOFILL_FEEDBACK;
 
+constexpr char kFeedbackPlaceholder[] =
+    "What steps did you just take?\n"
+    "(1)\n"
+    "(2)\n"
+    "(3)\n"
+    "\n"
+    "What was the expected result?\n"
+    "\n"
+    "What happened instead? (Please include the screenshot below)";
+
 base::Value::Dict LoadTriggerFormAndFieldLogs(
     AutofillManager* manager,
     content::RenderFrameHost* rfh,
@@ -246,7 +256,7 @@ void AutofillContextMenuManager::ExecuteAutofillFeedbackCommand(
   chrome::ShowFeedbackPage(
       browser_, chrome::kFeedbackSourceAutofillContextMenu,
       /*description_template=*/std::string(),
-      /*description_placeholder_text=*/std::string(),
+      /*description_placeholder_text=*/std::string(kFeedbackPlaceholder),
       /*category_tag=*/"dogfood_autofill_feedback",
       /*extra_diagnostics=*/std::string(),
       /*autofill_metadata=*/
