@@ -27,6 +27,10 @@ class MockSyncService : public syncer::TestSyncService {
   MockSyncService() {
     SetTransportState(TransportState::INITIALIZING);
     SetLastCycleSnapshot(syncer::SyncCycleSnapshot());
+
+#if BUILDFLAG(IS_CHROMEOS_ASH)
+    SetAppSync(false);
+#endif
   }
 
   MockSyncService(const MockSyncService&) = delete;
@@ -54,10 +58,6 @@ class MockSyncService : public syncer::TestSyncService {
         sync_pb::SyncEnums::UNKNOWN_ORIGIN, base::Minutes(1), false));
 
     NotifyObserversOfStateChanged();
-
-#if BUILDFLAG(IS_CHROMEOS)
-    SetAppSync(false);
-#endif  // BUILDFLAG(IS_CHROMEOS)
   }
 
   void Shutdown() override {
