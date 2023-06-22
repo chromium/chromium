@@ -121,9 +121,9 @@ DataTypeManagerImpl::DataTypeManagerImpl(
   DataTypeStatusTable::TypeErrorMap existing_errors;
   for (const auto& [type, controller] : *controllers_) {
     DataTypeController::State state = controller->state();
-    DCHECK(state == DataTypeController::NOT_RUNNING ||
-           state == DataTypeController::STOPPING ||
-           state == DataTypeController::FAILED)
+    CHECK(state == DataTypeController::NOT_RUNNING ||
+          state == DataTypeController::STOPPING ||
+          state == DataTypeController::FAILED)
         << " actual=" << DataTypeController::StateToString(state) << " for "
         << ModelTypeToDebugString(type);
 
@@ -269,7 +269,7 @@ void DataTypeManagerImpl::ConnectDataTypes() {
     std::unique_ptr<DataTypeActivationResponse> activation_response =
         dtc->Connect();
     DCHECK(activation_response);
-    DCHECK_EQ(dtc->state(), DataTypeController::RUNNING);
+    CHECK_EQ(dtc->state(), DataTypeController::RUNNING);
 
     if (activation_response->skip_engine_connection) {
       // |skip_engine_connection| means ConnectDataType() shouldn't be invoked
