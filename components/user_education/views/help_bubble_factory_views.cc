@@ -15,7 +15,6 @@
 #include "components/user_education/common/user_education_class_properties.h"
 #include "components/user_education/views/help_bubble_delegate.h"
 #include "components/user_education/views/help_bubble_view.h"
-#include "components/user_education/views/toggle_tracked_element_attention_utils.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
@@ -145,7 +144,6 @@ void HelpBubbleViews::MaybeResetAnchorView() {
   if (!anchor_view)
     return;
   anchor_view->SetProperty(kHasInProductHelpPromoKey, false);
-  MaybeRemoveAttentionStateFromTrackedElement(anchor_view);
 }
 
 void HelpBubbleViews::CloseBubbleImpl() {
@@ -219,9 +217,6 @@ std::unique_ptr<HelpBubble> HelpBubbleFactoryViews::CreateBubbleImpl(
     result->bubble_view()->GetFocusManager()->RegisterAccelerator(
         accelerator, ui::AcceleratorManager::HandlerPriority::kNormalPriority,
         result.get());
-  }
-  if (result) {
-    MaybeApplyAttentionStateToTrackedElement(anchor.view);
   }
   return result;
 }
