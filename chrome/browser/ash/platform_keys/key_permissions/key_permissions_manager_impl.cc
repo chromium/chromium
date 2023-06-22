@@ -56,14 +56,6 @@ KeyPermissionsManager* g_system_token_kpm_for_testing = nullptr;
 // started as well as the number of times it succeeded and failed.
 const char kMigrationStatusHistogramName[] =
     "ChromeOS.KeyPermissionsManager.Migration";
-// The name of the histogram that counts the number of times the arc usage flags
-// update started as well as the number of times it succeeded and failed.
-const char kArcUsageUpdateStatusHistogramName[] =
-    "ChromeOS.KeyPermissionsManager.ArcUsageUpdate";
-// The name of the histogram that records the time taken to successfully update
-// chaps with the new ARC usage flags.
-const char kArcUsageUpdateTimeHistogramName[] =
-    "ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime";
 
 // These values are logged to UMA. Entries should not be renumbered and
 // numeric values should never be reused. Please keep in sync with
@@ -78,22 +70,18 @@ enum class MigrationStatus {
   kMaxValue = kNecessary,
 };
 
-// These values are logged to UMA. Entries should not be renumbered and
-// numeric values should never be reused. Please keep in sync with
-// MigrationStatus in src/tools/metrics/histograms/enums.xml.
-enum class ArcUsageUpdateStatus {
-  kStarted = 0,
-  kSucceeded = 1,
-  kFailed = 2,
-  kMaxValue = kFailed,
-};
-
 chaps::KeyPermissions CreateKeyPermissions(bool corporate_usage_allowed,
                                            bool arc_usage_allowed) {
   chaps::KeyPermissions key_permissions;
   key_permissions.mutable_key_usages()->set_corporate(corporate_usage_allowed);
   key_permissions.mutable_key_usages()->set_arc(arc_usage_allowed);
   return key_permissions;
+}
+
+void OnKeyPermissionsInChapsUpdated(Status update_status) {
+  if (update_status != Status::kSuccess) {
+    LOG(ERROR) << "Updating key permissions in chaps failed.";
+  }
 }
 
 }  // namespace
@@ -113,8 +101,6 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::Update(
     UpdateCallback callback) {
   DCHECK(!update_started_) << "Update called more than once for the same "
                               "updater instance.";
-
-  update_start_time_ = base::TimeTicks::Now();
 
   update_started_ = true;
   callback_ = std::move(callback);
@@ -145,7 +131,7 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateWithAllKeys(
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   if (public_key_spki_der_queue_.empty()) {
-    OnUpdateFinished();
+    std::move(callback_).Run(Status::kSuccess);
     return;
   }
 
@@ -153,26 +139,6 @@ void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::UpdateNextKey() {
   public_key_spki_der_queue_.pop();
 
   UpdatePermissionsForKey(public_key);
-}
-
-void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
-    OnUpdateFinished() {
-  switch (mode_) {
-    case Mode::kMigratePermissionsFromPrefs: {
-      break;
-    }
-    case Mode::kUpdateArcUsageFlag: {
-      base::UmaHistogramCustomTimes(
-          kArcUsageUpdateTimeHistogramName,
-          /*sample=*/base::TimeTicks::Now() - update_start_time_,
-          /*min=*/base::Milliseconds(1),
-          /*max=*/base::Minutes(5),
-          /*buckets=*/50);
-      break;
-    }
-  }
-
-  std::move(callback_).Run(Status::kSuccess);
 }
 
 void KeyPermissionsManagerImpl::KeyPermissionsInChapsUpdater::
@@ -474,28 +440,11 @@ void KeyPermissionsManagerImpl::UpdateKeyPermissionsInChaps() {
     return;
   }
 
-  base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
-                                ArcUsageUpdateStatus::kStarted);
-
   key_permissions_in_chaps_updater_ =
       std::make_unique<KeyPermissionsInChapsUpdater>(
           KeyPermissionsInChapsUpdater::Mode::kUpdateArcUsageFlag, this);
   key_permissions_in_chaps_updater_->Update(
-      base::BindOnce(&KeyPermissionsManagerImpl::OnKeyPermissionsInChapsUpdated,
-                     weak_ptr_factory_.GetWeakPtr()));
-}
-
-void KeyPermissionsManagerImpl::OnKeyPermissionsInChapsUpdated(
-    Status update_status) {
-  if (update_status != Status::kSuccess) {
-    base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
-                                  ArcUsageUpdateStatus::kFailed);
-    LOG(ERROR) << "Updating key permissions in chaps failed.";
-    return;
-  }
-
-  base::UmaHistogramEnumeration(kArcUsageUpdateStatusHistogramName,
-                                ArcUsageUpdateStatus::kSucceeded);
+      base::BindOnce(&OnKeyPermissionsInChapsUpdated));
 }
 
 void KeyPermissionsManagerImpl::StartOneTimeMigration() {

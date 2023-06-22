@@ -56923,12 +56923,6 @@ Unsupported non-ascii characters will cause issues with xml presubmits.
   <int value="256" label="NONE"/>
 </enum>
 
-<enum name="KeyPermissionsManagerArcUsageUpdateStatus">
-  <int value="0" label="kStarted"/>
-  <int value="1" label="kSucceeded"/>
-  <int value="2" label="kFailed"/>
-</enum>
-
 <enum name="KeyPermissionsManagerMigrationStatus">
   <int value="0" label="kStarted"/>
   <int value="1" label="kSucceeded"/>

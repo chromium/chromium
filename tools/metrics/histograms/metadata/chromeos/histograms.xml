@@ -1651,26 +1651,6 @@ They are used for the ChromeOS.CertProvisioning.* histograms to distinguish
   </summary>
 </histogram>
 
-<histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdate"
-    enum="KeyPermissionsManagerArcUsageUpdateStatus" expires_after="2022-02-06">
-  <owner>omorsi@google.com</owner>
-  <owner>pmarko@google.com</owner>
-  <summary>
-    Counts the number of times the arc usage flags update started as well as the
-    number of times it succeeded and failed.
-  </summary>
-</histogram>
-
-<histogram name="ChromeOS.KeyPermissionsManager.ArcUsageUpdateTime" units="ms"
-    expires_after="2022-02-06">
-  <owner>omorsi@google.com</owner>
-  <owner>pmarko@chromium.org</owner>
-  <summary>
-    Records the time taken to successfully update chaps with the new ARC usage
-    flags.
-  </summary>
-</histogram>
-
 <histogram name="ChromeOS.KeyPermissionsManager.Migration"
     enum="KeyPermissionsManagerMigrationStatus" expires_after="2023-12-04">
   <owner>omorsi@google.com</owner>
