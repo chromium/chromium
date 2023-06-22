@@ -1028,7 +1028,7 @@ StyleRuleMedia* CSSParserImpl::ConsumeMediaRule(
   DCHECK(media);
 
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      parent_rule_for_nesting != nullptr) {
+      nesting_type == CSSNestingType::kNesting) {
     // Parse the interior as if it were a style rule.
     if (observer_) {
       // Observe an empty rule header to ensure the observer has a new rule data
@@ -1095,7 +1095,7 @@ StyleRuleSupports* CSSParserImpl::ConsumeSupportsRule(
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      parent_rule_for_nesting != nullptr) {
+      nesting_type == CSSNestingType::kNesting) {
     // Parse the interior as if it were a style rule.
     if (observer_) {
       // Observe an empty rule header to ensure the observer has a new rule data
@@ -1149,7 +1149,7 @@ StyleRuleStartingStyle* CSSParserImpl::ConsumeStartingStyleRule(
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      parent_rule_for_nesting != nullptr) {
+      nesting_type == CSSNestingType::kNesting) {
     // Parse the interior as if it were a style rule.
     if (observer_) {
       // Observe an empty rule header to ensure the observer has a new rule data
@@ -1664,7 +1664,7 @@ StyleRuleContainer* CSSParserImpl::ConsumeContainerRule(
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      parent_rule_for_nesting != nullptr) {
+      nesting_type == CSSNestingType::kNesting) {
     // Parse the interior as if it were a style rule.
     if (observer_) {
       // Observe an empty rule header to ensure the observer has a new rule data
@@ -1706,8 +1706,11 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     if (!ConsumeEndOfPreludeForAtRuleWithoutBlock(stream)) {
       return nullptr;
     }
-    if (nesting_type != CSSNestingType::kNone) {
-      // @layer statement rules cannot be nested.
+    if (nesting_type == CSSNestingType::kNesting) {
+      // @layer statement rules are not group rules, and can therefore
+      // not be nested.
+      //
+      // https://drafts.csswg.org/css-nesting-1/#nested-group-rules
       return nullptr;
     }
 
@@ -1764,7 +1767,7 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
 
   HeapVector<Member<StyleRuleBase>, 4> rules;
   if (RuntimeEnabledFeatures::CSSNestingEnabled() &&
-      parent_rule_for_nesting != nullptr) {
+      nesting_type == CSSNestingType::kNesting) {
     // Parse the interior as if it were a style rule.
     if (observer_) {
       // Observe an empty rule header to ensure the observer has a new rule data
@@ -1779,8 +1782,7 @@ StyleRuleBase* CSSParserImpl::ConsumeLayerRule(
     }
   } else {
     ConsumeRuleList(
-        stream, kRegularRuleList, CSSNestingType::kNone,
-        parent_rule_for_nesting,
+        stream, kRegularRuleList, nesting_type, parent_rule_for_nesting,
         [&rules](StyleRuleBase* rule, wtf_size_t) { rules.push_back(rule); });
   }
 
