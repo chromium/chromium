@@ -205,9 +205,9 @@ void CompanionPageHandler::ShowUI() {
     // Register a modal dialog manager to show permissions dialog like those
     // requested from the feedback UI.
     RegisterModalDialogManager(browser);
-    std::string initial_text_query = helper->GetTextQuery();
-    if (!initial_text_query.empty()) {
-      OnSearchTextQuery(initial_text_query);
+
+    // If searching the text query succeeds, then early return.
+    if (OnSearchTextQuery()) {
       return;
     }
 
@@ -222,7 +222,15 @@ void CompanionPageHandler::ShowUI() {
   }
 }
 
-void CompanionPageHandler::OnSearchTextQuery(const std::string& query) {
+bool CompanionPageHandler::OnSearchTextQuery() {
+  CHECK(web_contents());
+  auto* helper = companion::CompanionTabHelper::FromWebContents(web_contents());
+  CHECK(helper);
+  const std::string query = helper->GetTextQuery();
+  if (query.empty()) {
+    return false;
+  }
+
   // Only notify the companion UI the page changed if we can share
   // information about the page by user consent.
   GURL page_url;
@@ -232,6 +240,7 @@ void CompanionPageHandler::OnSearchTextQuery(const std::string& query) {
 
   GURL companion_url = url_builder_->BuildCompanionURL(page_url, query);
   page_->LoadCompanionPage(companion_url);
+  return true;
 }
 
 void CompanionPageHandler::NotifyURLChanged(bool is_full_reload) {

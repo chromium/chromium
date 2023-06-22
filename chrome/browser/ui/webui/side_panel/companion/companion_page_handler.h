@@ -84,9 +84,9 @@ class CompanionPageHandler
       unified_consent::UrlKeyedDataCollectionConsentHelper* consent_helper)
       override;
 
-  // Informs the page handler that a new text query to initialize / reload the
-  // page with was sent from client.
-  void OnSearchTextQuery(const std::string& text_query);
+  // Attempts to retrieve a search query string and initiate a search if
+  // available. If it does not load a companion page, returns false.
+  bool OnSearchTextQuery();
   void OnImageQuery(side_panel::mojom::ImageQuery image_query);
 
  private:
