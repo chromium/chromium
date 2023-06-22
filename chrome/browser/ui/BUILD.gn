@@ -3314,6 +3314,7 @@ static_library("ui") {
       "//ash/webui/scanning",
       "//ash/webui/shimless_rma",
       "//ash/webui/shortcut_customization_ui",
+      "//ash/webui/shortcut_customization_ui/backend/search:mojo_bindings",
       "//ash/webui/system_apps/public:system_web_app_type",
       "//ash/webui/system_extensions_internals_ui",
       "//ash/webui/web_applications",

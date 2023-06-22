@@ -4,8 +4,12 @@
 
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_result.h"
 
+#include <memory>
+#include <vector>
+
 #include "ash/public/cpp/app_list/app_list_types.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/profiles/profile.h"
 #include "chrome/test/base/chrome_ash_test_base.h"
@@ -131,6 +135,17 @@ TEST_F(KeyboardShortcutResultTest,
 
   EXPECT_EQ(text_vector[4].GetType(), TextType::kString);
   EXPECT_EQ(text_vector[4].GetText(), u", and release");
+}
+
+// Test that KeyBoardShortCutResult can take search results.
+// TODO(xiangdongkong): Replace with a real test.
+TEST_F(KeyboardShortcutResultTest, DummyTest) {
+  const auto& search_results =
+      ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
+  const auto& search_result0 = search_results[0];
+
+  auto result = std::make_unique<KeyboardShortcutResult>(
+      /* profile= */ nullptr, search_result0);
 }
 
 }  // namespace app_list::test

@@ -11,6 +11,7 @@
 #include "ash/public/cpp/app_list/internal_app_id_constants.h"
 #include "ash/shortcut_viewer/keyboard_shortcut_viewer_metadata.h"
 #include "ash/shortcut_viewer/strings/grit/shortcut_viewer_strings.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "base/i18n/rtl.h"
 #include "base/strings/strcat.h"
 #include "base/strings/string_number_conversions.h"
@@ -273,6 +274,13 @@ KeyboardShortcutResult::KeyboardShortcutResult(Profile* profile,
   SetAccessibleName(data.description + u", " + details() + u", " +
                     accessible_string);
   SetKeyboardShortcutTextVector(text_vector);
+}
+
+KeyboardShortcutResult::KeyboardShortcutResult(
+    Profile* profile,
+    const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
+    : profile_(profile) {
+  // TODO(xiangdongkong): Populate properties.
 }
 
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;

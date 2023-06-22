@@ -4,6 +4,11 @@
 
 #include "chrome/browser/ash/app_list/search/keyboard_shortcut_provider.h"
 
+#include <memory>
+
+#include "ash/constants/ash_features.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
+#include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "base/memory/raw_ptr.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
@@ -163,6 +168,107 @@ TEST_P(KeyboardShortcutProviderTest, Search) {
   EXPECT_GT(results()[0]->relevance(), kResultRelevanceThreshold);
   EXPECT_EQ(results()[0]->accessible_name(),
             u"Open Emoji Picker, Shortcuts, Shift+ Search+ Space");
+}
+
+class FakeSearchHandler : public ash::shortcut_ui::SearchHandler {
+ public:
+  FakeSearchHandler(
+      ash::shortcut_ui::SearchConceptRegistry* search_concept_registry,
+      ash::local_search_service::LocalSearchServiceProxy*
+          local_search_service_proxy)
+      : ash::shortcut_ui::SearchHandler(search_concept_registry,
+                                        local_search_service_proxy) {}
+
+  void Search(const std::u16string& query,
+              uint32_t max_num_results,
+              SearchCallback callback) override {
+    ASSERT_TRUE(search_result_ != nullptr);
+    std::move(callback).Run(std::move(*search_result_));
+  }
+
+  void AddSearchResultsAvailabilityObserver(
+      mojo::PendingRemote<
+          ash::shortcut_customization::mojom::SearchResultsAvailabilityObserver>
+          observer) override {
+    // No op.
+  }
+
+  void SetSearchResults(
+      std::vector<ash::shortcut_customization::mojom::SearchResultPtr> result) {
+    search_result_ = std::make_unique<
+        std::vector<ash::shortcut_customization::mojom::SearchResultPtr>>(
+        std::move(result));
+  }
+
+ private:
+  std::unique_ptr<
+      std::vector<ash::shortcut_customization::mojom::SearchResultPtr>>
+      search_result_;
+};
+
+class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
+ public:
+  CustomizableKeyboardShortcutProviderTest() {
+    scoped_feature_list_.InitAndEnableFeature(
+        ash::features::kSearchCustomizableShortcutsInLauncher);
+  }
+
+ protected:
+  void SetUp() override {
+    ChromeAshTestBase::SetUp();
+    // Initialize search_handler_;
+    local_search_service_proxy_ =
+        std::make_unique<ash::local_search_service::LocalSearchServiceProxy>(
+            /*for_testing=*/true);
+    search_concept_registry_ =
+        std::make_unique<ash::shortcut_ui::SearchConceptRegistry>(
+            *local_search_service_proxy_.get());
+    search_handler_ = std::make_unique<FakeSearchHandler>(
+        search_concept_registry_.get(), local_search_service_proxy_.get());
+
+    // Initialize provider_;
+    profile_ = std::make_unique<TestingProfile>();
+    auto provider = std::make_unique<KeyboardShortcutProvider>(profile_.get());
+    provider_ = provider.get();
+    provider_->SetSearchHandlerForTesting(search_handler_.get());
+
+    // Initialize search_controller_;
+    search_controller_ = std::make_unique<TestSearchController>();
+    search_controller_->AddProvider(std::move(provider));
+  }
+
+  void Wait() { task_environment()->RunUntilIdle(); }
+
+  const SearchProvider::Results& results() {
+    return search_controller_->last_results();
+  }
+
+  void StartSearch(const std::u16string& query) {
+    search_controller_->StartSearch(query);
+  }
+
+  base::test::ScopedFeatureList scoped_feature_list_;
+
+  std::unique_ptr<ash::local_search_service::LocalSearchServiceProxy>
+      local_search_service_proxy_;
+  std::unique_ptr<ash::shortcut_ui::SearchConceptRegistry>
+      search_concept_registry_;
+  std::unique_ptr<FakeSearchHandler> search_handler_;
+  std::unique_ptr<Profile> profile_;
+  std::unique_ptr<TestSearchController> search_controller_;
+  raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
+};
+
+TEST_F(CustomizableKeyboardShortcutProviderTest, ShouldReturnAllItems) {
+  auto search_results =
+      ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
+  const size_t results_count = search_results.size();
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  provider_->Start(u"fake query");
+  Wait();
+
+  EXPECT_EQ(results_count, results().size());
 }
 
 }  // namespace app_list::test
