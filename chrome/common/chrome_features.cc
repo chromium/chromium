@@ -864,7 +864,7 @@ BASE_FEATURE(kSystemNotifications,
 #endif  // BUILDFLAG(ENABLE_SYSTEM_NOTIFICATIONS)
 
 #if BUILDFLAG(IS_MAC)
-// Enables the usage of Apple's new Notification API on macOS 10.14+
+// Enables the usage of Apple's new Notification API.
 BASE_FEATURE(kNewMacNotificationAPI,
              "NewMacNotificationAPI",
              base::FEATURE_DISABLED_BY_DEFAULT);

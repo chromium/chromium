@@ -35,9 +35,9 @@ source_set("mac_notifications") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  frameworks = [ "Foundation.framework" ]
-  weak_frameworks = [
-    "UserNotifications.framework",  # macOS 10.14
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
   ]
 }
 
@@ -63,8 +63,8 @@ source_set("unit_tests") {
 
   configs += [ "//build/config/compiler:enable_arc" ]
 
-  frameworks = [ "Foundation.framework" ]
-  weak_frameworks = [
-    "UserNotifications.framework",  # macOS 10.14
+  frameworks = [
+    "UserNotifications.framework",
+    "Foundation.framework",
   ]
 }

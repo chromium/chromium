@@ -32,7 +32,6 @@
 // This uses a private API so that updated banners do not keep reappearing on
 // the screen, for example banners that are used to show progress would keep
 // reappearing on the screen without the usage of this private API.
-API_AVAILABLE(macosx(10.14))
 @interface UNUserNotificationCenter (Private)
 - (void)replaceContentForRequestWithIdentifier:(NSString*)identifier
                             replacementContent:
@@ -42,7 +41,6 @@ API_AVAILABLE(macosx(10.14))
                                      completionHandler;
 @end
 
-API_AVAILABLE(macosx(10.14))
 @interface AlertUNNotificationCenterDelegate
     : NSObject <UNUserNotificationCenterDelegate>
 - (instancetype)initWithActionHandler:
@@ -52,7 +50,6 @@ API_AVAILABLE(macosx(10.14))
 
 namespace {
 
-API_AVAILABLE(macosx(10.14))
 NotificationOperation GetNotificationOperationFromAction(
     NSString* actionIdentifier) {
   if ([actionIdentifier isEqual:UNNotificationDismissActionIdentifier] ||
@@ -87,7 +84,6 @@ int GetActionButtonIndexFromAction(NSString* actionIdentifier) {
   return kNotificationInvalidButtonIndex;
 }
 
-API_AVAILABLE(macosx(10.14))
 absl::optional<std::u16string> GetReplyFromResponse(
     UNNotificationResponse* response) {
   if (![response isKindOfClass:[UNTextInputNotificationResponse class]])

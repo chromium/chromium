@@ -28,7 +28,7 @@ namespace mac_notifications {
 // categories that can be used on notifications shown with it. This class
 // manages that set and returns category identifiers for a given set of action
 // buttons.
-class API_AVAILABLE(macos(10.14)) NotificationCategoryManager {
+class NotificationCategoryManager {
  public:
   using Button = std::pair</*title*/ std::u16string,
                            /*placeholder*/ absl::optional<std::u16string>>;

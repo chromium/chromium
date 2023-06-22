@@ -12,18 +12,15 @@
 #error "This file requires ARC support."
 #endif
 
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotification : NSObject
 @property(nonatomic, strong, nullable) UNNotificationRequest* request;
 @end
 
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNNotificationSettings : NSObject
 @property(nonatomic, assign) UNAlertStyle alertStyle;
 @property(nonatomic, assign) UNAuthorizationStatus authorizationStatus;
 @end
 
-API_AVAILABLE(macosx(10.14))
 @interface FakeUNUserNotificationCenter : NSObject
 - (nullable instancetype)init;
 - (void)setDelegate:(id<UNUserNotificationCenterDelegate> _Nullable)delegate;
