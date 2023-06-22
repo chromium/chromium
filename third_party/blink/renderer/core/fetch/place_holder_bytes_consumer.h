@@ -38,6 +38,7 @@ class CORE_EXPORT PlaceHolderBytesConsumer final : public BytesConsumer {
   Member<BytesConsumer> underlying_;
   Member<Client> client_;
   bool is_cancelled_ = false;
+  SEQUENCE_CHECKER(sequence_checker_);
 };
 
 }  // namespace blink
