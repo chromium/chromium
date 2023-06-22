@@ -114,7 +114,7 @@ const FeatureData kFeatures[] = {
      nullptr},
     {FeatureType::kDictation, prefs::kAccessibilityDictationEnabled,
      &kDictationMenuIcon},
-    {FeatureType::kColorCorrection, prefs::kAccessibilityColorFiltering,
+    {FeatureType::kColorCorrection, prefs::kAccessibilityColorCorrectionEnabled,
      &kColorCorrectionIcon},
     {FeatureType::kFocusHighlight, prefs::kAccessibilityFocusHighlightEnabled,
      nullptr, /* conflicting_feature= */ FeatureType::kSpokenFeedback},
@@ -205,7 +205,7 @@ constexpr const char* const kCopiedOnSigninAccessibilityPrefs[]{
     prefs::kAccessibilityChromeVoxVirtualBrailleColumns,
     prefs::kAccessibilityChromeVoxVirtualBrailleRows,
     prefs::kAccessibilityChromeVoxVoiceName,
-    prefs::kAccessibilityColorFiltering,
+    prefs::kAccessibilityColorCorrectionEnabled,
     prefs::kAccessibilityCursorHighlightEnabled,
     prefs::kAccessibilityCursorColorEnabled,
     prefs::kAccessibilityCursorColor,
@@ -815,7 +815,7 @@ void AccessibilityControllerImpl::Feature::UpdateFromPref() {
   PrefService* prefs = owner_->active_user_prefs_;
   DCHECK(prefs);
 
-  if (pref_name_ == prefs::kAccessibilityColorFiltering &&
+  if (pref_name_ == prefs::kAccessibilityColorCorrectionEnabled &&
       !::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     return;
@@ -1035,11 +1035,12 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
   registry->RegisterBooleanPref(prefs::kShouldAlwaysShowAccessibilityMenu,
                                 false);
 
-  registry->RegisterBooleanPref(prefs::kAccessibilityColorFiltering, false);
+  registry->RegisterBooleanPref(prefs::kAccessibilityColorCorrectionEnabled,
+                                false);
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
     registry->RegisterBooleanPref(
-        prefs::kAccessibilityColorFilteringHasBeenSetup, false);
+        prefs::kAccessibilityColorCorrectionHasBeenSetup, false);
   }
 
   // TODO(b/266816160): Make ChromeVox prefs are syncable, to so that ChromeOS
@@ -1229,8 +1230,8 @@ void AccessibilityControllerImpl::RegisterProfilePrefs(
         prefs::kAccessibilityColorVisionCorrectionAmount, 100,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
     registry->RegisterIntegerPref(
-        prefs::kAccessibilityColorVisionDeficiencyType,
-        ColorVisionDeficiencyType::kDeuteranomaly,
+        prefs::kAccessibilityColorVisionCorrectionType,
+        ColorVisionCorrectionType::kDeuteranomaly,
         user_prefs::PrefRegistrySyncable::SYNCABLE_OS_PREF);
   }
 }
@@ -2067,12 +2068,12 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
     pref_change_registrar_->Add(
         prefs::kAccessibilityColorVisionCorrectionAmount,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
             base::Unretained(this)));
     pref_change_registrar_->Add(
-        prefs::kAccessibilityColorVisionDeficiencyType,
+        prefs::kAccessibilityColorVisionCorrectionType,
         base::BindRepeating(
-            &AccessibilityControllerImpl::UpdateColorFilteringFromPrefs,
+            &AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs,
             base::Unretained(this)));
   }
 
@@ -2093,7 +2094,7 @@ void AccessibilityControllerImpl::ObservePrefs(PrefService* prefs) {
   UpdateShortcutsEnabledFromPref();
   UpdateTabletModeShelfNavigationButtonsFromPref();
   if (color_enhancement_feature_enabled) {
-    UpdateColorFilteringFromPrefs();
+    UpdateColorCorrectionFromPrefs();
   }
 }
 
@@ -2266,14 +2267,15 @@ void AccessibilityControllerImpl::UpdateCursorColorFromPrefs() {
   shell->UpdateCursorCompositingEnabled();
 }
 
-void AccessibilityControllerImpl::UpdateColorFilteringFromPrefs() {
+void AccessibilityControllerImpl::UpdateColorCorrectionFromPrefs() {
   DCHECK(active_user_prefs_);
 
   auto* color_enhancement_controller =
       Shell::Get()->color_enhancement_controller();
 
-  if (!active_user_prefs_->GetBoolean(prefs::kAccessibilityColorFiltering)) {
-    color_enhancement_controller->SetColorFilteringEnabledAndUpdateDisplays(
+  if (!active_user_prefs_->GetBoolean(
+          prefs::kAccessibilityColorCorrectionEnabled)) {
+    color_enhancement_controller->SetColorCorrectionEnabledAndUpdateDisplays(
         false);
     return;
   }
@@ -2282,14 +2284,15 @@ void AccessibilityControllerImpl::UpdateColorFilteringFromPrefs() {
       active_user_prefs_->GetInteger(
           prefs::kAccessibilityColorVisionCorrectionAmount) /
       100.0f;
-  ColorVisionDeficiencyType type =
-      static_cast<ColorVisionDeficiencyType>(active_user_prefs_->GetInteger(
-          prefs::kAccessibilityColorVisionDeficiencyType));
+  ColorVisionCorrectionType type =
+      static_cast<ColorVisionCorrectionType>(active_user_prefs_->GetInteger(
+          prefs::kAccessibilityColorVisionCorrectionType));
   color_enhancement_controller->SetColorVisionCorrectionFilter(
       type, cvd_correction_amount);
 
   // Ensure displays get updated.
-  color_enhancement_controller->SetColorFilteringEnabledAndUpdateDisplays(true);
+  color_enhancement_controller->SetColorCorrectionEnabledAndUpdateDisplays(
+      true);
 }
 
 void AccessibilityControllerImpl::UpdateAccessibilityHighlightingFromPrefs() {
@@ -2736,15 +2739,15 @@ void AccessibilityControllerImpl::UpdateFeatureFromPref(FeatureType feature) {
       break;
     case FeatureType::kColorCorrection:
       if (enabled && !active_user_prefs_->GetBoolean(
-                         prefs::kAccessibilityColorFilteringHasBeenSetup)) {
+                         prefs::kAccessibilityColorCorrectionHasBeenSetup)) {
         Shell::Get()
             ->system_tray_model()
             ->client()
             ->ShowColorCorrectionSettings();
         active_user_prefs_->SetBoolean(
-            prefs::kAccessibilityColorFilteringHasBeenSetup, true);
+            prefs::kAccessibilityColorCorrectionHasBeenSetup, true);
       }
-      UpdateColorFilteringFromPrefs();
+      UpdateColorCorrectionFromPrefs();
       break;
     case FeatureType::kFeatureCount:
     case FeatureType::kNoConflictingFeature:

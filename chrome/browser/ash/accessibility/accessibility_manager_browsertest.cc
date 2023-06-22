@@ -218,11 +218,12 @@ bool IsMonoAudioEnabled() {
 }
 
 bool IsColorCorrectionEnabled() {
-  return GetActiveUserPrefs()->GetBoolean(prefs::kAccessibilityColorFiltering);
+  return GetActiveUserPrefs()->GetBoolean(
+      prefs::kAccessibilityColorCorrectionEnabled);
 }
 
 void SetColorCorrectionEnabled(bool enabled) {
-  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityColorFiltering,
+  GetActiveUserPrefs()->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled,
                                    enabled);
 }
 

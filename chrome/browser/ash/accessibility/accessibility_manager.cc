@@ -556,7 +556,7 @@ bool AccessibilityManager::ShouldShowAccessibilityMenu() {
     }
     if (::features::
             AreExperimentalAccessibilityColorEnhancementSettingsEnabled() &&
-        prefs->GetBoolean(prefs::kAccessibilityColorFiltering)) {
+        prefs->GetBoolean(prefs::kAccessibilityColorCorrectionEnabled)) {
       return true;
     }
   }
@@ -1349,13 +1349,14 @@ void AccessibilityManager::SetColorCorrectionEnabled(bool enabled) {
   }
 
   PrefService* pref_service = profile_->GetPrefs();
-  pref_service->SetBoolean(prefs::kAccessibilityColorFiltering, enabled);
+  pref_service->SetBoolean(prefs::kAccessibilityColorCorrectionEnabled,
+                           enabled);
   pref_service->CommitPendingWrite();
 }
 
 bool AccessibilityManager::IsColorCorrectionEnabled() const {
-  return profile_ &&
-         profile_->GetPrefs()->GetBoolean(prefs::kAccessibilityColorFiltering);
+  return profile_ && profile_->GetPrefs()->GetBoolean(
+                         prefs::kAccessibilityColorCorrectionEnabled);
 }
 
 bool AccessibilityManager::IsBrailleDisplayConnected() const {
@@ -1700,8 +1701,8 @@ void AccessibilityManager::UpdateChromeOSAccessibilityHistograms() {
                                 IsColorCorrectionEnabled());
       base::UmaHistogramEnumeration(
           "Accessibility.CrosColorCorrection.FilterType",
-          static_cast<ColorVisionDeficiencyType>(prefs->GetInteger(
-              prefs::kAccessibilityColorVisionDeficiencyType)));
+          static_cast<ColorVisionCorrectionType>(prefs->GetInteger(
+              prefs::kAccessibilityColorVisionCorrectionType)));
       base::UmaHistogramPercentage(
           "Accessibility.CrosColorCorrection.FilterAmount",
           prefs->GetInteger(prefs::kAccessibilityColorVisionCorrectionAmount));

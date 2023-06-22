@@ -445,17 +445,17 @@ const char kAccessibilityAutoclickMovementThreshold[] =
 const char kAccessibilityAutoclickMenuPosition[] =
     "settings.a11y.autoclick_menu_position";
 // Whether to enable color filtering settings.
-const char kAccessibilityColorFiltering[] =
+const char kAccessibilityColorCorrectionEnabled[] =
     "settings.a11y.color_filtering.enabled";
 // Whether color filtering has been set up yet. It should be set up on first
 // use.
-const char kAccessibilityColorFilteringHasBeenSetup[] =
+const char kAccessibilityColorCorrectionHasBeenSetup[] =
     "settings.a11y.color_filtering.setup";
 // The amount of a color vision correction filter to apply.
 const char kAccessibilityColorVisionCorrectionAmount[] =
     "settings.a11y.color_filtering.color_vision_correction_amount";
 // The type of color vision correction to apply.
-const char kAccessibilityColorVisionDeficiencyType[] =
+const char kAccessibilityColorVisionCorrectionType[] =
     "settings.a11y.color_filtering.color_vision_deficiency_type";
 // A boolean pref which determines whether caret highlighting is enabled.
 const char kAccessibilityCaretHighlightEnabled[] =

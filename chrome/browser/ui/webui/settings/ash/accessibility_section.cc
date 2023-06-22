@@ -1155,7 +1155,7 @@ bool AccessibilitySection::LogMetric(mojom::Setting setting,
     case mojom::Setting::kColorCorrectionFilterType:
       base::UmaHistogramEnumeration(
           "ChromeOS.Settings.Accessibility.ColorCorrection.FilterType",
-          static_cast<ColorVisionDeficiencyType>(value.GetInt()));
+          static_cast<ColorVisionCorrectionType>(value.GetInt()));
       return true;
     case mojom::Setting::kColorCorrectionFilterAmount:
       base::UmaHistogramPercentage(

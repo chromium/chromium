@@ -179,11 +179,12 @@ TEST_F(AccessibilityControllerTest, PrefsAreRegistered) {
       prefs::kAccessibilityEnhancedNetworkVoicesInSelectToSpeakAllowed));
   if (::features::
           AreExperimentalAccessibilityColorEnhancementSettingsEnabled()) {
-    EXPECT_TRUE(prefs->FindPreference(prefs::kAccessibilityColorFiltering));
     EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorFilteringHasBeenSetup));
+        prefs->FindPreference(prefs::kAccessibilityColorCorrectionEnabled));
+    EXPECT_TRUE(prefs->FindPreference(
+        prefs::kAccessibilityColorCorrectionHasBeenSetup));
     EXPECT_TRUE(
-        prefs->FindPreference(prefs::kAccessibilityColorVisionDeficiencyType));
+        prefs->FindPreference(prefs::kAccessibilityColorVisionCorrectionType));
     EXPECT_TRUE(prefs->FindPreference(
         prefs::kAccessibilityColorVisionCorrectionAmount));
   }
@@ -912,28 +913,33 @@ TEST_F(AccessibilityControllerTest, ColorCorrectionTrayMenuVisibility) {
       Shell::Get()->accessibility_controller();
   // Check when the value is true and not being controlled by any policy.
   controller->color_correction().SetEnabled(true);
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kAccessibilityColorFiltering));
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityColorCorrectionEnabled));
   EXPECT_TRUE(controller->color_correction().enabled());
   EXPECT_TRUE(controller->IsColorCorrectionSettingVisibleInTray());
   // Check when the value is false and not being controlled by any policy.
   controller->color_correction().SetEnabled(false);
-  EXPECT_FALSE(prefs->IsManagedPreference(prefs::kAccessibilityColorFiltering));
+  EXPECT_FALSE(
+      prefs->IsManagedPreference(prefs::kAccessibilityColorCorrectionEnabled));
   EXPECT_FALSE(controller->color_correction().enabled());
   EXPECT_TRUE(controller->IsColorCorrectionSettingVisibleInTray());
 
   // Check that when the pref is managed and being forced on then it will be
   // visible.
   static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
-      prefs::kAccessibilityColorFiltering, std::make_unique<base::Value>(true));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityColorFiltering));
+      prefs::kAccessibilityColorCorrectionEnabled,
+      std::make_unique<base::Value>(true));
+  EXPECT_TRUE(
+      prefs->IsManagedPreference(prefs::kAccessibilityColorCorrectionEnabled));
   EXPECT_TRUE(controller->IsColorCorrectionSettingVisibleInTray());
   EXPECT_TRUE(controller->color_correction().enabled());
   // Check that when the pref is managed and only being forced off then it will
   // be invisible.
   static_cast<TestingPrefServiceSimple*>(prefs)->SetManagedPref(
-      prefs::kAccessibilityColorFiltering,
+      prefs::kAccessibilityColorCorrectionEnabled,
       std::make_unique<base::Value>(false));
-  EXPECT_TRUE(prefs->IsManagedPreference(prefs::kAccessibilityColorFiltering));
+  EXPECT_TRUE(
+      prefs->IsManagedPreference(prefs::kAccessibilityColorCorrectionEnabled));
   EXPECT_FALSE(controller->color_correction().enabled());
   EXPECT_FALSE(controller->IsColorCorrectionSettingVisibleInTray());
 }
