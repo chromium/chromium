@@ -12,6 +12,7 @@ source_set("browser") {
     "hash_realtime_mechanism.h",
     "ping_manager.cc",
     "ping_manager.h",
+    "safe_browsing_hats_delegate.h",
     "safe_browsing_lookup_mechanism.cc",
     "safe_browsing_lookup_mechanism.h",
     "safe_browsing_lookup_mechanism_experimenter.cc",

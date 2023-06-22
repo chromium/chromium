@@ -134,7 +134,8 @@ class MockPingManager : public PingManager {
                     nullptr,
                     base::SequencedTaskRunner::GetCurrentDefault(),
                     base::NullCallback(),
-                    base::NullCallback()) {}
+                    base::NullCallback(),
+                    nullptr) {}
   ReportThreatDetailsResult ReportThreatDetails(
       std::unique_ptr<ClientSafeBrowsingReportRequest> report,
       bool attach_default_data = true) override {

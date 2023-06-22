@@ -49,7 +49,8 @@ KeyedService* AwPingManagerFactory::BuildServiceInstanceFor(
       // user population values in android_webview, we should consider
       // threading the user population through for client reports
       /*get_user_population_callback=*/base::NullCallback(),
-      /*get_page_load_token_callback_=*/base::NullCallback());
+      /*get_page_load_token_callback_=*/base::NullCallback(),
+      /*hats_delegate=*/nullptr);
 }
 
 std::string AwPingManagerFactory::GetProtocolConfigClientName() const {

@@ -61,7 +61,8 @@ KeyedService* WebLayerPingManagerFactory::BuildServiceInstanceFor(
       base::FeatureList::IsEnabled(
           safe_browsing::kAddPageLoadTokenToClientSafeBrowsingReport)
           ? base::BindRepeating(&GetPageLoadTokenForURL, context)
-          : base::NullCallback());
+          : base::NullCallback(),
+      /*hats_delegate=*/nullptr);
 }
 
 bool WebLayerPingManagerFactory::ShouldFetchAccessTokenForReport(

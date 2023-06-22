@@ -226,6 +226,8 @@ static_library("safe_browsing") {
         "chrome_enterprise_url_lookup_service.h",
         "chrome_enterprise_url_lookup_service_factory.cc",
         "chrome_enterprise_url_lookup_service_factory.h",
+        "chrome_safe_browsing_hats_delegate.cc",
+        "chrome_safe_browsing_hats_delegate.h",
         "cloud_content_scanning/binary_fcm_service.cc",
         "cloud_content_scanning/binary_fcm_service.h",
         "cloud_content_scanning/binary_upload_service.cc",

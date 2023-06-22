@@ -4,6 +4,7 @@
 
 #include "components/safe_browsing/core/browser/ping_manager.h"
 
+#include <memory>
 #include <utility>
 
 #include "base/check.h"
@@ -16,6 +17,7 @@
 #include "base/strings/stringprintf.h"
 #include "base/task/sequenced_task_runner.h"
 #include "components/safe_browsing/core/browser/db/v4_protocol_manager_util.h"
+#include "components/safe_browsing/core/browser/safe_browsing_hats_delegate.h"
 #include "components/safe_browsing/core/common/features.h"
 #include "components/safe_browsing/core/common/proto/csd.pb.h"
 #include "components/safe_browsing/core/common/utils.h"
@@ -94,11 +96,13 @@ PingManager* PingManager::Create(
     base::RepeatingCallback<ChromeUserPopulation()>
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-        get_page_load_token_callback) {
+        get_page_load_token_callback,
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate) {
   return new PingManager(config, url_loader_factory, std::move(token_fetcher),
                          get_should_fetch_access_token, webui_delegate,
                          ui_task_runner, get_user_population_callback,
-                         get_page_load_token_callback);
+                         get_page_load_token_callback,
+                         std::move(hats_delegate));
 }
 
 PingManager::PingManager(
@@ -111,7 +115,8 @@ PingManager::PingManager(
     base::RepeatingCallback<ChromeUserPopulation()>
         get_user_population_callback,
     base::RepeatingCallback<ChromeUserPopulation::PageLoadToken(GURL)>
-        get_page_load_token_callback)
+        get_page_load_token_callback,
+    std::unique_ptr<SafeBrowsingHatsDelegate> hats_delegate)
     : config_(config),
       url_loader_factory_(url_loader_factory),
       token_fetcher_(std::move(token_fetcher)),
@@ -119,7 +124,8 @@ PingManager::PingManager(
       webui_delegate_(webui_delegate),
       ui_task_runner_(ui_task_runner),
       get_user_population_callback_(get_user_population_callback),
-      get_page_load_token_callback_(get_page_load_token_callback) {}
+      get_page_load_token_callback_(get_page_load_token_callback),
+      hats_delegate_(std::move(hats_delegate)) {}
 
 PingManager::~PingManager() {}
 

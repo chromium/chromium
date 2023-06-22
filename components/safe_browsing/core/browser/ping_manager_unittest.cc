@@ -104,7 +104,7 @@ void PingManagerTest::SetNewPingManager(
           base::BindRepeating([]() { return false; })),
       webui_delegate_.get(), base::SequencedTaskRunner::GetCurrentDefault(),
       get_user_population_callback.value_or(base::NullCallback()),
-      get_page_load_token_callback.value_or(base::NullCallback())));
+      get_page_load_token_callback.value_or(base::NullCallback()), nullptr));
 }
 
 void PingManagerTest::SetUpFeatureList(bool should_enable_remove_cookies) {
