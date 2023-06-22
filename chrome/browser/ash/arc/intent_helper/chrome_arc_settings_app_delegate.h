@@ -31,7 +31,7 @@ class ChromeArcSettingsAppDelegate : public ArcSettingsAppDelegate {
   void UpdateLocationSettings(bool is_enabled);
   bool IsInitialLocationSettingsSyncRequired();
 
-  raw_ptr<Profile, DanglingUntriaged> profile_;
+  raw_ptr<Profile> profile_;
 };
 
 }  // namespace arc

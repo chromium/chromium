@@ -42,7 +42,6 @@ constexpr const char* kArcSchemes[] = {url::kHttpScheme, url::kHttpsScheme,
 // is ChromeNewWindowClient in the browser.
 OpenUrlDelegate* g_open_url_delegate = nullptr;
 ControlCameraAppDelegate* g_control_camera_app_delegate = nullptr;
-std::unique_ptr<ArcSettingsAppDelegate> g_arc_settings_app_delegate = nullptr;
 
 // Singleton factory for ArcIntentHelperBridge.
 class ArcIntentHelperBridgeFactory
@@ -133,14 +132,13 @@ void ArcIntentHelperBridge::SetControlCameraAppDelegate(
   g_control_camera_app_delegate = delegate;
 }
 
-// static
-void ArcIntentHelperBridge::SetArcSettingsAppDelegate(
-    std::unique_ptr<ArcSettingsAppDelegate> delegate) {
-  g_arc_settings_app_delegate = std::move(delegate);
-}
-
 void ArcIntentHelperBridge::SetDelegate(std::unique_ptr<Delegate> delegate) {
   delegate_ = std::move(delegate);
+}
+
+void ArcIntentHelperBridge::SetArcSettingsAppDelegate(
+    std::unique_ptr<ArcSettingsAppDelegate> delegate) {
+  arc_settings_app_delegate_ = std::move(delegate);
 }
 
 ArcIntentHelperBridge::ArcIntentHelperBridge(content::BrowserContext* context,
@@ -416,11 +414,11 @@ void ArcIntentHelperBridge::SendNewCaptureBroadcast(bool is_video,
 void ArcIntentHelperBridge::OnAndroidSettingChange(
     arc::mojom::AndroidSetting setting,
     bool is_enabled) {
-  if (!g_arc_settings_app_delegate) {
+  if (!arc_settings_app_delegate_) {
     LOG(ERROR) << "Unable to set value as ARC app delegate is null.";
     return;
   }
-  g_arc_settings_app_delegate->HandleUpdateAndroidSettings(setting, is_enabled);
+  arc_settings_app_delegate_->HandleUpdateAndroidSettings(setting, is_enabled);
 }
 
 // static

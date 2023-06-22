@@ -69,11 +69,11 @@ class ArcIntentHelperBridge : public KeyedService,
 
   static void SetControlCameraAppDelegate(ControlCameraAppDelegate* delegate);
 
-  static void SetArcSettingsAppDelegate(
-      std::unique_ptr<ArcSettingsAppDelegate> delegate);
-
   // Sets the Delegate instance.
   void SetDelegate(std::unique_ptr<Delegate> delegate);
+
+  void SetArcSettingsAppDelegate(
+      std::unique_ptr<ArcSettingsAppDelegate> delegate);
 
   ArcIntentHelperBridge(content::BrowserContext* context,
                         ArcBridgeService* bridge_service);
@@ -172,6 +172,7 @@ class ArcIntentHelperBridge : public KeyedService,
   const std::set<std::string> allowed_arc_schemes_;
 
   std::unique_ptr<Delegate> delegate_;
+  std::unique_ptr<ArcSettingsAppDelegate> arc_settings_app_delegate_;
 
   base::WeakPtrFactory<ArcIntentHelperBridge> weak_ptr_factory_{this};
 };

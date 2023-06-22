@@ -28,7 +28,6 @@
 #include "base/values.h"
 #include "chrome/browser/ash/app_list/arc/arc_app_utils.h"
 #include "chrome/browser/ash/arc/arc_util.h"
-#include "chrome/browser/ash/arc/intent_helper/chrome_arc_settings_app_delegate.h"
 #include "chrome/browser/ash/arc/policy/arc_policy_util.h"
 #include "chrome/browser/ash/arc/session/arc_session_manager.h"
 #include "chrome/browser/ash/settings/stats_reporting_controller.h"
@@ -179,9 +178,6 @@ class ArcSettingsServiceImpl : public TimezoneSettings::Observer,
   // Retrieves Chrome's state for the settings that need to be synced on each
   // Android boot and send it to Android.
   void SyncBootTimeSettings() const;
-  // Sync delegates. To avoid dependency issue we use delegate design pattern
-  // to access chrome from ash.
-  void SyncAppDelegates() const;
   // Retrieves Chrome's state for the settings that need to be synced on each
   // Android boot after AppInstance is ready and send it to Android.
   void SyncAppTimeSettings();
@@ -290,8 +286,6 @@ ArcSettingsServiceImpl::ArcSettingsServiceImpl(
   // Note: if App connection is already established, OnConnectionReady()
   // is synchronously called, so that initial sync is done in the method.
   arc_bridge_service_->app()->AddObserver(this);
-
-  SyncAppDelegates();
 }
 
 ArcSettingsServiceImpl::~ArcSettingsServiceImpl() {
@@ -499,11 +493,6 @@ void ArcSettingsServiceImpl::SyncBootTimeSettings() const {
   // https://crbug.com/955071
   ResetFontScaleToDefault();
   ResetPageZoomToDefault();
-}
-
-void ArcSettingsServiceImpl::SyncAppDelegates() const {
-  ArcIntentHelperBridge::SetArcSettingsAppDelegate(
-      std::make_unique<ChromeArcSettingsAppDelegate>(profile_));
 }
 
 void ArcSettingsServiceImpl::SyncAppTimeSettings() {
