@@ -73,23 +73,9 @@
 
   .choice {
     align-items: center;
-    background-color: var(--google-grey-200);
     display: flex;
     flex-direction: row;
     gap: 16px;
-    height: 24px;
-    padding: 16px 24px;
-    width: 424px;
-  }
-
-  .choice:first-child {
-    border-top-left-radius: 24px;
-    border-top-right-radius: 24px;
-  }
-
-  div.choice:last-of-type {
-    border-bottom-left-radius: 24px;
-    border-bottom-right-radius: 24px;
   }
 
   .choice-icon {
@@ -103,8 +89,21 @@
     line-height: 20px;
   }
 
-  cr-checkbox {
-    margin-inline-start: auto;
+  cr-radio-button {
+    background-color: var(--google-grey-200);
+    height: 24px;
+    padding: 16px 24px;
+    width: 424px;
+  }
+
+  cr-radio-button:first-of-type {
+    border-top-left-radius: 24px;
+    border-top-right-radius: 24px;
+  }
+
+  cr-radio-button:last-of-type {
+    border-bottom-left-radius: 24px;
+    border-bottom-right-radius: 24px;
   }
 
   @media (prefers-color-scheme: dark) {
@@ -124,15 +123,16 @@
   <h1 class="title">$i18n{title}</h1>
   <div class="image-placeholder"></div>
   <p class="subtitle">$i18n{subtitle}</p>
-  <div class="choice-list">
+  <cr-radio-group class="choice-list">
     <template is="dom-repeat" items="[[choiceList_]]">
-      <div class="choice">
-        <div class="choice-icon"></div>
-        <div class="choice-text">[[item.name]]</div>
-        <cr-checkbox></cr-checkbox>
-      </div>
+      <cr-radio-button class="label-first" name="[[item.id]]">
+        <div class="choice">
+          <div class="choice-icon"></div>
+          <div class="choice-text">[[item.name]]</div>
+        </div>
+      </cr-radio-button>
     </template>
-  </div>
+  </cr-radio-group>
 </div>
 <div class="button-container">
   <cr-button class="first-button">$i18n{firstButton}</cr-button>
