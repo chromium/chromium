@@ -21,16 +21,14 @@
 class PermissionPromptChipModel {
  public:
   explicit PermissionPromptChipModel(
-      permissions::PermissionPrompt::Delegate* delegate);
-  ~PermissionPromptChipModel() = default;
+      base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate);
+  ~PermissionPromptChipModel();
   PermissionPromptChipModel(const PermissionPromptChipModel&) = delete;
   PermissionPromptChipModel& operator=(const PermissionPromptChipModel&) =
       delete;
 
-  void ResetDelegate() { delegate_.reset(); }
-
   // The delegate representing the permission request
-  absl::optional<permissions::PermissionPrompt::Delegate*> GetDelegate() {
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> GetDelegate() {
     return delegate_;
   }
 
@@ -57,11 +55,6 @@ class PermissionPromptChipModel {
 
   bool CanDisplayConfirmation() { return chip_text_.length() > 0; }
 
-  bool WasRequestAlreadyDisplayed() {
-    DCHECK(delegate_.has_value());
-    return delegate_.value()->WasCurrentRequestAlreadyDisplayed();
-  }
-
   // Takes a user decision and updates relevant properties of the model
   void UpdateWithUserDecision(permissions::PermissionAction permission_action);
 
@@ -69,7 +62,7 @@ class PermissionPromptChipModel {
 
  private:
   // Delegate holding the current request
-  absl::optional<permissions::PermissionPrompt::Delegate*> delegate_;
+  base::WeakPtr<permissions::PermissionPrompt::Delegate> delegate_;
 
   // Permission icons and text
   const raw_ref<const gfx::VectorIcon> allowed_icon_;
