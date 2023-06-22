@@ -30,6 +30,7 @@ import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.Answers;
+import org.mockito.ArgumentCaptor;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
@@ -64,79 +65,16 @@ import org.chromium.url.Origin;
 
 import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Map;
 
 @RunWith(BaseRobolectricTestRunner.class)
 public class Fido2CredentialRequestRobolectricTest {
-    private static class MockBrowserBridge extends WebAuthnBrowserBridge {
-        private int mOnCredManConditionalRequestPendingCallCount;
-        private int mCleanupRequestCallCount;
-        private int mOnCredManClosedCallCount;
-        private HashMap<String, String> mOnPasswordCredentialReceivedCall;
-        private Callback<Boolean> mCredManGetAssertionCallback;
-
-        MockBrowserBridge() {
-            mOnCredManConditionalRequestPendingCallCount = 0;
-            mCleanupRequestCallCount = 0;
-            mOnCredManClosedCallCount = 0;
-            mCredManGetAssertionCallback = null;
-            mOnPasswordCredentialReceivedCall = new HashMap<>();
-        }
-
-        @Override
-        public void onCredManConditionalRequestPending(
-                RenderFrameHost frameHost, boolean hasResults, Callback<Boolean> fullAssertion) {
-            mOnCredManConditionalRequestPendingCallCount += 1;
-            mCredManGetAssertionCallback = fullAssertion;
-        }
-
-        @Override
-        public void cleanupRequest(RenderFrameHost frameHost) {
-            mCleanupRequestCallCount += 1;
-        }
-
-        @Override
-        public void onCredManUiClosed(RenderFrameHost frameHost, boolean success) {
-            mOnCredManClosedCallCount += 1;
-        }
-
-        @Override
-        public void onPasswordCredentialReceived(
-                RenderFrameHost frameHost, String username, String password) {
-            mOnPasswordCredentialReceivedCall.put("username", username);
-            mOnPasswordCredentialReceivedCall.put("password", password);
-        }
-
-        int getOnCredManConditionalRequestPendingCallCount() {
-            return mOnCredManConditionalRequestPendingCallCount;
-        }
-
-        int getCleanupRequestCallCount() {
-            return mCleanupRequestCallCount;
-        }
-
-        Callback<Boolean> getCredManGetAssertionCallback() {
-            return mCredManGetAssertionCallback;
-        }
-
-        int getOnCredManClosedCallCount() {
-            return mOnCredManClosedCallCount;
-        }
-
-        Map<String, String> getOnPasswordCredentialReceivedCall() {
-            return mOnPasswordCredentialReceivedCall;
-        }
-    }
-
     private FakeAndroidCredentialManager mCredentialManager;
     private Fido2CredentialRequest mRequest;
     private PublicKeyCredentialCreationOptions mCreationOptions;
     private PublicKeyCredentialRequestOptions mRequestOptions;
     private Fido2ApiTestHelper.AuthenticatorCallback mCallback;
     private Origin mOrigin;
-    private MockBrowserBridge mMockBrowserBridge;
     private FakeFido2ApiCallHelper mFido2ApiCallHelper;
 
     @Mock
@@ -151,6 +89,8 @@ public class Fido2CredentialRequestRobolectricTest {
     Activity mActivity;
     @Mock
     CredManMetricsHelper mMetricsHelper;
+    @Mock
+    WebAuthnBrowserBridge mBrowserBridgeMock;
 
     @Rule
     public JniMocker mMocker = new JniMocker();
@@ -212,8 +152,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 FakeAndroidCredManGetRequest.Builder.class,
                 FakeAndroidCredentialOption.Builder.class, mMetricsHelper);
 
-        mMockBrowserBridge = new MockBrowserBridge();
-        mRequest.overrideBrowserBridgeForTesting(mMockBrowserBridge);
+        mRequest.overrideBrowserBridgeForTesting(mBrowserBridgeMock);
 
         mFido2ApiCallHelper = new FakeFido2ApiCallHelper();
         Fido2ApiCallHelper.overrideInstanceForTesting(mFido2ApiCallHelper);
@@ -330,7 +269,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 .isTrue();
         assertThat(option.isSystemProviderRequired()).isFalse();
         assertThat(mCallback.getStatus()).isEqualTo(Integer.valueOf(AuthenticatorStatus.SUCCESS));
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SENT_REQUEST), any());
         verify(mMetricsHelper, times(1))
@@ -351,7 +290,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.NOT_ALLOWED_ERROR));
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
     }
@@ -370,7 +309,7 @@ public class Fido2CredentialRequestRobolectricTest {
                 errorStatus -> mCallback.onError(errorStatus));
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.UNKNOWN_ERROR));
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.FAILURE), any());
     }
@@ -445,9 +384,9 @@ public class Fido2CredentialRequestRobolectricTest {
                 .isEqualTo("{serialized_get_request}");
         assertThat(option.isSystemProviderRequired()).isFalse();
         assertThat(mCallback.getStatus()).isNull();
-        assertThat(mMockBrowserBridge.getOnCredManConditionalRequestPendingCallCount())
-                .isEqualTo(1);
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, times(1))
+                .onCredManConditionalRequestPending(any(), anyBoolean(), any());
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .recordCredmanPrepareRequestHistogram(eq(CredManPrepareRequestEnum.SENT_REQUEST));
         verify(mMetricsHelper, times(1))
@@ -491,8 +430,8 @@ public class Fido2CredentialRequestRobolectricTest {
         mRequest.cancelConditionalGetAssertion(mFrameHost);
         assertThat(mCallback.getStatus())
                 .isEqualTo(Integer.valueOf(AuthenticatorStatus.ABORT_ERROR));
-        assertThat(mMockBrowserBridge.getCleanupRequestCallCount()).isEqualTo(1);
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, times(1)).cleanupRequest(any());
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, never()).reportGetCredentialMetrics(anyInt(), any());
     }
 
@@ -502,6 +441,7 @@ public class Fido2CredentialRequestRobolectricTest {
     testConditionalGetAssertion_credManEnabledUserCancelWhileIdle_DoesNotCancelConditionalRequest() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
@@ -512,11 +452,14 @@ public class Fido2CredentialRequestRobolectricTest {
         mCredentialManager.setErrorResponse(new FakeAndroidCredManException(
                 "android.credentials.GetCredentialException.TYPE_USER_CANCELED", "Message"));
 
-        mMockBrowserBridge.getCredManGetAssertionCallback().onResult(true);
+        verify(mBrowserBridgeMock, times(1))
+                .onCredManConditionalRequestPending(any(), anyBoolean(), callbackCaptor.capture());
+
+        callbackCaptor.getValue().onResult(true);
 
         assertThat(mCallback.getStatus()).isNull();
-        assertThat(mMockBrowserBridge.getCleanupRequestCallCount()).isEqualTo(0);
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(1);
+        verify(mBrowserBridgeMock, never()).cleanupRequest(any());
+        verify(mBrowserBridgeMock, times(1)).onCredManUiClosed(any(), anyBoolean());
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.CANCELLED), any());
     }
@@ -526,6 +469,7 @@ public class Fido2CredentialRequestRobolectricTest {
     public void testConditionalGetAssertion_credManEnabledWithPasswords_canHavePasswordResponse() {
         // Calls to `context.getMainExecutor()` require API level 28 or higher.
         Assume.assumeTrue(Build.VERSION.SDK_INT >= Build.VERSION_CODES.P);
+        ArgumentCaptor<Callback<Boolean>> callbackCaptor = ArgumentCaptor.forClass(Callback.class);
         mRequestOptions.isConditional = true;
 
         mRequest.handleGetAssertionRequest(mRequestOptions, mFrameHost, mOrigin, /*payment=*/null,
@@ -541,7 +485,11 @@ public class Fido2CredentialRequestRobolectricTest {
         String password = "38kay5er1sp0r38";
         mCredentialManager.setCredManGetResponseCredential(
                 new FakeAndroidPasswordCredential(username, password));
-        mMockBrowserBridge.getCredManGetAssertionCallback().onResult(true);
+
+        verify(mBrowserBridgeMock, times(1))
+                .onCredManConditionalRequestPending(any(), anyBoolean(), callbackCaptor.capture());
+
+        callbackCaptor.getValue().onResult(true);
 
         credManRequest = mCredentialManager.getGetRequest();
         assertThat(credManRequest).isNotNull();
@@ -552,14 +500,12 @@ public class Fido2CredentialRequestRobolectricTest {
         assertThat(credentialOptions.get(1).getType())
                 .isEqualTo("android.credentials.TYPE_PASSWORD_CREDENTIAL");
 
-        assertThat(mMockBrowserBridge.getOnCredManClosedCallCount()).isEqualTo(0);
+        verify(mBrowserBridgeMock, never()).onCredManUiClosed(any(), anyBoolean());
         // A password is selected, the callback will not be signed.
         assertThat(mCallback.getStatus()).isNull();
 
-        assertThat(mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("username"))
-                .isEqualTo(username);
-        assertThat(mMockBrowserBridge.getOnPasswordCredentialReceivedCall().get("password"))
-                .isEqualTo(password);
+        verify(mBrowserBridgeMock, times(1))
+                .onPasswordCredentialReceived(any(), eq(username), eq(password));
         verify(mMetricsHelper, times(1))
                 .reportGetCredentialMetrics(eq(CredManGetRequestEnum.SUCCESS_PASSWORD), any());
     }
