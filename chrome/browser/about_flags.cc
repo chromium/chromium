@@ -9321,12 +9321,6 @@ const FeatureEntry kFeatureEntries[] = {
 
 #endif
 
-#if BUILDFLAG(IS_CHROMEOS)
-    {"link-capturing-ui-update", flag_descriptions::kLinkCapturingUiUpdateName,
-     flag_descriptions::kLinkCapturingUiUpdateDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(apps::features::kLinkCapturingUiUpdate)},
-#endif
-
 #if BUILDFLAG(IS_ANDROID)
     {"touch-drag-and-context-menu",
      flag_descriptions::kTouchDragAndContextMenuName,
@@ -9508,21 +9502,11 @@ const FeatureEntry kFeatureEntries[] = {
      FEATURE_VALUE_TYPE(url::kUseIDNA2008NonTransitional)},
 
 #if BUILDFLAG(IS_CHROMEOS)
-    {"link-capturing-infobar", flag_descriptions::kLinkCapturingInfoBarName,
-     flag_descriptions::kLinkCapturingInfoBarDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(apps::features::kLinkCapturingInfoBar)},
-
-    {"intent-chip-skips-intent-picker",
-     flag_descriptions::kIntentChipSkipsPickerName,
-     flag_descriptions::kIntentChipSkipsPickerDescription, kOsCrOS | kOsLacros,
-     FEATURE_VALUE_TYPE(apps::features::kIntentChipSkipsPicker)},
-
     {"sync-chromeos-explicit-passphrase-sharing",
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingName,
      flag_descriptions::kSyncChromeOSExplicitPassphraseSharingDescription,
      kOsCrOS | kOsLacros,
      FEATURE_VALUE_TYPE(syncer::kSyncChromeOSExplicitPassphraseSharing)},
-
 #endif
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)

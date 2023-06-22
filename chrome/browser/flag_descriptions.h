@@ -3953,20 +3953,11 @@ extern const char kDisableIdleSocketsCloseOnMemoryPressureDescription[];
 extern const char kDisableOfficeEditingComponentAppName[];
 extern const char kDisableOfficeEditingComponentAppDescription[];
 
-extern const char kIntentChipSkipsPickerName[];
-extern const char kIntentChipSkipsPickerDescription[];
-
 extern const char kKioskEnableAppServiceName[];
 extern const char kKioskEnableAppServiceDescription[];
 
 extern const char kLacrosColorManagementName[];
 extern const char kLacrosColorManagementDescription[];
-
-extern const char kLinkCapturingInfoBarName[];
-extern const char kLinkCapturingInfoBarDescription[];
-
-extern const char kLinkCapturingUiUpdateName[];
-extern const char kLinkCapturingUiUpdateDescription[];
 
 extern const char kMessagesPreinstallName[];
 extern const char kMessagesPreinstallDescription[];

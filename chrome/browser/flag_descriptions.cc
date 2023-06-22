@@ -6901,14 +6901,6 @@ const char kDisableOfficeEditingComponentAppDescription[] =
     "handlers won't be registered, making it possible to install another "
     "version for testing.";
 
-const char kIntentChipSkipsPickerName[] =
-    "Link capturing intent chip skips the intent picker bubble";
-const char kIntentChipSkipsPickerDescription[] =
-    "When enabled, clicking the intent chip in the Omnibox will skip the "
-    "intent picker bubble and launch directly into the app. If multiple apps "
-    "are installed for a URL, the intent picker will still be shown for "
-    "disambigation.";
-
 const char kKioskEnableAppServiceName[] = "Enable App Service in Kiosk.";
 const char kKioskEnableAppServiceDescription[] =
     "Uses App Service to install web apps and launch both Chrome apps and web "
@@ -6918,17 +6910,6 @@ const char kLacrosColorManagementName[] = "Enable Chrome Color Management.";
 const char kLacrosColorManagementDescription[] =
     "Uses chrome-color-management wayland protocol to manage color spaces "
     "for lacros. This is necessary for enabling HDR on compatible devices.";
-
-const char kLinkCapturingInfoBarName[] = "Enable link capturing info bar";
-const char kLinkCapturingInfoBarDescription[] =
-    "Enables an info bar which appears when launching a web app through the "
-    "Omnibox intent chip, prompting to update the link capturing setting for "
-    "that app.";
-
-const char kLinkCapturingUiUpdateName[] = "Enable updated link capturing UI";
-const char kLinkCapturingUiUpdateDescription[] =
-    "Enables updated UI for link capturing flows from the browser to apps, "
-    "including the intent picker and an in-app link capturing prompt.";
 
 const char kMessagesPreinstallName[] = "Preinstall  Messages PWA";
 const char kMessagesPreinstallDescription[] =

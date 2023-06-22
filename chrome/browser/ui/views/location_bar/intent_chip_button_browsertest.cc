@@ -49,7 +49,7 @@ class IntentChipButtonBrowserTest
   IntentChipButtonBrowserTest() {
     scoped_feature_list_.InitWithFeatures(
         /*enabled_features=*/{apps::features::kLinkCapturingUiUpdate},
-        /*disabled_features=*/{apps::features::kIntentChipSkipsPicker});
+        /*disabled_features=*/{apps::features::kLinkCapturingInfoBar});
   }
 
   void SetUpOnMainThread() override {
@@ -248,25 +248,81 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest,
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
 
-class IntentChipButtonSkipIntentPickerBrowserTest
-    : public IntentChipButtonBrowserTest {
+IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
+  InstallOverlappingApp();
+
+  const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
+  const GURL overlapped_url =
+      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+  const GURL non_overlapped_url =
+      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
+
+  content::WebContents* web_contents =
+      browser()->tab_strip_model()->GetActiveWebContents();
+
+  ClickLinkAndWaitForIconUpdate(web_contents, root_url);
+
+  auto icon1 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_FALSE(IntentPickerTabHelper::FromWebContents(web_contents)
+                   ->app_icon()
+                   .IsEmpty());
+
+  ClickLinkAndWaitForIconUpdate(web_contents, non_overlapped_url);
+
+  // The chip should still be showing the same app icon.
+  auto icon2 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_TRUE(icon1.BackedBySameObjectAs(icon2));
+
+  ClickLinkAndWaitForIconUpdate(web_contents, overlapped_url);
+
+  // Loading a URL with multiple apps available should switch to a generic icon.
+  auto icon3 =
+      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
+  ASSERT_FALSE(icon1.BackedBySameObjectAs(icon3));
+  ASSERT_TRUE(IntentPickerTabHelper::FromWebContents(web_contents)
+                  ->app_icon()
+                  .IsEmpty());
+}
+
+#if BUILDFLAG(IS_CHROMEOS)
+// Test fixture class which shows the supported links infobar when opening an
+// app through the intent picker.
+class IntentChipWithInfoBarBrowserTest : public IntentChipButtonBrowserTest {
+ public:
+  IntentChipWithInfoBarBrowserTest() {
+    feature_list_.InitWithFeatures(
+        /*enabled_features=*/{apps::features::kLinkCapturingInfoBar},
+        /*disabled_features=*/{});
+  }
+
  private:
-  base::test::ScopedFeatureList feature_list_{
-      apps::features::kIntentChipSkipsPicker};
+  base::test::ScopedFeatureList feature_list_;
 };
 
-IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
-                       ClickingChipOpensApp) {
+IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
+                       ShowsInfoBarOnAppOpen) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
+
   DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
     ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
   });
+  EXPECT_TRUE(GetIntentChip()->GetVisible());
 
   Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
 
+  // Clicking the chip should open the app without showing the intent picker
+  // bubble.
   EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
                                                          test_web_app_id()));
+  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
+      app_browser->tab_strip_model()->GetActiveWebContents());
+  ASSERT_EQ(infobar_manager->infobar_count(), 1u);
+  ASSERT_EQ(
+      infobar_manager->infobar_at(0)->delegate()->GetIdentifier(),
+      infobars::InfoBarDelegate::SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS);
 }
 
 // TODO(crbug.com/1313274): Fix test flakiness on Lacros.
@@ -277,7 +333,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 #define MAYBE_ShowsIntentPickerWhenMultipleApps \
   ShowsIntentPickerWhenMultipleApps
 #endif
-IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
+IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
                        MAYBE_ShowsIntentPickerWhenMultipleApps) {
   InstallOverlappingApp();
 
@@ -301,7 +357,7 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
 }
 
 // TODO(crbug.com/1427908): Flaky on many platforms.
-IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
+IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
                        DISABLED_ShowsIntentChipCollapsed) {
   const GURL in_scope_url =
       https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
@@ -355,82 +411,6 @@ IN_PROC_BROWSER_TEST_F(IntentChipButtonSkipIntentPickerBrowserTest,
   ClickLinkAndWaitForIconUpdate(web_contents, in_scope_url);
   EXPECT_TRUE(GetIntentChip()->GetVisible());
   EXPECT_FALSE(GetIntentChip()->is_fully_collapsed());
-}
-
-IN_PROC_BROWSER_TEST_F(IntentChipButtonBrowserTest, ShowsAppIconInChip) {
-  InstallOverlappingApp();
-
-  const GURL root_url = https_server().GetURL(GetAppUrlHost(), "/");
-  const GURL overlapped_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-  const GURL non_overlapped_url =
-      https_server().GetURL(GetAppUrlHost(), GetOutOfScopeUrlPath());
-
-  content::WebContents* web_contents =
-      browser()->tab_strip_model()->GetActiveWebContents();
-
-  ClickLinkAndWaitForIconUpdate(web_contents, root_url);
-
-  auto icon1 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_FALSE(IntentPickerTabHelper::FromWebContents(web_contents)
-                   ->app_icon()
-                   .IsEmpty());
-
-  ClickLinkAndWaitForIconUpdate(web_contents, non_overlapped_url);
-
-  // The chip should still be showing the same app icon.
-  auto icon2 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_TRUE(icon1.BackedBySameObjectAs(icon2));
-
-  ClickLinkAndWaitForIconUpdate(web_contents, overlapped_url);
-
-  // Loading a URL with multiple apps available should switch to a generic icon.
-  auto icon3 =
-      GetIntentChip()->GetImage(views::Button::ButtonState::STATE_NORMAL);
-  ASSERT_FALSE(icon1.BackedBySameObjectAs(icon3));
-  ASSERT_TRUE(IntentPickerTabHelper::FromWebContents(web_contents)
-                  ->app_icon()
-                  .IsEmpty());
-}
-
-#if BUILDFLAG(IS_CHROMEOS)
-// Test fixture class which shows the supported links infobar when opening an
-// app through the intent picker.
-class IntentChipWithInfoBarBrowserTest : public IntentChipButtonBrowserTest {
- public:
-  IntentChipWithInfoBarBrowserTest() {
-    feature_list_.InitWithFeatures(
-        /*enabled_features=*/{apps::features::kIntentChipSkipsPicker,
-                              apps::features::kLinkCapturingInfoBar},
-        /*disabled_features=*/{});
-  }
-
- private:
-  base::test::ScopedFeatureList feature_list_;
-};
-
-IN_PROC_BROWSER_TEST_F(IntentChipWithInfoBarBrowserTest,
-                       ShowsInfoBarOnAppOpen) {
-  const GURL in_scope_url =
-      https_server().GetURL(GetAppUrlHost(), GetInScopeUrlPath());
-
-  DoAndWaitForIntentPickerIconUpdate([this, in_scope_url] {
-    ASSERT_TRUE(ui_test_utils::NavigateToURL(browser(), in_scope_url));
-  });
-  EXPECT_TRUE(GetIntentChip()->GetVisible());
-
-  Browser* app_browser = ClickIntentChip(/*wait_for_browser=*/true);
-
-  EXPECT_TRUE(web_app::AppBrowserController::IsForWebApp(app_browser,
-                                                         test_web_app_id()));
-  auto* infobar_manager = infobars::ContentInfoBarManager::FromWebContents(
-      app_browser->tab_strip_model()->GetActiveWebContents());
-  ASSERT_EQ(infobar_manager->infobar_count(), 1u);
-  ASSERT_EQ(
-      infobar_manager->infobar_at(0)->delegate()->GetIdentifier(),
-      infobars::InfoBarDelegate::SUPPORTED_LINKS_INFOBAR_DELEGATE_CHROMEOS);
 }
 
 #endif  // BUILDFLAG(IS_CHROMEOS)
