@@ -778,6 +778,11 @@ class FormForestTestUpdateOrder
     : public FormForestTestUpdateTree,
       public ::testing::WithParamInterface<FormNameVector> {
  protected:
+  void TearDown() override {
+    TestApi(ff_).Reset();
+    FormForestTestUpdateTree::TearDown();
+  }
+
   void UpdateFormForestAccordingToParamOrder() {
     for (const std::string& form_name : GetParam())
       UpdateTreeOfRendererForm(ff_, form_name);
