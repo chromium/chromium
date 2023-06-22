@@ -3185,27 +3185,29 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InitializeResult"
-    enum="ArcVideoDecodeAcceleratorResult" expires_after="2021-02-18">
+    enum="ArcVideoDecodeAcceleratorResult" expires_after="2024-06-22">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts of status values returned from calls to
-    GpuArcVideoDecodeAccelerator::Initialize().
+    GpuArcVideoDecodeAccelerator::Initialize(). Warning: this histogram was
+    expired from 2021-02-18 to 2023-06-21; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InstanceCount.All"
-    units="instances" expires_after="2023-01-22">
+    units="instances" expires_after="2024-06-22">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
     Counts how many GpuArcVideoDecodeAccelerator instances are alive at the time
-    a new GpuArcVideoDecodeAccelerator is created.
+    a new GpuArcVideoDecodeAccelerator is created. Warning: this histogram was
+    expired from 2023-01-22 to 2023-06-21; data may be missing.
   </summary>
 </histogram>
 
 <histogram name="Media.GpuArcVideoDecodeAccelerator.InstanceCount.Initialized"
-    units="instances" expires_after="2023-01-22">
+    units="instances" expires_after="2024-06-22">
   <owner>andrescj@chromium.org</owner>
   <owner>chromeos-gfx-video@google.com</owner>
   <summary>
@@ -3213,7 +3215,8 @@ chromium-metrics-reviews@google.com.
     through initialization (i.e., have an underlying
     media::VideoDecodeAccelerator) are alive at the time a
     GpuArcVideoDecodeAccelerator goes through initialization and successfully
-    creates its underlying media::VideoDecodeAccelerator.
+    creates its underlying media::VideoDecodeAccelerator. Warning: this
+    histogram was expired from 2023-01-22 to 2023-06-21; data may be missing.
   </summary>
 </histogram>
 
