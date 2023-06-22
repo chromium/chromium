@@ -917,6 +917,29 @@ bool ShouldWaitForDebuggerInWindowOpen() {
   return false;
 }
 
+namespace {
+// This is a helper function used in ApplyNetworkRequestOverrides and
+// ApplyUserAgentMetadataOverrides to help correctly set network request header
+// overrides. It behaves the same as RenderFrameDevToolsAgentHost::GetFor for
+// all FrameTreeNodes except those that are prerendering. For prerendering
+// FrameTreeNodes, it returns the DevToolsAgentHost of the primary main frame,
+// even if it has a DTAH of its own. The network header overrides are applied
+// too early, before the correct values sent by the client are propagated to the
+// prerender's DTAH's handlers. As a result, we use the values that were
+// previously set for the primary main frame.
+DevToolsAgentHostImpl* GetDevToolsAgentHostForNetworkOverrides(
+    FrameTreeNode* frame_tree_node) {
+  if (frame_tree_node->frame_tree().is_prerendering()) {
+    return RenderFrameDevToolsAgentHost::GetFor(
+        WebContentsImpl::FromFrameTreeNode(frame_tree_node)
+            ->GetPrimaryMainFrame()
+            ->frame_tree_node());
+  }
+  return RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
+}
+
+}  // namespace
+
 void ApplyNetworkRequestOverrides(
     FrameTreeNode* frame_tree_node,
     blink::mojom::BeginNavigationParams* begin_params,
@@ -929,18 +952,7 @@ void ApplyNetworkRequestOverrides(
   *devtools_accept_language_overridden = false;
   bool disable_cache = false;
   DevToolsAgentHostImpl* agent_host =
-      RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-  // Prerendered pages will only have have DevTools attached if the client opted
-  // into supporting the tab target. For legacy clients, we will apply relevant
-  // network override from the associated main frame target.
-  if (frame_tree_node->frame_tree().is_prerendering()) {
-    if (!agent_host) {
-      agent_host = RenderFrameDevToolsAgentHost::GetFor(
-          WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-              ->GetPrimaryMainFrame()
-              ->frame_tree_node());
-    }
-  }
+      GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
   if (!agent_host)
     return;
   net::HttpRequestHeaders headers;
@@ -976,19 +988,7 @@ bool ApplyUserAgentMetadataOverrides(
     FrameTreeNode* frame_tree_node,
     absl::optional<blink::UserAgentMetadata>* override_out) {
   DevToolsAgentHostImpl* agent_host =
-      RenderFrameDevToolsAgentHost::GetFor(frame_tree_node);
-  // If DevToolsTabTarget is not enabled, Prerendered pages do not have DevTools
-  // attached but it's important for developers that they get the UA override of
-  // the visible DevTools for testing mobile sites. Use the DevTools agent of
-  // the primary main frame of the WebContents.
-  // TODO(https://crbug.com/1221419): The real fix may be to make a separate
-  // target for the prerendered page.
-  if (frame_tree_node->frame_tree().is_prerendering() && !agent_host) {
-    agent_host = RenderFrameDevToolsAgentHost::GetFor(
-        WebContentsImpl::FromFrameTreeNode(frame_tree_node)
-            ->GetPrimaryMainFrame()
-            ->frame_tree_node());
-  }
+      GetDevToolsAgentHostForNetworkOverrides(frame_tree_node);
   if (!agent_host)
     return false;
 
