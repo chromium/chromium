@@ -31,6 +31,9 @@ using ::ash::string_matching::TokenizedString;
 constexpr size_t kMinQueryLength = 3u;
 constexpr size_t kMaxResults = 3u;
 constexpr double kResultRelevanceThreshold = 0.79;
+// The threshold is used to filter the results from the search handler of the
+// new shortcuts app.
+constexpr double kRelevanceScoreThreshold = 0.52;
 
 std::vector<std::pair<KeyboardShortcutData, double>> Search(
     const std::vector<KeyboardShortcutData>& shortcut_data,
@@ -75,8 +78,9 @@ void KeyboardShortcutProvider::Start(const std::u16string& query) {
   // Cancel all previous searches.
   weak_factory_.InvalidateWeakPtrs();
 
-  if (query.size() < kMinQueryLength)
+  if (query.size() < kMinQueryLength) {
     return;
+  }
 
   if (ash::features::isSearchCustomizableShortcutsInLauncherEnabled()) {
     if (!search_handler_) {
@@ -139,9 +143,16 @@ void KeyboardShortcutProvider::OnShortcutsSearchComplete(
   // Convert final candidates into correct type, and publish.
   SearchProvider::Results results;
   for (const auto& search_result : search_results) {
-    // TODO(xiangdongkong): implement kMaxResults and a Relevance threshold.
+    // The search results are sorted by relevance score in descending order
+    // already.
+    if (search_result->relevance_score < kRelevanceScoreThreshold) {
+      break;
+    }
     results.push_back(
         std::make_unique<KeyboardShortcutResult>(profile_, search_result));
+    if (results.size() >= kMaxResults) {
+      break;
+    }
   }
 
   SwapResults(&results);

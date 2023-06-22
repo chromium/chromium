@@ -280,7 +280,8 @@ KeyboardShortcutResult::KeyboardShortcutResult(
     Profile* profile,
     const ash::shortcut_customization::mojom::SearchResultPtr& search_result)
     : profile_(profile) {
-  // TODO(xiangdongkong): Populate properties.
+  set_relevance(search_result->relevance_score);
+  // TODO(xiangdongkong): Populate other properties.
 }
 
 KeyboardShortcutResult::~KeyboardShortcutResult() = default;

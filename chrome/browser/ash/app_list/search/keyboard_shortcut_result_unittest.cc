@@ -138,14 +138,15 @@ TEST_F(KeyboardShortcutResultTest,
 }
 
 // Test that KeyBoardShortCutResult can take search results.
-// TODO(xiangdongkong): Replace with a real test.
-TEST_F(KeyboardShortcutResultTest, DummyTest) {
+TEST_F(KeyboardShortcutResultTest, ExpectedPropertiesSetCorrectly) {
   const auto& search_results =
       ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
   const auto& search_result0 = search_results[0];
 
   auto result = std::make_unique<KeyboardShortcutResult>(
       /* profile= */ nullptr, search_result0);
+  EXPECT_EQ(0.5, result->relevance());
+  // TODO(xiangdongkong): Verify more properties as they are implemented.
 }
 
 }  // namespace app_list::test

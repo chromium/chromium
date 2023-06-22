@@ -10,6 +10,8 @@
 #include "ash/webui/shortcut_customization_ui/backend/search/fake_search_data.h"
 #include "ash/webui/shortcut_customization_ui/backend/search/search.mojom.h"
 #include "base/memory/raw_ptr.h"
+#include "base/strings/strcat.h"
+#include "base/strings/string_number_conversions.h"
 #include "base/test/scoped_feature_list.h"
 #include "chrome/browser/ash/app_list/search/chrome_search_result.h"
 #include "chrome/browser/ash/app_list/search/search_features.h"
@@ -24,7 +26,34 @@ namespace app_list::test {
 
 namespace {
 constexpr double kResultRelevanceThreshold = 0.79;
+// Threshold used by new shortcuts search.
+constexpr double kRelevanceScoreThreshold = 0.52;
+constexpr size_t kMaxResults = 3u;
+
+using ash::shortcut_customization::mojom::SearchResult;
+using ash::shortcut_customization::mojom::SearchResultPtr;
+
+std::vector<SearchResultPtr> CreateFakeSearchResultsWithSpecifiedScores(
+    const std::vector<double>& scores) {
+  std::vector<SearchResultPtr> search_results;
+  for (double score : scores) {
+    search_results.push_back(SearchResult::New(
+        /*accelerator_layout_info=*/CreateFakeAcceleratorLayoutInfo(
+            /*description=*/base::StrCat(
+                {u"result with score ", base::NumberToString16(score)}),
+            /*source=*/ash::mojom::AcceleratorSource::kAsh,
+            /*action=*/
+            ash::shortcut_ui::fake_search_data::FakeActionIds::kAction1,
+            /*style=*/ash::mojom::AcceleratorLayoutStyle::kDefault),
+        /*accelerator_infos=*/
+        ash::shortcut_ui::fake_search_data::CreateFakeAcceleratorInfoList(),
+        /*relevance_score=*/score));
+  }
+
+  return search_results;
 }
+
+}  // namespace
 
 class KeyboardShortcutProviderTest : public ChromeAshTestBase,
                                      public testing::WithParamInterface<bool> {
@@ -259,16 +288,51 @@ class CustomizableKeyboardShortcutProviderTest : public ChromeAshTestBase {
   raw_ptr<KeyboardShortcutProvider, ExperimentalAsh> provider_ = nullptr;
 };
 
-TEST_F(CustomizableKeyboardShortcutProviderTest, ShouldReturnAllItems) {
-  auto search_results =
-      ash::shortcut_ui::fake_search_data::CreateFakeSearchResultList();
-  const size_t results_count = search_results.size();
+// Test that when there are more than 3 results whose relevant score exceeds the
+// threshold, only return top three.
+TEST_F(CustomizableKeyboardShortcutProviderTest, FourQualifiedReturnThree) {
+  auto search_results = CreateFakeSearchResultsWithSpecifiedScores(
+      {0.9, 0.8, 0.7, 0.53, 0.5, 0.4});
   search_handler_->SetSearchResults(std::move(search_results));
 
   provider_->Start(u"fake query");
   Wait();
 
+  EXPECT_EQ(kMaxResults, results().size());
+  for (const auto& result : results()) {
+    EXPECT_GT(result->relevance(), kRelevanceScoreThreshold);
+  }
+}
+
+// Test that when there are 3 result but none of them whose relevant score
+// exceeds the threshold.
+TEST_F(CustomizableKeyboardShortcutProviderTest, NoneQualifiedReturnEmpty) {
+  auto search_results =
+      CreateFakeSearchResultsWithSpecifiedScores({0.51, 0.51, 0.5});
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  provider_->Start(u"fake query");
+  Wait();
+
+  EXPECT_TRUE(results().empty());
+}
+
+// Test that when there are 4 result but only 2 of them whose relevant score
+// exceeds the threshold, only return those two.
+TEST_F(CustomizableKeyboardShortcutProviderTest,
+       TwoQualifiedTwoNotQualifiedReturnTwo) {
+  auto search_results =
+      CreateFakeSearchResultsWithSpecifiedScores({0.9, 0.8, 0.51, 0.51, 0.5});
+  search_handler_->SetSearchResults(std::move(search_results));
+
+  provider_->Start(u"fake query");
+  Wait();
+
+  const size_t results_count = 2;
   EXPECT_EQ(results_count, results().size());
+  for (const auto& result : results()) {
+    EXPECT_GT(result->relevance(), kRelevanceScoreThreshold);
+  }
 }
 
 }  // namespace app_list::test
