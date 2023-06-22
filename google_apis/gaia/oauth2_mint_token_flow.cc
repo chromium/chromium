@@ -129,37 +129,68 @@ bool RemoteConsentResolutionData::operator==(
 
 OAuth2MintTokenFlow::Parameters::Parameters() : mode(MODE_ISSUE_ADVICE) {}
 
-OAuth2MintTokenFlow::Parameters::Parameters(
-    const std::string& eid,
-    const std::string& cid,
-    const std::vector<std::string>& scopes_arg,
+// static
+OAuth2MintTokenFlow::Parameters
+OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
+    base::StringPiece extension_id,
+    base::StringPiece client_id,
+    base::span<const base::StringPiece> scopes,
+    Mode mode,
     bool enable_granular_permissions,
-    const std::string& device_id,
-    const std::string& selected_user_id,
-    const std::string& consent_result,
-    const std::string& version,
-    const std::string& channel,
-    Mode mode_arg)
-    : extension_id(eid),
-      client_id(cid),
-      scopes(scopes_arg),
-      enable_granular_permissions(enable_granular_permissions),
-      device_id(device_id),
-      selected_user_id(selected_user_id),
-      consent_result(consent_result),
-      version(version),
-      channel(channel),
-      mode(mode_arg) {}
+    base::StringPiece version,
+    base::StringPiece channel,
+    base::StringPiece device_id,
+    base::StringPiece selected_user_id,
+    base::StringPiece consent_result) {
+  Parameters parameters;
+  parameters.extension_id = extension_id;
+  parameters.client_id = client_id;
+  parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
+  parameters.mode = mode;
+  parameters.enable_granular_permissions = enable_granular_permissions;
+  parameters.version = version;
+  parameters.channel = channel;
+  parameters.device_id = device_id;
+  parameters.selected_user_id = selected_user_id;
+  parameters.consent_result = consent_result;
+  return parameters;
+}
+
+// static
+OAuth2MintTokenFlow::Parameters
+OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
+    base::StringPiece client_id,
+    base::span<const base::StringPiece> scopes,
+    base::StringPiece version,
+    base::StringPiece channel,
+    base::StringPiece device_id) {
+  Parameters parameters;
+  parameters.client_id = client_id;
+  parameters.scopes = std::vector<std::string>(scopes.begin(), scopes.end());
+  parameters.mode = MODE_MINT_TOKEN_NO_FORCE;
+  parameters.version = version;
+  parameters.channel = channel;
+  parameters.device_id = device_id;
+  return parameters;
+}
+
+OAuth2MintTokenFlow::Parameters::Parameters(Parameters&& other) noexcept =
+    default;
+OAuth2MintTokenFlow::Parameters& OAuth2MintTokenFlow::Parameters::operator=(
+    Parameters&& other) noexcept = default;
 
 OAuth2MintTokenFlow::Parameters::Parameters(const Parameters& other) = default;
+OAuth2MintTokenFlow::Parameters::~Parameters() = default;
 
-OAuth2MintTokenFlow::Parameters::~Parameters() {}
+OAuth2MintTokenFlow::Parameters OAuth2MintTokenFlow::Parameters::Clone() {
+  return Parameters(*this);
+}
 
 OAuth2MintTokenFlow::OAuth2MintTokenFlow(Delegate* delegate,
-                                         const Parameters& parameters)
-    : delegate_(delegate), parameters_(parameters) {}
+                                         Parameters parameters)
+    : delegate_(delegate), parameters_(std::move(parameters)) {}
 
-OAuth2MintTokenFlow::~OAuth2MintTokenFlow() { }
+OAuth2MintTokenFlow::~OAuth2MintTokenFlow() = default;
 
 void OAuth2MintTokenFlow::ReportSuccess(
     const std::string& access_token,

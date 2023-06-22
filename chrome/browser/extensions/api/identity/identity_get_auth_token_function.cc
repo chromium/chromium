@@ -13,6 +13,7 @@
 #include "base/metrics/histogram_functions.h"
 #include "base/notreached.h"
 #include "base/strings/strcat.h"
+#include "base/strings/string_piece.h"
 #include "base/time/time.h"
 #include "base/trace_event/trace_event.h"
 #include "build/build_config.h"
@@ -60,12 +61,12 @@ bool IsBrowserSigninAllowed(Profile* profile) {
   return profile->GetPrefs()->GetBoolean(prefs::kSigninAllowed);
 }
 
-std::string GetOAuth2MintTokenFlowVersion() {
-  return std::string(version_info::GetVersionNumber());
+base::StringPiece GetOAuth2MintTokenFlowVersion() {
+  return version_info::GetVersionNumber();
 }
 
-std::string GetOAuth2MintTokenFlowChannel() {
-  return std::string(version_info::GetChannelString(chrome::GetChannel()));
+base::StringPiece GetOAuth2MintTokenFlowChannel() {
+  return version_info::GetChannelString(chrome::GetChannel());
 }
 
 void RecordFunctionResult(const IdentityGetAuthTokenError& error,
@@ -876,13 +877,13 @@ IdentityGetAuthTokenFunction::CreateMintTokenFlow() {
       GetSigninScopedDeviceIdForProfile(GetProfile());
   auto mint_token_flow = std::make_unique<OAuth2MintTokenFlow>(
       this,
-      OAuth2MintTokenFlow::Parameters(
+      OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
           extension()->id(), oauth2_client_id_,
-          std::vector<std::string>(token_key_.scopes.begin(),
-                                   token_key_.scopes.end()),
-          enable_granular_permissions_, signin_scoped_device_id,
-          GetSelectedUserId(), consent_result_, GetOAuth2MintTokenFlowVersion(),
-          GetOAuth2MintTokenFlowChannel(), gaia_mint_token_mode_));
+          std::vector<const base::StringPiece>(token_key_.scopes.begin(),
+                                               token_key_.scopes.end()),
+          gaia_mint_token_mode_, enable_granular_permissions_,
+          GetOAuth2MintTokenFlowVersion(), GetOAuth2MintTokenFlowChannel(),
+          signin_scoped_device_id, GetSelectedUserId(), consent_result_));
   return mint_token_flow;
 }
 

@@ -12,6 +12,7 @@
 #include <vector>
 
 #include "base/json/json_reader.h"
+#include "base/strings/string_piece.h"
 #include "base/strings/utf_string_conversions.h"
 #include "base/test/metrics/histogram_tester.h"
 #include "base/test/values_test_util.h"
@@ -95,13 +96,6 @@ static const char kInvalidRemoteConsentResponse[] =
     "  }"
     "}";
 
-std::vector<std::string> CreateTestScopes() {
-  std::vector<std::string> scopes;
-  scopes.push_back("http://scope1");
-  scopes.push_back("http://scope2");
-  return scopes;
-}
-
 static RemoteConsentResolutionData CreateRemoteConsentResolutionData() {
   RemoteConsentResolutionData resolution_data;
   resolution_data.url = GURL("https://test.com/consent?param=value");
@@ -138,9 +132,9 @@ class MockDelegate : public OAuth2MintTokenFlow::Delegate {
 class MockMintTokenFlow : public OAuth2MintTokenFlow {
  public:
   explicit MockMintTokenFlow(MockDelegate* delegate,
-                             const OAuth2MintTokenFlow::Parameters& parameters)
-      : OAuth2MintTokenFlow(delegate, parameters) {}
-  ~MockMintTokenFlow() override {}
+                             OAuth2MintTokenFlow::Parameters parameters)
+      : OAuth2MintTokenFlow(delegate, std::move(parameters)) {}
+  ~MockMintTokenFlow() override = default;
 
   MOCK_METHOD0(CreateAccessTokenFetcher,
                std::unique_ptr<OAuth2AccessTokenFetcher>());
@@ -192,12 +186,14 @@ class OAuth2MintTokenFlowTest : public testing::Test {
     std::string client_id = "client1";
     std::string version = "test_version";
     std::string channel = "test_channel";
-    std::vector<std::string> scopes(CreateTestScopes());
+    std::vector<std::string> scopes = {"http://scope1", "http://scope2"};
     flow_ = std::make_unique<MockMintTokenFlow>(
         delegate,
-        OAuth2MintTokenFlow::Parameters(
-            ext_id, client_id, scopes, enable_granular_permissions, device_id,
-            selected_user_id, consent_result, version, channel, mode));
+        OAuth2MintTokenFlow::Parameters::CreateForExtensionFlow(
+            ext_id, client_id,
+            std::vector<const base::StringPiece>(scopes.begin(), scopes.end()),
+            mode, enable_granular_permissions, version, channel, device_id,
+            selected_user_id, consent_result));
   }
 
   void ProcessApiCallSuccess(const network::mojom::URLResponseHead* head,

@@ -5,8 +5,11 @@
 #include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 
 #include <string>
+#include <vector>
 
+#include "base/containers/span.h"
 #include "base/memory/ref_counted.h"
+#include "base/strings/string_piece.h"
 #include "google_apis/gaia/google_service_auth_error.h"
 #include "google_apis/gaia/oauth2_access_token_consumer.h"
 #include "google_apis/gaia/oauth2_access_token_fetcher.h"
@@ -34,16 +37,16 @@ void OAuth2MintAccessTokenFetcherAdapter::Start(
     const std::string& client_id,
     const std::string& client_secret,
     const std::vector<std::string>& scopes) {
-  auto params = OAuth2MintTokenFlow::Parameters(
-      /*eid=*/std::string(), client_id, scopes,
-      /*enable_granular_permissions=*/false, device_id_,
-      /*selected_user_id=*/std::string(),
-      /*consent_result=*/std::string(), client_version_, client_channel_,
-      OAuth2MintTokenFlow::MODE_MINT_TOKEN_NO_FORCE);
+  auto params = OAuth2MintTokenFlow::Parameters::CreateForClientFlow(
+      client_id,
+      std::vector<const base::StringPiece>(scopes.begin(), scopes.end()),
+      client_version_, client_channel_, device_id_);
   if (mint_token_flow_factory_for_testing_) {
-    mint_token_flow_ = mint_token_flow_factory_for_testing_.Run(this, params);
+    mint_token_flow_ =
+        mint_token_flow_factory_for_testing_.Run(this, std::move(params));
   } else {
-    mint_token_flow_ = std::make_unique<OAuth2MintTokenFlow>(this, params);
+    mint_token_flow_ =
+        std::make_unique<OAuth2MintTokenFlow>(this, std::move(params));
   }
   mint_token_flow_->Start(url_loader_factory_, refresh_token_);
 }

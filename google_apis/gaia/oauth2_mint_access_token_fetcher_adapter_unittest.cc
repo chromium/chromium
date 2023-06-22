@@ -61,10 +61,10 @@ class MockOAuth2AccessTokenConsumer : public OAuth2AccessTokenConsumer {
 
 class MockOAuth2MintTokenFlow : public OAuth2MintTokenFlow {
  public:
-  MockOAuth2MintTokenFlow(Delegate* delegate, const Parameters& params)
-      : OAuth2MintTokenFlow(delegate, params),
+  MockOAuth2MintTokenFlow(Delegate* delegate, Parameters params)
+      : OAuth2MintTokenFlow(delegate, params.Clone()),
         delegate_(delegate),
-        params_(params) {}
+        params_(std::move(params)) {}
 
   MOCK_METHOD(
       void,
@@ -150,10 +150,10 @@ class OAuth2MintAccessTokenFetcherAdapterTest : public testing::Test {
 
   std::unique_ptr<OAuth2MintTokenFlow> CreateMockFlow(
       OAuth2MintTokenFlow::Delegate* delegate,
-      const OAuth2MintTokenFlow::Parameters& params) {
+      OAuth2MintTokenFlow::Parameters params) {
     CHECK(!mock_flow_);
     auto mock_flow =
-        std::make_unique<MockOAuth2MintTokenFlow>(delegate, params);
+        std::make_unique<MockOAuth2MintTokenFlow>(delegate, std::move(params));
     mock_flow_ = mock_flow->GetWeakPtr();
     EXPECT_CALL(*mock_flow_, Start(_, kTestRefreshToken));
     return mock_flow;

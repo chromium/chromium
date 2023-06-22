@@ -29,7 +29,7 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintAccessTokenFetcherAdapter
   using OAuth2MintTokenFlowFactory =
       base::RepeatingCallback<std::unique_ptr<OAuth2MintTokenFlow>(
           OAuth2MintTokenFlow::Delegate*,
-          const OAuth2MintTokenFlow::Parameters&)>;
+          OAuth2MintTokenFlow::Parameters)>;
 
   explicit OAuth2MintAccessTokenFetcherAdapter(
       OAuth2AccessTokenConsumer* consumer,
