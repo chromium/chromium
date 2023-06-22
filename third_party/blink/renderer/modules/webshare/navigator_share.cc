@@ -179,7 +179,7 @@ NavigatorShare& NavigatorShare::From(Navigator& navigator) {
   NavigatorShare* supplement =
       Supplement<Navigator>::From<NavigatorShare>(navigator);
   if (!supplement) {
-    supplement = MakeGarbageCollected<NavigatorShare>();
+    supplement = MakeGarbageCollected<NavigatorShare>(navigator);
     ProvideTo(navigator, supplement);
   }
   return *supplement;
