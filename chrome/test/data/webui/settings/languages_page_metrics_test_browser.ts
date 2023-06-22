@@ -4,11 +4,14 @@
 
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
 import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
-import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsActionType, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
+import {LanguageHelper, LanguagesBrowserProxyImpl, LanguageSettingsMetricsProxyImpl, LanguageSettingsPageImpressionType, SettingsLanguagesPageElement} from 'chrome://settings/lazy_load.js';
 import {CrSettingsPrefs} from 'chrome://settings/settings.js';
 import {assertEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {FakeSettingsPrivate} from 'chrome://webui-test/fake_settings_private.js';
 import {fakeDataBind} from 'chrome://webui-test/polymer_test_util.js';
+// <if expr="is_win">
+import {LanguageSettingsActionType} from 'chrome://settings/lazy_load.js';
+// </if>
 
 import {FakeLanguageSettingsPrivate, getFakeLanguagePrefs} from './fake_language_settings_private.js';
 import {TestLanguagesBrowserProxy} from './test_languages_browser_proxy.js';
@@ -21,9 +24,6 @@ suite('LanguagesPageMetricsBrowser', function() {
   let languageSettingsMetricsProxy: TestLanguageSettingsMetricsProxy;
 
   suiteSetup(function() {
-    loadTimeData.overrideValues({
-      enableDesktopDetailedLanguageSettings: false,
-    });
     CrSettingsPrefs.deferInitialization = true;
   });
 
@@ -83,28 +83,6 @@ suite('LanguagesPageMetricsBrowser', function() {
             'recordPageImpressionMetric'));
   });
 
-  test('records when disabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', true);
-    languagesPage.shadowRoot!
-        .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
-    flush();
-
-    assertEquals(
-        LanguageSettingsActionType.DISABLE_TRANSLATE_GLOBALLY,
-        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
-  });
-
-  test('records when enabling translate.enable toggle', async () => {
-    languagesPage.setPrefValue('translate.enabled', false);
-    languagesPage.shadowRoot!
-        .querySelector<HTMLElement>('#offerTranslateOtherLanguages')!.click();
-    flush();
-
-    assertEquals(
-        LanguageSettingsActionType.ENABLE_TRANSLATE_GLOBALLY,
-        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
-  });
-
   test('records when three-dot menu is opened', async () => {
     const menuButtons =
         languagesPage.shadowRoot!.querySelector('#languagesSection')!
@@ -116,33 +94,6 @@ suite('LanguagesPageMetricsBrowser', function() {
         LanguageSettingsPageImpressionType.LANGUAGE_OVERFLOW_MENU_OPENED,
         await languageSettingsMetricsProxy.whenCalled(
             'recordPageImpressionMetric'));
-  });
-
-  test('records when ticking translate checkbox', async () => {
-    const menuButtons =
-        languagesPage.shadowRoot!.querySelector('#languagesSection')!
-            .querySelectorAll<HTMLElement>(
-                '.list-item cr-icon-button.icon-more-vert');
-
-    // Chooses the second language to change translate checkbox
-    // as first language is the language used for translation.
-    menuButtons[1]!.click();
-    flush();
-    const actionMenu = languagesPage.$.menu.get();
-    assertTrue(actionMenu.open);
-    const item = actionMenu.querySelector<HTMLElement>('#offerTranslations');
-    assertTrue(!!item);
-
-    item!.click();
-    assertEquals(
-        LanguageSettingsActionType.DISABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
-        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
-
-    languageSettingsMetricsProxy.resetResolver('recordSettingsMetric');
-    item!.click();
-    assertEquals(
-        LanguageSettingsActionType.ENABLE_TRANSLATE_FOR_SINGLE_LANGUAGE,
-        await languageSettingsMetricsProxy.whenCalled('recordSettingsMetric'));
   });
 
   // <if expr="is_win">
