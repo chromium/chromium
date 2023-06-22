@@ -6549,7 +6549,7 @@
   {
     "name": "qs-revamp",
     "owners": ["jiamingc","amehfooz", "newcomer"],
-    "expiry_milestone" : 116
+    "expiry_milestone" : 118
   },
   {
     "name": "query-tiles",
