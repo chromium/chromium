@@ -66,7 +66,7 @@ class CORE_EXPORT PerformanceTiming final : public ScriptWrappable,
 
   uint64_t MonotonicTimeToIntegerMilliseconds(base::TimeTicks) const;
 
-  std::unique_ptr<TracedValue> GetNavigationTracingData();
+  void WriteInto(perfetto::TracedDictionary&) const;
 
  private:
   const DocumentTiming* GetDocumentTiming() const;

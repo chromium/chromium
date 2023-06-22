@@ -7,10 +7,10 @@ FYI: startTime in args is the equivalent DOMHighResTimeStamp.
 
 Marks:
 ph name                offset from ~zero   args
-R  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":0}}
-R  @1200                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":1200}}
-R  @1000                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":1000}}
-R  @500                             0 ms   {"data":{"navigationId":"xNavIdx","startTime":500}}
+I  ~zero                            0 ms   {"data":{"navigationId":"xNavIdx","startTime":0}}
+I  @500                           500 ms   {"data":{"navigationId":"xNavIdx","startTime":500}}
+I  @1000                         1000 ms   {"data":{"navigationId":"xNavIdx","startTime":1000}}
+I  @1200                         1200 ms   {"data":{"navigationId":"xNavIdx","startTime":1200}}
 
 Measures:
 ph name                offset from ~zero   args
