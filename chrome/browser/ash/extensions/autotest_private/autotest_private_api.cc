@@ -41,12 +41,12 @@
 #include "ash/public/cpp/shelf_types.h"
 #include "ash/public/cpp/shelf_ui_info.h"
 #include "ash/public/cpp/split_view_test_api.h"
-#include "ash/public/cpp/style/dark_light_mode_controller.h"
 #include "ash/public/cpp/tablet_mode.h"
 #include "ash/public/cpp/window_properties.h"
 #include "ash/root_window_controller.h"
 #include "ash/rotator/screen_rotation_animator.h"
 #include "ash/shell.h"
+#include "ash/style/dark_light_mode_controller_impl.h"
 #include "ash/wallpaper/wallpaper_widget_controller.h"
 #include "ash/wm/overview/overview_controller.h"
 #include "ash/wm/wm_event.h"
@@ -6314,10 +6314,11 @@ AutotestPrivateForceAutoThemeModeFunction::Run() {
       api::autotest_private::ForceAutoThemeMode::Params::Create(args());
   EXTENSION_FUNCTION_VALIDATE(params);
 
-  ash::DarkLightModeController* dark_light_mode_controller =
-      ash::DarkLightModeController::Get();
+  ash::DarkLightModeControllerImpl* dark_light_mode_controller =
+      ash::Shell::Get()->dark_light_mode_controller();
   DCHECK(dark_light_mode_controller);
 
+  dark_light_mode_controller->SetAutoScheduleEnabled(false);
   dark_light_mode_controller->SetDarkModeEnabledForTest(
       params->dark_mode_enabled);
   return RespondNow(NoArguments());
