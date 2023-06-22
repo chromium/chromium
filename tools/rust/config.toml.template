@@ -24,9 +24,6 @@ channel = "nightly"
 description = "$PACKAGE_VERSION chromium"
 
 [build]
-# We pull all dependencies into the src/vendor/ directory.
-vendor = true
-
 # Check that vendored dependencies match the root Cargo.lock.
 locked-deps = true
 

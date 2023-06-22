@@ -260,100 +260,42 @@ def InstallBetaPackage(package_dir, install_dir):
 
 def CargoVendor(cargo_bin):
     '''Runs `cargo vendor` to pull down dependencies.'''
-    # From https://github.com/rust-lang/rust/blob/4a18324a4df6bc98bec0b54d35908d7a9cdc7c32/src/bootstrap/dist.rs#L1008-L1015:
-    # The additional `--sync` Cargo.toml files are not part of the top level
-    # workspace.
-    SYNC_TARGETS = [
-        './src/tools/cargo/Cargo.toml',
-        './src/tools/rust-analyzer/Cargo.toml',
-        './compiler/rustc_codegen_cranelift/Cargo.toml',
-        './src/bootstrap/Cargo.toml',
-    ]
-
-    # Try to verify our sync targets match the upstream nightly tarball
-    # builder's.
-    BUILDER_REGEX = (r'(?:'
-                     r'\s*\.arg\("--sync"\)'
-                     r'\s*\.arg\(builder.src.join\("(?P<target>[^"]+)"\)\)'
-                     r')')
-    content = ''
-    with open(RUST_BOOTSTRAP_DIST_RS) as f:
-        content = ''.join([line.strip() for line in f])
-    upstream_sync_targets = re.compile(BUILDER_REGEX).findall(content)
-    error = False
-    for s in SYNC_TARGETS:
-        if not s in upstream_sync_targets:
-            print(f'Upstream bootstrap/dist.rs removed "--sync {s}", '
-                  'so it should be removed from SYNC_TARGETS in '
-                  '//tools/rust/build_rust.py.')
-            error = True
-    for s in upstream_sync_targets:
-        if not s in SYNC_TARGETS:
-            print(f'Upstream bootstrap/dist.rs added "--sync {s}", '
-                  'so it should be added to SYNC_TARGETS in '
-                  '//tools/rust/build_rust.py.')
-            error = True
-    if error:
-        sys.exit(1)
-
     os.chdir(RUST_SRC_DIR)
 
-    for i in range(0, 3):
-        # Some Submodules are part of the workspace and need to exist (so we can
-        # read their Cargo.toml files) before we can vendor their deps.
-        submod_cmd = [
-            'git', 'submodule', 'update', '--init', '--recursive', '--depth',
-            '1'
-        ]
-        if RunCommand(submod_cmd, fail_hard=False):
-            pass  # Move on to vendoring.
-        elif i < 2:
-            print('Failed git submodule, retrying...')
-            continue
-        else:
-            sys.exit(1)
+    # Some Submodules are part of the workspace and need to exist (so we can
+    # read their Cargo.toml files) before we can vendor their deps.
+    submod_cmd = [
+        'git', 'submodule', 'update', '--init', '--recursive', '--depth', '1'
+    ]
+    RunWithRetry(submod_cmd, 'git submodule')
 
-        vendor_env = os.environ
-        # The Cargo.toml files in the Rust toolchain may use nightly Cargo
-        # features, but the cargo binary is beta. This env var enables the
-        # beta cargo binary to allow nightly features anyway.
-        # https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
-        vendor_env['RUSTC_BOOTSTRAP'] = '1'
+    vendor_env = os.environ
+    # The Cargo.toml files in the Rust toolchain may use nightly Cargo
+    # features, but the cargo binary is beta. This env var enables the
+    # beta cargo binary to allow nightly features anyway.
+    # https://github.com/rust-lang/rust/commit/2e52f4deb0544480b6aefe2c0cc1e6f3c893b081
+    vendor_env['RUSTC_BOOTSTRAP'] = '1'
 
-        vendor_cmd = [
-            cargo_bin,
-            'vendor',
-            '--locked',
-            '--versioned-dirs',
-        ]
-        for s in SYNC_TARGETS:
-            vendor_cmd.extend(['--sync', s])
-        if RunCommand(vendor_cmd, fail_hard=False, env=vendor_env):
-            break  # Success, break out of the retry loop.
-        elif i < 2:
-            print('Failed cargo vendor, retrying...')
-            continue
-        else:
-            print(
-                'NOTE: Our cargo vendor step mimics the behaviour of upstream '
-                'bootstrap/dist.rs which is used to build the nightly tarball. '
-                'Any changes to that file may need to be reflected in '
-                'build_rust.py in order for our vendor step to succeed. See '
-                'the link in the roll CL description to quickly see changes to '
-                'the bootstrap/dist.rs file.')
-            sys.exit(1)
-
-    # Make a `.cargo/config.toml` the points to the `vendor` directory for all
-    # dependency crates.
-    try:
-        os.mkdir(os.path.join(RUST_SRC_DIR, '.cargo'))
-    except FileExistsError:
-        pass
-    shutil.copyfile(RUST_CARGO_CONFIG_TEMPLATE_PATH,
-                    os.path.join(RUST_SRC_DIR, '.cargo', 'config.toml'))
+    vendor_cmd = [
+        cargo_bin,
+        'vendor',
+        '--locked',
+        '--versioned-dirs',
+    ]
+    RunWithRetry(vendor_cmd, 'cargo vendor')
 
     os.chdir(CHROMIUM_DIR)
 
+
+def RunWithRetry(command, name):
+    '''Run a command, retrying a few times then aborting if it fails.'''
+    for i in range(0, 3):
+        if RunCommand(command, fail_hard=False):
+            return
+        elif i < 2:
+            print(f'failed {name}, retrying...')
+        else:
+            sys.exit(1)
 
 class XPy:
     ''' Runner for x.py, Rust's build script. Holds shared state between x.py
