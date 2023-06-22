@@ -70,11 +70,11 @@ GURL AutofillImageFetcherImpl::ResolveCardArtURL(const GURL& card_art_url) {
   // A FIFE image fetching param suffix is appended to the URL. The image
   // should be center cropped and of Size(32, 20) unless the
   // kAutofillEnableNewCardArtAndNetworkImages feature is enabled, in which
-  // case we take the image at its raw size and resize it to Size(40, 24)
+  // case we download the image at height 48 and resize it to Size(40, 24)
   // later.
   return base::FeatureList::IsEnabled(
              features::kAutofillEnableNewCardArtAndNetworkImages)
-             ? card_art_url
+             ? GURL(card_art_url.spec() + "=h48-pa")
              : GURL(card_art_url.spec() + "=w32-h20-n");
 }
 
