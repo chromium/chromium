@@ -150,6 +150,12 @@ void CompanionMetricsLogger::RecordUiSurfaceShown(
   DCHECK(!IsListSurface(ui_surface) || child_element_shown_count > 0);
   base::UmaHistogramBoolean(
       "Companion." + UiSurfaceToHistogramVariant(ui_surface) + ".Shown", true);
+  if (IsListSurface(ui_surface)) {
+    base::UmaHistogramBoolean("Companion." +
+                                  UiSurfaceToHistogramVariant(ui_surface) +
+                                  ".ChildElementCount",
+                              child_element_shown_count);
+  }
 }
 
 void CompanionMetricsLogger::RecordUiSurfaceClicked(UiSurface ui_surface,
