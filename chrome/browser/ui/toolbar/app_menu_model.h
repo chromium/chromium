@@ -215,6 +215,9 @@ class AppMenuModel : public ui::SimpleMenuModel,
   // Appends a clipboard menu (without separators).
   void CreateCutCopyPasteMenu();
 
+  // Appends a Find and edit sub-menu (without separators)
+  void CreateFindAndEditSubMenu();
+
   // Appends a zoom menu (without separators).
   void CreateZoomMenu();
 

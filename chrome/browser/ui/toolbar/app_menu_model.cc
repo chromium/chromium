@@ -1484,9 +1484,7 @@ void AppMenuModel::Build() {
 #endif
     AddItemWithStringId(IDC_SHOW_TRANSLATE, IDS_SHOW_TRANSLATE);
 
-    sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
-    AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
-                           sub_menus_.back().get());
+    CreateFindAndEditSubMenu();
 
     sub_menus_.push_back(
         std::make_unique<SaveAndShareSubMenuModel>(this, browser_));
@@ -1633,15 +1631,18 @@ void AppMenuModel::Build() {
 }
 
 void AppMenuModel::CreateCutCopyPasteMenu() {
-  // WARNING: Mac does not use the ButtonMenuItemModel, but instead defines
-  // the layout for this menu item in AppMenu.xib. It does, however, use the
-  // command_id value from AddButtonItem() to identify this special item.
   edit_menu_item_model_ =
       std::make_unique<ui::ButtonMenuItemModel>(IDS_EDIT, this);
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_CUT, IDS_CUT);
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_COPY, IDS_COPY);
   edit_menu_item_model_->AddGroupItemWithStringId(IDC_PASTE, IDS_PASTE);
   AddButtonItem(IDC_EDIT_MENU, edit_menu_item_model_.get());
+}
+
+void AppMenuModel::CreateFindAndEditSubMenu() {
+  sub_menus_.push_back(std::make_unique<FindAndEditSubMenuModel>(this));
+  AddSubMenuWithStringId(IDC_FIND_AND_EDIT_MENU, IDS_FIND_AND_EDIT_MENU,
+                         sub_menus_.back().get());
 }
 
 void AppMenuModel::CreateZoomMenu() {

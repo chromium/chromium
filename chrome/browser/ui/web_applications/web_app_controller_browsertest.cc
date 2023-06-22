@@ -42,6 +42,11 @@
 namespace web_app {
 
 WebAppControllerBrowserTest::WebAppControllerBrowserTest()
+    : WebAppControllerBrowserTest({}, {}) {}
+
+WebAppControllerBrowserTest::WebAppControllerBrowserTest(
+    const std::vector<base::test::FeatureRef>& enabled_features,
+    const std::vector<base::test::FeatureRef>& disabled_features)
     // TODO(crbug.com/1378355): Fix the manifest update process by ensuring
     // during test installs, an app is installed from the manifest so that the
     // identity update dialog is not triggered after navigation. This will
@@ -50,11 +55,17 @@ WebAppControllerBrowserTest::WebAppControllerBrowserTest()
       update_dialog_scope_(SetIdentityUpdateDialogActionForTesting(
           AppIdentityUpdate::kSkipped)) {
   os_hooks_suppress_.emplace();
-  scoped_feature_list_.InitWithFeatures({}, {
+  std::vector<base::test::FeatureRef> all_disabled_features = {
 #if BUILDFLAG(IS_CHROMEOS_ASH)
-    features::kWebAppsCrosapi, ash::features::kLacrosPrimary
+    features::kWebAppsCrosapi,
+    ash::features::kLacrosPrimary
 #endif
-  });
+  };
+  all_disabled_features.insert(all_disabled_features.end(),
+                               disabled_features.begin(),
+                               disabled_features.end());
+  scoped_feature_list_.InitWithFeatures(enabled_features,
+                                        all_disabled_features);
 }
 
 WebAppControllerBrowserTest::~WebAppControllerBrowserTest() = default;
