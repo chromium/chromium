@@ -249,7 +249,8 @@ void PageInfoMainView::SetPermissionInfo(
     UpdateResetButton(permission_info_list);
     return;
   }
-  const int separator_padding = features::IsChromeRefresh2023() ? 20 : 0;
+  const int separator_padding = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW);
   permissions_view_->AddChildView(
       PageInfoViewFactory::CreateSeparator(separator_padding));
 
@@ -602,39 +603,41 @@ std::unique_ptr<views::View> PageInfoMainView::CreateAboutThisSiteSection(
   about_this_site_section
       ->SetLayoutManager(std::make_unique<views::FlexLayout>())
       ->SetOrientation(views::LayoutOrientation::kVertical);
-  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator());
+  about_this_site_section->AddChildView(PageInfoViewFactory::CreateSeparator(
+      ChromeLayoutProvider::Get()->GetDistanceMetric(
+          DISTANCE_HORIZONTAL_SEPARATOR_PADDING_PAGE_INFO_VIEW)));
 
-    const auto& description =
-        info.has_description()
-            ? base::UTF8ToUTF16(info.description().description())
-            : l10n_util::GetStringUTF16(
-                  IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
+  const auto& description =
+      info.has_description()
+          ? base::UTF8ToUTF16(info.description().description())
+          : l10n_util::GetStringUTF16(
+                IDS_PAGE_INFO_ABOUT_THIS_PAGE_DESCRIPTION_PLACEHOLDER);
 
-    RichHoverButton* about_this_site_button =
-        about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
-            base::BindRepeating(
-                [](PageInfoMainView* view, GURL more_info_url,
-                   bool has_description, const ui::Event& event) {
-                  page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
-                      has_description);
-                  view->presenter_->RecordPageInfoAction(
-                      PageInfo::PageInfoAction::
-                          PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
-                  view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
-                                                               event);
-                  view->GetWidget()->Close();
-                },
-                this, GURL(info.more_about().url()), info.has_description()),
-            PageInfoViewFactory::GetAboutThisSiteIcon(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
-            std::u16string(),
-            l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
-            description, PageInfoViewFactory::GetLaunchIcon()));
-    about_this_site_button->SetID(
-        PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
-    about_this_site_button->SetSubtitleMultiline(false);
+  RichHoverButton* about_this_site_button =
+      about_this_site_section->AddChildView(std::make_unique<RichHoverButton>(
+          base::BindRepeating(
+              [](PageInfoMainView* view, GURL more_info_url,
+                 bool has_description, const ui::Event& event) {
+                page_info::AboutThisSiteService::OnAboutThisSiteRowClicked(
+                    has_description);
+                view->presenter_->RecordPageInfoAction(
+                    PageInfo::PageInfoAction::
+                        PAGE_INFO_ABOUT_THIS_SITE_PAGE_OPENED);
+                view->ui_delegate_->OpenMoreAboutThisPageUrl(more_info_url,
+                                                             event);
+                view->GetWidget()->Close();
+              },
+              this, GURL(info.more_about().url()), info.has_description()),
+          PageInfoViewFactory::GetAboutThisSiteIcon(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TITLE),
+          std::u16string(),
+          l10n_util::GetStringUTF16(IDS_PAGE_INFO_ABOUT_THIS_PAGE_TOOLTIP),
+          description, PageInfoViewFactory::GetLaunchIcon()));
+  about_this_site_button->SetID(
+      PageInfoViewFactory::VIEW_ID_PAGE_INFO_ABOUT_THIS_SITE_BUTTON);
+  about_this_site_button->SetSubtitleMultiline(false);
 
-    return about_this_site_section;
+  return about_this_site_section;
 }
 
 std::unique_ptr<views::View>

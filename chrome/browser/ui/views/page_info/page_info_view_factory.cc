@@ -83,11 +83,14 @@ int GetIconSize() {
 // static
 std::unique_ptr<views::View> PageInfoViewFactory::CreateSeparator(
     int horizontal_inset) {
-  // Distance for multi content list is used, but split in half, since there is
-  // a separator in the middle of it.
-  const int separator_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
-                                    DISTANCE_CONTENT_LIST_VERTICAL_MULTI) /
-                                2;
+  int separator_spacing = ChromeLayoutProvider::Get()->GetDistanceMetric(
+      DISTANCE_CONTENT_LIST_VERTICAL_MULTI);
+  if (!features::IsChromeRefresh2023()) {
+    // Distance for multi content list is used, but split in half, since there
+    // is a separator in the middle of it. For ChromeRefresh2023, the separator
+    // spacing is larger hence no need to split in half.
+    separator_spacing /= 2;
+  }
   auto separator = std::make_unique<views::Separator>();
   separator->SetProperty(views::kMarginsKey,
                          gfx::Insets::VH(separator_spacing, horizontal_inset));
@@ -208,11 +211,13 @@ std::unique_ptr<views::View> PageInfoViewFactory::CreateSubpageHeader(
   back_button->SetProperty(views::kInternalPaddingKey,
                            back_button->GetInsets());
   header->AddChildView(std::move(back_button));
-
   auto* label_wrapper = header->AddChildView(CreateLabelWrapper());
   auto* title_label = label_wrapper->AddChildView(
       std::make_unique<views::Label>(title, views::style::CONTEXT_DIALOG_TITLE,
                                      views::style::STYLE_SECONDARY));
+  if (features::IsChromeRefresh2023()) {
+    title_label->SetTextStyle(views::style::STYLE_HEADLINE_4);
+  }
   title_label->SetHorizontalAlignment(gfx::ALIGN_LEFT);
 
   if (!subtitle.empty()) {
