@@ -46,8 +46,6 @@
 #include "content/public/browser/download_manager_delegate.h"
 #include "content/public/browser/navigation_controller.h"
 #include "content/public/browser/network_service_util.h"
-#include "content/public/browser/notification_service.h"
-#include "content/public/browser/notification_types.h"
 #include "content/public/browser/page_navigator.h"
 #include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/web_contents.h"
@@ -2003,96 +2001,6 @@ IN_PROC_BROWSER_TEST_F(NavigationCorsExemptBrowserTest,
   response.WaitForRequest();
   EXPECT_EQ(header_value, response.http_request()->headers.at(kCorsHeaderName));
   EXPECT_EQ(header_value, last_cors_header_value());
-}
-
-struct NewWebContentsData {
-  NewWebContentsData() = default;
-  NewWebContentsData(NewWebContentsData&& other)
-      : new_web_contents(std::move(other.new_web_contents)),
-        manager(std::move(other.manager)) {}
-
-  std::unique_ptr<WebContents> new_web_contents;
-  std::unique_ptr<TestNavigationManager> manager;
-};
-
-class CreateWebContentsOnCrashObserver : public NotificationObserver {
- public:
-  CreateWebContentsOnCrashObserver(const GURL& url,
-                                   WebContents* first_web_contents)
-      : url_(url), first_web_contents_(first_web_contents) {}
-
-  CreateWebContentsOnCrashObserver(const CreateWebContentsOnCrashObserver&) =
-      delete;
-  CreateWebContentsOnCrashObserver& operator=(
-      const CreateWebContentsOnCrashObserver&) = delete;
-
-  void Observe(int type,
-               const NotificationSource& source,
-               const NotificationDetails& details) override {
-    EXPECT_EQ(content::NOTIFICATION_RENDERER_PROCESS_CLOSED, type);
-
-    // Only do this once in the test.
-    if (observed_)
-      return;
-    observed_ = true;
-
-    WebContents::CreateParams new_contents_params(
-        first_web_contents_->GetBrowserContext(),
-        first_web_contents_->GetSiteInstance());
-    data_.new_web_contents = WebContents::Create(new_contents_params);
-    data_.manager = std::make_unique<TestNavigationManager>(
-        data_.new_web_contents.get(), url_);
-    NavigationController::LoadURLParams load_params(url_);
-    data_.new_web_contents->GetController().LoadURLWithParams(load_params);
-  }
-
-  NewWebContentsData TakeNewWebContentsData() { return std::move(data_); }
-
- private:
-  NewWebContentsData data_;
-  bool observed_ = false;
-
-  GURL url_;
-  raw_ptr<WebContents> first_web_contents_;
-
-  ScopedAllowRendererCrashes scoped_allow_renderer_crashes_;
-};
-
-// This test simulates android webview's behavior in apps that handle
-// renderer crashes by synchronously creating a new WebContents and loads
-// the same page again. This reenters into content code.
-IN_PROC_BROWSER_TEST_F(NavigationBrowserTest, WebViewRendererKillReload) {
-  // Webview is limited to one renderer.
-  RenderProcessHost::SetMaxRendererProcessCount(1u);
-
-  // Load a page into first webview.
-  GURL url(embedded_test_server()->GetURL("/simple_links.html"));
-  {
-    TestNavigationObserver observer(web_contents());
-    EXPECT_TRUE(NavigateToURL(web_contents(), url));
-    EXPECT_EQ(url, observer.last_navigation_url());
-  }
-
-  // Install a crash observer that synchronously creates and loads a new
-  // WebContents. Then crash the renderer which triggers the observer.
-  CreateWebContentsOnCrashObserver crash_observer(url, web_contents());
-  content::NotificationRegistrar notification_registrar;
-  notification_registrar.Add(&crash_observer,
-                             content::NOTIFICATION_RENDERER_PROCESS_CLOSED,
-                             content::NotificationService::AllSources());
-  NavigateToURLBlockUntilNavigationsComplete(web_contents(),
-                                             GetWebUIURL("crash"), 1);
-
-  // Wait for navigation in new WebContents to finish.
-  NewWebContentsData data = crash_observer.TakeNewWebContentsData();
-  ASSERT_TRUE(data.manager->WaitForNavigationFinished());
-
-  // Test passes if renderer is still alive.
-  EXPECT_TRUE(ExecJs(data.new_web_contents.get(), "true;"));
-  EXPECT_TRUE(
-      data.new_web_contents->GetPrimaryMainFrame()->IsRenderFrameLive());
-  EXPECT_EQ(
-      url, data.new_web_contents->GetPrimaryMainFrame()->GetLastCommittedURL());
 }
 
 // Test NavigationRequest::CheckAboutSrcDoc()
