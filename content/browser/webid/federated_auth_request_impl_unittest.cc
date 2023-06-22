@@ -616,6 +616,7 @@ class TestDialogController
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
+      const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
       IdentityRequestDialogController::DismissCallback dismiss_callback,
       IdentityRequestDialogController::SigninToIdPCallback

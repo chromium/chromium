@@ -59,6 +59,7 @@ class FedCmAccountSelectionView : public AccountSelectionView,
       const std::string& top_frame_etld_plus_one,
       const absl::optional<std::string>& iframe_etld_plus_one,
       const std::string& idp_etld_plus_one,
+      const blink::mojom::RpContext& rp_context,
       const content::IdentityProviderMetadata& idp_metadata) override;
   std::string GetTitle() const override;
   absl::optional<std::string> GetSubtitle() const override;

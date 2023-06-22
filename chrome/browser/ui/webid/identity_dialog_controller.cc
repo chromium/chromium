@@ -46,6 +46,7 @@ void IdentityDialogController::ShowFailureDialog(
     const std::string& top_frame_for_display,
     const absl::optional<std::string>& iframe_for_display,
     const std::string& idp_for_display,
+    const blink::mojom::RpContext& rp_context,
     const content::IdentityProviderMetadata& idp_metadata,
     DismissCallback dismiss_callback,
     SigninToIdPCallback signin_callback) {
@@ -60,7 +61,7 @@ void IdentityDialogController::ShowFailureDialog(
   //   sign-in attempt failed.
 
   account_view_->ShowFailureDialog(top_frame_for_display, iframe_for_display,
-                                   idp_for_display, idp_metadata);
+                                   idp_for_display, rp_context, idp_metadata);
 }
 
 void IdentityDialogController::OnSigninToIdP() {

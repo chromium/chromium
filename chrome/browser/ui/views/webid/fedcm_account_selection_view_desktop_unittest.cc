@@ -129,6 +129,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
   TestFedCmAccountSelectionView& operator=(
       const TestFedCmAccountSelectionView&) = delete;
 
+  const blink::mojom::RpContext& GetRpContext() { return rp_context_; }
   size_t num_bubbles_{0u};
 
  protected:
@@ -139,6 +140,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
       blink::mojom::RpContext rp_context,
       bool show_auto_reauthn_checkbox) override {
     ++num_bubbles_;
+    rp_context_ = rp_context;
     return widget_;
   }
 
@@ -149,6 +151,7 @@ class TestFedCmAccountSelectionView : public FedCmAccountSelectionView {
  private:
   raw_ptr<views::Widget> widget_;
   raw_ptr<TestBubbleView> bubble_view_;
+  blink::mojom::RpContext rp_context_;
 };
 
 // Stub AccountSelectionView::Delegate.
@@ -228,11 +231,12 @@ class FedCmAccountSelectionViewDesktopTest : public ChromeViewsTestBase {
         mode, show_auto_reauthn_checkbox);
   }
 
-  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMismatchDialog() {
+  std::unique_ptr<TestFedCmAccountSelectionView> CreateAndShowMismatchDialog(
+      blink::mojom::RpContext rp_context = blink::mojom::RpContext::kSignIn) {
     auto controller = std::make_unique<TestFedCmAccountSelectionView>(
         delegate_.get(), widget_.get(), bubble_view_.get());
     controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
-                                  kIdpEtldPlusOne,
+                                  kIdpEtldPlusOne, rp_context,
                                   content::IdentityProviderMetadata());
     EXPECT_EQ(TestBubbleView::SheetType::kFailure, bubble_view_->sheet_type_);
     return controller;
@@ -906,10 +910,34 @@ TEST_F(FedCmAccountSelectionViewDesktopTest,
   EXPECT_FALSE(widget_->IsVisible());
 
   // Emulate another mismatch so we need to show the mismatch dialog again.
-  controller->ShowFailureDialog(kTopFrameEtldPlusOne, kIframeEtldPlusOne,
-                                kIdpEtldPlusOne,
-                                content::IdentityProviderMetadata());
+  controller->ShowFailureDialog(
+      kTopFrameEtldPlusOne, kIframeEtldPlusOne, kIdpEtldPlusOne,
+      blink::mojom::RpContext::kSignIn, content::IdentityProviderMetadata());
 
   // Mismatch dialog is visible again.
   EXPECT_TRUE(widget_->IsVisible());
+}
+
+// Tests that RP context is properly set for the mismatch UI.
+TEST_F(FedCmAccountSelectionViewDesktopTest, MismatchDialogWithRpContext) {
+  {
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog();
+    EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kSignIn);
+  }
+  {
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog(blink::mojom::RpContext::kSignUp);
+    EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kSignUp);
+  }
+  {
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog(blink::mojom::RpContext::kContinue);
+    EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kContinue);
+  }
+  {
+    std::unique_ptr<TestFedCmAccountSelectionView> controller =
+        CreateAndShowMismatchDialog(blink::mojom::RpContext::kUse);
+    EXPECT_EQ(controller->GetRpContext(), blink::mojom::RpContext::kUse);
+  }
 }

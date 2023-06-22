@@ -132,6 +132,7 @@ class CONTENT_EXPORT IdentityRequestDialogController {
       const std::string& top_frame_for_display,
       const absl::optional<std::string>& iframe_for_display,
       const std::string& idp_for_display,
+      const blink::mojom::RpContext& rp_context,
       const IdentityProviderMetadata& idp_metadata,
       DismissCallback dismiss_callback,
       SigninToIdPCallback signin_callback);
