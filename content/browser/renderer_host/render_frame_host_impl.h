@@ -20,6 +20,7 @@
 #include "base/containers/flat_map.h"
 #include "base/containers/flat_set.h"
 #include "base/containers/unique_ptr_adapters.h"
+#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/functional/function_ref.h"
@@ -5131,6 +5132,10 @@ class CONTENT_EXPORT RenderFrameHostImpl
   // See: https://chromestatus.com/feature/6002307972464640
   absl::optional<blink::DocumentToken>
       fullscreen_document_on_document_element_ready_ = absl::nullopt;
+
+  // TODO(crbug.com/1425281): Temporary for debugging.
+  const base::debug::StackTrace create_rfh_stack_trace_;
+  absl::optional<base::debug::StackTrace> last_commit_navigation_stack_trace_;
 
   // WeakPtrFactories are the last members, to ensure they are destroyed before
   // all other fields of `this`.
