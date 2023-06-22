@@ -255,7 +255,7 @@ public final class AuthenticatorImpl implements Authenticator {
         assert mMakeCredentialCallback != null;
         assert status == AuthenticatorStatus.SUCCESS;
         mMakeCredentialCallback.call(status, response, null);
-        close();
+        cleanupRequest();
     }
 
     public void onSignResponse(int status, GetAssertionAuthenticatorResponse response) {
@@ -264,7 +264,7 @@ public final class AuthenticatorImpl implements Authenticator {
 
         assert mGetAssertionCallback != null;
         mGetAssertionCallback.call(status, response, null);
-        close();
+        cleanupRequest();
     }
 
     public void onIsUserVerifyingPlatformAuthenticatorAvailableResponse(boolean isUVPAA) {
@@ -284,15 +284,19 @@ public final class AuthenticatorImpl implements Authenticator {
         } else if (mGetAssertionCallback != null) {
             mGetAssertionCallback.call(status, null, null);
         }
-        close();
+        cleanupRequest();
     }
 
-    @Override
-    public void close() {
+    private void cleanupRequest() {
         mIsOperationPending = false;
         mMakeCredentialCallback = null;
         mGetAssertionCallback = null;
         mPendingFido2CredentialRequest = null;
+    }
+
+    @Override
+    public void close() {
+        cleanupRequest();
     }
 
     @Override
