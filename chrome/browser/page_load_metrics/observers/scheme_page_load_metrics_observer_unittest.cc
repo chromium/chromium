@@ -99,9 +99,6 @@ class SchemePageLoadMetricsObserverTest
 
     std::string fcp_histogram_name(
         prefix + ".PaintTiming.NavigationToFirstContentfulPaint");
-    std::string fcp_understat_histogram_name(prefix + ".PaintTiming.UnderStat");
-    std::string fcp_understat_new_nav_histogram_name(
-        fcp_understat_histogram_name + ".UserInitiated.NewNavigation");
 
     tester()->histogram_tester().ExpectTotalCount(
         prefix + ".ParseTiming.NavigationToParseStart", 1);
@@ -114,45 +111,6 @@ class SchemePageLoadMetricsObserverTest
     tester()->histogram_tester().ExpectTotalCount(
         prefix + ".Experimental.PaintTiming.NavigationToFirstMeaningfulPaint",
         1);
-
-    tester()->histogram_tester().ExpectBucketCount(fcp_understat_histogram_name,
-                                                   0, 1);
-    if (new_navigation) {
-      tester()->histogram_tester().ExpectBucketCount(
-          fcp_understat_new_nav_histogram_name, 0, 1);
-    } else {
-      tester()->histogram_tester().ExpectTotalCount(
-          fcp_understat_new_nav_histogram_name, 0);
-    }
-
-    // Must remain synchronized with the array of the same name in
-    // scheme_page_load_metrics_observer.cc.
-    static constexpr const int kUnderStatRecordingIntervalsSeconds[] = {1, 2, 5,
-                                                                        8, 10};
-
-    base::TimeDelta recorded_fcp_value =
-        base::Milliseconds(GetRecordedMetricValue(fcp_histogram_name));
-
-    for (size_t index = 0;
-         index < std::size(kUnderStatRecordingIntervalsSeconds); ++index) {
-      base::TimeDelta threshold(
-          base::Seconds(kUnderStatRecordingIntervalsSeconds[index]));
-      if (recorded_fcp_value <= threshold) {
-        tester()->histogram_tester().ExpectBucketCount(
-            fcp_understat_histogram_name, index + 1, 1);
-        if (new_navigation) {
-          tester()->histogram_tester().ExpectBucketCount(
-              fcp_understat_new_nav_histogram_name, index + 1, 1);
-        }
-      }
-    }
-
-    // Overflow bucket should be empty. This also ensures that
-    // kUnderStatRecordingIntervalsSeconds above is synchronized with the array
-    // of the same name in scheme_page_load_metrics_observer.cc.
-    tester()->histogram_tester().ExpectBucketCount(
-        fcp_understat_histogram_name,
-        std::size(kUnderStatRecordingIntervalsSeconds) + 1, 0);
   }
 
   raw_ptr<SchemePageLoadMetricsObserver, DanglingUntriaged> observer_;

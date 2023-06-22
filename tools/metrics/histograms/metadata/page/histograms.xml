@@ -1116,62 +1116,6 @@ chromium-metrics-reviews@google.com.
   <token key="PrivacySandboxAdsApi" variants="PrivacySandboxAdsApi"/>
 </histogram>
 
-<histogram name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat"
-    enum="PageLoadTimingUnderStat" expires_after="2022-04-03">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records if the time from navigation to first contentful paint was less than
-    the specified threshold. Also, records the total number of first contentful
-    paints. For a single first contentful paint event, data may be recorded in
-    multiple buckets. Recorded at the time when first contentful paint happens.
-    Recorded only for page loads that have scheme http://.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.Scheme.HTTP.PaintTiming.UnderStat.UserInitiated.NewNavigation"
-    enum="PageLoadTimingUnderStat" expires_after="2020-12-31">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records if the time from navigation to first contentful paint was less than
-    the specified threshold. Also, records the total number of first contentful
-    paints. For a single first contentful paint event, data may be recorded in
-    multiple buckets. Recorded at the time when first contentful paint happens.
-    Recorded only for page loads that have scheme http://, are user-initiated,
-    and are new navigations (that is, they are not reloads nor forward or back
-    navigations).
-  </summary>
-</histogram>
-
-<histogram name="PageLoad.Clients.Scheme.HTTPS.PaintTiming.UnderStat"
-    enum="PageLoadTimingUnderStat" expires_after="2022-04-03">
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records if the time from navigation to first contentful paint was less than
-    the specified threshold. Also, records the total number of first contentful
-    paints. For a single first contentful paint event, data may be recorded in
-    multiple buckets. Recorded at the time when first contentful paint happens.
-    Recorded only for page loads that have scheme https://.
-  </summary>
-</histogram>
-
-<histogram
-    name="PageLoad.Clients.Scheme.HTTPS.PaintTiming.UnderStat.UserInitiated.NewNavigation"
-    enum="PageLoadTimingUnderStat" expires_after="2020-12-31">
-  <owner>dougarnett@chromium.org</owner>
-  <owner>tbansal@chromium.org</owner>
-  <summary>
-    Records if the time from navigation to first contentful paint was less than
-    the specified threshold. Also, records the total number of first contentful
-    paints. For a single first contentful paint event, data may be recorded in
-    multiple buckets. Recorded at the time when first contentful paint happens.
-    Recorded only for page loads that have scheme https://, are user-initiated,
-    and are new navigations (that is, they are not reloads nor forward or back
-    navigations).
-  </summary>
-</histogram>
-
 <histogram
     name="PageLoad.Clients.ServiceWorker2.PaintTiming.{Timing}.{HandlerType}"
     units="ms" expires_after="2023-10-01">

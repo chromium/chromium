@@ -80528,15 +80528,6 @@ Called by update_net_trust_anchors.py.-->
   <int value="25" label="Invalid order - activation start / first paint"/>
 </enum>
 
-<enum name="PageLoadTimingUnderStat">
-  <int value="0" label="Total count of metric values"/>
-  <int value="1" label="Metric value was less than 1 seconds"/>
-  <int value="2" label="Metric value was less than 2 seconds"/>
-  <int value="3" label="Metric value was less than 5 seconds"/>
-  <int value="4" label="Metric value was less than 8 seconds"/>
-  <int value="5" label="Metric value was less than 10 seconds"/>
-</enum>
-
 <enum name="PageLoadTrackerPageType">
   <int value="0" label="Primary Page"/>
   <int value="1" label="Prerender Page"/>
