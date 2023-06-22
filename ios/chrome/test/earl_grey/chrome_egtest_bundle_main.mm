@@ -8,6 +8,7 @@
 #import <objc/runtime.h>
 #import <memory>
 
+#import "base/apple/bundle_locations.h"
 #import "base/at_exit.h"
 #import "base/check.h"
 #import "base/command_line.h"
@@ -59,6 +60,11 @@ class TestMain {
     // Initialize the CommandLine with arguments. ResourceBundle requires
     // CommandLine to exist.
     base::CommandLine::Init(argc, argv);
+
+    // Configures the default framework bundle to point to the test module
+    // bundle instead of the test runner app.
+    base::apple::SetOverrideFrameworkBundle(
+        [NSBundle bundleForClass:[ChromeEGTestBundleMain class]]);
 
     base::i18n::InitializeICU();
 

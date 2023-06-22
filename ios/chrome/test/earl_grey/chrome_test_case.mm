@@ -160,11 +160,6 @@ void ResetAuthentication() {
 
 @implementation ChromeTestCase
 
-+ (void)load {
-  base::apple::SetOverrideFrameworkBundle(
-      [NSBundle bundleForClass:[ChromeTestCase class]]);
-}
-
 // Overrides testInvocations so the set of tests run can be modified, as
 // necessary.
 + (NSArray*)testInvocations {
