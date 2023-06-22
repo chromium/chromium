@@ -1341,16 +1341,17 @@ def build_perf_builder(**kwargs):
     kwargs.setdefault("reclient_instance", reclient.instance.DEFAULT_UNTRUSTED)
     kwargs.setdefault("reclient_jobs", reclient.jobs.HIGH_JOBS_FOR_CQ)
     kwargs.setdefault("use_clang_coverage", True)
+
     return ci.builder(
         service_account = "chromium-build-perf-ci-builder@chops-service-accounts.iam.gserviceaccount.com",
         # rely on the builder dimension for the bot selection.
         builderless = False,
         cores = None,
         siso_configs = ["remote_all"],
+        # TODO(b/273407069): enable reproxy mode by default.
+        siso_experiments = [],
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
-        # TODO(b/273407069): enable reproxy mode by default.
-        siso_experiments = ["use-reproxy"],
         siso_project = siso.project.DEFAULT_UNTRUSTED,
         notifies = ["chrome-build-perf"],
         **kwargs
