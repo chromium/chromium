@@ -758,8 +758,8 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
   if (base::FeatureList::IsEnabled(kAllowWinCursorEmbedded)) {
     options.set_prefer_cursor_embedded(true);
   }
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
-    options.set_allow_wgc_capturer(true);
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer)) {
+    options.set_allow_wgc_screen_capturer(true);
 
     // 0Hz support is by default disabled for WGC but it can be enabled using
     // the `kWebRtcAllowWgcZeroHz` feature flag. When enabled, the WGC capturer
@@ -768,6 +768,11 @@ std::unique_ptr<media::VideoCaptureDevice> DesktopCaptureDevice::Create(
     // changed or not. DesktopFrame::updated_region() will be empty if nothing
     // has changed and contain one (damage) region corresponding to the complete
     // screen or window being captured if any change is detected.
+    options.set_allow_wgc_zero_hertz(
+        base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
+  }
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
+    options.set_allow_wgc_window_capturer(true);
     options.set_allow_wgc_zero_hertz(
         base::FeatureList::IsEnabled(features::kWebRtcAllowWgcZeroHz));
   }
@@ -884,7 +889,8 @@ DesktopCaptureDevice::DesktopCaptureDevice(
 
   bool zero_hertz_is_supported = true;
 #if BUILDFLAG(IS_WIN)
-  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcDesktopCapturer)) {
+  if (base::FeatureList::IsEnabled(features::kWebRtcAllowWgcScreenCapturer) ||
+      base::FeatureList::IsEnabled(features::kWebRtcAllowWgcWindowCapturer)) {
     // TODO(https://crbug.com/1421242): Finalize 0Hz support for WGC.
     // This feature flag is disabled by default.
     zero_hertz_is_supported =
