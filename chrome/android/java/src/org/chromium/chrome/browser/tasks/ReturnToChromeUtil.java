@@ -20,6 +20,7 @@ import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.ApplicationStatus;
 import org.chromium.base.IntentUtils;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.TraceEvent;
 import org.chromium.base.library_loader.LibraryLoader;
 import org.chromium.base.lifetime.Destroyable;
@@ -143,10 +144,12 @@ public final class ReturnToChromeUtil {
         private final ActivityTabProvider mActivityTabProvider;
         private final Supplier<Tab> mTabSupplier; // for debugging only
         private final Supplier<LayoutStateProvider> mLayoutStateProviderSupplier;
+        private final Supplier<Long> mLastBackPressMsSupplier;
 
         public ReturnToChromeBackPressHandler(ActivityTabProvider activityTabProvider,
                 Runnable onBackPressedCallback, Supplier<Tab> tabSupplier,
-                Supplier<LayoutStateProvider> layoutStateProviderSupplier) {
+                Supplier<LayoutStateProvider> layoutStateProviderSupplier,
+                Supplier<Long> lastBackPressMsSupplier) {
             mActivityTabProvider = activityTabProvider;
             mActivityTabObserver =
                     new ActivityTabProvider.ActivityTabTabObserver(activityTabProvider, true) {
@@ -158,6 +161,7 @@ public final class ReturnToChromeUtil {
             mOnBackPressedCallback = onBackPressedCallback;
             mTabSupplier = tabSupplier;
             mLayoutStateProviderSupplier = layoutStateProviderSupplier;
+            mLastBackPressMsSupplier = lastBackPressMsSupplier;
             onBackPressStateChanged();
         }
 
@@ -175,9 +179,15 @@ public final class ReturnToChromeUtil {
                 int layoutType = mLayoutStateProviderSupplier.hasValue()
                         ? mLayoutStateProviderSupplier.get().getActiveLayoutType()
                         : LayoutType.NONE;
+                long interval = -1;
+                if (mLastBackPressMsSupplier.get() != -1) {
+                    interval = TimeUtils.elapsedRealtimeMillis() - mLastBackPressMsSupplier.get();
+                }
                 assert false
-                    : String.format("tab %s; control tab %s; back press state %s; layout %s", tab,
-                              controlTab, tab != null && tab.canGoBack(), layoutType);
+                    : String.format(
+                              "tab %s; control tab %s; back press state %s; layout %s; interval %s",
+                              tab, controlTab, tab != null && tab.canGoBack(), layoutType,
+                              interval);
             }
 
             mOnBackPressedCallback.run();

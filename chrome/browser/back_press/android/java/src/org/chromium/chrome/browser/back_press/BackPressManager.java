@@ -4,6 +4,7 @@
 
 package org.chromium.chrome.browser.back_press;
 
+import android.text.format.DateUtils;
 import android.util.SparseIntArray;
 
 import androidx.activity.OnBackPressedCallback;
@@ -11,6 +12,7 @@ import androidx.annotation.NonNull;
 import androidx.annotation.VisibleForTesting;
 
 import org.chromium.base.Callback;
+import org.chromium.base.TimeUtils;
 import org.chromium.base.lifetime.Destroyable;
 import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.chrome.browser.flags.ChromeFeatureList;
@@ -71,6 +73,7 @@ public class BackPressManager implements Destroyable {
 
     static final String HISTOGRAM = "Android.BackPress.Intercept";
     static final String FAILURE_HISTOGRAM = "Android.BackPress.Failure";
+    static final String INTERVAL_HISTOGRAM = "Android.BackPress.Interval";
 
     private final BackPressHandler[] mHandlers = new BackPressHandler[Type.NUM_TYPES];
     private final boolean mUseSystemBack;
@@ -79,6 +82,8 @@ public class BackPressManager implements Destroyable {
     private final Callback<Boolean>[] mObserverCallbacks = new Callback[Type.NUM_TYPES];
     private Runnable mFallbackOnBackPressed;
     private int mLastCalledHandlerForTesting = -1;
+    // Do not use static; otherwise the data might be corrupted because of multi-window usage.
+    private long mLastPressMs = -1;
 
     /**
      * @return True if the back gesture refactor is enabled.
@@ -108,6 +113,19 @@ public class BackPressManager implements Destroyable {
     public static void record(@Type int type) {
         RecordHistogram.recordEnumeratedHistogram(
                 HISTOGRAM, sMetricsMap.get(type), sMetricsMaxValue);
+    }
+
+    /**
+     * Record the interval between two consecutive back press events. Should be called when
+     * a back press event is intercepted.
+     */
+    public void recordLastPressInterval() {
+        long now = TimeUtils.elapsedRealtimeMillis();
+        if (mLastPressMs != -1) {
+            RecordHistogram.recordCustomTimesHistogram(
+                    INTERVAL_HISTOGRAM, now - mLastPressMs, 1, DateUtils.SECOND_IN_MILLIS * 3, 50);
+        }
+        mLastPressMs = now;
     }
 
     private static void recordFailure(@Type int type) {
@@ -191,6 +209,14 @@ public class BackPressManager implements Destroyable {
         mHasSystemBackArm = hasSystemBackArm;
     }
 
+    /**
+     * Get the timestamp of when the latest back press occurs.
+     * @return The timestamp of when the latest back press occurs. -1 if no previous back press.
+     */
+    public long getLastPressMs() {
+        return mLastPressMs;
+    }
+
     private void backPressStateChanged() {
         boolean intercept = shouldInterceptBackPress();
         if (mHasSystemBackArm) {
@@ -219,6 +245,7 @@ public class BackPressManager implements Destroyable {
                     recordFailure(i);
                 } else {
                     record(i);
+                    recordLastPressInterval();
                     assertListOfFailedHandlers(failed, i);
                     return;
                 }

@@ -2292,6 +2292,7 @@ public abstract class ChromeActivity<C extends ChromeActivityComponent>
             OnBackPressedCallback callback = new OnBackPressedCallback(true) {
                 @Override
                 public void handleOnBackPressed() {
+                    mBackPressManager.recordLastPressInterval();
                     if (!ChromeActivity.this.handleOnBackPressed()) {
                         setEnabled(false);
                         getOnBackPressedDispatcher().onBackPressed();

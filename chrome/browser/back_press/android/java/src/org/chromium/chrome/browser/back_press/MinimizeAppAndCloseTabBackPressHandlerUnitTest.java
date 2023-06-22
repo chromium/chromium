@@ -238,9 +238,9 @@ public class MinimizeAppAndCloseTabBackPressHandlerUnitTest {
         }
         TestThreadUtils.runOnUiThreadBlocking(
                 () -> { mActivityTabSupplier = new ObservableSupplierImpl<>(); });
-        mHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> new MinimizeAppAndCloseTabBackPressHandler(mActivityTabSupplier,
-                                mShouldCloseTab, mSendToBackground, mFinalCallback));
+        mHandler = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new MinimizeAppAndCloseTabBackPressHandler(mActivityTabSupplier, mShouldCloseTab,
+                    mSendToBackground, mFinalCallback, () -> { return -1L; });
+        });
     }
 }

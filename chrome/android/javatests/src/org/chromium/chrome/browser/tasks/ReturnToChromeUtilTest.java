@@ -253,14 +253,14 @@ public class ReturnToChromeUtilTest {
         } else {
             mActivityTestRule.waitForActivityNativeInitializationComplete();
         }
-        mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(
-                ()
-                        -> new ReturnToChromeBackPressHandler(
-                                mActivityTestRule.getActivity().getActivityTabProvider(),
-                                ()
-                                        -> {},
-                                mActivityTestRule.getActivity()::getActivityTab,
-                                mActivityTestRule.getActivity()::getLayoutManager));
+        mBackPressHandler = TestThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new ReturnToChromeBackPressHandler(
+                    mActivityTestRule.getActivity().getActivityTabProvider(),
+                    ()
+                            -> {},
+                    mActivityTestRule.getActivity()::getActivityTab,
+                    mActivityTestRule.getActivity()::getLayoutManager, () -> { return -1L; });
+        });
     }
 
     private void waitTabModelRestoration() {
