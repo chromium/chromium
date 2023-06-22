@@ -3,6 +3,7 @@
 // found in the LICENSE file.
 
 #include "ash/system/phonehub/phone_hub_tray.h"
+
 #include <string>
 #include <utility>
 
@@ -21,6 +22,7 @@
 #include "ash/system/eche/eche_icon_loading_indicator_view.h"
 #include "ash/system/eche/eche_tray.h"
 #include "ash/system/model/system_tray_model.h"
+#include "ash/system/phonehub/onboarding_nudge_controller.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
 #include "ash/system/phonehub/phone_hub_metrics.h"
 #include "ash/system/phonehub/quick_actions_view.h"
@@ -75,11 +77,7 @@ bool IsInUserSession() {
 
 PhoneHubTray::PhoneHubTray(Shelf* shelf)
     : TrayBackgroundView(shelf, TrayBackgroundViewCatalogName::kPhoneHub),
-      ui_controller_(new PhoneHubUiController()),
-      phone_hub_nudge_controller_(
-          features::IsPhoneHubNudgeEnabled()
-              ? std::make_unique<PhoneHubNudgeController>()
-              : nullptr) {
+      ui_controller_(new PhoneHubUiController()) {
   // By default, if the individual buttons did not handle the event consider it
   // as a phone hub icon event.
   SetPressedCallback(base::BindRepeating(&PhoneHubTray::PhoneHubIconActivated,
@@ -123,6 +121,18 @@ PhoneHubTray::PhoneHubTray(Shelf* shelf)
                          ui::ImageModel::FromVectorIcon(
                              kPhoneHubPhoneIcon, kColorAshIconColorPrimary));
   }
+
+  onboarding_nudge_controller_ =
+      features::IsPhoneHubNudgeEnabled()
+          ? std::make_unique<OnboardingNudgeController>(
+                /*phone_hub_tray=*/this,
+                /*animation_stop_callback=*/
+                base::BindRepeating(&PhoneHubTray::StopPulseAnimation,
+                                    weak_factory_.GetWeakPtr()),
+                /*start_animation_callback=*/
+                base::BindRepeating(&PhoneHubTray::StartPulseAnimation,
+                                    weak_factory_.GetWeakPtr()))
+          : nullptr;
 
   Shell::Get()->window_tree_host_manager()->AddObserver(this);
 }
@@ -232,6 +242,16 @@ void PhoneHubTray::OnActiveUserSessionChanged(const AccountId& account_id) {
 void PhoneHubTray::AnchorUpdated() {
   if (bubble_)
     bubble_->bubble_view()->UpdateBubble();
+}
+
+void PhoneHubTray::OnVisibilityAnimationFinished(
+    bool should_log_visible_pod_count,
+    bool aborted) {
+  TrayBackgroundView::OnVisibilityAnimationFinished(
+      should_log_visible_pod_count, aborted);
+  if (features::IsPhoneHubNudgeEnabled()) {
+    onboarding_nudge_controller_->ShowNudgeIfNeeded();
+  }
 }
 
 void PhoneHubTray::OnDisplayConfigurationChanged() {
@@ -406,15 +426,6 @@ void PhoneHubTray::UpdateVisibility() {
   auto ui_state = ui_controller_->ui_state();
   SetVisiblePreferred(ui_state != PhoneHubUiController::UiState::kHidden &&
                       IsInUserSession());
-  if (features::IsPhoneHubNudgeEnabled() && IsInUserSession()) {
-    if (ui_state == PhoneHubUiController::UiState::kOnboardingWithoutPhone) {
-      // TODO(b/282057052): update text based on different groups.
-      phone_hub_nudge_controller_->ShowNudge(
-          this, l10n_util::GetStringUTF16(
-                    IDS_ASH_MULTI_DEVICE_SETUP_NOTIFIER_TEXT_WITH_PHONE_HUB));
-      // TODO (b/266853434): Animation of icon.
-    }
-  }
 }
 
 void PhoneHubTray::UpdateHeaderVisibility() {
@@ -440,8 +451,8 @@ void PhoneHubTray::EcheIconActivated(const ui::Event& event) {
 
 void PhoneHubTray::PhoneHubIconActivated(const ui::Event& event) {
   if (features::IsPhoneHubNudgeEnabled()) {
-    phone_hub_nudge_controller_->HideNudge();
-    phone_hub_nudge_controller_->MaybeRecordNudgeAction();
+    onboarding_nudge_controller_->HideNudge();
+    onboarding_nudge_controller_->MaybeRecordNudgeAction();
   }
   // Simply toggle between visible/invisibvle
   if (bubble_ && bubble_->bubble_view()->GetVisible()) {

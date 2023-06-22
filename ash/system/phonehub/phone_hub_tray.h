@@ -10,7 +10,6 @@
 #include "ash/session/session_controller_impl.h"
 #include "ash/system/phonehub/onboarding_view.h"
 #include "ash/system/phonehub/phone_hub_content_view.h"
-#include "ash/system/phonehub/phone_hub_nudge_controller.h"
 #include "ash/system/phonehub/phone_hub_ui_controller.h"
 #include "ash/system/phonehub/phone_status_view.h"
 #include "ash/system/status_area_widget.h"
@@ -34,6 +33,7 @@ class ImageButton;
 namespace ash {
 
 class EcheIconLoadingIndicatorView;
+class OnboardingNudgeController;
 class PhoneHubContentView;
 class TrayBubbleWrapper;
 class SessionControllerImpl;
@@ -112,13 +112,16 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
 
   views::View* content_view_for_testing() { return content_view_; }
 
-  PhoneHubUiController* ui_controller_for_testing() {
-    return ui_controller_.get();
+  PhoneHubUiController* ui_controller() { return ui_controller_.get(); }
+
+  OnboardingNudgeController* onboarding_nudge_controller_for_testing() {
+    return onboarding_nudge_controller_.get();
   }
 
-  PhoneHubNudgeController* phone_hub_nudge_controller_for_testing() {
-    return phone_hub_nudge_controller_.get();
-  }
+ protected:
+  // TrayBackgroundView:
+  void OnVisibilityAnimationFinished(bool should_log_visible_pod_count,
+                                     bool aborted) override;
 
  private:
   FRIEND_TEST_ALL_PREFIXES(PhoneHubTrayTest, SafeAccessToHeaderView);
@@ -173,7 +176,7 @@ class ASH_EXPORT PhoneHubTray : public TrayBackgroundView,
   std::unique_ptr<PhoneHubUiController> ui_controller_;
 
   // Controls the behavior of a nudge shown to eligible users.
-  std::unique_ptr<PhoneHubNudgeController> phone_hub_nudge_controller_;
+  std::unique_ptr<OnboardingNudgeController> onboarding_nudge_controller_;
 
   // The bubble that appears after clicking the tray button.
   std::unique_ptr<TrayBubbleWrapper> bubble_;

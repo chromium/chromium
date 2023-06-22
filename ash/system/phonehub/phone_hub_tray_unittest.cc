@@ -79,6 +79,9 @@ class PhoneHubTrayTest : public AshTestBase {
 
     phone_hub_tray_ =
         StatusAreaWidgetTestHelper::GetStatusAreaWidget()->phone_hub_tray();
+    // Disable pulse animation so the tests will not hang.
+    ui::ScopedAnimationDurationScaleMode duration_mode(
+        ui::ScopedAnimationDurationScaleMode::ZERO_DURATION);
 
     GetFeatureStatusProvider()->SetStatus(
         phonehub::FeatureStatus::kEnabledAndConnected);
@@ -782,19 +785,7 @@ TEST_F(PhoneHubTrayTest, MultiDisplay) {
   EXPECT_TRUE(secondary_phone_hub_tray->GetVisible());
 }
 
-TEST_F(PhoneHubTrayTest, ShowNudge) {
-  // Simulate kOnboardingWithoutPhone state.
-  GetFeatureStatusProvider()->SetStatus(
-      phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
-  GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
-  GetSessionControllerClient()->SetSessionState(
-      session_manager::SessionState::ACTIVE);
-
-  EXPECT_TRUE(
-      Shell::Get()->anchored_nudge_manager()->IsNudgeShown(kPhoneHubNudgeId));
-}
-
-TEST_F(PhoneHubTrayTest, HideNudge) {
+TEST_F(PhoneHubTrayTest, ShowAndHideNudge) {
   GetFeatureStatusProvider()->SetStatus(
       phonehub::FeatureStatus::kEligiblePhoneButNotSetUp);
   GetOnboardingUiTracker()->SetShouldShowOnboardingUi(true);
