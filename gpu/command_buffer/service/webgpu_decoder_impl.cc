@@ -60,10 +60,6 @@
 #include "ui/gl/gl_angle_util_win.h"
 #endif
 
-#if BUILDFLAG(IS_WIN) && BUILDFLAG(ENABLE_VULKAN)
-#include <dawn/native/VulkanBackend.h>
-#endif
-
 namespace gpu {
 namespace webgpu {
 
@@ -80,27 +76,6 @@ static constexpr uint32_t kAllowedReadableMailboxTextureUsages =
 
 static constexpr uint32_t kAllowedMailboxTextureUsages =
     kAllowedWritableMailboxTextureUsages | kAllowedReadableMailboxTextureUsages;
-
-WGPUAdapterType PowerPreferenceToDawnAdapterType(
-    WGPUPowerPreference power_preference) {
-  switch (power_preference) {
-    case WGPUPowerPreference_Undefined:
-      // If on battery power, default to the integrated GPU.
-      if (!base::PowerMonitor::IsInitialized() ||
-          base::PowerMonitor::IsOnBatteryPower()) {
-        return WGPUAdapterType_IntegratedGPU;
-      } else {
-        return WGPUAdapterType_DiscreteGPU;
-      }
-    case WGPUPowerPreference_LowPower:
-      return WGPUAdapterType_IntegratedGPU;
-    case WGPUPowerPreference_HighPerformance:
-      return WGPUAdapterType_DiscreteGPU;
-    default:
-      NOTREACHED();
-      return WGPUAdapterType_CPU;
-  }
-}
 
 class WebGPUDecoderImpl final : public WebGPUDecoder {
  public:
@@ -368,8 +343,6 @@ class WebGPUDecoderImpl final : public WebGPUDecoder {
   // processing functions that do not return the error value. Should be set
   // only if not returning an error.
   error::Error current_decoder_error_ = error::kNoError;
-
-  void DiscoverPhysicalDevices();
 
   WGPUAdapter CreatePreferredAdapter(WGPUPowerPreference power_preference,
                                      bool force_fallback,
@@ -1172,7 +1145,7 @@ ContextResult WebGPUDecoderImpl::Initialize(
     use_webgpu_adapter_ = WebGPUAdapterName::kSwiftShader;
   }
 
-  DiscoverPhysicalDevices();
+  dawn_instance_->EnableAdapterBlocklist(use_blocklist());
   return ContextResult::kSuccess;
 }
 
@@ -1506,203 +1479,177 @@ bool WebGPUDecoderImpl::use_blocklist() const {
            base::Contains(require_disabled_toggles_, "adapter_blocklist"));
 }
 
-void WebGPUDecoderImpl::DiscoverPhysicalDevices() {
-  dawn_instance_->EnableAdapterBlocklist(use_blocklist());
-
-#if BUILDFLAG(IS_WIN)
-  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
-      gl::QueryD3D11DeviceObjectFromANGLE();
-  if (!d3d11_device) {
-    // In the case where the d3d11 device is nullptr, we want to return a null
-    // adapter
-    return;
-  }
-  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
-  d3d11_device.As(&dxgi_device);
-  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
-  dxgi_device->GetAdapter(&dxgi_adapter);
-
-  dawn::native::d3d12::PhysicalDeviceDiscoveryOptions d3d12Options(
-      dxgi_adapter);
-  dawn_instance_->DiscoverPhysicalDevices(&d3d12Options);
-
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
-    dawn::native::d3d11::PhysicalDeviceDiscoveryOptions d3d11Options(
-        std::move(dxgi_adapter));
-    dawn_instance_->DiscoverPhysicalDevices(&d3d11Options);
-  }
-
-#if BUILDFLAG(ENABLE_VULKAN)
-  // Also discover the SwiftShader physical device. It will be discovered by
-  // default for other OSes in DiscoverDefaultPhysicalDevices.
-  dawn::native::vulkan::PhysicalDeviceDiscoveryOptions swiftShaderOptions;
-  swiftShaderOptions.forceSwiftShader = true;
-  dawn_instance_->DiscoverPhysicalDevices(&swiftShaderOptions);
-#endif  // BUILDFLAG(ENABLE_VULKAN)
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
-    // Discover default physical devices to also discover the OpenGLES one.
-    // TODO(senorblanco): This may incorrectly discover a compat adapter that
-    // does not match the one ANGLE is using.
-    dawn_instance_->DiscoverDefaultPhysicalDevices();
-  }
-#else   // BUILDFLAG(IS_WIN)
-  // Only discover default physical devices on non-Windows. Windows requires
-  // compatibility with ANGLE. Other adapters will not be compatible.
-  dawn_instance_->DiscoverDefaultPhysicalDevices();
-#endif  // BUILDFLAG(IS_WIN)
-}
-
 WGPUAdapter WebGPUDecoderImpl::CreatePreferredAdapter(
     WGPUPowerPreference power_preference,
     bool force_fallback,
     bool compatibility_mode) const {
-  // Build the list of available adapters.
-  std::vector<dawn::native::Adapter> adapters;
-  for (dawn::native::Adapter& adapter : dawn_instance_->GetAdapters()) {
-    adapter.SetUseTieredLimits(tiered_adapter_limits_);
+  // Update power_preference based on command-line flag
+  // use_webgpu_power_preference_.
+  switch (use_webgpu_power_preference_) {
+    case WebGPUPowerPreference::kNone:
+      if (power_preference == WGPUPowerPreference_Undefined) {
+        // If on battery power, default to the integrated GPU.
+        if (!base::PowerMonitor::IsInitialized() ||
+            base::PowerMonitor::IsOnBatteryPower()) {
+          power_preference = WGPUPowerPreference_HighPerformance;
+        } else {
+          power_preference = WGPUPowerPreference_LowPower;
+        }
+      }
+      break;
+    case WebGPUPowerPreference::kDefaultLowPower:
+      if (power_preference == WGPUPowerPreference_Undefined) {
+        power_preference = WGPUPowerPreference_LowPower;
+      }
+      break;
+    case WebGPUPowerPreference::kDefaultHighPerformance:
+      if (power_preference == WGPUPowerPreference_Undefined) {
+        power_preference = WGPUPowerPreference_HighPerformance;
+      }
+      break;
+    case WebGPUPowerPreference::kForceLowPower:
+      power_preference = WGPUPowerPreference_LowPower;
+      break;
+    case WebGPUPowerPreference::kForceHighPerformance:
+      power_preference = WGPUPowerPreference_HighPerformance;
+      break;
+  }
 
-    WGPUAdapterProperties adapterProperties = {};
-    adapter.GetProperties(&adapterProperties);
+  // Prepare WGPURequestAdapterOptions.
+  WGPURequestAdapterOptions adapter_options = {};
+  adapter_options.compatibilityMode = compatibility_mode;
+  adapter_options.forceFallbackAdapter = force_fallback;
+  adapter_options.powerPreference = power_preference;
 
-    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapterProperties)) {
-      continue;
+#if BUILDFLAG(IS_WIN)
+  // On Windows, query the LUID of ANGLE's adapter.
+  Microsoft::WRL::ComPtr<ID3D11Device> d3d11_device =
+      gl::QueryD3D11DeviceObjectFromANGLE();
+  if (!d3d11_device) {
+    LOG(ERROR) << "Failed to query ID3D11Device from ANGLE.";
+    return nullptr;
+  }
+
+  Microsoft::WRL::ComPtr<IDXGIDevice> dxgi_device;
+  if (!SUCCEEDED(d3d11_device.As(&dxgi_device))) {
+    LOG(ERROR) << "Failed to get IDXGIDevice from ANGLE.";
+    return nullptr;
+  }
+  Microsoft::WRL::ComPtr<IDXGIAdapter> dxgi_adapter;
+  if (!SUCCEEDED(dxgi_device->GetAdapter(&dxgi_adapter))) {
+    LOG(ERROR) << "Failed to get IDXGIAdapter from ANGLE.";
+    return nullptr;
+  }
+
+  DXGI_ADAPTER_DESC adapter_desc;
+  if (!SUCCEEDED(dxgi_adapter->GetDesc(&adapter_desc))) {
+    LOG(ERROR) << "Failed to get DXGI_ADAPTER_DESC from ANGLE.";
+    return nullptr;
+  }
+
+  // Chain the LUID from ANGLE.
+  dawn::native::d3d::RequestAdapterOptionsLUID adapter_options_luid = {};
+  adapter_options_luid.adapterLUID = adapter_desc.AdapterLuid;
+  adapter_options.nextInChain =
+      reinterpret_cast<const WGPUChainedStruct*>(&adapter_options_luid);
+#endif
+
+  // Build a list of backend types we will search for, in order of preference.
+  std::vector<wgpu::BackendType> backend_types;
+  switch (use_webgpu_adapter_) {
+    case WebGPUAdapterName::kD3D11:
+      backend_types = {wgpu::BackendType::D3D11};
+      break;
+    case WebGPUAdapterName::kOpenGLES:
+      backend_types = {wgpu::BackendType::OpenGLES};
+      break;
+    case WebGPUAdapterName::kSwiftShader:
+      backend_types = {wgpu::BackendType::Vulkan};
+      break;
+    case WebGPUAdapterName::kDefault: {
+#if BUILDFLAG(IS_WIN)
+      backend_types = {wgpu::BackendType::D3D12};
+#elif BUILDFLAG(IS_MAC)
+      backend_types = {wgpu::BackendType::Metal};
+#else
+      backend_types = {wgpu::BackendType::Vulkan, wgpu::BackendType::OpenGLES};
+#endif
+      break;
+    }
+  }
+
+  // `CanUseAdapter` is a helper to determine if an adapter is not blocklisted,
+  // supports all required features, and matches the requested adapter options
+  // (some of which may be set by command-line flags).
+  auto CanUseAdapter = [&](const dawn::native::Adapter& adapter) {
+    WGPUAdapterProperties adapter_properties = {};
+    adapter.GetProperties(&adapter_properties);
+
+    if (use_blocklist() && IsWebGPUAdapterBlocklisted(adapter_properties)) {
+      return false;
     }
 
-    const bool is_fallback_adapter =
-        adapterProperties.adapterType == WGPUAdapterType_CPU &&
-        adapterProperties.vendorID == 0x1AE0 &&
-        adapterProperties.deviceID == 0xC0DE;
+    const bool is_swiftshader =
+        adapter_properties.adapterType == WGPUAdapterType_CPU &&
+        adapter_properties.vendorID == 0x1AE0 &&
+        adapter_properties.deviceID == 0xC0DE;
 
     // The adapter must be able to import external images, or it must be a
     // SwiftShader adapter. For SwiftShader, we will perform a manual
     // upload/readback to/from shared images.
-    if (!(adapter.SupportsExternalImages() || is_fallback_adapter)) {
-      continue;
+    if (!(adapter.SupportsExternalImages() || is_swiftshader)) {
+      return false;
     }
 
-    if (compatibility_mode != adapterProperties.compatibilityMode) {
-      continue;
+    // If the power preference is forced, only accept specific adapter
+    // types.
+    if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower &&
+        adapter_properties.adapterType != WGPUAdapterType_IntegratedGPU) {
+      return false;
+    }
+    if (use_webgpu_power_preference_ ==
+            WebGPUPowerPreference::kForceHighPerformance &&
+        adapter_properties.adapterType != WGPUAdapterType_DiscreteGPU) {
+      return false;
     }
 
-    if (use_webgpu_adapter_ == WebGPUAdapterName::kD3D11) {
-      if (adapterProperties.backendType == WGPUBackendType_D3D11) {
-        adapters.push_back(adapter);
+    return true;
+  };
+
+  // Enumerate adapters in order of the preferred backend type.
+  for (wgpu::BackendType backend_type : backend_types) {
+    adapter_options.backendType = static_cast<WGPUBackendType>(backend_type);
+    for (dawn::native::Adapter& adapter :
+         dawn_instance_->EnumerateAdapters(&adapter_options)) {
+      adapter.SetUseTieredLimits(tiered_adapter_limits_);
+
+      if (!CanUseAdapter(adapter)) {
+        continue;
       }
-    } else if (use_webgpu_adapter_ == WebGPUAdapterName::kOpenGLES) {
-      if (adapterProperties.backendType == WGPUBackendType_OpenGLES) {
-        adapters.push_back(adapter);
-      }
-    } else if (adapterProperties.backendType != WGPUBackendType_Null &&
-               adapterProperties.backendType != WGPUBackendType_OpenGL) {
-      adapters.push_back(adapter);
+
+      // Retain a reference to the adapter, and return it.
+      dawn::native::GetProcs().adapterReference(adapter.Get());
+      return adapter.Get();
     }
   }
 
-  // Set the preferred adapter type based on flags.
-  WGPUAdapterType preferred_adapter_type;
-  if (use_webgpu_adapter_ == WebGPUAdapterName::kSwiftShader) {
-    // When it is using SwiftShader, it is using CPU, so ignore webgpu power
-    // preference flag.
-    DCHECK(force_fallback);
-    preferred_adapter_type = WGPUAdapterType_CPU;
-  } else {
-    WGPUPowerPreference adjusted_power_preference = power_preference;
-    switch (use_webgpu_power_preference_) {
-      case WebGPUPowerPreference::kNone:
-        break;
-      case WebGPUPowerPreference::kDefaultLowPower:
-        if (adjusted_power_preference == WGPUPowerPreference_Undefined) {
-          adjusted_power_preference = WGPUPowerPreference_LowPower;
-        }
-        break;
-      case WebGPUPowerPreference::kDefaultHighPerformance:
-        if (adjusted_power_preference == WGPUPowerPreference_Undefined) {
-          adjusted_power_preference = WGPUPowerPreference_HighPerformance;
-        }
-        break;
-      case WebGPUPowerPreference::kForceLowPower:
-        adjusted_power_preference = WGPUPowerPreference_LowPower;
-        break;
-      case WebGPUPowerPreference::kForceHighPerformance:
-        adjusted_power_preference = WGPUPowerPreference_HighPerformance;
-        break;
-    }
-    preferred_adapter_type =
-        PowerPreferenceToDawnAdapterType(adjusted_power_preference);
-  }
+  // If we still don't have an adapter, now try to find the fallback adapter.
+  adapter_options.forceFallbackAdapter = true;
+  adapter_options.backendType = WGPUBackendType_Vulkan;
+  for (dawn::native::Adapter& adapter :
+       dawn_instance_->EnumerateAdapters(&adapter_options)) {
+    adapter.SetUseTieredLimits(tiered_adapter_limits_);
 
-  int32_t discrete_gpu_adapter_index = -1;
-  int32_t integrated_gpu_adapter_index = -1;
-  int32_t cpu_adapter_index = -1;
-  int32_t unknown_adapter_index = -1;
-
-  // Find the index of the preferred adapter.
-  for (int32_t i = 0; i < static_cast<int32_t>(adapters.size()); ++i) {
-    const dawn::native::Adapter& adapter = adapters[i];
-    WGPUAdapterProperties adapterProperties = {};
-    adapter.GetProperties(&adapterProperties);
-
-    if (force_fallback &&
-        (adapterProperties.adapterType != WGPUAdapterType_CPU ||
-         adapterProperties.backendType != WGPUBackendType_Vulkan)) {
+    if (!CanUseAdapter(adapter)) {
       continue;
     }
 
-    if (adapterProperties.adapterType == preferred_adapter_type) {
-      WGPUAdapter cAdapter = adapters[i].Get();
-      dawn::native::GetProcs().adapterReference(cAdapter);
-      return cAdapter;
-    }
-    switch (adapterProperties.adapterType) {
-      case WGPUAdapterType_DiscreteGPU:
-        discrete_gpu_adapter_index = i;
-        break;
-      case WGPUAdapterType_IntegratedGPU:
-        integrated_gpu_adapter_index = i;
-        break;
-      case WGPUAdapterType_CPU:
-        cpu_adapter_index = i;
-        break;
-      case WGPUAdapterType_Unknown:
-        unknown_adapter_index = i;
-        break;
-      default:
-        NOTREACHED();
-        break;
-    }
+    // Retain a reference to the adapter, and return it.
+    dawn::native::GetProcs().adapterReference(adapter.Get());
+    return adapter.Get();
   }
 
-  // For now, we always prefer the integrated GPU
-  if (integrated_gpu_adapter_index >= 0 &&
-      use_webgpu_power_preference_ !=
-          WebGPUPowerPreference::kForceHighPerformance) {
-    WGPUAdapter adapter = adapters[integrated_gpu_adapter_index].Get();
-    dawn::native::GetProcs().adapterReference(adapter);
-    return adapter;
-  }
-  if (discrete_gpu_adapter_index >= 0 &&
-      use_webgpu_power_preference_ != WebGPUPowerPreference::kForceLowPower) {
-    WGPUAdapter adapter = adapters[discrete_gpu_adapter_index].Get();
-    dawn::native::GetProcs().adapterReference(adapter);
-    return adapter;
-  }
-  if (use_webgpu_power_preference_ == WebGPUPowerPreference::kForceLowPower ||
-      use_webgpu_power_preference_ ==
-          WebGPUPowerPreference::kForceHighPerformance) {
-    // If we cannot find the forced adapter type, early return here instead of
-    // returning any other adapter.
-    return nullptr;
-  }
-  if (cpu_adapter_index >= 0) {
-    WGPUAdapter adapter = adapters[cpu_adapter_index].Get();
-    dawn::native::GetProcs().adapterReference(adapter);
-    return adapter;
-  }
-  if (unknown_adapter_index >= 0) {
-    WGPUAdapter adapter = adapters[unknown_adapter_index].Get();
-    dawn::native::GetProcs().adapterReference(adapter);
-    return adapter;
-  }
+  // No adapter could be found.
   return nullptr;
 }
 
