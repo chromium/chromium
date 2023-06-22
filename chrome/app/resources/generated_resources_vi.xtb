@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Thêm vào từ điển</translation>
 <translation id="1018656279737460067">Đã hủy</translation>
 <translation id="1022489261739821355">Đang hiển thị các mật khẩu lưu trong <ph name="BEGIN_LINK" />Tài khoản Google<ph name="END_LINK" /> của bạn</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Thiết bị của bạn do <ph name="DOMAIN" /> quản lý. Quản trị viên có thể truy cập vào dữ liệu trong bất kỳ hồ sơ nào trên thiết bị này.</translation>
 <translation id="1024734233509995696">Thẻ này đang sử dụng máy ảnh hoặc micrô của bạn</translation>
 <translation id="1026655690966755180">Thêm cổng</translation>
@@ -971,6 +972,7 @@ Các quyền bạn từng cấp cho ứng dụng có thể áp dụng cho cả t
 <translation id="1786290960428378411">Yêu cầu đọc và thay đổi</translation>
 <translation id="1787350673646245458">Hình ảnh của người dùng</translation>
 <translation id="1790976235243700817">Xóa quyền truy cập</translation>
+<translation id="1791662854739702043">Đã cài đặt</translation>
 <translation id="1792619191750875668">Màn hình mở rộng</translation>
 <translation id="1794051631868188691">Không bao giờ hiển thị <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ẩn mật khẩu của <ph name="DOMAIN" /></translation>
@@ -1873,7 +1875,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="250704661983564564">Sắp xếp màn hình</translation>
 <translation id="2507253002925770350">Đã xóa phiếu</translation>
 <translation id="2507491234071975894">Loa</translation>
-<translation id="2508428939232952663">Tài khoản Cửa hàng Google Play</translation>
 <translation id="2509495747794740764">Số tỷ lệ phải là một số giữa 10 và 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (đã chọn)</translation>
@@ -2942,7 +2943,6 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3458451003193188688">Không cài đặt được máy ảo này do lỗi mạng. Hãy thử lại hoặc liên hệ với quản trị viên. Mã lỗi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Không ngừng chia sẻ được</translation>
 <translation id="3459509316159669723">In</translation>
-<translation id="3459697287128633276">Để cho phép tài khoản của bạn truy cập vào Cửa hàng Google Play, vui lòng xác thực với Nhà cung cấp danh tính của bạn.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Đã xoá 1 dấu trang}other{Đã xoá # dấu trang}}</translation>
 <translation id="3461766685318630278">Tạo và xoá các vùng chứa bổ sung.</translation>
 <translation id="3462311546193741693">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ vẫn được duy trì trạng thái đăng nhập vào Tài khoản Google để có thể xóa dữ liệu đã đồng bộ hóa.</translation>
@@ -3503,6 +3503,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="3919145445993746351">Để có các tiện ích trên tất cả các máy tính, hãy bật tính năng đồng bộ hóa</translation>
 <translation id="3919229493046408863">Tắt thông báo khi có thiết bị ở gần</translation>
 <translation id="3919262972282962508">Sau tháng 12 năm 2022, các phiên bản cũ của Ứng dụng Chrome sẽ không mở trên các thiết bị Mac. Hãy liên hệ với quản trị viên để cập nhật lên phiên bản mới hoặc xoá ứng dụng này.</translation>
+<translation id="3919376399641777316">Sử dụng bộ nhớ Google Drive</translation>
 <translation id="3919798653937160644">Những trang bạn xem trong cửa sổ này sẽ không xuất hiện trong nhật ký duyệt web của trình duyệt, cũng như không để lại dấu vết khác (chẳng hạn như cookie) trên máy tính sau khi bạn đóng tất cả cửa sổ Khách đang mở. Tuy nhiên, hệ thống vẫn sẽ lưu giữ mọi tệp mà bạn tải xuống.</translation>
 <translation id="3920504717067627103">Chính sách Chứng chỉ</translation>
 <translation id="3920909973552939961">Không được phép cài đặt trình xử lý thanh toán</translation>
@@ -3653,6 +3654,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4044612648082411741">Nhập mật khẩu chứng chỉ của bạn</translation>
 <translation id="4044708573046946214">Phương thức khóa màn hình: mật khẩu</translation>
 <translation id="404493185430269859">Công cụ tìm kiếm mặc định</translation>
+<translation id="4044964245574571633">Sử dụng bộ nhớ Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Âm thanh trên thiết bị</translation>
 <translation id="4046013316139505482">Các tiện ích này không cần xem và thay đổi thông tin trên trang web này.</translation>
 <translation id="4046123991198612571">Bản nhạc tiếp theo</translation>
@@ -3691,6 +3693,7 @@ Bạn có thể quản lý các tùy chọn cài đặt của tài khoản này 
 <translation id="4084682180776658562">Dấu trang</translation>
 <translation id="4084835346725913160">Đóng <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript đã bị chặn trên trang này.</translation>
+<translation id="4085620044235559093">Chọn một ứng dụng để mở tệp <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Đã tạo tiện ích:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4445,6 +4448,7 @@ Nhấn tổ hợp phím Ctrl + Alt + Giảm độ sáng để thu nhỏ.</transl
 <translation id="4742970037960872810">Xóa nội dung được làm nổi bật</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Tìm hiểu cách cập nhật ứng dụng<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Mở trang web</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Bật âm thanh trang web}other{Bật âm thanh các trang web}}</translation>
 <translation id="474609389162964566">Hãy nói "Ok Google" để sử dụng Trợ lý của bạn</translation>
 <translation id="4746351372139058112">Tin nhắn</translation>
@@ -5506,6 +5510,7 @@ Bạn có thể gửi tệp này cho Google để kiểm tra xem tệp có an to
 <translation id="5684661240348539843">Số nhận dạng phần tử</translation>
 <translation id="5684950556880280580">Mật khẩu của bạn đã được cập nhật</translation>
 <translation id="5687326903064479980">Múi giờ</translation>
+<translation id="5687606994963670306">Chrome tự động xoá các trang web mà đã hơn 30 ngày bạn không truy cập. Những trang web bạn truy cập lại có thể xuất hiện lại trong danh sách. Ngoài ra, bạn có thể ngăn một trang web đề xuất quảng cáo cho bạn. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Hãy đảm bảo rằng thiết bị của bạn đang cắm điện và đừng tắt thiết bị. Quá trình cài đặt có thể mất đến 20 phút. Thiết bị của bạn sẽ tự động tắt khi quá trình cài đặt hoàn tất.</translation>
 <translation id="5689516760719285838">Vị trí</translation>
 <translation id="5689531695336322499">Có vẻ như <ph name="SUPERVISED_USER_NAME" /> đã thiết lập tính năng Voice Match với Trợ lý trên một thiết bị khác. Trợ lý đã dùng những bản ghi âm trước đây để tạo một mẫu giọng nói trên thiết bị này.</translation>
@@ -7335,6 +7340,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7273110280511444812">được đính kèm lần cuối vào <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> cho đến khi pin đầy</translation>
 <translation id="727595954130325265">Mua ngay</translation>
+<translation id="7276100255011548441">Chrome tự động xoá những chủ đề đã tồn tại hơn 4 tuần. Khi bạn tiếp tục duyệt web, chủ đề đã bị xoá có thể xuất hiện lại trong danh sách. Bạn cũng có thể chặn những chủ đề mà bạn không muốn Chrome chia sẻ với các trang web. Tìm hiểu thêm về <ph name="BEGIN_LINK" />quản lý quyền riêng tư trong quảng cáo trên Chrome.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Lỗi tải xuống</translation>
 <translation id="7280649757394340890">Cài đặt giọng nói của tính năng chuyển văn bản sang lời nói</translation>
 <translation id="7280877790564589615">Đã yêu cầu quyền</translation>
@@ -7522,6 +7528,7 @@ Bạn còn # mật khẩu bị lộ nữa. Trình quản lý mật khẩu của 
 <translation id="7432200167665670017">Quản trị viên đã chặn "<ph name="EXTENSION_NAME" />" – Mã ứng dụng <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Lắp thẻ thông minh để tiếp tục sử dụng <ph name="DEVICE_TYPE" /> của bạn</translation>
 <translation id="7433957986129316853">Giữ nguyên</translation>
+<translation id="7434100547946193426">Ứng dụng khác</translation>
 <translation id="7434509671034404296">Nhà phát triển</translation>
 <translation id="7434757724413878233">Tăng tốc chuột</translation>
 <translation id="7434969625063495310">Không thể thêm máy chủ máy in. Vui lòng kiểm tra cấu hình của máy chủ rồi thử lại.</translation>
@@ -8830,6 +8837,7 @@ Giữ tệp khóa của bạn ở nơi an toàn. Bạn sẽ cần tệp khóa đ
 <translation id="8534656636775144800">Rất tiếc! Đã xảy ra lỗi khi tìm cách tham gia miền. Vui lòng thử lại.</translation>
 <translation id="8535005006684281994">URL Gia hạn Chứng chỉ của Netscape</translation>
 <translation id="8536713137312218707">Lệnh nhanh</translation>
+<translation id="8536810348276651776">Đăng xuất bạn khỏi hầu hết các trang web. Bạn sẽ vẫn duy trì trạng thái đăng nhập vào Tài khoản Google để áp dụng các chế độ cài đặt trong Family Link cho Chrome.</translation>
 <translation id="8536956381488731905">Âm thanh khi nhấn phím</translation>
 <translation id="8539727552378197395">Không (HttpOnly)</translation>
 <translation id="8539766201049804895">Nâng cấp</translation>

@@ -435,6 +435,11 @@ Dies ersetzt die eingestellte Richtlinie <ph name="DEFAULT_WINDOW_PLACEMENT_SETT
 <translation id="1419945463533552043">Wenn die Richtlinie aktiviert ist, aktualisiert die Funktion zur Aktualisierung des GREASE-Algorithmus für Client-Hinweise in „User-Agent“-Headern den GREASE-Algorithmus auf die neueste Spezifikation. Ein solches Spezifikationsupdate kann Probleme verursachen, wenn eine Website einschränkt, welche Zeichen in Anfragen zulässig sind. Weitere Informationen findest du in der Spezifikation unter https://wicg.github.io/ua-client-hints/#grease. Ist diese Richtlinie aktiviert oder nicht konfiguriert, entscheidet der Browser, welcher GREASE-Algorithmus für „User-Agent“-Header verwendet wird. Wenn die Richtlinie deaktiviert ist, wird die vorherige Spezifikation des GREASE-Algorithmus für „User-Agent“-Header verwendet.
       Diese Richtlinie ist eine vorübergehende Maßnahme. Sie wird aus einer künftigen Version entfernt.</translation>
 <translation id="142346659686073702">Nicht verknüpften Nutzern die Verwendung von Crostini gestatten</translation>
+<translation id="1423900783955065155">Diese Richtlinie legt fest, ob eine Seite mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ im Back-Forward-Cache gespeichert werden kann. Es wird möglicherweise nicht erwartet, dass die Seite aus dem Back-Forward-Cache wiederhergestellt wird, da einige vertrauliche Daten auch nach der Wiederherstellung angezeigt werden können, selbst wenn die Seite nicht mehr zugänglich ist.
+
+Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, kann die Seite mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ aus dem Back-Forward-Cache wiederhergestellt werden, es sei denn, die Cache-Bereinigung wird ausgelöst (z. B. wenn es eine reine HTTP-Cookie-Änderung auf der Website gibt).
+
+Ist die Richtlinie deaktiviert, wird die Seite mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ nicht im Back-Forward-Cache gespeichert.</translation>
 <translation id="1425551776320718592">Nutzer des Geräts daran hindern, ADB-Sideloading zu verwenden, jedoch kein Powerwash für das Gerät erzwingen, was zu einem unklaren Sicherheitszustand des Geräts führen kann</translation>
 <translation id="1426170570389588560">Zeitraum für die Speicherung von Metadaten zu Druckaufträgen festlegen (in Tagen)</translation>
 <translation id="1426410128494586442">Ja</translation>
@@ -2213,6 +2218,7 @@ Ist sie aktiviert oder nicht konfiguriert, kann der Nutzer das Avatarbild über 
 <translation id="305106159605171619">Verringerung des User-Agents ist deaktiviert und wurde nicht durch Feld- oder Ursprungstests aktiviert.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Screencast deaktivieren</translation>
+<translation id="3063307261083019730">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen nicht im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="3064530882228745118">CNAME-Suche bei der Kerberos-Authentifizierung verwenden</translation>
 <translation id="3066446511111537292">Verknüpften Nutzern dieses Geräts erlauben, ADB-Sideloading zu verwenden</translation>
 <translation id="3067462824622454143">Nutzer können entscheiden, ob das Gerät gesperrt werden soll, wenn es in den Ruhemodus versetzt oder zugeklappt wird</translation>
@@ -2420,17 +2426,17 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="3229163415739929305">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Metadaten zum Seitenaufbau und Modelle zum maschinellen Lernen abgerufen, die die Browsernutzung verbessern.
       Ist sie deaktiviert, funktionieren einige Funktionen eventuell nicht richtig.</translation>
 <translation id="3231311173895401135">Unterstützung vom Browser entscheiden lassen</translation>
-<translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates konfiguriert.
+<translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates konfiguriert.
 
       Gib einzelne Einstellungen in den JSON-Eigenschaften an:
 
       * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />: Wenn die Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" /> gesetzt ist, können Nutzer mithilfe von Powerwash ein Update der <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware installieren.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (verfügbar ab Version 68 von <ph name="PRODUCT_NAME" />): Wenn diese Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" /> gesetzt ist, können Nutzer den Ablauf für das <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdate starten, bei dem der geräteübergreifende Status (einschließlich Unternehmensregistrierung) erhalten bleibt, aber die Nutzerdaten verloren gehen.
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (verfügbar ab Version 68 von <ph name="PRODUCT_NAME" />): Wenn diese Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" /> gesetzt ist, können Nutzer den Ablauf für das <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Update starten, bei dem der geräteübergreifende Status (einschließlich Unternehmensregistrierung) erhalten bleibt, aber die Nutzerdaten verloren gehen.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (verfügbar ab Version 75 von <ph name="PRODUCT_NAME" />): Mit dieser Einstellung kannst du festlegen, wie automatische<ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates für anfällige <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware erzwungen werden. Der lokale Gerätestatus wird bei allen Abläufen beibehalten. Wenn die Einstellung…
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (verfügbar ab Version 75 von <ph name="PRODUCT_NAME" />): Mit dieser Einstellung kannst du festlegen, wie automatische<ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates für anfällige <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware erzwungen werden. Der lokale Gerätestatus wird bei allen Abläufen beibehalten. Wenn die Einstellung…
 
-        * auf 1 gesetzt oder nicht konfiguriert ist, werden <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates nicht erzwungen.
+        * auf 1 gesetzt oder nicht konfiguriert ist, werden <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates nicht erzwungen.
 
         * auf 2 gesetzt ist, wird die <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware beim nächsten Neustart aktualisiert, nachdem der Nutzer das Update bestätigt hat.
 
@@ -2438,7 +2444,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 
         * auf 4 gesetzt ist, wird die <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware nach der Registrierung aktualisiert, bevor sich der Nutzer anmeldet.
 
-      Ist die Richtlinie nicht konfiguriert, ist kein <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdate verfügbar.</translation>
+      Ist die Richtlinie nicht konfiguriert, ist kein <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Update verfügbar.</translation>
 <translation id="3232563711929146405">Netzwerkdienst-Sandbox deaktivieren</translation>
 <translation id="3232691106293445015">Nicht sichere HTTP-Verbindungen dürfen keine <ph name="BASIC_AUTH" />-Authentifizierungen verwenden; HTTPS ist erforderlich</translation>
 <translation id="3234753491625248216">Hardwarebeschleunigung deaktivieren</translation>
@@ -5338,6 +5344,7 @@ Wenn der Wert für <ph name="CHROMEOS_VERSION_PROPERTY_NAME" /> bei keinem Eintr
 <translation id="603768430528561926">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, können Nutzer von Geräten in Unternehmen Angebote einlösen, indem sie <ph name="PRODUCT_OS_NAME" /> registrieren.
 
       Ist die Richtlinie deaktiviert, können solche Nutzer diese Angebote nicht einlösen.</translation>
+<translation id="6042407236638640864">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen im Back-Forward-Cache gespeichert werden</translation>
 <translation id="6042629184389251062">Das Erfassen von URL-Messwerten ist nicht zulässig</translation>
 <translation id="6046615715547751255">Steuerelemente für detailliertes Reporting nicht zulassen</translation>
 <translation id="6048199181629830227">Energieverwaltung zum Umschalten bei Leistungsspitzen aktivieren</translation>
@@ -7616,6 +7623,7 @@ Diese Richtlinie wird nicht angewendet, wenn die Richtlinie <ph name="SCREENSAVE
 
       Wenn die Einstellung aktiviert oder nicht konfiguriert ist, dürfen Websites prüfen, ob ein Nutzer Zahlungsmethoden gespeichert hat.</translation>
 <translation id="8118665053362250806">Cache-Größe für Mediendatenträger festlegen</translation>
+<translation id="8123648898339555150">Seiten mit dem Header „<ph name="CACHE_CONTROL_NO_STORE_NAME" />“ dürfen im Back-Forward-Cache gespeichert werden.</translation>
 <translation id="8124468781472887384">Richtlinie für den Zugriff auf die Konfiguration von an Geräte gebundenen Druckern.</translation>
 <translation id="8128192446158421884">URLs, auf die AutoOpenFileTypes angewendet werden können</translation>
 <translation id="8131046602440880289">Stimmen für die Sprachausgabe bei Enhanced Network zulassen, wenn die Funktion „Vorlesen“ verwendet wird</translation>
@@ -8551,11 +8559,6 @@ Ist die Richtlinie deaktiviert, wird das alte Verhalten verwendet.
 Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chromium-Nutzern das neue Verhalten verwendet.</translation>
 <translation id="8955719471735800169">Zurück nach oben</translation>
 <translation id="8956312248048980644">Diese Richtlinie erlaubt standardmäßig das an Ursprünge gebundene Agent-Clustering.</translation>
-<translation id="8961117818679701775">Mit dieser Richtlinie kann ein Administrator Einstellungen für installierte Web-Apps angeben. Diese Richtlinie ordnet die ID einer Web-App einer bestimmten Einstellung zu. Mit der spezifischen ID <ph name="DEFAULT_SCOPE" /> kannst du eine Standardkonfiguration festlegen, die für alle Web-Apps angewendet wird, die keine benutzerdefinierte Konfiguration in dieser Richtlinie haben.
-
-Das Feld <ph name="MANIFEST_ID_FIELD" /> ist die Manifest-ID der Web-App. Unter <ph name="WEB_APP_ID_REFERENCE_URL" /> findest du eine Anleitung dazu, wie du die Manifest-ID einer installierten Web-App herausfindest.
-Das Feld <ph name="RUN_ON_OS_LOGIN_FIELD" /> gibt an, ob eine Web-App während OS Login verwendet werden kann. Wenn dieses Feld auf <ph name="BLOCKED" /> gesetzt ist, funktioniert die Web-App während OS Login nicht. Nutzer können dies später nicht aktivieren. Ist es auf <ph name="RUN_WINDOWED" /> gesetzt, funktioniert die Web-App während OS Login. Nutzer können dies später nicht deaktivieren. Wenn das Feld auf <ph name="ALLOWED" /> gesetzt ist, können Nutzer die Web-App so konfigurieren, dass sie während OS Login funktioniert. Die Standardkonfiguration lässt nur die Werte <ph name="ALLOWED" /> und <ph name="BLOCKED" /> zu.
-(Seit Version 115) Mit dem Feld „<ph name="PREVENT_CLOSE_FIELD" />“ wird angegeben, ob verhindert werden soll, dass eine Web-App geschlossen wird, z. B. durch den Nutzer, den Task-Manager oder Web-APIs. Dieses Verhalten kann nur aktiviert werden, wenn <ph name="RUN_ON_OS_LOGIN_FIELD" /> auf <ph name="RUN_WINDOWED" /> gesetzt ist. Wenn die App gerade ausgeführt wird, wird diese Einstellung erst nach dem Neustart der App wirksam. Ist dieses Feld nicht definiert, können Apps von Nutzern geschlossen werden.</translation>
 <translation id="8970205333161758602">Hinweis auf Einstellung von <ph name="PRODUCT_FRAME_NAME" /> unterdrücken</translation>
 <translation id="8973579598359969188">Du kannst festlegen, ob Nutzern die <ph name="PRIVACY_SANDBOX_NAME" />-Aufforderung angezeigt werden kann</translation>
 <translation id="8974588819713914715">Diese Richtlinie ist veraltet und wird nicht mehr unterstützt. Bitte verwende stattdessen die Richtlinie „<ph name="URL_ALLOWLIST_POLICY_NAME" />“.</translation>

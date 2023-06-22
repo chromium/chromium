@@ -535,6 +535,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="2202020181578195191">Andika mwaka sahihi wa kuisha kwa muda wa matumizi</translation>
 <translation id="2202627062836089804">nyuma ya kadi yako</translation>
 <translation id="2204482073374652408">Imesasishwa!</translation>
+<translation id="2208053750671792556">Je, hukupokea msimbo? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Trei ya tatu</translation>
 <translation id="2210794033760923560">Pakia Ripoti</translation>
 <translation id="2212735316055980242">Sera haikupatikana</translation>
@@ -948,6 +949,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="3270847123878663523">Tendua Kupanga upya</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> inataka kuunganisha</translation>
 <translation id="3272091146646336650">Ukubwa wa Super B</translation>
+<translation id="3272112314896217187">Weka nambari ya kuthibitisha iliyo na tarakimu <ph name="NUMBER_OF_DIGITS" /></translation>
 <translation id="3281350579597955952">{0,plural, =1{Sera ya msimamizi haipendekezi kufungua faili hii kwenye <ph name="DESTINATION_NAME" />}other{Sera ya msimamizi haipendekezi kufungua faili hizi kwenye <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Shirika lako, <ph name="ENROLLMENT_DOMAIN" />, limetuma maelezo fulani kwenye tovuti zifuatazo, kama vile mipangilio au sera.</translation>
 <translation id="3286372614333682499">wima</translation>
@@ -2593,6 +2595,7 @@ Usipoiruhusu, itazuiwa na mipangilio yako ya faragha. Hali hii itaruhusu maudhui
 <translation id="7219179957768738017">Muunganisho unatumia <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Malipo yanashughulikiwa</translation>
 <translation id="7221855153210829124">Kuonyesha arifa</translation>
+<translation id="7221857374443660083">Benki unayotumia ingependa kuhakikisha kwamba ni wewe</translation>
 <translation id="722454870747268814">Kichupo Fiche Kipya</translation>
 <translation id="7227293336683593977">Historia ya Bei</translation>
 <translation id="7233592378249864828">Laha la uthibitishaji wa kuchapisha</translation>

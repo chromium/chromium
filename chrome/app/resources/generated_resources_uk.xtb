@@ -972,6 +972,7 @@
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Цей додаток буде видалено разом із додатком <ph name="APP_NAME" />:}one{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}few{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}many{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}other{Ці додатки буде видалено разом із додатком <ph name="APP_NAME" />:}}</translation>
 <translation id="1787350673646245458">Зображення користувача</translation>
 <translation id="1790976235243700817">Скасувати доступ</translation>
+<translation id="1791662854739702043">Установлено</translation>
 <translation id="1792619191750875668">Розширений дисплей</translation>
 <translation id="1794051631868188691">Ніколи не показувати продавця <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Сховати пароль для сайту <ph name="DOMAIN" /></translation>
@@ -1873,7 +1874,6 @@
 <translation id="250704661983564564">Розміщення дисплея</translation>
 <translation id="2507253002925770350">Квиток видалено</translation>
 <translation id="2507491234071975894">Колонка</translation>
-<translation id="2508428939232952663">Обліковий запис Google Play</translation>
 <translation id="2509495747794740764">Розмір масштабування має бути числом від 10 до 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (вибрано)</translation>
@@ -2942,7 +2942,6 @@
 <translation id="3458451003193188688">Не вдалося встановити віртуальну машину через помилку мережі. Повторіть спробу або зв'яжіться з адміністратором. Код помилки: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Не вдалося скасувати доступ</translation>
 <translation id="3459509316159669723">Друк</translation>
-<translation id="3459697287128633276">Щоб надати своєму обліковому запису доступ до Google Play, автентифікуйтеся за допомогою постачальника ідентифікаторів.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Видалено 1 закладку}one{Видалено # закладку}few{Видалено # закладки}many{Видалено # закладок}other{Видалено # закладки}}</translation>
 <translation id="3461766685318630278">Створюйте та видаляйте додаткові контейнери.</translation>
 <translation id="3462311546193741693">Ви вийдете з більшості сайтів, але не з облікового запису Google. Тому синхронізовані дані можуть бути очищені.</translation>

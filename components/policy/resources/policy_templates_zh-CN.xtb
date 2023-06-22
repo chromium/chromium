@@ -3035,6 +3035,7 @@
       如果此政策未设置，默认情况下，受企业管理的用户不能使用 Smart Lock，不受管理的用户则能够使用 Smart Lock。</translation>
 <translation id="3791179836066841809">政策文档</translation>
 <translation id="3791556154364029875">启用悬浮式工作区，并在登录时启动远程浏览器窗口</translation>
+<translation id="379318040165550702">允许用户选择</translation>
 <translation id="3793998702484455655">在 iOS 上，Chrome 会尝试升级某些类型的混合内容（HTTPS 网站上的 HTTP）子资源。
 如需了解详情，请参阅 https://chromium.googlesource.com/chromium/src/+/main/docs/security/autoupgrade-mixed.md。
 
@@ -4616,6 +4617,13 @@
 <translation id="5345910753471481870">不在“新标签页”页面上的搜索框中显示 Google 智能镜头按钮。</translation>
 <translation id="5346587320074666194">禁止在这些网站上使用传感器</translation>
 <translation id="534836255587440809">禁止在登录屏幕上自动点击</translation>
+<translation id="5361708558735884308">通过设置此政策，您可列出允许访问的网址，以便将这些网址作为 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 的例外情况。有关此列表所含条目的格式，请参阅 URLBlocklist 政策的说明。例如，将 <ph name="URL_BLOCKLIST_POLICY_NAME" /> 设置为 * 会屏蔽所有请求，但您可以通过此政策来允许访问您所列出的部分网址。您可借助此政策为某些 scheme、其他网域的子网域、端口或特定路径设置例外情况（需使用指定格式，详见 https://support.google.com/chrome/a?p=url_blocklist_filter_format）。系统是会屏蔽还是会允许某个网址取决于最具体的过滤条件。<ph name="URL_ALLOWLIST_POLICY_NAME" /> 政策的优先级高于 <ph name="URL_BLOCKLIST_POLICY_NAME" />。此政策最多只能包含 1,000 个条目。
+
+通过此政策，您还可让浏览器自动调用以下类型的外部应用：已注册为所列协议（如“tel:”或“ssh:”）的协议处理程序。
+
+如果您未设置此政策，<ph name="URL_BLOCKLIST_POLICY_NAME" /> 将不会有任何例外情况。
+
+从 <ph name="PRODUCT_NAME" /> 92 版开始，此政策在无头模式中也受支持。</translation>
 <translation id="5362531528507578966">覆盖默认背景图片打印模式。</translation>
 <translation id="5365476955714838841">用于启动替代浏览器的命令行参数。</translation>
 <translation id="5365946944967967336">在工具栏上显示“主页”按钮</translation>
@@ -8499,11 +8507,6 @@ Origin-Agent-Cluster HTTP 标头可控制是将某个文档隔离在以源为键
 如果此政策未设置，系统则会像其余 Chromium 用户一样使用新行为。</translation>
 <translation id="8955719471735800169">返回页首</translation>
 <translation id="8956312248048980644">默认允许使用以源为键的代理集群。</translation>
-<translation id="8961117818679701775">此政策让管理员能为已安装的 Web 应用指定设置。使用此政策时，您可将某个 Web 应用 ID 映射到特定设置。您可以使用特殊 ID“<ph name="DEFAULT_SCOPE" />”设定一项默认配置，该配置会应用于未在此政策中设定自定义配置的所有 Web 应用。
-
-<ph name="MANIFEST_ID_FIELD" /> 字段用于指明相应 Web 应用的清单 ID。如需了解怎样确定某个已安装 Web 应用的清单 ID，请参阅 <ph name="WEB_APP_ID_REFERENCE_URL" />。
-<ph name="RUN_ON_OS_LOGIN_FIELD" /> 字段用于指明相应 Web 应用能否在 OS 登录期间运行。如果此字段设为“<ph name="BLOCKED" />”，Web 应用将不会在 OS 登录期间运行，而且用户无法在日后启用此设置。如果此字段设为“<ph name="RUN_WINDOWED" />”，Web 应用将会在 OS 登录期间运行，但用户无法在日后停用此设置。如果此字段设为“<ph name="ALLOWED" />”，用户将能配置要在 OS 登录期间运行的 Web 应用。默认配置仅接受“<ph name="ALLOWED" />”值和“<ph name="BLOCKED" />”值。
-（自 115 版起）<ph name="PREVENT_CLOSE_FIELD" /> 字段用于指明是否应阻止以任何方式（例如由用户、任务管理器、Web API）关闭 Web 应用的行为。只有在 <ph name="RUN_ON_OS_LOGIN_FIELD" /> 设为“<ph name="RUN_WINDOWED" />”时，才能启用此行为。如果应用已在运行，只有在重启应用后，该属性才会生效。如果此字段未定义，用户将可以关闭应用。</translation>
 <translation id="8970205333161758602">阻止显示 <ph name="PRODUCT_FRAME_NAME" />停止支持的提示</translation>
 <translation id="8973579598359969188">选择是否可向用户显示 <ph name="PRIVACY_SANDBOX_NAME" /> 提示</translation>
 <translation id="8974588819713914715">此政策已被弃用且不再受支持，请改用“<ph name="URL_ALLOWLIST_POLICY_NAME" />”政策。</translation>

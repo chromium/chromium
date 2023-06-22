@@ -1690,6 +1690,7 @@ Jei norite išjungti įrenginį, dar kartą paspauskite ir palaikykite įrengini
 <translation id="8513108775083588393">Auto. pasukti</translation>
 <translation id="851458219935658693">Rodyti dabartinio darbalaukio langus, pasirinkta akutė</translation>
 <translation id="8517041960877371778">„<ph name="DEVICE_TYPE" />“ gali nebūti kraunamas, kai yra įjungtas.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mikrofono įvestį valdo „<ph name="APP_NAME" />“}one{Mikrofono įvestį valdo # programa}few{Mikrofono įvestį valdo # programos}many{Mikrofono įvestį valdo # programos}other{Mikrofono įvestį valdo # programų}}</translation>
 <translation id="8535393432370007982">Anuliuoti rūšiavimo tvarką pagal spalvą</translation>
 <translation id="8541078764854166027">Fotoaparato kadravimas</translation>
 <translation id="8542053257095774575">Nėra jokių išsaugotų darbalaukių ar šablonų</translation>

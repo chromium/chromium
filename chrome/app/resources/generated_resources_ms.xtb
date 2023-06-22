@@ -972,6 +972,7 @@ Kebenaran yang telah anda berikan kepada apl mungkin dikenakan pada akaun ini. A
 <translation id="1786290960428378411">Meminta untuk membaca dan menukar</translation>
 <translation id="1787350673646245458">Imej pengguna</translation>
 <translation id="1790976235243700817">Alih keluar akses</translation>
+<translation id="1791662854739702043">Dipasang</translation>
 <translation id="1792619191750875668">Paparan lanjutan</translation>
 <translation id="1794051631868188691">Jangan tunjukkan <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Sembunyikan kata laluan untuk <ph name="DOMAIN" /></translation>
@@ -1874,7 +1875,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="250704661983564564">Susunan paparan</translation>
 <translation id="2507253002925770350">Tiket dialih keluar</translation>
 <translation id="2507491234071975894">Pembesar suara</translation>
-<translation id="2508428939232952663">Akaun Gedung Google Play</translation>
 <translation id="2509495747794740764">Amaun skala mestilah nombor antara 10 dan 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (dipilih)</translation>
@@ -2943,7 +2943,6 @@ Anda boleh mengurus tetapan akaun ini dengan memasang apl Family Link pada peran
 <translation id="3458451003193188688">Tidak dapat memasang mesin maya disebabkan oleh ralat rangkaian. Sila cuba lagi atau hubungi pentadbir anda. Kod ralat: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Gagal menyahkongsi</translation>
 <translation id="3459509316159669723">Mencetak</translation>
-<translation id="3459697287128633276">Untuk membolehkan akaun anda mengakses Gedung Google Play, sila sahkan dengan Pembekal Pengenalan anda.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 penanda halaman dipadamkan}other{# penanda halaman dipadamkan}}</translation>
 <translation id="3461766685318630278">Buat dan padamkan bekas tambahan.</translation>
 <translation id="3462311546193741693">Mengelog anda keluar daripada kebanyakan tapak. Anda akan kekal dilog masuk ke Akaun Google supaya data tersegerak anda dapat dikosongkan.</translation>

@@ -570,6 +570,7 @@
 <translation id="2202020181578195191">Мөөнөтү аяктоочу жылды туура киргизиңиз</translation>
 <translation id="2202627062836089804">картаңыздын аркасы</translation>
 <translation id="2204482073374652408">Жаңыртылды!</translation>
+<translation id="2208053750671792556">Код келген жокпу? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">3-түпкүч</translation>
 <translation id="2210794033760923560">Отчётту жүктөп берүү</translation>
 <translation id="2212735316055980242">Саясат табылган жок</translation>
@@ -917,6 +918,7 @@
 <translation id="3041612393474885105">Тастыктама маалыматы</translation>
 <translation id="305162504811187366">Chrome Алыскы иштактанын таржымалы, анын ичинде убакыт белгилери, хосттор жана кардарлардын сеанстарынын идентификаторлору</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> <ph name="PRICE_DROP" /> арзандайт</translation>
+<translation id="3054512251683174387">Chrome тизмеде 4 аптадан ашуун убакыт мурун пайда болгон темаларды автоматтык түрдө жок кылып турат. Серептөөнү улантсаңыз, тема тизмеде кайрадан пайда болушу мүмкүн. Же болбосо, Chrome'го сайттар менен белгилүү бир темаларды бөлүшүүгө тыюу сала аласыз. Chrome'до жарнаманын купуялыгын башкаруу тууралуу кеңири маалымат.</translation>
 <translation id="3061707000357573562">Оңдоо кызматы</translation>
 <translation id="306573536155379004">Оюн башталды.</translation>
 <translation id="3068991664510324412">Компьютер жана видео оюндары</translation>
@@ -1018,6 +1020,7 @@
 <translation id="3270847123878663523">Иреттештирүүнү &amp;жасабоо</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> туташканы жатат</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> орундуу текшерүү кодун киргизиңиз</translation>
 <translation id="3281350579597955952">{0,plural, =1{Администратордун саясатында бул файлды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}other{Администратордун саясатында бул файлдарды төмөнкү жерде ачуу сунушталбайт: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552"><ph name="ENROLLMENT_DOMAIN" /> уюмуңуз жөндөөлөр же саясаттар сыяктуу айрым маалыматты төмөндөгү вебсайттарга жөнөттү.</translation>
 <translation id="3286372614333682499">тигинен</translation>
@@ -2793,6 +2796,7 @@
 <translation id="7219179957768738017">Туташуу <ph name="SSL_VERSION" /> колдонот.</translation>
 <translation id="7220786058474068424">Иштелүүдө</translation>
 <translation id="7221855153210829124">Билдирмелерди көрсөтүү</translation>
+<translation id="7221857374443660083">Банк аныктыгыңызды текшергени жатат</translation>
 <translation id="722454870747268814">Жаңы жашыруун өтмөк</translation>
 <translation id="7227293336683593977">Баалар таржымалы</translation>
 <translation id="7233592378249864828">Басып чыгарууну ырастоо барагы</translation>

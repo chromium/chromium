@@ -969,6 +969,7 @@
 <translation id="1784849162047402014">Уредот нема доволно простор на дискот</translation>
 <translation id="1787350673646245458">Слика на корисникот</translation>
 <translation id="1790976235243700817">Отстрани го пристапот</translation>
+<translation id="1791662854739702043">Инсталирано</translation>
 <translation id="1792619191750875668">Продолжен екран</translation>
 <translation id="1794051631868188691">Никогаш не прикажувај ја кошничката на <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Скриј ја лозинката за <ph name="DOMAIN" /></translation>
@@ -1870,7 +1871,6 @@
 <translation id="250704661983564564">Подредување на екранот</translation>
 <translation id="2507253002925770350">Билетот е отстранет</translation>
 <translation id="2507491234071975894">Звучник</translation>
-<translation id="2508428939232952663">Сметка на Google Play Store</translation>
 <translation id="2509495747794740764">Износот на скалирањето мора да биде број помеѓу 10 и 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (избран)</translation>
@@ -2938,7 +2938,6 @@
 <translation id="3458451003193188688">Виртуелната машина не може да се инсталира поради грешка на мрежата. Обидете се повторно или контактирајте со администраторот. Код за грешка: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Не успеа да се откаже споделувањето</translation>
 <translation id="3459509316159669723">Се печати</translation>
-<translation id="3459697287128633276">За да овозможите сметката да пристапува до Google Play Store, извршете проверка со вашиот oбезбедувач на идентитет.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 обележувач е избришан}one{# обележувач се избришани}other{# обележувачи се избришани}}</translation>
 <translation id="3461766685318630278">Создајте и избришете дополнителни контејнери.</translation>
 <translation id="3462311546193741693">Ќе ве одјави од повеќето сајтови. Ќе останете најавени на вашата сметка на Google за да може да ги избришете синхронизираните податоци.</translation>

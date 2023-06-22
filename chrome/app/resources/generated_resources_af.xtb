@@ -968,6 +968,7 @@ Toestemmings wat jy reeds aan programme gegee het, kan op hierdie rekening van t
 <translation id="1784849162047402014">Toestel het min skyfspasie beskikbaar</translation>
 <translation id="1787350673646245458">Gebruikerprent</translation>
 <translation id="1790976235243700817">Verwyder toegang</translation>
+<translation id="1791662854739702043">Geïnstalleer</translation>
 <translation id="1792619191750875668">Uitgebreide skerm</translation>
 <translation id="1794051631868188691">Moet nooit <ph name="MERCHANT" /> wys nie</translation>
 <translation id="1794212650797661990">Versteek wagwoord vir <ph name="DOMAIN" /></translation>
@@ -1869,7 +1870,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="250704661983564564">Vertoonrangskikking</translation>
 <translation id="2507253002925770350">Kaartjie is verwyder</translation>
 <translation id="2507491234071975894">Luidspreker</translation>
-<translation id="2508428939232952663">Google Play Winkel-rekening</translation>
 <translation id="2509495747794740764">Skaalgetal moet 'n getal tussen 10 en 200 wees.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (is gekies)</translation>
@@ -2937,7 +2937,6 @@ Jy kan hierdie rekening se instellings bestuur deur die Family Link-program op j
 <translation id="3458451003193188688">Kon weens 'n netwerkfout nie die virtuele masjien installeer nie. Probeer asseblief weer, of kontak jou administrateur. Foutkode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Kon nie ontdeel nie</translation>
 <translation id="3459509316159669723">Druk tans</translation>
-<translation id="3459697287128633276">Staaf met jou identiteitsverskaffer om jou rekening te aktiveer om toegang tot die Google Play Winkel te kry.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 boekmerk is uitgevee}other{# boekmerke is uitgevee}}</translation>
 <translation id="3461766685318630278">Skep en vee ekstra houers uit.</translation>
 <translation id="3462311546193741693">Meld jou by die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou gesinkroniseerde data uitgevee kan word.</translation>
@@ -5498,6 +5497,7 @@ Maak seker jy wys nie enige sensitiewe inligting nie.</translation>
 <translation id="5684661240348539843">Bate-identifiseerder</translation>
 <translation id="5684950556880280580">Jou wagwoord is opgedateer</translation>
 <translation id="5687326903064479980">Tydsone</translation>
+<translation id="5687606994963670306">Chrome vee werwe wat ouer as 30 dae is outomaties uit. ’n Werf wat jy weer besoek, kan weer op die lys verskyn. Of jy kan ’n werf keer om vir jou advertensies voor te stel. Kom meer te wete oor hoe om <ph name="BEGIN_LINK" />jou advertensieprivaatheid in Chrome te bestuur.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Maak seker dat jou toestel ingeprop is en moenie dit afskakel nie. Installering kan tot 20 minute duur. Jou toestel sal outomaties afskakel wanneer installering voltooi is.</translation>
 <translation id="5689516760719285838">Ligging</translation>
 <translation id="5689531695336322499">Dit lyk of <ph name="SUPERVISED_USER_NAME" /> reeds Voice Match met Assistent op 'n ander toestel opgestel het. Hierdie vorige opnames is gebruik om 'n stemmodel op hierdie toestel te maak.</translation>
@@ -7327,6 +7327,7 @@ Jy het nog # gekompromitteerde wagwoorde. Google Wagwoordbestuurder beveel aan d
 <translation id="7273110280511444812">laas aangeheg op <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> tot vol</translation>
 <translation id="727595954130325265">Koop nou</translation>
+<translation id="7276100255011548441">Chrome vee onderwerpe wat ouer as 4 weke is outomaties uit. As jy verder blaai, kan ’n onderwerp weer op die lys verskyn. Of jy kan onderwerpe blokkeer wat jy nie wil hê Chrome met werwe moet deel nie. Kom meer te wete oor hoe om <ph name="BEGIN_LINK" />jou advertensieprivaatheid in Chrome te bestuur.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Aflaaifout</translation>
 <translation id="7280649757394340890">Teks-na-spraak-steminstellings</translation>
 <translation id="7280877790564589615">Toestemming versoek</translation>
@@ -8818,6 +8819,7 @@ Hou jou sleutellêer op 'n veilige plek. Jy gaan dit nodig hê om nuwe weergawes
 <translation id="8534656636775144800">Oeps! Kon nie by die domein aansluit nie. Probeer weer.</translation>
 <translation id="8535005006684281994">Netscape-sertifikaathernuwing se URL</translation>
 <translation id="8536713137312218707">Kitsopdragte</translation>
+<translation id="8536810348276651776">Meld jou op die meeste werwe af. Jy sal by jou Google-rekening aangemeld bly sodat jou Family Link-instellings vir Chrome geld.</translation>
 <translation id="8536956381488731905">Klank met sleuteldruk</translation>
 <translation id="8539727552378197395">Nee (NetHttp)</translation>
 <translation id="8539766201049804895">Gradeer op</translation>

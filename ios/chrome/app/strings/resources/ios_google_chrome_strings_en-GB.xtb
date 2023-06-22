@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">You are signed in and syncing your data with an account managed by <ph name="DOMAIN" /> where its administrator can now set user policies specific to that account that can change the behaviour of Chrome.</translation>
 <translation id="1554731936187952550">You have Chrome's strongest security against harmful websites</translation>
 <translation id="1682483655351012182">Sync your Chrome data</translation>
+<translation id="1733654336159102143">Lock your Incognito when you leave Chrome or switch to a different app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Automatically use Chrome when you tap links in messages, documents and other apps.</translation>
 <translation id="1917964099031477364">This account and any unsaved data will be removed from Chrome and other Google apps on this device.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome couldn't check for updates. Try again later.</translation>
 <translation id="2732745070297234559">Chrome couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="2736805085127235148">Chrome notifications are currently turned off in your device settings.</translation>
+<translation id="2754286486056173475">Create calendar events on Chrome</translation>
 <translation id="2767464022270041271">No saved passwords. Google Password Manager can check your passwords when you save them.</translation>
 <translation id="2840432500933227975">Open Chrome Settings in iOS, then tap on 'Browser Default APP' and select Chrome.</translation>
 <translation id="2869959624320573933">Sign In to Chrome</translation>
@@ -100,6 +102,7 @@
 <translation id="6676840375528380067">Clear your Chrome data from this device?</translation>
 <translation id="6709398533399187136">Your password was exposed in a data breach. Google Password Manager recommends changing it now.</translation>
 <translation id="6822673484890854830">Chrome couldn't check all passwords. Try again later.</translation>
+<translation id="6896070677477855330">Turn on 'Lock Incognito tabs when you close Chrome'.</translation>
 <translation id="6964931465519938134">You can now use Chrome whenever you tap on links in messages, documents and other apps.</translation>
 <translation id="6975725306479268850">Choose Chrome for auto-fill</translation>
 <translation id="7059914902409643750">Make Chrome your own</translation>
@@ -141,6 +144,7 @@
 <translation id="8765470054473112089">When you type in the address bar or search box, Chrome sends what you type to your default search engine to get better suggestions. This is off in Incognito.</translation>
 <translation id="8772179140489533211">Shows prompts to sign in to Chrome.</translation>
 <translation id="8788269841521769222">You won't need to remember this password. It will be saved to Google Password Manager for <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Go to Chrome settings</translation>
 <translation id="8857676124663337448">Google Password Manager couldn't check all passwords. Try again tomorrow.</translation>
 <translation id="8897749957032330183">Passwords are saved to Google Password Manager on this device.</translation>
 <translation id="8969290730818637510">When on:

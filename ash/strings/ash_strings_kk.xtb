@@ -1690,6 +1690,7 @@
 <translation id="8513108775083588393">Автоматты бұру</translation>
 <translation id="851458219935658693">Терезелерді қазіргі жұмыс үстелінен көрсету, ауыстырып қосқыш таңдалды.</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> іске қосылғанда зарядталмауы мүмкін.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Микрофон кірісін <ph name="APP_NAME" /> басқарады}other{Микрофон кірісін # қолданба басқарады}}</translation>
 <translation id="8535393432370007982">Түс бойынша сұрыптау ретін қайтару</translation>
 <translation id="8541078764854166027">Камерамен кадрлау</translation>
 <translation id="8542053257095774575">Сақталған жұмыс үстелі немесе үлгі жоқ.</translation>

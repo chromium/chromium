@@ -37,7 +37,9 @@
 <translation id="1177414119866731261">打开 Chrome 菜单</translation>
 <translation id="1181037720776840403">移除</translation>
 <translation id="1207113853726624428">新搜索</translation>
+<translation id="1207493287814084192">下午 5:30</translation>
 <translation id="1209206284964581585">暂时隐藏</translation>
+<translation id="121048537318175637">在地址栏中输入任务，例如“清除我的历史记录”或“修改密码”。</translation>
 <translation id="1219674500290482172">无法连接到互联网。</translation>
 <translation id="1226238226094914652">在所有设备上都能使用您的密码</translation>
 <translation id="122699739164161391">关闭所有标签页</translation>
@@ -64,6 +66,7 @@
 <translation id="132683371494960526">点按两次即可更改父文件夹。</translation>
 <translation id="1335348992705722518">管理设置…</translation>
 <translation id="1340643665687018190">关闭菜单</translation>
+<translation id="1348596747084433075">https://www.amazon.com/Wife-Gifts/s?k=for+Wife+Gifts</translation>
 <translation id="1358214951266274152">访问您复制的链接</translation>
 <translation id="1360432990279830238">退出帐号并关闭同步功能？</translation>
 <translation id="1363028406613469049">曲目</translation>
@@ -84,6 +87,7 @@
 <translation id="1492417797159476138">您已为此网站保存该用户名</translation>
 <translation id="1497590942294823549">菜单 → 密码管理工具</translation>
 <translation id="1498283581832036924">您的 <ph name="WEBSITE" /> 帐号不会被删除。</translation>
+<translation id="1501820324067650154">如果您想查看路线选项，请点按“查询路线”</translation>
 <translation id="1506063256525392513">这样您就能拍摄并上传照片，还能扫描二维码</translation>
 <translation id="1509486075633541495">登录网站</translation>
 <translation id="1509960214886564027">很多网站上的功能可能会无法正常运作</translation>
@@ -99,6 +103,7 @@
 <translation id="1580715474678097352">时刻保护您免受危险网站的侵害</translation>
 <translation id="1580783302095112590">邮件已发送。</translation>
 <translation id="1582732959743469162">这会全面停止您正在执行的下载任务。</translation>
+<translation id="1594034544529347967">开始日期</translation>
 <translation id="1605405588277479165">关闭 - 不推荐</translation>
 <translation id="1605658421715042784">复制图片</translation>
 <translation id="1608337082864370066">搜索复制的图片</translation>
@@ -169,6 +174,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> 天前曾有活动</translation>
 <translation id="2074131957428911366">您始终可在<ph name="BEGIN_LINK" />设置<ph name="END_LINK" />中选择要同步的内容。</translation>
 <translation id="2079545284768500474">撤消</translation>
+<translation id="2080409463824088391">在应用内打开…</translation>
 <translation id="2080769225927880590">请使用一个有效的帐号登录</translation>
 <translation id="2103075008456228677">打开 history.google.com</translation>
 <translation id="21133533946938348">固定标签页</translation>
@@ -181,6 +187,7 @@
 <translation id="2155145621546387786">共享 Chrome</translation>
 <translation id="2175927920773552910">二维码</translation>
 <translation id="2178545675770638239">选择密码</translation>
+<translation id="2215566625617766058">多功能框中的快捷方式，可用于快速访问有用的设置和执行所需的操作。</translation>
 <translation id="2218443599109088993">缩小</translation>
 <translation id="2230173723195178503">已加载网页</translation>
 <translation id="2239626343334228536">正在清除浏览数据…</translation>
@@ -279,6 +286,7 @@
 <translation id="2786701870377699570">在所有已同步的设备上搜索标签页</translation>
 <translation id="2797029671965852011">显示历史记录</translation>
 <translation id="2800683595868705743">离开标签页切换器</translation>
+<translation id="2803192464408568808">完成任务</translation>
 <translation id="2815198996063984598">2. 点按“默认浏览器应用”</translation>
 <translation id="2818821771744632548">您在 iPhone 重置过程中退出了帐号 <ph name="USER_NAME" />。如需重新登录，请点按下方的“继续”。</translation>
 <translation id="2822917246944009066">已固定此标签页</translation>
@@ -306,6 +314,7 @@
 <translation id="2931440415625410757">显示说明</translation>
 <translation id="2932085390869194046">建议密码…</translation>
 <translation id="2932765531295814441">手动添加密码</translation>
+<translation id="2952246431280799028">轻触并按住相应地址。</translation>
 <translation id="2952278131021475699">智能镜头拍照搜索</translation>
 <translation id="2952581218264071393">1. 打开 Chrome 设置</translation>
 <translation id="2958718410589002129">密码</translation>
@@ -367,13 +376,16 @@
 <translation id="3311748811247479259">已关闭</translation>
 <translation id="3324193307694657476">地址第2行</translation>
 <translation id="3328801116991980348">网站信息</translation>
+<translation id="3340938510625667914">Chrome 操作</translation>
 <translation id="3344485292736684439">{count,plural, =1{已将书签保存到帐号 {email} 中的“{title}”}other{已将书签保存到帐号 {email} 中的“{title}”}}</translation>
+<translation id="3358769087921185505">长按某个日期</translation>
 <translation id="3371831930909698441">可以翻译。选项位于屏幕底部附近。</translation>
 <translation id="3377063233124932127">现在，您已保存的书签、密码等信息会显示在顶部。</translation>
 <translation id="3393920035788932672">允许显示弹出式窗口</translation>
 <translation id="3399930248910934354">打开 Chrome 设置</translation>
 <translation id="3404744938087714423">退出帐号会关闭同步功能。</translation>
 <translation id="3409785640040772790">地图</translation>
+<translation id="3416023309465857378">2023 年 10 月 25 日</translation>
 <translation id="3425644765244388016">卡的昵称</translation>
 <translation id="3433057996795775706">删除此密码不会删除您在 <ph name="WEBSITE" /> 上的帐号。如需保护您在 <ph name="WEBSITE" /> 上的帐号免遭他人盗用，请更改您的密码。</translation>
 <translation id="3443810440409579745">收到标签页。</translation>
@@ -415,6 +427,7 @@
 <translation id="3609785682760573515">正在同步…</translation>
 <translation id="3631443864840848029">请确保您保存的是您目前用于此网站的密码。</translation>
 <translation id="3638472932233958418">预先加载网页</translation>
+<translation id="3656645960301737801">完成活动创建并予以保存</translation>
 <translation id="3661160521073045932">有可用的配置文件</translation>
 <translation id="3670030362669914947">卡号</translation>
 <translation id="3700134753671613714">登录后可获取您所有设备上保存的书签。</translation>
@@ -654,6 +667,7 @@
 <translation id="5245322853195994030">取消同步</translation>
 <translation id="5271265092610673171">{count,plural, =1{有一个必填字段是空的。请先填写这个字段，然后再保存。}other{有一些必填字段是空的。请先填写这些字段，然后再保存。}}</translation>
 <translation id="5271549068863921519">保存密码</translation>
+<translation id="5283494734135414249">点按地址栏下方显示的相应快捷方式。</translation>
 <translation id="5295239312320826323">移除帐号 <ph name="USER_EMAIL" />？</translation>
 <translation id="5300589172476337783">显示</translation>
 <translation id="5317780077021120954">保存</translation>
@@ -663,6 +677,7 @@
 <translation id="536067926684072644">显示书签</translation>
 <translation id="5360976571138293719">如需了解更多与隐私、安全和数据收集相关的设置，请前往 <ph name="BEGIN_LINK" />Google 服务<ph name="END_LINK" />部分。</translation>
 <translation id="5386314158584363703">您已关注的网站都会显示在此处</translation>
+<translation id="538635840076594180">点按“隐私与安全”。</translation>
 <translation id="5388358297987318779">打开图片</translation>
 <translation id="5407969256130905701">舍弃更改</translation>
 <translation id="5414763847370083940">当相应商品在所跟踪的任何网站上降价时，您都会收到提醒。</translation>
@@ -675,6 +690,7 @@
 <translation id="5443952882982198570">信用卡</translation>
 <translation id="5444892875087332195">书签</translation>
 <translation id="5457226814769348910">打开离线版</translation>
+<translation id="5478327362747197944">点击网页上的日期即可直接创建日历活动。</translation>
 <translation id="5489208564673669003">若要管理所有网站的 Cookie，请查看 <ph name="BEGIN_LINK" />Cookie 设置<ph name="END_LINK" />。</translation>
 <translation id="5490005495580364134">阻止所有 Cookie（不建议）</translation>
 <translation id="5513681519188741830"><ph name="TIME" /> 小时前</translation>
@@ -717,6 +733,7 @@
 <translation id="5738385766833540397">管理您所跟踪商品的降价提醒接收方式</translation>
 <translation id="5738887413654608789">这样可让您找到与目前周遭环境相关的网页。</translation>
 <translation id="5745916533876677730">转到上一个标签页</translation>
+<translation id="574762237186762643">活动</translation>
 <translation id="5755162682436943950">已退出。打开对话框即可登录并开启同步功能。</translation>
 <translation id="5758631781033351321">您的阅读清单会显示在此处</translation>
 <translation id="5762370665605786758">口令加密不涵盖 Google Pay 中的付款方式和地址。只有知道您口令的人能读取您的加密数据。该口令不会被发送给 Google，也不会被 Google 存储。如果您忘记了该口令或想更改此设置，请<ph name="BEGIN_LINK" />清除您帐号中的 Chrome 数据<ph name="END_LINK" />。</translation>
@@ -772,6 +789,7 @@
 <translation id="6039429417015973673">标题：<ph name="TITLE" />；发布者：<ph name="PUBLISHER_INFORMATION" />；发布日期：<ph name="PUBLICATION_DATE" /></translation>
 <translation id="6040143037577758943">关闭</translation>
 <translation id="6042308850641462728">展开</translation>
+<translation id="6045460247888249350">添加标题</translation>
 <translation id="6054613632208573261">默认使用 Chrome</translation>
 <translation id="605721222689873409">YY</translation>
 <translation id="6059830886158432458">在此处控制您的报道和活动</translation>
@@ -863,6 +881,7 @@
 <translation id="648164694371393720">身份验证出错</translation>
 <translation id="6482629121755362506">删除了<ph name="NUMBER_OF_SELECTED_BOOKMARKS" />项</translation>
 <translation id="6484712497741564393">目前登录的帐号是 <ph name="EMAIL" />。您的数据已使用您的口令加密。请输入该口令，以便将 Chrome 数据保存在您的 Google 帐号中并使用这些数据。</translation>
+<translation id="6494931198667773526">结束日期</translation>
 <translation id="6497772452874122664">如果您信任 <ph name="TIME" />，则可使用您为另一网站保存的密码。
 
 请尽量为每个网站使用独一无二的密码。</translation>
@@ -974,6 +993,7 @@
 <translation id="7189598951263744875">分享...</translation>
 <translation id="7192050974311852563">开始生成日志</translation>
 <translation id="7203585745079012652">说出答案</translation>
+<translation id="7203792184900422187">点按“隐私与安全”</translation>
 <translation id="7207023858769244910">同步即可获取系统根据您的兴趣推荐的内容。</translation>
 <translation id="721597782417389033">卡的昵称无效</translation>
 <translation id="7221173315674413369">探索“新变化”中的新功能和提示</translation>
@@ -1004,6 +1024,7 @@
 <translation id="7446583256109515732">已取消固定此标签页</translation>
 <translation id="7451023311965289370">{count,plural, =1{书签已保存至“{title}”}other{书签已保存至“{title}”}}</translation>
 <translation id="7454057999980797137">省/区/县</translation>
+<translation id="745899714366929493">全天</translation>
 <translation id="7459628154744868585">已开启增强型保护</translation>
 <translation id="746684838091935575">3. 选择“Chrome”</translation>
 <translation id="7472734401283673885">公司名称</translation>
@@ -1046,6 +1067,7 @@
 <translation id="7744394900930577716">在其他应用中填充密码</translation>
 <translation id="7749790401023484470">您未选择任何文字。</translation>
 <translation id="7756478488453921771">菜单 → 设置 → 付款方式</translation>
+<translation id="7760127703945531263">无痕式标签页锁定</translation>
 <translation id="7765158879357617694">移动</translation>
 <translation id="7772032839648071052">确认密码</translation>
 <translation id="777572173400717978">{count,plural, =1{已添加书签}other{已添加书签}}</translation>
@@ -1177,6 +1199,7 @@
 <translation id="8534481786647257214">Google+ 信息发布已完成。</translation>
 <translation id="8548878600947630424">在网页中查找...</translation>
 <translation id="8556590991644167667">{count,plural, =1{您忽略了 {count} 条警告}other{您忽略了 {count} 条警告}}</translation>
+<translation id="8557690929085431655">您可选择在无痕模式下打开来自其他应用的传入网址。</translation>
 <translation id="8558480467877843976">现在，每当浏览或点按消息、文档和其他应用中的链接时，您都可以使用 Chrome 打开链接。</translation>
 <translation id="8588404856427128947">已关闭</translation>
 <translation id="8591976964826315682">在无痕模式下阻止第三方 Cookie</translation>
@@ -1208,6 +1231,7 @@
 <translation id="8775144690796719618">网址无效</translation>
 <translation id="8780076847684176174">{count,plural, =1{查看标签页…}other{查看所有标签页…}}</translation>
 <translation id="8787968206789828143">在网络上搜索</translation>
+<translation id="8790746396522455357">开启在无痕模式下打开链接的功能</translation>
 <translation id="8792626944327216835">麦克风</translation>
 <translation id="8803639129939845298">安全</translation>
 <translation id="8806823403540278281">贵单位要求您进行无痕浏览。在无痕模式下，系统不会保存标签页。
@@ -1231,8 +1255,10 @@
 <translation id="891282356902782456">这个密码仅会保存到此设备上。如果想在您的其他设备上使用它，请将它保存到您的 Google 帐号 <ph name="EMAIL" /> 中。</translation>
 <translation id="891658175948553296">在网站上突出显示文字</translation>
 <translation id="8917490105272468696">我同意</translation>
+<translation id="8926984231484284953">使用网页上的地址来获取本地信息和路线。</translation>
 <translation id="8928133177108699615">桌面版</translation>
 <translation id="8934982071228289624">若要将此密码保存到您的帐号中，您必须先在设备上设置一个用于解锁屏幕的密码。</translation>
+<translation id="8940809892068499052">在无痕式标签页中打开来自其他应用的网址</translation>
 <translation id="894191600409472540">创建安全系数高的密码</translation>
 <translation id="8952559610785099500">添加密码</translation>
 <translation id="8953046091948372197">您的密码会显示在此处</translation>
@@ -1246,6 +1272,7 @@
 <translation id="8985320356172329008">已使用以下帐号登录 Google：</translation>
 <translation id="8986567980592931173">登录您的 Google 帐号即可同步您的密码、历史记录等。</translation>
 <translation id="8998289560386111590">在您的设备上不可用</translation>
+<translation id="8999545564078155498">使用面容 ID 解锁</translation>
 <translation id="9000089900434778519">您所用的搜索引擎是<ph name="DSE_NAME" />。请查看它的相关说明，了解如何删除您的搜索记录（若适用）。</translation>
 <translation id="9008201768610948239">忽略</translation>
 <translation id="9034759925968272072">您不会因此而退出自己的 Google 帐号。您的 Google 帐号在 <ph name="BEGIN_LINK" />history.google.com<ph name="END_LINK" /> 上可能有其他形式的浏览记录。</translation>
@@ -1282,6 +1309,7 @@
 <translation id="9203116392574189331">Handoff</translation>
 <translation id="9219154867334666734">搜索标签页…</translation>
 <translation id="9223358826628549784">已发送崩溃报告。</translation>
+<translation id="937964924361024518">选择 Google 日历或 Apple 日历</translation>
 <translation id="941747855997058526">选择密码…</translation>
 <translation id="948048872540558976">创建新标签页</translation>
 <translation id="952704832371081537">取消</translation>

@@ -971,6 +971,7 @@ Permissions that you've already given to apps may apply to this account. You can
 <translation id="1786290960428378411">Requesting to read and change</translation>
 <translation id="1787350673646245458">User image</translation>
 <translation id="1790976235243700817">Remove access</translation>
+<translation id="1791662854739702043">Installed</translation>
 <translation id="1792619191750875668">Extended display</translation>
 <translation id="1794051631868188691">Never show <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Hide password for <ph name="DOMAIN" /></translation>
@@ -1873,7 +1874,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="250704661983564564">Display arrangement</translation>
 <translation id="2507253002925770350">Ticket removed</translation>
 <translation id="2507491234071975894">Speaker</translation>
-<translation id="2508428939232952663">Google Play Store Account</translation>
 <translation id="2509495747794740764">Scale amount must be a number between 10 and 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selected)</translation>
@@ -2942,7 +2942,6 @@ You can manage this account’s settings by installing the Family Link app on yo
 <translation id="3458451003193188688">Couldn't install the virtual machine because of a network error. Please try again, or contact your administrator. Error code: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Unshare failed</translation>
 <translation id="3459509316159669723">Printing</translation>
-<translation id="3459697287128633276">To enable your account to access the Google Play Store, please authenticate with your Identity Provider.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 bookmark deleted}other{# bookmarks deleted}}</translation>
 <translation id="3461766685318630278">Create and delete extra containers.</translation>
 <translation id="3462311546193741693">Signs you out of most sites. You'll stay signed in to your Google Account so that your synced data can be cleared.</translation>
@@ -5506,6 +5505,7 @@ You can send it to Google to check if it's unsafe. Scans usually take a few seco
 <translation id="5684661240348539843">Asset Identifier</translation>
 <translation id="5684950556880280580">Your password has been updated</translation>
 <translation id="5687326903064479980">Time Zone</translation>
+<translation id="5687606994963670306">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Make sure that your device is plugged in, and don’t turn it off. Installation may take up to 20 minutes. Your device will automatically shut down when installation is complete.</translation>
 <translation id="5689516760719285838">Location</translation>
 <translation id="5689531695336322499">It looks like <ph name="SUPERVISED_USER_NAME" /> already set up Voice Match with Assistant on another device. These previous recordings were used to make a voice model on this device.</translation>
@@ -7335,6 +7335,7 @@ You have # more compromised passwords. Google Password Manager recommends checki
 <translation id="7273110280511444812">last attached on <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> until full</translation>
 <translation id="727595954130325265">Shop now</translation>
+<translation id="7276100255011548441">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Download error</translation>
 <translation id="7280649757394340890">Text-to-speech voice settings</translation>
 <translation id="7280877790564589615">Permission requested</translation>
@@ -8451,7 +8452,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8195191503358432289">Add password</translation>
 <translation id="8195265224453131880">Intensity</translation>
 <translation id="8197673340773315084">Add a name or label, like Work or Personal</translation>
-<translation id="8198456017687137612">Cast tab</translation>
+<translation id="8198456017687137612">Casting tab</translation>
 <translation id="8198457270656084773">Looking for the system device-log page? Visit<ph name="BEGIN_LINK" /><ph name="OS_DEVICE_LOG_LINK" /><ph name="END_LINK" />.</translation>
 <translation id="8198511718495409170">To apply your updated settings for '<ph name="EXTENSION_NAME" />' to this site, reload this page</translation>
 <translation id="8199300056570174101">Network (Service) and Device properties</translation>
@@ -8830,6 +8831,7 @@ Keep your key file in a safe place. You will need it to create new versions of y
 <translation id="8534656636775144800">Oops!  Something went wrong when trying to join the domain. Please try again.</translation>
 <translation id="8535005006684281994">Netscape Certificate Renewal URL</translation>
 <translation id="8536713137312218707">Quick Commands</translation>
+<translation id="8536810348276651776">Signs you out of most sites. You'll stay signed in to your Google Account so your Family Link settings for Chrome apply.</translation>
 <translation id="8536956381488731905">Sound on key-press</translation>
 <translation id="8539727552378197395">No (HttpOnly)</translation>
 <translation id="8539766201049804895">Upgrade</translation>

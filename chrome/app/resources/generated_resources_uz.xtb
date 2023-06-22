@@ -959,6 +959,7 @@ Ilovalarga berilgan ruxsatlar bu hisobga tatbiq etilishi mumkin. Android ilovala
 <translation id="1786290960428378411">Oʻqish va yozishga ruxsat olmoqchi</translation>
 <translation id="1787350673646245458">Foydalanuvchi rasmi</translation>
 <translation id="1790976235243700817">Ruxsatni olib tashlash</translation>
+<translation id="1791662854739702043">Oʻrnatilgan</translation>
 <translation id="1792619191750875668">Kengaytirilgan ekran</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> hech qachon chiqarilmasin</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> parolini berkitish</translation>
@@ -1861,7 +1862,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="250704661983564564">Displey joylashuv tartibi</translation>
 <translation id="2507253002925770350">Chipta olib tashlandi</translation>
 <translation id="2507491234071975894">Karnay</translation>
-<translation id="2508428939232952663">Google Play Market hisobi</translation>
 <translation id="2509495747794740764">Masshtab qiymati 10 va 200 oralig‘ida bo‘lishi lozim.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (tanlandi)</translation>
@@ -2931,7 +2931,6 @@ Oʻz qurilmangizda Family Link ilovasini oʻrnatib, bu hisob sozlamalarini boshq
 <translation id="3458451003193188688">Tarmoqda muammo yuz bergani uchun virtual mashina oʻrnatilmadi. Qayta urining yoki administratorga murojaat qiling. Xatolik kodi: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Umumiy ruxsat bekor qilinmadi</translation>
 <translation id="3459509316159669723">Chop etish</translation>
-<translation id="3459697287128633276">Hisobingizda Google Play Marketni yoqish uchun hisobingiz haqiqiyligi tekshirilishi lozim.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 ta bukmark oʻchirildi}other{# ta bukmark oʻchirildi}}</translation>
 <translation id="3461766685318630278">Qoʻshimcha konteynerlarni yaratish va oʻchirish</translation>
 <translation id="3462311546193741693">Bir nechta saytdagi hisobingizdan chiqasiz, lekin Google hisobingizdan emas. Sinxronlangan ma’lumotlaringiz tozalanaveradi.</translation>

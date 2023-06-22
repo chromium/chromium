@@ -982,6 +982,7 @@
 <translation id="5308380583665731573">התחברות</translation>
 <translation id="5313326810920013265">‏הגדרות Bluetooth</translation>
 <translation id="5314219114274263156">התבצעה הקלטת מסך</translation>
+<translation id="5314489738835854379">מעבר אחורה בין חלונות</translation>
 <translation id="5316716239522500219">שיקוף צגים</translation>
 <translation id="5317780077021120954">שמירה</translation>
 <translation id="5319712128756744240">התאמת מכשיר חדש</translation>
@@ -1128,6 +1129,7 @@
 <translation id="5958529069007801266">משתמש בפיקוח</translation>
 <translation id="5961960957587052807">חלש</translation>
 <translation id="5965524703725988602">הפעלה או השבתה של עיצוב כהה. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">מעבר קדימה בין חלונות</translation>
 <translation id="5976112937189445008">‏כדי להקליט את החלון, מקישים על Enter</translation>
 <translation id="5978382165065462689">שיתוף שליטה במסך דרך סיוע מרחוק.</translation>
 <translation id="5980301590375426705">יציאה מהפעלת אורח</translation>
@@ -1338,6 +1340,7 @@
 <translation id="6891721121089053234">הצגת התמונות, המדיה והאפליקציות שבטלפון מהזמן האחרון ב-<ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">העתקה</translation>
 <translation id="6901883536534621389">רוצה לנסות לנווט באמצעות תנועות?</translation>
+<translation id="6912841030378044227">התמקדות בסרגל הכתובות</translation>
 <translation id="6919251195245069855">לא ניתן היה לזהות את הכרטיס החכם שלך. יש לנסות שוב.</translation>
 <translation id="6920245099716267363">החלפת המצב של הנקודה לשיתוף אינטרנט. נקודת האינטרנט פועלת. יש מכשיר אחד מחובר.</translation>
 <translation id="6931576957638141829">שמירה ב-</translation>

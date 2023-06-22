@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">Διαθέσιμες συσκευές</translation>
 <translation id="1550523713251050646">Κάντε κλικ για περισσότερες επιλογές</translation>
 <translation id="1555130319947370107">Μπλε</translation>
+<translation id="1557622599341396706">Εμφάνιση ονόματος γραφείου</translation>
 <translation id="1576511610858879060">Το Chromebook ή η συσκευή Bluetooth χρησιμοποιεί μια παλαιότερη έκδοση του Bluetooth. Χρησιμοποιήστε άλλη πηγή εισόδου για καλύτερη ποιότητα ήχου.</translation>
 <translation id="1576623706766186887">Σμίκρυνση όταν είναι ενεργοποιημένος ο μεγεθυντικός φακός</translation>
 <translation id="1586324912145647027">Μετάβαση στο γραφείο 1 έως 8</translation>
@@ -987,6 +988,7 @@
 <translation id="5317780077021120954">Αποθήκευση</translation>
 <translation id="5319712128756744240">Σύζευξη νέας συσκευής</translation>
 <translation id="5322611492012084517">Δεν βρίσκετε το τηλέφωνό σας</translation>
+<translation id="5323994101633366939">Απόκρυψη ονόματος γραφείου</translation>
 <translation id="5327248766486351172">Όνομα</translation>
 <translation id="5329548388331921293">Σύνδεση…</translation>
 <translation id="5331975486040154427">Συσκευή USB-C (πίσω αριστερή θύρα)</translation>
@@ -1169,6 +1171,7 @@
 <translation id="6103838137565245112">σύστημα</translation>
 <translation id="6114505516289286752">Έγινε λήψη των αρχείων ομιλίας στα <ph name="LANGUAGE" /></translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />. <ph name="BATTERY_SAVER_STATE" />.</translation>
+<translation id="6119972796024789243">Διόρθωση χρωμάτων</translation>
 <translation id="6121838516699723042">Επιβεβαίωση λήψης <ph name="FILENAME" /></translation>
 <translation id="612734058257491180">Ο Βοηθός Google δεν είναι διαθέσιμος σε περιόδους σύνδεσης επισκέπτη.</translation>
 <translation id="6129953537138746214">Κενό</translation>
@@ -1637,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />, Εφαρμογή</translation>
 <translation id="8255234195843591763">Επαναφορά στην ενημέρωση</translation>
 <translation id="8261506727792406068">Διαγραφή</translation>
+<translation id="8262312463845990408">Εναλλαγή αναπαραγωγής</translation>
 <translation id="8270450402312105425">{0,plural, =1{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός μίας ώρας}other{Αλλαγή της έκδοσης της συσκευής σε προηγούμενη εντός # ωρών}}</translation>
 <translation id="8277261673056602147">Επισήμανση κειμένου στην οθόνη</translation>
 <translation id="8284362522226889623">Σύρετε προς τα αριστερά με τέσσερα δάχτυλα για μετάβαση στο προηγούμενο γραφείο</translation>
@@ -1690,6 +1694,7 @@
 <translation id="8513108775083588393">Αυτ. περιστρ.</translation>
 <translation id="851458219935658693">Εμφάνιση παραθύρων από το τρέχον γραφείο, επιλέχτηκε το κουμπί επιλογής.</translation>
 <translation id="8517041960877371778">Δεν είναι δυνατή η φόρτιση της συσκευής <ph name="DEVICE_TYPE" /> ενώ είναι ενεργοποιημένη.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Η είσοδος μικροφώνου ελέγχεται από την εφαρμογή <ph name="APP_NAME" />}other{Η είσοδος μικροφώνου ελέγχεται από # εφαρμογές}}</translation>
 <translation id="8535393432370007982">Αναίρεση σειράς ταξινόμησης κατά χρώμα</translation>
 <translation id="8541078764854166027">Καδράρισμα</translation>
 <translation id="8542053257095774575">Δεν υπάρχουν αποθηκευμένα γραφεία ή πρότυπα.</translation>

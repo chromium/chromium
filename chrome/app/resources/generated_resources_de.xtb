@@ -954,6 +954,7 @@ Berechtigungen, die du Apps bereits gewährt hast, gelten möglicherweise für d
 <translation id="1784849162047402014">Gerät verfügt über wenig Speicherplatz</translation>
 <translation id="1787350673646245458">Nutzerbild</translation>
 <translation id="1790976235243700817">Zugriff entfernen</translation>
+<translation id="1791662854739702043">Installiert</translation>
 <translation id="1792619191750875668">Erweiterter Bildschirm</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> nie anzeigen</translation>
 <translation id="1794212650797661990">Passwort für <ph name="DOMAIN" /> ausblenden</translation>
@@ -1851,7 +1852,6 @@ Diese Aktion wirkt sich nicht auf Lesezeichen, Passwörter und den Verlauf aus.<
 <translation id="250704661983564564">Displayanordnung</translation>
 <translation id="2507253002925770350">Ticket entfernt</translation>
 <translation id="2507491234071975894">Lautsprecher</translation>
-<translation id="2508428939232952663">Google Play Store-Konto</translation>
 <translation id="2509495747794740764">Der Wert für die Skalierung muss zwischen 10 und 200 liegen.</translation>
 <translation id="2509566264613697683">8-fach</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ausgewählt)</translation>
@@ -2919,7 +2919,6 @@ Servernachricht: <ph name="SERVER_MSG" /></translation>
 <translation id="3458451003193188688">Die virtuelle Maschine konnte wegen eines Netzwerkfehlers nicht installiert werden. Versuche es noch einmal oder wende dich an deinen Administrator. Fehlercode: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Aufhebung der Freigabe fehlgeschlagen</translation>
 <translation id="3459509316159669723">Drucken</translation>
-<translation id="3459697287128633276">Damit dein Konto Zugriff auf den Google Play Store hat, musst du dich bei deinem Identitätsanbieter authentifizieren.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 Lesezeichen gelöscht}other{# Lesezeichen gelöscht}}</translation>
 <translation id="3461766685318630278">Erstelle und lösche zusätzliche Container.</translation>
 <translation id="3462311546193741693">Hiermit wirst du von den meisten Websites abgemeldet. Du bleibst jedoch in deinem Google-Konto angemeldet, sodass deine synchronisierten Daten gelöscht werden können.</translation>
@@ -5179,7 +5178,7 @@ Berechtigungen, die du Websites und Apps bereits gewährt hast, gelten mögliche
 <translation id="5427459444770871191">Im &amp;Uhrzeigersinn drehen</translation>
 <translation id="542750953150239272">Wenn du fortfährst, stimmst du zu, dass auf diesem Gerät auch automatisch Updates und Apps von Google, von deinem Mobilfunkanbieter und vom Hersteller deines Geräts heruntergeladen und installiert werden dürfen, möglicherweise über eine mobile Datenverbindung. Bei einigen dieser Apps werden eventuell In-App-Käufe angeboten.</translation>
 <translation id="5428850089342283580"><ph name="ACCNAME_APP" /> (Update verfügbar)</translation>
-<translation id="542948651837270806">Für das Trusted Platform Module muss ein Firmwareupdate installiert werden. Weitere Informationen: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
+<translation id="542948651837270806">Für das Trusted Platform Module muss ein Firmware-Update installiert werden. Weitere Informationen: <ph name="TPM_FIRMWARE_UPDATE_LINK" /></translation>
 <translation id="5429818411180678468">Volle Breite</translation>
 <translation id="5430931332414098647">Instant Tethering</translation>
 <translation id="5431318178759467895">Farbe</translation>
@@ -5476,6 +5475,7 @@ Du kannst sie an Google senden, um zu überprüfen, ob sie unsicher ist. Der Sca
 <translation id="5684661240348539843">Asset-ID</translation>
 <translation id="5684950556880280580">Dein Passwort wurde aktualisiert</translation>
 <translation id="5687326903064479980">Zeitzone</translation>
+<translation id="5687606994963670306">Websites, die länger als 30 Tage gelistet sind, werden von Chrome automatisch gelöscht. Eine Website, die du noch einmal besuchst, kann wieder in der Liste angezeigt werden. Du kannst auch Websites blockieren, sodass sie für dich keine Werbung mehr vorschlagen können. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Anzeigen in Chrome<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">Sieh nach, ob das Gerät eingesteckt ist und schalte es nicht aus. Die Installation kann bis zu 20 Minuten dauern. Dein Gerät wird automatisch heruntergefahren, sobald die Installation fertig ist.</translation>
 <translation id="5689516760719285838">Standort</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> hat Voice Match mit Assistant offenbar schon auf einem anderen Gerät eingerichtet. Diese vorherigen Aufnahmen wurden verwendet, um ein Sprachmodell auf diesem Gerät zu erstellen.</translation>
@@ -7304,6 +7304,7 @@ Du hast # weitere gehackte Passwörter. Der Google Passwortmanager empfiehlt, d
 <translation id="7273110280511444812">Zuletzt angeschlossen am <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – restliche Ladezeit: <ph name="TIME" /></translation>
 <translation id="727595954130325265">Jetzt kaufen</translation>
+<translation id="7276100255011548441">Themen, die länger als 4 Wochen gelistet sind, werden von Chrome automatisch gelöscht. Je nach deinen Browsingaktivitäten können die Themen wieder in der Liste erscheinen. Du kannst jedoch Themen blockieren, die Chrome nicht mit Websites teilen soll. <ph name="BEGIN_LINK" />Weitere Informationen zum Verwalten des Datenschutzes bei Anzeigen in Chrome<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">Fehler beim Herunterladen</translation>
 <translation id="7280649757394340890">Einstellungen für Sprachausgabe</translation>
 <translation id="7280877790564589615">Berechtigung angefordert</translation>
@@ -8796,6 +8797,7 @@ Speichere deine Schlüsseldatei an einem sicheren Ort. Du benötigst die Datei, 
 <translation id="8534656636775144800">Hoppla! Beim Beitritt zur Domain ist ein Fehler aufgetreten. Bitte versuche es noch einmal.</translation>
 <translation id="8535005006684281994">Verlängerungs-URL für Netscape-Zertifikate</translation>
 <translation id="8536713137312218707">Schnellbefehle</translation>
+<translation id="8536810348276651776">Du wirst von den meisten Websites abgemeldet. Du bleibst jedoch in deinem Google-Konto angemeldet, sodass deine Family Link-Einstellungen für Chrome Anwendung finden.</translation>
 <translation id="8536956381488731905">Ton bei Tastendruck</translation>
 <translation id="8539727552378197395">Nein (nur HTTP)</translation>
 <translation id="8539766201049804895">Aktualisieren</translation>

@@ -958,6 +958,7 @@
 <translation id="1784849162047402014">උපාංගයේ තැටි ඉඩ අඩුය</translation>
 <translation id="1787350673646245458">පරිශීලක රූපය</translation>
 <translation id="1790976235243700817">ප්‍රවේශය ඉවත් කරන්න</translation>
+<translation id="1791662854739702043">ස්ථාපිත</translation>
 <translation id="1792619191750875668">දීර්ඝ කළ සංදර්ශකය</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> කිසි විටක නොපෙන්වන්න</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> සඳහා මුරපදය සඟවන්න</translation>
@@ -1859,7 +1860,6 @@
 <translation id="250704661983564564">සංදර්ශක පිළියෙළ</translation>
 <translation id="2507253002925770350">ප්‍රවේශපත්‍රය ඉවත් කළා</translation>
 <translation id="2507491234071975894">ස්පීකරය</translation>
-<translation id="2508428939232952663">Google Play Store ගිණුම</translation>
 <translation id="2509495747794740764">පරිමාණ ප්‍රමාණය 10 සහ 200 අතර අංකයක් විය යුතුය.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (තෝරා ඇත)</translation>
@@ -2927,7 +2927,6 @@
 <translation id="3458451003193188688">ජාල දෝෂයක් හේතුවෙන් අතත්‍ය යන්ත්‍රය ස්ථාපන කළ නොහැකි විය. නැවත උත්සාහ කරන්න, නැති නම් ඔබේ පරිපාලකයා සම්බන්ධ කර ගන්න. දෝෂ කේතය: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">බෙදා නොගැනීම අසාර්ථක විය</translation>
 <translation id="3459509316159669723">මුද්‍රණය කරමින්</translation>
-<translation id="3459697287128633276">Google Play Store වෙත පිවිසීමට ඔබේ ගිණුම සබල කිරීමට, කරුණාකර ඔබේ අනන්‍යතා සැපයුම්කරු සමගින් සත්‍යාපනය කරන්න.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{පිටුසන් 1ක් මකන ලදි}one{පිටුසන් #ක් මකන ලදි}other{පිටුසන් #ක් මකන ලදි}}</translation>
 <translation id="3461766685318630278">අමතර බහාලුම් තැනීම සහ මැකීම.</translation>
 <translation id="3462311546193741693">බොහෝ වෙබ් අඩවිවලින් ඔබ වරයි. ඔබේ සමමුහුර්ත කළ දත්ත හිස් කළ හැකි වීම සඳහා ඔබ ඔබේ Google ගිණුමට පුරනය වී සිටියි.</translation>

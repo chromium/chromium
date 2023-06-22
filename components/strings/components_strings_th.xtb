@@ -535,6 +535,7 @@
 <translation id="2202020181578195191">ป้อนปีที่หมดอายุที่ถูกต้อง</translation>
 <translation id="2202627062836089804">ด้านหลังบัตร</translation>
 <translation id="2204482073374652408">อัปเดตเสร็จเรียบร้อย</translation>
+<translation id="2208053750671792556">หากไม่ได้รับรหัส <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ถาด 3</translation>
 <translation id="2210794033760923560">อัปโหลดรายงาน</translation>
 <translation id="2212735316055980242">ไม่พบนโยบาย</translation>
@@ -855,6 +856,7 @@
 <translation id="3041612393474885105">ข้อมูลในใบรับรอง</translation>
 <translation id="305162504811187366">ประวัติการใช้ Chrome Remote Desktop รวมถึงการประทับเวลา โฮสต์ และรหัสเซสชันไคลเอ็นต์</translation>
 <translation id="3052964831964880138">ลดราคา <ph name="PRICE_DROP" /> สำหรับ <ph name="PRODUCT_NAME" /></translation>
+<translation id="3054512251683174387">Chrome จะลบหัวข้อที่นานเกิน 4 สัปดาห์โดยอัตโนมัติ เมื่อคุณท่องเว็บไปเรื่อยๆ บางหัวข้อก็อาจกลับมาอยู่ในรายการอีกครั้ง หรือคุณจะบล็อกหัวข้อที่ไม่ต้องการให้ Chrome แชร์กับเว็บไซต์ต่างๆ ก็ได้ ดูข้อมูลเพิ่มเติมเกี่ยวกับการจัดการความเป็นส่วนตัวเกี่ยวกับโฆษณาใน Chrome</translation>
 <translation id="3061707000357573562">แพตช์บริการ</translation>
 <translation id="306573536155379004">เกมเริ่มแล้ว</translation>
 <translation id="3068991664510324412">วิดีโอเกมและเกมคอมพิวเตอร์</translation>
@@ -948,6 +950,7 @@
 <translation id="3270847123878663523">&amp;เลิกทำการจัดลำดับใหม่</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> ต้องการเชื่อมต่อ</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">ป้อนรหัสยืนยัน <ph name="NUMBER_OF_DIGITS" /> หลัก</translation>
 <translation id="3281350579597955952">{0,plural, =1{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์นี้ใน <ph name="DESTINATION_NAME" />}other{นโยบายของผู้ดูแลระบบไม่แนะนำให้เปิดไฟล์เหล่านี้ใน <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">องค์กรของคุณ <ph name="ENROLLMENT_DOMAIN" /> ได้ส่งข้อมูลบางอย่าง เช่น การตั้งค่าหรือนโยบายไปยังเว็บไซต์ต่อไปนี้</translation>
 <translation id="3286372614333682499">แนวตั้ง</translation>
@@ -2592,6 +2595,7 @@
 <translation id="7219179957768738017">การเชื่อมต่อใช้ <ph name="SSL_VERSION" /></translation>
 <translation id="7220786058474068424">กำลังดำเนินการ</translation>
 <translation id="7221855153210829124">แสดงการแจ้งเตือน</translation>
+<translation id="7221857374443660083">ธนาคารต้องการยืนยันว่าเป็นคุณ</translation>
 <translation id="722454870747268814">แท็บที่ไม่ระบุตัวตนใหม่</translation>
 <translation id="7227293336683593977">ประวัติราคา</translation>
 <translation id="7233592378249864828">พิมพ์แผ่นงานยืนยัน</translation>

@@ -971,6 +971,7 @@ Leidimai, kuriuos jau esate suteikę programoms, gali būti taikomi šiai paskyr
 <translation id="1784849162047402014">Mažai laisvos vietos įrenginio diske</translation>
 <translation id="1787350673646245458">Naudotojo vaizdas</translation>
 <translation id="1790976235243700817">Pašalinti prieigą</translation>
+<translation id="1791662854739702043">Įdiegta</translation>
 <translation id="1792619191750875668">Išplėstas vaizdas</translation>
 <translation id="1794051631868188691">Niekada nerodyti „<ph name="MERCHANT" />“</translation>
 <translation id="1794212650797661990">Slėpti <ph name="DOMAIN" /> slaptažodį</translation>
@@ -1872,7 +1873,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="250704661983564564">Ekrano išdėstymas</translation>
 <translation id="2507253002925770350">Bilietas pašalintas</translation>
 <translation id="2507491234071975894">Garsiakalbis</translation>
-<translation id="2508428939232952663">„Google Play“ parduotuvės paskyra</translation>
 <translation id="2509495747794740764">Mastelio verčių suma turi būti skaičius nuo 10 iki 200.</translation>
 <translation id="2509566264613697683">8 k.</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (pasirinkta)</translation>
@@ -2940,7 +2940,6 @@ Jei nenorite, dabar atsijunkite, kad šios paskyros pakeitimai būtų matomi ši
 <translation id="3458451003193188688">Nepavyko įdiegti virtualiojo įrenginio dėl tinklo klaidos Bandykite dar kartą arba susisiekite su administratoriumi. Klaidos kodas: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Nepavyko panaikinti bendrinimo</translation>
 <translation id="3459509316159669723">Spausdinimas</translation>
-<translation id="3459697287128633276">Kad leistumėte paskyrai pasiekti „Google Play“ parduotuvę, autentifikuokite prieigą naudodami tapatybės teikėją.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Ištrinta 1 žymė}one{Ištrinta # žymė}few{Ištrintos # žymės}many{Ištrinta # žymės}other{Ištrinta # žymių}}</translation>
 <translation id="3461766685318630278">Kurkite ir ištrinkite papildomus sudėtinius failus.</translation>
 <translation id="3462311546193741693">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, todėl sinchronizuoti duomenys gali būti išvalyti.</translation>
@@ -5501,6 +5500,7 @@ Galite išsiųsti jį „Google“, kad patikrintumėte, ar jis nesaugus. Nuskai
 <translation id="5684661240348539843">Ištekliaus identifikatorius</translation>
 <translation id="5684950556880280580">Slaptažodis atnaujintas</translation>
 <translation id="5687326903064479980">Laiko juosta</translation>
+<translation id="5687606994963670306">„Chrome“ automatiškai ištrina senesnes nei trisdešimt dienų svetaines. Jei dar kartą apsilankysite svetainėje, ji gali vėl atsirasti sąraše. Taip pat galite užblokuoti svetainę, kad ji negalėtų siūlyti skelbimų. Sužinokite daugiau apie <ph name="BEGIN_LINK" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Įsitikinkite, kad įrenginys prijungtas ir neišjunkite jo. Diegimas gali trukti iki 20 minučių. Įrenginys automatiškai išsijungs, kai diegimas bus baigtas.</translation>
 <translation id="5689516760719285838">Vieta</translation>
 <translation id="5689531695336322499">Panašu, kad <ph name="SUPERVISED_USER_NAME" /> jau nustatė „Voice Match“ naudodamas (-a) Padėjėją kitame įrenginyje. Ankstesni įrašai buvo naudojami kuriant balso modelį šiame įrenginyje.</translation>
@@ -7336,6 +7336,7 @@ Turite dar # pažeistų slaptažodžių. „Google“ slaptažodžių tvarkyklė
 <translation id="7273110280511444812">paskutinį kartą pridėta <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" /> % – <ph name="TIME" /> iki visiško įkrovimo</translation>
 <translation id="727595954130325265">Apsipirkti dabar</translation>
+<translation id="7276100255011548441">„Chrome“ automatiškai ištrina senesnes nei keturių savaičių temas. Jums naršant toliau, tema gali būti vėl rodoma sąraše. Arba galite blokuoti temas, kurių „Chrome“ neturėtų bendrinti su svetainėmis. Sužinokite daugiau apie <ph name="BEGIN_LINK" />su skelbimais susijusio privatumo tvarkymą naršyklėje „Chrome“<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Atsisiuntimo klaida</translation>
 <translation id="7280649757394340890">Teksto į kalbą balso nustatymai</translation>
 <translation id="7280877790564589615">Prašoma leidimo</translation>
@@ -8828,6 +8829,7 @@ Rakto failą laikykite saugioje vietoje. Jo reikės, kai norėsite sukurti nauja
 <translation id="8534656636775144800">Oi, kažkas nepavyko bandant prijungti prie domeno. Bandykite dar kartą.</translation>
 <translation id="8535005006684281994">„Netscape“ sertifikato atnaujinimo URL</translation>
 <translation id="8536713137312218707">Sparčiosios komandos</translation>
+<translation id="8536810348276651776">Būsite atjungti nuo daugelio svetainių. Liksite prisijungę prie „Google“ paskyros, kad būtų taikomi „Chrome“ skirti „Family Link“ nustatymai.</translation>
 <translation id="8536956381488731905">Garsas paspaudus klavišą</translation>
 <translation id="8539727552378197395">Ne (HttpOnly)</translation>
 <translation id="8539766201049804895">Naujovinti</translation>

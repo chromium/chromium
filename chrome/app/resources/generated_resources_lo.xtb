@@ -970,6 +970,7 @@
 <translation id="1786290960428378411">ຮ້ອງຂໍໃຫ້ອ່ານ ແລະ ປ່ຽນ</translation>
 <translation id="1787350673646245458">ຮູບພາບຜູ້ໃຊ້</translation>
 <translation id="1790976235243700817">ລຶບສິດເຂົ້າເຖິງ</translation>
+<translation id="1791662854739702043">ຕິດຕັ້ງແລ້ວ</translation>
 <translation id="1792619191750875668">ຈໍຂະຫຍາຍໃຫຍ່</translation>
 <translation id="1794051631868188691">ຢ່າສະແດງ <ph name="MERCHANT" /> ອີກ</translation>
 <translation id="1794212650797661990">ເຊື່ອງລະຫັດຜ່ານສຳລັບ <ph name="DOMAIN" /></translation>
@@ -1873,7 +1874,6 @@
 <translation id="250704661983564564">ການຈັດວາງຈໍສະແດງຜົນ</translation>
 <translation id="2507253002925770350">ລຶບປີ້ອອກແລ້ວ</translation>
 <translation id="2507491234071975894">ລຳໂພງ</translation>
-<translation id="2508428939232952663">ບັນຊີ Google Play Store</translation>
 <translation id="2509495747794740764">ຈຳນວນຂະໜາດຕ້ອງແມ່ນຕົວເລກລະຫວ່າງ 10 ຫາ 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ເລືອກແລ້ວ)</translation>
@@ -2943,7 +2943,6 @@
 <translation id="3458451003193188688">ບໍ່ສາມາດຕິດຕັ້ງເຄື່ອງສະເໝືອນຈິງໄດ້ ເນື່ອງຈາກເຄືອຂ່າຍຜິດພາດ. ກະລຸນາລອງໃໝ່ ຫຼື ຕິດຕໍ່ຜູ້ເບິ່ງແຍງລະບົບຂອງທ່ານ. ລະຫັດຂໍ້ຜິດພາດ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">ເຊົາແບ່ງປັນບໍ່ສຳເລັດ</translation>
 <translation id="3459509316159669723">ກໍາລັງພິມ</translation>
-<translation id="3459697287128633276">ເພື່ອເຮັດໃຫ້ບັນຊີຂອງທ່ານສາມາດເຂົ້າເຖິງ Google Play Store, ກະລຸນາຮັບຮອງຄວາມຖືກຕ້ອງນຳ Identity Provider ຂອງທ່ານ.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{ລຶບບຸກມາກ 1 ລາຍການແລ້ວ}other{ລຶບບຸກມາກ # ລາຍການແລ້ວ}}</translation>
 <translation id="3461766685318630278">ສ້າງ ແລະ ລຶບກ່ອງບັນຈຸເພີ່ມເຕີມ.</translation>
 <translation id="3462311546193741693">ນຳທ່ານອອກຈາກລະບົບເວັບໄຊສ່ວນໃຫຍ່. ທ່ານຈະສືບຕໍ່ຢູ່ໃນລະບົບບັນຊີ Google ຂອງທ່ານເພື່ອໃຫ້ລະບົບສາມາດລຶບລ້າງຂໍ້ມູນທີ່ຊິ້ງຂອງທ່ານໄດ້.</translation>
@@ -5513,6 +5512,7 @@
 <translation id="5684661240348539843">ຕົວ​ລະ​ບຸ​ຊັບ​ສິນ</translation>
 <translation id="5684950556880280580">ອັບເດດລະຫັດຜ່ານຂອງທ່ານແລ້ວ</translation>
 <translation id="5687326903064479980">ເຂດເວລາ</translation>
+<translation id="5687606994963670306">Chrome ຈະລຶບເວັບໄຊທີ່ເກົ່າກວ່າ 30 ມື້ໂດຍອັດຕະໂນມັດ. ເວັບໄຊທີ່ທ່ານເຂົ້າເບິ່ງຄືນໃໝ່ອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກ. ຫຼື ທ່ານສາມາດບລັອກເວັບໄຊບໍ່ໃຫ້ແນະນໍາໂຄສະນາໃຫ້ທ່ານໄດ້. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານໃນ Chrome.<ph name="END_LINK" /></translation>
 <translation id="5687935527303996204">ກະລຸນາກວດສອບວ່າທ່ານສຽບສາຍອຸປະກອນແລ້ວ ແລະ ຢ່າປິດມັນໄວ້. ການຕິດຕັ້ງອາດໃຊ້ເວລາສູງສຸດ 20 ນາທີ. ອຸປະກອນຂອງທ່ານຈະປິດເຄື່ອງອັດຕະໂນມັດເມື່ອການຕິດຕັ້ງສຳເລັດແລ້ວ.</translation>
 <translation id="5689516760719285838">ສະຖານທີ່</translation>
 <translation id="5689531695336322499"><ph name="SUPERVISED_USER_NAME" /> ໄດ້ຕັ້ງຄ່າ Voice Match ກັບຜູ້ຊ່ວຍຢູ່ອຸປະກອນອື່ນໄປກ່ອນແລ້ວ. ບັນທຶກສຽງກ່ອນໜ້າເຫຼົ່ານີ້ຖືກໃຊ້ເພື່ອສ້າງຮູບແບບສຽງຢູ່ອຸປະກອນນີ້.</translation>
@@ -7348,6 +7348,7 @@
 <translation id="7273110280511444812">ຄັດຕິດ​ຫຼ້າ​ສຸດ​ໃນ​ວັນ​ທີ <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% - <ph name="TIME" /> ຈົນ​ກ່​ວາ​ຈະ​ເຕັມ</translation>
 <translation id="727595954130325265">ຊື້ດຽວນີ້</translation>
+<translation id="7276100255011548441">Chrome ຈະລຶບເວັບໄຊທີ່ດົນກວ່າ 4 ອາທິດໂດຍອັດຕະໂນມັດ. ເມື່ອທ່ານເລືອກເບິ່ງໄປເລື້ອຍໆ, ຫົວຂໍ້ໃດໜຶ່ງກໍອາດກັບມາປາກົດຢູ່ໃນລາຍຊື່ອີກຄັ້ງ. ຫຼື ທ່ານສາມາດບລັອກຫົວຂໍ້ທີ່ທ່ານບໍ່ຕ້ອງການໃຫ້ Chrome ແບ່ງປັນກັບເວັບໄຊຕ່າງໆໄດ້. ສຶກສາເພີ່ມເຕີມກ່ຽວກັບ <ph name="BEGIN_LINK" />ການຈັດການຄວາມເປັນສ່ວນຕົວກ່ຽວກັບຕົວໂຄສະນາຂອງທ່ານໃນ Chrome.<ph name="END_LINK" /></translation>
 <translation id="727952162645687754">ດາວ​ໂຫລດ​ຜິດພາດ</translation>
 <translation id="7280649757394340890">ການຕັ້ງຄ່າສຽງສຳລັບການປ່ຽນຂໍ້ຄວາມເປັນສຽງເວົ້າ</translation>
 <translation id="7280877790564589615">ຂໍ​ເອົາການອະ​ນຸ​ຍາດ​ແລ້ວ</translation>
@@ -8844,6 +8845,7 @@
 <translation id="8534656636775144800">ອຸ້ຍ!  ມີບາງຢ່າງຜິດພາດໃນເວລາພະຍາຍາມເຂົ້າຮ່ວມໂດເມນ. ກະລຸນາລອງອີກຄັ້ງ.</translation>
 <translation id="8535005006684281994">URL ຕໍ່ໃບຢັ້ງຢືນ Netscape ໃໝ່</translation>
 <translation id="8536713137312218707">ຄຳສັ່ງດ່ວນ</translation>
+<translation id="8536810348276651776">ເອົາທ່ານອອກຈາກລະບົບເວັບໄຊສ່ວນໃຫຍ່. ທ່ານຈະສືບຕໍ່ເຂົ້າສູ່ລະບົບຫາບັນຊີ Google ຂອງທ່ານເພື່ອໃຫ້ການຕັ້ງຄ່າ Family Link ຂອງທ່ານສຳລັບ Chrome ມີຜົນນຳໃຊ້.</translation>
 <translation id="8536956381488731905">ສົ່ງສຽງເມື່ອກົດປຸ່ມ</translation>
 <translation id="8539727552378197395">ບໍ່ແມ່ນ (HttpOnly)</translation>
 <translation id="8539766201049804895">ອັບເກຣດ</translation>

@@ -857,6 +857,7 @@ I newid y gosodiad hwn, <ph name="BEGIN_LINK" />ailosodwch gysoni<ph name="END_L
 <translation id="5665379678064389456">Creu digwyddiad yn <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Ni all Chrome wirio am ddiweddariadau</translation>
 <translation id="5686790454216892815">Mae enw'r ffeil yn rhy hir</translation>
+<translation id="5687606994963670306">Mae Chrome yn dileu gwefannau sy'n hŷn na 30 diwrnod yn awtomatig. Mae'n bosib y bydd gwefan y byddwch yn ymweld â hi eto yn ailymddangos ar y rhestr. Neu gallwch rwystro gwefan rhag awgrymu hysbysebion i chi. Dysgu rhagor am <ph name="BEGIN_LINK" />reoli eich preifatrwydd hysbysebion yn Chrome.<ph name="END_LINK" /></translation>
 <translation id="569435661099256888">Gallwch weld y tudalennau rydych wedi ymweld â nhw neu gallwch eu clirio o'ch hanes</translation>
 <translation id="569536719314091526">Cyfieithu'r dudalen hon i unrhyw iaith o'r botwm Rhagor o ddewisiadau</translation>
 <translation id="5696597120588531049">Gall Chrome helpu i'ch cadw'n ddiogel rhag toriadau data, gwefannau anniogel a rhagor.</translation>
@@ -1171,6 +1172,7 @@ Er enghraifft, gall rhai gwefannau ymateb i'r cais hwn drwy ddangos hysbysebion 
 <translation id="7260367682327802201">Gall eich dyfais Android gynnwys gosodiad tebyg. Os caiff Mesur Hysbysebion ei droi ymlaen yn Chrome ac ar eich dyfais Android, mae'n bosib y gall cwmni fesur effeithiolrwydd hysbyseb ar draws gwefannau rydych yn ymweld â nhw a'r apiau rydych yn eu defnyddio.</translation>
 <translation id="727288900855680735">Cyflwyno <ph name="ONE_TIME_CODE" /> i <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Mae gwefan wedi'i hatal</translation>
+<translation id="7276100255011548441">Mae Chrome yn dileu gwefannau sy'n hŷn na 4 wythnos yn awtomatig. Wrth i chi barhau i bori, mae'n bosib y gall pwnc ailymddangos ar y rhestr. Neu gallwch rwystro pynciau nad ydych am i Chrome eu rhannu â gwefannau. Dysgu rhagor am <ph name="BEGIN_LINK" />reoli eich preifatrwydd hysbysebion yn Chrome.<ph name="END_LINK" /></translation>
 <translation id="7286703216224610554">Rhannu ymateb yn unig</translation>
 <translation id="7290209999329137901">Nid yw ailenwi ar gael</translation>
 <translation id="7291910923717764901">Ychwanegwyd disgrifiadau lluniau ar gyfer y dudalen hon</translation>

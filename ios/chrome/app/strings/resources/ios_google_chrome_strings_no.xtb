@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Du er pålogget og synkroniserer dataene dine med en konto som er administrert av <ph name="DOMAIN" />, hvor administratoren nå kan angi brukerinnstillinger spesifikt for denne kontoen for å endre virkemåten til Chrome.</translation>
 <translation id="1554731936187952550">Du har den sterkeste sikkerheten i Chrome mot skadelige nettsteder</translation>
 <translation id="1682483655351012182">Synkroniser Chrome-dataene dine</translation>
+<translation id="1733654336159102143">Lås inkognitomodus når du går ut av Chrome eller bytter til en annen app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Bruk Chrome automatisk når du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="1917964099031477364">Denne kontoen og eventuelle ulagrede data blir fjernet fra Chrome og andre Google-apper på enheten.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome kunne ikke se etter oppdateringer. Prøv på nytt senere.</translation>
 <translation id="2732745070297234559">Chrome kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="2736805085127235148">Chrome-varsler er nå slått av i enhetsinnstillingene.</translation>
+<translation id="2754286486056173475">Opprett kalenderaktiviteter i Chrome</translation>
 <translation id="2767464022270041271">Ingen lagrede passord. Google Passordlagring kan sjekke passordene dine når du lagrer dem.</translation>
 <translation id="2840432500933227975">Åpne Chrome-innstillingene i iOS, trykk på «Standard nettleserapp», og velg Chrome.</translation>
 <translation id="2869959624320573933">Logg på Chrome</translation>
@@ -48,6 +50,7 @@
 <translation id="3503014945441706099">Få Safe Browsing med økt beskyttelse for denne Chrome-profilen også</translation>
 <translation id="3522659714780527202">For å se fanene dine overalt hvor du bruker Chrome, slå på synkronisering</translation>
 <translation id="3533694711092285624">Ingen lagrede passord. Chrome kan sjekke passordene dine når du lagrer dem.</translation>
+<translation id="3611867725106943284">Trykk på «Se med Google Maps i Chrome».</translation>
 <translation id="3655656110921623717">Dette betyr at Chrome kommer til å forespørre mobilnettstedet hver gang.</translation>
 <translation id="3720541637541300822">Lås inkognitofaner når du lukker Chrome</translation>
 <translation id="3827545470516145620">Du får standard sikkerhetsbeskyttelse på denne enheten</translation>
@@ -100,6 +103,7 @@
 <translation id="6676840375528380067">Vil du fjerne Chrome-dataene dine fra denne enheten?</translation>
 <translation id="6709398533399187136">Passordet ditt har vært avdekket i et databrudd. Google Passordlagring anbefaler at du endrer det nå.</translation>
 <translation id="6822673484890854830">Chrome kunne ikke sjekke alle passordene. Prøv på nytt senere.</translation>
+<translation id="6896070677477855330">Slå på «Lås inkognitofaner når du lukker Chrome».</translation>
 <translation id="6964931465519938134">Nå kan du bruke Chrome hver gang du trykker på linker i meldinger, dokumenter og andre apper.</translation>
 <translation id="6975725306479268850">Velg Chrome for autofyll</translation>
 <translation id="7059914902409643750">Gi Chrome et personlig preg</translation>
@@ -112,6 +116,7 @@
 <translation id="7261678641327190792">Chrome kan ikke sjekke passordene dine</translation>
 <translation id="7272930098487145294">For å lagre bilder, trykk på Innstillinger for å la Chrome legge dem til i bildene dine</translation>
 <translation id="7275945473750112644">Kontoen din administreres av <ph name="HOSTED_DOMAIN" />, så Chrome-dataene dine blir slettet fra denne enheten</translation>
+<translation id="7394108421562933108">Maps i Chrome</translation>
 <translation id="7400722733683201933">Om Google Chrome</translation>
 <translation id="7501046334262221972">For å gjøre Chrome til standardnettleseren din, åpne Innstillinger. Trykk på Standard nettleserapp, og velg Chrome.</translation>
 <translation id="756809126120519699">Chrome-dataene er slettet</translation>
@@ -141,6 +146,7 @@
 <translation id="8765470054473112089">Når du skriver i adressefeltet eller søkefeltet, sender Chrome det du skriver til standardsøkemotoren din, for å gi deg bedre forslag. Dette er av i Inkognito.</translation>
 <translation id="8772179140489533211">Viser vinduer som ber deg logge på Chrome.</translation>
 <translation id="8788269841521769222">Du trenger ikke å huske dette passordet. Det blir lagret i Google Passordlagring for <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Gå til Chrome-innstillingene</translation>
 <translation id="8857676124663337448">Google Passordlagring kunne ikke sjekke alle passordene. Prøv på nytt i morgen.</translation>
 <translation id="8897749957032330183">Passord lagres i Google Passordlagring på denne enheten.</translation>
 <translation id="8969290730818637510">Når du gir samtykke

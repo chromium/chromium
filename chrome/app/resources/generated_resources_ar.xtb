@@ -960,6 +960,7 @@
 <translation id="1784849162047402014">مساحة القرص الموجودة على الجهاز منخفضة.</translation>
 <translation id="1787350673646245458">صورة المستخدم</translation>
 <translation id="1790976235243700817">إزالة إمكانية الوصول</translation>
+<translation id="1791662854739702043">تم التثبيت</translation>
 <translation id="1792619191750875668">شاشة تم توسيعها</translation>
 <translation id="1794051631868188691">عدم عرض <ph name="MERCHANT" /> مرة أخرى</translation>
 <translation id="1794212650797661990">إخفاء كلمة المرور لـ <ph name="DOMAIN" /></translation>
@@ -1858,7 +1859,6 @@
 <translation id="250704661983564564">ترتيب العرض</translation>
 <translation id="2507253002925770350">تمت إزالة التذكرة</translation>
 <translation id="2507491234071975894">مكبّر الصوت</translation>
-<translation id="2508428939232952663">‏حساب متجر Google Play</translation>
 <translation id="2509495747794740764">يجب أن تمثل قيمة التدرج رقمًا يتراوح بين 10 و200.</translation>
 <translation id="2509566264613697683">8 أضعاف</translation>
 <translation id="2512065992892294946">تم اختيار <ph name="LANGUAGE" />.</translation>
@@ -2927,7 +2927,6 @@
 <translation id="3458451003193188688">تعذّر تثبيت الآلة الافتراضية بسبب خطأ في الشبكة. يُرجى إعادة المحاولة أو التواصل مع المشرف. رمز الخطأ: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">تعذّر إلغاء المشاركة</translation>
 <translation id="3459509316159669723">الطباعة</translation>
-<translation id="3459697287128633276">‏لتمكين حسابك من الوصول إلى متجر Google Play، يُرجى المصادقة مع موفّر الهوية.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{تم حذف إشارة مرجعية واحدة.}zero{تم حذف # إشارة مرجعية.}two{تم حذف إشارتَين مرجعيتَين.}few{تم حذف # إشارات مرجعية.}many{تم حذف # إشارة مرجعية.}other{تم حذف # إشارة مرجعية.}}</translation>
 <translation id="3461766685318630278">يمكنك إنشاء حاويات إضافية وحذفها.</translation>
 <translation id="3462311546193741693">‏يؤدي هذا الخيار إلى تسجيل خروجك من معظم المواقع الإلكترونية. وسيستمر تسجيل دخولك إلى حسابك على Google بحيث يمكن محو بياناتك التي تمت مزامنتها.</translation>

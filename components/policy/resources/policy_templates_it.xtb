@@ -450,6 +450,11 @@ Questo sostituisce il criterio <ph name="DEFAULT_WINDOW_PLACEMENT_SETTING_POLICY
       Se questo criterio viene attivato o se non viene configurato, sarà il browser a decidere quale algoritmo User-Agent GREASE usare. Se il criterio viene disattivato, viene usato l'algoritmo User-Agent GREASE precedente.
       Questo criterio è una misura temporanea e verrà rimosso in una futura versione.</translation>
 <translation id="142346659686073702">Consenti agli utenti non affiliati di usare Crostini</translation>
+<translation id="1423900783955065155">Questo criterio consente di stabilire se una pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> può essere memorizzata o meno nella cache back-forward. L'impostazione del sito web per questa intestazione potrebbe non prevedere il ripristino della pagina dalla cache back-forward perché alcune informazioni sensibili potrebbero essere ancora visualizzate dopo il ripristino, anche se non sono più accessibili.
+
+Se il criterio viene attivato o se non viene configurato, la pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> potrebbe essere ripristinata dalla cache back-forward, a meno che non venga attivata l'eliminazione della cache, ad esempio se al sito viene apportata una modifica ai cookie solo HTTP.
+
+Se il criterio viene disattivato, la pagina con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /> non verrà memorizzata nella cache back-forward.</translation>
 <translation id="1425551776320718592">Impedisci agli utenti di questo dispositivo di utilizzare il processo sideload ADB senza forzare la funzione Powerwash, che potrebbe lasciare il dispositivo in uno stato di sicurezza discutibile</translation>
 <translation id="1426170570389588560">Imposta il periodo di tempo in giorni per memorizzare i metadati dei processi di stampa</translation>
 <translation id="1426410128494586442">Sì</translation>
@@ -2228,6 +2233,7 @@ Questa norma viene rispettata soltanto se viene attivata la norma "DefaultSearch
 <translation id="305106159605171619">Riduzione dello user agent disattivata e non attivata da Field-Trials o Origin-Trials.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Disattiva Registra schermo</translation>
+<translation id="3063307261083019730">Non consentire la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="3064530882228745118">Utilizza ricerca CNAME durante l'autenticazione Kerberos</translation>
 <translation id="3066446511111537292">Consenti agli utenti affiliati di questo dispositivo di utilizzare il processo sideload ADB</translation>
 <translation id="3067462824622454143">Consenti agli utenti di decidere se il dispositivo deve bloccarsi quando viene sospeso o il coperchio viene chiuso</translation>
@@ -5396,6 +5402,7 @@ Se questo criterio viene disattivato, la protezione delle estensioni di <ph name
 <translation id="603768430528561926">Se il criterio viene impostato su Attivato o se non viene configurato, gli utenti dei dispositivi aziendali possono riscattare le offerte tramite la registrazione a <ph name="PRODUCT_OS_NAME" />.
 
       Se viene impostato su Disattivato, gli utenti non possono riscattare tali offerte.</translation>
+<translation id="6042407236638640864">Consenti la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" /></translation>
 <translation id="6042629184389251062">La raccolta di metriche con chiave URL non è consentita</translation>
 <translation id="6046615715547751255">Non consentire i controlli di reporting granulare</translation>
 <translation id="6048199181629830227">Attiva la gestione della variazione dei picchi energetici</translation>
@@ -7708,6 +7715,7 @@ Questo criterio non avrà alcun effetto se il criterio <ph name="SCREENSAVER_LOC
 
       Se l'impostazione viene attivata o non viene configurata, i siti web possono controllare se l'utente ha salvato dei metodi di pagamento.</translation>
 <translation id="8118665053362250806">Imposta le dimensioni della cache su disco di supporto</translation>
+<translation id="8123648898339555150">Consenti la memorizzazione nella cache back-forward delle pagine con l'intestazione <ph name="CACHE_CONTROL_NO_STORE_NAME" />.</translation>
 <translation id="8124468781472887384">Norma di accesso alla configurazione delle stampanti per i dispositivi.</translation>
 <translation id="8128192446158421884">URL su cui è applicabile AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Consenti le voci di sintesi vocale di rete migliorate durante l'utilizzo di Seleziona per ascoltare</translation>
@@ -8623,11 +8631,6 @@ Se viene disattivato, verrà utilizzato il comportamento precedente.
 Se non viene configurato, verrà utilizzato il nuovo comportamento, esattamente come avviene per gli altri utenti di Chromium.</translation>
 <translation id="8955719471735800169">Torna all'inizio</translation>
 <translation id="8956312248048980644">Consente per impostazione predefinita il clustering di agenti in base all'origine.</translation>
-<translation id="8961117818679701775">Questo criterio consente a un amministratore di specificare le impostazioni relative alle app web installate. Questo criterio associa un ID app web alla relativa impostazione specifica. È possibile impostare con l'ID speciale <ph name="DEFAULT_SCOPE" /> una configurazione predefinita che verrà applicata a tutte le app web senza una configurazione personalizzata in questo criterio.
-
-Il campo <ph name="MANIFEST_ID_FIELD" /> è l'ID manifest dell'app web. Visita la pagina <ph name="WEB_APP_ID_REFERENCE_URL" /> per avere istruzioni su come stabilire l'ID manifest di un'app web installata.
-Il campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> consente di specificare se un'app web può essere eseguita durante l'accesso al sistema operativo. Se questo campo viene impostato su <ph name="BLOCKED" />, l'app web non verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà attivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="RUN_WINDOWED" />, l'app web verrà eseguita durante l'accesso al sistema operativo e l'utente non potrà disattivare questa funzionalità in un secondo momento. Se questo campo viene impostato su <ph name="ALLOWED" />, l'utente potrà configurare l'esecuzione dell'app web al momento dell'accesso al sistema operativo. Per la configurazione predefinita sono consentiti soltanto i valori <ph name="ALLOWED" /> e <ph name="BLOCKED" />.
-(Dalla versione 115) Il campo <ph name="PREVENT_CLOSE_FIELD" /> consente di specificare se impedire o meno la chiusura di un'app web in qualsiasi modo (ad esempio da parte dell'utente, da Task Manager, da API web). Questo comportamento può essere attivato solo se il criterio <ph name="RUN_ON_OS_LOGIN_FIELD" /> è impostato su <ph name="RUN_WINDOWED" />. Se l'app era già in esecuzione, questa proprietà diventa effettiva solo dopo il suo riavvio. Se questo campo non viene definito, gli utenti potranno chiudere le app.</translation>
 <translation id="8970205333161758602">Eliminazione del messaggio di richiesta di turndown di <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Scegli se è possibile o meno mostrare la richiesta di <ph name="PRIVACY_SANDBOX_NAME" /> ai tuoi utenti</translation>
 <translation id="8974588819713914715">Questo criterio è stato deprecato e non è supportato. Utilizza il criterio <ph name="URL_ALLOWLIST_POLICY_NAME" />.</translation>

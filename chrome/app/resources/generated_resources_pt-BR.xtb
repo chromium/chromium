@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Adicionar ao dicionário</translation>
 <translation id="1018656279737460067">Cancelado</translation>
 <translation id="1022489261739821355">Mostrando senhas da sua <ph name="BEGIN_LINK" />Conta do Google<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Seu dispositivo é gerenciado por <ph name="DOMAIN" />. Os administradores podem acessar os dados de qualquer perfil neste dispositivo.</translation>
 <translation id="1024734233509995696">Esta guia está usando sua câmera ou microfone</translation>
 <translation id="1026655690966755180">Adicionar porta</translation>
@@ -969,6 +970,7 @@ As permissões que você já concedeu a apps podem ser aplicadas a essa conta. V
 <translation id="1784849162047402014">O dispositivo está com pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do usuário</translation>
 <translation id="1790976235243700817">Remover acesso</translation>
+<translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Exibição estendida</translation>
 <translation id="1794051631868188691">Nunca mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ocultar senha de <ph name="DOMAIN" /></translation>
@@ -1870,7 +1872,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="250704661983564564">Disposição da tela</translation>
 <translation id="2507253002925770350">Tíquete removido</translation>
 <translation id="2507491234071975894">Alto-falante</translation>
-<translation id="2508428939232952663">Conta da Google Play Store</translation>
 <translation id="2509495747794740764">O valor do dimensionamento precisa ser um número entre 10 e 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selecionado)</translation>
@@ -2938,7 +2939,6 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3458451003193188688">Não foi possível instalar a máquina virtual devido a um erro de rede. Tente novamente ou entre em contato com o administrador. Código do erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Falha ao cancelar compartilhamento</translation>
 <translation id="3459509316159669723">Imprimir</translation>
-<translation id="3459697287128633276">Para ativar sua conta para acessar a Google Play Store, autentique com seu Provedor de identidade.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 favorito excluído}one{# favorito excluído}other{# favoritos excluídos}}</translation>
 <translation id="3461766685318630278">Criar e excluir contêineres extras.</translation>
 <translation id="3462311546193741693">Desconecta você da maioria dos sites. Você permanecerá conectado à sua Conta do Google para que seus dados sincronizados possam ser excluídos.</translation>
@@ -3498,6 +3498,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="3919145445993746351">Para ver suas extensões em todos os seus computadores, ative a sincronização</translation>
 <translation id="3919229493046408863">Desativar notificação quando os dispositivos estiverem por perto</translation>
 <translation id="3919262972282962508">Depois de dezembro de 2022, não vai mais ser possível abrir as versões antigas dos apps do Chrome em dispositivos Mac. Entre em contato com seu administrador para instalar uma nova versão ou remover esse app.</translation>
+<translation id="3919376399641777316">Usa o armazenamento do Google Drive</translation>
 <translation id="3919798653937160644">As páginas abertas nesta janela não aparecerão no histórico do navegador nem deixarão outros rastros no computador, como cookies, depois que todas as janelas de visitante forem fechadas. No entanto, todos os downloads serão preservados.</translation>
 <translation id="3920504717067627103">Diretivas de certificação</translation>
 <translation id="3920909973552939961">Bloquear a instalação de gerenciadores de pagamento</translation>
@@ -3648,6 +3649,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4044612648082411741">Digite a senha do certificado</translation>
 <translation id="4044708573046946214">Senha do bloqueio de tela</translation>
 <translation id="404493185430269859">Mecanismo de pesquisa padrão</translation>
+<translation id="4044964245574571633">Usa o armazenamento do Microsoft OneDrive</translation>
 <translation id="4045196801416070837">Sons do dispositivo</translation>
 <translation id="4046013316139505482">Estas extensões não precisam acessar e mudar as informações neste site.</translation>
 <translation id="4046123991198612571">Próxima faixa</translation>
@@ -3686,6 +3688,7 @@ Para gerenciar as configurações dessa conta, instale o app Family Link no seu 
 <translation id="4084682180776658562">Favorito</translation>
 <translation id="4084835346725913160">Fechar <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">O JavaScript foi bloqueado nesta página.</translation>
+<translation id="4085620044235559093">Escolha um app para abrir arquivos do <ph name="FILE_TYPE" /></translation>
 <translation id="4087089424473531098">Criou a extensão:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4438,6 +4441,7 @@ Use Ctrl + Alt + Diminuir brilho para diminuir o zoom.</translation>
 <translation id="4742970037960872810">Remover destaque</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saiba como atualizar aplicativos<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Acessar o site</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Ativar som do site}one{Ativar som do site}other{Ativar som dos sites}}</translation>
 <translation id="474609389162964566">Acesse o Google Assistente usando o "Ok Google"</translation>
 <translation id="4746351372139058112">Mensagens</translation>
@@ -7518,6 +7522,7 @@ Há # outras senhas comprometidas. O Gerenciador de senhas do Google recomenda q
 <translation id="7432200167665670017">Seu administrador bloqueou a extensão <ph name="EXTENSION_NAME" />: ID do app <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Insira o cartão inteligente para continuar usando seu <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Manter assim</translation>
+<translation id="7434100547946193426">Outros apps</translation>
 <translation id="7434509671034404296">Desenvolvedor</translation>
 <translation id="7434757724413878233">Aceleração do mouse</translation>
 <translation id="7434969625063495310">Não foi possível adicionar o servidor de impressão. Verifique a configuração do servidor e tente novamente.</translation>

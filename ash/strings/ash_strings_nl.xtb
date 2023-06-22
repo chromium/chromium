@@ -929,6 +929,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="504465286040788597">Vorige alinea</translation>
 <translation id="5045550434625856497">Onjuist wachtwoord</translation>
 <translation id="5062496344832867502">ram</translation>
+<translation id="5068762093486106012">Je krijgt een melding als je praat terwijl het geluid uitstaat. De audio verlaat je apparaat nooit.</translation>
 <translation id="5078796286268621944">Onjuiste pincode</translation>
 <translation id="5083553833479578423">Ontgrendel meer functies van de Assistent.</translation>
 <translation id="5092436659250499817">Achtergrondverlichting van toetsenbord aan-/uitzetten</translation>
@@ -959,6 +960,7 @@ Sluit je apparaat aan op een stopcontact.</translation>
 <translation id="5207949376430453814">Tekstcursor markeren</translation>
 <translation id="5208059991603368177">Aan</translation>
 <translation id="5216991270656129561">Uit tot <ph name="TIME" /></translation>
+<translation id="5221423477036820198">Stuur of beantwoord snel berichten van je telefoon met Telefoonhub.</translation>
 <translation id="5222676887888702881">Uitloggen</translation>
 <translation id="5229343007215035173">Privacyscherm aan-/uitzetten</translation>
 <translation id="5234764350956374838">Sluiten</translation>
@@ -1687,6 +1689,7 @@ Als je het apparaat wilt uitzetten, houd je de aan/uit-knop op het apparaat weer
 <translation id="8513108775083588393">Autom. draaien</translation>
 <translation id="851458219935658693">Vensters van het huidige bureau bekijken, keuzerondje geselecteerd</translation>
 <translation id="8517041960877371778">Je <ph name="DEVICE_TYPE" /> wordt mogelijk niet opgeladen als deze aanstaat.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Microfooninvoer beheerd door <ph name="APP_NAME" />}other{Microfooninvoer beheerd door # apps}}</translation>
 <translation id="8535393432370007982">Sorteren op kleur ongedaan maken</translation>
 <translation id="8541078764854166027">Cameraframing</translation>
 <translation id="8542053257095774575">Geen opgeslagen bureaus of templates</translation>

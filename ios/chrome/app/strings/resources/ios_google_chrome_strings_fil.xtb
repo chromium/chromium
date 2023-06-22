@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Naka-sign in ka at sini-sync ang iyong data sa isang account na pinamamahalaan ng <ph name="DOMAIN" /> kung saan magagawa na ng administrator nito na magtakda ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa pagkilos ng Chrome.</translation>
 <translation id="1554731936187952550">Nasa iyo ang pinakamaigting na seguridad ng Chrome laban sa mga mapaminsalang website</translation>
 <translation id="1682483655351012182">I-sync ang Iyong Data sa Chrome</translation>
+<translation id="1733654336159102143">I-lock ang iyong incognito kapag umalis ka sa Chrome o lumipat ka sa ibang app.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Awtomatikong gamitin ang Chrome kapag nag-tap ka ng mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="1917964099031477364">Aalisin sa Chrome at sa iba pang Google app sa device na ito ang account na ito at anumang hindi naka-save na data.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Hindi matingnan ng Chrome kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="2732745070297234559">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="2736805085127235148">Kasalukuyang naka-off ang mga notification sa Chrome sa mga setting ng iyong device.</translation>
+<translation id="2754286486056173475">Gumawa ng Mga Event sa Calendar sa Chrome</translation>
 <translation id="2767464022270041271">Walang naka-save na password. Masusuri ng Google Password Manager ang iyong mga password kapag na-save mo ang mga ito.</translation>
 <translation id="2840432500933227975">Buksan ang Mga Setting ng Chrome sa iOS, pagkatapos ay i-tap ang "Default na APP ng Browser" at piliin ang Chrome.</translation>
 <translation id="2869959624320573933">Mag-sign In sa Chrome</translation>
@@ -100,6 +102,7 @@
 <translation id="6676840375528380067">I-clear ang iyong data sa Chrome sa device na ito?</translation>
 <translation id="6709398533399187136">Na-expose ang password mo sa isang paglabag sa data. Inirerekomenda ng Google Password Manager na palitan na ito ngayon.</translation>
 <translation id="6822673484890854830">Hindi masuri ng Chrome ang lahat ng password. Subukan ulit sa ibang pagkakataon.</translation>
+<translation id="6896070677477855330">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chrome.”</translation>
 <translation id="6964931465519938134">Magagamit mo na ngayon ang Chrome sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
 <translation id="6975725306479268850">Piliin ang Chrome para sa AutoFill</translation>
 <translation id="7059914902409643750">Gawing Iyo ang Chrome</translation>
@@ -141,6 +144,7 @@
 <translation id="8765470054473112089">Kapag nag-type ka sa address bar o sa box para sa paghahanap, ipapadala ng Chrome kung ano ang tina-type mo sa iyong default na search engine para makakuha ng mas magagandang suhestyon. Naka-off ito sa Incognito.</translation>
 <translation id="8772179140489533211">Nagpapakita ng mga prompt na mag-sign in sa Chrome.</translation>
 <translation id="8788269841521769222">Hindi mo kailangang tandaan ang password na ito. Mase-save ito sa Google Password Manager para sa <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Pumunta sa Mga Setting ng Chrome</translation>
 <translation id="8857676124663337448">Hindi masuri ng Google Password Manager ang lahat ng password. Subukan ulit bukas.</translation>
 <translation id="8897749957032330183">Sine-save ang mga password sa Google Password Manager sa device na ito.</translation>
 <translation id="8969290730818637510">Kapag naka-on:

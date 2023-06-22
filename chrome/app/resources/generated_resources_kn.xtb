@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">ನಿಘಂಟಿಗೆ &amp;ಸೇರಿಸಿ</translation>
 <translation id="1018656279737460067">ರದ್ದುಗೊಳಿಸಲಾಗಿದೆ</translation>
 <translation id="1022489261739821355">ನಿಮ್ಮ <ph name="BEGIN_LINK" />Google ಖಾತೆಯಿಂದ<ph name="END_LINK" /> ಪಾಸ್‌ವರ್ಡ್‌ಗಳನ್ನು ತೋರಿಸಲಾಗುತ್ತಿದೆ</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">ನಿಮ್ಮ ಸಾಧನವನ್ನು <ph name="DOMAIN" /> ನಿರ್ವಹಿಸುತ್ತಿದೆ. ನಿರ್ವಾಹಕರು ಈ ಸಾಧನದಲ್ಲಿನ ಯಾವುದೇ ಪ್ರೊಫೈಲ್‌ನಲ್ಲಿರುವ ಡೇಟಾವನ್ನು ಆ್ಯಕ್ಸೆಸ್ ಮಾಡಬಹುದು.</translation>
 <translation id="1024734233509995696">ಈ ಟ್ಯಾಬ್ ನಿಮ್ಮ ಕ್ಯಾಮರಾ ಅಥವಾ ಮೈಕ್ರೊಫೋನ್‌ ಅನ್ನು ಬಳಸುತ್ತಿದೆ</translation>
 <translation id="1026655690966755180">ಪೋರ್ಟ್ ಸೇರಿಸಿ</translation>
@@ -965,6 +966,7 @@
 <translation id="1786290960428378411">ಓದಲು ಮತ್ತು ಬದಲಾಯಿಸಲು ವಿನಂತಿಸಲಾಗುತ್ತಿದೆ</translation>
 <translation id="1787350673646245458">ಬಳಕೆದಾರರ ಚಿತ್ರ</translation>
 <translation id="1790976235243700817">ಪ್ರವೇಶವನ್ನು ತೆಗೆದುಹಾಕಿ</translation>
+<translation id="1791662854739702043">ಇನ್‌ಸ್ಟಾಲ್ ಆಗಿದೆ</translation>
 <translation id="1792619191750875668">ವಿಸ್ತರಿಸಲಾದ ಡಿಸ್‌ಪ್ಲೇ</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> ಅನ್ನು ಎಂದಿಗೂ ತೋರಿಸಬೇಡಿ</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> ಗಾಗಿ ಪಾಸ್‌ವರ್ಡ್ ಅನ್ನು ಮರೆಮಾಡಿ</translation>
@@ -1866,7 +1868,6 @@
 <translation id="250704661983564564">ಡಿಸ್‌ಪ್ಲೇ ಜೋಡಣೆ</translation>
 <translation id="2507253002925770350">ಟಿಕೆಟ್ ತೆಗೆದುಹಾಕಲಾಗಿದೆ</translation>
 <translation id="2507491234071975894">ಸ್ಪೀಕರ್</translation>
-<translation id="2508428939232952663">Google Play Store  ಖಾತೆ</translation>
 <translation id="2509495747794740764">ಸ್ಕೇಲ್ ಪ್ರಮಾಣವು 10 ಮತ್ತು 200 ನಡುವಿನ ಸಂಖ್ಯೆಯಾಗಿರಬೇಕು.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (ಆಯ್ಕೆಮಾಡಲಾಗಿದೆ)</translation>
@@ -2935,7 +2936,6 @@
 <translation id="3458451003193188688">ನೆಟ್‌ವರ್ಕ್ ದೋಷದಿಂದಾಗಿ, ವರ್ಚುವಲ್ ಯಂತ್ರವನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಪುನಃ ಪ್ರಯತ್ನಿಸಿ ಅಥವಾ ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ. ದೋಷ ಕೋಡ್: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">ಹಂಚಿಕೊಂಡಿದ್ದನ್ನು ರದ್ದುಗೊಳಿಸಲು ಸಾಧ್ಯವಾಗಿಲ್ಲ</translation>
 <translation id="3459509316159669723">ಮುದ್ರಿಸಲಾಗುತ್ತಿದೆ</translation>
-<translation id="3459697287128633276">Google Play Store  ಪ್ರವೇಶಿಸಿಲು ನಿಮ್ಮ ಖಾತೆಯನ್ನು ಸಕ್ರಿಯಗೊಳಿಸಲು, ನಿಮ್ಮ ಗುರುತು ಒದಗಿಸುವವರ ಮೂಲಕ ದೃಢೀಕರಿಸಿ.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 ಬುಕ್‌ಮಾರ್ಕ್ ಅನ್ನು ಅಳಿಸಲಾಗಿದೆ}one{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}other{# ಬುಕ್‌ಮಾರ್ಕ್‌ಗಳನ್ನು ಅಳಿಸಲಾಗಿದೆ}}</translation>
 <translation id="3461766685318630278">ಹೆಚ್ಚುವರಿ ಕಂಟೇನರ್‌ಗಳನ್ನು ರಚಿಸಿ ಮತ್ತು ಅಳಿಸಿ.</translation>
 <translation id="3462311546193741693">ಬಹುತೇಕ ಸೈಟ್‌ಗಳಿಂದ ನಿಮ್ಮನ್ನು ಸೈನ್ ಔಟ್ ಮಾಡುತ್ತದೆ. ನಿಮ್ಮ Google ಖಾತೆಗೆ ನೀವು ಸೈನ್ ಇನ್ ಆಗಿಯೇ ಇರುವಿರಿ, ಈ ಮೂಲಕ ಸಿಂಕ್ ಮಾಡಿರುವ ನಿಮ್ಮ ಡೇಟಾವನ್ನು ತೆರವುಗೊಳಿಸಬಹುದು.</translation>
@@ -3497,6 +3497,7 @@
 <translation id="3919145445993746351">ನಿಮ್ಮ ಎಲ್ಲಾ ಕಂಪ್ಯೂಟರ್‌ಗಳಲ್ಲೂ ನಿಮ್ಮ ವಿಸ್ತರಣೆಗಳನ್ನು ಪಡೆಯಲು, ಸಿಂಕ್ ಅನ್ನು ಆನ್ ಮಾಡಿ</translation>
 <translation id="3919229493046408863">ಸಾಧನಗಳು ಸಮೀಪದಲ್ಲಿರುವಾಗ ಅಧಿಸೂಚನೆಯನ್ನು ಆಫ್ ಮಾಡಿ</translation>
 <translation id="3919262972282962508">ಡಿಸೆಂಬರ್ 2022 ರ ನಂತರ Chrome ಆ್ಯಪ್‌ಗಳ ಹಳೆಯ ಆವೃತ್ತಿಗಳು Mac ಸಾಧನಗಳಲ್ಲಿ ತೆರೆಯುವುದಿಲ್ಲ. ಹೊಸ ಆವೃತ್ತಿಗೆ ಅಪ್‌ಡೇಟ್ ಮಾಡಲು ಅಥವಾ ಈ ಆ್ಯಪ್ ಅನ್ನು ತೆಗೆದುಹಾಕಲು ನಿಮ್ಮ ನಿರ್ವಾಹಕರನ್ನು ಸಂಪರ್ಕಿಸಿ.</translation>
+<translation id="3919376399641777316">Google Drive ಸಂಗ್ರಹಣೆಯನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="3919798653937160644">ನಿಮ್ಮ ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ತೆರೆದಿರುವ ಎಲ್ಲ ಅತಿಥಿ ವಿಂಡೊಗಳನ್ನು ಮುಚ್ಚಿದ ನಂತರ ಈ ವಿಂಡೊದಲ್ಲಿ ನೀವು ವೀಕ್ಷಿಸುವ ಪುಟಗಳು ಬ್ರೌಸರ್ ಇತಿಹಾಸದಲ್ಲಿ ಗೋಚರಿಸುವುದಿಲ್ಲ ಮತ್ತು ಅವುಗಳು ಕುಕೀಗಳಂತಹ ಇತರ ಗುರುತುಗಳನ್ನು ಕಂಪ್ಯೂಟರ್‌ನಲ್ಲಿ ಉಳಿಯಲು ಬಿಡುವುದಿಲ್ಲ. ಆದರೂ, ನೀವು ಡೌನ್‌ಲೋಡ್ ಮಾಡಿದ ಯಾವುದೇ ಫೈಲ್‌ಗಳನ್ನು ರಕ್ಷಣೆ ಮಾಡಿ ಇಟ್ಟುಕೊಳ್ಳಲಾಗುತ್ತದೆ.</translation>
 <translation id="3920504717067627103">ಪ್ರಮಾಣಪತ್ರ ನೀತಿಗಳು</translation>
 <translation id="3920909973552939961">ಪಾವತಿ ಹ್ಯಾಂಡ್‌ಲರ್‌ಗಳನ್ನು ಇನ್‌ಸ್ಟಾಲ್ ಮಾಡಲು ಈ ಸೈಟ್‌ಗಳಿಗೆ ಅನುಮತಿಸಲಾಗುವುದಿಲ್ಲ</translation>
@@ -3647,6 +3648,7 @@
 <translation id="4044612648082411741">ನಿಮ್ಮ ಪ್ರಮಾಣಪತ್ರ ಪಾಸ್‌ವರ್ಡ್ ನಮೂದಿಸಿ</translation>
 <translation id="4044708573046946214">ಸ್ಕ್ರೀನ್ ಲಾಕ್ ಪಾಸ್‌ವರ್ಡ್</translation>
 <translation id="404493185430269859">ಡೀಫಾಲ್ಟ್ ಹುಡುಕಾಟ ಇಂಜಿನ್</translation>
+<translation id="4044964245574571633">Microsoft OneDrive ಸಂಗ್ರಹಣೆಯನ್ನು ಬಳಸುತ್ತದೆ</translation>
 <translation id="4045196801416070837">ಸಾಧನದ ಧ್ವನಿಗಳು</translation>
 <translation id="4046013316139505482">ಈ ಎಕ್ಸ್‌ಟೆನ್ಷನ್‌‌ಗಳು ಈ ಸೈಟ್‌ನಲ್ಲಿನ ಮಾಹಿತಿಯನ್ನು ವೀಕ್ಷಿಸುವುದು ಮತ್ತು ಬದಲಾಯಿಸುವುದು ಅಗತ್ಯವಿಲ್ಲ.</translation>
 <translation id="4046123991198612571">ಮುಂದಿನ ಟ್ರ್ಯಾಕ್</translation>
@@ -3685,6 +3687,7 @@
 <translation id="4084682180776658562">ಬುಕ್‌ಮಾರ್ಕ್</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> ಮುಚ್ಚಿ</translation>
 <translation id="4085298594534903246">ಈ ಪುಟದಲ್ಲಿ JavaScript ಅನ್ನು ನಿರ್ಬಂಧಿಸಲಾಗಿದೆ.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> ಫೈಲ್‌ಗಳನ್ನು ತೆರೆಯಲು ಆ್ಯಪ್ ಅನ್ನು ಆಯ್ಕೆಮಾಡಿ</translation>
 <translation id="4087089424473531098">ವಿಸ್ತರಣೆಯನ್ನು ರಚಿಸಲಾಗಿದೆ:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4438,6 +4441,7 @@
 <translation id="4742970037960872810">ಹೈಲೈಟ್ ತೆಗೆದುಹಾಕಿ</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ಅಪ್ಲಿಕೇಶನ್‌ಗಳನ್ನು ಅಪ್‌ಡೇಟ್‌ ಮಾಡುವುದು ಹೇಗೆ ಎಂದು ತಿಳಿಯಿರಿ<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">ಸೈಟ್‌ಗೆ ಹೋಗಿ</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}one{ಸೈಟ್‌ ಅನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}other{ಸೈಟ್‌ಗಳನ್ನು ಅನ್‌ಮ್ಯೂಟ್‌ ಮಾಡಿ}}</translation>
 <translation id="474609389162964566">"Ok Google" ಎಂದು ಎಚ್ಚರಿಸುವ ಮೂಲಕ ನಿಮ್ಮ Assistant ಅನ್ನು ಪ್ರವೇಶಿಸಿ</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -7521,6 +7525,7 @@
 <translation id="7432200167665670017">"<ph name="EXTENSION_NAME" />" - ಆ್ಯಪ್ ಐಡಿ <ph name="EXTENSION_ID" /> ಅನ್ನು ನಿಮ್ಮ ನಿರ್ವಾಹಕರು ನಿರ್ಬಂಧಿಸಿದ್ದಾರೆ</translation>
 <translation id="7433708794692032816">ನಿಮ್ಮ <ph name="DEVICE_TYPE" /> ಬಳಕೆಯನ್ನು ಮುಂದುವರಿಸಲು ಸ್ಮಾರ್ಟ್ ಕಾರ್ಡ್ ಸೇರಿಸಿ</translation>
 <translation id="7433957986129316853">ಇರಲಿ ಬಿಡಿ</translation>
+<translation id="7434100547946193426">ಇತರ ಆ್ಯಪ್‌ಗಳು</translation>
 <translation id="7434509671034404296">ಡೆವಲಪರ್</translation>
 <translation id="7434757724413878233">ಮೌಸ್ ವೇಗವರ್ಧನೆ</translation>
 <translation id="7434969625063495310">ಪ್ರಿಂಟ್ ಸರ್ವರ್ ಅನ್ನು ಸೇರಿಸಲು ಸಾಧ್ಯವಾಗಲಿಲ್ಲ. ಸರ್ವರ್‌ನ ಕಾನ್ಫಿಗರೇಶನ್ ಅನ್ನು ಪರಿಶೀಲಿಸಿ ಮತ್ತು ಪುನಃ ಪ್ರಯತ್ನಿಸಿ.</translation>

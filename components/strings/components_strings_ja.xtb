@@ -856,6 +856,7 @@
 <translation id="3041612393474885105">証明書情報</translation>
 <translation id="305162504811187366">Chrome リモート デスクトップの履歴（タイムスタンプ、ホスト、クライアント セッション ID を含む）</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" /> が <ph name="PRICE_DROP" /> 値下げ</translation>
+<translation id="3054512251683174387">Chrome では、4 週間以上経過したトピックは自動削除されます。ブラウジングを続けていると、トピックがリストに再度表示される場合もあります。サイトと共有したくないトピックはブロックできます。詳しくは、Chrome で広告のプライバシーを管理する方法についての説明をご覧ください。</translation>
 <translation id="3061707000357573562">サービスへのパッチの適用</translation>
 <translation id="306573536155379004">ゲームを開始しました。</translation>
 <translation id="3068991664510324412">TV ゲーム、PC ゲーム</translation>
@@ -3040,6 +3041,7 @@
 <translation id="8245703462678310750">|<ph name="ACCELERATOR" />| を長押しすると、全画面表示を終了してダウンロードを表示します。</translation>
 <translation id="8249296373107784235">中止</translation>
 <translation id="8249463483885748674">センターテスト、入学試験</translation>
+<translation id="824968735947741546"><ph name="SOURCE" />（自動検出）を <ph name="TARGET" /> に翻訳しています</translation>
 <translation id="8250094606476360498">この住所は現在、このデバイスに保存されています。Google サービス全体で使用するには、Google アカウント（<ph name="ACCOUNT" />）に保存してください。</translation>
 <translation id="8252991034201168845">[ユーザー補助設定を管理] ボタンです。Enter キーを押すと Chrome OS の設定でユーザー補助ツールをカスタマイズできます</translation>
 <translation id="8253091569723639551">請求先住所が必要です</translation>

@@ -1690,6 +1690,7 @@ I ddiffodd y ddyfais, pwyswch a daliwch y botwm pŵer ar y ddyfais eto.</transla
 <translation id="8513108775083588393">Awtogylchdroi</translation>
 <translation id="851458219935658693">Dangos ffenestri o'r ddesg bresennol, botwm radio wedi'i ddewis</translation>
 <translation id="8517041960877371778">Mae'n bosib na fydd eich <ph name="DEVICE_TYPE" /> yn gwefru tra bydd ymlaen.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Mewnbwn meic wedi'i reoli gan <ph name="APP_NAME" />}zero{Mewnbwn meic wedi'i reoli gan # apiau}two{Mewnbwn meic wedi'i reoli gan # ap}few{Mewnbwn meic wedi'i reoli gan # ap}many{Mewnbwn meic wedi'i reoli gan # ap}other{Mewnbwn meic wedi'i reoli gan # ap}}</translation>
 <translation id="8535393432370007982">Dadwnued trefnu yn ôl lliw</translation>
 <translation id="8541078764854166027">Fframio camera</translation>
 <translation id="8542053257095774575">Nid oes unrhyw ddesgiau neu dempledi wedi'u cadw</translation>

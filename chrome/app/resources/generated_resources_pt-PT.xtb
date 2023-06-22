@@ -958,6 +958,7 @@ As autorizações que já concedeu às apps podem aplicar-se a esta conta. Pode 
 <translation id="1784849162047402014">O dispositivo tem pouco espaço em disco</translation>
 <translation id="1787350673646245458">Imagem do utilizador</translation>
 <translation id="1790976235243700817">Remover acesso</translation>
+<translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Ecrã expandido</translation>
 <translation id="1794051631868188691">Nunca mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ocultar palavra-passe para <ph name="DOMAIN" /></translation>
@@ -1855,7 +1856,6 @@ Pode gerir as definições desta conta ao instalar a aplicação Family Link no 
 <translation id="250704661983564564">Posicionamento do ecrã</translation>
 <translation id="2507253002925770350">Permissão removida</translation>
 <translation id="2507491234071975894">Altifalante</translation>
-<translation id="2508428939232952663">Conta da Google Play Store</translation>
 <translation id="2509495747794740764">O valor de dimensionamento tem de ser um número entre 10 e 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selecionado)</translation>
@@ -2924,7 +2924,6 @@ Pretende pará-lo?</translation>
 <translation id="3458451003193188688">Não foi possível instalar a máquina virtual devido a um erro de rede. Tente novamente ou contacte o administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Falha ao cancelar a partilha</translation>
 <translation id="3459509316159669723">Impressão</translation>
-<translation id="3459697287128633276">Para permitir que a sua conta aceda à Google Play Store, realize a autenticação junto do seu Fornecedor de identidade.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 marcador apagado}other{# marcadores apagados}}</translation>
 <translation id="3461766685318630278">Crie e elimine contentores adicionais.</translation>
 <translation id="3462311546193741693">A sua sessão é terminada na maioria dos sites. Continua com sessão iniciada na sua Conta Google para poder limpar os dados sincronizados.</translation>

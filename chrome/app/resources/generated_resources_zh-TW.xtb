@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">新增至字典(&amp;A)</translation>
 <translation id="1018656279737460067">已取消</translation>
 <translation id="1022489261739821355">顯示 <ph name="BEGIN_LINK" />Google 帳戶<ph name="END_LINK" />的密碼</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">你的裝置由 <ph name="DOMAIN" /> 管理，管理員可以存取裝置上任一設定檔中的資料。</translation>
 <translation id="1024734233509995696">這個分頁正在使用相機或麥克風</translation>
 <translation id="1026655690966755180">新增連接埠</translation>
@@ -957,6 +958,7 @@
 <translation id="1784849162047402014">裝置磁碟空間即將用盡</translation>
 <translation id="1787350673646245458">使用者圖片</translation>
 <translation id="1790976235243700817">移除存取權</translation>
+<translation id="1791662854739702043">安裝位置</translation>
 <translation id="1792619191750875668">擴充顯示畫面</translation>
 <translation id="1794051631868188691">永不顯示「<ph name="MERCHANT" />」</translation>
 <translation id="1794212650797661990">隱藏 <ph name="DOMAIN" /> 的密碼</translation>
@@ -1854,7 +1856,6 @@
 <translation id="250704661983564564">螢幕排列位置</translation>
 <translation id="2507253002925770350">已移除票證</translation>
 <translation id="2507491234071975894">揚聲器</translation>
-<translation id="2508428939232952663">Google Play 商店帳戶</translation>
 <translation id="2509495747794740764">縮放比例必須為介於 10 和 200 之間的數字。</translation>
 <translation id="2509566264613697683">8 倍</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (已選取)</translation>
@@ -2922,7 +2923,6 @@
 <translation id="3458451003193188688">網路發生錯誤，因此無法安裝虛擬機器。請再試一次，或是與系統管理員聯絡。錯誤代碼：<ph name="ERROR_CODE" />。</translation>
 <translation id="3458794975359644386">取消分享失敗</translation>
 <translation id="3459509316159669723">列印</translation>
-<translation id="3459697287128633276">如要使用你的帳戶存取 Google Play 商店，請透過識別資訊提供者進行驗證。</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{已刪除 1 個書籤}other{已刪除 # 個書籤}}</translation>
 <translation id="3461766685318630278">建立及刪除其他容器。</translation>
 <translation id="3462311546193741693">大多數網站都會將你登出，但你仍會維持登入 Google 帳戶的狀態，讓系統可以清除同步資料。</translation>
@@ -3482,6 +3482,7 @@
 <translation id="3919145445993746351">如要在所有電腦上使用你的擴充功能，請開啟同步功能</translation>
 <translation id="3919229493046408863">附近有其他裝置時關閉通知</translation>
 <translation id="3919262972282962508">2022 年 12 月之後，舊版 Chrome 應用程式將無法在 Mac 裝置上開啟。如要更新至新版本或移除這個應用程式，請與系統管理員聯絡。</translation>
+<translation id="3919376399641777316">使用 Google 雲端硬碟儲存空間</translation>
 <translation id="3919798653937160644">你在這個視窗瀏覽的網頁不會顯示在瀏覽器記錄中，而且所有開啟的訪客視窗都關閉後，電腦上也不會留下 Cookie 等其他追蹤記錄。不過，系統將保留你下載的所有檔案。</translation>
 <translation id="3920504717067627103">憑證原則</translation>
 <translation id="3920909973552939961">不得安裝付款處理常式</translation>
@@ -3631,6 +3632,7 @@
 <translation id="4044612648082411741">輸入您的憑證密碼</translation>
 <translation id="4044708573046946214">螢幕鎖定密碼</translation>
 <translation id="404493185430269859">預設搜尋引擎</translation>
+<translation id="4044964245574571633">使用 Microsoft OneDrive 儲存空間</translation>
 <translation id="4045196801416070837">裝置音效</translation>
 <translation id="4046013316139505482">這些擴充功能不需要查看和變更這個網站上的資訊。</translation>
 <translation id="4046123991198612571">下一首曲目</translation>
@@ -3669,6 +3671,7 @@
 <translation id="4084682180776658562">書籤</translation>
 <translation id="4084835346725913160">關閉 <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">系統已封鎖此網頁的 JavaScript。</translation>
+<translation id="4085620044235559093">選擇用來開啟 <ph name="FILE_TYPE" /> 檔案的應用程式</translation>
 <translation id="4087089424473531098">已建立以下擴充功能：
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4418,6 +4421,7 @@
 <translation id="4742970037960872810">移除醒目顯示</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />瞭解如何更新應用程式<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">前往網站</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{開啟這個網站的音訊}other{開啟這些網站的音訊}}</translation>
 <translation id="474609389162964566">說出「Ok Google」即可存取 Google 助理</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -7489,6 +7493,7 @@
 <translation id="7432200167665670017">你的管理員已封鎖「<ph name="EXTENSION_NAME" />」(應用程式 ID：<ph name="EXTENSION_ID" />)</translation>
 <translation id="7433708794692032816">插入智慧型卡片才能繼續使用 <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">保留</translation>
+<translation id="7434100547946193426">其他應用程式</translation>
 <translation id="7434509671034404296">開發人員選項</translation>
 <translation id="7434757724413878233">滑鼠加速</translation>
 <translation id="7434969625063495310">無法新增印表機伺服器。請檢查伺服器設定，然後再試一次。</translation>

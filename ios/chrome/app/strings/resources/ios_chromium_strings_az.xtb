@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Chromium sinxronizasiyası datası</translation>
 <translation id="1722370509450468186">Parolunuz Hesabınızda (<ph name="EMAIL" />) saxlanacaq.</translation>
 <translation id="1736662517232558588">Təmizlənmiş Chromium datası</translation>
+<translation id="1758508597843173586">Chromium-dan çıxdıqda və ya başqa tətbiqə keçdikdə anonim tabları kilidləyin.</translation>
 <translation id="1838412507805038478">Chromium təsdiq edir ki, <ph name="ISSUER" /> bu veb saytı sertifikatlaşdırıb.</translation>
 <translation id="1843424232666537147">Chromium 'un funksiyaları internet datanızı idarə etməyə və veb səhifələri tez yükləməyə kömək edir.
 <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
@@ -40,6 +41,7 @@
 <translation id="2942241131342758843">Defolt olaraq keçidləri açmaq, vidcetlərdən axtarış etmək və digər tətbiqlərdə parolları avtomatik doldurmaq üçün Chromium istifadə edin</translation>
 <translation id="2977470724722393594">Chromium güncəldir</translation>
 <translation id="3102849287235003384">Bütün vebsaytlarda Google Hesabınızdan çıxmaq üçün <ph name="BEGIN_LINK" />Chromium'dan çıxın<ph name="END_LINK" />.</translation>
+<translation id="3115956258722352278">Chromium defolt brauzer edilsin?</translation>
 <translation id="3256316712990552818">Chromium'a kopyalandı</translation>
 <translation id="3344973607274501920">Chromium parollarınızı yoxlaya bilmədi. İnternet bağlantınızı yoxlayın.</translation>
 <translation id="3472200483164753384">Chromium Canary'də dəstəklənmir</translation>
@@ -57,6 +59,7 @@
 <translation id="452436063477828504">Google Hesabında hər zaman Chromium datasından istifadə edə biləcəyinizdən əmin olun</translation>
 <translation id="4555020257205549924">Bu funksiya aktiv olduqda, Chromium Google Tərcümədən istifadə edərək başqa dillərdə yazılmış səhifələri tərcümə etməyi təklif edəcək. <ph name="BEGIN_LINK" />Ətraflı məlumat<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">İndi istənilən vaxt mesajlar, sənədlər və digər tətbiqlərdə keçidlərə toxunduqda Chromium'u istifadə edə bilərsiniz.</translation>
+<translation id="4625550158881452646">Chromium-da Təqvim tədbiri yaradın</translation>
 <translation id="4633738821577273991">Bu Chromium profili üçün də Qabaqcıl Güvənli Baxış əldə edin</translation>
 <translation id="4654936625574199632">Tətbiqi təkmilləşdirməyə kömək etmək üçün Chrome istifadə və qəza datasını Google'a göndərir. <ph name="BEGIN_LINK" />İdarə edin<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium skanerini aktiv edin</translation>
@@ -76,6 +79,7 @@
 <translation id="5573014823074921752">Chromium məsləhəti. Daha çox tab seçimləri üçün ekranın aşağısında və ya yuxarısında yerləşən alət panelində "Tabları Göstərin" düyməsinə basıb saxlayın.</translation>
 <translation id="5700709190537129682">Chromium parollarınızı yoxlaya bilmir</translation>
 <translation id="5777187867430702742">Chromium Səhifəsi</translation>
+<translation id="5925698807555796756">"Chromium-u bağladıqda anonim tabları kilidləyin" seçimini aktiv edin.</translation>
 <translation id="5945387852661427312"><ph name="DOMAIN" /> tərəfindən idarə olunan hesab ilə daxil olursunuz və onun administratoruna Chromium datanız üzərində nəzarəti verirsiniz. Datanız həmişəlik bu hesab ilə əlaqələndiriləcək. Chromium'dan çıxmaq datanızı bu cihazdan siləcək, lakin data Google Hesabında qalacaq.</translation>
 <translation id="5983312940147103417">Chromium'u yaxşılaşdırın</translation>
 <translation id="6062449165341879460">Təşkilatınızın (<ph name="DOMAIN" />) bu hesabda saxladığınız Chromium datası, əlfəcinlər, tarixçələr, parollar və digər ayarlara girişi olacaq. Hesabdan çıxdığınız zaman datanız bu cihazdan silinəcək.  Bununla belə, datanız idarə olunan Google Hesabınızda saxlanacaq və təşkilatınız üçün əlçatan olacaq. Təşkilatınız həmçinin Chromium'un davranışını dəyişə bilən hesab üçün xüsusi istifadəçi siyasətləri təyin edə bilər.</translation>
@@ -120,6 +124,7 @@
 <translation id="7980860476903281594">Chromium icazə verdiyiniz saytlarla məkanınızı paylaşır.</translation>
 <translation id="8013573822802650211">Chromium istifadə etdiyiniz hər yerdən tabları görmək üçün bütün cihazlarda daxil olun</translation>
 <translation id="8073677936375100957">Chromium datası bu cihazdan silinsin?</translation>
+<translation id="8164086860209325020">Chromium ayarlarına keçin</translation>
 <translation id="8240981428553046115">Chromium güncəlləmələri yoxlaya bilmədi. Sonra cəhd edin.</translation>
 <translation id="8409374867500149834">Zərərli vebsaytlara qarşı Chromium'un ən güclü təhlükəsizliyinə sahibsiniz</translation>
 <translation id="858114650497379505">Parol Menecerində saxladığınız parolları iPhone'dakı digər tətbiqlərdə istifadə edə bilərsiniz.</translation>

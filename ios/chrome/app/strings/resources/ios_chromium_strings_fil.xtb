@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Data mula sa pag-sync sa Chromium</translation>
 <translation id="1722370509450468186">Ise-save sa iyong Account (<ph name="EMAIL" />) ang password mo.</translation>
 <translation id="1736662517232558588">Na-clear Chromium data</translation>
+<translation id="1758508597843173586">I-lock ang iyong incognito kapag umalis ka sa Chromium o lumipat ka sa ibang app.</translation>
 <translation id="1838412507805038478">Na-verify ng Chromium na ang <ph name="ISSUER" /> ang nag-isyu ng certificate ng website na ito.</translation>
 <translation id="1843424232666537147">Ang Chromium ay may mga feature na nakakatulong sa iyong pamahalaan ang iyong data sa internet at kung gaano ka kabilis nakakapag-load ng mga webpage.
 <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
@@ -58,6 +59,7 @@
 <translation id="452436063477828504">Tiyaking magagamit mo sa anumang oras ang data ng Chromium sa iyong Google Account</translation>
 <translation id="4555020257205549924">Kapag naka-on ang feature na ito, mag-aalok ang Chromium na magsalin ng mga page na nakasulat sa ibang mga wika gamit ang Google Translate. <ph name="BEGIN_LINK" />Matuto pa<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Magagamit mo na ngayon ang Chromium sa tuwing magta-tap ka sa mga link sa mga mensahe, dokumento, at iba pang app.</translation>
+<translation id="4625550158881452646">Gumawa ng Mga Event sa Calendar sa Chromium</translation>
 <translation id="4633738821577273991">Kunin din ang Pinahusay na Ligtas na Pag-browse para sa profile sa Chromium na ito</translation>
 <translation id="4654936625574199632">Para makatulong na mapaganda ang app, nagpapadala ang Chromium ng data ng paggamit at pag-crash sa Google. <ph name="BEGIN_LINK" />Pamahalaan<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">I-on ang scanner ng Chromium</translation>
@@ -77,6 +79,7 @@
 <translation id="5573014823074921752">Tip sa Chromium. Para sa higit pang opsyon sa tab, pindutin nang matagal ang button na Ipakita ang Mga Tab sa toolbar, na nasa ibaba o itaas ng iyong screen.</translation>
 <translation id="5700709190537129682">Hindi masuri ng Chromium ang iyong mga password</translation>
 <translation id="5777187867430702742">Page ng Chromium</translation>
+<translation id="5925698807555796756">I-on ang “I-lock ang Mga Tab na Incognito Kapag Isinara Mo ang Chromium.”</translation>
 <translation id="5945387852661427312">Nag-sign in ka gamit ang account na pinamamahalaan ng <ph name="DOMAIN" /> at binibigyan mo ang administrator nito ng kontrol sa iyong data sa Chromium. Permanenteng mauugnay ang data mo sa account na ito. Made-delete ang data mo sa device na ito kapag nag-sign out ka sa Chromium, ngunit mananatili itong naka-store sa Google Account mo.</translation>
 <translation id="5983312940147103417">Pahusayin ang Chromium</translation>
 <translation id="6062449165341879460">Magkakaroon ng access ang <ph name="DOMAIN" /> ng iyong organisasyon sa data, mga bookmark, history, mga password, at iba mo pang setting sa Chromium na iso-store mo sa account na ito. Kapag nag-sign out ka, maki-clear ang iyong data sa device na ito.  Gayunpaman, mananatiling naka-store ang iyong data sa pinapamahalaang Google Account mo at magiging available ito sa iyong organisasyon. Puwede ring magtakda ang iyong organisasyon ng mga patakaran ng user na partikular sa account na iyon na puwedeng makabago sa gawi ng Chromium.</translation>
@@ -121,6 +124,7 @@
 <translation id="7980860476903281594">Ibabahagi ng Chromium ang iyong lokasyon sa mga site na pinapayagan mo.</translation>
 <translation id="8013573822802650211">Para makita ang iyong mga tab sa kahit saan ka man gumagamit ng Chromium, mag-sign in sa lahat ng device mo</translation>
 <translation id="8073677936375100957">I-clear ang iyong data sa Chromium sa device na ito?</translation>
+<translation id="8164086860209325020">Pumunta sa Mga Setting ng Chromium</translation>
 <translation id="8240981428553046115">Hindi matingnan ng Chromium kung may mga update. Subukan ulit sa ibang pagkakataon.</translation>
 <translation id="8409374867500149834">Nasa iyo ang pinakamaigting na seguridad ng Chromium laban sa mga mapaminsalang website</translation>
 <translation id="858114650497379505">Puwede mong gamitin ang mga password na na-save mo sa Password Manager sa iba pang app sa iyong iPhone.</translation>

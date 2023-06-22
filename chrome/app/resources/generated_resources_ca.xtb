@@ -957,6 +957,7 @@ Comprova les contrasenyes sempre que vulguis al <ph name="GOOGLE_PASSWORD_MANAGE
 <translation id="1784849162047402014">Queda poc espai de disc del dispositiu</translation>
 <translation id="1787350673646245458">Imatge de l'usuari</translation>
 <translation id="1790976235243700817">Suprimeix l'accés</translation>
+<translation id="1791662854739702043">Instal·lat</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
 <translation id="1794051631868188691">No mostris mai <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Amaga la contrasenya per a <ph name="DOMAIN" /></translation>
@@ -1854,7 +1855,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="250704661983564564">Disposició de les pantalles</translation>
 <translation id="2507253002925770350">S'ha suprimit el tiquet</translation>
 <translation id="2507491234071975894">Altaveu</translation>
-<translation id="2508428939232952663">Compte de Google Play Store</translation>
 <translation id="2509495747794740764">El valor de l'escala ha d'oscil·lar entre 10 i 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionat)</translation>
@@ -2535,6 +2535,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3088325635286126843">&amp;Canvia el nom...</translation>
 <translation id="3089137131053189723">La cerca s'ha esborrat</translation>
 <translation id="3089941350495701096">Llista de lectura</translation>
+<translation id="3089948625237571254">C&amp;opia el fotograma del vídeo</translation>
 <translation id="3090227230165225418">Anuncia les notificacions de baixada</translation>
 <translation id="3090589793601454425">No les moguis</translation>
 <translation id="3090819949319990166">No es pot copiar el fitxer crx extern a <ph name="TEMP_CRX_FILE" />.</translation>
@@ -2921,7 +2922,6 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3458451003193188688">No s'ha pogut instal·lar la màquina virtual a causa d'un error de la xarxa. Torna-ho a provar o contacta amb l'administrador. Codi d'error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">No s'ha pogut deixar de compartir</translation>
 <translation id="3459509316159669723">Imprimeix</translation>
-<translation id="3459697287128633276">Per poder accedir a Google Play Store amb el teu compte, autentica't amb el teu proveïdor d'identitat.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 adreça d'interès suprimida}other{# adreces d'interès suprimides}}</translation>
 <translation id="3461766685318630278">Crea i suprimeix contenidors addicionals.</translation>
 <translation id="3462311546193741693">Se't tancarà la sessió de la majoria de llocs web, però continuaràs tenint la sessió iniciada al Compte de Google. Pot ser que les dades sincronitzades s'esborrin.</translation>
@@ -3039,6 +3039,7 @@ Pots gestionar la configuració d'aquest compte instal·lant l'aplicació Family
 <translation id="3559262020195162408">No s'ha pogut instal·lar la política al dispositiu.</translation>
 <translation id="3559533181353831840">Temps restant aproximat: <ph name="TIME_LEFT" /></translation>
 <translation id="3560034655160545939">Corrector ortogràfic(&amp;S)</translation>
+<translation id="3561201631376780358">Obre el tauler lateral per veure totes les adreces d'interès</translation>
 <translation id="3562423906127931518">Aquest procés pot tardar uns quants minuts. S'està configurant el contenidor de Linux.</translation>
 <translation id="3562655211539199254">Consulta les pestanyes de Chrome recents des del teu telèfon</translation>
 <translation id="3563432852173030730">L'aplicació Quiosc no s'ha pogut baixar.</translation>
@@ -4895,6 +4896,7 @@ Fes servir Ctrl+Alt+disminueix la brillantor per reduir.</translation>
 <translation id="5173668317844998239">Suprimeix empremtes digitals desades a la clau de seguretat i afegeix-ne</translation>
 <translation id="5174169235862638850">La contrasenya s'ha copiat al porta-retalls</translation>
 <translation id="5175379009094579629">El nom del dispositiu no és vàlid. Introdueix-ne un de vàlid per tornar-ho a provar.</translation>
+<translation id="5176787661653201403">C&amp;opia el fotograma del vídeo</translation>
 <translation id="5177479852722101802">Continua bloquejant l'accés a la càmera i al micròfon</translation>
 <translation id="5177549709747445269">Esteu utilitzant dades mòbils</translation>
 <translation id="5178667623289523808">Cerca l'anterior</translation>
@@ -5347,6 +5349,7 @@ Pots assignar diferents interruptors a aquesta acció.</translation>
 <translation id="5571066253365925590">S'ha activat el Bluetooth</translation>
 <translation id="5571092938913434726">Controls multimèdia globals</translation>
 <translation id="5571832155627049070">Personalitza el perfil</translation>
+<translation id="5572166921642484567">Tria un mode de paleta de colors</translation>
 <translation id="5572252023412311448">Mostra els detalls del lloc web: <ph name="SITE_GROUP" /></translation>
 <translation id="5572648434713976849">Obtindràs suggeriments millorats a la barra d'adreces</translation>
 <translation id="557506220935336383">Consulta els permisos d'extensions per a altres llocs web</translation>

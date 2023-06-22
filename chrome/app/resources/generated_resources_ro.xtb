@@ -959,6 +959,7 @@ Permisiunile pe care le-ai acordat deja aplicațiilor se pot aplica acestui cont
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{Dacă dezinstalezi <ph name="APP_NAME" />, se va dezinstala și această aplicație:}few{Dacă dezinstalezi <ph name="APP_NAME" />, se vor dezinstala și aceste aplicații:}other{Dacă dezinstalezi <ph name="APP_NAME" />, se vor dezinstala și aceste aplicații:}}</translation>
 <translation id="1787350673646245458">Imaginea utilizatorului</translation>
 <translation id="1790976235243700817">Elimină accesul</translation>
+<translation id="1791662854739702043">Instalat</translation>
 <translation id="1792619191750875668">Afișare extinsă</translation>
 <translation id="1794051631868188691">Nu afișa niciodată <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ascunde parola pentru <ph name="DOMAIN" /></translation>
@@ -1856,7 +1857,6 @@ Poți gestiona setările contului dacă instalezi aplicația Family Link pe disp
 <translation id="250704661983564564">Aranjarea pe afișaj</translation>
 <translation id="2507253002925770350">Tichetul a fost eliminat</translation>
 <translation id="2507491234071975894">Difuzor</translation>
-<translation id="2508428939232952663">Contul Magazin Google Play</translation>
 <translation id="2509495747794740764">Valoarea redimensionării trebuie să fie un număr între 10 și 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (selectată)</translation>
@@ -2925,7 +2925,6 @@ Mesaj de la server: <ph name="SERVER_MSG" /></translation>
 <translation id="3458451003193188688">Nu s-a putut instala mașina virtuală din cauza unei erori de rețea. Încearcă din nou sau contactează administratorul. Cod de eroare: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Distribuirea nu a fost anulată</translation>
 <translation id="3459509316159669723">Printare</translation>
-<translation id="3459697287128633276">Pentru a permite contului să acceseze Magazinul Google Play, autentifică-te folosind Furnizorul de identitate.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Un marcaj șters}few{# marcaje șterse}other{# de marcaje șterse}}</translation>
 <translation id="3461766685318630278">Creează și șterge containere suplimentare.</translation>
 <translation id="3462311546193741693">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google, astfel încât datele sincronizate să poată fi șterse.</translation>
@@ -5491,6 +5490,7 @@ Poți să îl trimiți la Google pentru a verifica dacă este nesigur. De obicei
 <translation id="5684661240348539843">Identificator articol</translation>
 <translation id="5684950556880280580">Parola a fost actualizată</translation>
 <translation id="5687326903064479980">Fus orar</translation>
+<translation id="5687606994963670306">Chrome șterge automat site-urile mai vechi de 30 de zile. Un site pe care îl accesezi din nou poate să reapară în listă. Sau poți să nu permiți unui site să îți sugereze anunțuri. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor în Chrome<ph name="END_LINK" />.</translation>
 <translation id="5687935527303996204">Asigură-te că dispozitivul este conectat și nu-l închide. Instalarea poate dura până la 20 de minute. Dispozitivul se va închide automat după finalizarea instalării.</translation>
 <translation id="5689516760719285838">Locație</translation>
 <translation id="5689531695336322499">Se pare că <ph name="SUPERVISED_USER_NAME" /> a configurat deja Voice Match cu Asistentul pe alt dispozitiv. Aceste înregistrări anterioare au fost folosite pentru a crea un model vocal pe acest dispozitiv.</translation>
@@ -7328,6 +7328,7 @@ Mai ai # de parole compromise. Managerul de parole Google recomandă să verific
 <translation id="7273110280511444812">conectat ultima dată pe <ph name="DATE" /></translation>
 <translation id="727441411541283857"><ph name="PERCENTAGE" />% – <ph name="TIME" /> până la încărcare completă</translation>
 <translation id="727595954130325265">Cumpără acum</translation>
+<translation id="7276100255011548441">Chrome șterge automat subiectele mai vechi de patru săptămâni. Pe măsură ce navighezi, un subiect poate să reapară în listă. Sau poți bloca subiectele pe care nu vrei să le trimită Chrome la site-uri. Află mai multe despre <ph name="BEGIN_LINK" />gestionarea confidențialității anunțurilor în Chrome<ph name="END_LINK" />.</translation>
 <translation id="727952162645687754">Eroare la descărcare</translation>
 <translation id="7280649757394340890">Setări ale vocii pentru redarea vocală a textului</translation>
 <translation id="7280877790564589615">Permisiune solicitată</translation>
@@ -8824,6 +8825,7 @@ Păstrează fișierul cu cheia într-un loc sigur. Acesta va fi necesar la crear
 <translation id="8534656636775144800">Hopa! A apărut o eroare la asocierea la domeniu. Încearcă din nou.</translation>
 <translation id="8535005006684281994">Adresă URL de reînnoire a certificatului Netscape</translation>
 <translation id="8536713137312218707">Comenzi rapide</translation>
+<translation id="8536810348276651776">Te deconectează de pe majoritatea site-urilor. Vei rămâne conectat(ă) la Contul Google pentru a se aplica setările Family Link pentru Chrome.</translation>
 <translation id="8536956381488731905">Sunet la apăsarea tastei</translation>
 <translation id="8539727552378197395">Nu (numai Http)</translation>
 <translation id="8539766201049804895">Fă upgrade</translation>

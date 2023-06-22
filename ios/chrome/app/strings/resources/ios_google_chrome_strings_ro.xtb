@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Te-ai conectat și datele tale se sincronizează cu un cont gestionat de <ph name="DOMAIN" />, în care administratorul acestuia poate acum să seteze politici privind utilizatorii specifice contului, care pot să modifice comportamentul browserului Chrome.</translation>
 <translation id="1554731936187952550">Ai cea mai puternică securitate Chrome împotriva site-urilor dăunătoare</translation>
 <translation id="1682483655351012182">Sincronizează-ți datele din Chromium</translation>
+<translation id="1733654336159102143">Blochează modul incognito când ieși din Chrome sau treci la altă aplicație.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Folosește automat Chrome când atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="1917964099031477364">Acest cont și toate datele nesalvate vor fi eliminate din Chrome și din alte aplicații Google de pe acest dispozitiv.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome nu a putut căuta actualizări. Încearcă din nou mai târziu.</translation>
 <translation id="2732745070297234559">Chrome nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="2736805085127235148">Notificările din Chrome sunt momentan dezactivate în setările dispozitivului.</translation>
+<translation id="2754286486056173475">Creează evenimente în Calendar în Chrome</translation>
 <translation id="2767464022270041271">Nu există parole salvate. Managerul de parole Google îți poate verifica parolele atunci când le salvezi.</translation>
 <translation id="2840432500933227975">Deschide Setările Chrome în iOS, apoi atinge Aplicația browser prestabilită și selectează Chrome.</translation>
 <translation id="2869959624320573933">Conectează-te la Chrome</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">Ștergi datele tale Chrome de pe acest dispozitiv?</translation>
 <translation id="6709398533399187136">Parola a fost expusă în urma încălcării securității datelor. Managerul de parole Google îți recomandă să schimbi parola acum.</translation>
 <translation id="6822673484890854830">Chrome nu a putut verifica toate parolele. Încearcă din nou mai târziu.</translation>
+<translation id="6896070677477855330">Activează Blochează filele incognito când închizi Chrome.</translation>
 <translation id="6964931465519938134">Acum poți folosi Chrome oricând atingi linkuri în mesaje, documente și alte aplicații.</translation>
 <translation id="6975725306479268850">Alege Chrome pentru completarea automată</translation>
 <translation id="7059914902409643750">Personalizează Chrome</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">Când introduci text în bara de adrese sau în caseta de căutare, Chrome trimite ceea ce introduci la motorul de căutare prestabilit, pentru a primi sugestii mai bune. Această opțiune este dezactivată în modul incognito.</translation>
 <translation id="8772179140489533211">Afișează solicitări pentru conectarea la Chrome.</translation>
 <translation id="8788269841521769222">Nu va trebui să reții această parolă. Ea se va salva în Managerul de parole Google pentru <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Accesează setările Chrome</translation>
 <translation id="8857676124663337448">Managerul de parole Google nu a putut verifica toate parolele. Încearcă din nou mâine.</translation>
 <translation id="8897749957032330183">Parolele sunt salvate în Managerul de parole Google pe acest dispozitiv.</translation>
 <translation id="8969290730818637510">Când opțiunea este activă

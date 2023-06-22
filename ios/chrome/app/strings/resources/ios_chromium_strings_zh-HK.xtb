@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium 驗證到由「<ph name="ISSUER" />」發出的網站憑證。</translation>
 <translation id="1843424232666537147">Chromium 擁有多項功能，助您管理互聯網的資料及網頁載入速度。
 <ph name="BEGIN_LINK" />瞭解詳情<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Chromium 的地圖</translation>
 <translation id="1867772173333403444">4. 選取 [Chromium]</translation>
 <translation id="2006345422933397527">Chromium 無法檢查更新，請檢查互聯網連線。</translation>
 <translation id="2052320862053429062">Chromium 會定期將您的密碼與網上發佈的清單互相核對。核對時，您的密碼和使用者名稱將會加密，任何人 (包括 Google) 均無法讀取。</translation>
@@ -69,6 +70,7 @@
 <translation id="4999538639245140991">由於您即將登出由 <ph name="SIGNOUT_MANAGED_DOMAIN" /> 管理的帳戶，系統將刪除您在此裝置上的 Chromium 資料，但這些資料仍會保留在您的 Google 帳戶中。</translation>
 <translation id="5048795749726991615">如要在其他應用程式中輕鬆取得已儲存的密碼，請使用 Chromium 的自動填入功能</translation>
 <translation id="5171868502429358653">登入 Chromium</translation>
+<translation id="5224044903258607400">輕按「透過 Chromium 上的 Google 地圖查看」</translation>
 <translation id="5224391634244552924">沒有已儲存的密碼。儲存密碼時，Chromium 可檢查您的密碼。</translation>
 <translation id="5308226104666789935">Chromium 無法檢查更新</translation>
 <translation id="5396916991083608703">要將 Chromium 設定為預設瀏覽器嗎？</translation>

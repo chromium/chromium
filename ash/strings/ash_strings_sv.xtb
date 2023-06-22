@@ -984,6 +984,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5308380583665731573">Anslut</translation>
 <translation id="5313326810920013265">Bluetooth-inställningar</translation>
 <translation id="5314219114274263156">En skärminspelning har tagits</translation>
+<translation id="5314489738835854379">Bläddra bakåt bland fönster</translation>
 <translation id="5316716239522500219">Spegla monitorer</translation>
 <translation id="5317780077021120954">Spara</translation>
 <translation id="5319712128756744240">Koppla en ny enhet</translation>
@@ -1130,6 +1131,7 @@ Anslut enheten till en strömkälla.</translation>
 <translation id="5958529069007801266">Kontrollerad användare</translation>
 <translation id="5961960957587052807">Ljus</translation>
 <translation id="5965524703725988602">Aktivera och inaktivera Mörkt tema. <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">Bläddra framåt bland fönster</translation>
 <translation id="5976112937189445008">Tryck på retur för att spela in fönstret</translation>
 <translation id="5978382165065462689">Dela kontroll över skärmen via Fjärrhjälp.</translation>
 <translation id="5980301590375426705">Avsluta gästsession</translation>
@@ -1340,6 +1342,7 @@ Nyligen installerad</translation>
 <translation id="6891721121089053234">Se de senaste bilderna, mediefilerna och apparna från telefonen på <ph name="DEVICE_TYPE" /></translation>
 <translation id="6896758677409633944">Kopiera</translation>
 <translation id="6901883536534621389">Testa att navigera med rörelser</translation>
+<translation id="6912841030378044227">Flytta fokus till adressfältet</translation>
 <translation id="6919251195245069855">Det smarta kortet kändes inte igen. Försök igen.</translation>
 <translation id="6920245099716267363">Aktivera och inaktivera surfzon. Surfzonen är aktiverad. 1 enhet är ansluten.</translation>
 <translation id="6931576957638141829">Spara i</translation>

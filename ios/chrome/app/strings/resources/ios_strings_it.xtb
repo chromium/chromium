@@ -90,6 +90,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="1492417797159476138">Hai già salvato questo nome utente per questo sito</translation>
 <translation id="1497590942294823549">Menu → Gestore delle password</translation>
 <translation id="1498283581832036924">Il tuo account <ph name="WEBSITE" /> non verrà eliminato.</translation>
+<translation id="1501820324067650154">Per conoscere le opzioni per il percorso, tocca "Indicazioni stradali"</translation>
 <translation id="1506063256525392513">In questo modo puoi scattare e caricare foto, nonché scansionare codici QR</translation>
 <translation id="1509486075633541495">Accedi al sito web</translation>
 <translation id="1509960214886564027">Le funzionalità su molti siti potrebbero non essere disponibili</translation>
@@ -177,6 +178,7 @@ Per modificare questa impostazione, <ph name="BEGIN_LINK" />cancella i dati di C
 <translation id="2073572773299281212">Attivo <ph name="DAYS" /> giorni fa</translation>
 <translation id="2074131957428911366">Puoi scegliere in qualsiasi momento i dati da sincronizzare nelle <ph name="BEGIN_LINK" />impostazioni<ph name="END_LINK" />.</translation>
 <translation id="2079545284768500474">Annulla</translation>
+<translation id="2080409463824088391">Apri nell'app…</translation>
 <translation id="2080769225927880590">Accedi con un account valido</translation>
 <translation id="2103075008456228677">Apri la pagina history.google.com</translation>
 <translation id="21133533946938348">Blocca scheda</translation>
@@ -316,6 +318,7 @@ Il tuo motore di ricerca è <ph name="DSE_NAME" />. Consulta le relative istruzi
 <translation id="2931440415625410757">Mostra istruzioni</translation>
 <translation id="2932085390869194046">Suggerisci password...</translation>
 <translation id="2932765531295814441">Aggiungi password manualmente</translation>
+<translation id="2952246431280799028">Tocca e tieni premuto un indirizzo</translation>
 <translation id="2952278131021475699">Ricerca con la fotocamera di Lens</translation>
 <translation id="2952581218264071393">1. Apri le Impostazioni di Chrome</translation>
 <translation id="2958718410589002129">Password</translation>
@@ -1263,6 +1266,7 @@ I tuoi dati sono stati criptati con la tua passphrase il giorno <ph name="TIME" 
 <translation id="891282356902782456">La password viene salvata solo su questo dispositivo. Per usarla sugli altri tuoi dispositivi, salvala nel tuo Account Google <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Evidenzia il testo su un sito</translation>
 <translation id="8917490105272468696">Sì, accetto</translation>
+<translation id="8926984231484284953">Usa gli indirizzi nelle pagine web per ricevere informazioni locali e indicazioni stradali.</translation>
 <translation id="8928133177108699615">Desktop</translation>
 <translation id="8934982071228289624">Per salvare la password nel tuo account, devi prima impostare un passcode sul dispositivo.</translation>
 <translation id="8940809892068499052">Apri schede di navigazione in incognito da altre app</translation>

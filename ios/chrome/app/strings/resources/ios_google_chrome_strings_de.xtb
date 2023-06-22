@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Du bist angemeldet und deine Daten werden mit einem Konto synchronisiert, das von <ph name="DOMAIN" /> verwaltet wird. Der Administrator dieser Domain kann jetzt spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chrome verändern können.</translation>
 <translation id="1554731936187952550">Du nutzt den umfangreichen Schutz von Chrome vor schädlichen Websites</translation>
 <translation id="1682483655351012182">Chrome-Daten synchronisieren</translation>
+<translation id="1733654336159102143">Sperre die Inkognitotabs, wenn du Chrome verlässt oder zu einer anderen App wechselst.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Automatisch Chrome verwenden, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="1917964099031477364">Dieses Konto und alle nicht gespeicherten Daten werden aus Chrome und anderen Google Apps auf diesem Gerät entfernt.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="2732745070297234559">Chrome konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="2736805085127235148">Chrome-Benachrichtigungen sind in den Geräteeinstellungen momentan deaktiviert.</translation>
+<translation id="2754286486056173475">Kalendertermine in Chrome erstellen</translation>
 <translation id="2767464022270041271">Keine gespeicherten Passwörter. Der Google Passwortmanager kann deine Passwörter prüfen, wenn du sie speicherst.</translation>
 <translation id="2840432500933227975">Öffne die Chrome-Einstellungen unter iOS, tippe auf „Standard-Browser-App“ und wähle „Chrome“ aus.</translation>
 <translation id="2869959624320573933">In Chrome anmelden</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">Deine Chrome-Daten vom Gerät löschen?</translation>
 <translation id="6709398533399187136">Dein Passwort wurde durch eine Datenpanne preisgegeben. Der Google Passwortmanager empfiehlt, dieses Passwort jetzt zu ändern.</translation>
 <translation id="6822673484890854830">Chrome konnte nicht alle Passwörter prüfen. Versuche es später noch einmal.</translation>
+<translation id="6896070677477855330">Aktiviere die Option „Inkognitotabs sperren, wenn Chrome geschlossen wird“.</translation>
 <translation id="6964931465519938134">Du kannst jetzt Chrome jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
 <translation id="6975725306479268850">Chrome für Autofill auswählen</translation>
 <translation id="7059914902409643750">Chrome personalisieren</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">Wenn du etwas in die Adressleiste oder das Suchfeld eingibst, sendet Chrome deine Eingabe an deine Standardsuchmaschine, damit du bessere Vorschläge erhältst. Im Inkognitomodus ist diese Funktion deaktiviert.</translation>
 <translation id="8772179140489533211">Aufforderungen für die Anmeldung in Chrome werden angezeigt.</translation>
 <translation id="8788269841521769222">Du musst dir dieses Passwort nicht merken. Es wird im Google Passwortmanager für <ph name="EMAIL" /> gespeichert.</translation>
+<translation id="880967149107462122">Zu den Chrome-Einstellungen</translation>
 <translation id="8857676124663337448">Der Google Passwortmanager konnte nicht alle Passwörter prüfen. Versuche es morgen noch einmal.</translation>
 <translation id="8897749957032330183">Passwörter werden auf diesem Gerät im Google Passwortmanager gespeichert.</translation>
 <translation id="8969290730818637510">Wenn aktiviert:

@@ -89,6 +89,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="1492417797159476138">Você já salvou este nome de usuário para este site</translation>
 <translation id="1497590942294823549">Menu → Gerenciador de senhas</translation>
 <translation id="1498283581832036924">Sua conta de <ph name="WEBSITE" /> não será excluída.</translation>
+<translation id="1501820324067650154">Para conferir opções de trajeto, toque em "Ver rotas"</translation>
 <translation id="1506063256525392513">Esse app permite que você tire fotos, faça upload delas e leia códigos QR</translation>
 <translation id="1509486075633541495">Fazer login no site</translation>
 <translation id="1509960214886564027">Os recursos de muitos sites podem apresentar falhas</translation>
@@ -175,6 +176,7 @@ Para mudar essa configuração, <ph name="BEGIN_LINK" />limpe os dados do Chrome
 <translation id="2073572773299281212">Ativado há <ph name="DAYS" /> dias</translation>
 <translation id="2074131957428911366">Nas <ph name="BEGIN_LINK" />configurações<ph name="END_LINK" />, é possível escolher a qualquer momento o que é sincronizado.</translation>
 <translation id="2079545284768500474">Desfazer</translation>
+<translation id="2080409463824088391">Abrir no app…</translation>
 <translation id="2080769225927880590">Faça login com uma conta válida</translation>
 <translation id="2103075008456228677">Abrir history.google.com</translation>
 <translation id="21133533946938348">Fixar guia</translation>
@@ -314,6 +316,7 @@ Seu mecanismo de pesquisa é o <ph name="DSE_NAME" />. Confira as instruções p
 <translation id="2931440415625410757">Mostrar instruções</translation>
 <translation id="2932085390869194046">Sugerir senha…</translation>
 <translation id="2932765531295814441">Adicionar senhas manualmente</translation>
+<translation id="2952246431280799028">Toque em um endereço e pressione.</translation>
 <translation id="2952278131021475699">Pesquisa com a câmera do Lens</translation>
 <translation id="2952581218264071393">1. Abrir configurações do Chrome</translation>
 <translation id="2958718410589002129">Senhas</translation>
@@ -1260,6 +1263,7 @@ Seus dados foram criptografados com a senha longa em <ph name="TIME" />. Digite-
 <translation id="891282356902782456">A senha é salva apenas neste dispositivo. Para usar em outros dispositivos, salve-a na sua Conta do Google <ph name="EMAIL" />.</translation>
 <translation id="891658175948553296">Destacar texto em um site</translation>
 <translation id="8917490105272468696">Sim</translation>
+<translation id="8926984231484284953">Use endereços em páginas da Web para conferir informações locais e rotas.</translation>
 <translation id="8928133177108699615">Computador</translation>
 <translation id="8934982071228289624">Para salvar essa senha na sua conta, primeiro defina uma para o dispositivo.</translation>
 <translation id="8940809892068499052">Abra guias anônimas de outros apps</translation>

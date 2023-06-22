@@ -930,6 +930,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="504465286040788597">Ipharagrafu yangaphambilini</translation>
 <translation id="5045550434625856497">Iphasiwedi engalungile</translation>
 <translation id="5062496344832867502">i-ram</translation>
+<translation id="5068762093486106012">Uzokwaziswa uma ukhuluma ngenkathi uthulisiwe. Umsindo awulokothi ushiye idivayisi yakho.</translation>
 <translation id="5078796286268621944">Iphinikhodi engalungile</translation>
 <translation id="5083553833479578423">Vula izici eziningi zomsizi.</translation>
 <translation id="5092436659250499817">Vula/vala ukukhanya okungemuva kwekhibhodi</translation>
@@ -960,6 +961,7 @@ Xhuma idivayisi yakho emandleni.</translation>
 <translation id="5207949376430453814">Gqamisa ikharethi yombhalo</translation>
 <translation id="5208059991603368177">Vuliwe</translation>
 <translation id="5216991270656129561">Kufaliwe kuze kube ngo-<ph name="TIME" /></translation>
+<translation id="5221423477036820198">Thumela ngokushesha noma uphendule imiyalezo yefoni yakho usebenzisa Ihabhu Yefoni.</translation>
 <translation id="5222676887888702881">Phuma ngemvume</translation>
 <translation id="5229343007215035173">Vula/vala isikrini sobumfihlo</translation>
 <translation id="5234764350956374838">Cashisa</translation>
@@ -1694,6 +1696,7 @@ Ukuze uvale idivayisi, cindezela futhi ubambe inkinobho yamandla kudivayisi futh
 <translation id="8513108775083588393">I-auto-rotate</translation>
 <translation id="851458219935658693">Bonisa amawindi kusuka kudeski lamanje, inkinobho yerediyo ikhethiwe</translation>
 <translation id="8517041960877371778">I-<ph name="DEVICE_TYPE" /> yakho ingahle ingashaji ngenkathi ivulekile.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Okokufaka kwe-mic kulawulwa yi-<ph name="APP_NAME" />}one{Okokufaka kwe-mic kulawulwa ngama-app angu-#}other{Okokufaka kwe-mic kulawulwa ngama-app angu-#}}</translation>
 <translation id="8535393432370007982">Hlehlisa i-oda yokuhlunga ngombala</translation>
 <translation id="8541078764854166027">Ukwenza uzimele ikhamera</translation>
 <translation id="8542053257095774575">Awekho amatafula noma izifanekiso ezilondoloziwe</translation>

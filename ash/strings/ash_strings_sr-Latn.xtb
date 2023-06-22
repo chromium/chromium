@@ -1697,6 +1697,7 @@ Da biste isključili uređaj, ponovo pritisnite i zadržite dugme za uključivan
 <translation id="8513108775083588393">Autom. rotir.</translation>
 <translation id="851458219935658693">Prikazujte prozore sa aktuelne radne površine, dugme za izbor je izabrano</translation>
 <translation id="8517041960877371778"><ph name="DEVICE_TYPE" /> se možda neće puniti dok je uključen.</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{Unos preko mikrofona kontroliše <ph name="APP_NAME" />}one{Unos preko mikrofona kontroliše # aplikacija}few{Unos preko mikrofona kontrolišu # aplikacije}other{Unos preko mikrofona kontroliše # aplikacija}}</translation>
 <translation id="8535393432370007982">Opozovite redosled sortiranja prema boji</translation>
 <translation id="8541078764854166027">Uokvir. kamere</translation>
 <translation id="8542053257095774575">Nema sačuvanih radnih površina niti šablona</translation>

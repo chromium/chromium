@@ -968,6 +968,7 @@
 <translation id="1784864038959330497">{NUM_SUB_APPS,plural, =1{"<ph name="APP_NAME" />" अनइंस्टॉल केल्याने हे अ‍ॅपदेखील अनइंस्टॉल केले जाईल:}other{"<ph name="APP_NAME" />" अनइंस्टॉल केल्याने ही अ‍ॅप्सदेखील अनइंस्टॉल केली जातील:}}</translation>
 <translation id="1787350673646245458">वापरकर्ता इमेज</translation>
 <translation id="1790976235243700817">अ‍ॅक्सेस काढून टाका</translation>
+<translation id="1791662854739702043">इंस्टॉल केले</translation>
 <translation id="1792619191750875668">एक्स्टेंशनित डिस्प्ले</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> कधीही दाखवू नका</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> चा पासवर्ड लपवा</translation>
@@ -1869,7 +1870,6 @@
 <translation id="250704661983564564">डिस्प्ले व्यवस्था</translation>
 <translation id="2507253002925770350">तिकीट काढून टाकले</translation>
 <translation id="2507491234071975894">स्पीकर</translation>
-<translation id="2508428939232952663">Google Play स्टोअर खाते</translation>
 <translation id="2509495747794740764">स्केल मूल्य 10 आणि 200 दरम्यानचा नंबर असणे आवश्यक आहे.</translation>
 <translation id="2509566264613697683">८x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (निवडली)</translation>
@@ -2938,7 +2938,6 @@
 <translation id="3458451003193188688">नेटवर्क एररमुळे व्हर्च्युअल मशीन इंस्टॉल करता आले नाही. कृपया पुन्हा प्रयत्न करा किंवा तुमच्या अ‍ॅडमिनिस्ट्रेटरशी संपर्क साधा. एरर कोड: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">अनशेअर करणे पूर्ण झाले नाही</translation>
 <translation id="3459509316159669723">प्रिंट</translation>
-<translation id="3459697287128633276">तुमच्या खात्यावर Google Play स्टोअर वापरणे सुरू करण्यासाठी, कृपया तुमच्या ओळख पुरवठादाराकडे तुमची ओळख पटवा.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{एक बुकमार्क हटवला}other{# बुकमार्क हटवले}}</translation>
 <translation id="3461766685318630278">अतिरिक्त कंटेनर तयार करा आणि हटवा.</translation>
 <translation id="3462311546193741693">बऱ्याच सायटींवरून तुम्हाला साइन आउट करते. तुम्ही तुमच्या Google खात्यामध्ये साइन इन रहाल जेणेकरून तुमचा सिंक केलेला डेटा साफ केला जाऊ शकतो.</translation>

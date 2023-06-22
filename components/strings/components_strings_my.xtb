@@ -400,6 +400,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" /> မှ</translation>
 <translation id="1871208020102129563">ပရောက်စီအား တိကျသည့် ပရောက်ဟီဆာဗာများ သတ်မှတ်ထားသည်၊ .pac script URL မဟုတ်ပါ။</translation>
 <translation id="1871284979644508959">ဖြည့်ရန်လိုအပ်သည့်အကွက်</translation>
+<translation id="1871739799120352748">ဈေးနှုန်း မြင့်သည်</translation>
 <translation id="1873899211667975540">ရော့ခ်တေးဂီတ</translation>
 <translation id="1874224422119691492">စကားဝှက်ဖြည့်ရာ၌ သင့်ဖန်သားပြင်လော့ခ်အသုံးပြု၊ မပြုကို <ph name="SETTINGS" /> တွင် ပြောင်းနိုင်သည်</translation>
 <translation id="1875025161375567525">ဓာတ်ပုံဗန်း</translation>
@@ -443,6 +444,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> သည် ကြီးမားသည့် ဒေတာများကို သင့်ကွန်ရက်အတွင်းရှိ ကွန်ပျူတာတွင် အမြဲတမ်းသိုလှောင်လိုသည်</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{နှင့် နောက်ထပ် ၁ ခု}other{နှင့် နောက်ထပ် # ခု}}</translation>
+<translation id="2001469757375372617">တစ်ခုခုမှားသွားသည်။ သင်၏အပြာင်းအလဲကို သိမ်းမထားပါ။</translation>
 <translation id="2003709556000175978">သင့်စကားဝှက်ကို ယခု ပြင်ဆင်သတ်မှတ်ရန်</translation>
 <translation id="2003775180883135320">ထိပ်တွင် လေးချက်ဖောက်ရန်</translation>
 <translation id="2009942480257059311">Google Calendar တွင် အစီအစဉ်သစ်ပြုလုပ်ရန်အတွက် ‘အစီအစဉ် ပြုလုပ်ရန်’ ခလုတ်ကို နှိပ်နိုင်သည်</translation>
@@ -500,6 +502,7 @@
 <translation id="2118132148597630479">C5 စာအိတ်</translation>
 <translation id="2119505898009119320">အောက်ပါသို့ ထုတ်ပေးထားသည်− <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">ညာဘက်အောက်ခြေတွင် ဖောက်ရန်</translation>
+<translation id="2122214041802369259">ဈေးနှုန်း မြင့်သည်</translation>
 <translation id="2122719317867821810">ဤမူဝါဒသည် သတ်မှတ်ထားသည့်အတိုင်း အလုပ်လုပ်နေသော်လည်း ကွဲလွဲသောတန်ဖိုးကို တစ်နေရာတွင် သတ်မှတ်ထားပြီး ဤမူဝါဒက အစားထိုးထားသည်။</translation>
 <translation id="2126374524350484896">PDF ထုတ်လုပ်သူ-</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode မူဝါဒကို ထည့်သွင်းမထားသောကြောင့် သင်သတ်မှတ်ထားသော နမူနာပုံစံများကို အသုံးပြုနိုင်မည် မဟုတ်ပါ။</translation>
@@ -536,6 +539,7 @@
 <translation id="2202020181578195191">မှန်ကန်သည့် ကုန်ဆုံးမည့်ခုနှစ်ကို ထည့်ပါ</translation>
 <translation id="2202627062836089804">သင့်ကတ်၏ ကျောဘက်ခြမ်း</translation>
 <translation id="2204482073374652408">အပ်ဒိတ်လုပ်ခြင်း ပြီးသွားပြီ။</translation>
+<translation id="2208053750671792556">ကုဒ်မရရှိဘူးလား။ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ဗန်း ၃</translation>
 <translation id="2210794033760923560">တိုင်ကြားချက် အပ်လုဒ်လုပ်ရန်</translation>
 <translation id="2212735316055980242">ပေါ်လစီမတွေ့ပါ</translation>
@@ -863,6 +867,7 @@
 <translation id="3054512251683174387">၄ ပတ်ကျော်ပြီဖြစ်သော အကြောင်းအရာများကို Chrome က အလိုအလျောက်ဖျက်သည်။ ဆက်လက်၍ ကြည့်ရှုသည်နှင့်အမျှ စာရင်းတွင် အကြောင်းအရာက ထပ်မံပေါ်လာနိုင်သည်။ သို့မဟုတ် ဝဘ်ဆိုက်များနှင့် မျှဝေလိုခြင်းမရှိသော အကြောင်းအရာများကို Chrome မှ မျှဝေခြင်းမပြုရန် ပိတ်ထားနိုင်သည်။ Chrome တွင် ကြော်ငြာဆိုင်ရာ အချက်အလက်လုံခြုံမှုကို စီမံခြင်း အကြောင်း ပိုမိုလေ့လာရန်။</translation>
 <translation id="3061707000357573562">ပြင်ဆင်ခြင်း ဝန်ဆောင်မှု</translation>
 <translation id="306573536155379004">ဂိမ်းစတင်ပါပြီ။</translation>
+<translation id="3067505415088964188">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="3068991664510324412">ကွန်ပျူတာနှင့် ဗီဒီယိုဂိမ်းများ</translation>
 <translation id="3080254622891793721">ဂရပ်ဖစ်</translation>
 <translation id="3081538120861307764">ကြော်ငြာတစ်ခု၏ စွမ်းဆောင်ရည်ကို တိုင်းတာအကဲဖြတ်ရန်အတွက် သင့်အား ကြော်ငြာပြသည့် အချိန်ကဲ့သို့သော အချို့ဒေတာမျိုးကိုသာ ဝဘ်ဆိုက်များအကြား မျှဝေသည်။</translation>
@@ -951,6 +956,7 @@
 <translation id="3270847123878663523">&amp;ပြန်စီမှုကို တစ်ဆင့်နောက်ပြန်ရန်</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> သည် ချိတ်ဆက်လိုပါသည်</translation>
 <translation id="3272091146646336650">စူပါ B</translation>
+<translation id="3272112314896217187">ဂဏန်း <ph name="NUMBER_OF_DIGITS" /> လုံးပါ ဒစ်ဂျစ်တယ် စိစစ်ခြင်းကုဒ် ထည့်ပါ</translation>
 <translation id="3281350579597955952">{0,plural, =1{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်ဖွင့်ရန် အကြံမပြုပါ}other{စီမံခန့်ခွဲသူမူဝါဒက <ph name="DESTINATION_NAME" /> ရှိ ဤဖိုင်များဖွင့်ရန် အကြံမပြုပါ}}</translation>
 <translation id="3282085321714087552">သင့်အဖွဲ့အစည်း <ph name="ENROLLMENT_DOMAIN" /> သည် ဆက်တင်များ (သို့) မူဝါဒများကဲ့သို့ အချက်အလက်အချို့ကို အောက်ပါဝဘ်ဆိုက်များသို့ ပို့လိုက်သည်။</translation>
 <translation id="3286372614333682499">ဒေါင်လိုက်</translation>
@@ -2073,6 +2079,7 @@
 <translation id="5967592137238574583">အဆက်အသွယ် အချက်အလက်ကို တည်းဖြတ်ခြင်း</translation>
 <translation id="5967867314010545767">သမိုင်းမှ ဖယ်ရှားရန်</translation>
 <translation id="5968022600320704045">ရှာဖွေမှု ရလဒ်များ မရှိပါ</translation>
+<translation id="5969199813874624822">ဈေးနှုန်းကို သိမ်းပြီး စောင့်ကြည့်ရန်</translation>
 <translation id="5974052231147553524">ခြောက်ခုမြောက်အလိပ်</translation>
 <translation id="5975083100439434680">ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="5979084224081478209">စကားဝှက်များ စစ်ဆေးရန်</translation>
@@ -2594,6 +2601,7 @@
 <translation id="7219179957768738017">ချိတ်ဆက်မှုက <ph name="SSL_VERSION" />ကို သုံးသည်။</translation>
 <translation id="7220786058474068424">ဆောင်ရွက်နေသည်</translation>
 <translation id="7221855153210829124">သတိပေးချက်များ ပြရန်</translation>
+<translation id="7221857374443660083">သင်ဖြစ်ကြောင်း သင်၏ဘဏ်က သေချာစေလိုသည်</translation>
 <translation id="722454870747268814">ရုပ်ဖျက်တဘ်အသစ်</translation>
 <translation id="7227293336683593977">ဈေးနှုန်းမှတ်တမ်း</translation>
 <translation id="7233592378249864828">အတည်ပြု စာမျက်နှာကို ပုံနှိပ်ရန်</translation>
@@ -3397,6 +3405,7 @@
 <translation id="9141013498910525015">လိပ်စာများ စီမံရန်</translation>
 <translation id="9144951720726881238">သက်တမ်းကုန်ဆုံးရက်-</translation>
 <translation id="9148507642005240123">&amp;တည်းဖြတ်မှု မလုပ်တော့ရန်</translation>
+<translation id="9148599396704355100">ဈေးနှုန်း နိမ့်သည်</translation>
 <translation id="9150045010208374699">သင့်ကင်မရာအား အသုံးပြုမည်</translation>
 <translation id="9150685862434908345">သင့်စီမံခန့်ခွဲသူက သင်၏ဘရောင်ဇာ စနစ်ထည့်သွင်းမှုကို အဝေးမှ ပြောင်းလဲနိုင်ပါသည်။ ဤစက်ပေါ်ရှိ လုပ်ဆောင်ချက်များကိုလည်း Chrome ပြင်ပမှ စီမံခန့်ခွဲထားခြင်း ဖြစ်နိုင်သည်။ <ph name="BEGIN_LINK" />ပိုမိုလေ့လာရန်<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">မွမ်းမံပြီး</translation>

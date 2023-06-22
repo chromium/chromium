@@ -399,6 +399,7 @@
 <translation id="1864927262126810325"><ph name="SOURCE_NAME" />ৰ পৰা</translation>
 <translation id="1871208020102129563">প্ৰক্সিয়ে কোনো .pac স্ক্ৰিপ্টৰ URLৰ সলনি স্থিৰ প্ৰ'ক্সী ছার্ভাৰ ব্যৱহাৰ কৰিবলৈ ছেট কৰা হৈছে।</translation>
 <translation id="1871284979644508959">বাধ্যতামূলক ক্ষেত্ৰ</translation>
+<translation id="1871739799120352748">বেছি মূল্যৰ</translation>
 <translation id="1873899211667975540">ৰক সংগীত</translation>
 <translation id="1874224422119691492">আপুনি পাছৱৰ্ড পূৰ কৰাৰ বাবে আপোনাৰ স্ক্ৰীন লক ব্যৱহাৰ কৰিবনে নাই সেইটো <ph name="SETTINGS" />ত সলনি কৰিব পাৰে</translation>
 <translation id="1875025161375567525">ফট’ ট্ৰে’</translation>
@@ -442,6 +443,7 @@
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567">আপোনাৰ স্থানীয় কম্পিউটাৰত <ph name="URL" />এ স্থায়ীভাৱে বেছিকৈ ডেটা ষ্ট’ৰ কৰিব বিচাৰে</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{আৰু ১টা}one{আৰু #টা অধিক}other{আৰু #টা অধিক}}</translation>
+<translation id="2001469757375372617">কিবা ভুল হ’ল। আপোনাৰ সালসলনি ছেভ কৰা নহ’ল।</translation>
 <translation id="2003709556000175978">এতিয়াই আপোনাৰ পাছৱৰ্ড ৰিছেট কৰক</translation>
 <translation id="2003775180883135320">ওপৰৰ অংশত চতুর্ভূজ আকাৰত পাঞ্চ কৰক</translation>
 <translation id="2009942480257059311">অনুষ্ঠান সৃষ্টি কৰাৰ বুটাম, Google Calendarত ক্ষিপ্ৰতাৰে এটা নতুন অনুষ্ঠান সৃষ্টি কৰিবলৈ সক্ৰিয় কৰক</translation>
@@ -499,6 +501,7 @@
 <translation id="2118132148597630479">এনভেল’প C5</translation>
 <translation id="2119505898009119320">ইয়াক প্ৰদান কৰা হৈছে: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">তলৰ অংশৰ সোঁফালে পাঞ্চ কৰক</translation>
+<translation id="2122214041802369259">বেছি মূল্যৰ</translation>
 <translation id="2122719317867821810">এই নীতিটোৱে বিচৰা ধৰণে কাম কৰি আছে, কিন্তু অন্য কোনো ঠাইত এটা সংঘাত থকা মান ছেট কৰা হৈছে আৰু সেইটোক এই নীতিটোৱে অভাৰৰাইড কৰিছে।</translation>
 <translation id="2126374524350484896">PDF সৃষ্টিকৰ্তা:</translation>
 <translation id="2130448033692577677">DnsOverHttpsMode নীতিটো ছেট নকৰাৰ বাবে আপুনি নির্দিষ্ট কৰা টেমপ্লেটসমূহ প্ৰয়োগ কৰা নহ’ব পাৰে।</translation>
@@ -535,6 +538,7 @@
 <translation id="2202020181578195191">এটা মান্য ম্যাদ উকলা বছৰ দিয়ক</translation>
 <translation id="2202627062836089804">আপোনাৰ কাৰ্ডৰ পিছফালে</translation>
 <translation id="2204482073374652408">আপডে’ট কৰা সম্পূৰ্ণ হৈছে!</translation>
+<translation id="2208053750671792556">আপোনাৰ ক’ডটো পোৱা নাই নেকি? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">ট্ৰে’ ৩</translation>
 <translation id="2210794033760923560">ৰিপ’ৰ্ট আপল’ড কৰক</translation>
 <translation id="2212735316055980242">নীতিটো বিচাৰি পোৱা নগ’ল</translation>
@@ -855,8 +859,10 @@
 <translation id="3041612393474885105">প্ৰমাণপত্ৰৰ তথ্য</translation>
 <translation id="305162504811187366">টাইমষ্টাম্প, হ’ষ্ট আৰু ক্লায়েণ্টৰ ছেশ্বন আইডিকে ধৰি Chrome ৰিম’ট ডেস্কটপৰ ইতিহাস</translation>
 <translation id="3052964831964880138"><ph name="PRODUCT_NAME" />ৰ দাম <ph name="PRICE_DROP" /> কমিছে</translation>
+<translation id="3054512251683174387">Chromeএ ৪ সপ্তাহতকৈ পুৰণি হোৱা বিষয়সমূহ স্বয়ংক্ৰিয়ভাৱে মচে। আপুনি ব্ৰাউজ কৰি থাকিলে, সূচীখনত পুনৰ কোনো এটা বিষয় প্ৰদৰ্শিত হ’ব পাৰে। অথবা আপুনি Chromeএ ছাইটসমূহৰ সৈতে শ্বেয়াৰ কৰাটো নিবিচৰা বিষয়সমূহ অৱৰোধ কৰিব পাৰে। Chromeত আপোনাৰ বিজ্ঞাপনৰ গোপনীয়তা পৰিচালনা কৰাৰ বিষয়ে অধিক জানক।</translation>
 <translation id="3061707000357573562">পেচ্চ্‌ সেৱা</translation>
 <translation id="306573536155379004">গে’ম আৰম্ভ হৈছে।</translation>
+<translation id="3067505415088964188">কম মূল্যৰ</translation>
 <translation id="3068991664510324412">কম্পিউটাৰ আৰু ভিডিঅ’ গে’ম</translation>
 <translation id="3080254622891793721">গ্ৰাফিক</translation>
 <translation id="3081538120861307764">এটা বিজ্ঞাপনৰ পাৰদৰ্শিতা জোখ-মাখ কৰিবলৈ ছাইটসমূহৰ মাজত সীমিত ধৰণৰ ডেটা শ্বেয়াৰ কৰা হয়, যেনে- আপোনাক কোনো বিজ্ঞাপন দিনটোৰ কি সময়ত দেখুওৱা হৈছিল।</translation>
@@ -946,6 +952,7 @@
 <translation id="3270847123878663523">পুনঃক্ৰম কৰাটো &amp;আনডু কৰক</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" />এ সংযোগ কৰিবলৈ বিচাৰিছে</translation>
 <translation id="3272091146646336650">ছুপাৰ B</translation>
+<translation id="3272112314896217187"><ph name="NUMBER_OF_DIGITS" /> টা অংকৰ প্ৰমাণীকৰণ ক’ডটো দিয়ক</translation>
 <translation id="3281350579597955952">{0,plural, =1{প্ৰশাসকৰ নীতিয়ে এই ফাইলটো <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}one{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}other{প্ৰশাসকৰ নীতিয়ে এই ফাইলসমূহ <ph name="DESTINATION_NAME" />ত খুলিবলৈ চুপাৰিছ নকৰে}}</translation>
 <translation id="3282085321714087552">আপোনাৰ প্ৰতিষ্ঠান <ph name="ENROLLMENT_DOMAIN" />এ এই ৱেবছাইটসমূহলৈ ছেটিং অথবা নীতিৰ দৰে কিছুমান তথ্য পঠিয়াইছে।</translation>
 <translation id="3286372614333682499">প’ৰ্ট্ৰেইট</translation>
@@ -2067,6 +2074,7 @@
 <translation id="5967592137238574583">সম্পর্কৰ তথ্য সম্পাদনা কৰক</translation>
 <translation id="5967867314010545767">ইতিহাসৰ পৰা আঁতৰাওক</translation>
 <translation id="5968022600320704045">সন্ধানৰ কোনো ফলাফল নাই</translation>
+<translation id="5969199813874624822">ছেভ কৰক আৰু মূল্য ট্ৰেক কৰক</translation>
 <translation id="5974052231147553524">ষষ্ঠ ৰোল</translation>
 <translation id="5975083100439434680">জুম আউট কৰক</translation>
 <translation id="5979084224081478209">পাছৱৰ্ডবোৰ পৰীক্ষা কৰক</translation>
@@ -2588,6 +2596,7 @@
 <translation id="7219179957768738017">সংযোগটোৱে <ph name="SSL_VERSION" /> ব্যৱহাৰ কৰে।</translation>
 <translation id="7220786058474068424">প্ৰক্ৰিয়া চলি আছে</translation>
 <translation id="7221855153210829124">জাননী দেখুৱাওক</translation>
+<translation id="7221857374443660083">আপোনাৰ বেংকে এয়া আপুনি বুলি নিশ্চিত কৰিবলৈ বিচাৰে</translation>
 <translation id="722454870747268814">নতুন ইনক’গ্নিট’ টেব</translation>
 <translation id="7227293336683593977">মূল্যৰ ইতিহাস</translation>
 <translation id="7233592378249864828">প্ৰিণ্ট নিশ্চিতি শ্বীট</translation>
@@ -3389,6 +3398,7 @@
 <translation id="9141013498910525015">ঠিকনাসমূহ পৰিচালনা কৰক</translation>
 <translation id="9144951720726881238">ম্যাদ উকলাৰ তাৰিখ:</translation>
 <translation id="9148507642005240123">সম্পাদনা &amp;আনডু কৰক</translation>
+<translation id="9148599396704355100">কম মূল্যৰ</translation>
 <translation id="9150045010208374699">আপোনাৰ কেমেৰা ব্যৱহাৰ কৰক</translation>
 <translation id="9150685862434908345">আপোনাৰ প্ৰশাসকে দূৰৰপৰাই আপোনাৰ ব্ৰাউজাৰৰ ছেটআপ সলনি কৰিব পাৰে। এই ডিভাইচটোত কৰা কাৰ্যকলাপ Chromeৰ বাহিৰৰ পৰাও পৰিচালনা কৰা হ'ব পাৰে। <ph name="BEGIN_LINK" />অধিক জানক<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">আপডে’ট কৰা হ’ল</translation>

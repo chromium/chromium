@@ -535,6 +535,7 @@
 <translation id="2202020181578195191">Увядзіце сапраўдны год заканчэння тэрміну дзеяння</translation>
 <translation id="2202627062836089804">адваротным баку карткі</translation>
 <translation id="2204482073374652408">Абнаўленне завершана!</translation>
+<translation id="2208053750671792556">Не атрымалі код? <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Латок 3</translation>
 <translation id="2210794033760923560">Запампаваць справаздачу</translation>
 <translation id="2212735316055980242">Палітыка не знойдзена</translation>
@@ -948,6 +949,7 @@
 <translation id="3270847123878663523">&amp;Адрабіць змяненне парадку</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> запытвае падключэнне</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Увядзіце <ph name="NUMBER_OF_DIGITS" />-значны код спраўджання</translation>
 <translation id="3281350579597955952">{0,plural, =1{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэты файл тут: <ph name="DESTINATION_NAME" />}one{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}few{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}many{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}other{Згодна з палітыкай адміністратара не рэкамендуецца адкрываць гэтыя файлы тут: <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ваша арганізацыя (<ph name="ENROLLMENT_DOMAIN" />) адправіла на наступныя вэб-сайты пэўныя звесткі (напрыклад, налады або палітыкі).</translation>
 <translation id="3286372614333682499">кніжная</translation>
@@ -2592,6 +2594,7 @@
 <translation id="7219179957768738017">На падключэнні выкарыстоўваецца <ph name="SSL_VERSION" />.</translation>
 <translation id="7220786058474068424">Ідзе апрацоўка</translation>
 <translation id="7221855153210829124">Паказваць апавяшчэнні</translation>
+<translation id="7221857374443660083">Ваш банк хоча пераканацца, што гэта сапраўды вы.</translation>
 <translation id="722454870747268814">Новая ўкладка ў рэжыме інкогніта</translation>
 <translation id="7227293336683593977">Гісторыя цэн</translation>
 <translation id="7233592378249864828">Друкаваць аркуш пацвярджэння</translation>

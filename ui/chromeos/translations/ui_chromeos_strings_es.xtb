@@ -107,7 +107,7 @@
 <translation id="1838709767668011582">Sitio de Google</translation>
 <translation id="1853795129690976061">Esta carpeta se comparte con Linux</translation>
 <translation id="1864756863218646478">No se ha podido encontrar el archivo.</translation>
-<translation id="1877377730633446520">Se requieren unos <ph name="REQUIRED_SPACE" /> de espacio disponible. Actualmente tienes <ph name="FREE_SPACE" /> de espacio disponible.</translation>
+<translation id="1877377730633446520">Se requiere un espacio disponible de <ph name="REQUIRED_SPACE" />. Actualmente tienes <ph name="FREE_SPACE" /> de espacio disponible.</translation>
 <translation id="1884013283844450420">Red <ph name="NETWORK_INDEX" /> de <ph name="NETWORK_COUNT" />, <ph name="NETWORK_NAME" />, conectar</translation>
 <translation id="1920670151694390848">Malayalam (transliteración)</translation>
 <translation id="1920798810075583923">Sandía</translation>
@@ -1013,6 +1013,7 @@
 <translation id="8919081441417203123">Danés</translation>
 <translation id="8949925099261528566">Conexión sin Internet</translation>
 <translation id="8965697826696209160">No hay suficiente espacio.</translation>
+<translation id="8970887620466824814">Ha ocurrido un error.</translation>
 <translation id="8971742885766657349">Sincronizando (<ph name="PERCENT" /> %)</translation>
 <translation id="8997962250644902079">Chino tradicional (pinyin)</translation>
 <translation id="8998871447376656508">No tienes suficiente espacio libre en Google Drive para completar la subida.</translation>

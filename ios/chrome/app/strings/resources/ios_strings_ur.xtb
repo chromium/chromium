@@ -89,6 +89,7 @@
 <translation id="1492417797159476138">آپ نے پہلے ہی اس سائٹ کے لئے یہ صارف نام محفوظ کر لیا ہے</translation>
 <translation id="1497590942294823549">مینیو ← پاس ورڈ مینیجر</translation>
 <translation id="1498283581832036924">آپ کا <ph name="WEBSITE" /> اکاؤنٹ حذف نہیں ہوگا۔</translation>
+<translation id="1501820324067650154">راستے کے اختیارات کے لیے، "ہدایات حاصل کریں" پر تھپتھپائیں</translation>
 <translation id="1506063256525392513">‏یہ آپ کو تصاویر لینے اور اپ لوڈ کرنے کے ساتھ ساتھ QR کوڈز اسکین کرنے کی اجازت دیتا ہے</translation>
 <translation id="1509486075633541495">ویب سائٹ میں سائن ان کریں</translation>
 <translation id="1509960214886564027">بہت سی سائٹس پر خصوصیات میں خلل ہو سکتا ہے</translation>
@@ -175,6 +176,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> دن پہلے فعال تھا</translation>
 <translation id="2074131957428911366">آپ <ph name="BEGIN_LINK" />ترتیبات<ph name="END_LINK" /> میں کسی بھی وقت اس بات کا انتخاب کر سکتے ہیں کہ کس چیز کی مطابقت پذیری کرنی ہے۔</translation>
 <translation id="2079545284768500474">کالعدم کریں</translation>
+<translation id="2080409463824088391">ایپ میں کھولیں…</translation>
 <translation id="2080769225927880590">ایک درست اکاؤنٹ سے سائن ان کریں</translation>
 <translation id="2103075008456228677">‏history.google.com کھولیں</translation>
 <translation id="21133533946938348">ٹیب کو پن کریں</translation>
@@ -231,6 +233,7 @@
 <translation id="2476359652512522418">انتخاب نہیں کیا گیا</translation>
 <translation id="2479148705183875116">ترتیبات پر جائیں</translation>
 <translation id="2482878487686419369">اطلاعات</translation>
+<translation id="2484459871750294497">میں اس خصوصیت کو کیسے فعال کروں؟</translation>
 <translation id="2496626742194544812">پہلے ٹیب پر جائیں</translation>
 <translation id="2500374554657206846">پاس ورڈ محفوظ کرنے کے اختیارات</translation>
 <translation id="2523363575747517183">یہ ویب سائٹ بار بار ایک اور ایپلیکیشن کھولنے کی کوشش کر رہی ہے۔</translation>
@@ -310,8 +313,11 @@
 <translation id="2921219216347069551">صفحہ کا اشتراک نہیں کر سکتے ہیں</translation>
 <translation id="2923448633003185837">پیسٹ کریں اور جائیں</translation>
 <translation id="292639812446257861">نہ پڑھے ہوئے کے بطور نشان زد کریں</translation>
+<translation id="2931440415625410757">ہدایات دکھائیں</translation>
 <translation id="2932085390869194046">پاس ورڈ تجویز کریں...</translation>
 <translation id="2932765531295814441">دستی طور پر پاس ورڈز شامل کریں</translation>
+<translation id="2952246431280799028">پتہ کو ٹچ کریں اور دبائے رکھیں۔</translation>
+<translation id="2952278131021475699">لینز کیمرا کے ذریعے تلاش</translation>
 <translation id="2952581218264071393">‏1۔ Chrome کی ترتیبات کھولیں</translation>
 <translation id="2958718410589002129">پاس ورڈز</translation>
 <translation id="2961210776189273067">عنوان</translation>
@@ -1256,6 +1262,7 @@ Handoff ترتیبات کے عام سیکشن میں بھی فعال ہونی ض
 <translation id="891282356902782456">‏یہ پاس ورڈ صرف اس آلے میں محفوظ ہے۔ اسے اپنے دوسرے آلات پر استعمال کرنے کے لیے، اسے اپنے Google اکاؤنٹ <ph name="EMAIL" /> میں محفوظ کریں۔</translation>
 <translation id="891658175948553296">کسی سائٹ پر ٹیکسٹ کو نمایاں کریں</translation>
 <translation id="8917490105272468696">ہاں میں متفق ہوں</translation>
+<translation id="8926984231484284953">مقامی معلومات اور ہدایات حاصل کرنے کے لیے ویب صفحات پر پتے استعمال کریں۔</translation>
 <translation id="8928133177108699615">ڈیسک ٹاپ</translation>
 <translation id="8934982071228289624">اپنے اکاؤنٹ میں اس پاس ورڈ کو محفوظ کرنے کے لیے آپ کو پہلے اپنے آلے پر پاس کوڈ سیٹ کرنا ہوگا۔</translation>
 <translation id="8940809892068499052">دیگر ایپس سے پوشیدگی ٹیبز کھولیں</translation>

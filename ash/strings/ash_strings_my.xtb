@@ -140,6 +140,7 @@
 <translation id="1550406609415860283">ရနိုင်သောစက်များ</translation>
 <translation id="1550523713251050646">ပိုမိုရွေးစရာများအတွက် နှိပ်ပါ</translation>
 <translation id="1555130319947370107">အပြာရောင်</translation>
+<translation id="1557622599341396706">မျက်နှာပြင်အမည် ပြပါ</translation>
 <translation id="1576511610858879060">သင့် Chromebook (သို့) ဘလူးတုသ်သုံးစက်သည် ဘလူးတုသ် ဗားရှင်းဟောင်းကို သုံးနေသည်။ အသံအရေအသွေး ပိုကောင်းရန် အခြားအဝင်ပေါက်တစ်ခုကို သုံးပါ။</translation>
 <translation id="1576623706766186887">မှန်ဘီလူးဖွင့်ထားပါက ဇူးမ်ဖြုတ်ရန်</translation>
 <translation id="1586324912145647027">မျက်နှာပြင်နေရာ ၁ မှ ၈ သို့သွားနိုင်သည်</translation>
@@ -982,10 +983,12 @@
 <translation id="5308380583665731573">ချိတ်ဆက်ရန်</translation>
 <translation id="5313326810920013265">ဘလူးတုသ် ဆက်တင်များ</translation>
 <translation id="5314219114274263156">ဖန်သားပြင်ရိုက်ကူးနေသည်</translation>
+<translation id="5314489738835854379">ဝင်းဒိုးများကို နောက်သို့လည်ပြီး ပြရန်</translation>
 <translation id="5316716239522500219">စောင့်ကြည့်မှုများကို ထင်ဟပ်ရန်</translation>
 <translation id="5317780077021120954">သိမ်းရန်</translation>
 <translation id="5319712128756744240">စက်အသစ် တွဲချိတ်ရန်</translation>
 <translation id="5322611492012084517">သင့်ဖုန်းကို ရှာမတွေ့ပါ</translation>
+<translation id="5323994101633366939">မျက်နှာပြင်အမည် ဖျောက်ထားရန်</translation>
 <translation id="5327248766486351172">အမည်</translation>
 <translation id="5329548388331921293">ချိတ်ဆက်နေသည်...</translation>
 <translation id="5331975486040154427">USB-C ကိရိယာ (ကျောဘက် ဘယ် ပို့တ်)</translation>
@@ -1128,6 +1131,7 @@
 <translation id="5958529069007801266">ကြီးကြပ်မှုခံ အသုံးပြုသူ</translation>
 <translation id="5961960957587052807">အနည်းငယ်</translation>
 <translation id="5965524703725988602">အမှောင်နောက်ခံ ပြောင်းရန်။ <ph name="STATE_TEXT" />။</translation>
+<translation id="5975235751479998104">ဝင်းဒိုးများကို ရှေ့သို့လည်ပြီး ပြရန်</translation>
 <translation id="5976112937189445008">ဝင်းဒိုးကို မှတ်တမ်းတင်ရန် Enter နှိပ်ပါ</translation>
 <translation id="5978382165065462689">အဝေးမှ ထောက်ကူခြင်း ဆိုသည်မှ တဆင့် သင့်ဖန်သားပြင်အားမျှဝေသုံးစွဲခြင်း။</translation>
 <translation id="5980301590375426705">ဧည့်သည် ထွက်ရန်</translation>
@@ -1167,6 +1171,7 @@
 <translation id="6103838137565245112">စနစ်</translation>
 <translation id="6114505516289286752"><ph name="LANGUAGE" /> တိုက်ရိုက်စာတန်းဖိုင်များ ဒေါင်းလုဒ်လုပ်ပြီးပြီ</translation>
 <translation id="6119360623251949462"><ph name="CHARGING_STATE" />။ <ph name="BATTERY_SAVER_STATE" /></translation>
+<translation id="6119972796024789243">အရောင် အမှန်ပြင်ခြင်း</translation>
 <translation id="6121838516699723042"><ph name="FILENAME" /> ဒေါင်းလုဒ်လုပ်ရန် အတည်ပြုခြင်း</translation>
 <translation id="612734058257491180">ဧည့်သည်စက်ရှင်တွင် Google Assistant ကို အသုံးပြု၍ မရပါ။</translation>
 <translation id="6129953537138746214">နေရာခြား</translation>
@@ -1338,6 +1343,7 @@
 <translation id="6891721121089053234">သင့်ဖုန်း၏ မကြာသေးမီက ဓာတ်ပုံ၊ မီဒီယာနှင့် အက်ပ်များကို သင့် <ph name="DEVICE_TYPE" /> တွင် ကြည့်နိုင်သည်</translation>
 <translation id="6896758677409633944">ကူးယူရန်</translation>
 <translation id="6901883536534621389">ရွှေ့ရန် လက်ဟန်များ သုံးကြည့်နိုင်သည်</translation>
+<translation id="6912841030378044227">လိပ်စာဘားပေါ် ရွှေ့ရန်</translation>
 <translation id="6919251195245069855">သင့်အဆင့်မြင့်ကတ်ကို ဖတ်၍မရပါ။ ထပ်စမ်းကြည့်ပါ။</translation>
 <translation id="6920245099716267363">ဟော့စပေါ့ ဖွင့်/ပိတ်လုပ်သည်။ ဟော့စပေါ့ ဖွင့်ထားပြီး စက် ၁ ခု ချိတ်ဆက်ထားသည်။</translation>
 <translation id="6931576957638141829">သိမ်းမည့်နေရာ</translation>
@@ -1634,6 +1640,7 @@
 <translation id="8247998213073982446"><ph name="APP_NAME" />၊ အက်ပ်</translation>
 <translation id="8255234195843591763">အပ်ဒိတ်လုပ်ရန် ပြင်ဆင်သတ်မှတ်ပါ</translation>
 <translation id="8261506727792406068">ဖျက်ရန်</translation>
+<translation id="8262312463845990408">ဖွင့်ရန် ခလုတ်</translation>
 <translation id="8270450402312105425">{0,plural, =1{စက်ကို ယခင်ဗားရှင်းသို့ တစ်နာရီအတွင်း ပြောင်းပါ}other{စက်ကို ယခင်ဗားရှင်းသို့ # နာရီအတွင်း ပြောင်းပါ}}</translation>
 <translation id="8277261673056602147">သင့်ဖန်သားပြင်ပေါ်ရှိ စာသားကို မြင်သာအောင်လုပ်ရန်</translation>
 <translation id="8284362522226889623">ယခင်မျက်နှာပြင်နေရာသို့ ပြောင်းရန် လက်လေးချောင်းဖြင့် ဘယ်သို့ပွတ်ဆွဲပါ</translation>

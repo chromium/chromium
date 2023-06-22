@@ -323,6 +323,7 @@
 <translation id="3604713164406837697">බිතුපත මාරු කරන්න</translation>
 <translation id="360565022852130722">WiFi ජාලය දුර්වල ප්‍රොටොකෝලයකින් ආරක්ෂිතයි WEP 802.1x</translation>
 <translation id="3606583719724308068">HTTPS වෙබ් අඩවිවලට ඉහළ පමාව</translation>
+<translation id="3607216139080387279">තිර සුරැකුම පෙන්වන්න</translation>
 <translation id="361575905210396100">ඔබගේ ප්‍රතිපෝෂණයට ස්තුතියි</translation>
 <translation id="3632579075709132555">පෞද්ගලිකත්ව තිරය ටොගල කිරීම</translation>
 <translation id="3639846061339007994">ඉහළ</translation>
@@ -335,6 +336,7 @@
 <translation id="3740976234706877572"><ph name="AVERAGE_SCORE" /> ★ (සමාලෝචන <ph name="AGGREGATED_COUNT" />)</translation>
 <translation id="3748026146096797577">සබැඳී නැත</translation>
 <translation id="3749289110408117711">ගොනුවේ නම</translation>
+<translation id="3766934827878963937">පැය 1ක් සඳහා</translation>
 <translation id="3771294271822695279">වීඩියෝ ගොනු</translation>
 <translation id="3784455785234192852">අගුලු ලන්න</translation>
 <translation id="380097101658023925">rgb පාලන</translation>
@@ -665,6 +667,7 @@
 <translation id="629550705077076970">යතුරු පුවරුව අඳුරු වීම</translation>
 <translation id="6302401976930124515"><ph name="TEST_NAME" /> පරීක්ෂණය අවලංගු කර ඇත</translation>
 <translation id="631063167932043783">යෙදුම ගවේෂණය කරන්න</translation>
+<translation id="6318437367327684789">සදහටම</translation>
 <translation id="6319207335391420837"><ph name="DEVICE_NAME" /> හි නිත්‍ය මෘදුකාංග යාවත්කාලීන කරන්න</translation>
 <translation id="6321407676395378991">තිර සුරැකුම ක්‍රියාත්මක කරන්න</translation>
 <translation id="6325525973963619867">අසාර්ථක විය</translation>
@@ -1029,6 +1032,7 @@
 <translation id="9126720536733509015">එක් PDF එකකට පිටු කිහිපයක් සුරකින්න</translation>
 <translation id="9137526406337347448">Google සේවා</translation>
 <translation id="9138630967333032450">වම් Shift යතුර</translation>
+<translation id="9143347780818904997">මිනිත්තු <ph name="MINUTES" />ක් සඳහා</translation>
 <translation id="9149391708638971077">මතක පරීක්ෂණය ධාවනය කරන්න</translation>
 <translation id="9161276708550942948">අවකාශය</translation>
 <translation id="9173638680043580060">මිනිත්තුවකට වඩා අඩුවෙන් ඉතිරිව ඇත</translation>

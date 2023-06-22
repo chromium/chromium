@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Vous êtes connecté et synchronisez vos données avec un compte géré par <ph name="DOMAIN" /> sur lequel l'administrateur peut maintenant définir des règles relatives aux utilisateurs propres à ce compte et pouvant modifier le comportement de Chrome.</translation>
 <translation id="1554731936187952550">Vous disposez du plus haut niveau de sécurité de Chrome contre les sites dangereux</translation>
 <translation id="1682483655351012182">Synchroniser vos données Chrome</translation>
+<translation id="1733654336159102143">Verrouillez votre navigation privée lorsque vous quittez Chrome ou passez à une autre application.</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Utilisez automatiquement Chrome lorsque vous appuyez sur des liens dans des messages, des documents et d'autres applis.</translation>
 <translation id="1917964099031477364">Ce compte et les données non enregistrées seront supprimés de Chrome et des autres applications Google sur cet appareil.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome n'est pas parvenu à rechercher les mises à jour. Réessayez plus tard.</translation>
 <translation id="2732745070297234559">Chrome n'est pas parvenu à vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="2736805085127235148">Les notifications Chrome sont actuellement désactivées dans les paramètres de votre appareil.</translation>
+<translation id="2754286486056173475">Créer des événements d'agenda sur Chrome</translation>
 <translation id="2767464022270041271">Aucun mot de passe enregistré. Le Gestionnaire de mots de passe de Google peut vérifier vos mots de passe lorsque vous les enregistrez.</translation>
 <translation id="2840432500933227975">Ouvrez les paramètres Chrome dans iOS, appuyez sur "Navigateur par défaut", puis sélectionnez Chrome.</translation>
 <translation id="2869959624320573933">Connectez-vous à Chrome</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">Supprimer vos données Chrome sur cet appareil ?</translation>
 <translation id="6709398533399187136">Votre mot de passe a été compromis lors d'une violation des données. Le Gestionnaire de mots de passe de Google vous recommande de le modifier immédiatement.</translation>
 <translation id="6822673484890854830">Chrome n'a pas pu vérifier tous les mots de passe. Réessayez plus tard.</translation>
+<translation id="6896070677477855330">Activez l'option "Verrouiller les onglets de navigation privée lorsque vous fermez Chrome".</translation>
 <translation id="6964931465519938134">Chaque fois que vous appuierez sur des liens dans des messages, des documents et d'autres applications, vous pourrez désormais voir le contenu correspondant dans Chrome.</translation>
 <translation id="6975725306479268850">Choisissez Chrome pour la saisie automatique</translation>
 <translation id="7059914902409643750">Personnalisez Chrome</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">Lorsque vous saisissez du texte dans la barre d'adresse ou le champ de recherche, Chrome envoie le contenu saisi à votre moteur de recherche par défaut pour obtenir de meilleures suggestions. Ce paramètre est désactivé en navigation privée.</translation>
 <translation id="8772179140489533211">Permet d'afficher des invites de connexion à Chrome.</translation>
 <translation id="8788269841521769222">Vous n'aurez pas besoin de mémoriser ce mot de passe. Il sera enregistré dans le Gestionnaire de mots de passe Google pour <ph name="EMAIL" /></translation>
+<translation id="880967149107462122">Accéder aux paramètres Chrome</translation>
 <translation id="8857676124663337448">Le Gestionnaire de mots de passe de Google n'a pas pu vérifier tous les mots de passe. Réessayez demain.</translation>
 <translation id="8897749957032330183">Les mots de passe sont enregistrés dans le Gestionnaire de mots de passe de Google sur cet appareil.</translation>
 <translation id="8969290730818637510">Si l'option est activée :

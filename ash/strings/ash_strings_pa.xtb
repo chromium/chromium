@@ -984,6 +984,7 @@
 <translation id="5308380583665731573">ਕਨੈਕਟ ਕਰੋ</translation>
 <translation id="5313326810920013265">ਬਲੂਟੁੱਥ ਸੈਟਿੰਗਾਂ</translation>
 <translation id="5314219114274263156">ਸਕ੍ਰੀਨ ਰਿਕਾਰਡਿੰਗ ਕੀਤੀ ਗਈ</translation>
+<translation id="5314489738835854379">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਪਿੱਛੇ ਜਾਓ</translation>
 <translation id="5316716239522500219">ਮਿਰਰ ਮਾਨੀਟਰਸ</translation>
 <translation id="5317780077021120954">ਰੱਖਿਅਤ ਕਰੋ</translation>
 <translation id="5319712128756744240">ਨਵਾਂ ਡੀਵਾਈਸ ਜੋੜਾਬੱਧ ਕਰੋ</translation>
@@ -1131,6 +1132,7 @@
 <translation id="5958529069007801266">ਨਿਗਰਾਨੀ ਕੀਤੇ ਵਰਤੋਂਕਾਰ</translation>
 <translation id="5961960957587052807">ਰੋਸ਼ਨੀ</translation>
 <translation id="5965524703725988602">ਗੂੜ੍ਹੇ ਥੀਮ ਨੂੰ ਟੌਗਲ ਕਰੋ। <ph name="STATE_TEXT" />.</translation>
+<translation id="5975235751479998104">ਵਿੰਡੋਆਂ ਰਾਹੀਂ ਅੱਗੇ ਜਾਓ</translation>
 <translation id="5976112937189445008">ਵਿੰਡੋ ਨੂੰ ਰਿਕਾਰਡ ਕਰਨ ਲਈ Enter ਦਬਾਓ</translation>
 <translation id="5978382165065462689">ਰਿਮੋਟ ਸਹਾਇਤਾ ਰਾਹੀਂ ਨਾਲ ਤੁਹਾਡੀ ਸਕ੍ਰੀਨ ਦਾ ਨਿਯੰਤਰਣ ਸ਼ੇਅਰ ਕਰ ਰਿਹਾ ਹੈ।</translation>
 <translation id="5980301590375426705">ਮਹਿਮਾਨ ਤੋਂ ਬਾਹਰ ਜਾਓ</translation>
@@ -1342,6 +1344,7 @@
 <translation id="6891721121089053234">ਆਪਣੇ <ph name="DEVICE_TYPE" /> 'ਤੇ ਆਪਣੇ ਫ਼ੋਨ ਦੀਆਂ ਹਾਲੀਆ ਫ਼ੋਟੋਆਂ, ਮੀਡੀਆ ਅਤੇ ਐਪਾਂ ਦੇਖੋ</translation>
 <translation id="6896758677409633944">ਕਾਪੀ ਕਰੋ</translation>
 <translation id="6901883536534621389">ਨੈਵੀਗੇਟ ਕਰਨ ਲਈ ਇਸ਼ਾਰਿਆਂ ਨੂੰ ਵਰਤ ਕੇ ਦੇਖੋ</translation>
+<translation id="6912841030378044227">ਪਤਾ ਬਾਰ 'ਤੇ ਫੋਕਸ ਕਰੋ</translation>
 <translation id="6919251195245069855">ਤੁਹਾਡਾ ਸਮਾਰਟ ਕਾਰਡ ਪਛਾਣਿਆ ਨਹੀਂ ਜਾ ਸਕਿਆ। ਦੁਬਾਰਾ ਕੋਸ਼ਿਸ਼ ਕਰੋ।</translation>
 <translation id="6920245099716267363">ਹੌਟਸਪੌਟ ਟੌਗਲ ਕਰੋ। ਹੌਟਸਪੌਟ ਚਾਲੂ ਹੈ, 1 ਡੀਵਾਈਸ ਕਨੈਕਟ ਹੈ।</translation>
 <translation id="6931576957638141829">ਇਸ ਵਿੱਚ ਰੱਖਿਅਤ ਕਰੋ</translation>
@@ -1692,6 +1695,7 @@
 <translation id="8513108775083588393">ਸਵੈ-ਘੁੰਮਾਓ</translation>
 <translation id="851458219935658693">ਮੌਜੂਦਾ ਡੈਸਕ ਤੋਂ ਉਹ ਵਿੰਡੋ ਦਿਖਾਓ ਜਿਸ ਵਿੱਚ ਰੇਡੀਓ ਬਟਨ ਨੂੰ ਚੁਣਿਆ ਹੋਵੇ</translation>
 <translation id="8517041960877371778">ਤੁਹਾਡੀ <ph name="DEVICE_TYPE" /> ਚਾਲੂ ਹੋਣ ਵੇਲੇ ਚਾਰਜ ਨਹੀਂ ਹੋ ਸਕਦੀ।</translation>
+<translation id="852060496139946719">{NUM_APPS,plural, =1{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ <ph name="APP_NAME" /> ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}one{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ # ਐਪ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}other{ਮਾਈਕ ਇਨਪੁੱਟ ਨੂੰ # ਐਪਾਂ ਵੱਲੋਂ ਕੰਟਰੋਲ ਕੀਤਾ ਜਾਂਦਾ ਹੈ}}</translation>
 <translation id="8535393432370007982">ਰੰਗ ਮੁਤਾਬਕ ਕ੍ਰਮ-ਬੱਧ ਕਰਨ ਦੇ ਕ੍ਰਮ ਨੂੰ ਅਣਕੀਤਾ ਕਰੋ</translation>
 <translation id="8541078764854166027">ਕੈਮਰਾ ਫ੍ਰੇਮਿੰਗ</translation>
 <translation id="8542053257095774575">ਕੋਈ ਰੱਖਿਅਤ ਕੀਤੀ ਡਿਸਕ ਜਾਂ ਟੈਮਪਲੇਟ ਨਹੀਂ</translation>

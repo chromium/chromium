@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Daten aus der Chromium-Synchronisierung</translation>
 <translation id="1722370509450468186">Dein Passwort wird in deinem Konto (<ph name="EMAIL" />) gespeichert.</translation>
 <translation id="1736662517232558588">Chromium-Daten gelöscht</translation>
+<translation id="1758508597843173586">Sperre die Inkognitotabs, wenn du Chromium verlässt oder zu einer anderen App wechselst.</translation>
 <translation id="1838412507805038478">Chromium hat verifiziert, dass <ph name="ISSUER" /> das Zertifikat dieser Website ausgestellt hat.</translation>
 <translation id="1843424232666537147">Chromium bietet Funktionen, mit denen du deine Internetdaten und die Ladezeit von Webseiten verwalten kannst. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="1867772173333403444">4. Wähle Chromium aus</translation>
@@ -56,6 +57,7 @@
 <translation id="452436063477828504">Achte darauf, dass du die Chromium-Daten in deinem Google-Konto jederzeit verwenden kannst</translation>
 <translation id="4555020257205549924">Wenn diese Funktion aktiviert ist, hast du in Chromium die Möglichkeit, Seiten in anderen Sprachen mithilfe von Google Übersetzer zu übersetzen. <ph name="BEGIN_LINK" />Weitere Informationen<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Du kannst jetzt Chromium jederzeit nutzen, wenn du in Nachrichten, Dokumenten und anderen Apps auf Links tippst.</translation>
+<translation id="4625550158881452646">Kalendertermine in Chromium erstellen</translation>
 <translation id="4633738821577273991">Hol dir für dieses Chromium-Profil auch erweitertes Safe Browsing</translation>
 <translation id="4654936625574199632">Chromium sendet Nutzungsstatistiken und Absturzdaten an Google, damit wir die App verbessern können. <ph name="BEGIN_LINK" />Verwalten<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Chromium-Scanner aktivieren</translation>
@@ -75,6 +77,7 @@
 <translation id="5573014823074921752">Chromium-Tipp: Wenn du weitere Tab-Optionen sehen möchtest, berühre und halte die Schaltfläche "Tabs anzeigen" in der Symbolleiste. Diese befindet sich unten oder oben auf dem Bildschirm.</translation>
 <translation id="5700709190537129682">Chromium kann deine Passwörter nicht prüfen</translation>
 <translation id="5777187867430702742">Chromium-Seite</translation>
+<translation id="5925698807555796756">Aktiviere die Option „Inkognitotabs sperren, wenn Chromium geschlossen wird“.</translation>
 <translation id="5945387852661427312">Du meldest dich mit einem von <ph name="DOMAIN" /> verwalteten Konto an und gibst dem Administrator der Domain Kontrolle über deine Chromium-Daten. Die Daten werden diesem Konto dauerhaft zugeordnet. Wenn du dich von Chromium abmeldest, werden deine Daten auf dem Gerät gelöscht, bleiben jedoch in deinem Google-Konto erhalten.</translation>
 <translation id="5983312940147103417">Chromium verbessern</translation>
 <translation id="6062449165341879460">Deine Organisation <ph name="DOMAIN" /> hat Zugriff auf deine Daten, Lesezeichen, Passwörter und deinen Verlauf in Chromium sowie auf andere Einstellungen, die du in diesem Konto speicherst. Wenn du dich abmeldest, werden deine Daten von diesem Gerät gelöscht.  Die Daten bleiben jedoch in deinem verwalteten Google-Konto gespeichert und können von deiner Organisation abgerufen werden. Deine Organisation kann auch spezifische Nutzerrichtlinien für dieses Konto festlegen, die das Verhalten von Chromium verändern können.</translation>
@@ -119,6 +122,7 @@
 <translation id="7980860476903281594">Chromium teilt deinen Standort mit Websites, für die du das zulässt.</translation>
 <translation id="8013573822802650211">Melde dich auf allen deinen Geräten an, um deine Tabs überall dort aufzurufen, wo du Chromium verwendest</translation>
 <translation id="8073677936375100957">Deine Chromium-Daten von diesem Gerät löschen?</translation>
+<translation id="8164086860209325020">Chromium-Einstellungen aufrufen</translation>
 <translation id="8240981428553046115">Chromium konnte nicht nach Updates suchen. Versuche es später noch einmal.</translation>
 <translation id="8409374867500149834">Du nutzt den umfangreichen Schutz von Chromium vor schädlichen Websites</translation>
 <translation id="858114650497379505">Du kannst die im Passwortmanager gespeicherten Passwörter in anderen Apps auf deinem iPhone verwenden.</translation>

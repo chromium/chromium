@@ -956,6 +956,7 @@ Pode que se lle apliquen a esta conta os permisos que xa lles concedeses ás apl
 <translation id="1784849162047402014">O dispositivo ten pouco espazo restante no disco</translation>
 <translation id="1787350673646245458">Imaxe do usuario</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
+<translation id="1791662854739702043">Completouse a instalación</translation>
 <translation id="1792619191750875668">Pantalla ampliada</translation>
 <translation id="1794051631868188691">Non mostrar nunca <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ocultar o contrasinal para <ph name="DOMAIN" /></translation>
@@ -1853,7 +1854,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="250704661983564564">Disposición da pantalla</translation>
 <translation id="2507253002925770350">Quitouse o tícket</translation>
 <translation id="2507491234071975894">Altofalante</translation>
-<translation id="2508428939232952663">Conta de Google Play Store</translation>
 <translation id="2509495747794740764">A escala debe ser un número comprendido entre o 10 e o 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
@@ -2921,7 +2921,6 @@ Se máis tarde decides que prefires que o teu fillo ou filla non utilice Voice M
 <translation id="3458451003193188688">Non se puido instalar a máquina virtual debido a un erro da rede. Téntao de novo ou ponte en contacto co teu administrador. Código de erro: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Produciuse un erro ao deixar de compartir o cartafol</translation>
 <translation id="3459509316159669723">Impresión</translation>
-<translation id="3459697287128633276">Para permitir que a túa conta acceda a Google Play Store, debes autenticala co teu provedor de identidade.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Eliminouse 1 marcador}other{Elimináronse # marcadores}}</translation>
 <translation id="3461766685318630278">Crea e elimina contedores adicionais.</translation>
 <translation id="3462311546193741693">Pecharase sesión na maioría dos sitios, pero seguirás tendo a sesión iniciada na túa Conta de Google. Por este motivo poden borrarse os datos sincronizados.</translation>

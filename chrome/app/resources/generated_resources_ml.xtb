@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;നിഘണ്ടുവിലേക്ക് ചേര്‍ക്കുക</translation>
 <translation id="1018656279737460067">റദ്ദാക്കി</translation>
 <translation id="1022489261739821355">നിങ്ങളുടെ <ph name="BEGIN_LINK" />Google അക്കൗണ്ടിൽ<ph name="END_LINK" />നിന്നുള്ള പാസ്‌വേഡുകൾ കാണിക്കുന്നു</translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">നിങ്ങളുടെ ഉപകരണം മാനേജ് ചെയ്യുന്നത് <ph name="DOMAIN" /> ആണ്. ഈ ഉപകരണത്തിലെ ഏത് പ്രൊഫൈലിലുള്ള ഡാറ്റയും അഡ്‌മിൻമാർക്ക് ആക്‌സസ് ചെയ്യാനാകും.</translation>
 <translation id="1024734233509995696">ഈ ടാബ് നിങ്ങളുടെ ക്യാമറയും മൈക്രോഫോണും ഉപയോഗിക്കുന്നു</translation>
 <translation id="1026655690966755180">പോർട്ട് ചേർക്കുക</translation>
@@ -960,6 +961,7 @@
 <translation id="1786290960428378411">വായിക്കാനും മാറ്റാനും അഭ്യർത്ഥിക്കുന്നു</translation>
 <translation id="1787350673646245458">ഉപയോക്തൃ ചിത്രം</translation>
 <translation id="1790976235243700817">ആക്‌സസ് നീക്കം ചെയ്യുക</translation>
+<translation id="1791662854739702043">ഇന്‍സ്റ്റാളുചെയ്തു</translation>
 <translation id="1792619191750875668">വിപുലീകരിച്ച ഡിസ്‌പ്ലേ</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> ഒരിക്കലും കാണിക്കരുത്</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> -നുള്ള പാസ്‍വേഡ് മറയ്ക്കുക</translation>
@@ -1858,7 +1860,6 @@
 <translation id="250704661983564564">ഡിസ്പ്ലേ ക്രമീകരണം</translation>
 <translation id="2507253002925770350">ടിക്കറ്റ് നീക്കം ചെയ്‌തു</translation>
 <translation id="2507491234071975894">സ്പീക്കർ</translation>
-<translation id="2508428939232952663">Google Play Store അക്കൗണ്ട്</translation>
 <translation id="2509495747794740764">സ്‌കെയിൽ തുക 10-നും 200-നും ഇടയിലുള്ള സംഖ്യ ആയിരിക്കണം.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (തിരഞ്ഞെടുത്തു)</translation>
@@ -2928,7 +2929,6 @@
 <translation id="3458451003193188688">നെറ്റ്‌വർക്ക് പിശക് കാരണം വെർച്വൽ മെഷീൻ ഇൻസ്‍റ്റാൾ ചെയ്യാനായില്ല. വീണ്ടും ശ്രമിക്കുക അല്ലെങ്കിൽ നിങ്ങളുടെ അഡ്‍മിനെ ബന്ധപ്പെടുക. പിശക് കോഡ്: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">പങ്കിടല്‍ മാറ്റാനായില്ല</translation>
 <translation id="3459509316159669723">പ്രിന്റിംഗ്</translation>
-<translation id="3459697287128633276">Google Play Store ആക്‌സസ് ചെയ്യുന്നതിനായി നിങ്ങളുടെ അക്കൗണ്ട് പ്രവർത്തനക്ഷമമാക്കാൻ, നിങ്ങളുടെ ഐഡന്റിറ്റി ദാതാവുമായി പരിശോധിച്ചുറപ്പിക്കുക.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{ഒരു ബുക്ക്‌മാർക്ക് ഇല്ലാതാക്കി}other{# ബുക്ക്‌മാർക്കുകൾ ഇല്ലാതാക്കി}}</translation>
 <translation id="3461766685318630278">അധിക കണ്ടെയ്‌നറുകൾ സൃഷ്‌ടിക്കുക, ഇല്ലാതാക്കുക.</translation>
 <translation id="3462311546193741693">ഇതിലൂടെ ഭൂരിഭാഗം സൈറ്റുകളിൽ നിന്നും നിങ്ങളുടെ അക്കൗണ്ട് സൈൻ ഔട്ട് ചെയ്യപ്പെടുന്നു. നിങ്ങളുടെ സമന്വയിപ്പിച്ച ഡാറ്റ മായ്ക്കാനായി നിങ്ങൾ Google അക്കൗണ്ടിൽ സൈൻ ഇൻ ചെയ്‌ത നിലയിൽ തുടരും.</translation>
@@ -3489,6 +3489,7 @@
 <translation id="3919145445993746351">എല്ലാ കമ്പ്യൂട്ടറുകളിലും നിങ്ങളുടെ വിപുലീകരണങ്ങൾ ലഭിക്കാൻ, സമന്വയം ഓണാക്കുക</translation>
 <translation id="3919229493046408863">ഉപകരണങ്ങൾ സമീപത്തുള്ളപ്പോൾ അറിയിപ്പ് ഓഫാക്കുക</translation>
 <translation id="3919262972282962508">2022 ഡിസംബറിന് ശേഷം, Chrome ആപ്പുകളുടെ പഴയ പതിപ്പുകൾ Mac ഉപകരണങ്ങളിൽ തുറക്കാനാകില്ല. പുതിയൊരു പതിപ്പിലേക്ക് അപ്‌ഡേറ്റ് ചെയ്യാനോ ഈ ആപ്പ് നീക്കം ചെയ്യാനോ നിങ്ങളുടെ അഡ്‌മിനെ ബന്ധപ്പെടുക.</translation>
+<translation id="3919376399641777316">Google Drive സ്റ്റോറേജ് ഉപയോഗിക്കുന്നു</translation>
 <translation id="3919798653937160644">ഈ വിൻഡോയിൽ കാണുന്ന പേജുകൾ, നിങ്ങൾ തുറന്ന എല്ലാ അതിഥി വിൻഡോകളും അടച്ച ശേഷം ബ്രൗസർ ചരിത്രത്തിൽ ദൃശ്യമാകില്ല, അവ കുക്കികൾ പോലുള്ള മറ്റ് അടയാളങ്ങൾ കമ്പ്യൂട്ടറിൽ അവശേഷിപ്പിക്കുകയുമില്ല. എന്നിരുന്നാലും നിങ്ങൾ ഡൗൺലോഡ് ചെയ്യുന്ന എല്ലാ ഫയലുകളും സംരക്ഷിക്കും.</translation>
 <translation id="3920504717067627103">സര്‍‌ട്ടിഫിക്കറ്റ് നയങ്ങള്‍‌</translation>
 <translation id="3920909973552939961">പേയ്‌മെന്റ് കൈകാര്യം ചെയ്യുന്ന സംവിധാനങ്ങൾ ഇൻസ്റ്റാൾ ചെയ്യാൻ അനുവാദമില്ല</translation>
@@ -3638,6 +3639,7 @@
 <translation id="4044612648082411741">നിങ്ങളുടെ സർട്ടിഫിക്കറ്റ് പാസ്‌വേഡ് നൽകുക</translation>
 <translation id="4044708573046946214">സ്‌ക്രീൻ ലോക്ക് പാസ്‌വേഡ്</translation>
 <translation id="404493185430269859">ഡിഫോൾട്ട് തിരയൽ യന്ത്രം</translation>
+<translation id="4044964245574571633">Microsoft OneDrive സ്റ്റോറേജ് ഉപയോഗിക്കുന്നു</translation>
 <translation id="4045196801416070837">ഉപകരണ ശബ്ദങ്ങൾ</translation>
 <translation id="4046013316139505482">ഈ വിപുലീകരണങ്ങൾക്ക് ഈ സൈറ്റിലെ വിവരങ്ങൾ കാണുകയും മാറ്റുകയും ചെയ്യേണ്ട ആവശ്യമില്ല.</translation>
 <translation id="4046123991198612571">അടുത്ത ട്രാക്ക്</translation>
@@ -3676,6 +3678,7 @@
 <translation id="4084682180776658562">ബുക്മാര്‍ക്ക്</translation>
 <translation id="4084835346725913160"><ph name="TAB_NAME" /> അടയ്‌ക്കുക</translation>
 <translation id="4085298594534903246">ഈ പേജില്‍‌ JavaScript നെ തടഞ്ഞു.</translation>
+<translation id="4085620044235559093"><ph name="FILE_TYPE" /> ഫയലുകൾ തുറക്കാൻ ഒരു ആപ്പ് തിരഞ്ഞെടുക്കുക</translation>
 <translation id="4087089424473531098">സൃഷ്‌ടിച്ച വിപുലീകരണം:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4431,6 +4434,7 @@
 <translation id="4742970037960872810">ഹൈലൈറ്റ് നീക്കം ചെയ്യുക</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />ആപ്പുകൾ അപ്‌ഡേറ്റ് ചെയ്യുന്നത് എങ്ങനെയെന്ന് അറിയുക<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">സൈറ്റിലേക്ക് പോകുക</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{സൈറ്റ് അൺമ്യൂട്ട് ചെയ്യുക}other{സൈറ്റുകൾ അൺമ്യൂട്ട് ചെയ്യുക}}</translation>
 <translation id="474609389162964566">"Ok Google" എന്ന് പറഞ്ഞ് നിങ്ങളുടെ Assistant ആക്‌സസ് ചെയ്യുക</translation>
 <translation id="4746351372139058112">Messages</translation>
@@ -7520,6 +7524,7 @@
 <translation id="7432200167665670017">നിങ്ങളുടെ അഡ്‌മിൻ "<ph name="EXTENSION_NAME" />" ബ്ലോക്ക് ചെയ്‌തിരിക്കുന്നു - ആപ്പ് ഐഡി <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">നിങ്ങളുടെ <ph name="DEVICE_TYPE" /> ഉപയോഗിക്കുന്നത് തുടരാൻ സ്‌മാർട്ട് കാർഡ് ഇൻസേർട്ട് ചെയ്യുക</translation>
 <translation id="7433957986129316853">നിലനിർത്തുക</translation>
+<translation id="7434100547946193426">മറ്റ് ആപ്പുകൾ</translation>
 <translation id="7434509671034404296">ഡെവലപ്പർ</translation>
 <translation id="7434757724413878233">മൗസ് ആക്സിലറേഷൻ</translation>
 <translation id="7434969625063495310">പ്രിന്റ് സെർവർ ചേർക്കാനായില്ല. സെർവറിന്റെ കോൺഫിഗറേഷൻ പരിശോധിച്ച ശേഷം വീണ്ടും ശ്രമിക്കുക.</translation>

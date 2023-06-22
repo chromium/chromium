@@ -954,6 +954,7 @@ Les autorisations que vous avez déjà accordées à des applications peuvent s'
 <translation id="1784849162047402014">L'appareil manque d'espace disque</translation>
 <translation id="1787350673646245458">Image de l'utilisateur</translation>
 <translation id="1790976235243700817">Révoquer l'accès</translation>
+<translation id="1791662854739702043">Module installé</translation>
 <translation id="1792619191750875668">Affichage étendu</translation>
 <translation id="1794051631868188691">Ne jamais afficher <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Masquer le mot de passe pour <ph name="DOMAIN" /></translation>
@@ -1849,7 +1850,6 @@ Vous pouvez gérer les paramètres de ce compte en installant l'application Fami
 <translation id="250704661983564564">Position des écrans</translation>
 <translation id="2507253002925770350">Ticket supprimé</translation>
 <translation id="2507491234071975894">Haut-parleur</translation>
-<translation id="2508428939232952663">Compte Google Play Store</translation>
 <translation id="2509495747794740764">La valeur de l'échelle doit être comprise entre 10 et 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (sélectionné)</translation>
@@ -2910,7 +2910,6 @@ https://support.google.com/chrome/?p=applescript</translation>
 <translation id="3458451003193188688">Impossible d'installer la machine virtuelle en raison d'une erreur réseau. Veuillez essayer de nouveau ou bien communiquez avec votre administrateur. Code d'erreur : <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Échec de l'annulation du partage</translation>
 <translation id="3459509316159669723">Impression</translation>
-<translation id="3459697287128633276">Pour autoriser votre compte à accéder à la boutique Google Play Store, veuillez vous authentifier auprès de votre fournisseur d'identité.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Un favori supprimé}one{# favori supprimé}other{# favoris supprimés}}</translation>
 <translation id="3461766685318630278">Créez des conteneurs supplémentaires et supprimez-en.</translation>
 <translation id="3462311546193741693">Vous déconnecte de la plupart des sites. Vous resterez connecté à votre compte Google afin que vos données synchronisées puissent être effacées.</translation>

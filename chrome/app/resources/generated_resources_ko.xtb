@@ -968,6 +968,7 @@
 <translation id="1784849162047402014">기기에 디스크 저장 공간 부족</translation>
 <translation id="1787350673646245458">사용자 이미지</translation>
 <translation id="1790976235243700817">액세스 권한 삭제</translation>
+<translation id="1791662854739702043">설치됨</translation>
 <translation id="1792619191750875668">확장 디스플레이</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" /> 표시 안함</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> 비밀번호 숨기기</translation>
@@ -1871,7 +1872,6 @@
 <translation id="250704661983564564">디스플레이 배치</translation>
 <translation id="2507253002925770350">티켓 삭제됨</translation>
 <translation id="2507491234071975894">스피커</translation>
-<translation id="2508428939232952663">Google Play 스토어 계정</translation>
 <translation id="2509495747794740764">배율 값은 10에서 200 사이의 숫자여야 합니다.</translation>
 <translation id="2509566264613697683">8배</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" />(선택됨)</translation>
@@ -2939,7 +2939,6 @@
 <translation id="3458451003193188688">네트워크 오류로 인해 가상 머신을 설치할 수 없습니다. 다시 시도하거나 관리자에게 문의하세요. 오류 코드: <ph name="ERROR_CODE" /></translation>
 <translation id="3458794975359644386">공유를 취소할 수 없음</translation>
 <translation id="3459509316159669723">인쇄</translation>
-<translation id="3459697287128633276">내 계정으로 Google Play 스토어에 액세스하려면 ID 공급업체를 통해 인증해 주세요.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{북마크 1개 삭제됨}other{북마크 #개 삭제됨}}</translation>
 <translation id="3461766685318630278">추가 컨테이너를 만들고 삭제합니다.</translation>
 <translation id="3462311546193741693">대부분의 사이트에서 로그아웃됩니다. 동기화된 데이터를 삭제할 수 있도록 Google 계정에서는 로그아웃되지 않습니다.</translation>

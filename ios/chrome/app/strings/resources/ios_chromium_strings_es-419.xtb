@@ -14,6 +14,7 @@
 <translation id="1617663976202781617">Datos de la sincronización de Chromium</translation>
 <translation id="1722370509450468186">La contraseña se guardará en tu Cuenta de Google (<ph name="EMAIL" />).</translation>
 <translation id="1736662517232558588">Dat. Chromium bor.</translation>
+<translation id="1758508597843173586">Bloquea el modo Incógnito cuando abandonas Chromium o cambias de app</translation>
 <translation id="1838412507805038478">Chromium verificó que <ph name="ISSUER" /> emitió el certificado de este sitio web.</translation>
 <translation id="1843424232666537147">Ciertas funciones de Chromium te ayudan a administrar los datos de Internet y la rapidez con la que puedes cargar páginas web.
 <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
@@ -57,6 +58,7 @@
 <translation id="452436063477828504">Asegúrate de que siempre puedas usar los datos de Chromium en tu Cuenta de Google</translation>
 <translation id="4555020257205549924">Si activas esta función, Chromium te preguntará si deseas usar Google Traductor para traducir páginas en otros idiomas. <ph name="BEGIN_LINK" />Más información<ph name="END_LINK" /></translation>
 <translation id="4585809515399340748">Ahora puedes usar Chromium cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
+<translation id="4625550158881452646">Crea eventos de calendario en Chromium</translation>
 <translation id="4633738821577273991">También obtén la Navegación segura mejorada para este perfil de Chromium</translation>
 <translation id="4654936625574199632">Para ayudarnos a mejorar la app, Chromium envía datos de uso y fallas a Google. <ph name="BEGIN_LINK" />Administrar<ph name="END_LINK" /></translation>
 <translation id="4681781466797808448">Activar el escáner de Chromium</translation>
@@ -76,6 +78,7 @@
 <translation id="5573014823074921752">Sugerencia de Chromium: Para obtener más opciones de pestañas, mantén presionado el botón Mostrar pestañas de la barra de herramientas, que se encuentra en la parte inferior o superior de la pantalla.</translation>
 <translation id="5700709190537129682">Chromium no puede revisar las contraseñas</translation>
 <translation id="5777187867430702742">Página de Chromium</translation>
+<translation id="5925698807555796756">Activa "Bloquear las pestañas de incógnito cuando cierras Chromium".</translation>
 <translation id="5945387852661427312">Estás accediendo con una cuenta que administra <ph name="DOMAIN" /> y dándole permiso a su administrador para que controle tus datos de Chromium. Tus datos se vincularán de forma permanente a esta cuenta. Si sales de Chromium, los datos se borrarán de este dispositivo, pero quedarán almacenados en tu cuenta de Google.</translation>
 <translation id="5983312940147103417">Cómo mejorar Chromium</translation>
 <translation id="6062449165341879460">Tu organización <ph name="DOMAIN" /> tendrá acceso a tus datos, favoritos, historial, contraseñas y otros parámetros de configuración de Chromium que almacenes en esta cuenta. Cuando salgas, se borrarán tus datos de este dispositivo.  Sin embargo, tus datos permanecerán almacenados en tu Cuenta de Google administrada y estarán disponibles para tu organización. Tu organización también puede establecer políticas del usuario específicas de esa cuenta, que pueden cambiar el comportamiento de Chromium.</translation>
@@ -120,6 +123,7 @@
 <translation id="7980860476903281594">Chromium comparte tu ubicación con los sitios en donde lo permites.</translation>
 <translation id="8013573822802650211">Para ver tus pestañas donde sea que uses Chromium, accede a tu cuenta en todos los dispositivos</translation>
 <translation id="8073677936375100957">¿Quieres borrar tus datos de Chromium de este dispositivo?</translation>
+<translation id="8164086860209325020">Ve a la configuración de Chromium</translation>
 <translation id="8240981428553046115">Chromium no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="8409374867500149834">Tienes la seguridad más sólida de Chromium contra sitios web dañinos</translation>
 <translation id="858114650497379505">Puedes usar las contraseñas que guardaste en el Administrador de contraseñas en otras apps de tu iPhone.</translation>

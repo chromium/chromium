@@ -28,6 +28,7 @@
 <translation id="1017280919048282932">&amp;Dodavanje u direktorij</translation>
 <translation id="1018656279737460067">Otkazano</translation>
 <translation id="1022489261739821355">Prikaz lozinki s vašeg <ph name="BEGIN_LINK" />Google računa<ph name="END_LINK" /></translation>
+<translation id="1022522674678746124">PowerPoint</translation>
 <translation id="1022669824195822609">Vašim uređajem upravlja <ph name="DOMAIN" />. Administratori mogu pristupiti podacima na bilo kojem profilu na ovom uređaju.</translation>
 <translation id="1024734233509995696">Ova kartica koristi kameru ili mikrofon</translation>
 <translation id="1026655690966755180">Dodaj priključak</translation>
@@ -967,6 +968,7 @@ da li    proksi server funkcionira. Ako smatrate da ne trebate koristiti
 <translation id="1784849162047402014">Na disku ima malo prostora</translation>
 <translation id="1787350673646245458">Slika korisnika</translation>
 <translation id="1790976235243700817">Ukloni pristup</translation>
+<translation id="1791662854739702043">Instalirano</translation>
 <translation id="1792619191750875668">Prošireni ekran</translation>
 <translation id="1794051631868188691">Nikad ne prikazuj <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Sakrivanje lozinke za domenu <ph name="DOMAIN" /></translation>
@@ -1868,7 +1870,6 @@ Postavkama ovog računa možete upravljati instaliranjem aplikacije Family Link 
 <translation id="250704661983564564">Raspored prikaza</translation>
 <translation id="2507253002925770350">Tiket je uklonjen</translation>
 <translation id="2507491234071975894">Zvučnik</translation>
-<translation id="2508428939232952663">Račun u Google Play trgovini</translation>
 <translation id="2509495747794740764">Razmjer mora biti broj između 10 i 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (odabrano)</translation>
@@ -2936,7 +2937,6 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3458451003193188688">Instaliranje virtuelnog računara nije uspjelo zbog greške na mreži. Pokušajte ponovo ili kontaktirajte administratora. Kȏd greške: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Poništavanje dijeljenja nije uspjelo</translation>
 <translation id="3459509316159669723">Štampanje</translation>
-<translation id="3459697287128633276">Da bi vaš račun mogao pristupiti Google Play trgovini, potvrdite svoj identitet pomoću pružaoca identiteta.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Izbrisana je 1 oznaka}one{Izbrisana je # oznaka}few{Izbrisane su # oznake}other{Izbrisano je # oznaka}}</translation>
 <translation id="3461766685318630278">Kreirajte i izbrišite dodatne spremnike.</translation>
 <translation id="3462311546193741693">Odjavljuje vas s većine stranica Ostat ćete prijavljeni na Google računu, stoga se vaši sinhronizirani podaci mogu obrisati.</translation>
@@ -3496,6 +3496,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="3919145445993746351">Da dobijete ekstenzije na svim svojim računarima, uključite sinhronizaciju</translation>
 <translation id="3919229493046408863">Isključite obavještenja kada su uređaji u blizini</translation>
 <translation id="3919262972282962508">Stare verzije Chromeovih aplikacija se neće moći otvarati na Mac uređajima nakon decembra 2022. Kontaktirajte administratora da ažurirate na novu verziju ili uklonite ovu aplikaciju.</translation>
+<translation id="3919376399641777316">Upotrebljava pohranu na Google disku</translation>
 <translation id="3919798653937160644">Stranice koje prikazujete u ovom prozoru se neće prikazivati u historiji preglednika i neće ostaviti na računaru druge tragove, kao što su kolačići, nakon što zatvorite sve otvorene prozore u načinu rada za gosta. Međutim, zadržat će se svi fajlovi koje preuzmete.</translation>
 <translation id="3920504717067627103">Pravila za potvrde</translation>
 <translation id="3920909973552939961">Nije dozvoljeno instaliranje obrađivača plaćanja</translation>
@@ -3646,6 +3647,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4044612648082411741">Unesite lozinku potvrde</translation>
 <translation id="4044708573046946214">Lozinka za zaključavanje ekrana</translation>
 <translation id="404493185430269859">Zadani pretraživač</translation>
+<translation id="4044964245574571633">Koristi pohranu Microsoft OneDrivea</translation>
 <translation id="4045196801416070837">Zvukovi uređaja</translation>
 <translation id="4046013316139505482">Ove ekstenzije ne moraju pregledati i mijenjati podatke na ovoj web lokaciji.</translation>
 <translation id="4046123991198612571">Sljedeća numera</translation>
@@ -3684,6 +3686,7 @@ Domena <ph name="DOMAIN" /> zahtijeva da pametna kartica ostane umetnuta.</trans
 <translation id="4084682180776658562">Oznaka</translation>
 <translation id="4084835346725913160">Zatvori <ph name="TAB_NAME" /></translation>
 <translation id="4085298594534903246">JavaScript je blokiran na ovoj stranici.</translation>
+<translation id="4085620044235559093">Odaberite aplikaciju za otvaranje <ph name="FILE_TYPE" /> datoteka</translation>
 <translation id="4087089424473531098">Kreirana je ekstenzija:
 
 <ph name="EXTENSION_FILE" /></translation>
@@ -4436,6 +4439,7 @@ Koristite Ctrl + Alt + Smanjivanje osvjetljenja da umanjite.</translation>
 <translation id="4742970037960872810">Ukloni istaknuti tekst</translation>
 <translation id="4743260470722568160"><ph name="BEGIN_LINK" />Saznajte kako ažurirati aplikacije<ph name="END_LINK" /></translation>
 <translation id="4744268813103118742">Idi na web lokaciju</translation>
+<translation id="4744571849207727284">Excel</translation>
 <translation id="4744981231093950366">{NUM_TABS,plural, =1{Uključi zvuk web lokacije}one{Uključi zvuk web lokacija}few{Uključi zvuk web lokacija}other{Uključi zvuk web lokacija}}</translation>
 <translation id="474609389162964566">Pristupite Asistentu pomoću fraze "Ok Google"</translation>
 <translation id="4746351372139058112">Poruke</translation>
@@ -7517,6 +7521,7 @@ Imate još # ugroženih lozinki. Googleov Upravitelj lozinki preporučuje da odm
 <translation id="7432200167665670017">Vaš administrator je blokirao "<ph name="EXTENSION_NAME" />" – ID aplikacije <ph name="EXTENSION_ID" /></translation>
 <translation id="7433708794692032816">Umetnite pametnu karticu da nastavite koristiti uređaj <ph name="DEVICE_TYPE" /></translation>
 <translation id="7433957986129316853">Zadrži</translation>
+<translation id="7434100547946193426">Ostale aplikacije</translation>
 <translation id="7434509671034404296">Programer</translation>
 <translation id="7434757724413878233">Ubrzanje miša</translation>
 <translation id="7434969625063495310">Dodavanje servera za štampanje nije uspjelo. Provjerite konfiguraciju servera i pokušajte ponovo.</translation>

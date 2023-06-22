@@ -538,6 +538,7 @@
 <translation id="2202020181578195191">Մուտքագրեք ժամկետի սպառման վավեր տարեթիվ</translation>
 <translation id="2202627062836089804">ձեր քարտի հետևի կողմում</translation>
 <translation id="2204482073374652408">Թարմացումն ավարտվեց</translation>
+<translation id="2208053750671792556">Կոդը չե՞ք ստացել։ <ph name="IDS_AUTOFILL_CARD_UNMASK_OTP_INPUT_DIALOG_NEW_CODE_MESSAGE" /></translation>
 <translation id="22081806969704220">Դարակ 3</translation>
 <translation id="2210794033760923560">Վերբեռնել զեկույցը</translation>
 <translation id="2212735316055980242">Կանոնը չգտնվեց</translation>
@@ -952,6 +953,7 @@
 <translation id="3270847123878663523">&amp;Հետարկել վերադասավորումը</translation>
 <translation id="3271648667212143903"><ph name="ORIGIN" /> կայքը ցանկանում է միանալ</translation>
 <translation id="3272091146646336650">Super B</translation>
+<translation id="3272112314896217187">Մուտքագրեք <ph name="NUMBER_OF_DIGITS" /> թվանշանից բաղկացած հաստատման կոդը</translation>
 <translation id="3281350579597955952">{0,plural, =1{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}one{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}other{Ադմինիստրատորը խորհուրդ չի տալիս այս ֆայլերը բացել այստեղ՝ <ph name="DESTINATION_NAME" />}}</translation>
 <translation id="3282085321714087552">Ձեր կազմակերպությունը (<ph name="ENROLLMENT_DOMAIN" />) հետևյալ կայքերին ուղարկել է որոշ տեղեկություններ, օրինակ՝ կարգավորումներ և կանոններ։</translation>
 <translation id="3286372614333682499">ուղղաձիգ</translation>
@@ -2599,6 +2601,7 @@
 <translation id="7219179957768738017">Կապակցումն օգտագործում է <ph name="SSL_VERSION" />:</translation>
 <translation id="7220786058474068424">Մշակվում է</translation>
 <translation id="7221855153210829124">Ցույց տալ ծանուցումները</translation>
+<translation id="7221857374443660083">Ձեր բանկն ուզում է համոզվել, որ դա իսկապես դուք եք</translation>
 <translation id="722454870747268814">Նոր ինկոգնիտո ներդիր</translation>
 <translation id="7227293336683593977">Գների փոփոխությունների պատմություն</translation>
 <translation id="7233592378249864828">Տպել հաստատման թերթը</translation>

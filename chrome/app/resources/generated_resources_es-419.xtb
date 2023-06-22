@@ -954,6 +954,7 @@ Es posible que se apliquen a esta cuenta los permisos que otorgaste a apps. Pued
 <translation id="1784849162047402014">El dispositivo tiene poco espacio en el disco</translation>
 <translation id="1787350673646245458">Imagen de usuario</translation>
 <translation id="1790976235243700817">Quitar acceso</translation>
+<translation id="1791662854739702043">Instalado</translation>
 <translation id="1792619191750875668">Pantalla extendida</translation>
 <translation id="1794051631868188691">No mostrar <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Ocultar contraseña de <ph name="DOMAIN" /></translation>
@@ -1851,7 +1852,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="250704661983564564">Disposición de la pantalla</translation>
 <translation id="2507253002925770350">Se quitó el ticket</translation>
 <translation id="2507491234071975894">Bocina</translation>
-<translation id="2508428939232952663">Cuenta de Google Play Store</translation>
 <translation id="2509495747794740764">El valor de la escala debe ser un número entre 10 y 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (seleccionado)</translation>
@@ -2919,7 +2919,6 @@ Para administrar la configuración de esta cuenta, instala la app de Family Lin
 <translation id="3458451003193188688">No se pudo instalar la máquina virtual debido a un error de red. Inténtalo de nuevo o comunícate con el administrador. Código de error: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">No se pudo dejar de compartir la carpeta</translation>
 <translation id="3459509316159669723">Impresión</translation>
-<translation id="3459697287128633276">A fin de habilitar tu cuenta para acceder a Google Play Store, autentícala con el Proveedor de identidad.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Se borró 1 favorito}other{Se borraron # favoritos}}</translation>
 <translation id="3461766685318630278">Crea y borra contenedores adicionales.</translation>
 <translation id="3462311546193741693">Saldrás de la mayoría de los sitios, pero permanecerás en tu Cuenta de Google para que puedan borrarse tus datos sincronizados.</translation>

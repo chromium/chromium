@@ -11,6 +11,7 @@
 <translation id="1511320244449497906">Accediste y estás sincronizando tus datos en una cuenta administrada por <ph name="DOMAIN" />, donde su administrador puede establecer las políticas del usuario específicas para esa cuenta, que pueden cambiar el comportamiento de Chrome.</translation>
 <translation id="1554731936187952550">Tienes la seguridad más sólida de Chrome contra sitios web dañinos</translation>
 <translation id="1682483655351012182">Sincronizar tus datos de Chrome</translation>
+<translation id="1733654336159102143">Bloquea el modo Incógnito cuando abandonas Chrome o cambias de app</translation>
 <translation id="1759842336958782510">Chrome</translation>
 <translation id="1843217788865538014">Usa Chrome automáticamente cuando presiones vínculos en mensajes, documentos y otras apps.</translation>
 <translation id="1917964099031477364">Se quitará esta cuenta y todos los datos sin guardar de Chrome y otras apps de Google que haya en este dispositivo.</translation>
@@ -34,6 +35,7 @@
 <translation id="2695886661449553974">Chrome no pudo buscar actualizaciones. Vuelve a intentarlo más tarde.</translation>
 <translation id="2732745070297234559">Chrome no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="2736805085127235148">Las notificaciones de Chrome están desactivadas en la configuración del dispositivo por el momento.</translation>
+<translation id="2754286486056173475">Crea eventos de calendario en Chrome</translation>
 <translation id="2767464022270041271">No hay contraseñas guardadas. El Administrador de contraseñas de Google puede revisar tus contraseñas cuando las guardas.</translation>
 <translation id="2840432500933227975">Abre la Configuración de Chrome en iOS, presiona "Navegador predeterminado" y selecciona Chrome.</translation>
 <translation id="2869959624320573933">Acceder a Chrome</translation>
@@ -99,6 +101,7 @@
 <translation id="6676840375528380067">¿Quieres borrar tus datos de Chrome de este dispositivo?</translation>
 <translation id="6709398533399187136">Tu contraseña quedó expuesta en una violación de la seguridad de los datos. El Administrador de contraseñas de Google te recomienda cambiarla ahora.</translation>
 <translation id="6822673484890854830">Chrome no pudo verificar todas las contraseñas. Vuelve a intentarlo más tarde.</translation>
+<translation id="6896070677477855330">Activa "Bloquear las pestañas de incógnito cuando cierras Chrome".</translation>
 <translation id="6964931465519938134">Ahora puedes usar Chrome cada vez que presionas vínculos que aparecen en mensajes, documentos u otras apps.</translation>
 <translation id="6975725306479268850">Elige Chrome para autocompletar</translation>
 <translation id="7059914902409643750">Personaliza Chrome a tu medida</translation>
@@ -140,6 +143,7 @@
 <translation id="8765470054473112089">Cuando escribes en la barra de direcciones o en el cuadro de búsqueda, Chrome envía lo que escribes a tu motor de búsqueda predeterminado para obtener mejores sugerencias. Esta función está desactivada en el modo Incógnito.</translation>
 <translation id="8772179140489533211">Muestra mensajes para acceder a Chrome.</translation>
 <translation id="8788269841521769222">No es necesario que recuerdes esta contraseña. Se guardará en el Administrador de contraseñas de Google de <ph name="EMAIL" />.</translation>
+<translation id="880967149107462122">Ve a la configuración de Chrome</translation>
 <translation id="8857676124663337448">El Administrador de contraseñas de Google no pudo revisar todas las contraseñas. Vuelve a intentarlo mañana.</translation>
 <translation id="8897749957032330183">Las contraseñas se guardan en el Administrador de contraseñas de Google en este dispositivo.</translation>
 <translation id="8969290730818637510">Cuando se activa:

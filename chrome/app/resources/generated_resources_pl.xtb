@@ -963,6 +963,7 @@ Na tym koncie mogą obowiązywać uprawnienia przyznane wcześniej aplikacjom. U
 <translation id="1786290960428378411">Prosi o zgodę na odczytywanie i zmienianie danych</translation>
 <translation id="1787350673646245458">Zdjęcie użytkownika</translation>
 <translation id="1790976235243700817">Anuluj dostęp</translation>
+<translation id="1791662854739702043">Zainstalowano</translation>
 <translation id="1792619191750875668">Ekran rozszerzony</translation>
 <translation id="1794051631868188691">Nigdy tego nie pokazuj (<ph name="MERCHANT" />)</translation>
 <translation id="1794212650797661990">Ukryj hasło do <ph name="DOMAIN" /></translation>
@@ -1846,7 +1847,6 @@ Możesz zarządzać ustawieniami konta, korzystając z aplikacji Family Link na
 <translation id="250704661983564564">Rozmieszczanie wyświetlaczy</translation>
 <translation id="2507253002925770350">Zgłoszenie zostało usunięte</translation>
 <translation id="2507491234071975894">Głośnik</translation>
-<translation id="2508428939232952663">Konto w Sklepie Google Play</translation>
 <translation id="2509495747794740764">Współczynnik skalowania musi wynosić od 10 do 200.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (wybrany)</translation>
@@ -2915,7 +2915,6 @@ Domena <ph name="DOMAIN" /> wymaga, by karta inteligentna pozostała w gnieźdz
 <translation id="3458451003193188688">Z powodu błędu sieci nie udało się zainstalować maszyny wirtualnej. Spróbuj jeszcze raz lub skontaktuj się z administratorem. Kod błędu: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Nie udało się cofnąć udostępniania</translation>
 <translation id="3459509316159669723">Drukowanie</translation>
-<translation id="3459697287128633276">Aby Twoje konto miało dostęp do Sklepu Google Play, uwierzytelnij je za pomocą dostawcy tożsamości.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Usunięto 1 zakładkę}few{Usunięto # zakładki}many{Usunięto # zakładek}other{Usunięto # zakładki}}</translation>
 <translation id="3461766685318630278">Twórz i usuwaj dodatkowe kontenery.</translation>
 <translation id="3462311546193741693">Spowoduje wylogowanie Cię z większości stron internetowych. Nie nastąpi wylogowanie z konta Google, więc będzie można wyczyścić zsynchronizowane dane.</translation>

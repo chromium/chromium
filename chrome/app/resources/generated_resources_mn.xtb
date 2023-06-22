@@ -965,6 +965,7 @@
 <translation id="1784849162047402014">Төхөөрөмжийн дискний багтаамж бага байна</translation>
 <translation id="1787350673646245458">Хэрэглэгчийн зураг</translation>
 <translation id="1790976235243700817">Хандалтын эрхийг хасах</translation>
+<translation id="1791662854739702043">Суулгасан</translation>
 <translation id="1792619191750875668">Өргөтгөсөн дэлгэц</translation>
 <translation id="1794051631868188691"><ph name="MERCHANT" />-г хэзээ ч бүү харуул</translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" />-н нууц үгийг нуух</translation>
@@ -1866,7 +1867,6 @@
 <translation id="250704661983564564">Дэлгэцийн зохион байгуулалт</translation>
 <translation id="2507253002925770350">Тасалбарыг хассан</translation>
 <translation id="2507491234071975894">Чанга яригч</translation>
-<translation id="2508428939232952663">Google Play Дэлгүүрийн бүртгэл</translation>
 <translation id="2509495747794740764">Хэмжээний дугаар 10-с 200-н хоорондох тоо байх ёстой.</translation>
 <translation id="2509566264613697683">8x</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (сонгосон)</translation>
@@ -2934,7 +2934,6 @@
 <translation id="3458451003193188688">Сүлжээний алдааны улмаас виртуал машиныг суулгаж чадсангүй. Дахин оролдож үзнэ үү, эсвэл админтайгаа холбогдоно уу. Алдааны код: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Хуваалцсаныг болиулж чадсангүй</translation>
 <translation id="3459509316159669723">Хэвлэж байна</translation>
-<translation id="3459697287128633276">Бүртгэлийнхээ Google Play Дэлгүүрийн хандалтыг идэвхжүүлэхийн тулд Таниулбар өгөгчөөр баталгаажуулна уу.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 хавчуургыг устгасан}other{# хавчуургыг устгасан}}</translation>
 <translation id="3461766685318630278">Нэмэлт контейнерыг үүсгэх болон үүнийг устгаарай.</translation>
 <translation id="3462311546193741693">Таныг ихэнх сайтаас гаргана. Та Google Бүртгэлдээ нэвтэрсэн хэвээр үлдэх бөгөөд ингэснээр таны синк хийсэн өгөгдлийг устгаж чадна.</translation>

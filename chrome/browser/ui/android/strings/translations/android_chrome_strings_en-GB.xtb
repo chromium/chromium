@@ -857,6 +857,7 @@ To change this setting, <ph name="BEGIN_LINK" />reset sync<ph name="END_LINK" />
 <translation id="5665379678064389456">Create event in <ph name="APP_NAME" /></translation>
 <translation id="5683547024293500885">Chrome can’t check for updates</translation>
 <translation id="5686790454216892815">File name too long</translation>
+<translation id="5687606994963670306">Chrome auto-deletes sites that are older than 30 days. A site that you visit again might reappear on the list. Or you can block a site from suggesting ads for you. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="569435661099256888">You can see the pages that you’ve visited or clear them from your history</translation>
 <translation id="569536719314091526">Translate this page to any language from the More options button</translation>
 <translation id="5696597120588531049">Chrome can help keep you safe from data breaches, unsafe websites and more</translation>
@@ -1171,6 +1172,7 @@ For example, some websites may respond to this request by showing you ads that a
 <translation id="7260367682327802201">Your Android device may include a similar setting. If ad measurement is turned on in Chrome and on your Android device, a company may be able to measure the effectiveness of an ad across websites that you visit and apps that you use.</translation>
 <translation id="727288900855680735">Submit <ph name="ONE_TIME_CODE" /> to <ph name="ORIGIN" />?</translation>
 <translation id="7274013316676448362">Blocked site</translation>
+<translation id="7276100255011548441">Chrome auto-deletes topics that are older than four weeks. As you keep browsing, a topic might reappear on the list. Or you can block topics that you don't want Chrome to share with sites. Learn more about <ph name="BEGIN_LINK" />managing your ad privacy in Chrome.<ph name="END_LINK" /></translation>
 <translation id="7286703216224610554">Share reaction only</translation>
 <translation id="7290209999329137901">Rename unavailable</translation>
 <translation id="7291910923717764901">Image descriptions added for this page</translation>

@@ -969,6 +969,7 @@ Az alkalmazások számára már megadott engedélyek erre a fiókra is érvénye
 <translation id="1784849162047402014">Az eszközön kevés a lemezterület</translation>
 <translation id="1787350673646245458">Felhasználó képe</translation>
 <translation id="1790976235243700817">Hozzáférés megvonása</translation>
+<translation id="1791662854739702043">Telepítve</translation>
 <translation id="1792619191750875668">Kiterjesztett kijelző</translation>
 <translation id="1794051631868188691">Soha ne jelenítse meg a következőt: <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990"><ph name="DOMAIN" /> jelszavának elrejtése</translation>
@@ -1869,7 +1870,6 @@ Ha kezelni szeretné a fiók beállításait, telepítse eszközére a Family Li
 <translation id="250704661983564564">Kijelzőelrendezés</translation>
 <translation id="2507253002925770350">Jegy eltávolítva</translation>
 <translation id="2507491234071975894">Hangszóró</translation>
-<translation id="2508428939232952663">Google Play Áruház-fiók</translation>
 <translation id="2509495747794740764">Az átméretezési értéknek 10 és 200 közötti számnak kell lennie.</translation>
 <translation id="2509566264613697683">8×</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (kiválasztva)</translation>
@@ -2937,7 +2937,6 @@ A(z) <ph name="DOMAIN" /> megköveteli, hogy ne távolítsa el az intelligens k�
 <translation id="3458451003193188688">Hálózati hiba miatt nem sikerült a virtuális gép telepítése. Próbálja újra, vagy forduljon rendszergazdájához. Hibakód: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">A megosztás visszavonása nem sikerült</translation>
 <translation id="3459509316159669723">Nyomtatás</translation>
-<translation id="3459697287128633276">A Google Play Áruházhoz való hozzáférés engedélyezéséhez hitelesítse fiókját az identitásszolgáltatóján keresztül.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{1 könyvjelző törölve}other{# könyvjelző törölve}}</translation>
 <translation id="3461766685318630278">Létrehozhat és törölhet további tárolókat.</translation>
 <translation id="3462311546193741693">A rendszer kijelentkezteti a legtöbb webhelyről. Google-fiókjába bejelentkezve marad, hogy lehetséges legyen a szinkronizált adatok törlése.</translation>

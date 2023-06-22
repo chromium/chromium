@@ -959,6 +959,7 @@ Na tento účet se mohou vztahovat oprávnění, která jste již udělili aplik
 <translation id="1784849162047402014">V zařízení dochází místo na disku</translation>
 <translation id="1787350673646245458">Obrázek uživatele</translation>
 <translation id="1790976235243700817">Odebrat přístup</translation>
+<translation id="1791662854739702043">Nainstalováno</translation>
 <translation id="1792619191750875668">Sekundární obrazovka</translation>
 <translation id="1794051631868188691">Nikdy nezobrazovat <ph name="MERCHANT" /></translation>
 <translation id="1794212650797661990">Skrýt heslo pro <ph name="DOMAIN" /></translation>
@@ -1856,7 +1857,6 @@ Chcete-li spravovat nastavení tohoto účtu, nainstalujte si do zařízení apl
 <translation id="250704661983564564">Uspořádání displejů</translation>
 <translation id="2507253002925770350">Lístek byl odstraněn</translation>
 <translation id="2507491234071975894">Reproduktor</translation>
-<translation id="2508428939232952663">Účet Obchodu Google Play</translation>
 <translation id="2509495747794740764">Hodnota měřítka musí být v intervalu 10 až 200.</translation>
 <translation id="2509566264613697683">8×</translation>
 <translation id="2512065992892294946"><ph name="LANGUAGE" /> (vybráno)</translation>
@@ -2924,7 +2924,6 @@ Zpráva serveru: <ph name="SERVER_MSG" /></translation>
 <translation id="3458451003193188688">Instalace virtuálního počítače se kvůli chybě sítě nezdařila. Zkuste to znovu, nebo kontaktujte administrátora. Kód chyby: <ph name="ERROR_CODE" />.</translation>
 <translation id="3458794975359644386">Zrušení sdílení se nezdařilo</translation>
 <translation id="3459509316159669723">Tisk</translation>
-<translation id="3459697287128633276">Chcete-li získat přístup k Obchodu Google Play, proveďte ověření u svého poskytovatele identity.</translation>
 <translation id="3460458947710119567">{NUM_BOOKMARKS,plural, =1{Byla smazána 1 záložka}few{Byly smazány # záložky}many{Bylo smazáno # záložky}other{Bylo smazáno # záložek}}</translation>
 <translation id="3461766685318630278">Vytvoření a smazání kontejnerů navíc.</translation>
 <translation id="3462311546193741693">Budete odhlášeni z většiny webů. Zůstanete přihlášeni k účtu Google, aby bylo možné vymazat synchronizovaná data.</translation>

@@ -18,6 +18,7 @@
 <translation id="1838412507805038478">Chromium је потврдио да је <ph name="ISSUER" /> издао сертификат овог веб-сајта.</translation>
 <translation id="1843424232666537147">Chromium има функције које вам помажу да управљате интернет подацима и брзином учитавања веб-страница.
 <ph name="BEGIN_LINK" />Сазнајте више<ph name="END_LINK" /></translation>
+<translation id="1847960401032164406">Мапе у Chromium-у</translation>
 <translation id="1867772173333403444">4. Изаберите Chromium</translation>
 <translation id="2006345422933397527">Chromium не може да тражи ажурирања. Проверите интернет везу.</translation>
 <translation id="2052320862053429062">Chromium повремено упоређује ваше лозинке са листама које су објављене онлајн. Док то ради, ваше лозинке и корисничка имена су шифровани, па нико не може да их прочита, укључујући Google.</translation>
@@ -70,6 +71,7 @@
 <translation id="4999538639245140991">Одјављујете се са налога којим управља <ph name="SIGNOUT_MANAGED_DOMAIN" />, што ће избрисати Chromium податке са овог уређаја. Подаци ће остати на Google налогу.</translation>
 <translation id="5048795749726991615">Да бисте лако приступали сачуваним лозинкама у другим апликацијама, користите Chromium за аутоматско попуњавање</translation>
 <translation id="5171868502429358653">Пријавите се у Chromium</translation>
+<translation id="5224044903258607400">Додирните Прикажи помоћу Google мапа у Chromium-у</translation>
 <translation id="5224391634244552924">Нема сачуваних лозинки. Chromium може да проверава лозинке када их сачувате.</translation>
 <translation id="5308226104666789935">Chromium не може да тражи ажурирања</translation>
 <translation id="5396916991083608703">Желите да подесите Chromium као подразумевани?</translation>

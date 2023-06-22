@@ -399,6 +399,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1864927262126810325">Iz: <ph name="SOURCE_NAME" /></translation>
 <translation id="1871208020102129563">Proxy je nastavljen na uporabo stalnih strežnikov proxy, ne na URL skripta .pac.</translation>
 <translation id="1871284979644508959">Obvezno polje</translation>
+<translation id="1871739799120352748">Cena je visoka</translation>
 <translation id="1873899211667975540">Rock glasba</translation>
 <translation id="1874224422119691492">Če želite spremeniti, ali se zaklepanje zaslona uporablja za izpolnjevanje gesel, lahko to storite tukaj: <ph name="SETTINGS" />.</translation>
 <translation id="1875025161375567525">Pladenj za fotografije</translation>
@@ -442,6 +443,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="1992331125980284532">JIS B3</translation>
 <translation id="1997484222658892567"><ph name="URL" /> želi trajno shraniti velike količine podatkov v lokalnem računalniku</translation>
 <translation id="2001146170449793414">{COUNT,plural, =1{in še 1}one{in še #}two{in še #}few{in še #}other{in še #}}</translation>
+<translation id="2001469757375372617">Prišlo je do napake. Vaša sprememba ni bila shranjena.</translation>
 <translation id="2003709556000175978">Ponastavite geslo</translation>
 <translation id="2003775180883135320">Četverno luknjanje zgoraj</translation>
 <translation id="2009942480257059311">Gumb za ustvarjanje dogodkov, aktivirajte, če želite hitro ustvariti nov dogodek v Google Koledarju</translation>
@@ -499,6 +501,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="2118132148597630479">Kuverta C5</translation>
 <translation id="2119505898009119320">Izdano za: <ph name="ORGANIZATION" /> [<ph name="JURISDICTION" />]</translation>
 <translation id="2119867082804433120">Luknjanje spodaj desno</translation>
+<translation id="2122214041802369259">Cena je visoka</translation>
 <translation id="2122719317867821810">Ta pravilnik deluje, kot je predvideno, vendar je nekje drugje nastavljena sporna vrednost, ki jo ta pravilnik preglasi.</translation>
 <translation id="2126374524350484896">Program za pretvorbo v PDF:</translation>
 <translation id="2130448033692577677">Navedenih predlog morda ne bo mogoče uporabiti, ker pravilnik DnsOverHttpsMode policy ni nastavljen.</translation>
@@ -858,6 +861,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="3052964831964880138"><ph name="PRICE_DROP" />-odstotno znižanje cene izdelka <ph name="PRODUCT_NAME" /></translation>
 <translation id="3061707000357573562">Storitev za popravke</translation>
 <translation id="306573536155379004">Igra se je začela.</translation>
+<translation id="3067505415088964188">Cena je nizka</translation>
 <translation id="3068991664510324412">Računalniške in video igre</translation>
 <translation id="3080254622891793721">Grafični elementi</translation>
 <translation id="3081538120861307764">Zaradi merjenja uspešnosti oglasa se s spletnimi mesti delijo omejene vrste podatkov, kot je ura v dnevu, ko je bil oglas prikazan.</translation>
@@ -2073,6 +2077,7 @@ V nasprotnem primeru bodo to blokirale nastavitve zasebnosti. S tem bo vsebina, 
 <translation id="5967592137238574583">Urejanje podatkov o stiku</translation>
 <translation id="5967867314010545767">Odstrani iz zgodovine</translation>
 <translation id="5968022600320704045">Ni rezultatov iskanja</translation>
+<translation id="5969199813874624822">Shranite in spremljajte ceno</translation>
 <translation id="5974052231147553524">Kolut 6</translation>
 <translation id="5975083100439434680">Pomanjšaj</translation>
 <translation id="5979084224081478209">Preveri gesla</translation>
@@ -3397,6 +3402,7 @@ Dodatne podrobnosti:
 <translation id="9141013498910525015">Upravljanje naslovov</translation>
 <translation id="9144951720726881238">Datum poteka:</translation>
 <translation id="9148507642005240123">&amp;Razveljavi urejanje</translation>
+<translation id="9148599396704355100">Cena je nizka</translation>
 <translation id="9150045010208374699">Uporabite kamero</translation>
 <translation id="9150685862434908345">Skrbnik lahko spremeni nastavitev brskalnika na daljavo. Dejavnost v tej napravi morda tudi upravljajo zunaj Chroma. <ph name="BEGIN_LINK" />Več o tem<ph name="END_LINK" /></translation>
 <translation id="9154194610265714752">Posodobljeno</translation>

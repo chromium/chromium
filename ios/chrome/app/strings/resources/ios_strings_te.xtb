@@ -90,6 +90,7 @@
 <translation id="1492417797159476138">మీరు ఇప్పటికే ఈ సైట్ కోసం ఈ యూజర్‌నేమ్‌ను సేవ్ చేశారు</translation>
 <translation id="1497590942294823549">మెనూ → Password Manager</translation>
 <translation id="1498283581832036924">మీ <ph name="WEBSITE" /> ఖాతా తొలగించబడదు.</translation>
+<translation id="1501820324067650154">మార్గం ఆప్షన్‌ల కోసం, "దిశలను పొందండి" ఆప్షన్‌ను ట్యాప్ చేయండి</translation>
 <translation id="1506063256525392513">ఫోటోలను తీసి, వాటిని అప్‌లోడ్ చేయడానికి, అలాగే QR కోడ్‌లను స్కాన్ చేయడానికి ఇది మిమ్మల్ని అనుమతిస్తుంది</translation>
 <translation id="1509486075633541495">వెబ్‌సైట్‌కు సైన్ ఇన్ చేయండి</translation>
 <translation id="1509960214886564027">చాలా సైట్‌లలోని ఫీచర్‌లు పని చేయకుండాపోవచ్చు</translation>
@@ -177,6 +178,7 @@
 <translation id="2073572773299281212"><ph name="DAYS" /> రోజుల క్రితం యాక్టివ్‌గా ఉంది</translation>
 <translation id="2074131957428911366">మీరు ఎప్పుడైనా <ph name="BEGIN_LINK" />సెట్టింగ్‌ల<ph name="END_LINK" /> ద్వారా వేటిని సింక్ చేయాలో ఎంచుకోవచ్చు.</translation>
 <translation id="2079545284768500474">చర్య రద్దు</translation>
+<translation id="2080409463824088391">యాప్‌లో తెరవండి…</translation>
 <translation id="2080769225927880590">చెల్లుబాటు అయ్యే ఖాతాతో సైన్ ఇన్ చేయండి</translation>
 <translation id="2103075008456228677">history.google.com తెరువు</translation>
 <translation id="21133533946938348">ట్యాబ్‌ను పిన్ చేయి</translation>
@@ -233,6 +235,7 @@
 <translation id="2476359652512522418">ఎంచుకోబడలేదు</translation>
 <translation id="2479148705183875116">సెట్టింగ్‌లకు వెళ్లు</translation>
 <translation id="2482878487686419369">నోటిఫికేషన్‌లు</translation>
+<translation id="2484459871750294497">నేను ఈ ఫీచర్‌ను ఎలా ఎనేబుల్ చేయగలను?</translation>
 <translation id="2496626742194544812">మొదటి ట్యాబ్‌కు వెళ్లండి</translation>
 <translation id="2500374554657206846">పాస్‌వర్డ్‌ను సేవ్ చేసే ఎంపికలు</translation>
 <translation id="2523363575747517183">ఈ వెబ్‌సైట్ మరో అప్లికేషన్‌ను తెరవడానికి పలుసార్లు ప్రయత్నిస్తోంది.</translation>
@@ -312,8 +315,11 @@
 <translation id="2921219216347069551">పేజీ భాగస్వామ్యం సాధ్యపడలేదు</translation>
 <translation id="2923448633003185837">పేస్ట్ చేసి, ముందుకు వెళ్ళండి</translation>
 <translation id="292639812446257861">చదవనట్లు గుర్తు పెట్టు</translation>
+<translation id="2931440415625410757">సూచనలు చూడండి</translation>
 <translation id="2932085390869194046">పాస్‌వర్డ్‌‌ను సూచించు...</translation>
 <translation id="2932765531295814441">పాస్‌వర్డ్‌లను మాన్యువల్‌గా జోడించండి</translation>
+<translation id="2952246431280799028">అడ్రస్‌ను తాకి, నొక్కి ఉంచండి.</translation>
+<translation id="2952278131021475699">Lens కెమెరా సెర్చ్</translation>
 <translation id="2952581218264071393">1. Chrome సెట్టింగ్‌లను తెరవండి</translation>
 <translation id="2956733177489514605">మీ పాస్‌వర్డ్‌లను, ఇంకా మరిన్నింటిని సింక్ చేయడానికి మీ Google ఖాతాతో సైన్ ఇన్ చేయండి.</translation>
 <translation id="2958718410589002129">పాస్‌వర్డ్‌లు</translation>
@@ -1266,6 +1272,7 @@
 <translation id="891282356902782456">ఈ పాస్‌వర్డ్ ఈ పరికరంలో మాత్రమే సేవ్ చేయబడింది. దీన్ని మీ ఇతర పరికరాలలో ఉపయోగించడానికి, మీ Google ఖాతా, <ph name="EMAIL" />లో దీన్ని సేవ్ చేయండి.</translation>
 <translation id="891658175948553296">సైట్‌లో టెక్స్ట్‌ను హైలైట్ చేయండి</translation>
 <translation id="8917490105272468696">సరే, నాకు సమ్మతమే</translation>
+<translation id="8926984231484284953">లోకల్ సమాచారం, దిశలను పొందడానికి వెబ్‌పేజీలలో అడ్రస్‌లను ఉపయోగించండి.</translation>
 <translation id="8928133177108699615">డెస్క్‌టాప్</translation>
 <translation id="8934982071228289624">ఈ పాస్‌వర్డ్‌ను మీ ఖాతాలో సేవ్ చేయడానికి, ముందు ఖచ్చితంగా మీ పరికరంలో మీరు పాస్‌కోడ్‌ను సెట్ చేయాలి.</translation>
 <translation id="8940809892068499052">ఇతర యాప్‌ల నుండి అజ్ఞాత ట్యాబ్‌లను తెరవండి</translation>

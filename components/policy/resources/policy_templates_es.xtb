@@ -437,6 +437,11 @@ Esta política sustituye a la obsoleta de <ph name="DEFAULT_WINDOW_PLACEMENT_SET
       Si se habilita esta política o no se establece, el navegador decidirá qué algoritmo User-Agent GREASE se usará. Si la política se inhabilita, se usará el anterior algoritmo User-Agent GREASE.
       Esta política es una medida temporal y se eliminará en una futura versión.</translation>
 <translation id="142346659686073702">Permitir que los usuarios no afiliados utilicen Crostini</translation>
+<translation id="1423900783955065155">Esta política controla si una página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se puede almacenar en la caché de páginas completas. Es posible que el sitio web que configura este encabezado no espere que se restaure la página desde la caché de páginas completas, ya que parte de la información sensible podría seguir mostrándose después de la restauración aunque ya no se pueda acceder a ella.
+
+Si se habilita esta política o no se define, es posible que la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se restaure desde la caché de páginas completas, a menos que se quite de la caché (por ejemplo, cuando haya un cambio de cookies exclusivas del protocolo HTTP en el sitio).
+
+Si se inhabilita esta política, la página con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> no se almacenará en la caché de páginas completas.</translation>
 <translation id="1425551776320718592">Impide que los usuarios de este dispositivo utilicen la instalación de fuente desconocida adb sin forzar un Powerwash, lo cual puede dejar el dispositivo en un estado de seguridad vulnerable</translation>
 <translation id="1426170570389588560">Define el periodo, en número de días, durante el que se almacenarán los metadatos de los trabajos de impresión</translation>
 <translation id="1426410128494586442">Sí</translation>
@@ -2219,6 +2224,7 @@ Si esta política se habilita o no se define, el usuario podrá establecer la im
 <translation id="305106159605171619">La reducción de user-agent está inhabilitada. No se habilita mediante pruebas de campo ni de origen.</translation>
 <translation id="3053265701996417839">Microsoft Windows 7</translation>
 <translation id="3063302084011279315">Inhabilitar Grabación de pantalla</translation>
+<translation id="3063307261083019730">No permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="3064530882228745118">Usar la búsqueda de CNAME durante la autenticación Kerberos</translation>
 <translation id="3066446511111537292">Permite que los usuarios afiliados de este dispositivo usen la instalación de fuente desconocida adb</translation>
 <translation id="3067462824622454143">Permitir que los usuarios decidan si el dispositivo se debe bloquear al suspenderlo o al cerrar la tapa</translation>
@@ -5369,6 +5375,7 @@ Si se inhabilita esta política, se inhabilitará la protección de extensiones 
 <translation id="603768430528561926">Si se habilita la política o no se establece, los usuarios de dispositivos empresariales podrán canjear ofertas mediante el registro de <ph name="PRODUCT_OS_NAME" />.
 
       Si se inhabilita la política, los usuarios no podrán canjear estas ofertas.</translation>
+<translation id="6042407236638640864">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se guarden en la caché de páginas completas</translation>
 <translation id="6042629184389251062">No se permite la recogida de métricas con clave de URL</translation>
 <translation id="6046615715547751255">No permitir los controles de informes granulares</translation>
 <translation id="6048199181629830227">Habilitar la gestión de energía Peak Shift</translation>
@@ -7683,6 +7690,7 @@ Esta política no tendrá ningún efecto si se asigna el valor false a la polít
 
       Si se habilita este ajuste o no se configura, los sitios web pueden comprobar si el usuario tiene algún método de pago guardado.</translation>
 <translation id="8118665053362250806">Establecer tamaño de caché de disco de medios</translation>
+<translation id="8123648898339555150">Permitir que las páginas con el encabezado <ph name="CACHE_CONTROL_NO_STORE_NAME" /> se almacenen en la caché de páginas completas.</translation>
 <translation id="8124468781472887384">Política de acceso a la configuración de las impresoras de dispositivos.</translation>
 <translation id="8128192446158421884">URL a las que se puede aplicar AutoOpenFileTypes</translation>
 <translation id="8131046602440880289">Permitir las voces de conversión de texto a voz de red mejorada al usar Enunciar selección</translation>
@@ -8609,11 +8617,6 @@ Si se inhabilita, se usará el comportamiento anterior.
 Si la política no se establece, se usará el nuevo comportamiento, tal como sucede con el resto de los usuarios de Chromium.</translation>
 <translation id="8955719471735800169">Volver al principio</translation>
 <translation id="8956312248048980644">Permite los clústeres de agentes con clave de origen de forma predeterminada.</translation>
-<translation id="8961117818679701775">Esta política permite que un administrador especifique la configuración de las aplicaciones web instaladas. Esta política asociará un ID de aplicación web a su configuración concreta. Se puede definir una configuración predeterminada usando el ID especial <ph name="DEFAULT_SCOPE" />, que se aplicará a todas las aplicaciones web para las que no se haya definido una configuración personalizada en esta política.
-
-El campo <ph name="MANIFEST_ID_FIELD" /> es el ID del archivo de manifiesto de la aplicación web. En <ph name="WEB_APP_ID_REFERENCE_URL" /> encontrarás las instrucciones para determinar el ID del archivo de manifiesto de una aplicación web instalada.
-El campo <ph name="RUN_ON_OS_LOGIN_FIELD" /> especifica si una aplicación web puede ejecutarse durante el inicio de sesión en el SO. Si a este campo se le asigna el valor <ph name="BLOCKED" />, la aplicación web no se ejecutará durante el inicio de sesión en el SO y el usuario no podrá habilitar esta opción después. Si a este campo se le asigna el valor <ph name="RUN_WINDOWED" />, la aplicación web se ejecutará durante el inicio de sesión en el SO y el usuario no podrá inhabilitar esta opción después. Si a este campo se le asigna el valor <ph name="ALLOWED" />, el usuario podrá configurar la aplicación web para que se ejecute durante el inicio de sesión en el SO. La configuración predeterminada solo permite los valores <ph name="ALLOWED" /> y <ph name="BLOCKED" />.
-Desde la versión 115, en el campo <ph name="PREVENT_CLOSE_FIELD" /> se especifica si se debe impedir todo tipo de cierres de aplicaciones web (por ejemplo, por parte del usuario, el administrador de tareas o las APIs web). Este comportamiento solo se puede habilitar si se asigna el valor <ph name="RUN_WINDOWED" /> a <ph name="RUN_ON_OS_LOGIN_FIELD" />. Si la aplicación ya se estaba ejecutando, esta propiedad solo se hará efectiva después de reiniciar la aplicación. Si este campo no se define, los usuarios podrán cerrar las aplicaciones.</translation>
 <translation id="8970205333161758602">Eliminar el mensaje de desactivación de <ph name="PRODUCT_FRAME_NAME" /></translation>
 <translation id="8973579598359969188">Elegir si se puede mostrar el mensaje de <ph name="PRIVACY_SANDBOX_NAME" /> a los usuarios</translation>
 <translation id="8974588819713914715">Esta política está obsoleta y no se admite. Usa la política <ph name="URL_ALLOWLIST_POLICY_NAME" /> en su lugar.</translation>
