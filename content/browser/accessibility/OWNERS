@@ -11,3 +11,6 @@ per-file *_win*=iapres@microsoft.com
 per-file *test*=kschmi@microsoft.com
 per-file *test*=kbabbitt@microsoft.com
 per-file *test*=iapres@microsoft.com
+
+# For tests
+chrishtr@chromium.org
