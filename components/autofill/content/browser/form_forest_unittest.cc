@@ -1398,7 +1398,7 @@ class FormForestTestFlatten : public FormForestTestWithMockedTree {
  protected:
   // The subject of this test fixture.
   FormData GetBrowserForm(base::StringPiece form_name) {
-    return *flattened_forms_.GetBrowserForm(
+    return flattened_forms_.GetBrowserForm(
         GetMockedForm(form_name).global_id());
   }
 };

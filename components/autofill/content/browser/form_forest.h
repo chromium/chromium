@@ -13,7 +13,6 @@
 #include "components/autofill/core/browser/field_types.h"
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/unique_ids.h"
-#include "content/public/browser/global_routing_id.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
 
@@ -230,10 +229,8 @@ class FormForest {
     UpdateTreeOfRendererForm(&renderer_form, driver);
   }
 
-  // Returns the non-null browser form of a known |renderer_form|.
-  // Returns null if |renderer_form| is unknown browser form; this may change to
-  // undefined behavior in the future.
-  const FormData* GetBrowserForm(FormGlobalId renderer_form) const;
+  // Returns the browser form of a known |renderer_form|.
+  const FormData& GetBrowserForm(FormGlobalId renderer_form) const;
 
   struct RendererForms {
     RendererForms();
@@ -375,17 +372,7 @@ class FormForest {
   void UpdateTreeOfRendererForm(FormData* renderer_form,
                                 AutofillDriver* driver);
 
-  // The URL of a main frame managed by the FormForest.
-  // TODO(crbug.com/1240247): Remove and make Resolve() static.
-  std::string MainUrlForDebugging() const;
-
-  // The frame managed by the FormForest that was last passed to
-  // UpdateTreeOfRendererForm().
-  // TODO(crbug.com/1240247): Remove and make Resolve() static.
-  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
-
   // The FrameData nodes of the forest.
-  // The members FrameData::frame_token must not be mutated.
   // Note that since the elements are (smart) pointers, they are not invalidated
   // when the set is resized (unlike pointers or references to the elements).
   base::flat_set<std::unique_ptr<FrameData>, FrameData::CompareByFrameToken>

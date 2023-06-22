@@ -17,7 +17,6 @@
 #include "components/autofill/core/common/form_data.h"
 #include "components/autofill/core/common/form_data_predictions.h"
 #include "components/autofill/core/common/form_field_data.h"
-#include "content/public/browser/render_frame_host.h"
 #include "content/public/browser/render_widget_host.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/gfx/geometry/rect_f.h"
@@ -352,6 +351,7 @@ class ContentAutofillRouter {
   friend class ContentAutofillRouterTestApi;
 
   // Returns the driver of |frame| stored in |form_forest_|.
+  // Does not invalidate any forms in the FormForest.
   ContentAutofillDriver* DriverOfFrame(LocalFrameToken frame);
 
   // Calls ContentAutofillDriver::TriggerFormExtraction() for all drivers in
@@ -361,15 +361,6 @@ class ContentAutofillRouter {
   // Update the last queried and source and do cleanup work.
   void SetLastQueriedSource(ContentAutofillDriver* source);
   void SetLastQueriedTarget(ContentAutofillDriver* target);
-
-  // The URL of a main frame managed by the ContentAutofillRouter.
-  // TODO(crbug.com/1240247): Remove.
-  std::string MainUrlForDebugging() const;
-
-  // The frame managed by the ContentAutofillRouter that was last passed to
-  // an event.
-  // TODO(crbug.com/1240247): Remove.
-  content::GlobalRenderFrameHostId some_rfh_for_debugging_;
 
   // The forest of forms. See its documentation for the usage protocol.
   internal::FormForest form_forest_;

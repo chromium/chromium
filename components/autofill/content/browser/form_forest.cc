@@ -4,6 +4,9 @@
 
 #include "components/autofill/content/browser/form_forest.h"
 
+#include "base/check.h"
+#include "base/check_deref.h"
+#include "base/check_op.h"
 #include "base/containers/contains.h"
 #include "base/containers/cxx20_erase_vector.h"
 #include "base/containers/stack.h"
@@ -18,21 +21,6 @@
 #include "components/autofill/content/browser/form_forest_util_inl.h"
 #include "components/autofill/core/common/autofill_features.h"
 
-// AFCHECK(condition[, error_handler]) creates a crash dump and executes
-// |error_handler| if |condition| is false.
-// TODO(https://crbug.com/1187842): Replace AFCHECK() with DCHECK().
-#define AFCHECK(condition, ...)                                                \
-  if (!(condition)) {                                                          \
-    SCOPED_CRASH_KEY_STRING256("autofill", "main_url", MainUrlForDebugging()); \
-    AFCRASHDUMP();                                                             \
-    __VA_ARGS__;                                                               \
-  }
-#if DCHECK_IS_ON()
-#define AFCRASHDUMP() DCHECK(false)
-#else
-#define AFCRASHDUMP() base::debug::DumpWithoutCrashing()
-#endif
-
 namespace autofill::internal {
 
 FormForest::FrameData::FrameData(LocalFrameToken frame_token)
@@ -42,27 +30,12 @@ FormForest::FrameData::~FrameData() = default;
 FormForest::FormForest() = default;
 FormForest::~FormForest() = default;
 
-std::string FormForest::MainUrlForDebugging() const {
-  content::RenderFrameHost* some_rfh =
-      content::RenderFrameHost::FromID(some_rfh_for_debugging_);
-  if (!some_rfh) {
-    for (const auto& frame_data : frame_datas_) {
-      if (frame_data && frame_data->driver)
-        some_rfh = static_cast<ContentAutofillDriver*>(frame_data->driver)
-                       ->render_frame_host();
-    }
-  }
-  if (!some_rfh)
-    return std::string();
-  return some_rfh->GetMainFrame()->GetLastCommittedURL().spec();
-}
-
 FormForest::FrameData* FormForest::GetOrCreateFrameData(LocalFrameToken frame) {
   auto it = frame_datas_.find(frame);
   if (it == frame_datas_.end())
     it = frame_datas_.insert(it, std::make_unique<FrameData>(frame));
-  AFCHECK(it != frame_datas_.end());
-  AFCHECK(it->get());
+  DCHECK(it != frame_datas_.end());
+  DCHECK(it->get());
   return it->get();
 }
 
@@ -85,11 +58,10 @@ FormData* FormForest::GetFormData(FormGlobalId form, FrameData* frame_data) {
 FormForest::FrameAndForm FormForest::GetRoot(FormGlobalId form) {
   for (;;) {
     FrameData* frame = GetFrameData(form.frame_token);
-    AFCHECK(frame, return {nullptr, nullptr});
     if (!frame->parent_form) {
       auto it = base::ranges::find(frame->child_forms, form.renderer_id,
                                    &FormData::unique_renderer_id);
-      AFCHECK(it != frame->child_forms.end(), return {nullptr, nullptr});
+      CHECK(it != frame->child_forms.end());
       return {frame, &*it};
     }
     form = *frame->parent_form;
@@ -105,14 +77,13 @@ void FormForest::EraseReferencesTo(
                : absl::get<FormGlobalId>(frame_or_form) == form;
   };
   for (std::unique_ptr<FrameData>& some_frame : frame_datas_) {
-    AFCHECK(some_frame, continue);
     for (FormData& some_form : some_frame->child_forms) {
       size_t num_removed =
           base::EraseIf(some_form.fields, [&](const FormFieldData& some_form) {
             return Match(some_form.renderer_form_id());
           });
       if (num_removed > 0 && forms_with_removed_fields) {
-        AFCHECK(!some_frame->parent_form);
+        CHECK(!some_frame->parent_form);
         forms_with_removed_fields->insert(some_form.global_id());
       }
     }
@@ -140,7 +111,6 @@ base::flat_set<FormGlobalId> FormForest::EraseForms(
 }
 
 void FormForest::EraseFormsOfFrame(LocalFrameToken frame, bool keep_frame) {
-  some_rfh_for_debugging_ = content::GlobalRenderFrameHostId();
   auto it = frame_datas_.find(frame);
   if (it == frame_datas_.end()) {
     return;
@@ -178,17 +148,11 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
                                           AutofillDriver* driver) {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.UpdateTreeOfRendererForm.Duration");
-  AFCHECK(form, return );
-  AFCHECK(driver, return );
-  AFCHECK(form->host_frame, return );
-  AFCHECK(form->host_frame == driver->GetFrameToken(), return);
-  some_rfh_for_debugging_ = static_cast<ContentAutofillDriver*>(driver)
-                                ->render_frame_host()
-                                ->GetGlobalId();
+  CHECK(form->host_frame);
+  CHECK_EQ(form->host_frame, driver->GetFrameToken());
 
   FrameData* frame = GetOrCreateFrameData(form->host_frame);
-  AFCHECK(frame, return );
-  AFCHECK(!frame->driver || frame->driver == driver, return );
+  CHECK(!frame->driver || frame->driver == driver);
   frame->driver = driver;
 
   // Moves |form| into its |frame|'s FrameData::child_forms, with a special
@@ -231,7 +195,8 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     frame->child_forms.push_back(std::move(*form));
     form = &frame->child_forms.back();
   }
-  DCHECK(form && form == GetFormData(form->global_id()));
+  DCHECK(form);
+  DCHECK_EQ(form, GetFormData(form->global_id()));
 
   // Do *NOT* modify any FrameData::child_forms after this line!
   // Doing so may resize FrameData::child_forms, while we keep raw pointers to
@@ -257,7 +222,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
     form->fields = std::move(form_fields);
   } else {
     FrameAndForm root = GetRoot(form->global_id());
-    AFCHECK(root, return );
+    CHECK(root);
 
     // Moves the first |max_number_of_fields_to_be_moved| fields that originated
     // from the renderer form |source_form| from |source| to |target|.
@@ -397,19 +362,19 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
 
     while (!frontier.empty()) {
       ++num_did_visit;
-      AFCHECK(num_did_visit <= num_will_visit, break);
-      AFCHECK(num_will_visit <= kMaxVisits, break);
+      CHECK_LE(num_did_visit, num_will_visit);
+      CHECK_LE(num_will_visit, kMaxVisits);
 
       Node n = frontier.top();
       frontier.pop();
-      AFCHECK(n.frame, continue);
-      AFCHECK(n.form, continue);
+      DCHECK(n.frame);
+      DCHECK(n.form);
 
       // Pushes the current form on |roots_on_path| only if this is the first
       // time we encounter the form in the traversal (Node::next_frame == 0).
       if (n.next_frame == 0 && (n.form == root.form || !n.form->fields.empty()))
         roots_on_path.push(n.form);
-      AFCHECK(!roots_on_path.empty(), continue);
+      CHECK(!roots_on_path.empty());
 
       std::vector<FormFieldData>& source =
           n.form->global_id() == form->global_id()
@@ -450,7 +415,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
                 : 0);
         size_t end = base::checked_cast<size_t>(
             n.form->child_frames[n.next_frame].predecessor + 1);
-        AFCHECK(begin <= end, continue);
+        CHECK_LE(begin, end);
         MoveFields(end - begin, n.form->global_id(), source, root_fields);
 
         // Pushes the right-sibling field range of |n| onto the stack.
@@ -493,7 +458,7 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
         }
       }
     }
-    AFCHECK(num_did_visit == num_will_visit);
+    CHECK_EQ(num_did_visit, num_will_visit);
     root.form->fields = std::move(root_fields);
     base::UmaHistogramCounts100(
         "Autofill.FormForest.UpdateTreeOfRendererForm.Visits", num_did_visit);
@@ -526,16 +491,14 @@ void FormForest::UpdateTreeOfRendererForm(FormData* form,
   }
 }
 
-const FormData* FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
+const FormData& FormForest::GetBrowserForm(FormGlobalId renderer_form) const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetBrowserFormOfRendererForm.Duration");
-  AFCHECK(renderer_form.frame_token, return nullptr);
+  CHECK(renderer_form.frame_token);
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
-  FormData* form = mutable_this.GetRoot(renderer_form).form;
-  AFCHECK(form, return nullptr);
-  return form;
+  return CHECK_DEREF(mutable_this.GetRoot(renderer_form).form.get());
 }
 
 FormForest::RendererForms::RendererForms() = default;
@@ -551,8 +514,7 @@ FormForest::RendererForms FormForest::GetRendererFormsOfBrowserForm(
     const {
   SCOPED_UMA_HISTOGRAM_TIMER_MICROS(
       "Autofill.FormForest.GetRendererFormsOfBrowserForm.Duration");
-  AFCHECK(browser_form.host_frame, RendererForms result;
-          result.renderer_forms = {browser_form}; return result);
+  CHECK(browser_form.host_frame);
 
   // For calling non-const-qualified getters.
   FormForest& mutable_this = *const_cast<FormForest*>(this);
