@@ -1512,8 +1512,16 @@ IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
 // Verifies the behavior when companion feature is disabled but a navigation to
 // exps registration URL is observed. Restart the browser and verify that
 // companion is active and pinned.
+// TODO(https://crbug.com/1457279): Flaky on Mac12 and Mac13.
+#if BUILDFLAG(IS_MAC)
+#define MAYBE_ObservesExpsRegistrationSuccessURL \
+  DISABLED_ObservesExpsRegistrationSuccessURL
+#else
+#define MAYBE_ObservesExpsRegistrationSuccessURL \
+  ObservesExpsRegistrationSuccessURL
+#endif
 IN_PROC_BROWSER_TEST_F(CompanionPageDisabledBrowserTest,
-                       ObservesExpsRegistrationSuccessURL) {
+                       MAYBE_ObservesExpsRegistrationSuccessURL) {
   EXPECT_TRUE(companion::IsCompanionFeatureEnabled());
   EXPECT_TRUE(base::FeatureList::IsEnabled(
       companion::features::internal::
