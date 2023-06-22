@@ -256,10 +256,8 @@ export class ArrayDataModel extends EventTarget {
    * This dispatches one or more change events.
    * This runs sort after updating.
    * @param {Array<number>} indexes The index list of items to update.
-   * @param {?boolean=} shouldInvalidateVisible Whether to emit an event that
-   *     contains the property to only invalidate invisible.
    */
-  updateIndexes(indexes, shouldInvalidateVisible = true) {
+  updateIndexes(indexes) {
     indexes.forEach(function(index) {
       assert(index >= 0 && index < this.length, 'Invalid index');
     }, this);
@@ -267,7 +265,6 @@ export class ArrayDataModel extends EventTarget {
     for (let i = 0; i < indexes.length; i++) {
       const e = new Event('change');
       e.index = indexes[i];
-      e.shouldInvalidateVisible = shouldInvalidateVisible;
       this.dispatchEvent(e);
     }
 

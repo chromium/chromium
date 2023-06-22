@@ -735,24 +735,12 @@ List.prototype = {
   },
 
   handleDataModelChange_(e) {
-    let shouldRedraw = false;
-    if (e.index >= this.firstIndex_ &&
-        (e.index < this.lastIndex_ || this.remainingSpace_)) {
-      shouldRedraw = true;
-    }
-
-    // In the event the item invalidated was inside the viewport but we only
-    // want to invalidate the visible items, avoid continuing here as this may
-    // have been updated in another section.
-    if (!e.shouldInvalidateVisible && shouldRedraw) {
-      return;
-    }
-
     delete this.cachedItems_[e.index];
     delete this.cachedItemHeights_[e.index];
     this.cachedMeasuredItem_ = null;
 
-    if (shouldRedraw) {
+    if (e.index >= this.firstIndex_ &&
+        (e.index < this.lastIndex_ || this.remainingSpace_)) {
       this.redraw();
     }
   },

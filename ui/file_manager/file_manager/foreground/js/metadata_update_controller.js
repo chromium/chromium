@@ -93,39 +93,6 @@ export class MetadataUpdateController {
         'filesystem', event.entries);
     this.listContainer_.currentView.updateListItemsMetadata(
         'external', event.entries);
-
-    if (!util.isDriveFsBulkPinningEnabled() &&
-        !util.isInlineSyncStatusEnabled()) {
-      return;
-    }
-
-    // updateListItemsMetadata only updates the metadata for items in the
-    // viewport, this can lead to stale items outside the viewport staying
-    // cached and not being updated. This ensures the items stored in the file
-    // list outside the viewport are properly removed from their cached.
-    const currentFileList = this.directoryModel_.getFileList();
-    const updatedIndexes = [];
-    const updateableProperties = [
-      'availableOffline',
-      'pinned',
-      'syncStatus',
-      'progress',
-      'syncCompletedTime',
-    ];
-    for (let i = 0; i < event.updatedNames.length; ++i) {
-      const entry = event.entries[i];
-      const updatedNames = event.updatedNames[i];
-      const index = currentFileList.indexOf(entry);
-      if (index >= 0 &&
-          updateableProperties.some((prop) => updatedNames.has(prop))) {
-        updatedIndexes.push(index);
-      }
-    }
-    if (updatedIndexes.length === 0) {
-      return;
-    }
-    currentFileList.updateIndexes(
-        updatedIndexes, /*shouldInvalidateVisible=*/ false);
   }
 
   /**

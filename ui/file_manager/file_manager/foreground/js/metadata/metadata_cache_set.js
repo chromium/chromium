@@ -84,21 +84,14 @@ export class MetadataCacheSet extends EventTarget {
     const changedEntries = [];
     const urls = util.entriesToURLs(entries);
     const entriesMap = new Map();
-    const updatedNames = [];
 
     for (let i = 0; i < entries.length; i++) {
       const url = urls[i];
       const item = this.items_.get(url);
-      if (!item) {
-        continue;
+      if (item && item.storeProperties(requestId, results[i])) {
+        changedEntries.push(entries[i]);
+        entriesMap.set(url, entries[i]);
       }
-      const changedNames = item.storeProperties(requestId, results[i]);
-      if (changedNames.length === 0) {
-        continue;
-      }
-      changedEntries.push(entries[i]);
-      updatedNames.push(changedNames);
-      entriesMap.set(url, entries[i]);
     }
 
     if (!changedEntries.length) {
@@ -108,7 +101,7 @@ export class MetadataCacheSet extends EventTarget {
     const event = new Event('update');
     event.entries = changedEntries;
     event.entriesMap = entriesMap;
-    event.updatedNames = updatedNames;
+    event.names = new Set(names);
     this.dispatchEvent(event);
     return true;
   }

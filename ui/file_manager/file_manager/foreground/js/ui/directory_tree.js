@@ -389,16 +389,7 @@ export class DirectoryItem extends FilesTreeItem {
     }
 
     const updateableProperties = ['shared', 'isMachineRoot', 'isExternalMedia'];
-    const urlsToUpdate = new Set();
-    for (let i = 0; i < event.updatedNames.length; ++i) {
-      const updatedNames = event.updatedNames[i];
-      if (updateableProperties.some((prop) => updatedNames.has(prop))) {
-        const entry = event.entries[i];
-        urlsToUpdate.add(entry.toURL());
-      }
-    }
-
-    if (urlsToUpdate.size === 0) {
+    if (!updateableProperties.some((prop) => event.names.has(prop))) {
       return;
     }
 
@@ -406,7 +397,8 @@ export class DirectoryItem extends FilesTreeItem {
     while (this.entries_[index]) {
       const childEntry = this.entries_[index];
       const childElement = this.items[index];
-      if (urlsToUpdate.has(childEntry.toURL())) {
+
+      if (event.entriesMap.has(childEntry.toURL())) {
         childElement.updateDriveSpecificIcons();
       }
 

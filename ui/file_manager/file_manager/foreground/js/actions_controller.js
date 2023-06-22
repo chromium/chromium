@@ -242,29 +242,17 @@ export class ActionsController {
    * @private
    */
   onMetadataUpdated_(event) {
-    if (!event) {
-      return;
-    }
-
-    const urlsToUpdate = new Set();
-    for (let i = 0; i < event.updatedNames.length; ++i) {
-      if (event.updatedNames[i].has('pinned')) {
-        const entry = event.entries[i];
-        urlsToUpdate.add(entry.toURL());
-      }
-    }
-
-    if (urlsToUpdate.size === 0) {
+    if (!event || !event.names.has('pinned')) {
       return;
     }
 
     for (const key of this.readyModels_.keys()) {
-      if (key.split(';').some(url => urlsToUpdate.has(url))) {
+      if (key.split(';').some(url => event.entriesMap.has(url))) {
         this.readyModels_.delete(key);
       }
     }
     for (const key of this.initializingdModels_.keys()) {
-      if (key.split(';').some(url => urlsToUpdate.has(url))) {
+      if (key.split(';').some(url => event.entriesMap.has(url))) {
         this.initializingdModels_.delete(key);
       }
     }
