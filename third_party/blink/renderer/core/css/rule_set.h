@@ -97,11 +97,6 @@ class CORE_EXPORT RuleData {
   DISALLOW_NEW();
 
  public:
-  // The `extra_specificity` parameter is added to the specificity of the
-  // RuleData. This is useful for @scope, where inner selectors must gain
-  // additional specificity from the <scope-start> of the enclosing @scope.
-  // https://drafts.csswg.org/css-cascade-6/#scope-atrule
-  //
   // NOTE: You will want to call ComputeBloomFilterHashes() before actually
   // using this RuleData for matching. However, the constructor cannot do it
   // right away, since RuleMap wants to use the space normally used for hashes
@@ -109,7 +104,6 @@ class CORE_EXPORT RuleData {
   RuleData(StyleRule*,
            unsigned selector_index,
            unsigned position,
-           unsigned extra_specificity,
            AddRuleFlags);
 
   unsigned GetPosition() const { return position_; }

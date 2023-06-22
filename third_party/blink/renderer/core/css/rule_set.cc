@@ -110,12 +110,11 @@ static unsigned DetermineLinkMatchType(const AddRuleFlags add_rule_flags,
 RuleData::RuleData(StyleRule* rule,
                    unsigned selector_index,
                    unsigned position,
-                   unsigned extra_specificity,
                    AddRuleFlags add_rule_flags)
     : rule_(rule),
       selector_index_(selector_index),
       position_(position),
-      specificity_(Selector().Specificity() + extra_specificity),
+      specificity_(Selector().Specificity()),
       link_match_type_(DetermineLinkMatchType(add_rule_flags, Selector())),
       valid_property_filter_(
           static_cast<std::underlying_type_t<ValidPropertyFilter>>(
@@ -514,9 +513,7 @@ void RuleSet::AddRule(StyleRule* rule,
   if (rule_count_ >= (1 << RuleData::kPositionBits)) {
     return;
   }
-  const int extra_specificity = style_scope ? style_scope->Specificity() : 0;
-  RuleData rule_data(rule, selector_index, rule_count_, extra_specificity,
-                     add_rule_flags);
+  RuleData rule_data(rule, selector_index, rule_count_, add_rule_flags);
   ++rule_count_;
   if (features_.CollectFeaturesFromSelector(rule_data.Selector(),
                                             style_scope) ==
@@ -537,7 +534,7 @@ void RuleSet::AddRule(StyleRule* rule,
     rule_data.ResetEntirelyCoveredByBucketing();
 
     RuleData visited_dependent(rule, rule_data.SelectorIndex(),
-                               rule_data.GetPosition(), extra_specificity,
+                               rule_data.GetPosition(),
                                add_rule_flags | kRuleIsVisitedDependent);
     // Since the selector now is in two buckets, we use BucketCoverage::kIgnore
     // to prevent CSSSelector::is_covered_by_bucketing_ from being set.

@@ -51,14 +51,6 @@ bool StyleScope::HasImplicitRoot(Element* element) const {
   return contents_->HasOwnerParentNode(element);
 }
 
-unsigned StyleScope::Specificity() const {
-  if (!specificity_.has_value()) {
-    specificity_ =
-        MaximumSpecificity(From()) + (parent_ ? parent_->Specificity() : 0);
-  }
-  return *specificity_;
-}
-
 StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
                               const CSSParserContext* context,
                               StyleSheetContents* style_sheet) {

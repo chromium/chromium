@@ -60,10 +60,6 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // This is used to find the roots for prelude-less @scope rules.
   bool HasImplicitRoot(Element*) const;
 
-  // Specificity of the <scope-start> selector (::From()), plus the
-  // specificity of the parent scope (if any).
-  unsigned Specificity() const;
-
  private:
   // If `contents_` is not nullptr, then this is a prelude-less @scope rule
   // which is implicitly scoped to the owner node's parent.
