@@ -88,8 +88,7 @@
     "scripts": [
       {
         "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
+        "script": "checkbins.py"
       }
     ]
   },
@@ -110,8 +109,7 @@
     "scripts": [
       {
         "name": "checkbins",
-        "script": "checkbins.py",
-        "swarming": {}
+        "script": "checkbins.py"
       }
     ]
   },

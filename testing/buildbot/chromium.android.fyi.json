@@ -140,8 +140,7 @@
     "scripts": [
       {
         "name": "test_traffic_annotation_auditor",
-        "script": "test_traffic_annotation_auditor.py",
-        "swarming": {}
+        "script": "test_traffic_annotation_auditor.py"
       }
     ]
   },
@@ -4729,8 +4728,7 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "script": "check_network_annotations.py",
-        "swarming": {}
+        "script": "check_network_annotations.py"
       }
     ]
   },
