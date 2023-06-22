@@ -14,6 +14,7 @@ import '../settings_shared.css.js';
 import '/shared/settings/controls/settings_dropdown_menu.js';
 import './input_device_settings_shared.css.js';
 import './keyboard_remap_modifier_key_row.js';
+import './keyboard_six_pack_key_row.js';
 
 import {I18nMixin, I18nMixinInterface} from 'chrome://resources/cr_elements/i18n_mixin.js';
 import {assert} from 'chrome://resources/js/assert_ts.js';
@@ -25,7 +26,7 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
 
 const SettingsPerDeviceKeyboardRemapKeysElementBase =
@@ -118,6 +119,72 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
             key: 'fakeCapsLockKeyRemapPref',
             type: chrome.settingsPrivate.PrefType.NUMBER,
             value: ModifierKey.kCapsLock,
+          };
+        },
+      },
+
+      insertPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'insertPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
+          };
+        },
+      },
+
+      deletePref: {
+        type: Object,
+        value() {
+          return {
+            key: 'deletePref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
+          };
+        },
+      },
+
+      homePref: {
+        type: Object,
+        value() {
+          return {
+            key: 'homePref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
+          };
+        },
+      },
+
+      endPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'endPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
+          };
+        },
+      },
+
+      pageUpPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'pageUpPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
+          };
+        },
+      },
+
+      pageDownPref: {
+        type: Object,
+        value() {
+          return {
+            key: 'pageDownPref',
+            type: chrome.settingsPrivate.PrefType.NUMBER,
+            value: SixPackShortcutModifier.kSearch,
           };
         },
       },
@@ -217,6 +284,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
   private fakeCapsLockPref: chrome.settingsPrivate.PrefObject;
   private fakeEscPref: chrome.settingsPrivate.PrefObject;
   private fakeMetaPref: chrome.settingsPrivate.PrefObject;
+  private insertPref: chrome.settingsPrivate.PrefObject;
+  private pageUpPref: chrome.settingsPrivate.PrefObject;
+  private pageDownPref: chrome.settingsPrivate.PrefObject;
+  private endPref: chrome.settingsPrivate.PrefObject;
+  private deletePref: chrome.settingsPrivate.PrefObject;
+  private homePref: chrome.settingsPrivate.PrefObject;
   private hasAssistantKey: boolean;
   private hasCapsLockKey: boolean;
   private metaKeyLabel: string;

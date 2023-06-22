@@ -30,6 +30,15 @@ export const SixPackShortcutModifier =
 
 export type SixPackKeyInfo = InputDeviceSettingsTypes.SixPackKeyInfo;
 
+export enum SixPackKey {
+  DELETE = 'del',
+  INSERT = 'insert',
+  PAGE_UP = 'pageUp',
+  PAGE_DOWN = 'pageDown',
+  HOME = 'home',
+  END = 'end',
+}
+
 export type PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 export const PolicyStatus = InputDeviceSettingsTypes.PolicyStatus;
 

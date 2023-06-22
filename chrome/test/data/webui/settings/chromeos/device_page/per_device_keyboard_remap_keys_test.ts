@@ -333,4 +333,14 @@ suite('<settings-per-device-keyboard-remap-keys>', () => {
         assertTrue(
             isVisible(page.shadowRoot!.querySelector('#otherKeysHeader')));
       });
+
+  test('Six pack keys displayed when alt flag enabled', async () => {
+    loadTimeData.overrideValues({
+      enableAltClickAndSixPackCustomization: true,
+    });
+    await initializePerDeviceKeyboardRemapKeys();
+    const sixPackKeyRows =
+        page.shadowRoot!.querySelectorAll('keyboard-six-pack-key-row');
+    assertEquals(6, sixPackKeyRows.length);
+  });
 });
