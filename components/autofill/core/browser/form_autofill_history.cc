@@ -28,10 +28,12 @@ FormAutofillHistory::FillOperation::GetFieldTypeMap() const {
       });
 }
 
-const std::u16string* FormAutofillHistory::FillOperation::GetValue(
+std::pair<std::u16string, bool>
+FormAutofillHistory::FillOperation::GetAutofillValue(
     FieldGlobalId field_id) const {
   auto it = iterator_->field_history_.find(field_id);
-  return it != iterator_->field_history_.end() ? &it->second.value : nullptr;
+  CHECK(it != iterator_->field_history_.end());
+  return {it->second.value, it->second.is_autofilled};
 }
 
 FormAutofillHistory::FormAutofillHistory() = default;
@@ -64,7 +66,8 @@ void FormAutofillHistory::AddFormFillEntry(
                  .emplace(field->global_id(),
                           FieldTypeAndValue{
                               .type = autofill_field->Type().GetStorableType(),
-                              .value = field->value})
+                              .value = field->value,
+                              .is_autofilled = field->is_autofilled})
                  .second;
   }
   // Drop the last history entry while the history size exceeds the limit.

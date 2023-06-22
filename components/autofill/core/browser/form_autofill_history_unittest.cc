@@ -33,9 +33,11 @@ class FormAutofillHistoryTest : public testing::Test {
                                    const char* name,
                                    const char* value,
                                    const char* type,
-                                   ServerFieldType field_type) {
+                                   ServerFieldType field_type,
+                                   bool is_autofilled = false) {
     std::unique_ptr<FormFieldData> field = std::make_unique<FormFieldData>();
     test::CreateTestFormField(label, name, value, type, field.get());
+    field->is_autofilled = is_autofilled;
     std::unique_ptr<AutofillField> autofill_field =
         std::make_unique<AutofillField>(*field);
     autofill_field->SetTypeTo(AutofillType(field_type));
@@ -70,7 +72,8 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_NormalFill) {
   EXPECT_TRUE(form_autofill_history_.HasHistory(first_name_id));
   FormAutofillHistory::FillOperation fill_operation =
       form_autofill_history_.GetLastFillingOperationForField(first_name_id);
-  EXPECT_EQ(*fill_operation.GetValue(first_name_id), u"some-value");
+  EXPECT_EQ(fill_operation.GetAutofillValue(first_name_id),
+            std::make_pair(u"some-value", false));
   EXPECT_THAT(fill_operation.GetFieldTypeMap(),
               ElementsAre(Pair(first_name_id, NAME_FIRST)));
 
@@ -86,8 +89,9 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
 
   // Modify the first name filling to simulate a refill.
   filled_fields_[0].first->value = u"some-other-first-name";
-  FieldGlobalId last_name_id = AddNewFieldFilling(
-      "last name", "last name", "some-other-last-name", "text", NAME_LAST);
+  FieldGlobalId last_name_id =
+      AddNewFieldFilling("last name", "last name", "some-other-last-name",
+                         "text", NAME_LAST, /*is_autofilled=*/true);
   AddFormFilling(/*is_refill=*/true);
 
   EXPECT_TRUE(form_autofill_history_.HasHistory(first_name_id));
@@ -98,8 +102,10 @@ TEST_F(FormAutofillHistoryTest, AddFormFillEntry_Refill) {
   EXPECT_EQ(
       fill_operation,
       form_autofill_history_.GetLastFillingOperationForField(last_name_id));
-  EXPECT_EQ(*fill_operation.GetValue(first_name_id), u"some-first-name");
-  EXPECT_EQ(*fill_operation.GetValue(last_name_id), u"some-other-last-name");
+  EXPECT_EQ(fill_operation.GetAutofillValue(first_name_id),
+            std::make_pair(u"some-first-name", false));
+  EXPECT_EQ(fill_operation.GetAutofillValue(last_name_id),
+            std::make_pair(u"some-other-last-name", true));
   EXPECT_THAT(fill_operation.GetFieldTypeMap(),
               ElementsAre(Pair(first_name_id, NAME_FIRST),
                           Pair(last_name_id, NAME_LAST)));

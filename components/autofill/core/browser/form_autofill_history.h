@@ -27,6 +27,7 @@ class FormAutofillHistory {
   struct FieldTypeAndValue {
     ServerFieldType type;
     std::u16string value;
+    bool is_autofilled;
   };
 
   struct AutofillHistoryEntry {
@@ -43,8 +44,11 @@ class FormAutofillHistory {
     // Returns the map held by `iterator_` without field values.
     base::flat_map<FieldGlobalId, ServerFieldType> GetFieldTypeMap() const;
 
-    // Assumes the underlying map contains a entry with key `field_id`.
-    const std::u16string* GetValue(FieldGlobalId field_id) const;
+    // Returns the field value stored in history for `field_id` as well as the
+    // boolean is_autofilled state. Assumes the underlying map contains a entry
+    // with key `field_id`.
+    std::pair<std::u16string, bool> GetAutofillValue(
+        FieldGlobalId field_id) const;
 
     const url::Origin& GetOrigin() const { return iterator_->filling_origin_; }
 
