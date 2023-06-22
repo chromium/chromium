@@ -454,24 +454,24 @@
       "--test-path=../../third_party/blink/web_tests/external/wpt/webdriver/tests/",
     ],
   },
-  "wpt_tests_isolate": {
-    "label": "//:wpt_tests_isolate",
+  "chrome_wpt": {
+    "label": "//:chrome_wpt",
     "type": "generated_script",
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
     ],
   },
-  "wpt_tests_isolate_content_shell": {
-    "label": "//:wpt_tests_isolate_content_shell",
+  "content_shell_wpt": {
+    "label": "//:content_shell_wpt",
     "type": "generated_script",
     "args": [
       "--results-directory",
       "${ISOLATED_OUTDIR}",
     ],
   },
-  "wpt_tests_ios": {
-    "label": "//ios/chrome/test/wpt:wpt_tests_ios",
+  "chrome_ios_wpt": {
+    "label": "//ios/chrome/test/wpt:chrome_ios_wpt",
     "type": "generated_script",
     "args": [
       "--results-directory",

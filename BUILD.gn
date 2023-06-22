@@ -1124,7 +1124,7 @@ if (!is_ios && !is_cronet_build) {
         data_deps += [ "//build/win:copy_cdb_to_output" ]
       }
     }
-    script_test("wpt_tests_isolate") {
+    script_test("chrome_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
         "--product=chrome",
@@ -1137,7 +1137,7 @@ if (!is_ios && !is_cronet_build) {
         "//third_party/blink/tools:wpt_tests_isolate",
       ]
     }
-    script_test("wpt_tests_isolate_content_shell") {
+    script_test("content_shell_wpt") {
       script = "//third_party/blink/tools/run_wpt_tests.py"
       args = [
         "--no-show-results",

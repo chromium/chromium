@@ -37,10 +37,13 @@ print-reftests) should work in `wptrunner`, but conversely, features available t
 
 The `wptrunner` wrapper script is
 [`//third_party/blink/tools/run_wpt_tests.py`](https://source.chromium.org/chromium/chromium/src/+/main:third_party/blink/tools/run_wpt_tests.py).
-First, build the necessary ninja target:
+First, build the [ninja target][1] for the product you wish to test:
 
 ``` sh
-autoninja -C out/Release wpt_tests_isolate_content_shell
+autoninja -C out/Release chrome_wpt
+autoninja -C out/Release content_shell_wpt
+autoninja -C out/Release system_webview_wpt   # `android_webview`
+autoninja -C out/Release chrome_public_wpt    # `chrome_android`
 ```
 
 To run the script, run the command below from `//third_party/blink/tools`:
@@ -286,3 +289,5 @@ Any updated test section will be annotated with `bug: crbug.com/123`.
 
 Please [file bugs and feature requests](https://crbug.com/new) against
 `Blink>Infra`, tagging the title with `[wptrunner]`.
+
+[1]: https://source.chromium.org/search?q=run_wpt_tests.py%20lang:gn

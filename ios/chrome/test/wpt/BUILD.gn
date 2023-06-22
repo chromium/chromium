@@ -10,7 +10,7 @@ import("//ios/chrome/test/xcuitest/ios_chrome_xcuitest_app_host.gni")
 import("//ios/public/provider/chrome/browser/build_config.gni")
 import("//testing/test.gni")
 
-script_test("wpt_tests_ios") {
+script_test("chrome_ios_wpt") {
   script = "//third_party/blink/tools/run_wpt_tests.py"
   args = [
     "--product",

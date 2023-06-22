@@ -5710,6 +5710,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
+        'isolate_name': 'chrome_ios_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5728,7 +5729,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate',
+        'isolate_name': 'chrome_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5744,7 +5745,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate_content_shell',
+        'isolate_name': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5763,7 +5764,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate_content_shell',
+        'isolate_name': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 15,
@@ -5784,7 +5785,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate_content_shell',
+        'isolate_name': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 3,
@@ -5804,7 +5805,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate',
+        'isolate_name': 'chrome_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 1,
@@ -5828,7 +5829,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate',
+        'isolate_name': 'chrome_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 1,
@@ -5850,7 +5851,7 @@
           ],
           'script': '//third_party/blink/tools/merge_web_test_results.py',
         },
-        'isolate_name': 'wpt_tests_isolate_content_shell',
+        'isolate_name': 'content_shell_wpt',
         'results_handler': 'layout tests',
         'swarming': {
           'shards': 10,

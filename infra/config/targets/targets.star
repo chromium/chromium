@@ -569,8 +569,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "wpt_tests_isolate",
-    label = "//:wpt_tests_isolate",
+    name = "chrome_wpt",
+    label = "//:chrome_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
@@ -578,8 +578,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "wpt_tests_isolate_content_shell",
-    label = "//:wpt_tests_isolate_content_shell",
+    name = "content_shell_wpt",
+    label = "//:content_shell_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",
@@ -587,8 +587,8 @@ targets.generated_script(
 )
 
 targets.generated_script(
-    name = "wpt_tests_ios",
-    label = "//ios/chrome/test/wpt:wpt_tests_ios",
+    name = "chrome_ios_wpt",
+    label = "//ios/chrome/test/wpt:chrome_ios_wpt",
     args = [
         "--results-directory",
         "${ISOLATED_OUTDIR}",

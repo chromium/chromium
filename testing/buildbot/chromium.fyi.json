@@ -17577,7 +17577,7 @@
           "14c18"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_ios",
+        "isolate_name": "chrome_ios_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -17616,7 +17616,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://ios/chrome/test/wpt:wpt_tests_ios/"
+        "test_id_prefix": "ninja://ios/chrome/test/wpt:chrome_ios_wpt/"
       }
     ]
   },
@@ -43516,7 +43516,7 @@
         "args": [
           "--enable-sanitizer"
         ],
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -43539,14 +43539,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 8
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "linux-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -43570,14 +43570,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       },
       {
         "args": [
           "--flag-specific",
           "highdpi"
         ],
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -43601,7 +43601,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 3
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       },
       {
         "args": [
@@ -43609,7 +43609,7 @@
           "--flag-specific",
           "disable-site-isolation-trials"
         ],
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -43633,7 +43633,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 10
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
@@ -43644,7 +43644,7 @@
           "--enable-leak-detection"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -43667,14 +43667,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "linux-wpt-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate",
+        "isolate_name": "chrome_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -43697,7 +43697,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://:chrome_wpt/"
       }
     ]
   },
@@ -43708,7 +43708,7 @@
           "--no-wpt-internal",
           "webauthn/"
         ],
-        "isolate_name": "wpt_tests_isolate",
+        "isolate_name": "chrome_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -43726,7 +43726,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://:chrome_wpt/"
       }
     ]
   },
@@ -43742,7 +43742,7 @@
           "uievents/"
         ],
         "experiment_percentage": 100,
-        "isolate_name": "wpt_tests_isolate",
+        "isolate_name": "chrome_wpt",
         "merge": {
           "args": [
             "--verbose"
@@ -43760,7 +43760,7 @@
           ],
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com"
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate/"
+        "test_id_prefix": "ninja://:chrome_wpt/"
       }
     ]
   },
@@ -46045,7 +46045,7 @@
   "mac10.15-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46070,14 +46070,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "mac11-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46102,14 +46102,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "mac12-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46134,14 +46134,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "mac12-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46166,14 +46166,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "mac13-arm64-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46198,14 +46198,14 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
   "mac13-wpt-content-shell-fyi-rel": {
     "isolated_scripts": [
       {
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -46230,7 +46230,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
@@ -49244,7 +49244,7 @@
           "--target",
           "Release_x64"
         ],
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49269,7 +49269,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   },
@@ -49280,7 +49280,7 @@
           "--target",
           "Release_x64"
         ],
-        "isolate_name": "wpt_tests_isolate_content_shell",
+        "isolate_name": "content_shell_wpt",
         "isolate_profile_data": true,
         "merge": {
           "args": [
@@ -49305,7 +49305,7 @@
           "service_account": "chromium-tester@chops-service-accounts.iam.gserviceaccount.com",
           "shards": 15
         },
-        "test_id_prefix": "ninja://:wpt_tests_isolate_content_shell/"
+        "test_id_prefix": "ninja://:content_shell_wpt/"
       }
     ]
   }
