@@ -95,6 +95,11 @@
 
       --oobe-reset-firmware-update-line-height: 20px;
 
+      --oobe-guest-tos-terms-title-font-family: var(--oobe-header-font-family);
+      --oobe-guest-tos-terms-title-font-size: 18px;
+      --oobe-guest-tos-terms-title-font-weight: var(--oobe-header-font-weight);
+      --oobe-guest-tos-terms-title-line-height: 24px;
+
       /* Select */
       --oobe-select-height: 44px;
 
