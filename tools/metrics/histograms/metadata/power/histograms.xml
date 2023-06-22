@@ -1134,6 +1134,18 @@ chromium-metrics-reviews@google.com.
   <token key="BatteryCapacityType" variants="BatteryCapacityType"/>
 </histogram>
 
+<histogram name="Power.BatteryPercentageAtHibernateSuspend" units="%"
+    expires_after="2024-06-14">
+  <owner>mka@chromium.org</owner>
+  <owner>bgeffon@chromium.org</owner>
+  <owner>chromeos-platform-power@google.com</owner>
+  <owner>chromeos-hibernate@google.com</owner>
+  <summary>
+    The battery level in percent at the time the system entered hibernate.
+    Reported at resume from hibernate.
+  </summary>
+</histogram>
+
 <histogram name="Power.BatteryPercentDrop" units="%" expires_after="2023-11-12">
   <owner>ryansturm@chromium.org</owner>
   <owner>tbansal@chromium.org</owner>
