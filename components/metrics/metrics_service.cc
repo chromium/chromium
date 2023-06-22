@@ -595,6 +595,12 @@ void MetricsService::OnAppEnterBackground(bool keep_recording_in_background) {
     base::UmaHistogramBoolean(
         "UMA.MetricsService.PendingOngoingLogOnBackgrounded",
         pending_ongoing_log_);
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kMergeSubprocessMetricsOnBgAndFg)) {
+      client_->MergeSubprocessHistograms();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     {
       ScopedTerminationChecker scoped_termination_checker(
           "UMA.MetricsService.OnBackgroundedScopedTerminationChecker");
@@ -618,6 +624,12 @@ void MetricsService::OnAppEnterForeground(bool force_open_new_log) {
     base::UmaHistogramBoolean(
         "UMA.MetricsService.PendingOngoingLogOnForegrounded",
         pending_ongoing_log_);
+#if BUILDFLAG(IS_ANDROID)
+    if (base::FeatureList::IsEnabled(
+            features::kMergeSubprocessMetricsOnBgAndFg)) {
+      client_->MergeSubprocessHistograms();
+    }
+#endif  // BUILDFLAG(IS_ANDROID)
     // Because state_ >= SENDING_LOGS, PushPendingLogsToPersistentStorage()
     // will close the log, allowing a new log to be opened.
     PushPendingLogsToPersistentStorage(

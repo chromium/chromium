@@ -663,6 +663,21 @@ void ChromeMetricsServiceClient::OnEnvironmentUpdate(std::string* environment) {
 #endif  // BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC) || BUILDFLAG(IS_ANDROID)
 }
 
+void ChromeMetricsServiceClient::MergeSubprocessHistograms() {
+  // TODO(crbug.com/1293026): Move this to a shared place to not have to
+  // duplicate the code across different `MetricsServiceClient`s.
+
+  // Synchronously fetch subprocess histograms that live in shared memory.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+
+  // Asynchronously fetch subprocess histograms that do not live in shared
+  // memory (e.g., they were emitted before the shared memory was set up).
+  content::FetchHistogramsAsynchronously(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      /*callback=*/base::DoNothing(),
+      /*wait_time=*/base::Milliseconds(kMaxHistogramGatheringWaitDuration));
+}
+
 void ChromeMetricsServiceClient::CollectFinalMetricsForLog(
     base::OnceClosure done_callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);

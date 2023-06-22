@@ -101,6 +101,7 @@ class ChromeMetricsServiceClient
   bool IsExtendedStableChannel() override;
   std::string GetVersionString() override;
   void OnEnvironmentUpdate(std::string* serialized_environment) override;
+  void MergeSubprocessHistograms() override;
   void CollectFinalMetricsForLog(base::OnceClosure done_callback) override;
   std::unique_ptr<metrics::MetricsLogUploader> CreateUploader(
       const GURL& server_url,

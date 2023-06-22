@@ -24,6 +24,12 @@ BASE_DECLARE_FEATURE(kMetricsClearLogsOnClonedInstall);
 // This can be used to disable structured metrics as a whole.
 BASE_DECLARE_FEATURE(kStructuredMetrics);
 
+#if BUILDFLAG(IS_ANDROID)
+// Determines whether to merge histograms from child processes when Chrome is
+// backgrounded/foregrounded. Only on Android.
+BASE_DECLARE_FEATURE(kMergeSubprocessMetricsOnBgAndFg);
+#endif  // BUILDFLAG(IS_ANDROID)
+
 // When this feature is enabled, use the client ID stored in the system profile
 // of the PMA files when creating independent logs from them. This is to address
 // the issue of a client resetting their client ID, and then creating an

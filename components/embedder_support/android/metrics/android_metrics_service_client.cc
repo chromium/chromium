@@ -524,6 +524,21 @@ std::string AndroidMetricsServiceClient::GetVersionString() {
   return metrics::GetVersionString();
 }
 
+void AndroidMetricsServiceClient::MergeSubprocessHistograms() {
+  // TODO(crbug.com/1293026): Move this to a shared place to not have to
+  // duplicate the code across different `MetricsServiceClient`s.
+
+  // Synchronously fetch subprocess histograms that live in shared memory.
+  base::StatisticsRecorder::ImportProvidedHistograms();
+
+  // Asynchronously fetch subprocess histograms that do not live in shared
+  // memory (e.g., they were emitted before the shared memory was set up).
+  content::FetchHistogramsAsynchronously(
+      base::SingleThreadTaskRunner::GetCurrentDefault(),
+      /*callback=*/base::DoNothing(),
+      /*wait_time=*/base::Milliseconds(kMaxHistogramGatheringWaitDuration));
+}
+
 void AndroidMetricsServiceClient::CollectFinalMetricsForLog(
     base::OnceClosure done_callback) {
   // Merge histograms from metrics providers into StatisticsRecorder.

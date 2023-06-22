@@ -358,6 +358,9 @@ public final class ProductionSupportedFlagList {
             Flag.baseFeature(MetricsFeatures.METRICS_CLEAR_LOGS_ON_CLONED_INSTALL,
                     "Controls whether UMA logs are cleared when a cloned "
                             + "install is detected."),
+            Flag.baseFeature(MetricsFeatures.MERGE_SUBPROCESS_METRICS_ON_BG_AND_FG,
+                    "Controls whether child process histograms are merged on background "
+                            + "and foreground."),
             Flag.baseFeature(MetricsFeatures.RESTORE_UMA_CLIENT_ID_INDEPENDENT_LOGS,
                     "Controls whether independent logs from PMA files will use the embedded "
                             + "client uuid as the log's client ID."),
