@@ -32,6 +32,7 @@
 #include "ui/base/ime/linux/linux_input_method_context.h"
 #include "ui/color/color_id.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/display/display.h"
 #include "ui/events/keycodes/dom/dom_code.h"
@@ -664,16 +665,16 @@ void GtkUi::UpdateColors() {
   const auto* color_provider =
       ui::ColorProviderManager::Get().GetColorProviderFor(
           {(color_scheme == ui::NativeTheme::ColorScheme::kDark)
-               ? ui::ColorProviderManager::ColorMode::kDark
-               : ui::ColorProviderManager::ColorMode::kLight,
+               ? ui::ColorProviderKey::ColorMode::kDark
+               : ui::ColorProviderKey::ColorMode::kLight,
            (color_scheme == ui::NativeTheme::ColorScheme::kPlatformHighContrast)
-               ? ui::ColorProviderManager::ContrastMode::kHigh
-               : ui::ColorProviderManager::ContrastMode::kNormal,
+               ? ui::ColorProviderKey::ContrastMode::kHigh
+               : ui::ColorProviderKey::ContrastMode::kNormal,
            ui::SystemTheme::kGtk,
            // Some theme colors, e.g. COLOR_NTP_LINK, are derived from color
            // provider colors. We assume that those sources' colors won't change
            // with frame type.
-           ui::ColorProviderManager::FrameType::kChromium});
+           ui::ColorProviderKey::FrameType::kChromium});
 
   SkColor location_bar_border = GetBorderColor("entry");
   if (SkColorGetA(location_bar_border)) {
