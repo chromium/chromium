@@ -57,8 +57,8 @@ class PLATFORM_EXPORT JPEGImageDecoder final : public ImageDecoder {
   SkYUVColorSpace GetYUVColorSpace() const override;
   Vector<SkISize> GetSupportedDecodeSizes() const override;
   bool GetGainmapInfoAndData(
-      SkGainmapInfo& outGainmapInfo,
-      scoped_refptr<SegmentReader>& outGainmapData) const override;
+      SkGainmapInfo& out_gainmap_info,
+      scoped_refptr<SegmentReader>& out_gainmap_data) const override;
 
   bool HasImagePlanes() const { return image_planes_.get(); }
 

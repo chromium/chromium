@@ -265,8 +265,8 @@ class PLATFORM_EXPORT ImageDecoder {
   // SkGainmapInfo rendering parameters, and a SegmentReader for the embedded
   // gainmap image's encoded data, and return true.
   virtual bool GetGainmapInfoAndData(
-      SkGainmapInfo& outGainmapInfo,
-      scoped_refptr<SegmentReader>& outGainmapData) const {
+      SkGainmapInfo& out_gainmap_info,
+      scoped_refptr<SegmentReader>& out_gainmap_data) const {
     return false;
   }
 

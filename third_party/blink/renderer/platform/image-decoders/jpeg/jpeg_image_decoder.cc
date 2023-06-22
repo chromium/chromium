@@ -970,7 +970,7 @@ Vector<SkISize> JPEGImageDecoder::GetSupportedDecodeSizes() const {
 
 bool JPEGImageDecoder::GetGainmapInfoAndData(
     SkGainmapInfo& out_gainmap_info,
-    scoped_refptr<SegmentReader>& out_gainmap_reader) const {
+    scoped_refptr<SegmentReader>& out_gainmap_data) const {
   auto* metadata_decoder = reader_ ? reader_->GetMetadataDecoder() : nullptr;
   if (!metadata_decoder) {
     return false;
@@ -995,7 +995,7 @@ bool JPEGImageDecoder::GetGainmapInfoAndData(
     return false;
   }
   out_gainmap_info = gainmap_info;
-  out_gainmap_reader =
+  out_gainmap_data =
       SegmentReader::CreateFromSkData(std::move(gainmap_image_data));
   return true;
 }
