@@ -29,12 +29,13 @@ const char kURLFirstMeaningfulPaint[] =
     "Omnibox.SuggestionUsed.URL.Experimental.NavigationToFirstMeaningfulPaint";
 
 const char kSearchLargestContentfulPaint2[] =
-    "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2";
+    "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2.1";
 const char kURLLargestContentfulPaint2[] =
-    "Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2";
+    "Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2.1";
 
 const char kSearchLargestContentfulPaint2Above2s[] =
-    "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2Above2s";
+    "Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint"
+    "2.1Above2s";
 }  // namespace
 
 OmniboxSuggestionUsedMetricsObserver::OmniboxSuggestionUsedMetricsObserver() =
@@ -59,12 +60,6 @@ OmniboxSuggestionUsedMetricsObserver::OnFencedFramesStart(
 }
 
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
-OmniboxSuggestionUsedMetricsObserver::OnHidden(
-    const page_load_metrics::mojom::PageLoadTiming& timing) {
-  return STOP_OBSERVING;
-}
-
-page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::OnCommit(
     content::NavigationHandle* navigation_handle) {
   transition_type_ = navigation_handle->GetPageTransition();
@@ -78,9 +73,11 @@ OmniboxSuggestionUsedMetricsObserver::OnCommit(
 
 void OmniboxSuggestionUsedMetricsObserver::OnFirstContentfulPaintInPage(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
+  CHECK(timing.paint_timing->first_contentful_paint);
   base::TimeDelta fcp = timing.paint_timing->first_contentful_paint.value();
 
-  if (GetDelegate().StartedInForeground()) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_contentful_paint, GetDelegate())) {
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       if (timing.input_to_navigation_start) {
@@ -111,7 +108,8 @@ void OmniboxSuggestionUsedMetricsObserver::
         const page_load_metrics::mojom::PageLoadTiming& timing) {
   base::TimeDelta fmp = timing.paint_timing->first_meaningful_paint.value();
 
-  if (GetDelegate().StartedInForeground()) {
+  if (page_load_metrics::WasStartedInForegroundOptionalEventInForeground(
+          timing.paint_timing->first_meaningful_paint, GetDelegate())) {
     if (ui::PageTransitionCoreTypeIs(transition_type_,
                                      ui::PAGE_TRANSITION_GENERATED)) {
       PAGE_LOAD_HISTOGRAM(kSearchFirstMeaningfulPaint, fmp);
@@ -125,8 +123,9 @@ void OmniboxSuggestionUsedMetricsObserver::
 page_load_metrics::PageLoadMetricsObserver::ObservePolicy
 OmniboxSuggestionUsedMetricsObserver::FlushMetricsOnAppEnterBackground(
     const page_load_metrics::mojom::PageLoadTiming& timing) {
-  if (GetDelegate().DidCommit())
+  if (GetDelegate().DidCommit()) {
     RecordSessionEndHistograms(timing);
+  }
   return STOP_OBSERVING;
 }
 

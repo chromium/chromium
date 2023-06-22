@@ -2049,7 +2049,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2"
+    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2.1"
     units="ms" expires_after="2023-11-12">
   <owner>lingqi@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
@@ -2062,7 +2062,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2Above2s"
+    name="Omnibox.SuggestionUsed.Search.NavigationToLargestContentfulPaint2.1Above2s"
     units="ms" expires_after="2023-12-04">
   <owner>spelchat@chromium.org</owner>
   <owner>chrome-brapp-loading@google.com</owner>
@@ -2143,7 +2143,7 @@ chromium-metrics-reviews@google.com.
 </histogram>
 
 <histogram
-    name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2"
+    name="Omnibox.SuggestionUsed.URL.NavigationToLargestContentfulPaint2.1"
     units="ms" expires_after="2023-09-03">
   <owner>robertlin@chromium.org</owner>
   <owner>chrome-prerendering@google.com</owner>
