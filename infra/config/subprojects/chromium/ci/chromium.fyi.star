@@ -1346,7 +1346,7 @@ def build_perf_builder(**kwargs):
         # rely on the builder dimension for the bot selection.
         builderless = False,
         cores = None,
-        siso_configs = ["remote_all"],
+        siso_configs = ["remote_all", "rewrapper_to_reproxy"],
         siso_enable_cloud_profiler = True,
         siso_enable_cloud_trace = True,
         # TODO(b/273407069): enable reproxy mode by default.
