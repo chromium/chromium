@@ -90,7 +90,6 @@ class CONTENT_EXPORT FileSystemAccessHandleBase {
   // blink::mojom::FileSystemAccessFileHandle and DirectoryHandle interfaces.
   void DoRemove(const storage::FileSystemURL& url,
                 bool recurse,
-                FileSystemAccessWriteLockManager::WriteLockType lock_type,
                 base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)>
                     callback);
 

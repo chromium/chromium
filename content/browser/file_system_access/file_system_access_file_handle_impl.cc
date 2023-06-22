@@ -213,8 +213,7 @@ void FileSystemAccessFileHandleImpl::Remove(RemoveCallback callback) {
 
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), url(), /*recurse=*/false,
-                     WriteLockType::kExclusive),
+                     weak_factory_.GetWeakPtr(), url(), /*recurse=*/false),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveCallback callback) {
         std::move(callback).Run(std::move(result));

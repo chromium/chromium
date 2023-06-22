@@ -520,7 +520,6 @@ void FileSystemAccessHandleBase::DidMove(
 void FileSystemAccessHandleBase::DoRemove(
     const storage::FileSystemURL& url,
     bool recurse,
-    WriteLockType lock_type,
     base::OnceCallback<void(blink::mojom::FileSystemAccessErrorPtr)> callback) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK_EQ(GetWritePermissionStatus(),
@@ -534,7 +533,7 @@ void FileSystemAccessHandleBase::DoRemove(
 
   // A locked file cannot be removed. Acquire a write lock and release it
   // after the remove operation completes.
-  auto write_lock = manager()->TakeWriteLock(url, lock_type);
+  auto write_lock = manager()->TakeWriteLock(url, WriteLockType::kExclusive);
   if (!write_lock) {
     std::move(callback).Run(file_system_access_error::FromStatus(
         blink::mojom::FileSystemAccessStatus::kNoModificationAllowedError));

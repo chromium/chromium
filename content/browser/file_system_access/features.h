@@ -19,7 +19,6 @@ CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDragAndDropCheckBlocklist);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessDoNotOverwriteOnMove);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessMoveLocalFiles);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessRemove);
-CONTENT_EXPORT BASE_DECLARE_FEATURE(kFileSystemAccessRemoveEntryExclusiveLock);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(
     kFileSystemAccessRenameWithoutParentAccessRequiresUserActivation);
 CONTENT_EXPORT BASE_DECLARE_FEATURE(

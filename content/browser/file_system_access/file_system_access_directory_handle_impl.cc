@@ -367,8 +367,7 @@ void FileSystemAccessDirectoryHandleImpl::Remove(bool recurse,
 
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), url(), recurse,
-                     WriteLockType::kExclusive),
+                     weak_factory_.GetWeakPtr(), url(), recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
         std::move(callback).Run(std::move(result));
@@ -390,13 +389,9 @@ void FileSystemAccessDirectoryHandleImpl::RemoveEntry(
     return;
   }
 
-  auto lock_type = base::FeatureList::IsEnabled(
-                       features::kFileSystemAccessRemoveEntryExclusiveLock)
-                       ? WriteLockType::kExclusive
-                       : WriteLockType::kShared;
   RunWithWritePermission(
       base::BindOnce(&FileSystemAccessHandleBase::DoRemove,
-                     weak_factory_.GetWeakPtr(), child_url, recurse, lock_type),
+                     weak_factory_.GetWeakPtr(), child_url, recurse),
       base::BindOnce([](blink::mojom::FileSystemAccessErrorPtr result,
                         RemoveEntryCallback callback) {
         std::move(callback).Run(std::move(result));
