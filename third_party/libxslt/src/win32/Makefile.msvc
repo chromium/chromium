@@ -29,13 +29,11 @@ XSLT_NAME = xslt
 XSLT_BASENAME = lib$(XSLT_NAME)
 XSLT_SO = $(XSLT_BASENAME).dll
 XSLT_IMP = $(XSLT_BASENAME).lib
-XSLT_DEF = $(XSLT_BASENAME).def
 XSLT_A = $(XSLT_BASENAME)_a.lib
 EXSLT_NAME = exslt
 EXSLT_BASENAME = lib$(EXSLT_NAME)
 EXSLT_SO = $(EXSLT_BASENAME).dll
 EXSLT_IMP = $(EXSLT_BASENAME).lib
-EXSLT_DEF = $(EXSLT_BASENAME).def
 EXSLT_A = $(EXSLT_BASENAME)_a.lib
 
 # Places where intermediate files produced by the compiler go
@@ -238,23 +236,13 @@ $(XSLT_OBJS) : $(XSLT_INTDIR)
 # Compiles static libxslt source. Uses the implicit rule for commands.
 $(XSLT_OBJS_A) : $(XSLT_INTDIR_A)
 
-# Creates the export definition file (DEF) for libxslt.
-$(XSLT_INTDIR)\$(XSLT_DEF) : $(XSLT_INTDIR) $(XSLT_DEF).src
-	$(CPP) $(CPPFLAGS) $(XSLT_DEF).src > $(XSLT_INTDIR)\$(XSLT_DEF)
-
 # Creates the libxslt shared object.
-$(BINDIR)\$(XSLT_SO) : $(BINDIR) $(XSLT_OBJS) $(XSLT_INTDIR)\$(XSLT_DEF)
+$(BINDIR)\$(XSLT_SO) : $(BINDIR) $(XSLT_OBJS)
 	$(LD) $(LDFLAGS) /DLL \
 		/VERSION:$(LIBXSLT_MAJOR_VERSION).$(LIBXSLT_MINOR_VERSION) \
 		/IMPLIB:$(BINDIR)\$(XSLT_IMP) /OUT:$(BINDIR)\$(XSLT_SO) \
 		$(XSLT_OBJS) $(LIBS) libxml2.lib
 			@$(_VC_MANIFEST_EMBED_DLL)
-
-#$(BINDIR)\$(XSLT_SO) : $(BINDIR) $(XSLT_OBJS) $(XSLT_INTDIR)\$(XSLT_DEF)
-#	$(LD) $(LDFLAGS) /DLL /DEF:$(XSLT_INTDIR)\$(XSLT_DEF) \
-#		/VERSION:$(LIBXSLT_MAJOR_VERSION).$(LIBXSLT_MINOR_VERSION) \
-#		/IMPLIB:$(BINDIR)\$(XSLT_IMP) /OUT:$(BINDIR)\$(XSLT_SO) \
-#		$(XSLT_OBJS) $(LIBS) libxml2.lib
 
 # Creates the libxslt archive.
 $(BINDIR)\$(XSLT_A) : $(BINDIR) $(XSLT_OBJS_A)
@@ -284,23 +272,13 @@ $(EXSLT_OBJS) : $(EXSLT_INTDIR)
 # Compiles libxslt source. Uses the implicit rule for commands.
 $(EXSLT_OBJS_A) : $(EXSLT_INTDIR_A)
 
-# Creates the export definition file (DEF) for libxslt.
-$(EXSLT_INTDIR)\$(EXSLT_DEF) : $(EXSLT_INTDIR) $(EXSLT_DEF).src
-	$(CPP) $(CPPFLAGS) $(EXSLT_DEF).src > $(EXSLT_INTDIR)\$(EXSLT_DEF)
-
 # Creates the libexslt shared object.
-$(BINDIR)\$(EXSLT_SO) : $(BINDIR) $(EXSLT_OBJS) $(EXSLT_INTDIR)\$(EXSLT_DEF) libxslt
+$(BINDIR)\$(EXSLT_SO) : $(BINDIR) $(EXSLT_OBJS) libxslt
 	$(LD) $(LDFLAGS) /DLL \
 		/VERSION:$(LIBEXSLT_MAJOR_VERSION).$(LIBEXSLT_MINOR_VERSION) \
 		/IMPLIB:$(BINDIR)\$(EXSLT_IMP) /OUT:$(BINDIR)\$(EXSLT_SO) \
 		$(EXSLT_OBJS) $(XSLT_IMP) $(LIBS) libxml2.lib
 			@$(_VC_MANIFEST_EMBED_DLL)
-
-#$(BINDIR)\$(EXSLT_SO) : $(BINDIR) $(EXSLT_OBJS) $(EXSLT_INTDIR)\$(EXSLT_DEF) libxslt
-#	$(LD) $(LDFLAGS) /DLL /DEF:$(EXSLT_INTDIR)\$(EXSLT_DEF) \
-#		/VERSION:$(LIBEXSLT_MAJOR_VERSION).$(LIBEXSLT_MINOR_VERSION) \
-#		/IMPLIB:$(BINDIR)\$(EXSLT_IMP) /OUT:$(BINDIR)\$(EXSLT_SO) \
-#		$(EXSLT_OBJS) $(XSLT_IMP) $(LIBS) libxml2.lib
 
 # Creates the libexslt archive.
 $(BINDIR)\$(EXSLT_A) : $(BINDIR) $(EXSLT_OBJS_A) libxslta

@@ -1,15 +1,5 @@
 #
-# Officially exported symbols, for which header
-# file definitions are installed in /usr/include/libxslt
-#
-# Automatically generated from symbols.xml and syms.xsl
-#
-# Versions here are *fixed* to match the libxslt version
-# at which the symbol was introduced. This ensures that
-# a new client app requiring symbol foo() can't accidentally
-# run with old libxslt.so not providing foo() - the global
-# soname version info can't enforce this since we never
-# change the soname
+# Retained for backward compatibility. Don't add new symbols.
 #
 
 LIBXML2_1.0.11 {

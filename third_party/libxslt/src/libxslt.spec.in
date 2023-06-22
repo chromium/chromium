@@ -96,9 +96,7 @@ rm -fr %{buildroot}
 
 %doc AUTHORS NEWS README Copyright TODO FEATURES
 %doc doc/libxslt-api.xml
-%doc doc/libxslt-refs.xml
 %doc doc/EXSLT/libexslt-api.xml
-%doc doc/EXSLT/libexslt-refs.xml
 %doc %{_mandir}/man3/libxslt.3*
 %doc %{_mandir}/man3/libexslt.3*
 %doc doc/*.html doc/html doc/*.gif doc/*.png

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.15)
+cmake_minimum_required(VERSION 3.18)
 
 file(STRINGS "configure.ac" CONFIGURE_AC_LINES)
 foreach(line ${CONFIGURE_AC_LINES})
@@ -28,6 +28,7 @@ include(CheckCSourceCompiles)
 include(CheckFunctionExists)
 include(CheckIncludeFiles)
 include(CheckLibraryExists)
+include(CheckLinkerFlag)
 include(CheckSymbolExists)
 include(CMakePackageConfigHelpers)
 include(GNUInstallDirs)
@@ -84,13 +85,6 @@ foreach(VARIABLE IN ITEMS WITH_CRYPTO WITH_DEBUGGER WITH_MEM_DEBUG WITH_MODULES 
 endforeach()
 
 set(MODULE_EXTENSION "${CMAKE_SHARED_LIBRARY_SUFFIX}")
-
-if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
-	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wshadow \
--Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return \
--Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline \
--Wredundant-decls -Wno-long-long -Wno-format-extra-args")
-endif()
 
 if(LIBXSLT_WITH_CRYPTO AND NOT WIN32)
 	list(APPEND CMAKE_REQUIRED_LIBRARIES Gcrypt::Gcrypt)
@@ -210,6 +204,21 @@ add_library(LibXslt::LibXslt ALIAS LibXslt)
 
 if(NOT BUILD_SHARED_LIBS)
 	target_compile_definitions(LibXslt INTERFACE LIBXSLT_STATIC)
+endif()
+
+if(CMAKE_C_COMPILER_ID MATCHES "Clang" OR CMAKE_C_COMPILER_ID STREQUAL "GNU")
+	set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Wall -Wextra -Wshadow \
+-Wpointer-arith -Wcast-align -Wwrite-strings -Waggregate-return \
+-Wstrict-prototypes -Wmissing-prototypes -Wnested-externs -Winline \
+-Wredundant-decls -Wno-long-long -Wno-format-extra-args")
+
+	if(BUILD_SHARED_LIBS AND UNIX AND NOT APPLE)
+		check_linker_flag(C "LINKER:--undefined-version" FLAG_UNDEFINED_VERSION)
+		if (FLAG_UNDEFINED_VERSION)
+			target_link_options(LibXslt PRIVATE "LINKER:--undefined-version")
+		endif()
+		target_link_options(LibXslt PRIVATE "LINKER:--version-script=${CMAKE_CURRENT_SOURCE_DIR}/libxslt/libxslt.syms")
+	endif()
 endif()
 
 target_include_directories(
