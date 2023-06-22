@@ -77,6 +77,10 @@ void AddTimeStatsForBookmark(BookmarkNode* node,
     int mru_days = std::max(0, (now - node->date_last_used()).InDays());
     stats->most_recently_used_bookmark_days =
         std::min<size_t>(mru_days, stats->most_recently_used_bookmark_days);
+    stats->per_bookmark_num_days_since_used.push_back(mru_days);
+  } else if (node->is_url()) {
+    int mra_days = std::max(0, (now - node->date_added()).InDays());
+    stats->per_bookmark_num_days_since_used.push_back(mra_days);
   }
 
   stats->most_recently_saved_bookmark_days =
