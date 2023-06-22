@@ -1304,7 +1304,7 @@ Nouvelle installation</translation>
 <translation id="7026338066939101231">Diminuer</translation>
 <translation id="7029814467594812963">Quitter la session</translation>
 <translation id="7032161822340700104">Seulement six modèles autorisés. Supprimez un modèle pour en enregistrer un nouveau.</translation>
-<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser <ph name="DEVICE_NAME" />. Activez le contacteur physique sur votre appareil <ph name="DEVICE_NAME" />.</translation>
+<translation id="7034025838182392395"><ph name="APP_NAME" /> souhaite utiliser <ph name="DEVICE_NAME" />. Activez <ph name="DEVICE_NAME" /> à l'aide du bouton physique.</translation>
 <translation id="703425375924687388"><ph name="QUERY_NAME" />, Assistant Google</translation>
 <translation id="7042322267639375032">Réduire la zone d'état</translation>
 <translation id="7045033600005038336">Remplacer le modèle ?</translation>

@@ -2452,17 +2452,17 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 <translation id="3229163415739929305">Wenn die Richtlinie aktiviert oder nicht konfiguriert ist, werden Metadaten zum Seitenaufbau und Modelle zum maschinellen Lernen abgerufen, die die Browsernutzung verbessern.
       Ist sie deaktiviert, funktionieren einige Funktionen eventuell nicht richtig.</translation>
 <translation id="3231311173895401135">Unterstützung vom Browser entscheiden lassen</translation>
-<translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates konfiguriert.
+<translation id="3231837273069128027">Mit dieser Richtlinie werden Verfügbarkeit und Verhalten von <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates konfiguriert.
 
       Gib einzelne Einstellungen in den JSON-Eigenschaften an:
 
       * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH" />: Wenn die Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_POWERWASH_TRUE" /> gesetzt ist, können Nutzer mithilfe von Powerwash ein Update der <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware installieren.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (verfügbar ab Version 68 von <ph name="PRODUCT_NAME" />): Wenn diese Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" /> gesetzt ist, können Nutzer den Ablauf für das <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdate starten, bei dem der geräteübergreifende Status (einschließlich Unternehmensregistrierung) erhalten bleibt, aber die Nutzerdaten verloren gehen.
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE" /> (verfügbar ab Version 68 von <ph name="PRODUCT_NAME" />): Wenn diese Einstellung auf <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_ALLOW_USER_INITIATED_PRESERVE_DEVICE_STATE_TRUE" /> gesetzt ist, können Nutzer den Ablauf für das <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Update starten, bei dem der geräteübergreifende Status (einschließlich Unternehmensregistrierung) erhalten bleibt, aber die Nutzerdaten verloren gehen.
 
-      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (verfügbar ab Version 75 von <ph name="PRODUCT_NAME" />): Mit dieser Einstellung kannst du festlegen, wie automatische<ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates für anfällige <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware erzwungen werden. Der lokale Gerätestatus wird bei allen Abläufen beibehalten. Wenn die Einstellung…
+      * <ph name="TPM_FIRMWARE_UPDATE_SETTINGS_AUTO_UPDATE_MODE" /> (verfügbar ab Version 75 von <ph name="PRODUCT_NAME" />): Mit dieser Einstellung kannst du festlegen, wie automatische<ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates für anfällige <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware erzwungen werden. Der lokale Gerätestatus wird bei allen Abläufen beibehalten. Wenn die Einstellung…
 
-        * auf 1 gesetzt oder nicht konfiguriert ist, werden <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdates nicht erzwungen.
+        * auf 1 gesetzt oder nicht konfiguriert ist, werden <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Updates nicht erzwungen.
 
         * auf 2 gesetzt ist, wird die <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware beim nächsten Neustart aktualisiert, nachdem der Nutzer das Update bestätigt hat.
 
@@ -2470,7 +2470,7 @@ Wenn diese Richtlinie nicht konfiguriert ist, wird genau wie bei den anderen Chr
 
         * auf 4 gesetzt ist, wird die <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware nach der Registrierung aktualisiert, bevor sich der Nutzer anmeldet.
 
-      Ist die Richtlinie nicht konfiguriert, ist kein <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmwareupdate verfügbar.</translation>
+      Ist die Richtlinie nicht konfiguriert, ist kein <ph name="TPM_FIRMWARE_UPDATE_TPM" />-Firmware-Update verfügbar.</translation>
 <translation id="3232563711929146405">Netzwerkdienst-Sandbox deaktivieren</translation>
 <translation id="3232691106293445015">Nicht sichere HTTP-Verbindungen dürfen keine <ph name="BASIC_AUTH" />-Authentifizierungen verwenden; HTTPS ist erforderlich</translation>
 <translation id="3234753491625248216">Hardwarebeschleunigung deaktivieren</translation>
