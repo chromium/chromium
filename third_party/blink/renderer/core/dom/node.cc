@@ -66,6 +66,7 @@
 #include "third_party/blink/renderer/core/dom/node_lists_node_data.h"
 #include "third_party/blink/renderer/core/dom/node_rare_data.h"
 #include "third_party/blink/renderer/core/dom/node_traversal.h"
+#include "third_party/blink/renderer/core/dom/part.h"
 #include "third_party/blink/renderer/core/dom/processing_instruction.h"
 #include "third_party/blink/renderer/core/dom/range.h"
 #include "third_party/blink/renderer/core/dom/shadow_root.h"
@@ -131,6 +132,7 @@
 #include "third_party/blink/renderer/platform/bindings/dom_data_store.h"
 #include "third_party/blink/renderer/platform/bindings/exception_state.h"
 #include "third_party/blink/renderer/platform/bindings/v8_dom_wrapper.h"
+#include "third_party/blink/renderer/platform/heap/collection_support/heap_hash_set.h"
 #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
 #include "third_party/blink/renderer/platform/instrumentation/instance_counters.h"
 #include "third_party/blink/renderer/platform/instrumentation/tracing/trace_event.h"
@@ -2237,6 +2239,16 @@ void Node::InvalidateIfHasEffectiveAppearance() const {
   layout_object->SetSubtreeShouldDoFullPaintInvalidation();
 }
 
+void Node::InvalidateDOMParts() {
+  if (UNLIKELY(RuntimeEnabledFeatures::DOMPartsAPIEnabled() && HasDOMParts())) {
+    for (Part* part : GetDOMParts()) {
+      if (part->root()) {
+        part->root()->MarkPartsDirty();
+      }
+    }
+  }
+}
+
 Node::InsertionNotificationRequest Node::InsertedInto(
     ContainerNode& insertion_point) {
   DCHECK(!ChildNeedsStyleInvalidation());
@@ -2245,6 +2257,9 @@ Node::InsertionNotificationRequest Node::InsertedInto(
          IsContainerNode());
   if (insertion_point.isConnected()) {
     SetFlag(kIsConnectedFlag);
+    // TODO(crbug.com/1453291) This would need to be outside the isConnected
+    // check when DocumentFragments are supported.
+    InvalidateDOMParts();
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().IncrementNodeCount();
 #endif
@@ -2266,6 +2281,9 @@ void Node::RemovedFrom(ContainerNode& insertion_point) {
     ClearNeedsStyleInvalidation();
     ClearChildNeedsStyleInvalidation();
     ClearFlag(kIsConnectedFlag);
+    // TODO(crbug.com/1453291) This would need to be outside the isConnected
+    // check when DocumentFragments are supported.
+    InvalidateDOMParts();
 #if DCHECK_IS_ON()
     insertion_point.GetDocument().DecrementNodeCount();
 #endif

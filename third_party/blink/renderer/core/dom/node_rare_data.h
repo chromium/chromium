@@ -42,6 +42,7 @@ class LayoutObject;
 class MutationObserverRegistration;
 class NodeListsNodeData;
 class NodeRareData;
+class Part;
 class ScrollTimeline;
 
 class NodeMutationObserverData final
@@ -225,6 +226,11 @@ class NodeRareData : public NodeData {
   void UnregisterScrollTimeline(ScrollTimeline*);
   void InvalidateAssociatedAnimationEffects();
 
+  void AddDOMPart(Part& part);
+  void RemoveDOMPart(Part& part);
+  bool HasDOMParts() { return dom_parts_; }
+  HeapHashSet<Member<Part>> GetDOMParts();
+
   void Trace(blink::Visitor*) const override;
 
  protected:
@@ -249,6 +255,7 @@ class NodeRareData : public NodeData {
   // Keeps strong scroll timeline pointers linked to this node to ensure
   // the timelines are alive as long as the node is alive.
   Member<HeapHashSet<Member<ScrollTimeline>>> scroll_timelines_;
+  Member<HeapHashSet<Member<Part>>> dom_parts_;
 };
 
 template <typename T>

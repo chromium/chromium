@@ -21,14 +21,14 @@ void PartRoot::Trace(Visitor* visitor) const {
 void PartRoot::AddPart(Part& new_part) {
   CHECK(!parts_unordered_.Contains(&new_part));
   parts_unordered_.push_back(new_part);
-  cached_parts_list_dirty_ = true;
+  MarkPartsDirty();
 }
 
 void PartRoot::RemovePart(Part& part) {
   auto index = parts_unordered_.Find(&part);
   CHECK_NE(index, kNotFound);
   parts_unordered_.EraseAt(index);
-  cached_parts_list_dirty_ = true;
+  MarkPartsDirty();
 }
 
 namespace {
@@ -110,11 +110,6 @@ HeapVector<Member<Part>> SortPartsInTreeOrder(
     } else {
       lca = LowestCommonAncestor(lca, lca_depth, node, node_depth, lca_depth);
     }
-#if DCHECK_IS_ON()
-    for (auto& part : *entry.value) {
-      DCHECK_EQ(node, part->RelevantNode());
-    }
-#endif
   }
 
   // Then traverse the tree under the LCA and add parts in the order they're
@@ -162,7 +157,7 @@ HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
     if (!part->IsValid() || part->GetDocument() != root_document) {
       continue;
     }
-    Node* node = part->RelevantNode();
+    Node* node = part->NodeToSortBy();
     CHECK(node->isConnected());
     CHECK_EQ(&node->GetDocument(), root_document);
     auto result = unordered_nodes_to_parts.insert(node, nullptr);
@@ -178,20 +173,9 @@ HeapVector<Member<Part>> PartRoot::RebuildPartsList() {
 HeapVector<Member<Part>> PartRoot::getParts() {
   if (cached_parts_list_dirty_) {
     cached_ordered_parts_ = RebuildPartsList();
-    // TODO(crbug.com/1453291) Set cached_parts_list_dirty_=false here.
+    cached_parts_list_dirty_ = false;
   }
   return cached_ordered_parts_;
-}
-
-std::ostream& operator<<(std::ostream& ostream, const PartRoot& part) {
-  return ostream << part.ToString().Utf8();
-}
-
-std::ostream& operator<<(std::ostream& ostream, const PartRoot* part) {
-  if (!part) {
-    return ostream << "null";
-  }
-  return ostream << *part;
 }
 
 }  // namespace blink

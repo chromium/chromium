@@ -19,9 +19,7 @@ void Part::Trace(Visitor* visitor) const {
 }
 
 void Part::disconnect() {
-  if (!root_) {
-    return;
-  }
+  CHECK(root_) << "disconnect should be overridden";
   root_->RemovePart(*this);
   root_ = nullptr;
 }

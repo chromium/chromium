@@ -75,6 +75,7 @@ class MutationObserverRegistration;
 class NodeList;
 class NodeListsNodeData;
 class NodeRareData;
+class Part;
 class QualifiedName;
 class RegisteredEventListener;
 class ScrollTimeline;
@@ -950,6 +951,12 @@ class CORE_EXPORT Node : public EventTargetWithInlineData {
 
   void RegisterScrollTimeline(ScrollTimeline*);
   void UnregisterScrollTimeline(ScrollTimeline*);
+
+  void AddDOMPart(Part& part) { EnsureRareData().AddDOMPart(part); }
+  void RemoveDOMPart(Part& part) { EnsureRareData().RemoveDOMPart(part); }
+  bool HasDOMParts() { return HasRareData() && RareData()->HasDOMParts(); }
+  HeapHashSet<Member<Part>> GetDOMParts() { return RareData()->GetDOMParts(); }
+  void InvalidateDOMParts();
 
   // For the imperative slot distribution API.
   void SetManuallyAssignedSlot(HTMLSlotElement* slot);

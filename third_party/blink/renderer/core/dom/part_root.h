@@ -31,12 +31,12 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   // Adds a new part to this PartRoot's collection of maintained parts.
   void AddPart(Part& new_part);
   void RemovePart(Part& part);
-  virtual String ToString() const = 0;
   // Both DocumentPartRoot and ChildNodePart can have contained parts, while
   // NodePart cannot. However, due to the class hierarchy, NodePart is a
   // PartRoot, so this method is used to detect which PartRoots can actually
   // have contained parts.
   virtual bool SupportsContainedParts() const { return false; }
+  void MarkPartsDirty() { cached_parts_list_dirty_ = true; }
 
   // PartRoot API
   HeapVector<Member<Part>> getParts();
@@ -57,9 +57,6 @@ class CORE_EXPORT PartRoot : public ScriptWrappable {
   HeapVector<Member<Part>> cached_ordered_parts_;
   bool cached_parts_list_dirty_{false};
 };
-
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const PartRoot&);
-CORE_EXPORT std::ostream& operator<<(std::ostream&, const PartRoot*);
 
 }  // namespace blink
 

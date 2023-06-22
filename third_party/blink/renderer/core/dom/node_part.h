@@ -26,21 +26,19 @@ class CORE_EXPORT NodePart : public Part {
                           Node* node,
                           const NodePartInit* init,
                           ExceptionState& exception_state);
-  // TODO(crbug.com/1453291): Handle the init parameter.
-  NodePart(PartRoot& root, Node* node, const NodePartInit* init)
-      : Part(root), node_(node) {}
+  NodePart(PartRoot& root, Node* node, const NodePartInit* init);
   NodePart(const NodePart&) = delete;
   ~NodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
-  Node* RelevantNode() const override;
-  String ToString() const override;
+  void disconnect() override;
+  bool IsValid() override;
+  Node* NodeToSortBy() const override;
 
   // NodePart API
   Node* node() const { return node_; }
 
  protected:
-  bool IsValid() override;
   Document* GetDocument() const override;
 
  private:

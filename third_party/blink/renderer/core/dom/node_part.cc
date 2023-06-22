@@ -20,6 +20,26 @@ NodePart* NodePart::Create(PartRoot* root,
   return MakeGarbageCollected<NodePart>(*root, node, init);
 }
 
+// TODO(crbug.com/1453291): Handle the init parameter.
+NodePart::NodePart(PartRoot& root, Node* node, const NodePartInit* init)
+    : Part(root), node_(node) {
+  if (node) {
+    node->AddDOMPart(*this);
+  }
+}
+
+void NodePart::disconnect() {
+  if (!root()) {
+    CHECK(!node_);
+    return;
+  }
+  if (node_) {
+    node_->RemoveDOMPart(*this);
+  }
+  node_ = nullptr;
+  Part::disconnect();
+}
+
 void NodePart::Trace(Visitor* visitor) const {
   visitor->Trace(node_);
   Part::Trace(visitor);
@@ -30,16 +50,12 @@ bool NodePart::IsValid() {
   return node_ && node_->isConnected();
 }
 
-Node* NodePart::RelevantNode() const {
+Node* NodePart::NodeToSortBy() const {
   return node_;
 }
 
 Document* NodePart::GetDocument() const {
   return node_ ? &node_->GetDocument() : nullptr;
-}
-
-String NodePart::ToString() const {
-  return "NodePart for " + (node_ ? node_->ToString() : "nullptr");
 }
 
 }  // namespace blink

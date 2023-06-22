@@ -28,13 +28,13 @@ class CORE_EXPORT Part : public PartRoot {
 
   void Trace(Visitor* visitor) const override;
   virtual bool IsValid() = 0;
-  virtual Node* RelevantNode() const = 0;
+  virtual Node* NodeToSortBy() const = 0;
 
   // Part API
   PartRoot* root() const { return root_; }
   // TODO(1453291) Populate metadata_.
   Vector<String>& metadata() { return metadata_; }
-  void disconnect();
+  virtual void disconnect();
 
  protected:
   explicit Part(PartRoot& root);

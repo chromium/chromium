@@ -31,23 +31,20 @@ class CORE_EXPORT ChildNodePart : public Part {
                                Node* next_sibling,
                                const NodePartInit* init,
                                ExceptionState& exception_state);
-  // TODO(crbug.com/1453291): Handle the init parameter.
   ChildNodePart(PartRoot& root,
                 Node& previous_sibling,
                 Node& next_sibling,
-                const NodePartInit* init)
-      : Part(root),
-        previous_sibling_(previous_sibling),
-        next_sibling_(next_sibling) {}
+                const NodePartInit* init);
   ChildNodePart(const ChildNodePart&) = delete;
   ~ChildNodePart() override = default;
 
   void Trace(Visitor* visitor) const override;
-  Node* RelevantNode() const override;
-  String ToString() const override;
+  bool IsValid() override;
+  Node* NodeToSortBy() const override;
   bool SupportsContainedParts() const override { return true; }
 
   // ChildNodePart API
+  void disconnect() override;
   Node* previousSibling() const { return previous_sibling_; }
   Node* nextSibling() const { return next_sibling_; }
   // TODO(crbug.com/1453291) Implement this method.
@@ -58,7 +55,6 @@ class CORE_EXPORT ChildNodePart : public Part {
   void replaceChildren(const HeapVector<Member<V8UnionNodeOrString>>& nodes) {}
 
  protected:
-  bool IsValid() override;
   Document* GetDocument() const override;
 
  private:

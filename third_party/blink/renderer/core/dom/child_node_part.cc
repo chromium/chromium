@@ -22,6 +22,36 @@ ChildNodePart* ChildNodePart::Create(PartRoot* root,
                                              *next_sibling, init);
 }
 
+// TODO(crbug.com/1453291): Handle the init parameter.
+ChildNodePart::ChildNodePart(PartRoot& root,
+                             Node& previous_sibling,
+                             Node& next_sibling,
+                             const NodePartInit* init)
+    : Part(root),
+      previous_sibling_(previous_sibling),
+      next_sibling_(next_sibling) {
+  if (previous_sibling.parentNode()) {
+    previous_sibling.parentNode()->AddDOMPart(*this);
+  }
+  previous_sibling.AddDOMPart(*this);
+  next_sibling.AddDOMPart(*this);
+}
+
+void ChildNodePart::disconnect() {
+  if (!root()) {
+    CHECK(!previous_sibling_ && !next_sibling_);
+    return;
+  }
+  if (previous_sibling_->parentNode()) {
+    previous_sibling_->parentNode()->RemoveDOMPart(*this);
+  }
+  previous_sibling_->RemoveDOMPart(*this);
+  next_sibling_->RemoveDOMPart(*this);
+  previous_sibling_ = nullptr;
+  next_sibling_ = nullptr;
+  Part::disconnect();
+}
+
 void ChildNodePart::Trace(Visitor* visitor) const {
   visitor->Trace(previous_sibling_);
   visitor->Trace(next_sibling_);
@@ -50,16 +80,12 @@ bool ChildNodePart::IsValid() {
   return false;
 }
 
-Node* ChildNodePart::RelevantNode() const {
+Node* ChildNodePart::NodeToSortBy() const {
   return previous_sibling_->parentNode();
 }
 
 Document* ChildNodePart::GetDocument() const {
   return &previous_sibling_->GetDocument();
-}
-
-String ChildNodePart::ToString() const {
-  return "ChildNodePart for parent " + RelevantNode()->ToString();
 }
 
 }  // namespace blink
