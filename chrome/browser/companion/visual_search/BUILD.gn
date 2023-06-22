@@ -2,6 +2,8 @@
 # Use of this source code is governed by a BSD-style license that can be
 # found in the LICENSE file.
 
+assert(!is_android, "Visual Search is for desktop platforms only")
+
 source_set("visual_search") {
   sources = [
     "features.cc",
@@ -35,6 +37,24 @@ source_set("unit_tests") {
     "//chrome/browser",
     "//chrome/common",
     "//chrome/common/companion:mojo_bindings",
+    "//chrome/test:test_support",
+    "//components/optimization_guide/core:test_support",
+    "//components/optimization_guide/proto:optimization_guide_proto",
+    "//testing/gmock",
+    "//testing/gtest",
+  ]
+}
+
+source_set("browser_tests") {
+  testonly = true
+  sources = [ "visual_search_suggestions_service_browsertest.cc" ]
+  defines = [ "HAS_OUT_OF_PROC_TEST_RUNNER" ]
+  deps = [
+    ":visual_search",
+    "//base",
+    "//base/test:test_support",
+    "//chrome/browser",
+    "//chrome/common",
     "//chrome/test:test_support",
     "//components/optimization_guide/core:test_support",
     "//components/optimization_guide/proto:optimization_guide_proto",
