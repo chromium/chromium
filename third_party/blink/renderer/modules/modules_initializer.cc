@@ -56,7 +56,6 @@
 #include "third_party/blink/renderer/modules/document_metadata/document_metadata_server.h"
 #include "third_party/blink/renderer/modules/document_picture_in_picture/picture_in_picture_controller_impl.h"
 #include "third_party/blink/renderer/modules/encryptedmedia/html_media_element_encrypted_media.h"
-#include "third_party/blink/renderer/modules/encryptedmedia/media_keys_controller.h"
 #include "third_party/blink/renderer/modules/event_interface_modules_names.h"
 #include "third_party/blink/renderer/modules/event_modules_factory.h"
 #include "third_party/blink/renderer/modules/event_target_modules_names.h"
@@ -356,7 +355,6 @@ WebRemotePlaybackClient* ModulesInitializer::CreateWebRemotePlaybackClient(
 void ModulesInitializer::ProvideModulesToPage(
     Page& page,
     const SessionStorageNamespaceId& namespace_id) const {
-  MediaKeysController::ProvideMediaKeysTo(page);
   ::blink::ProvideContextFeaturesTo(
       page, std::make_unique<ContextFeaturesClientImpl>());
   ::blink::ProvideDatabaseClientTo(page,
