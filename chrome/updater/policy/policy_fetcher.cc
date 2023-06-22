@@ -69,9 +69,9 @@ void PolicyFetcher::FetchPolicies(
 void PolicyFetcher::RegisterDevice(
     scoped_refptr<base::SequencedTaskRunner> main_task_runner,
     base::OnceCallback<void(bool, DMClient::RequestResult)> callback) {
-  VLOG(1) << __func__;
-
   scoped_refptr<DMStorage> dm_storage = GetDefaultDMStorage();
+  VLOG(1) << __func__
+          << " with enrollment token: " << dm_storage->GetEnrollmentToken();
   DMClient::RegisterDevice(
       DMClient::CreateDefaultConfigurator(server_url_,
                                           policy_service_proxy_configuration_),
@@ -97,6 +97,7 @@ void PolicyFetcher::OnRegisterDeviceRequestComplete(
                        base::BindPostTaskToCurrentDefault(
                            base::BindOnce(std::move(callback), kErrorOk))));
   } else {
+    VLOG(1) << "Device registration failed, skip fetching policies.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE,
         base::BindOnce(

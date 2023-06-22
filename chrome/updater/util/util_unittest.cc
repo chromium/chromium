@@ -4,6 +4,8 @@
 
 #include "chrome/updater/util/util.h"
 
+#include <sstream>
+
 #include "base/command_line.h"
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
@@ -24,6 +26,16 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 
 namespace updater {
+
+namespace {
+
+enum class TestEnum {
+  kEnumValue1 = 0L,
+  kEnumValue2 = 5L,
+  kEnumValue3,
+};
+
+}  // namespace
 
 TEST(Util, AppArgsAndAP) {
   base::test::ScopedCommandLine original_command_line;
@@ -92,6 +104,14 @@ TEST(Util, GetCrashDatabasePath) {
   ASSERT_TRUE(crash_database_path);
   EXPECT_EQ(crash_database_path->BaseName().value(),
             FILE_PATH_LITERAL("Crashpad"));
+}
+
+TEST(Util, StreamEnumValue) {
+  std::stringstream output;
+  output << "First: " << TestEnum::kEnumValue1
+         << ", second: " << TestEnum::kEnumValue2
+         << ", third: " << TestEnum::kEnumValue3;
+  EXPECT_EQ(output.str(), "First: 0, second: 5, third: 6");
 }
 
 }  // namespace updater

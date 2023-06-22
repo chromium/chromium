@@ -7,6 +7,7 @@
 #include <stdint.h>
 
 #include <memory>
+#include <ostream>
 #include <string>
 #include <utility>
 
@@ -232,6 +233,7 @@ void DMFetch::PostRequest(const std::string& request_type,
   } else if (storage_->GetDmToken().empty()) {
     result = DMClient::RequestResult::kNoDMToken;
   }
+  VLOG(1) << "Post [" << result << "] to server.";
 
   if (result != DMClient::RequestResult::kSuccess) {
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
@@ -260,7 +262,7 @@ void DMFetch::OnRequestStarted(int response_code, int64_t content_length) {
 
 void DMFetch::OnRequestProgress(int64_t current) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  VLOG(1) << "DM request progress made, current bytes: " << current;
+  VLOG(3) << "DM request progress made, current bytes: " << current;
 }
 
 void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
@@ -269,6 +271,7 @@ void DMFetch::OnRequestComplete(std::unique_ptr<std::string> response_body,
                                 const std::string& header_x_cup_server_proof,
                                 int64_t xheader_retry_after_sec) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
+  VLOG(2) << __func__;
 
   DMClient::RequestResult result = DMClient::RequestResult::kSuccess;
   if (net_error != 0) {
@@ -298,6 +301,7 @@ void OnDMRegisterRequestComplete(scoped_refptr<DMFetch> dm_fetch,
                                  DMClient::RegisterCallback callback,
                                  DMClient::RequestResult result,
                                  std::unique_ptr<std::string> response_body) {
+  VLOG(2) << __func__ << ": result=" << result;
   if (result == DMClient::RequestResult::kSuccess) {
     const std::string dm_token =
         ParseDeviceRegistrationResponse(*response_body);
@@ -322,6 +326,7 @@ void OnDMPolicyFetchRequestComplete(
     std::unique_ptr<CachedPolicyInfo> cached_info,
     DMClient::RequestResult result,
     std::unique_ptr<std::string> response_body) {
+  VLOG(2) << __func__ << ": result=" << result;
   std::vector<PolicyValidationResult> validation_results;
   scoped_refptr<DMStorage> storage = dm_fetch->storage();
   if (result == DMClient::RequestResult::kSuccess) {
@@ -350,6 +355,7 @@ void OnDMPolicyValidationReportRequestComplete(
     DMClient::PolicyValidationReportCallback callback,
     DMClient::RequestResult result,
     std::unique_ptr<std::string> response_body) {
+  VLOG(2) << __func__ << ": result=" << result;
   base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
       FROM_HERE, base::BindOnce(std::move(callback), result));
 }
@@ -359,6 +365,7 @@ void OnDMPolicyValidationReportRequestComplete(
 void DMClient::RegisterDevice(std::unique_ptr<Configurator> config,
                               scoped_refptr<DMStorage> storage,
                               RegisterCallback callback) {
+  VLOG(2) << __func__;
   auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
   dm_fetch->PostRequest(kRegistrationRequestType,
                         DMFetch::TokenType::kEnrollmentToken,
@@ -370,7 +377,9 @@ void DMClient::RegisterDevice(std::unique_ptr<Configurator> config,
 void DMClient::FetchPolicy(std::unique_ptr<Configurator> config,
                            scoped_refptr<DMStorage> storage,
                            PolicyFetchCallback callback) {
+  VLOG(2) << __func__;
   if (!storage->CanPersistPolicies()) {
+    VLOG(2) << "Cannot persist policies.";
     base::SequencedTaskRunner::GetCurrentDefault()->PostTask(
         FROM_HERE, base::BindOnce(std::move(callback),
                                   DMClient::RequestResult::kSerializationError,
@@ -394,6 +403,7 @@ void DMClient::ReportPolicyValidationErrors(
     scoped_refptr<DMStorage> storage,
     const PolicyValidationResult& validation_result,
     PolicyValidationReportCallback callback) {
+  VLOG(2) << __func__;
   auto dm_fetch = base::MakeRefCounted<DMFetch>(std::move(config), storage);
   dm_fetch->PostRequest(
       kValidationReportRequestType, DMFetch::TokenType::kDMToken,
@@ -408,6 +418,28 @@ std::unique_ptr<DMClient::Configurator> DMClient::CreateDefaultConfigurator(
         policy_service_proxy_configuration) {
   return std::make_unique<DefaultConfigurator>(
       server_url, policy_service_proxy_configuration);
+}
+
+std::ostream& operator<<(std::ostream& os,
+                         const DMClient::RequestResult& result) {
+#define SWITCH_ENTRY(p) \
+  case p:               \
+    return os << #p
+  switch (result) {
+    SWITCH_ENTRY(DMClient::RequestResult::kSuccess);
+    SWITCH_ENTRY(DMClient::RequestResult::kNoDeviceID);
+    SWITCH_ENTRY(DMClient::RequestResult::kAlreadyRegistered);
+    SWITCH_ENTRY(DMClient::RequestResult::kNotManaged);
+    SWITCH_ENTRY(DMClient::RequestResult::kDeregistered);
+    SWITCH_ENTRY(DMClient::RequestResult::kNoDMToken);
+    SWITCH_ENTRY(DMClient::RequestResult::kFetcherError);
+    SWITCH_ENTRY(DMClient::RequestResult::kNetworkError);
+    SWITCH_ENTRY(DMClient::RequestResult::kHttpError);
+    SWITCH_ENTRY(DMClient::RequestResult::kSerializationError);
+    SWITCH_ENTRY(DMClient::RequestResult::kUnexpectedResponse);
+    SWITCH_ENTRY(DMClient::RequestResult::kNoPayload);
+  }
+#undef SWITCH_ENTRY
 }
 
 }  // namespace updater

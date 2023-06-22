@@ -5,7 +5,9 @@
 #ifndef CHROME_UPDATER_UTIL_UTIL_H_
 #define CHROME_UPDATER_UTIL_UTIL_H_
 
+#include <ostream>
 #include <string>
+#include <type_traits>
 #include <utility>
 
 #include "base/command_line.h"
@@ -38,6 +40,14 @@ std::ostream& operator<<(std::ostream& os, const absl::optional<T>& opt) {
 }  // namespace base
 
 namespace updater {
+
+// This template function enables logging enum value as the underlying type.
+template <typename T>
+std::ostream& operator<<(
+    typename std::enable_if<std::is_enum<T>::value, std::ostream>::type& stream,
+    const T& e) {
+  return stream << static_cast<typename std::underlying_type<T>::type>(e);
+}
 
 namespace tagging {
 struct TagArgs;

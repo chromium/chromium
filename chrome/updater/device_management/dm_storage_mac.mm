@@ -11,6 +11,7 @@
 #include "base/files/file_path.h"
 #include "base/files/file_util.h"
 #include "base/files/important_file_writer.h"
+#include "base/logging.h"
 #include "base/mac/foundation_util.h"
 #include "base/mac/mac_util.h"
 #include "base/mac/scoped_cftyperef.h"
@@ -128,10 +129,12 @@ bool TokenService::StoreEnrollmentToken(const std::string& enrollment_token) {
       !base::CreateDirectory(enrollment_token_path.DirName()) ||
       !base::ImportantFileWriter::WriteFileAtomically(enrollment_token_path,
                                                       enrollment_token)) {
+    VLOG(1) << "Failed to update enrollment token.";
     return false;
   }
 
   enrollment_token_ = enrollment_token;
+  VLOG(1) << "Updated enrollment token to: " << enrollment_token;
   return true;
 }
 
@@ -140,18 +143,22 @@ bool TokenService::StoreDmToken(const std::string& token) {
   if (dm_token_path.empty() ||
       !base::CreateDirectory(dm_token_path.DirName()) ||
       !base::ImportantFileWriter::WriteFileAtomically(dm_token_path, token)) {
+    VLOG(1) << "Failed to update DM token.";
     return false;
   }
   dm_token_ = token;
+  VLOG(1) << "Updated DM token to: " << token;
   return true;
 }
 
 bool TokenService::DeleteDmToken() {
   const base::FilePath dm_token_path = GetDmTokenFilePath();
   if (dm_token_path.empty() || !base::DeleteFile(dm_token_path)) {
+    VLOG(1) << "Failed to delete DM token.";
     return false;
   }
   dm_token_.clear();
+  VLOG(1) << "DM token deleted.";
   return true;
 }
 
