@@ -259,14 +259,10 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
       base::BindRepeating(&PinRequestView::OnBack, base::Unretained(this)));
   back_button_->SetPreferredSize(
       gfx::Size(kBackButtonSizeDp, kBackButtonSizeDp));
-  back_button_->SetBackground(
-      views::CreateSolidBackground(SK_ColorTRANSPARENT));
-  back_button_->SetImage(
+  back_button_->SetImageModel(
       views::Button::STATE_NORMAL,
-      gfx::CreateVectorIcon(
-          views::kIcCloseIcon, kCrossSizeDp,
-          AshColorProvider::Get()->GetContentLayerColor(
-              AshColorProvider::ContentLayerType::kIconColorPrimary)));
+      ui::ImageModel::FromVectorIcon(views::kIcCloseIcon,
+                                     kColorAshIconColorPrimary, kCrossSizeDp));
   back_button_->SetImageHorizontalAlignment(views::ImageButton::ALIGN_CENTER);
   back_button_->SetImageVerticalAlignment(views::ImageButton::ALIGN_MIDDLE);
   back_button_->SetAccessibleName(
@@ -285,8 +281,7 @@ PinRequestView::PinRequestView(PinRequest request, Delegate* delegate)
   auto decorate_label = [](views::Label* label) {
     label->SetSubpixelRenderingEnabled(false);
     label->SetAutoColorReadabilityEnabled(false);
-    label->SetEnabledColor(AshColorProvider::Get()->GetContentLayerColor(
-        AshColorProvider::ContentLayerType::kTextColorPrimary));
+    label->SetEnabledColorId(kColorAshTextColorPrimary);
     label->SetFocusBehavior(FocusBehavior::ACCESSIBLE_ONLY);
   };
 
@@ -514,17 +509,13 @@ void PinRequestView::UpdateState(PinRequestViewState state,
   UpdatePreferredSize();
   switch (state_) {
     case PinRequestViewState::kNormal: {
-      const SkColor kTextColor = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorPrimary);
-      access_code_view_->SetInputColor(kTextColor);
-      title_label_->SetEnabledColor(kTextColor);
+      access_code_view_->SetInputColorId(kColorAshTextColorPrimary);
+      title_label_->SetEnabledColorId(kColorAshTextColorPrimary);
       return;
     }
     case PinRequestViewState::kError: {
-      const SkColor kErrorColor = AshColorProvider::Get()->GetContentLayerColor(
-          AshColorProvider::ContentLayerType::kTextColorAlert);
-      access_code_view_->SetInputColor(kErrorColor);
-      title_label_->SetEnabledColor(kErrorColor);
+      access_code_view_->SetInputColorId(kColorAshTextColorAlert);
+      title_label_->SetEnabledColorId(kColorAshTextColorAlert);
       // Read out the error.
       title_label_->NotifyAccessibilityEvent(ax::mojom::Event::kAlert, true);
       return;

@@ -7,8 +7,10 @@
 
 #include <string>
 
+#include "ash/style/system_textfield.h"
 #include "base/memory/raw_ptr.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
+#include "ui/color/color_id.h"
 #include "ui/views/controls/textfield/textfield.h"
 #include "ui/views/controls/textfield/textfield_controller.h"
 
@@ -38,7 +40,7 @@ class AccessCodeInput : public views::View, public views::TextfieldController {
   virtual absl::optional<std::string> GetCode() const = 0;
 
   // Sets the color of the input text.
-  virtual void SetInputColor(SkColor color) = 0;
+  virtual void SetInputColorId(ui::ColorId color_id) = 0;
 
   virtual void SetInputEnabled(bool input_enabled) = 0;
 
@@ -72,8 +74,6 @@ class FlexCodeInput : public AccessCodeInput {
   FlexCodeInput& operator=(const FlexCodeInput&) = delete;
   ~FlexCodeInput() override;
 
-  void OnThemeChanged() override;
-
   // Appends |value| to the code
   void InsertDigit(int value) override;
 
@@ -84,7 +84,7 @@ class FlexCodeInput : public AccessCodeInput {
   absl::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
-  void SetInputColor(SkColor color) override;
+  void SetInputColorId(ui::ColorId color_id) override;
 
   void SetInputEnabled(bool input_enabled) override;
 
@@ -107,7 +107,7 @@ class FlexCodeInput : public AccessCodeInput {
  private:
   void OnAccessibleNameChanged(const std::u16string& new_name) override;
 
-  raw_ptr<views::Textfield, ExperimentalAsh> code_field_;
+  raw_ptr<SystemTextfield, ExperimentalAsh> code_field_;
 
   // To be called when access input code changes (character is inserted, deleted
   // or updated). Passes true when code non-empty.
@@ -122,9 +122,9 @@ class FlexCodeInput : public AccessCodeInput {
 
 // Accessible input field for a single digit in fixed length codes.
 // Customizes field description and focus behavior.
-class AccessibleInputField : public views::Textfield {
+class AccessibleInputField : public SystemTextfield {
  public:
-  AccessibleInputField() = default;
+  AccessibleInputField();
 
   AccessibleInputField(const AccessibleInputField&) = delete;
   AccessibleInputField& operator=(const AccessibleInputField&) = delete;
@@ -180,8 +180,6 @@ class FixedLengthCodeInput : public AccessCodeInput {
   FixedLengthCodeInput(const FixedLengthCodeInput&) = delete;
   FixedLengthCodeInput& operator=(const FixedLengthCodeInput&) = delete;
 
-  void OnThemeChanged() override;
-
   // Inserts |value| into the |active_field_| and moves focus to the next field
   // if it exists.
   void InsertDigit(int value) override;
@@ -194,7 +192,7 @@ class FixedLengthCodeInput : public AccessCodeInput {
   absl::optional<std::string> GetCode() const override;
 
   // Sets the color of the input text.
-  void SetInputColor(SkColor color) override;
+  void SetInputColorId(ui::ColorId color_id) override;
 
   // views::View:
   bool IsGroupFocusTraversable() const override;
