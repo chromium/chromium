@@ -23,7 +23,6 @@
 #include "third_party/blink/renderer/modules/mediacapturefromelement/html_video_element_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_constraints_util.h"
-#include "third_party/blink/renderer/modules/mediastream/media_stream_track_impl.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_utils.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_capturer_source.h"
 #include "third_party/blink/renderer/modules/mediastream/media_stream_video_track.h"
@@ -202,15 +201,13 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
         absl::get<MediaStreamDescriptor*>(variant);
     DCHECK(descriptor);
     for (unsigned i = 0; i < descriptor->NumberOfAudioComponents(); i++) {
-      media_stream_->AddTrackAndFireEvents(
-          MediaStreamTrackImpl::CreateCloningComponent(
-              context, descriptor->AudioComponent(i)),
+      media_stream_->AddTrackByComponentAndFireEvents(
+          descriptor->AudioComponent(i),
           MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
     for (unsigned i = 0; i < descriptor->NumberOfVideoComponents(); i++) {
-      media_stream_->AddTrackAndFireEvents(
-          MediaStreamTrackImpl::CreateCloningComponent(
-              context, descriptor->VideoComponent(i)),
+      media_stream_->AddTrackByComponentAndFireEvents(
+          descriptor->VideoComponent(i),
           MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
     }
     UpdateSources(context);
@@ -238,15 +235,15 @@ void MediaElementEventListener::Invoke(ExecutionContext* context,
 
   MediaStreamComponentVector video_components = descriptor->VideoComponents();
   for (auto component : video_components) {
-    media_stream_->AddTrackAndFireEvents(
-        MediaStreamTrackImpl::CreateCloningComponent(context, component),
+    media_stream_->AddTrackByComponentAndFireEvents(
+        component,
         MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
   }
 
   MediaStreamComponentVector audio_components = descriptor->AudioComponents();
   for (auto component : audio_components) {
-    media_stream_->AddTrackAndFireEvents(
-        MediaStreamTrackImpl::CreateCloningComponent(context, component),
+    media_stream_->AddTrackByComponentAndFireEvents(
+        component,
         MediaStreamDescriptorClient::DispatchEventTiming::kScheduled);
   }
 
@@ -338,19 +335,7 @@ MediaStream* HTMLMediaElementCapture::captureStream(
     MediaStreamDescriptor* const element_descriptor =
         absl::get<MediaStreamDescriptor*>(variant);
     DCHECK(element_descriptor);
-
-    MediaStreamTrackVector audio_tracks;
-    for (auto component : element_descriptor->AudioComponents()) {
-      audio_tracks.push_back(
-          MediaStreamTrackImpl::CreateCloningComponent(context, component));
-    }
-    MediaStreamTrackVector video_tracks;
-    for (auto component : element_descriptor->VideoComponents()) {
-      video_tracks.push_back(
-          MediaStreamTrackImpl::CreateCloningComponent(context, component));
-    }
-    return MediaStream::Create(context, element_descriptor, audio_tracks,
-                               video_tracks);
+    return MediaStream::Create(context, element_descriptor);
   }
 
   LocalFrame* frame = ToLocalFrameIfNotDetached(script_state->GetContext());
