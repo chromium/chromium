@@ -382,7 +382,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app->last_launch_time().is_null());
   EXPECT_TRUE(app->install_time().is_null());
   EXPECT_TRUE(app->shortcuts_menu_item_infos().empty());
-  EXPECT_TRUE(app->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app->manifest_url().is_empty());
@@ -453,7 +452,6 @@ TEST_F(WebAppDatabaseTest, WebAppWithoutOptionalFields) {
   EXPECT_TRUE(app_copy->scope_extensions().empty());
   EXPECT_TRUE(app_copy->validated_scope_extensions().empty());
   EXPECT_TRUE(app_copy->shortcuts_menu_item_infos().empty());
-  EXPECT_TRUE(app_copy->downloaded_shortcuts_menu_icons_sizes().empty());
   EXPECT_EQ(app_copy->run_on_os_login_mode(), RunOnOsLoginMode::kNotRun);
   EXPECT_FALSE(app_copy->run_on_os_login_os_integration_state().has_value());
   EXPECT_TRUE(app_copy->manifest_url().is_empty());
@@ -584,11 +582,10 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   WebAppShortcutsMenuItemInfo shortcut_item_info{};
   shortcut_item_info.name = u"shortcut";
   shortcut_item_info.url = GURL("http://example.com/shortcut");
-  IconSizes downloaded_icon_sizes{};
-  downloaded_icon_sizes.any = {42};
-  downloaded_icon_sizes.maskable = {24};
-  downloaded_icon_sizes.monochrome = {123};
-  base_app->SetShortcutsMenuInfo({shortcut_item_info}, {downloaded_icon_sizes});
+  shortcut_item_info.downloaded_icon_sizes.any = {42};
+  shortcut_item_info.downloaded_icon_sizes.maskable = {24};
+  shortcut_item_info.downloaded_icon_sizes.monochrome = {123};
+  base_app->SetShortcutsMenuInfo({shortcut_item_info});
 
   std::unique_ptr<WebAppProto> base_proto =
       WebAppDatabase::CreateWebAppProto(*base_app);
@@ -604,12 +601,13 @@ TEST_F(WebAppDatabaseTest, MigrateFromMissingShortcutsSizes) {
   // length.
   WebAppProto proto_without_downloaded_sizes(*base_proto);
   proto_without_downloaded_sizes.clear_downloaded_shortcuts_menu_icons_sizes();
-
-  auto app_with_empty_downloaded_sizes = std::make_unique<WebApp>(*base_app);
-  app_with_empty_downloaded_sizes->SetShortcutsMenuInfo({shortcut_item_info},
-                                                        {IconSizes{}});
   auto roundtrip_app =
       WebAppDatabase::CreateWebApp(proto_without_downloaded_sizes);
+
+  auto app_with_empty_downloaded_sizes = std::make_unique<WebApp>(*base_app);
+  shortcut_item_info.downloaded_icon_sizes = {};
+  app_with_empty_downloaded_sizes->SetShortcutsMenuInfo({shortcut_item_info});
+
   EXPECT_EQ(base::ToString(*roundtrip_app),
             base::ToString(*app_with_empty_downloaded_sizes));
 }

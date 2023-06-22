@@ -252,12 +252,6 @@ class WebApp {
     return shortcuts_menu_item_infos_;
   }
 
-  // Represents which shortcuts menu icon sizes we successfully downloaded for
-  // each WebAppShortcutsMenuItemInfo.shortcuts_menu_manifest_icons.
-  const std::vector<IconSizes>& downloaded_shortcuts_menu_icons_sizes() const {
-    return downloaded_shortcuts_menu_icons_sizes_;
-  }
-
   blink::mojom::CaptureLinks capture_links() const { return capture_links_; }
 
   const GURL& manifest_url() const { return manifest_url_; }
@@ -448,10 +442,8 @@ class WebApp {
   void SetDownloadedIconSizes(IconPurpose purpose, SortedSizesPx sizes);
   void SetIsGeneratedIcon(bool is_generated_icon);
   // Sets information about the shortcuts menu for the app.
-  // `shortcuts_menu_item_infos` and `downloaded_sizes` must be the same length.
   void SetShortcutsMenuInfo(
-      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos,
-      std::vector<IconSizes> downloaded_sizes);
+      std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_infos);
   void SetFileHandlers(apps::FileHandlers file_handlers);
   void SetFileHandlerApprovalState(ApiApprovalState approval_state);
   void SetFileHandlerOsIntegrationState(
@@ -569,7 +561,6 @@ class WebApp {
   SortedSizesPx downloaded_icon_sizes_maskable_;
   bool is_generated_icon_ = false;
   std::vector<WebAppShortcutsMenuItemInfo> shortcuts_menu_item_infos_;
-  std::vector<IconSizes> downloaded_shortcuts_menu_icons_sizes_;
   apps::FileHandlers file_handlers_;
   absl::optional<apps::ShareTarget> share_target_;
   std::vector<std::string> additional_search_terms_;

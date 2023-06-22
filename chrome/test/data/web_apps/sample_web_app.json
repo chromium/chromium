@@ -59,27 +59,6 @@
       "MASKABLE": [ 256 ],
       "MONOCHROME": [ 256 ]
    },
-   "downloaded_shortcuts_menu_icons_sizes": [ {
-      "ANY": [  ],
-      "MASKABLE": [  ],
-      "MONOCHROME": [  ],
-      "index": 0
-   }, {
-      "ANY": [ 118 ],
-      "MASKABLE": [ 38 ],
-      "MONOCHROME": [ 228 ],
-      "index": 1
-   }, {
-      "ANY": [ 80, 47 ],
-      "MASKABLE": [ 240, 164 ],
-      "MONOCHROME": [ 138, 107 ],
-      "index": 2
-   }, {
-      "ANY": [ 3, 4, 22 ],
-      "MASKABLE": [ 141, 14, 123 ],
-      "MONOCHROME": [ 16, 115, 22 ],
-      "index": 3
-   } ],
    "file_handler_approval_state": "kRequiresPrompt",
    "file_handler_os_integration_state": "kDisabled",
    "file_handlers": [ {
@@ -330,6 +309,11 @@
       }
    },
    "shortcuts_menu_item_infos": [ {
+      "downloaded_icons_sizes": {
+         "ANY": [  ],
+         "MASKABLE": [  ],
+         "MONOCHROME": [  ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -353,6 +337,11 @@
       "name": "shortcut9442928603",
       "url": "https://example.com/scope1234/shortcut9442928603"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 118 ],
+         "MASKABLE": [ 38 ],
+         "MONOCHROME": [ 228 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -373,6 +362,11 @@
       "name": "shortcut9442928602",
       "url": "https://example.com/scope1234/shortcut9442928602"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 80, 47 ],
+         "MASKABLE": [ 240, 164 ],
+         "MONOCHROME": [ 138, 107 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {
@@ -390,6 +384,11 @@
       "name": "shortcut9442928601",
       "url": "https://example.com/scope1234/shortcut9442928601"
    }, {
+      "downloaded_icons_sizes": {
+         "ANY": [ 3, 4, 22 ],
+         "MASKABLE": [ 141, 14, 123 ],
+         "MONOCHROME": [ 16, 115, 22 ]
+      },
       "icons": {
          "ANY": [  ],
          "MASKABLE": [ {

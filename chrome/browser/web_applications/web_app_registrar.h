@@ -266,11 +266,6 @@ class WebAppRegistrar : public ProfileManagerObserver {
   std::vector<WebAppShortcutsMenuItemInfo> GetAppShortcutsMenuItemInfos(
       const AppId& app_id) const;
 
-  // Represents which icon sizes we successfully downloaded from the
-  // ShortcutsMenuItemInfos.
-  std::vector<IconSizes> GetAppDownloadedShortcutsMenuIconsSizes(
-      const AppId& app_id) const;
-
   // Returns the Run on OS Login mode and enterprise policy value.
   ValueWithPolicy<RunOnOsLoginMode> GetAppRunOnOsLoginMode(
       const AppId& app_id) const;

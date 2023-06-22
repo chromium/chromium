@@ -748,12 +748,17 @@ std::unique_ptr<WebApp> CreateRandomWebApp(CreateRandomWebAppParams params) {
   }
   app->SetAdditionalSearchTerms(std::move(additional_search_terms));
 
-  int num_shortcut_menus = static_cast<int>(random.next_uint(4)) + 1;
+  int num_shortcut_items = static_cast<int>(random.next_uint(4)) + 1;
   auto item_infos =
-      CreateRandomShortcutsMenuItemInfos(scope, num_shortcut_menus, random);
+      CreateRandomShortcutsMenuItemInfos(scope, num_shortcut_items, random);
   auto icons_sizes =
-      CreateRandomDownloadedShortcutsMenuIconsSizes(num_shortcut_menus, random);
-  app->SetShortcutsMenuInfo(std::move(item_infos), std::move(icons_sizes));
+      CreateRandomDownloadedShortcutsMenuIconsSizes(num_shortcut_items, random);
+  CHECK_EQ(item_infos.size(), icons_sizes.size());
+  for (int i = 0; i < num_shortcut_items; ++i) {
+    item_infos[i].downloaded_icon_sizes = std::move(icons_sizes[i]);
+  }
+  icons_sizes.clear();
+  app->SetShortcutsMenuInfo(std::move(item_infos));
 
   app->SetManifestUrl(
       params.base_url.Resolve("/manifest" + seed_str + ".json"));

@@ -1150,13 +1150,6 @@ WebAppRegistrar::GetAppShortcutsMenuItemInfos(const AppId& app_id) const {
                  : std::vector<WebAppShortcutsMenuItemInfo>();
 }
 
-std::vector<IconSizes> WebAppRegistrar::GetAppDownloadedShortcutsMenuIconsSizes(
-    const AppId& app_id) const {
-  auto* web_app = GetAppById(app_id);
-  return web_app ? web_app->downloaded_shortcuts_menu_icons_sizes()
-                 : std::vector<IconSizes>();
-}
-
 std::vector<AppId> WebAppRegistrar::GetAppIds() const {
   return GetAppIdsForAppSet(GetApps());
 }

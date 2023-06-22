@@ -94,6 +94,7 @@ struct IconSizes {
   IconSizes(IconSizes&&) noexcept;
   IconSizes& operator=(const IconSizes&);
   IconSizes& operator=(IconSizes&&) noexcept;
+  base::Value AsDebugValue() const;
 
   const std::vector<SquareSizePx>& GetSizesForPurpose(
       IconPurpose purpose) const;
@@ -168,6 +169,9 @@ struct WebAppShortcutsMenuItemInfo {
   // designed for monochrome contexts.
   // See https://www.w3.org/TR/appmanifest/#purpose-member
   std::vector<Icon> monochrome;
+
+  // Sizes of successfully downloaded icons for this shortcut menu item.
+  IconSizes downloaded_icon_sizes{};
 };
 
 // Structure used when installing a web page as an app.
