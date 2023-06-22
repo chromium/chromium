@@ -39,6 +39,8 @@ class LocationBarLayout {
   // - Whether the decoration should |auto_collapse| if there is no room for it;
   // - The |max_fraction| it can use within the omnibox, or 0 for non-resizable
   //   decorations;
+  // - |intra_item_padding|, the padding between the item and the previous item.
+  //   Does not apply to the first item, which instead uses edge_item_padding.
   // - |edge_item_padding|, the padding between the omnibox edge and the item,
   //   if the item is the first one drawn;
   // - The |view| corresponding to this decoration, a weak pointer.
@@ -47,6 +49,7 @@ class LocationBarLayout {
                      int height,
                      bool auto_collapse,
                      double max_fraction,
+                     int intra_item_padding,
                      int edge_item_padding,
                      views::View* view);
 

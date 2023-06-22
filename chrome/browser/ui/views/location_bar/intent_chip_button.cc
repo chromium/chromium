@@ -20,6 +20,8 @@
 #include "chrome/grit/generated_resources.h"
 #include "ui/base/l10n/l10n_util.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
+#include "ui/base/models/image_model.h"
+#include "ui/base/ui_base_features.h"
 #include "ui/views/style/platform_style.h"
 #include "ui/views/view_class_properties.h"
 
@@ -34,6 +36,10 @@ IntentChipButton::IntentChipButton(Browser* browser,
   SetFocusBehavior(views::PlatformStyle::kDefaultFocusBehavior);
   SetTooltipText(l10n_util::GetStringUTF16(IDS_INTENT_CHIP_OPEN_IN_APP));
   SetProperty(views::kElementIdentifierKey, kIntentChipElementId);
+
+  if (features::IsChromeRefresh2023()) {
+    label()->SetTextStyle(views::style::STYLE_BODY_3_EMPHASIS);
+  }
 }
 
 IntentChipButton::~IntentChipButton() = default;
@@ -80,6 +86,10 @@ bool IntentChipButton::GetChipExpanded() const {
 }
 
 ui::ImageModel IntentChipButton::GetAppIcon() const {
+  if (features::IsChromeRefresh2023()) {
+    // The color and size are configured in OmniboxChipButton.
+    return ui::ImageModel::FromVectorIcon(kOpenInNewChromeRefreshIcon);
+  }
   if (auto* tab_helper = GetTabHelper())
     return tab_helper->app_icon();
   return ui::ImageModel();

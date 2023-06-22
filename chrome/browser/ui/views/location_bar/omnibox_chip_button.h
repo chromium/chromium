@@ -90,6 +90,8 @@ class OmniboxChipButton : public views::MdTextButton {
 
   SkColor GetBackgroundColor() const;
 
+  int GetCornerRadius() const;
+
   // An animation used for expanding and collapsing the chip.
   std::unique_ptr<gfx::SlideAnimation> animation_;
 

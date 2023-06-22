@@ -16,6 +16,7 @@ struct DecorationInfo {
                  int height,
                  bool auto_collapse,
                  double max_fraction,
+                 int intra_item_padding,
                  int edge_item_padding,
                  views::View* view);
 
@@ -35,6 +36,10 @@ struct DecorationInfo {
   // decorations. If non-zero, |auto_collapse| must be false.
   double max_fraction;
 
+  // The padding between this item and the previous item. Does not apply to the
+  // first item, which instead uses edge_item_padding.
+  int intra_item_padding;
+
   // Padding to use if the decoration is the first element next to the edge.
   int edge_item_padding;
 
@@ -48,12 +53,14 @@ DecorationInfo::DecorationInfo(int y,
                                int height,
                                bool auto_collapse,
                                double max_fraction,
+                               int intra_item_padding,
                                int edge_item_padding,
                                views::View* view)
     : y(y),
       height(height),
       auto_collapse(auto_collapse),
       max_fraction(max_fraction),
+      intra_item_padding(intra_item_padding),
       edge_item_padding(edge_item_padding),
       view(view),
       computed_width(0) {
@@ -71,10 +78,12 @@ void LocationBarLayout::AddDecoration(int y,
                                       int height,
                                       bool auto_collapse,
                                       double max_fraction,
+                                      int intra_item_padding,
                                       int edge_item_padding,
                                       views::View* view) {
   decorations_.push_back(std::make_unique<DecorationInfo>(
-      y, height, auto_collapse, max_fraction, edge_item_padding, view));
+      y, height, auto_collapse, max_fraction, intra_item_padding,
+      edge_item_padding, view));
 }
 
 void LocationBarLayout::LayoutPass1(int* entry_width) {
@@ -83,6 +92,9 @@ void LocationBarLayout::LayoutPass1(int* entry_width) {
     // Autocollapsing decorations are ignored in this pass.
     if (first_item && !decoration->auto_collapse)
       *entry_width -= decoration->edge_item_padding;
+    if (!first_item) {
+      *entry_width -= decoration->intra_item_padding;
+    }
     first_item = false;
     // Resizing decorations are ignored in this pass.
     if (!decoration->auto_collapse && (decoration->max_fraction == 0.0)) {
@@ -108,7 +120,8 @@ void LocationBarLayout::LayoutPass2(int* entry_width) {
 void LocationBarLayout::LayoutPass3(gfx::Rect* bounds, int* available_width) {
   bool first_visible = true;
   for (const auto& decoration : decorations_) {
-    int padding = first_visible ? decoration->edge_item_padding : 0;
+    int padding = first_visible ? decoration->edge_item_padding
+                                : decoration->intra_item_padding;
 
     // Collapse decorations if needed.
     if (decoration->auto_collapse) {

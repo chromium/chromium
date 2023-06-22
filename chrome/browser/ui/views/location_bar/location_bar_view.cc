@@ -157,6 +157,9 @@ bool OmniboxPrefixRichAutocompletionEnabled() {
              kRichAutocompletionAutocompleteNonPrefixShortcutProvider.Get();
 }
 
+// The padding between the intent chip and the other trailing decorations.
+constexpr int kIntentChipIntraItemPadding = 12;
+
 }  // namespace
 
 using content::WebContents;
@@ -686,14 +689,15 @@ void LocationBarView::Layout() {
 
   if (show_overriding_permission_chip) {
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, icon_left, chip_controller_->chip());
+                                      0, /*intra_item_padding=*/0, icon_left,
+                                      chip_controller_->chip());
   }
 
   location_icon_view_->SetVisible(false);
   if (ShouldShowKeywordBubble()) {
-    leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      kLeadingDecorationMaxFraction, icon_left,
-                                      selected_keyword_view_);
+    leading_decorations.AddDecoration(
+        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
+        /*intra_item_padding=*/0, icon_left, selected_keyword_view_);
     if (selected_keyword_view_->GetKeyword() != keyword) {
       selected_keyword_view_->SetKeyword(keyword);
       const TemplateURL* template_url =
@@ -710,32 +714,38 @@ void LocationBarView::Layout() {
   } else if (location_icon_view_->GetShowText() &&
              !ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
-    leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      kLeadingDecorationMaxFraction, icon_left,
-                                      location_icon_view_);
+    leading_decorations.AddDecoration(
+        vertical_padding, location_height, false, kLeadingDecorationMaxFraction,
+        /*intra_item_padding=*/0, icon_left, location_icon_view_);
   } else if (!ShouldChipOverrideLocationIcon()) {
     location_icon_view_->SetVisible(true);
     leading_decorations.AddDecoration(vertical_padding, location_height, false,
-                                      0, icon_left, location_icon_view_);
+                                      0, /*intra_item_padding=*/0, icon_left,
+                                      location_icon_view_);
   }
 
-  auto add_trailing_decoration = [&](View* view) {
+  auto add_trailing_decoration = [&](View* view, int intra_item_padding) {
     if (view->GetVisible()) {
       trailing_decorations.AddDecoration(
-          vertical_padding, location_height, false, 0,
+          vertical_padding, location_height, /*auto_collapse=*/false,
+          /*max_fraction=*/0, intra_item_padding,
           trailing_decorations_edge_padding, view);
     }
   };
 
-  add_trailing_decoration(page_action_icon_container_);
+  add_trailing_decoration(page_action_icon_container_,
+                          /*intra_item_padding=*/0);
   for (ContentSettingImageView* view : base::Reversed(content_setting_views_)) {
-    add_trailing_decoration(view);
+    add_trailing_decoration(view, /*intra_item_padding=*/0);
   }
 
-  if (intent_chip_)
-    add_trailing_decoration(intent_chip_);
+  if (intent_chip_) {
+    int intra_item_padding =
+        features::IsChromeRefresh2023() ? kIntentChipIntraItemPadding : 0;
+    add_trailing_decoration(intent_chip_, intra_item_padding);
+  }
 
-  add_trailing_decoration(clear_all_button_);
+  add_trailing_decoration(clear_all_button_, /*intra_item_padding=*/0);
 
   // Perform layout.
   int entry_width = width();
