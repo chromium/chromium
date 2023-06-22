@@ -1123,6 +1123,9 @@ bool MultiplexRouter::ProcessIncomingMessage(
     // always accessed on the same sequence, including DetachEndpointClient().
     MayAutoUnlock unlocker(&lock_);
     Message tmp_message = message_wrapper->DeserializeEndpointHandlesAndTake();
+    recordreplay::Assert(
+        "[RUN-2229-2231] MultiplexRouter::ProcessIncomingMessage %d",
+        tmp_message.IsNull());
     result =
         !tmp_message.IsNull() && client->HandleIncomingMessage(&tmp_message);
   }
