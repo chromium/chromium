@@ -59,14 +59,6 @@ class SharesheetBubbleView : public views::BubbleDialogDelegateView,
   void ResizeBubble(const int& width, const int& height);
   void CloseBubble(views::Widget::ClosedReason reason);
 
-  // --- Added for debugging purposes. Remove after bug fixed.
-
-  ASH_EXPORT void PerformLoggingAndChecks(gfx::NativeWindow native_window);
-  ASH_EXPORT void SetUpDialog();
-  ASH_EXPORT void SetUpParentWindow(gfx::NativeWindow native_window);
-
-  // --- End of functions added for debugging.
-
  private:
   class SharesheetParentWidgetObserver;
 
