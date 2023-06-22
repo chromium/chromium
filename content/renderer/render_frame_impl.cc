@@ -1492,9 +1492,7 @@ RenderFrameImpl* RenderFrameImpl::CreateMainFrame(
   web_frame_widget->ApplyVisualProperties(
       params->widget_params->visual_properties);
 
-  CHECK(!render_frame->in_frame_tree_);
   render_frame->in_frame_tree_ = true;
-  render_frame->added_to_frame_tree_stack_trace_.emplace();
   render_frame->Initialize(nullptr);
 
   if (params->subresource_loader_factories
@@ -1602,9 +1600,7 @@ void RenderFrameImpl::CreateFrame(
 
     // The RenderFrame is created and inserted into the frame tree in the above
     // call to createLocalChild.
-    CHECK(!render_frame->in_frame_tree_);
     render_frame->in_frame_tree_ = true;
-    render_frame->added_to_frame_tree_stack_trace_.emplace();
   } else {
     WebFrame* previous_web_frame =
         WebFrame::FromFrameToken(previous_frame_token.value());
@@ -2113,9 +2109,7 @@ void RenderFrameImpl::Unload(
   task_runner->PostTask(FROM_HERE, std::move(send_unload_ack));
 }
 
-void RenderFrameImpl::Delete(
-    mojom::FrameDeleteIntention intent,
-    mojo::PendingRemote<mojom::DebugHelperForCrbug1425281> helper) {
+void RenderFrameImpl::Delete(mojom::FrameDeleteIntention intent) {
   TRACE_EVENT(
       "navigation", "RenderFrameImpl::Delete", [&](perfetto::EventContext ctx) {
         auto* event = ctx.event<perfetto::protos::pbzero::ChromeTrackEvent>();
@@ -2159,36 +2153,10 @@ void RenderFrameImpl::Delete(
       // main frame when a commit (and ownership transfer) is imminent.
       // TODO(dcheng): This is the case of https://crbug.com/838348.
       DCHECK(is_main_frame_);
-      // This check is not enabled on Android, since it was previously much
-      // easier to trigger this race there, and it's still unclear what's
-      // causing the new race.
 #if !BUILDFLAG(IS_ANDROID)
-      if (in_frame_tree_) {
-        // This remote should always be non-null when intent ==
-        // kSpeculativeMainFrameForNavigationCancelled.
-        mojo::Remote<mojom::DebugHelperForCrbug1425281> helper_remote(
-            std::move(helper));
-        size_t addresses_count = 0;
-        const void* const* addresses_ptr =
-            added_to_frame_tree_stack_trace_
-                ? added_to_frame_tree_stack_trace_->Addresses(&addresses_count)
-                : nullptr;
-        absl::optional<std::vector<uint64_t>> addresses;
-        if (addresses_ptr) {
-          addresses.emplace();
-          addresses->reserve(addresses_count);
-          for (size_t i = 0; i < addresses_count; ++i) {
-            addresses->push_back(reinterpret_cast<uintptr_t>(addresses_ptr[i]));
-          }
-        }
-        auto debug_info = mojom::Crbug1425281DebugInfo::New(
-            addresses, is_main_frame_, frame_->IsProvisional());
-        helper_remote->Failed(std::move(debug_info));
-        helper_remote.reset();
-      } else {
-        // No need to signal anything; only failure is signalled.
-        helper.reset();
-      }
+      // This check is not enabled on Android, since it seems like it's much
+      // easier to trigger data races there.
+      CHECK(!in_frame_tree_);
 #endif  // !BUILDFLAG(IS_ANDROID)
       break;
   }
@@ -3568,9 +3536,7 @@ blink::WebLocalFrame* RenderFrameImpl::CreateChildFrame(
       child_render_frame->blink_interface_registry_.get(), frame_token);
   finish_creation(web_frame, document_token);
 
-  CHECK(!child_render_frame->in_frame_tree_);
   child_render_frame->in_frame_tree_ = true;
-  child_render_frame->added_to_frame_tree_stack_trace_.emplace();
   child_render_frame->Initialize(/*parent=*/GetWebFrame());
 
   return web_frame;
@@ -5077,9 +5043,7 @@ bool RenderFrameImpl::SwapIn(WebFrame* previous_web_frame) {
 
   // `previous_web_frame` is now detached, and should no longer be referenced.
 
-  CHECK(!in_frame_tree_);
   in_frame_tree_ = true;
-  added_to_frame_tree_stack_trace_.emplace();
 
   // If this is the main frame going from a remote frame to a local frame,
   // it needs to set RenderViewImpl's pointer for the main frame to itself.

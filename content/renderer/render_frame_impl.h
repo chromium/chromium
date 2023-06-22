@@ -17,7 +17,6 @@
 #include <vector>
 
 #include "base/containers/id_map.h"
-#include "base/debug/stack_trace.h"
 #include "base/files/file_path.h"
 #include "base/functional/callback.h"
 #include "base/gtest_prod_util.h"
@@ -861,9 +860,7 @@ class CONTENT_EXPORT RenderFrameImpl
       blink::mojom::RemoteFrameInterfacesFromBrowserPtr remote_frame_interfaces,
       blink::mojom::RemoteMainFrameInterfacesPtr remote_main_frame_interfaces)
       override;
-  void Delete(
-      mojom::FrameDeleteIntention intent,
-      mojo::PendingRemote<mojom::DebugHelperForCrbug1425281> helper) override;
+  void Delete(mojom::FrameDeleteIntention intent) override;
   void UndoCommitNavigation(
       bool is_loading,
       blink::mojom::FrameReplicationStatePtr replicated_frame_state,
@@ -1194,8 +1191,6 @@ class CONTENT_EXPORT RenderFrameImpl
   // TODO(dcheng): Remove this once we have FrameTreeHandle and can use the
   // Blink Web* layer to check for provisional frames.
   bool in_frame_tree_;
-  // TODO(crbug.com/1425281): Temporary for debugging.
-  absl::optional<base::debug::StackTrace> added_to_frame_tree_stack_trace_;
 
   const int routing_id_;
 

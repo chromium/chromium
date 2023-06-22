@@ -15,7 +15,6 @@
 #include "base/containers/cxx20_erase.h"
 #include "base/debug/crash_logging.h"
 #include "base/debug/dump_without_crashing.h"
-#include "base/debug/stack_trace.h"
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/functional/callback_helpers.h"
@@ -3345,86 +3344,6 @@ void RenderFrameHostImpl::SetMojomFrameRemote(
   frame_.Bind(std::move(frame_remote));
 }
 
-namespace {
-
-class DebugHelperForCrbug1425281 : public mojom::DebugHelperForCrbug1425281 {
- public:
-  explicit DebugHelperForCrbug1425281(
-      const base::debug::StackTrace& create_rfh_stack_trace,
-      const absl::optional<base::debug::StackTrace>&
-          last_commit_navigation_stack_trace,
-      RenderFrameHostImpl::LifecycleStateImpl lifecycle_state,
-      bool page_is_primary,
-      bool browser_is_outermost_main_frame,
-      bool browser_has_parent,
-      bool browser_is_speculative)
-      : create_rfh_stack_trace_(create_rfh_stack_trace),
-        last_commit_navigation_stack_trace_(last_commit_navigation_stack_trace),
-        lifecycle_state_(lifecycle_state),
-        page_is_primary_(page_is_primary),
-        browser_is_outermost_main_frame_(browser_is_outermost_main_frame),
-        browser_has_parent_(browser_has_parent),
-        browser_is_speculative_(browser_is_speculative) {}
-
-  void Failed(mojom::Crbug1425281DebugInfoPtr debug_info) override {
-    base::debug::StackTrace create_rfh_stack_trace = create_rfh_stack_trace_;
-    absl::optional<base::debug::StackTrace> last_commit_navigation_stack_trace =
-        last_commit_navigation_stack_trace_;
-    base::debug::StackTrace delete_render_frame_stack_trace =
-        delete_render_frame_stack_trace_;
-
-    absl::optional<std::array<const void*, base::debug::StackTrace::kMaxTraces>>
-        added_to_frame_tree_stack_trace;
-    if (debug_info->added_to_frame_tree_stack_trace) {
-      added_to_frame_tree_stack_trace.emplace();
-      const size_t addresses_count =
-          std::min(base::debug::StackTrace::kMaxTraces,
-                   debug_info->added_to_frame_tree_stack_trace->size());
-      for (size_t i = 0; i < addresses_count; ++i) {
-        (*added_to_frame_tree_stack_trace)[i] =
-            reinterpret_cast<void*>(static_cast<uintptr_t>(
-                (*debug_info->added_to_frame_tree_stack_trace)[i]));
-      }
-    }
-
-    const RenderFrameHostImpl::LifecycleStateImpl lifecycle_state =
-        lifecycle_state_;
-    bool page_is_primary = page_is_primary_;
-    bool browser_is_outermost_main_frame = browser_is_outermost_main_frame_;
-    bool browser_has_parent = browser_has_parent_;
-    bool browser_is_speculative = browser_is_speculative_;
-    base::debug::Alias(&lifecycle_state);
-    base::debug::Alias(&page_is_primary);
-    base::debug::Alias(&browser_is_outermost_main_frame);
-    base::debug::Alias(&browser_has_parent);
-    base::debug::Alias(&browser_is_speculative);
-    base::debug::Alias(&create_rfh_stack_trace);
-    base::debug::Alias(&last_commit_navigation_stack_trace);
-    base::debug::Alias(&delete_render_frame_stack_trace);
-
-    bool renderer_is_main_frame = debug_info->is_main_frame;
-    bool renderer_is_provisional = debug_info->is_provisional;
-    base::debug::Alias(&renderer_is_main_frame);
-    base::debug::Alias(&renderer_is_provisional);
-    base::debug::Alias(&added_to_frame_tree_stack_trace);
-
-    base::debug::DumpWithoutCrashing();
-  }
-
- private:
-  const base::debug::StackTrace create_rfh_stack_trace_;
-  const absl::optional<base::debug::StackTrace>
-      last_commit_navigation_stack_trace_;
-  const RenderFrameHostImpl::LifecycleStateImpl lifecycle_state_;
-  const bool page_is_primary_;
-  const bool browser_is_outermost_main_frame_;
-  const bool browser_has_parent_;
-  const bool browser_is_speculative_;
-  const base::debug::StackTrace delete_render_frame_stack_trace_;
-};
-
-}  // namespace
-
 void RenderFrameHostImpl::DeleteRenderFrame(
     mojom::FrameDeleteIntention intent) {
   TRACE_EVENT("navigation", "RenderFrameHostImpl::DeleteRenderFrame",
@@ -3435,19 +3354,7 @@ void RenderFrameHostImpl::DeleteRenderFrame(
     return;
 
   if (IsRenderFrameLive()) {
-    mojo::PendingRemote<mojom::DebugHelperForCrbug1425281> helper_remote;
-    if (intent == mojom::FrameDeleteIntention::
-                      kSpeculativeMainFrameForNavigationCancelled) {
-      mojo::MakeSelfOwnedReceiver(
-          std::make_unique<DebugHelperForCrbug1425281>(
-              create_rfh_stack_trace_, last_commit_navigation_stack_trace_,
-              lifecycle_state_, GetPage().IsPrimary(), IsOutermostMainFrame(),
-              !!GetParent(),
-              frame_tree_node()->render_manager()->speculative_frame_host() ==
-                  this),
-          helper_remote.InitWithNewPipeAndPassReceiver());
-    }
-    GetMojomFrameInRenderer()->Delete(intent, std::move(helper_remote));
+    GetMojomFrameInRenderer()->Delete(intent);
 
     // We change the lifecycle state to kRunningUnloadHandlers at the end of
     // this method to wait until OnUnloadACK() is invoked.
@@ -13289,7 +13196,6 @@ void RenderFrameHostImpl::SendCommitNavigation(
       std::move(storage_info),
       coop_forbids_document_to_be_cross_origin_isolated,
       BuildCommitNavigationCallback(navigation_request));
-  last_commit_navigation_stack_trace_.emplace();
   base::UmaHistogramTimes(
       base::StrCat({"Navigation.SendCommitNavigationTime.",
                     IsOutermostMainFrame() ? "MainFrame" : "Subframe"}),
