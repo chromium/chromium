@@ -21,6 +21,8 @@
 #import "components/sync/service/sync_service.h"
 #import "components/sync/service/sync_user_settings.h"
 #import "ios/chrome/browser/net/crurl.h"
+#import "ios/chrome/browser/settings/sync/utils/account_error_ui_info.h"
+#import "ios/chrome/browser/settings/sync/utils/identity_error_util.h"
 #import "ios/chrome/browser/settings/sync/utils/sync_util.h"
 #import "ios/chrome/browser/shared/ui/list_model/list_model.h"
 #import "ios/chrome/browser/shared/ui/symbols/symbols.h"
@@ -40,6 +42,7 @@
 #import "ios/chrome/browser/sync/sync_setup_service.h"
 #import "ios/chrome/browser/ui/authentication/cells/table_view_central_account_item.h"
 #import "ios/chrome/browser/ui/authentication/enterprise/enterprise_utils.h"
+#import "ios/chrome/browser/ui/settings/cells/settings_image_detail_text_item.h"
 #import "ios/chrome/browser/ui/settings/cells/sync_switch_item.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_command_handler.h"
 #import "ios/chrome/browser/ui/settings/google_services/manage_sync_settings_constants.h"
@@ -81,6 +84,7 @@ UIImageConfiguration* AccessoryConfiguration() {
 
 // Enterprise icon.
 NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
+constexpr CGFloat kErrorSymbolPointSize = 22.;
 
 }  // namespace
 
@@ -925,6 +929,7 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
       case SignOutItemFooterType:
       case TypesListHeaderOrFooterType:
       case IdentityAccountItemType:
+      case AccountErrorMessageItemType:
         NOTREACHED();
         break;
     }
@@ -999,18 +1004,19 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
     case SignOutItemFooterType:
     case TypesListHeaderOrFooterType:
     case IdentityAccountItemType:
+    case AccountErrorMessageItemType:
       // Nothing to do.
       break;
   }
 }
 
-// Creates an item to display the sync error. `itemType` should only be one of
-// those types:
+// Creates an item to display and handle the sync error for syncing users.
+// `itemType` should only be one of those types:
 //   + PrimaryAccountReauthErrorItemType
 //   + ShowPassphraseDialogErrorItemType
 //   + SyncNeedsTrustedVaultKeyErrorItemType
 //   + SyncTrustedVaultRecoverabilityDegradedErrorItemType
-- (TableViewItem*)createSyncErrorItemWithItemType:(NSInteger)itemType {
+- (TableViewItem*)createSyncErrorIconItemWithItemType:(NSInteger)itemType {
   DCHECK((itemType == PrimaryAccountReauthErrorItemType) ||
          (itemType == ShowPassphraseDialogErrorItemType) ||
          (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
@@ -1058,6 +1064,56 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   return syncErrorItem;
 }
 
+// Creates a message item to display the sync error description for signed in
+// not syncing users.
+- (TableViewItem*)createSyncErrorMessageItem:(int)messageID {
+  CHECK(self.syncAccountState == SyncSettingsAccountState::kSignedIn);
+  SettingsImageDetailTextItem* syncErrorItem =
+      [[SettingsImageDetailTextItem alloc]
+          initWithType:AccountErrorMessageItemType];
+  syncErrorItem.detailText = l10n_util::GetNSString(messageID);
+  syncErrorItem.image =
+      DefaultSymbolWithPointSize(kErrorCircleFillSymbol, kErrorSymbolPointSize);
+  syncErrorItem.imageViewTintColor = [UIColor colorNamed:kRed500Color];
+  return syncErrorItem;
+}
+
+// Creates an error action button item to handle the indicated sync error type
+// for signed in not syncing users.
+- (TableViewItem*)createSyncErrorButtonItemWithItemType:(NSInteger)itemType
+                                          buttonLabelID:(int)buttonLabelID {
+  CHECK((itemType == PrimaryAccountReauthErrorItemType) ||
+        (itemType == ShowPassphraseDialogErrorItemType) ||
+        (itemType == SyncNeedsTrustedVaultKeyErrorItemType) ||
+        (itemType == SyncTrustedVaultRecoverabilityDegradedErrorItemType))
+      << "itemType: " << itemType;
+  CHECK(self.syncAccountState == SyncSettingsAccountState::kSignedIn);
+  TableViewTextItem* item = [[TableViewTextItem alloc] initWithType:itemType];
+  item.text = l10n_util::GetNSString(buttonLabelID);
+  item.textColor = [UIColor colorNamed:kBlueColor];
+  item.accessibilityTraits = UIAccessibilityTraitButton;
+  return item;
+}
+
+// Deletes the error section. If `notifyConsumer` is YES, the consumer is
+// notified about model changes.
+- (void)removeSyncErrorsSection:(BOOL)notifyConsumer {
+  TableViewModel* model = self.consumer.tableViewModel;
+  if (![model hasSectionForSectionIdentifier:SyncErrorsSectionIdentifier]) {
+    return;
+  }
+  NSInteger sectionIndex =
+      [model sectionForSectionIdentifier:SyncErrorsSectionIdentifier];
+  [model removeSectionWithIdentifier:SyncErrorsSectionIdentifier];
+  self.syncErrorItem = nil;
+
+  // Remove the sync error section from the table view model.
+  if (notifyConsumer) {
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
+    [self.consumer deleteSections:indexSet];
+  }
+}
+
 // Loads the sync errors section.
 - (void)loadSyncErrorsSection {
   // The `self.consumer.tableViewModel` will be reset prior to this method.
@@ -1072,46 +1128,71 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   // Checks if the sync setup service state has changed from the saved state in
   // the table view model.
   absl::optional<SyncSettingsItemType> type = [self syncErrorItemType];
-  if (![self needsSyncSetupServiceStateUpdate:type]) {
+  if (![self needsErrorSectionUpdate:type]) {
     return;
   }
 
   TableViewModel* model = self.consumer.tableViewModel;
-  // There is no error in sync setup service, but there previously was an error.
+  // There is no sync error now, but there previously was an error.
   if (!type.has_value()) {
-    NSInteger sectionIndex =
-        [model sectionForSectionIdentifier:SyncErrorsSectionIdentifier];
-    [model removeSectionWithIdentifier:SyncErrorsSectionIdentifier];
-    self.syncErrorItem = nil;
-
-    // Remove the sync error section from the table view model.
-    if (notifyConsumer) {
-      NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:sectionIndex];
-      [self.consumer deleteSections:indexSet];
-    }
+    [self removeSyncErrorsSection:notifyConsumer];
     return;
   }
 
-  // There is an error in the sync setup service with no previous error.
-  BOOL hasPreviousError = self.syncErrorItem;
+  // There is an error now and there might be a previous error.
+  BOOL errorSectionAlreadyExists = self.syncErrorItem;
+
+  if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+      errorSectionAlreadyExists) {
+    // As the previous error might not have a message item in case it is
+    // SyncDisabledByAdministratorError, clear the whole section instead of
+    // updating it's items.
+    errorSectionAlreadyExists = NO;
+    [self removeSyncErrorsSection:notifyConsumer];
+  }
 
   // Create the new sync error item.
   DCHECK(type.has_value());
   if (type.value() == SyncDisabledByAdministratorErrorItemType) {
     self.syncErrorItem = [self createSyncDisabledByAdministratorErrorItem];
+  } else if (self.syncAccountState == SyncSettingsAccountState::kSignedIn) {
+    // For signed in not syncing users, the sync error item will be displayed as
+    // a button.
+    self.syncErrorItem =
+        [self createSyncErrorButtonItemWithItemType:type.value()
+                                      buttonLabelID:GetAccountErrorUIInfo(
+                                                        _syncService)
+                                                        .buttonLabelID];
   } else {
-    self.syncErrorItem = [self createSyncErrorItemWithItemType:type.value()];
+    // For syncing users, the sync error item will be displayed as
+    // an icon with descriptive text.
+    self.syncErrorItem =
+        [self createSyncErrorIconItemWithItemType:type.value()];
   }
 
-  if (!hasPreviousError) {
-    [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier atIndex:0];
+  NSInteger syncErrorSectionIndex =
+      self.syncAccountState == SyncSettingsAccountState::kSignedIn
+          ? [model sectionForSectionIdentifier:AccountSectionIdentifier] + 1
+          : 0;
+  if (!errorSectionAlreadyExists) {
+    [model insertSectionWithIdentifier:SyncErrorsSectionIdentifier
+                               atIndex:syncErrorSectionIndex];
+    if (self.syncAccountState == SyncSettingsAccountState::kSignedIn &&
+        type.value() != SyncDisabledByAdministratorErrorItemType) {
+      // For signed in not syncing users, the sync error item will be preceded
+      // by a descriptive message item.
+      [model addItem:[self createSyncErrorMessageItem:GetAccountErrorUIInfo(
+                                                          _syncService)
+                                                          .messageID]
+          toSectionWithIdentifier:SyncErrorsSectionIdentifier];
+    }
     [model addItem:self.syncErrorItem
         toSectionWithIdentifier:SyncErrorsSectionIdentifier];
   }
 
   if (notifyConsumer) {
-    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:0];
-    if (hasPreviousError) {
+    NSIndexSet* indexSet = [NSIndexSet indexSetWithIndex:syncErrorSectionIndex];
+    if (errorSectionAlreadyExists) {
       [self.consumer reloadSections:indexSet];
     } else {
       [self.consumer insertSections:indexSet];
@@ -1153,10 +1234,8 @@ NSString* const kGoogleServicesEnterpriseImage = @"google_services_enterprise";
   return absl::nullopt;
 }
 
-// Returns whether the sync setup service state has changed since the last
-// update.
-- (BOOL)needsSyncSetupServiceStateUpdate:
-    (absl::optional<SyncSettingsItemType>)type {
+// Returns whether the error state has changed since the last update.
+- (BOOL)needsErrorSectionUpdate:(absl::optional<SyncSettingsItemType>)type {
   BOOL hasError = type.has_value();
   return (hasError && !self.syncErrorItem) ||
          (!hasError && self.syncErrorItem) ||
