@@ -449,6 +449,7 @@ content::WebUIDataSource* CreateAndAddPasswordsUIHTMLSource(
       profile, std::make_unique<FaviconSource>(
                    profile, chrome::FaviconUrlFormat::kFavicon2));
 
+  webui::SetupChromeRefresh2023(source);
   return source;
 }
 
