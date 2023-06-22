@@ -249,7 +249,7 @@
         ],
         'mixins': [
           'chrome-swarming-pool',
-          'linux-bionic',
+          'linux-jammy-or-bionic',
         ],
         'test_suites': {
           'isolated_scripts': 'chrome_linux_isolated_script_tests',
