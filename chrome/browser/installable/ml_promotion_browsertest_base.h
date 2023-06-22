@@ -38,11 +38,20 @@ class MLPromotionBrowserTestBase : public PlatformBrowserTest {
   void SetUp() override;
   void SetUpOnMainThread() override;
 
-  net::EmbeddedTestServer* https_server();
+  // Installs the app for the current web contents, skipping any dialogs.
   bool InstallAppForCurrentWebContents(bool install_locally);
+
+  // Triggers a user-initiated install for the current web contents, showing any
+  // install ux. If `accept_install` is true, then this will accept the install
+  // & continue. If it is false, then it will cancel the install.
+  // Returns if the installation went as expected.
+  bool InstallAppFromUserInitiation(bool accept_install);
+
   bool NavigateAndAwaitInstallabilityCheck(const GURL& url);
   segmentation_platform::MockSegmentationPlatformService* GetMockSegmentation(
       content::WebContents* custom_web_contents = nullptr);
+
+  net::EmbeddedTestServer* https_server();
   content::WebContents* web_contents();
   Profile* profile();
 

@@ -31,6 +31,7 @@
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/metrics/site_quality_metrics_task.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "components/webapps/browser/installable/ml_installability_promoter.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/service_worker_context_observer.h"
@@ -69,6 +70,7 @@ using testing::Pointee;
 using webapps::MLInstallabilityPromoter;
 using webapps::SiteInstallMetrics;
 using webapps::SiteQualityMetrics;
+using MlInstallResponse = MlInstallResultReporter::MlInstallResponse;
 
 segmentation_platform::ClassificationResult CreateClassificationResult(
     std::string label,
@@ -267,7 +269,7 @@ class MLPromotionBrowsertest : public MLPromotionBrowserTestBase {
 
   void ExpectTrainingResult(
       TrainingRequestId request,
-      webapps::MlInstallUserResponse response,
+      MlInstallResponse response,
       content::WebContents* custom_web_contents = nullptr) {
     if (!custom_web_contents) {
       custom_web_contents = web_contents();
@@ -629,8 +631,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownCancelled) {
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kCancelled);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kCancelled);
 
   views::test::CancelDialog(widget);
 
@@ -655,8 +656,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
 
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kIgnored);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kIgnored);
 
   views::test::WidgetDestroyedWaiter destroyed(widget);
   web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
@@ -683,8 +683,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter destroyed(widget);
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kIgnored);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kIgnored);
   widget->Close();
   destroyed.Wait();
 
@@ -708,8 +707,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallShownAccepted) {
   task_runner_->RunPendingTasks();
   views::Widget* widget = waiter.WaitIfNeededAndGet();
   views::test::WidgetDestroyedWaiter destroyed(widget);
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kAccepted);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kAccepted);
   views::test::AcceptDialog(widget);
   destroyed.Wait();
 
@@ -762,8 +760,7 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlHandlesInvisible) {
   // so handle installation request.
   views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
                                        "PWAConfirmationBubbleView");
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kAccepted,
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kAccepted,
                        original_web_contents);
   chrome::SelectPreviousTab(browser());
   views::Widget* widget = waiter.WaitIfNeededAndGet();
@@ -788,18 +785,20 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
                                        "PWAConfirmationBubbleView");
   // This calls unblocks the metrics tasks, allowing ML to be called.
   task_runner_->RunPendingTasks();
+
+  // Cancelling the dialog will save that result in the guardrails, which should
+  // cause the next immediate install call to trigger the guardrail response.
   views::Widget* widget = waiter.WaitIfNeededAndGet();
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kCancelled);
+  ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kCancelled);
   views::test::WidgetDestroyedWaiter destroyed(widget);
   views::test::CancelDialog(widget);
   destroyed.Wait();
 
+  // Ensure that nothing is installed.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
-
   EXPECT_TRUE(provider().registrar_unsafe().is_empty());
 
-  web_app::NavigateToURLAndWait(browser(), GURL("about:blank"));
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
 
   // Test that guardrails now block the install.
   NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
@@ -808,13 +807,107 @@ IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest, MlInstallGuardrailBlocked) {
       /*site_url=*/GetInstallableAppURL(),
       /*manifest_id=*/GetInstallableAppURL(),
       MLInstallabilityPromoter::kShowInstallPromptLabel,
-      TrainingRequestId(1ll));
-
-  ExpectTrainingResult(TrainingRequestId(1ll),
-                       webapps::MlInstallUserResponse::kBlockedGuardrails);
+      TrainingRequestId(2ll));
+  // This will cause the ML pipeline to complete, but not report anything yet.
+  // This allows the user install to possibly still happen and report success.
   task_runner_->RunPendingTasks();
 
+  ExpectTrainingResult(TrainingRequestId(2ll),
+                       MlInstallResponse::kBlockedGuardrails, web_contents());
+  // Doing another navigation should now trigger the guardrail blocked signal.
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+}
+
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+                       MlInstallGuardrailIgnoredUserInstallAccepted) {
+  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
+
+  // Cancelling the dialog will save that result in the guardrails, which
+  // should cause the next immediate install call to trigger the guardrail
+  // response.
+  {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "PWAConfirmationBubbleView");
+    // This calls unblocks the metrics tasks, allowing ML to be called.
+    task_runner_->RunPendingTasks();
+
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kCancelled);
+    views::test::WidgetDestroyedWaiter destroyed(widget);
+    views::test::CancelDialog(widget);
+    destroyed.Wait();
+  }
+  // Ensure that nothing is installed.
   provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().is_empty());
+
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate back to the app url to re-trigger the ml pipeline.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(2ll));
+  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  task_runner_->RunPendingTasks();
+
+  // Test that the guardrail isn't reported when the user completes the install,
+  // and instead reports success.
+  ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kAccepted);
+  EXPECT_TRUE(InstallAppFromUserInitiation(/*accept_install=*/true));
+}
+
+IN_PROC_BROWSER_TEST_F(MLPromotionBrowsertest,
+                       MlInstallGuardrailIgnoredUserInstallCancelled) {
+  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(1ll));
+
+  // Cancelling the dialog will save that result in the guardrails, which
+  // should cause the next immediate install call to trigger the guardrail
+  // response.
+  {
+    views::NamedWidgetShownWaiter waiter(views::test::AnyWidgetTestPasskey{},
+                                         "PWAConfirmationBubbleView");
+    // This calls unblocks the metrics tasks, allowing ML to be called.
+    task_runner_->RunPendingTasks();
+
+    views::Widget* widget = waiter.WaitIfNeededAndGet();
+    ExpectTrainingResult(TrainingRequestId(1ll), MlInstallResponse::kCancelled);
+    views::test::WidgetDestroyedWaiter destroyed(widget);
+    views::test::CancelDialog(widget);
+    destroyed.Wait();
+  }
+  // Ensure that nothing is installed.
+  provider().command_manager().AwaitAllCommandsCompleteForTesting();
+  EXPECT_TRUE(provider().registrar_unsafe().is_empty());
+
+  web_app::NavigateToURLAndWait(browser(), GURL(url::kAboutBlankURL));
+
+  // Navigate back to the app url to re-trigger the ml pipeline.
+  ExpectClasificationCallReturnResult(
+      /*site_url=*/GetInstallableAppURL(),
+      /*manifest_id=*/GetInstallableAppURL(),
+      MLInstallabilityPromoter::kShowInstallPromptLabel,
+      TrainingRequestId(2ll));
+  NavigateAndAwaitMetricsCollectionPending(GetInstallableAppURL());
+  task_runner_->RunPendingTasks();
+
+  // Test that the guardrail isn't reported when the user completes the install,
+  // and instead reports success.
+  ExpectTrainingResult(TrainingRequestId(2ll), MlInstallResponse::kCancelled);
+  EXPECT_TRUE(InstallAppFromUserInitiation(/*accept_install=*/false));
 }
 
 }  // namespace

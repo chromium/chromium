@@ -5,30 +5,26 @@
 #ifndef COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_OPERATION_TRACKER_H_
 #define COMPONENTS_WEBAPPS_BROWSER_INSTALLABLE_ML_INSTALL_OPERATION_TRACKER_H_
 
+#include <memory>
+
 #include "base/memory/weak_ptr.h"
 #include "base/types/pass_key.h"
-#include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
-#include "third_party/abseil-cpp/absl/types/optional.h"
-
-class GURL;
 
 namespace webapps {
-class AppBannerManager;
 class MLInstallabilityPromoter;
+class MlInstallResultReporter;
 
-// The values of this enum are used for UMA metrics, do not change them.
+// These are the actions that a user can take when interacting with installation
+// UX.
 enum class MlInstallUserResponse {
   // The dialog was accepted by the user, and the install was initiated.
-  kAccepted = 0,
+  kAccepted,
   // The install dialog was ignored via navigating away, clicking on a new tab,
   // etc.
-  kIgnored = 1,
+  kIgnored,
   // The install dialog was explicitly canceled by the user.
-  kCancelled = 2,
-  // The promotion was blocked by guardrails.
-  kBlockedGuardrails = 3,
-  kMaxValue = kBlockedGuardrails
+  kCancelled,
 };
 
 // Reports the result of an install to the ML metrics system, if applicable.
@@ -40,28 +36,23 @@ class MlInstallOperationTracker {
  public:
   // This can only be constructed from the MLInstallabilityPromoter class.
   MlInstallOperationTracker(base::PassKey<MLInstallabilityPromoter>,
-                            WebappInstallSource install_source);
+                            WebappInstallSource source);
   ~MlInstallOperationTracker();
 
   // This can only be called from the MLInstallabilityPromoter class.
   void OnMlResultForInstallation(
       base::PassKey<MLInstallabilityPromoter>,
-      base::WeakPtr<AppBannerManager> app_banner_manager,
-      segmentation_platform::TrainingRequestId training_request);
+      std::unique_ptr<MlInstallResultReporter> reporter);
 
-  // If this installation has an ML result on it (via construction OR via
-  // OnMlResult call), then this function will report the result to the ml
-  // training api, update guardrails if applicable, and emit the UMA.
-  // This can only be called once, and subsequent calls are ignored.
-  void ReportResult(const GURL& manifest_id, MlInstallUserResponse response);
+  // This call reports the result of the user's interaction with the
+  // installation dialog to the MlInstallResultReporter, if it exists.
+  void ReportResult(MlInstallUserResponse response);
 
   base::WeakPtr<MlInstallOperationTracker> GetWeakPtr();
 
  private:
-  const WebappInstallSource install_source_;
-
-  base::WeakPtr<AppBannerManager> app_banner_manager_;
-  absl::optional<segmentation_platform::TrainingRequestId> training_request_;
+  const WebappInstallSource source_;
+  std::unique_ptr<MlInstallResultReporter> reporter_;
 
   base::WeakPtrFactory<MlInstallOperationTracker> weak_factory_{this};
 };

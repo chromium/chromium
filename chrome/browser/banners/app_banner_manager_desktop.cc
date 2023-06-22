@@ -99,11 +99,12 @@ AppBannerManagerDesktop::AppBannerManagerDesktop(
 
 AppBannerManagerDesktop::~AppBannerManagerDesktop() = default;
 
-base::WeakPtr<AppBannerManager> AppBannerManagerDesktop::GetWeakPtr() {
+base::WeakPtr<AppBannerManager>
+AppBannerManagerDesktop::GetWeakPtrForThisNavigation() {
   return weak_factory_.GetWeakPtr();
 }
 
-void AppBannerManagerDesktop::InvalidateWeakPtrs() {
+void AppBannerManagerDesktop::InvalidateWeakPtrsForThisNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 }
 

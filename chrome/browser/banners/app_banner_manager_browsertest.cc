@@ -185,11 +185,13 @@ class AppBannerManagerTest : public AppBannerManager {
     }
   }
 
-  base::WeakPtr<AppBannerManager> GetWeakPtr() override {
+  base::WeakPtr<AppBannerManager> GetWeakPtrForThisNavigation() override {
     return weak_factory_.GetWeakPtr();
   }
 
-  void InvalidateWeakPtrs() override { weak_factory_.InvalidateWeakPtrs(); }
+  void InvalidateWeakPtrsForThisNavigation() override {
+    weak_factory_.InvalidateWeakPtrs();
+  }
 
   bool IsSupportedNonWebAppPlatform(
       const std::u16string& platform) const override {

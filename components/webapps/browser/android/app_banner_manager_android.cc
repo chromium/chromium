@@ -588,7 +588,8 @@ void AppBannerManagerAndroid::RecordExtraMetricsForInstallEvent(
     AddToHomescreenInstaller::Event event,
     const AddToHomescreenParams& a2hs_params) {}
 
-base::WeakPtr<AppBannerManager> AppBannerManagerAndroid::GetWeakPtr() {
+base::WeakPtr<AppBannerManager>
+AppBannerManagerAndroid::GetWeakPtrForThisNavigation() {
   return weak_factory_.GetWeakPtr();
 }
 
@@ -597,7 +598,7 @@ AppBannerManagerAndroid::GetAndroidWeakPtr() {
   return weak_factory_.GetWeakPtr();
 }
 
-void AppBannerManagerAndroid::InvalidateWeakPtrs() {
+void AppBannerManagerAndroid::InvalidateWeakPtrsForThisNavigation() {
   weak_factory_.InvalidateWeakPtrs();
 }
 

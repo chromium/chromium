@@ -15,6 +15,7 @@
 #include "components/segmentation_platform/public/trigger.h"
 #include "components/webapps/browser/installable/installable_metrics.h"
 #include "components/webapps/browser/installable/metrics/site_quality_metrics_task.h"
+#include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "content/public/browser/service_worker_context_observer.h"
 #include "content/public/browser/web_contents_observer.h"
 #include "content/public/browser/web_contents_user_data.h"
@@ -143,9 +144,7 @@ class MLInstallabilityPromoter
   void RequestMlClassification();
   void OnClassificationResult(
       const segmentation_platform::ClassificationResult& result);
-  // Can only be called after metrics are collected.
-  bool IsBlockedByGuardrails();
-  void ReportResultToAppBannerManager();
+  void MaybeReportResultToAppBannerManager();
 
   // contents::WebContentsObserver overrides
   void DidFinishNavigation(content::NavigationHandle* handle) override;
@@ -173,8 +172,7 @@ class MLInstallabilityPromoter
     kUKMCollectionComplete = 2,
     kMLClassificationRequested = 3,
     kWaitingForVisibility = 4,
-    // No more work needs to be done for this page load.
-    kComplete = 5
+    kComplete = 5,
   } state_ = MLPipelineState::kInactive;
 
   // - All of the following variables are reset when the page navigates. -
@@ -195,11 +193,9 @@ class MLInstallabilityPromoter
 
   // If populated, then an install is happening for the current web contents.
   base::WeakPtr<MlInstallOperationTracker> current_install_;
-  // If the ML classification request has come back, then both of these should
-  // be populated.
-  absl::optional<segmentation_platform::TrainingRequestId>
-      current_training_request_;
-  absl::optional<std::string> ml_output_label_;
+  // This is populated if the ML result has come back and no installation has
+  // occured. This is moved into the MlInstallOperationTracker on its creation.
+  std::unique_ptr<MlInstallResultReporter> ml_result_reporter_;
 
   // - The following variables are not reset on page navigation. -
 

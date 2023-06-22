@@ -214,9 +214,9 @@ void AppBannerManager::RequestAppBanner(const GURL& validated_url) {
     validated_url_ = validated_url;
 
   UpdateState(State::FETCHING_MANIFEST);
-  manager_->GetData(
-      ParamsToGetManifest(),
-      base::BindOnce(&AppBannerManager::OnDidGetManifest, GetWeakPtr()));
+  manager_->GetData(ParamsToGetManifest(),
+                    base::BindOnce(&AppBannerManager::OnDidGetManifest,
+                                   GetWeakPtrForThisNavigation()));
 }
 
 void AppBannerManager::OnInstall(blink::mojom::DisplayMode display) {
@@ -252,6 +252,10 @@ void AppBannerManager::AddObserver(Observer* observer) {
 
 void AppBannerManager::RemoveObserver(Observer* observer) {
   observer_list_.RemoveObserver(observer);
+}
+
+base::WeakPtr<AppBannerManager> AppBannerManager::GetWeakPtr() {
+  return weak_factory_.GetWeakPtr();
 }
 
 bool AppBannerManager::TriggeringDisabledForTesting() const {
@@ -414,7 +418,7 @@ void AppBannerManager::PerformInstallableWebAppCheck() {
   manager_->GetData(
       ParamsToPerformInstallableWebAppCheck(),
       base::BindOnce(&AppBannerManager::OnDidPerformInstallableWebAppCheck,
-                     GetWeakPtr()));
+                     GetWeakPtrForThisNavigation()));
 }
 
 void AppBannerManager::OnDidPerformInstallableWebAppCheck(
@@ -621,7 +625,7 @@ void AppBannerManager::Stop(InstallableStatusCode code) {
       InstallableWebAppCheckResult::kUnknown) {
     SetInstallableWebAppCheckResult(InstallableWebAppCheckResult::kNo);
   }
-  InvalidateWeakPtrs();
+  InvalidateWeakPtrsForThisNavigation();
   ResetBindings();
   UpdateState(State::COMPLETE);
   status_reporter_ = std::make_unique<NullStatusReporter>();
@@ -646,8 +650,8 @@ void AppBannerManager::SendBannerPromptRequest() {
   controller_ptr->BannerPromptRequest(
       receiver_.BindNewPipeAndPassRemote(), event_.BindNewPipeAndPassReceiver(),
       {GetBannerType()},
-      base::BindOnce(&AppBannerManager::OnBannerPromptReply, GetWeakPtr(),
-                     std::move(controller)));
+      base::BindOnce(&AppBannerManager::OnBannerPromptReply,
+                     GetWeakPtrForThisNavigation(), std::move(controller)));
 }
 
 void AppBannerManager::UpdateState(State state) {

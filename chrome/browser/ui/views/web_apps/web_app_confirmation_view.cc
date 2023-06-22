@@ -204,8 +204,7 @@ void WebAppConfirmationView::WindowClosing() {
   if (callback_) {
     CHECK(web_app_info_);
     CHECK(install_tracker_);
-    install_tracker_->ReportResult(web_app_info_->manifest_id,
-                                   webapps::MlInstallUserResponse::kCancelled);
+    install_tracker_->ReportResult(webapps::MlInstallUserResponse::kCancelled);
     std::move(callback_).Run(false, std::move(web_app_info_));
   }
 }
@@ -229,8 +228,7 @@ bool WebAppConfirmationView::Accept() {
             ? web_app::mojom::UserDisplayMode::kStandalone
             : web_app::mojom::UserDisplayMode::kBrowser;
   }
-  install_tracker_->ReportResult(web_app_info_->manifest_id,
-                                 webapps::MlInstallUserResponse::kAccepted);
+  install_tracker_->ReportResult(webapps::MlInstallUserResponse::kAccepted);
   // Some tests repeatedly create this class, and it's not guaranteed this class
   // is destroyed for subsequent calls. So reset the tracker manually here.
   install_tracker_.reset();

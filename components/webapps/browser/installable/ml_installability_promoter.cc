@@ -26,6 +26,7 @@
 #include "components/webapps/browser/installable/metrics/site_manifest_metrics_task.h"
 #include "components/webapps/browser/installable/metrics/site_quality_metrics_task.h"
 #include "components/webapps/browser/installable/ml_install_operation_tracker.h"
+#include "components/webapps/browser/installable/ml_install_result_reporter.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/service_worker_context.h"
 #include "content/public/browser/storage_partition.h"
@@ -69,14 +70,15 @@ bool MLInstallabilityPromoter::HasCurrentInstall() {
 std::unique_ptr<MlInstallOperationTracker>
 MLInstallabilityPromoter::RegisterCurrentInstallForWebContents(
     WebappInstallSource install_source) {
-  CHECK(!current_install_);
+  CHECK(!current_install_)
+      << "Only one installion can be happening at any given time.";
   std::unique_ptr<MlInstallOperationTracker> tracker =
       std::make_unique<MlInstallOperationTracker>(
           base::PassKey<MLInstallabilityPromoter>(), install_source);
-  if (current_training_request_) {
+  if (ml_result_reporter_) {
     tracker->OnMlResultForInstallation(
-        base::PassKey<MLInstallabilityPromoter>(), app_banner_manager_,
-        current_training_request_.value());
+        base::PassKey<MLInstallabilityPromoter>(),
+        std::move(ml_result_reporter_));
   }
   current_install_ = tracker->GetWeakPtr();
   return tracker;
@@ -346,29 +348,24 @@ void MLInstallabilityPromoter::OnClassificationResult(
     // An installation could have occurred while executing the ML logic.
     return;
   }
+  GURL manifest_id = GetProjectedManifestIdAfterMetricsCollection();
+  bool has_icons =
+      site_quality_metrics_.favicons_count > 0 || !manifest_->icons.empty();
+  // Promotion from this Ml result is blocked by guardrails if it doesn't have
+  // any icons, or if there has been a history of recent ignores. See the
+  // implementation of IsMlPromotionBlockedByHistoryGuardrail per platform for
+  // more details.
+  bool is_ml_promotion_blocked_by_guardrails =
+      !has_icons ||
+      app_banner_manager_->IsMlPromotionBlockedByHistoryGuardrail(manifest_id);
+  ml_result_reporter_ = std::make_unique<MlInstallResultReporter>(
+      app_banner_manager_, result.request_id, result.ordered_labels[0],
+      manifest_id, is_ml_promotion_blocked_by_guardrails);
 
-  CHECK(!result.ordered_labels.empty());
-  current_training_request_ = result.request_id;
-  ml_output_label_ = result.ordered_labels[0];
-
-  // If an install is already showing, then no need to block by guardrails or
-  // show the banner again - simply set the request id, and the result of the
-  // dialog will be reported to the ML.
   if (current_install_) {
     current_install_->OnMlResultForInstallation(
-        base::PassKey<MLInstallabilityPromoter>(), app_banner_manager_,
-        result.request_id);
-    return;
-  }
-
-  if (IsBlockedByGuardrails()) {
-    // Create the installation tracker to re-use the reporting code, as no
-    // prompt is being shown.
-    std::unique_ptr<MlInstallOperationTracker> install_tracker =
-        RegisterCurrentInstallForWebContents(WebappInstallSource::ML_PROMOTION);
-    install_tracker->ReportResult(
-        GetProjectedManifestIdAfterMetricsCollection(),
-        MlInstallUserResponse::kBlockedGuardrails);
+        base::PassKey<MLInstallabilityPromoter>(),
+        std::move(ml_result_reporter_));
     return;
   }
 
@@ -376,41 +373,19 @@ void MLInstallabilityPromoter::OnClassificationResult(
     state_ = MLPipelineState::kWaitingForVisibility;
     return;
   }
-  ReportResultToAppBannerManager();
+  MaybeReportResultToAppBannerManager();
 }
 
-bool MLInstallabilityPromoter::IsBlockedByGuardrails() {
-  // TODO(https://crbug.com/1455521) Remove this.
-  if (!app_banner_manager_) {
-    return false;
+void MLInstallabilityPromoter::MaybeReportResultToAppBannerManager() {
+  if (state_ != MLPipelineState::kComplete || !ml_result_reporter_ ||
+      ml_result_reporter_->ml_promotion_blocked_by_guardrail() ||
+      !app_banner_manager_) {
+    // TODO(https://crbug.com/1455521) Remove the app_banner_manager check
+    return;
   }
-  switch (state_) {
-    case MLPipelineState::kInactive:
-    case MLPipelineState::kRunningMetricTasks:
-      CHECK(false) << "Cannot check guardrails without having enough "
-                      "information to generate a manifest_id.";
-      break;
-    case MLPipelineState::kUKMCollectionComplete:
-    case MLPipelineState::kMLClassificationRequested:
-    case MLPipelineState::kWaitingForVisibility:
-    case MLPipelineState::kComplete:
-      break;
-  }
-  bool has_icons =
-      site_quality_metrics_.favicons_count > 0 || !manifest_->icons.empty();
-  return !has_icons ||
-         app_banner_manager_->IsMlPromotionBlockedByHistoryGuardrail(
-             GetProjectedManifestIdAfterMetricsCollection());
-}
-
-void MLInstallabilityPromoter::ReportResultToAppBannerManager() {
-  CHECK_EQ(state_, MLPipelineState::kComplete);
-  CHECK(ml_output_label_);
-  // TODO(https://crbug.com/1455521) Remove this check
-  if (app_banner_manager_) {
-    app_banner_manager_->OnMlInstallPrediction(
-        base::PassKey<MLInstallabilityPromoter>(), ml_output_label_.value());
-  }
+  app_banner_manager_->OnMlInstallPrediction(
+      base::PassKey<MLInstallabilityPromoter>(),
+      ml_result_reporter_->output_label());
 }
 
 void MLInstallabilityPromoter::DidFinishNavigation(
@@ -441,7 +416,7 @@ void MLInstallabilityPromoter::OnVisibilityChanged(
     return;
   }
   state_ = MLPipelineState::kComplete;
-  ReportResultToAppBannerManager();
+  MaybeReportResultToAppBannerManager();
 }
 
 // Stop collecting data if the web contents have been destroyed.
@@ -508,23 +483,6 @@ void MLInstallabilityPromoter::OnDestruct(
 }
 
 void MLInstallabilityPromoter::ResetRunningStagesAndTasksMaybeReportResult() {
-  if (current_install_) {
-    switch (state_) {
-      case MLPipelineState::kUKMCollectionComplete:
-      case MLPipelineState::kMLClassificationRequested:
-      case MLPipelineState::kWaitingForVisibility:
-      case MLPipelineState::kComplete:
-        // Result reporting only works if there is enough information to
-        // generate a manifest_id.
-        current_install_->ReportResult(
-            GetProjectedManifestIdAfterMetricsCollection(),
-            MlInstallUserResponse::kIgnored);
-        break;
-      case MLPipelineState::kInactive:
-      case MLPipelineState::kRunningMetricTasks:
-        break;
-    }
-  }
   state_ = MLPipelineState::kInactive;
   site_url_ = GURL();
   // TODO(https://crbug.com/1455521) Remove this.
@@ -532,9 +490,9 @@ void MLInstallabilityPromoter::ResetRunningStagesAndTasksMaybeReportResult() {
   site_manifest_metrics_task_.reset();
   site_quality_metrics_task_.reset();
   is_timeout_complete_ = false;
-  current_training_request_ = absl::nullopt;
-  ml_output_label_ = absl::nullopt;
-  current_install_.reset();
+  // Note: Destroying this will report the result to the classification system,
+  // if it wasn't given to an installation tracker.
+  ml_result_reporter_.reset();
   weak_factory_.InvalidateWeakPtrs();
 }
 
