@@ -2,8 +2,8 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-import {fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeStyluses, fakeTouchpads, ModifierKey} from 'chrome://os-settings/os_settings.js';
-import {assertDeepEquals} from 'chrome://webui-test/chai_assert.js';
+import {fakeGraphicsTablets, FakeInputDeviceSettingsProvider, fakeKeyboards, fakeMice, fakePointingSticks, fakeStyluses, fakeTouchpads, Keyboard, ModifierKey, SixPackKeyInfo, SixPackShortcutModifier} from 'chrome://os-settings/os_settings.js';
+import {assertDeepEquals, assertTrue} from 'chrome://webui-test/chai_assert.js';
 
 suite('FakeInputDeviceSettings', () => {
   let provider: FakeInputDeviceSettingsProvider;
@@ -110,10 +110,15 @@ suite('FakeInputDeviceSettings', () => {
     // Restore the default remappings for the first keyboard settings.
     provider.restoreDefaultKeyboardRemappings(fakeKeyboards[0]!.id!);
     // Verify if the first keyboard settings are updated.
-    const result = await provider.getConnectedKeyboardSettings();
-    assertDeepEquals(result[0]!.settings!.modifierRemappings, {
+    const keyboards: Keyboard[] = await provider.getConnectedKeyboardSettings();
+    const keyboard = keyboards[0] as Keyboard;
+    assertDeepEquals(keyboard.settings.modifierRemappings, {
       [ModifierKey.kControl]: ModifierKey.kMeta,
       [ModifierKey.kMeta]: ModifierKey.kControl,
     });
+    assertTrue(
+        Object
+            .values((keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo))
+            .every(modifier => modifier === SixPackShortcutModifier.kSearch));
   });
 });

@@ -4,7 +4,7 @@
 
 import {assert} from 'chrome://resources/js/assert_ts.js';
 
-import {GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
+import {GraphicsTablet, GraphicsTabletObserverInterface, InputDeviceSettingsProviderInterface, Keyboard, KeyboardObserverInterface, KeyboardSettings, MetaKey, ModifierKey, Mouse, MouseObserverInterface, MouseSettings, PointingStick, PointingStickObserverInterface, PointingStickSettings, SixPackShortcutModifier, Stylus, StylusObserverInterface, Touchpad, TouchpadObserverInterface, TouchpadSettings} from './input_device_settings_types.js';
 
 /**
  * @fileoverview
@@ -156,6 +156,14 @@ export class FakeInputDeviceSettingsProvider implements
               [ModifierKey.kMeta]: ModifierKey.kControl,
             } :
                                                     {};
+        keyboard.settings.sixPackKeyRemappings = {
+          pageDown: SixPackShortcutModifier.kSearch,
+          pageUp: SixPackShortcutModifier.kSearch,
+          del: SixPackShortcutModifier.kSearch,
+          insert: SixPackShortcutModifier.kSearch,
+          home: SixPackShortcutModifier.kSearch,
+          end: SixPackShortcutModifier.kSearch,
+        };
       }
     }
     this.methods.setResult('fakeKeyboards', keyboards);

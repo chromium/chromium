@@ -955,6 +955,7 @@ void InputDeviceSettingsControllerImpl::RestoreDefaultKeyboardRemappings(
   auto& keyboard = *keyboards_.at(id);
   mojom::KeyboardSettingsPtr new_settings = keyboard.settings->Clone();
   new_settings->modifier_remappings = {};
+  new_settings->six_pack_key_remappings = mojom::SixPackKeyInfo::New();
   if (keyboard.meta_key == mojom::MetaKey::kCommand) {
     new_settings->modifier_remappings[ui::mojom::ModifierKey::kControl] =
         ui::mojom::ModifierKey::kMeta;

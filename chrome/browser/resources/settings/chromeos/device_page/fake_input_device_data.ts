@@ -9,8 +9,8 @@ const defaultSixPackKeyRemappings: SixPackKeyInfo = {
   pageUp: SixPackShortcutModifier.kSearch,
   del: SixPackShortcutModifier.kSearch,
   insert: SixPackShortcutModifier.kSearch,
-  home: SixPackShortcutModifier.kSearch,
-  end: SixPackShortcutModifier.kSearch,
+  home: SixPackShortcutModifier.kAlt,
+  end: SixPackShortcutModifier.kAlt,
 };
 
 export const fakeKeyboards: Keyboard[] = [

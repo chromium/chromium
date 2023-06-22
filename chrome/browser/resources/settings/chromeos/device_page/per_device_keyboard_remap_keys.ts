@@ -26,7 +26,7 @@ import {RouteObserverMixin, RouteObserverMixinInterface} from '../route_observer
 import {Route, Router, routes} from '../router.js';
 
 import {getInputDeviceSettingsProvider} from './input_device_mojo_interface_provider.js';
-import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackShortcutModifier} from './input_device_settings_types.js';
+import {InputDeviceSettingsProviderInterface, Keyboard, MetaKey, ModifierKey, SixPackKey, SixPackKeyInfo, SixPackShortcutModifier} from './input_device_settings_types.js';
 import {getTemplate} from './per_device_keyboard_remap_keys.html.js';
 
 const SettingsPerDeviceKeyboardRemapKeysElementBase =
@@ -253,6 +253,12 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
           'fakeEscPref.value,' +
           'fakeBackspacePref.value,' +
           'fakeAssistantPref.value,' +
+          'insertPref.value,' +
+          'pageUpPref.value,' +
+          'pageDownPref.value,' +
+          'endPref.value,' +
+          'deletePref.value,' +
+          'homePref.value,' +
           'fakeCapsLockPref.value)',
       'onKeyboardListUpdated(keyboards.*)',
     ];
@@ -349,6 +355,8 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         .forEach((originalKey: ModifierKey) => {
           this.setRemappedKey(originalKey);
         });
+
+    this.setSixPackKeyRemappings();
     this.isInitialized = true;
   }
 
@@ -369,23 +377,6 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
       return;
     }
     this.initializeKeyboard();
-  }
-
-  private defaultInitializePrefs(): void {
-    this.set('fakeAltPref.value', this.defaultRemappings[ModifierKey.kAlt]);
-    this.set(
-        'fakeAssistantPref.value',
-        this.defaultRemappings[ModifierKey.kAssistant]);
-    this.set(
-        'fakeBackspacePref.value',
-        this.defaultRemappings[ModifierKey.kBackspace]);
-    this.set(
-        'fakeCtrlPref.value', this.defaultRemappings[ModifierKey.kControl]);
-    this.set(
-        'fakeCapsLockPref.value',
-        this.defaultRemappings[ModifierKey.kCapsLock]);
-    this.set('fakeEscPref.value', this.defaultRemappings[ModifierKey.kEscape]);
-    this.set('fakeMetaPref.value', this.defaultRemappings[ModifierKey.kMeta]);
   }
 
   /**
@@ -452,6 +443,7 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
     this.keyboard.settings = {
       ...this.keyboard.settings,
       modifierRemappings: this.getUpdatedRemappings(),
+      sixPackKeyRemappings: this.getSixPackKeyRemappings(),
     };
 
     this.inputDeviceSettingsProvider.setKeyboardSettings(
@@ -517,6 +509,45 @@ export class SettingsPerDeviceKeyboardRemapKeysElement extends
         this.keyboard.name :
         this.i18n('builtInKeyboardName');
     return this.i18n('remapKeyboardKeysDescription', keyboardName);
+  }
+
+  private setSixPackKeyRemappings(): void {
+    Object
+        .entries(
+            (this.keyboard.settings.sixPackKeyRemappings as SixPackKeyInfo))
+        .forEach(([key, modifier]) => {
+          switch (key) {
+            case SixPackKey.DELETE:
+              this.set('deletePref.value', modifier);
+              break;
+            case SixPackKey.INSERT:
+              this.set('insertPref.value', modifier);
+              break;
+            case SixPackKey.HOME:
+              this.set('homePref.value', modifier);
+              break;
+            case SixPackKey.END:
+              this.set('endPref.value', modifier);
+              break;
+            case SixPackKey.PAGE_UP:
+              this.set('pageUpPref.value', modifier);
+              break;
+            case SixPackKey.PAGE_DOWN:
+              this.set('pageDownPref.value', modifier);
+              break;
+          }
+        });
+  }
+
+  private getSixPackKeyRemappings(): SixPackKeyInfo {
+    return {
+      home: this.homePref.value,
+      pageUp: this.pageUpPref.value,
+      pageDown: this.pageDownPref.value,
+      del: this.deletePref.value,
+      insert: this.insertPref.value,
+      end: this.endPref.value,
+    };
   }
 }
 

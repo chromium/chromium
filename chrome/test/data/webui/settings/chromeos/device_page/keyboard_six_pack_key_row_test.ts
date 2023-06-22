@@ -74,12 +74,9 @@ suite('<keyboard-six-pack-key-row>', () => {
       await setKey((key as SixPackKey));
       assertDeepEquals(
           getMenuOptionsForSixPackKey((key as SixPackKey)),
-          // Use Array.prototype.splice to remove the "Off" menu option as we're
-          // only concerned with verifying that the correct Alt/Search shortcuts
-          // are shown for each key.
           (sixPackKeyRow.shadowRoot!.querySelector('#keyDropdown') as
            SettingsDropdownMenuElement)
-              .menuOptions.splice(1));
+              .menuOptions);
     }
   });
 });

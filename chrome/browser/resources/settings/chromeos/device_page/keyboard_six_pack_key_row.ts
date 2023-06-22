@@ -30,6 +30,11 @@ interface SixPackKeyProperties {
   label: string;
 }
 
+const offMenuOption = {
+  value: SixPackShortcutModifier.kNone,
+  name: loadTimeData.getString('sixPackKeyOff'),
+};
+
 export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
   [SixPackKey.DELETE]: {
     menuOptions: [
@@ -41,6 +46,7 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyDeleteSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelDelete'),
   },
@@ -54,6 +60,7 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyHomeSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelHome'),
   },
@@ -67,6 +74,7 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyEndSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelEnd'),
   },
@@ -76,6 +84,7 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyInsertSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelInsert'),
   },
@@ -89,6 +98,7 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyPageDownSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelPageDown'),
   },
@@ -102,14 +112,10 @@ export const sixPackKeyProperties: {[k in SixPackKey]: SixPackKeyProperties} = {
         value: SixPackShortcutModifier.kSearch,
         name: loadTimeData.getString('sixPackKeyPageUpSearch'),
       },
+      offMenuOption,
     ],
     label: loadTimeData.getString('sixPackKeyLabelPageUp'),
   },
-};
-
-const offMenuOption = {
-  value: SixPackShortcutModifier.kSearch,
-  name: loadTimeData.getString('sixPackKeyOff'),
 };
 
 export class KeyboardSixPackKeyRowElement extends PolymerElement {
@@ -145,7 +151,7 @@ export class KeyboardSixPackKeyRowElement extends PolymerElement {
 
   protected computeMenuOptions(): DropdownMenuOptionList {
     assert(this.key in sixPackKeyProperties);
-    return [offMenuOption, ...sixPackKeyProperties[this.key].menuOptions];
+    return sixPackKeyProperties[this.key].menuOptions;
   }
 
   protected computeKeyLabel(): string {
