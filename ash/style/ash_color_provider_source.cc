@@ -5,6 +5,7 @@
 #include "ash/style/ash_color_provider_source.h"
 
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_manager.h"
 
 namespace ash {
 
@@ -25,8 +26,7 @@ void AshColorProviderSource::OnNativeThemeUpdated(
   NotifyColorProviderChanged();
 }
 
-ui::ColorProviderManager::Key AshColorProviderSource::GetColorProviderKey()
-    const {
+ui::ColorProviderKey AshColorProviderSource::GetColorProviderKey() const {
   return ui::NativeTheme::GetInstanceForNativeUi()->GetColorProviderKey(
       nullptr);
 }

@@ -15,6 +15,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_recipe.h"
 #include "ui/color/color_transform.h"
 #include "ui/gfx/color_palette.h"
@@ -40,7 +41,7 @@ constexpr int kSecondToneOpacity = SK_AlphaOPAQUE * 0.3f;
 constexpr int kDisabledColorOpacity = SK_AlphaOPAQUE * 0.38f;
 
 void AddShieldAndBaseColors(ui::ColorMixer& mixer,
-                            const ui::ColorProviderManager::Key& key) {
+                            const ui::ColorProviderKey& key) {
   if (chromeos::features::IsJellyEnabled()) {
     // Generally, shield and base colors are cros.sys.sys-base-elevated.  That
     // is cros.sys.surface3 @ 90%.  So, map all shield colors to surface3 and
@@ -64,7 +65,7 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
   }
 
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   // Colors of the Shield and Base layers.
   const SkColor default_background_color =
@@ -90,10 +91,9 @@ void AddShieldAndBaseColors(ui::ColorMixer& mixer,
 }
 
 // Mappings of Controls Colors for Material 2.
-void AddControlsColors(ui::ColorMixer& mixer,
-                       const ui::ColorProviderManager::Key& key) {
+void AddControlsColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   // ControlsLayer colors
   mixer[kColorAshHairlineBorderColor] =
@@ -115,10 +115,9 @@ void AddControlsColors(ui::ColorMixer& mixer,
 }
 
 // Mappings the Content layer colors for Material 2.
-void AddContentColors(ui::ColorMixer& mixer,
-                      const ui::ColorProviderManager::Key& key) {
+void AddContentColors(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   // ContentLayer colors.
   mixer[kColorAshScrollBarColor] =
@@ -364,8 +363,7 @@ void RemapLegacySemanticColors(ui::ColorMixer& mixer) {
 
 // Adds the dynamic color palette tokens based on user_color. This is the base
 // palette so it is independent of ColorMode.
-void AddRefPalette(ui::ColorMixer& mixer,
-                   const ui::ColorProviderManager::Key& key) {
+void AddRefPalette(ui::ColorMixer& mixer, const ui::ColorProviderKey& key) {
   // TODO(skau): Currently these colors are mapped 1-1 with the ui ref color ids
   // for compatibility with the older generated CrOS ids. Uses of these CrOS ids
   // can eventually be migrated to use the equivalent ui ids.
@@ -574,9 +572,9 @@ void ReverseMapSysColors(ui::ColorMixer& mixer, bool dark_mode) {
 }  // namespace
 
 void AddCrosStylesColorMixer(ui::ColorProvider* provider,
-                             const ui::ColorProviderManager::Key& key) {
+                             const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
-  bool dark_mode = key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+  bool dark_mode = key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
   if (chromeos::features::IsJellyEnabled()) {
     AddRefPalette(mixer, key);
   } else {
@@ -600,10 +598,10 @@ void AddCrosStylesColorMixer(ui::ColorProvider* provider,
 }
 
 void AddAshColorMixer(ui::ColorProvider* provider,
-                      const ui::ColorProviderManager::Key& key) {
+                      const ui::ColorProviderKey& key) {
   ui::ColorMixer& mixer = provider->AddMixer();
   const bool use_dark_color =
-      key.color_mode == ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode == ui::ColorProviderKey::ColorMode::kDark;
 
   AddShieldAndBaseColors(mixer, key);
   AddControlsColors(mixer, key);

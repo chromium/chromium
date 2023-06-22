@@ -18,7 +18,7 @@
 #include "components/prefs/pref_service.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "third_party/skia/include/core/SkColor.h"
-#include "ui/color/color_provider_manager.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/gfx/color_palette.h"
 
 class PrefRegistrySimple;
@@ -51,8 +51,8 @@ struct ASH_EXPORT ColorPaletteSeed {
   // The type of palette which is being generated.
   ColorScheme scheme = ColorScheme::kStatic;
   // Dark or light palette.
-  ui::ColorProviderManager::ColorMode color_mode =
-      ui::ColorProviderManager::ColorMode::kLight;
+  ui::ColorProviderKey::ColorMode color_mode =
+      ui::ColorProviderKey::ColorMode::kLight;
 
   bool operator==(const ColorPaletteSeed& other) const {
     return std::tie(seed_color, scheme, color_mode) ==
