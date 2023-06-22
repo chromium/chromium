@@ -9,8 +9,8 @@ import {BookmarksApiProxyImpl} from 'chrome://bookmarks-side-panel.top-chrome/bo
 import {PowerBookmarksContextMenuElement} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_context_menu.js';
 import {PowerBookmarksService} from 'chrome://bookmarks-side-panel.top-chrome/power_bookmarks_service.js';
 import {loadTimeData} from 'chrome://resources/js/load_time_data.js';
-import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 import {assertEquals} from 'chrome://webui-test/chai_assert.js';
+import {flushTasks, waitAfterNextRender} from 'chrome://webui-test/polymer_test_util.js';
 
 import {TestBookmarksApiProxy} from './test_bookmarks_api_proxy.js';
 import {TestPowerBookmarksDelegate} from './test_power_bookmarks_delegate.js';
@@ -93,15 +93,15 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         document.createElement('power-bookmarks-context-menu');
     document.body.appendChild(powerBookmarksContextMenu);
 
-    await delegate.whenCalled('onBookmarksLoaded');
+    await flushTasks();
   });
 
-  test('ShowsMenuItemsForSingleSelectUrl', () => {
+  test('ShowsMenuItemsForSingleSelectUrl', async () => {
     const selection = [service.findBookmarkWithId('3')!];
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false);
 
-    flush();
+    await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
@@ -131,12 +131,12 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
   });
 
-  test('ShowsMenuItemsForSingleSelectFolder', () => {
+  test('ShowsMenuItemsForSingleSelectFolder', async () => {
     const selection = [service.findBookmarkWithId('5')!];
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false);
 
-    flush();
+    await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
@@ -171,13 +171,13 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
   });
 
-  test('ShowsMenuItemsForMultiSelect', () => {
+  test('ShowsMenuItemsForMultiSelect', async () => {
     const selection =
         [service.findBookmarkWithId('3')!, service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, false, false);
 
-    flush();
+    await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
@@ -208,12 +208,12 @@ suite('SidePanelPowerBookmarksContextMenuTest', () => {
         true);
   });
 
-  test('ShowsMenuItemsForPriceTracking', () => {
+  test('ShowsMenuItemsForPriceTracking', async () => {
     const selection = [service.findBookmarkWithId('4')!];
     powerBookmarksContextMenu.showAtPosition(
         new MouseEvent('click'), selection, true, true);
 
-    flush();
+    await waitAfterNextRender(powerBookmarksContextMenu);
 
     const menuItems = powerBookmarksContextMenu.shadowRoot!.querySelectorAll(
         '.dropdown-item');
