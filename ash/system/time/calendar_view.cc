@@ -436,7 +436,7 @@ BEGIN_METADATA(CalendarHeaderView, views::View)
 END_METADATA
 
 CalendarView::CalendarView(DetailedViewDelegate* delegate)
-    : TrayDetailedView(delegate),
+    : GlanceableTrayChildBubble(delegate),
       calendar_view_controller_(std::make_unique<CalendarViewController>()),
       scrolling_settled_timer_(
           FROM_HERE,
@@ -465,26 +465,6 @@ CalendarView::CalendarView(DetailedViewDelegate* delegate)
                 calendar_view->set_should_months_animate(true);
               },
               base::Unretained(this))) {
-  // TODO(b/281867480): Remove this after the `GlanceableTrayChildBubble`
-  // extends from the `TrayDetailedView` and this `CalendarView` extends from
-  // the `GlanceableTrayChildBubble`.
-  if (features::AreGlanceablesV2Enabled()) {
-    SetPaintToLayer();
-    layer()->SetFillsBoundsOpaquely(false);
-    layer()->SetIsFastRoundedCorner(true);
-    layer()->SetRoundedCornerRadius(
-        gfx::RoundedCornersF{static_cast<float>(kBubbleCornerRadius)});
-    layer()->SetBackgroundBlur(ColorProvider::kBackgroundBlurSigma);
-
-    SetBackground(views::CreateThemedSolidBackground(
-        static_cast<ui::ColorId>(cros_tokens::kCrosSysSystemBaseElevated)));
-    SetBorder(std::make_unique<views::HighlightBorder>(
-        kBubbleCornerRadius,
-        chromeos::features::IsJellyrollEnabled()
-            ? views::HighlightBorder::Type::kHighlightBorderOnShadow
-            : views::HighlightBorder::Type::kHighlightBorder1));
-  }
-
   SetLayoutManager(std::make_unique<views::BoxLayout>(
       views::BoxLayout::Orientation::kVertical));
   SetFocusBehavior(FocusBehavior::ALWAYS);

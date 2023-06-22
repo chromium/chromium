@@ -57,7 +57,8 @@ class ClassroomStudentComboboxModel : public ui::ComboboxModel {
 
 }  // namespace
 
-ClassroomBubbleView::ClassroomBubbleView() {
+ClassroomBubbleView::ClassroomBubbleView(DetailedViewDelegate* delegate)
+    : GlanceableTrayChildBubble(delegate) {
   header_view_ = AddChildView(std::make_unique<views::FlexLayoutView>());
   header_view_->SetCrossAxisAlignment(views::LayoutAlignment::kStretch);
   header_view_->SetOrientation(views::LayoutOrientation::kHorizontal);
@@ -65,6 +66,7 @@ ClassroomBubbleView::ClassroomBubbleView() {
       views::kFlexBehaviorKey,
       views::FlexSpecification(views::MinimumFlexSizeRule::kPreferred,
                                views::MaximumFlexSizeRule::kPreferred));
+  header_view_->SetProperty(views::kMarginsKey, gfx::Insets(16));
 
   combo_box_view_ =
       header_view_->AddChildView(std::make_unique<views::Combobox>(

@@ -21,7 +21,7 @@ class ASH_EXPORT ClassroomBubbleView : public GlanceableTrayChildBubble {
   METADATA_HEADER(ClassroomBubbleView);
 
   // TODO(b:283370907): Add classroom glanceable contents.
-  ClassroomBubbleView();
+  explicit ClassroomBubbleView(DetailedViewDelegate* delegate);
   ClassroomBubbleView(const ClassroomBubbleView&) = delete;
   ClassroomBubbleView& operator-(const ClassroomBubbleView&) = delete;
   ~ClassroomBubbleView() override;

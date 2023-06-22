@@ -14,6 +14,7 @@ class Label;
 namespace ash {
 class CalendarView;
 class ClassroomBubbleView;
+class DetailedViewDelegate;
 class TasksBubbleView;
 class Shelf;
 
@@ -24,7 +25,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
   GlanceableTrayBubbleView(const InitParams& init_params, Shelf* shelf);
   GlanceableTrayBubbleView(const GlanceableTrayBubbleView&) = delete;
   GlanceableTrayBubbleView& operator=(const GlanceableTrayBubbleView&) = delete;
-  ~GlanceableTrayBubbleView() override = default;
+  ~GlanceableTrayBubbleView() override;
 
   void UpdateBubble();
 
@@ -35,6 +36,7 @@ class GlanceableTrayBubbleView : public TrayBubbleView {
 
  private:
   const raw_ptr<Shelf, ExperimentalAsh> shelf_;
+  const std::unique_ptr<DetailedViewDelegate> detailed_view_delegate_;
 
   // Stand-in title label for glanceables_view_.
   // TODO(b:277268122): Remove and replace with actual glanceable content.

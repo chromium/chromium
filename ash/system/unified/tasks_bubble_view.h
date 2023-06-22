@@ -58,7 +58,7 @@ class ASH_EXPORT TasksBubbleView : public GlanceableTrayChildBubble {
  public:
   METADATA_HEADER(TasksBubbleView);
 
-  TasksBubbleView();
+  explicit TasksBubbleView(DetailedViewDelegate* delegate);
   TasksBubbleView(const TasksBubbleView&) = delete;
   TasksBubbleView& operator=(const TasksBubbleView&) = delete;
   ~TasksBubbleView() override;

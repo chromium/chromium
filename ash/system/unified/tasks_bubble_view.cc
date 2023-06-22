@@ -9,6 +9,7 @@
 #include "ash/shell.h"
 #include "ash/style/icon_button.h"
 #include "ash/system/tray/tray_constants.h"
+#include "ash/system/unified/glanceable_tray_child_bubble.h"
 #include "ash/system/unified/tasks_combobox_model.h"
 #include "components/vector_icons/vector_icons.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
@@ -21,9 +22,8 @@
 
 namespace ash {
 
-TasksBubbleView::TasksBubbleView() {
-  SetCrossAxisAlignment(views::LayoutAlignment::kStart);
-  SetOrientation(views::LayoutOrientation::kVertical);
+TasksBubbleView::TasksBubbleView(DetailedViewDelegate* delegate)
+    : GlanceableTrayChildBubble(delegate) {
   SetBorder(views::CreateEmptyBorder(gfx::Insets::VH(
       kGlanceablesVerticalMargin, kGlanceablesLeftRightMargin)));
 
