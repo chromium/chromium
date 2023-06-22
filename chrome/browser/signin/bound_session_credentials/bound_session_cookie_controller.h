@@ -62,6 +62,9 @@ class BoundSessionCookieController {
  protected:
   const GURL url_;
   const std::string cookie_name_;
+  // Reduced by threshold to guarantee cookie will be fresh when cookies are
+  // added to the request, as URL Loader throttle(s) attached to the request may
+  // decide to defer it.
   base::Time cookie_expiration_time_;
   raw_ptr<Delegate> delegate_;
 };

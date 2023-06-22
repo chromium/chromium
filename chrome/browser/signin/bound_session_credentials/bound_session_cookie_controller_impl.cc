@@ -54,12 +54,15 @@ void BoundSessionCookieControllerImpl::OnRequestBlockedOnCookie(
 
 void BoundSessionCookieControllerImpl::SetCookieExpirationTimeAndNotify(
     base::Time expiration_time) {
+  const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
+  if (!expiration_time.is_null()) {
+    expiration_time -= kCookieExpirationThreshold;
+  }
+
   if (cookie_expiration_time_ == expiration_time) {
     return;
   }
 
-  // TODO(b/263264391): Subtract a safety margin (e.g 2 seconds) from the cookie
-  // expiration time.
   cookie_expiration_time_ = expiration_time;
   if (IsCookieFresh()) {
     ResumeBlockedRequests();

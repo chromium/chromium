@@ -26,6 +26,8 @@
 namespace {
 constexpr char kSIDTSCookieName[] = "__Secure-1PSIDTS";
 
+const base::TimeDelta kCookieExpirationThreshold = base::Seconds(15);
+
 base::Time GetTimeInTenMinutes() {
   return base::Time::Now() + base::Minutes(10);
 }
@@ -156,7 +158,7 @@ TEST_F(BoundSessionCookieControllerImplTest, CookieRefreshOnStartup) {
   EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
   EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 1u);
   EXPECT_EQ(bound_session_cookie_controller()->cookie_expiration_time(),
-            GetTimeInTenMinutes());
+            GetTimeInTenMinutes() - kCookieExpirationThreshold);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -197,9 +199,9 @@ TEST_F(BoundSessionCookieControllerImplTest,
   ResetOnCookieExpirationDateChangedCallCount();
 
   // Update with the same date
-  base::Time cookie_expiration =
-      bound_session_cookie_controller()->cookie_expiration_time();
-  SetExpirationTimeAndNotify(cookie_expiration);
+  SetExpirationTimeAndNotify(
+      bound_session_cookie_controller()->cookie_expiration_time() +
+      kCookieExpirationThreshold);
   EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 0u);
 
   // Update with null time should trigger a notification.
@@ -217,7 +219,8 @@ TEST_F(BoundSessionCookieControllerImplTest, CookieChange) {
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   SimulateCookieChange(base::Time::Now());
   EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 1u);
-  EXPECT_EQ(controller->cookie_expiration_time(), base::Time::Now());
+  EXPECT_EQ(controller->cookie_expiration_time(),
+            base::Time::Now() - kCookieExpirationThreshold);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -225,7 +228,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   // Set fresh cookie.
   CompletePendingRefreshRequestIfAny();
   BoundSessionCookieController* controller = bound_session_cookie_controller();
-  EXPECT_EQ(controller->cookie_expiration_time(), GetTimeInTenMinutes());
+  EXPECT_EQ(controller->cookie_expiration_time(),
+            GetTimeInTenMinutes() - kCookieExpirationThreshold);
 
   // No fetch should be triggered since the cookie is fresh.
   // The callback should return immediately.
@@ -242,7 +246,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
   BoundSessionCookieController* controller = bound_session_cookie_controller();
   task_environment()->FastForwardBy(base::Minutes(12));
   // Cookie stale.
-  EXPECT_LT(controller->cookie_expiration_time(), base::Time::Now());
+  EXPECT_LT(controller->cookie_expiration_time(),
+            base::Time::Now() - kCookieExpirationThreshold);
   EXPECT_FALSE(cookie_fetcher());
 
   // Request blocked on the cookie
@@ -256,7 +261,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
       GetTimeInTenMinutes());
   task_environment()->RunUntilIdle();
   EXPECT_TRUE(future.IsReady());
-  EXPECT_EQ(controller->cookie_expiration_time(), GetTimeInTenMinutes());
+  EXPECT_EQ(controller->cookie_expiration_time(),
+            GetTimeInTenMinutes() - kCookieExpirationThreshold);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -342,7 +348,8 @@ TEST_F(BoundSessionCookieControllerImplTest,
     EXPECT_TRUE(future.IsReady());
   }
   EXPECT_EQ(on_cookie_expiration_date_changed_call_count(), 1u);
-  EXPECT_EQ(controller->cookie_expiration_time(), GetTimeInTenMinutes());
+  EXPECT_EQ(controller->cookie_expiration_time(),
+            GetTimeInTenMinutes() - kCookieExpirationThreshold);
 }
 
 TEST_F(BoundSessionCookieControllerImplTest,
@@ -382,4 +389,19 @@ TEST_F(BoundSessionCookieControllerImplTest,
   for (auto& future : futures) {
     EXPECT_TRUE(future.IsReady());
   }
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       NotNullCookieExpirationTimeIsReducedByThreshold) {
+  EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
+  EXPECT_EQ(bound_session_cookie_controller()->cookie_expiration_time(),
+            GetTimeInTenMinutes() - kCookieExpirationThreshold);
+}
+
+TEST_F(BoundSessionCookieControllerImplTest,
+       NullCookieExpirationTimeIsNotReducedByThreshold) {
+  EXPECT_TRUE(CompletePendingRefreshRequestIfAny());
+  SetExpirationTimeAndNotify(base::Time());
+  EXPECT_EQ(bound_session_cookie_controller()->cookie_expiration_time(),
+            base::Time());
 }
