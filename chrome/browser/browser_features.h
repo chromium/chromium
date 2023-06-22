@@ -59,6 +59,8 @@ BASE_DECLARE_FEATURE(kWebUsbDeviceDetection);
 
 #if BUILDFLAG(IS_ANDROID)
 BASE_DECLARE_FEATURE(kCertificateTransparencyAndroid);
+#else
+BASE_DECLARE_FEATURE(kCertificateTransparencyAskBeforeEnabling);
 #endif
 
 BASE_DECLARE_FEATURE(kLargeFaviconFromGoogle);

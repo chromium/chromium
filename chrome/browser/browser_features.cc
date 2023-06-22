@@ -5,6 +5,7 @@
 #include "chrome/browser/browser_features.h"
 
 #include "base/feature_list.h"
+#include "build/branding_buildflags.h"
 #include "build/build_config.h"
 #include "build/chromeos_buildflags.h"
 
@@ -169,8 +170,21 @@ BASE_FEATURE(kWebUsbDeviceDetection,
 // Enables Certificate Transparency on Android.
 BASE_FEATURE(kCertificateTransparencyAndroid,
              "CertificateTransparencyAndroid",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
              base::FEATURE_ENABLED_BY_DEFAULT);
-#endif
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#else
+// Enables Certificate Transparency on Desktop.
+BASE_FEATURE(kCertificateTransparencyAskBeforeEnabling,
+             "CertificateTransparencyAskBeforeEnabling",
+#if BUILDFLAG(GOOGLE_CHROME_BRANDING)
+             base::FEATURE_ENABLED_BY_DEFAULT);
+#else
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING)
+#endif  // BUILDFLAG(IS_ANDROID)
 
 BASE_FEATURE(kLargeFaviconFromGoogle,
              "LargeFaviconFromGoogle",

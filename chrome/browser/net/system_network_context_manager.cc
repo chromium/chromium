@@ -900,23 +900,23 @@ void SystemNetworkContextManager::SetEnableCertificateTransparencyForTesting(
 bool SystemNetworkContextManager::IsCertificateTransparencyEnabled() {
   if (certificate_transparency_enabled_for_testing_.has_value())
     return certificate_transparency_enabled_for_testing_.value();
-#if BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
-// TODO(carlosil): Figure out if we can/should remove the OFFICIAL_BUILD and
-// GOOGLE_CHROME_BRANDING checks now that enforcement does not rely on build
-// dates, and allow embedders to enforce.
-//    Certificate Transparency is only enabled if:
-//   - base::GetBuildTime() is deterministic to the source (OFFICIAL_BUILD)
-//   - The build in reliably updatable (GOOGLE_CHROME_BRANDING)
+#if defined(OFFICIAL_BUILD)
+// TODO(carlosil): Figure out if we can/should remove the OFFICIAL_BUILD
+// check now that enforcement does not rely on build dates.
+//    Certificate Transparency is enabled:
+//   - by default for Chrome-branded builds
+//   - on an opt-in basis for other builds and embedders, controlled with the
+//     kCertificateTransparencyAskBeforeEnabling flag
 #if BUILDFLAG(IS_ANDROID)
-  // On Android, enforcement is currently controlled via a feature flag.
   return base::FeatureList::IsEnabled(
       features::kCertificateTransparencyAndroid);
 #else
-  return true;
+  return base::FeatureList::IsEnabled(
+      features::kCertificateTransparencyAskBeforeEnabling);
 #endif  // BUILDFLAG(IS_ANDROID)
 #else
   return false;
-#endif  // BUILDFLAG(GOOGLE_CHROME_BRANDING) && defined(OFFICIAL_BUILD)
+#endif  // defined(OFFICIAL_BUILD)
 }
 
 #if BUILDFLAG(CHROME_ROOT_STORE_OPTIONAL)
