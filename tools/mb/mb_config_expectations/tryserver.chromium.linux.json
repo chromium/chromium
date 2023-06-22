@@ -23,7 +23,7 @@
       "use_remoteexec": true
     }
   },
-  "chromeos-js-code-coverage-rel": {
+  "chromeos-js-coverage-rel": {
     "gn_args": {
       "dcheck_always_on": false,
       "ffmpeg_branding": "ChromeOS",

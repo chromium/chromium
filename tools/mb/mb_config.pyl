@@ -1175,7 +1175,7 @@
     'tryserver.chromium.linux': {
       'cast-binary-size': 'cast_binary_size',
       'chromeos-js-code-coverage': 'chromeos_js_coverage_reclient',
-      'chromeos-js-code-coverage-rel': 'chromeos_js_coverage_reclient',
+      'chromeos-js-coverage-rel': 'chromeos_js_coverage_reclient',
       'chromium_presubmit': 'presubmit',
       'gpu-fyi-try-lacros-amd-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
       'gpu-fyi-try-lacros-intel-rel': 'gpu_tests_ozone_linux_non_x11_release_trybot_reclient',
