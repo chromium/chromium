@@ -4,6 +4,7 @@
 
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_coordinator.h"
 
+#import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_mediator.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_view_controller.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
@@ -11,6 +12,9 @@
 #endif
 
 @interface PaymentsSuggestionBottomSheetCoordinator ()
+
+// This mediator is used to fetch data related to the bottom sheet.
+@property(nonatomic, strong) PaymentsSuggestionBottomSheetMediator* mediator;
 
 // This view controller is used to display the bottom sheet.
 @property(nonatomic, strong)
@@ -31,6 +35,7 @@
 #pragma mark - ChromeCoordinator
 
 - (void)start {
+  self.mediator = [[PaymentsSuggestionBottomSheetMediator alloc] init];
   self.viewController =
       [[PaymentsSuggestionBottomSheetViewController alloc] init];
   [self.baseViewController presentViewController:self.viewController
@@ -42,6 +47,7 @@
   [super stop];
   [self.viewController dismissViewControllerAnimated:NO completion:nil];
   self.viewController = nil;
+  self.mediator = nil;
 }
 
 @end

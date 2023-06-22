@@ -1,0 +1,17 @@
+// Copyright 2023 The Chromium Authors
+// Use of this source code is governed by a BSD-style license that can be
+// found in the LICENSE file.
+
+#ifndef IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+#define IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
+
+#import <Foundation/Foundation.h>
+
+// This mediator fetches a list suggestions to display in the bottom sheet.
+// It also manages filling the form when a suggestion is selected, as well
+// as showing the keyboard if requested when the bottom sheet is dismissed.
+@interface PaymentsSuggestionBottomSheetMediator : NSObject
+
+@end
+
+#endif  // IOS_CHROME_BROWSER_UI_AUTOFILL_BOTTOM_SHEET_PAYMENTS_SUGGESTION_BOTTOM_SHEET_MEDIATOR_H_
