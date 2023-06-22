@@ -18,6 +18,7 @@ android_library("java") {
 
 android_library("external_java") {
   sources = [
+    "java/src/org/chromium/chrome/modules/readaloud/external/ChromeProvided.java",
     "java/src/org/chromium/chrome/modules/readaloud/external/Playback.java",
     "java/src/org/chromium/chrome/modules/readaloud/external/PlaybackListener.java",
     "java/src/org/chromium/chrome/modules/readaloud/external/ReadAloud.java",
