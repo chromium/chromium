@@ -19,9 +19,6 @@
         // now.
         forward_stdout_to: "log",
         forward_stderr_to: "log",
-
-        // Required to allow JIT in child processes such as renderers.
-        job_policy_ambient_mark_vmo_exec: "true",
     },
     capabilities: [
         {
