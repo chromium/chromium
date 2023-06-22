@@ -1,3 +1,6 @@
 dtrainor@chromium.org
 
 file://components/send_tab_to_self/OWNERS
+
+per-file ShareHelper*=wenyufu@chromium.org
+per-file ShareParams*=wenyufu@chromium.org

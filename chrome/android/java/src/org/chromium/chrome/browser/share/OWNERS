@@ -1,4 +1,5 @@
 dtrainor@chromium.org
+wenyufu@chromium.org
 
 per-file ShareDelegate*=file://components/send_tab_to_self/OWNERS
 per-file ShareButtonController*=file://components/send_tab_to_self/OWNERS
