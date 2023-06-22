@@ -46,6 +46,9 @@ interface PageHandler {
   // Unpins all files then force evicts them from the Drive cache (does not
   // force evict hosted documents).
   ClearPinnedFiles() => ();
+
+  // Record metric when bulk pinning is enabled.
+  RecordBulkPinningEnabledMetric();
 };
 
 // Interface for the Google drive settings page. Implemented in Javascript and

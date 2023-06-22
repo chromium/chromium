@@ -69,6 +69,7 @@
 #include "chrome/common/extensions/api/manifest_types.h"
 #include "chrome/common/pref_names.h"
 #include "chrome/common/webui_url_constants.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "chromeos/ash/components/settings/timezone_settings.h"
 #include "components/account_id/account_id.h"
 #include "components/drive/drive_pref_names.h"
@@ -282,6 +283,8 @@ FileManagerPrivateSetPreferencesFunction::Run() {
       params->change_info.drive_fs_bulk_pinning_enabled) {
     service->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled,
                         *params->change_info.drive_fs_bulk_pinning_enabled);
+    drivefs::pinning::RecordBulkPinningEnabledSource(
+        drivefs::pinning::BulkPinningEnabledSource::kBanner);
   }
   if (params->change_info.arc_enabled) {
     service->SetBoolean(arc::prefs::kArcEnabled,

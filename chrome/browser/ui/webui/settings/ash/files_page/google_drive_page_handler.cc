@@ -7,6 +7,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "chrome/browser/ash/drive/drive_integration_service.h"
 #include "chrome/browser/ui/webui/settings/ash/files_page/mojom/google_drive_handler.mojom.h"
+#include "chromeos/ash/components/drivefs/drivefs_pin_manager.h"
 #include "mojo/public/cpp/bindings/callback_helpers.h"
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/text/bytes_formatting.h"
@@ -146,6 +147,11 @@ void GoogleDrivePageHandler::OnClearPinnedFiles(
     ClearPinnedFilesCallback callback,
     drive::FileError error) {
   std::move(callback).Run();
+}
+
+void GoogleDrivePageHandler::RecordBulkPinningEnabledMetric() {
+  drivefs::pinning::RecordBulkPinningEnabledSource(
+      drivefs::pinning::BulkPinningEnabledSource::kSystemSettings);
 }
 
 }  // namespace ash::settings

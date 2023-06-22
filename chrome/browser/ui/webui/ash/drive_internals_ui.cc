@@ -874,6 +874,8 @@ class DriveInternalsWebUIHandler : public content::WebUIMessageHandler,
     const bool enabled = args[0].GetBool();
     GetPrefs()->SetBoolean(drive::prefs::kDriveFsBulkPinningEnabled, enabled);
     UpdateBulkPinningSection();
+    drivefs::pinning::RecordBulkPinningEnabledSource(
+        drivefs::pinning::BulkPinningEnabledSource::kDriveInternal);
   }
 
   // Called when the "Startup Arguments" field on the page is submitted.

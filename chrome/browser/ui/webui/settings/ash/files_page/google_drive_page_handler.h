@@ -37,6 +37,7 @@ class GoogleDrivePageHandler : public google_drive::mojom::PageHandler,
   void CalculateRequiredSpace() override;
   void GetTotalPinnedSize(GetTotalPinnedSizeCallback callback) override;
   void ClearPinnedFiles(ClearPinnedFilesCallback callback) override;
+  void RecordBulkPinningEnabledMetric() override;
 
   // drive::DriveIntegrationServiceObserver
   void OnBulkPinProgress(const drivefs::pinning::Progress& progress) override;

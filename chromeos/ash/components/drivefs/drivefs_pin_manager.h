@@ -37,6 +37,20 @@
 
 namespace drivefs::pinning {
 
+// These values are logged to UMA. Entries should not be renumbered and
+// numeric values should never be reused. Please keep in sync with
+// "FileManagerGoogleDriveBulkPinningEnabledSource" in
+// src/tools/metrics/histograms/enums.xml.
+enum class BulkPinningEnabledSource {
+  kBanner = 0,
+  kSystemSettings = 1,
+  kDriveInternal = 2,
+  kMaxValue = kDriveInternal,
+};
+
+COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)
+void RecordBulkPinningEnabledSource(BulkPinningEnabledSource source);
+
 // Imbue the output stream with a locale that prints numbers with thousands
 // separators.
 COMPONENT_EXPORT(CHROMEOS_ASH_COMPONENTS_DRIVEFS)

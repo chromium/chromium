@@ -236,6 +236,11 @@ Path AppendAbsoluteToMountPath(const Path& mount_path, StringPiece path) {
 
 }  // namespace
 
+void RecordBulkPinningEnabledSource(BulkPinningEnabledSource source) {
+  base::UmaHistogramEnumeration(
+      "FileBrowser.GoogleDrive.BulkPinning.Enabled.Source", source);
+}
+
 std::ostream& NiceNum(std::ostream& out) {
   out.imbue(NiceNumLocale());
   return out;

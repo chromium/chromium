@@ -375,6 +375,7 @@ export class SettingsGoogleDriveSubpageElement extends
     }
 
     this.setPrefValue(GOOGLE_DRIVE_BULK_PINNING_PREF, true);
+    this.proxy_.handler.recordBulkPinningEnabledMetric();
   }
 
   /**

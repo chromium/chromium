@@ -45300,6 +45300,12 @@ Called by update_permissions_policy_enum.py.-->
   <int value="3" label="Caught Exception"/>
 </enum>
 
+<enum name="FileManagerGoogleDriveBulkPinningEnabledSource">
+  <int value="0" label="Banner"/>
+  <int value="1" label="System Settings"/>
+  <int value="2" label="Drive Internals"/>
+</enum>
+
 <enum name="FileManagerListType">
   <int value="0" label="Uninitialized"/>
   <int value="1" label="List view (detail)"/>
