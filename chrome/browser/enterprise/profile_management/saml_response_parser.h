@@ -7,13 +7,11 @@
 #include <string>
 #include <vector>
 
-#include "base/base64.h"
 #include "base/containers/flat_map.h"
 #include "base/functional/callback.h"
 #include "base/memory/raw_ref.h"
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/navigation_throttle.h"
-#include "mojo/public/cpp/system/simple_watcher.h"
 #include "services/data_decoder/public/cpp/data_decoder.h"
 
 namespace profile_management {
@@ -26,7 +24,7 @@ class SAMLResponseParser {
   // the response. Invoke `callback` with a map the attributes values.
   SAMLResponseParser(
       std::vector<std::string>&& attributes,
-      const mojo::DataPipeConsumerHandle& body,
+      const std::string& body,
       base::OnceCallback<void(base::flat_map<std::string, std::string>)>
           callback);
   SAMLResponseParser(const SAMLResponseParser&) = delete;
@@ -34,15 +32,12 @@ class SAMLResponseParser {
   ~SAMLResponseParser();
 
  private:
-  void OnBodyReady(MojoResult result);
   void GetSamlResponse(data_decoder::DataDecoder::ValueOrError value_or_error);
 
   void GetAttributesFromSAMLResponse(
       data_decoder::DataDecoder::ValueOrError value_or_error);
 
   std::vector<std::string> attributes_;
-  const raw_ref<const mojo::DataPipeConsumerHandle> body_;
-  mojo::SimpleWatcher body_consumer_watcher_;
   base::OnceCallback<void(base::flat_map<std::string, std::string>)> callback_;
   base::WeakPtrFactory<SAMLResponseParser> weak_ptr_factory_{this};
 };
