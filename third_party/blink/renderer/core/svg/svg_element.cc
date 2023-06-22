@@ -901,9 +901,10 @@ static bool HasLoadListener(Element* element) {
         element->GetEventListeners(event_type_names::kLoad);
     if (!entry)
       continue;
-    for (wtf_size_t i = 0; i < entry->size(); ++i) {
-      if (entry->at(i).Capture())
+    for (auto& registered_event_listener : *entry) {
+      if (registered_event_listener->Capture()) {
         return true;
+      }
     }
   }
 

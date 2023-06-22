@@ -44,8 +44,9 @@ class MediaCustomControlsFullscreenDetectorTest : public testing::Test {
       return false;
 
     for (const auto& registered_listener : *listeners) {
-      if (registered_listener.Callback() == listener)
+      if (registered_listener->Callback() == listener) {
         return true;
+      }
     }
     return false;
   }

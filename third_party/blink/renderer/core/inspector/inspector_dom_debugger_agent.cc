@@ -106,13 +106,12 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
   // Nodes and their Listeners for the concerned event types (order is top to
   // bottom).
   Vector<AtomicString> event_types = target->EventTypes();
-  for (wtf_size_t j = 0; j < event_types.size(); ++j) {
-    AtomicString& type = event_types[j];
+  for (AtomicString& type : event_types) {
     EventListenerVector* listeners = target->GetEventListeners(type);
     if (!listeners)
       continue;
-    for (wtf_size_t k = 0; k < listeners->size(); ++k) {
-      EventListener* event_listener = listeners->at(k).Callback();
+    for (auto& registered_event_listener : *listeners) {
+      EventListener* event_listener = registered_event_listener->Callback();
       JSBasedEventListener* v8_event_listener =
           DynamicTo<JSBasedEventListener>(event_listener);
       if (!v8_event_listener)
@@ -138,8 +137,9 @@ void InspectorDOMDebuggerAgent::CollectEventListeners(
             target_node);
       }
       event_information->push_back(V8EventListenerInfo(
-          type, listeners->at(k).Capture(), listeners->at(k).Passive(),
-          listeners->at(k).Once(), handler.As<v8::Object>(),
+          type, registered_event_listener->Capture(),
+          registered_event_listener->Passive(),
+          registered_event_listener->Once(), handler.As<v8::Object>(),
           effective_function.As<v8::Function>(), backend_node_id));
     }
   }

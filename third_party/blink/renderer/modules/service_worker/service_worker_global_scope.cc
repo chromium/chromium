@@ -2674,10 +2674,10 @@ ServiceWorkerGlobalScope::FetchHandlerType() {
 
   // TODO(crbug.com/1349613): revisit the way to implement this.
   // The following code returns kEmptyFetchHandler if all handlers are nop.
-  for (RegisteredEventListener& e : *elv) {
+  for (RegisteredEventListener* e : *elv) {
     EventTarget* et = EventTarget::Create(script_state);
     v8::Local<v8::Value> v =
-        To<JSBasedEventListener>(e.Callback())->GetListenerObject(*et);
+        To<JSBasedEventListener>(e->Callback())->GetListenerObject(*et);
     if (v.IsEmpty() || !v->IsFunction() ||
         !v.As<v8::Function>()->Experimental_IsNopFunction()) {
       return mojom::blink::ServiceWorkerFetchHandlerType::kNotSkippable;

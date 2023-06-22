@@ -44,7 +44,7 @@ namespace blink {
 class EventListenerOptions;
 class EventTarget;
 
-using EventListenerVector = HeapVector<RegisteredEventListener, 1>;
+using EventListenerVector = HeapVector<Member<RegisteredEventListener>, 1>;
 
 class CORE_EXPORT EventListenerMap final {
   DISALLOW_NEW();
@@ -54,21 +54,26 @@ class CORE_EXPORT EventListenerMap final {
   EventListenerMap(const EventListenerMap&) = delete;
   EventListenerMap& operator=(const EventListenerMap&) = delete;
 
+  void Clear();
   bool IsEmpty() const { return entries_.empty(); }
   bool Contains(const AtomicString& event_type) const;
   bool ContainsCapturing(const AtomicString& event_type) const;
   bool ContainsJSBasedEventListeners(const AtomicString& event_type) const;
 
-  void Clear();
+  // Add an event listener. If the listener was indeed added (duplicates will
+  // return false) `registered_listener` will be updated to the
+  // `RegisteredEventListener` stored in the map.
   bool Add(const AtomicString& event_type,
            EventListener*,
            const AddEventListenerOptionsResolved*,
-           RegisteredEventListener* registered_listener);
+           RegisteredEventListener** registered_listener);
+  // Remove an event listener. If the listener is found the result will be
+  // true and `registered_listener` will be updated to the
+  // `RegisteredEventListener` that was removed from the map.
   bool Remove(const AtomicString& event_type,
               const EventListener*,
               const EventListenerOptions*,
-              wtf_size_t* index_of_removed_listener,
-              RegisteredEventListener* registered_listener);
+              RegisteredEventListener** registered_listener);
   EventListenerVector* Find(const AtomicString& event_type);
   Vector<AtomicString> EventTypes() const;
 

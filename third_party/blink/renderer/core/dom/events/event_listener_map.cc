@@ -62,8 +62,9 @@ bool EventListenerMap::ContainsCapturing(const AtomicString& event_type) const {
   for (const auto& entry : entries_) {
     if (entry.first == event_type) {
       for (const auto& event_listener : *entry.second) {
-        if (event_listener.Capture())
+        if (event_listener->Capture()) {
           return true;
+        }
       }
       return false;
     }
@@ -76,7 +77,7 @@ bool EventListenerMap::ContainsJSBasedEventListeners(
   for (const auto& entry : entries_) {
     if (entry.first == event_type) {
       for (const auto& event_listener : *entry.second) {
-        const EventListener* callback = event_listener.Callback();
+        const EventListener* callback = event_listener->Callback();
         if (callback && callback->IsJSBasedEventListener())
           return true;
       }
@@ -87,6 +88,11 @@ bool EventListenerMap::ContainsJSBasedEventListeners(
 }
 
 void EventListenerMap::Clear() {
+  for (const auto& entry : entries_) {
+    for (const auto& registered_listener : *entry.second) {
+      registered_listener->SetRemoved();
+    }
+  }
   entries_.clear();
 }
 
@@ -100,23 +106,28 @@ Vector<AtomicString> EventListenerMap::EventTypes() const {
   return types;
 }
 
-static bool AddListenerToVector(EventListenerVector* vector,
+static bool AddListenerToVector(EventListenerVector* listener_vector,
                                 EventListener* listener,
                                 const AddEventListenerOptionsResolved* options,
-                                RegisteredEventListener* registered_listener) {
-  *registered_listener = RegisteredEventListener(listener, options);
+                                RegisteredEventListener** registered_listener) {
+  auto* end = listener_vector->end();
+  for (auto* iter = listener_vector->begin(); iter != end; ++iter) {
+    if ((*iter)->Matches(listener, options)) {
+      // Duplicate listener.
+      return false;
+    }
+  }
 
-  if (vector->Find(*registered_listener) != kNotFound)
-    return false;  // Duplicate listener.
-
-  vector->push_back(*registered_listener);
+  *registered_listener =
+      MakeGarbageCollected<RegisteredEventListener>(listener, options);
+  listener_vector->push_back(*registered_listener);
   return true;
 }
 
 bool EventListenerMap::Add(const AtomicString& event_type,
                            EventListener* listener,
                            const AddEventListenerOptionsResolved* options,
-                           RegisteredEventListener* registered_listener) {
+                           RegisteredEventListener** registered_listener) {
   for (const auto& entry : entries_) {
     if (entry.first == event_type) {
       // Report the size of event listener vector in case of hang-crash to see
@@ -144,39 +155,28 @@ static bool RemoveListenerFromVector(
     EventListenerVector* listener_vector,
     const EventListener* listener,
     const EventListenerOptions* options,
-    wtf_size_t* index_of_removed_listener,
-    RegisteredEventListener* registered_listener) {
-  auto* const begin = listener_vector->data();
-  auto* const end = begin + listener_vector->size();
-
-  // Do a manual search for the matching RegisteredEventListener. It is not
-  // possible to create a RegisteredEventListener on the stack because of the
-  // const on |listener|.
-  auto* const it = std::find_if(
-      begin, end,
-      [listener, options](const RegisteredEventListener& event_listener)
-          -> bool { return event_listener.Matches(listener, options); });
-
-  if (it == end) {
-    *index_of_removed_listener = kNotFound;
-    return false;
+    RegisteredEventListener** registered_listener) {
+  EventListenerVector::iterator end = listener_vector->end();
+  for (EventListenerVector::iterator iter = listener_vector->begin();
+       iter != end; ++iter) {
+    if ((*iter)->Matches(listener, options)) {
+      (*iter)->SetRemoved();
+      *registered_listener = *iter;
+      listener_vector->erase(iter);
+      return true;
+    }
   }
-  *registered_listener = *it;
-  *index_of_removed_listener = static_cast<wtf_size_t>(it - begin);
-  listener_vector->EraseAt(*index_of_removed_listener);
-  return true;
+  return false;
 }
 
 bool EventListenerMap::Remove(const AtomicString& event_type,
                               const EventListener* listener,
                               const EventListenerOptions* options,
-                              wtf_size_t* index_of_removed_listener,
-                              RegisteredEventListener* registered_listener) {
+                              RegisteredEventListener** registered_listener) {
   for (unsigned i = 0; i < entries_.size(); ++i) {
     if (entries_[i].first == event_type) {
       bool was_removed = RemoveListenerFromVector(
-          entries_[i].second.Get(), listener, options,
-          index_of_removed_listener, registered_listener);
+          entries_[i].second.Get(), listener, options, registered_listener);
       if (entries_[i].second->empty())
         entries_.EraseAt(i);
       return was_removed;
@@ -200,10 +200,11 @@ static void CopyListenersNotCreatedFromMarkupToTarget(
     EventListenerVector* listener_vector,
     EventTarget* target) {
   for (auto& event_listener : *listener_vector) {
-    if (event_listener.Callback()->IsEventHandlerForContentAttribute())
+    if (event_listener->Callback()->IsEventHandlerForContentAttribute()) {
       continue;
-    AddEventListenerOptionsResolved* options = event_listener.Options();
-    target->addEventListener(event_type, event_listener.Callback(), options);
+    }
+    AddEventListenerOptionsResolved* options = event_listener->Options();
+    target->addEventListener(event_type, event_listener->Callback(), options);
   }
 }
 

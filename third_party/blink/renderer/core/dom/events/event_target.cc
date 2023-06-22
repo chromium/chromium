@@ -474,10 +474,11 @@ bool EventTarget::AddEventListenerInternal(
                               argv.data());
   }
 
-  RegisteredEventListener registered_listener;
+  RegisteredEventListener* registered_listener = nullptr;
   bool added = EnsureEventTargetData().event_listener_map.Add(
       event_type, listener, options, &registered_listener);
   if (added) {
+    CHECK(registered_listener);
     if (options->hasSignal()) {
       // Instead of passing the entire |options| here, which could create a
       // circular reference due to |options| holding a Member<AbortSignal>, just
@@ -502,7 +503,7 @@ bool EventTarget::AddEventListenerInternal(
       }
     }
 
-    AddedEventListener(event_type, registered_listener);
+    AddedEventListener(event_type, *registered_listener);
     if (IsA<JSBasedEventListener>(listener) &&
         IsInstrumentedForAsyncStack(event_type)) {
       listener->async_task_context()->Schedule(GetExecutionContext(),
@@ -632,34 +633,15 @@ bool EventTarget::RemoveEventListenerInternal(
   if (!d)
     return false;
 
-  wtf_size_t index_of_removed_listener;
-  RegisteredEventListener registered_listener;
+  RegisteredEventListener* registered_listener;
 
   if (!d->event_listener_map.Remove(event_type, listener, options,
-                                    &index_of_removed_listener,
-                                    &registered_listener))
+                                    &registered_listener)) {
     return false;
-
-  // Notify firing events planning to invoke the listener at 'index' that
-  // they have one less listener to invoke.
-  if (d->firing_event_iterators) {
-    for (const auto& firing_iterator : *d->firing_event_iterators) {
-      if (event_type != firing_iterator.event_type)
-        continue;
-
-      if (index_of_removed_listener >= firing_iterator.end)
-        continue;
-
-      --firing_iterator.end;
-      // Note that when firing an event listener,
-      // firingIterator.iterator indicates the next event listener
-      // that would fire, not the currently firing event
-      // listener. See EventTarget::fireEventListeners.
-      if (index_of_removed_listener < firing_iterator.iterator)
-        --firing_iterator.iterator;
-    }
   }
-  RemovedEventListener(event_type, registered_listener);
+
+  CHECK(registered_listener);
+  RemovedEventListener(event_type, *registered_listener);
   return true;
 }
 
@@ -673,11 +655,11 @@ RegisteredEventListener* EventTarget::GetAttributeRegisteredEventListener(
   if (!listener_vector)
     return nullptr;
 
-  for (auto& event_listener : *listener_vector) {
-    EventListener* listener = event_listener.Callback();
+  for (auto& registered_listener : *listener_vector) {
+    EventListener* listener = registered_listener->Callback();
     if (GetExecutionContext() && listener->IsEventHandler() &&
         listener->BelongsToTheCurrentWorld(GetExecutionContext()))
-      return &event_listener;
+      return registered_listener;
   }
   return nullptr;
 }
@@ -852,10 +834,12 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
 
   bool fired_event_listeners = false;
   if (listeners_vector) {
+    // Calling `FireEventListener` causes a clone of `listeners_vector`.
     fired_event_listeners = FireEventListeners(event, d, *listeners_vector);
   } else if (event.isTrusted() && legacy_listeners_vector) {
     AtomicString unprefixed_type_name = event.type();
     event.SetType(legacy_type_name);
+    // Calling `FireEventListener` causes a clone of `legacy_listeners_vector`.
     fired_event_listeners =
         FireEventListeners(event, d, *legacy_listeners_vector);
     event.SetType(unprefixed_type_name);
@@ -873,9 +857,10 @@ DispatchEventResult EventTarget::FireEventListeners(Event& event) {
   return GetDispatchEventResult(event);
 }
 
+// Fire event listeners, creates a copy of EventListenerVector on being called.
 bool EventTarget::FireEventListeners(Event& event,
                                      EventTargetData* d,
-                                     EventListenerVector& entry) {
+                                     EventListenerVector entry) {
   // Fire all listeners registered for this event. Don't fire listeners removed
   // during event dispatch. Also, don't fire event listeners added during event
   // dispatch. Conveniently, all new event listeners will be added after or at
@@ -888,13 +873,6 @@ bool EventTarget::FireEventListeners(Event& event,
 
   CountFiringEventListeners(event, ExecutingWindow());
 
-  wtf_size_t i = 0;
-  wtf_size_t size = entry.size();
-  if (!d->firing_event_iterators)
-    d->firing_event_iterators = std::make_unique<FiringEventIteratorVector>();
-  d->firing_event_iterators->push_back(
-      FiringEventIterator(event.type(), i, size));
-
   base::TimeDelta blocked_event_threshold =
       BlockedEventsWarningThreshold(context, event);
   base::TimeTicks now;
@@ -906,31 +884,30 @@ bool EventTarget::FireEventListeners(Event& event,
   }
   bool fired_listener = false;
 
-  while (i < size) {
+  for (auto& registered_listener : entry) {
+    if (UNLIKELY(registered_listener->Removed())) {
+      continue;
+    }
+
     // If stopImmediatePropagation has been called, we just break out
     // immediately, without handling any more events on this target.
-    if (event.ImmediatePropagationStopped())
+    if (event.ImmediatePropagationStopped()) {
       break;
+    }
 
-    RegisteredEventListener registered_listener = entry[i];
-
-    // Move the iterator past this event listener. This must match
-    // the handling of the FiringEventIterator::iterator in
-    // EventTarget::removeEventListener.
-    ++i;
-
-    if (!registered_listener.ShouldFire(event))
+    if (!registered_listener->ShouldFire(event)) {
       continue;
+    }
 
-    EventListener* listener = registered_listener.Callback();
+    EventListener* listener = registered_listener->Callback();
     // The listener will be retained by Member<EventListener> in the
     // registeredListener, i and size are updated with the firing event iterator
     // in case the listener is removed from the listener vector below.
-    if (registered_listener.Once())
+    if (registered_listener->Once()) {
       removeEventListener(event.type(), listener,
-                          registered_listener.Capture());
-
-    event.SetHandlingPassive(EventPassiveMode(registered_listener));
+                          registered_listener->Capture());
+    }
+    event.SetHandlingPassive(EventPassiveMode(*registered_listener));
 
     probe::UserCallback probe(context, nullptr, event.type(), false, this);
     probe::InvokeEventHandler probe_scope(context, this, &event, listener);
@@ -945,19 +922,16 @@ bool EventTarget::FireEventListeners(Event& event,
 
     // If we're about to report this event listener as blocking, make sure it
     // wasn't removed while handling the event.
-    if (should_report_blocked_event && i > 0 &&
-        entry[i - 1].Callback() == listener && !entry[i - 1].Passive() &&
-        !entry[i - 1].BlockedEventWarningEmitted() &&
+    if (should_report_blocked_event && !registered_listener->Removed() &&
+        !registered_listener->Passive() &&
+        !registered_listener->BlockedEventWarningEmitted() &&
         !event.defaultPrevented()) {
-      ReportBlockedEvent(*this, event, &entry[i - 1],
+      ReportBlockedEvent(*this, event, registered_listener,
                          now - event.PlatformTimeStamp());
     }
 
     event.SetHandlingPassive(Event::PassiveMode::kNotPassive);
-
-    CHECK_LE(i, size);
   }
-  d->firing_event_iterators->pop_back();
   return fired_listener;
 }
 
@@ -989,18 +963,8 @@ Vector<AtomicString> EventTarget::EventTypes() {
 }
 
 void EventTarget::RemoveAllEventListeners() {
-  EventTargetData* d = GetEventTargetData();
-  if (!d)
-    return;
-  d->event_listener_map.Clear();
-
-  // Notify firing events planning to invoke the listener at 'index' that
-  // they have one less listener to invoke.
-  if (d->firing_event_iterators) {
-    for (const auto& iterator : *d->firing_event_iterators) {
-      iterator.iterator = 0;
-      iterator.end = 0;
-    }
+  if (auto* d = GetEventTargetData()) {
+    d->event_listener_map.Clear();
   }
 }
 
