@@ -1545,7 +1545,7 @@
         "args": [],
         "bucket": "chromiumos-image-archive",
         "cros_board": "volteer",
-        "cros_img": "volteer-public/R114-15437.42.0",
+        "cros_img": "volteer-public/R114-15437.57.0",
         "dut_pool": "chromium",
         "name": "lacros_all_tast_tests VOLTEER_PUBLIC_STABLE",
         "public_builder": "cros_test_platform_public",

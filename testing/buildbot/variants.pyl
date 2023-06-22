@@ -498,8 +498,8 @@
   'CROS_DEDEDE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'dedede',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'dedede-release/R114-15437.42.0',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'dedede-release/R114-15437.57.0',
     },
     'enabled': True,
     'identifier': 'DEDEDE_RELEASE_STABLE',
@@ -534,8 +534,8 @@
   'CROS_EVE_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'eve',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'eve-release/R114-15437.42.0',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'eve-release/R114-15437.57.0',
     },
     'enabled': True,
     'identifier': 'EVE_RELEASE_STABLE',
@@ -583,8 +583,8 @@
   'CROS_HANA_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'hana',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'hana-release/R114-15437.42.0',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'hana-release/R114-15437.57.0',
     },
     'enabled': True,
     'identifier': 'HANA_RELEASE_STABLE',
@@ -740,8 +740,8 @@
   'CROS_OCTOPUS_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'octopus',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'octopus-release/R114-15437.42.0',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'octopus-release/R114-15437.57.0',
     },
     'enabled': True,
     'identifier': 'OCTOPUS_RELEASE_STABLE',
@@ -776,8 +776,8 @@
   'CROS_STRONGBAD_RELEASE_STABLE': {
     'skylab': {
       'cros_board': 'strongbad',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'strongbad-release/R114-15437.42.4',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'strongbad-release/R114-15437.57.0',
     },
     'enabled': True,
     'identifier': 'STRONGBAD_RELEASE_STABLE',
@@ -835,8 +835,8 @@
   'CROS_VOLTEER_PUBLIC_STABLE': {
     'skylab': {
       'cros_board': 'volteer',
-      'cros_chrome_version': '114.0.5735.119',
-      'cros_img': 'volteer-public/R114-15437.42.0',
+      'cros_chrome_version': '114.0.5735.143',
+      'cros_img': 'volteer-public/R114-15437.57.0',
       'bucket': 'chromiumos-image-archive',
       'dut_pool': 'chromium',
       'public_builder': 'cros_test_platform_public',
