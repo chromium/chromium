@@ -31,6 +31,7 @@
 
 using base::test::TestFuture;
 using device::mojom::SmartCardConnection;
+using device::mojom::SmartCardConnectionState;
 using device::mojom::SmartCardContext;
 using device::mojom::SmartCardDisposition;
 using device::mojom::SmartCardError;
@@ -40,6 +41,7 @@ using device::mojom::SmartCardReaderStateOut;
 using device::mojom::SmartCardReaderStateOutPtr;
 using device::mojom::SmartCardResult;
 using device::mojom::SmartCardShareMode;
+using device::mojom::SmartCardStatus;
 using device::mojom::SmartCardSuccess;
 using ::testing::_;
 using testing::Exactly;
@@ -431,6 +433,42 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetAttribute) {
 
       let responseString = new Uint8Array(response).toString();
       return `response: ${responseString}`;
+    })())"));
+}
+
+IN_PROC_BROWSER_TEST_F(SmartCardTest, Status) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection, Status(_))
+        .WillOnce([](SmartCardConnection::StatusCallback callback) {
+          auto result = device::mojom::SmartCardStatusResult::NewStatus(
+              SmartCardStatus::New(
+                  "Fake reader", SmartCardConnectionState::kSpecific,
+                  SmartCardProtocol::kT1, std::vector<uint8_t>({3u, 2u, 1u})));
+          std::move(callback).Run(std::move(result));
+        });
+  }
+
+  EXPECT_EQ("Fake reader, t1, {3,2,1}", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection = await context.connect("Fake reader", "shared", ["t1"]);
+
+      let status = await connection.status();
+
+      let atr = new Uint8Array(status.answerToReset).toString();
+      return `${status.readerName}, ${status.state}, {${atr}}`;
     })())"));
 }
 

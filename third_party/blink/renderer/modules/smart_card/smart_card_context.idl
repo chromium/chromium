@@ -29,6 +29,12 @@ dictionary SmartCardReaderStateFlags {
   boolean unpowered = false;
 };
 
+enum SmartCardProtocol {
+  "raw",
+  "t0",
+  "t1"
+};
+
 dictionary SmartCardConnectResult {
   required SmartCardConnection connection;
   required SmartCardProtocol activeProtocol;

@@ -5,6 +5,7 @@
 #include "third_party/blink/renderer/modules/smart_card/smart_card_connection.h"
 
 #include "base/notreached.h"
+#include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_connection_status.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_disposition.h"
 #include "third_party/blink/renderer/bindings/modules/v8/v8_smart_card_protocol.h"
 #include "third_party/blink/renderer/core/typed_arrays/dom_array_buffer.h"
@@ -15,7 +16,10 @@ namespace {
 constexpr char kOperationInProgress[] = "An operation is in progress.";
 constexpr char kDisconnected[] = "Is disconnected.";
 
+using device::mojom::blink::SmartCardConnectionState;
 using device::mojom::blink::SmartCardDisposition;
+using device::mojom::blink::SmartCardProtocol;
+using device::mojom::blink::SmartCardStatusPtr;
 
 SmartCardDisposition ToMojomDisposition(
     const V8SmartCardDisposition& disposition) {
@@ -28,6 +32,36 @@ SmartCardDisposition ToMojomDisposition(
       return SmartCardDisposition::kUnpower;
     case V8SmartCardDisposition::Enum::kEject:
       return SmartCardDisposition::kEject;
+  }
+}
+
+absl::optional<V8SmartCardConnectionState::Enum> ToV8ConnectionState(
+    SmartCardConnectionState state,
+    SmartCardProtocol protocol) {
+  switch (state) {
+    case SmartCardConnectionState::kAbsent:
+      return V8SmartCardConnectionState::Enum::kAbsent;
+    case SmartCardConnectionState::kPresent:
+      return V8SmartCardConnectionState::Enum::kPresent;
+    case SmartCardConnectionState::kSwallowed:
+      return V8SmartCardConnectionState::Enum::kSwallowed;
+    case SmartCardConnectionState::kPowered:
+      return V8SmartCardConnectionState::Enum::kPowered;
+    case SmartCardConnectionState::kNegotiable:
+      return V8SmartCardConnectionState::Enum::kNegotiable;
+    case SmartCardConnectionState::kSpecific:
+      switch (protocol) {
+        case SmartCardProtocol::kUndefined:
+          LOG(ERROR)
+              << "Invalid Status result: (state=specific, protocol=undefined)";
+          return absl::nullopt;
+        case SmartCardProtocol::kT0:
+          return V8SmartCardConnectionState::Enum::kT0;
+        case SmartCardProtocol::kT1:
+          return V8SmartCardConnectionState::Enum::kT1;
+        case SmartCardProtocol::kRaw:
+          return V8SmartCardConnectionState::Enum::kRaw;
+      }
   }
 }
 }  // anonymous namespace
@@ -103,9 +137,21 @@ ScriptPromise SmartCardConnection::transmit(ScriptState* script_state,
   return ongoing_request_->Promise();
 }
 
-ScriptPromise SmartCardConnection::status() {
-  NOTIMPLEMENTED();
-  return ScriptPromise();
+ScriptPromise SmartCardConnection::status(ScriptState* script_state,
+                                          ExceptionState& exception_state) {
+  if (!EnsureNoOperationInProgress(exception_state) ||
+      !EnsureConnection(exception_state)) {
+    return ScriptPromise();
+  }
+
+  ongoing_request_ = MakeGarbageCollected<ScriptPromiseResolver>(
+      script_state, exception_state.GetContext());
+
+  connection_->Status(WTF::BindOnce(&SmartCardConnection::OnStatusDone,
+                                    WrapPersistent(this),
+                                    WrapPersistent(ongoing_request_.Get())));
+
+  return ongoing_request_->Promise();
 }
 
 ScriptPromise SmartCardConnection::control(ScriptState* script_state,
@@ -216,6 +262,40 @@ void SmartCardConnection::OnDataResult(
   const Vector<uint8_t>& data = result->get_data();
 
   resolver->Resolve(DOMArrayBuffer::Create(data.data(), data.size()));
+}
+
+void SmartCardConnection::OnStatusDone(
+    ScriptPromiseResolver* resolver,
+    device::mojom::blink::SmartCardStatusResultPtr result) {
+  CHECK_EQ(ongoing_request_, resolver);
+  ongoing_request_ = nullptr;
+
+  if (result->is_error()) {
+    resolver->Reject(SmartCardError::Create(result->get_error()));
+    return;
+  }
+
+  const SmartCardStatusPtr& mojo_status = result->get_status();
+
+  absl::optional<V8SmartCardConnectionState::Enum> connection_state =
+      ToV8ConnectionState(mojo_status->state, mojo_status->protocol);
+
+  if (!connection_state.has_value()) {
+    auto* error = SmartCardError::Create(
+        device::mojom::blink::SmartCardError::kInternalError);
+    resolver->Reject(error);
+    return;
+  }
+
+  auto* status = SmartCardConnectionStatus::Create();
+  status->setReaderName(mojo_status->reader_name);
+  status->setState(connection_state.value());
+  if (!mojo_status->answer_to_reset.empty()) {
+    status->setAnswerToReset(
+        DOMArrayBuffer::Create(mojo_status->answer_to_reset.data(),
+                               mojo_status->answer_to_reset.size()));
+  }
+  resolver->Resolve(status);
 }
 
 void SmartCardConnection::CloseMojoConnection() {

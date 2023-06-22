@@ -23,6 +23,7 @@ enum SmartCardDisposition {
   [CallWith=ScriptState, RaisesException]
   Promise<ArrayBuffer> transmit(BufferSource sendBuffer);
 
+  [CallWith=ScriptState, RaisesException]
   Promise<SmartCardConnectionStatus> status();
 
   [CallWith=ScriptState, RaisesException]

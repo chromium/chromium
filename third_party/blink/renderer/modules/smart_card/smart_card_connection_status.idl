@@ -10,17 +10,13 @@ enum SmartCardConnectionState {
   "swallowed",
   "powered",
   "negotiable",
-  "specific"
-};
-
-enum SmartCardProtocol {
-  "raw",
   "t0",
-  "t1"
+  "t1",
+  "raw"
 };
 
-// TODO(crbug.com/1386175): Make it match the spec
 dictionary SmartCardConnectionStatus {
+  required DOMString readerName;
   required SmartCardConnectionState state;
-  SmartCardProtocol activeProtocol;
+  ArrayBuffer answerToReset;
 };
