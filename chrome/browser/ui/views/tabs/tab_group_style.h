@@ -55,10 +55,6 @@ class TabGroupStyle {
   // Returns the sync icon width.
   virtual float GetSyncIconWidth() const;
 
-  // Returns the selected opacity value, This value should match the
-  // corresponding value for the matching TabStyle.
-  virtual float GetSelectedTabOpacity() const;
-
   // The radius of the tab group header chip
   virtual int GetChipCornerRadius() const;
 

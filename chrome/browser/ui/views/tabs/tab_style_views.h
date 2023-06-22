@@ -63,11 +63,15 @@ class TabStyleViews {
   // active opacity.
   virtual TabActive GetApparentActiveState() const = 0;
 
+  // Returns the target opacity of the "active" portion of the tab's state. The
+  // current opacity may be animating towards this value.
+  virtual float GetTargetActiveOpacity() const = 0;
+
   // Returns the current opacity of the "active" portion of the tab's state.
-  virtual float GetActiveOpacity() const = 0;
+  virtual float GetCurrentActiveOpacity() const = 0;
 
   // Derives and returns colors for the tab. See TabColors, above.
-  virtual TabStyle::TabColors CalculateColors() const = 0;
+  virtual TabStyle::TabColors CalculateTargetColors() const = 0;
 
   // Sets the center of the radial highlight in the hover animation.
   virtual void SetHoverLocation(const gfx::Point& location) = 0;
