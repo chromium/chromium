@@ -87,7 +87,8 @@ public class MessageBannerViewBinder {
         } else if (propertyKey == SECONDARY_MENU_MAX_SIZE) {
             view.setSecondaryMenuMaxSize(model.get(SECONDARY_MENU_MAX_SIZE));
         } else if (propertyKey == SECONDARY_ICON_CONTENT_DESCRIPTION) {
-            view.setSecondaryIconContentDescription(model.get(SECONDARY_ICON_CONTENT_DESCRIPTION));
+            view.setSecondaryIconContentDescription(
+                    model.get(SECONDARY_ICON_CONTENT_DESCRIPTION), false);
         } else if (propertyKey == ON_SECONDARY_BUTTON_CLICK) {
             view.setSecondaryActionCallback(model.get(ON_SECONDARY_BUTTON_CLICK));
         } else if (propertyKey == ON_TOUCH_RUNNABLE) {

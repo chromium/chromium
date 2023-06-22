@@ -11,6 +11,7 @@ import static androidx.test.espresso.matcher.ViewMatchers.withId;
 import static androidx.test.espresso.matcher.ViewMatchers.withText;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -31,11 +32,13 @@ import org.mockito.Mockito;
 import org.mockito.junit.MockitoJUnit;
 import org.mockito.junit.MockitoRule;
 
+import org.chromium.base.ThreadUtils;
 import org.chromium.base.test.BaseActivityTestRule;
 import org.chromium.base.test.BaseJUnit4ClassRunner;
 import org.chromium.base.test.util.Batch;
 import org.chromium.components.browser_ui.widget.listmenu.BasicListMenu;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenu;
+import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButton.PopupMenuShownListener;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuButtonDelegate;
 import org.chromium.components.browser_ui.widget.listmenu.ListMenuItemProperties;
@@ -517,5 +520,57 @@ public class MessageBannerViewTest {
 
         onView(withId(R.id.message_primary_button)).perform(click());
         Mockito.verify(mPrimaryActionCallback).run();
+    }
+
+    /**
+     * Test the content description of secondary icon/button is correctly updated based on
+     * the given title and its content description.
+     */
+    @Test
+    @MediumTest
+    public void testSecondaryIconContentDescription() {
+        PropertyModel model = ThreadUtils.runOnUiThreadBlockingNoException(() -> {
+            return new PropertyModel.Builder(MessageBannerProperties.ALL_KEYS)
+                    .with(MessageBannerProperties.MESSAGE_IDENTIFIER,
+                            MessageIdentifier.TEST_MESSAGE)
+                    .with(MessageBannerProperties.TITLE, "42")
+                    .build();
+        });
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            PropertyModelChangeProcessor.create(
+                    model, mMessageBannerView, MessageBannerViewBinder::bind);
+        });
+        Resources res = mMessageBannerView.getResources();
+        ListMenuButton btn = mMessageBannerView.getSecondaryButtonForTesting();
+        Assert.assertEquals(
+                res.getString(R.string.message_more_options, "42"), btn.getContentDescription());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "41"));
+        Assert.assertEquals("Content description should be up-to-date after title is updated.",
+                res.getString(R.string.message_more_options, "41"), btn.getContentDescription());
+
+        TestThreadUtils.runOnUiThreadBlocking(
+                () -> model.set(MessageBannerProperties.TITLE_CONTENT_DESCRIPTION, "-42"));
+        Assert.assertEquals(
+                "Content description should be up-to-date if title content description is set.",
+                res.getString(R.string.message_more_options, "-42"), btn.getContentDescription());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "40"));
+        Assert.assertEquals(
+                "Content description should be up-to-date if title content description is set.",
+                res.getString(R.string.message_more_options, "-42"), btn.getContentDescription());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> {
+            model.set(MessageBannerProperties.SECONDARY_ICON_CONTENT_DESCRIPTION,
+                    "secondary icon content description");
+        });
+        Assert.assertEquals(
+                "Content description should be up-to-date if secondary icon content description is set.",
+                "secondary icon content description", btn.getContentDescription());
+
+        TestThreadUtils.runOnUiThreadBlocking(() -> model.set(MessageBannerProperties.TITLE, "39"));
+        Assert.assertEquals(
+                "Content description should be up-to-date if secondary icon content description is set.",
+                "secondary icon content description", btn.getContentDescription());
     }
 }

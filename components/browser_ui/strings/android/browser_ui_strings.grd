@@ -912,6 +912,9 @@
       <message name="IDS_MESSAGE_DISMISS_AND_SHOW_NEXT" desc="Accessibility label to allow user to dismiss the current one in order to show the background message">
         Dismiss and show next available action
       </message>
+      <message name="IDS_MESSAGE_MORE_OPTIONS" desc="Accessibility label of the more options icon in the message banner">
+        More options <ph name="BANNER_TITLE">%1$s<ex>Title</ex></ph>
+      </message>
 
       <!-- In-Product Help -->
       <message name="IDS_IPH_SNOOZE" desc="Snooze button text within In-Product Help tooltip.">
