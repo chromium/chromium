@@ -354,6 +354,17 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
+<histogram
+    name="Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp"
+    enum="Boolean" expires_after="2024-03-31">
+  <owner>tommasin@chromium.org</owner>
+  <owner>kartoffel-core-eng@google.com</owner>
+  <summary>
+    Android: PrivacySandbox dialog not shown because Chrome Tab was launched
+    from an external app.
+  </summary>
+</histogram>
+
 <histogram base="true" name="Startup.Android.SingleTabTitleAvailableTime"
     units="ms" expires_after="2023-11-12">
 <!-- Name completed by histogram_suffixes name="JavaStartMode" -->

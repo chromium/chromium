@@ -16,6 +16,7 @@ import org.chromium.base.Callback;
 import org.chromium.base.CallbackController;
 import org.chromium.base.CommandLine;
 import org.chromium.base.TraceEvent;
+import org.chromium.base.metrics.RecordHistogram;
 import org.chromium.base.supplier.ObservableSupplier;
 import org.chromium.base.supplier.ObservableSupplierImpl;
 import org.chromium.base.supplier.OneShotCallback;
@@ -664,10 +665,25 @@ public class TabbedRootUiCoordinator extends RootUiCoordinator {
 
         if (ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_3)
                 || ChromeFeatureList.isEnabled(ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4)) {
-            didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
-                    mActivity, new SettingsLauncherImpl(),
-                    mTabModelSelectorSupplier.get().isIncognitoSelected(),
-                    getBottomSheetController());
+            String histogramName =
+                    "Startup.Android.PrivacySandbox.DialogNotShownDueToTabLaunchedFromExternalApp";
+            Tab tab = mActivityTabProvider.get();
+            boolean isTabLaunchedFromExternalApp =
+                    tab != null && tab.getLaunchType() == TabLaunchType.FROM_EXTERNAL_APP;
+            boolean shouldSuppressPSDialogForExternalAppLaunches =
+                    ChromeFeatureList.getFieldTrialParamByFeatureAsBoolean(
+                            ChromeFeatureList.PRIVACY_SANDBOX_SETTINGS_4,
+                            "suppress-dialog-for-external-app-launches", true);
+            boolean shouldSuppressPSDialog =
+                    isTabLaunchedFromExternalApp && shouldSuppressPSDialogForExternalAppLaunches;
+
+            if (!shouldSuppressPSDialog) {
+                didTriggerPromo = PrivacySandboxDialogController.maybeLaunchPrivacySandboxDialog(
+                        mActivity, new SettingsLauncherImpl(),
+                        mTabModelSelectorSupplier.get().isIncognitoSelected(),
+                        getBottomSheetController());
+            }
+            RecordHistogram.recordBooleanHistogram(histogramName, shouldSuppressPSDialog);
         }
 
         if (!didTriggerPromo) {
