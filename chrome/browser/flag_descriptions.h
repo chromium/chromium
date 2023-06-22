@@ -3637,9 +3637,6 @@ extern const char kPerformantSplitViewResizingDescription[];
 extern const char kPhoneHubCallNotificationName[];
 extern const char kPhoneHubCallNotificationDescription[];
 
-extern const char kPhoneHubCameraRollName[];
-extern const char kPhoneHubCameraRollDescription[];
-
 extern const char kPhoneHubNudgeName[];
 extern const char kPhoneHubNudgeDescription[];
 

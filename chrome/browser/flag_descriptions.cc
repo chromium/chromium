@@ -6362,11 +6362,6 @@ const char kPhoneHubCallNotificationName[] =
 const char kPhoneHubCallNotificationDescription[] =
     "Enables the incoming/ongoing call feature in Phone Hub.";
 
-const char kPhoneHubCameraRollName[] = "Camera Roll in Phone Hub";
-const char kPhoneHubCameraRollDescription[] =
-    "Enables the Camera Roll feature in Phone Hub, which allows users to "
-    "access recent photos and videos taken on a connected Android device.";
-
 const char kPhoneHubNudgeName[] = "Phone Hub nudge";
 const char kPhoneHubNudgeDescription[] =
     "Enables a nudge to direct eligible users to open Phone Hub.";

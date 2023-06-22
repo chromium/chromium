@@ -9042,10 +9042,6 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kPhoneHubCallNotificationName,
      flag_descriptions::kPhoneHubCallNotificationDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kPhoneHubCallNotification)},
-
-    {"enable-phone-hub-camera-roll", flag_descriptions::kPhoneHubCameraRollName,
-     flag_descriptions::kPhoneHubCameraRollDescription, kOsCrOS,
-     FEATURE_VALUE_TYPE(ash::features::kPhoneHubCameraRoll)},
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"partitioned-cookies", flag_descriptions::kPartitionedCookiesName,
