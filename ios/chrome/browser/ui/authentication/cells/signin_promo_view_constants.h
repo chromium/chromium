@@ -22,13 +22,9 @@ typedef NS_ENUM(NSInteger, SigninPromoViewStyle) {
   // logo, text body, rounded corners colored button and an optional secondary
   // plain button, all stacked vertically.
   SigninPromoViewStyleStandard = 0,
-  // Compact style that does not support personalization. Horizontal layout with
-  // generic icon and title.
-  SigninPromoViewStyleCompactTitled = 1,
-  // Compact style with horizontal layout and avatar/logo.
-  SigninPromoViewStyleCompactHorizontal = 2,
   // Compact style with vertical layout and avatar/logo.
-  SigninPromoViewStyleCompactVertical = 3,
+  SigninPromoViewStyleCompactHorizontal = 1,
+  SigninPromoViewStyleCompactVertical = 2,
 };
 
 extern NSString* const kSigninPromoViewId;

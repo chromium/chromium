@@ -106,13 +106,9 @@ NSArray<NSLayoutConstraint*>* SameConstraintsWithInsets(
     DCHECK(!self.promoView);
     self.promoViewContainer = [[UIView alloc] init];
     self.promoViewContainer.translatesAutoresizingMaskIntoConstraints = NO;
-    if (GetTopOfFeedPromoStyle() == SigninPromoViewStyleCompactTitled) {
-      self.promoViewContainer.backgroundColor =
-          [UIColor colorNamed:kGroupedPrimaryBackgroundColor];
-    } else {
-      self.promoViewContainer.backgroundColor =
-          [UIColor colorNamed:kGrey100Color];
-    }
+    self.promoViewContainer.backgroundColor =
+        [UIColor colorNamed:kGrey100Color];
+
     // TODO(b/287118358): Cleanup IsMagicStackEnabled() code from the sync promo
     // after experiment.
     if (IsMagicStackEnabled()) {

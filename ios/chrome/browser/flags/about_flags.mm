@@ -262,18 +262,14 @@ const FeatureEntry::FeatureVariation
 // Uses int values from SigninPromoViewStyle enum.
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoStandard[] = {
     {kDiscoverFeedTopSyncPromoStyle, "0"}};
-const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactTitled[] = {
-    {kDiscoverFeedTopSyncPromoStyle, "1"}};
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactHorizontal[] =
-    {{kDiscoverFeedTopSyncPromoStyle, "2"}};
+    {{kDiscoverFeedTopSyncPromoStyle, "1"}};
 const FeatureEntry::FeatureParam kDiscoverFeedTopSyncPromoCompactVertical[] = {
-    {kDiscoverFeedTopSyncPromoStyle, "3"}};
+    {kDiscoverFeedTopSyncPromoStyle, "2"}};
 
 const FeatureEntry::FeatureVariation kDiscoverFeedTopSyncPromoVariations[] = {
     {"Standard", kDiscoverFeedTopSyncPromoStandard,
      std::size(kDiscoverFeedTopSyncPromoStandard), nullptr},
-    {"Compact Titled (Unpersonalized)", kDiscoverFeedTopSyncPromoCompactTitled,
-     std::size(kDiscoverFeedTopSyncPromoCompactTitled), nullptr},
     {"Compact Horizontal", kDiscoverFeedTopSyncPromoCompactHorizontal,
      std::size(kDiscoverFeedTopSyncPromoCompactHorizontal), nullptr},
     {"Compact Vertical", kDiscoverFeedTopSyncPromoCompactVertical,

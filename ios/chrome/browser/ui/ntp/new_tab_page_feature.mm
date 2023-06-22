@@ -126,9 +126,9 @@ bool IsDiscoverFeedTopSyncPromoEnabled() {
 
 SigninPromoViewStyle GetTopOfFeedPromoStyle() {
   CHECK(IsDiscoverFeedTopSyncPromoEnabled());
-  // Defaults to Compact Titled (Unpersonalized).
+  // Defaults to Compact Vertical.
   return (SigninPromoViewStyle)base::GetFieldTrialParamByFeatureAsInt(
-      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 1);
+      kEnableDiscoverFeedTopSyncPromo, kDiscoverFeedTopSyncPromoStyle, 2);
 }
 
 bool ShouldIgnoreFeedEngagementConditionForTopSyncPromo() {

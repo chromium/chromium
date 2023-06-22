@@ -85,7 +85,6 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
       [self configureStandardSigninPromoView:signinPromoView];
       break;
     }
-    case SigninPromoViewStyleCompactTitled:
     case SigninPromoViewStyleCompactHorizontal:
     case SigninPromoViewStyleCompactVertical: {
       [self configureCompactPromoView:signinPromoView withStyle:promoViewStyle];
@@ -150,15 +149,8 @@ NSString* const kPromoViewImageName = @"ntp_feed_signin_promo_icon";
       // This function shouldn't be used for the standard promo.
       CHECK(NO);
       break;
-    case SigninPromoViewStyleCompactTitled:
-      signinPromoView.titleLabel.hidden = NO;
-      [signinPromoView configurePrimaryButtonWithTitle:
-                           GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)];
-      [signinPromoView
-          setNonProfileImage:[UIImage imageNamed:kPromoViewImageName]];
-      break;
-    case SigninPromoViewStyleCompactHorizontal:
     case SigninPromoViewStyleCompactVertical:
+    case SigninPromoViewStyleCompactHorizontal:
       signinPromoView.titleLabel.hidden = YES;
       [signinPromoView configurePrimaryButtonWithTitle:
                            GetNSString(IDS_IOS_NTP_FEED_SIGNIN_PROMO_CONTINUE)];
