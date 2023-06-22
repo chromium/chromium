@@ -79,15 +79,27 @@ class CachedMetadataHandler : public GarbageCollected<CachedMetadataHandler> {
   };
 
   // Enum for marking serialized cached metadatas so that the deserializers
-  // do not conflict.
+  // do not conflict. Do not remove or reorder entries, because old versions
+  // could persist in cache storage after an upgrade.
   enum CachedMetadataType : uint32_t {
-    kSingleEntry = 0,  // the metadata is a single CachedMetadata entry
+    // Replaced by kSingleEntryWithTag around 06/2023.
+    // kSingleEntry = 0,  // the metadata is a single CachedMetadata entry
+
     // This was used for inline code cache, but the feature was removed around
     // 10/2022.
     // kSourceKeyedMap = 1,  // the metadata is multiple CachedMetadata
     // entries keyed by a source string.
-    kSingleEntryWithHash = 2  // the metadata is a content hash followed by a
-                              // single CachedMetadata entry
+
+    // Replaced by kSingleEntryWithHashAndPadding around 06/2023.
+    // kSingleEntryWithHash = 2,  // the metadata is a content hash followed by
+    //                            // a single CachedMetadata entry
+
+    kSingleEntryWithTag = 3,  // The header contains an 8-byte tag; the metadata
+                              // is a single CachedMetadata entry.
+
+    kSingleEntryWithHashAndPadding = 4,  // The metadata is four bytes of
+                                         // padding and a content hash followed
+                                         // by a single CachedMetadata entry.
   };
 
   virtual ~CachedMetadataHandler() = default;

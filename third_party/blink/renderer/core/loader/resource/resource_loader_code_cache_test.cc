@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/platform/loader/fetch/cached_metadata.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_fetcher.h"
 #include "third_party/blink/renderer/platform/loader/fetch/resource_loader.h"
+#include "third_party/blink/renderer/platform/loader/fetch/script_cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/fetch/url_loader/cached_metadata_handler.h"
 #include "third_party/blink/renderer/platform/loader/testing/mock_fetch_context.h"
 #include "third_party/blink/renderer/platform/loader/testing/test_resource_fetcher_properties.h"
@@ -98,28 +99,29 @@ class ResourceLoaderCodeCacheTest : public testing::Test {
       absl::optional<String> source_text = {},
       uint32_t data_type_id = 0,
       CachedMetadataHandler::CachedMetadataType outer_type =
-          CachedMetadataHandler::kSingleEntryWithHash,
+          CachedMetadataHandler::kSingleEntryWithHashAndPadding,
       CachedMetadataHandler::CachedMetadataType inner_type =
-          CachedMetadataHandler::kSingleEntry) {
-    const size_t kCachedMetadataTypeSize = sizeof(uint32_t);
-    const size_t kSerializedDataSize = kCachedMetadataTypeSize + kSha256Bytes +
-                                       kCachedMetaDataStart + data.size();
+          CachedMetadataHandler::kSingleEntryWithTag) {
+    const size_t kSerializedDataSize = sizeof(CachedMetadataHeaderWithHash) +
+                                       sizeof(CachedMetadataHeader) +
+                                       data.size();
     std::vector<uint8_t> serialized_data(kSerializedDataSize);
-    *reinterpret_cast<uint32_t*>(&serialized_data[0]) = outer_type;
+    CachedMetadataHeaderWithHash* outer_header =
+        reinterpret_cast<CachedMetadataHeaderWithHash*>(&serialized_data[0]);
+    outer_header->marker = outer_type;
     if (source_text.has_value()) {
       std::unique_ptr<ParkableStringImpl::SecureDigest> hash =
           ParkableStringImpl::HashString(source_text->Impl());
       CHECK_EQ(hash->size(), kSha256Bytes);
-      memcpy(&serialized_data[kCachedMetadataTypeSize], hash->data(),
-             kSha256Bytes);
+      memcpy(outer_header->hash, hash->data(), kSha256Bytes);
     }
-    *reinterpret_cast<uint32_t*>(
-        &serialized_data[kCachedMetadataTypeSize + kSha256Bytes]) = inner_type;
-    *reinterpret_cast<uint32_t*>(
-        &serialized_data[kCachedMetadataTypeSize + kSha256Bytes +
-                         kCacheDataTypeStart]) = data_type_id;
-    memcpy(&serialized_data[kCachedMetadataTypeSize + kSha256Bytes +
-                            kCachedMetaDataStart],
+    CachedMetadataHeader* inner_header =
+        reinterpret_cast<CachedMetadataHeader*>(
+            &serialized_data[sizeof(CachedMetadataHeaderWithHash)]);
+    inner_header->marker = inner_type;
+    inner_header->type = data_type_id;
+    memcpy(&serialized_data[sizeof(CachedMetadataHeaderWithHash) +
+                            sizeof(CachedMetadataHeader)],
            data.data(), data.size());
     return serialized_data;
   }
@@ -179,7 +181,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseFirst) {
 
   // Code cache data was present.
   EXPECT_EQ(resource_->CodeCacheSize(),
-            cache_data.size() + kCachedMetaDataStart);
+            cache_data.size() + sizeof(CachedMetadataHeader));
 }
 
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
@@ -197,7 +199,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullResponseSecond) {
 
   // Code cache data was present.
   EXPECT_EQ(resource_->CodeCacheSize(),
-            cache_data.size() + kCachedMetaDataStart);
+            cache_data.size() + sizeof(CachedMetadataHeader));
 }
 
 TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheFullHttpsScheme) {
@@ -225,7 +227,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheInvalidOuterType) {
   controller_->Respond(
       base::Time(),
       mojo_base::BigBuffer(MakeSerializedCodeCacheData(
-          cache_data, {}, 0, CachedMetadataHandler::kSingleEntry)));
+          cache_data, {}, 0, CachedMetadataHandler::kSingleEntryWithTag)));
 
   // Nothing has changed yet because the content response hasn't arrived yet.
   EXPECT_FALSE(resource_->CodeCacheSize());
@@ -252,7 +254,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckSuccess) {
 
   // Code cache data was present.
   EXPECT_EQ(resource_->CodeCacheSize(),
-            cache_data.size() + kCachedMetaDataStart);
+            cache_data.size() + sizeof(CachedMetadataHeader));
 
   // Make sure the following steps don't try to do anything too fancy.
   resource_->CacheHandler()->DisableSendToPlatformForTesting();
@@ -287,7 +289,7 @@ TEST_F(ResourceLoaderCodeCacheTest, WebUICodeCacheHashCheckFailure) {
 
   // Code cache data was present.
   EXPECT_EQ(resource_->CodeCacheSize(),
-            cache_data.size() + kCachedMetaDataStart);
+            cache_data.size() + sizeof(CachedMetadataHeader));
 
   // Make sure the following steps don't try to do anything too fancy.
   resource_->CacheHandler()->DisableSendToPlatformForTesting();

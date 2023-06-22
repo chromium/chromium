@@ -500,9 +500,10 @@ void Data(perfetto::TracedValue context,
 namespace inspector_compile_script_event {
 
 struct V8ConsumeCacheResult {
-  V8ConsumeCacheResult(int cache_size, bool rejected);
+  V8ConsumeCacheResult(int cache_size, bool rejected, bool full);
   int cache_size;
   bool rejected;
+  bool full;
 };
 
 void Data(perfetto::TracedValue context,

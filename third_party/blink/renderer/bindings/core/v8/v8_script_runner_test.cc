@@ -649,7 +649,7 @@ TEST_F(V8ScriptRunnerTest, discardOffThreadCodeCacheWithBitCorruption) {
 
   // Corrupt the cached data.
   Vector<uint8_t> corrupted_data = cached_data;
-  corrupted_data[10] ^= 0x1;
+  corrupted_data[sizeof(CachedMetadataHeader) + 2] ^= 0x1;
 
   // Hot run - should start an off-thread code cache consumption.
   ScriptResource* resource = CreateResource(UTF8Encoding(), corrupted_data);

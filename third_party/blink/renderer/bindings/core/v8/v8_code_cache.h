@@ -75,6 +75,8 @@ class CORE_EXPORT V8CodeCache final {
                     const KURL& url,
                     bool might_generate_compile_hints = false);
 
+  static bool IsFull(const CachedMetadata* metadata);
+
   static scoped_refptr<CachedMetadata> GetCachedMetadata(
       const CachedMetadataHandler* cache_handler,
       CachedMetadataHandler::GetCachedMetadataBehavior behavior =
