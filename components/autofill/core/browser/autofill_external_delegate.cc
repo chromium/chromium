@@ -202,20 +202,25 @@ void AutofillExternalDelegate::DidSelectSuggestion(
   const Suggestion::BackendId backend_id =
       suggestion.GetPayload<Suggestion::BackendId>();
 
-  // Only preview the data if it is a profile or a virtual card.
-  if (suggestion.popup_item_id == PopupItemId::kAddressEntry ||
-      suggestion.popup_item_id == PopupItemId::kCreditCardEntry) {
-    FillAutofillFormData(suggestion.popup_item_id, backend_id, true,
-                         AutofillTriggerSource::kKeyboardAccessory);
-  } else if (suggestion.popup_item_id == PopupItemId::kAutocompleteEntry ||
-             suggestion.popup_item_id == PopupItemId::kIbanEntry ||
-             suggestion.popup_item_id == PopupItemId::kMerchantPromoCodeEntry) {
-    driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
-                                                 suggestion.main_text.value);
-  } else if (suggestion.popup_item_id == PopupItemId::kVirtualCreditCardEntry) {
-    manager_->FillOrPreviewVirtualCardInformation(
-        mojom::RendererFormDataAction::kPreview, backend_id.value(),
-        query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
+  switch (suggestion.popup_item_id) {
+    case PopupItemId::kAddressEntry:
+    case PopupItemId::kCreditCardEntry:
+      FillAutofillFormData(suggestion.popup_item_id, backend_id, true,
+                           AutofillTriggerSource::kKeyboardAccessory);
+      break;
+    case PopupItemId::kAutocompleteEntry:
+    case PopupItemId::kIbanEntry:
+    case PopupItemId::kMerchantPromoCodeEntry:
+      driver_->RendererShouldPreviewFieldWithValue(query_field_.global_id(),
+                                                   suggestion.main_text.value);
+      break;
+    case PopupItemId::kVirtualCreditCardEntry:
+      manager_->FillOrPreviewVirtualCardInformation(
+          mojom::RendererFormDataAction::kPreview, backend_id.value(),
+          query_form_, query_field_, AutofillTriggerSource::kKeyboardAccessory);
+      break;
+    default:
+      break;
   }
 }
 
