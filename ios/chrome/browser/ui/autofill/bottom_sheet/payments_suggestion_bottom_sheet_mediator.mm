@@ -12,6 +12,7 @@
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_consumer.h"
 #import "ios/chrome/browser/ui/autofill/bottom_sheet/payments_suggestion_bottom_sheet_data.h"
 #import "ios/web/public/web_state_observer_bridge.h"
+#import "ui/base/resource/resource_bundle.h"
 
 #if !defined(__has_feature) || !__has_feature(objc_arc)
 #error "This file requires ARC support."
@@ -100,7 +101,7 @@
     [creditCardData
         addObject:[[PaymentsSuggestionBottomSheetCreditCardInfo alloc]
                       initWithCreditCard:creditCard
-                                    icon:nil]];
+                                    icon:[self iconForCreditCard:creditCard]]];
   }
 
   [consumer setCreditCardData:creditCardData];
@@ -168,6 +169,27 @@
 
 - (void)onWebStateChange {
   // TODO(crbug.com/1450214): Handle changes in web state
+}
+
+// Returns the icon associated with the provided credit card.
+- (UIImage*)iconForCreditCard:(const autofill::CreditCard*)creditCard {
+  // Check if custom card art is available.
+  GURL cardArtURL = _personalDataManager->GetCardArtURL(*creditCard);
+  if (!cardArtURL.is_empty() && cardArtURL.is_valid()) {
+    gfx::Image* image =
+        _personalDataManager->GetCreditCardArtImageForUrl(cardArtURL);
+    if (image) {
+      return image->ToUIImage();
+    }
+  }
+
+  // Otherwise, try to get the default card icon
+  std::string icon = creditCard->CardIconStringForAutofillSuggestion();
+  return icon.empty() ? nil
+                      : ui::ResourceBundle::GetSharedInstance()
+                            .GetNativeImageNamed(
+                                autofill::CreditCard::IconResourceId(icon))
+                            .ToUIImage();
 }
 
 @end
