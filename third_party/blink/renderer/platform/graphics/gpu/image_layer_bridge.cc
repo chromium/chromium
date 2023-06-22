@@ -46,17 +46,19 @@ scoped_refptr<StaticBitmapImage> MakeAccelerated(
     return source;
   }
 
-  auto paint_image = source->PaintImageForCurrentFrame();
-  auto image_info = paint_image.GetSkImageInfo().makeWH(
+  const auto paint_image = source->PaintImageForCurrentFrame();
+  const auto image_info = paint_image.GetSkImageInfo().makeWH(
       source->Size().width(), source->Size().height());
+  constexpr bool kIsOriginTopLeft = true;
   // Always request gpu::SHARED_IMAGE_USAGE_SCANOUT when using gpu compositing,
   // if possible. This is safe because the prerequisite capabilities are checked
   // downstream in CanvasResourceProvider::CreateSharedImageProvider.
+  constexpr uint32_t kSharedImageUsageFlags =
+      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT;
   auto provider = CanvasResourceProvider::CreateSharedImageProvider(
       image_info, cc::PaintFlags::FilterQuality::kLow,
       CanvasResourceProvider::ShouldInitialize::kNo, context_provider_wrapper,
-      RasterMode::kGPU, source->IsOriginTopLeft(),
-      gpu::SHARED_IMAGE_USAGE_DISPLAY_READ | gpu::SHARED_IMAGE_USAGE_SCANOUT);
+      RasterMode::kGPU, kIsOriginTopLeft, kSharedImageUsageFlags);
   if (!provider || !provider->IsAccelerated())
     return nullptr;
 
@@ -172,8 +174,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
     if (!image_for_compositor || !image_for_compositor->ContextProvider())
       return false;
 
-    const gfx::Size size(image_for_compositor->width(),
-                         image_for_compositor->height());
     auto mailbox_holder = image_for_compositor->GetMailboxHolder();
 
     if (mailbox_holder.mailbox.IsZero()) {
@@ -183,6 +183,11 @@ bool ImageLayerBridge::PrepareTransferableResource(
       // detected.
       return false;
     }
+
+    layer_->SetFlipped(!image_for_compositor->IsOriginTopLeft());
+
+    const gfx::Size size(image_for_compositor->width(),
+                         image_for_compositor->height());
 
     auto* sii = image_for_compositor->ContextProvider()->SharedImageInterface();
     bool is_overlay_candidate = sii->UsageForMailbox(mailbox_holder.mailbox) &
@@ -194,17 +199,6 @@ bool ImageLayerBridge::PrepareTransferableResource(
         mailbox_holder.sync_token, size,
         viz::SkColorTypeToSinglePlaneSharedImageFormat(color_type),
         is_overlay_candidate);
-
-    // If the transferred ImageBitmap contained in this ImageLayerBridge was
-    // originated in a WebGPU context, we need to set the layer to be flipped.
-    // Canvas2D and WebGL contexts handle this aspect internally, whereas
-    // WebGPU does not.
-    if (sii->UsageForMailbox(mailbox_holder.mailbox) &
-        gpu::SHARED_IMAGE_USAGE_WEBGPU_SWAP_CHAIN_TEXTURE) {
-      // Using image_for_compositor->IsOriginTopLeft() and remove
-      // implementation of sii->UsageForMailbox()?
-      layer_->SetFlipped(false);
-    }
 
     auto func = WTF::BindOnce(&ImageLayerBridge::ResourceReleasedGpu,
                               WrapWeakPersistent(this),
