@@ -31,7 +31,7 @@ void CustomWindowStateDelegate::ToggleLockedFullscreen(
   // Sets up the shell environment as appropriate for locked Lacros or Ash
   // chrome sessions including disabling ARC.
   ash::Shell::Get()->shell_delegate()->SetUpEnvironmentForLockedFullscreen(
-      window_state->IsPinned());
+      *window_state);
 }
 
 std::unique_ptr<ash::PresentationTimeRecorder>

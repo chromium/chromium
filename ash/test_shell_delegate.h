@@ -17,6 +17,7 @@
 namespace ash {
 
 class UserEducationDelegate;
+class WindowState;
 
 class TestShellDelegate : public ShellDelegate {
  public:
@@ -79,7 +80,8 @@ class TestShellDelegate : public ShellDelegate {
       mojo::PendingReceiver<video_capture::mojom::MultiCaptureService> receiver)
       override;
   bool IsSessionRestoreInProgress() const override;
-  void SetUpEnvironmentForLockedFullscreen(bool locked) override {}
+  void SetUpEnvironmentForLockedFullscreen(
+      const WindowState& window_state) override {}
   const GURL& GetLastCommittedURLForWindowIfAny(aura::Window* window) override;
   void ForceSkipWarningUserOnClose(
       const std::vector<aura::Window*>& windows) override {}
