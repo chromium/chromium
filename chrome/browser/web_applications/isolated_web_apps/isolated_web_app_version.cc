@@ -47,7 +47,7 @@ ParseIwaVersionIntoComponents(base::StringPiece version_string) {
     }
 
     unsigned int number;
-    if (!StringToUint(component_string, &number)) {
+    if (!base::StringToUint(component_string, &number)) {
       return base::unexpected(IwaVersionParseError::kCannotConvertToNumber);
     }
     // StringToUint returns unsigned int but Version fields are uint32_t.

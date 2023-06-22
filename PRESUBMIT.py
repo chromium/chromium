@@ -950,55 +950,6 @@ _BANNED_CPP_FUNCTIONS : Sequence[BanRule] = (
       [_THIRD_PARTY_EXCEPT_BLINK],  # Not an error in third_party folders.
     ),
     BanRule(
-      r'/\babsl::string_view\b',
-      (
-        'absl::string_view is a legacy spelling of std::string_view, which is ',
-        'not allowed yet (https://crbug.com/691162). Use base::StringPiece ',
-        'instead, unless std::string_view is needed to use with an external ',
-        'API.',
-      ),
-      True,
-      [
-        # Needed to use QUICHE API.
-        r'chrome/browser/ip_protection/.*',
-        _THIRD_PARTY_EXCEPT_BLINK
-      ],  # Don't warn in third_party folders.
-    ),
-    BanRule(
-      r'/\bstd::(u16)?string_view\b',
-      (
-        'std::[u16]string_view is not yet allowed (crbug.com/691162). Use ',
-        'base::StringPiece[16] instead, unless std::[u16]string_view is ',
-        'needed to use an external API.',
-      ),
-      True,
-      [
-        # Needed to implement and test std::string_view interoperability.
-        r'base/strings/string_piece.*',
-        # Needed to use re2::RE2 regular expression library.
-        r'third_party/blink/common/interest_group/ad_display_size_utils.cc',
-        # Needed to use liburlpattern API.
-        r'third_party/blink/renderer/core/url_pattern/.*',
-        r'third_party/blink/renderer/modules/manifest/manifest_parser\.cc',
-        # Needed to use QUICHE API.
-        r'net/quic/.*',
-        r'net/spdy/.*',
-        r'net/test/embedded_test_server/.*',
-        r'net/third_party/quiche/.*',
-        r'services/network/web_transport\.cc',
-        # This code is in the process of being extracted into an external
-        # library, where //base will be unavailable.
-        r'net/cert/pki/.*',
-        r'net/der/.*',
-        # Needed to use APIs from the above.
-        r'net/cert/.*',
-        # Needed by Caspian, which compiles to WASM.
-        r'tools/binary_size/libsupersize/viewer/caspian/.*',
-        # Not an error in third_party folders.
-        _THIRD_PARTY_EXCEPT_BLINK
-      ],
-    ),
-    BanRule(
       r'/\babsl::(StrSplit|StrJoin|StrCat|StrAppend|Substitute|StrContains)\b',
       (
         'Abseil string utilities are banned. Use base/strings instead.',

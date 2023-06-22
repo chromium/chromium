@@ -22,6 +22,7 @@
 #include "base/pending_task.h"
 #include "base/process/process_handle.h"
 #include "base/strings/string_piece.h"
+#include "base/strings/utf_string_conversions.h"
 #include "base/task/common/task_annotator.h"
 #include "base/trace_event/base_tracing.h"
 #include "build/build_config.h"
@@ -1272,19 +1273,3 @@ ScopedVmoduleSwitches::~ScopedVmoduleSwitches() = default;
 #endif  // BUILDFLAG(USE_RUNTIME_VLOG)
 
 }  // namespace logging
-
-std::ostream& std::operator<<(std::ostream& out, const wchar_t* wstr) {
-  return out << (wstr ? base::WStringPiece(wstr) : base::WStringPiece());
-}
-
-std::ostream& std::operator<<(std::ostream& out, const std::wstring& wstr) {
-  return out << base::WStringPiece(wstr);
-}
-
-std::ostream& std::operator<<(std::ostream& out, const char16_t* str16) {
-  return out << (str16 ? base::StringPiece16(str16) : base::StringPiece16());
-}
-
-std::ostream& std::operator<<(std::ostream& out, const std::u16string& str16) {
-  return out << base::StringPiece16(str16);
-}

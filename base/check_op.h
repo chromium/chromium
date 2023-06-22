@@ -7,6 +7,7 @@
 
 #include <cstddef>
 #include <string>
+#include <string_view>
 #include <type_traits>
 
 #include "base/base_export.h"
@@ -37,8 +38,10 @@
 
 namespace logging {
 
-// Functions for turning check operand values into strings.
-// Caller takes ownership of the returned string.
+// Functions for turning check operand values into NUL-terminated C strings.
+// Caller takes ownership of the result and must release it with `free`.
+// This would normally be defined by <ostream>, but this header tries to avoid
+// including <ostream> to reduce compile-time. See https://crrev.com/c/2128112.
 BASE_EXPORT char* CheckOpValueStr(int v);
 BASE_EXPORT char* CheckOpValueStr(unsigned v);
 BASE_EXPORT char* CheckOpValueStr(long v);
@@ -48,7 +51,12 @@ BASE_EXPORT char* CheckOpValueStr(unsigned long long v);
 BASE_EXPORT char* CheckOpValueStr(const void* v);
 BASE_EXPORT char* CheckOpValueStr(std::nullptr_t v);
 BASE_EXPORT char* CheckOpValueStr(double v);
+// Although the standard defines operator<< for std::string and std::string_view
+// in their respective headers, libc++ requires <ostream> for them. See
+// https://github.com/llvm/llvm-project/issues/61070. So we define non-<ostream>
+// versions here too.
 BASE_EXPORT char* CheckOpValueStr(const std::string& v);
+BASE_EXPORT char* CheckOpValueStr(std::string_view v);
 
 // Convert a streamable value to string out-of-line to avoid <sstream>.
 BASE_EXPORT char* StreamValToStr(const void* v,
