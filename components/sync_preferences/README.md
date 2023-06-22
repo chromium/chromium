@@ -12,19 +12,34 @@ This folder contains the code for synchronizing preferences. See
 
 ## Adding syncable preferences
 
+### For authors
+
 Making a pref syncable requires a few things:
 * Specify appropriate [PrefRegistrationFlags] to the `Register*Pref` call.
+  * Consider whether your pref should be synced as a browser pref (common case)
+    or as an OS pref (for use on ChromeOS-Ash). Note that it must be one or the
+    other.
+  * Consider whether it needs to be a "priority" pref. The answer is most likely
+    "no"; typically only prefs that need to be consumed on the server should be
+    marked "priority". Be aware that choosing "priority" has privacy
+    implications, so you'll get extra scrutiny.
 * Add an entry to the appropriate [SyncablePrefsDatabase]:
   `ChromeSyncablePrefsDatabase` if the pref is in `chrome/`,
   `IOSChromeSyncablePrefsDatabase` if it's in `ios/chrome/`, or
   `CommonSyncablePrefsDatabase` if it's cross-platform.
+  * Specify the matching pref type (browser or OS, priority or not).
+  * Consider whether your pref is particularly privacy-sensitive, and if so,
+    point this out to the reviewer. The most common case of this is when a pref
+    records URLs or other history-like data.
+
+### For reviewers
 
 **Important**: Adding syncable prefs may have privacy impact. It's the
   **responsibility of the code reviewer** to ensure that new syncable prefs
   don't have undue privacy impact. In particular:
 * If the pref contains URLs (example: site permissions), it **must** be marked
   as `is_history_opt_in_required = true`, and it will only be synced if the
-  user has opted in to history sync.
+  user has opted in to history sync (in addition to preferences sync).
 * If the pref is marked as "priority" (`syncer::PRIORITY_PREFERENCES` or
   `syncer::OS_PRIORITY_PREFERENCES`), then it will not be encrypted. Carefully
   consider if it actually needs to be "priority". (The most common reason for
