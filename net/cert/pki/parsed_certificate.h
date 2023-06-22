@@ -9,6 +9,7 @@
 #include <memory>
 #include <vector>
 
+#include "base/check.h"
 #include "net/base/net_export.h"
 #include "net/cert/pki/certificate_policies.h"
 #include "net/cert/pki/parse_certificate.h"
