@@ -6626,3 +6626,6 @@ crbug.com/1456779 [ Win11-arm64 ] http/tests/css/css-resources-referrer-srcdoc.h
 crbug.com/1456779 [ Win11-arm64 ] http/tests/css/css-resources-referrer.html [ Failure ]  # Reftest failure
 crbug.com/1456779 [ Win11-arm64 ] http/tests/images/image-with-dpr-header.html [ Failure ]  # Reftest failure
 crbug.com/1456779 [ Win11-arm64 ] http/tests/svg/svgimage-revalidation.html [ Failure ]  # Reftest failure
+
+# Sheriff 2023-06-21
+crbug.com/1456821 [ Linux ] fast/forms/accent-color/range-accent-color-hover-dark-appearance.html [ Failure Pass ]
