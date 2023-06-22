@@ -173,15 +173,6 @@ bool IsAppInstalled(std::string app_id) {
 }
 
 void OpenInBrowser(const GURL& event_url) {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    auto* browser_manager = crosapi::BrowserManager::Get();
-    browser_manager->SwitchToTab(
-        event_url,
-        /*path_behavior=*/NavigateParams::IGNORE_AND_NAVIGATE);
-    return;
-  }
-
-  // Lacros is not the primary browser, so use this workaround.
   ShowSingletonTabOverwritingNTP(ProfileManager::GetActiveUserProfile(),
                                  event_url,
                                  NavigateParams::IGNORE_AND_NAVIGATE);
@@ -547,13 +538,6 @@ void SystemTrayClientImpl::ShowGestureEducationHelp() {
 }
 
 void SystemTrayClientImpl::ShowPaletteHelp() {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromePaletteHelpURL),
-        /*path_behavior=*/NavigateParams::RESPECT);
-    return;
-  }
-
   ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
                    GURL(chrome::kChromePaletteHelpURL));
 }

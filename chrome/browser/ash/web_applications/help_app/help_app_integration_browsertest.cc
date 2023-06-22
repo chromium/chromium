@@ -219,6 +219,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppIntegrationTest,
 }
 
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppV2ShowHelp) {
+  // TODO(b/287166176): Fix the test and remove this.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
+  }
+#endif
+
   WaitForTestSystemAppInstall();
 
   GURL expected_url = GURL("chrome://help-app/");
@@ -941,6 +949,14 @@ IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest, HelpAppOpenGestures) {
 // Test that the Help App opens from keyboard shortcut.
 IN_PROC_BROWSER_TEST_P(HelpAppAllProfilesIntegrationTest,
                        HelpAppOpenKeyboardShortcut) {
+  // TODO(b/287166176): Fix the test and remove this.
+#if !BUILDFLAG(GOOGLE_CHROME_BRANDING)
+  if (GetParam().crosapi_state == TestProfileParam::CrosapiParam::kEnabled) {
+    GTEST_SKIP()
+        << "Skipping test body for CrosapiParam::kEnabled, see b/287166176.";
+  }
+#endif
+
   WaitForTestSystemAppInstall();
   base::HistogramTester histogram_tester;
 

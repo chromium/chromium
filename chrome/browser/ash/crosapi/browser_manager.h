@@ -201,7 +201,8 @@ class BrowserManager : public session_manager::SessionManagerObserver,
   void OpenUrl(
       const GURL& url,
       crosapi::mojom::OpenUrlFrom from,
-      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition);
+      crosapi::mojom::OpenUrlParams::WindowOpenDisposition disposition,
+      NavigateParams::PathBehavior path_behavior = NavigateParams::RESPECT);
 
   // If there's already a tab opening the URL in lacros-chrome, in some window
   // of the primary profile, activate the tab. Otherwise, opens a tab for

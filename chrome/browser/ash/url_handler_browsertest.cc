@@ -67,7 +67,7 @@ IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 
   // Failure: non-allowlisted non-SWA chrome page.
-  EXPECT_FALSE(ash::TryOpenUrl(GURL(chrome::kChromeUISettingsURL),
+  EXPECT_FALSE(ash::TryOpenUrl(GURL(chrome::kChromeUIDownloadsURL),
                                WindowOpenDisposition::NEW_FOREGROUND_TAB));
   base::RunLoop().RunUntilIdle();
   EXPECT_EQ(1u, BrowserList::GetInstance()->size());
@@ -90,6 +90,20 @@ IN_PROC_BROWSER_TEST_F(UrlHandlerTest, Basic) {
   EXPECT_EQ(2u, BrowserList::GetInstance()->size());
   EXPECT_EQ(1u,
             GetSystemWebAppBrowserCount(ash::SystemWebAppType::OS_URL_HANDLER));
+}
+
+IN_PROC_BROWSER_TEST_F(UrlHandlerTest, ChromeSchemeSemanticsLacros) {
+  ASSERT_FALSE(crosapi::browser_util::IsAshWebBrowserEnabled());
+  ASSERT_EQ(1u, BrowserList::GetInstance()->size());
+
+  // Success: ChromeSchemeSemantics::kLacros and chrome:// URL
+  const GURL url(chrome::kChromeUIDownloadsURL);
+  EXPECT_TRUE(ash::TryOpenUrl(url, WindowOpenDisposition::NEW_FOREGROUND_TAB,
+                              NavigateParams::RESPECT,
+                              ash::ChromeSchemeSemantics::kLacros));
+  base::RunLoop().RunUntilIdle();
+  // Routed to Lacros, hence no new Ash window.
+  EXPECT_EQ(1u, BrowserList::GetInstance()->size());
 }
 
 IN_PROC_BROWSER_TEST_F(UrlHandlerTest, ManagementURL) {

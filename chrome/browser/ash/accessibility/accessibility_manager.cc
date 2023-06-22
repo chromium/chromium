@@ -382,13 +382,6 @@ AccessibilityManager* AccessibilityManager::Get() {
 
 // static
 void AccessibilityManager::ShowAccessibilityHelp() {
-  if (crosapi::browser_util::IsLacrosPrimaryBrowser()) {
-    crosapi::BrowserManager::Get()->SwitchToTab(
-        GURL(chrome::kChromeAccessibilityHelpURL),
-        /*path_behavior=*/NavigateParams::RESPECT);
-    return;
-  }
-
   ShowSingletonTab(ProfileManager::GetActiveUserProfile(),
                    GURL(chrome::kChromeAccessibilityHelpURL));
 }

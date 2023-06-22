@@ -43,6 +43,7 @@ E2ETestBase = class extends AccessibilityTestBase {
   #include "base/containers/flat_set.h"
   #include "chrome/browser/ash/accessibility/accessibility_manager.h"
   #include "chrome/browser/ash/crosapi/browser_manager.h"
+  #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
   #include "chrome/browser/speech/extension_api/tts_engine_extension_api.h"
   #include "chrome/browser/ui/browser.h"
   #include "chrome/common/extensions/extension_constants.h"
@@ -61,6 +62,10 @@ E2ETestBase = class extends AccessibilityTestBase {
       crosapi::BrowserManager::Get()->NewTab();
       ASSERT_TRUE(crosapi::BrowserManager::Get()->IsRunning());
     }
+    // For ChromeVoxBackgroundTest.NewWindowWebSpeech:
+    // chrome.runtime.openOptionsPage opens a SWA when Lacros is enabled.
+    ash::SystemWebAppManager::GetForTest(browser()->profile())
+      ->InstallSystemAppsForTesting();
       `);
   }
 
