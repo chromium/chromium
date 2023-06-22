@@ -31,6 +31,9 @@
 
 #if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 #include "components/signin/internal/identity_manager/token_binding_helper.h"
+#include "components/signin/public/base/device_id_helper.h"
+#include "components/version_info/version_info.h"
+#include "google_apis/gaia/oauth2_mint_access_token_fetcher_adapter.h"
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
 
 namespace {
@@ -251,6 +254,18 @@ MutableProfileOAuth2TokenServiceDelegate::CreateAccessTokenFetcher(
   }
   std::string refresh_token = GetRefreshToken(account_id);
   DCHECK(!refresh_token.empty());
+#if BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
+  if (token_binding_helper_ &&
+      token_binding_helper_->HasBindingKey(account_id)) {
+    // `GaiaAccessTokenFetcher` doesn't support bound refresh tokens.
+    // TODO(b/263253243): Obtain a real `client_channel` from the embedder.
+    return std::make_unique<OAuth2MintAccessTokenFetcherAdapter>(
+        consumer, url_loader_factory, refresh_token,
+        signin::GetSigninScopedDeviceId(client_->GetPrefs()),
+        std::string(version_info::GetVersionNumber()),
+        /*client_channel=*/"unknown");
+  }
+#endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
   return GaiaAccessTokenFetcher::
       CreateExchangeRefreshTokenForAccessTokenInstance(
           consumer, url_loader_factory, refresh_token);

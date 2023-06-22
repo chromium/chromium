@@ -114,6 +114,8 @@ class COMPONENT_EXPORT(GOOGLE_APIS) OAuth2MintTokenFlow
 
   class COMPONENT_EXPORT(GOOGLE_APIS) Delegate {
    public:
+    // TODO(alexilin): change `time_to_live` parameter to be `base::TimeDelta`
+    // type.
     virtual void OnMintTokenSuccess(const std::string& access_token,
                                     const std::set<std::string>& granted_scopes,
                                     int time_to_live) {}

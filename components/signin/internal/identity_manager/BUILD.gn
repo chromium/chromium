@@ -67,6 +67,7 @@ source_set("identity_manager") {
     "//components/prefs",
     "//components/signin/public/webdata",
     "//components/supervised_user/core/common:features",
+    "//components/version_info",
     "//services/network/public/cpp",
     "//ui/gfx",
   ]

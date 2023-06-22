@@ -13,6 +13,7 @@ include_rules = [
   "-components/signin",
   "+components/user_manager",
   "+components/webdata/common",
+  "+components/version_info",
   "+crypto",
   "+google_apis/gaia",
   "+grit",  # For generated headers

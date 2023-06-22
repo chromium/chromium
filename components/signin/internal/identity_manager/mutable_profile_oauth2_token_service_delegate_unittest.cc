@@ -103,10 +103,17 @@ class MutableProfileOAuth2TokenServiceDelegateTest
     token_web_data_->Init(base::NullCallback());
   }
 
-  void AddSuccessfulOAuhTokenResponse() {
+  void AddSuccessfulOAuthTokenResponse() {
     client_->GetTestURLLoaderFactory()->AddResponse(
         GaiaUrls::GetInstance()->oauth2_token_url().spec(),
         GetValidTokenResponse("token", 3600));
+  }
+
+  void AddSuccessfulBoundTokenResponse() {
+    client_->GetTestURLLoaderFactory()->AddResponse(
+        GaiaUrls::GetInstance()->oauth2_issue_token_url().spec(),
+        GetValidBoundTokenResponse("access_token", base::Seconds(3600),
+                                   {"scope"}));
   }
 
   std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate>
@@ -829,7 +836,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchPersistentError) {
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called.
-  AddSuccessfulOAuhTokenResponse();
+  AddSuccessfulOAuthTokenResponse();
 
   EXPECT_EQ(0, access_token_success_count_);
   EXPECT_EQ(0, access_token_failure_count_);
@@ -858,7 +865,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RetryBackoff) {
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called just yet.
-  AddSuccessfulOAuhTokenResponse();
+  AddSuccessfulOAuthTokenResponse();
 
   // Transient error will repeat until backoff period expires.
   EXPECT_EQ(0, access_token_success_count_);
@@ -901,7 +908,7 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, ResetBackoff) {
             oauth2_service_delegate_->GetAuthError(account_id));
 
   // Create a "success" fetch we don't expect to get called just yet.
-  AddSuccessfulOAuhTokenResponse();
+  AddSuccessfulOAuthTokenResponse();
 
   // Transient error will repeat until backoff period expires.
   EXPECT_EQ(0, access_token_success_count_);
@@ -1504,5 +1511,32 @@ TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, RevokeBoundToken) {
   EXPECT_EQ(delegate->GetWrappedBindingKey(account_id2),
             kFakeWrappedBindingKey2);
   delegate->Shutdown();
+}
+
+TEST_F(MutableProfileOAuth2TokenServiceDelegateTest, FetchWithBoundToken) {
+  ProfileOAuth2TokenService::RegisterProfilePrefs(pref_service_.registry());
+  unexportable_keys::FakeUnexportableKeyService fake_unexportable_key_service;
+  auto token_binding_helper =
+      std::make_unique<TokenBindingHelper>(fake_unexportable_key_service);
+  std::unique_ptr<MutableProfileOAuth2TokenServiceDelegate> delegate =
+      CreateOAuth2ServiceDelegate(signin::AccountConsistencyMethod::kDisabled,
+                                  std::move(token_binding_helper));
+  const CoreAccountId account_id = CoreAccountId::FromGaiaId("account_id");
+  const std::vector<uint8_t> kFakeWrappedBindingKey = {1, 2, 3};
+
+  delegate->UpdateCredentials(account_id, "refresh_token",
+                              kFakeWrappedBindingKey);
+
+  AddSuccessfulBoundTokenResponse();
+
+  EXPECT_EQ(0, access_token_success_count_);
+  EXPECT_EQ(0, access_token_failure_count_);
+  std::unique_ptr<OAuth2AccessTokenFetcher> fetcher =
+      delegate->CreateAccessTokenFetcher(account_id,
+                                         delegate->GetURLLoaderFactory(), this);
+  fetcher->Start("foo", "bar", {"scope"});
+  base::RunLoop().RunUntilIdle();
+  EXPECT_EQ(1, access_token_success_count_);
+  EXPECT_EQ(0, access_token_failure_count_);
 }
 #endif  // BUILDFLAG(ENABLE_BOUND_SESSION_CREDENTIALS)
