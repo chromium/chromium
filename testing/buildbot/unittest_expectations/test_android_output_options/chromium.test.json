@@ -76,12 +76,6 @@
   "Fake Android M Tester": {
     "gtest_tests": [
       {
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "foo_test"
       }
     ]

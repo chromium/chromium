@@ -9,7 +9,6 @@
         "cros_img": "octopus-release/R89-13655.0.0",
         "name": "tast.basic OCTOPUS_TOT",
         "suite": "tast.basic",
-        "swarming": {},
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT"
@@ -20,7 +19,6 @@
         "cros_img": "octopus-release/R88-13597.23.0",
         "name": "tast.basic OCTOPUS_TOT-1",
         "suite": "tast.basic",
-        "swarming": {},
         "test": "tast.basic",
         "timeout": 3600,
         "variant_id": "OCTOPUS_TOT-1"

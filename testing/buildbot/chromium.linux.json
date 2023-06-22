@@ -259,12 +259,6 @@
           "--no-sandbox",
           "--test-launcher-jobs=1"
         ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "cast_shell_browsertests",
         "test_id_prefix": "ninja://chromecast:cast_shell_browsertests/"
       },
@@ -1144,12 +1138,6 @@
           "--no-sandbox",
           "--test-launcher-jobs=1"
         ],
-        "merge": {
-          "script": "//testing/merge_scripts/standard_gtest_merge.py"
-        },
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "cast_shell_browsertests",
         "test_id_prefix": "ninja://chromecast:cast_shell_browsertests/"
       },
@@ -1815,44 +1803,37 @@
       {
         "isolate_profile_data": true,
         "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
+        "script": "check_network_annotations.py"
       },
       {
         "isolate_profile_data": true,
         "name": "check_static_initializers",
-        "script": "check_static_initializers.py",
-        "swarming": {}
+        "script": "check_static_initializers.py"
       },
       {
         "isolate_profile_data": true,
         "name": "checkdeps",
-        "script": "checkdeps.py",
-        "swarming": {}
+        "script": "checkdeps.py"
       },
       {
         "isolate_profile_data": true,
         "name": "checkperms",
-        "script": "checkperms.py",
-        "swarming": {}
+        "script": "checkperms.py"
       },
       {
         "isolate_profile_data": true,
         "name": "headless_python_unittests",
-        "script": "headless_python_unittests.py",
-        "swarming": {}
+        "script": "headless_python_unittests.py"
       },
       {
         "isolate_profile_data": true,
         "name": "metrics_python_tests",
-        "script": "metrics_python_tests.py",
-        "swarming": {}
+        "script": "metrics_python_tests.py"
       },
       {
         "isolate_profile_data": true,
         "name": "webkit_lint",
-        "script": "blink_lint_expectations.py",
-        "swarming": {}
+        "script": "blink_lint_expectations.py"
       }
     ]
   },
