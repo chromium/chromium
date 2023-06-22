@@ -1585,6 +1585,26 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
+<histogram name="Accessibility.LiveTranslate.SourceLanguage"
+    enum="LocaleCodeISO639" expires_after="2024-02-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the source language of a request to the Cloud Translate service.
+    Recorded once per call to the Cloud Translate service.
+  </summary>
+</histogram>
+
+<histogram name="Accessibility.LiveTranslate.TargetLanguage"
+    enum="LocaleCodeISO639" expires_after="2024-02-01">
+  <owner>evliu@google.com</owner>
+  <owner>chrome-a11y-core@google.com</owner>
+  <summary>
+    Records the target language of a request to the Cloud Translate service.
+    Recorded once per call to the Cloud Translate service.
+  </summary>
+</histogram>
+
 <histogram name="Accessibility.Mac.ScreenReader{AccessibilityEveryReport}"
     enum="BooleanEnabled" expires_after="never">
 <!-- expires-never: usage drives a11y prioritization in browser and content. -->
