@@ -42,7 +42,8 @@ bool IsImage(const base::FilePath& path) {
   // Note: The UI design stipulates jpg, png, gif, and svg, but we use
   // the subset that ICA can handle.
   return extension == ".jpeg" || extension == ".jpg" || extension == ".png" ||
-         extension == ".JPEG" || extension == ".JPG" || extension == ".PNG";
+         extension == ".webp" || extension == ".JPEG" || extension == ".JPG" ||
+         extension == ".PNG" || extension == ".WEBP";
 }
 
 // Returns deleted files. Needs to be done in background.
@@ -156,7 +157,7 @@ void ImageAnnotationWorker::OnDlcInstalled() {
                 root_path,
                 /*recursive=*/true, base::FileEnumerator::FILES,
                 // There is an image extension test down the pipe.
-                "*.[j,p,J,P][p,n,P,N]*[g,G]",
+                "*.[j,p,J,P,w,W][p,n,P,N,e,E]*[g,G,p,P]",
                 base::FileEnumerator::FolderSearchPolicy::ALL);
           },
           root_path_),

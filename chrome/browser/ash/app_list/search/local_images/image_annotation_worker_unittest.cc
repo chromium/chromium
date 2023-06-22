@@ -56,10 +56,12 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   auto jng_path = test_directory_.AppendASCII("bar3.jng");
   auto tjng_path = test_directory_.AppendASCII("bar4.tjng");
   auto JPG_path = test_directory_.AppendASCII("bar5.JPG");
+  auto webp_path = test_directory_.AppendASCII("bar6.webp");
+  auto WEBP_path = test_directory_.AppendASCII("bar7.WEBP");
 
   auto image_time = base::Time::Now();
-  for (const auto& path :
-       {jpg_path, jpeg_path, png_path, jng_path, tjng_path, JPG_path}) {
+  for (const auto& path : {jpg_path, jpeg_path, png_path, jng_path, tjng_path,
+                           JPG_path, webp_path, WEBP_path}) {
     base::WriteFile(path, "test");
     base::TouchFile(path, image_time, image_time);
   }
@@ -72,10 +74,13 @@ TEST_F(ImageAnnotationWorkerTest, MustProcessTheFolderAtInitTest) {
   ImageInfo jpeg_image({"bar1"}, jpeg_path, image_time, /*is_ignored=*/false);
   ImageInfo png_image({"bar2"}, png_path, image_time, /*is_ignored=*/false);
   ImageInfo JPG_image({"bar5"}, JPG_path, image_time, /*is_ignored=*/false);
+  ImageInfo webp_image({"bar6"}, webp_path, image_time, /*is_ignored=*/false);
+  ImageInfo WEBP_image({"bar7"}, WEBP_path, image_time, /*is_ignored=*/false);
 
   auto annotations = storage_->GetAllAnnotations();
   EXPECT_THAT(annotations, testing::UnorderedElementsAreArray(
-                               {jpg_image, jpeg_image, png_image, JPG_image}));
+                               {jpg_image, jpeg_image, png_image, JPG_image,
+                                webp_image, WEBP_image}));
 
   task_environment_.RunUntilIdle();
 }
