@@ -293,7 +293,7 @@ public class ShareHelper {
         intent.putExtra(EXTRA_TASK_ID, params.getWindow().getActivity().get().getTaskId());
 
         Uri imageUri = params.getImageUriToShare();
-        if (imageUri != null) {
+        if (imageUri != null && !isMultipleFileShare) {
             intent.putExtra(Intent.EXTRA_STREAM, imageUri);
             intent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
 
