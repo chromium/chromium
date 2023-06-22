@@ -89,8 +89,8 @@ blink::WebKeyboardEvent MakeWebKeyboardEventFromUiEvent(const KeyEvent& event) {
       KeycodeConverter::DomCodeToNativeKeycode(event.code());
   webkit_event.dom_code = static_cast<int>(event.code());
   webkit_event.dom_key = static_cast<int>(event.GetDomKey());
-  webkit_event.unmodified_text[0] = event.GetCharacter();
-  webkit_event.text[0] = event.GetCharacter();
+  webkit_event.unmodified_text[0] = event.GetUnmodifiedText();
+  webkit_event.text[0] = event.GetText();
 
   return webkit_event;
 }

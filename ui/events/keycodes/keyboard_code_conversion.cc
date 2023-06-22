@@ -68,6 +68,83 @@ bool DomCodeToUsLayoutDomKey(DomCode dom_code,
   return DomCodeToNonPrintableDomKey(dom_code, out_dom_key, out_key_code);
 }
 
+bool DomCodeToControlCharacter(DomCode dom_code,
+                               int flags,
+                               DomKey* dom_key,
+                               KeyboardCode* key_code) {
+  if ((flags & EF_CONTROL_DOWN) == 0)
+    return false;
+
+  int code = static_cast<int>(dom_code);
+  const int kKeyA = static_cast<int>(DomCode::US_A);
+  // Control-A - Control-Z map to 0x01 - 0x1A.
+  if (code >= kKeyA && code <= static_cast<int>(DomCode::US_Z)) {
+    *dom_key = DomKey::FromCharacter(code - kKeyA + 1);
+    *key_code = static_cast<KeyboardCode>(code - kKeyA + VKEY_A);
+    switch (dom_code) {
+      case DomCode::US_H:
+        *key_code = VKEY_BACK;
+        break;
+      case DomCode::US_I:
+        *key_code = VKEY_TAB;
+        break;
+      case DomCode::US_M:
+        *key_code = VKEY_RETURN;
+        break;
+      default:
+        break;
+    }
+    return true;
+  }
+
+  if (flags & EF_SHIFT_DOWN) {
+    switch (dom_code) {
+      case DomCode::DIGIT2:
+        // NUL
+        *dom_key = DomKey::FromCharacter(0);
+        *key_code = VKEY_2;
+        return true;
+      case DomCode::DIGIT6:
+        // RS
+        *dom_key = DomKey::FromCharacter(0x1E);
+        *key_code = VKEY_6;
+        return true;
+      case DomCode::MINUS:
+        // US
+        *dom_key = DomKey::FromCharacter(0x1F);
+        *key_code = VKEY_OEM_MINUS;
+        return true;
+      default:
+        return false;
+    }
+  }
+
+  switch (dom_code) {
+    case DomCode::ENTER:
+      // NL
+      *dom_key = DomKey::FromCharacter(0x0A);
+      *key_code = VKEY_RETURN;
+      return true;
+    case DomCode::BRACKET_LEFT:
+      // ESC
+      *dom_key = DomKey::FromCharacter(0x1B);
+      *key_code = VKEY_OEM_4;
+      return true;
+    case DomCode::BACKSLASH:
+      // FS
+      *dom_key = DomKey::FromCharacter(0x1C);
+      *key_code = VKEY_OEM_5;
+      return true;
+    case DomCode::BRACKET_RIGHT:
+      // GS
+      *dom_key = DomKey::FromCharacter(0x1D);
+      *key_code = VKEY_OEM_6;
+      return true;
+    default:
+      return false;
+  }
+}
+
 // Returns a Windows-based VKEY for a non-printable DOM Level 3 |key|.
 // The returned VKEY is non-positional (e.g. VKEY_SHIFT).
 KeyboardCode NonPrintableDomKeyToKeyboardCode(DomKey dom_key) {
