@@ -104,12 +104,17 @@ std::vector<const re2::RE2*>
 StreetAddressNode::GetParseRegularExpressionsByRelevance() const {
   auto* pattern_provider = StructuredAddressesRegExProvider::Instance();
   DCHECK(pattern_provider);
-  return {pattern_provider->GetRegEx(RegEx::kParseHouseNumberStreetName),
-          pattern_provider->GetRegEx(RegEx::kParseStreetNameHouseNumber),
+  const std::string country_code =
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+  return {pattern_provider->GetRegEx(RegEx::kParseHouseNumberStreetName,
+                                     country_code),
+          pattern_provider->GetRegEx(RegEx::kParseStreetNameHouseNumber,
+                                     country_code),
           pattern_provider->GetRegEx(
-              RegEx::kParseStreetNameHouseNumberSuffixedFloor),
+              RegEx::kParseStreetNameHouseNumberSuffixedFloor, country_code),
           pattern_provider->GetRegEx(
-              RegEx::kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe)};
+              RegEx::kParseStreetNameHouseNumberSuffixedFloorAndAppartmentRe,
+              country_code)};
 }
 
 void StreetAddressNode::ParseValueAndAssignSubcomponentsByFallbackMethod() {
