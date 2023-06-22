@@ -3771,6 +3771,10 @@ crbug.com/793771 [ Mac ] media/controls/scrubbing.html [ Crash Failure Pass Time
 # Different paths may have different anti-aliasing pixels 2018-02-21
 skbug.com/7641 external/wpt/css/css-paint-api/paint2d-paths.https.html [ Failure Pass ]
 
+# Temporary suppression for Skia roll.
+skbug.com/14076 paint/invalidation/svg/animated-path-inside-transformed-html.xhtml [ Failure Pass ]
+skbug.com/14076 fast/borders/border-image-rotate-transform.html [ Failure Pass ]
+
 # Sheriff failures 2018-01-25
 # Flaking on Linux Tests, WebKit Linux Trusty (also ASAN, Leak)
 crbug.com/805794 [ Linux ] virtual/android/url-bar/bottom-fixed-adjusted-when-showing-url-bar.html [ Failure Pass ]
