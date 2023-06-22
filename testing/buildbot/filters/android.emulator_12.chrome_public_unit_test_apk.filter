@@ -1,2 +1,7 @@
 # crbug.com/1297678
 -org.chromium.ui.base.ClipboardAndroidTest.*
+
+# crbug.com/1457215
+-org.chromium.chrome.browser.back_press.BackPressManagerTest.testFailedHandlers
+-org.chromium.chrome.browser.back_press.BackPressManagerTest.testFallbackCallback
+-org.chromium.chrome.browser.back_press.BackPressManagerTest.testMultipleHandlers
