@@ -1595,6 +1595,8 @@ source_set("unit_test_support") {
     "//third_party/blink/renderer/core:testing",
     "//third_party/blink/renderer/platform:test_support",
   ]
+
+  data = [ "//third_party/blink/renderer/platform/testing/data/third_party/Noto/NotoNaskhArabic-regular.woff2" ]
 }
 
 # Fuzzer for blink::StyleSheetContents
