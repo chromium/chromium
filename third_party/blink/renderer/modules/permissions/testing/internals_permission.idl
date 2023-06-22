@@ -5,5 +5,5 @@
 [
     ImplementedAs=InternalsPermission
 ] partial interface Internals {
-    [CallWith=ScriptState, RaisesException] Promise<void> setPermission(object descriptor, PermissionState state, optional USVString? origin = null, optional USVString? embedding_origin = null);
+    [CallWith=ScriptState, RaisesException] Promise<void> setPermission(object descriptor, PermissionState state);
 };
