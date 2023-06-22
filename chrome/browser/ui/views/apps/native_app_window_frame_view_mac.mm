@@ -12,6 +12,10 @@
 #import "ui/gfx/mac/coordinate_conversion.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 NativeAppWindowFrameViewMac::NativeAppWindowFrameViewMac(
     views::Widget* frame,
     extensions::NativeAppWindow* window)

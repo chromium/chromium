@@ -33,6 +33,10 @@
 #include "content/public/browser/web_contents.h"
 #include "ui/base/l10n/l10n_util.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class SkBitmap;
 
 // KeystonePromotionInfoBarDelegate -------------------------------------------
@@ -51,10 +55,7 @@ void KeystonePromotionInfoBarDelegate::Create(
 
 KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(
     PrefService* prefs)
-    : ConfirmInfoBarDelegate(),
-      prefs_(prefs),
-      can_expire_(false),
-      weak_ptr_factory_(this) {
+    : prefs_(prefs), can_expire_(false), weak_ptr_factory_(this) {
   const base::TimeDelta kCanExpireOnNavigationAfterDelay = base::Seconds(8);
   base::SingleThreadTaskRunner::GetCurrentDefault()->PostDelayedTask(
       FROM_HERE,
@@ -63,8 +64,7 @@ KeystonePromotionInfoBarDelegate::KeystonePromotionInfoBarDelegate(
       kCanExpireOnNavigationAfterDelay);
 }
 
-KeystonePromotionInfoBarDelegate::~KeystonePromotionInfoBarDelegate() {
-}
+KeystonePromotionInfoBarDelegate::~KeystonePromotionInfoBarDelegate() = default;
 
 infobars::InfoBarDelegate::InfoBarIdentifier
 KeystonePromotionInfoBarDelegate::GetIdentifier() const {
@@ -113,11 +113,12 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
 - (void)removeObserver;
 @end  // @interface KeystonePromotionInfoBar
 
+KeystonePromotionInfoBar* g_currentPromotionInfoBar;
+
 @implementation KeystonePromotionInfoBar
 
 - (void)dealloc {
   [self removeObserver];
-  [super dealloc];
 }
 
 - (void)checkAndShowInfoBarForProfile:(Profile*)profile {
@@ -155,18 +156,17 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
                   }),
                   base::DoNothing());
   } else {
-    // Stay alive as long as needed.  This is balanced by a release in
-    // -updateStatus:.
-    [self retain];
+    // Stay alive as long as needed.  This is balanced in -updateStatus:.
+    g_currentPromotionInfoBar = self;
 
     AutoupdateStatus recentStatus = [keystoneGlue recentStatus];
     if (recentStatus == kAutoupdateNone ||
         recentStatus == kAutoupdateRegistering) {
-      NSNotificationCenter* center = [NSNotificationCenter defaultCenter];
-      [center addObserver:self
-                 selector:@selector(updateStatus:)
-                     name:kAutoupdateStatusNotification
-                   object:nil];
+      [NSNotificationCenter.defaultCenter
+          addObserver:self
+             selector:@selector(updateStatus:)
+                 name:kAutoupdateStatusNotification
+               object:nil];
     } else {
       [self updateStatus:[keystoneGlue recentNotification]];
     }
@@ -195,11 +195,11 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
     }
   }
 
-  [self release];
+  g_currentPromotionInfoBar = nil;
 }
 
 - (void)removeObserver {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 @end  // @implementation KeystonePromotionInfoBar
@@ -207,7 +207,7 @@ bool KeystonePromotionInfoBarDelegate::Cancel() {
 // static
 void KeystoneInfoBar::PromotionInfoBar(Profile* profile) {
   KeystonePromotionInfoBar* promotionInfoBar =
-      [[[KeystonePromotionInfoBar alloc] init] autorelease];
+      [[KeystonePromotionInfoBar alloc] init];
 
   [promotionInfoBar checkAndShowInfoBarForProfile:profile];
 }

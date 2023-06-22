@@ -4,6 +4,10 @@
 
 #include "chrome/browser/ui/views/dropdown_bar_host.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 void DropdownBarHost::SetHostViewNative(views::View* host_view) {
   // Nothing to do.
 }

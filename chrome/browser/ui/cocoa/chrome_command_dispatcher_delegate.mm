@@ -16,6 +16,10 @@
 #include "ui/content_accelerators/accelerator_util.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation ChromeCommandDispatcherDelegate
 
 - (BOOL)eventHandledByViewsFocusManager:(NSEvent*)event
@@ -166,7 +170,7 @@
       bool was_executed = false;
       bridge->host()->ExecuteCommand(
           result.chrome_command, WindowOpenDisposition::CURRENT_TAB,
-          false /* is_before_first_responder */, &was_executed);
+          /*is_before_first_responder=*/false, &was_executed);
       DCHECK(was_executed);
       return ui::PerformKeyEquivalentResult::kHandled;
     }

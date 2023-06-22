@@ -6,6 +6,10 @@
 
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // static
 extensions::NativeAppWindow* ChromeAppWindowClient::CreateNativeAppWindowImpl(
     extensions::AppWindow* app_window,

@@ -5,11 +5,14 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_EYE_DROPPER_EYE_DROPPER_VIEW_MAC_H_
 
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "content/public/browser/eye_dropper.h"
 #include "content/public/browser/eye_dropper_listener.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class NSColorSampler;
 
@@ -24,7 +27,7 @@ class EyeDropperViewMac : public content::EyeDropper {
   // Receives the color selection.
   raw_ptr<content::EyeDropperListener> listener_;
 
-  base::scoped_nsobject<NSColorSampler> color_sampler_;
+  NSColorSampler* __strong color_sampler_;
 
   base::WeakPtrFactory<EyeDropperViewMac> weak_ptr_factory_;
 };

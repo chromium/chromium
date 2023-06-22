@@ -8,7 +8,6 @@
 
 #include "base/command_line.h"
 #include "base/feature_list.h"
-#include "base/mac/scoped_nsobject.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_menubar_tracker.h"
 #import "chrome/browser/ui/cocoa/fullscreen/fullscreen_toolbar_animation_controller.h"
@@ -19,13 +18,17 @@
 #include "components/remote_cocoa/app_shim/native_widget_ns_window_bridge.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 @implementation FullscreenToolbarController {
   // Whether or not we are in fullscreen mode.
   BOOL _inFullscreenMode;
 
   // Updates the fullscreen toolbar layout for changes in the menubar. This
   // object is only set when the browser is in fullscreen mode.
-  base::scoped_nsobject<FullscreenMenubarTracker> _menubarTracker;
+  FullscreenMenubarTracker* __strong _menubarTracker;
 
   // Manages the toolbar animations for the TOOLBAR_HIDDEN style.
   std::unique_ptr<FullscreenToolbarAnimationController> _animationController;
@@ -33,7 +36,7 @@
   // When the menu bar and toolbar are visible, creates a tracking area which
   // is used to keep them visible until the mouse moves far enough away from
   // them. Only set when the browser is in fullscreen mode.
-  base::scoped_nsobject<FullscreenToolbarMouseTracker> _mouseTracker;
+  FullscreenToolbarMouseTracker* __strong _mouseTracker;
 
   // The style of the fullscreen toolbar.
   FullscreenToolbarStyle _toolbarStyle;
@@ -52,7 +55,6 @@
 
 - (void)dealloc {
   DCHECK(!_inFullscreenMode);
-  [super dealloc];
 }
 
 - (void)enterFullscreenMode {
@@ -60,10 +62,10 @@
     return;
   _inFullscreenMode = YES;
 
-  _menubarTracker.reset([[FullscreenMenubarTracker alloc]
-      initWithFullscreenToolbarController:self]);
-  _mouseTracker.reset([[FullscreenToolbarMouseTracker alloc]
-      initWithFullscreenToolbarController:self]);
+  _menubarTracker = [[FullscreenMenubarTracker alloc]
+      initWithFullscreenToolbarController:self];
+  _mouseTracker = [[FullscreenToolbarMouseTracker alloc]
+      initWithFullscreenToolbarController:self];
 }
 
 - (void)exitFullscreenMode {
@@ -74,8 +76,8 @@
   _animationController->StopAnimationAndTimer();
   [[NSNotificationCenter defaultCenter] removeObserver:self];
 
-  _menubarTracker.reset();
-  _mouseTracker.reset();
+  _menubarTracker = nil;
+  _mouseTracker = nil;
 }
 
 - (void)revealToolbarForWebContents:(content::WebContents*)contents
@@ -126,8 +128,9 @@
 }
 
 - (void)updateToolbarFrame:(NSRect)frame {
-  if (_mouseTracker.get())
+  if (_mouseTracker) {
     [_mouseTracker updateToolbarFrame:frame];
+  }
 }
 
 - (void)layoutToolbar {
@@ -141,7 +144,7 @@
 }
 
 - (FullscreenMenubarTracker*)menubarTracker {
-  return _menubarTracker.get();
+  return _menubarTracker;
 }
 
 - (void)setToolbarStyle:(FullscreenToolbarStyle)style {

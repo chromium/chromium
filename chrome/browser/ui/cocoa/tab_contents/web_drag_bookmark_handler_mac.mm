@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/browser_window.h"
 #include "content/public/browser/web_contents.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 using content::WebContents;
 
 WebDragBookmarkHandlerMac::WebDragBookmarkHandlerMac()

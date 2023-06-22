@@ -7,8 +7,11 @@
 
 #import <Foundation/Foundation.h>
 
-#import "base/mac/scoped_nsobject.h"
 #include "chrome/browser/ui/views/apps/chrome_native_app_window_views.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 @class ResizeNotificationObserver;
 
@@ -51,7 +54,7 @@ class ChromeNativeAppWindowViewsMac : public ChromeNativeAppWindowViews {
 
  private:
   // Used to notify us about certain NSWindow events.
-  base::scoped_nsobject<ResizeNotificationObserver> nswindow_observer_;
+  ResizeNotificationObserver* __strong nswindow_observer_;
 
   // The bounds of the window just before it was last maximized.
   NSRect bounds_before_maximize_;

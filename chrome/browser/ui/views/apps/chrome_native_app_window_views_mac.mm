@@ -2,18 +2,20 @@
 // Use of this source code is governed by a BSD-style license that can be
 // found in the LICENSE file.
 
-#include "base/memory/raw_ptr.h"
-
 #import "chrome/browser/ui/views/apps/chrome_native_app_window_views_mac.h"
 
 #import <Cocoa/Cocoa.h>
 
-#import "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/apps/app_shim/app_shim_manager_mac.h"
 #include "chrome/browser/profiles/profile.h"
 #import "chrome/browser/ui/views/apps/app_window_native_widget_mac.h"
 #import "chrome/browser/ui/views/apps/native_app_window_frame_view_mac.h"
 #import "ui/gfx/mac/coordinate_conversion.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 // This observer is used to get NSWindow notifications. We need to monitor
 // zoom and full screen events to store the correct bounds to Restore() to.
@@ -36,21 +38,21 @@
     (ChromeNativeAppWindowViewsMac*)nativeAppWindow {
   if ((self = [super init])) {
     _nativeAppWindow = nativeAppWindow;
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(onWindowWillStartLiveResize:)
                name:NSWindowWillStartLiveResizeNotification
              object:static_cast<ui::BaseWindow*>(nativeAppWindow)
                         ->GetNativeWindow()
                         .GetNativeNSWindow()];
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(onWindowWillExitFullScreen:)
                name:NSWindowWillExitFullScreenNotification
              object:static_cast<ui::BaseWindow*>(nativeAppWindow)
                         ->GetNativeWindow()
                         .GetNativeNSWindow()];
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         addObserver:self
            selector:@selector(onWindowDidExitFullScreen:)
                name:NSWindowDidExitFullScreenNotification
@@ -62,8 +64,7 @@
 }
 
 - (void)dealloc {
-  [[NSNotificationCenter defaultCenter] removeObserver:self];
-  [super dealloc];
+  [NSNotificationCenter.defaultCenter removeObserver:self];
 }
 
 - (void)onWindowWillStartLiveResize:(NSNotification*)notification {
@@ -187,6 +188,6 @@ void ChromeNativeAppWindowViewsMac::FlashFrame(bool flash) {
 }
 
 void ChromeNativeAppWindowViewsMac::OnWidgetCreated(views::Widget* widget) {
-  nswindow_observer_.reset(
-      [[ResizeNotificationObserver alloc] initForNativeAppWindow:this]);
+  nswindow_observer_ =
+      [[ResizeNotificationObserver alloc] initForNativeAppWindow:this];
 }

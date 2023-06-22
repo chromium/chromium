@@ -14,6 +14,10 @@
 #include "mojo/public/cpp/bindings/self_owned_receiver.h"
 #include "skia/ext/skia_utils_mac.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 // The currently active color chooser.
 ColorChooserMac* g_current_color_chooser = nullptr;
@@ -96,4 +100,4 @@ std::unique_ptr<content::ColorChooser> ShowColorChooser(
   return ColorChooserMac::Create(web_contents, initial_color,
                                  base::DoNothing());
 }
-}  // namepace chrome
+}  // namespace chrome

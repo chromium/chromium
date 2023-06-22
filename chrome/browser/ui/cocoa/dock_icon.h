@@ -14,15 +14,7 @@
 // icon.
 //
 // Like all UI, it must only be messaged from the UI thread.
-@interface DockIcon : NSObject {
- @private
-  // The time that the icon was last updated.
-  base::TimeTicks _lastUpdate;
-
-  // If true, the state has changed in a significant way since the last icon
-  // update and throttling should not prevent icon redraw.
-  BOOL _forceUpdate;
-}
+@interface DockIcon : NSObject
 
 + (DockIcon*)sharedDockIcon;
 

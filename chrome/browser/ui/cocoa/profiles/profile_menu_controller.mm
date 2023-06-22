@@ -9,7 +9,6 @@
 #include <memory>
 
 #include "base/feature_list.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/sys_string_conversions.h"
 #include "chrome/browser/browser_process.h"
@@ -31,6 +30,10 @@
 #include "third_party/abseil-cpp/absl/types/optional.h"
 #include "ui/base/l10n/l10n_util_mac.h"
 #include "ui/gfx/image/image.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -93,8 +96,7 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
   if ((self = [super init])) {
     _mainMenuItem = item;
 
-    base::scoped_nsobject<NSMenu> menu(
-        [[NSMenu alloc] initWithTitle:GetProfileMenuTitle()]);
+    NSMenu* menu = [[NSMenu alloc] initWithTitle:GetProfileMenuTitle()];
     [_mainMenuItem setSubmenu:menu];
 
     // This object will be constructed as part of nib loading, which happens
@@ -139,10 +141,9 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
     return NO;
 
   if (dock) {
-    base::scoped_nsobject<NSMenuItem> header([[NSMenuItem alloc]
-        initWithTitle:GetProfileMenuTitle()
-               action:nil
-        keyEquivalent:@""]);
+    NSMenuItem* header = [[NSMenuItem alloc] initWithTitle:GetProfileMenuTitle()
+                                                    action:nil
+                                             keyEquivalent:@""];
     [header setEnabled:NO];
     [menu insertItem:header atIndex:offset++];
   }
@@ -263,10 +264,11 @@ class Observer : public BrowserListObserver, public AvatarMenuObserver {
 }
 
 - (NSMenuItem*)createItemWithTitle:(NSString*)title action:(SEL)sel {
-  base::scoped_nsobject<NSMenuItem> item(
-      [[NSMenuItem alloc] initWithTitle:title action:sel keyEquivalent:@""]);
+  NSMenuItem* item = [[NSMenuItem alloc] initWithTitle:title
+                                                action:sel
+                                         keyEquivalent:@""];
   [item setTarget:self];
-  return [item.release() autorelease];
+  return item;
 }
 
 @end

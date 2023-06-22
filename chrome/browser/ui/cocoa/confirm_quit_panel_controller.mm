@@ -149,11 +149,15 @@ const NSTimeInterval kTimeDeltaFuzzFactor = 1.0;
 - (void)sendAccessibilityAnnouncement;
 @end
 
-ConfirmQuitPanelController* g_confirmQuitPanelController = nil;
+ConfirmQuitPanelController* __strong g_confirmQuitPanelController = nil;
 
 ////////////////////////////////////////////////////////////////////////////////
 
-@implementation ConfirmQuitPanelController
+@implementation ConfirmQuitPanelController {
+ @private
+  // The content view of the window that this controller manages.
+  ConfirmQuitFrameView* __weak _contentView;
+}
 
 + (ConfirmQuitPanelController*)sharedController {
   if (!g_confirmQuitPanelController) {

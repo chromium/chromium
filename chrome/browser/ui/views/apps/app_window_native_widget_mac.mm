@@ -12,6 +12,10 @@
 #include "extensions/browser/app_window/native_app_window.h"
 #import "ui/base/cocoa/window_size_constants.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 AppWindowNativeWidgetMac::AppWindowNativeWidgetMac(
     views::Widget* widget,
     extensions::NativeAppWindow* native_app_window)

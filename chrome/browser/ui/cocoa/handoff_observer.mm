@@ -12,6 +12,10 @@
 #include "content/public/browser/navigation_handle.h"
 #include "content/public/browser/web_contents.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 HandoffObserver::HandoffObserver(NSObject<HandoffObserverDelegate>* delegate)
     : delegate_(delegate) {
   DCHECK(delegate_);

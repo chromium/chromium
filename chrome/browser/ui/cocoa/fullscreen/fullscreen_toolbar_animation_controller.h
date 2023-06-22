@@ -12,6 +12,10 @@
 #include "ui/gfx/animation/animation_delegate.h"
 #include "ui/gfx/animation/slide_animation.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 class FullscreenToolbarAnimationController;
 @class FullscreenToolbarController;
 
@@ -73,7 +77,7 @@ class FullscreenToolbarAnimationController
   void StartHideTimerIfPossible();
 
   // Our owner.
-  FullscreenToolbarController* owner_;  // weak.
+  FullscreenToolbarController* __weak owner_;
 
   // The animation of the decoration.
   gfx::SlideAnimation animation_;

@@ -41,8 +41,8 @@ class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
     ASSERT_TRUE(profile());
 
     bridge_ = std::make_unique<HistoryMenuBridge>(profile());
-    bridge_->controller_.reset(
-        [[FakeHistoryMenuController alloc] initWithBridge:bridge_.get()]);
+    bridge_->controller_ =
+        [[FakeHistoryMenuController alloc] initWithBridge:bridge_.get()];
   }
 
   void TearDown() override {
@@ -70,7 +70,7 @@ class HistoryMenuCocoaControllerTest : public BrowserWithTestWindowTest {
   }
 
   FakeHistoryMenuController* controller() {
-    return static_cast<FakeHistoryMenuController*>(bridge_->controller_.get());
+    return static_cast<FakeHistoryMenuController*>(bridge_->controller_);
   }
 
  private:

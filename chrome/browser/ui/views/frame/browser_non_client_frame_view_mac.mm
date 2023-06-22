@@ -42,6 +42,10 @@
 #include "ui/gfx/canvas.h"
 #include "ui/views/cocoa/native_widget_mac_ns_window_host.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 // Keep in sync with web_app_frame_toolbar_browsertest.cc
@@ -78,8 +82,8 @@ BrowserNonClientFrameViewMac::BrowserNonClientFrameViewMac(
             base::Unretained(this)));
   }
   if (!browser_view->UsesImmersiveFullscreenMode()) {
-    fullscreen_toolbar_controller_.reset(
-        [[FullscreenToolbarController alloc] initWithBrowserView:browser_view]);
+    fullscreen_toolbar_controller_ =
+        [[FullscreenToolbarController alloc] initWithBrowserView:browser_view];
     [fullscreen_toolbar_controller_
         setToolbarStyle:GetUserPreferredToolbarStyle(
                             AlwaysShowToolbarInFullscreen())];

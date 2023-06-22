@@ -10,7 +10,6 @@
 
 #include "base/check.h"
 #include "base/mac/foundation_util.h"
-#include "base/mac/scoped_nsobject.h"
 #include "base/memory/raw_ptr.h"
 #include "base/memory/weak_ptr.h"
 #include "base/ranges/algorithm.h"
@@ -32,6 +31,10 @@
 #include "ui/views/focus/focus_search.h"
 #include "ui/views/view_observer.h"
 #include "ui/views/widget/widget.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace {
 
@@ -208,7 +211,8 @@ void ImmersiveModeControllerMac::SetEnabled(bool enabled) {
                                .GetNativeNSWindow()
                                .contentView;
     browser_view_->overlay_widget()->SetNativeWindowProperty(
-        views::NativeWidgetMacNSWindowHost::kMovedContentNSView, content_view);
+        views::NativeWidgetMacNSWindowHost::kMovedContentNSView,
+        (__bridge void*)content_view);
 
     // Move the appropriate children from the browser widget to the overlay
     // widget. Make sure to call `Show()` on the overlay widget before enabling

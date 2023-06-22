@@ -19,6 +19,10 @@
 #include "ui/resources/grit/ui_resources.h"
 #include "ui/strings/grit/ui_strings.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // Obj-C bridge class that is the target of all items in the context menu.
 // Relies on the tag being set to the command id.
 

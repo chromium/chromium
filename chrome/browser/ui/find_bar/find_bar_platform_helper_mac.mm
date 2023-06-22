@@ -18,20 +18,23 @@
 #include "content/public/browser/web_contents.h"
 #import "ui/base/cocoa/find_pasteboard.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 namespace {
 
 class FindBarPlatformHelperMac : public FindBarPlatformHelper {
  public:
   FindBarPlatformHelperMac(FindBarController* find_bar_controller)
       : FindBarPlatformHelper(find_bar_controller) {
-    find_pasteboard_notification_observer_ =
-        [[NSNotificationCenter defaultCenter]
-            addObserverForName:kFindPasteboardChangedNotification
-                        object:[FindPasteboard sharedInstance]
-                         queue:nil
-                    usingBlock:^(NSNotification*) {
-                      UpdateFindBarControllerFromPasteboard();
-                    }];
+    find_pasteboard_notification_observer_ = [NSNotificationCenter.defaultCenter
+        addObserverForName:kFindPasteboardChangedNotification
+                    object:[FindPasteboard sharedInstance]
+                     queue:nil
+                usingBlock:^(NSNotification*) {
+                  UpdateFindBarControllerFromPasteboard();
+                }];
     UpdateFindBarControllerFromPasteboard();
   }
 
@@ -39,7 +42,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
   FindBarPlatformHelperMac& operator=(const FindBarPlatformHelperMac&) = delete;
 
   ~FindBarPlatformHelperMac() override {
-    [[NSNotificationCenter defaultCenter]
+    [NSNotificationCenter.defaultCenter
         removeObserver:find_pasteboard_notification_observer_];
   }
 
@@ -87,7 +90,7 @@ class FindBarPlatformHelperMac : public FindBarPlatformHelper {
     }
   }
 
-  id find_pasteboard_notification_observer_;
+  id __strong find_pasteboard_notification_observer_;
 };
 
 }  // namespace

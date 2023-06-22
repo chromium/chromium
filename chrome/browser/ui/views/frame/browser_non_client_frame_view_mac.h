@@ -5,18 +5,20 @@
 #ifndef CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
 #define CHROME_BROWSER_UI_VIEWS_FRAME_BROWSER_NON_CLIENT_FRAME_VIEW_MAC_H_
 
-#include "base/memory/raw_ptr.h"
-
 #import <CoreGraphics/CGBase.h>
 
 #include <memory>
 
 #include "base/gtest_prod_util.h"
-#include "base/mac/scoped_nsobject.h"
+#include "base/memory/raw_ptr.h"
 #include "chrome/browser/ui/views/frame/browser_non_client_frame_view.h"
 #include "chrome/browser/web_applications/web_app_registrar.h"
 #include "chrome/browser/web_applications/web_app_registrar_observer.h"
 #include "components/prefs/pref_member.h"
+
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
 
 namespace base {
 class OneShotTimer;
@@ -136,8 +138,7 @@ class BrowserNonClientFrameViewMac : public BrowserNonClientFrameView,
   raw_ptr<CaptionButtonPlaceholderContainer>
       caption_button_placeholder_container_ = nullptr;
 
-  base::scoped_nsobject<FullscreenToolbarController>
-      fullscreen_toolbar_controller_;
+  FullscreenToolbarController* __strong fullscreen_toolbar_controller_;
 
   // Mark the start of a fullscreen session. Applies to both immersive and
   // standard fullscreen.

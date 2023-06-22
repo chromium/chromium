@@ -22,6 +22,10 @@
 #include "content/public/common/drop_data.h"
 #include "ui/views/widget/widget.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 ChromeWebContentsViewDelegateViewsMac::ChromeWebContentsViewDelegateViewsMac(
     content::WebContents* web_contents)
     : ContextMenuDelegate(web_contents),
@@ -47,8 +51,8 @@ ChromeWebContentsViewDelegateViewsMac::GetDelegateForHost(
   if (is_popup) {
     return nil;
   }
-  return [[[ChromeRenderWidgetHostViewMacDelegate alloc]
-      initWithRenderWidgetHost:render_widget_host] autorelease];
+  return [[ChromeRenderWidgetHostViewMacDelegate alloc]
+      initWithRenderWidgetHost:render_widget_host];
 }
 
 content::WebDragDestDelegate*

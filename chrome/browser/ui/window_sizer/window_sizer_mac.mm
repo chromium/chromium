@@ -10,6 +10,10 @@
 #include "chrome/browser/ui/browser_finder.h"
 #include "chrome/browser/ui/browser_window.h"
 
+#if !defined(__has_feature) || !__has_feature(objc_arc)
+#error "This file requires ARC support."
+#endif
+
 // How much horizontal and vertical offset there is between newly
 // opened windows.
 const int WindowSizer::kWindowTilePixels = 22;
@@ -17,8 +21,8 @@ const int WindowSizer::kWindowMaxDefaultWidth = 1200;
 
 // static
 gfx::Point WindowSizer::GetDefaultPopupOrigin(const gfx::Size& size) {
-  NSRect work_area = [[NSScreen mainScreen] visibleFrame];
-  NSRect main_area = [[[NSScreen screens] firstObject] frame];
+  NSRect work_area = NSScreen.mainScreen.visibleFrame;
+  NSRect main_area = NSScreen.screens.firstObject.frame;
   NSPoint corner = NSMakePoint(NSMinX(work_area), NSMaxY(work_area));
 
   if (Browser* browser = chrome::FindLastActive()) {
