@@ -159,7 +159,7 @@ class ScopedHighResolutionTimer {
   }
 
  private:
-  bool enabled_;
+  bool enabled_ = false;
 #endif
 };
 
