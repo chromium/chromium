@@ -336,6 +336,9 @@ class WebStateList {
   // Index of the currently active WebState, kInvalidIndex if no such WebState.
   int active_index_ = kInvalidIndex;
 
+  // Number of pinned tabs. Always in range from 0 to count() inclusive.
+  int pinned_tabs_count_ = 0;
+
   // Lock to prevent observers from mutating or deleting the list while it is
   // mutating. The lock is managed by LockForMutation() method (and released
   // by the returned base::AutoReset<bool>).

@@ -39,7 +39,7 @@ bool IsClosingFlagSet(int flagset, WebStateList::ClosingFlags flag) {
 // Wrapper around a WebState stored in a WebStateList.
 class WebStateList::WebStateWrapper {
  public:
-  WebStateWrapper(std::unique_ptr<web::WebState> web_state, bool pinned);
+  explicit WebStateWrapper(std::unique_ptr<web::WebState> web_state);
 
   WebStateWrapper(const WebStateWrapper&) = delete;
   WebStateWrapper& operator=(const WebStateWrapper&) = delete;
@@ -61,10 +61,6 @@ class WebStateList::WebStateWrapper {
   WebStateOpener opener() const { return opener_; }
   void SetOpener(WebStateOpener opener);
 
-  // Gets and sets information about this WebState being pinned.
-  bool pinned() const { return pinned_; }
-  void set_pinned(bool pinned) { pinned_ = pinned; }
-
   // Gets and sets whether this WebState opener must be clear when the active
   // WebState changes.
   bool ShouldResetOpenerOnActiveWebStateChange() const;
@@ -81,13 +77,11 @@ class WebStateList::WebStateWrapper {
   std::unique_ptr<web::WebState> web_state_;
   WebStateOpener opener_;
   bool should_reset_opener_ = false;
-  bool pinned_ = false;
 };
 
 WebStateList::WebStateWrapper::WebStateWrapper(
-    std::unique_ptr<web::WebState> web_state,
-    bool pinned)
-    : web_state_(std::move(web_state)), opener_(nullptr), pinned_(pinned) {
+    std::unique_ptr<web::WebState> web_state)
+    : web_state_(std::move(web_state)), opener_(nullptr) {
   DCHECK(web_state_);
 }
 
@@ -254,7 +248,7 @@ int WebStateList::SetWebStatePinnedAt(int index, bool pinned) {
 bool WebStateList::IsWebStatePinnedAt(int index) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
   DCHECK(ContainsIndex(index));
-  return web_state_wrappers_[index]->pinned();
+  return index < pinned_tabs_count_;
 }
 
 int WebStateList::InsertWebState(int index,
@@ -300,7 +294,7 @@ void WebStateList::CloseAllWebStates(int close_flags) {
 }
 
 void WebStateList::CloseAllNonPinnedWebStates(int close_flags) {
-  CloseAllWebStatesAfterIndex(GetIndexOfFirstNonPinnedWebState(), close_flags);
+  CloseAllWebStatesAfterIndex(pinned_tabs_count_, close_flags);
 }
 
 void WebStateList::ActivateWebStateAt(int index) {
@@ -346,7 +340,14 @@ int WebStateList::InsertWebStateImpl(int index,
   web::WebState* web_state_ptr = web_state.get();
   web_state_wrappers_.insert(
       web_state_wrappers_.begin() + index,
-      std::make_unique<WebStateWrapper>(std::move(web_state), pinned));
+      std::make_unique<WebStateWrapper>(std::move(web_state)));
+
+  if (pinned) {
+    DCHECK_LE(index, pinned_tabs_count_);
+    pinned_tabs_count_++;
+  } else {
+    DCHECK_GE(index, pinned_tabs_count_);
+  }
 
   if (active_index_ >= index) {
     ++active_index_;
@@ -463,6 +464,10 @@ std::unique_ptr<web::WebState> WebStateList::DetachWebStateAtImpl(int index) {
   std::unique_ptr<web::WebState> detached_web_state =
       web_state_wrappers_[index]->ReleaseWebState();
   web_state_wrappers_.erase(web_state_wrappers_.begin() + index);
+  if (index < pinned_tabs_count_) {
+    CHECK_GT(pinned_tabs_count_, 0);
+    --pinned_tabs_count_;
+  }
 
   // Check that the active element (if there is one) is valid.
   DCHECK(active_index_ == kInvalidIndex || ContainsIndex(active_index_));
@@ -654,46 +659,41 @@ int WebStateList::GetIndexOfNthWebStateOpenedBy(const web::WebState* opener,
 
 int WebStateList::SetWebStatePinnedImpl(int index, bool pinned) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  if (web_state_wrappers_[index]->pinned() == pinned) {
+  if (pinned == IsWebStatePinnedAt(index)) {
+    // The pinned state is not changed, nothing to do.
     return index;
   }
 
-  // The tab's position may have to change as the pinned tab state is changing.
-  int non_pinned_web_state_index = GetIndexOfFirstNonPinnedWebState();
-  web_state_wrappers_[index]->set_pinned(pinned);
-
-  if (pinned && index != non_pinned_web_state_index) {
-    MoveWebStateAtImpl(index, non_pinned_web_state_index);
-    index = non_pinned_web_state_index;
-  } else if (!pinned) {
-    // Unpinned WebStates should be moved to the end of the list.
-    MoveWebStateAtImpl(index, count() - 1);
-    index = count() - 1;
+  int new_index = index;
+  if (pinned) {
+    // Move the tab to the end of the pinned tabs. May be a no-op.
+    CHECK_LT(pinned_tabs_count_, count());
+    new_index = pinned_tabs_count_;
+    pinned_tabs_count_++;
+  } else {
+    // Move the tab to the end of the WebStateList. May be a no-op.
+    CHECK_GT(pinned_tabs_count_, 0);
+    new_index = count() - 1;
+    pinned_tabs_count_--;
   }
 
+  MoveWebStateAtImpl(index, new_index);
   for (auto& observer : observers_) {
     observer.WebStatePinnedStateChanged(
-        this, web_state_wrappers_[index]->web_state(), index);
+        this, web_state_wrappers_[new_index]->web_state(), new_index);
   }
 
-  return index;
+  return new_index;
 }
 
 int WebStateList::GetIndexOfFirstNonPinnedWebState() const {
-  for (size_t index = 0; index < web_state_wrappers_.size(); ++index) {
-    if (!web_state_wrappers_[index]->pinned()) {
-      return static_cast<int>(index);
-    }
-  }
-  // There are only pinned WebStates.
-  return count();
+  return pinned_tabs_count_;
 }
 
 int WebStateList::ConstrainMoveIndex(int index, bool pinned) const {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
-  return pinned ? std::clamp(index, 0, GetIndexOfFirstNonPinnedWebState() - 1)
-                : std::clamp(index, GetIndexOfFirstNonPinnedWebState(),
-                             count() - 1);
+  return pinned ? std::clamp(index, 0, pinned_tabs_count_ - 1)
+                : std::clamp(index, pinned_tabs_count_, count() - 1);
 }
 
 WebStateList::WebStateWrapper* WebStateList::GetActiveWebStateWrapper() const {
