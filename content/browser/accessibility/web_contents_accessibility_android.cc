@@ -267,12 +267,15 @@ void WebContentsAccessibilityAndroid::DisableRendererAccessibility(
   // AXTreeUpdate (e.g. for snapshots, frozen tabs, paint preview, etc).
   DCHECK(!snapshot_root_manager_);
 
-  // To disable the renderer, the root manager should already be connected to
-  // this instance, and we need to reset the weak pointer it has to |this|.
+  // To disable the renderer, the root manager /should/ already be connected to
+  // this instance, and we need to reset the weak pointer it has to |this|. In
+  // some rare cases, such as if a user rapidly toggles accessibility on/off,
+  // a manager may not be connected, in which case a reset is not needed.
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  DCHECK(root_manager);
-  root_manager->ResetWebContentsAccessibility();
+  if (root_manager) {
+    root_manager->ResetWebContentsAccessibility();
+  }
 
   // The local cache of Java strings can be cleared, and we should reset any
   // local state variables. The Connector should continue to live, since we want
@@ -307,10 +310,15 @@ void WebContentsAccessibilityAndroid::ReEnableRendererAccessibility(
   // update the reference just in case.
   web_contents_ = static_cast<WebContentsImpl*>(web_contents);
 
+  // If we are re-enabling, the root manager may already be connected, in which
+  // case we can set its weak pointer to |this|. However, if a user has rapidly
+  // turned accessibility on/off, the manager may not be ready. If the manager
+  // is not ready, the framework will continue polling until it is connected.
   BrowserAccessibilityManagerAndroid* root_manager =
       GetRootBrowserAccessibilityManager();
-  DCHECK(root_manager);
-  root_manager->set_web_contents_accessibility(GetWeakPtr());
+  if (root_manager) {
+    root_manager->set_web_contents_accessibility(GetWeakPtr());
+  }
 
   // The AXMode should have been set when the accessibility state was changed,
   // so by this method it should be something other than kNone.
