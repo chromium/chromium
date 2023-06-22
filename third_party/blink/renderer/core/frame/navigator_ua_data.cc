@@ -6,6 +6,7 @@
 
 #include "base/compiler_specific.h"
 #include "base/task/single_thread_task_runner.h"
+#include "third_party/blink/public/common/features.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
 #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
 #include "third_party/blink/public/common/privacy_budget/identifiable_surface.h"
@@ -108,6 +109,10 @@ void NavigatorUAData::SetBitness(const String& bitness) {
 
 void NavigatorUAData::SetWoW64(bool wow64) {
   is_wow64_ = wow64;
+}
+
+void NavigatorUAData::SetFormFactor(const String& form_factor) {
+  form_factor_ = form_factor;
 }
 
 bool NavigatorUAData::mobile() const {
@@ -216,6 +221,13 @@ ScriptPromise NavigatorUAData::getHighEntropyValues(
       values->setWow64(is_wow64_);
       MaybeRecordMetric(record_identifiability, hint, is_wow64_ ? "?1" : "?0",
                         execution_context);
+    } else if (hint == "formFactor") {
+      if (base::FeatureList::IsEnabled(
+              blink::features::kClientHintsFormFactor)) {
+        values->setFormFactor(form_factor_);
+        MaybeRecordMetric(record_identifiability, hint, form_factor_,
+                          execution_context);
+      }
     }
   }
 

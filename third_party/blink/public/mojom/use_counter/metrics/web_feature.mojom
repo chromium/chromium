@@ -3928,6 +3928,7 @@ enum WebFeature {
   kEditContext = 4588,
   kServiceWorkerStaticRouter_RegisterRouter = 4589,
   kServiceWorkerStaticRouter_Evaluate = 4590,
+  kClientHintsUAFormFactor = 4591,
 
   // Add new features immediately above this line. Don't change assigned
   // numbers of any item, and don't reuse removed slots.

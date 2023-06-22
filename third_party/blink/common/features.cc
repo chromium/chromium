@@ -468,6 +468,11 @@ BASE_FEATURE(kClientHintsDeviceMemory_DEPRECATED,
              "ClientHintsDeviceMemory_DEPRECATED",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+// Enable `form-factor` client hint.
+BASE_FEATURE(kClientHintsFormFactor,
+             "ClientHintsFormFactor",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 // Enable `sec-ch-width` client hint.
 BASE_FEATURE(kClientHintsResourceWidth,
              "ClientHintsResourceWidth",

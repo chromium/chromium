@@ -378,6 +378,14 @@ void BaseFetchContext::AddClientHintsIfNecessary(
       SetHttpHeader(WebClientHintsType::kUAWoW64,
                     SerializeBoolHeader(ua->wow64), request);
     }
+
+    if (ShouldSendClientHint(
+            policy, resource_origin, is_1p_origin,
+            network::mojom::blink::WebClientHintsType::kUAFormFactor,
+            hints_preferences)) {
+      SetHttpHeader(WebClientHintsType::kUAFormFactor,
+                    SerializeStringHeader(ua->form_factor), request);
+    }
   }
 
   if (ShouldSendClientHint(policy, resource_origin, is_1p_origin,

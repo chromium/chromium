@@ -47,7 +47,7 @@ public class ClientHintsTest {
     private static final String[] USER_AGENT_CLIENT_HINTS = {"sec-ch-ua", "sec-ch-ua-arch",
             "sec-ch-ua-platform", "sec-ch-ua-model", "sec-ch-ua-mobile", "sec-ch-ua-full-version",
             "sec-ch-ua-platform-version", "sec-ch-ua-bitness", "sec-ch-ua-full-version-list",
-            "sec-ch-ua-wow64"};
+            "sec-ch-ua-wow64", "sec-ch-ua-form-factor"};
 
     private static final String ANDROID_WEBVIEW_BRAND_NAME = "Android WebView";
 
@@ -103,7 +103,7 @@ public class ClientHintsTest {
                 + "sec-ch-ua-bitness,sec-ch-viewport-height,"
                 + "sec-ch-device-memory,sec-ch-dpr,sec-ch-width,sec-ch-viewport-width,"
                 + "sec-ch-ua-full-version-list,sec-ch-ua-wow64,save-data,"
-                + "sec-ch-prefers-reduced-motion");
+                + "sec-ch-prefers-reduced-motion,sec-ch-ua-form-factor");
 
         // Load twice to be sure hints are returned, then parse the results.
         loadUrlSync(contents, contentsClient.getOnPageFinishedHelper(), url);
@@ -114,7 +114,7 @@ public class ClientHintsTest {
         JSONObject jsonObject = new JSONObject(textContent);
         // If you're here because this line broke, please update this test to verify whichever
         // client hints were added or removed and don't just modify the number below.
-        Assert.assertEquals(25, jsonObject.length());
+        Assert.assertEquals(26, jsonObject.length());
 
         // All client hints must be verified for default behavior.
         Assert.assertTrue(jsonObject.getInt("device-memory") > 0);
@@ -159,6 +159,7 @@ public class ClientHintsTest {
         // This client hint isn't sent when data-saver is off.
         Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("save-data"));
         Assert.assertNotEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-prefers-reduced-motion"));
+        Assert.assertEquals("HEADER_NOT_FOUND", jsonObject.getString("sec-ch-ua-form-factor"));
 
         // Cleanup after test.
         clearCookies();
@@ -168,7 +169,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsNoCustom() throws Throwable {
@@ -186,7 +187,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsCustomOverride() throws Throwable {
@@ -203,7 +204,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsModifyDefaultUserAgent() throws Throwable {
@@ -243,7 +244,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsJavaScript() throws Throwable {
@@ -253,7 +254,7 @@ public class ClientHintsTest {
     @Test
     @SmallTest
     @Feature({"AndroidWebView", "Preferences"})
-    @CommandLineFlags.Add({"enable-features=UserAgentClientHint",
+    @CommandLineFlags.Add({"enable-features=UserAgentClientHint,ClientHintsFormFactor",
             ContentSwitches.HOST_RESOLVER_RULES + "=MAP * 127.0.0.1"})
     public void
     testEnableUserAgentClientHintsOverrideJavaScript() throws Throwable {
@@ -480,7 +481,7 @@ public class ClientHintsTest {
                     "navigator.userAgentData"
                             + ".getHighEntropyValues(['architecture', 'bitness', 'brands', "
                             + "'mobile', 'model', 'platform', 'platformVersion', 'uaFullVersion', "
-                            + "'fullVersionList', 'wow64'])"
+                            + "'fullVersionList', 'wow64', 'formFactor'])"
                             + ".then(ua => { "
                             + "    injectedObject.setUserAgentClientHints(JSON.stringify(ua)); "
                             + "})");
