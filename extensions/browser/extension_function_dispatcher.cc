@@ -691,9 +691,14 @@ void ExtensionFunctionDispatcher::OnExtensionFunctionCompleted(
   if (extension_function.is_from_service_worker()) {
     CHECK(extension_function.request_uuid().is_valid());
     CHECK(extension_function.worker_id());
-    process_manager->DecrementServiceWorkerKeepaliveCount(
-        *extension_function.worker_id(), extension_function.request_uuid(),
-        Activity::API_FUNCTION, extension_function.name());
+
+    // The service worker may have been stopped already. For instance, it may
+    // have timed out and been stopped by the content layer.
+    if (process_manager->HasServiceWorker(*extension_function.worker_id())) {
+      process_manager->DecrementServiceWorkerKeepaliveCount(
+          *extension_function.worker_id(), extension_function.request_uuid(),
+          Activity::API_FUNCTION, extension_function.name());
+    }
   } else {
     process_manager->DecrementLazyKeepaliveCount(extension_function.extension(),
                                                  Activity::API_FUNCTION,
