@@ -19,7 +19,6 @@ static_library("test_support") {
   ]
 
   visibility = [ "//third_party/blink/public:test_support" ]
-  defines = [ "ALLOW_IMPLICIT_ATOMIC_STRING_CONVERSIONS" ]
 }
 
 blink_core_sources("exported") {

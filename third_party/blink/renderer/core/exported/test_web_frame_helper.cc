@@ -10,6 +10,7 @@
 #include "third_party/blink/renderer/core/frame/local_frame.h"
 #include "third_party/blink/renderer/core/frame/web_local_frame_impl.h"
 #include "third_party/blink/renderer/core/html/html_frame_owner_element.h"
+#include "third_party/blink/renderer/core/html_names.h"
 #include "third_party/blink/renderer/platform/wtf/casting.h"
 #include "third_party/blink/renderer/platform/wtf/text/wtf_string.h"
 
@@ -33,8 +34,9 @@ void TestWebFrameHelper::FillStaticResponseForSrcdocNavigation(
   String srcdoc_value;
   String mime_type = "text/html";
   String charset = "UTF-8";
-  if (owner_element->hasAttribute("srcdoc"))
-    srcdoc_value = owner_element->getAttribute("srcdoc");
+  if (owner_element->hasAttribute(html_names::kSrcdocAttr)) {
+    srcdoc_value = owner_element->getAttribute(html_names::kSrcdocAttr);
+  }
   blink::WebNavigationParams::FillStaticResponse(params, mime_type, charset,
                                                  srcdoc_value.Utf8());
 }
