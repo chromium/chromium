@@ -600,7 +600,7 @@ BASE_FEATURE(kDriveFsChromeNetworking,
 // Enables DriveFS' bulk pinning functionality.
 BASE_FEATURE(kDriveFsBulkPinning,
              "DriveFsBulkPinning",
-             base::FEATURE_DISABLED_BY_DEFAULT);
+             base::FEATURE_ENABLED_BY_DEFAULT);
 
 // Enables DriveFS' bulk pinning functionality. This flag is to be enabled by
 // the feature management module.

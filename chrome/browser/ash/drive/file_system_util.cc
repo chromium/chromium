@@ -125,15 +125,6 @@ bool IsDriveFsBulkPinningEnabled(const Profile* const profile) {
     return false;
   }
 
-  // TODO(b/279872186): Prior to M117 and only on canary builds the feature
-  // should be enabled by the feature management module OR a direct feature
-  // flag. After M117 these 2 flags should be required to enable the feature.
-  if (version_info::GetMajorVersionNumberAsInt() < 117) {
-    return base::FeatureList::IsEnabled(
-               ash::features::kFeatureManagementDriveFsBulkPinning) ||
-           base::FeatureList::IsEnabled(ash::features::kDriveFsBulkPinning);
-  }
-
   return ash::features::IsDriveFsBulkPinningEnabled();
 }
 
