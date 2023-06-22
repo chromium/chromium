@@ -7535,6 +7535,11 @@ const FeatureEntry kFeatureEntries[] = {
      flag_descriptions::kOnlyShowNewShortcutsAppDescription, kOsCrOS,
      FEATURE_VALUE_TYPE(ash::features::kOnlyShowNewShortcutsApp)},
 
+    {"enable-pip-double-tap-to-resize",
+     flag_descriptions::kPipDoubleTapToResizeName,
+     flag_descriptions::kPipDoubleTapToResizeDescription, kOsCrOS,
+     FEATURE_VALUE_TYPE(ash::features::kPipDoubleTapToResize)},
+
 #endif  // BUILDFLAG(IS_CHROMEOS_ASH)
 
     {"enable-fenced-frames", flag_descriptions::kEnableFencedFramesName,

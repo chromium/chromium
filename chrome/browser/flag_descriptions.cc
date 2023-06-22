@@ -1293,6 +1293,12 @@ const char kBlockInsecurePrivateNetworkRequestsDescription[] =
     "more-private IP addresses. See also: "
     "https://developer.chrome.com/blog/private-network-access-update/";
 
+const char kPipDoubleTapToResizeName[] =
+    "Enable double-tap to resize PiP windows";
+const char kPipDoubleTapToResizeDescription[] =
+    "Enables double-tapping on existing PiP windows to resize "
+    "them depending on its current state, such as minimizng or maximizing.";
+
 const char kPrivateNetworkAccessSendPreflightsName[] =
     "Send Private Network Access preflights";
 const char kPrivateNetworkAccessSendPreflightsDescription[] =

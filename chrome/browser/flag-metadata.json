@@ -3146,6 +3146,11 @@
     "expiry_milestone": 116
   },
   {
+    "name": "enable-pip-double-tap-to-resize",
+    "owners": [ "bpnguyen", "jorgegil" ],
+    "expiry_milestone": 120
+  },
+  {
     "name": "enable-pixel-canvas-recording",
     "owners": [ "malaykeshav", "oshima" ],
     "expiry_milestone": 116
