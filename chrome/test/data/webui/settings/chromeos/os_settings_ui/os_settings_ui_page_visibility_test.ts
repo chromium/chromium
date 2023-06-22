@@ -61,13 +61,13 @@ suite('<os-settings-ui> page visibility', () => {
   }
 
   /**
-   * Asserts the following:
+   * Asserts the page with the given |pageName| is the only visible page by
+   * checking:
    * - Only one page is marked active
    * - Active page does not have style "display: none"
-   * - Active page is focused
    * - Inactive pages have style "display: none"
    */
-  function assertOnlyActivePageIsVisible(pageName: PageName): void {
+  function assertOnlyVisiblePage(pageName: PageName): void {
     const pages =
         mainPageContainer.shadowRoot!.querySelectorAll('page-displayer');
     let numActive = 0;
@@ -78,13 +78,21 @@ suite('<os-settings-ui> page visibility', () => {
         numActive++;
         assertNotEquals('none', displayStyle);
         assertEquals(Section[pageName], page.section);
-        assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
       } else {
         assertEquals('none', displayStyle);
       }
     }
 
     assertEquals(1, numActive);
+  }
+
+  /**
+   * Asserts the page with the given |pageName| is focused.
+   */
+  function assertPageIsFocused(pageName: PageName): void {
+    const page = mainPageContainer.shadowRoot!.querySelector(
+        `page-displayer[section="${Section[pageName]}"`);
+    assertEquals(page, mainPageContainer.shadowRoot!.activeElement);
   }
 
   suiteSetup(async () => {
@@ -110,8 +118,7 @@ suite('<os-settings-ui> page visibility', () => {
   });
 
   test('Network page should be the default visible page', () => {
-    Router.getInstance().navigateTo(testRoutes.BASIC);
-    assertOnlyActivePageIsVisible('kNetwork');
+    assertOnlyVisiblePage('kNetwork');
   });
 
   const pageNames: PageName[] = [
@@ -146,7 +153,8 @@ suite('<os-settings-ui> page visibility', () => {
 
           await pageReadyPromise;
 
-          assertOnlyActivePageIsVisible(pageName);
+          assertOnlyVisiblePage(pageName);
+          assertPageIsFocused(pageName);
         });
   }
 });

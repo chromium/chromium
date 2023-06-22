@@ -157,7 +157,7 @@ export const MainPageMixin = dedupingMixin(
          */
         private showPage(route: Route): void {
           if (isRevampWayfindingEnabled()) {
-            this.activatePage(route);
+            this.activatePage(route, {focus: true});
           } else {
             this.scrollToSection(route);
           }
@@ -170,14 +170,16 @@ export const MainPageMixin = dedupingMixin(
         }
 
         /**
-         * Effectively displays the page for the given |route|.
-         * Queries the shadow DOM for the respective page-displayer element
-         * for the given |route| and marks it as active.
+         * Effectively displays the page for the given |route| by marking the
+         * respective page-displayer element as active, and hides all other
+         * pages by marking them as inactive. Also, optionally transfers focus
+         * to the page content.
          */
-        private async activatePage(route: Route): Promise<void> {
+        private async activatePage(route: Route, options: {
+          focus?: boolean,
+        } = {}): Promise<void> {
           const page = await this.ensurePageForRoute(route);
 
-          // Hide any previously active pages
           const previouslyActive =
               this.shadowRoot!.querySelectorAll<PageDisplayerElement>(
                   'page-displayer[active]');
@@ -185,8 +187,10 @@ export const MainPageMixin = dedupingMixin(
             prevPage.active = false;
           }
 
-          // Show the respective page for |route|
           page.active = true;
+          if (options.focus) {
+            page.focus();
+          }
 
           this.dispatchCustomEvent_('show-container');
         }
@@ -195,13 +199,15 @@ export const MainPageMixin = dedupingMixin(
          * Activate and display the first page (Network page). This page
          * should be the default visible page when the root page is visited.
          */
-        private activateFirstPage(): void {
+        private activateInitialPage(): void {
           // The About page does not have the Network page so we should not
           // attempt to activate it.
           // TODO(b/282961146) Investigate removing MainPageMixin from
           // the About page so this check can be removed.
           if (isRevampWayfindingEnabled() && this.isMainPageContainer) {
-            this.showPage(FIRST_PAGE_ROUTE);
+            // Note: This should not focus the Network page since the search box
+            // should be the element initially focused after app load.
+            this.activatePage(FIRST_PAGE_ROUTE, {focus: false});
           }
         }
 
@@ -263,7 +269,7 @@ export const MainPageMixin = dedupingMixin(
                 return;
 
               case RouteState.ROOT:
-                this.activateFirstPage();
+                this.activateInitialPage();
                 return;
 
               // Nothing to do here for the DIALOG case.
@@ -287,7 +293,7 @@ export const MainPageMixin = dedupingMixin(
               // Happens when clearing search results (Navigating from
               // '/?search=foo' to '/')
               case RouteState.ROOT:
-                this.activateFirstPage();
+                this.activateInitialPage();
                 return;
 
               // Nothing to do here for the DIALOG case.
@@ -309,6 +315,7 @@ export const MainPageMixin = dedupingMixin(
 
               case RouteState.ROOT:
                 this.scroller_.scrollTop = 0;
+                this.activateInitialPage();
                 return;
 
               // Nothing to do here for the case of DIALOG.

@@ -374,6 +374,15 @@ TEST_F('OSSettingsCrostiniExtraContainerPageTest', 'AllJsTests', () => {
    'MainPageContainerPageDisplayer',
    'main_page_container/page_displayer_test.js',
  ],
+ [
+   'MainPageContainerRouteNavigation',
+   'main_page_container/route_navigation_test.js',
+   {
+     enabled: [
+       'ash::features::kOsSettingsRevampWayfinding',
+     ],
+   },
+ ],
  ['ManageUsersSubpage', 'manage_users_subpage_tests.js'],
  // TODO(b/208932892): Re-enable once flakiness is fixed.
  // ['MultideviceFeatureItem', 'multidevice_feature_item_tests.js'],
