@@ -134,7 +134,7 @@ class PrintContextTest : public PaintTestConfigurations, public RenderingTest {
     GetDocument().SetPrinting(Document::kBeforePrinting);
     Event* event = MakeGarbageCollected<BeforePrintEvent>();
     GetPrintContext().GetFrame()->DomWindow()->DispatchEvent(*event);
-    GetPrintContext().BeginPrintMode(kPageWidth, kPageHeight);
+    GetPrintContext().BeginPrintMode(gfx::SizeF(kPageWidth, kPageHeight));
     GetDocument().View()->UpdateAllLifecyclePhasesExceptPaint(
         DocumentUpdateReason::kTest);
 
@@ -678,7 +678,7 @@ TEST_P(PrintContextTest, SvgMarkersOnMultiplePages) {
   PrintSinglePage(first_page_canvas, 0);
 
   MockCanvas second_page_canvas;
-  EXPECT_CALL(second_page_canvas, didTranslate(0, 799)).Times(1);
+  EXPECT_CALL(second_page_canvas, didTranslate(0, kPageHeight)).Times(1);
   EXPECT_CALL(second_page_canvas, didTranslate(2, 0)).Times(1);
   EXPECT_CALL(second_page_canvas, onDrawRect(SkRect::MakeWH(50, 25), _))
       .Times(1);
@@ -753,8 +753,7 @@ TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
   float maximum_shrink_ratio = 1.1;
   auto* node = GetDocument().documentElement();
 
-  GetDocument().GetFrame()->StartPrinting(page_size, page_size,
-                                          maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(node->OffsetWidth(), 400);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(node->OffsetWidth(), 800);
@@ -762,8 +761,7 @@ TEST_P(PrintContextFrameTest, BasicPrintPageLayout) {
   SetBodyInnerHTML(R"HTML(
       <div style='border: 0px; margin: 0px; background-color: #0000FF;
       width:800px; height:400px'></div>)HTML");
-  GetDocument().GetFrame()->StartPrinting(page_size, page_size,
-                                          maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(node->OffsetWidth(), 440);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(node->OffsetWidth(), 800);
@@ -1110,8 +1108,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   // The iframe element in the document.
   auto* target = GetDocument().getElementById("target");
 
-  GetDocument().GetFrame()->StartPrinting(page_size, page_size,
-                                          maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(parent->OffsetWidth(), 440);
   EXPECT_EQ(child->OffsetWidth(), 800);
   EXPECT_EQ(target->OffsetWidth(), 440);
@@ -1130,8 +1127,7 @@ TEST_P(PrintContextFrameTest, DISABLED_SubframePrintPageLayout) {
   EXPECT_EQ(target->OffsetWidth(), 800);
 
   ASSERT_TRUE(ChildDocument() != GetDocument());
-  ChildDocument().GetFrame()->StartPrinting(page_size, page_size,
-                                            maximum_shrink_ratio);
+  ChildDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(parent->OffsetWidth(), 800);
   EXPECT_EQ(child->OffsetWidth(), 400);
   EXPECT_EQ(target->OffsetWidth(), 800);

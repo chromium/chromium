@@ -141,7 +141,7 @@ TEST_F(TextPainterTest,
       CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
-  GetFrame().StartPrinting(page_size, page_size, 1);
+  GetFrame().StartPrinting(page_size, 1);
   UpdateAllLifecyclePhasesForTest();
   // In LayoutNG, printing currently forces layout tree reattachment,
   // so we need to re-get layout_text_.
@@ -166,7 +166,7 @@ TEST_F(TextPainterTest, TextPaintingStyle_ForceBackgroundToWhite_Darkened) {
       CSSPropertyID::kWebkitPrintColorAdjust, CSSValueID::kEconomy);
   GetDocument().GetSettings()->SetShouldPrintBackgrounds(false);
   gfx::SizeF page_size(500, 800);
-  GetFrame().StartPrinting(page_size, page_size, 1);
+  GetFrame().StartPrinting(page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   // In LayoutNG, printing currently forces layout tree reattachment,
   // so we need to re-get layout_text_.

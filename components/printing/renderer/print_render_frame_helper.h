@@ -272,13 +272,6 @@ class PrintRenderFrameHelper
       SnapshotForContentAnalysisCallback callback) override;
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-  // Get |page_size| and |content_area| information from
-  // |page_layout_in_points|.
-  void GetPageSizeAndContentAreaFromPageLayout(
-      const mojom::PageSizeMargins& page_layout_in_points,
-      gfx::Size* page_size,
-      gfx::Rect* content_area);
-
   // Update |ignore_css_margins_| based on settings.
   void UpdateFrameMarginsCssInfo(const base::Value::Dict& settings);
 

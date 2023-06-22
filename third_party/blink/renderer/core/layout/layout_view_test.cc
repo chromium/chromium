@@ -103,7 +103,7 @@ TEST_F(LayoutViewTest, NamedPages) {
   ASSERT_TRUE(view);
 
   ScopedPrintContext print_context(&GetDocument().View()->GetFrame());
-  print_context->BeginPrintMode(500, 500);
+  print_context->BeginPrintMode(gfx::SizeF(500, 500));
 
   EXPECT_EQ(view->NamedPageAtIndex(0), AtomicString());
   EXPECT_EQ(view->NamedPageAtIndex(1), AtomicString());
@@ -139,7 +139,7 @@ TEST_F(LayoutViewTest, NamedPagesAbsPos) {
   ASSERT_TRUE(view);
 
   ScopedPrintContext print_context(&GetDocument().View()->GetFrame());
-  print_context->BeginPrintMode(500, 500);
+  print_context->BeginPrintMode(gfx::SizeF(500, 500));
 
   EXPECT_EQ(view->NamedPageAtIndex(0), "woohoo");
   EXPECT_EQ(view->NamedPageAtIndex(1), "woohoo");

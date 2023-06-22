@@ -30,6 +30,7 @@
 
 using printing::ConvertUnit;
 using printing::ConvertUnitFloat;
+using printing::kPixelsPerInch;
 using printing::kPointsPerInch;
 
 namespace chrome_pdf {
@@ -246,6 +247,20 @@ bool FlattenPrintData(FPDF_DOCUMENT doc) {
   return true;
 }
 
+gfx::RectF CSSPixelsToPoints(const gfx::RectF& rect) {
+  return gfx::RectF(
+      ConvertUnitFloat(rect.x(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.y(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.height(), kPixelsPerInch, kPointsPerInch));
+}
+
+gfx::SizeF CSSPixelsToPoints(const gfx::SizeF& size) {
+  return gfx::SizeF(
+      ConvertUnitFloat(size.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(size.height(), kPixelsPerInch, kPointsPerInch));
+}
+
 }  // namespace
 
 PDFiumPrint::PDFiumPrint(PDFiumEngine* engine) : engine_(engine) {}
@@ -324,8 +339,10 @@ ScopedFPDFDocument PDFiumPrint::CreatePrintPdf(
     return nullptr;
   }
 
-  gfx::Size int_paper_size = ToFlooredSize(print_params.paper_size);
-  gfx::Rect int_printable_area = ToEnclosedRect(print_params.printable_area);
+  gfx::Size int_paper_size =
+      ToFlooredSize(CSSPixelsToPoints(print_params.paper_size_in_css_pixels));
+  gfx::Rect int_printable_area = ToEnclosedRect(
+      CSSPixelsToPoints(print_params.printable_area_in_css_pixels));
 
   float scale_factor = print_params.scale_factor / 100.0f;
   FitContentsToPrintableAreaIfRequired(output_doc.get(), scale_factor,

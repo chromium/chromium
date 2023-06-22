@@ -5442,7 +5442,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
 
   // When the main frame is printing, it should not have content clip.
   gfx::SizeF page_size(100, 100);
-  GetFrame().StartPrinting(page_size, page_size, 1);
+  GetFrame().StartPrinting(page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   EXPECT_EQ(nullptr, DocContentClip(main_frame_doc));
   EXPECT_CLIP_RECT(gfx::RectF(0, 0, 300, 150), DocContentClip(child_frame_doc));
@@ -5452,7 +5452,7 @@ TEST_P(PaintPropertyTreeBuilderTest, FrameClipWhenPrinting) {
 
   // When only the child frame is printing, it should not have content clip but
   // the main frame still have (which doesn't matter though).
-  ChildFrame().StartPrinting(page_size, page_size, 1);
+  ChildFrame().StartPrinting(page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   ASSERT_NE(nullptr, DocContentClip(main_frame_doc));
   EXPECT_CLIP_RECT(gfx::RectF(0, 0, 800, 600), DocContentClip(main_frame_doc));
@@ -5773,7 +5773,7 @@ TEST_P(PaintPropertyTreeBuilderTest, RepeatingFixedPositionInPagedMedia) {
   EXPECT_EQ(1u, NumFragments(normal));
 
   gfx::SizeF page_size(300, 400);
-  GetFrame().StartPrinting(page_size, page_size, 1);
+  GetFrame().StartPrinting(page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
   fixed_child = GetLayoutObjectByElementId("fixed-child");
@@ -5836,7 +5836,7 @@ TEST_P(PaintPropertyTreeBuilderTest,
   EXPECT_EQ(1u, NumFragments(fixed_child));
 
   gfx::SizeF page_size(300, 400);
-  GetFrame().StartPrinting(page_size, page_size, 1);
+  GetFrame().StartPrinting(page_size, 1);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
   fixed = GetLayoutObjectByElementId("fixed");
   fixed_child = GetLayoutObjectByElementId("fixed-child");

@@ -520,13 +520,6 @@ static void PrintDocument(blink::WebLocalFrame* frame, SkDocument* doc) {
     cc::SkiaPaintCanvas canvas(sk_canvas);
     cc::PaintCanvasAutoRestore auto_restore(&canvas, true);
     canvas.translate(kMarginLeft, kMarginTop);
-
-#if BUILDFLAG(IS_WIN) || BUILDFLAG(IS_MAC)
-    float page_shrink = frame->GetPrintPageShrink(i);
-    DCHECK_GT(page_shrink, 0);
-    canvas.scale(page_shrink, page_shrink);
-#endif
-
     frame->PrintPage(i, &canvas);
   }
   frame->PrintEnd();

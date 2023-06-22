@@ -387,7 +387,6 @@ class CORE_EXPORT LocalFrame final
   // If this frame doesn't need to fit into a page size, default values are
   // used.
   void StartPrinting(const gfx::SizeF& page_size = gfx::SizeF(),
-                     const gfx::SizeF& aspect_ratio = gfx::SizeF(),
                      float maximum_shrink_ratio = 0);
 
   void EndPrinting();
@@ -943,11 +942,10 @@ class CORE_EXPORT LocalFrame final
 
   // Internal implementation for starting or ending printing.
   // |printing| is true when printing starts, false when printing ends.
-  // |page_size|, |aspect_ratio|, and |maximum_shrink_ratio| are only
-  // meaningful when we should use printing layout for this frame.
+  // |page_size| and |maximum_shrink_ratio| are only meaningful when we should
+  // use printing layout for this frame.
   void SetPrinting(bool printing,
                    const gfx::SizeF& page_size,
-                   const gfx::SizeF& aspect_ratio,
                    float maximum_shrink_ratio);
 
   // FrameScheduler::Delegate overrides:

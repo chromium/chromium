@@ -282,7 +282,6 @@ class WebViewTest : public testing::Test {
   bool SimulateTapEventAtElementById(WebInputEvent::Type,
                                      int tap_event_count,
                                      const WebString& id);
-  gfx::Size PrintICBSizeFromPageSize(const gfx::Size& page_size);
 
   ExternalDateTimeChooser* GetExternalDateTimeChooser(
       WebViewImpl* web_view_impl);
@@ -2822,17 +2821,6 @@ bool WebViewTest::SimulateTapEventAtElementById(WebInputEvent::Type type,
   auto* element = static_cast<Element*>(
       web_view_helper_.LocalMainFrame()->GetDocument().GetElementById(id));
   return SimulateTapEventAtElement(type, tap_event_count, element);
-}
-
-gfx::Size WebViewTest::PrintICBSizeFromPageSize(const gfx::Size& page_size) {
-  // The expected layout size comes from the calculation done in
-  // ResizePageRectsKeepingRatio() which is used from PrintContext::begin() to
-  // scale the page size.
-  float ratio = static_cast<float>(page_size.height()) / page_size.width();
-  int icb_width =
-      floor(page_size.width() * PrintContext::kPrintingMinimumShrinkFactor);
-  int icb_height = floor(icb_width * ratio);
-  return gfx::Size(icb_width, icb_height);
 }
 
 ExternalDateTimeChooser* WebViewTest::GetExternalDateTimeChooser(
@@ -5486,9 +5474,9 @@ TEST_F(WebViewTest, ResizeForPrintingViewportUnits) {
   gfx::Size page_size(300, 360);
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(gfx::SizeF(page_size));
+  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
 
-  gfx::Size expected_size = PrintICBSizeFromPageSize(page_size);
+  gfx::Size expected_size = page_size;
 
   frame->PrintBegin(print_params, WebNode());
 
@@ -5532,7 +5520,7 @@ TEST_F(WebViewTest, WidthMediaQueryWithPageZoomAfterPrinting) {
   gfx::SizeF page_size(300, 360);
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(page_size);
+  print_params.print_content_area_in_css_pixels.set_size(page_size);
 
   frame->PrintBegin(print_params, WebNode());
   frame->PrintEnd();
@@ -5567,10 +5555,10 @@ TEST_F(WebViewTest, ViewportUnitsPrintingWithPageZoom) {
   EXPECT_EQ(400, t2->OffsetWidth());
 
   gfx::Size page_size(600, 720);
-  int expected_width = PrintICBSizeFromPageSize(page_size).width();
+  int expected_width = page_size.width();
 
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(gfx::SizeF(page_size));
+  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
 
   frame->PrintBegin(print_params, WebNode());
 
@@ -5589,7 +5577,7 @@ TEST_F(WebViewTest, ResizeWithFixedPosCrash) {
   WebLocalFrameImpl* frame = web_view->MainFrameImpl();
   gfx::Size page_size(300, 360);
   WebPrintParams print_params;
-  print_params.print_content_area.set_size(gfx::SizeF(page_size));
+  print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(page_size));
   frame->PrintBegin(print_params, WebNode());
   web_view->MainFrameWidget()->Resize(page_size);
   frame->PrintEnd();

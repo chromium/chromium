@@ -715,8 +715,18 @@ String ExternalRepresentation(LocalFrame* frame,
   PrintContext print_context(frame, /*use_printing_layout=*/true);
   bool is_text_printing_mode = !!(behavior & kLayoutAsTextPrintingMode);
   if (is_text_printing_mode) {
-    print_context.BeginPrintMode(layout_box->ClientWidth(),
-                                 layout_box->ClientHeight());
+    gfx::SizeF page_size(layout_box->ClientWidth(), layout_box->ClientHeight());
+
+    // TODO(crbug.com/1450167): Get rid of this conversion, and rebaseline /
+    // rewrite tests, and use page_size_in_pixels everywhere. There used to be
+    // some pixel vs points confusion.
+    static constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
+    page_size.set_width(
+        floorf(page_size.width() * kPrintingMinimumShrinkFactor));
+    page_size.set_height(
+        floorf(page_size.height() * kPrintingMinimumShrinkFactor));
+
+    print_context.BeginPrintMode(page_size);
 
     // The lifecycle needs to be run again after changing printing mode,
     // to account for any style updates due to media query change.

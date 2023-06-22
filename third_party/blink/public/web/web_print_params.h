@@ -38,15 +38,16 @@
 namespace blink {
 
 struct WebPrintParams {
-  // Specifies printable content rect in points (a point is 1/72 of an inch).
-  gfx::RectF print_content_area;
+  // Specifies printable content rect in CSS pixels (a CSS pixel is 1/96 of an
+  // inch).
+  gfx::RectF print_content_area_in_css_pixels;
 
   // Specifies the selected printer default printable area details in
-  // points.
-  gfx::RectF printable_area;
+  // pixels.
+  gfx::RectF printable_area_in_css_pixels;
 
-  // Specifies the selected printer default paper size in points.
-  gfx::SizeF paper_size;
+  // Specifies the selected printer default paper size in pixels.
+  gfx::SizeF paper_size_in_css_pixels;
 
   // Specifies user selected DPI for printing.
   int printer_dpi = 72;
@@ -74,9 +75,9 @@ struct WebPrintParams {
       : WebPrintParams(paper_size, true) {}
 
   WebPrintParams(const gfx::SizeF& paper_size, bool use_printing_layout)
-      : print_content_area(paper_size),
-        printable_area(print_content_area),
-        paper_size(paper_size),
+      : print_content_area_in_css_pixels(paper_size),
+        printable_area_in_css_pixels(paper_size),
+        paper_size_in_css_pixels(paper_size),
         print_scaling_option(printing::mojom::PrintScalingOption::kSourceSize),
         use_printing_layout(use_printing_layout) {}
 };

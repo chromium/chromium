@@ -419,7 +419,6 @@ class CORE_EXPORT LocalFrameView final
   void DisableAutoSizeMode();
 
   void ForceLayoutForPagination(const gfx::SizeF& page_size,
-                                const gfx::SizeF& aspect_ratio,
                                 float maximum_shrink_factor);
 
   // Updates the fragment anchor element based on URL's fragment identifier.

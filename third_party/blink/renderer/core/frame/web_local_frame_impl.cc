@@ -339,7 +339,7 @@ class ChromePrintContext : public PrintContext {
 
   ~ChromePrintContext() override = default;
 
-  void BeginPrintMode(float width, float height) override {
+  void BeginPrintMode(gfx::SizeF page_size) override {
     DCHECK(!printed_page_width_);
 
     // Although layout itself can handle subpixels, we'll round down to the
@@ -352,11 +352,11 @@ class ChromePrintContext : public PrintContext {
     //
     // TODO(mstensho): Refactor page rectangle calculation, and update the
     // comment above.
-    width = floorf(width);
-    height = floorf(height);
+    page_size.set_width(floorf(page_size.width()));
+    page_size.set_height(floorf(page_size.height()));
 
-    printed_page_width_ = width;
-    PrintContext::BeginPrintMode(printed_page_width_, height);
+    printed_page_width_ = page_size.width();
+    PrintContext::BeginPrintMode(page_size);
   }
 
   virtual float GetPageShrink(uint32_t page_number) const {
@@ -459,11 +459,14 @@ class ChromePrintContext : public PrintContext {
         current_height += page_size_in_pixels.width() + 1;
       }
 
-      // Account for the disabling of scaling in spoolPage. In the context of
-      // SpoolPagesWithBoundariesForTesting the scale HAS NOT been
-      // pre-applied.
-      float scale = GetPageShrink(page_index);
+      // TODO(crbug.com/1450167): Remove weird scaling, and rebaseline / rewrite
+      // tests instead. We previously converted from points to pixels inside
+      // PrintContext, but not anymore. In order to avoid minor pixel
+      // differences in tests, we need to use the actual widths involved, rather
+      // than 72/96 directly.
+      float scale = page_size_in_pixels.width() / printed_page_width_;
       transform.Scale(scale, scale);
+
       context.Save();
       context.ConcatCTM(transform);
 
@@ -479,6 +482,12 @@ class ChromePrintContext : public PrintContext {
   virtual void SpoolPage(GraphicsContext& context, int page_number) {
     gfx::Rect page_rect = page_rects_[page_number];
     AffineTransform transform;
+
+    // Layout may have scaled down content in order to fit more unbreakable
+    // content in the inline direction.
+    float scale = GetPageShrink(page_number);
+    transform.Scale(scale, scale);
+
     transform.Translate(static_cast<float>(-page_rect.x()),
                         static_cast<float>(-page_rect.y()));
     context.Save();
@@ -545,9 +554,9 @@ class ChromePluginPrintContext final : public ChromePrintContext {
     ChromePrintContext::Trace(visitor);
   }
 
-  void BeginPrintMode(float width, float height) override {
-    gfx::Rect rect(gfx::ToFlooredSize(gfx::SizeF(width, height)));
-    print_params_.print_content_area = gfx::RectF(rect);
+  void BeginPrintMode(gfx::SizeF page_size) override {
+    gfx::Rect rect(gfx::ToFlooredSize(page_size));
+    print_params_.print_content_area_in_css_pixels = gfx::RectF(page_size);
     page_rects_.Fill(rect, plugin_->PrintBegin(print_params_));
   }
 
@@ -1918,15 +1927,10 @@ uint32_t WebLocalFrameImpl::PrintBegin(const WebPrintParams& print_params,
         GetFrame(), print_params.use_printing_layout);
   }
 
-  gfx::SizeF size(print_params.print_content_area.size());
-  print_context_->BeginPrintMode(size.width(), size.height());
+  gfx::SizeF size(print_params.print_content_area_in_css_pixels.size());
+  print_context_->BeginPrintMode(size);
 
   return print_context_->PageCount();
-}
-
-float WebLocalFrameImpl::GetPrintPageShrink(uint32_t page) {
-  DCHECK(print_context_);
-  return print_context_->GetPageShrink(page);
 }
 
 void WebLocalFrameImpl::PrintPage(uint32_t page, cc::PaintCanvas* canvas) {

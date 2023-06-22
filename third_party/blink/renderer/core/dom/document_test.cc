@@ -439,8 +439,7 @@ TEST_F(DocumentTest, PrintRelayout) {
   gfx::SizeF page_size(400, 400);
   float maximum_shrink_ratio = 1.6;
 
-  GetDocument().GetFrame()->StartPrinting(page_size, page_size,
-                                          maximum_shrink_ratio);
+  GetDocument().GetFrame()->StartPrinting(page_size, maximum_shrink_ratio);
   EXPECT_EQ(GetDocument().documentElement()->OffsetWidth(), 400);
   GetDocument().GetFrame()->EndPrinting();
   EXPECT_EQ(GetDocument().documentElement()->OffsetWidth(), 800);
@@ -1107,7 +1106,7 @@ TEST_F(DocumentTest, AtPageMarginWithDeviceScaleFactor) {
 
   constexpr gfx::SizeF initial_page_size(800, 600);
 
-  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().GetFrame()->StartPrinting(initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   WebPrintPageDescription description;

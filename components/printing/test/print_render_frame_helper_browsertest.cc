@@ -835,6 +835,85 @@ TEST_F(MAYBE_PrintRenderFrameHelperTest, MonolithicAbsposOverflowingParent) {
   OnPrintPages();
 }
 
+TEST_F(MAYBE_PrintRenderFrameHelperTest, SpecifiedPageSize1) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 400px 123px;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <div style="width:400px; height:123px;"></div>
+  )HTML");
+
+  print_manager()->SetExpectedPagesCount(1);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
+
+// TODO(crbug.com/1444579): Fix the remaining issues, and enable this test.
+TEST_F(MAYBE_PrintRenderFrameHelperTest, DISABLED_SpecifiedPageSize2) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 400px 123.1px;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <div style="width:400px; height:123.1px;"></div>
+  )HTML");
+
+  print_manager()->SetExpectedPagesCount(1);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
+
+// TODO(crbug.com/1444579): Fix the remaining issues, and enable this test.
+TEST_F(MAYBE_PrintRenderFrameHelperTest, DISABLED_SpecifiedPageSize3) {
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        size: 400px 123.9px;
+        margin: 0;
+      }
+      body {
+        margin: 0;
+      }
+    </style>
+    <div style="width:400px; height:123.9px;"></div>
+  )HTML");
+
+  print_manager()->SetExpectedPagesCount(1);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
+
+TEST_F(MAYBE_PrintRenderFrameHelperTest, MediaQueryNoCSSPageMargins) {
+  // The default page size in these tests is US Letter.
+  LoadHTML(R"HTML(
+    <style>
+      @page {
+        margin: 0;
+      }
+      @media (width: 8.5in) and (height: 11in) {
+        div { break-before: page; }
+      }
+    </style>
+    First page
+    <div>Second page</div>
+  )HTML");
+
+  print_manager()->SetExpectedPagesCount(2);
+  OnPrintPages();
+  VerifyPagesPrinted(true);
+}
+
 #if BUILDFLAG(IS_APPLE)
 // TODO(estade): I don't think this test is worth porting to Linux. We will have
 // to rip out and replace most of the IPC code if we ever plan to improve

@@ -358,6 +358,39 @@ void PrintPDFOutput(PP_Resource print_output,
 #endif  // BUILDFLAG(ENABLE_PRINTING)
 }
 
+// Stolen from //printing/units.{cc,h}
+
+// Length of an inch in CSS's 1pt unit.
+// http://dev.w3.org/csswg/css3-values/#absolute-length-units-cm-mm.-in-pt-pc
+constexpr int kPointsPerInch = 72;
+
+// Length of an inch in CSS's 1px unit.
+// http://dev.w3.org/csswg/css3-values/#the-px-unit
+constexpr int kPixelsPerInch = 96;
+
+float ConvertUnitFloat(float value, float old_unit, float new_unit) {
+  CHECK_GT(new_unit, 0);
+  CHECK_GT(old_unit, 0);
+  return value * new_unit / old_unit;
+}
+
+PP_Rect CSSPixelsToPoints(const gfx::RectF& rect) {
+  const gfx::Rect points_rect = gfx::ToEnclosedRect(gfx::RectF(
+      ConvertUnitFloat(rect.x(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.y(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(rect.height(), kPixelsPerInch, kPointsPerInch)));
+  return PP_MakeRectFromXYWH(points_rect.x(), points_rect.y(),
+                             points_rect.width(), points_rect.height());
+}
+
+PP_Size CSSPixelsToPoints(const gfx::SizeF& size) {
+  const gfx::Size points_size = gfx::ToFlooredSize(gfx::SizeF(
+      ConvertUnitFloat(size.width(), kPixelsPerInch, kPointsPerInch),
+      ConvertUnitFloat(size.height(), kPixelsPerInch, kPointsPerInch)));
+  return PP_MakeSize(points_size.width(), points_size.height());
+}
+
 }  // namespace
 
 // static
@@ -1578,11 +1611,11 @@ int PepperPluginInstanceImpl::PrintBegin(const WebPrintParams& print_params) {
 
   PP_PrintSettings_Dev print_settings;
   print_settings.printable_area =
-      PP_FromGfxRect(gfx::ToEnclosedRect(print_params.printable_area));
+      CSSPixelsToPoints(print_params.printable_area_in_css_pixels);
   print_settings.content_area =
-      PP_FromGfxRect(gfx::ToEnclosedRect(print_params.print_content_area));
+      CSSPixelsToPoints(print_params.print_content_area_in_css_pixels);
   print_settings.paper_size =
-      PP_FromGfxSize(gfx::ToFlooredSize(print_params.paper_size));
+      CSSPixelsToPoints(print_params.paper_size_in_css_pixels);
   print_settings.dpi = print_params.printer_dpi;
   print_settings.orientation = PP_PRINTORIENTATION_NORMAL;
   print_settings.grayscale = PP_FALSE;

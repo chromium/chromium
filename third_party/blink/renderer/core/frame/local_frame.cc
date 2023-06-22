@@ -1254,20 +1254,18 @@ scoped_refptr<InspectorTaskRunner> LocalFrame::GetInspectorTaskRunner() {
 }
 
 void LocalFrame::StartPrinting(const gfx::SizeF& page_size,
-                               const gfx::SizeF& aspect_ratio,
                                float maximum_shrink_ratio) {
   DCHECK(!saved_scroll_offsets_);
-  SetPrinting(true, page_size, aspect_ratio, maximum_shrink_ratio);
+  SetPrinting(true, page_size, maximum_shrink_ratio);
 }
 
 void LocalFrame::EndPrinting() {
   RestoreScrollOffsets();
-  SetPrinting(false, gfx::SizeF(), gfx::SizeF(), 0);
+  SetPrinting(false, gfx::SizeF(), 0);
 }
 
 void LocalFrame::SetPrinting(bool printing,
                              const gfx::SizeF& page_size,
-                             const gfx::SizeF& aspect_ratio,
                              float maximum_shrink_ratio) {
   // In setting printing, we should not validate resources already cached for
   // the document.  See https://bugs.webkit.org/show_bug.cgi?id=43704
@@ -1282,8 +1280,7 @@ void LocalFrame::SetPrinting(bool printing,
     text_autosizer->UpdatePageInfo();
 
   if (ShouldUsePrintingLayout()) {
-    View()->ForceLayoutForPagination(page_size, aspect_ratio,
-                                     maximum_shrink_ratio);
+    View()->ForceLayoutForPagination(page_size, maximum_shrink_ratio);
   } else {
     if (LayoutView* layout_view = View()->GetLayoutView()) {
       layout_view->SetIntrinsicLogicalWidthsDirty();

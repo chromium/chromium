@@ -709,7 +709,7 @@ TEST_F(ContainerQueryEvaluatorTest, Printing) {
       Color(0, 128, 0));
 
   constexpr gfx::SizeF initial_page_size(400, 400);
-  GetDocument().GetFrame()->StartPrinting(initial_page_size, initial_page_size);
+  GetDocument().GetFrame()->StartPrinting(initial_page_size);
   GetDocument().View()->UpdateLifecyclePhasesForPrinting();
 
   EXPECT_EQ(

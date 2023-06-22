@@ -3239,7 +3239,6 @@ void LocalFrameView::DisableAutoSizeMode() {
 }
 
 void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
-                                              const gfx::SizeF& aspect_ratio,
                                               float maximum_shrink_factor) {
   // Dumping externalRepresentation(m_frame->layoutObject()).ascii() is a good
   // trick to see the state of things before and after the layout
@@ -3272,8 +3271,8 @@ void LocalFrameView::ForceLayoutForPagination(const gfx::SizeF& page_size,
                           page_size.width() * maximum_shrink_factor),
           std::min<float>(document_rect.Height().Round(),
                           page_size.height() * maximum_shrink_factor));
-      gfx::SizeF max_page_size =
-          frame_->ResizePageRectsKeepingRatio(aspect_ratio, expected_page_size);
+      gfx::SizeF max_page_size = frame_->ResizePageRectsKeepingRatio(
+          /* aspect_ratio */ page_size, expected_page_size);
       page_logical_width = horizontal_writing_mode ? max_page_size.width()
                                                    : max_page_size.height();
       layout_view->SetPageSize({LayoutUnit(max_page_size.width()),

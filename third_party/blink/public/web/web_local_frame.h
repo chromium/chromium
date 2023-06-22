@@ -773,11 +773,6 @@ class BLINK_EXPORT WebLocalFrame : public WebFrame {
   // printing. It returns whether any resources will need to load.
   virtual bool WillPrintSoon() = 0;
 
-  // Returns the page shrinking factor calculated by webkit (usually
-  // between 1/1.33 and 1/2). Returns 0 if the page number is invalid or
-  // not in printing mode.
-  virtual float GetPrintPageShrink(uint32_t page) = 0;
-
   // Prints one page.
   virtual void PrintPage(uint32_t page_to_print, cc::PaintCanvas*) = 0;
 

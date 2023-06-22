@@ -109,9 +109,6 @@ enum PrintPreviewHelperEvents {
   PREVIEW_EVENT_MAX,
 };
 
-// Also set in third_party/WebKit/Source/core/page/PrintContext.h
-constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
-
 #if BUILDFLAG(ENABLE_PRINT_PREVIEW)
 bool g_is_preview_enabled = true;
 #else
@@ -260,7 +257,6 @@ mojom::PageSizeMarginsPtr CalculatePageLayoutFromPrintParams(
     const mojom::PrintParams& params,
     double scale_factor) {
   bool fit_to_page = IsPrintScalingOptionFitToPage(params);
-  int dpi = GetDPI(params);
   float content_width = params.content_size.width();
   float content_height = params.content_size.height();
   // Scale the content to its normal size for purpose of computing page layout.
@@ -276,20 +272,56 @@ mojom::PageSizeMarginsPtr CalculatePageLayoutFromPrintParams(
   float margin_right =
       params.page_size.width() - content_width - params.margin_left;
 
-  auto page_layout_in_points = mojom::PageSizeMargins::New();
-  page_layout_in_points->content_width =
-      ConvertUnitFloat(content_width, dpi, kPointsPerInch);
-  page_layout_in_points->content_height =
-      ConvertUnitFloat(content_height, dpi, kPointsPerInch);
-  page_layout_in_points->margin_top =
-      ConvertUnitFloat(params.margin_top, dpi, kPointsPerInch);
-  page_layout_in_points->margin_right =
-      ConvertUnitFloat(margin_right, dpi, kPointsPerInch);
-  page_layout_in_points->margin_bottom =
-      ConvertUnitFloat(margin_bottom, dpi, kPointsPerInch);
-  page_layout_in_points->margin_left =
-      ConvertUnitFloat(params.margin_left, dpi, kPointsPerInch);
-  return page_layout_in_points;
+  return mojom::PageSizeMargins::New(content_width, content_height,
+                                     params.margin_top, margin_right,
+                                     margin_bottom, params.margin_left);
+}
+
+mojom::PageSizeMarginsPtr ConvertedPageSizeMargins(
+    const mojom::PageSizeMarginsPtr& orig_page_layout,
+    float old_unit,
+    float new_unit) {
+  mojom::PageSizeMarginsPtr page_layout = orig_page_layout.Clone();
+  page_layout->content_width =
+      ConvertUnitFloat(page_layout->content_width, old_unit, new_unit);
+  page_layout->content_height =
+      ConvertUnitFloat(page_layout->content_height, old_unit, new_unit);
+  page_layout->margin_top =
+      ConvertUnitFloat(page_layout->margin_top, old_unit, new_unit);
+  page_layout->margin_right =
+      ConvertUnitFloat(page_layout->margin_right, old_unit, new_unit);
+  page_layout->margin_bottom =
+      ConvertUnitFloat(page_layout->margin_bottom, old_unit, new_unit);
+  page_layout->margin_left =
+      ConvertUnitFloat(page_layout->margin_left, old_unit, new_unit);
+
+  return page_layout;
+}
+
+// Get size and offset information from `page_layout`.
+//
+// `page_size` is the size of the page box (i.e. outside the margin area).
+//
+// `content_area` is the page area within `page_size`.
+//
+// `canvas_area` is the area that can be drawn on. If headers and footers are to
+// be included, it will simply be `page_size` at offset 0,0. Otherwise it will
+// be the same as `content_area`.
+void GetPageSizeAndContentAreaFromPageLayout(
+    const mojom::PrintParams& params,
+    const mojom::PageSizeMargins& page_layout,
+    gfx::Size* page_size,
+    gfx::Rect* content_area,
+    gfx::Rect* canvas_area) {
+  *page_size = gfx::Size(page_layout.content_width + page_layout.margin_right +
+                             page_layout.margin_left,
+                         page_layout.content_height + page_layout.margin_top +
+                             page_layout.margin_bottom);
+  *content_area =
+      gfx::Rect(page_layout.margin_left, page_layout.margin_top,
+                page_layout.content_width, page_layout.content_height);
+  *canvas_area =
+      params.display_header_footer ? gfx::Rect(*page_size) : *content_area;
 }
 
 void EnsureOrientationMatches(const mojom::PrintParams& css_params,
@@ -337,22 +369,22 @@ blink::WebPrintParams ComputeWebKitPrintParamsInDesiredDpi(
   webkit_print_params.rasterize_pdf = print_params.rasterize_pdf;
   webkit_print_params.print_scaling_option = print_params.print_scaling_option;
 
-  webkit_print_params.print_content_area.set_size(gfx::SizeF(
-      ConvertUnitFloat(print_params.content_size.width(), dpi, kPointsPerInch),
+  webkit_print_params.print_content_area_in_css_pixels.set_size(gfx::SizeF(
+      ConvertUnitFloat(print_params.content_size.width(), dpi, kPixelsPerInch),
       ConvertUnitFloat(print_params.content_size.height(), dpi,
-                       kPointsPerInch)));
+                       kPixelsPerInch)));
 
-  webkit_print_params.printable_area = gfx::RectF(
-      ConvertUnitFloat(print_params.printable_area.x(), dpi, kPointsPerInch),
-      ConvertUnitFloat(print_params.printable_area.y(), dpi, kPointsPerInch),
+  webkit_print_params.printable_area_in_css_pixels = gfx::RectF(
+      ConvertUnitFloat(print_params.printable_area.x(), dpi, kPixelsPerInch),
+      ConvertUnitFloat(print_params.printable_area.y(), dpi, kPixelsPerInch),
       ConvertUnitFloat(print_params.printable_area.width(), dpi,
-                       kPointsPerInch),
+                       kPixelsPerInch),
       ConvertUnitFloat(print_params.printable_area.height(), dpi,
-                       kPointsPerInch));
+                       kPixelsPerInch));
 
-  webkit_print_params.paper_size = gfx::SizeF(
-      ConvertUnitFloat(print_params.page_size.width(), dpi, kPointsPerInch),
-      ConvertUnitFloat(print_params.page_size.height(), dpi, kPointsPerInch));
+  webkit_print_params.paper_size_in_css_pixels = gfx::SizeF(
+      ConvertUnitFloat(print_params.page_size.width(), dpi, kPixelsPerInch),
+      ConvertUnitFloat(print_params.page_size.height(), dpi, kPixelsPerInch));
 
   // The following settings is for N-up mode.
   webkit_print_params.pages_per_sheet = print_params.pages_per_sheet;
@@ -588,8 +620,8 @@ mojom::PrintParamsPtr CalculatePrintParamsForCss(
   return result_params;
 }
 
-// Get page layout in points and fit to page if needed.
-mojom::PageSizeMarginsPtr ComputePageLayoutInPointsForCss(
+// Get page layout and fit to page if needed. The layout is in device pixels.
+mojom::PageSizeMarginsPtr ComputePageLayoutForCss(
     blink::WebLocalFrame* frame,
     uint32_t page_index,
     const mojom::PrintParams& page_params,
@@ -648,15 +680,17 @@ void PrintHeaderAndFooter(cc::PaintCanvas* canvas,
                           uint32_t page_number,
                           uint32_t total_pages,
                           const blink::WebLocalFrame& source_frame,
-                          float webkit_scale_factor,
+                          float scale_factor,
                           const mojom::PageSizeMargins& page_layout,
                           const mojom::PrintParams& params) {
   DCHECK_LE(total_pages, kMaxPageCount);
   // |page_number| is 1-based here, so it could be equal to kMaxPageCount.
   DCHECK_LE(page_number, kMaxPageCount);
 
+  // Scaling has already been applied to the canvas, but headers and footers
+  // should not be affected by that, so cancel it out.
   cc::PaintCanvasAutoRestore auto_restore(canvas, true);
-  canvas->scale(1 / webkit_scale_factor, 1 / webkit_scale_factor);
+  canvas->scale(1 / scale_factor, 1 / scale_factor);
 
   gfx::SizeF page_size(page_layout.margin_left + page_layout.margin_right +
                            page_layout.content_width,
@@ -977,18 +1011,11 @@ PrepareFrameAndViewForPrint::~PrepareFrameAndViewForPrint() {
 void PrepareFrameAndViewForPrint::ResizeForPrinting() {
   TRACE_EVENT0("print", "PrepareFrameAndViewForPrint::ResizeForPrinting");
 
-  // Layout page according to printer page size. Since WebKit shrinks the
-  // size of the page automatically (from 133.3% to 200%) we trick it to
-  // think the page is 133.3% larger so the size of the page is correct for
-  // minimum (default) scaling.
-  // The scaling factor 1.25 was originally chosen as a magic number that
-  // was 'about right'. However per https://crbug.com/273306 1.333 seems to be
-  // the number that produces output with the correct physical size for elements
-  // that are specified in cm, mm, pt etc.
-  // This is important for sites that try to fill the page.
-  gfx::SizeF print_layout_size(web_print_params_.print_content_area.size());
-  print_layout_size.set_height(InverseScaleDouble(
-      print_layout_size.height(), kPrintingMinimumShrinkFactor));
+  // TODO(crbug.com/1117050): This is an attempt at handling media queries, but
+  // it's not quite right. We're passing the page area instead of the page box
+  // here, so any page margins will cause inaccuracies.
+  gfx::SizeF print_layout_size(
+      web_print_params_.print_content_area_in_css_pixels.size());
 
   if (!frame())
     return;
@@ -1704,21 +1731,6 @@ void PrintRenderFrameHelper::SnapshotForContentAnalysis(
 }
 #endif  // BUILDFLAG(ENABLE_PRINT_CONTENT_ANALYSIS)
 
-void PrintRenderFrameHelper::GetPageSizeAndContentAreaFromPageLayout(
-    const mojom::PageSizeMargins& page_layout_in_points,
-    gfx::Size* page_size,
-    gfx::Rect* content_area) {
-  *page_size = gfx::Size(
-      page_layout_in_points.content_width + page_layout_in_points.margin_right +
-          page_layout_in_points.margin_left,
-      page_layout_in_points.content_height + page_layout_in_points.margin_top +
-          page_layout_in_points.margin_bottom);
-  *content_area = gfx::Rect(page_layout_in_points.margin_left,
-                            page_layout_in_points.margin_top,
-                            page_layout_in_points.content_width,
-                            page_layout_in_points.content_height);
-}
-
 void PrintRenderFrameHelper::UpdateFrameMarginsCssInfo(
     const base::Value::Dict& settings) {
   constexpr int kDefault = static_cast<int>(mojom::MarginType::kDefaultMargins);
@@ -1816,17 +1828,19 @@ PrintRenderFrameHelper::CreatePreviewDocument() {
                      /*is_pdf=*/!print_preview_context_.IsModifiable());
 
   mojom::PageSizeMarginsPtr default_page_layout =
-      ComputePageLayoutInPointsForCss(print_preview_context_.prepared_frame(),
-                                      0, print_params, ignore_css_margins_,
-                                      &scale_factor);
+      ComputePageLayoutForCss(print_preview_context_.prepared_frame(), 0,
+                              print_params, ignore_css_margins_, &scale_factor);
+  int dpi = GetDPI(print_params);
+  // Convert to points.
+  default_page_layout =
+      ConvertedPageSizeMargins(default_page_layout, dpi, kPointsPerInch);
+
   bool all_pages_have_custom_size;
   bool all_pages_have_custom_orientation;
   GetPageSizeAndOrientationInfo(print_preview_context_.prepared_frame(),
                                 print_preview_context_.total_page_count(),
                                 &all_pages_have_custom_size,
                                 &all_pages_have_custom_orientation);
-  int dpi = GetDPI(print_params);
-
   gfx::RectF printable_area_in_points(
       ConvertUnitFloat(print_params.printable_area.x(), dpi, kPointsPerInch),
       ConvertUnitFloat(print_params.printable_area.y(), dpi, kPointsPerInch),
@@ -2563,24 +2577,46 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
                                                double scale_factor,
                                                blink::WebLocalFrame* frame,
                                                MetafileSkia* metafile) {
-  double css_scale_factor = scale_factor;
-  mojom::PageSizeMarginsPtr page_layout_in_points =
-      ComputePageLayoutInPointsForCss(frame, page_number, params,
-                                      ignore_css_margins_, &css_scale_factor);
+  mojom::PageSizeMarginsPtr page_layout_in_device_pixels =
+      ComputePageLayoutForCss(frame, page_number, params, ignore_css_margins_,
+                              &scale_factor);
+  mojom::PageSizeMarginsPtr page_layout_in_css_pixels =
+      ConvertedPageSizeMargins(page_layout_in_device_pixels, GetDPI(params),
+                               kPixelsPerInch);
 
-  gfx::Size page_size;
+  gfx::Size page_size_ignored;
   gfx::Rect content_area;
-  GetPageSizeAndContentAreaFromPageLayout(*page_layout_in_points, &page_size,
-                                          &content_area);
+  gfx::Rect canvas_area;
+  GetPageSizeAndContentAreaFromPageLayout(params, *page_layout_in_css_pixels,
+                                          &page_size_ignored, &content_area,
+                                          &canvas_area);
 
-  gfx::Rect canvas_area =
-      params.display_header_footer ? gfx::Rect(page_size) : content_area;
+  cc::PaintCanvas* canvas;
+  {
+    // Explicit scope for stuff in points. Blink renders in CSS pixels. Convert
+    // to points for Skia metafile / PDF, since that's what they want. The PDF
+    // generation code expects the values to be in points, so that if we had
+    // passed them as pixels, the pages would be 1/kPointsPerPixel (33.333%)
+    // larger than they should be. It may be a cleaner approach if the metafile
+    // code handled this, so that this code could simply deal with CSS
+    // pixels. But for now the conversion is performed here.
+    mojom::PageSizeMarginsPtr page_layout_in_points = ConvertedPageSizeMargins(
+        page_layout_in_device_pixels, GetDPI(params), kPointsPerInch);
+    gfx::Size page_size_in_points;
+    gfx::Rect content_area_ignored;
+    gfx::Rect canvas_area_in_points;
+    GetPageSizeAndContentAreaFromPageLayout(
+        params, *page_layout_in_points, &page_size_in_points,
+        &content_area_ignored, &canvas_area_in_points);
 
-  float webkit_page_shrink_factor = frame->GetPrintPageShrink(page_number);
-  float final_scale_factor = css_scale_factor * webkit_page_shrink_factor;
+    double scale_factor_for_points = scale_factor *
+                                     static_cast<double>(kPointsPerInch) /
+                                     static_cast<double>(kPixelsPerInch);
 
-  cc::PaintCanvas* canvas = metafile->GetVectorCanvasForNewPage(
-      page_size, canvas_area, final_scale_factor, params.page_orientation);
+    canvas = metafile->GetVectorCanvasForNewPage(
+        page_size_in_points, canvas_area_in_points, scale_factor_for_points,
+        params.page_orientation);
+  }
   if (!canvas)
     return;
 
@@ -2589,11 +2625,11 @@ void PrintRenderFrameHelper::PrintPageInternal(const mojom::PrintParams& params,
   if (params.display_header_footer) {
     // |page_number| is 0-based, so 1 is added.
     PrintHeaderAndFooter(canvas, page_number + 1, page_count, *frame,
-                         final_scale_factor, *page_layout_in_points, params);
+                         scale_factor, *page_layout_in_css_pixels, params);
   }
 
-  RenderPageContent(frame, page_number, canvas_area, content_area,
-                    final_scale_factor, canvas);
+  RenderPageContent(frame, page_number, canvas_area, content_area, scale_factor,
+                    canvas);
 
   // Done printing. Close the canvas to retrieve the compiled metafile.
   bool ret = metafile->FinishPage();

@@ -120,31 +120,29 @@ void PrintContext::ComputePageRects(const gfx::SizeF& print_size) {
   }
 }
 
-void PrintContext::BeginPrintMode(float width, float height) {
-  DCHECK_GT(width, 0);
-  DCHECK_GT(height, 0);
+void PrintContext::BeginPrintMode(gfx::SizeF page_size) {
+  DCHECK_GT(page_size.width(), 0);
+  DCHECK_GT(page_size.height(), 0);
 
   // This function can be called multiple times to adjust printing parameters
   // without going back to screen mode.
   is_printing_ = true;
 
-  gfx::SizeF aspect_ratio(width, height);
-  gfx::SizeF floored_min_layout_size = frame_->ResizePageRectsKeepingRatio(
-      aspect_ratio, gfx::SizeF(width * kPrintingMinimumShrinkFactor,
-                               height * kPrintingMinimumShrinkFactor));
-
   const Settings* settings = frame_->GetSettings();
   DCHECK(settings);
+  // TODO(crbug.com/1296099): It would be better if the actual shrink factor was
+  // stored in settings, rather than something that has to be divided by
+  // 1.3333...
+  static constexpr float kPrintingMinimumShrinkFactor = 1.33333333f;
   float printingMaximumShrinkFactor =
       settings->GetPrintingMaximumShrinkFactor();
 
   // This changes layout, so callers need to make sure that they don't paint to
   // screen while in printing mode.
   frame_->StartPrinting(
-      floored_min_layout_size, aspect_ratio,
-      printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
+      page_size, printingMaximumShrinkFactor / kPrintingMinimumShrinkFactor);
 
-  ComputePageRects(gfx::SizeF(width, height));
+  ComputePageRects(page_size);
 }
 
 void PrintContext::EndPrintMode() {
@@ -168,9 +166,8 @@ int PrintContext::PageNumberForElement(Element* element,
   element->GetDocument().UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
   LocalFrame* frame = element->GetDocument().GetFrame();
-  gfx::RectF page_rect(page_size_in_pixels);
   ScopedPrintContext print_context(frame);
-  print_context->BeginPrintMode(page_rect.width(), page_rect.height());
+  print_context->BeginPrintMode(page_size_in_pixels);
 
   LayoutBoxModelObject* box =
       EnclosingBoxModelObject(element->GetLayoutObject());
@@ -237,7 +234,7 @@ String PrintContext::PageProperty(LocalFrame* frame,
   // Any non-zero size is OK here. We don't care about actual layout. We just
   // want to collect @page rules and figure out what declarations apply on a
   // given page (that may or may not exist).
-  print_context->BeginPrintMode(800, 1000);
+  print_context->BeginPrintMode(gfx::SizeF(800, 1000));
   scoped_refptr<const ComputedStyle> style =
       document->StyleForPage(page_number);
 
@@ -297,8 +294,7 @@ int PrintContext::NumberOfPages(LocalFrame* frame,
   frame->GetDocument()->UpdateStyleAndLayout(DocumentUpdateReason::kPrinting);
 
   ScopedPrintContext print_context(frame);
-  print_context->BeginPrintMode(page_size_in_pixels.width(),
-                                page_size_in_pixels.height());
+  print_context->BeginPrintMode(page_size_in_pixels);
   return print_context->PageCount();
 }
 
