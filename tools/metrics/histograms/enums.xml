@@ -43634,6 +43634,15 @@ Called by update_permissions_policy_enum.py.-->
   <int value="4" label="Feature is accessible to user. Recorded periodically."/>
 </enum>
 
+<enum name="FedCmAccountsResponseInvalidReason">
+  <int value="0" label="Response is not JSON or dict"/>
+  <int value="1" label="No accounts key"/>
+  <int value="2" label="Account list is empty"/>
+  <int value="3" label="Account is not dict"/>
+  <int value="4" label="Account misses required field"/>
+  <int value="5" label="Accounts share the same id"/>
+</enum>
+
 <enum name="FedCmCancelReason">
   <int value="0" label="Other"/>
   <int value="1" label="Close button"/>

@@ -307,4 +307,10 @@ void RecordIdpSignOutNetError(int response_code) {
                            -net_error);
 }
 
+void RecordAccountsResponseInvalidReason(
+    IdpNetworkRequestManager::AccountsResponseInvalidReason reason) {
+  base::UmaHistogramEnumeration(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason", reason);
+}
+
 }  // namespace content

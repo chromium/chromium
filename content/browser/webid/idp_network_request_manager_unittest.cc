@@ -38,6 +38,8 @@ using ParseStatus = content::IdpNetworkRequestManager::ParseStatus;
 using AccountsRequestCallback =
     content::IdpNetworkRequestManager::AccountsRequestCallback;
 using LoginState = content::IdentityRequestAccount::LoginState;
+using AccountsResponseInvalidReason =
+    content::IdpNetworkRequestManager::AccountsResponseInvalidReason;
 
 namespace content {
 
@@ -257,10 +259,13 @@ class IdpNetworkRequestManagerTest : public ::testing::Test {
     return test_url_loader_factory_;
   }
 
+  base::HistogramTester* histogram_tester() { return &histogram_tester_; }
+
  private:
   base::test::SingleThreadTaskEnvironment task_environment_;
   network::TestURLLoaderFactory test_url_loader_factory_;
   data_decoder::test::InProcessDataDecoder in_process_data_decoder;
+  base::HistogramTester histogram_tester_;
 };
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
@@ -276,6 +281,10 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountEmpty) {
   EXPECT_EQ(ParseStatus::kEmptyListError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
+
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kAccountListIsEmpty, 1);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountSingle) {
@@ -347,6 +356,7 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountOptionalFields) {
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
   {
+    base::HistogramTester histogram_tester;
     std::string test_account_missing_account_id_json =
         RemoveAllLinesWithKeyFromJson("id", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
@@ -359,8 +369,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
               accounts_response.parse_status);
     EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
     EXPECT_TRUE(accounts.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Blink.FedCm.Status.AccountsResponseInvalidReason",
+        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
   }
   {
+    base::HistogramTester histogram_tester;
     std::string test_account_missing_email_json =
         RemoveAllLinesWithKeyFromJson("email", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
@@ -372,8 +386,12 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
               accounts_response.parse_status);
     EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
     EXPECT_TRUE(accounts.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Blink.FedCm.Status.AccountsResponseInvalidReason",
+        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
   }
   {
+    base::HistogramTester histogram_tester;
     std::string test_account_missing_name_json =
         RemoveAllLinesWithKeyFromJson("name", kSingleAccountEndpointValidJson);
     FetchStatus accounts_response;
@@ -385,6 +403,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountRequiredFields) {
               accounts_response.parse_status);
     EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
     EXPECT_TRUE(accounts.empty());
+    histogram_tester.ExpectUniqueSample(
+        "Blink.FedCm.Status.AccountsResponseInvalidReason",
+        AccountsResponseInvalidReason::kAccountMissesRequiredField, 1);
   }
 }
 
@@ -413,6 +434,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountDuplicateIds) {
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kAccountsShareSameId, 1);
 
   // Test that JSON is valid with exception of duplicate id.
   std::string accounts_json_different_account_ids =
@@ -496,6 +520,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountInvalid) {
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kNoAccountsKey, 1);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
@@ -509,6 +536,9 @@ TEST_F(IdpNetworkRequestManagerTest, ParseAccountMalformed) {
   EXPECT_EQ(ParseStatus::kInvalidResponseError, accounts_response.parse_status);
   EXPECT_EQ(net::HTTP_OK, accounts_response.response_code);
   EXPECT_TRUE(accounts.empty());
+  histogram_tester()->ExpectUniqueSample(
+      "Blink.FedCm.Status.AccountsResponseInvalidReason",
+      AccountsResponseInvalidReason::kResponseIsNotJsonOrDict, 1);
 }
 
 TEST_F(IdpNetworkRequestManagerTest, ComputeWellKnownUrl) {
