@@ -1221,16 +1221,24 @@ TEST_P(WebAppPolicyManagerTest, DisableSystemWebApps) {
   auto disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_TRUE(disabled_apps.empty());
 
-  // Add camera to system features disable list policy.
-  base::Value::List disabled_apps_list;
-  disabled_apps_list.Append(static_cast<int>(policy::SystemFeature::kCamera));
+  // Add supported system web apps to system features disable list policy.
   testing_local_state_.Get()->SetUserPref(
       policy::policy_prefs::kSystemFeaturesDisableList,
-      std::move(disabled_apps_list));
+      base::Value::List()
+          .Append(static_cast<int>(policy::SystemFeature::kCamera))
+          .Append(static_cast<int>(policy::SystemFeature::kOsSettings))
+          .Append(static_cast<int>(policy::SystemFeature::kScanning))
+          .Append(static_cast<int>(policy::SystemFeature::kExplore))
+          .Append(static_cast<int>(policy::SystemFeature::kCrosh))
+          .Append(static_cast<int>(policy::SystemFeature::kTerminal))
+          .Append(static_cast<int>(policy::SystemFeature::kGallery)));
   base::RunLoop().RunUntilIdle();
 
-  std::set<ash::SystemWebAppType> expected_disabled_apps;
-  expected_disabled_apps.insert(ash::SystemWebAppType::CAMERA);
+  const std::set<ash::SystemWebAppType> expected_disabled_apps{
+      ash::SystemWebAppType::CAMERA,   ash::SystemWebAppType::SETTINGS,
+      ash::SystemWebAppType::SCANNING, ash::SystemWebAppType::HELP,
+      ash::SystemWebAppType::CROSH,    ash::SystemWebAppType::TERMINAL,
+      ash::SystemWebAppType::MEDIA};
 
   disabled_apps = policy_manager().GetDisabledSystemWebApps();
   EXPECT_EQ(disabled_apps, expected_disabled_apps);
