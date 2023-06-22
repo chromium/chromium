@@ -92,8 +92,7 @@ gfx::RectF RenderSurfaceImpl::DrawableContentRect() const {
   }
   gfx::RectF drawable_content_rect = MathUtil::MapClippedRect(
       draw_transform(), gfx::RectF(surface_content_rect));
-  if (!filters.IsEmpty() && is_clipped()) {
-    // Filter could move pixels around, but still need to be clipped.
+  if (is_clipped()) {
     drawable_content_rect.Intersect(gfx::RectF(clip_rect()));
   }
 
