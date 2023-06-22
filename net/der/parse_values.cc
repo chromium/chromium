@@ -5,6 +5,7 @@
 #include "net/der/parse_values.h"
 
 #include <tuple>
+#include <vector>
 
 #include "base/check_op.h"
 #include "base/notreached.h"
