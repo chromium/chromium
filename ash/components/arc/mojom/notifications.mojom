@@ -179,8 +179,9 @@ struct ArcNotificationData {
   string? package_name;
   [MinVersion=17]
   ArcNotificationFlags? flags;
+  // Flag if a notification progress is indeterminate.
   [MinVersion=21]
-  bool hidden_on_lock_screen;
+  bool indeterminate_progress;
   [MinVersion=21]
   ArcBitmap? snapshot_image_public;
   [MinVersion=23]
