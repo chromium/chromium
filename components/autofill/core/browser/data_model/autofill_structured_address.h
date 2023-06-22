@@ -118,9 +118,6 @@ class StreetAddressNode : public AddressComponentWithRewriter {
   std::vector<const re2::RE2*> GetParseRegularExpressionsByRelevance()
       const override;
 
-  // Returns the format string to create the full name from its subcomponents.
-  std::u16string GetBestFormatString() const override;
-
   // Recalculates the address line after an assignment.
   void PostAssignSanitization() override;
 

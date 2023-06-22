@@ -16,6 +16,7 @@
 #include "base/strings/string_util.h"
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
 
@@ -246,6 +247,18 @@ std::u16string AddressComponent::GetValueForOtherSupportedType(
 }
 
 std::u16string AddressComponent::GetBestFormatString() const {
+  auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
+  CHECK(pattern_provider);
+
+  const std::string country_code =
+      base::UTF16ToUTF8(GetRootNode().GetValueForType(ADDRESS_HOME_COUNTRY));
+
+  std::u16string result =
+      pattern_provider->GetPattern(GetStorageType(), country_code);
+  if (!result.empty()) {
+    return result;
+  }
+
   // If the component is atomic, the format string is just the value.
   if (IsAtomic())
     return base::ASCIIToUTF16(GetPlaceholderToken(GetStorageTypeName()));

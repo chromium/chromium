@@ -13,6 +13,7 @@
 #include "base/strings/utf_string_conversions.h"
 #include "components/autofill/core/browser/autofill_type.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_constants.h"
+#include "components/autofill/core/browser/data_model/autofill_structured_address_format_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_regex_provider.h"
 #include "components/autofill/core/browser/data_model/autofill_structured_address_utils.h"
 #include "components/autofill/core/browser/field_types.h"
@@ -213,13 +214,19 @@ std::vector<const re2::RE2*> NameFull::GetParseRegularExpressionsByRelevance()
           pattern_provider->GetRegEx(RegEx::kParseLastCommaFirstMiddleName),
           pattern_provider->GetRegEx(RegEx::kParseFirstMiddleLastName)};
 }
+
 std::u16string NameFull::GetBestFormatString() const {
-  if (HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
-      HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()))) {
-    return u"${NAME_LAST}${NAME_FIRST}";
-  }
-  return u"${NAME_FIRST} ${NAME_MIDDLE} ${NAME_LAST}";
+  StructuredAddressesFormatProvider::ContextInfo info;
+  info.name_has_cjk_characteristics =
+      HasCjkNameCharacteristics(base::UTF16ToUTF8(name_first_.GetValue())) &&
+      HasCjkNameCharacteristics(base::UTF16ToUTF8(name_last_.GetValue()));
+
+  auto* pattern_provider = StructuredAddressesFormatProvider::GetInstance();
+  CHECK(pattern_provider);
+  return pattern_provider->GetPattern(GetStorageType(), /*country_code=*/"",
+                                      info);
 }
+
 NameFull::~NameFull() = default;
 
 NameFullWithPrefix::NameFullWithPrefix() : NameFullWithPrefix(nullptr) {}
