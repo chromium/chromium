@@ -94,6 +94,18 @@ void UserEducationController::AbortTutorial(UserEducationPrivateApiKey) {
   delegate_->AbortTutorial(account_id);
 }
 
+void UserEducationController::LaunchSystemWebAppAsync(
+    UserEducationPrivateApiKey,
+    SystemWebAppType system_web_app_type,
+    int64_t display_id) {
+  // NOTE: User education in Ash is currently only supported for the primary
+  // user profile. This is a self-imposed restriction.
+  auto account_id = Shell::Get()->session_controller()->GetActiveAccountId();
+  CHECK(user_education_util::IsPrimaryAccountId(account_id));
+  delegate_->LaunchSystemWebAppAsync(account_id, system_web_app_type,
+                                     display_id);
+}
+
 void UserEducationController::OnChromeTerminating() {
   session_observation_.Reset();
 }

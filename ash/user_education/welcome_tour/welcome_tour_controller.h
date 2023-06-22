@@ -62,9 +62,9 @@ class ASH_EXPORT WelcomeTourController : public UserEducationFeatureController,
   void StartTutorial();
 
   // Invoked when the Welcome Tour is started/ended. The latter is called
-  // regardless of whether the tour was completed or aborted.
+  // regardless of whether the tour was `completed` or aborted.
   void OnWelcomeTourStarted();
-  void OnWelcomeTourEnded();
+  void OnWelcomeTourEnded(bool completed);
 
   // Used to apply a scrim to the help bubble container on all root windows
   // while the Welcome Tour is in progress. Exists only while the Welcome Tour

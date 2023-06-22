@@ -16,6 +16,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_scrim.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/check_op.h"
 #include "base/functional/bind.h"
 #include "components/user_education/common/help_bubble.h"
@@ -23,6 +24,8 @@
 #include "ui/base/interaction/element_identifier.h"
 #include "ui/base/interaction/element_tracker.h"
 #include "ui/base/interaction/interaction_sequence.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/events/base_event_utils.h"
 #include "ui/views/interaction/element_tracker_views.h"
 #include "ui/views/view.h"
@@ -218,6 +221,9 @@ WelcomeTourController::GetTutorialDescriptions() {
               HelpBubbleId::kWelcomeTourExploreApp))
           .InSameContext());
 
+  // Step 7: Explore app window.
+  // Implemented in `WelcomeTourController::OnWelcomeTourEnded()`.
+
   return tutorial_descriptions_by_id;
 }
 
@@ -251,10 +257,10 @@ void WelcomeTourController::MaybeShowDialog() {
                                          weak_ptr_factory_.GetWeakPtr()),
       /*cancel_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false),
       /*close_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false));
 
   // `WelcomeTourDialog` is part of the Welcome Tour. Therefore, when the dialog
   // shows, the tour has indeed been started.
@@ -269,10 +275,10 @@ void WelcomeTourController::StartTutorial() {
       GetInitialElementContext(),
       /*completed_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr()),
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/true),
       /*aborted_callback=*/
       base::BindOnce(&WelcomeTourController::OnWelcomeTourEnded,
-                     weak_ptr_factory_.GetWeakPtr()));
+                     weak_ptr_factory_.GetWeakPtr(), /*completed=*/false));
 }
 
 // TODO(http://b/277091006): Stabilize app launches.
@@ -298,7 +304,13 @@ void WelcomeTourController::OnWelcomeTourStarted() {
 // TODO(http://b/277091619): Restore wallpaper.
 // TODO(http://b/277091643): Restore notifications.
 // TODO(http://b/277091624): Restore nudges/toasts.
-void WelcomeTourController::OnWelcomeTourEnded() {
+void WelcomeTourController::OnWelcomeTourEnded(bool completed) {
+  if (completed) {
+    UserEducationController::Get()->LaunchSystemWebAppAsync(
+        UserEducationPrivateApiKey(), ash::SystemWebAppType::HELP,
+        display::Screen::GetScreen()->GetPrimaryDisplay().id());
+  }
+
   scrim_.reset();
 
   for (auto& observer : observer_list_) {

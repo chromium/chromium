@@ -20,6 +20,7 @@
 #include "ash/user_education/welcome_tour/welcome_tour_controller_observer.h"
 #include "ash/user_education/welcome_tour/welcome_tour_dialog.h"
 #include "ash/user_education/welcome_tour/welcome_tour_test_util.h"
+#include "ash/webui/system_apps/public/system_web_app_type.h"
 #include "base/functional/callback.h"
 #include "base/functional/overloaded.h"
 #include "base/scoped_observation.h"
@@ -34,6 +35,8 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
+#include "ui/display/display.h"
+#include "ui/display/screen.h"
 #include "ui/views/test/widget_test.h"
 
 namespace ash {
@@ -48,6 +51,7 @@ using ::testing::ElementsAre;
 using ::testing::Eq;
 using ::testing::Field;
 using ::testing::Matches;
+using ::testing::Mock;
 using ::testing::Pair;
 using ::testing::StrictMock;
 using ::user_education::HelpBubbleArrow;
@@ -237,12 +241,13 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
   EXPECT_CALL(observer, OnWelcomeTourStarted);
   session_controller_client->SetSessionState(SessionState::ACTIVE);
   EXPECT_TRUE(WelcomeTourDialog::Get());
-  testing::Mock::VerifyAndClearExpectations(&observer);
+  Mock::VerifyAndClearExpectations(&observer);
 
   // Click `accept_button`. This *should* trigger the Welcome Tour tutorial to
   // start. Note that the tutorial completed/aborted callbacks are cached for
   // later verification.
-  base::OnceClosure ended_callbacks[2u];
+  base::OnceClosure completed_callback;
+  base::OnceClosure aborted_callback;
   EXPECT_CALL(
       *user_education_delegate,
       StartTutorial(Eq(primary_account_id),
@@ -250,11 +255,11 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
                     Eq(welcome_tour_controller->GetInitialElementContext()),
                     /*completed_callback=*/_,
                     /*aborted_callback=*/_))
-      .WillOnce(MoveArgs<3, 4>(&ended_callbacks[0u], &ended_callbacks[1u]));
+      .WillOnce(MoveArgs<3, 4>(&completed_callback, &aborted_callback));
   const views::View* const accept_button = GetDialogAcceptButton();
   ASSERT_TRUE(accept_button);
   LeftClickOn(accept_button);
-  testing::Mock::VerifyAndClearExpectations(user_education_delegate);
+  Mock::VerifyAndClearExpectations(user_education_delegate);
 
   // Wait until `welcome_tour_dialog` gets destroyed.
   views::test::WidgetDestroyedWaiter(WelcomeTourDialog::Get()->GetWidget())
@@ -280,12 +285,20 @@ TEST_F(WelcomeTourControllerTest, StartsTourAndPropagatesEvents) {
 
   // Verify that the same event is propagated to observers regardless of whether
   // user education services in the browser indicate the tour was completed or
-  // aborted.
-  for (base::OnceClosure& ended_callback : ended_callbacks) {
+  // aborted. Only if the tour is completed should there be an attempt to launch
+  // the Explore app.
+  for (base::OnceClosure& ended_callback :
+       {std::ref(completed_callback), std::ref(aborted_callback)}) {
     ASSERT_FALSE(ended_callback.is_null());
     EXPECT_CALL(observer, OnWelcomeTourEnded);
+    EXPECT_CALL(*user_education_delegate,
+                LaunchSystemWebAppAsync(
+                    Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+                    Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())))
+        .Times(&ended_callback == &completed_callback ? 1 : 0);
     std::move(ended_callback).Run();
-    testing::Mock::VerifyAndClearExpectations(&observer);
+    Mock::VerifyAndClearExpectations(&observer);
+    Mock::VerifyAndClearExpectations(user_education_delegate);
   }
 }
 
@@ -353,7 +366,8 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
 
     // Simulate login of the primary user. Note that this should trigger the
     // Welcome Tour to start automatically.
-    SimulateUserLogin("primary@test");
+    const auto primary_account_id = AccountId::FromUserEmail("primary@test");
+    SimulateUserLogin(primary_account_id);
     EXPECT_TRUE(started_future.Wait());
 
     // Click the dialog's accept button to start the tutorial.
@@ -365,9 +379,17 @@ class WelcomeTourControllerRunTest : public WelcomeTourControllerTest {
     // while the Welcome Tour is in progress.
     std::move(in_progress_callback).Run();
 
+    // When the tour is completed, expect an attempt to launch the Explore app.
+    EXPECT_CALL(
+        *user_education_delegate(),
+        LaunchSystemWebAppAsync(
+            Eq(primary_account_id), Eq(ash::SystemWebAppType::HELP),
+            Eq(display::Screen::GetScreen()->GetPrimaryDisplay().id())));
+
     // Complete the tutorial by invoking the cached callback.
     std::move(completed_callback).Run();
     EXPECT_TRUE(ended_future.Wait());
+    Mock::VerifyAndClearExpectations(user_education_delegate());
   }
 };
 

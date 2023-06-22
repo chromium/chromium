@@ -15,7 +15,11 @@
 #include "chrome/browser/ash/app_list/app_list_client_impl.h"
 #include "chrome/browser/ash/system_web_apps/system_web_app_manager.h"
 #include "chrome/browser/profiles/profile_manager.h"
+#include "chrome/browser/ui/browser_element_identifiers.h"
+#include "chrome/browser/ui/views/frame/browser_view.h"
+#include "chrome/browser/ui/web_applications/app_browser_controller.h"
 #include "chrome/browser/web_applications/test/web_app_install_test_utils.h"
+#include "chrome/browser/web_applications/web_app_id_constants.h"
 #include "chrome/browser/web_applications/web_app_provider.h"
 #include "chrome/test/interaction/interactive_browser_test.h"
 #include "components/strings/grit/components_strings.h"
@@ -83,6 +87,11 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
             ash::WelcomeTourController::Get()->GetInitialElementContext()));
   }
 
+  // Returns a builder for an interaction step that waits for the browser.
+  [[nodiscard]] static auto WaitForBrowser() {
+    return WaitForShow(kBrowserViewElementId);
+  }
+
   // Returns a builder for an interaction step that waits for the dialog.
   [[nodiscard]] static auto WaitForDialog() {
     return WaitForShow(
@@ -92,6 +101,17 @@ class WelcomeTourInteractiveUiTest : public InteractiveBrowserTest {
   // Returns a builder for an interaction step that waits for a help bubble.
   [[nodiscard]] static auto WaitForHelpBubble() {
     return WaitForShow(ash::HelpBubbleViewAsh::kHelpBubbleElementIdForTesting);
+  }
+
+  // Returns a builder for an interaction step that checks the browser is
+  // for a web app associated with the specified `app_id`.
+  [[nodiscard]] static auto CheckBrowserIsForWebApp(
+      const web_app::AppId& app_id) {
+    return CheckView(kBrowserViewElementId,
+                     [app_id](BrowserView* browser_view) {
+                       return web_app::AppBrowserController::IsForWebApp(
+                           browser_view->browser(), app_id);
+                     });
   }
 
   // Returns a builder for an interaction step that checks the dialog accept
@@ -240,5 +260,9 @@ IN_PROC_BROWSER_TEST_F(WelcomeTourInteractiveUiTest, WelcomeTour) {
                 CheckHelpBubbleBodyText(
                     IDS_ASH_WELCOME_TOUR_EXPLORE_APP_BUBBLE_BODY_TEXT),
                 CheckHelpBubbleDefaultButtonText(IDS_TUTORIAL_CLOSE_TUTORIAL),
-                PressHelpBubbleDefaultButton(), FlushEvents())));
+                PressHelpBubbleDefaultButton(), FlushEvents())),
+
+      // Step 7: Explore app window.
+      InAnyContext(WaitForBrowser()),
+      InSameContext(CheckBrowserIsForWebApp(web_app::kHelpAppId)));
 }

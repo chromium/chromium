@@ -29,6 +29,7 @@ class SessionController;
 class UserEducationDelegate;
 class UserEducationFeatureController;
 
+enum class SystemWebAppType;
 enum class TutorialId;
 
 // The controller, owned by `Shell`, for user education features in Ash.
@@ -65,6 +66,13 @@ class ASH_EXPORT UserEducationController : public SessionObserver {
   // will be called.
   // NOTE: Currently only the primary user profile is supported.
   void AbortTutorial(UserEducationPrivateApiKey);
+
+  // Attempts to launch the system web app associated with the given type on
+  // the display associated with the given ID asynchronously.
+  // NOTE: Currently only the primary user profile is supported.
+  void LaunchSystemWebAppAsync(UserEducationPrivateApiKey,
+                               SystemWebAppType system_web_app_type,
+                               int64_t display_id);
 
  private:
   // SessionObserver:
