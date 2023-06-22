@@ -172,7 +172,7 @@ TEST_F(DepthTextureTest, RenderTo) {
     }
 
     // Render with the depth texture.
-    gl_.BindOffscreenFramebuffer(GL_FRAMEBUFFER);
+    glBindFramebuffer(GL_FRAMEBUFFER, 0);
     glBindTexture(GL_TEXTURE_2D, depth_texture);
     glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
     glDrawArrays(GL_TRIANGLES, 0, 6);

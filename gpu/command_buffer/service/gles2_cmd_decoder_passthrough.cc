@@ -41,10 +41,6 @@ namespace gpu {
 namespace gles2 {
 
 namespace {
-BASE_FEATURE(kEmulateDefaultFramebufferPassthrough,
-             "EmulateDefaultFramebufferPassthrough",
-             base::FEATURE_ENABLED_BY_DEFAULT);
-
 GLenum GetterForTextureTarget(GLenum target) {
   switch (target) {
     case GL_TEXTURE_2D:
@@ -1011,8 +1007,7 @@ gpu::ContextResult GLES2DecoderPassthroughImpl::Initialize(
   max_offscreen_framebuffer_size_ =
       std::min(max_2d_texture_size, max_renderbuffer_size_);
 
-  if (offscreen_ &&
-      base::FeatureList::IsEnabled(kEmulateDefaultFramebufferPassthrough)) {
+  if (offscreen_) {
 #if BUILDFLAG(IS_ANDROID)
     const bool alpha_channel_requested = attrib_helper.alpha_size > 0;
 #else
@@ -1272,16 +1267,12 @@ void GLES2DecoderPassthroughImpl::SetDefaultFramebufferSharedImage(
   GLuint default_framebuffer_id;
   if (external_default_framebuffer_->IsSharedImageAttached()) {
     default_framebuffer_id = external_default_framebuffer_->GetFramebufferId();
-  } else if (emulated_back_buffer_) {
-    default_framebuffer_id = emulated_back_buffer_->framebuffer_service_id;
   } else {
-    default_framebuffer_id = 0;
+    default_framebuffer_id = emulated_back_buffer_->framebuffer_service_id;
   }
 
   framebuffer_id_map_.RemoveClientID(0);
-  if (default_framebuffer_id) {
-    framebuffer_id_map_.SetIDMapping(0, default_framebuffer_id);
-  }
+  framebuffer_id_map_.SetIDMapping(0, default_framebuffer_id);
 
   // Note, there is member variable `supports_separate_fbo_bindings_` that is
   // used across this class, but it's never initialized with the real value

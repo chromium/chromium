@@ -284,31 +284,31 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glFramebufferTexturePixelLocalStorageANGLE(0, tex, 0, 0);
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glFramebufferPixelLocalClearValuefvANGLE(
       0, std::array{0.f, 0.f, 0.f, 0.f}.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glFramebufferPixelLocalClearValueivANGLE(0, std::array{0, 0, 0, 0}.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glFramebufferPixelLocalClearValueuivANGLE(0,
                                             std::array{0u, 0u, 0u, 0u}.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glBeginPixelLocalStorageANGLE(
       1, std::array<GLenum, 1>{GL_LOAD_OP_ZERO_ANGLE}.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glBeginPixelLocalStorageANGLE(
       1, std::array<GLenum, 1>{GL_STORE_OP_STORE_ANGLE}.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   glPixelLocalStorageBarrierANGLE();
@@ -318,13 +318,13 @@ TEST_F(ANGLEShaderPixelLocalStorageTest, BlockEmulatedDefaultFramebuffer) {
   std::array<GLfloat, 4> valuef{};
   glGetFramebufferPixelLocalStorageParameterfvANGLE(
       0, GL_PIXEL_LOCAL_CLEAR_VALUE_FLOAT_ANGLE, valuef.data());
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 
   GLint valuei = -1;
   glGetFramebufferPixelLocalStorageParameterivANGLE(
       0, GL_PIXEL_LOCAL_FORMAT_ANGLE, &valuei);
-  EXPECT_GL_ERROR(GL_INVALID_FRAMEBUFFER_OPERATION);
+  EXPECT_GL_ERROR(GL_INVALID_OPERATION);
   EXPECT_GL_ERROR(GL_NO_ERROR);
 }
 }  // namespace gpu
