@@ -428,6 +428,14 @@ class WaylandWindow : public PlatformWindow,
   // requested changes (server requested changes may be throttled).
   void MaybeApplyLatestStateRequest(bool force);
 
+  // Returns the next state that will be applied, or the currently applied state
+  // if there are no later unapplied states. This is used when updating a single
+  // property (e.g. window scale) without wanting to modify the others.
+  PlatformWindowDelegate::State GetLatestRequestedState() const {
+    return in_flight_requests_.empty() ? applied_state_
+                                       : in_flight_requests_.back().state;
+  }
+
   // PendingConfigureState describes the content of a configure sent from the
   // wayland server.
   struct PendingConfigureState {

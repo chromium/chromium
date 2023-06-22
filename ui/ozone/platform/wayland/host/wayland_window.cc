@@ -161,13 +161,12 @@ gfx::AcceleratedWidget WaylandWindow::GetWidget() const {
 
 void WaylandWindow::SetWindowScale(float new_scale) {
   DCHECK_GE(new_scale, 0.f);
-  auto state = in_flight_requests_.empty() ? applied_state_
-                                           : in_flight_requests_.back().state;
-  if (state.window_scale == new_scale) {
-    return;
-  }
-
+  auto state = GetLatestRequestedState();
   state.window_scale = new_scale;
+  // Note that we still need to call this even if the state does not change,
+  // because we want requests directly from the client (us) to be applied
+  // immediately, since that's what PlatformWindow expects. Also, RequestState
+  // may modify the state before applying it.
   RequestStateFromClient(state);
 }
 
@@ -404,10 +403,11 @@ gfx::Rect WaylandWindow::GetBoundsInPixels() const {
 }
 
 void WaylandWindow::SetBoundsInDIP(const gfx::Rect& bounds_dip) {
-  // TODO(crbug.com/1456338): Requesting state from the |applied_state_| needs
-  // to be reviewed, there could be throttled |in_flight_requests_|.
-  auto state = applied_state_;
+  auto state = GetLatestRequestedState();
   state.bounds_dip = bounds_dip;
+  // Call this even if the bounds haven't changed, as requesting from the client
+  // forces applying the state, which may (currently) not be applied if it was
+  // throttled. Also, RequestState may modify the state before applying it.
   RequestStateFromClient(state);
 }
 
@@ -1057,8 +1057,7 @@ void WaylandWindow::UpdateCursorShape(scoped_refptr<BitmapCursor> cursor) {
 void WaylandWindow::ProcessPendingConfigureState(uint32_t serial) {
   // For values not specified in pending_configure_state_, use the latest
   // requested values.
-  auto state = in_flight_requests_.empty() ? applied_state_
-                                           : in_flight_requests_.back().state;
+  auto state = GetLatestRequestedState();
   if (pending_configure_state_.bounds_dip.has_value()) {
     state.bounds_dip = pending_configure_state_.bounds_dip.value();
   }
@@ -1120,26 +1119,22 @@ void WaylandWindow::RequestState(PlatformWindowDelegate::State state,
   state.size_px =
       gfx::ScaleToEnclosingRect(state.bounds_dip, state.window_scale).size();
 
-  if (!in_flight_requests_.empty() &&
-      in_flight_requests_.back().state == state) {
-    // If we already asked for this configure state, we can send back a higher
-    // wayland serial for ack while needing a lower viz_seq.
-    in_flight_requests_.back().serial =
-        std::max(in_flight_requests_.back().serial, serial);
+  StateRequest req{.state = state, .serial = serial};
+  if (in_flight_requests_.empty()) {
+    in_flight_requests_.push_back(req);
   } else {
-    StateRequest req;
-    req.state = state;
-    req.serial = serial;
     // Propagate largest serial number so far, if we have one, since we
     // can have configure requests with no serial number (value -1).
-    if (!in_flight_requests_.empty()) {
-      req.serial = std::max(req.serial, in_flight_requests_.back().serial);
-    }
+    req.serial = std::max(req.serial, in_flight_requests_.back().serial);
 
-    if (!in_flight_requests_.empty() && !in_flight_requests_.back().applied) {
+    if (!in_flight_requests_.back().applied) {
       // If the last request has not been applied yet, overwrite it since
       // there's no point in requesting an old state.
       in_flight_requests_.back() = req;
+    } else if (in_flight_requests_.back().state == req.state) {
+      // If we already asked for this configure state, we can send back a higher
+      // wayland serial for ack while needing a lower viz_seq.
+      in_flight_requests_.back().serial = req.serial;
     } else {
       in_flight_requests_.push_back(req);
     }

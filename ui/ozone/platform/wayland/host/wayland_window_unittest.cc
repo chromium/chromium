@@ -3640,10 +3640,8 @@ TEST_P(WaylandWindowTest, MAYBE_SetsPropertiesOnShow) {
   absl::optional<gfx::Size> min_size(gfx::Size(1, 1));
   absl::optional<gfx::Size> max_size(gfx::Size(100, 100));
   EXPECT_CALL(delegate, GetMinimumSizeForWindow())
-      .Times(2)
       .WillRepeatedly(Return(min_size));
   EXPECT_CALL(delegate, GetMaximumSizeForWindow())
-      .Times(2)
       .WillRepeatedly(Return(max_size));
 
   PostToServerAndWait([surface_id, min_size, max_size,
