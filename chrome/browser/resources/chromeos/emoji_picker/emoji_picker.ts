@@ -14,6 +14,7 @@ import 'chrome://resources/cr_elements/cr_auto_img/cr_auto_img.js';
 import 'chrome://resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import 'chrome://resources/cr_elements/cr_icons.css.js';
 
+import {getInstance as getAnnouncerInstance} from '//resources/cr_elements/cr_a11y_announcer/cr_a11y_announcer.js';
 import {CrIconButtonElement} from '//resources/cr_elements/cr_icon_button/cr_icon_button.js';
 import {afterNextRender, PolymerElement} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min.js';
 
@@ -720,11 +721,17 @@ export class EmojiPicker extends PolymerElement {
         }
       }
     }
+
+    // Announcement for a11y.
+    getAnnouncerInstance().announce('New sections available');
   }
 
   private onLeftChevronClick() {
     this.pagination = Math.max(this.pagination - 1, 1);
     this.updateCurrentGroupTabs();
+
+    // Announcement for a11y.
+    getAnnouncerInstance().announce('New sections available');
   }
 
   private updateCurrentGroupTabs() {
