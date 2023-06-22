@@ -11,7 +11,6 @@
 #include "chrome/browser/ui/browser_element_identifiers.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_coordinator.h"
 #include "chrome/browser/ui/views/extensions/extensions_menu_view.h"
-#include "chrome/browser/ui/views/extensions/extensions_request_access_button.h"
 #include "chrome/browser/ui/views/extensions/extensions_toolbar_container.h"
 #include "chrome/grit/generated_resources.h"
 #include "components/vector_icons/vector_icons.h"
@@ -162,12 +161,6 @@ void ExtensionsToolbarButton::ToggleExtensionsMenu() {
   views::Widget* menu;
   if (base::FeatureList::IsEnabled(
           extensions_features::kExtensionsMenuAccessControl)) {
-    if (extensions_container_->GetExtensionsToolbarControls()
-            ->request_access_button()
-            ->GetVisible()) {
-      base::RecordAction(base::UserMetricsAction(
-          "Extensions.Toolbar.MenuOpenedWhenExtensionsAreRequestingAccess"));
-    }
     extensions_menu_coordinator_->Show(this, extensions_container_);
     menu = extensions_menu_coordinator_->GetExtensionsMenuWidget();
   } else {

@@ -35,7 +35,8 @@ class ExtensionsToolbarControls : public ToolbarIconContainerView {
     return extensions_button_;
   }
 
-  ExtensionsRequestAccessButton* request_access_button() const {
+  // Methods for testing.
+  ExtensionsRequestAccessButton* request_access_button_for_testing() const {
     return request_access_button_;
   }
 

@@ -107,7 +107,7 @@ ExtensionsMenuMainPageViewInteractiveUITest::
     GetExtensionsInRequestAccessButton() {
   return GetExtensionsToolbarContainer()
       ->GetExtensionsToolbarControls()
-      ->request_access_button()
+      ->request_access_button_for_testing()
       ->GetExtensionIdsForTesting();
 }
 
