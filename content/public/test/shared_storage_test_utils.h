@@ -9,6 +9,7 @@
 #include <string>
 
 #include "components/services/storage/shared_storage/shared_storage_manager.h"
+#include "content/browser/private_aggregation/private_aggregation_host.h"
 #include "services/network/public/mojom/optional_bool.mojom.h"
 #include "services/network/public/mojom/url_loader_network_service_observer.mojom.h"
 #include "third_party/abseil-cpp/absl/types/variant.h"
@@ -104,6 +105,12 @@ struct SharedStorageWriteOperationAndResult {
 
 bool operator==(const SharedStorageWriteOperationAndResult& a,
                 const SharedStorageWriteOperationAndResult& b);
+
+PrivateAggregationHost::SendHistogramReportResult
+GetPrivateAggregationSendHistogramSuccessValue();
+
+PrivateAggregationHost::SendHistogramReportResult
+GetPrivateAggregationSendHistogramApiDisabledValue();
 
 }  // namespace content
 
