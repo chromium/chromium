@@ -183,7 +183,12 @@ class DedicatedWebTransportHttp3ClientSession
     return true;
   }
 
-  bool ShouldNegotiateWebTransport() override { return true; }
+  quic::WebTransportHttp3VersionSet LocallySupportedWebTransportVersions()
+      const override {
+    return quic::WebTransportHttp3VersionSet(
+        {quic::WebTransportHttp3Version::kDraft02});
+  }
+
   quic::HttpDatagramSupport LocalHttpDatagramSupport() override {
     return quic::HttpDatagramSupport::kRfcAndDraft04;
   }
