@@ -557,6 +557,8 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   // manager by RegisterClient().
   void EnsureDatabaseOpened();
 
+  // Bootstraps only if it hasn't already happened.
+  void MaybeBootstrapDatabase();
   // Bootstraps database with storage keys that may not have been registered.
   // Bootstrapping ensures that there is a bucket entry in the buckets table for
   // all storage keys that have stored data by quota managed Storage APIs. Will
@@ -691,7 +693,7 @@ class COMPONENT_EXPORT(STORAGE_BROWSER) QuotaManagerImpl
   void ContinueIncognitoGetStorageCapacity(const QuotaSettings& settings);
   void DidGetStorageCapacity(const QuotaAvailability& total_and_available);
 
-  void DidRazeForReBootstrap(QuotaError raze_and_reopen_result);
+  void DidRecoverOrRazeForReBootstrap(bool success);
 
   void NotifyUpdatedBucket(const QuotaErrorOr<BucketInfo>& result);
   void OnBucketDeleted(

@@ -1835,6 +1835,10 @@ void QuotaManagerImpl::EnsureDatabaseOpened() {
     return;
   }
 
+  MaybeBootstrapDatabase();
+}
+
+void QuotaManagerImpl::MaybeBootstrapDatabase() {
   is_bootstrapping_database_ = true;
   db_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
@@ -2140,9 +2144,9 @@ void QuotaManagerImpl::OnDbError(int error_code) {
   // Wipe the database before triggering another bootstrap.
   db_runner_->PostTaskAndReplyWithResult(
       FROM_HERE,
-      base::BindOnce(&QuotaDatabase::RazeAndReopen,
-                     base::Unretained(database_.get())),
-      base::BindOnce(&QuotaManagerImpl::DidRazeForReBootstrap,
+      base::BindOnce(&QuotaDatabase::RecoverOrRaze,
+                     base::Unretained(database_.get()), error_code),
+      base::BindOnce(&QuotaManagerImpl::DidRecoverOrRazeForReBootstrap,
                      weak_factory_.GetWeakPtr()));
 }
 
@@ -2807,10 +2811,9 @@ void QuotaManagerImpl::DidGetStorageCapacity(
   DetermineStoragePressure(total_space, available_space);
 }
 
-void QuotaManagerImpl::DidRazeForReBootstrap(
-    QuotaError raze_and_reopen_result) {
-  if (raze_and_reopen_result == QuotaError::kNone) {
-    BootstrapDatabase();
+void QuotaManagerImpl::DidRecoverOrRazeForReBootstrap(bool success) {
+  if (success) {
+    MaybeBootstrapDatabase();
     return;
   }
 

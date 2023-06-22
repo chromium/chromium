@@ -24,6 +24,7 @@
 #include "sql/database.h"
 #include "sql/error_delegate_util.h"
 #include "sql/meta_table.h"
+#include "sql/recovery.h"
 #include "sql/statement.h"
 #include "sql/transaction.h"
 #include "storage/browser/quota/quota_database_migrations.h"
@@ -816,37 +817,16 @@ QuotaError QuotaDatabase::SetIsBootstrapped(bool bootstrap_flag) {
              : QuotaError::kDatabaseError;
 }
 
-QuotaError QuotaDatabase::RazeAndReopen() {
+bool QuotaDatabase::RecoverOrRaze(int error_code) {
   DCHECK_CALLED_ON_VALID_SEQUENCE(sequence_checker_);
 
-  // Opening failed, don't bother to try again. If the error occurred while
-  // opening the db, it won't be open and trying to raze it will result in a
-  // MISUSE error.
-  if (db_ && !db_->is_open()) {
-    return QuotaError::kDatabaseError;
-  }
+  std::ignore = sql::BuiltInRecovery::RecoverIfPossible(
+      db_.get(), error_code,
+      sql::BuiltInRecovery::Strategy::kRecoverWithMetaVersionOrRaze, nullptr);
 
-  // Try creating a database one last time if there isn't one.
-  if (!db_) {
-    if (!db_file_path_.empty()) {
-      DCHECK(!legacy_db_file_path_.empty());
-      sql::Database::Delete(db_file_path_);
-      sql::Database::Delete(legacy_db_file_path_);
-    }
-    return EnsureOpened();
-  }
-
-  // Abort the long-running transaction.
-  db_->RollbackTransaction();
-
-  // Raze and close the database.
-  if (!db_->Raze()) {
-    return QuotaError::kDatabaseError;
-  }
-
-  // Reset `db_` to nullptr so EnsureOpened will recreate the database.
   db_.reset();
-  return EnsureOpened();
+  EnsureOpened();
+  return db_->is_open();
 }
 
 QuotaError QuotaDatabase::CorruptForTesting(
