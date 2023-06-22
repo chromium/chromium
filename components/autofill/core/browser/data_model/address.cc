@@ -125,18 +125,19 @@ void Address::GetMatchingTypes(const std::u16string& text,
     matching_types->insert(ADDRESS_HOME_COUNTRY);
 
   l10n::CaseInsensitiveCompare compare;
-  AutofillProfileComparator comparator(app_locale);
   // Check to see if the |text| could be the full name or abbreviation of a
   // state.
-  std::u16string canon_text = comparator.NormalizeForComparison(text);
+  std::u16string canon_text =
+      AutofillProfileComparator::NormalizeForComparison(text);
   std::u16string state_name;
   std::u16string state_abbreviation;
   state_names::GetNameAndAbbreviation(canon_text, &state_name,
                                       &state_abbreviation);
 
   if (!state_name.empty() || !state_abbreviation.empty()) {
-    std::u16string canon_profile_state = comparator.NormalizeForComparison(
-        GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
+    std::u16string canon_profile_state =
+        AutofillProfileComparator::NormalizeForComparison(
+            GetInfo(AutofillType(ADDRESS_HOME_STATE), app_locale));
     if ((!state_name.empty() &&
          compare.StringsEqual(state_name, canon_profile_state)) ||
         (!state_abbreviation.empty() &&

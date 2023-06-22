@@ -20,8 +20,7 @@
 #include "testing/gmock/include/gmock/gmock.h"
 #include "testing/gtest/include/gtest/gtest.h"
 
-namespace autofill {
-namespace suggestion_selection {
+namespace autofill::suggestion_selection {
 
 using base::ASCIIToUTF16;
 using testing::Each;
@@ -85,7 +84,8 @@ class SuggestionSelectionTest : public testing::Test {
   }
 
   std::u16string GetCanonicalUtf16Content(const char* content) {
-    return comparator_.NormalizeForComparison(ASCIIToUTF16(content));
+    return AutofillProfileComparator::NormalizeForComparison(
+        ASCIIToUTF16(content));
   }
 
   std::vector<Suggestion> CreateSuggestions(
@@ -115,7 +115,8 @@ TEST_F(SuggestionSelectionTest,
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_, false, {profile1.get(), profile2.get()}, &matched_profiles);
+      comparator_.app_locale(), false, {profile1.get(), profile2.get()},
+      &matched_profiles);
 
   ASSERT_EQ(1U, suggestions.size());
   ASSERT_EQ(1U, matched_profiles.size());
@@ -133,7 +134,7 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_NoMatchingProfile) {
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_, false, {profile1.get()}, &matched_profiles);
+      comparator_.app_locale(), false, {profile1.get()}, &matched_profiles);
 
   ASSERT_TRUE(matched_profiles.empty());
   ASSERT_TRUE(suggestions.empty());
@@ -144,7 +145,7 @@ TEST_F(SuggestionSelectionTest,
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_, false, {}, &matched_profiles);
+      comparator_.app_locale(), false, {}, &matched_profiles);
 
   ASSERT_TRUE(matched_profiles.empty());
   ASSERT_TRUE(suggestions.empty());
@@ -167,7 +168,7 @@ TEST_F(SuggestionSelectionTest, GetPrefixMatchedSuggestions_LimitProfiles) {
   std::vector<AutofillProfile*> matched_profiles;
   auto suggestions = GetPrefixMatchedSuggestions(
       AutofillType(NAME_FIRST), u"Mar", GetCanonicalUtf16Content("Mar"),
-      comparator_, false, profiles_pointers, &matched_profiles);
+      comparator_.app_locale(), false, profiles_pointers, &matched_profiles);
 
   // Marie should not be found.
   ASSERT_EQ(kMaxSuggestedProfilesCount, suggestions.size());
@@ -540,5 +541,4 @@ TEST_F(SuggestionSelectionTest, PrepareSuggestions_SameStringInValueAndLabel) {
                         std::vector<std::vector<Suggestion::Text>>{}))));
 }
 
-}  // namespace suggestion_selection
-}  // namespace autofill
+}  // namespace autofill::suggestion_selection

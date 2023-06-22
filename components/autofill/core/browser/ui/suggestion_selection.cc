@@ -77,7 +77,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     const AutofillType& type,
     const std::u16string& raw_field_contents,
     const std::u16string& field_contents_canon,
-    const AutofillProfileComparator& comparator,
+    const std::string& app_locale,
     bool field_is_autofilled,
     const std::vector<AutofillProfile*>& profiles,
     std::vector<AutofillProfile*>* matched_profiles) {
@@ -101,8 +101,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
     }
 #endif  // BUILDFLAG(IS_ANDROID)
 
-    std::u16string value =
-        GetInfoInOneLine(profile, type, comparator.app_locale());
+    std::u16string value = GetInfoInOneLine(profile, type, app_locale);
     if (value.empty())
       continue;
 
@@ -133,8 +132,7 @@ std::vector<Suggestion> GetPrefixMatchedSuggestions(
           // (11) 2648-0254, respectively.
           value = base::UTF8ToUTF16(i18n::FormatPhoneNationallyForDisplay(
               base::UTF16ToUTF8(value),
-              data_util::GetCountryCodeWithFallback(*profile,
-                                                    comparator.app_locale())));
+              data_util::GetCountryCodeWithFallback(*profile, app_locale)));
         }
       }
 
@@ -312,11 +310,12 @@ void PrepareSuggestions(const std::vector<std::u16string>& labels,
   for (size_t i = 0; i < labels.size(); ++i) {
     std::u16string label = labels[i];
 
-    bool text_inserted = suggestion_text
-                             .insert(comparator.NormalizeForComparison(
-                                 (*suggestions)[i].main_text.value + label,
-                                 AutofillProfileComparator::DISCARD_WHITESPACE))
-                             .second;
+    bool text_inserted =
+        suggestion_text
+            .insert(AutofillProfileComparator::NormalizeForComparison(
+                (*suggestions)[i].main_text.value + label,
+                AutofillProfileComparator::DISCARD_WHITESPACE))
+            .second;
 
     if (text_inserted) {
       if (index_to_add_suggestion != i) {

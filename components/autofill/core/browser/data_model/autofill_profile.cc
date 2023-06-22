@@ -515,9 +515,9 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
       continue;
     } else if (type == NAME_FULL) {
       if (!comparator.IsNameVariantOf(
-              comparator.NormalizeForComparison(
+              AutofillProfileComparator::NormalizeForComparison(
                   profile.GetInfo(NAME_FULL, app_locale)),
-              comparator.NormalizeForComparison(value))) {
+              AutofillProfileComparator::NormalizeForComparison(value))) {
         // Check whether the full name of |this| can be derived from the full
         // name of |profile| if the form contains a full name field.
         //
@@ -525,7 +525,7 @@ bool AutofillProfile::IsSubsetOfForFieldSet(
         // is Mia L Park. Mia Park can be derived from Mia L Park, so |this|
         // could be a subset of |profile|.
         //
-        // If the form contains fields for a name's constiuent parts, e.g.
+        // If the form contains fields for a name's constituent parts, e.g.
         // NAME_FIRST, then these values are compared according to the
         // conditions that follow.
         return false;

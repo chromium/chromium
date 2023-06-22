@@ -1486,7 +1486,6 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   if (IsInAutofillSuggestionsDisabledExperiment())
     return std::vector<Suggestion>();
 
-  const AutofillProfileComparator comparator(app_locale_);
   std::u16string field_contents_canon =
       suggestion_selection::NormalizeForComparisonForType(
           field_contents, type.GetStorableType());
@@ -1506,9 +1505,10 @@ std::vector<Suggestion> PersonalDataManager::GetProfileSuggestions(
   std::vector<AutofillProfile*> matched_profiles;
   std::vector<Suggestion> suggestions =
       suggestion_selection::GetPrefixMatchedSuggestions(
-          type, field_contents, field_contents_canon, comparator,
+          type, field_contents, field_contents_canon, app_locale_,
           field_is_autofilled, sorted_profiles, &matched_profiles);
 
+  const AutofillProfileComparator comparator(app_locale_);
   // Don't show two suggestions if one is a subset of the other.
   // Duplicates across sources are resolved in favour of `kAccount` profiles.
   std::vector<AutofillProfile*> unique_matched_profiles;
