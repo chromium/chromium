@@ -15,6 +15,7 @@
       <template is="dom-if" if="[[isBulkPinningEnabled_]]">
         <cr-link-row
             id="GoogleDriveLink"
+            start-icon="settings20:google-drive"
             class="hr" on-click="onGoogleDrive_"
             label="$i18n{googleDriveLabel}"
             sub-label="[[googleDriveSignedInLabel_(driveDisabled_)]]"
@@ -24,6 +25,7 @@
       <template is="dom-if" if="[[showOfficeSettings_]]">
         <cr-link-row
             id="OneDriveLink"
+            start-icon="settings20:onedrive"
             class="hr" on-click="onTapOneDrive_"
             label="$i18n{oneDriveLabel}"
             sub-label="[[oneDriveSignedInLabel_(oneDriveConnectionState_)]]"
