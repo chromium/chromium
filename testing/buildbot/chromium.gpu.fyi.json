@@ -5287,19 +5287,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "context_lost_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5316,19 +5309,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "gpu_process_launch_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5345,19 +5331,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "hardware_accelerated_feature_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5378,19 +5357,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "info_collection_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5411,10 +5383,6 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "maps_pixel_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -5426,9 +5394,6 @@
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5445,19 +5410,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "mediapipe_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5478,10 +5436,6 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "pixel_skia_gold_validating_test",
         "precommit_args": [
           "--gerrit-issue=${patch_issue}",
@@ -5493,9 +5447,6 @@
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5513,19 +5464,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "screenshot_sync_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5542,19 +5486,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "trace_test",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5571,19 +5508,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webcodecs_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5603,19 +5533,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl2_conformance_gles_passthrough_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5635,19 +5558,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl2_conformance_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       },
@@ -5666,19 +5582,12 @@
         "bucket": "chromiumos-image-archive",
         "cros_board": "kevin",
         "cros_img": "kevin-public/R105-14988.0.0",
-        "merge": {
-          "args": [],
-          "script": "//testing/merge_scripts/standard_isolated_script_merge.py"
-        },
         "name": "webgl_conformance_validating_tests",
         "resultdb": {
           "enable": true,
           "has_native_resultdb_integration": true
         },
         "should_retry_with_patch": false,
-        "swarming": {
-          "can_use_on_swarming_builders": false
-        },
         "test": "telemetry_gpu_integration_test",
         "test_id_prefix": "ninja://chrome/test:telemetry_gpu_integration_test/"
       }

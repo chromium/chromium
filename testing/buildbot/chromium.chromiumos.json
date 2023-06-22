@@ -4946,8 +4946,7 @@
       {
         "isolate_profile_data": true,
         "name": "check_network_annotations",
-        "script": "check_network_annotations.py",
-        "swarming": {}
+        "script": "check_network_annotations.py"
       }
     ]
   },

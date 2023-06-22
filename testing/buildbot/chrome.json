@@ -1761,7 +1761,6 @@
         "cros_board": "trogdor",
         "cros_img": "trogdor64-release/R108-15130.0.0",
         "name": "chrome_all_tast_tests TROGDOR64_RELEASE_LKGM",
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:chrome\" && !informational)",
         "test": "chrome_all_tast_tests",
         "test_id_prefix": "ninja://chromeos:chrome_all_tast_tests/",
@@ -1887,7 +1886,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1903,7 +1901,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",
@@ -1998,7 +1995,6 @@
           "enable": true,
           "has_native_resultdb_integration": true
         },
-        "swarming": {},
         "tast_expr": "(\"group:mainline\" && \"dep:lacros\" && !informational)",
         "test": "lacros_all_tast_tests",
         "test_id_prefix": "ninja://chromeos/lacros:lacros_all_tast_tests/",

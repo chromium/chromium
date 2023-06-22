@@ -140,8 +140,7 @@
     "scripts": [
       {
         "name": "test_traffic_annotation_auditor",
-        "script": "test_traffic_annotation_auditor.py",
-        "swarming": {}
+        "script": "test_traffic_annotation_auditor.py"
       }
     ]
   },
