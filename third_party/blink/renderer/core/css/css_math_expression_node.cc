@@ -1971,6 +1971,14 @@ class CSSMathExpressionNodeParser {
     }
 
     HeapVector<Member<const CSSMathExpressionNode>> nodes;
+    // Parse the initial (optional) <rounding-strategy> argument to the round()
+    // function.
+    if (function_id == CSSValueID::kRound) {
+      CSSMathExpressionNode* rounding_strategy = ParseRoundingStrategy(tokens);
+      if (rounding_strategy) {
+        nodes.push_back(rounding_strategy);
+      }
+    }
 
     while (!tokens.AtEnd() && nodes.size() < max_argument_count) {
       if (nodes.size()) {
@@ -2032,31 +2040,24 @@ class CSSMathExpressionNodeParser {
         DCHECK_LE(nodes.size(), 3u);
         CSSMathOperator op;
         if (function_id == CSSValueID::kRound) {
-          if (nodes.size() == 2) {
-            op = CSSMathOperator::kRoundNearest;
-          } else if (const auto* operation =
-                         DynamicTo<CSSMathExpressionOperation>(*nodes[0])) {
-            if (operation->IsRoundingStrategyKeyword()) {
-              op = operation->OperatorType();
-              nodes.EraseAt(0);
-            } else {
-              return nullptr;
-            }
+          // If the first argument is a rounding strategy, use the specified
+          // operation and drop the argument from the list of operands.
+          const auto* maybe_rounding_strategy =
+              DynamicTo<CSSMathExpressionOperation>(*nodes[0]);
+          if (maybe_rounding_strategy &&
+              maybe_rounding_strategy->IsRoundingStrategyKeyword()) {
+            op = maybe_rounding_strategy->OperatorType();
+            nodes.EraseAt(0);
           } else {
+            op = CSSMathOperator::kRoundNearest;
+          }
+          if (nodes.size() != 2) {
             return nullptr;
           }
         } else if (function_id == CSSValueID::kMod) {
           op = CSSMathOperator::kMod;
         } else {
           op = CSSMathOperator::kRem;
-        }
-        for (const auto& node : nodes) {
-          if (const auto* operation =
-                  DynamicTo<CSSMathExpressionOperation>(*node)) {
-            if (operation->IsRoundingStrategyKeyword()) {
-              return nullptr;
-            }
-          }
         }
         return CSSMathExpressionOperation::CreateSteppedValueFunction(
             std::move(nodes), op);
@@ -2102,30 +2103,6 @@ class CSSMathExpressionNodeParser {
       return CSSMathExpressionNumericLiteral::Create(
           M_E, CSSPrimitiveValue::UnitType::kNumber);
     }
-    if (token.Id() == CSSValueID::kNearest) {
-      return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber,
-          true /* can_be_resolved_with_conversion_data */,
-          CSSMathOperator::kRoundNearest);
-    }
-    if (token.Id() == CSSValueID::kUp) {
-      return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber,
-          true /* can_be_resolved_with_conversion_data */,
-          CSSMathOperator::kRoundUp);
-    }
-    if (token.Id() == CSSValueID::kDown) {
-      return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber,
-          true /* can_be_resolved_with_conversion_data */,
-          CSSMathOperator::kRoundDown);
-    }
-    if (token.Id() == CSSValueID::kToZero) {
-      return MakeGarbageCollected<CSSMathExpressionOperation>(
-          CalculationResultCategory::kCalcNumber,
-          true /* can_be_resolved_with_conversion_data */,
-          CSSMathOperator::kRoundToZero);
-    }
     if (!(token.GetType() == kNumberToken ||
           (token.GetType() == kPercentageToken && is_percentage_allowed_) ||
           token.GetType() == kDimensionToken)) {
@@ -2139,6 +2116,30 @@ class CSSMathExpressionNodeParser {
 
     return CSSMathExpressionNumericLiteral::Create(
         CSSNumericLiteralValue::Create(token.NumericValue(), type));
+  }
+
+  CSSMathExpressionNode* ParseRoundingStrategy(CSSParserTokenRange& tokens) {
+    CSSMathOperator rounding_op = CSSMathOperator::kInvalid;
+    switch (tokens.Peek().Id()) {
+      case CSSValueID::kNearest:
+        rounding_op = CSSMathOperator::kRoundNearest;
+        break;
+      case CSSValueID::kUp:
+        rounding_op = CSSMathOperator::kRoundUp;
+        break;
+      case CSSValueID::kDown:
+        rounding_op = CSSMathOperator::kRoundDown;
+        break;
+      case CSSValueID::kToZero:
+        rounding_op = CSSMathOperator::kRoundToZero;
+        break;
+      default:
+        return nullptr;
+    }
+    tokens.ConsumeIncludingWhitespace();
+    return MakeGarbageCollected<CSSMathExpressionOperation>(
+        CalculationResultCategory::kCalcNumber,
+        true /* can_be_resolved_with_conversion_data */, rounding_op);
   }
 
   CSSMathExpressionNode* ParseValueTerm(CSSParserTokenRange& tokens,
