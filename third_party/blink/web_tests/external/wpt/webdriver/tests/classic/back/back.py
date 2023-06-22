@@ -33,6 +33,9 @@ def test_no_browsing_history(session):
     assert_success(response)
 
 
+# Capability needed as long as no valid certificate is available:
+#   https://github.com/web-platform-tests/wpt/issues/28847
+@pytest.mark.capabilities({"acceptInsecureCerts": True})
 @pytest.mark.parametrize("protocol,parameters", [
     ("http", ""),
     ("https", ""),
