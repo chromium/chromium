@@ -441,6 +441,41 @@ IN_PROC_BROWSER_TEST_F(SmartCardTest, GetAttribute) {
     })())"));
 }
 
+IN_PROC_BROWSER_TEST_F(SmartCardTest, SetAttribute) {
+  ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
+
+  MockSmartCardContextFactory& mock_context_factory =
+      GetFakeSmartCardDelegate().mock_context_factory;
+  MockSmartCardConnection mock_connection;
+  mojo::Receiver<SmartCardConnection> connection_receiver(&mock_connection);
+
+  {
+    InSequence s;
+
+    mock_context_factory.ExpectConnectFakeReaderSharedT1(connection_receiver);
+
+    EXPECT_CALL(mock_connection,
+                SetAttrib(42, std::vector<uint8_t>({3u, 2u, 1u}), _))
+        .WillOnce([](uint32_t tag, const std::vector<uint8_t>& data,
+                     SmartCardConnection::SetAttribCallback callback) {
+          std::move(callback).Run(device::mojom::SmartCardResult::NewSuccess(
+              SmartCardSuccess::kOk));
+        });
+  }
+
+  EXPECT_EQ("success", EvalJs(shell(), R"(
+    (async () => {
+      let context = await navigator.smartCard.establishContext();
+
+      let connection = await context.connect("Fake reader", "shared", ["t1"]);
+
+      let data = new Uint8Array([0x03, 0x02, 0x01]);
+      await connection.setAttribute(42, data);
+
+      return 'success';
+    })())"));
+}
+
 IN_PROC_BROWSER_TEST_F(SmartCardTest, Status) {
   ASSERT_TRUE(NavigateToURL(shell(), GetIsolatedContextUrl()));
 

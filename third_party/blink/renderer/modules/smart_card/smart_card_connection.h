@@ -45,6 +45,10 @@ class SmartCardConnection final : public ScriptWrappable {
   ScriptPromise getAttribute(ScriptState* script_state,
                              uint32_t tag,
                              ExceptionState& exception_state);
+  ScriptPromise setAttribute(ScriptState* script_state,
+                             uint32_t tag,
+                             const DOMArrayPiece& data,
+                             ExceptionState& exception_state);
 
   // ScriptWrappable overrides
   void Trace(Visitor*) const override;
@@ -54,6 +58,8 @@ class SmartCardConnection final : public ScriptWrappable {
   bool EnsureConnection(ExceptionState& exception_state) const;
   void OnDisconnectDone(ScriptPromiseResolver* resolver,
                         device::mojom::blink::SmartCardResultPtr result);
+  void OnPlainResult(ScriptPromiseResolver* resolver,
+                     device::mojom::blink::SmartCardResultPtr result);
   void OnDataResult(ScriptPromiseResolver* resolver,
                     device::mojom::blink::SmartCardDataResultPtr result);
   void OnStatusDone(ScriptPromiseResolver* resolver,

@@ -33,5 +33,9 @@ enum SmartCardDisposition {
   [CallWith=ScriptState, RaisesException]
   Promise<ArrayBuffer> getAttribute([EnforceRange] unsigned long tag);
 
+  [CallWith=ScriptState, RaisesException]
+  Promise<undefined> setAttribute([EnforceRange] unsigned long tag,
+      BufferSource value);
+
   // TODO(crbug.com/1386175): add the rest of the API
 };
