@@ -49,20 +49,25 @@ $ PATH_TO_INSTALLER.EXE ^
 --includeRecommended
 ```
 
--You must have the version 10.0.22621.0 [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
-installed. This can be installed separately or by checking the appropriate box
-in the Visual Studio Installer.
+Required
 
-The 10.0.22621.755 (Windows 11) SDK Debugging Tools must also be installed. This
-version of the Debugging tools is needed in order to support reading the
-large-page PDBs that Chrome uses to allow greater-than 4 GiB PDBs.
+* [Windows 11 SDK](https://developer.microsoft.com/en-us/windows/downloads/windows-sdk/)
+version 10.0.22621.0. This can be installed separately or by checking the
+appropriate box in the Visual Studio Installer.
+* (Windows 11) SDK Debugging Tools 10.0.22621.755. This version of the Debugging
+tools is needed in order to support reading the large-page PDBs that Chrome uses
+to allow greater-than 4 GiB PDBs. This can be installed after the matching
+Windows SDK version is installed, from: Control Panel -> Programs and Features
+-> Windows Software Development Kit [version] -> Change -> Debugging Tools for
+Windows.
 
 ## Install `depot_tools`
 
-Download the [depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
+Download the
+[depot_tools bundle](https://storage.googleapis.com/chrome-infra/depot_tools.zip)
 and extract it somewhere (eg: C:\src\depot_tools).
 
-*** note
+***
 **Warning:** **DO NOT** use drag-n-drop or copy-n-paste extract from Explorer,
 this will not extract the hidden “.git” folder which is necessary for
 depot_tools to autoupdate itself. You can use “Extract all…” from the
@@ -71,21 +76,15 @@ context menu though.
 
 Add depot_tools to the start of your PATH (must be ahead of any installs of
 Python. Note that environment variable names are case insensitive).
-
-Assuming you unzipped the bundle to C:\src\depot_tools, open:
-
-Control Panel → System and Security → System → Advanced system settings
-
-If you have Administrator access, Modify the PATH system variable and
-put `C:\src\depot_tools` at the front (or at least in front of any directory
-that might already have a copy of Python or Git).
-
-If you don't have Administrator access, you can add a user-level PATH
-environment variable by opening:
-
-Control Panel → System and Security → System → Search for "Edit environment variables for your account"
-
-Add `C:\src\depot_tools` at the front. Note: If your system PATH has a Python in it, you will be out of luck.
+* Assuming you unzipped the bundle to C:\src\depot_tools, open: Control Panel → System and Security → System → Advanced system settings
+* If you have Administrator access, Modify the PATH system variable and put
+`C:\src\depot_tools` at the front (or at least in front of any directory that
+might already have a copy of Python or Git).
+* If you don't have Administrator access, you can add a user-level PATH
+environment variable by opening: Control Panel → System and Security → System →
+Search for "Edit environment variables for your account"
+* Add `C:\src\depot_tools` at the front. Note: If your system PATH has a Python
+in it, you will be out of luck.
 
 Also, add a DEPOT_TOOLS_WIN_TOOLCHAIN environment variable in the same way, and set
 it to 0. This tells depot_tools to use your locally installed version of Visual
@@ -96,7 +95,6 @@ Visual Studio 2022, like
 `set vs2022_install=C:\Program Files\Microsoft Visual Studio\2022\Professional`.
 
 From a cmd.exe shell, run:
-
 ```shell
 $ gclient
 ```
