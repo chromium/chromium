@@ -114,7 +114,7 @@ enum class DOMExceptionCode : ExceptionCode {
   kWebTransportError,
 
   // Smart Card API
-  // https://github.com/WICG/web-smart-card/blob/main/README.md#web-idl
+  // https://wicg.github.io/web-smart-card/#smartcarderror-interface
   kSmartCardError,
 
   // WebGPU https://www.w3.org/TR/webgpu/
