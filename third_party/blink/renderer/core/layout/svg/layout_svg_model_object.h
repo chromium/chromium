@@ -52,7 +52,7 @@ class LayoutSVGModelObject : public LayoutObject {
 
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return StrokeBoundingBox();
+    return DecoratedBoundingBox();
   }
 
   void AbsoluteQuads(Vector<gfx::QuadF>&,

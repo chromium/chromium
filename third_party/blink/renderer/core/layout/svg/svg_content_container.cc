@@ -171,7 +171,7 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
   object_bounding_box_valid = false;
 
   gfx::RectF object_bounding_box;
-  gfx::RectF stroke_bounding_box;
+  gfx::RectF decorated_bounding_box;
   for (LayoutObject* current = children_.FirstChild(); current;
        current = current->NextSibling()) {
     // Don't include elements that are not rendered.
@@ -181,14 +181,15 @@ bool SVGContentContainer::UpdateBoundingBoxes(bool& object_bounding_box_valid) {
     UpdateObjectBoundingBox(
         object_bounding_box, object_bounding_box_valid,
         transform.MapRect(ObjectBoundsForPropagation(*current)));
-    stroke_bounding_box.Union(transform.MapRect(current->StrokeBoundingBox()));
+    decorated_bounding_box.Union(
+        transform.MapRect(current->DecoratedBoundingBox()));
   }
 
   bool changed = false;
   changed |= object_bounding_box_ != object_bounding_box;
   object_bounding_box_ = object_bounding_box;
-  changed |= stroke_bounding_box_ != stroke_bounding_box;
-  stroke_bounding_box_ = stroke_bounding_box;
+  changed |= decorated_bounding_box_ != decorated_bounding_box;
+  decorated_bounding_box_ = decorated_bounding_box;
   return changed;
 }
 

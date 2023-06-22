@@ -41,7 +41,7 @@ LayoutSVGEllipse::~LayoutSVGEllipse() = default;
 void LayoutSVGEllipse::UpdateShapeFromElement() {
   NOT_DESTROYED();
 
-  stroke_bounding_box_ = gfx::RectF();
+  decorated_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
   CalculateRadiiAndCenter();
@@ -71,7 +71,7 @@ void LayoutSVGEllipse::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  stroke_bounding_box_ = CalculateStrokeBoundingBox();
+  decorated_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
 void LayoutSVGEllipse::CalculateRadiiAndCenter() {

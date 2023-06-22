@@ -61,7 +61,7 @@ class LayoutNGSVGForeignObject final
   bool IsChildAllowed(LayoutObject* child,
                       const ComputedStyle& style) const override;
   gfx::RectF ObjectBoundingBox() const override;
-  gfx::RectF StrokeBoundingBox() const override;
+  gfx::RectF DecoratedBoundingBox() const override;
   gfx::RectF VisualRectInLocalSVGCoordinates() const override;
   AffineTransform LocalToSVGParentTransform() const override;
 

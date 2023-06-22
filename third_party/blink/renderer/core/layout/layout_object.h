@@ -1346,7 +1346,9 @@ class CORE_EXPORT LayoutObject : public GarbageCollected<LayoutObject>,
   // Like VisualRectInLocalSVGCoordinates() but does not include visual overflow
   // (name is misleading). May be zoomed (currently only for <foreignObject>,
   // which represents this via its LocalToSVGParentTransform()).
-  virtual gfx::RectF StrokeBoundingBox() const;
+  // It mostly corresponds to the "decorated bounding box" from the SVG spec.
+  // (https://svgwg.org/svg2-draft/coords.html#BoundingBoxes)
+  virtual gfx::RectF DecoratedBoundingBox() const;
 
   // This returns the transform applying to the local SVG coordinate space,
   // which combines the CSS transform properties and animation motion transform.

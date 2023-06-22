@@ -171,7 +171,7 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                                           const WindRule) const;
 
   gfx::RectF fill_bounding_box_;
-  gfx::RectF stroke_bounding_box_;
+  gfx::RectF decorated_bounding_box_;
 
   LayoutSVGShapeRareData& EnsureRareData() const;
 
@@ -198,9 +198,9 @@ class LayoutSVGShape : public LayoutSVGModelObject {
                     const HitTestLocation&,
                     PointerEventsHitRules);
 
-  gfx::RectF StrokeBoundingBox() const final {
+  gfx::RectF DecoratedBoundingBox() const final {
     NOT_DESTROYED();
-    return stroke_bounding_box_;
+    return decorated_bounding_box_;
   }
 
   // Calculates an inclusive bounding box of this shape as if this shape has a

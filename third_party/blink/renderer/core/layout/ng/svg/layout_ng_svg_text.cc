@@ -285,7 +285,7 @@ gfx::RectF LayoutNGSVGText::ObjectBoundingBox() const {
   return bounding_box_;
 }
 
-gfx::RectF LayoutNGSVGText::StrokeBoundingBox() const {
+gfx::RectF LayoutNGSVGText::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   gfx::RectF box = ObjectBoundingBox();
   if (box.IsEmpty())
@@ -305,12 +305,13 @@ gfx::RectF LayoutNGSVGText::VisualRectInLocalSVGCoordinates() const {
 void LayoutNGSVGText::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                     MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(StrokeBoundingBox()), mode));
+  quads.push_back(
+      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
 }
 
 gfx::RectF LayoutNGSVGText::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return StrokeBoundingBox();
+  return DecoratedBoundingBox();
 }
 
 bool LayoutNGSVGText::NodeAtPoint(HitTestResult& result,

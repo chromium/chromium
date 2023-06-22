@@ -99,7 +99,7 @@ gfx::RectF LayoutSVGInline::ObjectBoundingBox() const {
   return bounds;
 }
 
-gfx::RectF LayoutSVGInline::StrokeBoundingBox() const {
+gfx::RectF LayoutSVGInline::DecoratedBoundingBox() const {
   NOT_DESTROYED();
   if (!IsObjectBoundingBoxValid())
     return gfx::RectF();

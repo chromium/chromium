@@ -391,10 +391,10 @@ TEST_F(LayoutNGSVGForeignObjectTest, BBoxPropagationZoomed) {
   ASSERT_EQ(target.StyleRef().EffectiveZoom(), 2);
 
   EXPECT_EQ(target.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
-  EXPECT_EQ(target.StrokeBoundingBox(), gfx::RectF(12, 10, 200, 100));
+  EXPECT_EQ(target.DecoratedBoundingBox(), gfx::RectF(12, 10, 200, 100));
   const auto& parent_g = *target.Parent();
   EXPECT_EQ(parent_g.ObjectBoundingBox(), gfx::RectF(6, 5, 100, 50));
-  EXPECT_EQ(parent_g.StrokeBoundingBox(), gfx::RectF(6, 5, 100, 50));
+  EXPECT_EQ(parent_g.DecoratedBoundingBox(), gfx::RectF(6, 5, 100, 50));
 }
 
 // crbug.com/1335655

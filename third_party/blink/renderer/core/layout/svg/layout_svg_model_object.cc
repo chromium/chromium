@@ -74,7 +74,8 @@ void LayoutSVGModelObject::MapAncestorToLocal(
 void LayoutSVGModelObject::AbsoluteQuads(Vector<gfx::QuadF>& quads,
                                          MapCoordinatesFlags mode) const {
   NOT_DESTROYED();
-  quads.push_back(LocalToAbsoluteQuad(gfx::QuadF(StrokeBoundingBox()), mode));
+  quads.push_back(
+      LocalToAbsoluteQuad(gfx::QuadF(DecoratedBoundingBox()), mode));
 }
 
 // This method is called from inside PaintOutline(), and since we call
@@ -98,7 +99,7 @@ void LayoutSVGModelObject::AddOutlineRects(OutlineRectCollector& collector,
 
 gfx::RectF LayoutSVGModelObject::LocalBoundingBoxRectForAccessibility() const {
   NOT_DESTROYED();
-  return StrokeBoundingBox();
+  return DecoratedBoundingBox();
 }
 
 void LayoutSVGModelObject::WillBeDestroyed() {

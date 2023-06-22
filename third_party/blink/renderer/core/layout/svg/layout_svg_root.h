@@ -158,13 +158,13 @@ class CORE_EXPORT LayoutSVGRoot final : public LayoutReplaced {
     NOT_DESTROYED();
     return content_.ObjectBoundingBox();
   }
-  gfx::RectF StrokeBoundingBox() const override {
+  gfx::RectF DecoratedBoundingBox() const override {
     NOT_DESTROYED();
-    return content_.StrokeBoundingBox();
+    return content_.DecoratedBoundingBox();
   }
   gfx::RectF VisualRectInLocalSVGCoordinates() const override {
     NOT_DESTROYED();
-    return content_.StrokeBoundingBox();
+    return content_.DecoratedBoundingBox();
   }
 
   bool NodeAtPoint(HitTestResult&,

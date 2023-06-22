@@ -41,7 +41,7 @@ LayoutSVGRect::~LayoutSVGRect() = default;
 void LayoutSVGRect::UpdateShapeFromElement() {
   NOT_DESTROYED();
 
-  stroke_bounding_box_ = gfx::RectF();
+  decorated_bounding_box_ = gfx::RectF();
   use_path_fallback_ = false;
 
   SVGLengthContext length_context(GetElement());
@@ -77,7 +77,7 @@ void LayoutSVGRect::UpdateShapeFromElement() {
   if (!use_path_fallback_)
     ClearPath();
 
-  stroke_bounding_box_ = CalculateStrokeBoundingBox();
+  decorated_bounding_box_ = CalculateStrokeBoundingBox();
 }
 
 bool LayoutSVGRect::ShapeDependentStrokeContains(
