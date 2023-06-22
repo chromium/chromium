@@ -13,6 +13,7 @@
 #include "chrome/test/base/in_process_browser_test.h"
 #include "components/prefs/pref_service.h"
 #include "content/public/test/browser_test.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/ozone/public/ozone_platform.h"
 
@@ -42,12 +43,12 @@ void VerifyColorsForFrameType(const Browser* browser, bool use_custom_frame) {
 
   bool initialized_color_provider_for_custom_frame;
   ui::ColorProviderManager::GetForTesting().AppendColorProviderInitializer(
-      base::BindLambdaForTesting([&initialized_color_provider_for_custom_frame](
-                                     ui::ColorProvider* provider,
-                                     const ui::ColorProviderManager::Key& key) {
-        initialized_color_provider_for_custom_frame =
-            key.frame_type == ui::ColorProviderManager::FrameType::kChromium;
-      }));
+      base::BindLambdaForTesting(
+          [&initialized_color_provider_for_custom_frame](
+              ui::ColorProvider* provider, const ui::ColorProviderKey& key) {
+            initialized_color_provider_for_custom_frame =
+                key.frame_type == ui::ColorProviderKey::FrameType::kChromium;
+          }));
   ASSERT_NE(nullptr,
             BrowserView::GetBrowserViewForBrowser(browser)->GetColorProvider());
   EXPECT_EQ(use_custom_frame, initialized_color_provider_for_custom_frame);

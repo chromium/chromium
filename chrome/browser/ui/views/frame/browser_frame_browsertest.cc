@@ -28,6 +28,7 @@
 #include "ui/color/color_id.h"
 #include "ui/color/color_mixer.h"
 #include "ui/color/color_provider.h"
+#include "ui/color/color_provider_key.h"
 #include "ui/color/color_provider_manager.h"
 #include "ui/color/color_recipe.h"
 #include "ui/native_theme/test_native_theme.h"
@@ -112,16 +113,15 @@ class BrowserFrameColorProviderTest : public BrowserFrameTest,
 
  protected:
   static void AddColor(ui::ColorProvider* provider,
-                       const ui::ColorProviderManager::Key& key) {
+                       const ui::ColorProviderKey& key) {
     // Add a postprocessing mixer to ensure it is appended to the end of the
     // pipeline.
     ui::ColorMixer& mixer = provider->AddPostprocessingMixer();
 
     // Used to track the light/dark color mode setting.
     mixer[ui::kColorSysPrimary] = {
-        key.color_mode == ui::ColorProviderManager::ColorMode::kDark
-            ? kDarkColor
-            : kLightColor};
+        key.color_mode == ui::ColorProviderKey::ColorMode::kDark ? kDarkColor
+                                                                 : kLightColor};
 
     // Used to track the user color.
     mixer[ui::kColorSysSecondary] = {

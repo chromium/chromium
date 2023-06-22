@@ -279,8 +279,8 @@ const ui::ThemeProvider* BrowserFrame::GetThemeProvider() const {
   return &ThemeService::GetThemeProviderForProfile(browser->profile());
 }
 
-ui::ColorProviderManager::ThemeInitializerSupplier*
-BrowserFrame::GetCustomTheme() const {
+ui::ColorProviderKey::ThemeInitializerSupplier* BrowserFrame::GetCustomTheme()
+    const {
   // Do not return any custom theme if this is an incognito browser.
   if (IsIncognitoBrowser()) {
     return nullptr;
@@ -409,14 +409,14 @@ void BrowserFrame::OnNativeThemeUpdated(ui::NativeTheme* observed_theme) {
   UserChangedTheme(BrowserThemeChangeType::kNativeTheme);
 }
 
-ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
+ui::ColorProviderKey BrowserFrame::GetColorProviderKey() const {
   auto key = Widget::GetColorProviderKey();
 
   // color_mode.
   [this, &key]() {
     // Currently the incognito browser is implemented as unthemed dark mode.
     if (IsIncognitoBrowser()) {
-      key.color_mode = ui::ColorProviderManager::ColorMode::kDark;
+      key.color_mode = ui::ColorProviderKey::ColorMode::kDark;
       return;
     }
 
@@ -427,8 +427,8 @@ ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
     if (browser_color_scheme != ThemeService::BrowserColorScheme::kSystem) {
       key.color_mode =
           browser_color_scheme == ThemeService::BrowserColorScheme::kLight
-              ? ui::ColorProviderManager::ColorMode::kLight
-              : ui::ColorProviderManager::ColorMode::kDark;
+              ? ui::ColorProviderKey::ColorMode::kLight
+              : ui::ColorProviderKey::ColorMode::kDark;
     }
   }();
 
@@ -460,9 +460,8 @@ ui::ColorProviderManager::Key BrowserFrame::GetColorProviderKey() const {
   }();
 
   // frame_type.
-  key.frame_type = UseCustomFrame()
-                       ? ui::ColorProviderManager::FrameType::kChromium
-                       : ui::ColorProviderManager::FrameType::kNative;
+  key.frame_type = UseCustomFrame() ? ui::ColorProviderKey::FrameType::kChromium
+                                    : ui::ColorProviderKey::FrameType::kNative;
 
   // app_controller.
   auto* app_controller = browser_view_->browser()->app_controller();
