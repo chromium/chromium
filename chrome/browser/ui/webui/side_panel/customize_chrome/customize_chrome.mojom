@@ -53,6 +53,8 @@ struct Theme {
   bool colors_managed_by_policy;
   // True if the background is managed by a policy.
   bool background_managed_by_policy;
+  // True if using grey baseline theme.
+  bool is_grey_baseline;
 };
 
 struct ChromeColor {
@@ -145,6 +147,9 @@ interface CustomizeChromePageHandler {
 
   // Sets Chrome's theme according to the default color.
   SetDefaultColor();
+
+  // Sets Chrome's theme according to the grey version of the default color.
+  SetGreyDefaultColor();
 
   // Sets a Chrome theme generated from |seed_color|.
   SetSeedColor(skia.mojom.SkColor seed_color);

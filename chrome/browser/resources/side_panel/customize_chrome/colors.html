@@ -86,6 +86,22 @@
         basic-color>
     </customize-chrome-color>
   </template>
+  <template is="dom-if" if="[[isChromeRefresh2023_]]" restamp>
+    <customize-chrome-color
+        id="greyDefaultColor"
+        background-color="[[greyDefaultColor_.background]]"
+        base-color="[[greyDefaultColor_.base]]"
+        foreground-color="[[greyDefaultColor_.foreground]]"
+        title="$i18n{greyDefaultColorName}"
+        aria-label="$i18n{greyDefaultColorName}"
+        role="radio"
+        checked="[[isGreyDefaultColorSelected_]]"
+        aria-checked$="[[boolToString_(isGreyDefaultColorSelected_)]]"
+        tabindex$="[[tabIndex_(isGreyDefaultColorSelected_)]]"
+        on-click="onGreyDefaultColorClick_"
+        basic-color>
+    </customize-chrome-color>
+  </template>
   <template is="dom-if" if="[[themeHasMainColor_(theme_)]]" restamp>
     <customize-chrome-color
         id="mainColor"

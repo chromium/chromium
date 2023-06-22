@@ -196,8 +196,8 @@ class ThemeService : public KeyedService, public BrowserThemeProviderDelegate {
   virtual absl::optional<SkColor> GetUserColor() const;
 
   // Sets/gets the browser grayscale theme preference.
-  void SetIsGrayscale(bool is_grayscale);
-  bool GetIsGrayscale() const;
+  virtual void SetIsGrayscale(bool is_grayscale);
+  virtual bool GetIsGrayscale() const;
 
   // Returns |ThemeService::ThemeReinstaller| for the current theme.
   std::unique_ptr<ThemeService::ThemeReinstaller>

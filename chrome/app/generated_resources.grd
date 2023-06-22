@@ -7238,6 +7238,9 @@ Keep your key file in a safe place. You will need it to create new versions of y
       <message name="IDS_NTP_CUSTOMIZE_DEFAULT_LABEL" desc="The label for the Default theme in the customization menu on the New Tab Page">
         Default color
       </message>
+      <message name="IDS_NTP_CUSTOMIZE_GREY_DEFAULT_LABEL" desc="The label for the Grey version of the Default theme in the customization menu on the New Tab Page">
+        Grey default color
+      </message>
       <message name="IDS_NTP_CUSTOMIZE_MAIN_COLOR_LABEL" desc="The label for the main color theme in the customization menu on the New Tab Page">
         Color based on theme
       </message>

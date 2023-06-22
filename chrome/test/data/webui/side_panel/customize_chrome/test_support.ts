@@ -69,6 +69,7 @@ export function createTheme(isDarkMode = false): Theme {
     colorPickerIconColor: {value: 0xffff0000},
     colorsManagedByPolicy: false,
     backgroundManagedByPolicy: false,
+    isGreyBaseline: false,
   };
 }
 
