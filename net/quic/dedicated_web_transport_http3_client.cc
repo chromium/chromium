@@ -69,12 +69,15 @@ std::unique_ptr<quic::ProofVerifier> CreateProofVerifier(
     URLRequestContext* context,
     const WebTransportParameters& parameters) {
   if (parameters.server_certificate_fingerprints.empty()) {
+    std::set<std::string> hostnames_to_allow_unknown_roots = HostsFromOrigins(
+        context->quic_context()->params()->origins_to_force_quic_on);
+    if (context->quic_context()->params()->webtransport_developer_mode) {
+      hostnames_to_allow_unknown_roots.insert("");
+    }
     return std::make_unique<ProofVerifierChromium>(
         context->cert_verifier(), context->ct_policy_enforcer(),
         context->transport_security_state(), context->sct_auditing_delegate(),
-        HostsFromOrigins(
-            context->quic_context()->params()->origins_to_force_quic_on),
-        anonymization_key);
+        std::move(hostnames_to_allow_unknown_roots), anonymization_key);
   }
 
   auto verifier =

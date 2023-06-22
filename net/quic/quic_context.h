@@ -106,6 +106,10 @@ struct NET_EXPORT QuicParams {
   size_t max_server_configs_stored_in_properties = 0u;
   // QUIC will be used for all connections in this set.
   std::set<HostPortPair> origins_to_force_quic_on;
+  // WebTransport developer mode disables the requirement that all QUIC
+  // connections are anchored to a system certificate root, but only for
+  // WebTransport connections.
+  bool webtransport_developer_mode = false;
   // Set of QUIC tags to send in the handshake's connection options.
   quic::QuicTagVector connection_options;
   // Set of QUIC tags to send in the handshake's connection options that only

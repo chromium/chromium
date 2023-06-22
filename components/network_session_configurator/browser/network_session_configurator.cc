@@ -755,6 +755,10 @@ void ParseCommandLineAndFieldTrials(const base::CommandLine& command_line,
           quic_params->origins_to_force_quic_on.insert(quic_origin);
       }
     }
+
+    if (command_line.HasSwitch(switches::kWebTransportDeveloperMode)) {
+      quic_params->webtransport_developer_mode = true;
+    }
   }
 
   // Parameters only controlled by command line.

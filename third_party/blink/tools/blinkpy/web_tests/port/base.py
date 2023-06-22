@@ -376,7 +376,7 @@ class Port(object):
                 '--ignore-certificate-errors-spki-list=' + WPT_FINGERPRINT +
                 ',' + SXG_FINGERPRINT + ',' + SXG_WPT_FINGERPRINT,
                 # Required for WebTransport tests.
-                '--origin-to-force-quic-on=web-platform.test:11000',
+                '--webtransport-developer-mode',
                 '--user-data-dir'
             ]
             if self.get_option('nocheck_sys_deps', False):

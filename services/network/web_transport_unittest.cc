@@ -332,8 +332,7 @@ class WebTransportTest : public testing::TestWithParam<base::StringPiece> {
     auto* quic_context =
         network_context_->url_request_context()->quic_context();
     quic_context->params()->supported_versions.push_back(version_);
-    quic_context->params()->origins_to_force_quic_on.insert(
-        net::HostPortPair("test.example.com", 0));
+    quic_context->params()->webtransport_developer_mode = true;
   }
   ~WebTransportTest() override = default;
 
