@@ -15,7 +15,8 @@ namespace blink {
 StyleScope::StyleScope(StyleRule* from, CSSSelectorList* to)
     : from_(from), to_(to) {}
 
-StyleScope::StyleScope(StyleSheetContents* contents) : contents_(contents) {}
+StyleScope::StyleScope(StyleSheetContents* contents, CSSSelectorList* to)
+    : contents_(contents), to_(to) {}
 
 StyleScope::StyleScope(const StyleScope& other)
     : contents_(other.contents_),
@@ -68,17 +69,8 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
 
   prelude.ConsumeWhitespace();
 
-  if (prelude.AtEnd()) {
-    // Implicitly rooted.
-    return MakeGarbageCollected<StyleScope>(style_sheet);
-  }
-
-  if (prelude.Peek().GetType() != kLeftParenthesisToken) {
-    return nullptr;
-  }
-
   // <scope-start>
-  {
+  if (prelude.Peek().GetType() == kLeftParenthesisToken) {
     auto block = prelude.ConsumeBlock();
     // TODO(crbug.com/1280240): Pass actual nesting context from the outside.
     from = CSSSelectorParser::ParseScopeBoundary(
@@ -125,6 +117,11 @@ StyleScope* StyleScope::Parse(CSSParserTokenRange prelude,
   CSSSelectorList* to_list =
       to.has_value() ? CSSSelectorList::AdoptSelectorVector(to.value())
                      : nullptr;
+
+  if (!from.has_value()) {
+    // Implicitly rooted.
+    return MakeGarbageCollected<StyleScope>(style_sheet, to_list);
+  }
 
   return MakeGarbageCollected<StyleScope>(from_rule, to_list);
 }

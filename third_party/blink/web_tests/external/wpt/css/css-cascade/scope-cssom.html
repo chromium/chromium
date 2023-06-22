@@ -11,6 +11,7 @@
       display: block;
     }
   }
+  @scope to (.b) {}
 </style>
 <script>
 
@@ -27,6 +28,10 @@ test(() => {
   assert_equals(style.sheet.rules[2].cssText, '@scope (.a) to (.b) {\n  div { display: block; }\n}');
 }, 'CSSScopeRule.cssText, root and limit');
 
+test(() => {
+  assert_equals(style.sheet.rules[3].cssText, '@scope to (.b) {\n}');
+}, 'CSSScopeRule.cssText, limit only');
+
 // start
 test(() => {
   assert_equals(style.sheet.rules[0].start, null);
@@ -40,6 +45,10 @@ test(() => {
   assert_equals(style.sheet.rules[2].start, '.a');
 }, 'CSSScopeRule.start, root and limit');
 
+test(() => {
+  assert_equals(style.sheet.rules[3].start, null);
+}, 'CSSScopeRule.start, limit only');
+
 // end
 test(() => {
   assert_equals(style.sheet.rules[0].end, null);
@@ -52,4 +61,8 @@ test(() => {
 test(() => {
   assert_equals(style.sheet.rules[2].end, '.b');
 }, 'CSSScopeRule.end, root and limit');
+
+test(() => {
+  assert_equals(style.sheet.rules[3].end, '.b');
+}, 'CSSScopeRule.end, limit only');
 </script>

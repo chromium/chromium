@@ -25,12 +25,15 @@ String CSSScopeRule::PreludeText() const {
     result.Append('(');
     result.Append(CSSSelectorList::SelectorsText(scope.From()));
     result.Append(')');
+  }
 
-    if (scope.To()) {
-      result.Append(" to (");
-      result.Append(CSSSelectorList::SelectorsText(scope.To()));
-      result.Append(')');
+  if (scope.To()) {
+    if (!result.empty()) {
+      result.Append(" ");
     }
+    result.Append("to (");
+    result.Append(CSSSelectorList::SelectorsText(scope.To()));
+    result.Append(')');
   }
 
   return result.ReleaseString();

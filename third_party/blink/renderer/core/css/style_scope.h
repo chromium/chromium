@@ -31,8 +31,9 @@ class CORE_EXPORT StyleScope final : public GarbageCollected<StyleScope> {
   // https://drafts.csswg.org/css-nesting-1/#nesting-at-scope
   StyleScope(StyleRule* from, CSSSelectorList* to);
   // Construct a StyleScope with implicit roots at the parent nodes of the
-  // stylesheet's owner nodes.
-  explicit StyleScope(StyleSheetContents* contents);
+  // stylesheet's owner nodes. Note that StyleScopes with implicit roots
+  // can still have limits.
+  explicit StyleScope(StyleSheetContents* contents, CSSSelectorList* to);
   StyleScope(const StyleScope&);
   static StyleScope* Parse(CSSParserTokenRange prelude,
                            const CSSParserContext* context,
