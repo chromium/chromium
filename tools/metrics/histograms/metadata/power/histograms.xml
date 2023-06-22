@@ -1445,17 +1445,6 @@ chromium-metrics-reviews@google.com.
   </token>
 </histogram>
 
-<histogram name="Power.ExternalBrightnessReadResult"
-    enum="ExternalDisplayReceiveResult" expires_after="2022-05-01">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The result of attempting to read an external display's brightness on Chrome
-    OS. A read attempt is made after successfully requesting the brightness (see
-    Power.ExternalBrightnessRequestResult).
-  </summary>
-</histogram>
-
 <histogram name="Power.ExternalBrightnessRequestResult"
     enum="ExternalDisplaySendResult" expires_after="M100">
   <owner>puthik@chromium.org</owner>
@@ -1464,7 +1453,7 @@ chromium-metrics-reviews@google.com.
     The result of requesting an external display's brightness on Chrome OS. A
     request is sent when the user presses a brightness key and the current
     brightness is not already cached. A successful request is followed shortly
-    thereafter by a read attempt (see Power.ExternalBrightnessReadResult).
+    thereafter by a read attempt.
   </summary>
 </histogram>
 
@@ -1476,17 +1465,6 @@ chromium-metrics-reviews@google.com.
     The result of attempting to change an external display's brightness on
     Chrome OS. A request is sent when the user presses a brightness key and the
     current brightness is either already cached or successfully loaded.
-  </summary>
-</histogram>
-
-<histogram name="Power.ExternalDisplayOpenResult"
-    enum="ExternalDisplayOpenResult" expires_after="2021-08-01">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The result of attempting to open an I2C device to control an external
-    display's brightness on Chrome OS. An attempt is made when a display is
-    connected to a device that lacks an internal display.
   </summary>
 </histogram>
 
@@ -2020,17 +1998,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.LengthOfSession" units="seconds"
-    expires_after="2021-10-17">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The length of time, in seconds, that a user spent in a single session.
-    Values for this metric are clamped to 12 hours, so the last bucket should be
-    considered to be including all metrics above 12 hours.
-  </summary>
-</histogram>
-
 <histogram name="Power.LidClosedSuspendCountDaily" units="count"
     expires_after="2021-10-10">
   <owner>puthik@chromium.org</owner>
@@ -2103,29 +2070,6 @@ chromium-metrics-reviews@google.com.
   </summary>
 </histogram>
 
-<histogram name="Power.NumberOfAlsAdjustmentsPerSession" units="units"
-    expires_after="2022-05-01">
-  <owner>tbroch@chromium.org</owner>
-  <owner>napper@chromium.org</owner>
-  <summary>
-    The number of times that the Automatic Light Sensor (ALS) adjusted the
-    brightness during a session. Values for this metric are clamped to 10k
-    count, so the last bucket should be considered to be including all metrics
-    above 10k.
-  </summary>
-</histogram>
-
-<histogram name="Power.NumberOfSessionsPerCharge" units="units"
-    expires_after="2022-03-31">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The number of user sessions that occured since the last time that the device
-    was charged. Values for this metric are clamped at 10k, so the last bucket
-    should be considered to include all metrics about 10k.
-  </summary>
-</histogram>
-
 <histogram name="Power.PC10inS0ixRuntimeResidencyRate" units="%"
     expires_after="2023-11-12">
   <owner>skardach@google.com</owner>
@@ -2191,16 +2135,6 @@ chromium-metrics-reviews@google.com.
     The amount of time between the user pressing the power button and Chrome
     acknowledging the button-down event on Chrome OS. Values for this metric are
     capped to two seconds.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerButtonDownTime" units="ms"
-    expires_after="2022-04-24">
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The amount of time between the user pressing the power button and releasing
-    it on Chrome OS.
   </summary>
 </histogram>
 
@@ -2293,42 +2227,6 @@ chromium-metrics-reviews@google.com.
     policy is active (e.g. throttle while idle). A sample is recorded every time
     throttling stops (e.g. when exiting idle state), on the order of once per
     second.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerSupplyMaxPower" units="W"
-    expires_after="2022-04-17">
-  <owner>bleung@chromium.org</owner>
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The maximum power supported by the connected power supply on Chrome OS. A
-    sample is reported every time that the power manager polls sysfs (typically
-    every 30 seconds) and sees a connected supply.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerSupplyMaxVoltage" units="V"
-    expires_after="2022-04-17">
-  <owner>bleung@chromium.org</owner>
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The maximum voltage supported by the connected power supply on Chrome OS. A
-    sample is reported every time that the power manager polls sysfs (typically
-    every 30 seconds) and sees a connected supply.
-  </summary>
-</histogram>
-
-<histogram name="Power.PowerSupplyType" enum="PowerSupplyType"
-    expires_after="2022-04-10">
-  <owner>bleung@chromium.org</owner>
-  <owner>puthik@chromium.org</owner>
-  <owner>chromeos-platform-power@google.com</owner>
-  <summary>
-    The type of the connected power supply on Chrome OS. A sample is reported
-    every time that the power manager polls sysfs (typically every 30 seconds)
-    and sees a connected supply.
   </summary>
 </histogram>
 

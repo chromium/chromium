@@ -37967,25 +37967,6 @@ Called by update_extension_permission.py.-->
   <int value="5" label="Close (no action)"/>
 </enum>
 
-<enum name="ExternalDisplayOpenResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="Failed with EACCES (incorrect permission on device)"/>
-  <int value="2" label="Failed with ENOENT (device missing)"/>
-  <int value="3" label="Failed for some other reason"/>
-</enum>
-
-<enum name="ExternalDisplayReceiveResult">
-  <int value="0" label="Success"/>
-  <int value="1" label="ioctl() to I2C device failed"/>
-  <int value="2" label="Bad message checksum"/>
-  <int value="3" label="Bad message address"/>
-  <int value="4" label="Bad message length"/>
-  <int value="5" label="Bad command code in message"/>
-  <int value="6" label="Bad result code in message"/>
-  <int value="7" label="Bad feature index in message"/>
-  <int value="8" label="Maximum value of 0 in message"/>
-</enum>
-
 <enum name="ExternalDisplaySendResult">
   <int value="0" label="Success"/>
   <int value="1" label="ioctl() to I2C device failed"/>
@@ -85122,23 +85103,6 @@ chromeos/ash/components/peripheral_notification/peripheral_notification_manager.
   <int value="5" label="Right: first connectoin during a session"/>
   <int value="6" label="Right: same side with previous connection"/>
   <int value="7" label="Right: opposite side with previous connection"/>
-</enum>
-
-<enum name="PowerSupplyType">
-  <summary>
-    The type of power supply connected to a Chrome OS system, as reported by the
-    kernel.
-  </summary>
-  <int value="0" label="Other"/>
-  <int value="1" label="Mains"/>
-  <int value="2" label="USB"/>
-  <int value="3" label="USB_ACA"/>
-  <int value="4" label="USB_CDP"/>
-  <int value="5" label="USB_DCP"/>
-  <int value="6" label="USB_C"/>
-  <int value="7" label="USB_PD"/>
-  <int value="8" label="USB_PD_DRP"/>
-  <int value="9" label="BrickID (Apple)"/>
 </enum>
 
 <enum name="PowerwashDialogViewType">
