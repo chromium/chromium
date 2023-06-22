@@ -228,9 +228,8 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
   // Root settings accessed on fast paths.
   //
   // Careful! PartitionAlloc's performance is sensitive to its layout.  Please
-  // put the fast-path objects in the struct below, and the other ones after
-  // the union..
-  struct Settings {
+  // put the fast-path objects in the struct below.
+  struct alignas(internal::kPartitionCachelineSize) Settings {
     // Chromium-style: Complex constructor needs an explicit out-of-line
     // constructor.
     Settings();
@@ -280,19 +279,11 @@ struct PA_ALIGNAS(64) PA_COMPONENT_EXPORT(PARTITION_ALLOC) PartitionRoot {
 #endif  // PA_CONFIG(EXTRAS_REQUIRED)
   };
 
-  // Read-mostly settings.
-  union {
-    Settings settings;
-
-    // The flags above are accessed for all (de)allocations, and are mostly
-    // read-only. They should not share a cacheline with the data below, which
-    // is only touched when the lock is taken.
-    uint8_t one_cacheline[internal::kPartitionCachelineSize];
-  };
+  Settings settings;
 
   // Not used on the fastest path (thread cache allocations), but on the fast
   // path of the central allocator.
-  ::partition_alloc::internal::Lock lock_;
+  alignas(internal::kPartitionCachelineSize) internal::Lock lock_;
 
   Bucket buckets[internal::kNumBuckets] = {};
   Bucket sentinel_bucket{};
@@ -2161,10 +2152,6 @@ ThreadCache* PartitionRoot::GetThreadCache() {
 }
 
 using ThreadSafePartitionRoot = PartitionRoot;
-
-static_assert(offsetof(ThreadSafePartitionRoot, lock_) ==
-                  internal::kPartitionCachelineSize,
-              "Padding is incorrect");
 
 #if BUILDFLAG(ENABLE_BACKUP_REF_PTR_SUPPORT)
 // Usage in `raw_ptr.cc` is notable enough to merit a non-internal alias.
