@@ -10,22 +10,21 @@
 #include "ash/glanceables/classroom/glanceables_classroom_item_view.h"
 #include "ash/glanceables/glanceables_v2_controller.h"
 #include "ash/shell.h"
-#include "ash/system/tray/tray_constants.h"
 #include "base/strings/utf_string_conversions.h"
-#include "chromeos/constants/chromeos_features.h"
 #include "ui/base/metadata/metadata_impl_macros.h"
 #include "ui/base/models/combobox_model.h"
 #include "ui/compositor/layer.h"
+#include "ui/gfx/geometry/insets.h"
 #include "ui/gfx/geometry/rounded_corners_f.h"
 #include "ui/views/controls/combobox/combobox.h"
-#include "ui/views/controls/label.h"
-#include "ui/views/highlight_border.h"
 #include "ui/views/layout/flex_layout_view.h"
+#include "ui/views/view_class_properties.h"
 
 namespace ash {
 namespace {
 
 constexpr int kSpacingAboveListContainerView = 16;
+constexpr auto kIndividualItemViewMargin = gfx::Insets::TLBR(0, 0, 2, 0);
 
 // TODO(b/283371050): Localize these strings once finalized.
 const char* const kStudentLists[] = {
@@ -119,11 +118,20 @@ void ClassroomBubbleView::OnGetStudentAssignmentsDueSoon(
     std::vector<std::unique_ptr<GlanceablesClassroomStudentAssignment>>
         assignments) {
   for (const auto& assignment : assignments) {
-    list_container_view_->AddChildView(
-        std::make_unique<GlanceablesClassroomItemView>(assignment.get()));
+    list_container_view_
+        ->AddChildView(
+            std::make_unique<GlanceablesClassroomItemView>(assignment.get()))
+        ->SetProperty(views::kMarginsKey, kIndividualItemViewMargin);
+
     if (list_container_view_->children().size() >= kMaxAssignments) {
       break;
     }
+  }
+
+  if (!list_container_view_->children().empty()) {
+    // Reset bottom margin of the last element in the list.
+    list_container_view_->children().back()->SetProperty(views::kMarginsKey,
+                                                         gfx::Insets());
   }
 }
 

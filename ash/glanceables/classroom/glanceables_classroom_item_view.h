@@ -5,17 +5,25 @@
 #ifndef ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_ITEM_VIEW_H_
 #define ASH_GLANCEABLES_CLASSROOM_GLANCEABLES_CLASSROOM_ITEM_VIEW_H_
 
-#include "ash/glanceables/classroom/glanceables_classroom_types.h"
-#include "ui/views/controls/label.h"
+#include "ash/ash_export.h"
 #include "ui/views/layout/flex_layout_view.h"
 
 namespace ash {
 
+struct GlanceablesClassroomStudentAssignment;
+
 // A view which shows information about a single assignment in the classroom
 // glanceable.
-class GlanceablesClassroomItemView : public views::FlexLayoutView {
+class ASH_EXPORT GlanceablesClassroomItemView : public views::FlexLayoutView {
  public:
   METADATA_HEADER(GlanceablesClassroomItemView);
+
+  // Known view ids.
+  static constexpr int kIconViewId = 1;
+  static constexpr int kCourseWorkTitleLabelId = 2;
+  static constexpr int kCourseTitleLabelId = 3;
+  static constexpr int kDueDateLabelId = 4;
+  static constexpr int kDueTimeLabelId = 5;
 
   explicit GlanceablesClassroomItemView(
       const GlanceablesClassroomStudentAssignment* assignment);
@@ -23,9 +31,6 @@ class GlanceablesClassroomItemView : public views::FlexLayoutView {
   GlanceablesClassroomItemView& operator=(const GlanceablesClassroomItemView&) =
       delete;
   ~GlanceablesClassroomItemView() override;
-
- private:
-  raw_ptr<views::Label, ExperimentalAsh> placeholder_label_ = nullptr;
 };
 
 }  // namespace ash
