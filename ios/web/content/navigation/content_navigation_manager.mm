@@ -53,18 +53,6 @@ network::mojom::ReferrerPolicy ToContentReferrerPolicy(ReferrerPolicy policy) {
   return network::mojom::ReferrerPolicy::kDefault;
 }
 
-content::ReloadType ToContentReloadType(ReloadType reload_type) {
-  switch (reload_type) {
-    case ReloadType::NORMAL:
-      return content::ReloadType::NORMAL;
-    case ReloadType::ORIGINAL_REQUEST_URL:
-      return content::ReloadType::ORIGINAL_REQUEST_URL;
-    default:
-      NOTREACHED();
-  }
-  return content::ReloadType::NORMAL;
-}
-
 }  // namespace
 
 ContentNavigationManager::ContentNavigationManager(
@@ -197,7 +185,11 @@ void ContentNavigationManager::GoToIndex(int index) {
 
 void ContentNavigationManager::Reload(ReloadType reload_type,
                                       bool check_for_reposts) {
-  controller_.Reload(ToContentReloadType(reload_type), check_for_reposts);
+  if (reload_type == ReloadType::ORIGINAL_REQUEST_URL) {
+    controller_.LoadOriginalRequestURL();
+  } else {
+    controller_.Reload(content::ReloadType::NORMAL, check_for_reposts);
+  }
 }
 
 void ContentNavigationManager::ReloadWithUserAgentType(
