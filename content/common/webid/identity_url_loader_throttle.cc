@@ -5,7 +5,6 @@
 #include "content/common/webid/identity_url_loader_throttle.h"
 
 #include "base/containers/contains.h"
-#include "base/metrics/field_trial_params.h"
 #include "base/metrics/histogram_macros.h"
 #include "base/strings/string_split.h"
 #include "base/time/time.h"
@@ -32,13 +31,8 @@ static constexpr char kIdpHeaderValueSignin[] = "action=signin";
 static constexpr char kIdpHeaderValueSignout[] = "action=signout-all";
 
 bool IsFedCmIdpSigninStatusThrottleEnabled() {
-  return GetFieldTrialParamByFeatureAsBool(
-             features::kFedCm,
-             features::kFedCmIdpSigninStatusFieldTrialParamName, false) ||
-         GetFieldTrialParamByFeatureAsBool(
-             features::kFedCm,
-             features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
-             true);
+  return base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics) ||
+         base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled);
 }
 
 }  // namespace

@@ -230,6 +230,8 @@ void SetRuntimeFeaturesFromChromiumFeatures() {
      kSetOnlyIfOverridden},
     {wf::EnableFedCmLoginHint, raw_ref(features::kFedCmLoginHint),
      kSetOnlyIfOverridden},
+    {wf::EnableFedCmIdpSigninStatus,
+     raw_ref(features::kFedCmIdpSigninStatusEnabled), kSetOnlyIfOverridden},
     {wf::EnableGamepadMultitouch, raw_ref(features::kEnableGamepadMultitouch)},
     {wf::EnableSharedStorageAPI,
      raw_ref(features::kPrivacySandboxAdsAPIsOverride), kSetOnlyIfOverridden},
@@ -604,11 +606,6 @@ void SetCustomizedRuntimeFeaturesFromCombinedArgs(
             features::kFedCm, features::kFedCmIdpSignoutFieldTrialParamName,
             false)) {
       WebRuntimeFeatures::EnableFedCmIdpSignout(true);
-    }
-    if (base::GetFieldTrialParamByFeatureAsBool(
-            features::kFedCm,
-            features::kFedCmIdpSigninStatusFieldTrialParamName, false)) {
-      WebRuntimeFeatures::EnableFedCmIdpSigninStatus(true);
     }
   }
 

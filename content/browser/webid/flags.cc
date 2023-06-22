@@ -30,15 +30,10 @@ bool IsFedCmMultipleIdentityProvidersEnabled() {
 }
 
 FedCmIdpSigninStatusMode GetFedCmIdpSigninStatusFlag() {
-  if (GetFieldTrialParamByFeatureAsBool(
-          features::kFedCm, features::kFedCmIdpSigninStatusFieldTrialParamName,
-          false)) {
+  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusEnabled)) {
     return FedCmIdpSigninStatusMode::ENABLED;
   }
-  if (GetFieldTrialParamByFeatureAsBool(
-          features::kFedCm,
-          features::kFedCmIdpSigninStatusMetricsOnlyFieldTrialParamName,
-          true)) {
+  if (base::FeatureList::IsEnabled(features::kFedCmIdpSigninStatusMetrics)) {
     return FedCmIdpSigninStatusMode::METRICS_ONLY;
   }
   return FedCmIdpSigninStatusMode::DISABLED;
