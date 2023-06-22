@@ -6504,8 +6504,8 @@
   },
   {
     "name": "private-network-access-respect-preflight-results",
-    "owners": [ "titouan", "chrome-security-owp-team@google.com" ],
-    "expiry_milestone": 116
+    "owners": [ "titouan", "lyf", "phao", "chrome-security-owp-team@google.com" ],
+    "expiry_milestone": 120
   },
   {
     "name": "private-state-tokens",
