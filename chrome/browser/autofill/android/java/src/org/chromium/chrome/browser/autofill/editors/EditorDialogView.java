@@ -7,7 +7,6 @@ package org.chromium.chrome.browser.autofill.editors;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.IS_FULL_LINE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.DROPDOWN;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.ItemType.TEXT_INPUT;
-import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.isDropdownField;
 
 import android.animation.Animator;
@@ -201,6 +200,24 @@ public class EditorDialogView
     public void setShouldTriggerDoneCallbackBeforeCloseAnimation(
             boolean triggerDoneCallbackBeforeCloseAnimation) {
         mTriggerDoneCallbackBeforeCloseAnimation = triggerDoneCallbackBeforeCloseAnimation;
+    }
+
+    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
+        for (FieldView view : mFieldViews) {
+            view.setShowRequiredIndicator(showRequiredIndicator);
+        }
+
+        TextView requiredFieldsNotice = mFooter.findViewById(R.id.required_fields_notice);
+        int requiredFieldsNoticeVisibility = View.GONE;
+        if (showRequiredIndicator) {
+            for (int i = 0; i < mFieldViews.size(); i++) {
+                if (mFieldViews.get(i).isRequired()) {
+                    requiredFieldsNoticeVisibility = View.VISIBLE;
+                    break;
+                }
+            }
+        }
+        requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
     }
 
     public void setAllowDelete(boolean allowDelete) {
@@ -417,22 +434,6 @@ public class EditorDialogView
         cancelButton.setOnClickListener(this);
     }
 
-    private void prepareFooter(boolean showRequiredIndicator) {
-        mContentView.addView(mFooter);
-
-        TextView requiredFieldsNotice = mFooter.findViewById(R.id.required_fields_notice);
-        int requiredFieldsNoticeVisibility = View.GONE;
-        if (showRequiredIndicator) {
-            for (int i = 0; i < mFieldViews.size(); i++) {
-                if (mFieldViews.get(i).isRequired()) {
-                    requiredFieldsNoticeVisibility = View.VISIBLE;
-                    break;
-                }
-            }
-        }
-        requiredFieldsNotice.setVisibility(requiredFieldsNoticeVisibility);
-    }
-
     /**
      * Create the visual representation of the PropertyModel defined by {@link EditorProperties}.
      *
@@ -496,7 +497,8 @@ public class EditorDialogView
         }
 
         // Add the footer.
-        prepareFooter(showRequiredIndicator);
+        mContentView.addView(mFooter);
+        setShowRequiredIndicator(showRequiredIndicator);
     }
 
     /**
@@ -531,8 +533,8 @@ public class EditorDialogView
 
         switch (fieldItem.type) {
             case DROPDOWN: {
-                DropdownFieldView dropdownView = new DropdownFieldView(
-                        mActivity, parent, fieldItem.model, showRequiredIndicator);
+                DropdownFieldView dropdownView =
+                        new DropdownFieldView(mActivity, parent, fieldItem.model);
                 mFieldViews.add(dropdownView);
                 mDropdownFields.add(dropdownView.getDropdown());
 
@@ -541,10 +543,8 @@ public class EditorDialogView
             }
             case TEXT_INPUT: {
                 TextFieldView inputLayout =
-                        new TextFieldView(mActivity, fieldItem.model, mEditorActionListener,
-                                fieldItem.model.get(TEXT_FORMATTER), showRequiredIndicator);
+                        new TextFieldView(mActivity, fieldItem.model, mEditorActionListener);
                 mFieldViews.add(inputLayout);
-
                 mEditableTextFields.add(inputLayout.getEditText());
                 childView = inputLayout;
                 break;

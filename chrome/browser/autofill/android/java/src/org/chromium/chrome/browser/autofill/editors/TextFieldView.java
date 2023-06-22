@@ -9,6 +9,7 @@ import static org.chromium.chrome.browser.autofill.editors.EditorProperties.Fiel
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.LABEL;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.FieldProperties.VALUE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.LENGTH_COUNTER_LIMIT_NONE;
+import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_FORMATTER;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_INPUT_TYPE;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_LENGTH_COUNTER_LIMIT;
 import static org.chromium.chrome.browser.autofill.editors.EditorProperties.TextFieldProperties.TEXT_SUGGESTIONS;
@@ -26,7 +27,6 @@ import android.content.Context;
 import android.text.Editable;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -61,9 +61,6 @@ class TextFieldView extends FrameLayout implements FieldView {
     @Nullable
     private static EditorObserverForTest sObserverForTest;
 
-    @Nullable
-    private final TextWatcher mFormatter;
-
     private PropertyModel mEditorFieldModel;
     private OnEditorActionListener mEditorActionListener;
     private TextInputLayout mInputLayout;
@@ -72,8 +69,7 @@ class TextFieldView extends FrameLayout implements FieldView {
     private ImageView mActionIcon;
 
     public TextFieldView(Context context, final PropertyModel fieldModel,
-            OnEditorActionListener actionListener, @Nullable TextWatcher formatter,
-            boolean hasRequiredIndicator) {
+            OnEditorActionListener actionListener) {
         super(context);
         mEditorFieldModel = fieldModel;
         mEditorActionListener = actionListener;
@@ -81,16 +77,8 @@ class TextFieldView extends FrameLayout implements FieldView {
         LayoutInflater.from(context).inflate(R.layout.payments_request_editor_textview, this, true);
         mInputLayout = (TextInputLayout) findViewById(R.id.text_input_layout);
 
-        // Build up the label.  Required fields are indicated by appending a '*'.
-        CharSequence label = fieldModel.get(LABEL);
-        if (fieldModel.get(IS_REQUIRED) && hasRequiredIndicator) {
-            label = label + REQUIRED_FIELD_INDICATOR;
-        }
-        mInputLayout.setHint(label);
-
         mInput = (AutoCompleteTextView) mInputLayout.findViewById(R.id.text_view);
         mInput.setText(fieldModel.get(VALUE));
-        mInput.setContentDescription(label);
         mInput.setOnEditorActionListener(mEditorActionListener);
         // AutoCompleteTextView requires and explicit onKeyListener to show the OSK upon receiving
         // a KEYCODE_DPAD_CENTER.
@@ -105,6 +93,8 @@ class TextFieldView extends FrameLayout implements FieldView {
             imm.showSoftInput(v, 0);
             return true;
         });
+
+        setShowRequiredIndicator(/*showRequiredIndicator=*/false);
 
         mIconsLayer = findViewById(R.id.icons_layer);
         mIconsLayer.addOnLayoutChangeListener(new View.OnLayoutChangeListener() {
@@ -174,10 +164,9 @@ class TextFieldView extends FrameLayout implements FieldView {
             mInputLayout.setCounterMaxLength(lengthCounter);
         }
 
-        mFormatter = formatter;
-        if (formatter != null) {
-            mInput.addTextChangedListener(formatter);
-            formatter.afterTextChanged(mInput.getText());
+        if (mEditorFieldModel.get(TEXT_FORMATTER) != null) {
+            mInput.addTextChangedListener(mEditorFieldModel.get(TEXT_FORMATTER));
+            mEditorFieldModel.get(TEXT_FORMATTER).afterTextChanged(mInput.getText());
         }
 
         switch (fieldModel.get(TEXT_INPUT_TYPE)) {
@@ -214,6 +203,17 @@ class TextFieldView extends FrameLayout implements FieldView {
                         | InputType.TYPE_TEXT_VARIATION_POSTAL_ADDRESS);
                 break;
         }
+    }
+
+    @Override
+    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
+        // Build up the label. Required fields are indicated by appending a '*'.
+        String label = mEditorFieldModel.get(LABEL);
+        if (mEditorFieldModel.get(IS_REQUIRED) && showRequiredIndicator) {
+            label += REQUIRED_FIELD_INDICATOR;
+        }
+        mInputLayout.setHint(label);
+        mInput.setContentDescription(label);
     }
 
     @Override
@@ -274,8 +274,8 @@ class TextFieldView extends FrameLayout implements FieldView {
     }
 
     public void removeTextChangedListeners() {
-        if (mFormatter != null) {
-            mInput.removeTextChangedListener(mFormatter);
+        if (mEditorFieldModel.get(TEXT_FORMATTER) != null) {
+            mInput.removeTextChangedListener(mEditorFieldModel.get(TEXT_FORMATTER));
         }
     }
 

@@ -69,8 +69,7 @@ class DropdownFieldView implements FieldView {
      * @param fieldModel           The data model of the dropdown.
      * @param hasRequiredIndicator Whether the required (*) indicator is visible.
      */
-    public DropdownFieldView(Context context, ViewGroup root, final PropertyModel fieldModel,
-            boolean hasRequiredIndicator) {
+    public DropdownFieldView(Context context, ViewGroup root, final PropertyModel fieldModel) {
         mContext = context;
         mFieldModel = fieldModel;
 
@@ -78,9 +77,7 @@ class DropdownFieldView implements FieldView {
                 R.layout.payment_request_editor_dropdown, root, false);
 
         mLabel = (TextView) mLayout.findViewById(R.id.spinner_label);
-        mLabel.setText(mFieldModel.get(IS_REQUIRED) && hasRequiredIndicator
-                        ? mFieldModel.get(LABEL) + EditorDialogView.REQUIRED_FIELD_INDICATOR
-                        : mFieldModel.get(LABEL));
+        setShowRequiredIndicator(/*showRequiredIndicator=*/false);
 
         mUnderline = mLayout.findViewById(R.id.spinner_underline);
 
@@ -152,6 +149,13 @@ class DropdownFieldView implements FieldView {
                 return false;
             }
         });
+    }
+
+    @Override
+    public void setShowRequiredIndicator(boolean showRequiredIndicator) {
+        mLabel.setText(mFieldModel.get(IS_REQUIRED) && showRequiredIndicator
+                        ? mFieldModel.get(LABEL) + EditorDialogView.REQUIRED_FIELD_INDICATOR
+                        : mFieldModel.get(LABEL));
     }
 
     /** @return The View containing everything. */

@@ -45,7 +45,7 @@ public class EditorDialogViewBinder {
         } else if (propertyKey == DELETE_CONFIRMATION_TEXT) {
             view.setDeleteConfirmationText(model.get(DELETE_CONFIRMATION_TEXT));
         } else if (propertyKey == SHOW_REQUIRED_INDICATOR) {
-            view.setEditorFields(model.get(EDITOR_FIELDS), model.get(SHOW_REQUIRED_INDICATOR));
+            view.setShowRequiredIndicator(model.get(SHOW_REQUIRED_INDICATOR));
         } else if (propertyKey == TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION) {
             view.setShouldTriggerDoneCallbackBeforeCloseAnimation(
                     model.get(TRIGGER_DONE_CALLBACK_BEFORE_CLOSE_ANIMATION));
