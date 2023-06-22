@@ -86,8 +86,10 @@ class GoogleDriveHandlerTest
     : public drive::DriveIntegrationServiceBrowserTestBase {
  public:
   GoogleDriveHandlerTest() : receiver_(&fake_search_query_) {
-    scoped_feature_list_.InitWithFeatures({ash::features::kDriveFsBulkPinning},
-                                          {});
+    scoped_feature_list_.InitWithFeatures(
+        {ash::features::kDriveFsBulkPinning,
+         ash::features::kFeatureManagementDriveFsBulkPinning},
+        {});
   }
 
   GoogleDriveHandlerTest(const GoogleDriveHandlerTest&) = delete;
@@ -133,9 +135,8 @@ class GoogleDriveHandlerTest
   mojo::Receiver<drivefs::mojom::SearchQuery> receiver_;
 };
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_NoSearchResultsReturnsNoRequiredOnlyFreeSpace) {
+                       NoSearchResultsReturnsNoRequiredOnlyFreeSpace) {
   SetUpSearchResultExpectations();
   fake_search_query_.SetSearchResults({});
 
@@ -183,9 +184,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningSpace(required_space, remaining_space);
 }
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_NegativeRemainingSpaceReturnsEmptyStrings) {
+                       NegativeRemainingSpaceReturnsEmptyStrings) {
   SetUpSearchResultExpectations();
 
   auto* fake_drivefs = GetFakeDriveFsForProfile(browser()->profile());
@@ -212,9 +212,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
       /*remaining_space=*/"-1");
 }
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_TotalPinnedSizeUpdatesValueOnElement) {
+                       TotalPinnedSizeUpdatesValueOnElement) {
   SetUpSearchResultExpectations();
 
   // Mock no search results are returned (this avoids the call to
@@ -232,9 +231,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
       FormatBytesToString(pinned_size));
 }
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_InvalidSizeUpdatesRemainingSizeToUnknown) {
+                       InvalidSizeUpdatesRemainingSizeToUnknown) {
   SetUpSearchResultExpectations();
 
   // Mock no search results are returned (this avoids the call to
@@ -250,9 +248,8 @@ IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
   google_drive_settings.AssertBulkPinningPinnedSize("Unknown");
 }
 
-// Failing reliably in M117: crbug.com/1456602
 IN_PROC_BROWSER_TEST_F(GoogleDriveHandlerTest,
-                       DISABLED_ClearingOfflineFilesCallsProperMethods) {
+                       ClearingOfflineFilesCallsProperMethods) {
   SetUpSearchResultExpectations();
 
   // Mock no search results are returned (this avoids the call to
