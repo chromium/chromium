@@ -10,6 +10,8 @@
 #include <map>
 #include <memory>
 
+#include "base/synchronization/lock.h"
+#include "base/thread_annotations.h"
 #include "base/unguessable_token.h"
 #include "build/chromeos_buildflags.h"
 #include "media/media_buildflags.h"
@@ -60,8 +62,12 @@ class MEDIA_MOJO_EXPORT MojoCdmServiceContext {
       const base::UnguessableToken& cdm_id);
 
  private:
+  // Lock for cdm_services_. Audio and video decoder may access it from
+  // different threads.
+  base::Lock cdm_services_lock_;
   // A map between CDM ID and MojoCdmService.
-  std::map<base::UnguessableToken, MojoCdmService*> cdm_services_;
+  std::map<base::UnguessableToken, MojoCdmService*> cdm_services_
+      GUARDED_BY(cdm_services_lock_);
 
 #if BUILDFLAG(IS_CHROMEOS_ASH)
   // A map between CDM ID and RemoteCdmContext.

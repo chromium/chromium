@@ -22,9 +22,11 @@ namespace media {
 
 MojoAudioDecoderService::MojoAudioDecoderService(
     MojoMediaClient* mojo_media_client,
-    MojoCdmServiceContext* mojo_cdm_service_context)
+    MojoCdmServiceContext* mojo_cdm_service_context,
+    scoped_refptr<base::SingleThreadTaskRunner> task_runner)
     : mojo_media_client_(mojo_media_client),
-      mojo_cdm_service_context_(mojo_cdm_service_context) {
+      mojo_cdm_service_context_(mojo_cdm_service_context),
+      task_runner_(std::move(task_runner)) {
   DCHECK(mojo_cdm_service_context_);
   weak_this_ = weak_factory_.GetWeakPtr();
 }
@@ -37,11 +39,9 @@ void MojoAudioDecoderService::Construct(
   DVLOG(1) << __func__;
   client_.Bind(std::move(client));
 
-  scoped_refptr<base::SingleThreadTaskRunner> task_runner =
-      base::SingleThreadTaskRunner::GetCurrentDefault();
   auto mojo_media_log =
-      std::make_unique<MojoMediaLog>(std::move(media_log), task_runner);
-  decoder_ = mojo_media_client_->CreateAudioDecoder(std::move(task_runner),
+      std::make_unique<MojoMediaLog>(std::move(media_log), task_runner_);
+  decoder_ = mojo_media_client_->CreateAudioDecoder(task_runner_,
                                                     std::move(mojo_media_log));
 }
 

@@ -166,6 +166,9 @@ CastContentBrowserClient::CastContentBrowserClient(
   std::vector<const base::Feature*> extra_disable_features;
 
 #if BUILDFLAG(IS_ANDROID)
+  extra_enable_features.push_back(
+      &::media::kUseTaskRunnerForMojoAudioDecoderService);
+
   if (base::android::BuildInfo::GetInstance()->is_tv()) {
     // Use the software decoder provided by MediaCodec instead of the built in
     // software decoder. This can improve av sync quality.

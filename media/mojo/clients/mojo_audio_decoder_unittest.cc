@@ -159,7 +159,8 @@ class MojoAudioDecoderTest : public ::testing::Test {
 
     mojo::MakeSelfOwnedReceiver(
         std::make_unique<MojoAudioDecoderService>(&mojo_media_client_,
-                                                  &mojo_cdm_service_context_),
+                                                  &mojo_cdm_service_context_,
+                                                  service_task_runner_),
         std::move(receiver));
   }
 

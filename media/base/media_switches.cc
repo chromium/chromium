@@ -1326,6 +1326,21 @@ BASE_FEATURE(kUseTaskRunnerForMojoVEAService,
 #endif
 );
 
+// Feature flag to run the MojoAudioDecoderService in a sequence different than
+// the other mojo media services. On some Android devices, MediaCodec may block
+// the thread which leads to frequent audio decoder underrun in renderer.
+// Running the audio decoder in a separate sequence can improve the performance.
+// Note: running audio decoder in a separate thread/sequence will cause
+// multithread access to mojo media services. For Android audio decoder, the
+// thread safety is easier to guarantee because:
+//   1. The audio decoder and most of the other mojo media services don't cross
+//   reference each other.
+//   2. The only exception is CDM so we use a lock inside MojoCdmServiceContext
+//   for thread safety.
+BASE_FEATURE(kUseTaskRunnerForMojoAudioDecoderService,
+             "UseTaskRunnerForMojoAudioDecoderService",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
 std::string GetEffectiveAutoplayPolicy(const base::CommandLine& command_line) {
   // Return the autoplay policy set in the command line, if any.
   if (command_line.HasSwitch(switches::kAutoplayPolicy))
