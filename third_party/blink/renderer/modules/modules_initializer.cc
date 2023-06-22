@@ -357,8 +357,7 @@ void ModulesInitializer::ProvideModulesToPage(
     const SessionStorageNamespaceId& namespace_id) const {
   ::blink::ProvideContextFeaturesTo(
       page, std::make_unique<ContextFeaturesClientImpl>());
-  ::blink::ProvideDatabaseClientTo(page,
-                                   MakeGarbageCollected<DatabaseClient>());
+  page.ProvideSupplement(MakeGarbageCollected<DatabaseClient>(page));
   StorageNamespace::ProvideSessionStorageNamespaceTo(page, namespace_id);
   AudioGraphTracer::ProvideAudioGraphTracerTo(page);
 #if BUILDFLAG(IS_ANDROID)
