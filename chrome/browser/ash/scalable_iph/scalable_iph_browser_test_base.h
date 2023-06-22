@@ -15,6 +15,7 @@
 #include "chrome/browser/ash/scalable_iph/customizable_test_env_browser_test_base.h"
 #include "chrome/browser/ash/scalable_iph/mock_scalable_iph_delegate.h"
 #include "chrome/browser/profiles/profile.h"
+#include "chromeos/services/network_config/public/cpp/fake_cros_network_config.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "components/keyed_service/core/keyed_service.h"
 #include "content/public/browser/browser_context.h"
@@ -32,6 +33,9 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   void TearDownOnMainThread() override;
 
  protected:
+  // Allow sub-classes to initialize scoped feature list with different values.
+  virtual void InitializeScopedFeatureList();
+
   feature_engagement::test::MockTracker* mock_tracker() {
     return mock_tracker_;
   }
@@ -43,6 +47,11 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
 
   void ShutdownScalableIph();
 
+  void AddOnlineNetwork();
+
+  // A sub-class might override this from `InitializeScopedFeatureList`.
+  base::test::ScopedFeatureList scoped_feature_list_;
+
  private:
   static void SetTestingFactories(content::BrowserContext* browser_context);
   static std::unique_ptr<KeyedService> CreateMockTracker(
@@ -50,11 +59,11 @@ class ScalableIphBrowserTestBase : public CustomizableTestEnvBrowserTestBase {
   static std::unique_ptr<scalable_iph::ScalableIphDelegate> CreateMockDelegate(
       Profile* profile);
 
+  chromeos::network_config::FakeCrosNetworkConfig fake_cros_network_config_;
   scoped_refptr<base::TestMockTimeTaskRunner> task_runner_;
   base::CallbackListSubscription subscription_;
   raw_ptr<feature_engagement::test::MockTracker> mock_tracker_;
   raw_ptr<test::MockScalableIphDelegate> mock_delegate_;
-  base::test::ScopedFeatureList scoped_feature_list_;
 };
 
 }  // namespace ash

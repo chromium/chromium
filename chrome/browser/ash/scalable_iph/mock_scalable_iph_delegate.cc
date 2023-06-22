@@ -10,5 +10,24 @@ namespace test {
 MockScalableIphDelegate::MockScalableIphDelegate() = default;
 MockScalableIphDelegate::~MockScalableIphDelegate() = default;
 
+void MockScalableIphDelegate::DelegateObserverWith(
+    std::unique_ptr<scalable_iph::ScalableIphDelegate> delegate) {
+  CHECK(!delegate_) << "You are NOT allowed to set a delegate object twice";
+
+  delegate_ = std::move(delegate);
+
+  ON_CALL(*this, AddObserver).WillByDefault([this](Observer* observer) {
+    delegate_->AddObserver(observer);
+  });
+
+  ON_CALL(*this, RemoveObserver).WillByDefault([this](Observer* observer) {
+    delegate_->RemoveObserver(observer);
+  });
+
+  ON_CALL(*this, IsOnline).WillByDefault([this]() {
+    return delegate_->IsOnline();
+  });
+}
+
 }  // namespace test
 }  // namespace ash

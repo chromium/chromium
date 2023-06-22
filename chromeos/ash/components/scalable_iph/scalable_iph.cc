@@ -10,9 +10,11 @@
 #include "base/feature_list.h"
 #include "base/functional/bind.h"
 #include "base/location.h"
+#include "base/metrics/field_trial_params.h"
 #include "base/no_destructor.h"
 #include "base/time/time.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 
 namespace scalable_iph {
@@ -27,7 +29,7 @@ const std::map<ScalableIph::Event, std::string>& GetEventNamesMap() {
   // events.
   static const base::NoDestructor<std::map<ScalableIph::Event, std::string>>
       event_names_map(
-          {{ScalableIph::Event::kFiveMinTick, "ScalableIphFiveMinTick"}});
+          {{ScalableIph::Event::kFiveMinTick, kEventNameFiveMinTick}});
   return *event_names_map;
 }
 
@@ -49,7 +51,15 @@ ScalableIph::ScalableIph(feature_engagement::Tracker* tracker,
   CHECK(tracker_);
   CHECK(delegate_);
 
+  delegate_observation_.Observe(delegate_.get());
+
   EnsureTimerStarted();
+
+  online_ = delegate_->IsOnline();
+
+  tracker_->AddOnInitializedCallback(
+      base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 ScalableIph::~ScalableIph() = default;
@@ -58,7 +68,21 @@ void ScalableIph::Shutdown() {
   timer_.Stop();
 
   tracker_ = nullptr;
+
+  delegate_observation_.Reset();
   delegate_.reset();
+}
+
+void ScalableIph::OnConnectionChanged(bool online) {
+  if (online_ == online) {
+    return;
+  }
+
+  online_ = online;
+
+  tracker_->AddOnInitializedCallback(
+      base::BindOnce(&ScalableIph::CheckTriggerConditionsOnInitSuccess,
+                     weak_ptr_factory_.GetWeakPtr()));
 }
 
 void ScalableIph::OverrideFeatureListForTesting(
@@ -125,6 +149,15 @@ void ScalableIph::RecordEventInternal(ScalableIph::Event event,
   CheckTriggerConditions();
 }
 
+void ScalableIph::CheckTriggerConditionsOnInitSuccess(bool init_success) {
+  if (!init_success) {
+    DCHECK(false) << "Failed to initialize feature_engagement::Tracker.";
+    return;
+  }
+
+  CheckTriggerConditions();
+}
+
 void ScalableIph::CheckTriggerConditions() {
   // Make sure that `tracker_` is initialized. `tracker_` should not cause crash
   // even if we call `ShouldTriggerHelpUI` before initialization. But it returns
@@ -133,13 +166,31 @@ void ScalableIph::CheckTriggerConditions() {
   DCHECK(tracker_->IsInitialized());
 
   for (const base::Feature* feature : GetFeatureList()) {
-    if (tracker_->ShouldTriggerHelpUI(*feature)) {
+    if (CheckCustomConditions(*feature) &&
+        tracker_->ShouldTriggerHelpUI(*feature)) {
       // TODO(b/284053005): Add the actual implementations.
       ScalableIphDelegate::BubbleParams params;
       delegate_->ShowBubble(params,
                             std::make_unique<IphSession>(*feature, tracker_));
     }
   }
+}
+
+bool ScalableIph::CheckCustomConditions(const base::Feature& feature) {
+  // NetworkConnection:
+  std::string connection_condition = base::GetFieldTrialParamValueByFeature(
+      feature, kCustomConditionNetworkConnectionParamName);
+  if (connection_condition.empty()) {
+    return true;
+  }
+
+  // If an invalid value is provided, does not satisfy a condition for a
+  // fail-safe behavior.
+  if (connection_condition != kCustomConditionNetworkConnectionOnline) {
+    return false;
+  }
+
+  return online_;
 }
 
 const std::vector<const base::Feature*>& ScalableIph::GetFeatureList() const {

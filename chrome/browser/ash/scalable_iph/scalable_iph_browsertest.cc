@@ -11,6 +11,7 @@
 #include "chrome/browser/ui/browser.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph.h"
+#include "chromeos/ash/components/scalable_iph/scalable_iph_constants.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
 #include "components/feature_engagement/test/mock_tracker.h"
 #include "content/public/test/browser_test.h"
@@ -25,6 +26,36 @@ using TestEnvironment =
 using UserSessionType =
     ::ash::CustomizableTestEnvBrowserTestBase::UserSessionType;
 
+BASE_FEATURE(kScalableIphTest,
+             "ScalableIphTest",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+
+class ScalableIphBrowserTestNetworkConnection : public ScalableIphBrowserTest {
+ protected:
+  void InitializeScopedFeatureList() override {
+    base::FieldTrialParams params;
+    params[scalable_iph::kCustomConditionNetworkConnectionParamName] =
+        scalable_iph::kCustomConditionNetworkConnectionOnline;
+    base::test::FeatureRefAndParams test_config(kScalableIphTest, params);
+
+    base::test::FeatureRefAndParams scalable_iph_feature(
+        ash::features::kScalableIph, {});
+
+    scoped_feature_list_.InitWithFeaturesAndParameters(
+        {scalable_iph_feature, test_config}, {});
+  }
+};
+
+class ScalableIphBrowserTestNetworkConnectionOnline
+    : public ScalableIphBrowserTestNetworkConnection {
+ protected:
+  void SetUpOnMainThread() override {
+    AddOnlineNetwork();
+
+    ScalableIphBrowserTestNetworkConnection::SetUpOnMainThread();
+  }
+};
+
 class ScalableIphBrowserTestParameterized
     : public ash::CustomizableTestEnvBrowserTestBase,
       public testing::WithParamInterface<TestEnvironment> {
@@ -36,12 +67,6 @@ class ScalableIphBrowserTestParameterized
   }
 };
 
-BASE_FEATURE(kScalableIphTest,
-             "ScalableIphTest",
-             base::FEATURE_DISABLED_BY_DEFAULT);
-
-constexpr char kFiveMinTickEventName[] = "ScalableIphFiveMinTick";
-
 }  // namespace
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, NoService) {
@@ -50,7 +75,8 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestFlagOff, NoService) {
 }
 
 IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, RecordEvent) {
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName));
+  EXPECT_CALL(*mock_tracker(),
+              NotifyEvent(scalable_iph::kEventNameFiveMinTick));
 
   scalable_iph::ScalableIph* scalable_iph =
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
@@ -91,17 +117,17 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
       ScalableIphFactory::GetForBrowserContext(browser()->profile());
   ASSERT_TRUE(scalable_iph);
 
-  base::TestMockTimeTaskRunner::ScopedContext context(task_runner());
-
   // Fast forward by 3 mins. The interval of time tick event is 5 mins. No time
   // tick event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(0);
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameFiveMinTick))
+      .Times(0);
   task_runner()->FastForwardBy(base::Minutes(3));
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 
   // Fast forward by another 3 mins. The total of fast forwarded time is 6 mins.
   // A time tick event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(1);
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameFiveMinTick))
+      .Times(1);
   task_runner()->FastForwardBy(base::Minutes(3));
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
 
@@ -109,9 +135,46 @@ IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTest, TimeTickEvent) {
 
   // Fast forward by another 6 mins after the shutdown. Shutdown should stop the
   // timer and no time tick event should be observed.
-  EXPECT_CALL(*mock_tracker(), NotifyEvent(kFiveMinTickEventName)).Times(0);
+  EXPECT_CALL(*mock_tracker(), NotifyEvent(scalable_iph::kEventNameFiveMinTick))
+      .Times(0);
   task_runner()->FastForwardBy(base::Minutes(6));
   testing::Mock::VerifyAndClearExpectations(mock_tracker());
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnection, Online) {
+  ON_CALL(*mock_tracker(), ShouldTriggerHelpUI)
+      .WillByDefault([](const base::Feature& feature) {
+        return &feature == &kScalableIphTest;
+      });
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->OverrideFeatureListForTesting({&kScalableIphTest});
+
+  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+      .Times(1);
+
+  AddOnlineNetwork();
+}
+
+IN_PROC_BROWSER_TEST_F(ScalableIphBrowserTestNetworkConnectionOnline,
+                       OnlineFromBeginning) {
+  ON_CALL(*mock_tracker(), ShouldTriggerHelpUI)
+      .WillByDefault([](const base::Feature& feature) {
+        return &feature == &kScalableIphTest;
+      });
+
+  scalable_iph::ScalableIph* scalable_iph =
+      ScalableIphFactory::GetForBrowserContext(browser()->profile());
+  scalable_iph->OverrideFeatureListForTesting({&kScalableIphTest});
+
+  EXPECT_CALL(*mock_delegate(), ShowBubble(::testing::_, ::testing::NotNull()))
+      .Times(1);
+
+  // We need an event to trigger check conditions. The trigger condition check
+  // in `ScalableIph` constructor happens before we set the expectation to the
+  // delegate mock. We need another event for the next check.
+  task_runner()->FastForwardBy(base::Minutes(6));
 }
 
 INSTANTIATE_TEST_SUITE_P(

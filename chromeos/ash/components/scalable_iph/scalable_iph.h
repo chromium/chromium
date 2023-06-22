@@ -8,6 +8,7 @@
 #include <vector>
 
 #include "base/memory/weak_ptr.h"
+#include "base/scoped_observation.h"
 #include "base/task/sequenced_task_runner.h"
 #include "base/timer/timer.h"
 #include "chromeos/ash/components/scalable_iph/scalable_iph_delegate.h"
@@ -24,7 +25,7 @@ namespace scalable_iph {
 // flexibility: //components/feature_engagement/README.md.
 //
 // - IPH: in-product-help.
-class ScalableIph : public KeyedService {
+class ScalableIph : public KeyedService, public ScalableIphDelegate::Observer {
  public:
   // List of events ScalableIph supports.
   enum class Event { kFiveMinTick };
@@ -40,6 +41,9 @@ class ScalableIph : public KeyedService {
   ~ScalableIph() override;
   void Shutdown() override;
 
+  // ScalableIphDelegate::Observer:
+  void OnConnectionChanged(bool online) override;
+
   void OverrideFeatureListForTesting(
       const std::vector<const base::Feature*> features);
   void OverrideTaskRunnerForTesting(
@@ -49,15 +53,25 @@ class ScalableIph : public KeyedService {
   void EnsureTimerStarted();
   void RecordTimeTickEvent();
   void RecordEventInternal(Event event, bool init_success);
+  void CheckTriggerConditionsOnInitSuccess(bool init_success);
   void CheckTriggerConditions();
+
+  // Check all custom conditions assigned to `feature`. Returns true if all
+  // conditions are valid and satisfied. Otherwise false including an invalid
+  // config case.
+  bool CheckCustomConditions(const base::Feature& feature);
+
   const std::vector<const base::Feature*>& GetFeatureList() const;
 
   raw_ptr<feature_engagement::Tracker> tracker_;
   std::unique_ptr<ScalableIphDelegate> delegate_;
   base::RepeatingTimer timer_;
+  bool online_;
 
   std::vector<const base::Feature*> feature_list_for_testing_;
 
+  base::ScopedObservation<ScalableIphDelegate, ScalableIph>
+      delegate_observation_{this};
   base::WeakPtrFactory<ScalableIph> weak_ptr_factory_{this};
 };
 

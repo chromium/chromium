@@ -10,6 +10,7 @@ source_set("scalable_iph") {
   sources = [
     "scalable_iph.cc",
     "scalable_iph.h",
+    "scalable_iph_constants.h",
   ]
 
   deps = [

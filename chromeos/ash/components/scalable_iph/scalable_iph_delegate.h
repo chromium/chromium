@@ -5,16 +5,30 @@
 #ifndef CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_DELEGATE_H_
 #define CHROMEOS_ASH_COMPONENTS_SCALABLE_IPH_SCALABLE_IPH_DELEGATE_H_
 
+#include "base/observer_list_types.h"
 #include "chromeos/ash/components/scalable_iph/iph_session.h"
 
 namespace scalable_iph {
 
-// `ScalableIphDelegate` is responsible to delivering IPH. `ScalableIph` class
-// is responsible to triggering an IPH. After the class has decided to trigger
-// an IPH, this delegate is responsible to deliver it.
+// `ScalableIphDelegate` is responsible to delegate tasks to Chrome or Ash. In
+// contrast, `ScalableIph` is responsible to decide on which/when to trigger an
+// IPH.
+//
+// This delegate is responsible for:
+// - Show an IPH with a request from `ScalableIph`.
+// - Observe events in Ash, e.g. Network state change, etc.
 class ScalableIphDelegate {
  public:
-  // Have a virtul destructor as we can put `ScalableIphDelegate` in unique_ptr.
+  // Observer for observing events in Ash.
+  class Observer : public base::CheckedObserver {
+   public:
+    virtual void OnConnectionChanged(bool online) {}
+
+    // TODO(b/283863495): Add device unlock event.
+  };
+
+  // Have a virtual destructor as we can put `ScalableIphDelegate` in
+  // unique_ptr.
   virtual ~ScalableIphDelegate() = default;
 
   // TODO(b/284158779): Details of the interface TBD.
@@ -76,6 +90,12 @@ class ScalableIphDelegate {
   // IPH to a user with specified behavior via `NotificationParams`.
   virtual void ShowNotification(const NotificationParams& params,
                                 std::unique_ptr<IphSession> iph_session) = 0;
+
+  virtual void AddObserver(Observer* observer) = 0;
+  virtual void RemoveObserver(Observer* observer) = 0;
+
+  // Returns true if a device is online.
+  virtual bool IsOnline() = 0;
 };
 
 }  // namespace scalable_iph
