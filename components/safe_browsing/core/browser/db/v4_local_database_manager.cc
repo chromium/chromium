@@ -263,6 +263,7 @@ void MaybeDeleteStore(const base::FilePath& path) {
   // `hash_files` field in the `V4StoreFileFormat`, but we haven't read the
   // store at this point. Instead we use the fact that these helper files have a
   // simple structure to delete them all.
+  std::vector<base::FilePath> paths_to_delete;
   base::FileEnumerator enumerator(
       path.DirName(), false, base::FileEnumerator::FILES,
       path.BaseName().value() + FILE_PATH_LITERAL("*"),
@@ -272,9 +273,17 @@ void MaybeDeleteStore(const base::FilePath& path) {
       base::FileEnumerator::ErrorPolicy::STOP_ENUMERATION);
   for (base::FilePath store_path = enumerator.Next(); !store_path.empty();
        store_path = enumerator.Next()) {
-    base::DeleteFile(store_path);
+    paths_to_delete.push_back(std::move(store_path));
   }
 
+  for (const base::FilePath& delete_path : paths_to_delete) {
+    if (!base::DeleteFile(delete_path)) {
+      LOG(ERROR) << "Failed to delete unused store file " << delete_path;
+    }
+  }
+
+  // TODO(crbug.com/1444720): Remove this logging. It was only added for
+  // debugging a test failure and is not useful on end users machines.
   if (enumerator.GetError() != base::File::FILE_OK) {
     LOG(ERROR) << "Removing store at " << path << " failed with error "
                << base::File::ErrorToString(enumerator.GetError());
