@@ -7,21 +7,35 @@
 
 #include <memory>
 
+#include "chromeos/components/print_management/mojom/printing_manager.mojom.h"
+#include "mojo/public/cpp/bindings/pending_receiver.h"
+#include "mojo/public/cpp/bindings/receiver.h"
+
 namespace ash::printing::printing_manager {
 
 class PrintManagementDelegate;
 
-class PrintManagementHandler {
+class PrintManagementHandler : public chromeos::printing::printing_manager::
+                                   mojom::PrintManagementHandler {
  public:
   explicit PrintManagementHandler(
       std::unique_ptr<PrintManagementDelegate> delegate);
   PrintManagementHandler(const PrintManagementHandler&) = delete;
   PrintManagementHandler& operator=(const PrintManagementHandler&) = delete;
-  ~PrintManagementHandler();
+  ~PrintManagementHandler() override;
 
-  void LaunchPrinterSettings();
+  // PrintManagementHandler:
+  void LaunchPrinterSettings() override;
+
+  void BindInterface(
+      mojo::PendingReceiver<
+          chromeos::printing::printing_manager::mojom::PrintManagementHandler>
+          receiver);
 
  private:
+  mojo::Receiver<
+      chromeos::printing::printing_manager::mojom::PrintManagementHandler>
+      receiver_{this};
   // Used to call browser functions from ash.
   std::unique_ptr<PrintManagementDelegate> delegate_;
 };

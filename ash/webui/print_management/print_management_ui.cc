@@ -172,6 +172,13 @@ void PrintManagementUI::BindInterface(
 }
 
 void PrintManagementUI::BindInterface(
+    mojo::PendingReceiver<
+        chromeos::printing::printing_manager::mojom::PrintManagementHandler>
+        receiver) {
+  print_management_handler_->BindInterface(std::move(receiver));
+}
+
+void PrintManagementUI::BindInterface(
     mojo::PendingReceiver<color_change_listener::mojom::PageHandler> receiver) {
   color_provider_handler_ = std::make_unique<ui::ColorChangeHandler>(
       web_ui()->GetWebContents(), std::move(receiver));

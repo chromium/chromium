@@ -146,3 +146,10 @@ interface PrintingMetadataProvider {
       int16 expiration_period_in_days,
       bool is_from_policy);
 };
+
+// Provides services needed by the Print Management UI. Implemented in the
+// browser process and called by the Print Management SWA (a renderer process).
+interface PrintManagementHandler {
+  // Opens OS Settings to the Printer settings subpage.
+  LaunchPrinterSettings();
+};

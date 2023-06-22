@@ -28,7 +28,7 @@
   <iron-icon icon="print-management:empty-state"></iron-icon>
   <h2 class="message-heading">[[i18n('emptyStateNoJobsMessage')]]</h2>
   <p class="message-detail">[[i18n('emptyStatePrinterSettingsMessage')]]</p>
-  <cr-button class="action-button">
+  <cr-button class="action-button" on-click="onManagePrintersClicked">
     [[i18n('managePrintersButtonLabel')]]
   </cr-button>
 </div>

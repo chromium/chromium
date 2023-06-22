@@ -1300,6 +1300,10 @@ void PopulateChromeWebUIFrameBinders(
       ash::printing::printing_manager::PrintManagementUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<
+      chromeos::printing::printing_manager::mojom::PrintManagementHandler,
+      ash::printing::printing_manager::PrintManagementUI>(map);
+
+  RegisterWebUIControllerInterfaceBinder<
       ash::help_app::mojom::PageHandlerFactory, ash::HelpAppUI>(map);
 
   RegisterWebUIControllerInterfaceBinder<

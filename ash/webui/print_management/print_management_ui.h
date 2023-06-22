@@ -63,6 +63,11 @@ class PrintManagementUI : public ui::MojoWebUIController {
           receiver);
 
   void BindInterface(
+      mojo::PendingReceiver<
+          chromeos::printing::printing_manager::mojom::PrintManagementHandler>
+          receiver);
+
+  void BindInterface(
       mojo::PendingReceiver<color_change_listener::mojom::PageHandler>
           receiver);
 

@@ -9,7 +9,10 @@ ts_library("build_ts") {
   root_dir = "."
   out_dir = "$target_gen_dir/tsc"
   tsconfig_base = "../../tsconfig_base.json"
-  in_files = [ "print_management_test.ts" ]
+  in_files = [
+    "fake_print_management_handler.ts",
+    "print_management_test.ts",
+  ]
   path_mappings = [
     "chrome://print-management/*|" +
         rebase_path("$root_gen_dir/ash/webui/print_management/resources/tsc/*",

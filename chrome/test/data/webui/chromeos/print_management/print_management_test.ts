@@ -6,7 +6,7 @@ import 'chrome://print-management/print_management.js';
 import 'chrome://webui-test/mojo_webui_test_support.js';
 
 import {IronIconElement} from '//resources/polymer/v3_0/iron-icon/iron-icon.js';
-import {setMetadataProviderForTesting} from 'chrome://print-management/mojo_interface_provider.js';
+import {setMetadataProviderForTesting, setPrintManagementHandlerForTesting} from 'chrome://print-management/mojo_interface_provider.js';
 import {PrintJobEntryElement} from 'chrome://print-management/print_job_entry.js';
 import {PrintManagementElement} from 'chrome://print-management/print_management.js';
 import {PrinterSetupInfoElement} from 'chrome://print-management/printer_setup_info.js';
@@ -19,6 +19,8 @@ import {flush} from 'chrome://resources/polymer/v3_0/polymer/polymer_bundled.min
 import {assertEquals, assertFalse, assertTrue} from 'chrome://webui-test/chai_assert.js';
 import {flushTasks} from 'chrome://webui-test/polymer_test_util.js';
 import {isVisible} from 'chrome://webui-test/test_util.js';
+
+import {FakePrintManagementHandler} from './fake_print_management_handler.js';
 
 export function initPrintJobEntryElement(): PrintJobEntryElement {
   const element = document.createElement('print-job-entry');
@@ -322,14 +324,18 @@ suite('PrintManagementTest', () => {
   let page: PrintManagementElement|null = null;
 
   let mojoApi_: FakePrintingMetadataProvider;
+  let pageHandler: FakePrintManagementHandler;
 
   suiteSetup(() => {
     mojoApi_ = new FakePrintingMetadataProvider();
     setMetadataProviderForTesting(mojoApi_);
+    pageHandler = new FakePrintManagementHandler();
+    setPrintManagementHandlerForTesting(pageHandler);
   });
 
   teardown(function() {
     mojoApi_.resetForTest();
+    pageHandler.resetForTest();
     page?.remove();
     page = null;
   });
@@ -1275,18 +1281,26 @@ suite('PrintJobEntryTest', () => {
 
 suite('PrinterSetupInfoTest', () => {
   let printerSetupInfoElement: PrinterSetupInfoElement|null = null;
+  let pageHandler: FakePrintManagementHandler;
+
+  suiteSetup(() => {
+    pageHandler = new FakePrintManagementHandler();
+    setPrintManagementHandlerForTesting(pageHandler);
+  });
 
   teardown(() => {
     if (printerSetupInfoElement) {
       printerSetupInfoElement.remove();
     }
     printerSetupInfoElement = null;
+    pageHandler.resetForTest();
   });
 
   function initPrinterSetupInfoElement(): Promise<void> {
     const element = document.createElement(PrinterSetupInfoElement.is);
     document.body.appendChild(element);
     printerSetupInfoElement = element as PrinterSetupInfoElement;
+    assertTrue(!!printerSetupInfoElement);
 
     return flushTasks();
   }
@@ -1355,5 +1369,21 @@ suite('PrinterSetupInfoTest', () => {
     const iconEl =
         querySelector<IronIconElement>(printerSetupInfoElement!, 'iron-icon');
     assertEquals(expectedIcon, iconEl?.icon);
+  });
+
+  // Verify clicking 'Manage Printers' button calls
+  // `PrintManagementHandler.LaunchPrinterSettings`
+  test('launchPrinterSettingsCalled', async () => {
+    await initPrinterSetupInfoElement();
+    assertEquals(0, pageHandler.getLaunchPrinterSettingsCount());
+
+    // Click button.
+    const managePrintersButton =
+        querySelector<CrButtonElement>(printerSetupInfoElement!, 'cr-button');
+    assertTrue(isVisible(managePrintersButton));
+    managePrintersButton!.click();
+
+    // Verify fake page handler count update.
+    assertEquals(1, pageHandler.getLaunchPrinterSettingsCount());
   });
 });
