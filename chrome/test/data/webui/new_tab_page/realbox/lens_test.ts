@@ -81,11 +81,8 @@ suite('Lens search', () => {
     document.body.appendChild(realbox);
   });
 
-  test('Lens search button is visible when feature is flipped', async () => {
+  test('Lens search button is visible by default', async () => {
     // Arrange.
-    loadTimeData.overrideValues({
-      realboxLensSearch: true,
-    });
     document.body.innerHTML = window.trustedTypes!.emptyHTML;
     realbox = document.createElement('ntp-realbox');
     document.body.appendChild(realbox);
