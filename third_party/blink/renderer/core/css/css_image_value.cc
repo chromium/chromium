@@ -136,6 +136,11 @@ StyleImage* CSSImageValue::CacheImage(
 
 void CSSImageValue::RestoreCachedResourceIfNeeded(
     const Document& document) const {
+  recordreplay::Assert(
+      "[RUN-1436-2226] CSSImageValue::RestoreCachedResourceIfNeeded %d %d %d "
+      "%d",
+      !!cached_image_, !!document.Fetcher(), !!absolute_url_.IsNull(),
+      cached_image_ && cached_image_->CachedImage());
   if (!cached_image_ || !document.Fetcher() || absolute_url_.IsNull())
     return;
 

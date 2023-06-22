@@ -174,6 +174,9 @@ void StyleCascade::AddInterpolations(const ActiveInterpolationsMap* map,
 void StyleCascade::Apply(CascadeFilter filter) {
   AnalyzeIfNeeded();
 
+  recordreplay::Assert("[RUN-1436-2226] StyleCascade::Apply %d",
+                       state_.GetElement().RecordReplayId());
+
   CascadeResolver resolver(filter, ++generation_);
 
   ApplyCascadeAffecting(resolver);

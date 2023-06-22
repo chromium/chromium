@@ -87,6 +87,8 @@ class ElementRareData final : public NodeRareData {
   void SetShadowRoot(ShadowRoot& shadow_root) {
     DCHECK(!shadow_root_);
     shadow_root_ = &shadow_root;
+    recordreplay::Assert("[RUN-1436-2226] ElementRareData::SetShadowRoot %d",
+                         shadow_root.RecordReplayId());
   }
 
   NamedNodeMap* AttributeMap() const { return attribute_map_.Get(); }
