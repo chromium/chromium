@@ -28,7 +28,7 @@ constexpr int kNormalPercentageForCharging = 80;
 // battery isn't charging.
 constexpr int kWarningPercentageForNoCharging = 15;
 
-// Gets the sound for plugging in a power line at different battery levels.
+// Gets the sound for plugging in an AC charger at different battery levels.
 Sound GetSoundKeyForBatteryLevel(int level) {
   if (level >= kNormalPercentageForCharging)
     return Sound::kChargeHighBattery;
@@ -75,7 +75,7 @@ PowerSoundsController::PowerSoundsController() {
   power_status->AddObserver(this);
 
   battery_level_ = power_status->GetRoundedBatteryPercent();
-  is_line_power_connected_ = power_status->IsLinePowerConnected();
+  is_ac_charger_connected_ = power_status->IsMainsChargerConnected();
 }
 
 PowerSoundsController::~PowerSoundsController() {
@@ -94,7 +94,7 @@ void PowerSoundsController::OnPowerStatusChanged() {
   const PowerStatus& status = *PowerStatus::Get();
 
   SetPowerStatus(status.GetRoundedBatteryPercent(),
-                 status.IsLinePowerConnected(), status.IsBatteryCharging());
+                 status.IsMainsChargerConnected(), status.IsBatteryCharging());
 }
 
 void PowerSoundsController::LidEventReceived(
@@ -118,17 +118,17 @@ bool PowerSoundsController::CanPlaySounds() const {
 }
 
 void PowerSoundsController::SetPowerStatus(int battery_level,
-                                           bool is_line_power_connected,
+                                           bool is_ac_charger_connected,
                                            bool is_battery_charging) {
   const int old_battery_level = battery_level_;
-  const bool old_line_power_connected = is_line_power_connected_;
+  const bool old_ac_charger_connected = is_ac_charger_connected_;
 
   battery_level_ = battery_level;
-  is_line_power_connected_ = is_line_power_connected;
+  is_ac_charger_connected_ = is_ac_charger_connected;
 
   // Records the battery level only for the device plugged in or Unplugged.
-  if (old_line_power_connected != is_line_power_connected) {
-    base::UmaHistogramPercentage(is_line_power_connected_
+  if (old_ac_charger_connected != is_ac_charger_connected) {
+    base::UmaHistogramPercentage(is_ac_charger_connected_
                                      ? kPluggedInBatteryLevelHistogramName
                                      : kUnpluggedBatteryLevelHistogramName,
                                  battery_level_);
@@ -137,12 +137,12 @@ void PowerSoundsController::SetPowerStatus(int battery_level,
   if (!CanPlaySounds())
     return;
 
-  MaybePlaySoundsForCharging(old_line_power_connected);
+  MaybePlaySoundsForCharging(old_ac_charger_connected);
   MaybePlaySoundsForLowBattery(old_battery_level, is_battery_charging);
 }
 
 void PowerSoundsController::MaybePlaySoundsForCharging(
-    bool old_line_power_connected) {
+    bool old_ac_charger_connected) {
   // Don't play the charging sound if the toggle button is disabled by user in
   // the Settings UI.
   if (!GetChargingSoundsEnabled()) {
@@ -150,7 +150,7 @@ void PowerSoundsController::MaybePlaySoundsForCharging(
   }
 
   // Returns when it isn't a plug in event.
-  bool is_plugging_in = !old_line_power_connected && is_line_power_connected_;
+  bool is_plugging_in = !old_ac_charger_connected && is_ac_charger_connected_;
   if (!is_plugging_in)
     return;
 
