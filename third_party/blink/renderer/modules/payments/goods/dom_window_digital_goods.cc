@@ -48,8 +48,8 @@ void OnCreateDigitalGoodsResponse(
 
 const char DOMWindowDigitalGoods::kSupplementName[] = "DOMWindowDigitalGoods";
 
-DOMWindowDigitalGoods::DOMWindowDigitalGoods(ExecutionContext* context)
-    : Supplement(nullptr), mojo_service_(context) {}
+DOMWindowDigitalGoods::DOMWindowDigitalGoods(LocalDOMWindow& window)
+    : Supplement(window), mojo_service_(&window) {}
 
 ScriptPromise DOMWindowDigitalGoods::getDigitalGoodsService(
     ScriptState* script_state,
@@ -129,7 +129,7 @@ DOMWindowDigitalGoods* DOMWindowDigitalGoods::FromState(
   DOMWindowDigitalGoods* supplement =
       Supplement<LocalDOMWindow>::From<DOMWindowDigitalGoods>(window);
   if (!supplement) {
-    supplement = MakeGarbageCollected<DOMWindowDigitalGoods>(window);
+    supplement = MakeGarbageCollected<DOMWindowDigitalGoods>(*window);
     ProvideTo(*window, supplement);
   }
 

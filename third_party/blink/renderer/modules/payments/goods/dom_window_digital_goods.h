@@ -23,7 +23,7 @@ class DOMWindowDigitalGoods final
  public:
   static const char kSupplementName[];
 
-  DOMWindowDigitalGoods(ExecutionContext* context);
+  DOMWindowDigitalGoods(LocalDOMWindow& window);
 
   // IDL Interface:
   static ScriptPromise getDigitalGoodsService(ScriptState*,
