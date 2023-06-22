@@ -134,6 +134,7 @@
 #include "components/tab_groups/tab_group_visual_data.h"
 #include "components/translate/core/browser/language_state.h"
 #include "components/translate/core/browser/translate_manager.h"
+#include "components/translate/core/common/translate_constants.h"
 #include "components/user_education/common/feature_promo_controller.h"
 #include "components/web_modal/web_contents_modal_dialog_manager.h"
 #include "components/zoom/page_zoom.h"
@@ -1435,6 +1436,12 @@ void ShowTranslateBubble(Browser* browser) {
   std::string target_language;
   chrome_translate_client->GetTranslateLanguages(web_contents, &source_language,
                                                  &target_language);
+
+  // If the source language matches the target language, we change the source
+  // language to unknown, so that we display "Detected Language".
+  if (source_language == target_language) {
+    source_language = translate::kUnknownLanguageCode;
+  }
 
   translate::TranslateStep step = translate::TRANSLATE_STEP_BEFORE_TRANSLATE;
   auto* language_state =
