@@ -9025,6 +9025,14 @@ const FeatureEntry kFeatureEntries[] = {
          "PasswordGenerationExperiment")},
 #endif
 
+#if BUILDFLAG(IS_CHROMEOS)
+    {"print-preview-setup-assistance",
+     flag_descriptions::kPrintPreviewSetupAssistanceName,
+     flag_descriptions::kPrintPreviewSetupAssistanceDescription,
+     kOsCrOS | kOsLacros,
+     FEATURE_VALUE_TYPE(features::kPrintPreviewSetupAssistance)},
+#endif
+
 #if BUILDFLAG(IS_ANDROID)
     {"privacy-guide-android", flag_descriptions::kPrivacyGuideAndroidName,
      flag_descriptions::kPrivacyGuideAndroidDescription, kOsAndroid,

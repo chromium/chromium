@@ -6925,6 +6925,11 @@ const char kPreinstalledWebAppWindowExperimentDescription[] =
     "open in windows with link capturing enabled, or tabs, instead of the "
     "default behavior.";
 
+const char kPrintPreviewSetupAssistanceName[] =
+    "Enable improved printer status and error messaging in Print Preview.";
+const char kPrintPreviewSetupAssistanceDescription[] =
+    "Enable improved printer status and error messaging in Print Preview.";
+
 const char kDisableQuickAnswersV2TranslationName[] =
     "Disable Quick Answers Translation";
 const char kDisableQuickAnswersV2TranslationDescription[] =

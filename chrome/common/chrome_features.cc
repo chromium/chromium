@@ -954,6 +954,13 @@ BASE_FEATURE(kPrerenderFallbackToPreconnect,
              "PrerenderFallbackToPreconnect",
              base::FEATURE_ENABLED_BY_DEFAULT);
 
+#if BUILDFLAG(IS_CHROMEOS)
+// Enable improved printer state and error state messaging for Print Preview.
+BASE_FEATURE(kPrintPreviewSetupAssistance,
+             "PrintPreviewSetupAssistance",
+             base::FEATURE_DISABLED_BY_DEFAULT);
+#endif
+
 BASE_FEATURE(kPrivacyGuideAndroid,
              "PrivacyGuideAndroid",
              base::FEATURE_DISABLED_BY_DEFAULT);
